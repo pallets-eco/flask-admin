@@ -1,0 +1,11 @@
+*.swp
+*.swo
+*.pyc
+*.*~
+pyenv
+#*#
+build
+source/_static*
+source/_templates*
+make.bat
+venv
