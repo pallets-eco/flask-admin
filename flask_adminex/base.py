@@ -1,4 +1,5 @@
 from functools import wraps
+from re import sub
 
 from flask import Blueprint, render_template, url_for, abort
 
@@ -57,8 +58,9 @@ class AdminViewMeta(type):
 class BaseView(object):
     __metaclass__ = AdminViewMeta
 
-    def __init__(self, name=None, endpoint=None, url=None, static_folder=None):
+    def __init__(self, name=None, category=None, endpoint=None, url=None, static_folder=None):
         self.name = name
+        self.category = category
         self.endpoint = endpoint
         self.url = url
         self.static_folder = static_folder
@@ -81,7 +83,7 @@ class BaseView(object):
 
         # If name is not povided, use capitalized endpoint name
         if self.name is None:
-            self.name = self.endpoint.capitalize()
+            self.name = self._prettify_name(self.__class__.__name__)
 
         # Create blueprint and register rules
         self.blueprint = Blueprint(self.endpoint, __name__,
@@ -95,6 +97,9 @@ class BaseView(object):
                                         getattr(self, name),
                                         methods=methods)
 
+    def _prettify_name(self, name):
+        return sub(r'(?<=.)([A-Z])', r' \1', name)
+
     def is_accessible(self):
         return True
 
@@ -104,8 +109,8 @@ class BaseView(object):
 
 
 class AdminIndexView(BaseView):
-    def __init__(self, name=None, endpoint=None, url=None):
-        super(AdminIndexView, self).__init__(name or 'Home', endpoint or 'admin', url or '/admin/', 'static')
+    def __init__(self, name=None, category=None, endpoint=None, url=None):
+        super(AdminIndexView, self).__init__(name or 'Home', category, endpoint or 'admin', url or '/admin', 'static')
 
     @expose('/')
     def index(self):
@@ -113,9 +118,51 @@ class AdminIndexView(BaseView):
 
 
 class Admin(object):
-    def __init__(self, app, index_view=None):
-        self.app = app
+    class MenuItem(object):
+        def __init__(self, name, view=None):
+            self.name = name
+            self._view = view
+            self._children = []
+            self._children_urls = set()
+
+            self.url = None
+            if view is not None:
+                self.url = view.url
+
+        def add_child(self, view):
+            self._children.append(view)
+            self._children_urls.add(view.url)
+
+        def get_url(self):
+            if self._view is None:
+                return None
+
+            return url_for('%s.%s' % (self._view.endpoint, self._view._default_view))
+
+        def is_active(self, view):
+            if view == self._view:
+                return True
+
+            return view.url in self._children_urls
+
+        def is_accessible(self):
+            if self._view is None:
+                return False
+
+            return self._view.is_accessible()
+
+        def is_category(self):
+            return self._view is None
+
+        def get_children(self):
+            return [c for c in self._children if c.is_accessible()]
+
+        def __repr__(self):
+            return 'MenuItem %s (%s)' % (self.name, repr(self._children))
+
+    def __init__(self, index_view=None):
         self._views = []
+        self._menu = []
 
         if index_view is None:
             index_view = AdminIndexView()
@@ -124,14 +171,37 @@ class Admin(object):
         self.add_view(index_view)
 
     def add_view(self, view):
-        # Store in list of views and associate view with admin instance
-        self._views.append(view)
         view._set_admin(self)
+        self._views.append(view)
 
-        # Register blueprint
-        self.app.register_blueprint(view.blueprint)
+    def apply(self, app):
+        self.app = app
 
-    @property
+        for v in self._views:
+            app.register_blueprint(v.blueprint)
+
+        self._refresh_menu()
+
+    def _refresh_menu(self):
+        categories = dict()
+
+        self._menu = []
+
+        for v in self._views:
+            if v.category is None:
+                self._menu.append(self.MenuItem(v.name, v))
+            else:
+                category = categories.get(v.category)
+
+                if category is None:
+                    category = self.MenuItem(v.category)
+                    categories[v.category] = category
+                    self._menu.append(category)
+
+                category.add_child(self.MenuItem(v.name, v))
+
+        print repr(self._menu)
+
     def menu(self):
-        # TODO: Precalculate URL - no need to get URLs for every request
-        return (('%s.%s' % (v.endpoint, v._default_view), v.url, v.name) for v in self._views if v.is_accessible())
+        return self._menu
+

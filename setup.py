@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='Flask-ExtAdmin',
+    name='Flask-AdminEx',
     version='0.0.1',
     url='https://github.com/MrJoes/flask-extadmin/',
     license='BSD',
@@ -9,7 +9,7 @@ setup(
     author_email='serge.koval+github@gmail.com',
     description='Simple and extensible admin interface framework for Flask',
     long_description=__doc__,
-    packages=['flask_extadmin'],
+    packages=['flask_adminex'],
     include_package_data=True,
     zip_safe=False,
     platforms='any',

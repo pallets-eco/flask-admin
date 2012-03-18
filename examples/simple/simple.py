@@ -1,19 +1,23 @@
 from flask import Flask, render_template
 
-from flask.ext import extadmin
+from flask.ext import adminex
 
 
 # Create custom admin view
-class MyAdminView(extadmin.BaseView):
-    @extadmin.expose('/')
+class MyAdminView(adminex.BaseView):
+    @adminex.expose('/')
     def index(self):
         return render_template('myadmin.html', view=self)
 
 
-class AnotherAdminView(extadmin.BaseView):
-    @extadmin.expose('/')
+class AnotherAdminView(adminex.BaseView):
+    @adminex.expose('/')
     def index(self):
         return render_template('anotheradmin.html', view=self)
+
+    @adminex.expose('/test/')
+    def test(self):
+        return render_template('test.html', view=self)
 
 
 # Create flask app
@@ -28,9 +32,10 @@ def index():
 
 if __name__ == '__main__':
     # Create admin interface
-    admin = extadmin.Admin(app)
-    admin.add_view(MyAdminView())
-    admin.add_view(AnotherAdminView())
+    admin = adminex.Admin()
+    admin.add_view(MyAdminView(category='Test'))
+    admin.add_view(AnotherAdminView(category='Test'))
+    admin.apply(app)
 
     # Start app
     app.debug = True

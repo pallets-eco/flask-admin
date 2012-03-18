@@ -8,7 +8,7 @@ from flask import request, render_template, url_for, redirect
 
 from flaskext import wtf
 
-from .base import Admin, BaseView, expose
+from flask.ext.adminex import BaseView, expose
 
 
 class AdminModelConverter(ModelConverter):
