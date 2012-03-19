@@ -1,10 +1,11 @@
 - Core
     - Pregenerate URLs for menu
     - Page titles
+    - Create base model-admin class and derive SQLA admin from it
 - SQLA Model Admin
-    - Ability to override displayed columns in a list
     - Ability to override displayed form fields
-    - Ability to provide form validators without messing with form creation
+    - Ability to rename list columns
+    - Ability to change form without messing with form creation
     - Filtering
     - Many2Many editing
     - Many2One editor

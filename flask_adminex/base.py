@@ -117,52 +117,57 @@ class AdminIndexView(BaseView):
         return render_template('admin/index.html', view=self)
 
 
+class MenuItem(object):
+    def __init__(self, name, view=None):
+        self.name = name
+        self._view = view
+        self._children = []
+        self._children_urls = set()
+
+        self.url = None
+        if view is not None:
+            self.url = view.url
+
+    def add_child(self, view):
+        self._children.append(view)
+        self._children_urls.add(view.url)
+
+    def get_url(self):
+        if self._view is None:
+            return None
+
+        return url_for('%s.%s' % (self._view.endpoint, self._view._default_view))
+
+    def is_active(self, view):
+        if view == self._view:
+            return True
+
+        return view.url in self._children_urls
+
+    def is_accessible(self):
+        if self._view is None:
+            return False
+
+        return self._view.is_accessible()
+
+    def is_category(self):
+        return self._view is None
+
+    def get_children(self):
+        return [c for c in self._children if c.is_accessible()]
+
+    def __repr__(self):
+        return 'MenuItem %s (%s)' % (self.name, repr(self._children))
+
+
 class Admin(object):
-    class MenuItem(object):
-        def __init__(self, name, view=None):
-            self.name = name
-            self._view = view
-            self._children = []
-            self._children_urls = set()
-
-            self.url = None
-            if view is not None:
-                self.url = view.url
-
-        def add_child(self, view):
-            self._children.append(view)
-            self._children_urls.add(view.url)
-
-        def get_url(self):
-            if self._view is None:
-                return None
-
-            return url_for('%s.%s' % (self._view.endpoint, self._view._default_view))
-
-        def is_active(self, view):
-            if view == self._view:
-                return True
-
-            return view.url in self._children_urls
-
-        def is_accessible(self):
-            if self._view is None:
-                return False
-
-            return self._view.is_accessible()
-
-        def is_category(self):
-            return self._view is None
-
-        def get_children(self):
-            return [c for c in self._children if c.is_accessible()]
-
-        def __repr__(self):
-            return 'MenuItem %s (%s)' % (self.name, repr(self._children))
-
-    def __init__(self, index_view=None):
+    def __init__(self, name=None, index_view=None):
         self._views = []
         self._menu = []
+
+        if name is None:
+            name = 'Flask'
+        self.name = name
 
         if index_view is None:
             index_view = AdminIndexView()
@@ -189,16 +194,16 @@ class Admin(object):
 
         for v in self._views:
             if v.category is None:
-                self._menu.append(self.MenuItem(v.name, v))
+                self._menu.append(MenuItem(v.name, v))
             else:
                 category = categories.get(v.category)
 
                 if category is None:
-                    category = self.MenuItem(v.category)
+                    category = MenuItem(v.category)
                     categories[v.category] = category
                     self._menu.append(category)
 
-                category.add_child(self.MenuItem(v.name, v))
+                category.add_child(MenuItem(v.name, v))
 
     def menu(self):
         return self._menu

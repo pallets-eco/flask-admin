@@ -44,11 +44,17 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
+class PostAdmin(sqlamodel.ModelView):
+    list_columns = ('title', 'user')
+
+    def __init__(self, session):
+        super(PostAdmin, self).__init__(Post, session)
+
 if __name__ == '__main__':
     # Create admin
-    admin = adminex.Admin()
-    admin.add_view(sqlamodel.ModelView(User, db.session, category='News'))
-    admin.add_view(sqlamodel.ModelView(Post, db.session, category='News'))
+    admin = adminex.Admin('Simple Models')
+    admin.add_view(sqlamodel.ModelView(User, db.session))
+    admin.add_view(PostAdmin(db.session))
     admin.apply(app)
 
     # Create DB
