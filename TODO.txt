@@ -1,0 +1,16 @@
+- Core
+    - Pregenerate URLs for menu
+    - Page titles
+- SQLA Model Admin
+    - Ability to override displayed columns in a list
+    - Ability to override displayed form fields
+    - Ability to provide form validators without messing with form creation
+    - Paging
+    - Sorting
+    - Filtering
+    - Many2Many editing
+    - Many2One editor
+- File admin
+- Documentation
+- Examples
+    - Authentication samples

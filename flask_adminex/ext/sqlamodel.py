@@ -46,12 +46,17 @@ class AdminModelConverter(ModelConverter):
 
 
 class ModelView(BaseView):
-    def __init__(self, model, session, name=None, category=None, endpoint=None, url=None,
-                 can_create=True, can_edit=True, can_delete=True,
-                 list_template='admin/model/list.html',
-                 edit_template='admin/model/edit.html',
-                 create_template='admin/model/edit.html'):
+    # Permissions
+    can_create = True
+    can_edit = True
+    can_delete = True
 
+    # Templates
+    list_template = 'admin/model/list.html'
+    edit_template = 'admin/model/edit.html'
+    create_template = 'admin/model/edit.html'
+
+    def __init__(self, model, session, name=None, category=None, endpoint=None, url=None):
         # If name not provided, it is modelname
         if name is None:
             name = '%s' % self._prettify_name(model.__name__)
@@ -64,16 +69,6 @@ class ModelView(BaseView):
 
         self.session = session
         self.model = model
-
-        # Permissions
-        self.can_create = can_create
-        self.can_edit = can_edit
-        self.can_delete = can_delete
-
-        # Templates
-        self.list_template = list_template
-        self.edit_template = edit_template
-        self.create_template = create_template
 
         # Scaffolding
         self.list_columns = self.get_list_columns()
