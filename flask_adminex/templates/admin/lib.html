@@ -1,0 +1,62 @@
+{% macro pager(page, pages, generator) -%}
+{% if pages > 1 %}
+<div class="pagination">
+    <ul>
+    {% if not page %}
+        {% set page = 1 %}
+    {% endif %}
+
+    {% set min = page - 3 %}
+    {% set max = page + 3 + 1 %}
+
+    {% if min < 0 %}
+        {% set max = max - min + 1 %}
+    {% endif %}
+    {% if max > pages %}
+        {% set min = min + pages - max - 1 %}
+    {% endif %}
+
+    {% if min < 1 %}
+        {% set min = 1 %}
+    {% endif %}
+    {% if max > pages + 1 %}
+        {% set max = pages + 1 %}
+    {% endif %}
+
+    {% if min > 1 %}
+    <li>
+        <a href="{{ generator(1) }}">&lt;&lt;</a>
+    </li>
+    {% endif %}
+    {% if page > 1 %}
+    <li>
+        <a href="{{ generator(page-1) }}">&lt;</a>
+    </li>
+    {% endif %}
+
+    {% for p in range(min, max) %}
+    {% if page == p %}
+    <li class="disabled">
+        <a href="#">{{ p }}</a>
+    </li>
+    {% else %}
+    <li>
+        <a href="{{ generator(p) }}">{{ p }}</a>
+    </li>
+    {% endif %}
+    {% endfor %}
+
+    {% if page+1 <= pages %}
+    <li>
+        <a href="{{ generator(page+1) }}">&gt;</a>
+    </li>
+    {% endif %}
+    {% if max <= pages %}
+    <li>
+        <a href="{{ generator(pages) }}">&gt;&gt;</a>
+    </li>
+    {% endif %}
+    </ul>
+</div>
+{% endif %}
+{%- endmacro %}

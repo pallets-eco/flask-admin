@@ -44,6 +44,22 @@
         </div>
       </div>
     </div>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        {% for category, m in messages %}
+          {% if category == 'error' %}
+          <div class="alert alert-error">
+          {% else %}
+          <div class="alert">
+          {% endif %}
+            <a href="#" class="close" data-dismiss="alert">x</a>
+            {{ m }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <div class="container">
       {% block body %}{% endblock %}
     </div>
