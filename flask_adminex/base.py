@@ -200,8 +200,5 @@ class Admin(object):
 
                 category.add_child(self.MenuItem(v.name, v))
 
-        print repr(self._menu)
-
     def menu(self):
         return self._menu
-

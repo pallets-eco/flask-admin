@@ -1,5 +1,6 @@
 from sqlalchemy.orm.properties import RelationshipProperty, ColumnProperty
 from sqlalchemy.orm.interfaces import MANYTOONE
+from sqlalchemy import exc
 
 from wtforms.ext.sqlalchemy.orm import model_form, ModelConverter
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
@@ -45,12 +46,21 @@ class AdminModelConverter(ModelConverter):
 
 
 class ModelView(BaseView):
-    def __init__(self, session, model, name=None, endpoint=None, url=None,
+    def __init__(self, model, session, name=None, category=None, endpoint=None, url=None,
                  can_create=True, can_edit=True, can_delete=True,
                  list_template='admin/model/list.html',
                  edit_template='admin/model/edit.html',
                  create_template='admin/model/edit.html'):
-        super(ModelView, self).__init__(name, endpoint, url)
+
+        # If name not provided, it is modelname
+        if name is None:
+            name = '%s' % self._prettify_name(model.__name__)
+
+        # If endpoint not provided, it is modelname + 'view'
+        if endpoint is None:
+            endpoint = ('%sview' % model.__name__).lower()
+
+        super(ModelView, self).__init__(name, category, endpoint, url)
 
         self.session = session
         self.model = model
@@ -80,7 +90,7 @@ class ModelView(BaseView):
         for p in mapper.iterate_properties:
             if isinstance(p, RelationshipProperty):
                 if p.direction is MANYTOONE:
-                    self.list_columns.append(p.key)
+                    columns.append(p.key)
             elif isinstance(p, ColumnProperty):
                 # TODO: Check for multiple columns
                 column = p.columns[0]
@@ -99,7 +109,7 @@ class ModelView(BaseView):
         return self.scaffold_form()
 
     def scaffold_edit_form(self):
-        return self.scaffold_edit_form()
+        return self.scaffold_form()
 
     # Database-related API
     def get_list(self):
@@ -110,6 +120,7 @@ class ModelView(BaseView):
 
     # Model handlers
     def create_model(self, form):
+        # TODO: Error handling
         model = self.model()
         form.populate_obj(model)
         self.session.add(model)
@@ -143,7 +154,7 @@ class ModelView(BaseView):
         return render_template(self.create_template, view=self, form=form)
 
     @expose('/edit/<int:id>/', methods=('GET', 'POST'))
-    def edit_view(self):
+    def edit_view(self, id):
         if not self.can_edit:
             return redirect(url_for('.index_view'))
 
@@ -161,7 +172,7 @@ class ModelView(BaseView):
         return render_template(self.edit_template, view=self, form=form)
 
     @expose('/delete/<int:id>/')
-    def delete_view(self):
+    def delete_view(self, id):
         # TODO: Use post
         if not self.can_delete:
             return redirect(url_for('.index_view'))

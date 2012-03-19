@@ -1,0 +1,35 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+    <form action="" method="POST">
+      {{ form.csrf }}
+      <table class="form">
+        {% for f in form if f.label.text != 'Csrf' %}
+        <tr>
+           <td>
+               {{ f.label }}
+           </td>
+           <td>
+               {{ f }}
+           </td>
+        </tr>
+        {% endfor %}
+        <tr>
+           <td>
+           </td>
+           <td>
+               {% if form.errors %}
+               <ul>
+               {% for fn, fe in form.errors.items() if fe %}
+               {% for e in fe %}
+               <li>{{ e }}</li>
+               {% endfor %}
+               {% endfor %}
+               </ul>
+               {% endif %}
+               <input type="submit" class="btn btn-primary btn-large" />
+           </td>
+        </tr>
+      </table>
+    </form>
+{% endblock %}
