@@ -84,6 +84,7 @@ class BaseView(object):
     def __init__(self, name=None, category=None, endpoint=None, url=None, static_folder=None):
         """
             Constructor.
+
             `name`
                 Name of this view. If not provided, will be defaulted to the class name.
             `category`
@@ -111,6 +112,9 @@ class BaseView(object):
     def _set_admin(self, admin):
         """
             Associate this view with Admin class instance.
+
+            `admin`
+                Admin instance
         """
         self.admin = admin
 
@@ -145,6 +149,9 @@ class BaseView(object):
     def _prettify_name(self, name):
         """
             Prettify class name by splitting name by capital characters. So, 'MySuperClass' will look like 'My Super Class'
+
+            `name`
+                String to prettify
         """
         return sub(r'(?<=.)([A-Z])', r' \1', name)
 
@@ -176,6 +183,12 @@ class AdminIndexView(BaseView):
                     return render_template('adminhome.html')
 
             admin = Admin(index_view=MyHomeView)
+
+        By default, has following rules:
+        1. If name is not provided, will use 'Home'
+        2. If endpoint is not provided, will use 'admin'
+        3. If url is not provided, will use '/admin'
+        4. Automatically associates with static folder.
     """
     def __init__(self, name=None, category=None, endpoint=None, url=None):
         super(AdminIndexView, self).__init__(name or 'Home', category, endpoint or 'admin', url or '/admin', 'static')
@@ -186,6 +199,9 @@ class AdminIndexView(BaseView):
 
 
 class MenuItem(object):
+    """
+        Simple menu tree hierarchy.
+    """
     def __init__(self, name, view=None):
         self.name = name
         self._view = view
@@ -204,6 +220,7 @@ class MenuItem(object):
         if self._view is None:
             return None
 
+        # TODO: Optimize me
         return url_for('%s.%s' % (self._view.endpoint, self._view._default_view))
 
     def is_active(self, view):
@@ -237,7 +254,7 @@ class Admin(object):
             Constructor.
 
             `name`
-                Application name. Will be displayed in main menu and as a page title. If not provided, defaulted to "Flask"
+                Application name. Will be displayed in main menu and as a page title. If not provided, defaulted to "Admin"
             `index_view`
                 Home page view to use. If not provided, will use `AdminIndexView`.
         """
@@ -245,7 +262,7 @@ class Admin(object):
         self._menu = []
 
         if name is None:
-            name = 'Flask'
+            name = 'Admin'
         self.name = name
 
         if index_view is None:

@@ -1,36 +1,37 @@
 {% extends 'admin/master.html' %}
 
 {% block body %}
-    <form action="" method="POST">
-      {{ form.csrf }}
-      <table class="form">
+    <form action="" method="POST" class="form-horizontal">
+      <fieldset>
+        {{ form.csrf }}
+
         {% for f in form if f.label.text != 'Csrf' %}
-        <tr>
-           <td>
-               {{ f.label }}
-           </td>
-           <td>
-               {{ f }}
-           </td>
-        </tr>
+        {% if f.name in form.errors %}
+        <div class="control-group error">
+        {% else %}
+        <div class="control-group">
+        {% endif %}
+          {{ f.label(class='control-label') }}
+          <div class="controls">
+            <div>
+              {{ f }}
+            </div>
+            {% if f.name in form.errors %}
+              <ul>
+              {% for e in form.errors[f.name] %}
+                <li>{{ e }}</li>
+              {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        </div>
         {% endfor %}
-        <tr>
-           <td>
-           </td>
-           <td>
-               {% if form.errors %}
-               <ul>
-               {% for fn, fe in form.errors.items() if fe %}
-               {% for e in fe %}
-               <li>{{ e }}</li>
-               {% endfor %}
-               {% endfor %}
-               </ul>
-               {% endif %}
-               <input type="submit" class="btn btn-primary btn-large" />
-               <a href="{{ return_url }}" class="btn btn-large">Cancel</a>
-           </td>
-        </tr>
-      </table>
+        <div class="control-group">
+          <div class="controls">
+            <input type="submit" class="btn btn-primary btn-large" />
+            <a href="{{ return_url }}" class="btn btn-large">Cancel</a>
+          </div>
+        </div>
+      </fieldset>
     </form>
 {% endblock %}

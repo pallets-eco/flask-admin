@@ -14,6 +14,9 @@ from flask.ext.adminex.model import BaseModelView
 
 
 class AdminModelConverter(ModelConverter):
+    """
+        SQLAlchemy model to form converter
+    """
     def __init__(self, session):
         super(AdminModelConverter, self).__init__()
 
@@ -48,14 +51,40 @@ class AdminModelConverter(ModelConverter):
 
 
 class ModelView(BaseModelView):
+    """
+        SQLALchemy model view
+
+        Usage sample::
+
+            admin = ModelView(User, db.session)
+    """
     def __init__(self, model, session,
                  name=None, category=None, endpoint=None, url=None):
+        """
+            Constructor.
+
+            `model`
+                Model class
+            `session`
+                SQLALchemy session
+            `name`
+                View name. If not set, will default to model name
+            `category`
+                Category name
+            `endpoint`
+                Endpoint name. If not set, will default to model name
+            `url`
+                Base URL. If not set, will default to '/admin/' + endpoint
+        """
         self.session = session
 
         super(ModelView, self).__init__(model, name, category, endpoint, url)
 
-    # Public API
+    # Scaffolding
     def scaffold_list_columns(self):
+        """
+            Return list of columns from the model.
+        """
         columns = []
 
         mapper = self.model._sa_class_manager.mapper
@@ -76,6 +105,10 @@ class ModelView(BaseModelView):
         return columns
 
     def scaffold_sortable_columns(self):
+        """
+            Return dictionary of sortable columns.
+            Key is column name, value is sort column/field.
+        """
         columns = dict()
 
         mapper = self.model._sa_class_manager.mapper
@@ -93,13 +126,29 @@ class ModelView(BaseModelView):
         return columns
 
     def scaffold_form(self):
+        """
+            Create form from the model.
+        """
         return model_form(self.model,
                           wtf.Form,
                           self.form_columns,
+                          field_args=self.form_args,
                           converter=AdminModelConverter(self.session))
 
     # Database-related API
     def get_list(self, page, sort_column, sort_desc, execute=True):
+        """
+            Return models from the database.
+
+            `page`
+                Page number
+            `sort_column`
+                Sort column name
+            `sort_desc`
+                Descending or ascending sort
+            `execute`
+                Execute query immediately? Default is `True`
+        """
         query = self.session.query(self.model)
 
         count = query.count()
@@ -133,16 +182,29 @@ class ModelView(BaseModelView):
 
         query = query.limit(self.page_size)
 
+        # Execute if needed
         if execute:
             query = query.all()
 
         return count, query
 
     def get_one(self, id):
+        """
+            Return one model by its id.
+
+            `id`
+                Model
+        """
         return self.session.query(self.model).get(id)
 
     # Model handlers
     def create_model(self, form):
+        """
+            Create model from form.
+
+            `form`
+                Form instance
+        """
         try:
             model = self.model()
             form.populate_obj(model)
@@ -154,6 +216,12 @@ class ModelView(BaseModelView):
             return False
 
     def update_model(self, form, model):
+        """
+            Update model from form.
+
+            `form`
+                Form instance
+        """
         try:
             form.populate_obj(model)
             self.session.commit()
@@ -163,5 +231,11 @@ class ModelView(BaseModelView):
             return False
 
     def delete_model(self, model):
+        """
+            Delete model.
+
+            `model`
+                Model to delete
+        """
         self.session.delete(model)
         self.session.commit()

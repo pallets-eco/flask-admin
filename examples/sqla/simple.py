@@ -1,7 +1,7 @@
 from flask import Flask
 from flaskext.sqlalchemy import SQLAlchemy
 
-from flask.ext import adminex
+from flask.ext import adminex, wtf
 from flask.ext.adminex.ext import sqlamodel
 
 # Create application
@@ -51,6 +51,10 @@ class PostAdmin(sqlamodel.ModelView):
 
     sortable_columns = ('title', ('user', User.username))
     rename_columns = dict(title='Tiiitle')
+
+    form_args = dict(
+                    text=dict(label='Big Text', validators=[wtf.required()])
+                )
 
     def __init__(self, session):
         super(PostAdmin, self).__init__(Post, session)

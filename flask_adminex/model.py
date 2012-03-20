@@ -96,6 +96,19 @@ class BaseModelView(BaseView):
                 list_columns = ('name', 'email')
     """
 
+    form_args = None
+    """
+        Dictionary of form field arguments. Refer to WTForm documentation on
+        list of possible options.
+
+        Example::
+
+            class MyModelView(BaseModelView):
+                form_args = dict(
+                    name=dict(label='First Name', validators=[wtf.required()])
+                }
+    """
+
     # Various settings
     page_size = 20
     """
@@ -343,7 +356,7 @@ class BaseModelView(BaseView):
             `name`
                 Name to prettify
         """
-        return ' '.join(x.capitalize() for x in name.split('_'))
+        return name.replace('_', ' ').title()
 
     # URL generation helper
     def _get_extra_args(self):
@@ -434,6 +447,9 @@ class BaseModelView(BaseView):
 
     @expose('/new/', methods=('GET', 'POST'))
     def create_view(self):
+        """
+            Create model view
+        """
         return_url = request.args.get('return')
 
         if not self.can_create:
@@ -449,6 +465,9 @@ class BaseModelView(BaseView):
 
     @expose('/edit/<int:id>/', methods=('GET', 'POST'))
     def edit_view(self, id):
+        """
+            Edit model view
+        """
         return_url = request.args.get('return')
 
         if not self.can_edit:
@@ -472,6 +491,9 @@ class BaseModelView(BaseView):
 
     @expose('/delete/<int:id>/')
     def delete_view(self, id):
+        """
+            Delete model view
+        """
         return_url = request.args.get('return')
 
         # TODO: Use post
