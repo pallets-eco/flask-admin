@@ -7,17 +7,17 @@ class BaseModelView(BaseView):
     """
         Base model view.
 
-        Does not make any assumptions on how models are stored or managed, but expects following:
+        View does not make any assumptions on how models are stored or managed, but expects following:
         1. Model is an object
         2. Model contains properties
-        3. Each model contains 'id' attribute which uniquely identifies it (TBD: Make it more flexible)
+        3. Each model contains attribute which uniquely identifies it (i.e. primary key for database model)
         4. You can get list of sorted models with pagination applied from a data source
-        5. You can get one model by its 'id' from the data source
+        5. You can get one model by its identifier from the data source
 
         Essentially, if you want to support new data store, all you have to do:
         1. Derive from `BaseModelView` class
         2. Implement various data-related methods (`get_list`, `get_one`, `create_model`, etc)
-        3. Implement automatic form generation from the model representation (`scaffold_form`, etc)
+        3. Implement automatic form generation from the model representation (`scaffold_form`)
     """
 
     # Permissions

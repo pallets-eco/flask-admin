@@ -105,30 +105,24 @@ class BaseView(object):
         self.url = url
         self.static_folder = static_folder
 
+        # Initialized from create_blueprint
         self.admin = None
+        self.blueprint = None
 
-        self._create_blueprint()
-
-    def _set_admin(self, admin):
-        """
-            Associate this view with Admin class instance.
-
-            `admin`
-                Admin instance
-        """
-        self.admin = admin
-
-    def _create_blueprint(self):
+    def create_blueprint(self, admin):
         """
             Create Flask blueprint.
         """
+        # Store admin instance
+        self.admin = admin
+
         # If endpoint name is not provided, get it from the class name
         if self.endpoint is None:
             self.endpoint = self.__class__.__name__.lower()
 
         # If url is not provided, generate it from endpoint name
         if self.url is None:
-            self.url = '/admin/%s' % self.endpoint
+            self.url = '%s/%s' % (self.admin.url, self.endpoint)
 
         # If name is not povided, use capitalized endpoint name
         if self.name is None:
@@ -145,6 +139,8 @@ class BaseView(object):
                                         name,
                                         getattr(self, name),
                                         methods=methods)
+
+        return self.blueprint
 
     def _prettify_name(self, name):
         """
@@ -249,7 +245,7 @@ class Admin(object):
     """
         Collection of the views. Also manages menu structure.
     """
-    def __init__(self, name=None, index_view=None):
+    def __init__(self, name=None, url=None, index_view=None):
         """
             Constructor.
 
@@ -265,6 +261,10 @@ class Admin(object):
             name = 'Admin'
         self.name = name
 
+        if url is None:
+            url = '/admin'
+        self.url = url
+
         if index_view is None:
             index_view = AdminIndexView()
 
@@ -278,7 +278,6 @@ class Admin(object):
             `view`
                 View to add.
         """
-        view._set_admin(self)
         self._views.append(view)
 
     def apply(self, app):
@@ -291,7 +290,7 @@ class Admin(object):
         self.app = app
 
         for v in self._views:
-            app.register_blueprint(v.blueprint)
+            app.register_blueprint(v.create_blueprint(self))
 
         self._refresh_menu()
 

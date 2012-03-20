@@ -8,8 +8,6 @@ from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleF
 
 from flask import flash
 
-from flaskext import wtf
-
 from flask.ext.adminex.model import BaseModelView
 from flask.ext.adminex.form import AdminForm
 
