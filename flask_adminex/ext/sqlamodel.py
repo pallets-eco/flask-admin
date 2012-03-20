@@ -1,43 +1,54 @@
 from sqlalchemy.orm.properties import RelationshipProperty, ColumnProperty
-from sqlalchemy.orm.interfaces import MANYTOONE
+from sqlalchemy.orm.interfaces import MANYTOONE, ONETOMANY
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.expression import desc
 
 from wtforms.ext.sqlalchemy.orm import model_form, ModelConverter
-from wtforms.ext.sqlalchemy.fields import QuerySelectField
+from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
 
 from flask import flash
 
 from flaskext import wtf
 
 from flask.ext.adminex.model import BaseModelView
+from flask.ext.adminex.form import AdminForm
 
 
 class AdminModelConverter(ModelConverter):
     """
         SQLAlchemy model to form converter
     """
-    def __init__(self, session):
+    def __init__(self, view):
         super(AdminModelConverter, self).__init__()
 
-        self.session = session
+        self.view = view
 
     def convert(self, model, mapper, prop, field_args):
         if isinstance(prop, RelationshipProperty):
+            local_column = prop.local_remote_pairs[0][0]
+            remote_model = prop.mapper.class_
+
             kwargs = {
                 'validators': [],
                 'filters': [],
+                'allow_blank': local_column.nullable,
                 'default': None
             }
 
             if field_args:
                 kwargs.update(field_args)
 
-            if prop.direction is MANYTOONE:
-                def query_factory():
-                    return self.session.query(prop.argument)
+            def query_factory():
+                return self.view.session.query(remote_model)
 
+            if prop.direction is MANYTOONE:
                 return QuerySelectField(query_factory=query_factory, **kwargs)
+            elif prop.direction is ONETOMANY:
+                # Skip backrefs
+                if not local_column.foreign_keys and self.view.hide_backrefs:
+                    return None
+
+                return QuerySelectMultipleField(query_factory=query_factory, **kwargs)
         else:
             # Ignore pk/fk
             if isinstance(prop, ColumnProperty):
@@ -58,6 +69,12 @@ class ModelView(BaseModelView):
 
             admin = ModelView(User, db.session)
     """
+
+    hide_backrefs = True
+    """
+        Set this to False if you want to see multiselect for model backrefs.
+    """
+
     def __init__(self, model, session,
                  name=None, category=None, endpoint=None, url=None):
         """
@@ -115,9 +132,14 @@ class ModelView(BaseModelView):
 
         for p in mapper.iterate_properties:
             if isinstance(p, ColumnProperty):
-                # TODO: Check for multiple columns
+                # Sanity check
+                if len(p.columns) > 1:
+                    raise Exception('Automatic form scaffolding is not supported' +
+                                    ' for multi-column properties (%s.%s)' % (self.model.__name__, p.key))
+
                 column = p.columns[0]
 
+                # Can't sort by on primary and foreign keys by default
                 if column.foreign_keys or column.primary_key:
                     continue
 
@@ -130,10 +152,10 @@ class ModelView(BaseModelView):
             Create form from the model.
         """
         return model_form(self.model,
-                          wtf.Form,
+                          AdminForm,
                           self.form_columns,
                           field_args=self.form_args,
-                          converter=AdminModelConverter(self.session))
+                          converter=AdminModelConverter(self))
 
     # Database-related API
     def get_list(self, page, sort_column, sort_desc, execute=True):

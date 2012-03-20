@@ -37,6 +37,9 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = db.relationship(User, backref='posts')
 
+    def __unicode__(self):
+        return self.title
+
 
 # Flask routes
 @app.route('/')
