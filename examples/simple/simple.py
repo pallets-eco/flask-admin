@@ -7,17 +7,17 @@ from flask.ext import adminex
 class MyAdminView(adminex.BaseView):
     @adminex.expose('/')
     def index(self):
-        return render_template('myadmin.html', view=self)
+        return self.render('myadmin.html')
 
 
 class AnotherAdminView(adminex.BaseView):
     @adminex.expose('/')
     def index(self):
-        return render_template('anotheradmin.html', view=self)
+        return self.render('anotheradmin.html')
 
     @adminex.expose('/test/')
     def test(self):
-        return render_template('test.html', view=self)
+        return self.render('test.html')
 
 
 # Create flask app
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     admin = adminex.Admin()
     admin.add_view(MyAdminView(category='Test'))
     admin.add_view(AnotherAdminView(category='Test'))
-    admin.apply(app)
+    admin.setup_app(app)
 
     # Start app
     app.debug = True

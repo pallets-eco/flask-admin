@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{% block title %}{% if view.category %}{{ view.category }} - {% endif %}{{ view.name }} - {{ view.admin.name }}{% endblock %}</title>
+    <title>{% block title %}{% if admin_view.category %}{{ admin_view.category }} - {% endif %}{{ admin_view.name }} - {{ admin_view.admin.name }}{% endblock %}</title>
     {% block head_meta %}
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
@@ -20,9 +20,9 @@
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <span class="brand">{{ view.admin.name }}</span>
+          <span class="brand">{{ admin_view.admin.name }}</span>
           <ul class="nav">
-            {% for item in view.admin.menu() %}
+            {% for item in admin_view.admin.menu() %}
               {% if item.is_category() %}
                 {% set children = item.get_children() %}
                 {% if children %}

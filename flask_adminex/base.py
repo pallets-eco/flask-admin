@@ -146,6 +146,20 @@ class BaseView(object):
 
         return self.blueprint
 
+    def render(self, template, **kwargs):
+        """
+            Render template
+
+            `template`
+                Template path to render
+            `kwargs`
+                Template arguments
+        """
+        # Store
+        kwargs['admin_view'] = self
+
+        return render_template(template, **kwargs)
+
     def _prettify_name(self, name):
         """
             Prettify class name by splitting name by capital characters. So, 'MySuperClass' will look like 'My Super Class'
@@ -195,7 +209,7 @@ class AdminIndexView(BaseView):
 
     @expose('/')
     def index(self):
-        return render_template('admin/index.html', view=self)
+        return self.render('admin/index.html')
 
 
 class MenuItem(object):

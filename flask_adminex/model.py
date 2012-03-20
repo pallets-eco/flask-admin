@@ -1,4 +1,4 @@
-from flask import request, url_for, render_template, redirect
+from flask import request, url_for, redirect
 
 from .base import BaseView, expose
 
@@ -426,8 +426,7 @@ class BaseModelView(BaseView):
         def get_value(obj, field):
             return getattr(obj, field, None)
 
-        return render_template(self.list_template,
-                               view=self,
+        return self.render(self.list_template,
                                data=data,
                                # List
                                list_columns=self._list_columns,
@@ -461,7 +460,7 @@ class BaseModelView(BaseView):
             if self.create_model(form):
                 return redirect(return_url or url_for('.index_view'))
 
-        return render_template(self.create_template, view=self, form=form)
+        return self.render(self.create_template, form=form)
 
     @expose('/edit/<int:id>/', methods=('GET', 'POST'))
     def edit_view(self, id):
@@ -484,8 +483,7 @@ class BaseModelView(BaseView):
             if self.update_model(form, model):
                 return redirect(return_url or url_for('.index_view'))
 
-        return render_template(self.edit_template,
-                               view=self,
+        return self.render(self.edit_template,
                                form=form,
                                return_url=return_url or url_for('.index_view'))
 

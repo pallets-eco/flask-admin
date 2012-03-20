@@ -76,7 +76,7 @@ if __name__ == '__main__':
     admin.add_view(PostAdmin(db.session))
 
     # Associate with an app
-    admin.apply(app)
+    admin.setup_app(app)
 
     # Create DB
     db.create_all()
