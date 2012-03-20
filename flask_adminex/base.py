@@ -97,7 +97,8 @@ class BaseView(object):
             `url`
                 Base URL. If provided, affects how URLs are generated. For example, if url parameter
                 equals to "test", resulting URL will look like "/admin/test/". If not provided, will
-                use endpoint as a base url.
+                use endpoint as a base url. However, if URL starts with '/', absolute path is assumed
+                and '/admin/' prefix won't be applied.
         """
         self.name = name
         self.category = category
@@ -123,6 +124,9 @@ class BaseView(object):
         # If url is not provided, generate it from endpoint name
         if self.url is None:
             self.url = '%s/%s' % (self.admin.url, self.endpoint)
+        else:
+            if not self.url.startswith('/'):
+                self.url = '%s/%s' % (self.admin.url, self.url)
 
         # If name is not povided, use capitalized endpoint name
         if self.name is None:
