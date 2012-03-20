@@ -5,6 +5,13 @@ from flask import Blueprint, render_template, url_for, abort
 
 
 def expose(url='/', methods=('GET',)):
+    """
+        Use this decorator to expose views in your view classes.
+        `url`
+            Relative URL for the view
+        `methods`
+            Allowed HTTP methods. By default only GET is allowed.
+    """
     def wrap(f):
         if not hasattr(f, '_urls'):
             f._urls = []
@@ -29,6 +36,12 @@ def _wrap_view(f):
 
 
 class AdminViewMeta(type):
+    """
+        View metaclass.
+
+        Does some precalculations (like getting list of view methods from the class) to avoid
+        calculating them for each view class instance.
+    """
     def __init__(cls, classname, bases, fields):
         type.__init__(cls, classname, bases, fields)
 
@@ -56,9 +69,35 @@ class AdminViewMeta(type):
 
 
 class BaseView(object):
+    """
+        Base administrative view.
+
+        Derive from this class to implement your administrative interface piece. For example::
+
+            class MyView(BaseView):
+                @expose('/')
+                def index(self):
+                    return 'Hello World!'
+    """
     __metaclass__ = AdminViewMeta
 
     def __init__(self, name=None, category=None, endpoint=None, url=None, static_folder=None):
+        """
+            Constructor.
+            `name`
+                Name of this view. If not provided, will be defaulted to the class name.
+            `category`
+                View category. If not provided, will be shown as a top-level menu item. Otherwise, will
+                be in a submenu.
+            `endpoint`
+                Base endpoint name for the view. For example, if there's view method called "index" and
+                endpoint was set to "myadmin", you can use `url_for('myadmin.index')` to get URL to the
+                view method. By default, equals to the class name in lower case.
+            `url`
+                Base URL. If provided, affects how URLs are generated. For example, if url parameter
+                equals to "test", resulting URL will look like "/admin/test/". If not provided, will
+                use endpoint as a base url.
+        """
         self.name = name
         self.category = category
         self.endpoint = endpoint
@@ -70,9 +109,15 @@ class BaseView(object):
         self._create_blueprint()
 
     def _set_admin(self, admin):
+        """
+            Associate this view with Admin class instance.
+        """
         self.admin = admin
 
     def _create_blueprint(self):
+        """
+            Create Flask blueprint.
+        """
         # If endpoint name is not provided, get it from the class name
         if self.endpoint is None:
             self.endpoint = self.__class__.__name__.lower()
@@ -98,9 +143,20 @@ class BaseView(object):
                                         methods=methods)
 
     def _prettify_name(self, name):
+        """
+            Prettify class name by splitting name by capital characters. So, 'MySuperClass' will look like 'My Super Class'
+        """
         return sub(r'(?<=.)([A-Z])', r' \1', name)
 
     def is_accessible(self):
+        """
+            Override this method to add permission checks.
+
+            Flask-AdminEx does not make any assumptions about authentication system used in your application, so it is
+            up for you to implement it.
+
+            By default, it will allow access for the everyone.
+        """
         return True
 
     def _handle_view(self, name, **kwargs):
@@ -109,6 +165,18 @@ class BaseView(object):
 
 
 class AdminIndexView(BaseView):
+    """
+        Administrative interface entry page. You can see it by going to the /admin/ URL.
+
+        You can override this page by passing your own view class to the `Admin` constructor::
+
+            class MyHomeView(AdminIndexView):
+                @expose('/')
+                def index(self):
+                    return render_template('adminhome.html')
+
+            admin = Admin(index_view=MyHomeView)
+    """
     def __init__(self, name=None, category=None, endpoint=None, url=None):
         super(AdminIndexView, self).__init__(name or 'Home', category, endpoint or 'admin', url or '/admin', 'static')
 
@@ -161,7 +229,18 @@ class MenuItem(object):
 
 
 class Admin(object):
+    """
+        Collection of the views. Also manages menu structure.
+    """
     def __init__(self, name=None, index_view=None):
+        """
+            Constructor.
+
+            `name`
+                Application name. Will be displayed in main menu and as a page title. If not provided, defaulted to "Flask"
+            `index_view`
+                Home page view to use. If not provided, will use `AdminIndexView`.
+        """
         self._views = []
         self._menu = []
 
@@ -176,10 +255,22 @@ class Admin(object):
         self.add_view(index_view)
 
     def add_view(self, view):
+        """
+            Add view to the collection.
+
+            `view`
+                View to add.
+        """
         view._set_admin(self)
         self._views.append(view)
 
     def apply(self, app):
+        """
+            Register all views with Flask application.
+
+            `app`
+                Flask application instance
+        """
         self.app = app
 
         for v in self._views:
@@ -206,4 +297,7 @@ class Admin(object):
                 category.add_child(MenuItem(v.name, v))
 
     def menu(self):
+        """
+            Return menu hierarchy.
+        """
         return self._menu

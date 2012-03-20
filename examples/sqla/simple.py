@@ -41,11 +41,15 @@ class Post(db.Model):
 # Flask routes
 @app.route('/')
 def index():
+    db.session.query(Post).join(User).order_by(User.username).all()
+
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
 class PostAdmin(sqlamodel.ModelView):
     list_columns = ('title', 'user')
+
+    sortable_columns = dict(title='title', user=User.username)
 
     def __init__(self, session):
         super(PostAdmin, self).__init__(Post, session)

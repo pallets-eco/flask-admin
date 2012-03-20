@@ -1,8 +1,13 @@
 - Core
     - Pregenerate URLs for menu
-    - Page titles
-    - Create base model-admin class and derive SQLA admin from it
+    - Override base URL (/admin/)
+- Model admin
+    - Ability to override sortable fields
 - SQLA Model Admin
+    - Sort by foreign key
+    - Validation of the joins in the query
+    - Automatic joined load for foreign keys
+    - Automatic PK detection
     - Ability to override displayed form fields
     - Ability to rename list columns
     - Ability to change form without messing with form creation

@@ -7,7 +7,7 @@
             <tr>
                 <th class="span1">&nbsp;</th>
                 {% set column = 0 %}
-                {% for c, name in view.list_columns %}
+                {% for c, name in list_columns %}
                 <th>
                     {% if sort_column == column %}
                     <a href="{{ sort_url(column, True) }}">
@@ -40,14 +40,14 @@
                 </a>
                 {%- endif -%}
             </td>
-            {% for c, name in view.list_columns %}
-            <td>{{ row[c] }}</td>
+            {% for c, name in list_columns %}
+            <td>{{ get_value(row, c) }}</td>
             {% endfor %}
         </tr>
         {% endfor %}
     </table>
     {{ lib.pager(page, num_pages, pager_url) }}
     {% if view.can_create %}
-    <a class="btn btn-primary btn-large" href="{{ url_for('.create_view') }}">Create New</a>
+    <a class="btn btn-primary btn-large" href="{{ url_for('.create_view', return=return_url) }}">Create New</a>
     {% endif %}
 {% endblock %}

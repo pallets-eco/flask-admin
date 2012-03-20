@@ -1,5 +1,6 @@
 from sqlalchemy.orm.properties import RelationshipProperty, ColumnProperty
 from sqlalchemy.orm.interfaces import MANYTOONE
+from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.expression import desc
 
 from wtforms.ext.sqlalchemy.orm import model_form, ModelConverter
@@ -42,41 +43,64 @@ class AdminModelConverter(ModelConverter):
                 if column.foreign_keys or column.primary_key:
                     return None
 
-            return super(AdminModelConverter, self).convert(model, mapper, prop, field_args)
+            return super(AdminModelConverter, self).convert(model, mapper,
+                                                            prop, field_args)
 
 
 class ModelView(BaseModelView):
-    def __init__(self, model, session, name=None, category=None, endpoint=None, url=None):
+    def __init__(self, model, session,
+                 name=None, category=None, endpoint=None, url=None):
         self.session = session
 
         super(ModelView, self).__init__(model, name, category, endpoint, url)
 
     # Public API
-    def get_list_columns(self):
-        columns = self.list_columns
+    def scaffold_list_columns(self):
+        columns = []
 
-        if columns is None:
-            mapper = self.model._sa_class_manager.mapper
+        mapper = self.model._sa_class_manager.mapper
 
-            columns = []
-
-            for p in mapper.iterate_properties:
-                if isinstance(p, RelationshipProperty):
-                    if p.direction is MANYTOONE:
-                        columns.append(p.key)
-                elif isinstance(p, ColumnProperty):
-                    # TODO: Check for multiple columns
-                    column = p.columns[0]
-
-                    if column.foreign_keys or column.primary_key:
-                        continue
-
+        for p in mapper.iterate_properties:
+            if isinstance(p, RelationshipProperty):
+                if p.direction is MANYTOONE:
                     columns.append(p.key)
+            elif isinstance(p, ColumnProperty):
+                # TODO: Check for multiple columns
+                column = p.columns[0]
 
-        return [(c, self.prettify_name(c)) for c in columns]
+                if column.foreign_keys or column.primary_key:
+                    continue
+
+                columns.append((p.key, self.prettify_name(p.key)))
+
+        return columns
+
+    def scaffold_sortable_columns(self):
+        columns = dict()
+
+        mapper = self.model._sa_class_manager.mapper
+
+        for p in mapper.iterate_properties:
+            if isinstance(p, RelationshipProperty):
+                if p.direction is MANYTOONE:
+                    # TODO: Detect PK
+                    columns[p.key] = '%s.id' % p.target.name
+            elif isinstance(p, ColumnProperty):
+                # TODO: Check for multiple columns
+                column = p.columns[0]
+
+                if column.foreign_keys or column.primary_key:
+                    continue
+
+                columns[p.key] = p.key
+
+        return columns
 
     def scaffold_form(self):
-        return model_form(self.model, wtf.Form, self.form_columns, converter=AdminModelConverter(self.session))
+        return model_form(self.model,
+                          wtf.Form,
+                          self.form_columns,
+                          converter=AdminModelConverter(self.session))
 
     # Database-related API
     def get_list(self, page, sort_column, sort_desc):
@@ -84,19 +108,34 @@ class ModelView(BaseModelView):
 
         count = query.count()
 
-        if sort_column is not None:
-            # Validate first
-            if sort_column >= 0 and sort_column < len(self.list_columns):
-                if sort_desc:
-                    query = query.order_by(desc(self.list_columns[sort_column][0]))
+        # Sorting
+        column = self._get_column_by_idx(sort_column)
+        if column is not None:
+            name = column[0]
+
+            if name in self._sortable_columns:
+                sort_field = self._sortable_columns[name]
+
+                # Try to handle it as a string
+                if isinstance(sort_field, basestring):
+                    # Create automatic join if string contains dot
+                    if '.' in sort_field:
+                        parts = sort_field.split('.', 1)
+                        query = query.join(parts[0])
+                elif isinstance(sort_field, InstrumentedAttribute):
+                    query = query.join(sort_field.parententity)
                 else:
-                    query = query.order_by(self.list_columns[sort_column][0])
+                    sort_field = None
 
+                if sort_field is not None:
+                    if sort_desc:
+                        query = query.order_by(desc(sort_field))
+                    else:
+                        query = query.order_by(sort_field)
+
+        # Pagination
         if page is not None:
-            if page < 1:
-                page = 1
-
-            query = query.offset((page - 1) * self.page_size)
+            query = query.offset(page * self.page_size)
 
         query = query.limit(self.page_size)
 

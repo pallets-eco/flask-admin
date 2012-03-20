@@ -2,58 +2,70 @@
 {% if pages > 1 %}
 <div class="pagination">
     <ul>
-    {% if not page %}
-        {% set page = 1 %}
-    {% endif %}
-
     {% set min = page - 3 %}
     {% set max = page + 3 + 1 %}
 
     {% if min < 0 %}
-        {% set max = max - min + 1 %}
+        {% set max = max - min %}
     {% endif %}
-    {% if max > pages %}
-        {% set min = min + pages - max - 1 %}
-    {% endif %}
-
-    {% if min < 1 %}
-        {% set min = 1 %}
-    {% endif %}
-    {% if max > pages + 1 %}
-        {% set max = pages + 1 %}
+    {% if max >= pages %}
+        {% set min = min - max + pages %}
     {% endif %}
 
-    {% if min > 1 %}
+    {% if min < 0 %}
+        {% set min = 0 %}
+    {% endif %}
+    {% if max >= pages %}
+        {% set max = pages %}
+    {% endif %}
+
+    {% if min > 0 %}
     <li>
-        <a href="{{ generator(1) }}">&lt;&lt;</a>
+        <a href="{{ generator(0) }}">&laquo;</a>
+    </li>
+    {% else %}
+    <li class="disabled">
+        <a href="#">&laquo;</a>
     </li>
     {% endif %}
-    {% if page > 1 %}
+    {% if page > 0 %}
     <li>
         <a href="{{ generator(page-1) }}">&lt;</a>
+    </li>
+    {% else %}
+    <li class="disabled">
+        <a href="#">&lt;</a>
     </li>
     {% endif %}
 
     {% for p in range(min, max) %}
     {% if page == p %}
-    <li class="disabled">
-        <a href="#">{{ p }}</a>
+    <li class="active">
+        <a href="#">{{ p + 1 }}</a>
     </li>
     {% else %}
     <li>
-        <a href="{{ generator(p) }}">{{ p }}</a>
+        <a href="{{ generator(p) }}">{{ p + 1 }}</a>
     </li>
     {% endif %}
     {% endfor %}
 
-    {% if page+1 <= pages %}
+    {% if page + 1 < pages %}
     <li>
-        <a href="{{ generator(page+1) }}">&gt;</a>
+        <a href="{{ generator(page + 1) }}">&gt;</a>
+    </li>
+    {% else %}
+    <li class="disabled">
+        <a href="#">&gt;</a>
     </li>
     {% endif %}
-    {% if max <= pages %}
+    {% if max < pages %}
     <li>
-        <a href="{{ generator(pages) }}">&gt;&gt;</a>
+        <a href="{{ generator(pages - 1) }}">&raquo;</a>
+    </li>
+    {% else %}
+    <li class="disabled">
+        <a href="#">&raquo;</a>
     </li>
     {% endif %}
     </ul>
