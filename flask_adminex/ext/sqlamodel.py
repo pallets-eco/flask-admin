@@ -71,7 +71,7 @@ class ModelView(BaseModelView):
                 if column.foreign_keys or column.primary_key:
                     continue
 
-                columns.append((p.key, self.prettify_name(p.key)))
+                columns.append(p.key)
 
         return columns
 
@@ -81,11 +81,7 @@ class ModelView(BaseModelView):
         mapper = self.model._sa_class_manager.mapper
 
         for p in mapper.iterate_properties:
-            if isinstance(p, RelationshipProperty):
-                if p.direction is MANYTOONE:
-                    # TODO: Detect PK
-                    columns[p.key] = '%s.id' % p.target.name
-            elif isinstance(p, ColumnProperty):
+            if isinstance(p, ColumnProperty):
                 # TODO: Check for multiple columns
                 column = p.columns[0]
 
@@ -103,22 +99,20 @@ class ModelView(BaseModelView):
                           converter=AdminModelConverter(self.session))
 
     # Database-related API
-    def get_list(self, page, sort_column, sort_desc):
+    def get_list(self, page, sort_column, sort_desc, execute=True):
         query = self.session.query(self.model)
 
         count = query.count()
 
         # Sorting
-        column = self._get_column_by_idx(sort_column)
-        if column is not None:
-            name = column[0]
-
-            if name in self._sortable_columns:
-                sort_field = self._sortable_columns[name]
+        if sort_column is not None:
+            if sort_column in self._sortable_columns:
+                sort_field = self._sortable_columns[sort_column]
 
                 # Try to handle it as a string
                 if isinstance(sort_field, basestring):
-                    # Create automatic join if string contains dot
+                    # Create automatic join against a table if column name
+                    # contains dot.
                     if '.' in sort_field:
                         parts = sort_field.split('.', 1)
                         query = query.join(parts[0])
@@ -139,7 +133,10 @@ class ModelView(BaseModelView):
 
         query = query.limit(self.page_size)
 
-        return count, query.all()
+        if execute:
+            query = query.all()
+
+        return count, query
 
     def get_one(self, id):
         return self.session.query(self.model).get(id)

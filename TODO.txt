@@ -1,19 +1,16 @@
 - Core
     - Pregenerate URLs for menu
     - Override base URL (/admin/)
-- Model admin
-    - Ability to override sortable fields
+- Model Admin
+    Ability to sort by fields that are not visible?
 - SQLA Model Admin
     - Sort by foreign key
     - Validation of the joins in the query
     - Automatic joined load for foreign keys
     - Automatic PK detection
-    - Ability to override displayed form fields
-    - Ability to rename list columns
-    - Ability to change form without messing with form creation
     - Filtering
     - Many2Many editing
-    - Many2One editor
+    - One2Many editor
 - File admin
 - Documentation
 - Examples

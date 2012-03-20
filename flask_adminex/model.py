@@ -50,26 +50,39 @@ class BaseModelView(BaseView):
 
             class MyModelView(BaseModelView):
                 list_columns = ('name', 'last_name', 'email')
+    """
 
-        If you want to rename column, use tuple instead of the name,
-        where first value is field name and second is display name.
-        You can also mix these values::
+    rename_columns = None
+    """
+        Dictionary where key is column name and value is string to display.
+
+        For example::
 
             class MyModelView(BaseModelView):
-                list_columns = (('name', 'First Name'),
-                                ('last_name', 'Family Name'),
-                                'email')
+                rename_columns = dict(name='Name', last_name='Last Name')
     """
 
     sortable_columns = None
     """
-        Dictionary of the sortable columns names and property references.
+        Collection of the sortable columns for the list view.
         If set to `None`, will get them from the model.
 
         For example::
 
             class MyModelView(BaseModelView):
-                sortable_columns = dict(name='name', user='user.id')
+                sortable_columns = ('name', 'last_name')
+
+        If you want to explicitly specify field/column to be used while
+        sorting, you can use tuple::
+
+            class MyModelView(BaseModelView):
+                sortable_columns = ('name', ('user', 'user.username'))
+
+        For SQLAlchemy models, you can pass attribute instead of the string
+        too::
+
+            class MyModelView(BaseModelView):
+                sortable_columns = ('name', ('user', User.username))
     """
 
     form_columns = None
@@ -136,9 +149,7 @@ class BaseModelView(BaseView):
             Expected return format is list of tuples with field name and
             display text. For example::
 
-                [('name', 'Name'),
-                 ('email', 'Email'),
-                 ('last_name', 'Last Name')]
+                ['name', 'first_name', 'last_name']
         """
         raise NotImplemented('Please implement scaffold_list_columns method')
 
@@ -148,18 +159,20 @@ class BaseModelView(BaseView):
             set, returns it. Otherwise calls `scaffold_list_columns`
             to generate list from the model.
         """
+        result = []
+
         if self.list_columns is None:
             columns = self.scaffold_list_columns()
         else:
-            columns = []
+            columns = self.list_columns
 
-            for c in self.list_columns:
-                if not isinstance(c, tuple):
-                    columns.append((c, self.prettify_name(c)))
-                else:
-                    columns.append(c)
+        for c in columns:
+            if self.rename_columns and c in self.rename_columns:
+                result.append((c, self.rename_columns[c]))
+            else:
+                result.append((c, self.prettify_name(c)))
 
-        return columns
+        return result
 
     def scaffold_sortable_columns(self):
         """
@@ -180,10 +193,17 @@ class BaseModelView(BaseView):
             `scaffold_sortable_columns` to get them from the model.
         """
         if self.sortable_columns is None:
-            print self.__class__.__name__
             return self.scaffold_sortable_columns()
         else:
-            return self.sortable_columns
+            result = dict()
+
+            for c in self.sortable_columns:
+                if isinstance(c, tuple):
+                    result[c[0]] = c[1]
+                else:
+                    result[c] = c
+
+            return result
 
     def scaffold_form(self):
         """
@@ -226,9 +246,18 @@ class BaseModelView(BaseView):
 
     # Helpers
     def is_sortable(self, name):
+        """
+            Verify if column is sortable.
+
+            `name`
+                Column name.
+        """
         return name in self._sortable_columns
 
     def _get_column_by_idx(self, idx):
+        """
+            Return column index by
+        """
         if idx is None or idx < 0 or idx >= len(self._list_columns):
             return None
 
@@ -245,31 +274,82 @@ class BaseModelView(BaseView):
             `page`
                 Page number, 0 based. Can be set to None if it is first page.
             `sort_field`
-                Sort field index in the `self.list_columns` or None.
+                Sort column name or None.
             `sort_desc`
                 If set to True, sorting is in descending order.
         """
         raise NotImplemented('Please implement get_list method')
 
     def get_one(self, id):
+        """
+            Return one model by its id.
+
+            Must be implemented in the child class.
+
+            `id`
+                Model id
+        """
         raise NotImplemented('Please implement get_one method')
 
     # Model handlers
     def create_model(self, form):
+        """
+            Create model from the form.
+
+            Returns `True` if operation succeeded.
+
+            Must be implemented in the child class.
+
+            `form`
+                Form instance
+        """
         raise NotImplemented()
 
     def update_model(self, form, model):
+        """
+            Update model from the form.
+
+            Returns `True` if operation succeeded.
+
+            Must be implemented in the child class.
+
+            `form`
+                Form instance
+            `model`
+                Model instance
+        """
         raise NotImplemented()
 
     def delete_model(self, model):
+        """
+            Delete model.
+
+            Returns `True` if operation succeeded.
+
+            Must be implemented in the child class.
+
+            `model`
+                Model instance
+        """
         raise NotImplemented()
 
     # Various helpers
     def prettify_name(self, name):
+        """
+            Prettify pythonic variable name.
+
+            For example, 'hello_world' will be converted to 'Hello World'
+
+            `name`
+                Name to prettify
+        """
         return ' '.join(x.capitalize() for x in name.split('_'))
 
     # URL generation helper
     def _get_extra_args(self):
+        """
+            Return arguments from query string.
+        """
         page = request.args.get('page', 0, type=int)
         sort = request.args.get('sort', None, type=int)
         sort_desc = request.args.get('desc', None, type=int)
@@ -277,16 +357,37 @@ class BaseModelView(BaseView):
         return page, sort, sort_desc
 
     def _get_url(self, view, page, sort, sort_desc):
+        """
+            Generate page URL with current page, sort column and
+            other parameters.
+
+            `view`
+                View name
+            `page`
+                Page number
+            `sort`
+                Sort column index
+            `sort_desc`
+                Use descending sorting order
+        """
         return url_for(view, page=page, sort=sort, desc=sort_desc)
 
     # Views
     @expose('/')
     def index_view(self):
+        """
+            List view
+        """
         # Grab parameters from URL
-        page, sort, sort_desc = self._get_extra_args()
+        page, sort_idx, sort_desc = self._get_extra_args()
+
+        # Map column index to column name
+        sort_column = self._get_column_by_idx(sort_idx)
+        if sort_column is not None:
+            sort_column = sort_column[0]
 
         # Get count and data
-        count, data = self.get_list(page, sort, sort_desc)
+        count, data = self.get_list(page, sort_column, sort_desc)
 
         # Calculate number of pages
         num_pages = count / self.page_size
@@ -299,7 +400,7 @@ class BaseModelView(BaseView):
             if p == 0:
                 p = None
 
-            return self._get_url('.index_view', p, sort, sort_desc)
+            return self._get_url('.index_view', p, sort_idx, sort_desc)
 
         def sort_url(column, invert=False):
             desc = None
@@ -320,13 +421,13 @@ class BaseModelView(BaseView):
                                sortable_columns=self._sortable_columns,
                                # Stuff
                                get_value=get_value,
-                               return_url=self._get_url('.index_view', page, sort, sort_desc),
+                               return_url=self._get_url('.index_view', page, sort_idx, sort_desc),
                                # Pagination
                                pager_url=pager_url,
                                num_pages=num_pages,
                                page=page,
                                # Sorting
-                               sort_column=sort,
+                               sort_column=sort_idx,
                                sort_desc=sort_desc,
                                sort_url=sort_url
                                )

@@ -9,6 +9,7 @@
                 {% set column = 0 %}
                 {% for c, name in list_columns %}
                 <th>
+                    {% if view.is_sortable(c) %}
                     {% if sort_column == column %}
                     <a href="{{ sort_url(column, True) }}">
                         {{ name }}
@@ -20,6 +21,9 @@
                     </a>
                     {% else %}
                     <a href="{{ sort_url(column) }}">{{ name }}</a>
+                    {% endif %}
+                    {% else %}
+                    {{ name }}
                     {% endif %}
                 </th>
                 {% set column = column + 1 %}

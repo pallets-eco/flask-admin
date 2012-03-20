@@ -49,7 +49,8 @@ def index():
 class PostAdmin(sqlamodel.ModelView):
     list_columns = ('title', 'user')
 
-    sortable_columns = dict(title='title', user=User.username)
+    sortable_columns = ('title', ('user', User.username))
+    rename_columns = dict(title='Tiiitle')
 
     def __init__(self, session):
         super(PostAdmin, self).__init__(Post, session)
