@@ -9,7 +9,7 @@
                 {% set column = 0 %}
                 {% for c, name in list_columns %}
                 <th>
-                    {% if admin_.is_sortable(c) %}
+                    {% if admin_view.is_sortable(c) %}
                     {% if sort_column == column %}
                     <a href="{{ sort_url(column, True) }}">
                         {{ name }}
@@ -33,12 +33,12 @@
         {% for row in data %}
         <tr>
             <td>
-                {%- if admin_.can_edit -%}
+                {%- if admin_view.can_edit -%}
                 <a href="{{ url_for('.edit_view', id=row.id, return=return_url) }}">
                     <i class="icon-pencil"></i>
                 </a>
                 {%- endif -%}
-                {%- if admin_.can_delete -%}
+                {%- if admin_view.can_delete -%}
                 <a href="{{ url_for('.delete_view', id=row.id, return=return_url) }}" onclick="return confirm('You sure you want to delete this item?')">
                     <i class="icon-remove"></i>
                 </a>
@@ -51,7 +51,7 @@
         {% endfor %}
     </table>
     {{ lib.pager(page, num_pages, pager_url) }}
-    {% if admin_.can_create %}
+    {% if admin_view.can_create %}
     <a class="btn btn-primary btn-large" href="{{ url_for('.create_view', return=return_url) }}">Create New</a>
     {% endif %}
 {% endblock %}

@@ -47,8 +47,14 @@ You must create `Admin` class and associate it with the `Flask` application::
 
     app.run()
 
-If you will run this application and will navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/`_,
+If you will run this application and will navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
 you should see lonely Home page with a navigation bar on top.
+
+You can change application name by passing `name` parameter to the `Admin` class constructor::
+
+    admin = Admin(name='My App')
+    admin.setup_app(app)
+
 
 Adding first view
 -----------------
@@ -181,6 +187,8 @@ you can do something like this::
 
 It is very easy to add support for different database backends (Mongo, etc) by inheriting from `BaseModelView`
 class and implementing database-related methods.
+
+Please refer to documentation on how to customize behavior of model-based administrative views.
 
 Examples
 --------
