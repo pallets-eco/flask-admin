@@ -5,8 +5,8 @@
 - SQLA Model Admin
     - Validation of the joins in the query
     - Automatic joined load for foreign keys
-    - Filtering
-    - Many2Many editing
+    - Built-in filtering support
+    - Many2Many support
 - File admin
 - Documentation
 - Examples

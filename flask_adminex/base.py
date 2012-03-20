@@ -284,7 +284,7 @@ class Admin(object):
         """
         self._views.append(view)
 
-    def apply(self, app):
+    def setup_app(self, app):
         """
             Register all views with Flask application.
 
