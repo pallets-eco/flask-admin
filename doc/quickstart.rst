@@ -7,8 +7,8 @@ knowledge of `Flask <http://flask.pocoo.org/>`_ framework.
 Introduction
 ------------
 
-While developing the library, I attempted to make it as flexible as possible, so you don't have
-to monkey patch, if you wanted to extend or change existing functionality.
+While developing the library, I attempted to make it as flexible as possible. Developer should
+not patch a library to achieve desired functionality.
 
 Library uses one simple, but powerful concept - administrative pieces are built as classes with
 view methods.
@@ -79,10 +79,9 @@ Now, lets add a view. To do this, you need to derive from `BaseView` class::
 
     app.run()
 
-If you will run this example, you will see that menu has two items: Home and Hello. If you click on the Hello menu
-item, application will crash, as you did not create 'index.html' template.
+If you will run this example, you will see that menu has two items: Home and Hello.
 
-Create templates directory and create new index.html file with following contents::
+Now, create `templates` directory and put new index.html file with following content::
 
     {% extends 'admin/master.html' %}
     {% block body %}

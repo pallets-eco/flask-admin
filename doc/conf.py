@@ -134,8 +134,10 @@ html_static_path = ['_static']
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {}
-
+html_sidebars = {
+    'index': ['sidebarintro.html', 'sourcelink.html', 'searchbox.html'],
+    '**': ['localtoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html']
+}
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
 #html_additional_pages = {}
@@ -247,3 +249,18 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
+
+# fall back if theme is not there
+try:
+    __import__('flask_theme_support')
+except ImportError, e:
+    print '-' * 74
+    print 'Warning: Flask themes unavailable. Building with default theme'
+    print 'If you want the Flask themes, run this command and build again:'
+    print
+    print ' git submodule update --init'
+    print '-' * 74
+
+    pygments_style = 'tango'
+    html_theme = 'default'
+    html_theme_options = {}
