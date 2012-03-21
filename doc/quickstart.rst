@@ -193,7 +193,7 @@ you can do something like this::
 It is very easy to add support for different database backends (Mongo, etc) by inheriting from `BaseModelView`
 class and implementing database-related methods.
 
-Please refer to documentation on how to customize behavior of model-based administrative views.
+Please refer to :mod:`flask.ext.adminex.ext.sqlamodel` documentation on how to customize behavior of model-based administrative views.
 
 Examples
 --------
