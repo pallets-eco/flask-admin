@@ -10,5 +10,6 @@
     - Many2Many support
 - File admin
 - Documentation
+- Unit tests
 - Examples
     - Authentication samples
