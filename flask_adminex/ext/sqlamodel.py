@@ -65,7 +65,8 @@ class ModelView(BaseModelView):
 
         Usage sample::
 
-            admin = ModelView(User, db.session)
+            admin = Admin()
+            admin.add_view(ModelView(User, db.session))
     """
 
     hide_backrefs = True

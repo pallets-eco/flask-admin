@@ -112,7 +112,7 @@ class BaseModelView(BaseView):
     # Various settings
     page_size = 20
     """
-        Page size. You can change it to something you want.
+        Default page size.
     """
 
     def __init__(self, model,
@@ -147,11 +147,18 @@ class BaseModelView(BaseView):
         self.model = model
 
         # Scaffolding
+        self._refresh_cache()
+
+    # Caching
+    def _refresh_cache(self):
+        """
+            Refresh various cached variables.
+        """
         self._list_columns = self.get_list_columns()
         self._sortable_columns = self.get_sortable_columns()
 
-        self._create_form_class = self.scaffold_create_form()
-        self._edit_form_class = self.scaffold_edit_form()
+        self._create_form_class = self.get_create_form()
+        self._edit_form_class = self.get_edit_form()
 
     # Public API
     def scaffold_list_columns(self):
@@ -225,7 +232,7 @@ class BaseModelView(BaseView):
         """
         raise NotImplemented('Please implement scaffold_form method')
 
-    def scaffold_create_form(self):
+    def get_create_form(self):
         """
             Create form class for model creation view.
 
@@ -233,7 +240,7 @@ class BaseModelView(BaseView):
         """
         return self.scaffold_form()
 
-    def scaffold_edit_form(self):
+    def get_edit_form(self):
         """
             Create form class for model editing view.
 

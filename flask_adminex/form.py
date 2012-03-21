@@ -2,8 +2,15 @@ from flask.ext import wtf
 
 
 class AdminForm(wtf.Form):
+    """
+        Customized form class.
+    """
+
     @property
     def has_file_field(self):
+        """
+            Return True if form contains at least one FileField.
+        """
         # TODO: Optimize me
         for f in self:
             if isinstance(f, wtf.FileField):

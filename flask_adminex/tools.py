@@ -1,4 +1,5 @@
-import sys, traceback
+import sys
+import traceback
 
 
 def import_module(name, required=True):

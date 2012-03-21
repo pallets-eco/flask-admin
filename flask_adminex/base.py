@@ -7,6 +7,7 @@ from flask import Blueprint, render_template, url_for, abort
 def expose(url='/', methods=('GET',)):
     """
         Use this decorator to expose views in your view classes.
+
         `url`
             Relative URL for the view
         `methods`

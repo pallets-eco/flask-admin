@@ -10,6 +10,7 @@ Topics
    :maxdepth: 2
 
    quickstart
+   api
 
 
 Indices and tables
