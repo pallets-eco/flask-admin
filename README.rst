@@ -15,8 +15,7 @@ Instead of providing simple scaffolding of the SQLAlchemy models, Flask-AdminEx
 provides tools that can be used to build adminstrative interface of any complexity,
 using consistent look and feel.
 
-Example
--------
+Small example (Flask initialization omitted)::
 
     app = Flask(__name__)
 
@@ -24,6 +23,7 @@ Example
     admin.add_view(ModelView(User, db.session))
     admin.add_view(GalleryManager(name='Photos', category='Cats'))
     admin.setup_app(app)
+
 
 Documentation
 -------------
