@@ -15,7 +15,7 @@ setup(
     platforms='any',
     install_requires=[
         'Flask>=0.7',
-        'wtforms>=0.6.3',
+        'Flask-WTF>=0.6',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
