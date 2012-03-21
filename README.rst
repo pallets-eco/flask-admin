@@ -30,6 +30,11 @@ Documentation
 
 Flask-AdminEx is extensively documented, you can find documentation `here <http://readthedocs.org/docs/flask-adminex>`_.
 
+3rd Party Stuff
+---------------
+
+Flask-AdminEx is built with help of `Twitter Bootstrap <http://twitter.github.com/bootstrap/>`_ and `Chosen <http://harvesthq.github.com/chosen/>`_.
+
 Examples
 --------
 

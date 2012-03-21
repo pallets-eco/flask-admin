@@ -153,7 +153,7 @@ is not provided. Model-based views will be explained in the next section.
 Model Views
 -----------
 
-Flask-AdminEx comes with built-in SQLAlchemy model administrative interface. It is very easy to use it::
+Flask-AdminEx comes with built-in SQLAlchemy model administrative interface. It is very easy to use::
 
     from flask.ext.adminex.ext.sqlamodel import ModelBase
     from flask.ext.sqlalchemy import db
