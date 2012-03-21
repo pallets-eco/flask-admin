@@ -5,4 +5,4 @@
 
     .. autoclass:: AdminForm
 
-        .. automethod:: has_file_field
+        .. autoattribute:: has_file_field
