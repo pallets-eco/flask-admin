@@ -81,7 +81,7 @@ Now, lets add a view. To do this, you need to derive from `BaseView` class::
 
 If you will run this example, you will see that menu has two items: Home and Hello.
 
-Now, create `templates` directory and put new index.html file with following content::
+Now, create `templates` directory and then create new `index.html` file with following content::
 
     {% extends 'admin/master.html' %}
     {% block body %}
