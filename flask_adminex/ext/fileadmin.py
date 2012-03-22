@@ -106,6 +106,26 @@ class FileAdmin(BaseView):
                 allowed_extensions = ('swf', 'jpg', 'gif', 'png')
     """
 
+    list_template = 'admin/file/list.html'
+    """
+        File list template
+    """
+
+    upload_template = 'admin/file/form.html'
+    """
+        File upload template
+    """
+
+    mkdir_template = 'admin/file/form.html'
+    """
+        Directory creation (mkdir) template
+    """
+
+    rename_template = 'admin/file/rename.html'
+    """
+        Rename template
+    """
+
     def __init__(self, base_path, base_url,
                  name=None, category=None, endpoint=None, url=None):
         """
@@ -276,9 +296,8 @@ class FileAdmin(BaseView):
         # Generate breadcrumbs
         accumulator = ''
         breadcrumbs = [(n, op.join(accumulator, n)) for n in path.split(os.sep)]
-        print breadcrumbs, path, breadcrumbs[:-1], breadcrumbs[-1]
 
-        return self.render('admin/file/list.html',
+        return self.render(self.list_template,
                            dir_path=path,
                            breadcrumbs=breadcrumbs,
                            get_dir_url=self._get_dir_url,
@@ -310,11 +329,13 @@ class FileAdmin(BaseView):
                 flash('File "%s" already exists.' % form.upload.file.filename,
                       'error')
             else:
-                form.upload.file.save(filename)
+                try:
+                    form.upload.file.save(filename)
+                    return redirect(self._get_dir_url('.index', path))
+                except Exception, ex:
+                    flash('Failed to save file: %s' % ex)
 
-            return redirect(self._get_dir_url('.index', path))
-
-        return self.render('admin/file/form.html', form=form)
+        return self.render(self.upload_template, form=form)
 
     @expose('/mkdir/', methods=('GET', 'POST'))
     @expose('/mkdir/<path:path>', methods=('GET', 'POST'))
@@ -343,7 +364,7 @@ class FileAdmin(BaseView):
             except Exception, ex:
                 flash('Failed to create directory: %s' % ex, 'error')
 
-        return self.render('admin/file/form.html',
+        return self.render(self.mkdir_template,
                            form=form,
                            dir_url=dir_url)
 
@@ -368,6 +389,7 @@ class FileAdmin(BaseView):
 
         if op.isdir(full_path):
             if not self.can_delete_dirs:
+                flash('Directory deletion is disabled.')
                 return redirect(return_url)
 
             try:
@@ -421,7 +443,7 @@ class FileAdmin(BaseView):
 
             return redirect(return_url)
 
-        return self.render('admin/file/rename.html',
+        return self.render(self.rename_template,
                            form=form,
                            path=op.dirname(path),
                            name=op.basename(path),

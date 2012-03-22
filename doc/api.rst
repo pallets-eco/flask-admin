@@ -10,3 +10,4 @@ API
    mod_tools
 
    mod_ext_sqlamodel
+   mod_ext_fileadmin

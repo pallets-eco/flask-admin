@@ -35,8 +35,8 @@
                 </a>
                 {% endif %}
                 {%- if admin_view.can_delete and path -%}
-                    {% if is_dir and admin_view.can_delete_dirs %}
-                        {% if name != '..' %}
+                    {% if is_dir %}
+                        {% if name != '..' and admin_view.can_delete_dirs %}
                         <form class="icon" method="POST" action="{{ url_for('.delete') }}">
                             <input type="hidden" name="path" value="{{ path }}"></input>
                             <button onclick="return confirm('Are you sure you want to delete \'{{ name }}\' recursively?')">
