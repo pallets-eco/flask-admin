@@ -84,6 +84,13 @@ Now, lets add a view. To do this, you need to derive from `BaseView` class::
 
 If you will run this example, you will see that menu has two items: Home and Hello.
 
+Each view should have default page - view method with '/' url. Following view class won't work::
+
+    class MyView(BaseView):
+        @expose('/index/')
+        def index(self):
+            return self.render('index.html')
+
 Now, create `templates` directory and then create new `index.html` file with following content::
 
     {% extends 'admin/master.html' %}
