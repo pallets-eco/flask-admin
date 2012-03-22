@@ -35,7 +35,7 @@
                 </a>
                 {% endif %}
                 {%- if admin_view.can_delete and path -%}
-                    {% if is_dir %}
+                    {% if is_dir and admin_view.can_delete_dirs %}
                         {% if name != '..' %}
                         <form class="icon" method="POST" action="{{ url_for('.delete') }}">
                             <input type="hidden" name="path" value="{{ path }}"></input>

@@ -297,6 +297,10 @@ class FileAdmin(BaseView):
         # Get path and verify if it is valid
         base_path, directory, path = self._normalize_path(path)
 
+        if not self.can_upload:
+            flash('File uploading is disabled.', 'error')
+            return redirect(self._get_dir_url('.index', path))
+
         form = UploadForm(request.form, self)
         if form.validate_on_submit():
             filename = op.join(directory,
@@ -326,6 +330,10 @@ class FileAdmin(BaseView):
 
         dir_url = self._get_dir_url('.index', path)
 
+        if not self.can_mkdir:
+            flash('Directory creation is disabled.', 'error')
+            return redirect(dir_url)
+
         form = NameForm(request.form)
 
         if form.validate_on_submit():
@@ -353,6 +361,10 @@ class FileAdmin(BaseView):
         base_path, full_path, path = self._normalize_path(path)
 
         return_url = self._get_dir_url('.index', op.dirname(path))
+
+        if not self.can_delete:
+            flash('Deletion is disabled.')
+            return redirect(return_url)
 
         if op.isdir(full_path):
             if not self.can_delete_dirs:
@@ -385,6 +397,10 @@ class FileAdmin(BaseView):
         base_path, full_path, path = self._normalize_path(path)
 
         return_url = self._get_dir_url('.index', op.dirname(path))
+
+        if not self.can_rename:
+            flash('Renaming is disabled.')
+            return redirect(return_url)
 
         if not op.exists(full_path):
             flash('Path does not exist.')

@@ -194,11 +194,34 @@ class and implementing database-related methods.
 
 Please refer to :mod:`flask.ext.adminex.ext.sqlamodel` documentation on how to customize behavior of model-based administrative views.
 
+File Admin
+----------
+
+Flask-AdminEx comes with another handy battery - file admin. It gives you ability to manage files on your server (upload, delete, rename, etc).
+
+Here is simple example::
+
+    from flask.ext.adminex.ext.fileadmin import FileAdmin
+
+    import os.path as op
+
+    # Flask setup here
+
+    admin = Admin()
+
+    path = op.join(op.dirname(__file__), 'static')
+    admin.add_view(path, '/static/', name='Static Files')
+    admin.setup_app(app)
+
+You can disable uploads, disable file or directory deletion, restrict file uploads to certain types and so on.
+Check :mod:`flask.ext.adminex.ext.fileadmin` documentation on how to do it.
+
 Examples
 --------
 
-Flask-AdminEx comes with three samples:
+Flask-AdminEx comes with four samples:
 
 - `Simple administrative interface <https://github.com/MrJoes/Flask-AdminEx/tree/master/examples/simple>`_ with custom administrative views
 - `SQLAlchemy model example <https://github.com/MrJoes/Flask-AdminEx/tree/master/examples/sqla>`_
 - `Flask-Login integration example <https://github.com/MrJoes/Flask-AdminEx/tree/master/examples/auth>`_
+- `File management interface <https://github.com/MrJoes/Flask-AdminEx/tree/master/examples/file>`_
