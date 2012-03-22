@@ -311,7 +311,12 @@ class Admin(object):
             self._add_view_to_menu(view)
 
     def _add_view_to_menu(self, view):
-        # Update menu
+        """
+            Add view to the menu tree
+
+            `view`
+                View to add
+        """
         if view.category:
             category = self._menu_categories.get(view.category)
 

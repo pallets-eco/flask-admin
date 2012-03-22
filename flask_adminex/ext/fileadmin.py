@@ -67,7 +67,7 @@ class FileAdmin(BaseView):
             admin = Admin()
 
             path = op.join(op.dirname(__file__), 'static')
-            admin.add_view(path, '/static/', name='Static Files')
+            admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
             admin.setup_app(app)
     """
 
