@@ -305,6 +305,12 @@ class Admin(object):
         # Add to views
         self._views.append(view)
 
+        # If app was provided in constructor, register view with Flask app
+        if self.app is not None:
+            self.app.register_blueprint(view.create_blueprint(self))
+            self._add_view_to_menu(view)
+
+    def _add_view_to_menu(self, view):
         # Update menu
         if view.category:
             category = self._menu_categories.get(view.category)
@@ -318,10 +324,6 @@ class Admin(object):
         else:
             self._menu.append(MenuItem(view.name, view))
 
-        # If app was provided in constructor, register view with Flask app
-        if self.app is not None:
-            self.app.register_blueprint(view.create_blueprint(self))
-
     def init_app(self, app):
         """
             Register all views with Flask application.
@@ -334,8 +336,9 @@ class Admin(object):
 
         self.app = app
 
-        for v in self._views:
-            app.register_blueprint(v.create_blueprint(self))
+        for view in self._views:
+            app.register_blueprint(view.create_blueprint(self))
+            self._add_view_to_menu(view)
 
     def menu(self):
         """
