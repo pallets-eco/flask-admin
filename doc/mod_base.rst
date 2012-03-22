@@ -34,5 +34,5 @@
 
         .. automethod:: __init__
         .. automethod:: add_view
-        .. automethod:: setup_app
+        .. automethod:: init_app
         .. automethod:: menu

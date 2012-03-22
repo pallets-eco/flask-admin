@@ -264,10 +264,12 @@ class Admin(object):
     """
         Collection of the views. Also manages menu structure.
     """
-    def __init__(self, name=None, url=None, index_view=None):
+    def __init__(self, app=None, name=None, url=None, index_view=None):
         """
             Constructor.
 
+            `app`
+                Flask application object
             `name`
                 Application name. Will be displayed in main menu and as a page title. If not provided, defaulted to "Admin"
             `index_view`
@@ -275,6 +277,7 @@ class Admin(object):
         """
         self._views = []
         self._menu = []
+        self._menu_categories = dict()
 
         if name is None:
             name = 'Admin'
@@ -287,6 +290,8 @@ class Admin(object):
         if index_view is None:
             index_view = AdminIndexView()
 
+        self.app = app
+
         # Add predefined index view
         self.add_view(index_view)
 
@@ -297,39 +302,40 @@ class Admin(object):
             `view`
                 View to add.
         """
+        # Add to views
         self._views.append(view)
 
-    def setup_app(self, app):
+        # Update menu
+        if view.category:
+            category = self._menu_categories.get(view.category)
+
+            if category is None:
+                category = MenuItem(view.category)
+                self._menu_categories[view.category] = category
+                self._menu.append(category)
+
+            category.add_child(MenuItem(view.name, view))
+        else:
+            self._menu.append(MenuItem(view.name, view))
+
+        # If app was provided in constructor, register view with Flask app
+        if self.app is not None:
+            self.app.register_blueprint(view.create_blueprint(self))
+
+    def init_app(self, app):
         """
             Register all views with Flask application.
 
             `app`
                 Flask application instance
         """
+        if self.app is not None:
+            raise Exception('Flask-AdminEx is already associated with an application.')
+
         self.app = app
 
         for v in self._views:
             app.register_blueprint(v.create_blueprint(self))
-
-        self._refresh_menu()
-
-    def _refresh_menu(self):
-        categories = dict()
-
-        self._menu = []
-
-        for v in self._views:
-            if v.category is None:
-                self._menu.append(MenuItem(v.name, v))
-            else:
-                category = categories.get(v.category)
-
-                if category is None:
-                    category = MenuItem(v.category)
-                    categories[v.category] = category
-                    self._menu.append(category)
-
-                category.add_child(MenuItem(v.name, v))
 
     def menu(self):
         """

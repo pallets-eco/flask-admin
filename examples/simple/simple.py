@@ -31,10 +31,9 @@ def index():
 
 if __name__ == '__main__':
     # Create admin interface
-    admin = adminex.Admin()
+    admin = adminex.Admin(app)
     admin.add_view(MyAdminView(category='Test'))
     admin.add_view(AnotherAdminView(category='Test'))
-    admin.setup_app(app)
 
     # Start app
     app.debug = True

@@ -70,14 +70,11 @@ class PostAdmin(sqlamodel.ModelView):
 
 if __name__ == '__main__':
     # Create admin
-    admin = adminex.Admin('Simple Models')
+    admin = adminex.Admin(app, 'Simple Models')
 
     # Add views
     admin.add_view(sqlamodel.ModelView(User, db.session))
     admin.add_view(PostAdmin(db.session))
-
-    # Associate with an app
-    admin.setup_app(app)
 
     # Create DB
     db.create_all()

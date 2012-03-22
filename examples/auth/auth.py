@@ -137,13 +137,10 @@ if __name__ == '__main__':
     init_login()
 
     # Create admin
-    admin = adminex.Admin('Auth', index_view=MyAdminIndexView())
+    admin = adminex.Admin(app, 'Auth', index_view=MyAdminIndexView())
 
     # Add view
     admin.add_view(MyModelView(User, db.session))
-
-    # Associate with an app
-    admin.setup_app(app)
 
     # Create DB
     db.create_all()

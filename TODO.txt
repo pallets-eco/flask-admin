@@ -1,6 +1,5 @@
 - Core
     - Pregenerate URLs for menu
-    - Flask app in constructor
     - Calendar - add validation for time without seconds (automatically add seconds)
 - Model Admin
     - Ability to sort by fields that are not visible?

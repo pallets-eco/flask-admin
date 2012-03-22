@@ -42,8 +42,8 @@ To start using Flask-AdminEx, you have to create `Admin` class instance and asso
 
     app = Flask(__name__)
 
-    admin = Admin()
-    admin.setup_app(app)
+    admin = Admin(app)
+    # Add administrative views here
 
     app.run()
 
@@ -52,11 +52,15 @@ you should see empty "Home" page with a navigation bar on top.
 
 You can change application name by passing `name` parameter to the `Admin` class constructor::
 
-    admin = Admin(name='My App')
-    admin.setup_app(app)
+    admin = Admin(app, name='My App')
 
 Name is displayed in the menu section.
 
+You don't have to pass Flask application object to the constructor - you can call `init_app` later::
+
+    admin = Admin(name='My App')
+    # Add views here
+    admin.init_app(app)
 
 Adding view
 -----------
@@ -73,9 +77,8 @@ Now, lets add a view. To do this, you need to derive from `BaseView` class::
 
     app = Flask(__name__)
 
-    admin = Admin()
+    admin = Admin(app)
     admin.add_view(MyView(name='Hello'))
-    admin.setup_app(app)
 
     app.run()
 
@@ -133,9 +136,8 @@ If you want to generate URL to the particular view method from outside, followin
 1. You have ability to override endpoint name by passing `endpoint` parameter to the view class
 constructor::
 
-    admin = Admin()
+    admin = Admin(app)
     admin.add_view(MyView(endpoint='testadmin'))
-    admin.setup_app(app)
 
 In this case, you can generate links by concatenating view method name with a endpoint::
 
@@ -160,9 +162,8 @@ Flask-AdminEx comes with built-in SQLAlchemy model administrative interface. It 
 
     # Flask and Flask-SQLAlchemy initialization here
 
-    admin = Admin()
+    admin = Admin(app)
     admin.add_view(ModelBase(User, db.session))
-    admin.setup_app(app)
 
 This will create administrative interface for `User` model with default settings.
 
@@ -184,10 +185,8 @@ you can do something like this::
         def __init__(self, session):
             __super__(MyView, self).__init__(User, session)
 
-    admin = Admin()
+    admin = Admin(app)
     admin.add_view(UserView(db.session))
-    admin.setup_app(app)
-
 
 It is very easy to add support for different database backends (Mongo, etc) by inheriting from `BaseModelView`
 class and implementing database-related methods.
@@ -207,11 +206,10 @@ Here is simple example::
 
     # Flask setup here
 
-    admin = Admin()
+    admin = Admin(app)
 
     path = op.join(op.dirname(__file__), 'static')
     admin.add_view(path, '/static/', name='Static Files')
-    admin.setup_app(app)
 
 You can disable uploads, disable file or directory deletion, restrict file uploads to certain types and so on.
 Check :mod:`flask.ext.adminex.ext.fileadmin` documentation on how to do it.
