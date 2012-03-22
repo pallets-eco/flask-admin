@@ -34,6 +34,8 @@ class AdminModelConverter(ModelConverter):
                 'default': None
             }
 
+            print prop, kwargs, local_column
+
             if field_args:
                 kwargs.update(field_args)
 

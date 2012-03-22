@@ -33,7 +33,7 @@ class Post(db.Model):
     text = db.Column(db.Text)
     date = db.Column(db.DateTime)
 
-    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
     user = db.relationship(User, backref='posts')
 
     def __unicode__(self):
