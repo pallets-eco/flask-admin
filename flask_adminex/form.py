@@ -25,7 +25,8 @@ class AdminForm(wtf.Form):
 
 class TimeField(fields.Field):
     """
-        A text field which stores a `datetime.time` matching a format.
+        A text field which stores a `datetime.time` object.
+        Accepts time string in multiple formats: 20:10, 20:10:00, 10:00 am, 9:30pm, etc.
     """
     widget = widgets.TextInput()
 
@@ -72,6 +73,11 @@ class TimeField(fields.Field):
 
 
 class ChosenSelectWidget(widgets.Select):
+    """
+        `Chosen <http://harvesthq.github.com/chosen/>`_ styled select widget.
+
+        You must include chosen.js and form.js for styling to work.
+    """
     def __call__(self, field, **kwargs):
         if field.allow_blank and not self.multiple:
             kwargs['data-role'] = u'chosenblank'
@@ -82,16 +88,31 @@ class ChosenSelectWidget(widgets.Select):
 
 
 class ChosenSelectField(fields.SelectField):
+    """
+        `Chosen <http://harvesthq.github.com/chosen/>`_ styled select field.
+
+        You must include chosen.js and form.js for styling to work.
+    """
     widget = ChosenSelectWidget
 
 
 class DatePickerWidget(widgets.TextInput):
+    """
+        Date picker widget.
+
+        You must include bootstrap-datepicker.js and form.js for styling to work.
+    """
     def __call__(self, field, **kwargs):
         kwargs['data-role'] = u'datepicker'
         return super(DatePickerWidget, self).__call__(field, **kwargs)
 
 
 class DateTimePickerWidget(widgets.TextInput):
+    """
+        Datetime picker widget.
+
+        You must include bootstrap-datepicker.js and form.js for styling to work.
+    """
     def __call__(self, field, **kwargs):
         kwargs['data-role'] = u'datetimepicker'
         return super(DateTimePickerWidget, self).__call__(field, **kwargs)
