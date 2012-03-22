@@ -3,3 +3,19 @@ body
 {
     padding-top: 50px;
 }
+
+form.icon {
+    display: inline;
+}
+
+form.icon button {
+    border: none;
+    background: transparent;
+    text-decoration: none;
+    padding: 0;
+    line-height: normal;
+}
+
+a.icon {
+    text-decoration: none;
+}

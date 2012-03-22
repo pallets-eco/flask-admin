@@ -72,3 +72,42 @@
 </div>
 {% endif %}
 {%- endmacro %}
+
+{% macro render_form(form, cancel_url) -%}
+    <form action="" method="POST" class="form-horizontal"{% if form.has_file_field %} enctype="multipart/form-data"{% endif %}>
+      <fieldset>
+        {{ form.csrf }}
+
+        {% for f in form if f.label.text != 'Csrf' %}
+        <div class="control-group{% if f.errors %} error{% endif %}">
+          {{ f.label(class='control-label') }}
+          <div class="controls">
+            <div>
+              {% if not focus_set %}
+              {{ f(autofocus='autofocus') }}
+              {% set focus_set = True %}
+              {% else %}
+              {{ f() }}
+              {% endif %}
+            </div>
+            {% if f.errors %}
+              <ul>
+              {% for e in f.errors %}
+                <li>{{ e }}</li>
+              {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+        <div class="control-group">
+          <div class="controls">
+            <input type="submit" class="btn btn-primary btn-large" />
+            {% if cancel_url %}
+            <a href="{{ cancel_url }}" class="btn btn-large">Cancel</a>
+            {% endif %}
+          </div>
+        </div>
+      </fieldset>
+    </form>
+{% endmacro %}

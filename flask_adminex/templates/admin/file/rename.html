@@ -1,0 +1,7 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib %}
+
+{% block body %}
+    <h3>Please provide new name for <i>{{ name }}</i></h3>
+    {{ lib.render_form(form, dir_url) }}
+{% endblock %}

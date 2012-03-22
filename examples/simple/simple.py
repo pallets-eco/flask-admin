@@ -23,7 +23,6 @@ class AnotherAdminView(adminex.BaseView):
 # Create flask app
 app = Flask(__name__, template_folder='templates')
 
-
 # Flask views
 @app.route('/')
 def index():

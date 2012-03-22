@@ -34,14 +34,16 @@
         <tr>
             <td>
                 {%- if admin_view.can_edit -%}
-                <a href="{{ url_for('.edit_view', id=row.id, return=return_url) }}">
+                <a class="icon" href="{{ url_for('.edit_view', id=row.id, return=return_url) }}">
                     <i class="icon-pencil"></i>
                 </a>
                 {%- endif -%}
                 {%- if admin_view.can_delete -%}
-                <a href="{{ url_for('.delete_view', id=row.id, return=return_url) }}" onclick="return confirm('You sure you want to delete this item?')">
-                    <i class="icon-remove"></i>
-                </a>
+                <form class="icon" method="POST" action="{{ url_for('.delete_view', id=row.id, return=return_url) }}">
+                    <button onclick="return confirm('You sure you want to delete this item?')">
+                        <i class="icon-remove"></i>
+                    </button>
+                </form>
                 {%- endif -%}
             </td>
             {% for c, name in list_columns %}

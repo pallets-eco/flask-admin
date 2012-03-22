@@ -494,10 +494,10 @@ class BaseModelView(BaseView):
                                form=form,
                                return_url=return_url or url_for('.index_view'))
 
-    @expose('/delete/<int:id>/')
+    @expose('/delete/<int:id>/', methods=('POST',))
     def delete_view(self, id):
         """
-            Delete model view
+            Delete model view. Only POST method is allowed.
         """
         return_url = request.args.get('return')
 

@@ -1,0 +1,80 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib %}
+
+{% block body %}
+    <ul class="breadcrumb">
+        <li>
+            <a href="{{ get_dir_url('.index', path=None) }}">Root</a>
+        </li>
+        {% for name, path in breadcrumbs[:-1] %}
+        <li>
+            <span class="divider">/</span><a href="{{ get_dir_url('.index', path=path) }}">{{ name }}</a>
+        </li>
+        {% endfor %}
+        {% if breadcrumbs %}
+        <li>
+            <span class="divider">/</span><a href="{{ get_dir_url('.index', path=breadcrumbs[-1][1]) }}">{{ breadcrumbs[-1][0] }}</a>
+        </li>
+        {% endif %}
+    </ul>
+
+    <table class="table table-striped table-bordered model-list">
+        <thead>
+            <tr>
+                <th class="span1">&nbsp;</th>
+                <th>Name</th>
+                <th>Size</th>
+            </tr>
+        </thead>
+        {% for name, path, is_dir, size in items %}
+        <tr>
+            <td>
+                {% if admin_view.can_rename and path and name != '..' %}
+                <a class="icon" href="{{ url_for('.rename', path=path) }}">
+                        <i class="icon-pencil"></i>
+                </a>
+                {% endif %}
+                {%- if admin_view.can_delete and path -%}
+                    {% if is_dir %}
+                        {% if name != '..' %}
+                        <form class="icon" method="POST" action="{{ url_for('.delete') }}">
+                            <input type="hidden" name="path" value="{{ path }}"></input>
+                            <button onclick="return confirm('Are you sure you want to delete \'{{ name }}\' recursively?')">
+                                <i class="icon-remove"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    {% else %}
+                    <form class="icon" method="POST" action="{{ url_for('.delete') }}">
+                        <input type="hidden" name="path" value="{{ path }}"></input>
+                        <button onclick="return confirm('Are you sure you want to delete \'{{ name }}\'?')">
+                            <i class="icon-remove"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                {%- endif -%}
+            </td>
+            {% if is_dir %}
+            <td colspan="2">
+                <a href="{{ get_dir_url('.index', path)|safe }}">
+                    <i class="icon-folder-close"></i> <span>{{ name }}</span>
+                </a>
+            </td>
+            {% else %}
+            <td>
+                <a href="{{ get_file_url(path)|safe }}">{{ name }}</a>
+            </td>
+            <td>
+                {{ size }}
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+    {% if admin_view.can_upload %}
+    <a class="btn btn-primary btn-large" href="{{ get_dir_url('.upload', path=dir_path) }}">Upload File</a>
+    {% endif %}
+    {% if admin_view.can_mkdir %}
+    <a class="btn btn-primary btn-large" href="{{ get_dir_url('.mkdir', path=dir_path) }}">Create Directory</a>
+    {% endif %}
+{% endblock %}

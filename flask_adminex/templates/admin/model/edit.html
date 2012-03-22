@@ -1,4 +1,5 @@
 {% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib %}
 
 {% block head %}
     <link href="{{ url_for('admin.static', filename='chosen/chosen.css') }}" rel="stylesheet">
@@ -6,35 +7,7 @@
 {% endblock %}
 
 {% block body %}
-    <form action="" method="POST" class="form-horizontal"{% if form.has_file_field %} enctype="multipart/form-data"{% endif %}>
-      <fieldset>
-        {{ form.csrf }}
-
-        {% for f in form if f.label.text != 'Csrf' %}
-        <div class="control-group{% if f.errors %} error{% endif %}">
-          {{ f.label(class='control-label') }}
-          <div class="controls">
-            <div>
-              {{ f }}
-            </div>
-            {% if f.errors %}
-              <ul>
-              {% for e in f.errors %}
-                <li>{{ e }}</li>
-              {% endfor %}
-              </ul>
-            {% endif %}
-          </div>
-        </div>
-        {% endfor %}
-        <div class="control-group">
-          <div class="controls">
-            <input type="submit" class="btn btn-primary btn-large" />
-            <a href="{{ return_url }}" class="btn btn-large">Cancel</a>
-          </div>
-        </div>
-      </fieldset>
-    </form>
+  {{ lib.render_form(form, return_url) }}
 {% endblock %}
 
 {% block tail %}
