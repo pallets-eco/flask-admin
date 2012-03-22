@@ -84,7 +84,7 @@ Now, lets add a view. To do this, you need to derive from `BaseView` class::
 
 If you will run this example, you will see that menu has two items: Home and Hello.
 
-Each view should have default page - view method with '/' url. Following view class won't work::
+Each view class should have default page - view method with '/' url. Following code won't work::
 
     class MyView(BaseView):
         @expose('/index/')
