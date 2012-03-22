@@ -1,13 +1,18 @@
 - Core
     - Right-side menu items (auth?)
     - Pregenerate URLs for menu
+    - Conditional js include for forms or pages
+    - More form widgets (date time, time, etc)
 - Model Admin
     - Ability to sort by fields that are not visible?
 - SQLA Model Admin
+    - Use of date time widgets
     - Validation of the joins in the query
     - Automatic joined load for foreign keys
     - Built-in filtering support
     - Many2Many support
+    - Ability to override form field types
+    - WYSIWYG editor support
 - File admin
 - Documentation
 - Unit tests

@@ -3,13 +3,14 @@ from sqlalchemy.orm.interfaces import MANYTOONE, ONETOMANY
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.expression import desc
 
-from wtforms.ext.sqlalchemy.orm import model_form, ModelConverter
+from wtforms import fields
+from wtforms.ext.sqlalchemy.orm import model_form, converts, ModelConverter
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
 
 from flask import flash
 
 from flask.ext.adminex.model import BaseModelView
-from flask.ext.adminex.form import AdminForm
+from flask.ext.adminex import form
 
 
 class AdminModelConverter(ModelConverter):
@@ -40,13 +41,17 @@ class AdminModelConverter(ModelConverter):
                 return self.view.session.query(remote_model)
 
             if prop.direction is MANYTOONE:
-                return QuerySelectField(query_factory=query_factory, **kwargs)
+                return QuerySelectField(query_factory=query_factory,
+                                        widget=form.ChosenSelectWidget(),
+                                        **kwargs)
             elif prop.direction is ONETOMANY:
                 # Skip backrefs
                 if not local_column.foreign_keys and self.view.hide_backrefs:
                     return None
 
-                return QuerySelectMultipleField(query_factory=query_factory, **kwargs)
+                return QuerySelectMultipleField(query_factory=query_factory,
+                                                widget=form.ChosenSelectWidget(multiple=True),
+                                                **kwargs)
         else:
             # Ignore pk/fk
             if isinstance(prop, ColumnProperty):
@@ -57,6 +62,20 @@ class AdminModelConverter(ModelConverter):
 
             return super(AdminModelConverter, self).convert(model, mapper,
                                                             prop, field_args)
+
+    @converts('Date')
+    def conv_date(self, field_args, **kwargs):
+        field_args['widget'] = form.DatePickerWidget()
+        return fields.DateField(**field_args)
+
+    @converts('DateTime')
+    def conv_datetime(self, field_args, **kwargs):
+        field_args['widget'] = form.DateTimePickerWidget()
+        return fields.DateTimeField(**field_args)
+
+    @converts('Time')
+    def conv_time(self, field_args, **kwargs):
+        return form.TimeField(**field_args)
 
 
 class ModelView(BaseModelView):
@@ -151,7 +170,7 @@ class ModelView(BaseModelView):
             Create form from the model.
         """
         return model_form(self.model,
-                          AdminForm,
+                          form.AdminForm,
                           self.form_columns,
                           field_args=self.form_args,
                           converter=AdminModelConverter(self))

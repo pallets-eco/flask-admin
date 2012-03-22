@@ -31,6 +31,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
     text = db.Column(db.Text)
+    date = db.Column(db.DateTime)
 
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = db.relationship(User, backref='posts')

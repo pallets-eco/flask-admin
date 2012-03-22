@@ -8,7 +8,7 @@ Introduction
 ------------
 
 While developing the library, I attempted to make it as flexible as possible. Developer should
-not patch a library to achieve desired functionality.
+not monkey-patch anything to achieve desired functionality.
 
 Library uses one simple, but powerful concept - administrative pieces are built as classes with
 view methods.
@@ -30,12 +30,12 @@ implementing reusable functional pieces that are highly customizable.
 For example, Flask-AdminEx provides ready-to-use SQLAlchemy model interface. It is implemented as a
 class which accepts two parameters: model and a database session. While it exposes some
 class-level variables which change behavior of the interface (somewhat similar to django.contrib.admin),
-nothing prohibits you from overriding form creation or database access methods or adding more views.
+nothing prohibits you from overriding form creation logic, database access methods or adding more views.
 
 Initialization
 --------------
 
-To start using Admin, you have to create `Admin` class instance and associate it with Flask application::
+To start using Flask-AdminEx, you have to create `Admin` class instance and associate it with Flask application::
 
     from flask import Flask
     from flask.ext.adminex import Admin
@@ -47,7 +47,7 @@ To start using Admin, you have to create `Admin` class instance and associate it
 
     app.run()
 
-If you will run this application and will navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
+If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
 you should see empty "Home" page with a navigation bar on top.
 
 You can change application name by passing `name` parameter to the `Admin` class constructor::

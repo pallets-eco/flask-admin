@@ -98,7 +98,7 @@ class BaseModelView(BaseView):
 
     form_args = None
     """
-        Dictionary of form field arguments. Refer to WTForm documentation on
+        Dictionary of form field arguments. Refer to WTForm documentation for
         list of possible options.
 
         Example::
@@ -106,7 +106,7 @@ class BaseModelView(BaseView):
             class MyModelView(BaseModelView):
                 form_args = dict(
                     name=dict(label='First Name', validators=[wtf.required()])
-                }
+                )
     """
 
     # Various settings
