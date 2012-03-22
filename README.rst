@@ -35,6 +35,11 @@ Flask-AdminEx is extensively documented, you can find documentation `here <http:
 
 Flask-AdminEx is built with help of `Twitter Bootstrap <http://twitter.github.com/bootstrap/>`_ and `Chosen <http://harvesthq.github.com/chosen/>`_.
 
+Kudos
+-----
+
+Some ideas were taken from the `Flask-Admin <https://github.com/wilsaj/flask-admin>`_ by Andy Wilson.
+
 Examples
 --------
 

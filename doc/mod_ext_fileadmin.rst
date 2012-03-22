@@ -40,6 +40,7 @@
     .. automethod:: FileAdmin.get_base_path
     .. automethod:: FileAdmin.get_base_url
     .. automethod:: FileAdmin.is_in_folder
+    .. automethod:: FileAdmin.save_file
 
     Views
     -----

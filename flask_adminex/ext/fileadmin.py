@@ -206,6 +206,17 @@ class FileAdmin(BaseView):
         """
         return op.normpath(directory).startswith(base_path)
 
+    def save_file(self, path, file_data):
+        """
+            Save uploaded file to the disk
+
+            `path`
+                Path to save to
+            `file_data`
+                Werkzeug `FileStorage` object
+        """
+        file_data.save(path)
+
     def _get_dir_url(self, endpoint, path, **kwargs):
         """
             Return prettified URL
@@ -330,7 +341,7 @@ class FileAdmin(BaseView):
                       'error')
             else:
                 try:
-                    form.upload.file.save(filename)
+                    self.save_file(filename, form.upload.file)
                     return redirect(self._get_dir_url('.index', path))
                 except Exception, ex:
                     flash('Failed to save file: %s' % ex)
