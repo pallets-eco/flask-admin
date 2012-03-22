@@ -2,7 +2,7 @@ Quick Start
 ===========
 
 This page gives quick introduction to Flask-AdminEx library. It is assumed that reader has some prior
-knowledge of `Flask <http://flask.pocoo.org/>`_ framework.
+knowledge of the `Flask <http://flask.pocoo.org/>`_ framework.
 
 Introduction
 ------------
