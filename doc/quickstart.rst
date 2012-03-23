@@ -48,7 +48,10 @@ To start using Flask-AdminEx, you have to create `Admin` class instance and asso
     app.run()
 
 If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
-you should see empty "Home" page with a navigation bar on top.
+you should see empty "Home" page with a navigation bar on top
+
+    .. image:: images/quickstart/quickstart_1.png
+        :target: _images/quickstart_1.png
 
 You can change application name by passing `name` parameter to the `Admin` class constructor::
 
@@ -68,7 +71,7 @@ Adding view
 Now, lets add a view. To do this, you need to derive from `BaseView` class::
 
     from flask import Flask
-    from flask.ext.adminex import Admin, BaseView
+    from flask.ext.adminex import Admin, BaseView, expose
 
     class MyView(BaseView):
         @expose('/')
@@ -102,6 +105,35 @@ All administrative pages should derive from the 'admin/master.html' to maintain 
 
 If you will refresh 'Hello' administrative page again you should see greeting in the content section.
 
+    .. image:: images/quickstart/quickstart_2.png
+        :width: 640
+        :target: _images/quickstart_2.png
+
+You're not limited to top level menu. It is possible to pass category name and it will be used as a
+top menu item. For example::
+
+    from flask import Flask
+    from flask.ext.adminex import Admin, BaseView, expose
+
+    class MyView(BaseView):
+        @expose('/')
+        def index(self):
+            return self.render('index.html')
+
+    app = Flask(__name__)
+
+    admin = Admin(app)
+    admin.add_view(MyView(name='Hello 1', endpoint='test1', category='Test'))
+    admin.add_view(MyView(name='Hello 2', endpoint='test2', category='Test'))
+    admin.add_view(MyView(name='Hello 3', endpoint='test3', category='Test'))
+    app.run()
+
+Will look like this:
+
+    .. image:: images/quickstart/quickstart_3.png
+        :width: 640
+        :target: _images/quickstart_3.png
+
 Authentication
 --------------
 
@@ -130,7 +162,7 @@ prefix to get URL to a local view::
     class MyView(BaseView):
         @expose('/')
         def index(self)
-            # Get URL for the `test` view method
+            # Get URL for the test view method
             url = url_for('.test')
             return self.render('index.html', url=url)
 
@@ -173,6 +205,12 @@ Flask-AdminEx comes with built-in SQLAlchemy model administrative interface. It 
     admin.add_view(ModelBase(User, db.session))
 
 This will create administrative interface for `User` model with default settings.
+
+Here is how default list view looks like:
+
+    .. image:: images/quickstart/quickstart_4.png
+        :width: 640
+        :target: _images/quickstart_4.png
 
 If you want to customize model views, you have two options:
 
@@ -217,6 +255,12 @@ Here is simple example::
 
     path = op.join(op.dirname(__file__), 'static')
     admin.add_view(path, '/static/', name='Static Files')
+
+Sample screenshot:
+
+    .. image:: images/quickstart/quickstart_5.png
+        :width: 640
+        :target: _images/quickstart_5.png
 
 You can disable uploads, disable file or directory deletion, restrict file uploads to certain types and so on.
 Check :mod:`flask.ext.adminex.ext.fileadmin` documentation on how to do it.
