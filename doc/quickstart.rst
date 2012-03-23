@@ -18,11 +18,11 @@ Here is absolutely valid administrative piece::
     class MyAdminView(BaseView):
         @expose('/')
         def index(self):
-            return render_template('admin/myindex.html', view=self)
+            return self.render('admin/myindex.html')
 
         @expose('/test/')
         def test(self):
-            return render_template('admin/test.html', view=self)
+            return self.render('admin/test.html')
 
 So, how does it help structuring administrative interface? With such building blocks, you're
 implementing reusable functional pieces that are highly customizable.
