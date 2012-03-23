@@ -51,7 +51,7 @@ If you start this application and navigate to `http://localhost:5000/admin/ <htt
 you should see empty "Home" page with a navigation bar on top
 
     .. image:: images/quickstart/quickstart_1.png
-        :target: _images/quickstart_1.png
+        :target: ../_images/quickstart_1.png
 
 You can change application name by passing `name` parameter to the `Admin` class constructor::
 
@@ -107,7 +107,7 @@ If you will refresh 'Hello' administrative page again you should see greeting in
 
     .. image:: images/quickstart/quickstart_2.png
         :width: 640
-        :target: _images/quickstart_2.png
+        :target: ../_images/quickstart_2.png
 
 You're not limited to top level menu. It is possible to pass category name and it will be used as a
 top menu item. For example::
@@ -132,7 +132,7 @@ Will look like this:
 
     .. image:: images/quickstart/quickstart_3.png
         :width: 640
-        :target: _images/quickstart_3.png
+        :target: ../_images/quickstart_3.png
 
 Authentication
 --------------
@@ -210,7 +210,7 @@ Here is how default list view looks like:
 
     .. image:: images/quickstart/quickstart_4.png
         :width: 640
-        :target: _images/quickstart_4.png
+        :target: ../_images/quickstart_4.png
 
 If you want to customize model views, you have two options:
 
@@ -260,7 +260,7 @@ Sample screenshot:
 
     .. image:: images/quickstart/quickstart_5.png
         :width: 640
-        :target: _images/quickstart_5.png
+        :target: ../_images/quickstart_5.png
 
 You can disable uploads, disable file or directory deletion, restrict file uploads to certain types and so on.
 Check :mod:`flask.ext.adminex.ext.fileadmin` documentation on how to do it.
