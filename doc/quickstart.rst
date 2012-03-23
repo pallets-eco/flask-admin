@@ -196,7 +196,7 @@ Model Views
 
 Flask-AdminEx comes with built-in SQLAlchemy model administrative interface. It is very easy to use::
 
-    from flask.ext.adminex.ext.sqlamodel import ModelBase
+    from flask.ext.adminex.ext.sqlamodel import ModelView
     from flask.ext.sqlalchemy import db
 
     # Flask and Flask-SQLAlchemy initialization here
