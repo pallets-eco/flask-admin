@@ -11,7 +11,7 @@ Introduction
 
 This is library for building adminstrative interface on top of Flask framework.
 
-Instead of providing simple scaffolding of the SQLAlchemy models, Flask-AdminEx
+Instead of providing simple scaffolding for the SQLAlchemy models, Flask-AdminEx
 provides tools that can be used to build adminstrative interface of any complexity,
 using consistent look and feel.
 
@@ -43,4 +43,4 @@ Some ideas were taken from the `Flask-Admin <https://github.com/wilsaj/flask-adm
 Examples
 --------
 
-Library comes with three examples, you can find them in `examples` directory.
+Library comes with few examples, you can find them in `examples` directory.

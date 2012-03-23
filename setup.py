@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='Flask-AdminEx',
     version='0.0.1',
-    url='https://github.com/MrJoes/flask-extadmin/',
+    url='https://github.com/mrjoes/flask-extadmin/',
     license='BSD',
     author='Serge S. Koval',
     author_email='serge.koval+github@gmail.com',
