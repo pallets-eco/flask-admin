@@ -28,9 +28,14 @@
     .. autoattribute:: BaseModelView.form_columns
     .. autoattribute:: BaseModelView.form_args
 
+    .. autoattribute:: BaseModelView.page_size
+
+    SQLAlchemy-related Customizations
+    ---------------------------------
     .. autoattribute:: ModelView.hide_backrefs
 
-    .. autoattribute:: BaseModelView.page_size
+    .. autoattribute:: ModelView.auto_select_related
+    .. autoattribute:: ModelView.list_select_related
 
     Constructor
     -----------
@@ -83,3 +88,4 @@
     ------------
 
     .. automethod:: ModelView._get_url
+    .. automethod:: ModelView.scaffold_auto_joins

@@ -1,5 +1,6 @@
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm import subqueryload
 from sqlalchemy.sql.expression import desc
 
 from wtforms import ValidationError, fields, validators
@@ -8,7 +9,8 @@ from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleF
 
 from flask import flash
 
-from flask.ext.adminex import model, form
+from flask.ext.adminex import form
+from flask.ext.adminex.model import BaseModelView
 
 
 class Unique(object):
@@ -141,7 +143,7 @@ class AdminModelConverter(ModelConverter):
         return form.TimeField(**field_args)
 
 
-class ModelView(model.BaseModelView):
+class ModelView(BaseModelView):
     """
         SQLALchemy model view
 
@@ -154,6 +156,35 @@ class ModelView(model.BaseModelView):
     hide_backrefs = True
     """
         Set this to False if you want to see multiselect for model backrefs.
+    """
+
+    auto_select_related = True
+    """
+        Enable automatic detection of displayed foreign keys in this view
+        and perform automatic joined loading for related models to improve
+        query performance.
+
+        Please note that detection is not recursive: if `__unicode__` method
+        of related model uses another model to generate string representation, it
+        will still make separate database call.
+    """
+
+    list_select_related = None
+    """
+        List of parameters for SQLAlchemy `subqueryload`. Overrides `auto_select_related`
+        property.
+
+        For example::
+
+            class PostAdmin(ModelAdmin):
+                list_select_related = ('user', 'city')
+
+        You can also use properties::
+
+            class PostAdmin(ModelAdmin):
+                list_select_related = (Post.user, Post.city)
+
+        Please refer to the `subqueryload` on list of possible values.
     """
 
     def __init__(self, model, session,
@@ -178,6 +209,16 @@ class ModelView(model.BaseModelView):
 
         super(ModelView, self).__init__(model, name, category, endpoint, url)
 
+        # Configuration
+        if not self.list_select_related:
+            self._auto_joins = self.scaffold_auto_joins()
+        else:
+            self._auto_joins = self.list_select_related
+
+    # Internal API
+    def _get_model_iterator(self):
+        return self.model._sa_class_manager.mapper.iterate_properties
+
     # Scaffolding
     def scaffold_list_columns(self):
         """
@@ -185,9 +226,7 @@ class ModelView(model.BaseModelView):
         """
         columns = []
 
-        mapper = self.model._sa_class_manager.mapper
-
-        for p in mapper.iterate_properties:
+        for p in self._get_model_iterator():
             if hasattr(p, 'direction'):
                 if p.direction.name == 'MANYTOONE':
                     columns.append(p.key)
@@ -209,9 +248,7 @@ class ModelView(model.BaseModelView):
         """
         columns = dict()
 
-        mapper = self.model._sa_class_manager.mapper
-
-        for p in mapper.iterate_properties:
+        for p in self._get_model_iterator():
             if hasattr(p, 'columns'):
                 # Sanity check
                 if len(p.columns) > 1:
@@ -239,6 +276,26 @@ class ModelView(model.BaseModelView):
                           field_args=self.form_args,
                           converter=AdminModelConverter(self))
 
+    def scaffold_auto_joins(self):
+        """
+            Return list of joined tables by going through the
+            displayed columns.
+        """
+        relations = set()
+
+        for p in self._get_model_iterator():
+            if hasattr(p, 'direction'):
+                if p.direction.name == 'MANYTOONE':
+                    relations.add(p.key)
+
+        joined = []
+
+        for prop, name in self._list_columns:
+            if prop in relations:
+                joined.append(getattr(self.model, prop))
+
+        return joined
+
     # Database-related API
     def get_list(self, page, sort_column, sort_desc, execute=True):
         """
@@ -256,6 +313,10 @@ class ModelView(model.BaseModelView):
         query = self.session.query(self.model)
 
         count = query.count()
+
+        # Auto join
+        for j in self._auto_joins:
+            query = query.options(subqueryload(j))
 
         # Sorting
         if sort_column is not None:

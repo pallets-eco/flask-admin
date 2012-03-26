@@ -3,6 +3,6 @@
 
 .. automodule:: flask.ext.adminex.form
 
-    .. autoclass:: AdminForm
+    .. autoclass:: BaseForm
 
         .. autoattribute:: has_file_field
