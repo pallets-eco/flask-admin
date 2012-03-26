@@ -2,7 +2,7 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 
-from wtforms import ValidationError, fields
+from wtforms import ValidationError, fields, validators
 from wtforms.ext.sqlalchemy.orm import model_form, converts, ModelConverter
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
 
@@ -81,6 +81,11 @@ class AdminModelConverter(ModelConverter):
                 'query_factory': lambda: self.view.session.query(remote_model)
             })
 
+            if local_column.nullable:
+                kwargs['validators'].append(validators.Optional())
+            else:
+                kwargs['validators'].append(validators.Required())
+
             if prop.direction.name == 'MANYTOONE':
                 return QuerySelectField(widget=form.ChosenSelectWidget(),
                                         **kwargs)
@@ -109,6 +114,9 @@ class AdminModelConverter(ModelConverter):
                     kwargs['validators'].append(Unique(self.view.session,
                                                        model,
                                                        column))
+
+                if not column.nullable:
+                    kwargs['validators'].append(validators.Required())
 
             # Apply label
             kwargs['label'] = self._get_label(prop.key, kwargs)
