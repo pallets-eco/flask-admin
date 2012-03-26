@@ -76,9 +76,9 @@
 {% macro render_form(form, cancel_url) -%}
     <form action="" method="POST" class="form-horizontal"{% if form.has_file_field %} enctype="multipart/form-data"{% endif %}>
       <fieldset>
-        {{ form.csrf }}
+        {{ form.hidden_tag() }}
 
-        {% for f in form if f.label.text != 'Csrf' %}
+        {% for f in form if f.name != 'csrf_token' and f.name != 'csrf' %}
         <div class="control-group{% if f.errors %} error{% endif %}">
           {{ f.label(class='control-label') }}
           <div class="controls">
@@ -111,3 +111,4 @@
       </fieldset>
     </form>
 {% endmacro %}
+

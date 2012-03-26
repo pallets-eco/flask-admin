@@ -22,7 +22,19 @@ class AdminModelConverter(ModelConverter):
 
         self.view = view
 
+    def _get_label(self, name, field_args):
+        if 'label' in field_args:
+            return field_args['label']
+
+        if self.view.rename_columns:
+            return self.view.rename_columns.get(name)
+
+        return None
+
     def convert(self, model, mapper, prop, field_args):
+        if not field_args:
+            field_args = dict()
+
         if isinstance(prop, RelationshipProperty):
             local_column = prop.local_remote_pairs[0][0]
             remote_model = prop.mapper.class_
@@ -31,6 +43,7 @@ class AdminModelConverter(ModelConverter):
                 'validators': [],
                 'filters': [],
                 'allow_blank': local_column.nullable,
+                'label': self._get_label(prop.key, field_args),
                 'default': None
             }
 
@@ -60,21 +73,25 @@ class AdminModelConverter(ModelConverter):
                 if column.foreign_keys or column.primary_key:
                     return None
 
-            return super(AdminModelConverter, self).convert(model, mapper,
-                                                            prop, field_args)
+            field_args['label'] = self._get_label(prop.key, field_args)
+
+            return super(AdminModelConverter, self).convert(model,
+                                                            mapper,
+                                                            prop,
+                                                            field_args)
 
     @converts('Date')
-    def conv_date(self, field_args, **kwargs):
+    def conv_date(self, field_args, **extra):
         field_args['widget'] = form.DatePickerWidget()
         return fields.DateField(**field_args)
 
     @converts('DateTime')
-    def conv_datetime(self, field_args, **kwargs):
+    def conv_datetime(self, field_args, **extra):
         field_args['widget'] = form.DateTimePickerWidget()
         return fields.DateTimeField(**field_args)
 
     @converts('Time')
-    def conv_time(self, field_args, **kwargs):
+    def conv_time(self, field_args, **extra):
         return form.TimeField(**field_args)
 
 
