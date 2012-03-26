@@ -1,5 +1,3 @@
-from sqlalchemy.orm.properties import RelationshipProperty, ColumnProperty
-from sqlalchemy.orm.interfaces import MANYTOONE, ONETOMANY
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.expression import desc
 
@@ -35,39 +33,37 @@ class AdminModelConverter(ModelConverter):
         if not field_args:
             field_args = dict()
 
-        if isinstance(prop, RelationshipProperty):
-            local_column = prop.local_remote_pairs[0][0]
+        if hasattr(prop, 'direction'):
             remote_model = prop.mapper.class_
+            local_column = prop.local_remote_pairs[0][0]
 
             kwargs = {
                 'validators': [],
                 'filters': [],
                 'allow_blank': local_column.nullable,
                 'label': self._get_label(prop.key, field_args),
+                'query_factory': lambda: self.view.session.query(remote_model),
                 'default': None
             }
 
             if field_args:
                 kwargs.update(field_args)
 
-            def query_factory():
-                return self.view.session.query(remote_model)
-
-            if prop.direction is MANYTOONE:
-                return QuerySelectField(query_factory=query_factory,
-                                        widget=form.ChosenSelectWidget(),
-                                        **kwargs)
-            elif prop.direction is ONETOMANY:
+            if prop.direction.name == 'MANYTOONE':
+                return QuerySelectField(widget=form.ChosenSelectWidget(), **kwargs)
+            elif prop.direction.name == 'ONETOMANY':
                 # Skip backrefs
                 if not local_column.foreign_keys and self.view.hide_backrefs:
                     return None
 
-                return QuerySelectMultipleField(query_factory=query_factory,
-                                                widget=form.ChosenSelectWidget(multiple=True),
+                return QuerySelectMultipleField(widget=form.ChosenSelectWidget(multiple=True),
+                                                **kwargs)
+            elif prop.direction.name == 'MANYTOMANY':
+                return QuerySelectMultipleField(widget=form.ChosenSelectWidget(multiple=True),
                                                 **kwargs)
         else:
             # Ignore pk/fk
-            if isinstance(prop, ColumnProperty):
+            if hasattr(prop, 'columns'):
                 column = prop.columns[0]
 
                 if column.foreign_keys or column.primary_key:
@@ -81,17 +77,17 @@ class AdminModelConverter(ModelConverter):
                                                             field_args)
 
     @converts('Date')
-    def conv_date(self, field_args, **extra):
+    def convert_date(self, field_args, **extra):
         field_args['widget'] = form.DatePickerWidget()
         return fields.DateField(**field_args)
 
     @converts('DateTime')
-    def conv_datetime(self, field_args, **extra):
+    def convert_datetime(self, field_args, **extra):
         field_args['widget'] = form.DateTimePickerWidget()
         return fields.DateTimeField(**field_args)
 
     @converts('Time')
-    def conv_time(self, field_args, **extra):
+    def convert_time(self, field_args, **extra):
         return form.TimeField(**field_args)
 
 
@@ -142,10 +138,10 @@ class ModelView(BaseModelView):
         mapper = self.model._sa_class_manager.mapper
 
         for p in mapper.iterate_properties:
-            if isinstance(p, RelationshipProperty):
-                if p.direction is MANYTOONE:
+            if hasattr(p, 'direction'):
+                if p.direction.name == 'MANYTOONE':
                     columns.append(p.key)
-            elif isinstance(p, ColumnProperty):
+            elif hasattr(p, 'columns'):
                 # TODO: Check for multiple columns
                 column = p.columns[0]
 
@@ -166,7 +162,7 @@ class ModelView(BaseModelView):
         mapper = self.model._sa_class_manager.mapper
 
         for p in mapper.iterate_properties:
-            if isinstance(p, ColumnProperty):
+            if hasattr(p, 'columns'):
                 # Sanity check
                 if len(p.columns) > 1:
                     raise Exception('Automatic form scaffolding is not supported' +

@@ -19,6 +19,7 @@
         - Through the hint
     - Built-in filtering support
     - Many2Many support
+        - Verify if it is working properly
     - WYSIWYG editor support
 - File admin
     - Header title
