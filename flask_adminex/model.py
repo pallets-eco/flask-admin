@@ -1,4 +1,4 @@
-from flask import request, url_for, redirect
+from flask import request, url_for, redirect, flash
 
 from .base import BaseView, expose
 
@@ -37,7 +37,7 @@ class BaseModelView(BaseView):
     edit_template = 'admin/model/edit.html'
     """Default edit template"""
 
-    create_template = 'admin/model/edit.html'
+    create_template = 'admin/model/create.html'
     """Default create template"""
 
     # Customizations
@@ -419,6 +419,9 @@ class BaseModelView(BaseView):
         if not search:
             search = None
 
+        if not page:
+            page = None
+
         return url_for(view,
                        page=page,
                        sort=sort,
@@ -501,7 +504,7 @@ class BaseModelView(BaseView):
         """
             Create model view
         """
-        return_url = request.args.get('return')
+        return_url = request.args.get('url')
 
         if not self.can_create:
             return redirect(return_url or url_for('.index_view'))
@@ -510,16 +513,22 @@ class BaseModelView(BaseView):
 
         if form.validate_on_submit():
             if self.create_model(form):
-                return redirect(return_url or url_for('.index_view'))
+                if '_add_another' in request.form:
+                    flash('Model was successfully created.')
+                    return redirect(url_for('.create_view', url=return_url))
+                else:
+                    return redirect(return_url or url_for('.index_view'))
 
-        return self.render(self.create_template, form=form)
+        return self.render(self.create_template,
+                           form=form,
+                           return_url=return_url)
 
     @expose('/edit/<int:id>/', methods=('GET', 'POST'))
     def edit_view(self, id):
         """
             Edit model view
         """
-        return_url = request.args.get('return')
+        return_url = request.args.get('url')
 
         if not self.can_edit:
             return redirect(return_url or url_for('.index_view'))
@@ -544,7 +553,7 @@ class BaseModelView(BaseView):
         """
             Delete model view. Only POST method is allowed.
         """
-        return_url = request.args.get('return')
+        return_url = request.args.get('url')
 
         # TODO: Use post
         if not self.can_delete:

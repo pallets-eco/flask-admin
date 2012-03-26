@@ -73,7 +73,7 @@
 {% endif %}
 {%- endmacro %}
 
-{% macro render_form(form, cancel_url) -%}
+{% macro render_form(form, cancel_url, extra=None) -%}
     <form action="" method="POST" class="form-horizontal"{% if form.has_file_field %} enctype="multipart/form-data"{% endif %}>
       <fieldset>
         {{ form.hidden_tag() }}
@@ -103,6 +103,9 @@
         <div class="control-group">
           <div class="controls">
             <input type="submit" class="btn btn-primary btn-large" />
+            {% if extra %}
+            {{ extra }}
+            {% endif %}
             {% if cancel_url %}
             <a href="{{ cancel_url }}" class="btn btn-large">Cancel</a>
             {% endif %}

@@ -15,8 +15,6 @@
     - Custom CSS/JS in admin interface
 - SQLA Model Admin
     - Built-in filtering support
-    - Built-in search support
-        - Support for related models
     - Many2Many support
         - Verify if it is working properly
     - WYSIWYG editor support?

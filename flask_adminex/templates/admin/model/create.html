@@ -1,0 +1,20 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib %}
+
+{% block head %}
+    <link href="{{ url_for('admin.static', filename='chosen/chosen.css') }}" rel="stylesheet">
+    <link href="{{ url_for('admin.static', filename='css/datepicker.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+  {% macro extra() %}
+    <input name="_add_another" type="submit" class="btn btn-primary btn-large" value="Save and Add" />
+  {% endmacro %}
+
+  {{ lib.render_form(form, return_url, extra()) }}
+{% endblock %}
+
+{% block tail %}
+    <script src="{{ url_for('admin.static', filename='js/bootstrap-datepicker.js') }}"></script>
+    <script src="{{ url_for('admin.static', filename='js/form.js') }}"></script>
+{% endblock %}
