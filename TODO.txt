@@ -10,14 +10,16 @@
     - Built-in filtering support
         - Configurable operations (=, >, <, etc)
         - Callable operations
-    - Custom paginator class?
+    - Built-in search support
+    - Paginator class
     - Custom CSS/JS in admin interface
 - SQLA Model Admin
-    - Validation of the joins in the query
     - Built-in filtering support
+    - Built-in search support
+        - Support for related models
     - Many2Many support
         - Verify if it is working properly
-    - WYSIWYG editor support
+    - WYSIWYG editor support?
 - File admin
     - Header title
     - Mass-delete functionality

@@ -2,6 +2,24 @@
 {% import 'admin/lib.html' as lib %}
 
 {% block body %}
+    {% if search_supported %}
+    <form method="GET" action="{{ return_url }}" class="well form-search">
+        {% if search %}
+            <a href="{{ clear_search_url }}">
+                <i class="icon-remove"></i>
+            </a>
+        {% endif %}
+        {% if sort_column is not none %}
+        <input type="hidden" name="sort" value="{{ sort_column }}"></input>
+        {% endif %}
+        {% if sort_desc %}
+        <input type="hidden" name="desc" value="{{ sort_desc }}"></input>
+        {% endif %}
+        <input type="text" name="search" value="{{ search or '' }}" class="span10 search-query"></input>
+        <button type="submit" class="btn">Search</button>
+    </form>
+    {% endif %}
+
     <table class="table table-striped table-bordered model-list">
         <thead>
             <tr>

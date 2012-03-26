@@ -85,6 +85,18 @@ class BaseModelView(BaseView):
                 sortable_columns = ('name', ('user', User.username))
     """
 
+    searchable_columns = None
+    """
+        Collection of the searchable columns. It is assumed that only
+        text-only fields are searchable, but it is up for a model implementation
+        to make decision.
+
+        For example::
+
+            class MyModelView(BaseModelView):
+                searchable_columns = ('name', 'email')
+    """
+
     form_columns = None
     """
         Collection of the model field names for the form. If set to `None` will
@@ -160,6 +172,8 @@ class BaseModelView(BaseView):
         self._create_form_class = self.get_create_form()
         self._edit_form_class = self.get_edit_form()
 
+        self._search_supported = self.init_search()
+
     # Public API
     def scaffold_list_columns(self):
         """
@@ -225,6 +239,13 @@ class BaseModelView(BaseView):
 
             return result
 
+    def init_search(self):
+        """
+            Initialize search. If data provider does not support search,
+            `init_search` will return `False`.
+        """
+        return False
+
     def scaffold_form(self):
         """
             Create `form.BaseForm` inherited class from the model. Must be implemented in
@@ -284,7 +305,7 @@ class BaseModelView(BaseView):
         return self._list_columns[idx]
 
     # Database-related API
-    def get_list(self, page, sort_field, sort_desc):
+    def get_list(self, page, sort_field, sort_desc, search):
         """
             Return list of models from the data source with applied pagination
             and sorting.
@@ -297,6 +318,8 @@ class BaseModelView(BaseView):
                 Sort column name or None.
             `sort_desc`
                 If set to True, sorting is in descending order.
+            `search`
+                Search query
         """
         raise NotImplemented('Please implement get_list method')
 
@@ -373,10 +396,11 @@ class BaseModelView(BaseView):
         page = request.args.get('page', 0, type=int)
         sort = request.args.get('sort', None, type=int)
         sort_desc = request.args.get('desc', None, type=int)
+        search = request.args.get('search', None)
 
-        return page, sort, sort_desc
+        return page, sort, sort_desc, search
 
-    def _get_url(self, view, page, sort, sort_desc):
+    def _get_url(self, view=None, page=None, sort=None, sort_desc=None, search=None):
         """
             Generate page URL with current page, sort column and
             other parameters.
@@ -389,8 +413,17 @@ class BaseModelView(BaseView):
                 Sort column index
             `sort_desc`
                 Use descending sorting order
+            `search`
+                Search query
         """
-        return url_for(view, page=page, sort=sort, desc=sort_desc)
+        if not search:
+            search = None
+
+        return url_for(view,
+                       page=page,
+                       sort=sort,
+                       desc=sort_desc,
+                       search=search)
 
     # Views
     @expose('/')
@@ -399,7 +432,7 @@ class BaseModelView(BaseView):
             List view
         """
         # Grab parameters from URL
-        page, sort_idx, sort_desc = self._get_extra_args()
+        page, sort_idx, sort_desc, search = self._get_extra_args()
 
         # Map column index to column name
         sort_column = self._get_column_by_idx(sort_idx)
@@ -407,7 +440,7 @@ class BaseModelView(BaseView):
             sort_column = sort_column[0]
 
         # Get count and data
-        count, data = self.get_list(page, sort_column, sort_desc)
+        count, data = self.get_list(page, sort_column, sort_desc, search)
 
         # Calculate number of pages
         num_pages = count / self.page_size
@@ -420,7 +453,7 @@ class BaseModelView(BaseView):
             if p == 0:
                 p = None
 
-            return self._get_url('.index_view', p, sort_idx, sort_desc)
+            return self._get_url('.index_view', p, sort_idx, sort_desc, search)
 
         def sort_url(column, invert=False):
             desc = None
@@ -428,7 +461,7 @@ class BaseModelView(BaseView):
             if invert and not sort_desc:
                 desc = 1
 
-            return self._get_url('.index_view', page, column, desc)
+            return self._get_url('.index_view', page, column, desc, search)
 
         def get_value(obj, field):
             return getattr(obj, field, None)
@@ -440,7 +473,11 @@ class BaseModelView(BaseView):
                                sortable_columns=self._sortable_columns,
                                # Stuff
                                get_value=get_value,
-                               return_url=self._get_url('.index_view', page, sort_idx, sort_desc),
+                               return_url=self._get_url('.index_view',
+                                                        page,
+                                                        sort_idx,
+                                                        sort_desc,
+                                                        search),
                                # Pagination
                                pager_url=pager_url,
                                num_pages=num_pages,
@@ -448,7 +485,15 @@ class BaseModelView(BaseView):
                                # Sorting
                                sort_column=sort_idx,
                                sort_desc=sort_desc,
-                               sort_url=sort_url
+                               sort_url=sort_url,
+                               # Search
+                               search_supported=self._search_supported,
+                               clear_search_url=self._get_url('.index_view',
+                                                              None,
+                                                              sort_idx,
+                                                              sort_desc,
+                                                              None),
+                               search=search
                                )
 
     @expose('/new/', methods=('GET', 'POST'))

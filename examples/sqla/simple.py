@@ -58,6 +58,8 @@ class PostAdmin(sqlamodel.ModelView):
     # Rename 'title' columns to 'Post Title' in list view
     rename_columns = dict(title='Post Title')
 
+    searchable_columns = ('title', User.username)
+
     # Pass arguments to WTForms. In this case, change label for text field to
     # be 'Big Text' and add required() validator.
     form_args = dict(

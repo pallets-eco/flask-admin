@@ -2,6 +2,7 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import subqueryload
 from sqlalchemy.sql.expression import desc
+from sqlalchemy import or_
 
 from wtforms import ValidationError, fields, validators
 from wtforms.ext.sqlalchemy.orm import model_form, converts, ModelConverter
@@ -187,6 +188,38 @@ class ModelView(BaseModelView):
         Please refer to the `subqueryload` on list of possible values.
     """
 
+    searchable_columns = None
+    """
+        Collection of the searchable columns. Only text-based columns
+        are searchable (`String`, `Unicode`, `Text`, `UnicodeText`).
+
+        Example::
+
+            class MyModelView(ModelView):
+                searchable_columns = ('name', 'email')
+
+        You can also pass columns::
+
+            class MyModelView(ModelView):
+                searchable_columns = (User.name, User.email)
+
+        Following search rules apply:
+
+        - If you enter *ZZZ* in the UI search field, it will generate *ILIKE '%ZZZ%'*
+          statement against searchable columns.
+
+        - If you enter multiple words, each word will be searched separately, but
+          only rows that contain all words will be displayed. For example, searching
+          for 'abc def' will find all rows that contain 'abc' and 'def' in one or
+          more columns.
+
+        - If you prefix your search term with ^, it will find all rows
+          that start with ^. So, if you entered *^ZZZ*, *ILIKE 'ZZZ%'* will be used.
+
+        - If you prefix your search term with =, it will do exact match.
+          For example, if you entered *=ZZZ*, *ILIKE 'ZZZ'* statement will be used.
+    """
+
     def __init__(self, model, session,
                  name=None, category=None, endpoint=None, url=None):
         """
@@ -207,6 +240,10 @@ class ModelView(BaseModelView):
         """
         self.session = session
 
+        self._search_fields = None
+        self._search_joins = None
+        self._search_joins_names = None
+
         super(ModelView, self).__init__(model, name, category, endpoint, url)
 
         # Configuration
@@ -217,6 +254,9 @@ class ModelView(BaseModelView):
 
     # Internal API
     def _get_model_iterator(self):
+        """
+            Return property iterator for the model
+        """
         return self.model._sa_class_manager.mapper.iterate_properties
 
     # Scaffolding
@@ -266,6 +306,57 @@ class ModelView(BaseModelView):
 
         return columns
 
+    def init_search(self):
+        """
+            Initialize search. Returns `True` if search is supported for this
+            view.
+
+            For SQLAlchemy, this will initialize internal fields: list of
+            column objects used for filtering, etc.
+        """
+        if self.searchable_columns:
+            self._search_fields = []
+            self._search_joins = []
+            self._search_joins_names = set()
+
+            for p in self.searchable_columns:
+                # If item is a stirng, resolve it as an attribute
+                if isinstance(p, basestring):
+                    attr = getattr(self.model, p, None)
+                else:
+                    attr = p
+
+                # Only column searches are supported
+                if (not attr or
+                    not hasattr(attr, 'property') or
+                    not hasattr(attr.property, 'columns')):
+                    raise Exception('Invalid searchable column "%s"' % p)
+
+                for column in attr.property.columns:
+                    column_type = type(column.type).__name__
+
+                    if not self.is_text_column_type(column_type):
+                        raise Exception('Can only search on text columns. ' +
+                                        'Failed to setup search for "%s"' % p)
+
+                    self._search_fields.append(column)
+
+                    # If it belongs to different table - add a join
+                    if column.table != self.model.__table__:
+                        self._search_joins.append(column.table)
+                        self._search_joins_names.add(column.table.name)
+
+        return bool(self.searchable_columns)
+
+    def is_text_column_type(self, name):
+        """
+            Verify if column type is text-based.
+
+            Returns `True` for `String`, `Unicode`, `Text`, `UnicodeText`
+        """
+        return (name == 'String' or name == 'Unicode' or
+                name == 'Text' or name == 'UnicodeText')
+
     def scaffold_form(self):
         """
             Create form from the model.
@@ -297,7 +388,7 @@ class ModelView(BaseModelView):
         return joined
 
     # Database-related API
-    def get_list(self, page, sort_column, sort_desc, execute=True):
+    def get_list(self, page, sort_column, sort_desc, search, execute=True):
         """
             Return models from the database.
 
@@ -307,11 +398,42 @@ class ModelView(BaseModelView):
                 Sort column name
             `sort_desc`
                 Descending or ascending sort
+            `search`
+                Search query
             `execute`
                 Execute query immediately? Default is `True`
         """
+
+        # Will contain names of joined tables to avoid duplicate joins
+        joins = set()
+
         query = self.session.query(self.model)
 
+        # Apply search before counting results
+        if self._search_supported and search:
+            # Apply search-related joins
+            if self._search_joins:
+                query = query.join(*self._search_joins)
+                joins |= self._search_joins_names
+
+            # Apply terms
+            terms = search.split(' ')
+
+            for term in terms:
+                if not term:
+                    continue
+
+                if term.startswith('^'):
+                    stmt = '%s%%' % term[1:]
+                elif term.startswith('='):
+                    stmt = term[1:]
+                else:
+                    stmt = '%%%s%%' % term
+
+                filter_stmt = [c.ilike(stmt) for c in self._search_fields]
+                query = query.filter(or_(*filter_stmt))
+
+        # Calculate number of rows
         count = query.count()
 
         # Auto join
@@ -329,9 +451,16 @@ class ModelView(BaseModelView):
                     # contains dot.
                     if '.' in sort_field:
                         parts = sort_field.split('.', 1)
-                        query = query.join(parts[0])
+
+                        if parts[0] not in joins:
+                            query = query.join(parts[0])
+                            joins.add(parts[0])
                 elif isinstance(sort_field, InstrumentedAttribute):
-                    query = query.join(sort_field.parententity)
+                    table = sort_field.parententity.tables[0]
+
+                    if table.name not in joins:
+                        query = query.join(table)
+                        joins.add(table.name)
                 else:
                     sort_field = None
 

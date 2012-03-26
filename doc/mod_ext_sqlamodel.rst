@@ -25,6 +25,9 @@
     .. autoattribute:: BaseModelView.list_columns
     .. autoattribute:: BaseModelView.rename_columns
     .. autoattribute:: BaseModelView.sortable_columns
+
+    .. autoattribute:: ModelView.searchable_columns
+
     .. autoattribute:: BaseModelView.form_columns
     .. autoattribute:: BaseModelView.form_args
 
@@ -58,6 +61,8 @@
     .. automethod:: ModelView.get_create_form
     .. automethod:: ModelView.get_edit_form
 
+    .. automethod:: ModelView.init_search
+
     Data
     ----
 
@@ -89,3 +94,4 @@
 
     .. automethod:: ModelView._get_url
     .. automethod:: ModelView.scaffold_auto_joins
+    .. automethod:: ModelView.is_text_column_type
