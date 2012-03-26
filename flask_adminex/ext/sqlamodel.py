@@ -267,6 +267,12 @@ class ModelView(BaseModelView):
         columns = []
 
         for p in self._get_model_iterator():
+            # Filter by name
+            if (self.excluded_list_columns and
+                p.key in self.excluded_list_columns):
+                continue
+
+            # Verify type
             if hasattr(p, 'direction'):
                 if p.direction.name == 'MANYTOONE':
                     columns.append(p.key)
@@ -363,7 +369,8 @@ class ModelView(BaseModelView):
         """
         return model_form(self.model,
                           form.BaseForm,
-                          self.form_columns,
+                          only=self.form_columns,
+                          exclude=self.excluded_form_columns,
                           field_args=self.form_args,
                           converter=AdminModelConverter(self))
 

@@ -52,6 +52,16 @@ class BaseModelView(BaseView):
                 list_columns = ('name', 'last_name', 'email')
     """
 
+    excluded_list_columns = None
+    """
+        Collection of excluded list column names.
+
+        For example::
+
+            class MyModelView(BaseModelView):
+                excluded_list_columns = ('last_name', 'email')
+    """
+
     rename_columns = None
     """
         Dictionary where key is column name and value is string to display.
@@ -106,6 +116,16 @@ class BaseModelView(BaseView):
 
             class MyModelView(BaseModelView):
                 list_columns = ('name', 'email')
+    """
+
+    excluded_form_columns = None
+    """
+        Collection of excluded form field names.
+
+        For example::
+
+            class MyModelView(BaseModelView):
+                excluded_form_columns = ('last_name', 'email')
     """
 
     form_args = None

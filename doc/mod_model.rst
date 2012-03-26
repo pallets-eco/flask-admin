@@ -23,12 +23,14 @@
     --------------
 
     .. autoattribute:: BaseModelView.list_columns
+    .. autoattribute:: BaseModelView.excluded_list_columns
     .. autoattribute:: BaseModelView.rename_columns
     .. autoattribute:: BaseModelView.sortable_columns
 
     .. autoattribute:: BaseModelView.searchable_columns
 
     .. autoattribute:: BaseModelView.form_columns
+    .. autoattribute:: BaseModelView.excluded_form_columns
     .. autoattribute:: BaseModelView.form_args
 
     .. autoattribute:: BaseModelView.page_size
