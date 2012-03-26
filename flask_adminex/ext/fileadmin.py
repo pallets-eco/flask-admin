@@ -16,7 +16,7 @@ from flask.ext.adminex import form
 from flask.ext import wtf
 
 
-class NameForm(wtf.Form):
+class NameForm(form.BaseForm):
     """
         Form with a filename input field.
 
@@ -31,7 +31,7 @@ class NameForm(wtf.Form):
             raise wtf.ValidationError('Invalid directory name')
 
 
-class UploadForm(form.AdminForm):
+class UploadForm(form.BaseForm):
     """
         File upload form. Works with FileAdmin instance to check if it is allowed
         to upload file with given extension.

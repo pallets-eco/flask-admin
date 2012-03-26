@@ -1,14 +1,47 @@
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 
-from wtforms import fields
+from wtforms import ValidationError, fields
 from wtforms.ext.sqlalchemy.orm import model_form, converts, ModelConverter
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
 
 from flask import flash
 
-from flask.ext.adminex.model import BaseModelView
-from flask.ext.adminex import form
+from flask.ext.adminex import model, form
+
+
+class Unique(object):
+    """Checks field value unicity against specified table field.
+
+    :param get_session:
+        A function that return a SQAlchemy Session.
+    :param model:
+        The model to check unicity against.
+    :param column:
+        The unique column.
+    :param message:
+        The error message.
+    """
+    field_flags = ('unique', )
+
+    def __init__(self, db_session, model, column, message=None):
+        self.db_session = db_session
+        self.model = model
+        self.column = column
+        self.message = message
+
+    def __call__(self, form, field):
+        try:
+            obj = (self.db_session.query(self.model)
+                       .filter(self.column == field.data).one())
+
+            if not hasattr(form, '_obj') or not form._obj == obj:
+                if self.message is None:
+                    self.message = field.gettext(u'Already exists.')
+                raise ValidationError(self.message)
+        except NoResultFound:
+            pass
 
 
 class AdminModelConverter(ModelConverter):
@@ -30,37 +63,39 @@ class AdminModelConverter(ModelConverter):
         return None
 
     def convert(self, model, mapper, prop, field_args):
-        if not field_args:
-            field_args = dict()
+        kwargs = {
+            'validators': [],
+            'filters': []
+        }
+
+        if field_args:
+            kwargs.update(field_args)
 
         if hasattr(prop, 'direction'):
             remote_model = prop.mapper.class_
             local_column = prop.local_remote_pairs[0][0]
 
-            kwargs = {
-                'validators': [],
-                'filters': [],
+            kwargs.update({
                 'allow_blank': local_column.nullable,
-                'label': self._get_label(prop.key, field_args),
-                'query_factory': lambda: self.view.session.query(remote_model),
-                'default': None
-            }
-
-            if field_args:
-                kwargs.update(field_args)
+                'label': self._get_label(prop.key, kwargs),
+                'query_factory': lambda: self.view.session.query(remote_model)
+            })
 
             if prop.direction.name == 'MANYTOONE':
-                return QuerySelectField(widget=form.ChosenSelectWidget(), **kwargs)
+                return QuerySelectField(widget=form.ChosenSelectWidget(),
+                                        **kwargs)
             elif prop.direction.name == 'ONETOMANY':
                 # Skip backrefs
                 if not local_column.foreign_keys and self.view.hide_backrefs:
                     return None
 
-                return QuerySelectMultipleField(widget=form.ChosenSelectWidget(multiple=True),
-                                                **kwargs)
+                return QuerySelectMultipleField(
+                                widget=form.ChosenSelectWidget(multiple=True),
+                                **kwargs)
             elif prop.direction.name == 'MANYTOMANY':
-                return QuerySelectMultipleField(widget=form.ChosenSelectWidget(multiple=True),
-                                                **kwargs)
+                return QuerySelectMultipleField(
+                                widget=form.ChosenSelectWidget(multiple=True),
+                                **kwargs)
         else:
             # Ignore pk/fk
             if hasattr(prop, 'columns'):
@@ -69,12 +104,19 @@ class AdminModelConverter(ModelConverter):
                 if column.foreign_keys or column.primary_key:
                     return None
 
-            field_args['label'] = self._get_label(prop.key, field_args)
+                # If field is unique, validate it
+                if column.unique:
+                    kwargs['validators'].append(Unique(self.view.session,
+                                                       model,
+                                                       column))
+
+            # Apply label
+            kwargs['label'] = self._get_label(prop.key, kwargs)
 
             return super(AdminModelConverter, self).convert(model,
                                                             mapper,
                                                             prop,
-                                                            field_args)
+                                                            kwargs)
 
     @converts('Date')
     def convert_date(self, field_args, **extra):
@@ -91,7 +133,7 @@ class AdminModelConverter(ModelConverter):
         return form.TimeField(**field_args)
 
 
-class ModelView(BaseModelView):
+class ModelView(model.BaseModelView):
     """
         SQLALchemy model view
 
@@ -166,7 +208,8 @@ class ModelView(BaseModelView):
                 # Sanity check
                 if len(p.columns) > 1:
                     raise Exception('Automatic form scaffolding is not supported' +
-                                    ' for multi-column properties (%s.%s)' % (self.model.__name__, p.key))
+                                    ' for multi-column properties (%s.%s)' % (
+                                                    self.model.__name__, p.key))
 
                 column = p.columns[0]
 
@@ -183,7 +226,7 @@ class ModelView(BaseModelView):
             Create form from the model.
         """
         return model_form(self.model,
-                          form.AdminForm,
+                          form.BaseForm,
                           self.form_columns,
                           field_args=self.form_args,
                           converter=AdminModelConverter(self))

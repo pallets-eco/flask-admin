@@ -5,10 +5,14 @@ from flask.ext import wtf
 from wtforms import fields, widgets
 
 
-class AdminForm(wtf.Form):
+class BaseForm(wtf.Form):
     """
         Customized form class.
     """
+    def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
+        super(BaseForm, self).__init__(formdata, obj, prefix, **kwargs)
+
+        self._obj = obj
 
     @property
     def has_file_field(self):

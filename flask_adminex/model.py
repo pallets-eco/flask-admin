@@ -227,7 +227,7 @@ class BaseModelView(BaseView):
 
     def scaffold_form(self):
         """
-            Create `form.AdminForm` class from the model. Must be implemented in
+            Create `form.BaseForm` inherited class from the model. Must be implemented in
             the child class.
         """
         raise NotImplemented('Please implement scaffold_form method')
