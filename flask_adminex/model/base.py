@@ -1,6 +1,9 @@
+from itertools import count
+
 from flask import request, url_for, redirect, flash
 
-from .base import BaseView, expose
+from flask.ext.adminex.base import BaseView, expose
+from flask.ext.adminex.model import filters
 
 
 class BaseModelView(BaseView):
@@ -98,13 +101,20 @@ class BaseModelView(BaseView):
     searchable_columns = None
     """
         Collection of the searchable columns. It is assumed that only
-        text-only fields are searchable, but it is up for a model implementation
-        to make decision.
+        text-only fields are searchable, but it is up for a model
+        implementation to make decision.
 
         For example::
 
             class MyModelView(BaseModelView):
                 searchable_columns = ('name', 'email')
+    """
+
+    column_filters = None
+    """
+        Collection of the column filters.
+
+        TBD: Doc
     """
 
     form_columns = None
@@ -186,13 +196,28 @@ class BaseModelView(BaseView):
         """
             Refresh various cached variables.
         """
+        # List view
         self._list_columns = self.get_list_columns()
         self._sortable_columns = self.get_sortable_columns()
 
+        # Forms
         self._create_form_class = self.get_create_form()
         self._edit_form_class = self.get_edit_form()
 
+        # Search
         self._search_supported = self.init_search()
+
+        # Filters
+        self._filters = self.get_filters()
+
+        if self._filters:
+            self._filter_names = [unicode(n) for n in self._filters]
+            self._filter_types = dict((i, f.data_type)
+                                      for i, f in enumerate(self._filters)
+                                      if f.data_type)
+        else:
+            self._filter_names = None
+            self._filter_types = None
 
     # Public API
     def scaffold_list_columns(self):
@@ -207,26 +232,30 @@ class BaseModelView(BaseView):
         """
         raise NotImplemented('Please implement scaffold_list_columns method')
 
+    def get_column_name(self, field):
+        """
+            Return human-readable column name.
+
+            `field`
+                Model field name.
+        """
+        if self.rename_columns and field in self.rename_columns:
+            return self.rename_columns[field]
+        else:
+            return self.prettify_name(field)
+
     def get_list_columns(self):
         """
             Returns list of the model field names. If `list_columns` was
             set, returns it. Otherwise calls `scaffold_list_columns`
             to generate list from the model.
         """
-        result = []
-
         if self.list_columns is None:
             columns = self.scaffold_list_columns()
         else:
             columns = self.list_columns
 
-        for c in columns:
-            if self.rename_columns and c in self.rename_columns:
-                result.append((c, self.rename_columns[c]))
-            else:
-                result.append((c, self.prettify_name(c)))
-
-        return result
+        return [(c, self.get_column_name(c)) for c in columns]
 
     def scaffold_sortable_columns(self):
         """
@@ -266,10 +295,51 @@ class BaseModelView(BaseView):
         """
         return False
 
+    def scaffold_filter(self, name):
+        """
+            Generate filter object for the given name
+
+            `name`
+                Name of the field
+        """
+        return None
+
+    def is_valid_filter(self, filter):
+        """
+            Verify that provided filter object is valid.
+
+            `filter`
+                Filter object to verify.
+        """
+        return isinstance(filter, filters.BaseFilter)
+
+    def get_filters(self):
+        """
+            Return list of filter objects.
+        """
+        if self.column_filters:
+            collection = []
+
+            for n in self.column_filters:
+                if not self.is_valid_filter(n):
+                    flt = self.scaffold_filters(n)
+                    if flt:
+                        collection.extend(flt)
+                    else:
+                        raise Exception('Unsupported filter type %s' % n)
+                else:
+                    collection.append(n)
+
+            print collection
+
+            return collection
+        else:
+            return None
+
     def scaffold_form(self):
         """
-            Create `form.BaseForm` inherited class from the model. Must be implemented in
-            the child class.
+            Create `form.BaseForm` inherited class from the model. Must be
+            implemented in the child class.
         """
         raise NotImplemented('Please implement scaffold_form method')
 
@@ -325,7 +395,7 @@ class BaseModelView(BaseView):
         return self._list_columns[idx]
 
     # Database-related API
-    def get_list(self, page, sort_field, sort_desc, search):
+    def get_list(self, page, sort_field, sort_desc, search, filters):
         """
             Return list of models from the data source with applied pagination
             and sorting.
@@ -340,6 +410,9 @@ class BaseModelView(BaseView):
                 If set to True, sorting is in descending order.
             `search`
                 Search query
+            `filters`
+                List of filter tuples. First value in a tuple is a search
+                index, second value is a search value.
         """
         raise NotImplemented('Please implement get_list method')
 
@@ -418,9 +491,28 @@ class BaseModelView(BaseView):
         sort_desc = request.args.get('desc', None, type=int)
         search = request.args.get('search', None)
 
-        return page, sort, sort_desc, search
+        # Gather filters
+        if self._filters:
+            filters = []
 
-    def _get_url(self, view=None, page=None, sort=None, sort_desc=None, search=None):
+            for n in count():
+                param = 'flt%d' % n
+                if param not in request.args:
+                    break
+
+                idx = request.args.get(param, None, type=int)
+                value = request.args.get(param + 'v', None)
+
+                if idx >= 0 and idx < len(self._filters):
+                    if self._filters[idx].validate(value):
+                        filters.append((idx, value))
+        else:
+            filters = None
+
+        return page, sort, sort_desc, search, filters
+
+    def _get_url(self, view=None, page=None, sort=None, sort_desc=None,
+                 search=None, filters=None):
         """
             Generate page URL with current page, sort column and
             other parameters.
@@ -435,6 +527,8 @@ class BaseModelView(BaseView):
                 Use descending sorting order
             `search`
                 Search query
+            `filters`
+                List of active filters
         """
         if not search:
             search = None
@@ -442,11 +536,16 @@ class BaseModelView(BaseView):
         if not page:
             page = None
 
-        return url_for(view,
-                       page=page,
-                       sort=sort,
-                       desc=sort_desc,
-                       search=search)
+        kwargs = dict(page=page, sort=sort, desc=sort_desc, search=search)
+
+        if filters:
+            for i, flt in enumerate(filters):
+                base = 'flt%d' % i
+
+                kwargs[base] = flt[0]
+                kwargs[base + 'v'] = flt[1]
+
+        return url_for(view, **kwargs)
 
     # Views
     @expose('/')
@@ -455,7 +554,7 @@ class BaseModelView(BaseView):
             List view
         """
         # Grab parameters from URL
-        page, sort_idx, sort_desc, search = self._get_extra_args()
+        page, sort_idx, sort_desc, search, filters = self._get_extra_args()
 
         # Map column index to column name
         sort_column = self._get_column_by_idx(sort_idx)
@@ -463,12 +562,25 @@ class BaseModelView(BaseView):
             sort_column = sort_column[0]
 
         # Get count and data
-        count, data = self.get_list(page, sort_column, sort_desc, search)
+        count, data = self.get_list(page, sort_column, sort_desc,
+                                    search, filters)
 
         # Calculate number of pages
         num_pages = count / self.page_size
         if count % self.page_size != 0:
             num_pages += 1
+
+        # Pregenerate filters
+        if self._filters:
+            filters_data = dict()
+
+            for idx, f in enumerate(self._filters):
+                flt_data = f.get_options(self)
+
+                if flt_data:
+                    filters_data[idx] = flt_data
+        else:
+            filters_data = None
 
         # Various URL generation helpers
         def pager_url(p):
@@ -476,7 +588,8 @@ class BaseModelView(BaseView):
             if p == 0:
                 p = None
 
-            return self._get_url('.index_view', p, sort_idx, sort_desc, search)
+            return self._get_url('.index_view', p, sort_idx, sort_desc,
+                                 search, filters)
 
         def sort_url(column, invert=False):
             desc = None
@@ -484,7 +597,8 @@ class BaseModelView(BaseView):
             if invert and not sort_desc:
                 desc = 1
 
-            return self._get_url('.index_view', page, column, desc, search)
+            return self._get_url('.index_view', page, column, desc,
+                                 search, filters)
 
         def get_value(obj, field):
             return getattr(obj, field, None)
@@ -495,12 +609,14 @@ class BaseModelView(BaseView):
                                list_columns=self._list_columns,
                                sortable_columns=self._sortable_columns,
                                # Stuff
+                               enumerate=enumerate,
                                get_value=get_value,
                                return_url=self._get_url('.index_view',
                                                         page,
                                                         sort_idx,
                                                         sort_desc,
-                                                        search),
+                                                        search,
+                                                        filters),
                                # Pagination
                                pager_url=pager_url,
                                num_pages=num_pages,
@@ -514,9 +630,13 @@ class BaseModelView(BaseView):
                                clear_search_url=self._get_url('.index_view',
                                                               None,
                                                               sort_idx,
-                                                              sort_desc,
-                                                              None),
-                               search=search
+                                                              sort_desc),
+                               search=search,
+                               # Filters
+                               filter_names=self._filter_names,
+                               filter_types=self._filter_types,
+                               filter_data=filters_data,
+                               active_filters=filters
                                )
 
     @expose('/new/', methods=('GET', 'POST'))

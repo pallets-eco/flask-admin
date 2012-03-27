@@ -12,6 +12,7 @@ from flask import flash
 
 from flask.ext.adminex import form
 from flask.ext.adminex.model import BaseModelView
+from flask.ext.adminex.ext.sqlamodel import filters, tools
 
 
 class Unique(object):
@@ -220,6 +221,11 @@ class ModelView(BaseModelView):
           For example, if you entered *=ZZZ*, *ILIKE 'ZZZ'* statement will be used.
     """
 
+    filter_converter = filters.FilterConverter()
+    """
+        TBD:
+    """
+
     def __init__(self, model, session,
                  name=None, category=None, endpoint=None, url=None):
         """
@@ -241,8 +247,9 @@ class ModelView(BaseModelView):
         self.session = session
 
         self._search_fields = None
-        self._search_joins = None
-        self._search_joins_names = None
+        self._search_joins_names = set()
+
+        self._filter_joins_names = set()
 
         super(ModelView, self).__init__(model, name, category, endpoint, url)
 
@@ -312,6 +319,23 @@ class ModelView(BaseModelView):
 
         return columns
 
+    def _get_columns_for_field(self, field):
+        if isinstance(field, basestring):
+            attr = getattr(self.model, field, None)
+
+            if field is None:
+                raise Exception('Field %s was not found.' % field)
+        else:
+            attr = field
+
+        if (not attr or
+            not hasattr(attr, 'property') or
+            not hasattr(attr.property, 'columns') or
+            not attr.property.columns):
+                raise Exception('Invalid field %s: does not contains any columns.' % field)
+
+        return attr.property.columns
+
     def init_search(self):
         """
             Initialize search. Returns `True` if search is supported for this
@@ -322,23 +346,10 @@ class ModelView(BaseModelView):
         """
         if self.searchable_columns:
             self._search_fields = []
-            self._search_joins = []
             self._search_joins_names = set()
 
             for p in self.searchable_columns:
-                # If item is a stirng, resolve it as an attribute
-                if isinstance(p, basestring):
-                    attr = getattr(self.model, p, None)
-                else:
-                    attr = p
-
-                # Only column searches are supported
-                if (not attr or
-                    not hasattr(attr, 'property') or
-                    not hasattr(attr.property, 'columns')):
-                    raise Exception('Invalid searchable column "%s"' % p)
-
-                for column in attr.property.columns:
+                for column in self._get_columns_for_field(p):
                     column_type = type(column.type).__name__
 
                     if not self.is_text_column_type(column_type):
@@ -349,7 +360,6 @@ class ModelView(BaseModelView):
 
                     # If it belongs to different table - add a join
                     if column.table != self.model.__table__:
-                        self._search_joins.append(column.table)
                         self._search_joins_names.add(column.table.name)
 
         return bool(self.searchable_columns)
@@ -362,6 +372,31 @@ class ModelView(BaseModelView):
         """
         return (name == 'String' or name == 'Unicode' or
                 name == 'Text' or name == 'UnicodeText')
+
+    def scaffold_filters(self, name):
+        columns = self._get_columns_for_field(name)
+
+        if len(columns) > 1:
+            raise Exception('Can not filter more than on one column for %s' % name)
+
+        column = columns[0]
+
+        if not isinstance(name, basestring):
+            visible_name = self.get_column_name(name.property.key)
+        else:
+            visible_name = self.get_column_name(name)
+
+        type_name = type(column.type).__name__
+        flt = self.filter_converter.convert(type_name,
+                                            column,
+                                            visible_name)
+
+        if flt:
+            # If there's relation to other table, do it
+            if column.table != self.model.__table__:
+                self._filter_joins_names.add(column.table.name)
+
+        return flt
 
     def scaffold_form(self):
         """
@@ -395,7 +430,7 @@ class ModelView(BaseModelView):
         return joined
 
     # Database-related API
-    def get_list(self, page, sort_column, sort_desc, search, execute=True):
+    def get_list(self, page, sort_column, sort_desc, search, filters, execute=True):
         """
             Return models from the database.
 
@@ -409,6 +444,8 @@ class ModelView(BaseModelView):
                 Search query
             `execute`
                 Execute query immediately? Default is `True`
+            `filters`
+                List of filter tuples
         """
 
         # Will contain names of joined tables to avoid duplicate joins
@@ -416,11 +453,11 @@ class ModelView(BaseModelView):
 
         query = self.session.query(self.model)
 
-        # Apply search before counting results
+        # Apply search criteria
         if self._search_supported and search:
             # Apply search-related joins
-            if self._search_joins:
-                query = query.join(*self._search_joins)
+            if self._search_joins_names:
+                query = query.join(*self._search_joins_names)
                 joins |= self._search_joins_names
 
             # Apply terms
@@ -430,15 +467,23 @@ class ModelView(BaseModelView):
                 if not term:
                     continue
 
-                if term.startswith('^'):
-                    stmt = '%s%%' % term[1:]
-                elif term.startswith('='):
-                    stmt = term[1:]
-                else:
-                    stmt = '%%%s%%' % term
-
+                stmt = tools.parse_like_term(term)
                 filter_stmt = [c.ilike(stmt) for c in self._search_fields]
                 query = query.filter(or_(*filter_stmt))
+
+        # Apply filters
+        if self._filters:
+            # Apply search-related joins
+            if self._filter_joins_names:
+                new_joins = self._filter_joins_names - joins
+
+                if new_joins:
+                    query = query.join(*new_joins)
+                    joins |= self._search_joins_names
+
+            # Apply filters
+            for flt, value in filters:
+                query = self._filters[flt].apply(query, value)
 
         # Calculate number of rows
         count = query.count()

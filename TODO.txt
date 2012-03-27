@@ -3,9 +3,9 @@
     - Calendar - add validation for time without seconds (automatically add seconds)
 - Model Admin
     - Ability to sort by fields that are not visible?
-    - Exclude for list columns
-    - Exclude for form fields
     - List display callables
+    - Search
+        - Rename init_search
     - Built-in filtering support
         - Configurable operations (=, >, <, etc)
         - Callable operations
@@ -20,5 +20,6 @@
     - Header title
     - Mass-delete functionality
     - File size restriction
+- Localization
 - Unit tests
 - Documentation

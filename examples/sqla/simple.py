@@ -3,6 +3,7 @@ from flaskext.sqlalchemy import SQLAlchemy
 
 from flask.ext import adminex, wtf
 from flask.ext.adminex.ext import sqlamodel
+from flask.ext.adminex.ext.sqlamodel import filters
 
 # Create application
 app = Flask(__name__)
@@ -61,6 +62,8 @@ class PostAdmin(sqlamodel.ModelView):
 
     searchable_columns = ('title', User.username)
 
+    column_filters = (User.username, 'title', 'date', filters.FilterLike(Post.title, 'Fixed Title', options=(('test1', 'Test 1'), ('test2', 'Test 2'))))
+
     # Pass arguments to WTForms. In this case, change label for text field to
     # be 'Big Text' and add required() validator.
     form_args = dict(
@@ -84,4 +87,4 @@ if __name__ == '__main__':
 
     # Start app
     app.debug = True
-    app.run()
+    app.run('0.0.0.0', 8000)

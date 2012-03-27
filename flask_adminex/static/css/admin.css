@@ -1,9 +1,10 @@
-/* Body */
+/* Global styles */
 body
 {
     padding-top: 50px;
 }
 
+/* Form customizations */
 form.icon {
     display: inline;
 }
@@ -18,4 +19,19 @@ form.icon button {
 
 a.icon {
     text-decoration: none;
+}
+
+/* Filters */
+.filter-row {
+    margin: 4px;
+}
+
+.filter-row a, .filter-row select {
+    margin-right: 4px;
+}
+
+.filter-row input
+{
+    margin-bottom: 0px;
+    width: 208px;
 }
