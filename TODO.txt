@@ -12,6 +12,7 @@
     - Paginator class
     - Custom CSS/JS in admin interface
 - SQLA Model Admin
+    - Do not rely on id as a primary key
     - Built-in filtering support
     - Many2Many support
         - Verify if it is working properly

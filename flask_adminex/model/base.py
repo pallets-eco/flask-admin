@@ -114,7 +114,12 @@ class BaseModelView(BaseView):
     """
         Collection of the column filters.
 
-        TBD: Doc
+        Can contain either field names or instances of :class:`flask.ext.admin.model.filters.BaseFilter` classes.
+
+        For example:
+
+            class MyModelView(BaseModelView):
+                column_filters = ('user', 'email')
     """
 
     form_columns = None
@@ -196,6 +201,12 @@ class BaseModelView(BaseView):
         """
             Refresh various cached variables.
         """
+        # Primary key
+        self._primary_key = self.scaffold_pk()
+
+        if self._primary_key is None:
+            raise Exception('Model %s does not have primary key.' % self.model.__name__)
+
         # List view
         self._list_columns = self.get_list_columns()
         self._sortable_columns = self.get_sortable_columns()
@@ -219,7 +230,17 @@ class BaseModelView(BaseView):
             self._filter_names = None
             self._filter_types = None
 
-    # Public API
+    # Primary key
+    def scaffold_pk(self):
+        """
+            Find model primary key name
+        """
+        raise NotImplemented()
+
+    def get_pk_value(self, model):
+        return getattr(model, self._primary_key)
+
+    # List view
     def scaffold_list_columns(self):
         """
             Return list of the model field names. Must be implemented in
@@ -308,6 +329,9 @@ class BaseModelView(BaseView):
         """
             Verify that provided filter object is valid.
 
+            Override in model backend implementation to verify if
+            provided filter type is allowed.
+
             `filter`
                 Filter object to verify.
         """
@@ -316,6 +340,9 @@ class BaseModelView(BaseView):
     def get_filters(self):
         """
             Return list of filter objects.
+
+            If your model backend implementation does not support filters,
+            override this method and return `None`.
         """
         if self.column_filters:
             collection = []
@@ -329,8 +356,6 @@ class BaseModelView(BaseView):
                         raise Exception('Unsupported filter type %s' % n)
                 else:
                     collection.append(n)
-
-            print collection
 
             return collection
         else:
@@ -504,8 +529,10 @@ class BaseModelView(BaseView):
                 value = request.args.get(param + 'v', None)
 
                 if idx >= 0 and idx < len(self._filters):
-                    if self._filters[idx].validate(value):
-                        filters.append((idx, value))
+                    flt = self._filters[idx]
+
+                    if flt.validate(value):
+                        filters.append((idx, flt.clean(value)))
         else:
             filters = None
 
@@ -610,6 +637,7 @@ class BaseModelView(BaseView):
                                sortable_columns=self._sortable_columns,
                                # Stuff
                                enumerate=enumerate,
+                               gey_pk_value=self.get_pk_value,
                                get_value=get_value,
                                return_url=self._get_url('.index_view',
                                                         page,

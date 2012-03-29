@@ -267,6 +267,15 @@ class ModelView(BaseModelView):
         return self.model._sa_class_manager.mapper.iterate_properties
 
     # Scaffolding
+    def scaffold_pk(self):
+        for p in self._get_model_iterator():
+            if hasattr(p, 'columns'):
+                for c in p.columns:
+                    if c.primary_key:
+                        return p.key
+
+        return None
+
     def scaffold_list_columns(self):
         """
             Return list of columns from the model.
