@@ -10,7 +10,10 @@ class BaseForm(wtf.Form):
         Customized form class.
     """
     def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
-        super(BaseForm, self).__init__(formdata, obj, prefix, **kwargs)
+        if formdata:
+            super(BaseForm, self).__init__(formdata, obj, prefix, **kwargs)
+        else:
+            super(BaseForm, self).__init__(obj=obj, prefix=prefix, **kwargs)
 
         self._obj = obj
 

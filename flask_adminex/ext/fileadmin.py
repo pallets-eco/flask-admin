@@ -36,18 +36,21 @@ class UploadForm(form.BaseForm):
         File upload form. Works with FileAdmin instance to check if it is allowed
         to upload file with given extension.
     """
-    upload = wtf.FileField('File to upload', validators=[wtf.file_required()])
+    upload = wtf.FileField('File to upload')
 
-    def __init__(self, form, admin):
+    def __init__(self, admin):
         self.admin = admin
 
-        super(UploadForm, self).__init__(form)
+        super(UploadForm, self).__init__()
 
     def validate_upload(self, field):
-        filename = field.file.filename
+        if not self.upload.has_file():
+            raise wtf.ValidationError('File required.')
+
+        filename = self.upload.data.filename
 
         if not self.admin.is_file_allowed(filename):
-            raise wtf.ValidationError('Invalid file type')
+            raise wtf.ValidationError('Invalid file type.')
 
 
 class FileAdmin(BaseView):
@@ -331,17 +334,17 @@ class FileAdmin(BaseView):
             flash('File uploading is disabled.', 'error')
             return redirect(self._get_dir_url('.index', path))
 
-        form = UploadForm(request.form, self)
+        form = UploadForm(self)
         if form.validate_on_submit():
             filename = op.join(directory,
-                               secure_filename(form.upload.file.filename))
+                               secure_filename(form.upload.data.filename))
 
             if op.exists(filename):
-                flash('File "%s" already exists.' % form.upload.file.filename,
+                flash('File "%s" already exists.' % form.upload.data.filename,
                       'error')
             else:
                 try:
-                    self.save_file(filename, form.upload.file)
+                    self.save_file(filename, form.upload.data)
                     return redirect(self._get_dir_url('.index', path))
                 except Exception, ex:
                     flash('Failed to save file: %s' % ex)
