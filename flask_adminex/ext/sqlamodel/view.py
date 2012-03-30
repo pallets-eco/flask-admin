@@ -221,9 +221,28 @@ class ModelView(BaseModelView):
           For example, if you entered *=ZZZ*, *ILIKE 'ZZZ'* statement will be used.
     """
 
+    column_filters = None
+    """
+        Collection of the column filters.
+
+        Can contain either field names or instances of :class:`flask.ext.adminex.ext.sqlamodel.filters.BaseFilter` classes.
+
+        For example::
+
+            class MyModelView(BaseModelView):
+                column_filters = ('user', 'email')
+
+        or::
+
+            class MyModelView(BaseModelView):
+                column_filters = (BooleanEqualFilter(User.name, 'Name'))
+    """
+
     filter_converter = filters.FilterConverter()
     """
-        TBD:
+        Field to filter converter.
+
+        Override this attribute to use non-default converter.
     """
 
     def __init__(self, model, session,
@@ -406,6 +425,16 @@ class ModelView(BaseModelView):
                 self._filter_joins_names.add(column.table.name)
 
         return flt
+
+    def is_valid_filter(self, filter):
+        """
+            Verify that provided filter object is derived from the
+            SQLAlchemy-compatible filter class.
+
+            `filter`
+                Filter object to verify.
+        """
+        return isinstance(filter, filters.BaseSQLAFilter)
 
     def scaffold_form(self):
         """

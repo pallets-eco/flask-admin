@@ -114,7 +114,7 @@ class BaseModelView(BaseView):
     """
         Collection of the column filters.
 
-        Can contain either field names or instances of :class:`flask.ext.admin.model.filters.BaseFilter` classes.
+        Can contain either field names or instances of :class:`flask.ext.adminex.model.filters.BaseFilter` classes.
 
         For example:
 
@@ -316,7 +316,7 @@ class BaseModelView(BaseView):
         """
         return False
 
-    def scaffold_filter(self, name):
+    def scaffold_filters(self, name):
         """
             Generate filter object for the given name
 
@@ -637,7 +637,7 @@ class BaseModelView(BaseView):
                                sortable_columns=self._sortable_columns,
                                # Stuff
                                enumerate=enumerate,
-                               gey_pk_value=self.get_pk_value,
+                               get_pk_value=self.get_pk_value,
                                get_value=get_value,
                                return_url=self._get_url('.index_view',
                                                         page,

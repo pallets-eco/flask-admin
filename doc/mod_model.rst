@@ -25,9 +25,12 @@
     .. autoattribute:: BaseModelView.list_columns
     .. autoattribute:: BaseModelView.excluded_list_columns
     .. autoattribute:: BaseModelView.rename_columns
+
     .. autoattribute:: BaseModelView.sortable_columns
 
     .. autoattribute:: BaseModelView.searchable_columns
+
+    .. autoattribute:: BaseModelView.column_filters
 
     .. autoattribute:: BaseModelView.form_columns
     .. autoattribute:: BaseModelView.excluded_form_columns
@@ -43,9 +46,11 @@
     Scaffolding
     -----------
 
+    .. automethod:: BaseModelView.scaffold_pk
     .. automethod:: BaseModelView.scaffold_list_columns
     .. automethod:: BaseModelView.scaffold_sortable_columns
     .. automethod:: BaseModelView.scaffold_form
+    .. automethod:: BaseModelView.scaffold_filters
 
     Configuration
     -------------
@@ -57,6 +62,9 @@
     .. automethod:: BaseModelView.get_edit_form
 
     .. automethod:: BaseModelView.init_search
+
+    .. automethod:: BaseModelView.get_filters
+    .. automethod:: BaseModelView.is_valid_filter
 
     Data
     ----

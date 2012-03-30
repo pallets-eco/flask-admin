@@ -3,7 +3,22 @@ from flask.ext.adminex.ext.sqlamodel import tools
 
 
 class BaseSQLAFilter(filters.BaseFilter):
+    """
+        Base SQLAlchemy filter.
+    """
     def __init__(self, column, name, options=None, data_type=None):
+        """
+            Constructor.
+
+            `column`
+                Model field
+            `name`
+                Display name
+            `options`
+                Fixed set of options
+            `data_type`
+                Client data type
+        """
         super(BaseSQLAFilter, self).__init__(name, options, data_type)
 
         self.column = column

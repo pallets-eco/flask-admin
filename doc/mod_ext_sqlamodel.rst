@@ -29,6 +29,8 @@
 
     .. autoattribute:: ModelView.searchable_columns
 
+    .. autoattribute:: ModelView.column_filters
+
     .. autoattribute:: BaseModelView.form_columns
     .. autoattribute:: BaseModelView.excluded_form_columns
     .. autoattribute:: BaseModelView.form_args
@@ -53,6 +55,12 @@
     .. automethod:: ModelView.scaffold_list_columns
     .. automethod:: ModelView.scaffold_sortable_columns
     .. automethod:: ModelView.scaffold_form
+
+    .. automethod:: ModelView.init_search
+
+    .. automethod:: ModelView.scaffold_filters
+
+    .. autoattribute:: ModelView.filter_converter
 
     Configuration
     -------------
