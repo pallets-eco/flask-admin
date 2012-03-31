@@ -288,7 +288,7 @@ class Admin(object):
         self.url = url
 
         if index_view is None:
-            index_view = AdminIndexView()
+            index_view = AdminIndexView(url=self.url)
 
         self.app = app
         self.index_view = index_view
