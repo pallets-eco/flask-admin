@@ -17,6 +17,9 @@ setup(
         'Flask>=0.7',
         'Flask-WTF>=0.6',
     ],
+    setup_required=[
+        'nose>=1.0'
+    ],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
