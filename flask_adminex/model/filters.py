@@ -110,7 +110,6 @@ def convert(*args):
         See :mod:`flask.ext.adminex.ext.sqlamodel.filters` for usage example.
     """
     def _inner(func):
-        print args
         func._converter_for = args
         return func
     return _inner

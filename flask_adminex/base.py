@@ -64,10 +64,6 @@ class AdminViewMeta(type):
                 # Wrap views
                 setattr(cls, p, _wrap_view(attr))
 
-        # Default view
-        if cls._default_view is None and cls._urls:
-            raise Exception('Missing default view for the admin view %s' % classname)
-
 
 class BaseView(object):
     """
@@ -110,6 +106,10 @@ class BaseView(object):
         # Initialized from create_blueprint
         self.admin = None
         self.blueprint = None
+
+        # Default view
+        if self._default_view is None:
+            raise Exception('Attempted to instantiate admin view %s without defailt view' % self.__class__.__name__)
 
     def create_blueprint(self, admin):
         """
@@ -156,7 +156,7 @@ class BaseView(object):
             `kwargs`
                 Template arguments
         """
-        # Store
+        # Store self as admin_view
         kwargs['admin_view'] = self
 
         return render_template(template, **kwargs)
@@ -291,6 +291,7 @@ class Admin(object):
             index_view = AdminIndexView()
 
         self.app = app
+        self.index_view = index_view
 
         # Add predefined index view
         self.add_view(index_view)
