@@ -621,5 +621,10 @@ class ModelView(BaseModelView):
             `model`
                 Model to delete
         """
-        self.session.delete(model)
-        self.session.commit()
+        try:
+            self.session.delete(model)
+            self.session.commit()
+            return True
+        except Exception, ex:
+            flash('Failed to delete model. ' + str(ex), 'error')
+            return False
