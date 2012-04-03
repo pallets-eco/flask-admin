@@ -23,15 +23,26 @@ class CustomModelView(ModelView):
 
 def create_models(db):
     class Model1(db.Model):
+        def __init__(self, test1=None, test2=None, test3=None, test4=None):
+            self.test1 = test1
+            self.test2 = test2
+            self.test3 = test3
+            self.test4 = test4
+
         id = db.Column(db.Integer, primary_key=True)
         test1 = db.Column(db.String(20))
         test2 = db.Column(db.Unicode(20))
         test3 = db.Column(db.Text)
         test4 = db.Column(db.UnicodeText)
 
+    class Model2(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        int_field = db.Column(db.Integer)
+        bool_field = db.Column(db.Boolean)
+
     db.create_all()
 
-    return Model1
+    return Model1, Model2
 
 
 def setup():
@@ -48,7 +59,7 @@ def setup():
 
 def test_model():
     app, db, admin = setup()
-    Model1 = create_models(db)
+    Model1, Model2 = create_models(db)
     db.create_all()
 
     view = CustomModelView(Model1, db.session)
@@ -131,7 +142,7 @@ def test_no_pk():
 def test_list_columns():
     app, db, admin = setup()
 
-    Model1 = create_models(db)
+    Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1, db.session,
                            list_columns=['test1', 'test3'],
@@ -151,7 +162,7 @@ def test_list_columns():
 def test_exclude_columns():
     app, db, admin = setup()
 
-    Model1 = create_models(db)
+    Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1, db.session,
                            excluded_list_columns=['test2', 'test4'])
@@ -159,11 +170,17 @@ def test_exclude_columns():
 
     eq_(view._list_columns, [('test1', 'Test1'), ('test3', 'Test3')])
 
+    client = app.test_client()
+
+    rv = client.get('/admin/model1view/')
+    ok_('Test1' in rv.data)
+    ok_('Test2' not in rv.data)
+
 
 def test_searchable_columns():
     app, db, admin = setup()
 
-    Model1 = create_models(db)
+    Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1, db.session,
                            searchable_columns=['test1', 'test2'])
@@ -176,3 +193,68 @@ def test_searchable_columns():
     eq_(view._search_fields[0].name, 'test1')
     eq_(view._search_fields[1].name, 'test2')
 
+    db.session.add(Model1('model1'))
+    db.session.add(Model1('model2'))
+    db.session.commit()
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model1view/?search=model1')
+    ok_('model1' in rv.data)
+    ok_('model2' not in rv.data)
+
+
+def test_column_filters():
+    app, db, admin = setup()
+
+    Model1, Model2 = create_models(db)
+
+    view = CustomModelView(Model1, db.session,
+                           column_filters=['test1'])
+    admin.add_view(view)
+
+    eq_(len(view._filters), 4)
+
+    eq_(view._filter_names, ['Test1 equals', 'Test1 not equal',
+                             'Test1 like', 'Test1 not like'])
+
+    db.session.add(Model1('model1'))
+    db.session.add(Model1('model2'))
+    db.session.add(Model1('model3'))
+    db.session.add(Model1('model4'))
+    db.session.commit()
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model1view/?flt0=0&flt0v=model1')
+    eq_(rv.status_code, 200)
+    ok_('model1' in rv.data)
+    ok_('model2' not in rv.data)
+
+    rv = client.get('/admin/model1view/?flt0=5')
+    eq_(rv.status_code, 200)
+    ok_('model1' in rv.data)
+    ok_('model2' in rv.data)
+
+    # Test different filter types
+    view = CustomModelView(Model2, db.session,
+                           column_filters=['int_field'])
+    admin.add_view(view)
+
+    eq_(view._filter_names, ['Int Field equals',
+                             'Int Field not equal',
+                             'Int Field greater than',
+                             'Int Field smaller than'])
+
+
+def test_url_args():
+    app, db, admin = setup()
+
+    Model1, Model2 = create_models(db)
+
+
+def test_form():
+    # TODO: form_columns
+    # TODO: excluded_form_columns
+    # TODO: form_args
+    pass
