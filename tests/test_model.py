@@ -1,4 +1,4 @@
-from nose.tools import eq_, ok_
+from nose.tools import eq_, ok_, raises
 
 from flask import Flask
 from flask.helpers import get_flashed_messages
@@ -21,6 +21,12 @@ class Form(wtf.Form):
     col1 = wtf.TextField()
     col2 = wtf.TextField()
     col3 = wtf.TextField()
+
+
+class SimpleFilter(filters.BaseFilter):
+    def apply(self, query):
+        query._applied = True
+        return query
 
 
 class MockModelView(base.BaseModelView):
@@ -57,8 +63,8 @@ class MockModelView(base.BaseModelView):
     def init_search(self):
         return bool(self.searchable_columns)
 
-    def scaffold_filters(self):
-        return None
+    def scaffold_filters(self, name):
+        return [SimpleFilter(name)]
 
     def scaffold_sortable_columns(self):
         return ['col1', 'col2', 'col3']
@@ -189,6 +195,14 @@ def test_permissions():
     eq_(rv.status_code, 302)
 
 
+@raises(Exception)
+def test_no_pk():
+    app, admin = setup()
+
+    view = MockModelView(Model, scaffold_pk=lambda: None)
+    admin.add_view(view)
+
+
 def test_templates():
     app, admin = setup()
 
@@ -260,3 +274,27 @@ def test_searchable_columns():
     admin.add_view(view)
 
     eq_(view._search_supported, True)
+
+    # TODO: Make calls with search
+
+
+def test_column_filters():
+    app, admin = setup()
+
+    view = MockModelView(Model, column_filters=['col1', 'col2'])
+    admin.add_view(view)
+
+    eq_(len(view._filters), 2)
+    eq_(view._filters[0].name, 'col1')
+    eq_(view._filters[1].name, 'col2')
+
+    eq_(view._filter_names, ['col1', 'col2'])
+
+    # TODO: Make calls with filters
+
+
+def test_form():
+    # TODO: form_columns
+    # TODO: excluded_form_columns
+    # TODO: form_args
+    pass
