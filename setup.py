@@ -1,3 +1,6 @@
+# Fix for older setuptools
+import multiprocessing, logging
+
 from setuptools import setup, find_packages
 
 setup(
@@ -17,7 +20,7 @@ setup(
         'Flask>=0.7',
         'Flask-WTF>=0.6',
     ],
-    setup_required=[
+    tests_require=[
         'nose>=1.0'
     ],
     classifiers=[
@@ -28,5 +31,6 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Topic :: Software Development :: Libraries :: Python Modules'
-    ]
+    ],
+    test_suite='nose.collector'
 )
