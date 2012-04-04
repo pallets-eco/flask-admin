@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='Flask-AdminEx',
@@ -9,7 +9,7 @@ setup(
     author_email='serge.koval+github@gmail.com',
     description='Simple and extensible admin interface framework for Flask',
     long_description=__doc__,
-    packages=['flask_adminex', 'flask_adminex.model', 'flask_adminex.ext', 'flask_adminex.ext.sqlamodel'],
+    packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
     platforms='any',
