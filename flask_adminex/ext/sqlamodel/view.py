@@ -1,3 +1,4 @@
+
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import subqueryload
 from sqlalchemy.sql.expression import desc
@@ -280,10 +281,10 @@ class ModelView(BaseModelView):
         if attr is None:
             raise Exception('Failed to find field for filter: %s' % name)
 
-        if hasattr(attr, '_sa_class_manager'):
+        if hasattr(attr, 'property') and hasattr(attr.property, 'direction'):
             filters = []
 
-            for p in self._get_model_iterator(attr):
+            for p in self._get_model_iterator(attr.property.mapper.class_):
                 if hasattr(p, 'columns'):
                     # TODO: Check for multiple columns
                     column = p.columns[0]
@@ -291,7 +292,7 @@ class ModelView(BaseModelView):
                     if column.foreign_keys or column.primary_key:
                         continue
 
-                    visible_name = '%s / %s' % (self.get_column_name(attr.__table__.name),
+                    visible_name = '%s / %s' % (self.get_column_name(attr.prop.table.name),
                                                 self.get_column_name(p.key))
 
                     type_name = type(column.type).__name__

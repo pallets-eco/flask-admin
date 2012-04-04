@@ -62,7 +62,7 @@ class PostAdmin(sqlamodel.ModelView):
 
     searchable_columns = ('title', User.username)
 
-    column_filters = (User,
+    column_filters = ('user',
                       'title',
                       'date',
                       filters.FilterLike(Post.title, 'Fixed Title', options=(('test1', 'Test 1'), ('test2', 'Test 2'))))
