@@ -9,7 +9,7 @@ setup(
     author_email='serge.koval+github@gmail.com',
     description='Simple and extensible admin interface framework for Flask',
     long_description=__doc__,
-    packages=['flask_adminex', 'flask_adminex.ext'],
+    packages=['flask_adminex', 'flask_adminex.model', 'flask_adminex.ext', 'flask_adminex.ext.sqlamodel'],
     include_package_data=True,
     zip_safe=False,
     platforms='any',
