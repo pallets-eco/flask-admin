@@ -252,6 +252,50 @@ def test_url_args():
 
     Model1, Model2 = create_models(db)
 
+    view = CustomModelView(Model1, db.session,
+                           page_size=2,
+                           searchable_columns=['test1'],
+                           column_filters=['test1'])
+    admin.add_view(view)
+
+    db.session.add(Model1('data1'))
+    db.session.add(Model1('data2'))
+    db.session.add(Model1('data3'))
+    db.session.add(Model1('data4'))
+    db.session.commit()
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model1view/')
+    ok_('data1' in rv.data)
+    ok_('data3' not in rv.data)
+
+    # page
+    rv = client.get('/admin/model1view/?page=1')
+    ok_('data1' not in rv.data)
+    ok_('data3' in rv.data)
+
+    # sort
+    rv = client.get('/admin/model1view/?sort=0&desc=1')
+    ok_('data1' not in rv.data)
+    ok_('data3' in rv.data)
+    ok_('data4' in rv.data)
+
+    # search
+    rv = client.get('/admin/model1view/?search=data1')
+    ok_('data1' in rv.data)
+    ok_('data2' not in rv.data)
+
+    rv = client.get('/admin/model1view/?search=^data1')
+    ok_('data2' not in rv.data)
+
+    # like
+    rv = client.get('/admin/model1view/?flt0=0&flt0v=data1')
+    ok_('data1' in rv.data)
+
+    # not like
+    rv = client.get('/admin/model1view/?flt0=1&flt0v=data1')
+    ok_('data2' in rv.data)
 
 def test_form():
     # TODO: form_columns

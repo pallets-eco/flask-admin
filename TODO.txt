@@ -2,12 +2,14 @@
     - Pregenerate URLs for menu
     - Calendar - add validation for time without seconds (automatically add seconds)
 - Model Admin
+    - Rework filter UI
     - Ability to sort by fields that are not visible?
     - List display callables
     - Search
         - Rename init_search
     - Paginator class
     - Custom CSS/JS in admin interface
+    - Checkboxes and mass operations
 - SQLA Model Admin
     - Many2Many support
         - Verify if it is working properly
