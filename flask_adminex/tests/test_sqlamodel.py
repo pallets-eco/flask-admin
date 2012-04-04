@@ -215,8 +215,10 @@ def test_column_filters():
 
     eq_(len(view._filters), 4)
 
-    eq_(view._filter_names, ['Test1 equals', 'Test1 not equal',
-                             'Test1 like', 'Test1 not like'])
+    eq_(view._filter_dict, {'Test1': [(0, 'equals'),
+                                      (1, 'not equal'),
+                                      (2, 'like'),
+                                      (3, 'not like')]})
 
     db.session.add(Model1('model1'))
     db.session.add(Model1('model2'))
@@ -226,12 +228,12 @@ def test_column_filters():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/?flt0=0&flt0v=model1')
+    rv = client.get('/admin/model1view/?flt0_0=model1')
     eq_(rv.status_code, 200)
     ok_('model1' in rv.data)
     ok_('model2' not in rv.data)
 
-    rv = client.get('/admin/model1view/?flt0=5')
+    rv = client.get('/admin/model1view/?flt0_5=model1')
     eq_(rv.status_code, 200)
     ok_('model1' in rv.data)
     ok_('model2' in rv.data)
@@ -241,10 +243,8 @@ def test_column_filters():
                            column_filters=['int_field'])
     admin.add_view(view)
 
-    eq_(view._filter_names, ['Int Field equals',
-                             'Int Field not equal',
-                             'Int Field greater than',
-                             'Int Field smaller than'])
+    eq_(view._filter_dict, {'Int Field': [(0, 'equals'), (1, 'not equal'),
+                                          (2, 'greater than'), (3, 'smaller than')]})
 
 
 def test_url_args():
@@ -296,6 +296,7 @@ def test_url_args():
     # not like
     rv = client.get('/admin/model1view/?flt0=1&flt0v=data1')
     ok_('data2' in rv.data)
+
 
 def test_form():
     # TODO: form_columns

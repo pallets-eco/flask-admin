@@ -7,54 +7,84 @@
 {% endblock %}
 
 {% block body %}
-    {% if search_supported %}
-    <form method="GET" action="{{ return_url }}" class="well form-search">
-        {% if search %}
-            <a href="{{ clear_search_url }}">
-                <i class="icon-remove"></i>
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a href="#">List ({{ count }})</a>
+        </li>
+        {% if admin_view.can_create %}
+        <li>
+            <a href="{{ url_for('.create_view', url=return_url) }}">Create</a>
+        </li>
+        {% endif %}
+        
+        {% if filter_groups %}
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                Add Filter<b class="caret"></b>
             </a>
+            <ul class="dropdown-menu field-filters">
+                {% for k in filter_groups %}
+                <li>
+                    <a href="#" class="filter">{{ k[0] }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </li>
         {% endif %}
-        {% if sort_column is not none %}
-        <input type="hidden" name="sort" value="{{ sort_column }}"></input>
-        {% endif %}
-        {% if sort_desc %}
-        <input type="hidden" name="desc" value="{{ sort_desc }}"></input>
-        {% endif %}
-        <input type="text" name="search" value="{{ search or '' }}" class="span10 search-query"></input>
-        <button type="submit" class="btn">Search</button>
-    </form>
-    {% endif %}
 
-    {% if filter_names %}
-    <form id="filter_form" method="GET" action="{{ return_url }}" class="well">
-        <div id="filters">
-            {%- for idx, flt in enumerate(active_filters) -%}
-            <div id="fltdiv{{ idx }}" class="filter-row">
-                <a href="#" class="remove-filter"><i class="icon-remove"></i></a><select name="flt{{ idx }}" class="filter-op" data-role="chosen">
-                    {% for optidx, opt in enumerate(filter_names) -%}
-                    <option value="{{ optidx }}"{% if flt[0] == optidx %} selected="selected"{% endif %}>{{ opt }}</option>
-                    {%- endfor %}
-                </select>
-                {%- set data = filter_data.get(flt[0]) -%}
-                {%- if data -%}
-                <select name="flt{{ idx }}v" class="filter-val" data-role="chosen">
-                    {%- for opt in data %}
-                    <option value="{{ opt[0] }}"{% if flt[1] == opt[0] %} selected{% endif %}>{{ opt[1] }}</option>
-                    {%- endfor %}
-                </select>
-                {%- else -%}
-                    <input name="flt{{ idx }}v" type="text" value="{{ flt[1] or '' }}" class="filter-val"{% if flt[0] in filter_types %} data-role="{{ filter_types[flt[0]] }}"{% endif %}></input>
-                {%- endif -%}
+        {% if search_supported %}
+        <li>
+            <form method="GET" action="{{ return_url }}" class="search-form">
+                {% if sort_column is not none %}
+                <input type="hidden" name="sort" value="{{ sort_column }}"></input>
+                {% endif %}
+                {% if sort_desc %}
+                <input type="hidden" name="desc" value="{{ sort_desc }}"></input>
+                {% endif %}
+                <input type="text" name="search" value="{{ search or '' }}" class="search-query span2" placeholder="Search"></input>
+                {% if search %}
+                    <a href="{{ clear_search_url }}" class="clear">
+                        <i class="icon-remove"></i>
+                    </a>
+                {% endif %}
+            </form>
+        </li>
+        {% endif %}
+    </ul>
+    {% if filter_groups %}
+        <form id="filter_form" method="GET" action="{{ return_url }}">
+            <div class="pull-right">
+                <button type="submit" class="btn btn-primary" style="display: none">Apply</button>
+                {% if active_filters %}
+                <a href="{{ clear_search_url }}" class="btn">Reset Filters</a>
+                {% endif %}
             </div>
-            {%- endfor %}
-        </div>
 
-        {% if active_filters %}
-        <a href="{{ clear_search_url }}" class="btn">Reset Filters</a>
-        {% endif %}
-        <a id="add_filter" href="#" class="btn">Add Filter</a>
-        <button type="submit" class="btn" style="display: none">Apply</button>
-    </form>
+            <div class="filters">
+                {%- for i, flt in enumerate(active_filters) -%}
+                <div class="filter-row">
+                    {% set filter = admin_view._filters[flt[0]] %}
+                    <a href="#" class="btn remove-filter" title="Remove Filter">
+                        {{ filters[flt[0]] }}
+                    </a><select class="filter-op" data-role="chosen">
+                        {% for op in admin_view._filter_dict[filter.name] %}
+                        <option value="{{ op[0] }}"{% if flt[0] == op[0] %} selected="selected"{% endif %}>{{ op[1] }}</option>
+                        {% endfor %}
+                    </select>
+                    {%- set data = filter_data.get(flt[0]) -%}
+                    {%- if data -%}
+                    <select name="flt{{ i }}_{{ flt[0] }}" class="filter-val" data-role="chosen">
+                        {%- for d in data %}
+                        <option value="{{ d[0] }}"{% if flt[1] == d[0] %} selected{% endif %}>{{ d[1] }}</option>
+                        {%- endfor %}
+                    </select>
+                    {%- else -%}
+                        <input name="flt{{ i }}_{{ flt[0] }}" type="text" value="{{ flt[1] or '' }}" class="filter-val"{% if flt[0] in filter_types %} data-role="{{ filter_types[flt[0]] }}"{% endif %}></input>
+                    {%- endif -%}
+                </div>
+                {% endfor %}
+            </div>
+        </form>
     {% endif %}
 
     <table class="table table-striped table-bordered model-list">
@@ -108,19 +138,17 @@
         {% endfor %}
     </table>
     {{ lib.pager(page, num_pages, pager_url) }}
-    {% if admin_view.can_create %}
-    <a class="btn btn-primary btn-large" href="{{ url_for('.create_view', url=return_url) }}">Create New</a>
-    {% endif %}
 {% endblock %}
 
 {% block tail %}
     <script src="{{ url_for('admin.static', filename='js/bootstrap-datepicker.js') }}"></script>
     <script src="{{ url_for('admin.static', filename='js/form.js') }}"></script>
     <script src="{{ url_for('admin.static', filename='js/filters.js') }}"></script>
-    {% if filter_names is not none and filter_data is not none %}
+    {% if filter_groups is not none and filter_data is not none %}
     <script language="javascript">
-        var filter = new Filters('#filter_form',
-                                {{ filter_names|tojson|safe }},
+        var form = new AdminForm();
+        var filter = new AdminFilters('#filter_form', '.field-filters', form,
+                                {{ admin_view._filter_dict|tojson|safe }},
                                 {{ filter_data|tojson|safe }},
                                 {{ filter_types|tojson|safe }});
     </script>

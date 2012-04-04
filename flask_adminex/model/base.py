@@ -1,5 +1,3 @@
-from itertools import count
-
 from flask import request, url_for, redirect, flash
 
 from flask.ext.adminex.base import BaseView, expose
@@ -222,12 +220,24 @@ class BaseModelView(BaseView):
         self._filters = self.get_filters()
 
         if self._filters:
-            self._filter_names = [unicode(n) for n in self._filters]
+            self._filter_groups = []
+            self._filter_dict = dict()
+
+            for i, n in enumerate(self._filters):
+                if n.name not in self._filter_dict:
+                    group = []
+                    self._filter_dict[n.name] = group
+                    self._filter_groups.append((n.name, group))
+                else:
+                    group = self._filter_dict[n.name]
+
+                group.append((i, n.operation()))
+
             self._filter_types = dict((i, f.data_type)
                                       for i, f in enumerate(self._filters)
                                       if f.data_type)
         else:
-            self._filter_names = None
+            self._filter_groups = None
             self._filter_types = None
 
     # Primary key
@@ -518,21 +528,29 @@ class BaseModelView(BaseView):
 
         # Gather filters
         if self._filters:
-            filters = []
+            sfilters = []
 
-            for n in count():
-                param = 'flt%d' % n
-                if param not in request.args:
-                    break
+            for n in request.args:
+                if n.startswith('flt'):
+                    ofs = n.find('_')
+                    if ofs == -1:
+                        continue
 
-                idx = request.args.get(param, None, type=int)
-                value = request.args.get(param + 'v', None)
+                    try:
+                        pos = int(n[3:ofs])
+                        idx = int(n[ofs + 1:])
+                    except ValueError:
+                        continue
 
-                if idx >= 0 and idx < len(self._filters):
-                    flt = self._filters[idx]
+                    if idx >= 0 and idx < len(self._filters):
+                        flt = self._filters[idx]
 
-                    if flt.validate(value):
-                        filters.append((idx, flt.clean(value)))
+                        value = request.args[n]
+
+                        if flt.validate(value):
+                            sfilters.append((pos, (idx, flt.clean(value))))
+
+            filters = [v[1] for v in sorted(sfilters, key=lambda n: n[0])]
         else:
             filters = None
 
@@ -567,10 +585,8 @@ class BaseModelView(BaseView):
 
         if filters:
             for i, flt in enumerate(filters):
-                base = 'flt%d' % i
-
-                kwargs[base] = flt[0]
-                kwargs[base + 'v'] = flt[1]
+                key = 'flt%d_%d' % (i, flt[0])
+                kwargs[key] = flt[1]
 
         return url_for(view, **kwargs)
 
@@ -646,6 +662,7 @@ class BaseModelView(BaseView):
                                                         search,
                                                         filters),
                                # Pagination
+                               count=count,
                                pager_url=pager_url,
                                num_pages=num_pages,
                                page=page,
@@ -661,7 +678,8 @@ class BaseModelView(BaseView):
                                                               sort_desc),
                                search=search,
                                # Filters
-                               filter_names=self._filter_names,
+                               filters=self._filters,
+                               filter_groups=self._filter_groups,
                                filter_types=self._filter_types,
                                filter_data=filters_data,
                                active_filters=filters
@@ -672,10 +690,10 @@ class BaseModelView(BaseView):
         """
             Create model view
         """
-        return_url = request.args.get('url')
+        return_url = request.args.get('url') or url_for('.index_view')
 
         if not self.can_create:
-            return redirect(return_url or url_for('.index_view'))
+            return redirect(return_url)
 
         form = self.create_form(request.form)
 
@@ -685,7 +703,7 @@ class BaseModelView(BaseView):
                     flash('Model was successfully created.')
                     return redirect(url_for('.create_view', url=return_url))
                 else:
-                    return redirect(return_url or url_for('.index_view'))
+                    return redirect(return_url)
 
         return self.render(self.create_template,
                            form=form,
@@ -696,40 +714,40 @@ class BaseModelView(BaseView):
         """
             Edit model view
         """
-        return_url = request.args.get('url')
+        return_url = request.args.get('url') or url_for('.index_view')
 
         if not self.can_edit:
-            return redirect(return_url or url_for('.index_view'))
+            return redirect(return_url)
 
         model = self.get_one(id)
 
         if model is None:
-            return redirect(return_url or url_for('.index_view'))
+            return redirect(return_url)
 
         form = self.edit_form(request.form, model)
 
         if form.validate_on_submit():
             if self.update_model(form, model):
-                return redirect(return_url or url_for('.index_view'))
+                return redirect(return_url)
 
         return self.render(self.edit_template,
                                form=form,
-                               return_url=return_url or url_for('.index_view'))
+                               return_url=return_url)
 
     @expose('/delete/<int:id>/', methods=('POST',))
     def delete_view(self, id):
         """
             Delete model view. Only POST method is allowed.
         """
-        return_url = request.args.get('url')
+        return_url = request.args.get('url') or url_for('.index_view')
 
         # TODO: Use post
         if not self.can_delete:
-            return redirect(return_url or url_for('.index_view'))
+            return redirect(return_url)
 
         model = self.get_one(id)
 
         if model:
             self.delete_model(model)
 
-        return redirect(return_url or url_for('.index_view'))
+        return redirect(return_url)

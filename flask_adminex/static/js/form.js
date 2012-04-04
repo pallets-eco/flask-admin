@@ -1,4 +1,4 @@
-var adminForm = new function() {
+var AdminForm = function() {
   this.applyStyle = function(el, name) {
     switch (name) {
         case 'chosen':
@@ -21,4 +21,4 @@ var adminForm = new function() {
   $('[data-role=chosenblank]').chosen({allow_single_deselect: true});
   $('[data-role=datepicker]').datepicker();
   $('[data-role=datetimepicker]').datepicker({displayTime: true});
-}
+};

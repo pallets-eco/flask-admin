@@ -57,6 +57,14 @@ class BaseFilter(object):
         """
         raise NotImplemented()
 
+    def operation(self):
+        """
+            Return readable operation name.
+
+            For example: u'equals'
+        """
+        raise NotImplemented()
+
     def __unicode__(self):
         return self.name
 

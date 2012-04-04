@@ -1,12 +1,18 @@
 - Core
     - Pregenerate URLs for menu
     - Calendar - add validation for time without seconds (automatically add seconds)
+    - View Site button?
 - Model Admin
-    - Rework filter UI
+    - Rework model UI
+        - Number of records
+        - Tabs
+        - Filters in drop down instead of add button
     - Ability to sort by fields that are not visible?
     - List display callables
     - Search
         - Rename init_search
+    - Filters
+        - FK filters support
     - Paginator class
     - Custom CSS/JS in admin interface
     - Checkboxes and mass operations

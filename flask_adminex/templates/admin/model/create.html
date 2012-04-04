@@ -11,6 +11,14 @@
     <input name="_add_another" type="submit" class="btn btn-primary btn-large" value="Save and Add" />
   {% endmacro %}
 
+    <ul class="nav nav-tabs">
+        <li>
+            <a href="{{ return_url }}">List</a>
+        </li>
+        <li class="active">
+            <a href="#">Create</a>
+        </li>
+  	</ul>
   {{ lib.render_form(form, return_url, extra()) }}
 {% endblock %}
 

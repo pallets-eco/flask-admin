@@ -1,108 +1,94 @@
-var Filters = function(element, operations, options, types) {
+var AdminFilters = function(element, filters_element, adminForm, operations, options, types) {
     var $root = $(element)
-    var $container = $('#filters');
-    var count = $('#filters>div', $root).length;
+    var $container = $('.filters', $root);
+    var lastCount = 0;
 
-    function appendValueControl(element, id, optionId) {
-        var field;
-
-        // Conditionally generate select or textbox
-        if (optionId in options) {
-            field = $('<select class="filter-val" />').attr('name', 'flt' + id + 'v');
-            $(options[optionId]).each(function() {
-                field.append($('<option/>').val(this[0]).text(this[1]));
-            });
-        } else
-        {
-            field = $('<input type="text" class="filter-val" />').attr('name', 'flt' + id + 'v');
-        }
-
-        $(element).append(field);
-
-        if (optionId in options)
-            field.chosen();
-
-        if (optionId in types) {
-            field.attr('data-role', types[optionId]);
-            adminForm.applyStyle(field, types[optionId]);
-        }
-    }
-
-    function addFilter() {
-        var node = $('<div class="filter-row" />').attr('id', 'fltdiv' + count).appendTo($container);
-
-        $('<a href="#" class="remove-filter" />')
-            .append('<i class="icon-remove"/>')
-            .click(removeFilter)
-            .appendTo(node);
-
-        var operation = $('<select class="filter-op" />')
-                .attr('name', 'flt' + count)
-                .change(changeOperation)
-                .appendTo(node);
-
-        var index = 0;
-        $(operations).each(function() {
-            operation.append($('<option/>').val(index).text(this.toString()));
-            index++;
-        });
-        operation.chosen();
-
-        appendValueControl(node, count, 0);
-
-        count += 1;
-
-        $('button', $root).show();
-
-        return false;
-    }
-
-    function removeFilter() {
-        var row = $(this).parent();
-        var idx = parseInt(row.attr('id').substr(6));
-
-        // Remove row
-        row.remove();
-
-        // Renumber any rows that are after
-        for (var i = idx + 1; i < count; ++i) {
-            row = $('#fltdiv' + i);
-            row.attr('id', 'fltdiv' + (i - 1));
-
-            $('.filter-op', row).attr('name', 'flt' + (i - 1));
-            $('.filter-val', row).attr('name', 'flt' + (i - 1) + 'v');
-        }
-
-        count -= 1;
-
-        $('button', $root).show();
-
-        return false;
+    function getCount(name) {
+        var idx = name.indexOf('_');
+        return parseInt(name.substr(3, idx - 3));
     }
 
     function changeOperation() {
-        var row = $(this).parent();
-        var rowIdx = parseInt(row.attr('id').substr(6));
-
-        // Get old value field
-        var oldValue = $('.filter-val', row);
-        var oldValueId = oldValue.attr('id');
-
-        // Delete old value
-        oldValue.remove();
-        if (oldValueId != null)
-            $('div#' + oldValueId + '_chzn', row).remove();
-
-        var optId = $(this).val();
-        appendValueControl(row, rowIdx, optId);
-
+        var $parent = $(this).parent();
+        var $el = $('.filter-val', $parent);
+        var count = getCount($el.attr('name'));
+        $el.attr('name', 'flt' + count + '_' + $(this).val());
         $('button', $root).show();
-    };
+    }
 
-    $('#add_filter', $root).click(addFilter);
-    $('.remove-filter', $root).click(removeFilter);
-    $('.filter-op').change(changeOperation);
-    $('.filter-val').change(function() {
+    function removeFilter() {
+        $(this).parent().remove();
+        $('button', $root).show();
+    }
+
+    function addFilter(name, op) {
+        var $el = $('<div class="filter-row" />').appendTo($container);
+
+        $('<a href="#" class="btn remove-filter" title="Remove Filter" />')
+                .text(name)
+                .appendTo($el)
+                .click(removeFilter);
+
+        var $select = $('<select class="filter-op" />')
+                      .appendTo($el)
+                      .change(changeOperation);
+
+        $(op).each(function() {
+            $select.append($('<option/>').attr('value', this[0]).text(this[1]));
+        });
+
+        $select.chosen();
+
+        var optId = op[0][0];
+
+        var $field;
+
+        if (optId in options) {
+            $field = $('<select class="filter-val" />')
+                        .attr('name', 'flt' + lastCount + '_' + optId)
+                        .appendTo($el);
+            
+            $(options[optId]).each(function() {
+                $field.append($('<option/>')
+                    .val(this[0]).text(this[1]))
+                    .appendTo($el);
+            });
+
+            $field.chosen();
+        } else
+        {
+            $field = $('<input type="text" class="filter-val" />')
+                        .attr('name', 'flt' + lastCount + '_' + optId)
+                        .appendTo($el);
+        }
+
+        if (optId in types) {
+            $field.attr('data-role', types[optId]);
+            adminForm.applyStyle($field, types[optId]);
+        }
+
+        lastCount += 1;
+    }
+
+    $('a.filter', filters_element).click(function() {
+        var name = $(this).text().trim();
+        
+        addFilter(name, operations[name]);
+
         $('button', $root).show();
     });
+
+    $('.filter-op', $root).change(changeOperation);
+    $('.filter-val', $root).change(function() {
+        $('button', $root).show();
+    });
+    $('.remove-filter', $root).click(removeFilter);
+
+    $('.filter-val', $root).each(function() {
+        var count = getCount($(this).attr('name'));
+        if (count > lastCount)
+            lastCount = count;
+    });
+
+    lastCount += 1;
 };

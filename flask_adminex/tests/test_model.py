@@ -28,6 +28,9 @@ class SimpleFilter(filters.BaseFilter):
         query._applied = True
         return query
 
+    def operation(self):
+        return 'test'
+
 
 class MockModelView(base.BaseModelView):
     def __init__(self, model, name=None, category=None, endpoint=None, url=None,
@@ -288,7 +291,8 @@ def test_column_filters():
     eq_(view._filters[0].name, 'col1')
     eq_(view._filters[1].name, 'col2')
 
-    eq_(view._filter_names, ['col1', 'col2'])
+    eq_(view._filter_dict, {'col1': [(0, 'test')],
+                            'col2': [(1, 'test')]})
 
     # TODO: Make calls with filters
 

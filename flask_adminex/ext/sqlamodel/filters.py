@@ -29,16 +29,16 @@ class FilterEqual(BaseSQLAFilter):
     def apply(self, query, value):
         return query.filter(self.column == value)
 
-    def __unicode__(self):
-        return '%s equals' % self.name
+    def operation(self):
+        return 'equals'
 
 
 class FilterNotEqual(BaseSQLAFilter):
     def apply(self, query, value):
         return query.filter(self.column != value)
 
-    def __unicode__(self):
-        return '%s not equal' % self.name
+    def operation(self):
+        return 'not equal'
 
 
 class FilterLike(BaseSQLAFilter):
@@ -46,8 +46,8 @@ class FilterLike(BaseSQLAFilter):
         stmt = tools.parse_like_term(value)
         return query.filter(self.column.ilike(stmt))
 
-    def __unicode__(self):
-        return '%s like' % self.name
+    def operation(self):
+        return 'like'
 
 
 class FilterNotLike(BaseSQLAFilter):
@@ -55,24 +55,24 @@ class FilterNotLike(BaseSQLAFilter):
         stmt = tools.parse_like_term(value)
         return query.filter(~self.column.ilike(stmt))
 
-    def __unicode__(self):
-        return '%s not like' % self.name
+    def operation(self):
+        return 'not like'
 
 
 class FilterGreater(BaseSQLAFilter):
     def apply(self, query, value):
         return query.filter(self.column > value)
 
-    def __unicode__(self):
-        return '%s greater than' % self.name
+    def operation(self):
+        return 'greater than'
 
 
 class FilterSmaller(BaseSQLAFilter):
     def apply(self, query, value):
         return query.filter(self.column < value)
 
-    def __unicode__(self):
-        return '%s smaller than' % self.name
+    def operation(self):
+        return 'smaller than'
 
 
 # Customized type filters
