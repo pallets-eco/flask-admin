@@ -62,7 +62,10 @@ class PostAdmin(sqlamodel.ModelView):
 
     searchable_columns = ('title', User.username)
 
-    column_filters = (User.username, 'title', 'date', filters.FilterLike(Post.title, 'Fixed Title', options=(('test1', 'Test 1'), ('test2', 'Test 2'))))
+    column_filters = (User,
+                      'title',
+                      'date',
+                      filters.FilterLike(Post.title, 'Fixed Title', options=(('test1', 'Test 1'), ('test2', 'Test 2'))))
 
     # Pass arguments to WTForms. In this case, change label for text field to
     # be 'Big Text' and add required() validator.

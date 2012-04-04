@@ -146,11 +146,14 @@ class ModelView(BaseModelView):
             self._auto_joins = self.list_select_related
 
     # Internal API
-    def _get_model_iterator(self):
+    def _get_model_iterator(self, model=None):
         """
             Return property iterator for the model
         """
-        return self.model._sa_class_manager.mapper.iterate_properties
+        if model is None:
+            model = self.model
+
+        return model._sa_class_manager.mapper.iterate_properties
 
     # Scaffolding
     def scaffold_pk(self):
@@ -269,29 +272,62 @@ class ModelView(BaseModelView):
                 name == 'Text' or name == 'UnicodeText')
 
     def scaffold_filters(self, name):
-        columns = self._get_columns_for_field(name)
-
-        if len(columns) > 1:
-            raise Exception('Can not filter more than on one column for %s' % name)
-
-        column = columns[0]
-
-        if not isinstance(name, basestring):
-            visible_name = self.get_column_name(name.property.key)
+        if isinstance(name, basestring):
+            attr = getattr(self.model, name, None)
         else:
-            visible_name = self.get_column_name(name)
+            attr = name
 
-        type_name = type(column.type).__name__
-        flt = self.filter_converter.convert(type_name,
-                                            column,
-                                            visible_name)
+        if attr is None:
+            raise Exception('Failed to find field for filter: %s' % name)
 
-        if flt:
-            # If there's relation to other table, do it
-            if column.table != self.model.__table__:
-                self._filter_joins_names.add(column.table.name)
+        if hasattr(attr, '_sa_class_manager'):
+            filters = []
 
-        return flt
+            for p in self._get_model_iterator(attr):
+                if hasattr(p, 'columns'):
+                    # TODO: Check for multiple columns
+                    column = p.columns[0]
+
+                    if column.foreign_keys or column.primary_key:
+                        continue
+
+                    visible_name = '%s / %s' % (self.get_column_name(attr.__table__.name),
+                                                self.get_column_name(p.key))
+
+                    type_name = type(column.type).__name__
+                    flt = self.filter_converter.convert(type_name,
+                                                        column,
+                                                        visible_name)
+
+                    if flt:
+                        self._filter_joins_names.add(column.table.name)
+                        filters.extend(flt)
+
+            return filters
+        else:
+            columns = self._get_columns_for_field(attr)
+
+            if len(columns) > 1:
+                raise Exception('Can not filter more than on one column for %s' % name)
+
+            column = columns[0]
+
+            if not isinstance(name, basestring):
+                visible_name = self.get_column_name(name.property.key)
+            else:
+                visible_name = self.get_column_name(name)
+
+            type_name = type(column.type).__name__
+            flt = self.filter_converter.convert(type_name,
+                                                column,
+                                                visible_name)
+
+            if flt:
+                # If there's relation to other table, do it
+                if column.table != self.model.__table__:
+                    self._filter_joins_names.add(column.table.name)
+
+            return flt
 
     def is_valid_filter(self, filter):
         """
