@@ -81,7 +81,7 @@ class MockModelView(base.BaseModelView):
         return len(self.all_models), self.all_models.itervalues()
 
     def get_one(self, id):
-        return self.all_models.get(id)
+        return self.all_models.get(int(id))
 
     def create_model(self, form):
         model = Model(self.last_id)
@@ -136,7 +136,6 @@ def test_mockview():
     # Make model view requests
     rv = client.get('/admin/modelview/')
     eq_(rv.status_code, 200)
-    ok_('/admin/modelview/delete/1/' in rv.data)
 
     # Test model creation view
     rv = client.get('/admin/modelview/new/')
@@ -154,11 +153,11 @@ def test_mockview():
     eq_(model.col3, 'test3')
 
     # Try model edit view
-    rv = client.get('/admin/modelview/edit/3/')
+    rv = client.get('/admin/modelview/edit/?id=3')
     eq_(rv.status_code, 200)
     ok_('test1' in rv.data)
 
-    rv = client.post('/admin/modelview/edit/3/',
+    rv = client.post('/admin/modelview/edit/?id=3',
                      data=dict(col1='test!', col2='test@', col3='test#'))
     eq_(rv.status_code, 302)
     eq_(len(view.updated_models), 1)
@@ -168,11 +167,11 @@ def test_mockview():
     eq_(model.col2, 'test@')
     eq_(model.col3, 'test#')
 
-    rv = client.get('/admin/modelview/edit/4/')
+    rv = client.get('/admin/modelview/edit/?id=4')
     eq_(rv.status_code, 302)
 
     # Attempt to delete model
-    rv = client.post('/admin/modelview/delete/3/')
+    rv = client.post('/admin/modelview/delete/?id=3')
     eq_(rv.status_code, 302)
     eq_(rv.headers['location'], 'http://localhost/admin/modelview/')
 
@@ -190,11 +189,11 @@ def test_permissions():
     eq_(rv.status_code, 302)
 
     view.can_edit = False
-    rv = client.get('/admin/modelview/edit/1/')
+    rv = client.get('/admin/modelview/edit/?id=1')
     eq_(rv.status_code, 302)
 
     view.can_delete = False
-    rv = client.post('/admin/modelview/delete/1/')
+    rv = client.post('/admin/modelview/delete/?id=1')
     eq_(rv.status_code, 302)
 
 
@@ -224,7 +223,7 @@ def test_templates():
     rv = client.get('/admin/modelview/new/')
     eq_(rv.data, 'Success!')
 
-    rv = client.get('/admin/modelview/edit/1/')
+    rv = client.get('/admin/modelview/edit/?id=1')
     eq_(rv.data, 'Success!')
 
 

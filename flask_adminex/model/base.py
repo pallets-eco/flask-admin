@@ -709,14 +709,18 @@ class BaseModelView(BaseView):
                            form=form,
                            return_url=return_url)
 
-    @expose('/edit/<int:id>/', methods=('GET', 'POST'))
-    def edit_view(self, id):
+    @expose('/edit/', methods=('GET', 'POST'))
+    def edit_view(self):
         """
             Edit model view
         """
         return_url = request.args.get('url') or url_for('.index_view')
 
         if not self.can_edit:
+            return redirect(return_url)
+
+        id = request.args.get('id')
+        if id is None:
             return redirect(return_url)
 
         model = self.get_one(id)
@@ -734,8 +738,8 @@ class BaseModelView(BaseView):
                                form=form,
                                return_url=return_url)
 
-    @expose('/delete/<int:id>/', methods=('POST',))
-    def delete_view(self, id):
+    @expose('/delete/', methods=('POST',))
+    def delete_view(self):
         """
             Delete model view. Only POST method is allowed.
         """
@@ -743,6 +747,10 @@ class BaseModelView(BaseView):
 
         # TODO: Use post
         if not self.can_delete:
+            return redirect(return_url)
+
+        id = request.args.get('id')
+        if id is None:
             return redirect(return_url)
 
         model = self.get_one(id)

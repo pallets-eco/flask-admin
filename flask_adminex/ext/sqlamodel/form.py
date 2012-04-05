@@ -102,11 +102,28 @@ class AdminModelConverter(ModelConverter):
             if hasattr(prop, 'columns'):
                 column = prop.columns[0]
 
-                if column.foreign_keys or column.primary_key:
+                # Do not display foreign keys - use relations
+                if column.foreign_keys:
                     return None
 
+                unique = False
+
+                if column.primary_key:
+                    # By default, don't show primary keys either
+                    if self.view.form_columns is None:
+                        return None
+
+                    # If PK is not explicitly allowed, ignore it
+                    if prop.key not in self.view.form_columns:
+                        return None
+
+                    kwargs['validators'].append(Unique(self.view.session,
+                                                       model,
+                                                       column))
+                    unique = True
+
                 # If field is unique, validate it
-                if column.unique:
+                if column.unique and not unique:
                     kwargs['validators'].append(Unique(self.view.session,
                                                        model,
                                                        column))

@@ -8,7 +8,7 @@
     - Search
         - Rename init_search
     - Filters
-        - FK filters support
+        - Custom filters for date fields
     - Paginator class
     - Custom CSS/JS in admin interface
     - Checkboxes and mass operations
@@ -23,3 +23,4 @@
 - Localization
 - Unit tests
 - Documentation
+    - Add all new stuff

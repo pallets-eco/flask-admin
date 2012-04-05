@@ -108,7 +108,7 @@ def test_model():
     eq_(rv.status_code, 200)
     ok_('test1large' in rv.data)
 
-    url = '/admin/model1view/edit/%d/' % model.id
+    url = '/admin/model1view/edit/?id=%s' % model.id
     rv = client.get(url)
     eq_(rv.status_code, 200)
 
@@ -122,7 +122,7 @@ def test_model():
     eq_(model.test3, '')
     eq_(model.test4, '')
 
-    url = '/admin/model1view/delete/%d/' % model.id
+    url = '/admin/model1view/delete/?id=%s' % model.id
     rv = client.post(url)
     eq_(rv.status_code, 302)
     eq_(db.session.query(Model1).count(), 0)
@@ -296,6 +296,36 @@ def test_url_args():
     # not like
     rv = client.get('/admin/model1view/?flt0=1&flt0v=data1')
     ok_('data2' in rv.data)
+
+
+def test_non_int_pk():
+    app, db, admin = setup()
+
+    class Model(db.Model):
+        id = db.Column(db.String, primary_key=True)
+        test = db.Column(db.String)
+
+    db.create_all()
+
+    view = CustomModelView(Model, db.session, form_columns=['id', 'test'])
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/modelview/')
+    eq_(rv.status_code, 200)
+
+    rv = client.post('/admin/modelview/new/',
+                     data=dict(id='test1', test='test2'))
+    eq_(rv.status_code, 302)
+
+    rv = client.get('/admin/modelview/')
+    eq_(rv.status_code, 200)
+    ok_('test1' in rv.data)
+
+    rv = client.get('/admin/modelview/edit/?id=test1')
+    eq_(rv.status_code, 200)
+    ok_('test2' in rv.data)
 
 
 def test_form():
