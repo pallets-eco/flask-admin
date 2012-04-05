@@ -301,3 +301,16 @@ def test_form():
     # TODO: excluded_form_columns
     # TODO: form_args
     pass
+
+
+def test_custom_form():
+    app, admin = setup()
+
+    class TestForm(wtf.Form):
+        pass
+
+    view = MockModelView(Model, form=TestForm)
+    admin.add_view(view)
+
+    eq_(view._create_form_class, TestForm)
+    eq_(view._edit_form_class, TestForm)

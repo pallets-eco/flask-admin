@@ -120,6 +120,19 @@ class BaseModelView(BaseView):
                 column_filters = ('user', 'email')
     """
 
+    form = None
+    """
+        Form class. Override if you want to use custom form for your model.
+
+        For example:
+
+            class MyForm(wtf.Form):
+                pass
+
+            class MyModelView(BaseModelView):
+                form = MyForm
+    """
+
     form_columns = None
     """
         Collection of the model field names for the form. If set to `None` will
@@ -378,13 +391,27 @@ class BaseModelView(BaseView):
         """
         raise NotImplemented('Please implement scaffold_form method')
 
+    def get_form(self):
+        """
+            Get form class.
+
+            If ``self.form`` is set, will return it and will call
+            ``self.scaffold_form`` otherwise.
+
+            Override to implement customized behavior.
+        """
+        if self.form is not None:
+            return self.form
+
+        return self.scaffold_form()
+
     def get_create_form(self):
         """
             Create form class for model creation view.
 
             Override to implement customized behavior.
         """
-        return self.scaffold_form()
+        return self.get_form()
 
     def get_edit_form(self):
         """
@@ -392,7 +419,7 @@ class BaseModelView(BaseView):
 
             Override to implement customized behavior.
         """
-        return self.scaffold_form()
+        return self.get_form()
 
     def create_form(self, form, obj=None):
         """
