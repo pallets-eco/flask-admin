@@ -5,7 +5,8 @@
 - Model Admin
     - Ability to sort by fields that are not visible?
     - List display callables
-    - Fields
+    - Form Fields
+        - Override field class by field name
         - Verify how boolean field is rendered
     - Search
         - Rename init_search

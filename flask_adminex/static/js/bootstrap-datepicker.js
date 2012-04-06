@@ -258,7 +258,7 @@
 
     , getTimeString: function(s) {
         var time = $('input', this.$time).val();
-        return this.validateTime(time) ? time : '12:00:00';
+        return this.getTime(time);
     }
 
     , pad: function(s) {
@@ -289,6 +289,19 @@
 
     , validateTime: function(s) {
         return s.match(/^(\d{2,2}):(\d{2,2}):(\d{2,2})$/);
+    }
+
+    , getTime: function(s) {
+      if (this.validateTime(s)) {
+          return s;
+      } else {
+        // Time without seconds
+        if (s.match(/^(\d{2,2}):(\d{2,2})$/)) {
+          return s + ':00';
+        }
+      }
+
+      return '00:00:00';
     }
 
     , format: function(date) {
