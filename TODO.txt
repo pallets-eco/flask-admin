@@ -1,6 +1,4 @@
 - Core
-    - Pregenerate URLs for menu
-    - Calendar - add validation for time without seconds (automatically add seconds)
     - View Site button?
 - Model Admin
     - Ability to sort by fields that are not visible?
@@ -8,10 +6,8 @@
     - Form Fields
         - Override field class by field name
         - Verify how boolean field is rendered
-    - Search
-        - Rename init_search
     - Filters
-        - Custom filters for date fields
+        - Custom filters for date fields?
     - Paginator class
     - Custom CSS/JS in admin interface
     - Checkboxes and mass operations
@@ -25,5 +21,6 @@
     - File size restriction
 - Localization
 - Unit tests
+    - Form generation tests
 - Documentation
     - Add all new stuff

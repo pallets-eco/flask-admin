@@ -222,6 +222,7 @@ class MenuItem(object):
         self._view = view
         self._children = []
         self._children_urls = set()
+        self._cached_url = None
 
         self.url = None
         if view is not None:
@@ -235,8 +236,11 @@ class MenuItem(object):
         if self._view is None:
             return None
 
-        # TODO: Optimize me
-        return url_for('%s.%s' % (self._view.endpoint, self._view._default_view))
+        if self._cached_url:
+            return self._cached_url
+
+        self._cached_url = url_for('%s.%s' % (self._view.endpoint, self._view._default_view))
+        return self._cached_url
 
     def is_active(self, view):
         if view == self._view:
