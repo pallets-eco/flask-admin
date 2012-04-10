@@ -167,6 +167,16 @@ class BaseModelView(BaseView):
                 )
     """
 
+    form_overrides = None
+    """
+        Dictionary of form column overrides.
+
+        Example::
+
+            class MyModelView(BaseModelView):
+                form_overrides = dict(name=wtf.FileField)
+    """
+
     # Various settings
     page_size = 20
     """

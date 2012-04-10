@@ -8,8 +8,6 @@
         - Verify how boolean field is rendered
     - Filters
         - Custom filters for date fields?
-    - Paginator class
-    - Custom CSS/JS in admin interface
     - Checkboxes and mass operations
 - SQLA Model Admin
     - Many2Many support

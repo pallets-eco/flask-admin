@@ -58,6 +58,12 @@ class AdminModelConverter(ModelConverter):
 
         return None
 
+    def _get_field_override(self, name):
+        if self.view.form_overrides:
+            return self.view.form_overrides.get(name)
+
+        return None
+
     def convert(self, model, mapper, prop, field_args):
         kwargs = {
             'validators': [],
@@ -81,6 +87,11 @@ class AdminModelConverter(ModelConverter):
                 kwargs['validators'].append(validators.Optional())
             else:
                 kwargs['validators'].append(validators.Required())
+
+            # Override field type if necessary
+            override = self._get_field_override(prop.key)
+            if override:
+                return override(**kwargs)
 
             if prop.direction.name == 'MANYTOONE':
                 return QuerySelectField(widget=form.ChosenSelectWidget(),
@@ -133,6 +144,11 @@ class AdminModelConverter(ModelConverter):
 
             # Apply label
             kwargs['label'] = self._get_label(prop.key, kwargs)
+
+            # Override field type if necessary
+            override = self._get_field_override(prop.key)
+            if override:
+                return override(**kwargs)
 
             return super(AdminModelConverter, self).convert(model,
                                                             mapper,
