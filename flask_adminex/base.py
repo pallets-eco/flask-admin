@@ -3,6 +3,8 @@ from re import sub
 
 from flask import Blueprint, render_template, url_for, abort
 
+from flask.ext.adminex import babel
+
 
 def expose(url='/', methods=('GET',)):
     """
@@ -159,6 +161,11 @@ class BaseView(object):
         # Store self as admin_view
         kwargs['admin_view'] = self
 
+        # Provide i18n support even if flask-babel is not installed
+        # or enabled.
+        kwargs['_gettext'] = babel.gettext
+        kwargs['_ngettext'] = babel.ngettext
+
         return render_template(template, **kwargs)
 
     def _prettify_name(self, name):
@@ -259,9 +266,6 @@ class MenuItem(object):
 
     def get_children(self):
         return [c for c in self._children if c.is_accessible()]
-
-    def __repr__(self):
-        return 'MenuItem %s (%s)' % (self.name, repr(self._children))
 
 
 class Admin(object):

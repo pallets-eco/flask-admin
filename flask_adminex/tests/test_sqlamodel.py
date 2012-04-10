@@ -217,8 +217,8 @@ def test_column_filters():
 
     eq_(view._filter_dict, {'Test1': [(0, 'equals'),
                                       (1, 'not equal'),
-                                      (2, 'like'),
-                                      (3, 'not like')]})
+                                      (2, 'contains'),
+                                      (3, 'not contains')]})
 
     db.session.add(Model1('model1'))
     db.session.add(Model1('model2'))

@@ -4,6 +4,8 @@ import datetime
 from flask.ext import wtf
 from wtforms import fields, widgets
 
+from flask.ext.adminex.babel import gettext
+
 
 class BaseForm(wtf.Form):
     """
@@ -76,7 +78,7 @@ class TimeField(fields.Field):
                 except ValueError:
                     pass
 
-            raise ValueError('Invalid time format')
+            raise ValueError(gettext('Invalid time format'))
 
 
 class ChosenSelectWidget(widgets.Select):

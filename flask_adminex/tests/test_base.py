@@ -182,7 +182,6 @@ def test_submenu():
     eq_(admin._menu[1].is_accessible(), False)
 
     eq_(len(admin._menu[1].get_children()), 1)
-    ok_(repr(admin._menu[1]).startswith('MenuItem '))
 
 
 def test_delayed_init():

@@ -1,10 +1,10 @@
 {% extends 'admin/master.html' %}
-{% import 'admin/lib.html' as lib %}
+{% import 'admin/lib.html' as lib with context %}
 
 {% block body %}
     <ul class="breadcrumb">
         <li>
-            <a href="{{ get_dir_url('.index', path=None) }}">Root</a>
+            <a href="{{ get_dir_url('.index', path=None) }}">{{ _gettext('Root') }}</a>
         </li>
         {% for name, path in breadcrumbs[:-1] %}
         <li>
@@ -39,7 +39,7 @@
                         {% if name != '..' and admin_view.can_delete_dirs %}
                         <form class="icon" method="POST" action="{{ url_for('.delete') }}">
                             <input type="hidden" name="path" value="{{ path }}"></input>
-                            <button onclick="return confirm('Are you sure you want to delete \'{{ name }}\' recursively?')">
+                            <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
                                 <i class="icon-remove"></i>
                             </button>
                         </form>
@@ -47,7 +47,7 @@
                     {% else %}
                     <form class="icon" method="POST" action="{{ url_for('.delete') }}">
                         <input type="hidden" name="path" value="{{ path }}"></input>
-                        <button onclick="return confirm('Are you sure you want to delete \'{{ name }}\'?')">
+                        <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
                             <i class="icon-remove"></i>
                         </button>
                     </form>
@@ -72,9 +72,9 @@
         {% endfor %}
     </table>
     {% if admin_view.can_upload %}
-    <a class="btn btn-primary btn-large" href="{{ get_dir_url('.upload', path=dir_path) }}">Upload File</a>
+    <a class="btn btn-primary btn-large" href="{{ get_dir_url('.upload', path=dir_path) }}">{{ _gettext('Upload File') }}</a>
     {% endif %}
     {% if admin_view.can_mkdir %}
-    <a class="btn btn-primary btn-large" href="{{ get_dir_url('.mkdir', path=dir_path) }}">Create Directory</a>
+    <a class="btn btn-primary btn-large" href="{{ get_dir_url('.mkdir', path=dir_path) }}">{{ _gettext('Create Directory') }}</a>
     {% endif %}
 {% endblock %}

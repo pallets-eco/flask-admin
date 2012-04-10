@@ -1,5 +1,5 @@
 {% extends 'admin/master.html' %}
-{% import 'admin/lib.html' as lib %}
+{% import 'admin/lib.html' as lib with context %}
 
 {% block head %}
     <link href="{{ url_for('admin.static', filename='chosen/chosen.css') }}" rel="stylesheet">
@@ -8,7 +8,7 @@
 
 {% block body %}
   {% macro extra() %}
-    <input name="_add_another" type="submit" class="btn btn-primary btn-large" value="Save and Add" />
+    <input name="_add_another" type="submit" class="btn btn-primary btn-large" value="{{ _gettext('Save and Add') }}" />
   {% endmacro %}
 
     <ul class="nav nav-tabs">
@@ -16,7 +16,7 @@
             <a href="{{ return_url }}">List</a>
         </li>
         <li class="active">
-            <a href="#">Create</a>
+            <a href="#">{{ _gettext('Create') }}</a>
         </li>
   	</ul>
   {{ lib.render_form(form, return_url, extra()) }}

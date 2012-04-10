@@ -1,5 +1,5 @@
 {% extends 'admin/master.html' %}
-{% import 'admin/lib.html' as lib %}
+{% import 'admin/lib.html' as lib with context %}
 
 {% block head %}
     <link href="{{ url_for('admin.static', filename='chosen/chosen.css') }}" rel="stylesheet">
@@ -9,18 +9,18 @@
 {% block body %}
     <ul class="nav nav-tabs">
         <li class="active">
-            <a href="#">List ({{ count }})</a>
+            <a href="#">{{ _gettext('List') }} ({{ count }})</a>
         </li>
         {% if admin_view.can_create %}
         <li>
-            <a href="{{ url_for('.create_view', url=return_url) }}">Create</a>
+            <a href="{{ url_for('.create_view', url=return_url) }}">{{ _gettext('Create') }}</a>
         </li>
         {% endif %}
-        
+
         {% if filter_groups %}
         <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                Add Filter<b class="caret"></b>
+                {{ _gettext('Add Filter') }}<b class="caret"></b>
             </a>
             <ul class="dropdown-menu field-filters">
                 {% for k in filter_groups %}
@@ -41,7 +41,7 @@
                 {% if sort_desc %}
                 <input type="hidden" name="desc" value="{{ sort_desc }}"></input>
                 {% endif %}
-                <input type="text" name="search" value="{{ search or '' }}" class="search-query span2" placeholder="Search"></input>
+                <input type="text" name="search" value="{{ search or '' }}" class="search-query span2" placeholder="{{ _gettext('Search') }}"></input>
                 {% if search %}
                     <a href="{{ clear_search_url }}" class="clear">
                         <i class="icon-remove"></i>
@@ -54,9 +54,9 @@
     {% if filter_groups %}
         <form id="filter_form" method="GET" action="{{ return_url }}">
             <div class="pull-right">
-                <button type="submit" class="btn btn-primary" style="display: none">Apply</button>
+                <button type="submit" class="btn btn-primary" style="display: none">{{ _gettext('Apply') }}</button>
                 {% if active_filters %}
-                <a href="{{ clear_search_url }}" class="btn">Reset Filters</a>
+                <a href="{{ clear_search_url }}" class="btn">{{ _gettext('Reset Filters') }}</a>
                 {% endif %}
             </div>
 
@@ -64,7 +64,7 @@
                 {%- for i, flt in enumerate(active_filters) -%}
                 <div class="filter-row">
                     {% set filter = admin_view._filters[flt[0]] %}
-                    <a href="#" class="btn remove-filter" title="Remove Filter">
+                    <a href="#" class="btn remove-filter" title="{{ _gettext('Remove Filter') }}">
                         {{ filters[flt[0]] }}
                     </a><select class="filter-op" data-role="chosen">
                         {% for op in admin_view._filter_dict[filter.name] %}
@@ -125,7 +125,7 @@
                 {%- endif -%}
                 {%- if admin_view.can_delete -%}
                 <form class="icon" method="POST" action="{{ url_for('.delete_view', id=get_pk_value(row), url=return_url) }}">
-                    <button onclick="return confirm('You sure you want to delete this item?')">
+                    <button onclick="return confirm('{{ _gettext('You sure you want to delete this item?') }}');">
                         <i class="icon-remove"></i>
                     </button>
                 </form>

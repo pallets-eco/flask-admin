@@ -1,5 +1,5 @@
 {% extends 'admin/master.html' %}
-{% import 'admin/lib.html' as lib %}
+{% import 'admin/lib.html' as lib with context %}
 
 {% block head %}
     <link href="{{ url_for('admin.static', filename='chosen/chosen.css') }}" rel="stylesheet">

@@ -7,11 +7,12 @@ import shutil
 
 from operator import itemgetter
 
-from flask import flash, url_for, redirect, abort, request
-
 from werkzeug import secure_filename
 
+from flask import flash, url_for, redirect, abort, request
+
 from flask.ext.adminex.base import BaseView, expose
+from flask.ext.adminex.babel import gettext, lazy_gettext
 from flask.ext.adminex import form
 from flask.ext import wtf
 
@@ -28,7 +29,7 @@ class NameForm(form.BaseForm):
 
     def validate_name(self, field):
         if not self.regexp.match(field.data):
-            raise wtf.ValidationError('Invalid directory name')
+            raise wtf.ValidationError(gettext('Invalid directory name'))
 
 
 class UploadForm(form.BaseForm):
@@ -36,7 +37,7 @@ class UploadForm(form.BaseForm):
         File upload form. Works with FileAdmin instance to check if it is allowed
         to upload file with given extension.
     """
-    upload = wtf.FileField('File to upload')
+    upload = wtf.FileField(lazy_gettext('File to upload'))
 
     def __init__(self, admin):
         self.admin = admin
@@ -45,12 +46,12 @@ class UploadForm(form.BaseForm):
 
     def validate_upload(self, field):
         if not self.upload.has_file():
-            raise wtf.ValidationError('File required.')
+            raise wtf.ValidationError(gettext('File required.'))
 
         filename = self.upload.data.filename
 
         if not self.admin.is_file_allowed(filename):
-            raise wtf.ValidationError('Invalid file type.')
+            raise wtf.ValidationError(gettext('Invalid file type.'))
 
 
 class FileAdmin(BaseView):
@@ -331,7 +332,7 @@ class FileAdmin(BaseView):
         base_path, directory, path = self._normalize_path(path)
 
         if not self.can_upload:
-            flash('File uploading is disabled.', 'error')
+            flash(gettext('File uploading is disabled.'), 'error')
             return redirect(self._get_dir_url('.index', path))
 
         form = UploadForm(self)
@@ -340,14 +341,14 @@ class FileAdmin(BaseView):
                                secure_filename(form.upload.data.filename))
 
             if op.exists(filename):
-                flash('File "%s" already exists.' % form.upload.data.filename,
+                flash(gettext('File "%(name)s" already exists.', name=form.upload.data.filename),
                       'error')
             else:
                 try:
                     self.save_file(filename, form.upload.data)
                     return redirect(self._get_dir_url('.index', path))
                 except Exception, ex:
-                    flash('Failed to save file: %s' % ex)
+                    flash(gettext('Failed to save file: %(error)s', error=ex))
 
         return self.render(self.upload_template, form=form)
 
@@ -366,7 +367,7 @@ class FileAdmin(BaseView):
         dir_url = self._get_dir_url('.index', path)
 
         if not self.can_mkdir:
-            flash('Directory creation is disabled.', 'error')
+            flash(gettext('Directory creation is disabled.'), 'error')
             return redirect(dir_url)
 
         form = NameForm(request.form)
@@ -376,7 +377,7 @@ class FileAdmin(BaseView):
                 os.mkdir(op.join(directory, form.name.data))
                 return redirect(dir_url)
             except Exception, ex:
-                flash('Failed to create directory: %s' % ex, 'error')
+                flash(gettext('Failed to create directory: %(error)s', ex), 'error')
 
         return self.render(self.mkdir_template,
                            form=form,
@@ -398,25 +399,25 @@ class FileAdmin(BaseView):
         return_url = self._get_dir_url('.index', op.dirname(path))
 
         if not self.can_delete:
-            flash('Deletion is disabled.')
+            flash(gettext('Deletion is disabled.'))
             return redirect(return_url)
 
         if op.isdir(full_path):
             if not self.can_delete_dirs:
-                flash('Directory deletion is disabled.')
+                flash(gettext('Directory deletion is disabled.'))
                 return redirect(return_url)
 
             try:
                 shutil.rmtree(full_path)
-                flash('Directory "%s" was successfully deleted.' % path)
+                flash(gettext('Directory "%s" was successfully deleted.' % path))
             except Exception, ex:
-                flash('Failed to delete directory: %s' % ex, 'error')
+                flash(gettext('Failed to delete directory: %(error)s', error=ex), 'error')
         else:
             try:
                 os.remove(full_path)
-                flash('File "%s" was successfully deleted.' % path)
+                flash(gettext('File "%(name)s" was successfully deleted.', name=path))
             except Exception, ex:
-                flash('Failed to delete file: %s' % ex, 'error')
+                flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
 
         return redirect(return_url)
 
@@ -435,11 +436,11 @@ class FileAdmin(BaseView):
         return_url = self._get_dir_url('.index', op.dirname(path))
 
         if not self.can_rename:
-            flash('Renaming is disabled.')
+            flash(gettext('Renaming is disabled.'))
             return redirect(return_url)
 
         if not op.exists(full_path):
-            flash('Path does not exist.')
+            flash(gettext('Path does not exist.'))
             return redirect(return_url)
 
         form = NameForm(request.form, name=op.basename(path))
@@ -449,11 +450,11 @@ class FileAdmin(BaseView):
                 filename = secure_filename(form.name.data)
 
                 os.rename(full_path, op.join(dir_base, filename))
-                flash('Successfully renamed "%s" to "%s"' % (
-                        op.basename(path),
-                        filename))
+                flash(gettext('Successfully renamed "%(src)s" to "%(dst)s"',
+                      src=op.basename(path),
+                      dst=filename))
             except Exception, ex:
-                flash('Failed to rename: %s' % ex, 'error')
+                flash(gettext('Failed to rename: %(error)s', error=ex), 'error')
 
             return redirect(return_url)
 

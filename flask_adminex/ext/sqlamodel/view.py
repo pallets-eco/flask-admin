@@ -6,6 +6,7 @@ from sqlalchemy import or_
 from wtforms.ext.sqlalchemy.orm import model_form
 
 from flask import flash
+from flask.ext.babel import gettext
 
 from flask.ext.adminex.form import BaseForm
 from flask.ext.adminex.model import BaseModelView
@@ -500,7 +501,7 @@ class ModelView(BaseModelView):
             self.session.commit()
             return True
         except Exception, ex:
-            flash('Failed to create model. ' + str(ex), 'error')
+            flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
             return False
 
     def update_model(self, form, model):
@@ -515,7 +516,7 @@ class ModelView(BaseModelView):
             self.session.commit()
             return True
         except Exception, ex:
-            flash('Failed to update model. ' + str(ex), 'error')
+            flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')
             return False
 
     def delete_model(self, model):
@@ -530,5 +531,5 @@ class ModelView(BaseModelView):
             self.session.commit()
             return True
         except Exception, ex:
-            flash('Failed to delete model. ' + str(ex), 'error')
+            flash(gettext('Failed to delete model. %(error)s', error=str(ex)), 'error')
             return False

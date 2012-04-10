@@ -1,3 +1,5 @@
+from flask.ext.babel import gettext
+
 from flask.ext.adminex.model import filters
 from flask.ext.adminex.ext.sqlamodel import tools
 
@@ -30,7 +32,7 @@ class FilterEqual(BaseSQLAFilter):
         return query.filter(self.column == value)
 
     def operation(self):
-        return 'equals'
+        return gettext('equals')
 
 
 class FilterNotEqual(BaseSQLAFilter):
@@ -38,7 +40,7 @@ class FilterNotEqual(BaseSQLAFilter):
         return query.filter(self.column != value)
 
     def operation(self):
-        return 'not equal'
+        return gettext('not equal')
 
 
 class FilterLike(BaseSQLAFilter):
@@ -47,7 +49,7 @@ class FilterLike(BaseSQLAFilter):
         return query.filter(self.column.ilike(stmt))
 
     def operation(self):
-        return 'like'
+        return gettext('contains')
 
 
 class FilterNotLike(BaseSQLAFilter):
@@ -56,7 +58,7 @@ class FilterNotLike(BaseSQLAFilter):
         return query.filter(~self.column.ilike(stmt))
 
     def operation(self):
-        return 'not like'
+        return gettext('not contains')
 
 
 class FilterGreater(BaseSQLAFilter):
@@ -64,7 +66,7 @@ class FilterGreater(BaseSQLAFilter):
         return query.filter(self.column > value)
 
     def operation(self):
-        return 'greater than'
+        return gettext('greater than')
 
 
 class FilterSmaller(BaseSQLAFilter):
@@ -72,7 +74,7 @@ class FilterSmaller(BaseSQLAFilter):
         return query.filter(self.column < value)
 
     def operation(self):
-        return 'smaller than'
+        return gettext('smaller than')
 
 
 # Customized type filters

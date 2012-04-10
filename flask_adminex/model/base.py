@@ -1,5 +1,7 @@
 from flask import request, url_for, redirect, flash
 
+from flask.ext.babel import gettext
+
 from flask.ext.adminex.base import BaseView, expose
 from flask.ext.adminex.model import filters
 
@@ -737,7 +739,7 @@ class BaseModelView(BaseView):
         if form.validate_on_submit():
             if self.create_model(form):
                 if '_add_another' in request.form:
-                    flash('Model was successfully created.')
+                    flash(gettext('Model was successfully created.'))
                     return redirect(url_for('.create_view', url=return_url))
                 else:
                     return redirect(return_url)

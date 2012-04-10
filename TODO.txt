@@ -1,14 +1,13 @@
 - Core
     - View Site button?
+- Localization
 - Model Admin
-    - Ability to sort by fields that are not visible?
-    - List display callables
-    - Form Fields
-        - Override field class by field name
-        - Verify how boolean field is rendered
+    - Reduce number of parameters passed to list view
+    - Checkboxes and mass operations
     - Filters
         - Custom filters for date fields?
-    - Checkboxes and mass operations
+    - Ability to sort by fields that are not visible?
+    - List display callables?
 - SQLA Model Admin
     - Many2Many support
         - Verify if it is working properly
@@ -17,7 +16,6 @@
     - Header title
     - Mass-delete functionality
     - File size restriction
-- Localization
 - Unit tests
     - Form generation tests
 - Documentation

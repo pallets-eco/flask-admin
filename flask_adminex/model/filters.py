@@ -1,3 +1,6 @@
+from flask.ext.babel import lazy_gettext
+
+
 class BaseFilter(object):
     """
         Base filter class.
@@ -76,7 +79,8 @@ class BaseBooleanFilter(BaseFilter):
     """
     def __init__(self, name, data_type=None):
         super(BaseBooleanFilter, self).__init__(name,
-                                                (('1', 'Yes'), ('0', 'No')),
+                                                (('1', lazy_gettext('Yes')),
+                                                 ('0', lazy_gettext('No'))),
                                                 data_type)
 
     def validate(self, value):
