@@ -283,6 +283,8 @@ class Admin(object):
             `index_view`
                 Home page view to use. If not provided, will use `AdminIndexView`.
         """
+        self.app = app
+
         self._views = []
         self._menu = []
         self._menu_categories = dict()
@@ -295,14 +297,20 @@ class Admin(object):
             url = '/admin'
         self.url = url
 
+        # Localizations
+        self.locale_selector_func = None
+
+        # Index view
         if index_view is None:
             index_view = AdminIndexView(url=self.url)
 
-        self.app = app
         self.index_view = index_view
 
         # Add predefined index view
         self.add_view(index_view)
+
+        if app:
+            self._init_extension()
 
     def add_view(self, view):
         """
@@ -318,6 +326,37 @@ class Admin(object):
         if self.app is not None:
             self.app.register_blueprint(view.create_blueprint(self))
             self._add_view_to_menu(view)
+
+    def locale_selector(self, f):
+        """
+            Install locale selector for current admin instance.
+
+            Example::
+
+                admin = Admin(app)
+
+                @admin.locale_selector
+                def admin_locale_selector():
+                    return request.args.get('lang', 'en')
+
+            Another example:
+
+                def admin_locale_selector():
+                    return request.args.get('lang', 'en')
+
+                admin = Admin(app)
+                admin.locale_selector(admin_locale_selector)
+
+            And if you want to subclass ``Admin``, you can do something like:
+
+                class MyAdmin(Admin):
+                    def locale_selector(self):
+                        return request.args.get('lang', 'en')
+        """
+        if self.locale_selector_func is not None:
+            raise Exception('Can not add locale_selector second time.')
+
+        self.locale_selector_func = f
 
     def _add_view_to_menu(self, view):
         """
@@ -353,6 +392,17 @@ class Admin(object):
         for view in self._views:
             app.register_blueprint(view.create_blueprint(self))
             self._add_view_to_menu(view)
+
+        self._init_extension()
+
+    def _init_extension(self):
+        if not hasattr(self.app, 'extensions'):
+            self.app.extensions = dict()
+
+        if 'admin' in self.app.extensions:
+            raise Exception('Can not have more than one instance of the Admin class associated with Flask application')
+
+        self.app.extensions['admin'] = self
 
     def menu(self):
         """

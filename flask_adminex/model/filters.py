@@ -1,4 +1,4 @@
-from flask.ext.babel import lazy_gettext
+from flask.ext.adminex.babel import lazy_gettext
 
 
 class BaseFilter(object):

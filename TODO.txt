@@ -1,11 +1,14 @@
 - Core
     - View Site button?
 - Localization
+    - Verify that babel string collection works
+    - Add localized sample
 - Model Admin
     - Reduce number of parameters passed to list view
     - Checkboxes and mass operations
     - Filters
         - Custom filters for date fields?
+        - Change boolean filter to True/False instead of Yes/No
     - Ability to sort by fields that are not visible?
     - List display callables?
 - SQLA Model Admin
