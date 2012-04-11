@@ -213,7 +213,11 @@ class AdminIndexView(BaseView):
         4. Automatically associates with static folder.
     """
     def __init__(self, name=None, category=None, endpoint=None, url=None):
-        super(AdminIndexView, self).__init__(name or 'Home', category, endpoint or 'admin', url or '/admin', 'static')
+        super(AdminIndexView, self).__init__(name or babel.lazy_gettext('Home'),
+                                             category,
+                                             endpoint or 'admin',
+                                             url or '/admin',
+                                             'static')
 
     @expose('/')
     def index(self):

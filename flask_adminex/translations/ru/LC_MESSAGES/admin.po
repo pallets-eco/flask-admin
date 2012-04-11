@@ -4,238 +4,240 @@
 # project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Flask-AdminEx VERSION\n"
+"Project-Id-Version: Flask-AdminEx\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2012-04-11 18:47+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2012-04-11 18:48+0200\n"
+"Last-Translator: Serge S. Koval <serge.koval+github@gmail.com>\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
+"X-Poedit-Language: Russian\n"
+"X-Poedit-Country: RUSSIAN FEDERATION\n"
+"X-Poedit-SourceCharset: utf-8\n"
 
 #: ../flask_adminex/base.py:216
 msgid "Home"
-msgstr ""
+msgstr "Главная"
 
 #: ../flask_adminex/form.py:81
 msgid "Invalid time format"
-msgstr ""
+msgstr "Неправильный формат времени."
 
 #: ../flask_adminex/ext/fileadmin.py:32
 msgid "Invalid directory name"
-msgstr ""
+msgstr "Недопустимое имя директории"
 
 #: ../flask_adminex/ext/fileadmin.py:40
 msgid "File to upload"
-msgstr ""
+msgstr "Файл"
 
 #: ../flask_adminex/ext/fileadmin.py:49
 msgid "File required."
-msgstr ""
+msgstr "Необходимо выбрать файл"
 
 #: ../flask_adminex/ext/fileadmin.py:54
 msgid "Invalid file type."
-msgstr ""
+msgstr "Недопустимый тип файла."
 
 #: ../flask_adminex/ext/fileadmin.py:335
 msgid "File uploading is disabled."
-msgstr ""
+msgstr "Заливка файлов запрещена."
 
 #: ../flask_adminex/ext/fileadmin.py:344
 #, python-format
 msgid "File \"%(name)s\" already exists."
-msgstr ""
+msgstr "Файл с именем \"%(name)s\" уже существует."
 
 #: ../flask_adminex/ext/fileadmin.py:351
 #, python-format
 msgid "Failed to save file: %(error)s"
-msgstr ""
+msgstr "Ошибка сохранения файла: %(error)s"
 
 #: ../flask_adminex/ext/fileadmin.py:370
 msgid "Directory creation is disabled."
-msgstr ""
+msgstr "Создание новых директорий запрещено."
 
 #: ../flask_adminex/ext/fileadmin.py:380
 #, python-format
 msgid "Failed to create directory: %(error)s"
-msgstr ""
+msgstr "Ошибка создания директории: %(error)s"
 
 #: ../flask_adminex/ext/fileadmin.py:402
 msgid "Deletion is disabled."
-msgstr ""
+msgstr "Удаление запрещено."
 
 #: ../flask_adminex/ext/fileadmin.py:407
 msgid "Directory deletion is disabled."
-msgstr ""
+msgstr "Удаление директорий запрещено."
 
 #: ../flask_adminex/ext/fileadmin.py:412
 #, python-format
 msgid "Directory \"%s\" was successfully deleted."
-msgstr ""
+msgstr "Директория \"%s\" была удалена."
 
 #: ../flask_adminex/ext/fileadmin.py:414
 #, python-format
 msgid "Failed to delete directory: %(error)s"
-msgstr ""
+msgstr "Ошибка удаления директории: %(error)s"
 
 #: ../flask_adminex/ext/fileadmin.py:418
 #, python-format
 msgid "File \"%(name)s\" was successfully deleted."
-msgstr ""
+msgstr "Файл \"%(name)s\" был удален."
 
 #: ../flask_adminex/ext/fileadmin.py:420
 #, python-format
 msgid "Failed to delete file: %(name)s"
-msgstr ""
+msgstr "Ошибка удаления файла: %(name)s"
 
 #: ../flask_adminex/ext/fileadmin.py:439
 msgid "Renaming is disabled."
-msgstr ""
+msgstr "Переименование запрещено."
 
 #: ../flask_adminex/ext/fileadmin.py:443
 msgid "Path does not exist."
-msgstr ""
+msgstr "Путь не существует."
 
 #: ../flask_adminex/ext/fileadmin.py:454
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
-msgstr ""
+msgstr "\"%(src)s\" был переименован в \"%(dst)s\""
 
 #: ../flask_adminex/ext/fileadmin.py:457
 #, python-format
 msgid "Failed to rename: %(error)s"
-msgstr ""
+msgstr "Ошибка переименования: %(error)s"
 
 #: ../flask_adminex/ext/sqlamodel/filters.py:35
 msgid "equals"
-msgstr ""
+msgstr "равно"
 
 #: ../flask_adminex/ext/sqlamodel/filters.py:43
 msgid "not equal"
-msgstr ""
+msgstr "не равно"
 
 #: ../flask_adminex/ext/sqlamodel/filters.py:52
 msgid "contains"
-msgstr ""
+msgstr "содержит"
 
 #: ../flask_adminex/ext/sqlamodel/filters.py:61
 msgid "not contains"
-msgstr ""
+msgstr "не содержит"
 
 #: ../flask_adminex/ext/sqlamodel/filters.py:69
 msgid "greater than"
-msgstr ""
+msgstr "больше чем"
 
 #: ../flask_adminex/ext/sqlamodel/filters.py:77
 msgid "smaller than"
-msgstr ""
+msgstr "меньше чем"
 
 #: ../flask_adminex/ext/sqlamodel/form.py:37
 msgid "Already exists."
-msgstr ""
+msgstr "Уже существует."
 
 #: ../flask_adminex/ext/sqlamodel/view.py:504
 #, python-format
 msgid "Failed to create model. %(error)s"
-msgstr ""
+msgstr "Ошибка создания записи: %(error)s"
 
 #: ../flask_adminex/ext/sqlamodel/view.py:519
 #, python-format
 msgid "Failed to update model. %(error)s"
-msgstr ""
+msgstr "Ошибка обновления записи: %(error)s"
 
 #: ../flask_adminex/ext/sqlamodel/view.py:534
 #, python-format
 msgid "Failed to delete model. %(error)s"
-msgstr ""
+msgstr "Ошибка удаления записи: %(error)s"
 
 #: ../flask_adminex/model/base.py:742
 msgid "Model was successfully created."
-msgstr ""
+msgstr "Запись была создана."
 
 #: ../flask_adminex/model/filters.py:82
 msgid "Yes"
-msgstr ""
+msgstr "Да"
 
 #: ../flask_adminex/model/filters.py:83
 msgid "No"
-msgstr ""
+msgstr "Нет"
 
 #: ../flask_adminex/templates/admin/lib.html:105
 msgid "Submit"
-msgstr ""
+msgstr "Отправить"
 
 #: ../flask_adminex/templates/admin/lib.html:110
 msgid "Cancel"
-msgstr ""
+msgstr "Отмена"
 
 #: ../flask_adminex/templates/admin/file/list.html:7
 msgid "Root"
-msgstr ""
+msgstr "Корень"
 
 #: ../flask_adminex/templates/admin/file/list.html:42
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
-msgstr ""
+msgstr "Вы уверены что хотите рекурсивно удалить \\'%(name)s\\'?"
 
 #: ../flask_adminex/templates/admin/file/list.html:50
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\'?"
-msgstr ""
+msgstr "Вы уверены что хотите удалить \\'%(name)s\\'?"
 
 #: ../flask_adminex/templates/admin/file/list.html:75
 msgid "Upload File"
-msgstr ""
+msgstr "Залить файл"
 
 #: ../flask_adminex/templates/admin/file/list.html:78
 msgid "Create Directory"
-msgstr ""
+msgstr "Создать директорию"
 
 #: ../flask_adminex/templates/admin/file/rename.html:5
 #, python-format
 msgid "Please provide new name for %(name)s"
-msgstr ""
+msgstr "Введите новое имя для %(name)s"
 
 #: ../flask_adminex/templates/admin/model/create.html:11
 msgid "Save and Add"
-msgstr ""
+msgstr "Сохранить и Добавить"
 
 #: ../flask_adminex/templates/admin/model/create.html:16
 #: ../flask_adminex/templates/admin/model/list.html:12
 msgid "List"
-msgstr ""
+msgstr "Список"
 
 #: ../flask_adminex/templates/admin/model/create.html:19
 #: ../flask_adminex/templates/admin/model/list.html:16
 msgid "Create"
-msgstr ""
+msgstr "Создать"
 
 #: ../flask_adminex/templates/admin/model/list.html:23
 msgid "Add Filter"
-msgstr ""
+msgstr "Добавить Фильтр"
 
 #: ../flask_adminex/templates/admin/model/list.html:44
 msgid "Search"
-msgstr ""
+msgstr "Поиск"
 
 #: ../flask_adminex/templates/admin/model/list.html:57
 msgid "Apply"
-msgstr ""
+msgstr "Применить"
 
 #: ../flask_adminex/templates/admin/model/list.html:59
 msgid "Reset Filters"
-msgstr ""
+msgstr "Сброс Фильтров"
 
 #: ../flask_adminex/templates/admin/model/list.html:67
 msgid "Remove Filter"
-msgstr ""
+msgstr "Убрать Фильтр"
 
 #: ../flask_adminex/templates/admin/model/list.html:128
 msgid "You sure you want to delete this item?"
-msgstr ""
+msgstr "Вы уверены что хотите удалить эту запись?"
 
