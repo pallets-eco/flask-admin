@@ -2,7 +2,21 @@ try:
     from flask.ext.babel import Domain
 
     from flask.ext.adminex import translations
-    domain = Domain(translations.__path__[0], domain='admin')
+
+    class CustomDomain(Domain):
+        def __init__(self):
+            super(CustomDomain, self).__init__(translations.__path__[0], domain='admin')
+
+        def get_translations_path(self, ctx):
+            print ctx
+
+            dirname = ctx.app.extensions['admin'].translations_path
+            if dirname is not None:
+                return dirname
+
+            return super(CustomDomain, self).get_translations_path(ctx)
+
+    domain = CustomDomain()
 
     gettext = domain.gettext
     ngettext = domain.ngettext

@@ -276,7 +276,8 @@ class Admin(object):
     """
         Collection of the views. Also manages menu structure.
     """
-    def __init__(self, app=None, name=None, url=None, index_view=None):
+    def __init__(self, app=None, name=None, url=None, index_view=None,
+                 translations_path=None):
         """
             Constructor.
 
@@ -286,8 +287,13 @@ class Admin(object):
                 Application name. Will be displayed in main menu and as a page title. If not provided, defaulted to "Admin"
             `index_view`
                 Home page view to use. If not provided, will use `AdminIndexView`.
+            `translations_path`
+                Location of the translation message catalogs. By default will use translations
+                shipped with the Flask-AdminEx.
         """
         self.app = app
+
+        self.translations_path = translations_path
 
         self._views = []
         self._menu = []
