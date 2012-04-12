@@ -44,3 +44,19 @@ form.search-form a.clear i {
     margin-bottom: 0px;
     width: 208px;
 }
+
+.filter-row .remove-filter
+{
+    vertical-align: middle;
+}
+
+.filter-row .remove-filter .close-icon
+{
+    font-size: 16px;
+}
+
+.filter-row .remove-filter .close-icon:hover
+{
+    color: black;
+    opacity: 0.4;
+}

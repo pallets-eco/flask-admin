@@ -6,7 +6,7 @@
     - Reduce number of parameters passed to list view
     - Checkboxes and mass operations
     - Filters
-        - Add 'x' to remove filter and remove button
+        - Use table to draw filters so column names will line up?
         - Custom filters for date fields?
         - Change boolean filter to True/False instead of Yes/No
     - Ability to sort by fields that are not visible?

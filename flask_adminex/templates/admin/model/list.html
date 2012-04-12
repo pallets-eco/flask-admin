@@ -65,7 +65,7 @@
                 <div class="filter-row">
                     {% set filter = admin_view._filters[flt[0]] %}
                     <a href="#" class="btn remove-filter" title="{{ _gettext('Remove Filter') }}">
-                        {{ filters[flt[0]] }}
+                        <span class="close-icon">&times;</span>&nbsp;{{ filters[flt[0]] }}
                     </a><select class="filter-op" data-role="chosen">
                         {% for op in admin_view._filter_dict[filter.name] %}
                         <option value="{{ op[0] }}"{% if flt[0] == op[0] %} selected="selected"{% endif %}>{{ op[1] }}</option>

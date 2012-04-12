@@ -24,8 +24,10 @@ var AdminFilters = function(element, filters_element, adminForm, operations, opt
     function addFilter(name, op) {
         var $el = $('<div class="filter-row" />').appendTo($container);
 
-        $('<a href="#" class="btn remove-filter" title="Remove Filter" />')
-                .text(name)
+        $('<a href="#" class="btn remove-filter" />')
+                .append($('<span class="close-icon">&times;</span>'))
+                .append('&nbsp;')
+                .append(name)
                 .appendTo($el)
                 .click(removeFilter);
 
@@ -47,7 +49,7 @@ var AdminFilters = function(element, filters_element, adminForm, operations, opt
             $field = $('<select class="filter-val" />')
                         .attr('name', 'flt' + lastCount + '_' + optId)
                         .appendTo($el);
-            
+
             $(options[optId]).each(function() {
                 $field.append($('<option/>')
                     .val(this[0]).text(this[1]))
@@ -72,7 +74,7 @@ var AdminFilters = function(element, filters_element, adminForm, operations, opt
 
     $('a.filter', filters_element).click(function() {
         var name = $(this).text().trim();
-        
+
         addFilter(name, operations[name]);
 
         $('button', $root).show();
