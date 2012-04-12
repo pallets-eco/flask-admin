@@ -52,8 +52,8 @@ class MockModelView(base.BaseModelView):
         self.last_id = 3
 
     # Scaffolding
-    def scaffold_pk(self):
-        return 'id'
+    def get_pk_value(self, model):
+        return model.id
 
     def scaffold_list_columns(self):
         columns = ['col1', 'col2', 'col3']
@@ -124,7 +124,6 @@ def test_mockview():
     eq_(view.endpoint, 'modelview')
 
     # Verify scaffolding
-    eq_(view._primary_key, 'id')
     eq_(view._sortable_columns, ['col1', 'col2', 'col3'])
     eq_(view._create_form_class, Form)
     eq_(view._edit_form_class, Form)
@@ -195,14 +194,6 @@ def test_permissions():
     view.can_delete = False
     rv = client.post('/admin/modelview/delete/?id=1')
     eq_(rv.status_code, 302)
-
-
-@raises(Exception)
-def test_no_pk():
-    app, admin = setup()
-
-    view = MockModelView(Model, scaffold_pk=lambda: None)
-    admin.add_view(view)
 
 
 def test_templates():

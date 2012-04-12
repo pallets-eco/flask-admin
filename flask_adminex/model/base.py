@@ -226,12 +226,6 @@ class BaseModelView(BaseView):
         """
             Refresh various cached variables.
         """
-        # Primary key
-        self._primary_key = self.scaffold_pk()
-
-        if self._primary_key is None:
-            raise Exception('Model %s does not have primary key.' % self.model.__name__)
-
         # List view
         self._list_columns = self.get_list_columns()
         self._sortable_columns = self.get_sortable_columns()
@@ -268,14 +262,11 @@ class BaseModelView(BaseView):
             self._filter_types = None
 
     # Primary key
-    def scaffold_pk(self):
+    def get_pk_value(self, model):
         """
-            Find model primary key name
+            Return PK value from a model object.
         """
         raise NotImplemented()
-
-    def get_pk_value(self, model):
-        return getattr(model, self._primary_key)
 
     # List view
     def scaffold_list_columns(self):

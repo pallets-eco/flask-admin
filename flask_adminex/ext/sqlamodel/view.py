@@ -1,4 +1,3 @@
-
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import subqueryload
 from sqlalchemy.sql.expression import desc
@@ -141,6 +140,12 @@ class ModelView(BaseModelView):
 
         super(ModelView, self).__init__(model, name, category, endpoint, url)
 
+        # Primary key
+        self._primary_key = self.scaffold_pk()
+
+        if self._primary_key is None:
+            raise Exception('Model %s does not have primary key.' % self.model.__name__)
+
         # Configuration
         if not self.list_select_related:
             self._auto_joins = self.scaffold_auto_joins()
@@ -159,6 +164,9 @@ class ModelView(BaseModelView):
 
     # Scaffolding
     def scaffold_pk(self):
+        """
+            Return primary key name from a model
+        """
         for p in self._get_model_iterator():
             if hasattr(p, 'columns'):
                 for c in p.columns:
@@ -166,6 +174,12 @@ class ModelView(BaseModelView):
                         return p.key
 
         return None
+
+    def get_pk_value(self, model):
+        """
+            Return PK value from a model object.
+        """
+        return getattr(model, self._primary_key)
 
     def scaffold_list_columns(self):
         """
