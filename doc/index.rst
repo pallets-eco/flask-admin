@@ -7,6 +7,7 @@ Flask-AdminEx is simple and extensible administrative interface framework for `F
    :maxdepth: 2
 
    quickstart
+   model_guidelines
    api
 
 

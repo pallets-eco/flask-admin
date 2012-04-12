@@ -12,6 +12,7 @@
     - Ability to sort by fields that are not visible?
     - List display callables?
 - SQLA Model Admin
+    - Postprocess sort columns - do not resolve to attributes in runtime
     - Many2Many support
         - Verify if it is working properly
     - WYSIWYG editor support?
@@ -23,4 +24,3 @@
     - Form generation tests
 - Documentation
     - Add all new stuff
-    - Change to use :members:

@@ -325,7 +325,7 @@ class BaseModelView(BaseView):
             `scaffold_sortable_columns` to get them from the model.
         """
         if self.sortable_columns is None:
-            return self.scaffold_sortable_columns()
+            return self.scaffold_sortable_columns() or dict()
         else:
             result = dict()
 
