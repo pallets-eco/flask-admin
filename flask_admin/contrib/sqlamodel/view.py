@@ -10,7 +10,7 @@ from flask.ext.babel import gettext
 from flask.ext.admin.form import BaseForm
 from flask.ext.admin.model import BaseModelView
 
-from flask.ext.admin.ext.sqlamodel import form, filters, tools
+from flask.ext.admin.contrib.sqlamodel import form, filters, tools
 
 
 class ModelView(BaseModelView):
@@ -93,7 +93,7 @@ class ModelView(BaseModelView):
     """
         Collection of the column filters.
 
-        Can contain either field names or instances of :class:`flask.ext.admin.ext.sqlamodel.filters.BaseFilter` classes.
+        Can contain either field names or instances of :class:`flask.ext.admin.contrib.sqlamodel.filters.BaseFilter` classes.
 
         For example::
 

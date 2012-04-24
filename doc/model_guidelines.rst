@@ -1,13 +1,13 @@
 Adding new model backend
 ========================
 
-If you want to implement new database backend to use with model views, follow steps from this guideline.
+If you want to implement new database backend to use with model views, follow steps found in this guideline.
 
 There are few assumptions about models:
 
     1. Model has "primary key" - value which uniquely identifies
        one model in a data store. There's no restriction on the
-       data type.
+       data type or field name.
     2. Model has readable python properties
     3. It is possible to get list of models (optionally - sorted,
        filtered, etc) from data store
@@ -30,7 +30,7 @@ Steps to add new model backend:
 
     This method will return primary key value from
     the model. For example, in SQLAlchemy backend,
-    it gets primary key from the model (:meth:`~flask.ext.admin.ext.sqla.ModelView.scaffold_pk), caches it
+    it gets primary key from the model (:meth:`~flask.ext.admin.contrib.sqla.ModelView.scaffold_pk), caches it
     and returns actual value from the model from ``get_pk_value`` when requested.
 
     For example::
@@ -103,7 +103,7 @@ Steps to add new model backend:
     filtering logic for this filter type.
 
     Lets take SQLAlchemy model backend as an example.
-    All SQLAlchemy filters derive from :class:`~flask.ext.admin.ext.sqla.filters.BaseSQLAFilter` class.
+    All SQLAlchemy filters derive from :class:`~flask.ext.admin.contrib.sqla.filters.BaseSQLAFilter` class.
 
     Each filter implements one simple filter SQL operation
     (like, not like, greater, etc) and accepts column as

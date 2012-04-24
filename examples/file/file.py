@@ -4,7 +4,7 @@ import os.path as op
 from flask import Flask
 
 from flask.ext import admin
-from flask.ext.admin.ext import fileadmin
+from flask.ext.admin.contrib import fileadmin
 
 
 # Create flask app

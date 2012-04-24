@@ -196,7 +196,7 @@ Model Views
 
 Flask-Admin comes with built-in SQLAlchemy model administrative interface. It is very easy to use::
 
-    from flask.ext.admin.ext.sqlamodel import ModelView
+    from flask.ext.admin.contrib.sqlamodel import ModelView
     from flask.ext.sqlalchemy import db
 
     # Flask and Flask-SQLAlchemy initialization here
@@ -236,7 +236,7 @@ you can do something like this::
 It is very easy to add support for different database backends (Mongo, etc) by inheriting from `BaseModelView`
 class and implementing database-related methods.
 
-Please refer to :mod:`flask.ext.admin.ext.sqlamodel` documentation on how to customize behavior of model-based administrative views.
+Please refer to :mod:`flask.ext.admin.contrib.sqlamodel` documentation on how to customize behavior of model-based administrative views.
 
 File Admin
 ----------
@@ -245,7 +245,7 @@ Flask-Admin comes with another handy battery - file admin. It gives you ability 
 
 Here is simple example::
 
-    from flask.ext.admin.ext.fileadmin import FileAdmin
+    from flask.ext.admin.contrib.fileadmin import FileAdmin
 
     import os.path as op
 
@@ -263,7 +263,7 @@ Sample screenshot:
         :target: ../_images/quickstart_5.png
 
 You can disable uploads, disable file or directory deletion, restrict file uploads to certain types and so on.
-Check :mod:`flask.ext.admin.ext.fileadmin` documentation on how to do it.
+Check :mod:`flask.ext.admin.contrib.fileadmin` documentation on how to do it.
 
 Examples
 --------

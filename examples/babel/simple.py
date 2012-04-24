@@ -4,7 +4,7 @@ from flaskext.sqlalchemy import SQLAlchemy
 from flask.ext import admin
 from flask.ext.babel import Babel
 
-from flask.ext.admin.ext import sqlamodel
+from flask.ext.admin.contrib import sqlamodel
 
 # Create application
 app = Flask(__name__)

@@ -2,8 +2,8 @@ from flask import Flask
 from flaskext.sqlalchemy import SQLAlchemy
 
 from flask.ext import admin, wtf
-from flask.ext.admin.ext import sqlamodel
-from flask.ext.admin.ext.sqlamodel import filters
+from flask.ext.admin.contrib import sqlamodel
+from flask.ext.admin.contrib.sqlamodel import filters
 
 # Create application
 app = Flask(__name__)

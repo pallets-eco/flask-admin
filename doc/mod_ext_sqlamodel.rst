@@ -1,7 +1,7 @@
-``flask.ext.admin.ext.sqlamodel``
-=================================
+``flask.ext.admin.contrib.sqlamodel``
+=====================================
 
-.. automodule:: flask.ext.admin.ext.sqlamodel
+.. automodule:: flask.ext.admin.contrib.sqlamodel
 
     .. autoclass:: ModelView
         :members:

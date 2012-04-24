@@ -2,7 +2,7 @@ from flask import Flask, url_for, redirect, render_template, request
 from flaskext.sqlalchemy import SQLAlchemy
 
 from flask.ext import admin, login, wtf
-from flask.ext.admin.ext import sqlamodel
+from flask.ext.admin.contrib import sqlamodel
 
 # Create application
 app = Flask(__name__)

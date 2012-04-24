@@ -6,7 +6,7 @@ from flask.ext import wtf
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.admin import Admin
-from flask.ext.admin.ext.sqlamodel import ModelView
+from flask.ext.admin.contrib.sqlamodel import ModelView
 
 
 class CustomModelView(ModelView):
