@@ -5,8 +5,8 @@ from sqlalchemy import or_
 from wtforms.ext.sqlalchemy.orm import model_form
 
 from flask import flash
-from flask.ext.babel import gettext
 
+from flask.ext.admin.babel import gettext
 from flask.ext.admin.form import BaseForm
 from flask.ext.admin.model import BaseModelView
 
