@@ -24,14 +24,14 @@ Steps to add new model backend:
     By default, all model views accept model class and it
     will be stored as ``self.model``.
 
-    2. Implement following scaffolding methods::
+    2. Implement following scaffolding methods:
 
     - :meth:`~flask.ext.admin.model.BaseModelView.get_pk_value`
 
     This method will return primary key value from
     the model. For example, in SQLAlchemy backend,
-    it gets primary key from the model (:meth:`~flask.ext.admin.contrib.sqla.ModelView.scaffold_pk), caches it
-    and returns actual value from the model from ``get_pk_value`` when requested.
+    it gets primary key from the model using :meth:`~flask.ext.admin.contrib.sqlamodel.ModelView.scaffold_pk`, caches it
+    and returns actual value from the model when requested.
 
     For example::
 
@@ -103,7 +103,7 @@ Steps to add new model backend:
     filtering logic for this filter type.
 
     Lets take SQLAlchemy model backend as an example.
-    All SQLAlchemy filters derive from :class:`~flask.ext.admin.contrib.sqla.filters.BaseSQLAFilter` class.
+    All SQLAlchemy filters derive from :class:`~flask.ext.admin.contrib.sqlamodel.filters.BaseSQLAFilter` class.
 
     Each filter implements one simple filter SQL operation
     (like, not like, greater, etc) and accepts column as
