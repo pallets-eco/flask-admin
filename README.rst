@@ -1,5 +1,5 @@
-Flask-AdminEx
-=============
+Flask-Admin
+===========
 
 Contributors
 ------------
@@ -11,7 +11,7 @@ Introduction
 
 This is library for building adminstrative interface on top of Flask framework.
 
-Instead of providing simple scaffolding for the SQLAlchemy models, Flask-AdminEx
+Instead of providing simple scaffolding for the SQLAlchemy models, Flask-Admin
 provides tools that can be used to build adminstrative interface of any complexity,
 using consistent look and feel.
 
@@ -24,16 +24,17 @@ Small example (Flask initialization omitted)::
     admin.add_view(GalleryManager(name='Photos', category='Cats'))
     admin.setup_app(app)
 
+If you're looking for 0.x version of the Flask-Admin written by Andy Wilson, check `here <https://github.com/wilsaj/flask-admin>`_
 
 Documentation
 -------------
 
-Flask-AdminEx is extensively documented, you can find documentation `here <http://readthedocs.org/docs/flask-adminex>`_.
+Flask-Admin is extensively documented, you can find documentation `here <http://readthedocs.org/docs/flask-admin>`_.
 
 3rd Party Stuff
 ---------------
 
-Flask-AdminEx is built with help of `Twitter Bootstrap <http://twitter.github.com/bootstrap/>`_ and `Chosen <http://harvesthq.github.com/chosen/>`_.
+Flask-Admin is built with help of `Twitter Bootstrap <http://twitter.github.com/bootstrap/>`_ and `Chosen <http://harvesthq.github.com/chosen/>`_.
 
 Kudos
 -----

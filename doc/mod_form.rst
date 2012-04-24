@@ -1,7 +1,7 @@
-``flask.ext.adminex.form``
-==========================
+``flask.ext.admin.form``
+========================
 
-.. automodule:: flask.ext.adminex.form
+.. automodule:: flask.ext.admin.form
 
     .. autoclass:: BaseForm
         :members:

@@ -1,7 +1,7 @@
-Flask-AdminEx
-=============
+Flask-Admin
+===========
 
-Flask-AdminEx is simple and extensible administrative interface framework for `Flask <http://flask.pocoo.org/>`_.
+Flask-Admin is simple and extensible administrative interface framework for `Flask <http://flask.pocoo.org/>`_.
 
 .. toctree::
    :maxdepth: 2

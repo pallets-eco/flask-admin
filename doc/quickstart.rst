@@ -1,7 +1,7 @@
 Quick Start
 ===========
 
-This page gives quick introduction to Flask-AdminEx library. It is assumed that reader has some prior
+This page gives quick introduction to Flask-Admin library. It is assumed that reader has some prior
 knowledge of the `Flask <http://flask.pocoo.org/>`_ framework.
 
 Introduction
@@ -27,7 +27,7 @@ Here is absolutely valid administrative piece::
 So, how does it help structuring administrative interface? With such building blocks, you're
 implementing reusable functional pieces that are highly customizable.
 
-For example, Flask-AdminEx provides ready-to-use SQLAlchemy model interface. It is implemented as a
+For example, Flask-Admin provides ready-to-use SQLAlchemy model interface. It is implemented as a
 class which accepts two parameters: model and a database session. While it exposes some
 class-level variables which change behavior of the interface (somewhat similar to django.contrib.admin),
 nothing prohibits you from overriding form creation logic, database access methods or adding more views.
@@ -35,10 +35,10 @@ nothing prohibits you from overriding form creation logic, database access metho
 Initialization
 --------------
 
-To start using Flask-AdminEx, you have to create `Admin` class instance and associate it with Flask application::
+To start using Flask-Admin, you have to create `Admin` class instance and associate it with Flask application::
 
     from flask import Flask
-    from flask.ext.adminex import Admin
+    from flask.ext.admin import Admin
 
     app = Flask(__name__)
 
@@ -71,7 +71,7 @@ Adding view
 Now, lets add a view. To do this, you need to derive from `BaseView` class::
 
     from flask import Flask
-    from flask.ext.adminex import Admin, BaseView, expose
+    from flask.ext.admin import Admin, BaseView, expose
 
     class MyView(BaseView):
         @expose('/')
@@ -113,7 +113,7 @@ You're not limited to top level menu. It is possible to pass category name and i
 top menu item. For example::
 
     from flask import Flask
-    from flask.ext.adminex import Admin, BaseView, expose
+    from flask.ext.admin import Admin, BaseView, expose
 
     class MyView(BaseView):
         @expose('/')
@@ -137,7 +137,7 @@ Will look like this:
 Authentication
 --------------
 
-By default, administrative interface is visible to everyone, as Flask-AdminEx does not make
+By default, administrative interface is visible to everyone, as Flask-Admin does not make
 any assumptions about authentication system you're using.
 
 If you want to control who can access administrative views and who can not, derive from the
@@ -194,9 +194,9 @@ is not provided. Model-based views will be explained in the next section.
 Model Views
 -----------
 
-Flask-AdminEx comes with built-in SQLAlchemy model administrative interface. It is very easy to use::
+Flask-Admin comes with built-in SQLAlchemy model administrative interface. It is very easy to use::
 
-    from flask.ext.adminex.ext.sqlamodel import ModelView
+    from flask.ext.admin.ext.sqlamodel import ModelView
     from flask.ext.sqlalchemy import db
 
     # Flask and Flask-SQLAlchemy initialization here
@@ -236,16 +236,16 @@ you can do something like this::
 It is very easy to add support for different database backends (Mongo, etc) by inheriting from `BaseModelView`
 class and implementing database-related methods.
 
-Please refer to :mod:`flask.ext.adminex.ext.sqlamodel` documentation on how to customize behavior of model-based administrative views.
+Please refer to :mod:`flask.ext.admin.ext.sqlamodel` documentation on how to customize behavior of model-based administrative views.
 
 File Admin
 ----------
 
-Flask-AdminEx comes with another handy battery - file admin. It gives you ability to manage files on your server (upload, delete, rename, etc).
+Flask-Admin comes with another handy battery - file admin. It gives you ability to manage files on your server (upload, delete, rename, etc).
 
 Here is simple example::
 
-    from flask.ext.adminex.ext.fileadmin import FileAdmin
+    from flask.ext.admin.ext.fileadmin import FileAdmin
 
     import os.path as op
 
@@ -263,14 +263,14 @@ Sample screenshot:
         :target: ../_images/quickstart_5.png
 
 You can disable uploads, disable file or directory deletion, restrict file uploads to certain types and so on.
-Check :mod:`flask.ext.adminex.ext.fileadmin` documentation on how to do it.
+Check :mod:`flask.ext.admin.ext.fileadmin` documentation on how to do it.
 
 Examples
 --------
 
-Flask-AdminEx comes with four samples:
+Flask-Admin comes with four samples:
 
-- `Simple administrative interface <https://github.com/MrJoes/Flask-AdminEx/tree/master/examples/simple>`_ with custom administrative views
-- `SQLAlchemy model example <https://github.com/MrJoes/Flask-AdminEx/tree/master/examples/sqla>`_
-- `Flask-Login integration example <https://github.com/MrJoes/Flask-AdminEx/tree/master/examples/auth>`_
-- `File management interface <https://github.com/MrJoes/Flask-AdminEx/tree/master/examples/file>`_
+- `Simple administrative interface <https://github.com/MrJoes/Flask-Admin/tree/master/examples/simple>`_ with custom administrative views
+- `SQLAlchemy model example <https://github.com/MrJoes/Flask-Admin/tree/master/examples/sqla>`_
+- `Flask-Login integration example <https://github.com/MrJoes/Flask-Admin/tree/master/examples/auth>`_
+- `File management interface <https://github.com/MrJoes/Flask-Admin/tree/master/examples/file>`_

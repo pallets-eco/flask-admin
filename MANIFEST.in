@@ -1,4 +1,4 @@
 include LICENSE
-recursive-include flask_adminex/static *
-recursive-include flask_adminex/templates *
-recursive-include flask_adminex/translations *
+recursive-include flask_admin/static *
+recursive-include flask_admin/templates *
+recursive-include flask_admin/translations *

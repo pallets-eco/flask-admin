@@ -1,7 +1,7 @@
-``flask.ext.adminex.ext.fileadmin``
-===================================
+``flask.ext.admin.ext.fileadmin``
+=================================
 
-.. automodule:: flask.ext.adminex.ext.fileadmin
+.. automodule:: flask.ext.admin.ext.fileadmin
 
     .. autoclass:: FileAdmin
         :members:

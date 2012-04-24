@@ -16,7 +16,7 @@ There are few assumptions about models:
 
 Steps to add new model backend:
 
-    1. Create new class and derive it from :class:`~flask.ext.adminex.model.BaseModelView`::
+    1. Create new class and derive it from :class:`~flask.ext.admin.model.BaseModelView`::
 
         class MyDbModel(BaseModelView):
             pass
@@ -26,11 +26,11 @@ Steps to add new model backend:
 
     2. Implement following scaffolding methods::
 
-    - :meth:`~flask.ext.adminex.model.BaseModelView.get_pk_value`
+    - :meth:`~flask.ext.admin.model.BaseModelView.get_pk_value`
 
     This method will return primary key value from
     the model. For example, in SQLAlchemy backend,
-    it gets primary key from the model (:meth:`~flask.ext.adminex.ext.sqla.ModelView.scaffold_pk), caches it
+    it gets primary key from the model (:meth:`~flask.ext.admin.ext.sqla.ModelView.scaffold_pk), caches it
     and returns actual value from the model from ``get_pk_value`` when requested.
 
     For example::
@@ -39,7 +39,7 @@ Steps to add new model backend:
             def get_pk_value(self, model):
                 return self.model.id
 
-    - :meth:`~flask.ext.adminex.model.BaseModelView.scaffold_list_columns`
+    - :meth:`~flask.ext.admin.model.BaseModelView.scaffold_list_columns`
 
     Returns list of columns to be displayed in a list view.
     Make sure you exclude columns if `self.excluded_list_columns` was set.
@@ -59,7 +59,7 @@ Steps to add new model backend:
 
                 return columns
 
-    - :meth:`~flask.ext.adminex.model.BaseModelView.scaffold_sortable_columns`
+    - :meth:`~flask.ext.admin.model.BaseModelView.scaffold_sortable_columns`
 
     Returns dictionary of sortable columns. Key in a dictionary is field name. Value - implementation
     specific, value that will be used by you backend implementation to do actual sort operation.
@@ -72,7 +72,7 @@ Steps to add new model backend:
     If your backend does not support sorting, return
     `None` or empty dictionary.
 
-    - :meth:`~flask.ext.adminex.model.BaseModelView.init_search`
+    - :meth:`~flask.ext.admin.model.BaseModelView.init_search`
 
     Initialize search functionality. If your backend supports
     full-text search, do initializations and return `True`.
@@ -84,7 +84,7 @@ Steps to add new model backend:
     it will add a join, etc) and caches this information for
     future use.
 
-    - :meth:`~flask.ext.adminex.model.BaseModelView.is_valid_filter`
+    - :meth:`~flask.ext.admin.model.BaseModelView.is_valid_filter`
 
     Verify if provided object is a valid filter.
 
@@ -94,16 +94,16 @@ Steps to add new model backend:
     This also means that different backends might have
     different set of available filters.
 
-    Filter is a class derived from :class:`~flask.ext.adminex.model.filters.BaseFilter` which implements at least two methods:
+    Filter is a class derived from :class:`~flask.ext.admin.model.filters.BaseFilter` which implements at least two methods:
 
-        1. :meth:`~flask.ext.adminex.model.filters.BaseFilter.apply`
-        2. :meth:`~flask.ext.adminex.model.filters.BaseFilter.operation`
+        1. :meth:`~flask.ext.admin.model.filters.BaseFilter.apply`
+        2. :meth:`~flask.ext.admin.model.filters.BaseFilter.operation`
 
     `apply` method accepts two parameters: `query` object and a value from the client. Here you will add
     filtering logic for this filter type.
 
     Lets take SQLAlchemy model backend as an example.
-    All SQLAlchemy filters derive from :class:`~flask.ext.adminex.ext.sqla.filters.BaseSQLAFilter` class.
+    All SQLAlchemy filters derive from :class:`~flask.ext.admin.ext.sqla.filters.BaseSQLAFilter` class.
 
     Each filter implements one simple filter SQL operation
     (like, not like, greater, etc) and accepts column as
@@ -139,7 +139,7 @@ Steps to add new model backend:
             def clean(self, value):
                 return value
 
-    - :meth:`~flask.ext.adminex.model.BaseModelView.scaffold_filters`
+    - :meth:`~flask.ext.admin.model.BaseModelView.scaffold_filters`
 
     Return list of filter objects for one model field.
 
@@ -158,7 +158,7 @@ Steps to add new model backend:
                 if isinstance(attr, MyDbTextField):
                     return [MyEqualFilter(name, name)]
 
-    - :meth:`~flask.ext.adminex.model.BaseModelView.scaffold_form`
+    - :meth:`~flask.ext.admin.model.BaseModelView.scaffold_form`
 
         Generate `WTForms` form class from the model.
 
@@ -172,7 +172,7 @@ Steps to add new model backend:
                     # Do something
                     return MyForm
 
-        - :meth:`~flask.ext.adminex.model.BaseModelView.get_list`
+        - :meth:`~flask.ext.admin.model.BaseModelView.get_list`
 
         This method should return list of models with paging,
         sorting, etc applied.
@@ -202,19 +202,19 @@ Steps to add new model backend:
 
             6. Return count, list as a tuple
 
-        - :meth:`~flask.ext.adminex.model.BaseModelView.get_one`
+        - :meth:`~flask.ext.admin.model.BaseModelView.get_one`
 
         Return one model by its primary key.
 
-        - :meth:`~flask.ext.adminex.model.BaseModelView.create_model`
+        - :meth:`~flask.ext.admin.model.BaseModelView.create_model`
 
         Create new model from the `Form` object.
 
-        - :meth:`~flask.ext.adminex.model.BaseModelView.update_model`
+        - :meth:`~flask.ext.admin.model.BaseModelView.update_model`
 
         Update provided model with the data from the form.
 
-        - :meth:`~flask.ext.adminex.model.BaseModelView.delete_model`
+        - :meth:`~flask.ext.admin.model.BaseModelView.delete_model`
 
         Delete provided model from the data store.
 
