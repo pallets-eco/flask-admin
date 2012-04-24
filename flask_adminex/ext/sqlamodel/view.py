@@ -7,10 +7,10 @@ from wtforms.ext.sqlalchemy.orm import model_form
 from flask import flash
 from flask.ext.babel import gettext
 
-from flask.ext.adminex.form import BaseForm
-from flask.ext.adminex.model import BaseModelView
+from flask.ext.admin.form import BaseForm
+from flask.ext.admin.model import BaseModelView
 
-from flask.ext.adminex.ext.sqlamodel import form, filters, tools
+from flask.ext.admin.ext.sqlamodel import form, filters, tools
 
 
 class ModelView(BaseModelView):
@@ -93,7 +93,7 @@ class ModelView(BaseModelView):
     """
         Collection of the column filters.
 
-        Can contain either field names or instances of :class:`flask.ext.adminex.ext.sqlamodel.filters.BaseFilter` classes.
+        Can contain either field names or instances of :class:`flask.ext.admin.ext.sqlamodel.filters.BaseFilter` classes.
 
         For example::
 

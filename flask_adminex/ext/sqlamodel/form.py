@@ -4,7 +4,7 @@ from wtforms import ValidationError, fields, validators
 from wtforms.ext.sqlalchemy.orm import converts, ModelConverter
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
 
-from flask.ext.adminex import form
+from flask.ext.admin import form
 
 
 class Unique(object):

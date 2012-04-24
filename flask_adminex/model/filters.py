@@ -1,4 +1,4 @@
-from flask.ext.adminex.babel import lazy_gettext
+from flask.ext.admin.babel import lazy_gettext
 
 
 class BaseFilter(object):
@@ -119,7 +119,7 @@ def convert(*args):
     """
         Decorator for field to filter conversion routine.
 
-        See :mod:`flask.ext.adminex.ext.sqlamodel.filters` for usage example.
+        See :mod:`flask.ext.admin.ext.sqlamodel.filters` for usage example.
     """
     def _inner(func):
         func._converter_for = args

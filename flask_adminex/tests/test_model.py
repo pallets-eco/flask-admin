@@ -3,8 +3,8 @@ from nose.tools import eq_, ok_, raises
 from flask import Flask
 from flask.helpers import get_flashed_messages
 
-from flask.ext.adminex import Admin
-from flask.ext.adminex.model import base, filters
+from flask.ext.admin import Admin
+from flask.ext.admin.model import base, filters
 
 from flask.ext import wtf
 

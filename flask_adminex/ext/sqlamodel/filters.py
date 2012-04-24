@@ -1,7 +1,7 @@
 from flask.ext.babel import gettext
 
-from flask.ext.adminex.model import filters
-from flask.ext.adminex.ext.sqlamodel import tools
+from flask.ext.admin.model import filters
+from flask.ext.admin.ext.sqlamodel import tools
 
 
 class BaseSQLAFilter(filters.BaseFilter):

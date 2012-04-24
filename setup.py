@@ -4,8 +4,8 @@ import multiprocessing, logging
 from setuptools import setup, find_packages
 
 setup(
-    name='Flask-AdminEx',
-    version='0.0.1',
+    name='Flask-Admin',
+    version='1.0.0',
     url='https://github.com/mrjoes/flask-extadmin/',
     license='BSD',
     author='Serge S. Koval',

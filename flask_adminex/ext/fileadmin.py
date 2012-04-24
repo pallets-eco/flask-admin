@@ -11,9 +11,9 @@ from werkzeug import secure_filename
 
 from flask import flash, url_for, redirect, abort, request
 
-from flask.ext.adminex.base import BaseView, expose
-from flask.ext.adminex.babel import gettext, lazy_gettext
-from flask.ext.adminex import form
+from flask.ext.admin.base import BaseView, expose
+from flask.ext.admin.babel import gettext, lazy_gettext
+from flask.ext.admin import form
 from flask.ext import wtf
 
 

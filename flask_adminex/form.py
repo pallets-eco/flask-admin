@@ -4,7 +4,7 @@ import datetime
 from flask.ext import wtf
 from wtforms import fields, widgets
 
-from flask.ext.adminex.babel import gettext
+from flask.ext.admin.babel import gettext
 
 
 class BaseForm(wtf.Form):

@@ -3,7 +3,7 @@ from re import sub
 
 from flask import Blueprint, render_template, url_for, abort
 
-from flask.ext.adminex import babel
+from flask.ext.admin import babel
 
 
 def expose(url='/', methods=('GET',)):
@@ -181,7 +181,7 @@ class BaseView(object):
         """
             Override this method to add permission checks.
 
-            Flask-AdminEx does not make any assumptions about authentication system used in your application, so it is
+            Flask-Admin does not make any assumptions about authentication system used in your application, so it is
             up for you to implement it.
 
             By default, it will allow access for the everyone.
@@ -289,7 +289,7 @@ class Admin(object):
                 Home page view to use. If not provided, will use `AdminIndexView`.
             `translations_path`
                 Location of the translation message catalogs. By default will use translations
-                shipped with the Flask-AdminEx.
+                shipped with the Flask-Admin.
         """
         self.app = app
 
@@ -395,7 +395,7 @@ class Admin(object):
                 Flask application instance
         """
         if self.app is not None:
-            raise Exception('Flask-AdminEx is already associated with an application.')
+            raise Exception('Flask-Admin is already associated with an application.')
 
         self.app = app
 

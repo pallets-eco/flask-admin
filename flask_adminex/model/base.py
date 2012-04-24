@@ -2,8 +2,8 @@ from flask import request, url_for, redirect, flash
 
 from flask.ext.babel import gettext
 
-from flask.ext.adminex.base import BaseView, expose
-from flask.ext.adminex.model import filters
+from flask.ext.admin.base import BaseView, expose
+from flask.ext.admin.model import filters
 
 
 class BaseModelView(BaseView):
@@ -116,7 +116,7 @@ class BaseModelView(BaseView):
     """
         Collection of the column filters.
 
-        Can contain either field names or instances of :class:`~flask.ext.adminex.model.filters.BaseFilter` classes.
+        Can contain either field names or instances of :class:`~flask.ext.admin.model.filters.BaseFilter` classes.
 
         For example:
 

@@ -1,5 +1,5 @@
 from flask import Flask
-from flask.ext.adminex import Admin
+from flask.ext.admin import Admin
 
 
 app = Flask(__name__)

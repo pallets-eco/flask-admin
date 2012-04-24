@@ -1,10 +1,10 @@
 from flask import Flask, request, session
 from flaskext.sqlalchemy import SQLAlchemy
 
-from flask.ext import adminex, wtf
+from flask.ext import admin
 from flask.ext.babel import Babel
 
-from flask.ext.adminex.ext import sqlamodel
+from flask.ext.admin.ext import sqlamodel
 
 # Create application
 app = Flask(__name__)
@@ -62,7 +62,7 @@ def index():
 
 if __name__ == '__main__':
     # Create admin
-    admin = adminex.Admin(app, 'Simple Models')
+    admin = admin.Admin(app, 'Simple Models')
 
     admin.locale_selector(get_locale)
 

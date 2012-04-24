@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# flask-adminex documentation build configuration file, created by
+# flask-admin documentation build configuration file, created by
 # sphinx-quickstart on Tue Nov 01 18:35:30 2011.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -40,7 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'flask-adminex'
+project = u'flask-admin'
 copyright = u'2012, Serge S. Koval'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -170,7 +170,7 @@ html_sidebars = {
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'flask-adminex'
+htmlhelp_basename = 'flask-admin'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -189,7 +189,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'flask-adminex', u'Flask-AdminEx documentation',
+  ('index', 'flask-admin', u'Flask-Admin documentation',
    u'Serge S. Koval', 'manual'),
 ]
 
@@ -219,7 +219,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'flask-adminex', u'Flask-AdminEx documentation',
+    ('index', 'flask-admin', u'Flask-Admin documentation',
      [u'Serge S. Koval'], 1)
 ]
 
@@ -233,8 +233,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'flask-adminex', u'Flask-AdminEx documentation',
-   u'Serge S. Koval', 'Flask-AdminEx', 'One line description of project.',
+  ('index', 'flask-admin', u'Flask-Admin documentation',
+   u'Serge S. Koval', 'Flask-Admin', 'One line description of project.',
    'Miscellaneous'),
 ]
 
