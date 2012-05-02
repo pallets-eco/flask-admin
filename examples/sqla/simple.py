@@ -1,5 +1,5 @@
 from flask import Flask
-from flaskext.sqlalchemy import SQLAlchemy
+from flask.ext.sqlalchemy import SQLAlchemy
 
 from flask.ext import admin, wtf
 from flask.ext.admin.contrib import sqlamodel
