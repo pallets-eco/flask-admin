@@ -19,12 +19,12 @@ Small example (Flask initialization omitted)::
     admin.add_view(GalleryManager(name='Photos', category='Cats'))
     admin.setup_app(app)
 
-If you're looking for 0.x version of the Flask-Admin written by Andy Wilson, check `here <https://github.com/wilsaj/flask-admin>`_
+If you're looking for 0.x version of the Flask-Admin written by Andy Wilson, check `here <http://github.com/wilsaj/flask-admin>`_.
 
 Documentation
 -------------
 
-Flask-Admin is extensively documented, you can find documentation `here <http://readthedocs.org/docs/flask-admin>`_.
+Flask-Admin is extensively documented, you can find `documentation here <http://readthedocs.org/docs/flask-admin>`_.
 
 3rd Party Stuff
 ---------------
@@ -39,4 +39,4 @@ Some ideas were taken from the `Flask-Admin <https://github.com/wilsaj/flask-adm
 Examples
 --------
 
-Library comes with few examples, you can find them in `examples` directory.
+Library comes with few examples, you can find them in _examples_ directory.
