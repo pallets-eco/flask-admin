@@ -1,6 +1,6 @@
 from flask import request, url_for, redirect, flash
 
-from flask.ext.babel import gettext
+from flask.ext.admin.babel import gettext
 
 from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.model import filters
