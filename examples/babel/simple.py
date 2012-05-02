@@ -1,5 +1,5 @@
 from flask import Flask, request, session
-from flaskext.sqlalchemy import SQLAlchemy
+from flask.ext.sqlalchemy import SQLAlchemy
 
 from flask.ext import admin
 from flask.ext.babel import Babel
