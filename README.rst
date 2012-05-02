@@ -1,11 +1,6 @@
 Flask-Admin
 ===========
 
-Contributors
-------------
-
--  `Serge S. Koval <https://github.com/MrJoes/>`_
-
 Introduction
 ------------
 
