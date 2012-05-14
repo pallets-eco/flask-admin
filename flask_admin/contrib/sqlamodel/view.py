@@ -114,7 +114,7 @@ class ModelView(BaseModelView):
     """
 
     def __init__(self, model, session,
-                 name=None, category=None, endpoint=None, url=None):
+                 name=None, category=None, endpoint=None, url=None, **kwargs):
         """
             Constructor.
 
@@ -130,7 +130,13 @@ class ModelView(BaseModelView):
                 Endpoint name. If not set, will default to model name
             `url`
                 Base URL. If not set, will default to '/admin/' + endpoint
+            `**kwargs`
+                Easy way to setup view attributes without subclassing
         """
+        for param, value in kwargs.items():
+            if hasattr(self, param):
+                setattr(self, param, value)
+
         self.session = session
 
         self._search_fields = None
