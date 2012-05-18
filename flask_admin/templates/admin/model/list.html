@@ -123,6 +123,11 @@
                     <i class="icon-pencil"></i>
                 </a>
                 {%- endif -%}
+            </td>
+            {% for c, name in list_columns %}
+            <td>{{ get_value(row, c) }}</td>
+            {% endfor %}
+            <td>
                 {%- if admin_view.can_delete -%}
                 <form class="icon" method="POST" action="{{ url_for('.delete_view', id=get_pk_value(row), url=return_url) }}">
                     <button onclick="return confirm('{{ _gettext('You sure you want to delete this item?') }}');">
@@ -131,9 +136,6 @@
                 </form>
                 {%- endif -%}
             </td>
-            {% for c, name in list_columns %}
-            <td>{{ get_value(row, c) }}</td>
-            {% endfor %}
         </tr>
         {% endfor %}
     </table>
