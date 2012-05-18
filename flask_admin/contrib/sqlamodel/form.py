@@ -85,7 +85,7 @@ class AdminModelConverter(ModelConverter):
 
             if local_column.nullable:
                 kwargs['validators'].append(validators.Optional())
-            else:
+            elif prop.direction.name != 'MANYTOMANY':
                 kwargs['validators'].append(validators.Required())
 
             # Override field type if necessary

@@ -28,6 +28,13 @@ class User(db.Model):
         return self.username
 
 
+# Create M2M table
+post_tags_table = db.Table('post_tags', db.Model.metadata,
+                           db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
+                           db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
+                           )
+
+
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
@@ -37,8 +44,18 @@ class Post(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
     user = db.relationship(User, backref='posts')
 
+    tags = db.relationship('Tag', secondary=post_tags_table)
+
     def __unicode__(self):
         return self.title
+
+
+class Tag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode(64))
+
+    def __unicode__(self):
+        return self.name
 
 
 # Flask views
@@ -83,6 +100,7 @@ if __name__ == '__main__':
 
     # Add views
     admin.add_view(sqlamodel.ModelView(User, db.session))
+    admin.add_view(sqlamodel.ModelView(Tag, db.session))
     admin.add_view(PostAdmin(db.session))
 
     # Create DB
