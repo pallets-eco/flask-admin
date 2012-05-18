@@ -1,7 +1,7 @@
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import subqueryload
 from sqlalchemy.sql.expression import desc
-from sqlalchemy import or_
+from sqlalchemy import or_, Column
 from wtforms.ext.sqlalchemy.orm import model_form
 
 from flask import flash
@@ -229,7 +229,7 @@ class ModelView(BaseModelView):
                 if column.foreign_keys or column.primary_key:
                     continue
 
-                columns[p.key] = p.key
+                columns[p.key] = column
 
         return columns
 
@@ -260,7 +260,7 @@ class ModelView(BaseModelView):
         """
         if self.searchable_columns:
             self._search_fields = []
-            self._search_joins_names = set()
+            self._search_joins = set()
 
             for p in self.searchable_columns:
                 for column in self._get_columns_for_field(p):
@@ -274,7 +274,7 @@ class ModelView(BaseModelView):
 
                     # If it belongs to different table - add a join
                     if column.table != self.model.__table__:
-                        self._search_joins_names.add(column.table.name)
+                        self._search_joins.add(column.table)
 
         return bool(self.searchable_columns)
 
@@ -413,9 +413,9 @@ class ModelView(BaseModelView):
         # Apply search criteria
         if self._search_supported and search:
             # Apply search-related joins
-            if self._search_joins_names:
-                query = query.join(*self._search_joins_names)
-                joins |= self._search_joins_names
+            if self._search_joins:
+                query = query.join(*self._search_joins)
+                joins |= self._search_joins
 
             # Apply terms
             terms = search.split(' ')
@@ -470,8 +470,10 @@ class ModelView(BaseModelView):
                     if table.name not in joins:
                         query = query.join(table)
                         joins.add(table.name)
+                elif isinstance(sort_field, Column):
+                    pass
                 else:
-                    sort_field = None
+                    raise TypeError('Wrong argument type')
 
                 if sort_field is not None:
                     if sort_desc:
