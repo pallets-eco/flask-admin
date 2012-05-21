@@ -15,7 +15,7 @@ view methods.
 
 Here is absolutely valid administrative piece::
 
-    class MyAdminView(BaseView):
+    class MyView(BaseView):
         @expose('/')
         def index(self):
             return self.render('admin/myindex.html')
@@ -30,12 +30,14 @@ implementing reusable functional pieces that are highly customizable.
 For example, Flask-Admin provides ready-to-use SQLAlchemy model interface. It is implemented as a
 class which accepts two parameters: model and a database session. While it exposes some
 class-level variables which change behavior of the interface (somewhat similar to django.contrib.admin),
-nothing prohibits you from overriding form creation logic, database access methods or adding more views.
+nothing prohibits you from overriding form creation logic, database access methods or extending existing
+functionality.
 
 Initialization
 --------------
 
-To start using Flask-Admin, you have to create `Admin` class instance and associate it with Flask application::
+To start using Flask-Admin, you have to create :class:`~flask.ext.admin.base.Admin` class instance and associate it with the Flask
+application instance::
 
     from flask import Flask
     from flask.ext.admin import Admin
@@ -53,22 +55,22 @@ you should see empty "Home" page with a navigation bar on top
     .. image:: images/quickstart/quickstart_1.png
         :target: ../_images/quickstart_1.png
 
-You can change application name by passing `name` parameter to the `Admin` class constructor::
+You can change application name by passing `name` parameter to the :class:`~flask.ext.admin.base.Admin` class constructor::
 
     admin = Admin(app, name='My App')
 
 Name is displayed in the menu section.
 
-You don't have to pass Flask application object to the constructor - you can call `init_app` later::
+You don't have to pass Flask application object to the constructor - you can call :meth:`~flask.ext.admin.base.Admin.init_app` later::
 
     admin = Admin(name='My App')
     # Add views here
     admin.init_app(app)
 
-Adding view
------------
+Adding views
+------------
 
-Now, lets add a view. To do this, you need to derive from `BaseView` class::
+Now, lets add an administrative view. To do this, you need to derive from :class:`~flask.ext.admin.base.BaseView` class::
 
     from flask import Flask
     from flask.ext.admin import Admin, BaseView, expose
@@ -150,14 +152,17 @@ this::
             return login.current_user.is_authenticated()
 
 
-Menu is generated dynamically, so you can implement policy-based security and conditionally
-allow or disallow access to parts of the administrative interface.
+You can implement policy-based security, conditionally allow or disallow access to parts of the
+administrative interface and if user does not have access to the view, he won't see menu item
+as well.
 
 Generating URLs
 ---------------
 
 Internally, view classes work on top of Flask blueprints, so you can use `url_for` with a dot
 prefix to get URL to a local view::
+
+    from flask import url_for
 
     class MyView(BaseView):
         @expose('/')
@@ -197,12 +202,11 @@ Model Views
 Flask-Admin comes with built-in SQLAlchemy model administrative interface. It is very easy to use::
 
     from flask.ext.admin.contrib.sqlamodel import ModelView
-    from flask.ext.sqlalchemy import db
 
     # Flask and Flask-SQLAlchemy initialization here
 
     admin = Admin(app)
-    admin.add_view(ModelBase(User, db.session))
+    admin.add_view(ModelView(User, db.session))
 
 This will create administrative interface for `User` model with default settings.
 
@@ -220,7 +224,11 @@ If you want to customize model views, you have two options:
 For example, if you want to disable model creation, show only 'login' and 'email' columns in the list view,
 you can do something like this::
 
-    class UserView(ModelBase):
+    from flask.ext.admin.contrib.sqlamodel import ModelView
+
+    # Flask and Flask-SQLAlchemy initialization here
+
+    class MyView(ModelView):
         # Disable model creation
         can_create = False
 
@@ -228,12 +236,13 @@ you can do something like this::
         list_columns = ('login', 'email')
 
         def __init__(self, session):
+            # You can pass name and other parameters if you want to
             __super__(MyView, self).__init__(User, session)
 
     admin = Admin(app)
-    admin.add_view(UserView(db.session))
+    admin.add_view(MyView(db.session))
 
-It is very easy to add support for different database backends (Mongo, etc) by inheriting from `BaseModelView`
+It is relatively easy to add support for different database backends (Mongo, etc) by inheriting from :class:`~flask.ext.admin.model.BaseModelView`.
 class and implementing database-related methods.
 
 Please refer to :mod:`flask.ext.admin.contrib.sqlamodel` documentation on how to customize behavior of model-based administrative views.
