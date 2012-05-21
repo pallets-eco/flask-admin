@@ -235,9 +235,9 @@ you can do something like this::
         # Override displayed fields
         list_columns = ('login', 'email')
 
-        def __init__(self, session):
+        def __init__(self, session, **kwargs):
             # You can pass name and other parameters if you want to
-            __super__(MyView, self).__init__(User, session)
+            super(MyView, self).__init__(User, session, **kwargs)
 
     admin = Admin(app)
     admin.add_view(MyView(db.session))
