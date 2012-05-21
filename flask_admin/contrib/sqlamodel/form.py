@@ -83,7 +83,7 @@ class AdminModelConverter(ModelConverter):
                 'query_factory': lambda: self.view.session.query(remote_model)
             })
 
-            if local_column.nullable or prop.direction.name == 'MANYTOMANY':
+            if local_column.nullable:
                 kwargs['validators'].append(validators.Optional())
             elif prop.direction.name != 'MANYTOMANY':
                 kwargs['validators'].append(validators.Required())

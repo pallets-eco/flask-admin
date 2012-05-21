@@ -70,10 +70,12 @@ def test_model():
     eq_(view.endpoint, 'model1view')
 
     eq_(view._primary_key, 'id')
-    eq_(view._sortable_columns, dict(test1='test1',
-                                     test2='test2',
-                                     test3='test3',
-                                     test4='test4'))
+
+    ok_('test1' in view._sortable_columns)
+    ok_('test2' in view._sortable_columns)
+    ok_('test3' in view._sortable_columns)
+    ok_('test4' in view._sortable_columns)
+
     ok_(view._create_form_class is not None)
     ok_(view._edit_form_class is not None)
     eq_(view._search_supported, False)
