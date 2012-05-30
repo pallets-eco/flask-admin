@@ -242,6 +242,21 @@ you can do something like this::
     admin = Admin(app)
     admin.add_view(MyView(db.session))
 
+Overriding form elements can be a bit trickier, but it is still possible. Here's an example of
+how to set up a form that includes a column named ``status`` that allows only predefined values and
+therefore should use a ``SelectField``::
+
+    from wtforms.fields import SelectField
+
+    class MyView(ModelView):
+        form_overrides = dict(status=SelectField)
+        form_args = dict(
+            # Pass the choices to the `SelectField`
+            status=dict(
+                choices=[(0, 'waiting'), (1, 'in_progress'), (2, 'finished')]
+            ))
+
+
 It is relatively easy to add support for different database backends (Mongo, etc) by inheriting from :class:`~flask.ext.admin.model.BaseModelView`.
 class and implementing database-related methods.
 
