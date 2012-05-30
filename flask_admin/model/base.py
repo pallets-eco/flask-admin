@@ -93,8 +93,8 @@ class BaseModelView(BaseView):
             class MyModelView(BaseModelView):
                 sortable_columns = ('name', ('user', 'user.username'))
 
-        For SQLAlchemy models, you can pass attribute instead of the string
-        too::
+        When using SQLAlchemy models, model attributes can be used instead
+        of the string::
 
             class MyModelView(BaseModelView):
                 sortable_columns = ('name', ('user', User.username))
@@ -106,7 +106,7 @@ class BaseModelView(BaseView):
         text-only fields are searchable, but it is up for a model
         implementation to make decision.
 
-        For example::
+        Example::
 
             class MyModelView(BaseModelView):
                 searchable_columns = ('name', 'email')
@@ -118,7 +118,7 @@ class BaseModelView(BaseView):
 
         Can contain either field names or instances of :class:`~flask.ext.admin.model.filters.BaseFilter` classes.
 
-        For example:
+        Example::
 
             class MyModelView(BaseModelView):
                 column_filters = ('user', 'email')
@@ -128,7 +128,7 @@ class BaseModelView(BaseView):
     """
         Form class. Override if you want to use custom form for your model.
 
-        For example:
+        For example::
 
             class MyForm(wtf.Form):
                 pass
@@ -137,12 +137,26 @@ class BaseModelView(BaseView):
                 form = MyForm
     """
 
+    form_args = None
+    """
+        Dictionary of form field arguments. Refer to WTForms documentation for
+        list of possible options.
+
+        Example::
+
+            class MyModelView(BaseModelView):
+                form_args = dict(
+                    name=dict(label='First Name', validators=[wtf.required()])
+                )
+    """
+
+
     form_columns = None
     """
         Collection of the model field names for the form. If set to `None` will
         get them from the model.
 
-        For example:
+        Example::
 
             class MyModelView(BaseModelView):
                 list_columns = ('name', 'email')
@@ -156,19 +170,6 @@ class BaseModelView(BaseView):
 
             class MyModelView(BaseModelView):
                 excluded_form_columns = ('last_name', 'email')
-    """
-
-    form_args = None
-    """
-        Dictionary of form field arguments. Refer to WTForm documentation for
-        list of possible options.
-
-        Example::
-
-            class MyModelView(BaseModelView):
-                form_args = dict(
-                    name=dict(label='First Name', validators=[wtf.required()])
-                )
     """
 
     form_overrides = None
