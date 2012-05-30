@@ -195,9 +195,9 @@ class BaseView(object):
 
 class AdminIndexView(BaseView):
     """
-        Administrative interface entry page. You can see it by going to the /admin/ URL.
+        Default administrative interface index page when visiting the ``/admin/`` URL.
 
-        You can override this page by passing your own view class to the `Admin` constructor::
+        It can be overridden by passing your own view class to the ``Admin`` constructor::
 
             class MyHomeView(AdminIndexView):
                 @expose('/')
@@ -206,11 +206,12 @@ class AdminIndexView(BaseView):
 
             admin = Admin(index_view=MyHomeView)
 
-        By default, has following rules:
-        1. If name is not provided, will use 'Home'
-        2. If endpoint is not provided, will use 'admin'
-        3. If url is not provided, will use '/admin'
-        4. Automatically associates with static folder.
+        Default values for the index page are following:
+
+        * If name is not provided, 'Home' will be used.
+        * If endpoint is not provided, will use ``admin``
+        * Default URL route is ``/admin``.
+        * Automatically associates with static folder.
     """
     def __init__(self, name=None, category=None, endpoint=None, url=None):
         super(AdminIndexView, self).__init__(name or babel.lazy_gettext('Home'),
@@ -339,17 +340,9 @@ class Admin(object):
 
     def locale_selector(self, f):
         """
-            Install locale selector for current admin instance.
+            Installs locale selector for current ``Admin`` instance.
 
             Example::
-
-                admin = Admin(app)
-
-                @admin.locale_selector
-                def admin_locale_selector():
-                    return request.args.get('lang', 'en')
-
-            Another example:
 
                 def admin_locale_selector():
                     return request.args.get('lang', 'en')
@@ -357,7 +350,15 @@ class Admin(object):
                 admin = Admin(app)
                 admin.locale_selector(admin_locale_selector)
 
-            And if you want to subclass ``Admin``, you can do something like:
+            It is also possible to use the ``@admin`` decorator::
+
+                admin = Admin(app)
+
+                @admin.locale_selector
+                def admin_locale_selector():
+                    return request.args.get('lang', 'en')
+
+            Or by subclassing the ``Admin``::
 
                 class MyAdmin(Admin):
                     def locale_selector(self):
