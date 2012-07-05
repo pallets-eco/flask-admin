@@ -433,7 +433,7 @@ class BaseModelView(BaseView):
 
             Override to implement custom behavior.
         """
-        return self._create_form_class(form, obj)
+        return self._create_form_class(obj=obj)
 
     def edit_form(self, form, obj=None):
         """
