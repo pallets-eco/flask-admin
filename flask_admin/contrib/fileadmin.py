@@ -176,7 +176,7 @@ class FileAdmin(BaseView):
             Return base path. Override to customize behavior (per-user
             directories, etc)
         """
-        return self.base_path
+        return op.normpath(self.base_path)
 
     def get_base_url(self):
         """
