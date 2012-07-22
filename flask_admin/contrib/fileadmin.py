@@ -309,8 +309,11 @@ class FileAdmin(BaseView):
         items.sort(key=itemgetter(2), reverse=True)
 
         # Generate breadcrumbs
-        accumulator = ''
-        breadcrumbs = [(n, op.join(accumulator, n)) for n in path.split(os.sep)]
+        accumulator = []
+        breadcrumbs = []
+        for n in path.split(os.sep):
+            accumulator.append(n)
+            breadcrumbs.append((n, op.join(*accumulator)))
 
         return self.render(self.list_template,
                            dir_path=path,
