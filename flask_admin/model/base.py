@@ -677,7 +677,16 @@ class BaseModelView(BaseView):
                                  search, filters)
 
         def get_value(obj, field):
-            return getattr(obj, field, None)
+            if '.' in field:
+                while '.' in field:
+                    field_split = field.split('.')
+                    col, field = field_split[0], '.'.join(field_split[1::])
+                    obj = getattr(obj, col, None)
+                else:
+                    obj = getattr(obj, field, None)
+            else:
+                obj = getattr(obj, field, None)
+            return obj
 
         return self.render(self.list_template,
                                data=data,
