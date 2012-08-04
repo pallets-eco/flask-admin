@@ -3,6 +3,7 @@ from flask import request, url_for, redirect, flash
 from flask.ext.admin.babel import gettext
 
 from flask.ext.admin.base import BaseView, expose
+from flask.ext.admin.tools import rec_getattr
 from flask.ext.admin.model import filters
 
 
@@ -676,18 +677,6 @@ class BaseModelView(BaseView):
             return self._get_url('.index_view', page, column, desc,
                                  search, filters)
 
-        def get_value(obj, field):
-            if '.' in field:
-                while '.' in field:
-                    field_split = field.split('.')
-                    col, field = field_split[0], '.'.join(field_split[1::])
-                    obj = getattr(obj, col, None)
-                else:
-                    obj = getattr(obj, field, None)
-            else:
-                obj = getattr(obj, field, None)
-            return obj
-
         return self.render(self.list_template,
                                data=data,
                                # List
@@ -696,7 +685,7 @@ class BaseModelView(BaseView):
                                # Stuff
                                enumerate=enumerate,
                                get_pk_value=self.get_pk_value,
-                               get_value=get_value,
+                               get_value=rec_getattr,
                                return_url=self._get_url('.index_view',
                                                         page,
                                                         sort_idx,
