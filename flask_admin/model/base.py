@@ -160,7 +160,7 @@ class BaseModelView(BaseView):
         Example::
 
             class MyModelView(BaseModelView):
-                list_columns = ('name', 'email')
+                form_columns = ('name', 'email')
     """
 
     excluded_form_columns = None
