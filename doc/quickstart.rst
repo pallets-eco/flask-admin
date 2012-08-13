@@ -278,7 +278,7 @@ Here is simple example::
     admin = Admin(app)
 
     path = op.join(op.dirname(__file__), 'static')
-    admin.add_view(path, '/static/', name='Static Files')
+    admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
 
 Sample screenshot:
 
