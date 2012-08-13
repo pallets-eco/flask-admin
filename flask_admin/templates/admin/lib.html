@@ -90,6 +90,9 @@
               {{ f() }}
               {% endif %}
             </div>
+            {% if f.description %}
+            <p class="help-block">{{ f.description }}</p>
+            {% endif %}
             {% if f.errors %}
               <ul>
               {% for e in f.errors %}
