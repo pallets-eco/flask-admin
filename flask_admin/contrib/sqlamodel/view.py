@@ -6,9 +6,9 @@ from wtforms.ext.sqlalchemy.orm import model_form
 
 from flask import flash
 
-from flask.ext.admin.babel import gettext
+from flask.ext.admin.babel import gettext, ngettext
 from flask.ext.admin.form import BaseForm
-from flask.ext.admin.model import BaseModelView
+from flask.ext.admin.model import BaseModelView, action
 
 from flask.ext.admin.contrib.sqlamodel import form, filters, tools
 
@@ -549,3 +549,30 @@ class ModelView(BaseModelView):
         except Exception, ex:
             flash(gettext('Failed to delete model. %(error)s', error=str(ex)), 'error')
             return False
+
+    # Default model actions
+    def is_action_allowed(self, name):
+        # Check delete action permission
+        if name == 'delete' and not self.can_delete:
+            return False
+
+        return super(ModelView, self).is_action_allowed(name)
+
+    @action('delete', 'Delete', 'Are you sure you want to delete selected models?')
+    def action_delete(self, ids):
+        try:
+            model_pk = getattr(self.model, self._primary_key)
+
+            query = self.session.query(self.model).filter(model_pk.in_(ids))
+
+            # TODO: Load up ORM and delete models one by one?
+            count = query.delete(synchronize_session=False)
+
+            self.session.commit()
+
+            flash(ngettext('Model was successfully deleted.',
+                           '%(count)s models were sucessfully deleted.',
+                           count,
+                           count=count))
+        except Exception, ex:
+            flash(gettext('Failed to delete models. %(error)s', error=str(ex)), 'error')

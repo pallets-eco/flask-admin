@@ -7,5 +7,6 @@ pyenv
 build
 source/_static*
 source/_templates*
+dist/*
 make.bat
 venv

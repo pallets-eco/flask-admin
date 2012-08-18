@@ -1,5 +1,5 @@
 var AdminFilters = function(element, filters_element, adminForm, operations, options, types) {
-    var $root = $(element)
+    var $root = $(element);
     var $container = $('.filters', $root);
     var lastCount = 0;
 

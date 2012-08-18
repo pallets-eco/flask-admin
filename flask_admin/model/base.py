@@ -151,7 +151,6 @@ class BaseModelView(BaseView):
                 )
     """
 
-
     form_columns = None
     """
         Collection of the model field names for the form. If set to `None` will
@@ -181,6 +180,16 @@ class BaseModelView(BaseView):
 
             class MyModelView(BaseModelView):
                 form_overrides = dict(name=wtf.FileField)
+    """
+
+    # Actions
+    disallowed_actions = []
+    """
+        Set of disallowed action names. For example, if you want to disable
+        mass model deletion, do something like this:
+
+            class MyModelView(BaseModelView):
+                disallowed_actions = ['delete']
     """
 
     # Various settings
@@ -219,6 +228,9 @@ class BaseModelView(BaseView):
         super(BaseModelView, self).__init__(name, category, endpoint, url)
 
         self.model = model
+
+        # Actions
+        self._init_actions()
 
         # Scaffolding
         self._refresh_cache()
@@ -262,6 +274,22 @@ class BaseModelView(BaseView):
         else:
             self._filter_groups = None
             self._filter_types = None
+
+    # Actions
+    def _init_actions(self):
+        self._actions = []
+        self._action_data = dict()
+
+        for p in dir(self):
+            attr = getattr(self, p)
+
+            if hasattr(attr, '_action'):
+                name, text, desc = attr._action
+
+                self._actions.append((name, text))
+
+                # TODO: Use namedtuple
+                self._action_data[name] = (attr, text, desc)
 
     # Primary key
     def get_pk_value(self, model):
@@ -624,6 +652,16 @@ class BaseModelView(BaseView):
 
         return url_for(view, **kwargs)
 
+    def is_action_allowed(self, name):
+        """
+            Override this method to allow or disallow actions based
+            on some condition.
+
+            Default implementation only checks if particular action
+            is not in `disallowed_actions`.
+        """
+        return name not in self.disallowed_actions
+
     # Views
     @expose('/')
     def index_view(self):
@@ -677,6 +715,14 @@ class BaseModelView(BaseView):
             return self._get_url('.index_view', page, column, desc,
                                  search, filters)
 
+        # Actions
+        actions = filter(lambda x: self.is_action_allowed(x[0]), self._actions)
+
+        actions_confirmation = dict()
+        for act in actions:
+            name, _ = act
+            actions_confirmation[name] = gettext(self._action_data[name][2])
+
         return self.render(self.list_template,
                                data=data,
                                # List
@@ -713,7 +759,11 @@ class BaseModelView(BaseView):
                                filter_groups=self._filter_groups,
                                filter_types=self._filter_types,
                                filter_data=filters_data,
-                               active_filters=filters
+                               active_filters=filters,
+
+                               # Actions
+                               actions=actions,
+                               actions_confirmation=actions_confirmation
                                )
 
     @expose('/new/', methods=('GET', 'POST'))
@@ -790,3 +840,21 @@ class BaseModelView(BaseView):
             self.delete_model(model)
 
         return redirect(return_url)
+
+    @expose('/action/', methods=('POST',))
+    def action_view(self):
+        """
+            Mass-model action view.
+        """
+        action = request.form.get('action')
+        ids = request.form.getlist('rowid')
+
+        handler = self._action_data.get(action)
+
+        if handler and self.is_action_allowed(action):
+            response = handler[0](ids)
+
+            if response is not None:
+                return response
+
+        return redirect(url_for('.index_view'))
