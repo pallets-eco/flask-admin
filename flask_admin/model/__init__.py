@@ -1,2 +1,2 @@
 from .base import BaseModelView
-from .action import action
+from flask.ext.admin.actions import action
