@@ -3,17 +3,16 @@ from flask import request, url_for, redirect
 
 def action(name, text, confirmation=None):
     """
-        Use this decorator to expose mass-model actions
+        Use this decorator to expose actions that span more than one
+        entity (model, file, etc)
 
         `name`
             Action name
         `text`
             Action text.
-            Will be passed through gettext() before rendering.
         `confirmation`
             Confirmation text. If not provided, action will be executed
             unconditionally.
-            Will be passed through gettext() before rendering.
     """
     def wrap(f):
         f._action = (name, text, confirmation)
@@ -23,11 +22,30 @@ def action(name, text, confirmation=None):
 
 
 class ActionsMixin(object):
+    """
+        Actions mixin.
+
+        In some cases, you might work with more than one "entity" (model, file, etc) in
+        your admin view and will want to perform actions on group of entities at once.
+
+        In this case, you can add this functionality by doing this:
+        1. Add mixin to your administrative view class
+        2. Call `init_actions` in your class constructor
+        3. Expose actions view
+        4. Import `actions.html` library and add call library macros in your template
+    """
+
     def __init__(self):
+        """
+            Default constructor.
+        """
         self._actions = []
         self._actions_data = {}
 
     def init_actions(self):
+        """
+            Initialize list of actions for the current administrative view.
+        """
         self._actions = []
         self._actions_data = {}
 
@@ -43,9 +61,18 @@ class ActionsMixin(object):
                 self._actions_data[name] = (attr, text, desc)
 
     def is_action_allowed(self, name):
+        """
+            Verify if action with `name` is allowed.
+
+            `name`
+                Action name
+        """
         return True
 
     def get_actions_list(self):
+        """
+            Return list and a dictionary of allowed actions.
+        """
         actions = []
         actions_confirmation = {}
 
@@ -61,6 +88,13 @@ class ActionsMixin(object):
         return actions, actions_confirmation
 
     def handle_action(self, return_view=None):
+        """
+            Handle action request.
+
+            `return_view`
+                Name of the view to return to after the request.
+                If not provided, will return user to the index view.
+        """
         action = request.form.get('action')
         ids = request.form.getlist('rowid')
 
