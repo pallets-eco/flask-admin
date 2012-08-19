@@ -5,9 +5,10 @@ from flask.ext.admin.babel import gettext
 from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.tools import rec_getattr
 from flask.ext.admin.model import filters
+from flask.ext.admin.actions import ActionsMixin
 
 
-class BaseModelView(BaseView):
+class BaseModelView(BaseView, ActionsMixin):
     """
         Base model view.
 
@@ -230,7 +231,7 @@ class BaseModelView(BaseView):
         self.model = model
 
         # Actions
-        self._init_actions()
+        self.init_actions()
 
         # Scaffolding
         self._refresh_cache()
@@ -274,22 +275,6 @@ class BaseModelView(BaseView):
         else:
             self._filter_groups = None
             self._filter_types = None
-
-    # Actions
-    def _init_actions(self):
-        self._actions = []
-        self._action_data = dict()
-
-        for p in dir(self):
-            attr = getattr(self, p)
-
-            if hasattr(attr, '_action'):
-                name, text, desc = attr._action
-
-                self._actions.append((name, text))
-
-                # TODO: Use namedtuple
-                self._action_data[name] = (attr, text, desc)
 
     # Primary key
     def get_pk_value(self, model):
@@ -715,18 +700,8 @@ class BaseModelView(BaseView):
             return self._get_url('.index_view', page, column, desc,
                                  search, filters)
 
-        # Actions.
-        actions = []
-        actions_confirmation = {}
-
-        for act in self._actions:
-            name, text = act
-
-            if self.is_action_allowed(name):
-                text = unicode(text)
-
-                actions.append((name, text))
-                actions_confirmation[name] = unicode(self._action_data[name][2])
+        # Actions
+        actions, actions_confirmation = self.get_actions_list()
 
         return self.render(self.list_template,
                                data=data,
@@ -851,15 +826,4 @@ class BaseModelView(BaseView):
         """
             Mass-model action view.
         """
-        action = request.form.get('action')
-        ids = request.form.getlist('rowid')
-
-        handler = self._action_data.get(action)
-
-        if handler and self.is_action_allowed(action):
-            response = handler[0](ids)
-
-            if response is not None:
-                return response
-
-        return redirect(url_for('.index_view'))
+        return self.handle_action()

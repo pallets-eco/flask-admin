@@ -1,5 +1,6 @@
 {% extends 'admin/master.html' %}
 {% import 'admin/lib.html' as lib with context %}
+{% import 'admin/actions.html' as actionlib with context %}
 
 {% block head %}
     <link href="{{ url_for('admin.static', filename='chosen/chosen.css') }}" rel="stylesheet">
@@ -32,20 +33,7 @@
         </li>
         {% endif %}
 
-        {% if actions %}
-        <li class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                {{ _gettext('With selected')}}<b class="caret"></b>
-            </a>
-            <ul id="action_list" class="dropdown-menu">
-                {% for p in actions %}
-                <li>
-                    <a href="#" onclick="return modelActions.execute('{{ p[0] }}');">{{ _gettext(p[1]) }}</a>
-                </li>
-                {% endfor %}
-            </ul>
-        </li>
-        {% endif %}
+        {{ actionlib.dropdown(actions) }}
 
         {% if search_supported %}
         <li>
@@ -107,7 +95,7 @@
             <tr>
                 {% if actions %}
                 <th class="span1">
-                    <input type="checkbox" name="rowtoggle" id="rowtoggle" />
+                    <input type="checkbox" name="rowtoggle" class="action-rowtoggle" />
                 </th>
                 {% endif %}
                 <th class="span1">&nbsp;</th>
@@ -166,24 +154,18 @@
     </table>
     {{ lib.pager(page, num_pages, pager_url) }}
 
-    {% if actions %}
-    <form id="action_form" action="{{ url_for('.action_view') }}" method="POST" style="display: none">
-        <input type="hidden" id="action" name="action" />
-    </form>
-    {% endif %}
+    {{ actionlib.form(actions, '.action_view') }}
 {% endblock %}
 
 {% block tail %}
     <script src="{{ url_for('admin.static', filename='js/bootstrap-datepicker.js') }}"></script>
     <script src="{{ url_for('admin.static', filename='js/form.js') }}"></script>
     <script src="{{ url_for('admin.static', filename='js/filters.js') }}"></script>
-    {% if actions %}
-    <script src="{{ url_for('admin.static', filename='js/actions.js') }}"></script>
-    <script language="javascript">
-        var modelActions = new AdminModelActions('{{ _gettext("Please select at least one model.") }}',
-                                                 {{ actions_confirmation|tojson|safe }});
-    </script>
-    {% endif %}
+
+    {{ actionlib.script(_gettext('Please select at least one model.'),
+                      actions,
+                      actions_confirmation) }}
+
     {% if filter_groups is not none and filter_data is not none %}
     <script language="javascript">
         var form = new AdminForm();

@@ -1,0 +1,33 @@
+{% macro dropdown(actions) -%}
+    {% if actions %}
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            {{ _gettext('With selected')}}<b class="caret"></b>
+        </a>
+        <ul id="action_list" class="dropdown-menu">
+            {% for p in actions %}
+            <li>
+                <a href="#" onclick="return modelActions.execute('{{ p[0] }}');">{{ _gettext(p[1]) }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endif %}
+{% endmacro %}
+
+{% macro form(actions, view) %}
+    {% if actions %}
+    <form id="action_form" action="{{ url_for(view) }}" method="POST" style="display: none">
+        <input type="hidden" id="action" name="action" />
+    </form>
+    {% endif %}
+{% endmacro %}
+
+{% macro script(message, actions, actions_confirmation) %}
+    {% if actions %}
+    <script src="{{ url_for('admin.static', filename='js/actions.js') }}"></script>
+    <script language="javascript">
+        var modelActions = new AdminModelActions({{ message|tojson|safe }}, {{ actions_confirmation|tojson|safe }});
+    </script>
+    {% endif %}
+{% endmacro %}
