@@ -83,7 +83,9 @@ class ActionsMixin(object):
                 text = unicode(text)
 
                 actions.append((name, text))
-                actions_confirmation[name] = unicode(self._actions_data[name][2])
+                confirmation = self._actions_data[name][2]
+                if confirmation:
+                    actions_confirmation[name] = unicode(confirmation)
 
         return actions, actions_confirmation
 
