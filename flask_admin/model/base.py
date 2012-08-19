@@ -715,13 +715,18 @@ class BaseModelView(BaseView):
             return self._get_url('.index_view', page, column, desc,
                                  search, filters)
 
-        # Actions
-        actions = filter(lambda x: self.is_action_allowed(x[0]), self._actions)
+        # Actions.
+        actions = []
+        actions_confirmation = {}
 
-        actions_confirmation = dict()
-        for act in actions:
-            name, _ = act
-            actions_confirmation[name] = gettext(self._action_data[name][2])
+        for act in self._actions:
+            name, text = act
+
+            if self.is_action_allowed(name):
+                text = unicode(text)
+
+                actions.append((name, text))
+                actions_confirmation[name] = unicode(self._action_data[name][2])
 
         return self.render(self.list_template,
                                data=data,

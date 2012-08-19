@@ -40,7 +40,7 @@
             <ul id="action_list" class="dropdown-menu">
                 {% for p in actions %}
                 <li>
-                    <a href="#" onclick="return actionExecute('{{ p[0] }}');">{{ _gettext(p[1]) }}</a>
+                    <a href="#" onclick="return modelActions.execute('{{ p[0] }}');">{{ _gettext(p[1]) }}</a>
                 </li>
                 {% endfor %}
             </ul>
@@ -139,7 +139,7 @@
         <tr>
             {% if actions %}
             <td>
-                <input type="checkbox" name="rowid" value="{{ get_pk_value(row) }}" />
+                <input type="checkbox" name="rowid" class="action-checkbox" value="{{ get_pk_value(row) }}" />
             </td>
             {% endif %}
             <td>
@@ -177,6 +177,13 @@
     <script src="{{ url_for('admin.static', filename='js/bootstrap-datepicker.js') }}"></script>
     <script src="{{ url_for('admin.static', filename='js/form.js') }}"></script>
     <script src="{{ url_for('admin.static', filename='js/filters.js') }}"></script>
+    {% if actions %}
+    <script src="{{ url_for('admin.static', filename='js/actions.js') }}"></script>
+    <script language="javascript">
+        var modelActions = new AdminModelActions('{{ _gettext("Please select at least one model.") }}',
+                                                 {{ actions_confirmation|tojson|safe }});
+    </script>
+    {% endif %}
     {% if filter_groups is not none and filter_data is not none %}
     <script language="javascript">
         var form = new AdminForm();
@@ -184,45 +191,6 @@
                                 {{ admin_view._filter_dict|tojson|safe }},
                                 {{ filter_data|tojson|safe }},
                                 {{ filter_types|tojson|safe }});
-
-        // Actions helpers. TODO: Move to separate file
-        $(function() {
-            $('#rowtoggle').change(function() {
-                $('td input[type=checkbox]').attr('checked', this.checked);
-            });
-
-            var actionForm = $('#action_form');
-            actionForm.submit(function() {
-                $('td input[type=checkbox]:checked').each(function() {
-                    actionForm.append($(this).clone());
-                });
-            });
-        });
-
-        // TODO: Cleanup this mess
-        var confirmation = {{ actions_confirmation|tojson|safe }};
-
-        function actionExecute(name) {
-            var selected = $('td input[type=checkbox]:checked').size();
-
-            if (selected == 0)
-            {
-                // TODO: Translation
-                alert('{{ _gettext("Please select at least one model.") }}');
-                return false;
-            }
-
-            var msg = confirmation[$('#action_form select').val()];
-
-            if (!!msg)
-                if (!confirm(msg))
-                    return false;
-
-            $('#action_form #action').val(name);
-            $('#action_form').submit();
-
-            return false;
-        }
     </script>
     {% endif %}
 {% endblock %}

@@ -6,7 +6,7 @@ from wtforms.ext.sqlalchemy.orm import model_form
 
 from flask import flash
 
-from flask.ext.admin.babel import gettext, ngettext
+from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.form import BaseForm
 from flask.ext.admin.model import BaseModelView, action
 
@@ -558,7 +558,9 @@ class ModelView(BaseModelView):
 
         return super(ModelView, self).is_action_allowed(name)
 
-    @action('delete', 'Delete', 'Are you sure you want to delete selected models?')
+    @action('delete',
+            lazy_gettext('Delete'),
+            lazy_gettext('Are you sure you want to delete selected models?'))
     def action_delete(self, ids):
         try:
             model_pk = getattr(self.model, self._primary_key)
