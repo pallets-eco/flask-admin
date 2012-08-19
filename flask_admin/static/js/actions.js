@@ -29,8 +29,8 @@ var AdminModelActions = function(actionErrorMessage, actionConfirmations) {
     };
 
     $(function() {
-        $('#rowtoggle').change(function() {
-            $('td input[type=checkbox]').attr('checked', this.checked);
+        $('.action-rowtoggle').change(function() {
+            $('input.action-checkbox').attr('checked', this.checked);
         });
     });
 };
