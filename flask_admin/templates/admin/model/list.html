@@ -158,7 +158,7 @@
     </table>
     {{ lib.pager(page, num_pages, pager_url) }}
 
-    {{ actionlib.form(actions, '.action_view') }}
+    {{ actionlib.form(actions, url_for('.action_view')) }}
 {% endblock %}
 
 {% block tail %}
