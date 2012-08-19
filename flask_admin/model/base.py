@@ -69,6 +69,24 @@ class BaseModelView(BaseView, ActionsMixin):
                 excluded_list_columns = ('last_name', 'email')
     """
 
+    list_formatters = dict()
+    """
+        Dictionary of list view column formatters.
+
+        For example, if you want to show price multiplied by
+        two, you can do something like this::
+
+            class MyModelView(BaseModelView):
+                list_formatters = dict(price=lambda m, p: m.price*2)
+
+        Callback function has following prototype::
+
+            def formatter(model, name):
+                # model is model instance
+                # name is property name
+                pass
+    """
+
     rename_columns = None
     """
         Dictionary where key is column name and value is string to display.
@@ -647,6 +665,20 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return name not in self.disallowed_actions
 
+    def get_list_value(self, model, name):
+        """
+            Returns value to be displayed in list view
+
+                `model`
+                    Model instance
+                `name`
+                    Field name
+        """
+        if name in self.list_formatters:
+            return self.list_formatters[name](model, name)
+
+        return rec_getattr(model, name)
+
     # Views
     @expose('/')
     def index_view(self):
@@ -711,7 +743,7 @@ class BaseModelView(BaseView, ActionsMixin):
                                # Stuff
                                enumerate=enumerate,
                                get_pk_value=self.get_pk_value,
-                               get_value=rec_getattr,
+                               get_value=self.get_list_value,
                                return_url=self._get_url('.index_view',
                                                         page,
                                                         sort_idx,

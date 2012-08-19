@@ -94,6 +94,7 @@ class PostAdmin(sqlamodel.ModelView):
         # Just call parent class with predefined model.
         super(PostAdmin, self).__init__(Post, session)
 
+
 if __name__ == '__main__':
     # Create admin
     admin = admin.Admin(app, 'Simple Models')
