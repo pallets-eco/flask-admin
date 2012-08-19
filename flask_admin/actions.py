@@ -43,7 +43,7 @@ class ActionsMixin(object):
                 self._actions_data[name] = (attr, text, desc)
 
     def is_action_allowed(self, name):
-        return name not in self.disallowed_actions
+        return True
 
     def get_actions_list(self):
         actions = []
