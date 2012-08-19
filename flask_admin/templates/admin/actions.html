@@ -1,23 +1,19 @@
-{% macro dropdown(actions) -%}
-    {% if actions %}
-    <li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-            {{ _gettext('With selected')}}<b class="caret"></b>
-        </a>
-        <ul id="action_list" class="dropdown-menu">
-            {% for p in actions %}
-            <li>
-                <a href="#" onclick="return modelActions.execute('{{ p[0] }}');">{{ _gettext(p[1]) }}</a>
-            </li>
-            {% endfor %}
-        </ul>
-    </li>
-    {% endif %}
+{% macro dropdown(btn_class='dropdown-toggle') -%}
+    <a class="{{ btn_class }}" data-toggle="dropdown" href="#">
+        {{ _gettext('With selected')}}<b class="caret"></b>
+    </a>
+    <ul class="dropdown-menu">
+        {% for p in actions %}
+        <li>
+            <a href="#" onclick="return modelActions.execute('{{ p[0] }}');">{{ _gettext(p[1]) }}</a>
+        </li>
+        {% endfor %}
+    </ul>
 {% endmacro %}
 
-{% macro form(actions, view) %}
+{% macro form(actions, url) %}
     {% if actions %}
-    <form id="action_form" action="{{ url_for(view) }}" method="POST" style="display: none">
+    <form id="action_form" action="{{ url }}" method="POST" style="display: none">
         <input type="hidden" id="action" name="action" />
     </form>
     {% endif %}

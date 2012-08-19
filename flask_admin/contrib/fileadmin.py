@@ -12,6 +12,7 @@ from werkzeug import secure_filename
 from flask import flash, url_for, redirect, abort, request
 
 from flask.ext.admin.base import BaseView, expose
+from flask.ext.admin.actions import action, ActionsMixin
 from flask.ext.admin.babel import gettext, lazy_gettext
 from flask.ext.admin import form
 from flask.ext import wtf
@@ -54,7 +55,7 @@ class UploadForm(form.BaseForm):
             raise wtf.ValidationError(gettext('Invalid file type.'))
 
 
-class FileAdmin(BaseView):
+class FileAdmin(BaseView, ActionsMixin):
     """
         Simple file-management interface.
 
@@ -150,6 +151,8 @@ class FileAdmin(BaseView):
         """
         self.base_path = base_path
         self.base_url = base_url
+
+        self.init_actions()
 
         self._on_windows = platform.system() == 'Windows'
 
@@ -277,6 +280,12 @@ class FileAdmin(BaseView):
 
         return base_path, directory, path
 
+    def is_action_allowed(self, name):
+        if name == 'delete' and not self.can_delete:
+            return False
+
+        return True
+
     @expose('/')
     @expose('/b/<path:path>')
     def index(self, path=None):
@@ -315,12 +324,17 @@ class FileAdmin(BaseView):
             accumulator.append(n)
             breadcrumbs.append((n, op.join(*accumulator)))
 
+        # Actions
+        actions, actions_confirmation = self.get_actions_list()
+
         return self.render(self.list_template,
                            dir_path=path,
                            breadcrumbs=breadcrumbs,
                            get_dir_url=self._get_dir_url,
                            get_file_url=self._get_file_url,
-                           items=items)
+                           items=items,
+                           actions=actions,
+                           actions_confirmation=actions_confirmation)
 
     @expose('/upload/', methods=('GET', 'POST'))
     @expose('/upload/<path:path>', methods=('GET', 'POST'))
@@ -466,3 +480,21 @@ class FileAdmin(BaseView):
                            path=op.dirname(path),
                            name=op.basename(path),
                            dir_url=return_url)
+
+    @expose('/action/', methods=('POST',))
+    def action_view(self):
+        return self.handle_action()
+
+    # Actions
+    @action('delete',
+            lazy_gettext('Delete'),
+            lazy_gettext('Are you sure you want to delete these files?'))
+    def action_delete(self, items):
+        for path in items:
+            base_path, full_path, path = self._normalize_path(path)
+
+            try:
+                os.remove(full_path)
+                flash(gettext('File "%(name)s" was successfully deleted.', name=path))
+            except Exception, ex:
+                flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')

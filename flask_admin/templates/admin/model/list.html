@@ -33,7 +33,11 @@
         </li>
         {% endif %}
 
-        {{ actionlib.dropdown(actions) }}
+        {% if actions %}
+        <li class="dropdown">
+            {{ actionlib.dropdown() }}
+        </li>
+        {% endif %}
 
         {% if search_supported %}
         <li>
