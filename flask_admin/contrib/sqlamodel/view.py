@@ -2,13 +2,12 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import subqueryload
 from sqlalchemy.sql.expression import desc
 from sqlalchemy import or_, Column
-from wtforms.ext.sqlalchemy.orm import model_form
 
 from flask import flash
 
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
-from flask.ext.admin.form import BaseForm
 from flask.ext.admin.model import BaseModelView
+from flask.ext.admin.model.form import model_form
 from flask.ext.admin.actions import action
 
 from flask.ext.admin.contrib.sqlamodel import form, filters, tools
@@ -112,6 +111,18 @@ class ModelView(BaseModelView):
         Field to filter converter.
 
         Override this attribute to use non-default converter.
+    """
+
+    fast_mass_delete = False
+    """
+        If set to `False` and user deletes more than one model using actions,
+        all models will be read from the database and then deleted one by one
+        giving SQLAlchemy chance to manually cleanup any dependencies (many-to-many
+        relationships, etc).
+
+        If set to True, will run DELETE statement which is somewhat faster, but
+        might leave corrupted data if you forget to configure DELETE CASCADE
+        for your model.
     """
 
     def __init__(self, model, session,
@@ -360,12 +371,13 @@ class ModelView(BaseModelView):
         """
             Create form from the model.
         """
-        return model_form(self.model,
-                          BaseForm,
+        form_fields = form.model_fields(
+                          self.model,
+                          form.AdminModelConverter(self),
                           only=self.form_columns,
                           exclude=self.excluded_form_columns,
-                          field_args=self.form_args,
-                          converter=form.AdminModelConverter(self))
+                          field_args=self.form_args)
+        return model_form(self.model, form_fields)
 
     def scaffold_auto_joins(self):
         """
@@ -568,8 +580,14 @@ class ModelView(BaseModelView):
 
             query = self.session.query(self.model).filter(model_pk.in_(ids))
 
-            # TODO: Load up ORM and delete models one by one?
-            count = query.delete(synchronize_session=False)
+            if self.fast_mass_delete:
+                count = query.delete(synchronize_session=False)
+            else:
+                count = 0
+
+                for m in query.all():
+                    self.session.delete(m)
+                    count += 1
 
             self.session.commit()
 
