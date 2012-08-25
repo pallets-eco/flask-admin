@@ -7,7 +7,6 @@ from flask import flash
 
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
-from flask.ext.admin.model.form import model_form
 from flask.ext.admin.actions import action
 
 from flask.ext.admin.contrib.sqlamodel import form, filters, tools
@@ -371,13 +370,11 @@ class ModelView(BaseModelView):
         """
             Create form from the model.
         """
-        form_fields = form.model_fields(
-                          self.model,
-                          form.AdminModelConverter(self),
+        converter = form.AdminModelConverter(self)
+        return converter.get_form(self.model,
                           only=self.form_columns,
                           exclude=self.excluded_form_columns,
                           field_args=self.form_args)
-        return model_form(self.model, form_fields)
 
     def scaffold_auto_joins(self):
         """

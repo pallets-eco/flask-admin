@@ -218,30 +218,27 @@ class AdminModelConverter(ModelConverterBase):
         field_args['validators'].append(validators.UUID())
         return fields.TextField(**field_args)
 
+    # Get list of fields and generate form
+    def get_form(self, model, base_class=form.BaseForm,
+                    only=None, exclude=None,
+                    field_args=None):
+        # TODO: Support new 0.8 API
+        if not hasattr(model, '_sa_class_manager'):
+            raise TypeError('model must be a sqlalchemy mapped model')
 
-def model_fields(model, converter, only=None, exclude=None, field_args=None):
-    """
-    Generate a dictionary of fields for a given SQLAlchemy model.
+        mapper = model._sa_class_manager.mapper
+        field_args = field_args or {}
 
-    See `model_form` docstring for description of parameters.
-    """
-    # TODO: Support new 0.8 API
-    if not hasattr(model, '_sa_class_manager'):
-        raise TypeError('model must be a sqlalchemy mapped model')
+        properties = ((p.key, p) for p in mapper.iterate_properties)
+        if only:
+            properties = (x for x in properties if x[0] in only)
+        elif exclude:
+            properties = (x for x in properties if x[0] not in exclude)
 
-    mapper = model._sa_class_manager.mapper
-    field_args = field_args or {}
+        field_dict = {}
+        for name, prop in properties:
+            field = self.convert(model, mapper, prop, field_args.get(name))
+            if field is not None:
+                field_dict[name] = field
 
-    properties = ((p.key, p) for p in mapper.iterate_properties)
-    if only:
-        properties = (x for x in properties if x[0] in only)
-    elif exclude:
-        properties = (x for x in properties if x[0] not in exclude)
-
-    field_dict = {}
-    for name, prop in properties:
-        field = converter.convert(model, mapper, prop, field_args.get(name))
-        if field is not None:
-            field_dict[name] = field
-
-    return field_dict
+        return type(model.__name__ + 'Form', (base_class, ), field_dict)
