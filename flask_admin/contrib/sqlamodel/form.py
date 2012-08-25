@@ -64,7 +64,7 @@ class AdminModelConverter(ModelConverter):
 
         return None
 
-    def convert(self, model, mapper, prop, field_args):
+    def convert(self, model, mapper, prop, field_args, *args):
         kwargs = {
             'validators': [],
             'filters': []

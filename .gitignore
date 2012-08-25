@@ -10,3 +10,4 @@ source/_templates*
 dist/*
 make.bat
 venv
+*.sqlite
