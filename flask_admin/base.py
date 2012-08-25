@@ -126,10 +126,17 @@ class BaseView(object):
 
         # If url is not provided, generate it from endpoint name
         if self.url is None:
-            self.url = '%s/%s' % (self.admin.url, self.endpoint)
+            if self.admin.url != '/':
+                self.url = '%s/%s' % (self.admin.url, self.endpoint)
+            else:
+                self.url = '/'
         else:
             if not self.url.startswith('/'):
                 self.url = '%s/%s' % (self.admin.url, self.url)
+
+        # If we're working from the root of the site, set prefix to None
+        if self.url == '/':
+            self.url = None
 
         # If name is not povided, use capitalized endpoint name
         if self.name is None:
@@ -138,6 +145,7 @@ class BaseView(object):
         # Create blueprint and register rules
         self.blueprint = Blueprint(self.endpoint, __name__,
                                    url_prefix=self.url,
+                                   subdomain=self.admin.subdomain,
                                    template_folder='templates',
                                    static_folder=self.static_folder)
 
@@ -214,13 +222,16 @@ class AdminIndexView(BaseView):
         * Automatically associates with static folder.
     """
     def __init__(self, name=None, category=None, endpoint=None, url=None):
+        if url is None:
+            url = '/admin'
+
         super(AdminIndexView, self).__init__(name or babel.lazy_gettext('Home'),
                                              category,
                                              endpoint or 'admin',
-                                             url or '/admin',
+                                             url,
                                              'static')
 
-    @expose('/')
+    @expose()
     def index(self):
         return self.render('admin/index.html')
 
@@ -277,7 +288,9 @@ class Admin(object):
     """
         Collection of the views. Also manages menu structure.
     """
-    def __init__(self, app=None, name=None, url=None, index_view=None,
+    def __init__(self, app=None, name=None,
+                 url=None, subdomain=None,
+                 index_view=None,
                  translations_path=None):
         """
             Constructor.
@@ -286,6 +299,10 @@ class Admin(object):
                 Flask application object
             `name`
                 Application name. Will be displayed in main menu and as a page title. If not provided, defaulted to "Admin"
+            `url`
+                Base URL
+            `subdomain`
+                Subdomain to use
             `index_view`
                 Home page view to use. If not provided, will use `AdminIndexView`.
             `translations_path`
@@ -307,6 +324,7 @@ class Admin(object):
         if url is None:
             url = '/admin'
         self.url = url
+        self.subdomain = subdomain
 
         # Localizations
         self.locale_selector_func = None
