@@ -132,7 +132,8 @@ class FileAdmin(BaseView, ActionsMixin):
     """
 
     def __init__(self, base_path, base_url,
-                 name=None, category=None, endpoint=None, url=None):
+                 name=None, category=None, endpoint=None, url=None,
+                 verify_path=True):
         """
             Constructor.
 
@@ -148,6 +149,9 @@ class FileAdmin(BaseView, ActionsMixin):
                 Endpoint name for the view
             `url`
                 URL for view
+            `verify_path`
+                Verify if path exists. If set to `True` and path does not exist
+                will throw exception.
         """
         self.base_path = base_path
         self.base_url = base_url
@@ -160,6 +164,10 @@ class FileAdmin(BaseView, ActionsMixin):
         if (self.allowed_extensions
             and not isinstance(self.allowed_extensions, set)):
             self.allowed_extensions = set(self.allowed_extensions)
+
+        # Check if path exists
+        if not op.exists(base_path):
+            raise IOError('FileAdmin path "%s" does not exist or is not accessible' % base_path)
 
         super(FileAdmin, self).__init__(name, category, endpoint, url)
 
