@@ -4,9 +4,10 @@ from flask.ext.admin import form
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
 
-from peewee import PrimaryKeyField, ForeignKeyField, Field, CharField, TextField, Q
+from peewee import PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
 from wtfpeewee.orm import model_form
 
+from flask.ext.admin.actions import action
 from flask.ext.admin.contrib.peeweemodel import filters
 from .form import CustomModelConverter
 
@@ -34,6 +35,18 @@ class ModelView(BaseModelView):
         Field to filter converter.
 
         Override this attribute to use non-default converter.
+    """
+
+    fast_mass_delete = False
+    """
+        If set to `False` and user deletes more than one model using actions,
+        all models will be read from the database and then deleted one by one
+        giving SQLAlchemy chance to manually cleanup any dependencies (many-to-many
+        relationships, etc).
+
+        If set to True, will run DELETE statement which is somewhat faster, but
+        might leave corrupted data if you forget to configure DELETE CASCADE
+        for your model.
     """
 
     def __init__(self, model, name=None,
@@ -246,3 +259,36 @@ class ModelView(BaseModelView):
         except Exception, ex:
             flash(gettext('Failed to delete model. %(error)s', error=str(ex)), 'error')
             return False
+
+    # Default model actions
+    def is_action_allowed(self, name):
+        # Check delete action permission
+        if name == 'delete' and not self.can_delete:
+            return False
+
+        return super(ModelView, self).is_action_allowed(name)
+
+    @action('delete',
+            lazy_gettext('Delete'),
+            lazy_gettext('Are you sure you want to delete selected models?'))
+    def action_delete(self, ids):
+        try:
+            model_pk = getattr(self.model, self._primary_key)
+
+            if self.fast_mass_delete:
+                count = self.model.delete().where(model_pk << ids).execute()
+            else:
+                count = 0
+
+                query = self.model.select().filter(model_pk << ids)
+
+                for m in query:
+                    m.delete_instance(recursive=True)
+                    count += 1
+
+            flash(ngettext('Model was successfully deleted.',
+                           '%(count)s models were sucessfully deleted.',
+                           count,
+                           count=count))
+        except Exception, ex:
+            flash(gettext('Failed to delete models. %(error)s', error=str(ex)), 'error')
