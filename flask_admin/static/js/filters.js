@@ -1,4 +1,4 @@
-var AdminFilters = function(element, filters_element, adminForm, operations, options, types) {
+var AdminFilters = function(element, filters_element, operations, options, types) {
     var $root = $(element);
     var $container = $('.filters', $root);
     var lastCount = 0;
@@ -68,7 +68,7 @@ var AdminFilters = function(element, filters_element, adminForm, operations, opt
 
         if (optId in types) {
             $field.attr('data-role', types[optId]);
-            adminForm.applyStyle($field, types[optId]);
+            faForm.applyStyle($field, types[optId]);
         }
 
         lastCount += 1;

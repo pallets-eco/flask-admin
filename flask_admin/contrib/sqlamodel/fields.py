@@ -4,8 +4,13 @@
 import operator
 
 from wtforms import widgets
-from wtforms.fields import SelectFieldBase
+from wtforms.fields import SelectFieldBase, FormField, FieldList
 from wtforms.validators import ValidationError
+
+from .tools import get_primary_key
+from flask.ext.admin.model.widgets import InlineFormListWidget
+
+from flask import request
 
 try:
     from sqlalchemy.orm.util import identity_key
@@ -174,6 +179,79 @@ class QuerySelectMultipleField(QuerySelectField):
             for v in self.data:
                 if v not in obj_list:
                     raise ValidationError(self.gettext('Not a valid choice'))
+
+
+class InlineModelFormField(FormField):
+    def __init__(self, form, model, **kwargs):
+        super(InlineModelFormField, self).__init__(form, **kwargs)
+
+        self.model = model
+        self._pk = get_primary_key(model)
+
+        self._should_delete = False
+
+    def process(self, formdata, data=None):
+        super(InlineModelFormField, self).process(formdata, data)
+
+        # Grab delete key
+        key = 'del-%s' % self.id
+        if key in request.form:
+            self._should_delete = True
+
+    def should_delete(self):
+        return self._should_delete
+
+    def get_pk(self):
+        return getattr(self.form, self._pk).data
+
+    def populate_obj(self, obj, name):
+        for name, field in self.form._fields.iteritems():
+            if name != self._pk:
+                field.populate_obj(obj, name)
+
+
+class InlineModelFormList(FieldList):
+    widget = InlineFormListWidget()
+
+    def __init__(self, form, session, model, **kwargs):
+        self.form = form
+        self.session = session
+        self.model = model
+
+        self._pk = get_primary_key(model)
+
+        super(InlineModelFormList, self).__init__(InlineModelFormField(form, model), **kwargs)
+
+    def __call__(self, **kwargs):
+        return self.widget(self, template=self.form(), **kwargs)
+
+    def populate_obj(self, obj, name):
+        values = getattr(obj, name, None)
+
+        if values is None:
+            return
+
+        # Create primary key map
+        pk_map = dict((str(getattr(v, self._pk)), v) for v in values)
+
+        # Create fake object to work around wtforms limitations
+        for field in self.entries:
+            field_id = field.get_pk()
+
+            if field_id in pk_map:
+                model = pk_map[field_id]
+
+                if field.should_delete():
+                    self.session.delete(model)
+                    continue
+            else:
+                model = self.model()
+                values.append(model)
+
+            field.populate_obj(model, None)
+
+            # Force relation
+            model.user = obj
 
 
 def get_pk_from_identity(obj):

@@ -1,37 +1,42 @@
 from wtforms import fields, validators
 
 from flask.ext.admin import form
-from flask.ext.admin.model.form import converts, ModelConverterBase
+from flask.ext.admin.model.form import converts, ModelConverterBase, InlineFormAdmin
 
 from .validators import Unique
-from .fields import QuerySelectField, QuerySelectMultipleField
+from .fields import QuerySelectField, QuerySelectMultipleField, InlineModelFormList
 
 
 class AdminModelConverter(ModelConverterBase):
     """
         SQLAlchemy model to form converter
     """
-    def __init__(self, view):
+    def __init__(self, session, view):
         super(AdminModelConverter, self).__init__()
 
+        self.session = session
         self.view = view
 
     def _get_label(self, name, field_args):
         if 'label' in field_args:
             return field_args['label']
 
-        if self.view.rename_columns:
-            return self.view.rename_columns.get(name)
+        rename_columns = getattr(self.view, 'rename_columns', None)
+
+        if rename_columns:
+            return rename_columns.get(name)
 
         return None
 
     def _get_field_override(self, name):
-        if self.view.form_overrides:
-            return self.view.form_overrides.get(name)
+        form_overrides = getattr(self.view, 'form_overrides', None)
+
+        if form_overrides:
+            return form_overrides.get(name)
 
         return None
 
-    def convert(self, model, mapper, prop, field_args):
+    def convert(self, model, mapper, prop, field_args, hidden_pk):
         kwargs = {
             'validators': [],
             'filters': []
@@ -48,7 +53,7 @@ class AdminModelConverter(ModelConverterBase):
             kwargs.update({
                 'allow_blank': local_column.nullable,
                 'label': self._get_label(prop.key, kwargs),
-                'query_factory': lambda: self.view.session.query(remote_model)
+                'query_factory': lambda: self.session.query(remote_model)
             })
 
             if local_column.nullable:
@@ -66,7 +71,7 @@ class AdminModelConverter(ModelConverterBase):
                                         **kwargs)
             elif prop.direction.name == 'ONETOMANY':
                 # Skip backrefs
-                if not local_column.foreign_keys and self.view.hide_backrefs:
+                if not local_column.foreign_keys and getattr(self.view, 'hide_backrefs', False):
                     return None
 
                 return QuerySelectMultipleField(
@@ -93,22 +98,28 @@ class AdminModelConverter(ModelConverterBase):
                 unique = False
 
                 if column.primary_key:
-                    # By default, don't show primary keys either
-                    if self.view.form_columns is None:
-                        return None
+                    if hidden_pk:
+                        # If requested to add hidden field, show it
+                        return fields.HiddenField()
+                    else:
+                        # By default, don't show primary keys either
+                        form_columns = getattr(self.view, 'form_columns', None)
 
-                    # If PK is not explicitly allowed, ignore it
-                    if prop.key not in self.view.form_columns:
-                        return None
+                        if form_columns is None:
+                            return None
 
-                    kwargs['validators'].append(Unique(self.view.session,
-                                                       model,
-                                                       column))
-                    unique = True
+                        # If PK is not explicitly allowed, ignore it
+                        if prop.key not in form_columns:
+                            return None
+
+                        kwargs['validators'].append(Unique(self.session,
+                                                           model,
+                                                           column))
+                        unique = True
 
                 # If field is unique, validate it
                 if column.unique and not unique:
-                    kwargs['validators'].append(Unique(self.view.session,
+                    kwargs['validators'].append(Unique(self.session,
                                                        model,
                                                        column))
 
@@ -221,27 +232,86 @@ class AdminModelConverter(ModelConverterBase):
         field_args['validators'].append(validators.UUID())
         return fields.TextField(**field_args)
 
-    # Get list of fields and generate form
-    def get_form(self, model, base_class=form.BaseForm,
-                    only=None, exclude=None,
-                    field_args=None):
-        # TODO: Support new 0.8 API
-        if not hasattr(model, '_sa_class_manager'):
-            raise TypeError('model must be a sqlalchemy mapped model')
 
-        mapper = model._sa_class_manager.mapper
-        field_args = field_args or {}
+# Get list of fields and generate form
+def get_form(model, converter,
+            base_class=form.BaseForm,
+            only=None, exclude=None,
+            field_args=None,
+            hidden_pk=False):
 
-        properties = ((p.key, p) for p in mapper.iterate_properties)
-        if only:
-            properties = (x for x in properties if x[0] in only)
-        elif exclude:
-            properties = (x for x in properties if x[0] not in exclude)
+    # TODO: Support new 0.8 API
+    if not hasattr(model, '_sa_class_manager'):
+        raise TypeError('model must be a sqlalchemy mapped model')
 
-        field_dict = {}
-        for name, prop in properties:
-            field = self.convert(model, mapper, prop, field_args.get(name))
-            if field is not None:
-                field_dict[name] = field
+    mapper = model._sa_class_manager.mapper
+    field_args = field_args or {}
 
-        return type(model.__name__ + 'Form', (base_class, ), field_dict)
+    properties = ((p.key, p) for p in mapper.iterate_properties)
+    if only:
+        properties = (x for x in properties if x[0] in only)
+    elif exclude:
+        properties = (x for x in properties if x[0] not in exclude)
+
+    field_dict = {}
+    for name, prop in properties:
+        field = converter.convert(model, mapper, prop, field_args.get(name), hidden_pk)
+        if field is not None:
+            field_dict[name] = field
+
+    return type(model.__name__ + 'Form', (base_class, ), field_dict)
+
+
+def contribute_inline(session, model, form_class, inline_models):
+    # Get mapper
+    mapper = model._sa_class_manager.mapper
+
+    # Contribute columns
+    for p in inline_models:
+        # Figure out
+        if isinstance(p, basestring):
+            info = InlineFormAdmin(p)
+        elif isinstance(p, tuple):
+            info = InlineFormAdmin(p[0], **p[1])
+        elif isinstance(p, InlineFormAdmin):
+            info = p
+        else:
+            raise Exception('Unknown inline model admin: %s' % repr(p))
+
+        prop = mapper.get_property(info.field)
+        if prop is None:
+            raise Exception('Inline form property %s.%s was not found' % (model.__name__,
+                                                                          info.field))
+
+        if not hasattr(prop, 'direction'):
+            raise Exception('Failed to convert inline admin %s - only one-to-many relations are supported' % info.field)
+
+        if prop.direction.name != 'ONETOMANY':
+            raise Exception('Failed to convert inline admin %s - only one-to-many relations are supported' % info.field)
+
+        # Find reverse relationship (to exlude from the list)
+        ignore = []
+
+        for remote_prop in prop.mapper.iterate_properties:
+            if hasattr(remote_prop, 'direction') and remote_prop.direction.name == 'MANYTOONE':
+                if remote_prop.mapper.class_ == prop.parent.class_:
+                    ignore.append(remote_prop.key)
+                    print remote_prop.key
+
+        if info.exclude:
+            exclude = ignore + info.exclude
+        else:
+            exclude = ignore
+
+        # Create field
+        remote_model = prop.mapper.class_
+
+        converter = AdminModelConverter(session, info)
+        child_form = get_form(remote_model, converter,
+                            only=info.include,
+                            exclude=exclude,
+                            hidden_pk=True)
+
+        setattr(form_class, p, InlineModelFormList(child_form, session, remote_model))
+
+    return form_class

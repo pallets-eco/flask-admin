@@ -1,0 +1,32 @@
+{% import 'admin/lib.html' as lib with context %}
+
+{% macro render_form(form) %}
+{% endmacro %}
+
+{% macro render_template(template) -%}
+<div class="fa-inline-form">
+    <div style="float: right">
+        <a href="#" class="fa-remove-form">x</a>
+    </div>
+    {{ lib.render_form_fields(template) }}
+    <hr/>
+</div>
+{%- endmacro %}
+
+<div class="well">
+    <div id="{{ field.id }}-forms">
+    {% for subfield in field %}
+    <div id="{{ subfield.id }}" class="fa-inline-form">
+        {% set pk = subfield.get_pk() %}
+        {%- if pk %}
+        <div style="float: right">
+            <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />Delete?
+        </div>
+        {%- endif -%}
+        {{ lib.render_form_fields(subfield, True) }}
+        <hr/>
+    </div>
+    {% endfor %}
+    </div>
+    <a href="#" class="btn" onclick="faForm.addInlineModel('{{ field.id }}', '#{{ field.id }}-forms', {{ render_template(template)|tojson }});">Add {{ field.name }}</a>
+</div>

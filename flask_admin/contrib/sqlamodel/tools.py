@@ -7,3 +7,18 @@ def parse_like_term(term):
         stmt = '%%%s%%' % term
 
     return stmt
+
+
+def get_primary_key(model):
+    """
+        Return primary key name from a model
+    """
+    props = model._sa_class_manager.mapper.iterate_properties
+
+    for p in props:
+        if hasattr(p, 'columns'):
+            for c in p.columns:
+                if c.primary_key:
+                    return p.key
+
+    return None

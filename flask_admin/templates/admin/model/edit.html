@@ -7,7 +7,10 @@
 {% endblock %}
 
 {% block body %}
-  	{{ lib.render_form(form, return_url) }}
+    {% call lib.form_tag() %}
+        {{ lib.render_form_fields(form) }}
+        {{ lib.render_form_buttons(cancel_url) }}
+    {% endcall %}
 {% endblock %}
 
 {% block tail %}

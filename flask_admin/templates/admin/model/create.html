@@ -7,19 +7,23 @@
 {% endblock %}
 
 {% block body %}
+  <ul class="nav nav-tabs">
+      <li>
+          <a href="{{ return_url }}">{{ _gettext('List') }}</a>
+      </li>
+      <li class="active">
+          <a href="#">{{ _gettext('Create') }}</a>
+      </li>
+	</ul>
+
   {% macro extra() %}
     <input name="_add_another" type="submit" class="btn btn-large" value="{{ _gettext('Save and Add') }}" />
   {% endmacro %}
 
-    <ul class="nav nav-tabs">
-        <li>
-            <a href="{{ return_url }}">{{ _gettext('List') }}</a>
-        </li>
-        <li class="active">
-            <a href="#">{{ _gettext('Create') }}</a>
-        </li>
-  	</ul>
-  {{ lib.render_form(form, return_url, extra()) }}
+  {% call lib.form_tag() %}
+      {{ lib.render_form_fields(form) }}
+      {{ lib.render_form_buttons(cancel_url, extra()) }}
+  {% endcall %}
 {% endblock %}
 
 {% block tail %}

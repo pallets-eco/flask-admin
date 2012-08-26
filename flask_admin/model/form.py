@@ -10,6 +10,18 @@ def converts(*args):
     return _inner
 
 
+class InlineFormAdmin(object):
+    def __init__(self, field, **kwargs):
+        self.field = field
+
+        defaults = dict(include=None,
+                        exclude=None)
+        defaults.update(kwargs)
+
+        for k, v in defaults.iteritems():
+            setattr(self, k, v)
+
+
 class ModelConverterBase(object):
     def __init__(self, converters=None, use_mro=True):
         self.use_mro = use_mro

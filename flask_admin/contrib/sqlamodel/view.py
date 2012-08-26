@@ -124,6 +124,17 @@ class ModelView(BaseModelView):
         for your model.
     """
 
+    inline_models = None
+    """
+        Inline related-model editing for parent to child relation.
+
+        If you have child relation with name 'posts', you can generate inline
+        administration interface by using this code::
+
+            class MyModelView(BaseModelView):
+                inline_models = ('posts',)
+    """
+
     def __init__(self, model, session,
                  name=None, category=None, endpoint=None, url=None):
         """
@@ -178,13 +189,7 @@ class ModelView(BaseModelView):
         """
             Return primary key name from a model
         """
-        for p in self._get_model_iterator():
-            if hasattr(p, 'columns'):
-                for c in p.columns:
-                    if c.primary_key:
-                        return p.key
-
-        return None
+        return tools.get_primary_key(self.model)
 
     def get_pk_value(self, model):
         """
@@ -370,11 +375,17 @@ class ModelView(BaseModelView):
         """
             Create form from the model.
         """
-        converter = form.AdminModelConverter(self)
-        return converter.get_form(self.model,
+        converter = form.AdminModelConverter(self.session, self)
+        form_class = form.get_form(self.model, converter,
                           only=self.form_columns,
                           exclude=self.excluded_form_columns,
                           field_args=self.form_args)
+
+        if self.inline_models:
+            form_class = form.contribute_inline(self.session, self.model,
+                                              form_class, self.inline_models)
+
+        return form_class
 
     def scaffold_auto_joins(self):
         """
