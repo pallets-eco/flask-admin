@@ -311,6 +311,7 @@ def contribute_inline(session, model, form_class, inline_models):
                             exclude=exclude,
                             hidden_pk=True)
 
-        setattr(form_class, p, InlineModelFormList(child_form, session, remote_model))
+        setattr(form_class, p,
+                InlineModelFormList(child_form, session, remote_model, p))
 
     return form_class

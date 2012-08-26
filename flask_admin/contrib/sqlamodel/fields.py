@@ -4,13 +4,12 @@
 import operator
 
 from wtforms import widgets
-from wtforms.fields import SelectFieldBase, FormField, FieldList
+from wtforms.fields import SelectFieldBase, FieldList
 from wtforms.validators import ValidationError
 
 from .tools import get_primary_key
+from flask.ext.admin.model.fields import InlineModelFormField
 from flask.ext.admin.model.widgets import InlineFormListWidget
-
-from flask import request
 
 try:
     from sqlalchemy.orm.util import identity_key
@@ -181,46 +180,18 @@ class QuerySelectMultipleField(QuerySelectField):
                     raise ValidationError(self.gettext('Not a valid choice'))
 
 
-class InlineModelFormField(FormField):
-    def __init__(self, form, model, **kwargs):
-        super(InlineModelFormField, self).__init__(form, **kwargs)
-
-        self.model = model
-        self._pk = get_primary_key(model)
-
-        self._should_delete = False
-
-    def process(self, formdata, data=None):
-        super(InlineModelFormField, self).process(formdata, data)
-
-        # Grab delete key
-        key = 'del-%s' % self.id
-        if key in request.form:
-            self._should_delete = True
-
-    def should_delete(self):
-        return self._should_delete
-
-    def get_pk(self):
-        return getattr(self.form, self._pk).data
-
-    def populate_obj(self, obj, name):
-        for name, field in self.form._fields.iteritems():
-            if name != self._pk:
-                field.populate_obj(obj, name)
-
-
 class InlineModelFormList(FieldList):
     widget = InlineFormListWidget()
 
-    def __init__(self, form, session, model, **kwargs):
+    def __init__(self, form, session, model, prop, **kwargs):
         self.form = form
         self.session = session
         self.model = model
+        self.prop = prop
 
         self._pk = get_primary_key(model)
 
-        super(InlineModelFormList, self).__init__(InlineModelFormField(form, model), **kwargs)
+        super(InlineModelFormList, self).__init__(InlineModelFormField(form, self._pk), **kwargs)
 
     def __call__(self, **kwargs):
         return self.widget(self, template=self.form(), **kwargs)
@@ -251,9 +222,10 @@ class InlineModelFormList(FieldList):
             field.populate_obj(model, None)
 
             # Force relation
-            model.user = obj
+            setattr(self.model, self.prop, obj)
 
 
 def get_pk_from_identity(obj):
+    # TODO: Remove me
     cls, key = identity_key(instance=obj)
     return u':'.join(unicode(x) for x in key)

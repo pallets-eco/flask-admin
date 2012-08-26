@@ -1,6 +1,8 @@
 import time
 import datetime
 
+from flask.globals import _request_ctx_stack
+
 from flask.ext import wtf
 from wtforms import fields, widgets
 
@@ -125,3 +127,17 @@ class DateTimePickerWidget(widgets.TextInput):
     def __call__(self, field, **kwargs):
         kwargs['data-role'] = u'datetimepicker'
         return super(DateTimePickerWidget, self).__call__(field, **kwargs)
+
+
+class RenderTemplateWidget(object):
+    def __init__(self, template):
+        self.template = template
+
+    def __call__(self, field, **kwargs):
+        ctx = _request_ctx_stack.top
+        jinja_env = ctx.app.jinja_env
+
+        kwargs['field'] = field
+
+        template = jinja_env.get_template(self.template)
+        return template.render(kwargs)
