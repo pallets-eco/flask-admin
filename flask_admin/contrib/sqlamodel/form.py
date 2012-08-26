@@ -79,6 +79,11 @@ class AdminModelConverter(ModelConverterBase):
         else:
             # Ignore pk/fk
             if hasattr(prop, 'columns'):
+                # Check if more than one column mapped to the property
+                if len(prop.columns) != 1:
+                    raise TypeError('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
+
+                # Grab column
                 column = prop.columns[0]
 
                 # Do not display foreign keys - use relations
@@ -110,42 +115,40 @@ class AdminModelConverter(ModelConverterBase):
                 if not column.nullable:
                     kwargs['validators'].append(validators.Required())
 
-            # Apply label
-            kwargs['label'] = self._get_label(prop.key, kwargs)
+                # Apply label
+                kwargs['label'] = self._get_label(prop.key, kwargs)
 
-            # Check if more than one column mapped to the property
-            if len(prop.columns) != 1:
-                raise TypeError('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
+                # Figure out default value
+                default = getattr(column, 'default', None)
 
-            # Figure out default value
-            default = getattr(column, 'default', None)
+                if default is not None:
+                    callable_default = getattr(default, 'arg', None)
 
-            if default is not None:
-                callable_default = getattr(default, 'arg', None)
+                    if callable_default and callable(callable_default):
+                        default = callable_default(None)
 
-                if callable_default and callable(callable_default):
-                    default = callable_default(None)
+                if default is not None:
+                    kwargs['default'] = default
 
-            if default is not None:
-                kwargs['default'] = default
+                # Check nullable
+                if column.nullable:
+                    kwargs['validators'].append(validators.Optional())
 
-            # Check nullable
-            if column.nullable:
-                kwargs['validators'].append(validators.Optional())
+                # Override field type if necessary
+                override = self._get_field_override(prop.key)
+                if override:
+                    return override(**kwargs)
 
-            # Override field type if necessary
-            override = self._get_field_override(prop.key)
-            if override:
-                return override(**kwargs)
+                # Run converter
+                converter = self.get_converter(column)
 
-            # Run converter
-            converter = self.get_converter(column)
+                if converter is None:
+                    return None
 
-            if converter is None:
-                return None
+                return converter(model=model, mapper=mapper, prop=prop,
+                                column=column, field_args=kwargs)
 
-            return converter(model=model, mapper=mapper, prop=prop,
-                            column=column, field_args=kwargs)
+        return None
 
     @classmethod
     def _string_common(cls, column, field_args, **extra):
