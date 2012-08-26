@@ -45,8 +45,7 @@ class PostAdmin(peeweemodel.ModelView):
     # a column.
     #sortable_columns = ('title', ('user', User.username), 'date')
 
-    #searchable_columns = ('title', User.username)
-    searchable_columns = ('title',)
+    searchable_columns = ('title', User.username)
 
     column_filters = ('title',
                       'date',

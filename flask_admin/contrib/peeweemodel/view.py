@@ -38,12 +38,11 @@ class ModelView(BaseModelView):
 
     def __init__(self, model, name=None,
                  category=None, endpoint=None, url=None):
+        self._search_fields = []
+
         super(ModelView, self).__init__(model, name, category, endpoint, url)
 
         self._primary_key = self.scaffold_pk()
-
-        self._search_fields = []
-        self._search_joins = dict()
 
     def _get_model_fields(self, model=None):
         if model is None:
@@ -90,8 +89,6 @@ class ModelView(BaseModelView):
         return columns
 
     def init_search(self):
-        self._search_fields = []
-
         if self.searchable_columns:
             for p in self.searchable_columns:
                 if isinstance(p, basestring):
@@ -105,17 +102,7 @@ class ModelView(BaseModelView):
                         raise Exception('Can only search on text columns. ' +
                                         'Failed to setup search for "%s"' % p)
 
-                # Try to find reference from this model to the field
-                if p.model != self.model:
-                    path = self._find_field(self.model, p, set())
-
-                    if path is None:
-                        raise Exception('Can not find relation path from the %s' +
-                                        'to the %s.%s' % (self.model, p.model, p.name))
-
-                    self._search_fields.append(path)
-                else:
-                    self._search_fields.append(p.name)
+                self._search_fields.append(p)
 
         return bool(self._search_fields)
 
@@ -156,6 +143,16 @@ class ModelView(BaseModelView):
             field_args=self.form_args,
             converter=CustomModelConverter())
 
+    def _handle_join(self, query, field, joins):
+        if field.model != self.model:
+            model_name = field.model.__name__
+
+            if model_name not in joins:
+                query = query.join(field.model)
+                joins.add(model_name)
+
+        return query
+
     def get_list(self, page, sort_column, sort_desc, search, filters,
                  execute=True):
         query = self.model.select()
@@ -172,10 +169,9 @@ class ModelView(BaseModelView):
 
                 stmt = None
                 for field in self._search_fields:
-                    flt = '%s__icontains' % field
-                    q = Q(**{flt: term})
+                    query = self._handle_join(query, field, joins)
 
-                    #print flt, term
+                    q = field ** term
 
                     if stmt is None:
                         stmt = q
@@ -189,13 +185,7 @@ class ModelView(BaseModelView):
             for flt, value in filters:
                 f = self._filters[flt]
 
-                if f.column.model != self.model:
-                    model_name = f.column.model.__name__
-
-                    if model_name not in joins:
-                        query = query.join(f.column.model)
-                        joins.add(model_name)
-
+                query = self._handle_join(query, f.column, joins)
                 query = self._filters[flt].apply(query, value)
 
         # Get count
