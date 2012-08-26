@@ -43,7 +43,7 @@ class PostAdmin(peeweemodel.ModelView):
 
     # List of columns that can be sorted. For 'user' column, use User.username as
     # a column.
-    #sortable_columns = ('title', ('user', User.username), 'date')
+    sortable_columns = ('title', ('user', User.email), 'date')
 
     searchable_columns = ('title', User.username)
 

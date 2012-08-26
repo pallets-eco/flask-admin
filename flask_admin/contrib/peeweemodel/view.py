@@ -211,7 +211,14 @@ class ModelView(BaseModelView):
             if isinstance(sort_field, basestring):
                 query = query.order_by((sort_field, sort_desc and 'desc' or 'asc'))
             elif isinstance(sort_field, Field):
-                query = query.order_by((sort_column, sort_desc and 'desc' or 'asc'))
+                print sort_field
+
+                if sort_field.model != self.model:
+                    query = self._handle_join(query, sort_field, joins)
+
+                    query = query.order_by((sort_field.model, sort_field.name, sort_desc and 'desc' or 'asc'))
+                else:
+                    query = query.order_by((sort_column, sort_desc and 'desc' or 'asc'))
 
         # Pagination
         if page is not None:
