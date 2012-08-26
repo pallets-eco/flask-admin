@@ -296,7 +296,6 @@ def contribute_inline(session, model, form_class, inline_models):
             if hasattr(remote_prop, 'direction') and remote_prop.direction.name == 'MANYTOONE':
                 if remote_prop.mapper.class_ == prop.parent.class_:
                     ignore.append(remote_prop.key)
-                    print remote_prop.key
 
         if info.exclude:
             exclude = ignore + info.exclude
