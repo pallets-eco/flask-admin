@@ -41,12 +41,14 @@ class PostAdmin(peeweemodel.ModelView):
     #list_columns = ('title', 'user')
     excluded_list_columns = ['text']
 
-    # List of columns that can be sorted. For 'user' column, use User.username as
+    # List of columns that can be sorted. For 'user' column, use User.email as
     # a column.
     sortable_columns = ('title', ('user', User.email), 'date')
 
+    # Full text search
     searchable_columns = ('title', User.username)
 
+    # Column filters
     column_filters = ('title',
                       'date',
                       User.username)
