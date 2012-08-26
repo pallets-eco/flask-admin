@@ -87,17 +87,17 @@
     <div class="btn-toolbar">
         {% if admin_view.can_upload %}
         <div class="btn-group">
-            <a class="btn btn-primary btn-large" href="{{ get_dir_url('.upload', path=dir_path) }}">{{ _gettext('Upload File') }}</a>
+            <a class="btn btn-large" href="{{ get_dir_url('.upload', path=dir_path) }}">{{ _gettext('Upload File') }}</a>
         </div>
         {% endif %}
         {% if admin_view.can_mkdir %}
         <div class="btn-group">
-            <a class="btn btn-primary btn-large" href="{{ get_dir_url('.mkdir', path=dir_path) }}">{{ _gettext('Create Directory') }}</a>
+            <a class="btn btn-large" href="{{ get_dir_url('.mkdir', path=dir_path) }}">{{ _gettext('Create Directory') }}</a>
         </div>
         {% endif %}
         {% if actions %}
         <div class="btn-group">
-            {{ actionslib.dropdown(actions, 'dropdown-toggle btn btn-primary btn-large') }}
+            {{ actionslib.dropdown(actions, 'dropdown-toggle btn btn-large') }}
         </div>
         {% endif %}
     </div>
