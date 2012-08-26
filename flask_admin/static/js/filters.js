@@ -78,6 +78,8 @@ var AdminFilters = function(element, filters_element, adminForm, operations, opt
         addFilter(name, operations[name]);
 
         $('button', $root).show();
+
+        return false;
     });
 
     $('.filter-op', $root).change(changeOperation);

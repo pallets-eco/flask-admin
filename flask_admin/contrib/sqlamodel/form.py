@@ -158,7 +158,7 @@ class AdminModelConverter(ModelConverterBase):
         return fields.TextField(**field_args)
 
     @converts('Text', 'UnicodeText',
-            'types.LargeBinary', 'types.Binary')
+            'sqlalchemy.types.LargeBinary', 'sqlalchemy.types.Binary')
     def conv_Text(self, field_args, **extra):
         self._string_common(field_args=field_args, **extra)
         return fields.TextAreaField(**field_args)
