@@ -211,8 +211,6 @@ class ModelView(BaseModelView):
             if isinstance(sort_field, basestring):
                 query = query.order_by((sort_field, sort_desc and 'desc' or 'asc'))
             elif isinstance(sort_field, Field):
-                print sort_field
-
                 if sort_field.model != self.model:
                     query = self._handle_join(query, sort_field, joins)
 
