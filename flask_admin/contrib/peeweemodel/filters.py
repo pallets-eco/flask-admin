@@ -11,13 +11,13 @@ class BasePeeweeFilter(filters.BaseFilter):
         """
             Constructor.
 
-            `column`
+            :param column:
                 Model field
-            `name`
+            :param name:
                 Display name
-            `options`
+            :param options:
                 Fixed set of options
-            `data_type`
+            :param data_type:
                 Client data type
         """
         super(BasePeeweeFilter, self).__init__(name, options, data_type)

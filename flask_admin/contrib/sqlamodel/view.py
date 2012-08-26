@@ -137,17 +137,17 @@ class ModelView(BaseModelView):
         """
             Constructor.
 
-            `model`
+            :param model:
                 Model class
-            `session`
+            :param session:
                 SQLALchemy session
-            `name`
+            :param name:
                 View name. If not set, will default to model name
-            `category`
+            :param category:
                 Category name
-            `endpoint`
+            :param endpoint:
                 Endpoint name. If not set, will default to model name
-            `url`
+            :param url:
                 Base URL. If not set, will default to '/admin/' + endpoint
         """
         self.session = session
@@ -295,12 +295,16 @@ class ModelView(BaseModelView):
         """
             Verify if column type is text-based.
 
-            Returns `True` for `String`, `Unicode`, `Text`, `UnicodeText`
+            :returns:
+                ``True`` for ``String``, ``Unicode``, ``Text``, ``UnicodeText``
         """
         return (name == 'String' or name == 'Unicode' or
                 name == 'Text' or name == 'UnicodeText')
 
     def scaffold_filters(self, name):
+        """
+            Return list of enabled filters
+        """
         if isinstance(name, basestring):
             attr = getattr(self.model, name, None)
         else:
@@ -363,7 +367,7 @@ class ModelView(BaseModelView):
             Verify that provided filter object is derived from the
             SQLAlchemy-compatible filter class.
 
-            `filter`
+            :param filter:
                 Filter object to verify.
         """
         return isinstance(filter, filters.BaseSQLAFilter)
@@ -409,17 +413,17 @@ class ModelView(BaseModelView):
         """
             Return models from the database.
 
-            `page`
+            :param page:
                 Page number
-            `sort_column`
+            :param sort_column:
                 Sort column name
-            `sort_desc`
+            :param sort_desc:
                 Descending or ascending sort
-            `search`
+            :param search:
                 Search query
-            `execute`
+            :param execute:
                 Execute query immediately? Default is `True`
-            `filters`
+            :param filters:
                 List of filter tuples
         """
 
@@ -515,8 +519,8 @@ class ModelView(BaseModelView):
         """
             Return one model by its id.
 
-            `id`
-                Model
+            :param id:
+                Model id
         """
         return self.session.query(self.model).get(id)
 
@@ -525,7 +529,7 @@ class ModelView(BaseModelView):
         """
             Create model from form.
 
-            `form`
+            :param form:
                 Form instance
         """
         try:
@@ -542,8 +546,10 @@ class ModelView(BaseModelView):
         """
             Update model from form.
 
-            `form`
+            :param form:
                 Form instance
+            :param model:
+                Model instance
         """
         try:
             form.populate_obj(model)
@@ -557,7 +563,7 @@ class ModelView(BaseModelView):
         """
             Delete model.
 
-            `model`
+            :param model:
                 Model to delete
         """
         try:

@@ -9,11 +9,11 @@ class BaseFilter(object):
         """
             Constructor.
 
-            `name`
+            :param name:
                 Displayed name
-            `options`
+            :param options:
                 List of fixed options. If provided, will use drop down instead of textbox.
-            `data_type`
+            :param data_type:
                 Client-side widget type to use.
         """
         self.name = name
@@ -26,7 +26,7 @@ class BaseFilter(object):
 
             Override to customize behavior.
 
-            `view`
+            :param view:
                 Associated administrative view class.
         """
         return self.options
@@ -37,7 +37,7 @@ class BaseFilter(object):
 
             If value is valid, returns `True` and `False` otherwise.
 
-            `value`
+            :param value:
                 Value to validate
         """
         return True
@@ -46,7 +46,7 @@ class BaseFilter(object):
         """
             Parse value into python format.
 
-            `value`
+            :param value:
                 Value to parse
         """
         return value
@@ -55,7 +55,7 @@ class BaseFilter(object):
         """
             Apply search criteria to the query and return new query.
 
-            `query`
+            :param query:
                 Query
         """
         raise NotImplemented()

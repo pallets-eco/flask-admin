@@ -6,9 +6,9 @@ def import_module(name, required=True):
     """
         Import module by name
 
-        `name`
+        :param name:
             Module name
-        `required`
+        :param required:
             If set to `True` and module was not found - will throw exception.
             If set to `False` and module was not found - will return None.
             Default is `True`.
@@ -26,7 +26,7 @@ def import_attribute(name):
     """
         Import attribute using string reference.
 
-        `name`
+        :param name:
             String reference.
 
         Throws ImportError or AttributeError if module or attribute do not exist.
@@ -47,7 +47,7 @@ def module_not_found(additional_depth=0):
         Checks if ImportError was raised because module does not exist or
         something inside it raised ImportError
 
-        `additional_depth`
+        :param additional_depth:
             supply int of depth of your call if you're not doing
             import on the same level of code - f.e., if you call function, which is
             doing import, you should pass 1 for single additional level of depth
@@ -62,9 +62,9 @@ def rec_getattr(obj, attr, default=None):
     """
         Recursive getattr.
 
-        `attr`
+        :param attr:
             Dot delimited attribute name
-        `default`
+        :param default:
             Default value
 
         Example::

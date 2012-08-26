@@ -10,9 +10,9 @@ def expose(url='/', methods=('GET',)):
     """
         Use this decorator to expose views in your view classes.
 
-        `url`
+        :param url:
             Relative URL for the view
-        `methods`
+        :param methods:
             Allowed HTTP methods. By default only GET is allowed.
     """
     def wrap(f):
@@ -84,16 +84,16 @@ class BaseView(object):
         """
             Constructor.
 
-            `name`
+            :param name:
                 Name of this view. If not provided, will be defaulted to the class name.
-            `category`
+            :param category:
                 View category. If not provided, will be shown as a top-level menu item. Otherwise, will
                 be in a submenu.
-            `endpoint`
+            :param endpoint:
                 Base endpoint name for the view. For example, if there's view method called "index" and
                 endpoint was set to "myadmin", you can use `url_for('myadmin.index')` to get URL to the
                 view method. By default, equals to the class name in lower case.
-            `url`
+            :param url:
                 Base URL. If provided, affects how URLs are generated. For example, if url parameter
                 equals to "test", resulting URL will look like "/admin/test/". If not provided, will
                 use endpoint as a base url. However, if URL starts with '/', absolute path is assumed
@@ -161,9 +161,9 @@ class BaseView(object):
         """
             Render template
 
-            `template`
+            :param template:
                 Template path to render
-            `kwargs`
+            :param kwargs:
                 Template arguments
         """
         # Store self as admin_view
@@ -180,7 +180,7 @@ class BaseView(object):
         """
             Prettify class name by splitting name by capital characters. So, 'MySuperClass' will look like 'My Super Class'
 
-            `name`
+            :param name:
                 String to prettify
         """
         return sub(r'(?<=.)([A-Z])', r' \1', name)
@@ -197,6 +197,17 @@ class BaseView(object):
         return True
 
     def _handle_view(self, name, **kwargs):
+        """
+            This method will be executed before calling any view method.
+
+            By default, it will check if admin class is accessible and if it is not - will
+            throw HTTP 403 error.
+
+            :param name:
+                View function name
+            :param kwargs:
+                View function arguments
+        """
         if not self.is_accessible():
             return abort(403)
 
@@ -295,17 +306,17 @@ class Admin(object):
         """
             Constructor.
 
-            `app`
+            :param app:
                 Flask application object
-            `name`
+            :param name:
                 Application name. Will be displayed in main menu and as a page title. If not provided, defaulted to "Admin"
-            `url`
+            :param url:
                 Base URL
-            `subdomain`
+            :param subdomain:
                 Subdomain to use
-            `index_view`
+            :param index_view:
                 Home page view to use. If not provided, will use `AdminIndexView`.
-            `translations_path`
+            :param translations_path:
                 Location of the translation message catalogs. By default will use translations
                 shipped with the Flask-Admin.
         """
@@ -345,7 +356,7 @@ class Admin(object):
         """
             Add view to the collection.
 
-            `view`
+            :param view:
                 View to add.
         """
         # Add to views
@@ -391,7 +402,7 @@ class Admin(object):
         """
             Add view to the menu tree
 
-            `view`
+            :param view:
                 View to add
         """
         if view.category:
@@ -410,7 +421,7 @@ class Admin(object):
         """
             Register all views with Flask application.
 
-            `app`
+            :param app:
                 Flask application instance
         """
         if self.app is not None:

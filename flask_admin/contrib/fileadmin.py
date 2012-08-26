@@ -61,9 +61,9 @@ class FileAdmin(BaseView, ActionsMixin):
 
         Requires two parameters:
 
-        `path`
+        :param path:
             Path to the directory which will be managed
-        `url`
+        :param url:
             Base URL for the directory. Will be used to generate
             static links to the files.
 
@@ -137,19 +137,19 @@ class FileAdmin(BaseView, ActionsMixin):
         """
             Constructor.
 
-            `base_path`
+            :param base_path:
                 Base file storage location
-            `base_url`
+            :param base_url:
                 Base URL for the files
-            `name`
+            :param name:
                 Name of this view. If not provided, will be defaulted to the class name.
-            `category`
+            :param category:
                 View category
-            `endpoint`
+            :param endpoint:
                 Endpoint name for the view
-            `url`
+            :param url:
                 URL for view
-            `verify_path`
+            :param verify_path:
                 Verify if path exists. If set to `True` and path does not exist
                 will throw exception.
         """
@@ -177,7 +177,7 @@ class FileAdmin(BaseView, ActionsMixin):
 
             Override to customize behavior.
 
-            `path`
+            :param path:
                 Relative path to the root
         """
         return True
@@ -202,7 +202,7 @@ class FileAdmin(BaseView, ActionsMixin):
 
             Override to customize behavior.
 
-            `filename`
+            :param filename:
                 Source file name
         """
         ext = op.splitext(filename)[1].lower()
@@ -218,6 +218,11 @@ class FileAdmin(BaseView, ActionsMixin):
     def is_in_folder(self, base_path, directory):
         """
             Verify if `directory` is in `base_path` folder
+
+            :param base_path:
+                Base directory path
+            :param directory:
+                Directory path to check
         """
         return op.normpath(directory).startswith(base_path)
 
@@ -225,9 +230,9 @@ class FileAdmin(BaseView, ActionsMixin):
         """
             Save uploaded file to the disk
 
-            `path`
+            :param path:
                 Path to save to
-            `file_data`
+            :param file_data:
                 Werkzeug `FileStorage` object
         """
         file_data.save(path)
@@ -236,11 +241,11 @@ class FileAdmin(BaseView, ActionsMixin):
         """
             Return prettified URL
 
-            `endpoint`
+            :param endpoint:
                 Endpoint name
-            `path`
+            :param path:
                 Directory path
-            `kwargs`
+            :param kwargs:
                 Additional arguments
         """
         if not path:
@@ -257,7 +262,7 @@ class FileAdmin(BaseView, ActionsMixin):
         """
             Return static file url
 
-            `path`
+            :param path:
                 Static file path
         """
         base_url = self.get_base_url()
@@ -300,7 +305,7 @@ class FileAdmin(BaseView, ActionsMixin):
         """
             Index view method
 
-            `path`
+            :param path:
                 Optional directory path. If not provided, will use base directory
         """
         # Get path and verify if it is valid
@@ -350,7 +355,7 @@ class FileAdmin(BaseView, ActionsMixin):
         """
             Upload view method
 
-            `path`
+            :param path:
                 Optional directory path. If not provided, will use base directory
         """
         # Get path and verify if it is valid
@@ -383,7 +388,7 @@ class FileAdmin(BaseView, ActionsMixin):
         """
             Directory creation view method
 
-            `path`
+            :param path:
                 Optional directory path. If not provided, will use base directory
         """
         # Get path and verify if it is valid

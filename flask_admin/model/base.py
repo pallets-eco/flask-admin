@@ -222,17 +222,17 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Constructor.
 
-            `model`
+            :param model:
                 Model class
-            `name`
+            :param name:
                 View name. If not provided, will use model class name
-            `category`
+            :param category:
                 View category
-            `endpoint`
+            :param endpoint:
                 Base endpoint. If not provided, will use model name + 'view'.
                 For example if model name was 'User', endpoint will be
                 'userview'
-            `url`
+            :param url:
                 Base URL. If not provided, will use endpoint as a URL.
         """
 
@@ -318,7 +318,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Return human-readable column name.
 
-            `field`
+            :param field:
                 Model field name.
         """
         if self.rename_columns and field in self.rename_columns:
@@ -381,7 +381,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Generate filter object for the given name
 
-            `name`
+            :param name:
                 Name of the field
         """
         return None
@@ -393,7 +393,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Override in model backend implementation to verify if
             provided filter type is allowed.
 
-            `filter`
+            :param filter:
                 Filter object to verify.
         """
         return isinstance(filter, filters.BaseFilter)
@@ -480,7 +480,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Verify if column is sortable.
 
-            `name`
+            :param name:
                 Column name.
         """
         return name in self._sortable_columns
@@ -502,15 +502,15 @@ class BaseModelView(BaseView, ActionsMixin):
 
             Must be implemented in child class.
 
-            `page`
+            :param page:
                 Page number, 0 based. Can be set to None if it is first page.
-            `sort_field`
+            :param sort_field:
                 Sort column name or None.
-            `sort_desc`
+            :param sort_desc:
                 If set to True, sorting is in descending order.
-            `search`
+            :param search:
                 Search query
-            `filters`
+            :param filters:
                 List of filter tuples. First value in a tuple is a search
                 index, second value is a search value.
         """
@@ -522,7 +522,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             Must be implemented in the child class.
 
-            `id`
+            :param id:
                 Model id
         """
         raise NotImplemented('Please implement get_one method')
@@ -536,7 +536,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             Must be implemented in the child class.
 
-            `form`
+            :param form:
                 Form instance
         """
         raise NotImplemented()
@@ -549,9 +549,9 @@ class BaseModelView(BaseView, ActionsMixin):
 
             Must be implemented in the child class.
 
-            `form`
+            :param form:
                 Form instance
-            `model`
+            :param model:
                 Model instance
         """
         raise NotImplemented()
@@ -564,7 +564,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             Must be implemented in the child class.
 
-            `model`
+            :param model:
                 Model instance
         """
         raise NotImplemented()
@@ -576,7 +576,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             For example, 'hello_world' will be converted to 'Hello World'
 
-            `name`
+            :param name:
                 Name to prettify
         """
         return name.replace('_', ' ').title()
@@ -627,17 +627,17 @@ class BaseModelView(BaseView, ActionsMixin):
             Generate page URL with current page, sort column and
             other parameters.
 
-            `view`
+            :param view:
                 View name
-            `page`
+            :param page:
                 Page number
-            `sort`
+            :param sort:
                 Sort column index
-            `sort_desc`
+            :param sort_desc:
                 Use descending sorting order
-            `search`
+            :param search:
                 Search query
-            `filters`
+            :param filters:
                 List of active filters
         """
         if not search:
@@ -669,10 +669,10 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Returns value to be displayed in list view
 
-                `model`
-                    Model instance
-                `name`
-                    Field name
+            :param model:
+                Model instance
+            :param name:
+                Field name
         """
         if name in self.list_formatters:
             return self.list_formatters[name](model, name)

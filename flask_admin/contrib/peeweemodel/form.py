@@ -20,7 +20,6 @@ class InlineModelFormList(fields.FieldList):
         self.model = model
         self.prop = prop
 
-        # TODO: Fix me
         self._pk = get_primary_key(model)
 
         super(InlineModelFormList, self).__init__(InlineModelFormField(form, self._pk), **kwargs)

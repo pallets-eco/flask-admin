@@ -45,13 +45,13 @@ class TimeField(fields.Field):
         """
             Constructor
 
-            `label`
+            :param label:
                 Label
-            `validators`
+            :param validators:
                 Field validators
-            `formats`
+            :param formats:
                 Supported time formats, as a enumerable.
-            `kwargs`
+            :param kwargs:
                 Any additional parameters
         """
         super(TimeField, self).__init__(label, validators, **kwargs)
@@ -130,7 +130,16 @@ class DateTimePickerWidget(widgets.TextInput):
 
 
 class RenderTemplateWidget(object):
+    """
+        WTForms widget that renders Jinja2 template
+    """
     def __init__(self, template):
+        """
+            Constructor
+
+            :param template:
+                Template path
+        """
         self.template = template
 
     def __call__(self, field, **kwargs):

@@ -181,9 +181,26 @@ class QuerySelectMultipleField(QuerySelectField):
 
 
 class InlineModelFormList(FieldList):
+    """
+        Customizied ``wtforms.fields.FieldList`` class which will work with SQLAlchemy
+        model instances.
+    """
+
     widget = InlineFormListWidget()
 
     def __init__(self, form, session, model, prop, **kwargs):
+        """
+            Default constructor.
+
+            :param form:
+                Form for the related model
+            :param session:
+                SQLAlchemy session
+            :param model:
+                Related model
+            :param prop:
+                Related property name
+        """
         self.form = form
         self.session = session
         self.model = model

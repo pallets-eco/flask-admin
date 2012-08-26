@@ -239,6 +239,24 @@ def get_form(model, converter,
             only=None, exclude=None,
             field_args=None,
             hidden_pk=False):
+    """
+        Generate form from the model.
+
+        :param model:
+            Model to generate form from
+        :param converter:
+            Converter class to use
+        :param base_class:
+            Base form class
+        :param only:
+            Include fields
+        :param exclude:
+            Exclude fields
+        :param field_args:
+            Dictionary with additional field arguments
+        :param hidden_pk:
+            Generate hidden field with model primary key or not
+    """
 
     # TODO: Support new 0.8 API
     if not hasattr(model, '_sa_class_manager'):
@@ -263,6 +281,28 @@ def get_form(model, converter,
 
 
 def contribute_inline(session, model, form_class, inline_models):
+    """
+        Generate form fields for inline forms and contribute them to
+        the `form_class`
+
+        :param session:
+            SQLAlchemy session
+        :param model:
+            Model class
+        :param form_class:
+            Form to add properties to
+        :param inline_models:
+            List of inline model definitions. Can be one of:
+
+             - ``tuple``, first value is related model instance,
+             second is dictionary with options
+             - ``InlineFormAdmin`` instance
+             - Model class
+
+        :return:
+            Form class
+    """
+
     # Get mapper
     mapper = model._sa_class_manager.mapper
 

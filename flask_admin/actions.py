@@ -6,11 +6,11 @@ def action(name, text, confirmation=None):
         Use this decorator to expose actions that span more than one
         entity (model, file, etc)
 
-        `name`
+        :param name:
             Action name
-        `text`
+        :param text:
             Action text.
-        `confirmation`
+        :param confirmation:
             Confirmation text. If not provided, action will be executed
             unconditionally.
     """
@@ -64,7 +64,7 @@ class ActionsMixin(object):
         """
             Verify if action with `name` is allowed.
 
-            `name`
+            :param name:
                 Action name
         """
         return True
@@ -93,7 +93,7 @@ class ActionsMixin(object):
         """
             Handle action request.
 
-            `return_view`
+            :param return_view:
                 Name of the view to return to after the request.
                 If not provided, will return user to the index view.
         """

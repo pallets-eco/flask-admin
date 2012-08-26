@@ -12,6 +12,9 @@ def parse_like_term(term):
 def get_primary_key(model):
     """
         Return primary key name from a model
+
+        :param model:
+            Model class
     """
     props = model._sa_class_manager.mapper.iterate_properties
 
