@@ -25,6 +25,16 @@ class User(BaseModel):
         return self.username
 
 
+class UserInfo(BaseModel):
+    key = peewee.CharField(max_length=64)
+    value = peewee.CharField(max_length=64)
+
+    user = peewee.ForeignKeyField(User)
+
+    def __unicode__(self):
+        return '%s - %s' % (self.key, self.value)
+
+
 class Post(BaseModel):
     title = peewee.CharField(max_length=120)
     text = peewee.TextField(null=False)
@@ -34,6 +44,10 @@ class Post(BaseModel):
 
     def __unicode__(self):
         return self.title
+
+
+class UserAdmin(peeweemodel.ModelView):
+    inline_models = (UserInfo,)
 
 
 class PostAdmin(peeweemodel.ModelView):
@@ -60,13 +74,18 @@ def index():
 
 
 if __name__ == '__main__':
+    import logging
+    logging.basicConfig()
+    logging.getLogger().setLevel(logging.DEBUG)
+
     admin = admin.Admin(app, 'Peewee Models')
 
-    admin.add_view(peeweemodel.ModelView(User))
+    admin.add_view(UserAdmin(User))
     admin.add_view(PostAdmin(Post))
 
     try:
         User.create_table()
+        UserInfo.create_table()
         Post.create_table()
     except:
         pass

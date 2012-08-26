@@ -29,5 +29,5 @@
     </div>
     {% endfor %}
     </div>
-    <a href="#" class="btn" onclick="faForm.addInlineModel('{{ field.id }}', '#{{ field.id }}-forms', {{ render_template(template)|tojson }});">Add {{ field.name }}</a>
+    <a href="#" class="btn" onclick="faForm.addInlineModel('{{ field.id }}', '#{{ field.id }}-forms', {{ render_template(template)|tojson }});">Add {{ field.label.text }}</a>
 </div>

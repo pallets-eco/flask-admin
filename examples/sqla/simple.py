@@ -64,9 +64,6 @@ class UserInfo(db.Model):
     key = db.Column(db.String(64), nullable=False)
     value = db.Column(db.String(64))
 
-    tag_id = db.Column(db.Integer(), db.ForeignKey(Tag.id), nullable=False)
-    tags = db.relationship(Tag, backref='userinfos')
-
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
     user = db.relationship(User, backref='info')
 
@@ -82,7 +79,7 @@ def index():
 
 # Customized User model admin
 class UserAdmin(sqlamodel.ModelView):
-    inline_models = ('info',)
+    inline_models = (UserInfo,)
 
 
 # Customized Post model admin

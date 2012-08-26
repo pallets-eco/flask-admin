@@ -9,7 +9,8 @@ from wtfpeewee.orm import model_form
 
 from flask.ext.admin.actions import action
 from flask.ext.admin.contrib.peeweemodel import filters
-from .form import CustomModelConverter
+from .form import CustomModelConverter, contribute_inline, save_inline
+from .tools import get_primary_key
 
 
 class ModelView(BaseModelView):
@@ -49,6 +50,14 @@ class ModelView(BaseModelView):
         for your model.
     """
 
+    inline_models = None
+    """
+        Inline related-model editing for parent to child relation::
+
+            class MyModelView(ModelView):
+                inline_models = (Post,)
+    """
+
     def __init__(self, model, name=None,
                  category=None, endpoint=None, url=None):
         self._search_fields = []
@@ -64,11 +73,7 @@ class ModelView(BaseModelView):
         return model._meta.get_sorted_fields()
 
     def scaffold_pk(self):
-        for n, f in self._get_model_fields():
-            if type(f) == PrimaryKeyField:
-                return n
-
-        return None
+        return get_primary_key(self.model)
 
     def get_pk_value(self, model):
         return getattr(model, self._primary_key)
@@ -149,12 +154,17 @@ class ModelView(BaseModelView):
         return isinstance(filter, filters.BasePeeweeFilter)
 
     def scaffold_form(self):
-        return model_form(self.model,
-            base_class=form.BaseForm,
-            only=self.form_columns,
-            exclude=self.excluded_form_columns,
-            field_args=self.form_args,
-            converter=CustomModelConverter())
+        form_class = model_form(self.model,
+                        base_class=form.BaseForm,
+                        only=self.form_columns,
+                        exclude=self.excluded_form_columns,
+                        field_args=self.form_args,
+                        converter=CustomModelConverter())
+
+        if self.inline_models:
+            form_class = contribute_inline(self.model, form_class, self.inline_models)
+
+        return form_class
 
     def _handle_join(self, query, field, joins):
         if field.model != self.model:
@@ -237,6 +247,10 @@ class ModelView(BaseModelView):
             model = self.model()
             form.populate_obj(model)
             model.save()
+
+            # For peewee have to save inline forms after model was saved
+            save_inline(form, model)
+
             return True
         except Exception, ex:
             flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
@@ -252,6 +266,10 @@ class ModelView(BaseModelView):
         try:
             form.populate_obj(model)
             model.save()
+
+            # For peewee have to save inline forms after model was saved
+            save_inline(form, model)
+
             return True
         except Exception, ex:
             flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')

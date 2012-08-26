@@ -205,7 +205,7 @@ class InlineModelFormList(FieldList):
         # Create primary key map
         pk_map = dict((str(getattr(v, self._pk)), v) for v in values)
 
-        # Create fake object to work around wtforms limitations
+        # Handle request data
         for field in self.entries:
             field_id = field.get_pk()
 

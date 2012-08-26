@@ -268,34 +268,42 @@ def contribute_inline(session, model, form_class, inline_models):
 
     # Contribute columns
     for p in inline_models:
-        # Figure out
-        if isinstance(p, basestring):
-            info = InlineFormAdmin(p)
-        elif isinstance(p, tuple):
+        # Figure out settings
+        if isinstance(p, tuple):
             info = InlineFormAdmin(p[0], **p[1])
         elif isinstance(p, InlineFormAdmin):
             info = p
+        elif hasattr(p, '_sa_class_manager'):
+            info = InlineFormAdmin(p)
         else:
             raise Exception('Unknown inline model admin: %s' % repr(p))
 
-        prop = mapper.get_property(info.field)
-        if prop is None:
-            raise Exception('Inline form property %s.%s was not found' % (model.__name__,
-                                                                          info.field))
+        # Find property from target model to current model
+        target_mapper = info.model._sa_class_manager.mapper
 
-        if not hasattr(prop, 'direction'):
-            raise Exception('Failed to convert inline admin %s - only one-to-many relations are supported' % info.field)
+        reverse_prop = None
 
-        if prop.direction.name != 'ONETOMANY':
-            raise Exception('Failed to convert inline admin %s - only one-to-many relations are supported' % info.field)
+        for prop in target_mapper.iterate_properties:
+            if hasattr(prop, 'direction') and prop.direction.name == 'MANYTOONE':
+                if prop.mapper.class_ == model:
+                    reverse_prop = prop
+                    break
+        else:
+            raise Exception('Cannot find reverse relation for model %s' % info.model)
 
-        # Find reverse relationship (to exlude from the list)
-        ignore = []
+        # Find forward property
+        forward_prop = None
 
-        for remote_prop in prop.mapper.iterate_properties:
-            if hasattr(remote_prop, 'direction') and remote_prop.direction.name == 'MANYTOONE':
-                if remote_prop.mapper.class_ == prop.parent.class_:
-                    ignore.append(remote_prop.key)
+        for prop in mapper.iterate_properties:
+            if hasattr(prop, 'direction') and prop.direction.name == 'ONETOMANY':
+                if prop.mapper.class_ == target_mapper.class_:
+                    forward_prop = prop
+                    break
+        else:
+            raise Exception('Cannot find forward relation for model %s' % info.model)
+
+        # Remove reverse property from the list
+        ignore = [reverse_prop.key]
 
         if info.exclude:
             exclude = ignore + info.exclude
@@ -303,15 +311,18 @@ def contribute_inline(session, model, form_class, inline_models):
             exclude = ignore
 
         # Create field
-        remote_model = prop.mapper.class_
-
         converter = AdminModelConverter(session, info)
-        child_form = get_form(remote_model, converter,
+        child_form = get_form(info.model,
+                            converter,
                             only=info.include,
                             exclude=exclude,
                             hidden_pk=True)
 
-        setattr(form_class, p,
-                InlineModelFormList(child_form, session, remote_model, p))
+        setattr(form_class,
+                forward_prop.key,
+                InlineModelFormList(child_form,
+                                    session,
+                                    info.model,
+                                    forward_prop.key))
 
     return form_class

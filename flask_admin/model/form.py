@@ -11,8 +11,8 @@ def converts(*args):
 
 
 class InlineFormAdmin(object):
-    def __init__(self, field, **kwargs):
-        self.field = field
+    def __init__(self, model, **kwargs):
+        self.model = model
 
         defaults = dict(include=None,
                         exclude=None)

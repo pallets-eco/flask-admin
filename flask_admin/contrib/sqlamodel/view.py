@@ -126,13 +126,10 @@ class ModelView(BaseModelView):
 
     inline_models = None
     """
-        Inline related-model editing for parent to child relation.
+        Inline related-model editing for parent to child relation::
 
-        If you have child relation with name 'posts', you can generate inline
-        administration interface by using this code::
-
-            class MyModelView(BaseModelView):
-                inline_models = ('posts',)
+            class MyModelView(ModelView):
+                inline_models = (Post,)
     """
 
     def __init__(self, model, session,
