@@ -79,7 +79,7 @@ var AdminFilters = function(element, filters_element, adminForm, operations, opt
 
         $('button', $root).show();
 
-        return false;
+        //return false;
     });
 
     $('.filter-op', $root).change(changeOperation);
