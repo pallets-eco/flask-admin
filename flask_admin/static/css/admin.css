@@ -60,3 +60,8 @@ form.search-form a.clear i {
     color: black;
     opacity: 0.4;
 }
+
+/* Inline forms */
+.fa-inline-form-control {
+    float: right;
+}

@@ -5,7 +5,7 @@
 
 {% macro render_template(template) -%}
 <div class="fa-inline-form">
-    <div style="float: right">
+    <div class="fa-inline-form-control">
         <a href="#" class="fa-remove-form"><i class="icon-remove"></i></a>
     </div>
     {{ lib.render_form_fields(template) }}
@@ -19,8 +19,9 @@
     <div id="{{ subfield.id }}" class="fa-inline-form">
         {% set pk = subfield.get_pk() %}
         {%- if pk %}
-        <div style="float: right">
-            <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />Delete?
+        <div class="fa-inline-form-control">
+            <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
+            <label for="del-{{ subfield.id }}" style="display: inline">Delete?</a>
         </div>
         {%- endif -%}
         {{ lib.render_form_fields(subfield, True) }}
