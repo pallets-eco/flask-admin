@@ -93,7 +93,7 @@
         {% endif %}
         {% if f.errors %}
           <ul>
-          {% for e in f.errors %}
+          {% for e in f.errors if e is string %}
             <li>{{ e }}</li>
           {% endfor %}
           </ul>

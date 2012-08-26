@@ -28,18 +28,6 @@ class User(db.Model):
         return self.username
 
 
-class UserInfo(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-
-    key = db.Column(db.String(64))
-    value = db.Column(db.String(64))
-
-    user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
-    user = db.relationship(User, backref='info')
-
-    def __unicode__(self):
-        return '%s - %s' % (self.key, self.value)
-
 # Create M2M table
 post_tags_table = db.Table('post_tags', db.Model.metadata,
                            db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
@@ -68,6 +56,22 @@ class Tag(db.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class UserInfo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    key = db.Column(db.String(64), nullable=False)
+    value = db.Column(db.String(64))
+
+    tag_id = db.Column(db.Integer(), db.ForeignKey(Tag.id), nullable=False)
+    tags = db.relationship(Tag, backref='userinfos')
+
+    user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
+    user = db.relationship(User, backref='info')
+
+    def __unicode__(self):
+        return '%s - %s' % (self.key, self.value)
 
 
 # Flask views
