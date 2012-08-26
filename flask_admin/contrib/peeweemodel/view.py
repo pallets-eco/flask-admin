@@ -42,6 +42,9 @@ class ModelView(BaseModelView):
 
         self._primary_key = self.scaffold_pk()
 
+        self._search_fields = []
+        self._search_joins = dict()
+
     def _get_model_fields(self, model=None):
         if model is None:
             model = self.model
@@ -116,29 +119,6 @@ class ModelView(BaseModelView):
 
         return bool(self._search_fields)
 
-    def _find_field(self, model, field, visited, path=None):
-        def make_path(n):
-            if path:
-                return '%s__%s' % (path, n)
-            else:
-                return n
-
-        for n, p in self._get_model_fields(model):
-            if p.model == model and p.name == field.name:
-                return make_path(n)
-
-            if type(p) == ForeignKeyField:
-                if p.to not in visited:
-                    visited.add(p.to)
-
-                    result = self._find_field(p.to, field, visited,
-                                        make_path(n))
-
-                    if result is not None:
-                        return result
-
-        return None
-
     def scaffold_filters(self, name):
         if isinstance(name, basestring):
             attr = getattr(self.model, name, None)
@@ -148,19 +128,20 @@ class ModelView(BaseModelView):
         if attr is None:
             raise Exception('Failed to find field for filter: %s' % name)
 
-        if not isinstance(name, basestring):
-            visible_name = self.get_column_name(attr.name)
+        # Check if field is in different model
+        if attr.model != self.model:
+            visible_name = '%s / %s' % (self.get_column_name(attr.model.__name__),
+                                        self.get_column_name(attr.name))
         else:
-            visible_name = self.get_column_name(name)
+            if not isinstance(name, basestring):
+                visible_name = self.get_column_name(attr.name)
+            else:
+                visible_name = self.get_column_name(name)
 
         type_name = type(attr).__name__
         flt = self.filter_converter.convert(type_name,
                                             attr,
                                             visible_name)
-
-        if flt:
-            # TODO: Related table search
-            pass
 
         return flt
 
@@ -178,6 +159,8 @@ class ModelView(BaseModelView):
     def get_list(self, page, sort_column, sort_desc, search, filters,
                  execute=True):
         query = self.model.select()
+
+        joins = set()
 
         # Search
         if self._search_supported and search:
@@ -204,6 +187,15 @@ class ModelView(BaseModelView):
         # Filters
         if self._filters:
             for flt, value in filters:
+                f = self._filters[flt]
+
+                if f.column.model != self.model:
+                    model_name = f.column.model.__name__
+
+                    if model_name not in joins:
+                        query = query.join(f.column.model)
+                        joins.add(model_name)
+
                 query = self._filters[flt].apply(query, value)
 
         # Get count

@@ -49,7 +49,8 @@ class PostAdmin(peeweemodel.ModelView):
     searchable_columns = ('title',)
 
     column_filters = ('title',
-                      'date')
+                      'date',
+                      User.username)
 
 
 @app.route('/')

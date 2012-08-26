@@ -19,6 +19,8 @@ var AdminFilters = function(element, filters_element, adminForm, operations, opt
     function removeFilter() {
         $(this).parent().remove();
         $('button', $root).show();
+
+        return false;
     }
 
     function addFilter(name, op) {
