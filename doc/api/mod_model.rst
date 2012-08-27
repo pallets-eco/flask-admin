@@ -8,7 +8,8 @@
         :exclude-members: can_create, can_edit, can_delete, list_template, edit_template,
                           create_template, list_columns, excluded_list_columns, rename_columns,
                           sortable_columns, searchable_columns, column_filters, form, form_columns,
-                          excluded_form_columns, form_args, form_overrides, page_size
+                          excluded_form_columns, form_args, form_overrides, page_size,
+                          disallowed_actions
 
         .. autoattribute:: can_create
         .. autoattribute:: can_edit
@@ -33,5 +34,7 @@
         .. autoattribute:: excluded_form_columns
         .. autoattribute:: form_args
         .. autoattribute:: form_overrides
+
+        .. autoattribute:: disallowed_actions
 
         .. autoattribute:: page_size

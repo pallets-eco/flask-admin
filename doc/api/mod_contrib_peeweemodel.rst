@@ -1,9 +1,9 @@
-``flask.ext.admin.contrib.sqlamodel``
-=====================================
+``flask.ext.admin.contrib.peeweemodel``
+=======================================
 
-SQLAlchemy model backend implementation.
+Peewee model backend implementation.
 
-.. automodule:: flask.ext.admin.contrib.sqlamodel
+.. automodule:: flask.ext.admin.contrib.peeweemodel
 
     .. autoclass:: ModelView
         :members:
@@ -13,9 +13,6 @@ SQLAlchemy model backend implementation.
 
         Class inherits configuration options from :class:`~flask.ext.admin.model.BaseModelView` and they're not displayed here.
 
-        .. autoattribute:: hide_backrefs
-        .. autoattribute:: auto_select_related
-        .. autoattribute:: list_select_related
         .. autoattribute:: searchable_columns
         .. autoattribute:: filter_converter
         .. autoattribute:: fast_mass_delete

@@ -11,11 +11,30 @@ def converts(*args):
 
 
 class InlineFormAdmin(object):
+    """
+        Settings for inline form administration.
+
+        You can use this class to customize displayed form.
+        For example::
+
+            class MyUserInfoForm(InlineFormAdmin):
+                form_columns = ('name', 'email')
+    """
     def __init__(self, model, **kwargs):
+        """
+            Constructor
+
+            :param model:
+                Target model class
+            :param kwargs:
+                Additional options
+        """
         self.model = model
 
-        defaults = dict(include=None,
-                        exclude=None)
+        defaults = dict(form_columns=None,
+                        excluded_form_columns=None,
+                        form_args=None)
+
         defaults.update(kwargs)
 
         for k, v in defaults.iteritems():

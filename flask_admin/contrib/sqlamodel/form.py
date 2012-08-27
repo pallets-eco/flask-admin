@@ -345,8 +345,8 @@ def contribute_inline(session, model, form_class, inline_models):
         # Remove reverse property from the list
         ignore = [reverse_prop.key]
 
-        if info.exclude:
-            exclude = ignore + info.exclude
+        if info.excluded_form_columns:
+            exclude = ignore + info.excluded_form_columns
         else:
             exclude = ignore
 
@@ -354,8 +354,9 @@ def contribute_inline(session, model, form_class, inline_models):
         converter = AdminModelConverter(session, info)
         child_form = get_form(info.model,
                             converter,
-                            only=info.include,
+                            only=info.form_columns,
                             exclude=exclude,
+                            field_args=info.form_args,
                             hidden_pk=True)
 
         setattr(form_class,

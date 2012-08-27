@@ -177,7 +177,7 @@ Steps to add new model backend:
         This method should return list of models with paging,
         sorting, etc applied.
 
-        For SQLAlchemy it looks like:
+        For SQLAlchemy backend it looks like:
 
             1. If search was enabled and provided search value is not empty,
                generate LIKE statements for each field from `self.searchable_columns`

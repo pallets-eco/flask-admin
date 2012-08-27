@@ -114,8 +114,8 @@ def contribute_inline(model, form_class, inline_models):
         # Remove reverse property from the list
         ignore = [reverse_field.name]
 
-        if info.exclude:
-            exclude = ignore + info.exclude
+        if info.excluded_form_columns:
+            exclude = ignore + info.excluded_form_columns
         else:
             exclude = ignore
 
@@ -123,8 +123,9 @@ def contribute_inline(model, form_class, inline_models):
         converter = CustomModelConverter()
         child_form = model_form(info.model,
                             base_class=form.BaseForm,
-                            only=info.include,
+                            only=info.form_columns,
                             exclude=exclude,
+                            field_args=info.form_args,
                             allow_pk=True,
                             converter=converter)
 

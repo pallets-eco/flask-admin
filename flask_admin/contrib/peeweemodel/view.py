@@ -52,10 +52,27 @@ class ModelView(BaseModelView):
 
     inline_models = None
     """
-        Inline related-model editing for parent to child relation::
+        Inline related-model editing for models with parent to child relation.
+
+        Accept enumerable with one of the values:
+
+        1. Child model class
 
             class MyModelView(ModelView):
                 inline_models = (Post,)
+
+        2. Child model class and additional options
+
+            class MyModelView(ModelView):
+                inline_models = [(Post, dict(form_columns=['title']))]
+
+        3. Django-like ``InlineFormAdmin`` class instance
+
+            class MyInlineForm(InlineFormAdmin):
+                forum_columns = ('title', 'date')
+
+            class MyModelView(ModelView):
+                inline_models = (MyInlineForm,)
     """
 
     def __init__(self, model, name=None,
@@ -257,12 +274,6 @@ class ModelView(BaseModelView):
             return False
 
     def update_model(self, form, model):
-        """
-            Update model from form.
-
-            `form`
-                Form instance
-        """
         try:
             form.populate_obj(model)
             model.save()

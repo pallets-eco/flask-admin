@@ -114,7 +114,7 @@ class ModelView(BaseModelView):
 
     fast_mass_delete = False
     """
-        If set to `False` and user deletes more than one model using actions,
+        If set to `False` and user deletes more than one model using built in action,
         all models will be read from the database and then deleted one by one
         giving SQLAlchemy chance to manually cleanup any dependencies (many-to-many
         relationships, etc).
@@ -126,10 +126,27 @@ class ModelView(BaseModelView):
 
     inline_models = None
     """
-        Inline related-model editing for parent to child relation::
+        Inline related-model editing for models with parent to child relation.
+
+        Accept enumerable with one of the values:
+
+        1. Child model class
 
             class MyModelView(ModelView):
                 inline_models = (Post,)
+
+        2. Child model class and additional options
+
+            class MyModelView(ModelView):
+                inline_models = [(Post, dict(form_columns=['title']))]
+
+        3. Django-like ``InlineFormAdmin`` class instance
+
+            class MyInlineForm(InlineFormAdmin):
+                forum_columns = ('title', 'date')
+
+            class MyModelView(ModelView):
+                inline_models = (MyInlineForm,)
     """
 
     def __init__(self, model, session,

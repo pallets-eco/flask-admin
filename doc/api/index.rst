@@ -10,4 +10,5 @@ API
    mod_tools
 
    mod_contrib_sqlamodel
+   mod_contrib_peeweemodel
    mod_contrib_fileadmin
