@@ -67,6 +67,11 @@ class PostAdmin(peeweemodel.ModelView):
                       'date',
                       User.username)
 
+    @admin.action('merge',
+            'Merge',
+            'Are you sure you want to merge selected models?')
+    def action_combine(self, ids):
+        pass
 
 @app.route('/')
 def index():

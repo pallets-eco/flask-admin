@@ -6,7 +6,7 @@ Changelog
 
 * Peewee model backend
 * Inline form administration interface for models a-la Django
-* Model actions - methods that work with more than one model (for example - mass delete)
+* Mass actions - methods that work with more than one item (for example - mass delete for models or files)
 * SQLAlchemy form scaffolding is now independent from the wtforms.ext.sqlalchemy helpers
 * Added ability to mount administrative interface as a top-level folder
 * Administrative interface can now be mounted as a subdomain
