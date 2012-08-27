@@ -17,7 +17,7 @@ def desc():
 
 setup(
     name='Flask-Admin',
-    version='1.0.1',
+    version='1.0.2',
     url='https://github.com/mrjoes/flask-admin/',
     license='BSD',
     author='Serge S. Koval',

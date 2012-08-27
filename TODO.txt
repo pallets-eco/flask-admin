@@ -6,20 +6,19 @@
     - Reduce number of parameters passed to list view
     - Filters
         - Use table to draw filters so column names will line up?
-        - Custom filters for date fields?
         - Change boolean filter to True/False instead of Yes/No
     - Ability to sort by fields that are not visible?
     - List display callables?
 - SQLA Model Admin
     - Postprocess sort columns - do not resolve to attributes in runtime
-    - Many2Many support
-        - Verify if it is working properly
     - WYSIWYG editor support?
 - File admin
     - Header title
-    - Mass-delete functionality
     - File size restriction
 - Unit tests
     - Form generation tests
+    - Inline form generation tests
 - Documentation
     - Add all new stuff
+    - Fixed stylesheet
+
