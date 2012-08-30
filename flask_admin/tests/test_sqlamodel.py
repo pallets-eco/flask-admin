@@ -2,7 +2,7 @@ from nose.tools import eq_, ok_, raises
 
 from flask import Flask
 
-from flask.ext import wtf
+from wtforms.fields import TextField, TextAreaField, FileField
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.admin import Admin
@@ -82,10 +82,10 @@ def test_model():
     eq_(view._filters, None)
 
     # Verify form
-    eq_(view._create_form_class.test1.field_class, wtf.TextField)
-    eq_(view._create_form_class.test2.field_class, wtf.TextField)
-    eq_(view._create_form_class.test3.field_class, wtf.TextAreaField)
-    eq_(view._create_form_class.test4.field_class, wtf.TextAreaField)
+    eq_(view._create_form_class.test1.field_class, TextField)
+    eq_(view._create_form_class.test2.field_class, TextField)
+    eq_(view._create_form_class.test3.field_class, TextAreaField)
+    eq_(view._create_form_class.test4.field_class, TextAreaField)
 
     # Make some test clients
     client = app.test_client()
@@ -347,12 +347,12 @@ def test_form_override():
     db.create_all()
 
     view1 = CustomModelView(Model, db.session, endpoint='view1')
-    view2 = CustomModelView(Model, db.session, endpoint='view2', form_overrides=dict(test=wtf.FileField))
+    view2 = CustomModelView(Model, db.session, endpoint='view2', form_overrides=dict(test=FileField))
     admin.add_view(view1)
     admin.add_view(view2)
 
-    eq_(view1._create_form_class.test.field_class, wtf.TextField)
-    eq_(view2._create_form_class.test.field_class, wtf.FileField)
+    eq_(view1._create_form_class.test.field_class, TextField)
+    eq_(view2._create_form_class.test.field_class, FileField)
 
 
 def test_relations():

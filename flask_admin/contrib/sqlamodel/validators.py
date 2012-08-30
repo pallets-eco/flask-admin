@@ -1,6 +1,6 @@
 from sqlalchemy.orm.exc import NoResultFound
 
-from wtforms import ValidationError
+from wtforms.validators import ValidationError
 
 
 class Unique(object):

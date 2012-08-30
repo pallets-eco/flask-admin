@@ -6,7 +6,8 @@ from flask.helpers import get_flashed_messages
 from flask.ext.admin import Admin
 from flask.ext.admin.model import base, filters
 
-from flask.ext import wtf
+from flask.ext.wtf import Form
+from wtforms.fields import TextField
 
 
 class Model(object):
@@ -17,10 +18,10 @@ class Model(object):
         self.col3 = c3
 
 
-class Form(wtf.Form):
-    col1 = wtf.TextField()
-    col2 = wtf.TextField()
-    col3 = wtf.TextField()
+class Form(Form):
+    col1 = TextField()
+    col2 = TextField()
+    col3 = TextField()
 
 
 class SimpleFilter(filters.BaseFilter):
@@ -297,7 +298,7 @@ def test_form():
 def test_custom_form():
     app, admin = setup()
 
-    class TestForm(wtf.Form):
+    class TestForm(Form):
         pass
 
     view = MockModelView(Model, form=TestForm)
