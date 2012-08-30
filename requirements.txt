@@ -1,3 +1,6 @@
 Flask>=0.7
-Flask-WTF>=0.6
+
+#Flask-WTF form Simon Sapin, see http://simonklee.org/pkg/flask-wtf/
+http://github.com/simonz05/flask-wtf/tarball/master
+
 Flask-SQLAlchemy>=0.15
