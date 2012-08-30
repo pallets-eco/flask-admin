@@ -74,7 +74,7 @@
 {%- endmacro %}
 
 {% macro render_form_fields(form, focus_set=False) %}
-    {{ form.hidden_tag() if form.hidden_tag is defined }}
+    {{ form.hidden_fields() if form.hidden_fields is defined }}
 
     {% for f in form if f.type != 'HiddenField' and f.type != 'CSRFTokenField' %}
     <div class="control-group{% if f.errors %} error{% endif %}">
