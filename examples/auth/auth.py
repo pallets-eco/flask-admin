@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+
+import sys
+import os
+
+sys.path.pop(0)
+sys.path.insert(0, os.getcwd())
+
 from flask import Flask, url_for, redirect, render_template, request
 from flask.ext.sqlalchemy import SQLAlchemy
 
@@ -153,4 +161,4 @@ if __name__ == '__main__':
 
     # Start app
     app.debug = True
-    app.run()
+    app.run(host='127.0.0.1', port=7089)

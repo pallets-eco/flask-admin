@@ -1,4 +1,11 @@
+# -*- coding: utf-8 -*-
+
+import sys
 import os
+
+sys.path.pop(0)
+sys.path.insert(0, os.getcwd())
+
 import os.path as op
 
 from flask import Flask
