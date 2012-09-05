@@ -31,6 +31,20 @@ class ModelView(BaseModelView):
                 column_filters = (BooleanEqualFilter(User.name, 'Name'))
     """
 
+    model_form_converter = CustomModelConverter
+    """
+        Model form conversion class. Use this to implement custom field conversion logic.
+
+        For example::
+
+            class MyModelConverter(AdminModelConverter):
+                pass
+
+
+            class MyAdminView(ModelView):
+                model_form_converter = MyModelConverter
+    """
+
     filter_converter = filters.FilterConverter()
     """
         Field to filter converter.
@@ -176,7 +190,7 @@ class ModelView(BaseModelView):
                         only=self.form_columns,
                         exclude=self.excluded_form_columns,
                         field_args=self.form_args,
-                        converter=CustomModelConverter())
+                        converter=self.model_form_converter())
 
         if self.inline_models:
             form_class = contribute_inline(self.model, form_class, self.inline_models)
