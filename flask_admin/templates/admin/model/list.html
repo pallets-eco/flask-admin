@@ -153,7 +153,13 @@
                     {%- endif -%}
                 </td>
                 {% for c, name in list_columns %}
-                <td>{{ get_value(row, c) }}</td>
+                <td>
+                    {%- if get_html_value(row, c) -%}
+                        {{ get_html_value(row, c) }}
+                    {%- else -%}
+                        {{ get_value(row, c) }}
+                    {%- endif -%}
+                </td>
                 {% endfor %}
             {% endblock %}
         </tr>

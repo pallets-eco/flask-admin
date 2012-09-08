@@ -87,6 +87,23 @@ class BaseModelView(BaseView, ActionsMixin):
                 pass
     """
 
+    list_html_formatters = dict()
+    """
+        Dictionary of list view column formatters.
+
+        For example, if you want to show div with color background::
+
+            class MyModelView(BaseModelView):
+                list_html_formatters = dict(price=lambda m, p: m.price*2)
+
+        Callback function has following prototype::
+
+            def formatter(model, name):
+                # model is model instance
+                # name is property name
+                pass
+    """
+
     rename_columns = None
     """
         Dictionary where key is column name and value is string to display.
@@ -679,6 +696,20 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return rec_getattr(model, name)
 
+    def get_html_list_value(self, model, name):
+        """
+            Returns value to be displayed in list view
+
+            :param model:
+                Model instance
+            :param name:
+                Field name
+        """
+        if name in self.list_html_formatters:
+            return self.list_html_formatters[name](model, name)
+
+        return rec_getattr(model, name)
+
     # Views
     @expose('/')
     def index_view(self):
@@ -744,6 +775,7 @@ class BaseModelView(BaseView, ActionsMixin):
                                enumerate=enumerate,
                                get_pk_value=self.get_pk_value,
                                get_value=self.get_list_value,
+                               get_html_value=self.get_html_list_value,
                                return_url=self._get_url('.index_view',
                                                         page,
                                                         sort_idx,
