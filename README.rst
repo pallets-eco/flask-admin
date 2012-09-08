@@ -17,7 +17,7 @@ Small example (Flask initialization omitted)::
     admin = Admin()
     admin.add_view(ModelView(User, db.session))
     admin.add_view(GalleryManager(name='Photos', category='Cats'))
-    admin.setup_app(app)
+    admin.init_app(app)
 
 If you're looking for 0.x version of the Flask-Admin written by Andy Wilson, check `here <http://github.com/wilsaj/flask-admin-old>`_.
 
