@@ -14,6 +14,9 @@
             case 'datetimepicker':
                 $(el).datepicker({displayTime: true});
                 break;
+            case 'simplecolorpicker':
+                $(el).simplecolorpicker();
+                break;
         }
       };
 
@@ -53,6 +56,7 @@
         $('[data-role=chosenblank]', parent).chosen({allow_single_deselect: true});
         $('[data-role=datepicker]', parent).datepicker();
         $('[data-role=datetimepicker]', parent).datepicker({displayTime: true});
+        $('[data-role=simplecolorpicker]', parent).simplecolorpicker();
       };
     };
 

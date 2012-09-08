@@ -5,6 +5,7 @@
 {% block head %}
     <link href="{{ url_for('admin.static', filename='chosen/chosen.css') }}" rel="stylesheet">
     <link href="{{ url_for('admin.static', filename='css/datepicker.css') }}" rel="stylesheet">
+    <link href="{{ url_for('admin.static', filename='css/simplecolorpicker.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
@@ -165,6 +166,7 @@
 
 {% block tail %}
     <script src="{{ url_for('admin.static', filename='js/bootstrap-datepicker.js') }}"></script>
+    <script src="{{ url_for('admin.static', filename='js/bootstrap-simplecolorpicker.js') }}"></script>
     <script src="{{ url_for('admin.static', filename='js/form.js') }}"></script>
     <script src="{{ url_for('admin.static', filename='js/filters.js') }}"></script>
 
