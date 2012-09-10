@@ -5,6 +5,8 @@ from flask import Blueprint, render_template, url_for, abort
 
 from flask.ext.admin import babel
 
+from .helpers import set_current_view
+
 
 def expose(url='/', methods=('GET',)):
     """
@@ -28,6 +30,10 @@ def expose(url='/', methods=('GET',)):
 def _wrap_view(f):
     @wraps(f)
     def inner(self, **kwargs):
+        # Store current admin view
+        set_current_view(self)
+
+        # Check if administrative piece is accessible
         h = self._handle_view(f.__name__, **kwargs)
 
         if h is not None:
@@ -302,7 +308,8 @@ class Admin(object):
     def __init__(self, app=None, name=None,
                  url=None, subdomain=None,
                  index_view=None,
-                 translations_path=None):
+                 translations_path=None,
+                 endpoint=None):
         """
             Constructor.
 
@@ -319,6 +326,9 @@ class Admin(object):
             :param translations_path:
                 Location of the translation message catalogs. By default will use translations
                 shipped with the Flask-Admin.
+            :param endpoint:
+                Base endpoint name for index view. If you use multiple instances of `Admin` class with
+                one Flask application, you have to set unique endpoint name for each instance.
         """
         self.app = app
 
@@ -337,20 +347,23 @@ class Admin(object):
         self.url = url
         self.subdomain = subdomain
 
+        self.endpoint = endpoint
+
         # Localizations
         self.locale_selector_func = None
 
+        # Register with application
+        if app:
+            self._init_extension()
+
         # Index view
         if index_view is None:
-            index_view = AdminIndexView(url=self.url)
+            index_view = AdminIndexView(endpoint=self.endpoint, url=self.url)
 
         self.index_view = index_view
 
         # Add predefined index view
         self.add_view(index_view)
-
-        if app:
-            self._init_extension()
 
     def add_view(self, view):
         """
@@ -429,20 +442,30 @@ class Admin(object):
 
         self.app = app
 
+        self._init_extension()
+
+        # Register views
         for view in self._views:
             app.register_blueprint(view.create_blueprint(self))
             self._add_view_to_menu(view)
-
-        self._init_extension()
 
     def _init_extension(self):
         if not hasattr(self.app, 'extensions'):
             self.app.extensions = dict()
 
-        if 'admin' in self.app.extensions:
-            raise Exception('Can not have more than one instance of the Admin class associated with Flask application')
+        admins = self.app.extensions.get('admin', [])
 
-        self.app.extensions['admin'] = self
+        for p in admins:
+            if p.endpoint == self.endpoint:
+                raise Exception('Cannot have two Admin() instances with same'
+                                ' endpoint name.')
+
+            if p.url == self.url and p.subdomain == self.subdomain:
+                raise Exception('Cannot assign two Admin() instances with same'
+                                ' URL and subdomain to the same application.')
+
+        admins.append(self)
+        self.app.extensions['admin'] = admins
 
     def menu(self):
         """

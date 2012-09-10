@@ -1,4 +1,6 @@
 try:
+    from .helpers import get_current_view
+
     from flask.ext.babel import Domain
 
     from flask.ext.admin import translations
@@ -8,9 +10,12 @@ try:
             super(CustomDomain, self).__init__(translations.__path__[0], domain='admin')
 
         def get_translations_path(self, ctx):
-            dirname = ctx.app.extensions['admin'].translations_path
-            if dirname is not None:
-                return dirname
+            view = get_current_view()
+
+            if view is not None:
+                dirname = view.admin.translations_path
+                if dirname is not None:
+                    return dirname
 
             return super(CustomDomain, self).get_translations_path(ctx)
 
