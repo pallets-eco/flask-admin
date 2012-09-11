@@ -1,4 +1,9 @@
-from wtforms import fields, validators
+from wtforms.validators import (Required, Optional, Length, UUID, MacAddress,
+                                IPAddress, NumberRange)
+from wtforms.fields import (TextField, BooleanField, HiddenField, DateField,
+                            DateTimeField, TextAreaField, IntegerField, 
+                            DecimalField)
+
 
 from flask.ext.admin import form
 from flask.ext.admin.model.form import converts, ModelConverterBase, InlineFormAdmin
@@ -53,9 +58,9 @@ class AdminModelConverter(ModelConverterBase):
             kwargs['label'] = self._get_label(prop.key, kwargs)
 
             if local_column.nullable:
-                kwargs['validators'].append(validators.Optional())
+                kwargs['validators'].append(Optional())
             elif prop.direction.name != 'MANYTOMANY':
-                kwargs['validators'].append(validators.Required())
+                kwargs['validators'].append(Required())
 
             # Override field type if necessary
             override = self._get_field_override(prop.key)
@@ -102,7 +107,7 @@ class AdminModelConverter(ModelConverterBase):
                 if column.primary_key:
                     if hidden_pk:
                         # If requested to add hidden field, show it
-                        return fields.HiddenField()
+                        return HiddenField()
                     else:
                         # By default, don't show primary keys either
                         form_columns = getattr(self.view, 'form_columns', None)
@@ -126,7 +131,7 @@ class AdminModelConverter(ModelConverterBase):
                                                        column))
 
                 if not column.nullable:
-                    kwargs['validators'].append(validators.Required())
+                    kwargs['validators'].append(Required())
 
                 # Apply label
                 kwargs['label'] = self._get_label(prop.key, kwargs)
@@ -145,7 +150,7 @@ class AdminModelConverter(ModelConverterBase):
 
                 # Check nullable
                 if column.nullable:
-                    kwargs['validators'].append(validators.Optional())
+                    kwargs['validators'].append(Optional())
 
                 # Override field type if necessary
                 override = self._get_field_override(prop.key)
@@ -166,32 +171,32 @@ class AdminModelConverter(ModelConverterBase):
     @classmethod
     def _string_common(cls, column, field_args, **extra):
         if column.type.length:
-            field_args['validators'].append(validators.Length(max=column.type.length))
+            field_args['validators'].append(Length(max=column.type.length))
 
     @converts('String', 'Unicode')
     def conv_String(self, field_args, **extra):
         self._string_common(field_args=field_args, **extra)
-        return fields.TextField(**field_args)
+        return TextField(**field_args)
 
     @converts('Text', 'UnicodeText',
             'sqlalchemy.types.LargeBinary', 'sqlalchemy.types.Binary')
     def conv_Text(self, field_args, **extra):
         self._string_common(field_args=field_args, **extra)
-        return fields.TextAreaField(**field_args)
+        return TextAreaField(**field_args)
 
     @converts('Boolean')
     def conv_Boolean(self, field_args, **extra):
-        return fields.BooleanField(**field_args)
+        return BooleanField(**field_args)
 
     @converts('Date')
     def convert_date(self, field_args, **extra):
         field_args['widget'] = form.DatePickerWidget()
-        return fields.DateField(**field_args)
+        return DateField(**field_args)
 
     @converts('DateTime')
     def convert_datetime(self, field_args, **extra):
         field_args['widget'] = form.DateTimePickerWidget()
-        return fields.DateTimeField(**field_args)
+        return DateTimeField(**field_args)
 
     @converts('Time')
     def convert_time(self, field_args, **extra):
@@ -201,38 +206,38 @@ class AdminModelConverter(ModelConverterBase):
     def handle_integer_types(self, column, field_args, **extra):
         unsigned = getattr(column.type, 'unsigned', False)
         if unsigned:
-            field_args['validators'].append(validators.NumberRange(min=0))
-        return fields.IntegerField(**field_args)
+            field_args['validators'].append(NumberRange(min=0))
+        return IntegerField(**field_args)
 
     @converts('Numeric', 'Float')
     def handle_decimal_types(self, column, field_args, **extra):
         places = getattr(column.type, 'scale', 2)
         if places is not None:
             field_args['places'] = places
-        return fields.DecimalField(**field_args)
+        return DecimalField(**field_args)
 
     @converts('databases.mysql.MSYear')
     def conv_MSYear(self, field_args, **extra):
-        field_args['validators'].append(validators.NumberRange(min=1901, max=2155))
-        return fields.TextField(**field_args)
+        field_args['validators'].append(NumberRange(min=1901, max=2155))
+        return TextField(**field_args)
 
     @converts('databases.postgres.PGInet', 'dialects.postgresql.base.INET')
     def conv_PGInet(self, field_args, **extra):
         field_args.setdefault('label', u'IP Address')
-        field_args['validators'].append(validators.IPAddress())
-        return fields.TextField(**field_args)
+        field_args['validators'].append(IPAddress())
+        return TextField(**field_args)
 
     @converts('dialects.postgresql.base.MACADDR')
     def conv_PGMacaddr(self, field_args, **extra):
         field_args.setdefault('label', u'MAC Address')
-        field_args['validators'].append(validators.MacAddress())
-        return fields.TextField(**field_args)
+        field_args['validators'].append(MacAddress())
+        return TextField(**field_args)
 
     @converts('dialects.postgresql.base.UUID')
     def conv_PGUuid(self, field_args, **extra):
         field_args.setdefault('label', u'UUID')
-        field_args['validators'].append(validators.UUID())
-        return fields.TextField(**field_args)
+        field_args['validators'].append(UUID())
+        return TextField(**field_args)
 
 
 # Get list of fields and generate form

@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+
+import sys
+import os
+
+sys.path.pop(0)
+sys.path.insert(0, os.getcwd())
+
 from flask import Flask, request, session
 from flask.ext.sqlalchemy import SQLAlchemy
 

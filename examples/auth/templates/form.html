@@ -1,7 +1,7 @@
 <html>
     <body>
         <form method="POST" action="">
-            {{ form.hidden_tag() }}
+            {{ form.hidden_fields() }}
             {% for f in form if f.type != 'CSRFTokenField' %}
             {{ f.type }}
             <div>

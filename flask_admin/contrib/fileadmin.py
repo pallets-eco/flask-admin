@@ -15,7 +15,9 @@ from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.actions import action, ActionsMixin
 from flask.ext.admin.babel import gettext, lazy_gettext
 from flask.ext.admin import form
-from flask.ext import wtf
+
+from wtforms.fields import TextField, FileField
+from wtforms.validators import ValidationError
 
 
 class NameForm(form.BaseForm):
@@ -24,13 +26,13 @@ class NameForm(form.BaseForm):
 
         Validates if provided name is valid for *nix and Windows systems.
     """
-    name = wtf.TextField()
+    name = TextField()
 
     regexp = re.compile(r'^(?!^(PRN|AUX|CLOCK\$|NUL|CON|COM\d|LPT\d|\..*)(\..+)?$)[^\x00-\x1f\\?*:\";|/]+$')
 
     def validate_name(self, field):
         if not self.regexp.match(field.data):
-            raise wtf.ValidationError(gettext('Invalid directory name'))
+            raise ValidationError(gettext('Invalid directory name'))
 
 
 class UploadForm(form.BaseForm):
@@ -38,7 +40,7 @@ class UploadForm(form.BaseForm):
         File upload form. Works with FileAdmin instance to check if it is allowed
         to upload file with given extension.
     """
-    upload = wtf.FileField(lazy_gettext('File to upload'))
+    upload = FileField(lazy_gettext('File to upload'))
 
     def __init__(self, admin):
         self.admin = admin
@@ -47,12 +49,12 @@ class UploadForm(form.BaseForm):
 
     def validate_upload(self, field):
         if not self.upload.has_file():
-            raise wtf.ValidationError(gettext('File required.'))
+            raise ValidationError(gettext('File required.'))
 
         filename = self.upload.data.filename
 
         if not self.admin.is_file_allowed(filename):
-            raise wtf.ValidationError(gettext('Invalid file type.'))
+            raise ValidationError(gettext('Invalid file type.'))
 
 
 class FileAdmin(BaseView, ActionsMixin):

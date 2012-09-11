@@ -3,13 +3,14 @@ import datetime
 
 from flask.globals import _request_ctx_stack
 
-from flask.ext import wtf
-from wtforms import fields, widgets
+from flask.ext.wtf import Form
+from wtforms.widgets import TextInput, Select
+from wtforms.fields import SelectField, FileField, Field
 
 from flask.ext.admin.babel import gettext
 
 
-class BaseForm(wtf.Form):
+class BaseForm(Form):
     """
         Customized form class.
     """
@@ -28,18 +29,18 @@ class BaseForm(wtf.Form):
         """
         # TODO: Optimize me
         for f in self:
-            if isinstance(f, wtf.FileField):
+            if isinstance(f, FileField):
                 return True
 
         return False
 
 
-class TimeField(fields.Field):
+class TimeField(Field):
     """
         A text field which stores a `datetime.time` object.
         Accepts time string in multiple formats: 20:10, 20:10:00, 10:00 am, 9:30pm, etc.
     """
-    widget = widgets.TextInput()
+    widget = TextInput()
 
     def __init__(self, label=None, validators=None, formats=None, **kwargs):
         """
@@ -83,7 +84,7 @@ class TimeField(fields.Field):
             raise ValueError(gettext('Invalid time format'))
 
 
-class ChosenSelectWidget(widgets.Select):
+class ChosenSelectWidget(Select):
     """
         `Chosen <http://harvesthq.github.com/chosen/>`_ styled select widget.
 
@@ -98,7 +99,7 @@ class ChosenSelectWidget(widgets.Select):
         return super(ChosenSelectWidget, self).__call__(field, **kwargs)
 
 
-class ChosenSelectField(fields.SelectField):
+class ChosenSelectField(SelectField):
     """
         `Chosen <http://harvesthq.github.com/chosen/>`_ styled select field.
 
@@ -107,7 +108,7 @@ class ChosenSelectField(fields.SelectField):
     widget = ChosenSelectWidget
 
 
-class DatePickerWidget(widgets.TextInput):
+class DatePickerWidget(TextInput):
     """
         Date picker widget.
 
@@ -118,7 +119,7 @@ class DatePickerWidget(widgets.TextInput):
         return super(DatePickerWidget, self).__call__(field, **kwargs)
 
 
-class DateTimePickerWidget(widgets.TextInput):
+class DateTimePickerWidget(TextInput):
     """
         Datetime picker widget.
 
