@@ -50,11 +50,7 @@ class AdminModelConverter(ModelConverterBase):
             remote_model = prop.mapper.class_
             local_column = prop.local_remote_pairs[0][0]
 
-            kwargs.update({
-                'allow_blank': local_column.nullable,
-                'label': self._get_label(prop.key, kwargs),
-                'query_factory': lambda: self.session.query(remote_model)
-            })
+            kwargs['label'] = self._get_label(prop.key, kwargs)
 
             if local_column.nullable:
                 kwargs['validators'].append(validators.Optional())
@@ -65,6 +61,12 @@ class AdminModelConverter(ModelConverterBase):
             override = self._get_field_override(prop.key)
             if override:
                 return override(**kwargs)
+
+            # Contribute model-related parameters
+            kwargs.update({
+                'allow_blank': local_column.nullable,
+                'query_factory': lambda: self.session.query(remote_model)
+            })
 
             if prop.direction.name == 'MANYTOONE':
                 return QuerySelectField(widget=form.ChosenSelectWidget(),
