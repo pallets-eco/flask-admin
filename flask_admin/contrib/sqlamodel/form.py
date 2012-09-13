@@ -137,7 +137,7 @@ class AdminModelConverter(ModelConverterBase):
                 if default is not None:
                     callable_default = getattr(default, 'arg', None)
 
-                    if callable_default and callable(callable_default):
+                    if callable_default is not None and callable(callable_default):
                         default = callable_default(None)
 
                 if default is not None:
