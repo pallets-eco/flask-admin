@@ -79,11 +79,12 @@ class BaseModelView(BaseView, ActionsMixin):
         two, you can do something like this::
 
             class MyModelView(BaseModelView):
-                list_formatters = dict(price=lambda m, p: m.price*2)
+                list_formatters = dict(price=lambda c, m, p: m.price*2)
 
         Callback function has following prototype::
 
-            def formatter(model, name):
+            def formatter(context, model, name):
+                # context is instance of jinja2.runtime.Context
                 # model is model instance
                 # name is property name
                 pass
@@ -673,7 +674,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Returns value to be displayed in list view
 
             :param context:
-                Jinja2 context
+                :py:class:`jinja2.runtime.Context`
             :param model:
                 Model instance
             :param name:
