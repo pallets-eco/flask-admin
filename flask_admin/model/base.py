@@ -1,5 +1,7 @@
 from flask import request, url_for, redirect, flash
 
+from jinja2 import contextfunction
+
 from flask.ext.admin.babel import gettext
 
 from flask.ext.admin.base import BaseView, expose
@@ -665,17 +667,20 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return name not in self.disallowed_actions
 
-    def get_list_value(self, model, name):
+    @contextfunction
+    def get_list_value(self, context, model, name):
         """
             Returns value to be displayed in list view
 
+            :param context:
+                Jinja2 context
             :param model:
                 Model instance
             :param name:
                 Field name
         """
         if name in self.list_formatters:
-            return self.list_formatters[name](model, name)
+            return self.list_formatters[name](context, model, name)
 
         return rec_getattr(model, name)
 
