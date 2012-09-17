@@ -1,4 +1,5 @@
 from wtforms import fields, validators
+from sqlalchemy import Boolean
 
 from flask.ext.admin import form
 from flask.ext.admin.model.form import converts, ModelConverterBase, InlineFormAdmin
@@ -125,7 +126,7 @@ class AdminModelConverter(ModelConverterBase):
                                                        model,
                                                        column))
 
-                if not column.nullable:
+                if not column.nullable and not isinstance(column.type, Boolean):
                     kwargs['validators'].append(validators.Required())
 
                 # Apply label

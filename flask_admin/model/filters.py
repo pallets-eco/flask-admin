@@ -77,7 +77,7 @@ class BaseBooleanFilter(BaseFilter):
     """
         Base boolean filter, uses fixed list of options.
     """
-    def __init__(self, name, data_type=None):
+    def __init__(self, name, options=None, data_type=None):
         super(BaseBooleanFilter, self).__init__(name,
                                                 (('1', lazy_gettext('Yes')),
                                                  ('0', lazy_gettext('No'))),
