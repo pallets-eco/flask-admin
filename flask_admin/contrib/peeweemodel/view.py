@@ -282,6 +282,8 @@ class ModelView(BaseModelView):
             # For peewee have to save inline forms after model was saved
             save_inline(form, model)
 
+            self.on_model_change(form, model)
+
             return True
         except Exception, ex:
             flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
@@ -295,6 +297,8 @@ class ModelView(BaseModelView):
             # For peewee have to save inline forms after model was saved
             save_inline(form, model)
 
+            self.on_model_change(form, model)
+
             return True
         except Exception, ex:
             flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')
@@ -302,6 +306,7 @@ class ModelView(BaseModelView):
 
     def delete_model(self, model):
         try:
+            self.on_model_delete(model)
             model.delete_instance(recursive=True)
             return True
         except Exception, ex:
