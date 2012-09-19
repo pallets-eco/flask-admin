@@ -358,3 +358,37 @@ def test_form_override():
 def test_relations():
     # TODO: test relations
     pass
+
+def test_on_model_change_delete():
+    app, db, admin = setup()
+    Model1, _ = create_models(db)
+    db.create_all()
+
+    class ModelView(CustomModelView):
+        def on_model_change(self, form, model):
+            model.test1 = model.test1.upper()
+
+        def on_model_delete(self, model):
+            self.deleted = True
+
+    view = ModelView(Model1, db.session)
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    client.post('/admin/model1view/new/',
+                     data=dict(test1='test1large', test2='test2'))
+
+    model = db.session.query(Model1).first()
+    eq_(model.test1, 'TEST1LARGE')
+
+    url = '/admin/model1view/edit/?id=%s' % model.id
+    client.post(url, data=dict(test1='test1small', test2='test2large'))
+
+    model = db.session.query(Model1).first()
+    eq_(model.test1, 'TEST1SMALL')
+
+    url = '/admin/model1view/delete/?id=%s' % model.id
+    client.post(url)
+    ok_(view.deleted)
+

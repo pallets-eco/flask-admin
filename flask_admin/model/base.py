@@ -531,6 +531,28 @@ class BaseModelView(BaseView, ActionsMixin):
         raise NotImplemented('Please implement get_one method')
 
     # Model handlers
+    def on_model_change(self, form, model):
+        """
+            Allow to do some actions after a model was created or updated.
+
+            Called from create_model and update_model in the same transaction
+            (if it has any meaning for a store backend).
+
+            By default do nothing.
+        """
+        pass
+
+    def on_model_delete(self, model):
+        """
+            Allow to do some actions before a model will be deleted.
+
+            Called from delete_model in the same transaction
+            (if it has any meaning for a store backend).
+
+            By default do nothing.
+        """
+        pass
+
     def create_model(self, form):
         """
             Create model from the form.

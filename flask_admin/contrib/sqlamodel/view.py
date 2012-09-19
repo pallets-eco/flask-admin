@@ -567,6 +567,8 @@ class ModelView(BaseModelView):
             model = self.model()
             form.populate_obj(model)
             self.session.add(model)
+            self.session.flush()
+            self.on_model_change(form, model)
             self.session.commit()
             return True
         except Exception, ex:
@@ -584,6 +586,8 @@ class ModelView(BaseModelView):
         """
         try:
             form.populate_obj(model)
+            self.session.flush()
+            self.on_model_change(form, model)
             self.session.commit()
             return True
         except Exception, ex:
@@ -598,6 +602,8 @@ class ModelView(BaseModelView):
                 Model to delete
         """
         try:
+            self.on_model_delete(model)
+            self.session.flush()
             self.session.delete(model)
             self.session.commit()
             return True
