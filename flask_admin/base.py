@@ -117,7 +117,7 @@ class BaseView(object):
 
         # Default view
         if self._default_view is None:
-            raise Exception('Attempted to instantiate admin view %s without defailt view' % self.__class__.__name__)
+            raise Exception('Attempted to instantiate admin view %s without default view' % self.__class__.__name__)
 
     def create_blueprint(self, admin):
         """
