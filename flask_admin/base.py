@@ -339,25 +339,13 @@ class Admin(object):
             name = 'Admin'
         self.name = name
 
-        if index_view:
-            endpoint = index_view.endpoint
-            url = index_view.url
-        else:
-            if endpoint is None:
-                endpoint = 'admin'
-
-            if url is None:
-                url = '/admin'
-
-            index_view = AdminIndexView(endpoint=endpoint, url=url)
-
-        self.endpoint = endpoint
-        self.url = url
+        self.index_view = index_view or AdminIndexView(endpoint=endpoint, url=url)
+        self.endpoint = endpoint or self.index_view.endpoint
+        self.url = url or self.index_view.url
         self.subdomain = subdomain
-        self.index_view = index_view
 
         # Add predefined index view
-        self.add_view(index_view)
+        self.add_view(self.index_view)
 
         # Localizations
         self.locale_selector_func = None
