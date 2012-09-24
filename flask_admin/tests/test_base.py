@@ -196,6 +196,15 @@ def test_delayed_init():
     eq_(rv.data, 'Success!')
 
 
+def test_multi_instances_init():
+    app = Flask(__name__)
+    admin = base.Admin(app)
+
+    class ManageIndex(base.AdminIndexView):
+        pass
+    manage = base.Admin(app, index_view=ManageIndex(url='/manage', endpoint='manage'))
+
+
 @raises(Exception)
 def test_double_init():
     app = Flask(__name__)
