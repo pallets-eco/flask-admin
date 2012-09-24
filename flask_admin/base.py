@@ -239,13 +239,10 @@ class AdminIndexView(BaseView):
         * Automatically associates with static folder.
     """
     def __init__(self, name=None, category=None, endpoint=None, url=None):
-        if url is None:
-            url = '/admin'
-
         super(AdminIndexView, self).__init__(name or babel.lazy_gettext('Home'),
                                              category,
                                              endpoint or 'admin',
-                                             url,
+                                             url or '/admin',
                                              'static')
 
     @expose()
@@ -342,12 +339,25 @@ class Admin(object):
             name = 'Admin'
         self.name = name
 
-        if url is None:
-            url = '/admin'
-        self.url = url
-        self.subdomain = subdomain
+        if index_view:
+            endpoint = index_view.endpoint
+            url = index_view.url
+        else:
+            if endpoint is None:
+                endpoint = 'admin'
+
+            if url is None:
+                url = '/admin'
+
+            index_view = AdminIndexView(endpoint=endpoint, url=url)
 
         self.endpoint = endpoint
+        self.url = url
+        self.subdomain = subdomain
+        self.index_view = index_view
+
+        # Add predefined index view
+        self.add_view(index_view)
 
         # Localizations
         self.locale_selector_func = None
@@ -355,15 +365,6 @@ class Admin(object):
         # Register with application
         if app:
             self._init_extension()
-
-        # Index view
-        if index_view is None:
-            index_view = AdminIndexView(endpoint=self.endpoint, url=self.url)
-
-        self.index_view = index_view
-
-        # Add predefined index view
-        self.add_view(index_view)
 
     def add_view(self, view):
         """
