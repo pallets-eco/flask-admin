@@ -270,7 +270,9 @@ def get_form(model, converter,
 
     properties = ((p.key, p) for p in mapper.iterate_properties)
     if only:
-        properties = (x for x in properties if x[0] in only)
+        # Filter properties while maintaining property order in 'only' list
+        temp = dict(properties)
+        properties = ((x, temp[x]) for x in only)
     elif exclude:
         properties = (x for x in properties if x[0] not in exclude)
 
