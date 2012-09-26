@@ -134,15 +134,20 @@ class AdminModelConverter(ModelConverterBase):
 
                 # Figure out default value
                 default = getattr(column, 'default', None)
+                value = None
 
                 if default is not None:
-                    callable_default = getattr(default, 'arg', None)
+                    value = getattr(default, 'arg', None)
 
-                    if callable_default is not None and callable(callable_default):
-                        default = callable_default(None)
+                    if value is not None:
+                        if getattr(default, 'is_callable', False):
+                            value = value(None)
+                        else:
+                            if not getattr(default, 'is_scalar', True):
+                                value = None
 
-                if default is not None:
-                    kwargs['default'] = default
+                if value is not None:
+                    kwargs['default'] = value
 
                 # Check nullable
                 if column.nullable:
