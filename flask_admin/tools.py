@@ -75,3 +75,21 @@ def rec_getattr(obj, attr, default=None):
         return reduce(getattr, attr.split('.'), obj)
     except AttributeError:
         return default
+
+
+def get_dict_attr(obj, attr, default=None):
+    """
+        Get attibute of the object without triggering its __getattr__.
+
+        :param obj:
+            Object
+        :param attr:
+            Attribute name
+        :param default:
+            Default value if attribute was not found
+    """
+    for obj in [obj] + obj.__class__.mro():
+        if attr in obj.__dict__:
+            return obj.__dict__[attr]
+
+    return default

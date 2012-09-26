@@ -88,8 +88,6 @@ class PostAdmin(sqlamodel.ModelView):
     #list_columns = ('title', 'user')
     excluded_list_columns = ['text']
 
-    list_display_all_relations = True
-
     # List of columns that can be sorted. For 'user' column, use User.username as
     # a column.
     sortable_columns = ('title', ('user', User.username), 'date')

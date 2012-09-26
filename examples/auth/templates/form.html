@@ -3,7 +3,6 @@
         <form method="POST" action="">
             {{ form.hidden_tag() }}
             {% for f in form if f.type != 'CSRFTokenField' %}
-            {{ f.type }}
             <div>
             {{ f.label }}
             {{ f }}

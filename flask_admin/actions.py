@@ -1,6 +1,9 @@
 from flask import request, url_for, redirect
 
 
+from flask.ext.admin.tools import get_dict_attr
+
+
 def action(name, text, confirmation=None):
     """
         Use this decorator to expose actions that span more than one
@@ -50,7 +53,7 @@ class ActionsMixin(object):
         self._actions_data = {}
 
         for p in dir(self):
-            attr = getattr(self, p)
+            attr = get_dict_attr(self, p)
 
             if hasattr(attr, '_action'):
                 name, text, desc = attr._action
