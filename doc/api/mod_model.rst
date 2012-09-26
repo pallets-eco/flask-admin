@@ -6,7 +6,7 @@
     .. autoclass:: BaseModelView
         :members:
         :exclude-members: can_create, can_edit, can_delete, list_template, edit_template,
-                          create_template, list_columns, excluded_list_columns, rename_columns,
+                          create_template, list_columns, excluded_list_columns, rename_columns, list_formatters,
                           sortable_columns, searchable_columns, column_filters, form, form_columns,
                           excluded_form_columns, form_args, form_overrides, page_size,
                           disallowed_actions
