@@ -229,7 +229,7 @@ class AdminIndexView(BaseView):
                 def index(self):
                     return render_template('adminhome.html')
 
-            admin = Admin(index_view=MyHomeView)
+            admin = Admin(index_view=MyHomeView())
 
         Default values for the index page are following:
 

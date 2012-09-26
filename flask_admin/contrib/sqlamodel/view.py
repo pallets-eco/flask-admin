@@ -56,6 +56,11 @@ class ModelView(BaseModelView):
         Please refer to the `subqueryload` on list of possible values.
     """
 
+    list_display_all_relations = False
+    """
+        Controls if list view should display all relations, not only many-to-one.
+    """
+
     searchable_columns = None
     """
         Collection of the searchable columns. Only text-based columns
@@ -239,7 +244,7 @@ class ModelView(BaseModelView):
 
             # Verify type
             if hasattr(p, 'direction'):
-                if p.direction.name == 'MANYTOONE':
+                if self.list_display_all_relations or p.direction.name == 'MANYTOONE':
                     columns.append(p.key)
             elif hasattr(p, 'columns'):
                 # TODO: Check for multiple columns

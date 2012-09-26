@@ -81,14 +81,14 @@ def index():
 class UserAdmin(sqlamodel.ModelView):
     inline_models = (UserInfo,)
 
-    list_display_pk = True
-
 
 # Customized Post model admin
 class PostAdmin(sqlamodel.ModelView):
     # Visible columns in the list view
     #list_columns = ('title', 'user')
     excluded_list_columns = ['text']
+
+    list_display_all_relations = True
 
     # List of columns that can be sorted. For 'user' column, use User.username as
     # a column.
