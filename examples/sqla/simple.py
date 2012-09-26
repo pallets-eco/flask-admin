@@ -81,6 +81,8 @@ def index():
 class UserAdmin(sqlamodel.ModelView):
     inline_models = (UserInfo,)
 
+    list_display_pk = True
+
 
 # Customized Post model admin
 class PostAdmin(sqlamodel.ModelView):

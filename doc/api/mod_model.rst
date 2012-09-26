@@ -23,6 +23,7 @@
         .. autoattribute:: excluded_list_columns
         .. autoattribute:: rename_columns
         .. autoattribute:: list_formatters
+        .. autoattribute:: list_display_pk
 
         .. autoattribute:: sortable_columns
 

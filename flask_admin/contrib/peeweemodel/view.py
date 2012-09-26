@@ -123,7 +123,7 @@ class ModelView(BaseModelView):
 
             if field_class == ForeignKeyField:
                 columns.append(n)
-            elif field_class != PrimaryKeyField:
+            elif self.list_display_pk or field_class != PrimaryKeyField:
                 columns.append(n)
 
         return columns
@@ -132,7 +132,7 @@ class ModelView(BaseModelView):
         columns = dict()
 
         for n, f in self._get_model_fields():
-            if type(f) != PrimaryKeyField:
+            if self.list_display_pk or type(f) != PrimaryKeyField:
                 columns[n] = f
 
         return columns

@@ -147,6 +147,11 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_filters = ('user', 'email')
     """
 
+    list_display_pk = False
+    """
+        Controls if primary key should be displayed in list view.
+    """
+
     form = None
     """
         Form class. Override if you want to use custom form for your model.

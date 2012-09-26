@@ -245,7 +245,10 @@ class ModelView(BaseModelView):
                 # TODO: Check for multiple columns
                 column = p.columns[0]
 
-                if column.foreign_keys or column.primary_key:
+                if column.foreign_keys:
+                    continue
+
+                if not self.list_display_pk and column.primary_key:
                     continue
 
                 columns.append(p.key)
@@ -270,7 +273,10 @@ class ModelView(BaseModelView):
                 column = p.columns[0]
 
                 # Can't sort by on primary and foreign keys by default
-                if column.foreign_keys or column.primary_key:
+                if column.foreign_keys:
+                    continue
+
+                if not self.list_display_pk and column.primary_key:
                     continue
 
                 columns[p.key] = column
