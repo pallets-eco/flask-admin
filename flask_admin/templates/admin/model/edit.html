@@ -9,7 +9,7 @@
 {% block body %}
     {% call lib.form_tag() %}
         {{ lib.render_form_fields(form) }}
-        {{ lib.render_form_buttons(cancel_url) }}
+        {{ lib.render_form_buttons(return_url) }}
     {% endcall %}
 {% endblock %}
 

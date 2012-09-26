@@ -22,7 +22,7 @@
 
   {% call lib.form_tag() %}
       {{ lib.render_form_fields(form) }}
-      {{ lib.render_form_buttons(cancel_url, extra()) }}
+      {{ lib.render_form_buttons(return_url, extra()) }}
   {% endcall %}
 {% endblock %}
 
