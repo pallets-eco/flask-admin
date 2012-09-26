@@ -61,7 +61,9 @@ class ActionsMixin(object):
                 self._actions.append((name, text))
 
                 # TODO: Use namedtuple
-                self._actions_data[name] = (attr, text, desc)
+                # Reason why we need getattr here - what's in attr is not
+                # bound to the object.
+                self._actions_data[name] = (getattr(self, p), text, desc)
 
     def is_action_allowed(self, name):
         """
