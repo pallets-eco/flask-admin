@@ -1,7 +1,9 @@
 from functools import wraps
 from re import sub
 
-from flask import Blueprint, render_template, url_for, abort
+from werkzeug.local import LocalProxy
+
+from flask import Blueprint, render_template, url_for, abort, _request_ctx_stack
 
 from flask.ext.admin import babel
 
@@ -85,6 +87,8 @@ class BaseView(object):
                     return 'Hello World!'
     """
     __metaclass__ = AdminViewMeta
+
+    extra_template_args = LocalProxy(lambda: _request_ctx_stack.top.extra_template_args)
 
     def __init__(self, name=None, category=None, endpoint=None, url=None, static_folder=None):
         """
@@ -179,6 +183,9 @@ class BaseView(object):
         # or enabled.
         kwargs['_gettext'] = babel.gettext
         kwargs['_ngettext'] = babel.ngettext
+
+        # Add extra templates args from subclass views (if any)
+        kwargs.update(self.extra_template_args)
 
         return render_template(template, **kwargs)
 
@@ -455,6 +462,11 @@ class Admin(object):
 
         admins.append(self)
         self.app.extensions['admin'] = admins
+
+        # Before every request, create request-scoped extra_template_args
+        @self.app.before_request
+        def init_extra_template_args():
+            _request_ctx_stack.top.extra_template_args = {}
 
     def menu(self):
         """
