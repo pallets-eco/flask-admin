@@ -1,7 +1,7 @@
 from functools import wraps
 from re import sub
 
-from flask import Blueprint, render_template, url_for, abort
+from flask import Blueprint, render_template, url_for, abort, g
 
 from flask.ext.admin import babel
 
@@ -85,6 +85,37 @@ class BaseView(object):
                     return 'Hello World!'
     """
     __metaclass__ = AdminViewMeta
+
+    @property
+    def _template_args(self):
+        """
+            Extra template arguments.
+
+            If you need to pass some extra parameters to the template,
+            you can override particular view function, contribute
+            arguments you want to pass to the template and call parent view.
+
+            These arguments are local for this request and will be discarded
+            in next request.
+
+            Any value passed through ``_template_args`` will override whatever
+            parent view function passed to the template.
+
+            For example::
+
+                class MyAdmin(ModelView):
+                    @expose('/')
+                    def index(self):
+                        self._template_args['name'] = 'foobar'
+                        self._template_args['code'] = '12345'
+                        super(MyAdmin, self).index()
+        """
+        args = getattr(g, '_admin_template_args', None)
+
+        if args is None:
+            args = g._admin_template_args = dict()
+
+        return args
 
     def __init__(self, name=None, category=None, endpoint=None, url=None, static_folder=None):
         """
@@ -179,6 +210,9 @@ class BaseView(object):
         # or enabled.
         kwargs['_gettext'] = babel.gettext
         kwargs['_ngettext'] = babel.ngettext
+
+        # Contribute extra arguments
+        kwargs.update(self._template_args)
 
         return render_template(template, **kwargs)
 
