@@ -570,7 +570,7 @@ class ModelView(BaseModelView):
             :param id:
                 Model id
         """
-        return self.get_query().get(id)
+        return self.session.query(self.model).get(id)
 
     # Model handlers
     def create_model(self, form):
