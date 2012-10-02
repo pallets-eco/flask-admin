@@ -12,3 +12,4 @@ dist/*
 make.bat
 venv
 *.sqlite
+*.sublime-*
