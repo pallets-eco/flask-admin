@@ -246,7 +246,8 @@ def get_form(model, converter,
             base_class=form.BaseForm,
             only=None, exclude=None,
             field_args=None,
-            hidden_pk=False):
+            hidden_pk=False,
+            ignore_hidden=True):
     """
         Generate form from the model.
 
@@ -264,6 +265,8 @@ def get_form(model, converter,
             Dictionary with additional field arguments
         :param hidden_pk:
             Generate hidden field with model primary key or not
+        :param ignore_hidden:
+            If set to True (default), will ignore properties that start with underscore
     """
 
     # TODO: Support new 0.8 API
@@ -274,15 +277,34 @@ def get_form(model, converter,
     field_args = field_args or {}
 
     properties = ((p.key, p) for p in mapper.iterate_properties)
+
     if only:
+        props = dict(properties)
+
+        def find(name):
+            # Try to look it up in properties lsit first
+            p = props.get(name)
+            if p is not None:
+                return p
+
+            # If it is hybrid property or alias, look it up in a model itself
+            p = getattr(model, name, None)
+            if p is not None and hasattr(p, 'property'):
+                return p.property
+
+            raise ValueError('Invalid model property name %s.%s' % (model, name))
+
         # Filter properties while maintaining property order in 'only' list
-        temp = dict(properties)
-        properties = ((x, temp[x]) for x in only)
+        properties = ((x, find(x)) for x in only)
     elif exclude:
         properties = (x for x in properties if x[0] not in exclude)
 
     field_dict = {}
     for name, prop in properties:
+        # Ignore protected properties
+        if ignore_hidden and name.startswith('_'):
+            continue
+
         field = converter.convert(model, mapper, prop, field_args.get(name), hidden_pk)
         if field is not None:
             field_dict[name] = field

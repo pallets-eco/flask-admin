@@ -451,6 +451,12 @@ class ModelView(BaseModelView):
         return joined
 
     # Database-related API
+    def get_query(self):
+        """
+            Return a query for the model type
+        """
+        return self.session.query(self.model)
+
     def get_list(self, page, sort_column, sort_desc, search, filters, execute=True):
         """
             Return models from the database.
@@ -472,7 +478,7 @@ class ModelView(BaseModelView):
         # Will contain names of joined tables to avoid duplicate joins
         joins = set()
 
-        query = self.session.query(self.model)
+        query = self.get_query()
 
         # Apply search criteria
         if self._search_supported and search:
@@ -637,7 +643,7 @@ class ModelView(BaseModelView):
         try:
             model_pk = getattr(self.model, self._primary_key)
 
-            query = self.session.query(self.model).filter(model_pk.in_(ids))
+            query = self.get_query().filter(model_pk.in_(ids))
 
             if self.fast_mass_delete:
                 count = query.delete(synchronize_session=False)
