@@ -467,7 +467,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return self.get_form()
 
-    def create_form(self, form, obj=None):
+    def create_form(self, form=None, obj=None):
         """
             Instantiate model creation form and return it.
 
@@ -475,7 +475,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return self._create_form_class(obj=obj)
 
-    def edit_form(self, form, obj=None):
+    def edit_form(self, form=None, obj=None):
         """
             Instantiate model editing form and return it.
 
@@ -821,7 +821,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if not self.can_create:
             return redirect(return_url)
 
-        form = self.create_form(request.form)
+        form = self.create_form()
 
         if form.validate_on_submit():
             if self.create_model(form):
@@ -854,7 +854,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if model is None:
             return redirect(return_url)
 
-        form = self.edit_form(request.form, model)
+        form = self.edit_form(obj=model)
 
         if form.validate_on_submit():
             if self.update_model(form, model):
