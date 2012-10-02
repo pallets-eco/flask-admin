@@ -1,6 +1,10 @@
 Flask-Admin
 ===========
 
+.. image:: https://travis-ci.org/mrjoes/flask-admin.png?branch=master
+	:target: https://secure.travis-ci.org/mrjoes/flask-admin
+
+
 Introduction
 ------------
 
