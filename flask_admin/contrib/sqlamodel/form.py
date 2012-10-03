@@ -64,10 +64,10 @@ class AdminModelConverter(ModelConverterBase):
                 return override(**kwargs)
 
             # Contribute model-related parameters
-            kwargs.update({
-                'allow_blank': local_column.nullable,
-                'query_factory': lambda: self.session.query(remote_model)
-            })
+            if 'allow_blank' not in kwargs:
+                kwargs['allow_blank'] = local_column.nullable,
+            if 'query_factory' not in kwargs:
+                kwargs['query_factory'] = lambda: self.session.query(remote_model)
 
             if prop.direction.name == 'MANYTOONE':
                 return QuerySelectField(widget=form.ChosenSelectWidget(),
