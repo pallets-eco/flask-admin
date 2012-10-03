@@ -73,14 +73,14 @@
                     {% set filter = admin_view._filters[flt[0]] %}
                     <a href="#" class="btn remove-filter" title="{{ _gettext('Remove Filter') }}">
                         <span class="close-icon">&times;</span>&nbsp;{{ filters[flt[0]] }}
-                    </a><select class="filter-op" data-role="chosen">
+                    </a><select class="filter-op" data-role="select2">
                         {% for op in admin_view._filter_dict[filter.name] %}
                         <option value="{{ op[0] }}"{% if flt[0] == op[0] %} selected="selected"{% endif %}>{{ op[1] }}</option>
                         {% endfor %}
                     </select>
                     {%- set data = filter_data.get(flt[0]) -%}
                     {%- if data -%}
-                    <select name="flt{{ i }}_{{ flt[0] }}" class="filter-val" data-role="chosen">
+                    <select name="flt{{ i }}_{{ flt[0] }}" class="filter-val" data-role="select2">
                         {%- for d in data %}
                         <option value="{{ d[0] }}"{% if flt[1] == d[0] %} selected{% endif %}>{{ d[1] }}</option>
                         {%- endfor %}

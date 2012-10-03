@@ -2,10 +2,10 @@
     var AdminForm = function() {
       this.applyStyle = function(el, name) {
         switch (name) {
-            case 'chosen':
+            case 'select2':
                 $(el).select2();
                 break;
-            case 'chosenblank':
+            case 'select2blank':
                 $(el).select2({allowClear: true});
                 break;
             case 'datepicker':
@@ -49,8 +49,8 @@
       };
 
       this.applyGlobalStyles = function(parent) {
-        $('[data-role=chosen]', parent).select2();
-        $('[data-role=chosenblank]', parent).select2({allowClear: true});
+        $('[data-role=select2]', parent).select2();
+        $('[data-role=select2blank]', parent).select2({allowClear: true});
         $('[data-role=datepicker]', parent).datepicker();
         $('[data-role=datetimepicker]', parent).datepicker({displayTime: true});
       };
