@@ -3,10 +3,10 @@
       this.applyStyle = function(el, name) {
         switch (name) {
             case 'chosen':
-                $(el).chosen();
+                $(el).select2();
                 break;
             case 'chosenblank':
-                $(el).chosen({allow_single_deselect: true});
+                $(el).select2({allowClear: true});
                 break;
             case 'datepicker':
                 $(el).datepicker();
@@ -49,8 +49,8 @@
       };
 
       this.applyGlobalStyles = function(parent) {
-        $('[data-role=chosen]', parent).chosen();
-        $('[data-role=chosenblank]', parent).chosen({allow_single_deselect: true});
+        $('[data-role=chosen]', parent).select2();
+        $('[data-role=chosenblank]', parent).select2({allowClear: true});
         $('[data-role=datepicker]', parent).datepicker();
         $('[data-role=datetimepicker]', parent).datepicker({displayTime: true});
       };
