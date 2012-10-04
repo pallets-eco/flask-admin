@@ -138,28 +138,28 @@ class ModelView(BaseModelView):
         giving SQLAlchemy chance to manually cleanup any dependencies (many-to-many
         relationships, etc).
 
-        If set to True, will run DELETE statement which is somewhat faster, but
-        might leave corrupted data if you forget to configure DELETE CASCADE
-        for your model.
+        If set to `True`, will run `DELETE` statement which is somewhat faster,
+        but might leave corrupted data if you forget to configure `DELETE
+        CASCADE` for your model.
     """
 
     inline_models = None
     """
         Inline related-model editing for models with parent to child relation.
 
-        Accept enumerable with one of the values:
+        Accepts enumerable with one of the following possible values:
 
-        1. Child model class
+        1. Child model class::
 
             class MyModelView(ModelView):
                 inline_models = (Post,)
 
-        2. Child model class and additional options
+        2. Child model class and additional options::
 
             class MyModelView(ModelView):
                 inline_models = [(Post, dict(form_columns=['title']))]
 
-        3. Django-like ``InlineFormAdmin`` class instance
+        3. Django-like ``InlineFormAdmin`` class instance::
 
             class MyInlineForm(InlineFormAdmin):
                 forum_columns = ('title', 'date')
