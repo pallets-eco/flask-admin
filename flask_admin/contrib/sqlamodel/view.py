@@ -145,7 +145,7 @@ class ModelView(BaseModelView):
 
     inline_models = None
     """
-        Inline related-model editing for models with parent to child relation.
+        Inline related-model editing for models with parent-child relations.
 
         Accepts enumerable with one of the following possible values:
 
@@ -161,11 +161,11 @@ class ModelView(BaseModelView):
 
         3. Django-like ``InlineFormAdmin`` class instance::
 
-            class MyInlineForm(InlineFormAdmin):
-                forum_columns = ('title', 'date')
+            class MyInlineModelForm(InlineFormAdmin):
+                form_columns = ('title', 'date')
 
             class MyModelView(ModelView):
-                inline_models = (MyInlineForm,)
+                inline_models = (MyInlineModelForm(MyInlineModel),)
     """
 
     def __init__(self, model, session,
@@ -657,7 +657,7 @@ class ModelView(BaseModelView):
             self.session.commit()
 
             flash(ngettext('Model was successfully deleted.',
-                           '%(count)s models were sucessfully deleted.',
+                           '%(count)s models were successfully deleted.',
                            count,
                            count=count))
         except Exception, ex:
