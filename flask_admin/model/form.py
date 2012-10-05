@@ -20,6 +20,8 @@ class InlineFormAdmin(object):
             class MyUserInfoForm(InlineFormAdmin):
                 form_columns = ('name', 'email')
     """
+    _defaults = ['form_columns', 'excluded_form_columns', 'form_args']
+
     def __init__(self, model, **kwargs):
         """
             Constructor
@@ -31,13 +33,11 @@ class InlineFormAdmin(object):
         """
         self.model = model
 
-        defaults = dict(form_columns=None,
-                        excluded_form_columns=None,
-                        form_args=None)
+        for k in self.defaults:
+            if not hasattr(self, k):
+                setattr(self, k, None)
 
-        defaults.update(kwargs)
-
-        for k, v in defaults.iteritems():
+        for k, v in kwargs.iteritems():
             setattr(self, k, v)
 
 
