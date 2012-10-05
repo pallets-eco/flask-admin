@@ -41,7 +41,7 @@ var AdminFilters = function(element, filters_element, operations, options, types
             $select.append($('<option/>').attr('value', this[0]).text(this[1]));
         });
 
-        $select.chosen();
+        $select.select2();
 
         var optId = op[0][0];
 
@@ -58,7 +58,7 @@ var AdminFilters = function(element, filters_element, operations, options, types
                     .appendTo($el);
             });
 
-            $field.chosen();
+            $field.select2();
         } else
         {
             $field = $('<input type="text" class="filter-val" />')

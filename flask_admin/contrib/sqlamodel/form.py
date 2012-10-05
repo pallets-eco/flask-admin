@@ -70,7 +70,7 @@ class AdminModelConverter(ModelConverterBase):
                 kwargs['query_factory'] = lambda: self.session.query(remote_model)
 
             if prop.direction.name == 'MANYTOONE':
-                return QuerySelectField(widget=form.ChosenSelectWidget(),
+                return QuerySelectField(widget=form.Select2Widget(),
                                         **kwargs)
             elif prop.direction.name == 'ONETOMANY':
                 # Skip backrefs
@@ -78,11 +78,11 @@ class AdminModelConverter(ModelConverterBase):
                     return None
 
                 return QuerySelectMultipleField(
-                                widget=form.ChosenSelectWidget(multiple=True),
+                                widget=form.Select2Widget(multiple=True),
                                 **kwargs)
             elif prop.direction.name == 'MANYTOMANY':
                 return QuerySelectMultipleField(
-                                widget=form.ChosenSelectWidget(multiple=True),
+                                widget=form.Select2Widget(multiple=True),
                                 **kwargs)
         else:
             # Ignore pk/fk

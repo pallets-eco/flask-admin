@@ -83,28 +83,30 @@ class TimeField(fields.Field):
             raise ValueError(gettext('Invalid time format'))
 
 
-class ChosenSelectWidget(widgets.Select):
+class Select2Widget(widgets.Select):
     """
-        `Chosen <http://harvesthq.github.com/chosen/>`_ styled select widget.
+        `Select2 <https://github.com/ivaynberg/select2>`_ styled select widget.
 
-        You must include chosen.js and form.js for styling to work.
+        You must include select2.js, form.js and select2 stylesheet for it to
+        work.
     """
     def __call__(self, field, **kwargs):
         if field.allow_blank and not self.multiple:
-            kwargs['data-role'] = u'chosenblank'
+            kwargs['data-role'] = u'select2blank'
         else:
-            kwargs['data-role'] = u'chosen'
+            kwargs['data-role'] = u'select2'
 
-        return super(ChosenSelectWidget, self).__call__(field, **kwargs)
+        return super(Select2Widget, self).__call__(field, **kwargs)
 
 
-class ChosenSelectField(fields.SelectField):
+class Select2Field(fields.SelectField):
     """
-        `Chosen <http://harvesthq.github.com/chosen/>`_ styled select field.
+        `Select2 <https://github.com/ivaynberg/select2>`_ styled select widget.
 
-        You must include chosen.js and form.js for styling to work.
+        You must include select2.js, form.js and select2 stylesheet for it to
+        work.
     """
-    widget = ChosenSelectWidget
+    widget = Select2Widget
 
 
 class DatePickerWidget(widgets.TextInput):

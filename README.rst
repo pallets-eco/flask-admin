@@ -33,7 +33,7 @@ Flask-Admin is extensively documented, you can find `documentation here <http://
 3rd Party Stuff
 ---------------
 
-Flask-Admin is built with help of `Twitter Bootstrap <http://twitter.github.com/bootstrap/>`_ and `Chosen <http://harvesthq.github.com/chosen/>`_.
+Flask-Admin is built with help of `Twitter Bootstrap <http://twitter.github.com/bootstrap/>`_ and `Select2 <https://github.com/ivaynberg/select2>`_.
 
 Kudos
 -----
