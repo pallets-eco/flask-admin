@@ -348,7 +348,17 @@ def contribute_inline(session, model, form_class, inline_models):
         elif hasattr(p, '_sa_class_manager'):
             info = InlineFormAdmin(p)
         else:
-            raise Exception('Unknown inline model admin: %s' % repr(p))
+            model = getattr(p, 'model', None)
+
+            if model is None:
+                raise Exception('Unknown inline model admin: %s' % repr(p))
+
+            attrs = dict()
+            for attr in dir(p):
+                if not attr.startswith('_') and attr != 'model':
+                    attrs[attr] = getattr(p, attr)
+
+            info = InlineFormAdmin(model, **attrs)
 
         # Find property from target model to current model
         target_mapper = info.model._sa_class_manager.mapper
