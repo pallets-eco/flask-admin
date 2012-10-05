@@ -33,7 +33,7 @@ class InlineFormAdmin(object):
         """
         self.model = model
 
-        for k in self.defaults:
+        for k in self._defaults:
             if not hasattr(self, k):
                 setattr(self, k, None)
 
