@@ -340,8 +340,7 @@ class ModelView(BaseModelView):
             :returns:
                 ``True`` for ``String``, ``Unicode``, ``Text``, ``UnicodeText``
         """
-        return (name == 'String' or name == 'Unicode' or
-                name == 'Text' or name == 'UnicodeText')
+        return name in ('String', 'Unicode', 'Text', 'UnicodeText')
 
     def scaffold_filters(self, name):
         """
