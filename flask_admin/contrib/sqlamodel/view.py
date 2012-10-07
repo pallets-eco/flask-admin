@@ -589,6 +589,7 @@ class ModelView(BaseModelView):
             return True
         except Exception, ex:
             flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
+            self.session.rollback()
             return False
 
     def update_model(self, form, model):
@@ -608,6 +609,7 @@ class ModelView(BaseModelView):
             return True
         except Exception, ex:
             flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')
+            self.session.rollback()
             return False
 
     def delete_model(self, model):
@@ -625,6 +627,7 @@ class ModelView(BaseModelView):
             return True
         except Exception, ex:
             flash(gettext('Failed to delete model. %(error)s', error=str(ex)), 'error')
+            self.session.rollback()
             return False
 
     # Default model actions
