@@ -64,13 +64,13 @@ class AdminModelConverter(ModelConverterBase):
                 return override(**kwargs)
 
             # Contribute model-related parameters
-            kwargs.update({
-                'allow_blank': local_column.nullable,
-                'query_factory': lambda: self.session.query(remote_model)
-            })
+            if 'allow_blank' not in kwargs:
+                kwargs['allow_blank'] = local_column.nullable,
+            if 'query_factory' not in kwargs:
+                kwargs['query_factory'] = lambda: self.session.query(remote_model)
 
             if prop.direction.name == 'MANYTOONE':
-                return QuerySelectField(widget=form.ChosenSelectWidget(),
+                return QuerySelectField(widget=form.Select2Widget(),
                                         **kwargs)
             elif prop.direction.name == 'ONETOMANY':
                 # Skip backrefs
@@ -78,11 +78,11 @@ class AdminModelConverter(ModelConverterBase):
                     return None
 
                 return QuerySelectMultipleField(
-                                widget=form.ChosenSelectWidget(multiple=True),
+                                widget=form.Select2Widget(multiple=True),
                                 **kwargs)
             elif prop.direction.name == 'MANYTOMANY':
                 return QuerySelectMultipleField(
-                                widget=form.ChosenSelectWidget(multiple=True),
+                                widget=form.Select2Widget(multiple=True),
                                 **kwargs)
         else:
             # Ignore pk/fk
@@ -348,7 +348,17 @@ def contribute_inline(session, model, form_class, inline_models):
         elif hasattr(p, '_sa_class_manager'):
             info = InlineFormAdmin(p)
         else:
-            raise Exception('Unknown inline model admin: %s' % repr(p))
+            model = getattr(p, 'model', None)
+
+            if model is None:
+                raise Exception('Unknown inline model admin: %s' % repr(p))
+
+            attrs = dict()
+            for attr in dir(p):
+                if not attr.startswith('_') and attr != 'model':
+                    attrs[attr] = getattr(p, attr)
+
+            info = InlineFormAdmin(model, **attrs)
 
         # Find property from target model to current model
         target_mapper = info.model._sa_class_manager.mapper

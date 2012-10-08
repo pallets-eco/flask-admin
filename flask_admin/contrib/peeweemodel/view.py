@@ -70,23 +70,23 @@ class ModelView(BaseModelView):
 
         Accept enumerable with one of the values:
 
-        1. Child model class
+        1. Child model class::
 
             class MyModelView(ModelView):
                 inline_models = (Post,)
 
-        2. Child model class and additional options
+        2. Child model class and additional options::
 
             class MyModelView(ModelView):
                 inline_models = [(Post, dict(form_columns=['title']))]
 
-        3. Django-like ``InlineFormAdmin`` class instance
+        3. Django-like ``InlineFormAdmin`` class instance::
 
-            class MyInlineForm(InlineFormAdmin):
-                forum_columns = ('title', 'date')
+            class MyInlineModelForm(InlineFormAdmin):
+                form_columns = ('title', 'date')
 
             class MyModelView(ModelView):
-                inline_models = (MyInlineForm,)
+                inline_models = (MyInlineModelForm(MyInlineModel),)
     """
 
     def __init__(self, model, name=None,
@@ -340,7 +340,7 @@ class ModelView(BaseModelView):
                     count += 1
 
             flash(ngettext('Model was successfully deleted.',
-                           '%(count)s models were sucessfully deleted.',
+                           '%(count)s models were successfully deleted.',
                            count,
                            count=count))
         except Exception, ex:

@@ -138,34 +138,34 @@ class ModelView(BaseModelView):
         giving SQLAlchemy chance to manually cleanup any dependencies (many-to-many
         relationships, etc).
 
-        If set to True, will run DELETE statement which is somewhat faster, but
-        might leave corrupted data if you forget to configure DELETE CASCADE
-        for your model.
+        If set to `True`, will run `DELETE` statement which is somewhat faster,
+        but might leave corrupted data if you forget to configure `DELETE
+        CASCADE` for your model.
     """
 
     inline_models = None
     """
-        Inline related-model editing for models with parent to child relation.
+        Inline related-model editing for models with parent-child relations.
 
-        Accept enumerable with one of the values:
+        Accepts enumerable with one of the following possible values:
 
-        1. Child model class
+        1. Child model class::
 
             class MyModelView(ModelView):
                 inline_models = (Post,)
 
-        2. Child model class and additional options
+        2. Child model class and additional options::
 
             class MyModelView(ModelView):
                 inline_models = [(Post, dict(form_columns=['title']))]
 
-        3. Django-like ``InlineFormAdmin`` class instance
+        3. Django-like ``InlineFormAdmin`` class instance::
 
-            class MyInlineForm(InlineFormAdmin):
-                forum_columns = ('title', 'date')
+            class MyInlineModelForm(InlineFormAdmin):
+                form_columns = ('title', 'date')
 
             class MyModelView(ModelView):
-                inline_models = (MyInlineForm,)
+                inline_models = (MyInlineModelForm(MyInlineModel),)
     """
 
     def __init__(self, model, session,
@@ -657,7 +657,7 @@ class ModelView(BaseModelView):
             self.session.commit()
 
             flash(ngettext('Model was successfully deleted.',
-                           '%(count)s models were sucessfully deleted.',
+                           '%(count)s models were successfully deleted.',
                            count,
                            count=count))
         except Exception, ex:
