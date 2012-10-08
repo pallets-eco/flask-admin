@@ -375,3 +375,19 @@ def test_on_model_change_delete():
     client.post(url)
     ok_(view.deleted)
 
+def test_multiple_delete():
+    app, db, admin = setup()
+    M1, _ = create_models(db)
+
+    db.session.add_all([M1('a'), M1('b'), M1('c')])
+    db.session.commit()
+    eq_(M1.query.count(), 3)
+
+    view = ModelView(M1, db.session)
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.post('/admin/model1view/action/', data=dict(action='delete', rowid=[1,2,3]))
+    eq_(rv.status_code, 302)
+    eq_(M1.query.count(), 0)
