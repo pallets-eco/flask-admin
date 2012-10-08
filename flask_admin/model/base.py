@@ -467,7 +467,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return self.get_form()
 
-    def create_form(self, form=None, obj=None):
+    def create_form(self, obj=None):
         """
             Instantiate model creation form and return it.
 
@@ -475,13 +475,13 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return self._create_form_class(obj=obj)
 
-    def edit_form(self, form=None, obj=None):
+    def edit_form(self, obj=None):
         """
             Instantiate model editing form and return it.
 
             Override to implement custom behavior.
         """
-        return self._edit_form_class(form, obj)
+        return self._edit_form_class(obj=obj)
 
     # Helpers
     def is_sortable(self, name):
@@ -821,7 +821,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if not self.can_create:
             return redirect(return_url)
 
-        form = self.create_form(None)
+        form = self.create_form()
 
         if form.validate_on_submit():
             if self.create_model(form):
@@ -854,7 +854,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if model is None:
             return redirect(return_url)
 
-        form = self.edit_form(None, obj=model)
+        form = self.edit_form(obj=model)
 
         if form.validate_on_submit():
             if self.update_model(form, model):
