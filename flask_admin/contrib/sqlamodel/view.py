@@ -484,7 +484,8 @@ class ModelView(BaseModelView):
         if self._search_supported and search:
             # Apply search-related joins
             if self._search_joins:
-                query = query.join(*self._search_joins.values())
+                for j in self._search_joins.values():
+                    query = query.join(j)
                 joins = set(self._search_joins.keys())
 
             # Apply terms
