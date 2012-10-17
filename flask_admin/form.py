@@ -152,3 +152,31 @@ class RenderTemplateWidget(object):
 
         template = jinja_env.get_template(self.template)
         return template.render(kwargs)
+
+
+class TagListField(fields.TextField):
+    """Tags styled with `Select2 <http://ivaynberg.github.com/select2/#tags>`_"""
+
+    def __init__(self, label=None, validators=None, save_as_list=False, **kwargs):
+        """Initialization
+
+        :param save_as_list:
+            if set to `True` populates `obj` using ``list`` type
+            else string with comma separated values
+        """
+        self.save_as_list = save_as_list
+        super(TagListField, self).__init__(label, validators, **kwargs)
+
+    def __call__(self, **kwargs):
+        kwargs['data-role'] = u'select2tags'
+        return super(TagListField, self).__call__(**kwargs)
+
+    def _value(self):
+        return u', '.join(self.data) if isinstance(self.data, list) else self.data
+
+    def process_formdata(self, valuelist):
+        if self.save_as_list:
+            self.data = [v.strip() for v in valuelist[0].split(',') if v.strip()]
+        else:
+            self.data = valuelist[0]
+
