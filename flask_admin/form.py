@@ -152,3 +152,37 @@ class RenderTemplateWidget(object):
 
         template = jinja_env.get_template(self.template)
         return template.render(kwargs)
+
+
+class Select2TagsWidget(widgets.TextInput):
+    """`Select2 <http://ivaynberg.github.com/select2/#tags>`_ styled text widget.
+    You must include select2.js, form.js and select2 stylesheet for it to work.
+    """
+    def __call__(self, field, **kwargs):
+        kwargs['data-role'] = u'select2tags'
+        return super(Select2TagsWidget, self).__call__(field, **kwargs)
+
+ 
+class Select2TagsField(fields.TextField):
+    """`Select2 <http://ivaynberg.github.com/select2/#tags>`_ styled text field.
+    You must include select2.js, form.js and select2 stylesheet for it to work.
+    """
+    widget = Select2TagsWidget()
+    def __init__(self, label=None, validators=None, save_as_list=False, **kwargs):
+        """Initialization
+
+        :param save_as_list:
+            If `True` then populate ``obj`` using list else string
+        """
+        self.save_as_list = save_as_list
+        super(Select2TagsField, self).__init__(label, validators, **kwargs)
+
+    def process_formdata(self, valuelist):
+        if self.save_as_list:
+            self.data = [v.strip() for v in valuelist[0].split(',') if v.strip()]
+        else:
+            self.data = valuelist[0]
+
+    def _value(self):
+        return u', '.join(self.data) if isinstance(self.data, list) else self.data
+

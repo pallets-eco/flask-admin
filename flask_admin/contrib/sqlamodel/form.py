@@ -240,6 +240,9 @@ class AdminModelConverter(ModelConverterBase):
         field_args['validators'].append(validators.UUID())
         return fields.TextField(**field_args)
 
+    @converts('sqlalchemy.dialects.postgresql.base.ARRAY')
+    def conv_ARRAY(self, field_args, **extra):
+        return form.Select2TagsField(save_as_list=True, **field_args)
 
 # Get list of fields and generate form
 def get_form(model, converter,
