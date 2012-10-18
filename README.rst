@@ -4,8 +4,6 @@ Flask-Admin
 .. image:: https://travis-ci.org/mrjoes/flask-admin.png?branch=master
 	:target: https://secure.travis-ci.org/mrjoes/flask-admin
 
-.. attention:: This fork doesn't contain any extra features, it only for extending `mrjoes/flask-admin <https://github.com/mrjoes/flask-admin>`_
-
 
 Introduction
 ------------
