@@ -154,7 +154,7 @@
                     {% endblock %}
                 </td>
                 {% for c, name in list_columns %}
-                <td>{{ get_value(row, c) }}</td>
+                <td>{{ get_value(row, c)|safe }}</td>
                 {% endfor %}
             {% endblock %}
         </tr>

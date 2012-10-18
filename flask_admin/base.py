@@ -51,6 +51,14 @@ class AdminViewMeta(type):
         Does some precalculations (like getting list of view methods from the class) to avoid
         calculating them for each view class instance.
     """
+
+    __model_views_map__ = {}
+    """Dict with inherited classes, where
+
+    key - Model instance
+    values - ModelView class
+    """
+
     def __init__(cls, classname, bases, fields):
         type.__init__(cls, classname, bases, fields)
 
@@ -71,6 +79,13 @@ class AdminViewMeta(type):
 
                 # Wrap views
                 setattr(cls, p, _wrap_view(attr))
+
+    def __call__(cls, **kwargs):
+        """Bind ``ModelView`` classes to ``Model`` instances"""
+        model_view = super(AdminViewMeta, cls).__call__(**kwargs)
+        if hasattr(model_view, 'model'):
+            cls.__model_views_map__[model_view.model] = model_view
+        return model_view
 
 
 class BaseView(object):
