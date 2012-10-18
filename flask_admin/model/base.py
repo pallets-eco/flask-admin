@@ -1,11 +1,10 @@
-from flask import request, url_for, redirect, flash
+import warnings
+import inspect
 
 from jinja2 import contextfunction
-
+from flask import request, url_for, redirect, flash
 from flask.ext.admin.babel import gettext
-
 from flask.ext.admin.base import BaseView, expose
-from flask.ext.admin.tools import rec_getattr
 from flask.ext.admin.model import filters
 from flask.ext.admin.actions import ActionsMixin
 
@@ -71,9 +70,85 @@ class BaseModelView(BaseView, ActionsMixin):
                 excluded_list_columns = ('last_name', 'email')
     """
 
+    column_formatters = {}
+    """Customize data representation for db fields from ``list_columns``
+
+    For example, we have `Category` model with multiple `Products`::
+
+        class CategoryView(ModelView):
+            list_columns = ('name', 'url', 'is_active')
+            column_formatters = {
+                'is_active': lambda v: 'Yes' if v else 'No'
+            }
+
+        class ProductView(ModelView):
+            list_columns = (
+                'price',
+                'category', 'category.name', 'category.is_active'
+            )
+            column_formatters = {
+                'price': lambda v: "%d USD" % v * 2,
+                'category': lambda v: "%s - %s" % (
+                    getattr(v, 'name'),
+                    getattr(v, 'url'),
+                ),
+                'category.name': lambda v: "Home -> %s" % v,
+            }
+
+    Please note:
+
+        - ModelViews know about relation beetween Models
+        - Child ``ModelView`` (`BookView`) can use formatters from parent ``ModelView`` (`AuthorView`) or rewrites it
+
+    If you need extra info in callback function use this::
+
+        column_formatters = {
+            'price': lambda v, c, obj, attr: getattr(obj, attr) * 2
+        }
+
+    Callback function has following prototype::
+
+        def formatter(v, c, obj, attr):
+            # v is value, same as getattr(obj, attr)
+            # c is instance of jinja2.runtime.Context
+            # obj is model instance
+            # attr is model field name
+            pass
+    """
+
+    global_type_formatters = {
+        bool: lambda value: u'<i class="icon-%s"></i>' % 'check' if value else '',
+        list: lambda value: u', '.join(value),
+    }
+    """Globally customize data representation for specified python types
+
+    To define new or redefine existed::
+
+        class MyModelView(ModelView):
+            ModelView.global_type_formatters.update({
+                # your custom global_type_formatters
+            })
+
+    It similar to ``column_formatters`` and callback function also support extra info::
+
+        def formatter(v, c, obj, attr):
+            # v is value, same as getattr(obj, attr)
+            # c is instance of jinja2.runtime.Context
+            # obj is model instance
+            # attr is model field name
+            pass
+    """
+
+    type_formatters = {}
+    """Same as ``global_type_formatters`` but is unique per every ``ModelView`` instance"""
+
+    #TODO: Remove in version 1.3
     list_formatters = dict()
     """
         Dictionary of list view column formatters.
+
+        .. warning:: This will be removed in version 1.3.
+                         Use ``column_formatters`` instead
 
         For example, if you want to show price multiplied by
         two, you can do something like this::
@@ -685,6 +760,28 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return url_for(view, **kwargs)
 
+    def _get_model_view(self, model):
+        """Get ModelView defined by user and binded to specified model
+
+        :param model: Model class
+        :return: ModelView instance
+        """
+        return self.__class__.__model_views_map__[model]
+
+    def _call_formatter(self, func, value, **kwargs):
+        """Call formatter function only with ``kwargs`` that supported in it
+
+        :param func: formatter function
+        :param value: first argument for ``func``
+        :param kwargs: named arguments that can be passed if ``func`` supports it
+        :return: ``func`` execution result
+        """
+        args = inspect.getargspec(func).args
+        for k in kwargs.keys():
+            if k not in args:
+                del kwargs[k]
+        return func(value, **kwargs)
+
     def is_action_allowed(self, name):
         """
             Override this method to allow or disallow actions based
@@ -696,21 +793,52 @@ class BaseModelView(BaseView, ActionsMixin):
         return name not in self.disallowed_actions
 
     @contextfunction
-    def get_list_value(self, context, model, name):
-        """
-            Returns value to be displayed in list view
+    def get_formatted_value(self, context, obj, attr):
+        """Returns value to be displayed in list view
 
-            :param context:
-                :py:class:`jinja2.runtime.Context`
-            :param model:
-                Model instance
-            :param name:
-                Field name
+        :param context:
+            :py:class:`jinja2.runtime.Context`
+        :param obj:
+            Model instance
+        :param attr:
+            Column name
         """
-        if name in self.list_formatters:
-            return self.list_formatters[name](context, model, name)
+        model_view_class = self._get_model_view(obj.__class__)
+        list_formatters = model_view_class.list_formatters
+        type_formatters = model_view_class.type_formatters
+        column_formatters = model_view_class.column_formatters
 
-        return rec_getattr(model, name)
+        if '.' in attr and not attr in list_formatters and not attr in column_formatters:
+            obj = getattr(obj, attr.split('.')[0])
+            attr = attr.split('.')[1]
+            return self.get_formatted_value(context, obj, attr)
+
+        if attr in list_formatters:
+            #TODO: Remove in version 1.3
+            warnings.warn(
+                "`ModelView.list_formatters` is deprecated and will be removed if version 1.3. "
+                "Use `ModelView.column_formatters` instead"
+            )
+            return list_formatters[attr](context, obj, attr)
+        elif attr in column_formatters:
+            # This is formatter by Model field name
+            value = getattr(obj, attr, None)
+            formatter = column_formatters[attr]
+            if '.' in attr:
+                obj = getattr(obj, attr.split('.')[0])
+                attr = attr.split('.')[1]
+        elif isinstance(attr, (str, unicode)):
+            value = getattr(obj, attr, None)
+            if type(value) in type_formatters:
+                formatter = type_formatters[type(value)]
+            elif type(value) in self.global_type_formatters:
+                formatter = self.global_type_formatters[type(value)]
+            else:
+                formatter = None
+        if formatter:
+            return self._call_formatter(formatter, value, c=context, obj=obj, attr=attr)
+        else:
+            return getattr(obj, attr)
 
     # Views
     @expose('/')
@@ -776,7 +904,7 @@ class BaseModelView(BaseView, ActionsMixin):
                                # Stuff
                                enumerate=enumerate,
                                get_pk_value=self.get_pk_value,
-                               get_value=self.get_list_value,
+                               get_value=self.get_formatted_value,
                                return_url=self._get_url('.index_view',
                                                         page,
                                                         sort_idx,
