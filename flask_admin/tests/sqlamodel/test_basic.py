@@ -1,13 +1,9 @@
 from nose.tools import eq_, ok_, raises
 
-from flask import Flask
-
 from flask.ext import wtf
-
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqlamodel import ModelView
 
+from . import setup
 
 class CustomModelView(ModelView):
     def __init__(self, model, session,
@@ -19,7 +15,6 @@ class CustomModelView(ModelView):
         super(CustomModelView, self).__init__(model, session,
                                               name, category,
                                               endpoint, url)
-
 
 def create_models(db):
     class Model1(db.Model):
@@ -43,18 +38,6 @@ def create_models(db):
     db.create_all()
 
     return Model1, Model2
-
-
-def setup():
-    app = Flask(__name__)
-    app.config['SECRET_KEY'] = '1'
-    app.config['CSRF_ENABLED'] = False
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'
-
-    db = SQLAlchemy(app)
-    admin = Admin(app)
-
-    return app, db, admin
 
 
 def test_model():
@@ -392,3 +375,19 @@ def test_on_model_change_delete():
     client.post(url)
     ok_(view.deleted)
 
+def test_multiple_delete():
+    app, db, admin = setup()
+    M1, _ = create_models(db)
+
+    db.session.add_all([M1('a'), M1('b'), M1('c')])
+    db.session.commit()
+    eq_(M1.query.count(), 3)
+
+    view = ModelView(M1, db.session)
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.post('/admin/model1view/action/', data=dict(action='delete', rowid=[1,2,3]))
+    eq_(rv.status_code, 302)
+    eq_(M1.query.count(), 0)
