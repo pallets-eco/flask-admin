@@ -1,5 +1,5 @@
 from wtforms import fields, validators
-from sqlalchemy import Boolean
+from sqlalchemy import Boolean, Column
 
 from flask.ext.admin import form
 from flask.ext.admin.model.form import converts, ModelConverterBase, InlineFormAdmin
@@ -96,6 +96,10 @@ class AdminModelConverter(ModelConverterBase):
 
                 # Do not display foreign keys - use relations
                 if column.foreign_keys:
+                    return None
+
+                # Only display "real" columns
+                if not isinstance(column, Column):
                     return None
 
                 unique = False
