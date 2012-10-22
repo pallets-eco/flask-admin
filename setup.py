@@ -1,13 +1,16 @@
 # Fix for older setuptools
-import multiprocessing, logging, os
-
-import flask_admin
+import re
+import os
 
 from setuptools import setup, find_packages
 
 
+def fpath(name):
+    return os.path.join(os.path.dirname(__file__), name)
+
+
 def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+    return open(fpath(fname)).read()
 
 
 def desc():
@@ -17,13 +20,21 @@ def desc():
     except IOError:
         return info
 
+# grep flask_admin/__init__.py since python 3.x cannot import it before using 2to3
+file_text = read(fpath('flask_admin/__init__.py'))
+def grep(attrname):
+    pattern = r"{0}\W*=\W*'([^']+)'".format(attrname)
+    strval, = re.findall(pattern, file_text)
+    return strval
+
+
 setup(
     name='Flask-Admin',
-    version=flask_admin.__version__,
+    version=grep('__version__'),
     url='https://github.com/mrjoes/flask-admin/',
     license='BSD',
-    author='Serge S. Koval',
-    author_email='serge.koval+github@gmail.com',
+    author=grep('__author__'),
+    author_email=grep('__email__'),
     description='Simple and extensible admin interface framework for Flask',
     long_description=desc(),
     packages=find_packages(),
