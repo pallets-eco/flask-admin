@@ -604,8 +604,8 @@ class ModelView(BaseModelView):
         """
         try:
             form.populate_obj(model)
-            self.session.flush()
             self.on_model_change(form, model)
+            self.session.flush()
             self.session.commit()
             return True
         except Exception, ex:
