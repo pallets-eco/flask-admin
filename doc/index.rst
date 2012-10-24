@@ -7,6 +7,7 @@ Flask-Admin is simple and extensible administrative interface framework for `Fla
    :maxdepth: 2
 
    quickstart
+   templates
    model_guidelines
    api/index
    changelog

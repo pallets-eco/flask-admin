@@ -182,12 +182,6 @@ class BaseView(object):
         if self.name is None:
             self.name = self._prettify_name(self.__class__.__name__)
 
-        # Figure out root_path
-        mod_name = self.__module__
-        mod = sys.modules[mod_name]
-        root_path = os.path.abspath(os.path.dirname(mod.__file__))
-        print mod_name, mod.__file__, root_path
-
         # Create blueprint and register rules
         self.blueprint = Blueprint(self.endpoint, __name__,
                                    url_prefix=self.url,
