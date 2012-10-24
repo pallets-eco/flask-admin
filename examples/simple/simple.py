@@ -37,6 +37,9 @@ if __name__ == '__main__':
     admin.add_view(AnotherAdminView(category='Test'))
     admin.init_app(app)
 
+    import pdb
+    pdb.set_trace()
+
     # Start app
     app.debug = True
     app.run()
