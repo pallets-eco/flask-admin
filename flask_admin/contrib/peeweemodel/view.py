@@ -277,12 +277,11 @@ class ModelView(BaseModelView):
         try:
             model = self.model()
             form.populate_obj(model)
+            self.on_model_change(form, model)
             model.save()
 
             # For peewee have to save inline forms after model was saved
             save_inline(form, model)
-
-            self.on_model_change(form, model)
 
             return True
         except Exception, ex:
@@ -292,12 +291,11 @@ class ModelView(BaseModelView):
     def update_model(self, form, model):
         try:
             form.populate_obj(model)
+            self.on_model_change(form, model)
             model.save()
 
             # For peewee have to save inline forms after model was saved
             save_inline(form, model)
-
-            self.on_model_change(form, model)
 
             return True
         except Exception, ex:
