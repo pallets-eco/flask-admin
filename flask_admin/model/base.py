@@ -6,7 +6,7 @@ from flask.ext.admin.babel import gettext
 
 from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.tools import rec_getattr
-from flask.ext.admin.model import filters
+from flask.ext.admin.model import filters, typefmt
 from flask.ext.admin.actions import ActionsMixin
 
 
@@ -88,6 +88,35 @@ class BaseModelView(BaseView, ActionsMixin):
                 # model is model instance
                 # name is property name
                 pass
+    """
+
+    list_type_formatters = None
+    """
+        Dictionary of value type formatters to be used in list view.
+
+        By default, two types are formatted:
+        1. ``None`` will be displayed as empty string
+        2. ``bool`` will be displayed as checkbox
+
+        If you don't like default behavior and don't want any type formatters
+        applied, just override this property with empty dictionary::
+
+            class MyModelView(BaseModelView):
+                list_type_formatters = dict()
+
+        If you don't want to display `NULL` instead of empty string, you can do
+        something like this::
+
+            from flask.ext.admin import typefmt
+
+            MY_DEFAULT_FORMATTERS = dict(typefmt.DEFAULT_FORMATTERS).extend({
+                    type(None): typefmt.null_formatter
+                })
+
+            class MyModelView(BaseModelView):
+                list_type_formatters = MY_DEFAULT_FORMATTERS
+
+        Type formatters have lower priority than list column formatters.
     """
 
     rename_columns = None
@@ -280,6 +309,10 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # Filters
         self._filters = self.get_filters()
+
+        # Type formatters
+        if self.list_type_formatters is None:
+            self.list_type_formatters = dict(typefmt.DEFAULT_FORMATTERS)
 
         if self._filters:
             self._filter_groups = []
@@ -707,10 +740,17 @@ class BaseModelView(BaseView, ActionsMixin):
             :param name:
                 Field name
         """
-        if name in self.list_formatters:
-            return self.list_formatters[name](context, model, name)
+        column_fmt = self.list_formatters.get(name)
+        if column_fmt is not None:
+            return column_fmt(context, model, name)
 
-        return rec_getattr(model, name)
+        value = rec_getattr(model, name)
+
+        type_fmt = self.list_type_formatters.get(type(value))
+        if type_fmt is not None:
+            value = type_fmt(value)
+
+        return value
 
     # Views
     @expose('/')
