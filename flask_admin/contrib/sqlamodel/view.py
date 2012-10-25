@@ -483,8 +483,9 @@ class ModelView(BaseModelView):
         if self._search_supported and search:
             # Apply search-related joins
             if self._search_joins:
-                for j in self._search_joins.values():
-                    query = query.join(j)
+                for jn in self._search_joins.values():
+                    query = query.join(jn)
+
                 joins = set(self._search_joins.keys())
 
             # Apply terms
@@ -504,11 +505,12 @@ class ModelView(BaseModelView):
             if self._filter_joins:
                 new_joins = set(self._filter_joins.keys()) - joins
 
-                if new_joins:
-                    query = query.join(*[self._filter_joins[jn] for jn in new_joins])
-                    joins |= new_joins
+                for jn in new_joins:
+                    query = query.join(self._filter_joins[jn])
 
-            # Apply filters
+                joins |= new_joins
+
+            # Apply filter values
             for flt, value in filters:
                 query = self._filters[flt].apply(query, value)
 
