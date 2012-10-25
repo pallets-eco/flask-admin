@@ -96,7 +96,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         By default, two types are formatted:
         1. ``None`` will be displayed as empty string
-        2. ``bool`` will be displayed as checkbox
+        2. ``bool`` will be displayed as check if it is ``True``
 
         If you don't like default behavior and don't want any type formatters
         applied, just override this property with empty dictionary::
@@ -104,7 +104,7 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(BaseModelView):
                 list_type_formatters = dict()
 
-        If you don't want to display `NULL` instead of empty string, you can do
+        If you want to display `NULL` instead of empty string, you can do
         something like this::
 
             from flask.ext.admin import typefmt
