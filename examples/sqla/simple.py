@@ -53,7 +53,6 @@ class Post(db.Model):
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
-    value = db.Column(db.Boolean())
 
     def __unicode__(self):
         return self.name

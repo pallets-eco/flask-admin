@@ -354,6 +354,7 @@ class ModelView(BaseModelView):
         if attr is None:
             raise Exception('Failed to find field for filter: %s' % name)
 
+        # Figure out filters for related column
         if hasattr(attr, 'property') and hasattr(attr.property, 'direction'):
             filters = []
 
@@ -500,19 +501,19 @@ class ModelView(BaseModelView):
                 query = query.filter(or_(*filter_stmt))
 
         # Apply filters
-        if self._filters:
-            # Apply search-related joins
-            if self._filter_joins:
-                new_joins = set(self._filter_joins.keys()) - joins
+        if filters and self._filters:
+            for idx, value in filters:
+                flt = self._filters[idx]
 
-                for jn in new_joins:
-                    query = query.join(self._filter_joins[jn])
+                # Figure out join
+                tbl = flt.column.table.name
+                join = self._filter_joins.get(tbl)
+                if join is not None:
+                    query = query.join(join)
+                    joins.add(tbl)
 
-                joins |= new_joins
-
-            # Apply filter values
-            for flt, value in filters:
-                query = self._filters[flt].apply(query, value)
+                # Apply filter
+                query = flt.apply(query, value)
 
         # Calculate number of rows
         count = query.count()
