@@ -41,7 +41,7 @@ var AdminFilters = function(element, filters_element, operations, options, types
             $select.append($('<option/>').attr('value', this[0]).text(this[1]));
         });
 
-        $select.select2();
+        $select.select2({width: 'resolve'});
 
         var optId = op[0][0];
 
