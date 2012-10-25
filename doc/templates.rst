@@ -5,9 +5,10 @@ Flask-Admin is built on top of standard Flask template management functionality.
 
 If you're not familiar with Jinja2 templates, take a look `here <http://jinja.pocoo.org/docs/templates/>`_. Short summary:
 
-1. You can derive from template
-2. You can override template block(s)
-3. When you override template block, you can render or not render parent block if you want to
+1. You can derive from template;
+2. You can override template block(s);
+3. When you override template block, you can render or not render parent block;
+4. It does not matter how blocks are nested - you override them by name.
 
 
 Flask Core
