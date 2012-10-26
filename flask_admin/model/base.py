@@ -746,6 +746,12 @@ class BaseModelView(BaseView, ActionsMixin):
 
         value = rec_getattr(model, name)
 
+        # Replace with choice description if choices exists
+        if self.form_args and name in self.form_args:
+            choices = dict(self.form_args[name].get('choices', ''))
+            if value in choices:
+                return choices[value]
+
         type_fmt = self.list_type_formatters.get(type(value))
         if type_fmt is not None:
             value = type_fmt(value)
