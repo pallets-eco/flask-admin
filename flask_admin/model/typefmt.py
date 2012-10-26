@@ -31,7 +31,18 @@ def bool_formatter(value):
     return Markup('<i class="icon-ok"></i>' if value else '')
 
 
+def list_formatter(values):
+    """
+        Return string with comma separated values
+
+        :param values:
+            Value to check
+    """
+    return u', '.join(values)
+
+
 DEFAULT_FORMATTERS = {
     type(None): empty_formatter,
-    bool: bool_formatter
+    bool: bool_formatter,
+    list: list_formatter,
 }
