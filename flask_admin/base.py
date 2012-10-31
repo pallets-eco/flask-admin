@@ -463,9 +463,6 @@ class Admin(object):
             :param app:
                 Flask application instance
         """
-        if self.app is not None:
-            raise Exception('Flask-Admin is already associated with an application.')
-
         self.app = app
 
         self._init_extension()
