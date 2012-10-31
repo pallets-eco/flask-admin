@@ -162,6 +162,10 @@ class AdminModelConverter(ModelConverterBase):
                 if override:
                     return override(**kwargs)
 
+                # Check choices
+                if 'choices' in kwargs:
+                    return fields.SelectField(**kwargs)
+
                 # Run converter
                 converter = self.get_converter(column)
 
@@ -247,6 +251,13 @@ class AdminModelConverter(ModelConverterBase):
     @converts('sqlalchemy.dialects.postgresql.base.ARRAY')
     def conv_ARRAY(self, field_args, **extra):
         return form.Select2TagsField(save_as_list=True, **field_args)
+
+    @converts('Enum')
+    def conv_Enum(self, column, field_args, **extra):
+        if 'choices' not in field_args:
+            field_args['choices'] = [(e, e) for e in column.type.enums]
+        return fields.SelectField(**field_args)
+
 
 # Get list of fields and generate form
 def get_form(model, converter,
