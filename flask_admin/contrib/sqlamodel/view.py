@@ -1,3 +1,5 @@
+import logging
+
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import subqueryload
 from sqlalchemy.sql.expression import desc
@@ -623,6 +625,7 @@ class ModelView(BaseModelView):
             return True
         except Exception, ex:
             flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
+            logging.exception('Failed to create model')
             self.session.rollback()
             return False
 
@@ -642,6 +645,7 @@ class ModelView(BaseModelView):
             return True
         except Exception, ex:
             flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')
+            logging.exception('Failed to update model')
             self.session.rollback()
             return False
 
@@ -660,6 +664,7 @@ class ModelView(BaseModelView):
             return True
         except Exception, ex:
             flash(gettext('Failed to delete model. %(error)s', error=str(ex)), 'error')
+            logging.exception('Failed to delete model')
             self.session.rollback()
             return False
 

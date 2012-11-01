@@ -396,6 +396,7 @@ class InlineModelConverter(InlineModelConverterBase):
                             hidden_pk=True)
 
         # Post-process form
+        print info, info.postprocess_form
         child_form = info.postprocess_form(child_form)
 
         # Contribute field
