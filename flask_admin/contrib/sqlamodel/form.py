@@ -2,7 +2,8 @@ from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
 
 from flask.ext.admin import form
-from flask.ext.admin.model.form import converts, ModelConverterBase, InlineModelConverterBase
+from flask.ext.admin.model.form import (converts, ModelConverterBase,
+                                        InlineFormAdmin, InlineModelConverterBase)
 
 from .validators import Unique
 from .fields import QuerySelectField, QuerySelectMultipleField, InlineModelFormList
@@ -327,6 +328,30 @@ class InlineModelConverter(InlineModelConverterBase):
     def __init__(self, session):
         self.session = session
 
+    def get_info(self, p):
+        info = super(InlineModelConverter, self).get_info(p)
+
+        # Special case for model instances
+        if info is None:
+            if hasattr(p, '_sa_class_manager'):
+                return InlineFormAdmin(p)
+            else:
+                model = getattr(p, 'model', None)
+
+                if model is None:
+                    raise Exception('Unknown inline model admin: %s' % repr(p))
+
+                attrs = dict()
+                for attr in dir(p):
+                    if not attr.startswith('_') and attr != 'model':
+                        attrs[attr] = getattr(p, attr)
+
+                return InlineFormAdmin(model, **attrs)
+
+            info = InlineFormAdmin(model, **attrs)
+
+        return info
+
     def contribute(self, converter, model, form_class, inline_model):
         """
             Generate form fields for inline forms and contribute them to
@@ -396,7 +421,6 @@ class InlineModelConverter(InlineModelConverterBase):
                             hidden_pk=True)
 
         # Post-process form
-        print info, info.postprocess_form
         child_form = info.postprocess_form(child_form)
 
         # Contribute field

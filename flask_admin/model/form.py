@@ -115,17 +115,5 @@ class InlineModelConverterBase(object):
             return InlineFormAdmin(p[0], **p[1])
         elif isinstance(p, InlineFormAdmin):
             return p
-        elif hasattr(p, '_sa_class_manager'):
-            return InlineFormAdmin(p)
-        else:
-            model = getattr(p, 'model', None)
 
-            if model is None:
-                raise Exception('Unknown inline model admin: %s' % repr(p))
-
-            attrs = dict()
-            for attr in dir(p):
-                if not attr.startswith('_') and attr != 'model':
-                    attrs[attr] = getattr(p, attr)
-
-            return InlineFormAdmin(model, **attrs)
+        return None

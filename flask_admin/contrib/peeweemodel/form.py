@@ -1,6 +1,7 @@
 from wtforms import fields
 
-from peewee import DateTimeField, DateField, TimeField, BaseModel, ForeignKeyField
+from peewee import (DateTimeField, DateField, TimeField,
+                    PrimaryKeyField, ForeignKeyField, BaseModel)
 
 from wtfpeewee.orm import ModelConverter, model_form
 
@@ -71,9 +72,14 @@ class InlineModelFormList(fields.FieldList):
 class CustomModelConverter(ModelConverter):
     def __init__(self, additional=None):
         super(CustomModelConverter, self).__init__(additional)
+        self.converters[PrimaryKeyField] = self.handle_pk
         self.converters[DateTimeField] = self.handle_datetime
         self.converters[DateField] = self.handle_date
         self.converters[TimeField] = self.handle_time
+
+    def handle_pk(self, model, field, **kwargs):
+        kwargs['validators'] = []
+        return field.name, fields.HiddenField(**kwargs)
 
     def handle_date(self, model, field, **kwargs):
         kwargs['widget'] = form.DatePickerWidget()
@@ -88,6 +94,27 @@ class CustomModelConverter(ModelConverter):
 
 
 class InlineModelConverter(InlineModelConverterBase):
+    def get_info(self, p):
+        info = super(InlineModelConverter, self).get_info(p)
+
+        if info is None:
+            if isinstance(p, BaseModel):
+                info = InlineFormAdmin(p)
+            else:
+                model = getattr(p, 'model', None)
+                if model is None:
+                    raise Exception('Unknown inline model admin: %s' % repr(p))
+
+                attrs = dict()
+
+                for attr in dir(p):
+                    if not attr.startswith('_') and attr != model:
+                        attrs[attr] = getattr(p, attr)
+
+                info = InlineFormAdmin(model, **attrs)
+
+        return info
+
     def contribute(self, converter, model, form_class, inline_model):
         # Find property from target model to current model
         reverse_field = None
