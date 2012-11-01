@@ -45,12 +45,31 @@ def test_base_defaults():
     admin = base.Admin()
     eq_(admin.name, 'Admin')
     eq_(admin.url, '/admin')
+    eq_(admin.endpoint, 'admin')
     eq_(admin.app, None)
     ok_(admin.index_view is not None)
+    eq_(admin.index_view._template, 'admin/index.html')
 
     # Check if default view was added
     eq_(len(admin._views), 1)
     eq_(admin._views[0], admin.index_view)
+
+
+def test_custom_index_view():
+    view = base.AdminIndexView(name='a', category='b', endpoint='c',
+                               url='/d', template='e')
+    admin = base.Admin(index_view=view)
+
+    eq_(admin.endpoint, 'c')
+    eq_(admin.url, '/d')
+    ok_(admin.index_view is view)
+    eq_(view.name, 'a')
+    eq_(view.category, 'b')
+    eq_(view._template, 'e')
+
+    # Check if view was added
+    eq_(len(admin._views), 1)
+    eq_(admin._views[0], view)
 
 
 def test_base_registration():
