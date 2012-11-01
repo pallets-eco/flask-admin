@@ -264,7 +264,8 @@ class AdminIndexView(BaseView):
             class MyHomeView(AdminIndexView):
                 @expose('/')
                 def index(self):
-                    return render_template('adminhome.html')
+                    arg1 = 'Hello'
+                    return render_template('adminhome.html', arg1=arg1)
 
             admin = Admin(index_view=MyHomeView())
 
@@ -274,17 +275,21 @@ class AdminIndexView(BaseView):
         * If endpoint is not provided, will use ``admin``
         * Default URL route is ``/admin``.
         * Automatically associates with static folder.
+        * Default template is ``admin/index.html``
     """
-    def __init__(self, name=None, category=None, endpoint=None, url=None):
+    def __init__(self, name=None, category=None,
+                 endpoint=None, url=None,
+                 template='admin/index.html'):
         super(AdminIndexView, self).__init__(name or babel.lazy_gettext('Home'),
                                              category,
                                              endpoint or 'admin',
                                              url or '/admin',
                                              'static')
+        self._template = template
 
     @expose()
     def index(self):
-        return self.render('admin/index.html')
+        return self.render(self._template)
 
 
 class MenuItem(object):
