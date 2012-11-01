@@ -5,6 +5,7 @@ from flask.ext.admin.contrib.sqlamodel import ModelView
 
 from . import setup
 
+
 class CustomModelView(ModelView):
     def __init__(self, model, session,
                  name=None, category=None, endpoint=None, url=None,
@@ -15,6 +16,7 @@ class CustomModelView(ModelView):
         super(CustomModelView, self).__init__(model, session,
                                               name, category,
                                               endpoint, url)
+
 
 def create_models(db):
     class Model1(db.Model):

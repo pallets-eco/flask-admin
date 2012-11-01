@@ -40,6 +40,22 @@ class InlineFormAdmin(object):
         for k, v in kwargs.iteritems():
             setattr(self, k, v)
 
+    def postprocess_form(self, form_class):
+        """
+            Post process form. Use this to contribute fields.
+
+            For example::
+
+                class MyInlineForm(InlineFormAdmin):
+                    def postprocess_form(self, form):
+                        form.value = wtf.TextField('value')
+                        return form
+
+                class MyAdmin(ModelView):
+                    inline_models = (MyInlineForm(ValueModel),)
+        """
+        return form_class
+
 
 class ModelConverterBase(object):
     def __init__(self, converters=None, use_mro=True):
@@ -80,3 +96,36 @@ class ModelConverterBase(object):
                 only=None, exclude=None,
                 field_args=None):
         raise NotImplemented()
+
+
+class InlineModelConverterBase(object):
+    def get_info(self, p):
+        """
+            Figure out InlineFormAdmin information.
+
+            :param p:
+                Inline model. Can be one of:
+
+                 - ``tuple``, first value is related model instance,
+                 second is dictionary with options
+                 - ``InlineFormAdmin`` instance
+                 - Model class
+        """
+        if isinstance(p, tuple):
+            return InlineFormAdmin(p[0], **p[1])
+        elif isinstance(p, InlineFormAdmin):
+            return p
+        elif hasattr(p, '_sa_class_manager'):
+            return InlineFormAdmin(p)
+        else:
+            model = getattr(p, 'model', None)
+
+            if model is None:
+                raise Exception('Unknown inline model admin: %s' % repr(p))
+
+            attrs = dict()
+            for attr in dir(p):
+                if not attr.startswith('_') and attr != 'model':
+                    attrs[attr] = getattr(p, attr)
+
+            return InlineFormAdmin(model, **attrs)

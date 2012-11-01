@@ -1,3 +1,5 @@
+import logging
+
 from flask import flash
 
 from flask.ext.admin import form
@@ -9,8 +11,8 @@ from wtfpeewee.orm import model_form
 
 from flask.ext.admin.actions import action
 from flask.ext.admin.contrib.peeweemodel import filters
-from .form import CustomModelConverter, contribute_inline, save_inline
-from .tools import get_primary_key
+from .form import CustomModelConverter, InlineModelConverter, save_inline
+from .tools import get_primary_key, parse_like_term
 
 
 class ModelView(BaseModelView):
@@ -43,6 +45,20 @@ class ModelView(BaseModelView):
 
             class MyAdminView(ModelView):
                 model_form_converter = MyModelConverter
+    """
+
+    inline_model_form_converter = InlineModelConverter
+    """
+        Inline model conversion class. If you need some kind of post-processing for inline
+        forms, you can customize behavior by doing something like this::
+
+            class MyInlineModelConverter(AdminModelConverter):
+                def post_process(self, form_class, info):
+                    form_class.value = wtf.TextField('value')
+                    return form_class
+
+            class MyAdminView(ModelView):
+                inline_model_form_converter = MyInlineModelConverter
     """
 
     filter_converter = filters.FilterConverter()
@@ -165,8 +181,8 @@ class ModelView(BaseModelView):
             raise Exception('Failed to find field for filter: %s' % name)
 
         # Check if field is in different model
-        if attr.model != self.model:
-            visible_name = '%s / %s' % (self.get_column_name(attr.model.__name__),
+        if attr.model_class != self.model:
+            visible_name = '%s / %s' % (self.get_column_name(attr.model_class.__name__),
                                         self.get_column_name(attr.name))
         else:
             if not isinstance(name, basestring):
@@ -193,16 +209,28 @@ class ModelView(BaseModelView):
                         converter=self.model_form_converter())
 
         if self.inline_models:
-            form_class = contribute_inline(self.model, form_class, self.inline_models)
+            form_class = self.scaffold_inline_form_models(form_class)
+
+        return form_class
+
+    def scaffold_inline_form_models(self, form_class):
+        converter = self.model_form_converter()
+        inline_converter = self.inline_model_form_converter()
+
+        for m in self.inline_models:
+            form_class = inline_converter.contribute(converter,
+                                                self.model,
+                                                form_class,
+                                                m)
 
         return form_class
 
     def _handle_join(self, query, field, joins):
-        if field.model != self.model:
-            model_name = field.model.__name__
+        if field.model_class != self.model:
+            model_name = field.model_class.__name__
 
             if model_name not in joins:
-                query = query.join(field.model)
+                query = query.join(field.model_class)
                 joins.add(model_name)
 
         return query
@@ -215,11 +243,13 @@ class ModelView(BaseModelView):
 
         # Search
         if self._search_supported and search:
-            terms = search.split(' ')
+            values = search.split(' ')
 
-            for term in terms:
-                if not term:
+            for value in values:
+                if not value:
                     continue
+
+                term = parse_like_term(value)
 
                 stmt = None
                 for field in self._search_fields:
@@ -250,14 +280,13 @@ class ModelView(BaseModelView):
             sort_field = self._sortable_columns[sort_column]
 
             if isinstance(sort_field, basestring):
-                query = query.order_by((sort_field, sort_desc and 'desc' or 'asc'))
+                field = getattr(self.model, sort_field)
+                query = query.order_by(field.desc() if sort_desc else field.asc())
             elif isinstance(sort_field, Field):
-                if sort_field.model != self.model:
+                if sort_field.model_class != self.model:
                     query = self._handle_join(query, sort_field, joins)
 
-                    query = query.order_by((sort_field.model, sort_field.name, sort_desc and 'desc' or 'asc'))
-                else:
-                    query = query.order_by((sort_column, sort_desc and 'desc' or 'asc'))
+                query = query.order_by(sort_field.desc() if sort_desc else sort_field.asc())
 
         # Pagination
         if page is not None:
@@ -286,6 +315,7 @@ class ModelView(BaseModelView):
             return True
         except Exception, ex:
             flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
+            logging.exception('Failed to create model')
             return False
 
     def update_model(self, form, model):
@@ -300,6 +330,7 @@ class ModelView(BaseModelView):
             return True
         except Exception, ex:
             flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')
+            logging.exception('Failed to update model')
             return False
 
     def delete_model(self, model):
@@ -309,6 +340,7 @@ class ModelView(BaseModelView):
             return True
         except Exception, ex:
             flash(gettext('Failed to delete model. %(error)s', error=str(ex)), 'error')
+            logging.exception('Failed to delete model')
             return False
 
     # Default model actions

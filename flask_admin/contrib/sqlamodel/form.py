@@ -2,7 +2,7 @@ from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
 
 from flask.ext.admin import form
-from flask.ext.admin.model.form import converts, ModelConverterBase, InlineFormAdmin
+from flask.ext.admin.model.form import converts, ModelConverterBase, InlineModelConverterBase
 
 from .validators import Unique
 from .fields import QuerySelectField, QuerySelectMultipleField, InlineModelFormList
@@ -248,6 +248,7 @@ class AdminModelConverter(ModelConverterBase):
     def conv_ARRAY(self, field_args, **extra):
         return form.Select2TagsField(save_as_list=True, **field_args)
 
+
 # Get list of fields and generate form
 def get_form(model, converter,
             base_class=form.BaseForm,
@@ -319,53 +320,40 @@ def get_form(model, converter,
     return type(model.__name__ + 'Form', (base_class, ), field_dict)
 
 
-def contribute_inline(session, model, form_class, inline_models):
+class InlineModelConverter(InlineModelConverterBase):
     """
-        Generate form fields for inline forms and contribute them to
-        the `form_class`
-
-        :param session:
-            SQLAlchemy session
-        :param model:
-            Model class
-        :param form_class:
-            Form to add properties to
-        :param inline_models:
-            List of inline model definitions. Can be one of:
-
-             - ``tuple``, first value is related model instance,
-             second is dictionary with options
-             - ``InlineFormAdmin`` instance
-             - Model class
-
-        :return:
-            Form class
+        Inline model form helper.
     """
+    def __init__(self, session):
+        self.session = session
 
-    # Get mapper
-    mapper = model._sa_class_manager.mapper
+    def contribute(self, converter, model, form_class, inline_model):
+        """
+            Generate form fields for inline forms and contribute them to
+            the `form_class`
 
-    # Contribute columns
-    for p in inline_models:
-        # Figure out settings
-        if isinstance(p, tuple):
-            info = InlineFormAdmin(p[0], **p[1])
-        elif isinstance(p, InlineFormAdmin):
-            info = p
-        elif hasattr(p, '_sa_class_manager'):
-            info = InlineFormAdmin(p)
-        else:
-            model = getattr(p, 'model', None)
+            :param converter:
+                ModelConverterBase instance
+            :param session:
+                SQLAlchemy session
+            :param model:
+                Model class
+            :param form_class:
+                Form to add properties to
+            :param inline_model:
+                Inline model. Can be one of:
 
-            if model is None:
-                raise Exception('Unknown inline model admin: %s' % repr(p))
+                 - ``tuple``, first value is related model instance,
+                 second is dictionary with options
+                 - ``InlineFormAdmin`` instance
+                 - Model class
 
-            attrs = dict()
-            for attr in dir(p):
-                if not attr.startswith('_') and attr != 'model':
-                    attrs[attr] = getattr(p, attr)
+            :return:
+                Form class
+        """
 
-            info = InlineFormAdmin(model, **attrs)
+        mapper = model._sa_class_manager.mapper
+        info = self.get_info(inline_model)
 
         # Find property from target model to current model
         target_mapper = info.model._sa_class_manager.mapper
@@ -399,8 +387,7 @@ def contribute_inline(session, model, form_class, inline_models):
         else:
             exclude = ignore
 
-        # Create field
-        converter = AdminModelConverter(session, info)
+        # Create form
         child_form = get_form(info.model,
                             converter,
                             only=info.form_columns,
@@ -408,11 +395,15 @@ def contribute_inline(session, model, form_class, inline_models):
                             field_args=info.form_args,
                             hidden_pk=True)
 
+        # Post-process form
+        child_form = info.postprocess_form(child_form)
+
+        # Contribute field
         setattr(form_class,
                 forward_prop.key,
                 InlineModelFormList(child_form,
-                                    session,
+                                    self.session,
                                     info.model,
                                     forward_prop.key))
 
-    return form_class
+        return form_class

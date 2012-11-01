@@ -13,3 +13,5 @@ make.bat
 venv
 *.sqlite
 *.sublime-*
+.coverage
+

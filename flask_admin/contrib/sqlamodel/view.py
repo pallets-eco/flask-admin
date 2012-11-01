@@ -124,6 +124,20 @@ class ModelView(BaseModelView):
                 model_form_converter = MyModelConverter
     """
 
+    inline_model_form_converter = form.InlineModelConverter
+    """
+        Inline model conversion class. If you need some kind of post-processing for inline
+        forms, you can customize behavior by doing something like this::
+
+            class MyInlineModelConverter(AdminModelConverter):
+                def post_process(self, form_class, info):
+                    form_class.value = wtf.TextField('value')
+                    return form_class
+
+            class MyAdminView(ModelView):
+                inline_model_form_converter = MyInlineModelConverter
+    """
+
     filter_converter = filters.FilterConverter()
     """
         Field to filter converter.
@@ -425,8 +439,25 @@ class ModelView(BaseModelView):
                           field_args=self.form_args)
 
         if self.inline_models:
-            form_class = form.contribute_inline(self.session, self.model,
-                                              form_class, self.inline_models)
+            form_class = self.scaffold_inline_form_models(form_class)
+
+        return form_class
+
+    def scaffold_inline_form_models(self, form_class):
+        """
+            Contribute inline models to the form
+
+            :param form_class:
+                Form class
+        """
+        converter = self.model_form_converter(self.session, self)
+        inline_converter = self.inline_model_form_converter(self.session)
+
+        for m in self.inline_models:
+            form_class = inline_converter.contribute(converter,
+                                                self.model,
+                                                form_class,
+                                                m)
 
         return form_class
 

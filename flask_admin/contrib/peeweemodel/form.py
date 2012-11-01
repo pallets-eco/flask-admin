@@ -5,7 +5,7 @@ from peewee import DateTimeField, DateField, TimeField, BaseModel, ForeignKeyFie
 from wtfpeewee.orm import ModelConverter, model_form
 
 from flask.ext.admin import form
-from flask.ext.admin.model.form import InlineFormAdmin
+from flask.ext.admin.model.form import InlineFormAdmin, InlineModelConverterBase
 from flask.ext.admin.model.fields import InlineModelFormField
 from flask.ext.admin.model.widgets import InlineFormListWidget
 
@@ -29,7 +29,8 @@ class InlineModelFormList(fields.FieldList):
 
     def process(self, formdata, data=None):
         if not formdata:
-            data = self.model.select().where(user=data).execute()
+            attr = getattr(self.model, self.prop)
+            data = self.model.select().where(attr == data).execute()
         else:
             data = None
 
@@ -41,7 +42,8 @@ class InlineModelFormList(fields.FieldList):
     def save_related(self, obj):
         model_id = getattr(obj, self._pk)
 
-        values = self.model.select().where(user=model_id).execute()
+        attr = getattr(self.model, self.prop)
+        values = self.model.select().where(attr == model_id).execute()
 
         pk_map = dict((str(getattr(v, self._pk)), v) for v in values)
 
@@ -85,37 +87,18 @@ class CustomModelConverter(ModelConverter):
         return field.name, form.TimeField(**kwargs)
 
 
-def contribute_inline(model, form_class, inline_models):
-    # Contribute columns
-    for p in inline_models:
-        # Figure out settings
-        if isinstance(p, tuple):
-            info = InlineFormAdmin(p[0], **p[1])
-        elif isinstance(p, InlineFormAdmin):
-            info = p
-        elif isinstance(p, BaseModel):
-            info = InlineFormAdmin(p)
-        else:
-            model = getattr(p, 'model', None)
-
-            if model is None:
-                raise Exception('Unknown inline model admin: %s' % repr(p))
-
-            attrs = dict()
-            for attr in dir(p):
-                if not attr.startswith('_') and attr != model:
-                    attrs[attr] = getattr(p, attr)
-
-            info = InlineFormAdmin(model, **attrs)
-
+class InlineModelConverter(InlineModelConverterBase):
+    def contribute(self, converter, model, form_class, inline_model):
         # Find property from target model to current model
         reverse_field = None
+
+        info = self.get_info(inline_model)
 
         for field in info.model._meta.get_fields():
             field_type = type(field)
 
             if field_type == ForeignKeyField:
-                if field.to == model:
+                if field.rel_model == model:
                     reverse_field = field
                     break
         else:
@@ -130,7 +113,6 @@ def contribute_inline(model, form_class, inline_models):
             exclude = ignore
 
         # Create field
-        converter = CustomModelConverter()
         child_form = model_form(info.model,
                             base_class=form.BaseForm,
                             only=info.form_columns,
@@ -140,7 +122,6 @@ def contribute_inline(model, form_class, inline_models):
                             converter=converter)
 
         prop_name = 'fa_%s' % model.__name__
-
         setattr(form_class,
                 prop_name,
                 InlineModelFormList(child_form,
@@ -148,11 +129,11 @@ def contribute_inline(model, form_class, inline_models):
                                     reverse_field.name,
                                     label=info.model.__name__))
 
-        setattr(field.to,
+        setattr(field.rel_model,
                 prop_name,
                 property(lambda self: self.id))
 
-    return form_class
+        return form_class
 
 
 def save_inline(form, model):

@@ -1,6 +1,7 @@
 from flask.ext.admin.babel import gettext
 
 from flask.ext.admin.model import filters
+from .tools import parse_like_term
 
 
 class BasePeeweeFilter(filters.BaseFilter):
@@ -44,7 +45,8 @@ class FilterNotEqual(BasePeeweeFilter):
 
 class FilterLike(BasePeeweeFilter):
     def apply(self, query, value):
-        return query.filter(self.column ** value)
+        term = parse_like_term(value)
+        return query.filter(self.column ** term)
 
     def operation(self):
         return gettext('contains')
@@ -52,7 +54,8 @@ class FilterLike(BasePeeweeFilter):
 
 class FilterNotLike(BasePeeweeFilter):
     def apply(self, query, value):
-        return query.filter(~(self.column ** value))
+        term = parse_like_term(value)
+        return query.filter(~(self.column ** term))
 
     def operation(self):
         return gettext('not contains')
