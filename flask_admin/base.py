@@ -244,7 +244,7 @@ class BaseView(object):
             This method will be executed before calling any view method.
 
             By default, it will check if admin class is accessible and if it is not - will
-            throw HTTP 403 error.
+            throw HTTP 404 error.
 
             :param name:
                 View function name
@@ -252,7 +252,7 @@ class BaseView(object):
                 View function arguments
         """
         if not self.is_accessible():
-            return abort(403)
+            return abort(404)
 
 
 class AdminIndexView(BaseView):
