@@ -1,6 +1,6 @@
 {% macro dropdown(actions, btn_class='dropdown-toggle') -%}
     <a class="{{ btn_class }}" data-toggle="dropdown" href="#">
-        {{ _gettext('With selected')}}<b class="caret"></b>
+        {{ _gettext('With selected') }}<b class="caret"></b>
     </a>
     <ul class="dropdown-menu">
         {% for p in actions %}
