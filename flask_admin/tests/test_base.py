@@ -178,7 +178,7 @@ def test_permissions():
     view.allow_access = False
 
     rv = client.get('/admin/mockview/')
-    eq_(rv.status_code, 403)
+    eq_(rv.status_code, 404)
 
 
 def test_submenu():
