@@ -9,7 +9,7 @@
                           create_template, list_columns, excluded_list_columns, rename_columns, list_formatters,
                           sortable_columns, searchable_columns, column_filters, form, form_columns,
                           excluded_form_columns, form_args, form_overrides, page_size,
-                          disallowed_actions
+                          disallowed_actions, list_display_pk, list_type_formatters
 
         .. autoattribute:: can_create
         .. autoattribute:: can_edit
@@ -24,6 +24,7 @@
         .. autoattribute:: rename_columns
         .. autoattribute:: list_formatters
         .. autoattribute:: list_display_pk
+        .. autoattribute:: list_type_formatters
 
         .. autoattribute:: sortable_columns
 
