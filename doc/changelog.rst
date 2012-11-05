@@ -1,6 +1,38 @@
 Changelog
 =========
 
+1.0.3
+-----
+
+General:
+
+* Peewee 2.x support
+* Model form scaffolding is now customizable in model views
+* Inline model forms are much more customizable now
+* List view type-based formatters
+* Database ``NULL`` will be displayed as empty string by default in list view. Use type-based formatter if you want to display something else.
+* Use `Select2 <http://ivaynberg.github.com/select2/>`_ instead of Chosen
+* List view formatting callbacks. See example `here <https://gist.github.com/3714266>`_.
+* ``_template_args`` property is now available in all views
+* ``on_model_change`` and ``on_model_delete`` callbacks
+* Model backends now support ``list_display_pk`` property
+* Minor template refactoring, more blocks to override
+* Supported multiple ``Admin`` class instances for one Flask application
+* File uploads are now supported in model views
+* Use HTTPS CDN for jQuery
+* Lots of minor fixes
+
+SQLAlchemy backend:
+
+* Support for non-nullable boolean fields
+* If create/delete/update fails, Flask-Admin will rollback the transaction
+* Default column values support
+* ``list_display_all_relations`` to show many-to-one relations in list view
+* ``get_query`` method, which can be overridden to implement additional filtering/sorting/etc
+* Synonym properties support
+* Backend will ignore protected fields (name starting with underscore) from now on
+* Support for various PostgreSQL fields
+
 1.0.2
 -----
 
