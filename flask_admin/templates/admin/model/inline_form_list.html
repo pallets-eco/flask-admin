@@ -21,7 +21,7 @@
         {%- if pk %}
         <div class="fa-inline-form-control">
             <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
-            <label for="del-{{ subfield.id }}" style="display: inline">Delete?</a>
+            <label for="del-{{ subfield.id }}" style="display: inline">Delete?</label>
         </div>
         {%- endif -%}
         {{ lib.render_form_fields(subfield, True) }}
