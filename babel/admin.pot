@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Flask-Admin VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-11-02 11:48+0200\n"
+"POT-Creation-Date: 2012-11-09 03:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -267,6 +267,14 @@ msgstr ""
 
 #: ../flask_admin/templates/admin/model/create.html:20
 msgid "Save and Add"
+msgstr ""
+
+#: ../flask_admin/templates/admin/model/inline_form_list.html:24
+msgid "Delete?"
+msgstr ""
+
+#: ../flask_admin/templates/admin/model/inline_form_list.html:32
+msgid "Add"
 msgstr ""
 
 #: ../flask_admin/templates/admin/model/list.html:24

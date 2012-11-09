@@ -6,7 +6,7 @@ from flask.globals import _request_ctx_stack
 from flask.ext import wtf
 from wtforms import fields, widgets
 
-from flask.ext.admin.babel import gettext
+from flask.ext.admin.babel import gettext, ngettext
 
 
 class BaseForm(wtf.Form):
@@ -149,6 +149,11 @@ class RenderTemplateWidget(object):
         jinja_env = ctx.app.jinja_env
 
         kwargs['field'] = field
+
+        # Provide i18n support even if flask-babel is not installed
+        # or enabled.
+        kwargs['_gettext'] = gettext
+        kwargs['_ngettext'] = ngettext
 
         template = jinja_env.get_template(self.template)
         return template.render(kwargs)
