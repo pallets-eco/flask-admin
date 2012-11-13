@@ -10,9 +10,9 @@ General:
 * Model form scaffolding is now customizable in model views
 * Inline model forms are much more customizable now
 * List view type-based formatters
-* Database ``NULL`` will be displayed as empty string by default in list view. Use type-based formatter if you want to display something else.
-* Use `Select2 <http://ivaynberg.github.com/select2/>`_ instead of Chosen
-* List view formatting callbacks. See example `here <https://gist.github.com/3714266>`_.
+* Database ``NULL`` will be displayed in list view as empty string by default. Use type-based formatter if you want to show something else.
+* Use `Select2`_ instead of Chosen
+* List view formatting callbacks. See `example <https://gist.github.com/3714266>`_.
 * ``_template_args`` property is now available in all views
 * ``on_model_change`` and ``on_model_delete`` callbacks
 * Model backends now support ``list_display_pk`` property
