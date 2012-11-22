@@ -1,9 +1,11 @@
-from mongoengine import ReferenceField, EmbeddedDocumentField
+from mongoengine import ReferenceField
+
+from wtforms import fields as f
 
 from flask.ext.mongoengine.wtf import orm, fields
 
 from flask.ext.admin import form
-from flask.ext.admin.model.fields import InlineFieldList
+from flask.ext.admin.model.fields import InlineFieldList, InlineModelFormField
 
 
 class CustomModelConverter(orm.ModelConverter):
@@ -29,6 +31,18 @@ class CustomModelConverter(orm.ModelConverter):
             'filters': [],
         }
         return InlineFieldList(unbound_field, min_entries=0, **kwargs)
+
+    @orm.converts('EmbeddedDocumentField')
+    def conv_EmbeddedDocument(self, model, field, kwargs):
+        # TODO: Fix me
+        kwargs = {
+            'validators': [],
+            'filters': [],
+            'widget': InlineModelFormField()
+        }
+
+        form_class = model_form(field.document_type_obj, field_args={})
+        return f.FormField(form_class, **kwargs)
 
     @orm.converts('ReferenceField')
     def conv_Reference(self, model, field, kwargs):

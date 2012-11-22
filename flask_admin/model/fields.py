@@ -1,6 +1,6 @@
 from wtforms.fields import FieldList, FormField
 
-from .widgets import InlineFieldListWidget
+from .widgets import InlineFieldListWidget, InlineFormWidget
 
 
 class InlineFieldList(FieldList):
@@ -55,6 +55,8 @@ class InlineModelFormField(FormField):
         Excludes model primary key from the `populate_obj` and
         handles `should_delete` flag.
     """
+    widget = InlineFormWidget()
+
     def __init__(self, form, pk, **kwargs):
         super(InlineModelFormField, self).__init__(form, **kwargs)
 

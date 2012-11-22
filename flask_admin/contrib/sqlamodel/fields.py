@@ -4,12 +4,11 @@
 import operator
 
 from wtforms import widgets
-from wtforms.fields import SelectFieldBase, FieldList
+from wtforms.fields import SelectFieldBase
 from wtforms.validators import ValidationError
 
 from .tools import get_primary_key
 from flask.ext.admin.model.fields import InlineFieldList, InlineModelFormField
-from flask.ext.admin.model.widgets import InlineFormListWidget
 
 
 try:
@@ -183,11 +182,8 @@ class QuerySelectMultipleField(QuerySelectField):
 
 class InlineModelFormList(InlineFieldList):
     """
-        Customised ``wtforms.fields.FieldList`` class which will work with SQLAlchemy
-        model instances.
+        TODO: Documentation
     """
-    widget = InlineFormListWidget()
-
     def __init__(self, form, session, model, prop, **kwargs):
         """
             Default constructor.

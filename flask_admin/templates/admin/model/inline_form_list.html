@@ -1,8 +1,0 @@
-{% import 'admin/model/inline_list_base.html' as base with context %}
-{% import 'admin/lib.html' as lib with context %}
-
-{% macro render_field(field) %}
-    {{ lib.render_form_fields(field, True) }}
-{% endmacro %}
-
-{{ base.render_inline_fields(field, template, render_field, check) }}

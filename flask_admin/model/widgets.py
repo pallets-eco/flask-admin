@@ -6,6 +6,6 @@ class InlineFieldListWidget(RenderTemplateWidget):
         super(InlineFieldListWidget, self).__init__('admin/model/inline_field_list.html')
 
 
-class InlineFormListWidget(RenderTemplateWidget):
+class InlineFormWidget(RenderTemplateWidget):
     def __init__(self):
-        super(InlineFormListWidget, self).__init__('admin/model/inline_form_list.html')
+        super(InlineFormWidget, self).__init__('admin/model/inline_form.html')
