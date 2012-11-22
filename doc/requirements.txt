@@ -3,3 +3,4 @@ Flask-WTF>=0.6
 Flask-SQLAlchemy>=0.15
 peewee
 wtf-peewee
+flask-mongoengine
