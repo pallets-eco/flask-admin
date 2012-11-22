@@ -1,3 +1,5 @@
+import itertools
+
 from wtforms.fields import FieldList, FormField
 
 from .widgets import InlineFieldListWidget, InlineFormWidget
@@ -37,15 +39,24 @@ class InlineFieldList(FieldList):
         return getattr(field, '_should_delete', False)
 
     def populate_obj(self, obj, name):
-        result = []
+        values = getattr(obj, name, None)
+        try:
+            ivalues = iter(values)
+        except TypeError:
+            ivalues = iter([])
 
-        for f in self.entries:
-            if not self.should_delete(f):
-                field = self.field_type()
-                f.populate_obj(field, None)
-                result.append(field)
+        candidates = itertools.chain(ivalues, itertools.repeat(None))
+        _fake = type(str('_fake'), (object, ), {})
 
-        setattr(obj, self.prop, result)
+        output = []
+        for field, data in itertools.izip(self.entries, candidates):
+            if not self.should_delete(field):
+                fake_obj = _fake()
+                fake_obj.data = data
+                field.populate_obj(fake_obj, 'data')
+                output.append(fake_obj.data)
+
+        setattr(obj, name, output)
 
 
 class InlineModelFormField(FormField):

@@ -220,7 +220,8 @@ class ModelView(BaseModelView):
 
     def create_model(self, form):
         try:
-            model = self.model(**form.data)
+            model = self.model()
+            form.populate_obj(model)
             self.on_model_change(form, model)
             model.save()
             return True
@@ -232,12 +233,7 @@ class ModelView(BaseModelView):
 
     def update_model(self, form, model):
         try:
-            for f in form:
-                name, field = f.name, f
-
-                if hasattr(model, name) and getattr(model, name) != field.data:
-                    setattr(model, name, field.data)
-
+            form.populate_obj(model)
             self.on_model_change(form, model)
             model.save()
             return True

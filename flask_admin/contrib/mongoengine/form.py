@@ -5,7 +5,10 @@ from wtforms import fields as f
 from flask.ext.mongoengine.wtf import orm, fields
 
 from flask.ext.admin import form
-from flask.ext.admin.model.fields import InlineFieldList, InlineModelFormField
+from flask.ext.admin.model.fields import InlineFieldList
+from flask.ext.admin.model.widgets import InlineFormWidget
+
+from .fields import ModelFormField
 
 
 class CustomModelConverter(orm.ModelConverter):
@@ -38,11 +41,11 @@ class CustomModelConverter(orm.ModelConverter):
         kwargs = {
             'validators': [],
             'filters': [],
-            'widget': InlineModelFormField()
+            'widget': InlineFormWidget()
         }
 
         form_class = model_form(field.document_type_obj, field_args={})
-        return f.FormField(form_class, **kwargs)
+        return ModelFormField(field.document_type_obj, form_class, **kwargs)
 
     @orm.converts('ReferenceField')
     def conv_Reference(self, model, field, kwargs):
