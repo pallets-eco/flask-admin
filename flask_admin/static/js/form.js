@@ -41,11 +41,20 @@
         $('[name]', $template).each(function(e) {
             var me = $(this);
 
-            me.attr('id', prefix + '-' + me.attr('id'));
-            me.attr('name', prefix + '-' + me.attr('name'));
+            var id = me.attr('id');
+            var name = me.attr('name');
+
+            id = prefix + (id !== '' ? '-' + id : '');
+            name = prefix + (name !== '' ? '-' + name : '');
+
+            me.attr('id', id);
+            me.attr('name', name);
         });
 
         $template.appendTo($el);
+
+        // Select first field
+        $('input:first', $template).focus();
 
         // Apply styles
         this.applyGlobalStyles($template);

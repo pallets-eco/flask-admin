@@ -62,6 +62,10 @@ form.search-form a.clear i {
 }
 
 /* Inline forms */
+.fa-inline-field {
+    padding-bottom: 0.5em;
+}
+
 .fa-inline-field-control {
     float: right;
 }

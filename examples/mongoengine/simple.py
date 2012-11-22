@@ -55,6 +55,7 @@ class Post(db.Document):
     name = db.StringField(max_length=20)
     value = db.StringField(max_length=20)
     inner = db.ListField(db.EmbeddedDocumentField(Comment))
+    lols = db.ListField(db.StringField(max_length=20))
 
 
 # Customized admin views

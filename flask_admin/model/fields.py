@@ -12,7 +12,7 @@ class InlineFieldList(FieldList):
         super(InlineFieldList, self).__init__(*args, **kwargs)
 
         # Create template
-        self.template = self.unbound_field.bind(form=None, name='', prefix='', separator='')
+        self.template = self.unbound_field.bind(form=None, name='')
         self.template.process(None)
 
     def __call__(self, **kwargs):
