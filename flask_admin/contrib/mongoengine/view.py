@@ -12,6 +12,7 @@ from flask.ext.admin.actions import action
 from flask.ext.admin.form import BaseForm
 from .filters import FilterConverter, BaseMongoEngineFilter
 from .form import model_form, CustomModelConverter
+from .typefmt import MONGOENGINE_FORMATTERS
 
 
 SORTABLE_FIELDS = set((
@@ -82,6 +83,11 @@ class ModelView(BaseModelView):
         for your model.
     """
 
+    list_type_formatters = MONGOENGINE_FORMATTERS
+    """
+        Customized list formatters for MongoEngine
+    """
+
     def __init__(self, model, name=None,
                  category=None, endpoint=None, url=None):
         self._search_fields = []
@@ -117,7 +123,12 @@ class ModelView(BaseModelView):
             # Verify type
             field_class = type(f)
 
-            if self.list_display_pk or field_class != mongoengine.ObjectIdField:
+            if (field_class == mongoengine.ListField and
+                isinstance(f.field, mongoengine.EmbeddedDocumentField)):
+                continue
+            if field_class == mongoengine.EmbeddedDocumentField:
+                continue
+            elif self.list_display_pk or field_class != mongoengine.ObjectIdField:
                 columns.append(n)
 
         return columns

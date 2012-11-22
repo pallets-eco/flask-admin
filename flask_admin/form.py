@@ -148,12 +148,10 @@ class RenderTemplateWidget(object):
         ctx = _request_ctx_stack.top
         jinja_env = ctx.app.jinja_env
 
-        kwargs['field'] = field
-
-        # Provide i18n support even if flask-babel is not installed
-        # or enabled.
-        kwargs['_gettext'] = gettext
-        kwargs['_ngettext'] = ngettext
+        kwargs.update({
+            'field': field,
+            '_gettext': gettext,
+            '_ngettext': ngettext})
 
         template = jinja_env.get_template(self.template)
         return template.render(kwargs)
@@ -167,12 +165,13 @@ class Select2TagsWidget(widgets.TextInput):
         kwargs['data-role'] = u'select2tags'
         return super(Select2TagsWidget, self).__call__(field, **kwargs)
 
- 
+
 class Select2TagsField(fields.TextField):
     """`Select2 <http://ivaynberg.github.com/select2/#tags>`_ styled text field.
     You must include select2.js, form.js and select2 stylesheet for it to work.
     """
     widget = Select2TagsWidget()
+
     def __init__(self, label=None, validators=None, save_as_list=False, **kwargs):
         """Initialization
 
@@ -190,4 +189,3 @@ class Select2TagsField(fields.TextField):
 
     def _value(self):
         return u', '.join(self.data) if isinstance(self.data, list) else self.data
-

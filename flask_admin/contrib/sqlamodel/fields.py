@@ -8,8 +8,9 @@ from wtforms.fields import SelectFieldBase, FieldList
 from wtforms.validators import ValidationError
 
 from .tools import get_primary_key
-from flask.ext.admin.model.fields import InlineModelFormField
+from flask.ext.admin.model.fields import InlineFieldList, InlineModelFormField
 from flask.ext.admin.model.widgets import InlineFormListWidget
+
 
 try:
     from sqlalchemy.orm.util import identity_key
@@ -180,12 +181,11 @@ class QuerySelectMultipleField(QuerySelectField):
                     raise ValidationError(self.gettext('Not a valid choice'))
 
 
-class InlineModelFormList(FieldList):
+class InlineModelFormList(InlineFieldList):
     """
-        Customizied ``wtforms.fields.FieldList`` class which will work with SQLAlchemy
+        Customised ``wtforms.fields.FieldList`` class which will work with SQLAlchemy
         model instances.
     """
-
     widget = InlineFormListWidget()
 
     def __init__(self, form, session, model, prop, **kwargs):
@@ -210,8 +210,8 @@ class InlineModelFormList(FieldList):
 
         super(InlineModelFormList, self).__init__(InlineModelFormField(form, self._pk), **kwargs)
 
-    def __call__(self, **kwargs):
-        return self.widget(self, template=self.form(), **kwargs)
+    def display_row_controls(self, field):
+        return field.get_pk() is not None
 
     def populate_obj(self, obj, name):
         values = getattr(obj, name, None)
@@ -229,7 +229,7 @@ class InlineModelFormList(FieldList):
             if field_id in pk_map:
                 model = pk_map[field_id]
 
-                if field.should_delete():
+                if self.should_delete(field):
                     self.session.delete(model)
                     continue
             else:
@@ -239,7 +239,7 @@ class InlineModelFormList(FieldList):
             field.populate_obj(model, None)
 
             # Force relation
-            setattr(self.model, self.prop, obj)
+            setattr(model, self.prop, obj)
 
 
 def get_pk_from_identity(obj):

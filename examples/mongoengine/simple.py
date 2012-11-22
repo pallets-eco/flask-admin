@@ -20,7 +20,7 @@ db.init_app(app)
 
 class User(db.Document):
     name = db.StringField(max_length=40)
-    tag = db.StringField(max_length=20)
+    tags = db.ListField(db.ReferenceField('Tag'))
     password = db.StringField(max_length=40)
 
     def __unicode__(self):
@@ -39,10 +39,27 @@ class Todo(db.Document):
         return self.title
 
 
+class Tag(db.Document):
+    name = db.StringField(max_length=10)
+
+    def __unicode__(self):
+        return self.name
+
+
+class Comment(db.EmbeddedDocument):
+    name = db.StringField(max_length=20)
+    value = db.StringField(max_length=20)
+
+
+class Post(db.Document):
+    name = db.StringField(max_length=20)
+    value = db.StringField(max_length=20)
+    inner = db.ListField(db.EmbeddedDocumentField(Comment))
+
+
 # Customized admin views
 class UserView(ModelView):
-    column_filters = ('name',
-                      User.tag)
+    column_filters = ['name']
 
 
 # Flask views
@@ -55,9 +72,15 @@ if __name__ == '__main__':
     # Create admin
     admin = admin.Admin(app, 'Simple Models')
 
+    #p = Post.objects[0]
+    #p.inner.append(Comment(name='12345'))
+    #p.save()
+
     # Add views
     admin.add_view(UserView(User))
     admin.add_view(ModelView(Todo))
+    admin.add_view(ModelView(Tag))
+    admin.add_view(ModelView(Post))
 
     # Start app
     app.debug = True

@@ -1,33 +1,8 @@
+{% import 'admin/model/inline_list_base.html' as base with context %}
 {% import 'admin/lib.html' as lib with context %}
 
-{% macro render_form(form) %}
+{% macro render_field(field) %}
+    {{ lib.render_form_fields(field, True) }}
 {% endmacro %}
 
-{% macro render_template(template) -%}
-<div class="fa-inline-form">
-    <div class="fa-inline-form-control">
-        <a href="#" class="fa-remove-form"><i class="icon-remove"></i></a>
-    </div>
-    {{ lib.render_form_fields(template) }}
-    <hr/>
-</div>
-{%- endmacro %}
-
-<div class="well">
-    <div id="{{ field.id }}-forms">
-    {% for subfield in field %}
-    <div id="{{ subfield.id }}" class="fa-inline-form">
-        {% set pk = subfield.get_pk() %}
-        {%- if pk %}
-        <div class="fa-inline-form-control">
-            <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
-            <label for="del-{{ subfield.id }}" style="display: inline">{{ _gettext('Delete?') }}</label>
-        </div>
-        {%- endif -%}
-        {{ lib.render_form_fields(subfield, True) }}
-        <hr/>
-    </div>
-    {% endfor %}
-    </div>
-    <a href="#" class="btn" onclick="faForm.addInlineModel('{{ field.id }}', '#{{ field.id }}-forms', {{ render_template(template)|tojson }});">{{ _gettext('Add') }} {{ field.label.text }}</a>
-</div>
+{{ base.render_inline_fields(field, template, render_field, check) }}

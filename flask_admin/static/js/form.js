@@ -20,16 +20,16 @@
         }
       };
 
-      this.addInlineModel = function(id, el, template) {
+      this.addInlineField = function(id, el, template) {
         var $el = $(el);
         var $template = $(template);
 
-        // Figure out new form ID
-        var lastForm = $el.children('.fa-inline-form').last();
+        // Figure out new field ID
+        var lastField = $el.children('.fa-inline-field').last();
 
         var prefix = id + '-0';
-        if (lastForm.length > 0) {
-            var parts = $(lastForm[0]).attr('id').split('-');
+        if (lastField.length > 0) {
+            var parts = $(lastField[0]).attr('id').split('-');
             idx = parseInt(parts[parts.length - 1]) + 1;
             prefix = id + '-' + idx;
         }
@@ -61,10 +61,10 @@
     };
 
     // Add live event handler
-    $('.fa-remove-form').live('click', function(e) {
+    $('.fa-remove-field').live('click', function(e) {
         e.preventDefault();
 
-        var form = $(this).closest('.fa-inline-form');
+        var form = $(this).closest('.fa-inline-field');
         form.remove();
     });
 

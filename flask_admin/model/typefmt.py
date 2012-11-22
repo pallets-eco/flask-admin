@@ -38,7 +38,7 @@ def list_formatter(values):
         :param values:
             Value to check
     """
-    return u', '.join(values)
+    return u', '.join(unicode(v) for v in values)
 
 
 DEFAULT_FORMATTERS = {

@@ -4,7 +4,7 @@
     - Create documentation
 - Model Admin
     - Simplify scaffold_list_columns - remove excluded_list_columns check, update documentation
-
+    - Simplify InlineModelFormList implementation - accept property instead of property name
     - Reduce number of parameters passed to list view
     - Filters
         - Use table to draw filters so column names will line up?

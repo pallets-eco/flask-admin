@@ -746,6 +746,8 @@ class BaseModelView(BaseView, ActionsMixin):
 
         value = rec_getattr(model, name)
 
+        print name, type(value)
+
         type_fmt = self.list_type_formatters.get(type(value))
         if type_fmt is not None:
             value = type_fmt(value)

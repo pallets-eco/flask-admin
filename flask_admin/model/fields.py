@@ -1,4 +1,51 @@
-from wtforms.fields import FormField
+from wtforms.fields import FieldList, FormField
+
+from .widgets import InlineFieldListWidget
+
+
+class InlineFieldList(FieldList):
+    widget = InlineFieldListWidget()
+
+    def __init__(self, *args, **kwargs):
+        super(InlineFieldList, self).__init__(*args, **kwargs)
+
+        # Create template
+        self.template = self.unbound_field.bind(form=None, name='', prefix='', separator='')
+        self.template.process(None)
+
+    def __call__(self, **kwargs):
+        return self.widget(self,
+                    template=self.template,
+                    check=self.display_row_controls,
+                    **kwargs)
+
+    def display_row_controls(self, field):
+        return True
+
+    def process(self, formdata, data=None):
+        res = super(InlineFieldList, self).process(formdata, data)
+
+        # Postprocess - contribute flag
+        if formdata:
+            for f in self.entries:
+                key = 'del-%s' % f.id
+                f._should_delete = key in formdata
+
+        return res
+
+    def should_delete(self, field):
+        return getattr(field, '_should_delete', False)
+
+    def populate_obj(self, obj, name):
+        result = []
+
+        for f in self.entries:
+            if not self.should_delete(f):
+                field = self.field_type()
+                f.populate_obj(field, None)
+                result.append(field)
+
+        setattr(obj, self.prop, result)
 
 
 class InlineModelFormField(FormField):
@@ -12,19 +59,6 @@ class InlineModelFormField(FormField):
         super(InlineModelFormField, self).__init__(form, **kwargs)
 
         self._pk = pk
-        self._should_delete = False
-
-    def process(self, formdata, data=None):
-        super(InlineModelFormField, self).process(formdata, data)
-
-        # Grab delete key
-        if formdata:
-            key = 'del-%s' % self.id
-            if key in formdata:
-                self._should_delete = True
-
-    def should_delete(self):
-        return self._should_delete
 
     def get_pk(self):
         return getattr(self.form, self._pk).data
