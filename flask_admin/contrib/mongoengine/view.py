@@ -180,7 +180,11 @@ class ModelView(BaseModelView):
 
         query = self.model.objects
 
-        # TODO: Filters
+        # Filters
+        if self._filters:
+            for flt, value in filters:
+                f = self._filters[flt]
+                query = f.apply(query, value)
 
         # Get count
         count = query.count()
