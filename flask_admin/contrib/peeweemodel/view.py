@@ -20,7 +20,8 @@ class ModelView(BaseModelView):
     """
         Collection of the column filters.
 
-        Can contain either field names or instances of :class:`flask.ext.admin.contrib.sqlamodel.filters.BaseFilter` classes.
+        Can contain either field names or instances of
+        :class:`flask.ext.admin.contrib.peeweemodel.filters.BaseFilter` classes.
 
         For example::
 

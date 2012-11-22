@@ -1,12 +1,11 @@
 from flask.ext.admin.babel import gettext
 
 from flask.ext.admin.model import filters
-from .tools import parse_like_term
 
 
-class BasePeeweeFilter(filters.BaseFilter):
+class BaseMongoEngineFilter(filters.BaseFilter):
     """
-        Base Peewee filter.
+        Base MongoEngine filter.
     """
     def __init__(self, column, name, options=None, data_type=None):
         """
@@ -21,57 +20,63 @@ class BasePeeweeFilter(filters.BaseFilter):
             :param data_type:
                 Client data type
         """
-        super(BasePeeweeFilter, self).__init__(name, options, data_type)
+        super(BaseMongoEngineFilter, self).__init__(name, options, data_type)
 
         self.column = column
 
 
 # Common filters
-class FilterEqual(BasePeeweeFilter):
+class FilterEqual(BaseMongoEngineFilter):
     def apply(self, query, value):
-        return query.filter(self.column == value)
+        flt = {'%s' % self.column.name: value}
+        return query.filter(**flt)
 
     def operation(self):
         return gettext('equals')
 
 
-class FilterNotEqual(BasePeeweeFilter):
+class FilterNotEqual(BaseMongoEngineFilter):
     def apply(self, query, value):
-        return query.filter(self.column != value)
+        flt = {'%s__ne' % self.column.name: value}
+        return query.filter(**flt)
 
     def operation(self):
         return gettext('not equal')
 
 
-class FilterLike(BasePeeweeFilter):
+class FilterLike(BaseMongoEngineFilter):
     def apply(self, query, value):
-        term = parse_like_term(value)
-        return query.filter(self.column ** term)
+        term, data = parse_like_term(value)
+        flt = {'%s__%s' % (self.column.name, term): data}
+        return query.filter(**flt)
 
     def operation(self):
         return gettext('contains')
 
 
-class FilterNotLike(BasePeeweeFilter):
+class FilterNotLike(BaseMongoEngineFilter):
     def apply(self, query, value):
-        term = parse_like_term(value)
-        return query.filter(~(self.column ** term))
+        term, data = parse_like_term(value)
+        flt = {'%s__not__%s' % (self.column.name, term): data}
+        return query.filter(**flt)
 
     def operation(self):
         return gettext('not contains')
 
 
-class FilterGreater(BasePeeweeFilter):
+class FilterGreater(BaseMongoEngineFilter):
     def apply(self, query, value):
-        return query.filter(self.column > value)
+        flt = {'%s__gt' % self.column.name: value}
+        return query.filter(**flt)
 
     def operation(self):
         return gettext('greater than')
 
 
-class FilterSmaller(BasePeeweeFilter):
+class FilterSmaller(BaseMongoEngineFilter):
     def apply(self, query, value):
-        return query.filter(self.column < value)
+        flt = {'%s__lt' % self.column.name: value}
+        return query.filter(**flt)
 
     def operation(self):
         return gettext('smaller than')
@@ -99,7 +104,7 @@ class FilterConverter(filters.BaseFilterConverter):
 
         return None
 
-    @filters.convert('CharField', 'TextField')
+    @filters.convert('StringField')
     def conv_string(self, column, name):
         return [f(column, name) for f in self.strings]
 
@@ -108,7 +113,7 @@ class FilterConverter(filters.BaseFilterConverter):
         return [BooleanEqualFilter(column, name),
                 BooleanNotEqualFilter(column, name)]
 
-    @filters.convert('IntegerField', 'DecimalField', 'FloatField')
+    @filters.convert('IntField', 'DecimalField', 'FloatField')
     def conv_int(self, column, name):
         return [f(column, name) for f in self.numeric]
 
