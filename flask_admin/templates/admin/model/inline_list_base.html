@@ -1,0 +1,31 @@
+{% macro render_template(template, render) -%}
+<div class="fa-inline-field">
+    <div class="fa-inline-field-control">
+        <a href="#" class="fa-remove-field"><i class="icon-remove"></i></a>
+    </div>
+    {{ render(template) }}
+    <hr/>
+</div>
+{%- endmacro %}
+
+{% macro render_inline_fields(field, template, render, check=None) %}
+<div class="well">
+    <div id="{{ field.id }}-fields">
+        {% for subfield in field %}
+        <div id="{{ subfield.id }}" class="fa-inline-field">
+            {%- if not check or check(subfield) %}
+            <div class="fa-inline-field-control">
+                <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
+                <label for="del-{{ subfield.id }}" style="display: inline">{{ _gettext('Delete?') }}</label>
+            </div>
+            {%- endif -%}
+
+            {{ render(subfield) }}
+            <hr/>
+        </div>
+        {% endfor %}
+    </div>
+    {{ field.id }}
+    <a href="#" class="btn" onclick="faForm.addInlineField('{{ field.id }}', '#{{ field.id }}-fields', {{ render_template(template, render)|tojson }});">{{ _gettext('Add') }} {{ field.label.text }}</a>
+</div>
+{% endmacro %}
