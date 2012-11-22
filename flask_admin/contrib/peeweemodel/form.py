@@ -7,15 +7,12 @@ from wtfpeewee.orm import ModelConverter, model_form
 
 from flask.ext.admin import form
 from flask.ext.admin.model.form import InlineFormAdmin, InlineModelConverterBase
-from flask.ext.admin.model.fields import InlineModelFormField
-from flask.ext.admin.model.widgets import InlineFormListWidget
+from flask.ext.admin.model.fields import InlineModelFormField, InlineFieldList
 
 from .tools import get_primary_key
 
 
-class InlineModelFormList(fields.FieldList):
-    widget = InlineFormListWidget()
-
+class InlineModelFormList(InlineFieldList):
     def __init__(self, form, model, prop, **kwargs):
         self.form = form
         self.model = model
@@ -25,8 +22,8 @@ class InlineModelFormList(fields.FieldList):
 
         super(InlineModelFormList, self).__init__(InlineModelFormField(form, self._pk), **kwargs)
 
-    def __call__(self, **kwargs):
-        return self.widget(self, template=self.form(), **kwargs)
+    def display_row_controls(self, field):
+        return field.get_pk() is not None
 
     def process(self, formdata, data=None):
         if not formdata:
@@ -55,7 +52,7 @@ class InlineModelFormList(fields.FieldList):
             if field_id in pk_map:
                 model = pk_map[field_id]
 
-                if field.should_delete():
+                if self.should_delete(field):
                     model.delete_instance(recursive=True)
                     continue
             else:
