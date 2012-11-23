@@ -16,10 +16,11 @@ using consistent look and feel.
 
 Flask-Admin comes with following batteries out of the box:
 
- - SQLAlchemy model scaffolding
- - MongoEngine model scaffolding
- - Peewee model scaffolding
- - File admin
+- SQLAlchemy model scaffolding
+- MongoEngine model scaffolding
+- Peewee model scaffolding
+- File admin
+
 
 Documentation
 -------------
