@@ -13,6 +13,7 @@ from flask.ext.admin.form import BaseForm
 from .filters import FilterConverter, BaseMongoEngineFilter
 from .form import model_form, CustomModelConverter
 from .typefmt import MONGOENGINE_FORMATTERS
+from .tools import parse_like_term
 
 
 SORTABLE_FIELDS = set((
@@ -85,7 +86,7 @@ class ModelView(BaseModelView):
 
     list_type_formatters = MONGOENGINE_FORMATTERS
     """
-        Customized list formatters for MongoEngine
+        Customized list formatters for MongoEngine backend
     """
 
     def __init__(self, model, name=None,
@@ -97,6 +98,9 @@ class ModelView(BaseModelView):
         self._primary_key = self.scaffold_pk()
 
     def _get_model_fields(self, model=None):
+        """
+            Return list of model field_args
+        """
         if model is None:
             model = self.model
 
@@ -144,6 +148,23 @@ class ModelView(BaseModelView):
         return columns
 
     def init_search(self):
+        if self.searchable_columns:
+            for p in self.searchable_columns:
+                if isinstance(p, basestring):
+                    p = self.model._fields.get(p)
+
+                if p is None:
+                    raise Exception('Invalid search field')
+
+                field_type = type(p)
+
+                # Check type
+                if (field_type != mongoengine.StringField):
+                        raise Exception('Can only search on text columns. ' +
+                                        'Failed to setup search for "%s"' % p)
+
+                self._search_fields.append(p)
+
         return bool(self._search_fields)
 
     def scaffold_filters(self, name):
@@ -196,6 +217,27 @@ class ModelView(BaseModelView):
             for flt, value in filters:
                 f = self._filters[flt]
                 query = f.apply(query, value)
+
+        # Search
+        if self._search_supported and search:
+            # TODO: Unfortunately, MongoEngine contains bug which
+            # prevents running complex Q queries and, as a result,
+            # Flask-Admin does not support per-word searching like
+            # in other backends
+            op, term = parse_like_term(search)
+
+            criteria = None
+
+            for field in self._search_fields:
+                flt = {'%s__%s' % (field.name, op): term}
+                q = mongoengine.Q(**flt)
+
+                if criteria is None:
+                    criteria = q
+                else:
+                    criteria |= q
+
+            query = query.filter(criteria)
 
         # Get count
         count = query.count()
