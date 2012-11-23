@@ -10,17 +10,13 @@ Introduction
 
 This is library for building adminstrative interface on top of Flask framework.
 
-Instead of providing simple scaffolding for the database models, Flask-Admin
-provides tools that can be used to build adminstrative interface of any complexity,
+Flask-Admin comes with few batteries out of the box: model scaffolding for `SQLAlchemy <http://www.sqlalchemy.org/>`_,
+`MongoEngine <http://mongoengine.org/>`_ and `Peewee <https://github.com/coleifer/peewee>`_ ORMs and
+simple file management interface.
+
+However, you're not limited by provided functionality - instead of providing simple scaffolding for the ORM
+models, Flask-Admin provides tools that can be used to build adminstrative interface of any complexity,
 using consistent look and feel.
-
-Flask-Admin comes with following batteries out of the box:
-
-- SQLAlchemy model scaffolding
-- MongoEngine model scaffolding
-- Peewee model scaffolding
-- File admin
-
 
 Documentation
 -------------
