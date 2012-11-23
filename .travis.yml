@@ -5,4 +5,6 @@ python:
 
 install: "pip install -r requirements.txt --use-mirrors"
 
+services: mongodb
+
 script: nosetests
