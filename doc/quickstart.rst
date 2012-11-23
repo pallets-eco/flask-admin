@@ -292,9 +292,11 @@ Check :mod:`flask.ext.admin.contrib.fileadmin` documentation on how to do it.
 Examples
 --------
 
-Flask-Admin comes with four samples:
+Flask-Admin comes with few examples:
 
 - `Simple administrative interface <https://github.com/MrJoes/Flask-Admin/tree/master/examples/simple>`_ with custom administrative views
 - `SQLAlchemy model example <https://github.com/MrJoes/Flask-Admin/tree/master/examples/sqla>`_
 - `Flask-Login integration example <https://github.com/MrJoes/Flask-Admin/tree/master/examples/auth>`_
 - `File management interface <https://github.com/MrJoes/Flask-Admin/tree/master/examples/file>`_
+- `Peewee model example <https://github.com/MrJoes/Flask-Admin/tree/master/examples/peewee>`_
+- `MongoEngine model example <https://github.com/MrJoes/Flask-Admin/tree/master/examples/mongoengine>`_

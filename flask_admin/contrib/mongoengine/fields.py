@@ -2,6 +2,9 @@ from wtforms.fields import FormField
 
 
 class ModelFormField(FormField):
+    """
+        Customized ModelFormField for MongoEngine EmbeddedDocuments.
+    """
     def __init__(self, model, *args, **kwargs):
         super(ModelFormField, self).__init__(*args, **kwargs)
 

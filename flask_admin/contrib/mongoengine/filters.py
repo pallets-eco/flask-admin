@@ -99,8 +99,6 @@ class FilterConverter(filters.BaseFilterConverter):
     numeric = (FilterEqual, FilterNotEqual, FilterGreater, FilterSmaller)
 
     def convert(self, type_name, column, name):
-        #print type_name, column, name
-
         if type_name in self.converters:
             return self.converters[type_name](column, name)
 

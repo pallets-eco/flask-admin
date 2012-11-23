@@ -73,7 +73,7 @@ class ModelView(BaseModelView):
     """
         If set to `False` and user deletes more than one model using actions,
         all models will be read from the database and then deleted one by one
-        giving SQLAlchemy chance to manually cleanup any dependencies (many-to-many
+        giving Peewee chance to manually cleanup any dependencies (many-to-many
         relationships, etc).
 
         If set to True, will run DELETE statement which is somewhat faster, but

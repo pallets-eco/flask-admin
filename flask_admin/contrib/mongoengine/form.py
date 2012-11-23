@@ -1,7 +1,5 @@
 from mongoengine import ReferenceField
 
-from wtforms import fields as f
-
 from flask.ext.mongoengine.wtf import orm, fields
 
 from flask.ext.admin import form
@@ -12,6 +10,12 @@ from .fields import ModelFormField
 
 
 class CustomModelConverter(orm.ModelConverter):
+    """
+        Customized MongoEngine form conversion class.
+
+        Injects various Flask-Admin widgets and handles lists with
+        customized InlineFieldList field.
+    """
     @orm.converts('DateTimeField')
     def conv_DateTime(self, model, field, kwargs):
         kwargs['widget'] = form.DateTimePickerWidget()
@@ -37,7 +41,6 @@ class CustomModelConverter(orm.ModelConverter):
 
     @orm.converts('EmbeddedDocumentField')
     def conv_EmbeddedDocument(self, model, field, kwargs):
-        # TODO: Fix me
         kwargs = {
             'validators': [],
             'filters': [],

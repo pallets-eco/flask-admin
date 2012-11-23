@@ -11,9 +11,8 @@
         - Change boolean filter to True/False instead of Yes/No
     - Ability to sort by fields that are not visible?
     - List display callables?
-- SQLA Model Admin
-    - Postprocess sort columns - do not resolve to attributes in runtime
-    - WYSIWYG editor support?
+- MongoEngine
+    - EmbeddedDocument customization
 - File admin
     - Header title
     - File size restriction

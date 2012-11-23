@@ -75,10 +75,6 @@ if __name__ == '__main__':
     # Create admin
     admin = admin.Admin(app, 'Simple Models')
 
-    #p = Post.objects[0]
-    #p.inner.append(Comment(name='12345'))
-    #p.save()
-
     # Add views
     admin.add_view(UserView(User))
     admin.add_view(ModelView(Todo))

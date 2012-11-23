@@ -31,6 +31,10 @@ SORTABLE_FIELDS = set((
 
 
 class ModelView(BaseModelView):
+    """
+        MongoEngine model scaffolding.
+    """
+
     column_filters = None
     """
         Collection of the column filters.
@@ -72,25 +76,27 @@ class ModelView(BaseModelView):
         Override this attribute to use non-default converter.
     """
 
-    fast_mass_delete = False
-    """
-        If set to `False` and user deletes more than one model using actions,
-        all models will be read from the database and then deleted one by one
-        giving SQLAlchemy chance to manually cleanup any dependencies
-        (many-to-many relationships, etc).
-
-        If set to True, will run DELETE statement which is somewhat faster, but
-        might leave corrupted data if you forget to configure DELETE CASCADE
-        for your model.
-    """
-
     list_type_formatters = MONGOENGINE_FORMATTERS
     """
-        Customized list formatters for MongoEngine backend
+        Customized type formatters for MongoEngine backend
     """
 
     def __init__(self, model, name=None,
                  category=None, endpoint=None, url=None):
+        """
+            Constructor
+
+            :param model:
+                Model class
+            :param name:
+                Display name
+            :param category:
+                Display category
+            :param endpoint:
+                Endpoint
+            :param url:
+                Custom URL
+        """
         self._search_fields = []
 
         super(ModelView, self).__init__(model, name, category, endpoint, url)
@@ -99,7 +105,10 @@ class ModelView(BaseModelView):
 
     def _get_model_fields(self, model=None):
         """
-            Return list of model field_args
+            Inspect model and return list of model fields
+
+            :param model:
+                Model to inspect
         """
         if model is None:
             model = self.model
@@ -111,14 +120,21 @@ class ModelView(BaseModelView):
         return 'id'
 
     def get_pk_value(self, model):
+        """
+            Return primary key value from the model instance
+
+            :param model:
+                Model instance
+        """
         return model.pk
 
     def scaffold_list_columns(self):
+        """
+            Scaffold list columns
+        """
         columns = []
 
         for n, f in self._get_model_fields():
-            #import pdb; pdb.set_trace()
-
             # Filter by name
             if (self.excluded_list_columns and
                 n in self.excluded_list_columns):
@@ -138,6 +154,9 @@ class ModelView(BaseModelView):
         return columns
 
     def scaffold_sortable_columns(self):
+        """
+            Return sortable columns dictionary (name, field)
+        """
         columns = {}
 
         for n, f in self._get_model_fields():
@@ -148,6 +167,9 @@ class ModelView(BaseModelView):
         return columns
 
     def init_search(self):
+        """
+            Init search
+        """
         if self.searchable_columns:
             for p in self.searchable_columns:
                 if isinstance(p, basestring):
@@ -168,6 +190,12 @@ class ModelView(BaseModelView):
         return bool(self._search_fields)
 
     def scaffold_filters(self, name):
+        """
+            Return filter object(s) for the field
+
+            :param name:
+                Either field name or field instance
+        """
         if isinstance(name, basestring):
             attr = self.model._fields.get(name)
         else:
@@ -194,6 +222,12 @@ class ModelView(BaseModelView):
         return flt
 
     def is_valid_filter(self, filter):
+        """
+            Validate if it is valid MongoEngine filter
+
+            :param filter:
+                Filter object
+        """
         return isinstance(filter, BaseMongoEngineFilter)
 
     def scaffold_form(self):
@@ -209,7 +243,22 @@ class ModelView(BaseModelView):
 
     def get_list(self, page, sort_column, sort_desc, search, filters,
                  execute=True):
+        """
+            Get list of objects from MongoEngine
 
+            :param page:
+                Page number
+            :param sort_column:
+                Sort column
+            :param sort_desc:
+                Sort descending
+            :param search:
+                Search criteria
+            :param filters:
+                List of applied fiters
+            :param execute:
+                Run query immediately or not
+        """
         query = self.model.objects
 
         # Filters
@@ -258,9 +307,21 @@ class ModelView(BaseModelView):
         return count, query
 
     def get_one(self, id):
+        """
+            Return single model instance by ID
+
+            :param id:
+                Model ID
+        """
         return self.model.objects.with_id(id)
 
     def create_model(self, form):
+        """
+            Create model helper
+
+            :param form:
+                Form instance
+        """
         try:
             model = self.model()
             form.populate_obj(model)
@@ -274,6 +335,14 @@ class ModelView(BaseModelView):
             return False
 
     def update_model(self, form, model):
+        """
+            Update model helper
+
+            :param form:
+                Form instance
+            :param model:
+                Model instance to update
+        """
         try:
             form.populate_obj(model)
             self.on_model_change(form, model)
@@ -286,6 +355,12 @@ class ModelView(BaseModelView):
             return False
 
     def delete_model(self, model):
+        """
+            Delete model helper
+
+            :param model:
+                Model instance
+        """
         try:
             self.on_model_delete(model)
             model.delete()

@@ -10,20 +10,16 @@ Introduction
 
 This is library for building adminstrative interface on top of Flask framework.
 
-Instead of providing simple scaffolding for the SQLAlchemy models, Flask-Admin
+Instead of providing simple scaffolding for the database models, Flask-Admin
 provides tools that can be used to build adminstrative interface of any complexity,
 using consistent look and feel.
 
-Small example (Flask initialization omitted)::
+Flask-Admin comes with following batteries out of the box:
 
-    app = Flask(__name__)
-
-    admin = Admin()
-    admin.add_view(ModelView(User, db.session))
-    admin.add_view(GalleryManager(name='Photos', category='Cats'))
-    admin.init_app(app)
-
-If you're looking for 0.x version of the Flask-Admin written by Andy Wilson, check `here <http://github.com/wilsaj/flask-admin-old>`_.
+ - SQLAlchemy model scaffolding
+ - MongoEngine model scaffolding
+ - Peewee model scaffolding
+ - File admin
 
 Documentation
 -------------
