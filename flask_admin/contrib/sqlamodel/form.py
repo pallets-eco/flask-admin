@@ -291,9 +291,13 @@ def get_form(model, converter,
         props = dict(properties)
 
         def find(name):
-            # Try to look it up in properties lsit first
+            # Try to look it up in properties list first
             p = props.get(name)
             if p is not None:
+                # Try to see if it is proxied property
+                if hasattr(p, '_proxied_property'):
+                    return p._proxied_property
+
                 return p
 
             # If it is hybrid property or alias, look it up in a model itself
