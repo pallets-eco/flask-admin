@@ -11,6 +11,7 @@ from flask.ext.admin.model import BaseModelView
 from flask.ext.admin.actions import action
 
 from .filters import BasePyMongoFilter
+from .tools import parse_like_term
 
 
 class ModelView(BaseModelView):
@@ -175,7 +176,40 @@ class ModelView(BaseModelView):
                 else:
                     query['$AND'] = data
 
-        # TODO: Search
+        # Search
+        if self._search_supported and search:
+            values = search.split(' ')
+
+            queries = []
+
+            # Construct inner querie
+            for value in values:
+                if not value:
+                    continue
+
+                regex = parse_like_term(value)
+
+                stmt = []
+                for field in self._search_fields:
+                    stmt.append({field: {'$regex': regex}})
+
+                if stmt:
+                    if len(stmt) == 1:
+                        queries.append(stmt[0])
+                    else:
+                        queries.append({'$or': stmt})
+
+            # Construct final query
+            if queries:
+                if len(queries) == 1:
+                    final = queries[0]
+                else:
+                    final = {'$and': queries}
+
+                if query:
+                    query = {'$and': [query, final]}
+                else:
+                    query = final
 
         # Get count
         count = self.coll.find(query).count()

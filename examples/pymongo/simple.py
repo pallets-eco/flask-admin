@@ -61,6 +61,8 @@ class TweetView(ModelView):
                       filters.FilterLike('name', 'Name'),
                       filters.FilterNotLike('name', 'Name'))
 
+    searchable_columns = ('name', 'text')
+
     form = TweetForm
 
     def get_list(self, *args, **kwargs):
