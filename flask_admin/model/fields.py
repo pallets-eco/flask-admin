@@ -85,3 +85,10 @@ class InlineModelFormField(FormField):
         for name, field in self.form._fields.iteritems():
             if name != self._pk:
                 field.populate_obj(obj, name)
+
+
+class InlineFormField(FormField):
+    """
+        Inline version of the ``FormField`` widget.
+    """
+    widget = InlineFormWidget()

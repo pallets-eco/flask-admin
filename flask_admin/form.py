@@ -91,7 +91,9 @@ class Select2Widget(widgets.Select):
         work.
     """
     def __call__(self, field, **kwargs):
-        if field.allow_blank and not self.multiple:
+        allow_blank = getattr(field, 'allow_blank', False)
+
+        if allow_blank and not self.multiple:
             kwargs['data-role'] = u'select2blank'
         else:
             kwargs['data-role'] = u'select2'
@@ -106,7 +108,7 @@ class Select2Field(fields.SelectField):
         You must include select2.js, form.js and select2 stylesheet for it to
         work.
     """
-    widget = Select2Widget
+    widget = Select2Widget()
 
 
 class DatePickerWidget(widgets.TextInput):
