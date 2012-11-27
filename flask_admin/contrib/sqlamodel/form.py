@@ -2,6 +2,7 @@ from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
 
 from flask.ext.admin import form
+from flask.ext.admin.tools import get_property
 from flask.ext.admin.model.form import (converts, ModelConverterBase,
                                         InlineFormAdmin, InlineModelConverterBase)
 
@@ -23,10 +24,10 @@ class AdminModelConverter(ModelConverterBase):
         if 'label' in field_args:
             return field_args['label']
 
-        rename_columns = getattr(self.view, 'rename_columns', None)
+        column_labels = get_property(self.view, 'column_labels', 'rename_columns')
 
-        if rename_columns:
-            return rename_columns.get(name)
+        if column_labels:
+            return column_labels.get(name)
 
         return None
 

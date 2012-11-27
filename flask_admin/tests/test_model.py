@@ -58,13 +58,13 @@ class MockModelView(base.BaseModelView):
     def scaffold_list_columns(self):
         columns = ['col1', 'col2', 'col3']
 
-        if self.excluded_list_columns:
-            return filter(lambda x: x not in self.excluded_list_columns, columns)
+        if self.column_exclude_list:
+            return filter(lambda x: x not in self.column_exclude_list, columns)
 
         return columns
 
     def init_search(self):
-        return bool(self.searchable_columns)
+        return bool(self.column_searchable_list)
 
     def scaffold_filters(self, name):
         return [SimpleFilter(name)]
@@ -222,8 +222,8 @@ def test_list_columns():
     app, admin = setup()
 
     view = MockModelView(Model,
-                         list_columns=['col1', 'col3'],
-                         rename_columns=dict(col1='Column1'))
+                         column_list=['col1', 'col3'],
+                         column_labels=dict(col1='Column1'))
     admin.add_view(view)
 
     eq_(len(view._list_columns), 2)
@@ -239,7 +239,7 @@ def test_list_columns():
 def test_exclude_columns():
     app, admin = setup()
 
-    view = MockModelView(Model, excluded_list_columns=['col2'])
+    view = MockModelView(Model, column_exclude_list=['col2'])
     admin.add_view(view)
 
     eq_(view._list_columns, [('col1', 'Col1'), ('col3', 'Col3')])
@@ -254,16 +254,16 @@ def test_exclude_columns():
 def test_sortable_columns():
     app, admin = setup()
 
-    view = MockModelView(Model, sortable_columns=['col1', ('col2', 'test1')])
+    view = MockModelView(Model, column_sortable_list=['col1', ('col2', 'test1')])
     admin.add_view(view)
 
     eq_(view._sortable_columns, dict(col1='col1', col2='test1'))
 
 
-def test_searchable_columns():
+def test_column_searchable_list():
     app, admin = setup()
 
-    view = MockModelView(Model, searchable_columns=['col1', 'col2'])
+    view = MockModelView(Model, column_searchable_list=['col1', 'col2'])
     admin.add_view(view)
 
     eq_(view._search_supported, True)

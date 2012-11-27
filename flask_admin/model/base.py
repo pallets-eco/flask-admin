@@ -5,7 +5,7 @@ from jinja2 import contextfunction
 from flask.ext.admin.babel import gettext
 
 from flask.ext.admin.base import BaseView, expose
-from flask.ext.admin.tools import rec_getattr
+from flask.ext.admin.tools import rec_getattr, ObsoleteAttr
 from flask.ext.admin.model import filters, typefmt
 from flask.ext.admin.actions import ActionsMixin
 
@@ -28,7 +28,6 @@ class BaseModelView(BaseView, ActionsMixin):
             2. Implement various data-related methods (`get_list`, `get_one`, `create_model`, etc)
             3. Implement automatic form generation from the model representation (`scaffold_form`)
     """
-
     # Permissions
     can_create = True
     """Is model creation allowed"""
@@ -50,7 +49,7 @@ class BaseModelView(BaseView, ActionsMixin):
     """Default create template"""
 
     # Customizations
-    list_columns = None
+    column_list = ObsoleteAttr('column_list', 'list_columns', None)
     """
         Collection of the model field names for the list view.
         If set to `None`, will get them from the model.
@@ -58,20 +57,21 @@ class BaseModelView(BaseView, ActionsMixin):
         For example::
 
             class MyModelView(BaseModelView):
-                list_columns = ('name', 'last_name', 'email')
+                column_list = ('name', 'last_name', 'email')
     """
 
-    excluded_list_columns = None
+    column_exclude_list = ObsoleteAttr('column_exclude_list',
+                                       'excluded_list_columns', None)
     """
         Collection of excluded list column names.
 
         For example::
 
             class MyModelView(BaseModelView):
-                excluded_list_columns = ('last_name', 'email')
+                column_exclude_list = ('last_name', 'email')
     """
 
-    list_formatters = dict()
+    column_formatters = ObsoleteAttr('column_formatters', 'list_formatters', dict())
     """
         Dictionary of list view column formatters.
 
@@ -79,7 +79,7 @@ class BaseModelView(BaseView, ActionsMixin):
         two, you can do something like this::
 
             class MyModelView(BaseModelView):
-                list_formatters = dict(price=lambda c, m, p: m.price*2)
+                column_formatters = dict(price=lambda c, m, p: m.price*2)
 
         Callback function has following prototype::
 
@@ -90,7 +90,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 pass
     """
 
-    list_type_formatters = None
+    column_type_formatters = ObsoleteAttr('column_type_formatters', 'list_type_formatters', None)
     """
         Dictionary of value type formatters to be used in list view.
 
@@ -102,7 +102,7 @@ class BaseModelView(BaseView, ActionsMixin):
         applied, just override this property with empty dictionary::
 
             class MyModelView(BaseModelView):
-                list_type_formatters = dict()
+                column_type_formatters = dict()
 
         If you want to display `NULL` instead of empty string, you can do
         something like this::
@@ -114,22 +114,24 @@ class BaseModelView(BaseView, ActionsMixin):
                 })
 
             class MyModelView(BaseModelView):
-                list_type_formatters = MY_DEFAULT_FORMATTERS
+                column_type_formatters = MY_DEFAULT_FORMATTERS
 
         Type formatters have lower priority than list column formatters.
     """
 
-    rename_columns = None
+    column_labels = ObsoleteAttr('column_labels', 'rename_columns', None)
     """
         Dictionary where key is column name and value is string to display.
 
         For example::
 
             class MyModelView(BaseModelView):
-                rename_columns = dict(name='Name', last_name='Last Name')
+                column_labels = dict(name='Name', last_name='Last Name')
     """
 
-    sortable_columns = None
+    column_sortable_list = ObsoleteAttr('column_sortable_list',
+                                        'sortable_columns',
+                                        None)
     """
         Collection of the sortable columns for the list view.
         If set to `None`, will get them from the model.
@@ -137,22 +139,24 @@ class BaseModelView(BaseView, ActionsMixin):
         For example::
 
             class MyModelView(BaseModelView):
-                sortable_columns = ('name', 'last_name')
+                column_sortable_list = ('name', 'last_name')
 
         If you want to explicitly specify field/column to be used while
         sorting, you can use tuple::
 
             class MyModelView(BaseModelView):
-                sortable_columns = ('name', ('user', 'user.username'))
+                column_sortable_list = ('name', ('user', 'user.username'))
 
         When using SQLAlchemy models, model attributes can be used instead
         of the string::
 
             class MyModelView(BaseModelView):
-                sortable_columns = ('name', ('user', User.username))
+                column_sortable_list = ('name', ('user', User.username))
     """
 
-    searchable_columns = None
+    column_searchable_list = ObsoleteAttr('column_searchable_list',
+                                          'searchable_columns',
+                                          None)
     """
         Collection of the searchable columns. It is assumed that only
         text-only fields are searchable, but it is up for a model
@@ -161,7 +165,7 @@ class BaseModelView(BaseView, ActionsMixin):
         Example::
 
             class MyModelView(BaseModelView):
-                searchable_columns = ('name', 'email')
+                column_searchable_list = ('name', 'email')
     """
 
     column_filters = None
@@ -311,8 +315,8 @@ class BaseModelView(BaseView, ActionsMixin):
         self._filters = self.get_filters()
 
         # Type formatters
-        if self.list_type_formatters is None:
-            self.list_type_formatters = dict(typefmt.DEFAULT_FORMATTERS)
+        if self.column_type_formatters is None:
+            self.column_type_formatters = dict(typefmt.DEFAULT_FORMATTERS)
 
         if self._filters:
             self._filter_groups = []
@@ -362,21 +366,25 @@ class BaseModelView(BaseView, ActionsMixin):
             :param field:
                 Model field name.
         """
-        if self.rename_columns and field in self.rename_columns:
-            return self.rename_columns[field]
+        if self.column_labels and field in self.column_labels:
+            return self.column_labels[field]
         else:
             return self.prettify_name(field)
 
     def get_list_columns(self):
         """
-            Returns list of the model field names. If `list_columns` was
+            Returns list of the model field names. If `column_list` was
             set, returns it. Otherwise calls `scaffold_list_columns`
             to generate list from the model.
         """
-        if self.list_columns is None:
+        columns = self.column_list
+
+        if columns is None:
             columns = self.scaffold_list_columns()
-        else:
-            columns = self.list_columns
+
+            # Filter excluded columns
+            if self.column_exclude_list:
+                columns = [c for c in columns if c not in self.column_exclude_list]
 
         return [(c, self.get_column_name(c)) for c in columns]
 
@@ -395,15 +403,15 @@ class BaseModelView(BaseView, ActionsMixin):
             Returns dictionary of the sortable columns. Key is a model
             field name and value is sort column (for example - attribute).
 
-            If `sortable_columns` is set, will use it. Otherwise, will call
+            If `column_sortable_list` is set, will use it. Otherwise, will call
             `scaffold_sortable_columns` to get them from the model.
         """
-        if self.sortable_columns is None:
+        if self.column_sortable_list is None:
             return self.scaffold_sortable_columns() or dict()
         else:
             result = dict()
 
-            for c in self.sortable_columns:
+            for c in self.column_sortable_list:
                 if isinstance(c, tuple):
                     result[c[0]] = c[1]
                 else:
@@ -740,13 +748,13 @@ class BaseModelView(BaseView, ActionsMixin):
             :param name:
                 Field name
         """
-        column_fmt = self.list_formatters.get(name)
+        column_fmt = self.column_formatters.get(name)
         if column_fmt is not None:
             return column_fmt(context, model, name)
 
         value = rec_getattr(model, name)
 
-        type_fmt = self.list_type_formatters.get(type(value))
+        type_fmt = self.column_type_formatters.get(type(value))
         if type_fmt is not None:
             value = type_fmt(value)
 

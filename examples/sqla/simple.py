@@ -85,17 +85,16 @@ class UserAdmin(sqlamodel.ModelView):
 # Customized Post model admin
 class PostAdmin(sqlamodel.ModelView):
     # Visible columns in the list view
-    #list_columns = ('title', 'user')
-    excluded_list_columns = ['text']
+    column_exclude_list = ['text']
 
     # List of columns that can be sorted. For 'user' column, use User.username as
     # a column.
-    sortable_columns = ('title', ('user', User.username), 'date')
+    column_sortable_list = ('title', ('user', User.username), 'date')
 
     # Rename 'title' columns to 'Post Title' in list view
-    rename_columns = dict(title='Post Title')
+    column_labels = dict(title='Post Title')
 
-    searchable_columns = ('title', User.username)
+    column_searchable_list = ('title', User.username)
 
     column_filters = ('user',
                       'title',

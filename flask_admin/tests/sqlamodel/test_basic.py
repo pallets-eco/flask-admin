@@ -132,8 +132,8 @@ def test_list_columns():
     Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1, db.session,
-                           list_columns=['test1', 'test3'],
-                           rename_columns=dict(test1='Column1'))
+                           column_list=['test1', 'test3'],
+                           column_labels=dict(test1='Column1'))
     admin.add_view(view)
 
     eq_(len(view._list_columns), 2)
@@ -152,7 +152,7 @@ def test_exclude_columns():
     Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1, db.session,
-                           excluded_list_columns=['test2', 'test4'])
+                           column_exclude_list=['test2', 'test4'])
     admin.add_view(view)
 
     eq_(view._list_columns, [('test1', 'Test1'), ('test3', 'Test3')])
@@ -164,13 +164,13 @@ def test_exclude_columns():
     ok_('Test2' not in rv.data)
 
 
-def test_searchable_columns():
+def test_column_searchable_list():
     app, db, admin = setup()
 
     Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1, db.session,
-                           searchable_columns=['test1', 'test2'])
+                           column_searchable_list=['test1', 'test2'])
     admin.add_view(view)
 
     eq_(view._search_supported, True)
@@ -241,7 +241,7 @@ def test_url_args():
 
     view = CustomModelView(Model1, db.session,
                            page_size=2,
-                           searchable_columns=['test1'],
+                           column_searchable_list=['test1'],
                            column_filters=['test1'])
     admin.add_view(view)
 

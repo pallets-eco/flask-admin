@@ -86,8 +86,8 @@ class ModelView(BaseModelView):
         """
             Init search
         """
-        if self.searchable_columns:
-            for p in self.searchable_columns:
+        if self.column_searchable_list:
+            for p in self.column_searchable_list:
                 if not isinstance(p, basestring):
                     raise ValueError('Expected string')
 
@@ -130,13 +130,13 @@ class ModelView(BaseModelView):
             :param name:
                 Field name
         """
-        column_fmt = self.list_formatters.get(name)
+        column_fmt = self.column_formatters.get(name)
         if column_fmt is not None:
             return column_fmt(context, model, name)
 
         value = model.get(name)
 
-        type_fmt = self.list_type_formatters.get(type(value))
+        type_fmt = self.column_type_formatters.get(type(value))
         if type_fmt is not None:
             value = type_fmt(value)
 

@@ -130,11 +130,6 @@ class ModelView(BaseModelView):
         columns = []
 
         for n, f in self._get_model_fields():
-            # Filter by name
-            if (self.excluded_list_columns and
-                n in self.excluded_list_columns):
-                continue
-
             # Verify type
             field_class = type(f)
 
@@ -155,8 +150,8 @@ class ModelView(BaseModelView):
         return columns
 
     def init_search(self):
-        if self.searchable_columns:
-            for p in self.searchable_columns:
+        if self.column_searchable_list:
+            for p in self.column_searchable_list:
                 if isinstance(p, basestring):
                     p = getattr(self.model, p)
 

@@ -52,15 +52,14 @@ class UserAdmin(peeweemodel.ModelView):
 
 class PostAdmin(peeweemodel.ModelView):
     # Visible columns in the list view
-    #list_columns = ('title', 'user')
-    excluded_list_columns = ['text']
+    column_exclude_list = ['text']
 
     # List of columns that can be sorted. For 'user' column, use User.email as
     # a column.
-    sortable_columns = ('title', ('user', User.email), 'date')
+    column_sortable_list = ('title', ('user', User.email), 'date')
 
     # Full text search
-    searchable_columns = ('title', User.username)
+    column_searchable_list = ('title', User.username)
 
     # Column filters
     column_filters = ('title',

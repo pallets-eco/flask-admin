@@ -62,7 +62,7 @@ class Post(db.Document):
 class UserView(ModelView):
     column_filters = ['name']
 
-    searchable_columns = ('name', 'password')
+    column_searchable_list = ('name', 'password')
 
 
 # Flask views

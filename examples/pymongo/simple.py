@@ -39,8 +39,8 @@ class UserForm(wtf.Form):
 
 
 class UserView(ModelView):
-    list_columns = ('name', 'email', 'password')
-    sortable_columns = ('name', 'email', 'password')
+    column_list = ('name', 'email', 'password')
+    column_sortable_list = ('name', 'email', 'password')
 
     form = UserForm
 
@@ -53,15 +53,15 @@ class TweetForm(wtf.Form):
 
 
 class TweetView(ModelView):
-    list_columns = ('name', 'user_name', 'text')
-    sortable_columns = ('name', 'text')
+    column_list = ('name', 'user_name', 'text')
+    column_sortable_list = ('name', 'text')
 
     column_filters = (filters.FilterEqual('name', 'Name'),
                       filters.FilterNotEqual('name', 'Name'),
                       filters.FilterLike('name', 'Name'),
                       filters.FilterNotLike('name', 'Name'))
 
-    searchable_columns = ('name', 'text')
+    column_searchable_list = ('name', 'text')
 
     form = TweetForm
 

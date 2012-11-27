@@ -7,6 +7,7 @@ from sqlalchemy import or_, Column
 
 from flask import flash
 
+from flask.ext.admin.tools import ObsoleteAttr
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
 from flask.ext.admin.actions import action
@@ -63,7 +64,9 @@ class ModelView(BaseModelView):
         Controls if list view should display all relations, not only many-to-one.
     """
 
-    searchable_columns = None
+    column_searchable_list = ObsoleteAttr('column_searchable_list',
+                                          'searchable_columns',
+                                          None)
     """
         Collection of the searchable columns. Only text-based columns
         are searchable (`String`, `Unicode`, `Text`, `UnicodeText`).
@@ -71,12 +74,12 @@ class ModelView(BaseModelView):
         Example::
 
             class MyModelView(ModelView):
-                searchable_columns = ('name', 'email')
+                column_searchable_list = ('name', 'email')
 
         You can also pass columns::
 
             class MyModelView(ModelView):
-                searchable_columns = (User.name, User.email)
+                column_searchable_list = (User.name, User.email)
 
         Following search rules apply:
 
@@ -253,11 +256,6 @@ class ModelView(BaseModelView):
         columns = []
 
         for p in self._get_model_iterator():
-            # Filter by name
-            if (self.excluded_list_columns and
-                p.key in self.excluded_list_columns):
-                continue
-
             # Verify type
             if hasattr(p, 'direction'):
                 if self.list_display_all_relations or p.direction.name == 'MANYTOONE':
@@ -329,11 +327,11 @@ class ModelView(BaseModelView):
             For SQLAlchemy, this will initialize internal fields: list of
             column objects used for filtering, etc.
         """
-        if self.searchable_columns:
+        if self.column_searchable_list:
             self._search_fields = []
             self._search_joins = dict()
 
-            for p in self.searchable_columns:
+            for p in self.column_searchable_list:
                 for column in self._get_columns_for_field(p):
                     column_type = type(column.type).__name__
 
@@ -347,7 +345,7 @@ class ModelView(BaseModelView):
                     if column.table != self.model.__table__:
                         self._search_joins[column.table.name] = column.table
 
-        return bool(self.searchable_columns)
+        return bool(self.column_searchable_list)
 
     def is_text_column_type(self, name):
         """

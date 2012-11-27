@@ -76,7 +76,7 @@ class ModelView(BaseModelView):
         Override this attribute to use non-default converter.
     """
 
-    list_type_formatters = MONGOENGINE_FORMATTERS
+    column_type_formatters = MONGOENGINE_FORMATTERS
     """
         Customized type formatters for MongoEngine backend
     """
@@ -135,20 +135,17 @@ class ModelView(BaseModelView):
         columns = []
 
         for n, f in self._get_model_fields():
-            # Filter by name
-            if (self.excluded_list_columns and
-                n in self.excluded_list_columns):
-                continue
-
             # Verify type
             field_class = type(f)
 
             if (field_class == mongoengine.ListField and
                 isinstance(f.field, mongoengine.EmbeddedDocumentField)):
                 continue
+
             if field_class == mongoengine.EmbeddedDocumentField:
                 continue
-            elif self.list_display_pk or field_class != mongoengine.ObjectIdField:
+
+            if self.list_display_pk or field_class != mongoengine.ObjectIdField:
                 columns.append(n)
 
         return columns
@@ -170,8 +167,8 @@ class ModelView(BaseModelView):
         """
             Init search
         """
-        if self.searchable_columns:
-            for p in self.searchable_columns:
+        if self.column_searchable_list:
+            for p in self.column_searchable_list:
                 if isinstance(p, basestring):
                     p = self.model._fields.get(p)
 
