@@ -327,6 +327,9 @@ class ModelView(BaseModelView):
 
         return attr.property.columns
 
+    def _need_join(self, table):
+        return table not in self.model._sa_class_manager.mapper.tables
+
     def init_search(self):
         """
             Initialize search. Returns `True` if search is supported for this
@@ -350,7 +353,7 @@ class ModelView(BaseModelView):
                     self._search_fields.append(column)
 
                     # If it belongs to different table - add a join
-                    if column.table != self.model.__table__:
+                    if self._need_join(column.table):
                         self._search_joins[column.table.name] = column.table
 
         return bool(self.column_searchable_list)
@@ -397,7 +400,9 @@ class ModelView(BaseModelView):
                                                         visible_name)
 
                     if flt:
-                        self._filter_joins[column.table.name] = column.table
+                        if self._need_join(column.table):
+                            self._filter_joins[column.table.name] = column.table
+
                         filters.extend(flt)
 
             return filters
@@ -421,7 +426,7 @@ class ModelView(BaseModelView):
 
             if flt:
                 # If there's relation to other table, do it
-                if column.table != self.model.__table__:
+                if self._need_join(column.table):
                     self._filter_joins[column.table.name] = column.table
 
             return flt
@@ -481,6 +486,10 @@ class ModelView(BaseModelView):
 
         for p in self._get_model_iterator():
             if hasattr(p, 'direction'):
+                # Check if it is pointing to same model
+                if p.mapper.class_ == self.model:
+                    continue
+
                 if p.direction.name == 'MANYTOONE':
                     relations.add(p.key)
 

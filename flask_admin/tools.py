@@ -143,5 +143,4 @@ class ObsoleteAttr(object):
         return self.default
 
     def __set__(self, obj, value):
-        print 'set', self.new_name, value, self.cache
         setattr(obj, self.cache, value)
