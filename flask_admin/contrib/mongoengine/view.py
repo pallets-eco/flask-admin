@@ -145,7 +145,7 @@ class ModelView(BaseModelView):
             if field_class == mongoengine.EmbeddedDocumentField:
                 continue
 
-            if self.list_display_pk or field_class != mongoengine.ObjectIdField:
+            if self.column_display_pk or field_class != mongoengine.ObjectIdField:
                 columns.append(n)
 
         return columns
@@ -158,7 +158,7 @@ class ModelView(BaseModelView):
 
         for n, f in self._get_model_fields():
             if type(f) in SORTABLE_FIELDS:
-                if self.list_display_pk or type(f) != mongoengine.ObjectIdField:
+                if self.column_display_pk or type(f) != mongoengine.ObjectIdField:
                     columns[n] = f
 
         return columns
@@ -232,7 +232,7 @@ class ModelView(BaseModelView):
         form_class = model_form(self.model,
                         base_class=BaseForm,
                         only=self.form_columns,
-                        exclude=self.excluded_form_columns,
+                        exclude=self.form_excluded_columns,
                         field_args=self.form_args,
                         converter=self.model_form_converter())
 

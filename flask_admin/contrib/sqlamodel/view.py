@@ -25,12 +25,16 @@ class ModelView(BaseModelView):
             admin.add_view(ModelView(User, db.session))
     """
 
-    hide_backrefs = True
+    column_hide_backrefs = ObsoleteAttr('column_hide_backrefs',
+                                        'hide_backrefs',
+                                        True)
     """
         Set this to False if you want to see multiselect for model backrefs.
     """
 
-    auto_select_related = True
+    column_auto_select_related = ObsoleteAttr('column_auto_select_related',
+                                              'auto_select_related',
+                                              True)
     """
         Enable automatic detection of displayed foreign keys in this view
         and perform automatic joined loading for related models to improve
@@ -41,25 +45,29 @@ class ModelView(BaseModelView):
         will still make separate database call.
     """
 
-    list_select_related = None
+    column_select_related = ObsoleteAttr('column_select_related',
+                                         'list_select_related',
+                                         None)
     """
-        List of parameters for SQLAlchemy `subqueryload`. Overrides `auto_select_related`
+        List of parameters for SQLAlchemy `subqueryload`. Overrides `column_auto_select_related`
         property.
 
         For example::
 
             class PostAdmin(ModelAdmin):
-                list_select_related = ('user', 'city')
+                column_select_related = ('user', 'city')
 
         You can also use properties::
 
             class PostAdmin(ModelAdmin):
-                list_select_related = (Post.user, Post.city)
+                column_select_related = (Post.user, Post.city)
 
         Please refer to the `subqueryload` on list of possible values.
     """
 
-    list_display_all_relations = False
+    column_display_all_relations = ObsoleteAttr('column_display_all_relations',
+                                                'list_display_all_relations',
+                                                False)
     """
         Controls if list view should display all relations, not only many-to-one.
     """
@@ -221,10 +229,10 @@ class ModelView(BaseModelView):
             raise Exception('Model %s does not have primary key.' % self.model.__name__)
 
         # Configuration
-        if not self.list_select_related:
+        if not self.column_select_related:
             self._auto_joins = self.scaffold_auto_joins()
         else:
-            self._auto_joins = self.list_select_related
+            self._auto_joins = self.column_select_related
 
     # Internal API
     def _get_model_iterator(self, model=None):
@@ -258,7 +266,7 @@ class ModelView(BaseModelView):
         for p in self._get_model_iterator():
             # Verify type
             if hasattr(p, 'direction'):
-                if self.list_display_all_relations or p.direction.name == 'MANYTOONE':
+                if self.column_display_all_relations or p.direction.name == 'MANYTOONE':
                     columns.append(p.key)
             elif hasattr(p, 'columns'):
                 # TODO: Check for multiple columns
@@ -267,7 +275,7 @@ class ModelView(BaseModelView):
                 if column.foreign_keys:
                     continue
 
-                if not self.list_display_pk and column.primary_key:
+                if not self.column_display_pk and column.primary_key:
                     continue
 
                 columns.append(p.key)
@@ -295,7 +303,7 @@ class ModelView(BaseModelView):
                 if column.foreign_keys:
                     continue
 
-                if not self.list_display_pk and column.primary_key:
+                if not self.column_display_pk and column.primary_key:
                     continue
 
                 columns[p.key] = column
@@ -435,7 +443,7 @@ class ModelView(BaseModelView):
         converter = self.model_form_converter(self.session, self)
         form_class = form.get_form(self.model, converter,
                           only=self.form_columns,
-                          exclude=self.excluded_form_columns,
+                          exclude=self.form_excluded_columns,
                           field_args=self.form_args)
 
         if self.inline_models:
@@ -466,6 +474,9 @@ class ModelView(BaseModelView):
             Return list of joined tables by going through the
             displayed columns.
         """
+        if not self.column_auto_select_related:
+            return []
+
         relations = set()
 
         for p in self._get_model_iterator():

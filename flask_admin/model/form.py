@@ -20,7 +20,7 @@ class InlineFormAdmin(object):
             class MyUserInfoForm(InlineFormAdmin):
                 form_columns = ('name', 'email')
     """
-    _defaults = ['form_columns', 'excluded_form_columns', 'form_args']
+    _defaults = ['form_columns', 'form_excluded_columns', 'form_args']
 
     def __init__(self, model, **kwargs):
         """

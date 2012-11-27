@@ -180,7 +180,9 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_filters = ('user', 'email')
     """
 
-    list_display_pk = False
+    column_display_pk = ObsoleteAttr('column_display_pk',
+                                     'list_display_pk',
+                                     False)
     """
         Controls if primary key should be displayed in list view.
     """
@@ -222,14 +224,16 @@ class BaseModelView(BaseView, ActionsMixin):
                 form_columns = ('name', 'email')
     """
 
-    excluded_form_columns = None
+    form_excluded_columns = ObsoleteAttr('form_excluded_columns',
+                                         'excluded_form_columns',
+                                         None)
     """
         Collection of excluded form field names.
 
         For example::
 
             class MyModelView(BaseModelView):
-                excluded_form_columns = ('last_name', 'email')
+                form_excluded_columns = ('last_name', 'email')
     """
 
     form_overrides = None
@@ -243,13 +247,15 @@ class BaseModelView(BaseView, ActionsMixin):
     """
 
     # Actions
-    disallowed_actions = []
+    action_disallowed_list = ObsoleteAttr('action_disallowed_list',
+                                          'disallowed_actions',
+                                          [])
     """
         Set of disallowed action names. For example, if you want to disable
         mass model deletion, do something like this:
 
             class MyModelView(BaseModelView):
-                disallowed_actions = ['delete']
+                action_disallowed_list = ['delete']
     """
 
     # Various settings
@@ -732,9 +738,9 @@ class BaseModelView(BaseView, ActionsMixin):
             on some condition.
 
             Default implementation only checks if particular action
-            is not in `disallowed_actions`.
+            is not in `action_disallowed_list`.
         """
-        return name not in self.disallowed_actions
+        return name not in self.action_disallowed_list
 
     @contextfunction
     def get_list_value(self, context, model, name):

@@ -76,7 +76,7 @@ class AdminModelConverter(ModelConverterBase):
                                         **kwargs)
             elif prop.direction.name == 'ONETOMANY':
                 # Skip backrefs
-                if not local_column.foreign_keys and getattr(self.view, 'hide_backrefs', False):
+                if not local_column.foreign_keys and getattr(self.view, 'column_hide_backrefs', False):
                     return None
 
                 return QuerySelectMultipleField(
@@ -412,8 +412,8 @@ class InlineModelConverter(InlineModelConverterBase):
         # Remove reverse property from the list
         ignore = [reverse_prop.key]
 
-        if info.excluded_form_columns:
-            exclude = ignore + info.excluded_form_columns
+        if info.form_excluded_columns:
+            exclude = ignore + info.form_excluded_columns
         else:
             exclude = ignore
 

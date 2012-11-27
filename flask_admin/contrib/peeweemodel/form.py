@@ -131,8 +131,8 @@ class InlineModelConverter(InlineModelConverterBase):
         # Remove reverse property from the list
         ignore = [reverse_field.name]
 
-        if info.excluded_form_columns:
-            exclude = ignore + info.excluded_form_columns
+        if info.form_excluded_columns:
+            exclude = ignore + info.form_excluded_columns
         else:
             exclude = ignore
 
