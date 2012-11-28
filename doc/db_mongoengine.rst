@@ -16,7 +16,9 @@ MongoEngine models without any problems.
 Known issues:
 
  - There's no way to configure EmbeddedDocument display options
- - Search functionality can't split query into multiple terms
-
+ - Search functionality can't split query into multiple terms due to
+   MongoEngine query language limitations
 
 For more documentation, check :doc:`api/mod_contrib_mongoengine` documentation.
+
+MongoEngine integration example is `here <https://github.com/mrjoes/flask-admin/tree/master/examples/mongoengine>`_.

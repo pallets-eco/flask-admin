@@ -42,20 +42,17 @@ Steps to add new model backend:
     - :meth:`~flask.ext.admin.model.BaseModelView.scaffold_list_columns`
 
     Returns list of columns to be displayed in a list view.
-    Make sure you exclude columns if `self.excluded_list_columns` was set.
 
     For example::
 
         class MyDbModel(BaseModelView):
             def scaffold_list_columns(self):
                 columns = []
-                exclude = self.excluded_list_columns or []
 
                 for p in dir(self.model):
-                    if p not in exclude:
-                        attr = getattr(self.model)
-                        if isinstance(attr, MyDbColumn):
-                            columns.append(p)
+                    attr = getattr(self.model)
+                    if isinstance(attr, MyDbColumn):
+                        columns.append(p)
 
                 return columns
 

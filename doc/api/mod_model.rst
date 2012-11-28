@@ -6,10 +6,11 @@
     .. autoclass:: BaseModelView
         :members:
         :exclude-members: can_create, can_edit, can_delete, list_template, edit_template,
-                          create_template, list_columns, excluded_list_columns, rename_columns, list_formatters,
-                          sortable_columns, searchable_columns, column_filters, form, form_columns,
-                          excluded_form_columns, form_args, form_overrides, page_size,
-                          disallowed_actions, list_display_pk, list_type_formatters
+                          create_template, column_list, column_exclude_list, column_labels,
+                          column_formatters, column_type_formatters, column_display_pk,
+                          column_sortable_list, column_searchable_list, column_filters,
+                          form, form_columns, form_excluded_columns, form_args,
+                          form_overrides, action_disallowed_list, page_size
 
         .. autoattribute:: can_create
         .. autoattribute:: can_edit
@@ -19,25 +20,24 @@
         .. autoattribute:: edit_template
         .. autoattribute:: create_template
 
-        .. autoattribute:: list_columns
-        .. autoattribute:: excluded_list_columns
-        .. autoattribute:: rename_columns
-        .. autoattribute:: list_formatters
-        .. autoattribute:: list_display_pk
-        .. autoattribute:: list_type_formatters
+        .. autoattribute:: column_list
+        .. autoattribute:: column_exclude_list
+        .. autoattribute:: column_labels
+        .. autoattribute:: column_formatters
+        .. autoattribute:: column_type_formatters
+        .. autoattribute:: column_display_pk
 
-        .. autoattribute:: sortable_columns
-
-        .. autoattribute:: searchable_columns
+        .. autoattribute:: column_sortable_list
+        .. autoattribute:: column_searchable_list
 
         .. autoattribute:: column_filters
 
         .. autoattribute:: form
         .. autoattribute:: form_columns
-        .. autoattribute:: excluded_form_columns
+        .. autoattribute:: form_excluded_columns
         .. autoattribute:: form_args
         .. autoattribute:: form_overrides
 
-        .. autoattribute:: disallowed_actions
+        .. autoattribute:: action_disallowed_list
 
         .. autoattribute:: page_size

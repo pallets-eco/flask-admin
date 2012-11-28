@@ -1,6 +1,16 @@
 Changelog
 =========
 
+1.0.4
+-----
+
+* MongoEngine support
+* Raw PyMongo support
+* Model property names are more consistent now
+* Revamped InlineForm implementation
+* Proper support of SQLAlchemy model inheritance
+* Updated to bootstrap 2.2.1
+
 1.0.3
 -----
 
@@ -11,7 +21,7 @@ General:
 * Inline model forms are much more customizable now
 * List view type-based formatters
 * Database ``NULL`` will be displayed in list view as empty string by default. Use type-based formatter if you want to show something else.
-* Use `Select2`_ instead of Chosen
+* `Use Select2 <http://ivaynberg.github.com/select2/>`_ instead of Chosen
 * List view formatting callbacks. See `example <https://gist.github.com/3714266>`_.
 * ``_template_args`` property is now available in all views
 * ``on_model_change`` and ``on_model_delete`` callbacks

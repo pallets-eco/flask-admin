@@ -7,3 +7,4 @@ Database backends
    db_sqla
    db_mongoengine
    db_peewee
+   db_pymongo

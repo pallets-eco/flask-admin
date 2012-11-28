@@ -45,9 +45,9 @@ class ModelView(BaseModelView):
         will still make separate database call.
     """
 
-    column_select_related = ObsoleteAttr('column_select_related',
-                                         'list_select_related',
-                                         None)
+    column_select_related_list = ObsoleteAttr('column_select_related',
+                                             'list_select_related',
+                                              None)
     """
         List of parameters for SQLAlchemy `subqueryload`. Overrides `column_auto_select_related`
         property.
@@ -55,12 +55,12 @@ class ModelView(BaseModelView):
         For example::
 
             class PostAdmin(ModelAdmin):
-                column_select_related = ('user', 'city')
+                column_select_related_list = ('user', 'city')
 
         You can also use properties::
 
             class PostAdmin(ModelAdmin):
-                column_select_related = (Post.user, Post.city)
+                column_select_related_list = (Post.user, Post.city)
 
         Please refer to the `subqueryload` on list of possible values.
     """
@@ -229,10 +229,10 @@ class ModelView(BaseModelView):
             raise Exception('Model %s does not have primary key.' % self.model.__name__)
 
         # Configuration
-        if not self.column_select_related:
+        if not self.column_select_related_list:
             self._auto_joins = self.scaffold_auto_joins()
         else:
-            self._auto_joins = self.column_select_related
+            self._auto_joins = self.column_select_related_list
 
     # Internal API
     def _get_model_iterator(self, model=None):

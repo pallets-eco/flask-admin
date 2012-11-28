@@ -8,21 +8,21 @@ SQLAlchemy model backend implementation.
     .. autoclass:: ModelView
         :members:
         :inherited-members:
-        :exclude-members: hide_backrefs, auto_select_related, list_select_related,
-                          searchable_columns, filter_converter,
-                          fast_mass_delete, inline_models, column_filters,
-                          inline_model_form_converter, model_form_converter
-
+        :exclude-members: column_hide_backrefs, column_auto_select_related,
+                          column_select_related_list, column_searchable_list,
+                          column_filters, filter_converter, model_form_converter,
+                          inline_model_form_converter, fast_mass_delete,
+                          inline_models
 
         Class inherits configuration options from :class:`~flask.ext.admin.model.BaseModelView` and they're not displayed here.
 
-        .. autoattribute:: hide_backrefs
-        .. autoattribute:: auto_select_related
-        .. autoattribute:: list_select_related
-        .. autoattribute:: searchable_columns
+        .. autoattribute:: column_hide_backrefs
+        .. autoattribute:: column_auto_select_related
+        .. autoattribute:: column_select_related_list
+        .. autoattribute:: column_searchable_list
+        .. autoattribute:: column_filters
         .. autoattribute:: filter_converter
         .. autoattribute:: model_form_converter
         .. autoattribute:: inline_model_form_converter
         .. autoattribute:: fast_mass_delete
         .. autoattribute:: inline_models
-        .. autoattribute:: column_filters

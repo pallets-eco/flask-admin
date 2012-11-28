@@ -33,8 +33,8 @@ class ModelView(BaseModelView):
                 column_filters = (BooleanEqualFilter(User.name, 'Name'),)
     """
 
-    def __init__(self, coll, name,
-                 category=None, endpoint=None, url=None):
+    def __init__(self, coll,
+                 name=None, category=None, endpoint=None, url=None):
         """
             Constructor
 
@@ -50,6 +50,9 @@ class ModelView(BaseModelView):
                 Custom URL
         """
         self._search_fields = []
+
+        if name is None:
+            name = self._prettify_name(coll.name)
 
         if endpoint is None:
             endpoint = ('%sview' % coll.name).lower()
