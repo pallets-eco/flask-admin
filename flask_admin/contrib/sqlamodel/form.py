@@ -1,4 +1,6 @@
 from wtforms import fields, validators
+# Field has better input parsing capabilities.
+from wtforms.ext.dateutil.fields import DateTimeField
 from sqlalchemy import Boolean, Column
 
 from flask.ext.admin import form
@@ -210,7 +212,7 @@ class AdminModelConverter(ModelConverterBase):
     @converts('DateTime')
     def convert_datetime(self, field_args, **extra):
         field_args['widget'] = form.DateTimePickerWidget()
-        return fields.DateTimeField(**field_args)
+        return DateTimeField(**field_args)
 
     @converts('Time')
     def convert_time(self, field_args, **extra):
