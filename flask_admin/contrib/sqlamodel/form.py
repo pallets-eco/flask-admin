@@ -21,6 +21,13 @@ class AdminModelConverter(ModelConverterBase):
         self.view = view
 
     def _get_label(self, name, field_args):
+        """
+            Label for field name. If it is not specified explicitly,
+            then the views prettify_name method is used to find it.
+
+            :param field_args:
+                Dictionary with additional field arguments
+        """
         if 'label' in field_args:
             return field_args['label']
 
@@ -29,7 +36,7 @@ class AdminModelConverter(ModelConverterBase):
         if column_labels:
             return column_labels.get(name)
 
-        return None
+        return self.view.prettify_name(name)
 
     def _get_field_override(self, name):
         form_overrides = getattr(self.view, 'form_overrides', None)
