@@ -330,7 +330,8 @@ class InlineModelConverter(InlineModelConverterBase):
     """
         Inline model form helper.
     """
-    def __init__(self, session):
+    def __init__(self, session, view):
+        super(InlineModelConverter, self).__init__(view)
         self.session = session
 
     def get_info(self, p):
@@ -428,12 +429,19 @@ class InlineModelConverter(InlineModelConverterBase):
         # Post-process form
         child_form = info.postprocess_form(child_form)
 
+        kwargs = dict()
+
+        label = self.get_label(info, forward_prop.key)
+        if label:
+            kwargs['label'] = label
+
         # Contribute field
         setattr(form_class,
                 forward_prop.key,
                 InlineModelFormList(child_form,
                                     self.session,
                                     info.model,
-                                    forward_prop.key))
+                                    forward_prop.key,
+                                    **kwargs))
 
         return form_class

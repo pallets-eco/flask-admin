@@ -99,6 +99,35 @@ class ModelConverterBase(object):
 
 
 class InlineModelConverterBase(object):
+    def __init__(self, view):
+        """
+            Base constructor
+
+            :param view:
+                View class
+        """
+        self.view = view
+
+    def get_label(self, info, name):
+        """
+            Get inline model field label
+
+            :param info:
+                Inline model info
+            :param name:
+                Field name
+        """
+        form_name = getattr(info, 'form_label', None)
+        if form_name:
+            return form_name
+
+        column_labels = getattr(self.view, 'column_labels', None)
+
+        if column_labels and name in column_labels:
+            return column_labels[name]
+
+        return None
+
     def get_info(self, p):
         """
             Figure out InlineFormAdmin information.

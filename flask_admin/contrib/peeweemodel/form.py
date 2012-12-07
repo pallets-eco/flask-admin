@@ -146,12 +146,15 @@ class InlineModelConverter(InlineModelConverterBase):
                             converter=converter)
 
         prop_name = 'fa_%s' % model.__name__
+
+        label = self.get_label(info, prop_name)
+
         setattr(form_class,
                 prop_name,
                 InlineModelFormList(child_form,
                                     info.model,
                                     reverse_field.name,
-                                    label=info.model.__name__))
+                                    label=label or info.model.__name__))
 
         setattr(field.rel_model,
                 prop_name,

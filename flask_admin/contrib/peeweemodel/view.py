@@ -104,6 +104,27 @@ class ModelView(BaseModelView):
 
             class MyModelView(ModelView):
                 inline_models = (MyInlineModelForm(MyInlineModel),)
+
+        You can customize generated field name by:
+
+        1. Using `form_name` property as option:
+
+            class MyModelView(ModelView):
+                inline_models = ((Post, dict(form_label='Hello')))
+
+        2. Using target model name with `fa_` prefis:
+
+            class Model1(Base):
+                # ...
+                pass
+
+            class Model2(Base):
+                # ...
+                pass
+
+            class MyModel1View(Base):
+                inline_models = (Model2,)
+                column_labels = {'fa_Model2': 'Hello'}
     """
 
     def __init__(self, model, name=None,
@@ -211,7 +232,7 @@ class ModelView(BaseModelView):
 
     def scaffold_inline_form_models(self, form_class):
         converter = self.model_form_converter()
-        inline_converter = self.inline_model_form_converter()
+        inline_converter = self.inline_model_form_converter(self)
 
         for m in self.inline_models:
             form_class = inline_converter.contribute(converter,

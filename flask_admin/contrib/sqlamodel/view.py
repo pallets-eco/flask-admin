@@ -193,6 +193,26 @@ class ModelView(BaseModelView):
 
             class MyModelView(ModelView):
                 inline_models = (MyInlineModelForm(MyInlineModel),)
+
+        You can customize generated field name by:
+
+        1. Using `form_name` property as option:
+
+            class MyModelView(ModelView):
+                inline_models = ((Post, dict(form_label='Hello')))
+
+        2. Using forward relation name and `column_labels` property:
+
+            class Model1(Base):
+                pass
+
+            class Model2(Base):
+                # ...
+                model1 = relation(Model1, backref='models')
+
+            class MyModel1View(Base):
+                inline_models = (Model2,)
+                column_labels = {'models': 'Hello'}
     """
 
     def __init__(self, model, session,
@@ -464,7 +484,7 @@ class ModelView(BaseModelView):
                 Form class
         """
         converter = self.model_form_converter(self.session, self)
-        inline_converter = self.inline_model_form_converter(self.session)
+        inline_converter = self.inline_model_form_converter(self.session, self)
 
         for m in self.inline_models:
             form_class = inline_converter.contribute(converter,
