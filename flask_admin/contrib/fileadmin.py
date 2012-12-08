@@ -116,7 +116,7 @@ class FileAdmin(BaseView, ActionsMixin):
                 allowed_extensions = ('swf', 'jpg', 'gif', 'png')
     """
 
-    editable_extensions = None
+    editable_extensions = tuple()
     """
         List of editable extensions, in lower case.
 
