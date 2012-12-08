@@ -561,6 +561,7 @@ class FileAdmin(BaseView, ActionsMixin):
         next_url = next_url or dir_url
 
         form = EditForm()
+        error = False
         if request.method == 'POST':
             form.process(request.form, content='')
             if form.validate():
@@ -568,16 +569,35 @@ class FileAdmin(BaseView, ActionsMixin):
                     with open(full_path, 'w') as f:
                         f.write(request.form['content'])
                 except IOError:
-                    flash(lazy_gettext("Error saving changes to file!"),
-                            'error')
+                    flash(gettext("Error saving changes to %(name)s.", name=path), 'error')
+                    error = True
                 else:
-                    flash(lazy_gettext("Changes saved successfully!"))
+                    flash(gettext("Changes to %(name)s saved successfully.", name=path))
                     return redirect(next_url)
         else:
-            with open(full_path, 'r') as f:
-                form.content.data = f.read()
-        return self.render(self.edit_template, dir_url=dir_url, form=form,
-                            path=path)
+            try:
+                with open(full_path, 'r') as f:
+                    content = f.read()
+            except IOError:
+                flash(gettext("Error reading %(name)s.", name=path), 'error')
+                error = True
+            except:
+                flash(gettext("Unexpected error while reading from %(name)s", name=path), 'error')
+                error = True
+            else:
+                try:
+                    content.decode('utf8')
+                except UnicodeDecodeError:
+                    flash(gettext("Cannot edit %(name)s.", name=path), 'error')
+                    error = True
+                except:
+                    flash(gettext("Unexpected error while reading from %(name)s", name=path), 'error')
+                    error = True
+                else:
+                    form.content.data = content
+
+        return self.render(self.edit_template, dir_url=dir_url, path=path,
+                        form=form, error=error)
 
     @expose('/action/', methods=('POST',))
     def action_view(self):
