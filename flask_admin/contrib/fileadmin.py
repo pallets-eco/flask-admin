@@ -55,6 +55,11 @@ class UploadForm(form.BaseForm):
             raise wtf.ValidationError(gettext('Invalid file type.'))
 
 
+class EditForm(form.BaseForm):
+    content = wtf.TextAreaField(lazy_gettext('Content'),
+                                [wtf.validators.required()])
+
+
 class FileAdmin(BaseView, ActionsMixin):
     """
         Simple file-management interface.
@@ -111,6 +116,16 @@ class FileAdmin(BaseView, ActionsMixin):
                 allowed_extensions = ('swf', 'jpg', 'gif', 'png')
     """
 
+    editable_extensions = tuple()
+    """
+        List of editable extensions, in lower case.
+
+        Example::
+
+            class MyAdmin(FileAdmin):
+                editable_extensions = ('md', 'html', 'txt')
+    """
+
     list_template = 'admin/file/list.html'
     """
         File list template
@@ -129,6 +144,11 @@ class FileAdmin(BaseView, ActionsMixin):
     rename_template = 'admin/file/rename.html'
     """
         Rename template
+    """
+
+    edit_template = 'admin/file/edit.html'
+    """
+        Edit template
     """
 
     def __init__(self, base_path, base_url,
@@ -164,6 +184,11 @@ class FileAdmin(BaseView, ActionsMixin):
         if (self.allowed_extensions
             and not isinstance(self.allowed_extensions, set)):
             self.allowed_extensions = set(self.allowed_extensions)
+
+        # Convert editable_extensions to set for quick validation
+        if (self.editable_extensions
+            and not isinstance(self.editable_extensions, set)):
+            self.editable_extensions = set(self.editable_extensions)
 
         # Check if path exists
         if not op.exists(base_path):
@@ -211,6 +236,25 @@ class FileAdmin(BaseView, ActionsMixin):
             ext = ext[1:]
 
         if self.allowed_extensions and ext not in self.allowed_extensions:
+            return False
+
+        return True
+
+    def is_file_editable(self, filename):
+        """
+            Verify if file can be edited.
+
+            Override to customize behavior.
+
+            :param filename:
+                Source file name
+        """
+        ext = op.splitext(filename)[1].lower()
+
+        if ext.startswith('.'):
+            ext = ext[1:]
+
+        if self.editable_extensions and ext not in self.editable_extensions:
             return False
 
         return True
@@ -265,8 +309,11 @@ class FileAdmin(BaseView, ActionsMixin):
             :param path:
                 Static file path
         """
-        base_url = self.get_base_url()
-        return urlparse.urljoin(base_url, path)
+        if self.is_file_editable(path):
+            return url_for(".edit", path=path)
+        else:
+            base_url = self.get_base_url()
+            return urlparse.urljoin(base_url, path)
 
     def _normalize_path(self, path):
         """
@@ -494,6 +541,64 @@ class FileAdmin(BaseView, ActionsMixin):
                            name=op.basename(path),
                            dir_url=return_url)
 
+    @expose('/edit/', methods=('GET', 'POST'))
+    def edit(self):
+        """
+            Edit view method
+        """
+        path = request.args.get('path')
+        next_url = None
+        if not path:
+            return redirect(url_for('.index'))
+
+        path = path.split(':')
+        if len(path) > 1:
+            next_url = url_for('.edit', path=':'.join(path[1:]))
+        path = path[0]
+
+        base_path, full_path, path = self._normalize_path(path)
+        dir_url = self._get_dir_url('.index', os.path.dirname(path))
+        next_url = next_url or dir_url
+
+        form = EditForm()
+        error = False
+        if request.method == 'POST':
+            form.process(request.form, content='')
+            if form.validate():
+                try:
+                    with open(full_path, 'w') as f:
+                        f.write(request.form['content'])
+                except IOError:
+                    flash(gettext("Error saving changes to %(name)s.", name=path), 'error')
+                    error = True
+                else:
+                    flash(gettext("Changes to %(name)s saved successfully.", name=path))
+                    return redirect(next_url)
+        else:
+            try:
+                with open(full_path, 'r') as f:
+                    content = f.read()
+            except IOError:
+                flash(gettext("Error reading %(name)s.", name=path), 'error')
+                error = True
+            except:
+                flash(gettext("Unexpected error while reading from %(name)s", name=path), 'error')
+                error = True
+            else:
+                try:
+                    content.decode('utf8')
+                except UnicodeDecodeError:
+                    flash(gettext("Cannot edit %(name)s.", name=path), 'error')
+                    error = True
+                except:
+                    flash(gettext("Unexpected error while reading from %(name)s", name=path), 'error')
+                    error = True
+                else:
+                    form.content.data = content
+
+        return self.render(self.edit_template, dir_url=dir_url, path=path,
+                        form=form, error=error)
+
     @expose('/action/', methods=('POST',))
     def action_view(self):
         return self.handle_action()
@@ -511,3 +616,7 @@ class FileAdmin(BaseView, ActionsMixin):
                 flash(gettext('File "%(name)s" was successfully deleted.', name=path))
             except Exception, ex:
                 flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
+
+    @action('edit', lazy_gettext('Edit'))
+    def action_edit(self, items):
+        return redirect(url_for('.edit', path=':'.join(items)))
