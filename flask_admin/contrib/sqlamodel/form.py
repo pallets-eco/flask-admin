@@ -142,11 +142,10 @@ class AdminModelConverter(ModelConverterBase):
                 if not column.nullable and not isinstance(column.type, Boolean):
                     kwargs['validators'].append(validators.Required())
 
-                # Apply label
-                kwargs['label'] = self._get_label(prop.key, kwargs)
-
-                # Apply description
-                kwargs['description'] = self._get_description(prop.key, kwargs)
+                # Apply label and description if it isn't inline form field
+                if self.view.model == mapper.class_:
+                    kwargs['label'] = self._get_label(prop.key, kwargs)
+                    kwargs['description'] = self._get_description(prop.key, kwargs)
 
                 # Figure out default value
                 default = getattr(column, 'default', None)
