@@ -129,6 +129,19 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_labels = dict(name='Name', last_name='Last Name')
     """
 
+    column_descriptions = None
+    """
+        Dictionary where key is column name and
+        value is description for `list view` column or add/edit form field.
+
+        For example::
+
+            class MyModelView(BaseModelView):
+                column_descriptions = dict(
+                    full_name='First and Last name'
+                )
+    """
+
     column_sortable_list = ObsoleteAttr('column_sortable_list',
                                         'sortable_columns',
                                         None)
@@ -323,6 +336,9 @@ class BaseModelView(BaseView, ActionsMixin):
         # Type formatters
         if self.column_type_formatters is None:
             self.column_type_formatters = dict(typefmt.DEFAULT_FORMATTERS)
+
+        if self.column_descriptions is None:
+            self.column_descriptions = dict()
 
         if self._filters:
             self._filter_groups = []

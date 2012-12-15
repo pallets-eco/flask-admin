@@ -31,6 +31,12 @@ class AdminModelConverter(ModelConverterBase):
 
         return None
 
+    def _get_description(self, name, field_args):
+        if 'description' in field_args:
+            return field_args['description']
+        if self.view.column_descriptions:
+            return self.view.column_descriptions.get(name)
+
     def _get_field_override(self, name):
         form_overrides = getattr(self.view, 'form_overrides', None)
 
@@ -54,6 +60,7 @@ class AdminModelConverter(ModelConverterBase):
             local_column = prop.local_remote_pairs[0][0]
 
             kwargs['label'] = self._get_label(prop.key, kwargs)
+            kwargs['description'] = self._get_description(prop.key, kwargs)
 
             if local_column.nullable:
                 kwargs['validators'].append(validators.Optional())
@@ -137,6 +144,9 @@ class AdminModelConverter(ModelConverterBase):
 
                 # Apply label
                 kwargs['label'] = self._get_label(prop.key, kwargs)
+
+                # Apply description
+                kwargs['description'] = self._get_description(prop.key, kwargs)
 
                 # Figure out default value
                 default = getattr(column, 'default', None)
