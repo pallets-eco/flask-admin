@@ -546,14 +546,13 @@ class FileAdmin(BaseView, ActionsMixin):
         """
             Edit view method
         """
-        path = request.args.get('path')
+        path = request.args.getlist('path')
         next_url = None
         if not path:
             return redirect(url_for('.index'))
 
-        path = path.split(':')
         if len(path) > 1:
-            next_url = url_for('.edit', path=':'.join(path[1:]))
+            next_url = url_for('.edit', path=path[1:])
         path = path[0]
 
         base_path, full_path, path = self._normalize_path(path)
@@ -562,6 +561,7 @@ class FileAdmin(BaseView, ActionsMixin):
 
         form = EditForm()
         error = False
+
         if request.method == 'POST':
             form.process(request.form, content='')
             if form.validate():
@@ -619,4 +619,4 @@ class FileAdmin(BaseView, ActionsMixin):
 
     @action('edit', lazy_gettext('Edit'))
     def action_edit(self, items):
-        return redirect(url_for('.edit', path=':'.join(items)))
+        return redirect(url_for('.edit', path=items))
