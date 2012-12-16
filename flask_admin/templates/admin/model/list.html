@@ -124,7 +124,10 @@
                             {{ name }}
                         {% endif %}
                         {% if c in admin_view.column_descriptions %}
-                            <a class="icon-question-sign js-tooltip" title="{{ admin_view.column_descriptions[c] }}" href="#"></a>
+                            <a class="icon-question-sign"
+                               title="{{ admin_view.column_descriptions[c] }}"
+                               href="#" data-role="tooltip"
+                            ></a>
                         {% endif %}
                     </th>
                     {% set column = column + 1 %}
@@ -180,12 +183,14 @@
 
     <script language="javascript">
         (function($) {
-            $('.js-tooltip').tooltip();
+            $('[data-role=tooltip]').tooltip();
             {% if filter_groups is not none and filter_data is not none %}
-                var filter = new AdminFilters('#filter_form', '.field-filters',
-                                        {{ admin_view._filter_dict|tojson|safe }},
-                                        {{ filter_data|tojson|safe }},
-                                        {{ filter_types|tojson|safe }});
+                var filter = new AdminFilters(
+                    '#filter_form', '.field-filters',
+                    {{ admin_view._filter_dict|tojson|safe }},
+                    {{ filter_data|tojson|safe }},
+                    {{ filter_types|tojson|safe }}
+                );
             {% endif %}
         })(jQuery);
     </script>
