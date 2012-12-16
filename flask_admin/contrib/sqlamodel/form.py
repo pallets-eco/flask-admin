@@ -1,6 +1,4 @@
 from wtforms import fields, validators
-# Field has better input parsing capabilities.
-from wtforms.ext.dateutil.fields import DateTimeField
 from sqlalchemy import Boolean, Column
 
 from flask.ext.admin import form
@@ -10,6 +8,12 @@ from flask.ext.admin.model.form import (converts, ModelConverterBase,
 
 from .validators import Unique
 from .fields import QuerySelectField, QuerySelectMultipleField, InlineModelFormList
+
+try:
+    # Field has better input parsing capabilities.
+    from wtforms.ext.dateutil.fields import DateTimeField
+except ImportError:
+    from wtforms.fields import DateTimeField
 
 
 class AdminModelConverter(ModelConverterBase):
