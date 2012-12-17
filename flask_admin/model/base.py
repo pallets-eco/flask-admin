@@ -336,7 +336,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # Type formatters
         if self.column_type_formatters is None:
-            self.column_type_formatters = dict(typefmt.DEFAULT_FORMATTERS)
+            self.column_type_formatters = self._get_default_column_type_formatters()
 
         if self.column_descriptions is None:
             self.column_descriptions = dict()
@@ -714,6 +714,9 @@ class BaseModelView(BaseView, ActionsMixin):
             filters = None
 
         return page, sort, sort_desc, search, filters
+
+    def _get_default_column_type_formatters(self):
+        return typefmt.DEFAULT_FORMATTERS
 
     def _get_url(self, view=None, page=None, sort=None, sort_desc=None,
                  search=None, filters=None):

@@ -2,11 +2,12 @@ import logging
 
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import subqueryload
+from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy.sql.expression import desc
 from sqlalchemy import or_, Column
 
 from flask import flash
-
+from flask.ext.admin.model.typefmt import list_formatter
 from flask.ext.admin.tools import ObsoleteAttr
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
@@ -263,6 +264,13 @@ class ModelView(BaseModelView):
             model = self.model
 
         return model._sa_class_manager.mapper.iterate_properties
+
+    def _get_default_column_type_formatters(self):
+        formatters = super(ModelView, self)._get_default_column_type_formatters()
+        formatters.update({
+            InstrumentedList: list_formatter,
+        })
+        return formatters
 
     # Scaffolding
     def scaffold_pk(self):
