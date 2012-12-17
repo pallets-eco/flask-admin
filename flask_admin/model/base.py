@@ -97,6 +97,7 @@ class BaseModelView(BaseView, ActionsMixin):
         By default, two types are formatted:
         1. ``None`` will be displayed as empty string
         2. ``bool`` will be displayed as check if it is ``True``
+        3. ``list`` will be displayed as string with comma-separated values
 
         If you don't like default behavior and don't want any type formatters
         applied, just override this property with empty dictionary::
