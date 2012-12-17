@@ -1,4 +1,5 @@
 from jinja2 import Markup
+from sqlalchemy.orm.collections import InstrumentedList
 
 
 def null_formatter(value):
@@ -45,4 +46,5 @@ DEFAULT_FORMATTERS = {
     type(None): empty_formatter,
     bool: bool_formatter,
     list: list_formatter,
+    InstrumentedList: list_formatter,
 }
