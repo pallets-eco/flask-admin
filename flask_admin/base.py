@@ -1,6 +1,3 @@
-import sys
-import os.path
-
 from functools import wraps
 from re import sub
 
@@ -26,6 +23,20 @@ def expose(url='/', methods=('GET',)):
         f._urls.append((url, methods))
         return f
 
+    return wrap
+
+
+def expose_class(url='/'):
+    """
+        User this decorator to expose ``View`` classes (flask.MethodView).
+
+        :param url:
+            Relative URL for the view
+    """
+    def wrap(v):
+        name = v.__name__
+        print name
+        return expose(url)(v.as_view(name))
     return wrap
 
 
