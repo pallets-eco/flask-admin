@@ -35,7 +35,6 @@ def expose_class(url='/'):
     """
     def wrap(v):
         name = v.__name__
-        print name
         return expose(url)(v.as_view(name))
     return wrap
 
