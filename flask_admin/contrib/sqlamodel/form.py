@@ -203,8 +203,12 @@ class AdminModelConverter(ModelConverterBase):
             field_args['validators'].append(validators.Length(max=column.type.length))
 
     @converts('String', 'Unicode')
-    def conv_String(self, field_args, **extra):
-        self._string_common(field_args=field_args, **extra)
+    def conv_String(self, column, field_args, **extra):
+        if hasattr(column.type, 'enums'):
+            field_args['validators'].append(validators.AnyOf(column.type.enums))
+            field_args['choices'] = [(f,f) for f in column.type.enums]
+            return form.Select2Field(**field_args)
+        self._string_common(column=column, field_args=field_args, **extra)
         return fields.TextField(**field_args)
 
     @converts('Text', 'UnicodeText',
