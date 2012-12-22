@@ -3,5 +3,5 @@
   This view {{ name }} was accessed using {{ request.method }} request.
 
   <br>
-  <a href="/">Return</a>
+  <a href="{{ url_for('.index') }}">Return</a>
 {% endblock %}
