@@ -3,4 +3,4 @@ __author__ = 'Serge S. Koval'
 __email__ = 'serge.koval+github@gmail.com'
 
 
-from .base import expose, expose_class, Admin, BaseView, AdminIndexView
+from .base import expose, expose_plugview, Admin, BaseView, AdminIndexView
