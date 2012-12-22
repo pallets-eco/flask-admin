@@ -32,6 +32,8 @@ def expose_plugview(url='/'):
 
         :param url:
             Relative URL for the view
+
+        .. versionadded:: 1.0.4
     """
     def wrap(v):
         return expose(url)(v.as_view(v.__name__))
