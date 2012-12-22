@@ -36,7 +36,7 @@ def expose_plugview(url='/'):
         .. versionadded:: 1.0.4
     """
     def wrap(v):
-        return expose(url)(v.as_view(v.__name__))
+        return expose(url, v.methods)(v.as_view(v.__name__))
     return wrap
 
 
