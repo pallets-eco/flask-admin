@@ -22,20 +22,21 @@ def expose(url='/', methods=('GET',)):
             f._urls = []
         f._urls.append((url, methods))
         return f
-
     return wrap
 
 
-def expose_class(url='/'):
+def expose_plugview(url='/'):
     """
-        User this decorator to expose ``View`` classes (flask.MethodView).
+        Decorator to expose Flask's pluggable view classes
+        (``flask.views.View`` or ``flask.views.MethodView``).
 
         :param url:
             Relative URL for the view
+
+        .. versionadded:: 1.0.4
     """
     def wrap(v):
-        name = v.__name__
-        return expose(url)(v.as_view(name))
+        return expose(url, v.methods)(v.as_view(v.__name__))
     return wrap
 
 
