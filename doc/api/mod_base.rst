@@ -7,6 +7,7 @@
     ---------
 
     .. autofunction:: expose
+    .. autofunction:: expose_plugview
 
     .. autoclass:: BaseView
         :members:

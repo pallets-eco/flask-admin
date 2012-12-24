@@ -1,6 +1,7 @@
 from nose.tools import ok_, eq_, raises
 
-from flask import Flask
+from flask import Flask, request
+from flask.views import MethodView
 from flask.ext.admin import base
 
 
@@ -29,6 +30,28 @@ class MockView(base.BaseView):
         else:
             return False
 
+class MockMethodView(base.BaseView):
+    @base.expose('/')
+    def index(self):
+        return 'Success!'
+
+    @base.expose_plugview('/_api/1')
+    class API1(MethodView):
+        def get(self, cls):
+            return cls.render('method.html', request=request, name='API1')
+        def post(self, cls):
+            return cls.render('method.html', request=request, name='API1')
+        def put(self, cls):
+            return cls.render('method.html', request=request, name='API1')
+        def delete(self, cls):
+            return cls.render('method.html', request=request, name='API1')
+
+    @base.expose_plugview('/_api/2')
+    class API2(MethodView):
+        def get(self, cls):
+            return cls.render('method.html', request=request, name='API2')
+        def post(self, cls):
+            return cls.render('method.html', request=request, name='API2')
 
 def test_baseview_defaults():
     view = MockView()
@@ -229,3 +252,30 @@ def test_double_init():
     app = Flask(__name__)
     admin = base.Admin(app)
     admin.init_app(app)
+
+def test_nested_flask_views():
+    app = Flask(__name__)
+    admin = base.Admin(app)
+
+    view = MockMethodView()
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/mockmethodview/_api/1')
+    assert rv.data == 'GET - API1'
+    rv = client.put('/admin/mockmethodview/_api/1')
+    assert rv.data == 'PUT - API1'
+    rv = client.post('/admin/mockmethodview/_api/1')
+    assert rv.data == 'POST - API1'
+    rv = client.delete('/admin/mockmethodview/_api/1')
+    assert rv.data == 'DELETE - API1'
+
+    rv = client.get('/admin/mockmethodview/_api/2')
+    assert rv.data == 'GET - API2'
+    rv = client.post('/admin/mockmethodview/_api/2')
+    assert rv.data == 'POST - API2'
+    rv = client.delete('/admin/mockmethodview/_api/2')
+    assert rv.status_code == 405
+    rv = client.put('/admin/mockmethodview/_api/2')
+    assert rv.status_code == 405
