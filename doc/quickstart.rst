@@ -233,7 +233,7 @@ you can do something like this::
         can_create = False
 
         # Override displayed fields
-        list_columns = ('login', 'email')
+        column_list = ('login', 'email')
 
         def __init__(self, session, **kwargs):
             # You can pass name and other parameters if you want to
