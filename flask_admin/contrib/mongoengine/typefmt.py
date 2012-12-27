@@ -1,9 +1,8 @@
 from mongoengine.base import BaseList
-
 from flask.ext.admin.model.typefmt import DEFAULT_FORMATTERS
 
 
-def mongoengine_list_formatter(values):
+def list_formatter(values):
     """
         Return string with comma separated values
 
@@ -13,7 +12,7 @@ def mongoengine_list_formatter(values):
     return u', '.join(unicode(v) for v in values)
 
 
-MONGOENGINE_FORMATTERS = dict(DEFAULT_FORMATTERS)
-MONGOENGINE_FORMATTERS.update({
-        BaseList: mongoengine_list_formatter
-    })
+DEFAULT_FORMATTERS = DEFAULT_FORMATTERS.copy()
+DEFAULT_FORMATTERS.update({
+    BaseList: list_formatter
+})
