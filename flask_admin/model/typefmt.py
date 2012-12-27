@@ -41,7 +41,7 @@ def list_formatter(values):
     return u', '.join(unicode(v) for v in values)
 
 
-DEFAULT_FORMATTERS = {
+BASE_FORMATTERS = {
     type(None): empty_formatter,
     bool: bool_formatter,
     list: list_formatter,

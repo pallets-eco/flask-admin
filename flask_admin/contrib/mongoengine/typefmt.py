@@ -1,18 +1,8 @@
 from mongoengine.base import BaseList
-from flask.ext.admin.model.typefmt import DEFAULT_FORMATTERS
+from flask.ext.admin.model.typefmt import BASE_FORMATTERS, list_formatter
 
 
-def list_formatter(values):
-    """
-        Return string with comma separated values
-
-        :param values:
-            Value to check
-    """
-    return u', '.join(unicode(v) for v in values)
-
-
-DEFAULT_FORMATTERS = DEFAULT_FORMATTERS.copy()
+DEFAULT_FORMATTERS = BASE_FORMATTERS.copy()
 DEFAULT_FORMATTERS.update({
     BaseList: list_formatter
 })

@@ -109,7 +109,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             from flask.ext.admin import typefmt
 
-            MY_DEFAULT_FORMATTERS = dict(typefmt.DEFAULT_FORMATTERS).extend({
+            MY_DEFAULT_FORMATTERS = dict(typefmt.BASE_FORMATTERS).extend({
                     type(None): typefmt.null_formatter
                 })
 
@@ -335,7 +335,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # Type formatters
         if self.column_type_formatters is None:
-            self.column_type_formatters = dict(typefmt.DEFAULT_FORMATTERS)
+            self.column_type_formatters = dict(typefmt.BASE_FORMATTERS)
 
         if self.column_descriptions is None:
             self.column_descriptions = dict()
