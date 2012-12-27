@@ -12,7 +12,7 @@ from flask.ext.admin.actions import action
 from flask.ext.admin.form import BaseForm
 from .filters import FilterConverter, BaseMongoEngineFilter
 from .form import model_form, CustomModelConverter
-from .typefmt import MONGOENGINE_FORMATTERS
+from .typefmt import DEFAULT_FORMATTERS
 from .tools import parse_like_term
 
 
@@ -76,7 +76,7 @@ class ModelView(BaseModelView):
         Override this attribute to use non-default converter.
     """
 
-    column_type_formatters = MONGOENGINE_FORMATTERS
+    column_type_formatters = DEFAULT_FORMATTERS
     """
         Customized type formatters for MongoEngine backend
     """

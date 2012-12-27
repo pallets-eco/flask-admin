@@ -13,6 +13,7 @@ from flask.ext.admin.model import BaseModelView
 from flask.ext.admin.actions import action
 
 from flask.ext.admin.contrib.sqlamodel import form, filters, tools
+from .typefmt import DEFAULT_FORMATTERS
 
 
 class ModelView(BaseModelView):
@@ -214,6 +215,8 @@ class ModelView(BaseModelView):
                 inline_models = (Model2,)
                 column_labels = {'models': 'Hello'}
     """
+
+    column_type_formatters = DEFAULT_FORMATTERS
 
     def __init__(self, model, session,
                  name=None, category=None, endpoint=None, url=None):
