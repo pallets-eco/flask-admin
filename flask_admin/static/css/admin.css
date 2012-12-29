@@ -69,3 +69,9 @@ form.search-form a.clear i {
 .fa-inline-field-control {
     float: right;
 }
+
+
+/* Patch Select2 */
+.select2-results li {
+    min-height: 24px !important;
+}
