@@ -394,8 +394,20 @@ class ModelView(BaseModelView):
         """
             Return list of enabled filters
         """
+        join_tables = []
         if isinstance(name, basestring):
-            attr = getattr(self.model, name, None)
+            model = self.model
+            for attribute in name.split('.'):
+                value = getattr(model, attribute)
+                if (
+                    hasattr(value, 'property')
+                    and hasattr(value.property, 'direction')
+                ):
+                    model = value.property.mapper.class_
+                    table = model.__table__
+                    if self._need_join(table):
+                        join_tables.append(table)
+                attr = value
         else:
             attr = name
 
@@ -423,9 +435,11 @@ class ModelView(BaseModelView):
                                                         visible_name)
 
                     if flt:
-                        if self._need_join(column.table):
-                            self._filter_joins[column.table.name] = column.table
-
+                        table = column.table
+                        if join_tables:
+                            self._filter_joins[table.name.name] = join_tables
+                        elif self._need_join(table.name):
+                            self._filter_joins[table.name.name] = [table.name]
                         filters.extend(flt)
 
             return filters
@@ -449,9 +463,10 @@ class ModelView(BaseModelView):
 
             if flt:
                 # If there's relation to other table, do it
-                if self._need_join(column.table):
-                    self._filter_joins[column.table.name] = column.table
-
+                if join_tables:
+                    self._filter_joins[column.table.name] = join_tables
+                elif self._need_join(column.table):
+                    self._filter_joins[column.table.name] = [column.table]
             return flt
 
     def is_valid_filter(self, filter):
@@ -581,10 +596,10 @@ class ModelView(BaseModelView):
 
                 # Figure out join
                 tbl = flt.column.table.name
-                join = self._filter_joins.get(tbl)
-                if join is not None:
-                    query = query.join(join)
-                    joins.add(tbl)
+                join_tables = self._filter_joins.get(tbl, [])
+                for table in join_tables:
+                    query = query.join(table)
+                    joins.add(table)
 
                 # Apply filter
                 query = flt.apply(query, value)
