@@ -181,6 +181,20 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_searchable_list = ('name', 'email')
     """
 
+    column_choices = None
+    """
+        Map choices to columns in list view
+
+        Example::
+
+            class MyModelView(BaseModelView):
+                column_choices = {
+                    'my_column': [
+                        ('db_value', 'display_value'),
+                    ]
+                }
+    """
+
     column_filters = None
     """
         Collection of the column filters.
@@ -329,6 +343,15 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # Search
         self._search_supported = self.init_search()
+
+        # Choices
+        if self.column_choices:
+            self._column_choices_map = dict([
+                (column, dict(choices))
+                for column, choices in self.column_choices.items()
+            ])
+        else:
+            self.column_choices = self._column_choices_map = dict()
 
         # Filters
         self._filters = self.get_filters()
@@ -480,15 +503,14 @@ class BaseModelView(BaseView, ActionsMixin):
             collection = []
 
             for n in self.column_filters:
-                if not self.is_valid_filter(n):
+                if self.is_valid_filter(n):
+                    collection.append(n)
+                else:
                     flt = self.scaffold_filters(n)
                     if flt:
                         collection.extend(flt)
                     else:
                         raise Exception('Unsupported filter type %s' % n)
-                else:
-                    collection.append(n)
-
             return collection
         else:
             return None
@@ -775,6 +797,10 @@ class BaseModelView(BaseView, ActionsMixin):
             return column_fmt(context, model, name)
 
         value = rec_getattr(model, name)
+
+        choices_map = self._column_choices_map.get(name, {})
+        if choices_map:
+            return choices_map.get(value) or value
 
         type_fmt = self.column_type_formatters.get(type(value))
         if type_fmt is not None:

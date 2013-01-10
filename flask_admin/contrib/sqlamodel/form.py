@@ -186,6 +186,12 @@ class AdminModelConverter(ModelConverterBase):
                 if override:
                     return override(**kwargs)
 
+                # Check choices
+                if mapper.class_ == self.view.model and self.view.form_choices:
+                    choices = self.view.form_choices.get(column.key)
+                    if choices:
+                        return fields.SelectField(choices=choices, **kwargs)
+
                 # Run converter
                 converter = self.get_converter(column)
 

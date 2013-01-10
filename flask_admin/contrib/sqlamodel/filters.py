@@ -86,6 +86,15 @@ class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
     pass
 
 
+
+class ChoicesEqualFilter(FilterEqual, filters.BaseFilter):
+    pass
+
+
+class ChoicesNotEqualFilter(FilterNotEqual, filters.BaseFilter):
+    pass
+
+
 # Base SQLA filter field converter
 class FilterConverter(filters.BaseFilterConverter):
     strings = (FilterEqual, FilterNotEqual, FilterLike, FilterNotLike)

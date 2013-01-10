@@ -6,6 +6,7 @@ from sqlalchemy.sql.expression import desc
 from sqlalchemy import or_, Column
 
 from flask import flash
+from flask.ext.admin.contrib.sqlamodel.filters import ChoicesEqualFilter, ChoicesNotEqualFilter
 
 from flask.ext.admin.tools import ObsoleteAttr
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
@@ -218,6 +219,18 @@ class ModelView(BaseModelView):
 
     column_type_formatters = DEFAULT_FORMATTERS
 
+    form_choices = None
+    """
+        Map choices to form fields
+
+        Example::
+
+            class MyModelView(BaseModelView):
+                form_choices = {'my_form_field': [
+                    ('db_value', 'display_value'),
+                ]
+    """
+
     def __init__(self, model, session,
                  name=None, category=None, endpoint=None, url=None):
         """
@@ -242,6 +255,9 @@ class ModelView(BaseModelView):
         self._search_joins = dict()
 
         self._filter_joins = dict()
+
+        if self.form_choices is None:
+            self.form_choices = {}
 
         super(ModelView, self).__init__(model, name, category, endpoint, url)
 
@@ -443,6 +459,14 @@ class ModelView(BaseModelView):
                 visible_name = self.get_column_name(name)
 
             type_name = type(column.type).__name__
+
+            if name in self.column_choices:
+                choices = self.column_choices[name]
+                return [
+                    ChoicesEqualFilter(column, visible_name, options=choices),
+                    ChoicesNotEqualFilter(column, visible_name, options=choices),
+                ]
+
             flt = self.filter_converter.convert(type_name,
                                                 column,
                                                 visible_name)
