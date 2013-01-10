@@ -2,10 +2,8 @@ from functools import wraps
 from re import sub
 
 from flask import Blueprint, render_template, url_for, abort, g
-
 from flask.ext.admin import babel
-
-from .helpers import set_current_view
+from flask.ext.admin import helpers as h
 
 
 def expose(url='/', methods=('GET',)):
@@ -45,13 +43,12 @@ def _wrap_view(f):
     @wraps(f)
     def inner(self, **kwargs):
         # Store current admin view
-        set_current_view(self)
+        h.set_current_view(self)
 
         # Check if administrative piece is accessible
-        h = self._handle_view(f.__name__, **kwargs)
-
-        if h is not None:
-            return h
+        abort = self._handle_view(f.__name__, **kwargs)
+        if abort is not None:
+            return abort
 
         return f(self, **kwargs)
 
@@ -224,6 +221,7 @@ class BaseView(object):
         # or enabled.
         kwargs['_gettext'] = babel.gettext
         kwargs['_ngettext'] = babel.ngettext
+        kwargs['h'] = h
 
         # Contribute extra arguments
         kwargs.update(self._template_args)
