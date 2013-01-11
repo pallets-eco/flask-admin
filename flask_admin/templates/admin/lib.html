@@ -77,7 +77,7 @@
     {{ form.hidden_tag() if form.hidden_tag is defined }}
 
     {% for f in form if f.type != 'HiddenField' and f.type != 'CSRFTokenField' %}
-      <div class="control-group{% if f.errors %} error{% endif %}">
+      <div class="control-group{{ ' error' if f.errors }}">
         <div class="control-label">
           {{ f.label.text }}
           {% if h.is_required_form_field(f) %}
