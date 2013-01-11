@@ -1,12 +1,11 @@
 import time
 import datetime
 
-from flask.globals import _request_ctx_stack
-
-from flask.ext import wtf
 from wtforms import fields, widgets
-
+from flask.globals import _request_ctx_stack
+from flask.ext import wtf
 from flask.ext.admin.babel import gettext, ngettext
+from flask.ext.admin import helpers as h
 
 
 class BaseForm(wtf.Form):
@@ -153,7 +152,9 @@ class RenderTemplateWidget(object):
         kwargs.update({
             'field': field,
             '_gettext': gettext,
-            '_ngettext': ngettext})
+            '_ngettext': ngettext,
+            'h': h,
+        })
 
         template = jinja_env.get_template(self.template)
         return template.render(kwargs)
