@@ -123,7 +123,7 @@
                         {% else %}
                             {{ name }}
                         {% endif %}
-                        {% if c in admin_view.column_descriptions %}
+                        {% if admin_view.column_descriptions.get(c) %}
                             <a class="icon-question-sign"
                                title="{{ admin_view.column_descriptions[c] }}"
                                href="#" data-role="tooltip"
@@ -183,7 +183,10 @@
 
     <script language="javascript">
         (function($) {
-            $('[data-role=tooltip]').tooltip();
+            $('[data-role=tooltip]').tooltip({
+                html: true,
+                placement: 'bottom'
+            });
             {% if filter_groups is not none and filter_data is not none %}
                 var filter = new AdminFilters(
                     '#filter_form', '.field-filters',
