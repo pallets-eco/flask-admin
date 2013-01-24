@@ -223,9 +223,53 @@ def test_column_filters():
             (2, 'contains'),
             (3, 'not contains')
         ],
-
     })
 
+    # Test filter that references property
+    view = CustomModelView(Model2, db.session,
+                           column_filters=['model1'])
+
+    eq_(view._filter_dict, {
+        'Model1 / Test1': [
+            (0, 'equals'),
+            (1, 'not equal'),
+            (2, 'contains'),
+            (3, 'not contains')
+        ],
+        'Model1 / Test2': [
+            (4, 'equals'),
+            (5, 'not equal'),
+            (6, 'contains'),
+            (7, 'not contains')
+        ],
+        'Model1 / Test3': [
+            (8, 'equals'),
+            (9, 'not equal'),
+            (10, 'contains'),
+            (11, 'not contains')
+        ],
+        'Model1 / Test4': [
+            (12, 'equals'),
+            (13, 'not equal'),
+            (14, 'contains'),
+            (15, 'not contains')
+        ],
+        'Model1 / Bool Field': [
+            (16, 'equals'),
+            (17, 'not equal'),
+        ],
+    })
+
+    # Test filter with a dot
+    view = CustomModelView(Model2, db.session,
+                           column_filters=['model1.bool_field'])
+
+    eq_(view._filter_dict, {
+        'Model1 / Bool Field': [
+            (0, 'equals'),
+            (1, 'not equal'),
+        ],
+    })
     # Fill DB
     model1_obj1 = Model1('model1_obj1', bool_field=True)
     model1_obj2 = Model1('model1_obj2')
@@ -428,6 +472,7 @@ def test_on_model_change_delete():
     url = '/admin/model1view/delete/?id=%s' % model.id
     client.post(url)
     ok_(view.deleted)
+
 
 def test_multiple_delete():
     app, db, admin = setup()

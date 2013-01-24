@@ -394,19 +394,21 @@ class ModelView(BaseModelView):
         """
             Return list of enabled filters
         """
+
         join_tables = []
         if isinstance(name, basestring):
             model = self.model
+
             for attribute in name.split('.'):
                 value = getattr(model, attribute)
-                if (
-                    hasattr(value, 'property')
-                    and hasattr(value.property, 'direction')
-                ):
+                if (hasattr(value, 'property') and
+                    hasattr(value.property, 'direction')):
                     model = value.property.mapper.class_
                     table = model.__table__
+
                     if self._need_join(table):
                         join_tables.append(table)
+
                 attr = value
         else:
             attr = name
@@ -436,10 +438,11 @@ class ModelView(BaseModelView):
 
                     if flt:
                         table = column.table
+
                         if join_tables:
-                            self._filter_joins[table.name.name] = join_tables
+                            self._filter_joins[table.name] = join_tables
                         elif self._need_join(table.name):
-                            self._filter_joins[table.name.name] = [table.name]
+                            self._filter_joins[table.name] = [table.name]
                         filters.extend(flt)
 
             return filters
@@ -451,10 +454,14 @@ class ModelView(BaseModelView):
 
             column = columns[0]
 
-            if not isinstance(name, basestring):
-                visible_name = self.get_column_name(name.property.key)
+            if self._need_join(column.table):
+                visible_name = '%s / %s' % (self.get_column_name(column.table.name),
+                                            self.get_column_name(column.name))
             else:
-                visible_name = self.get_column_name(name)
+                if not isinstance(name, basestring):
+                    visible_name = self.get_column_name(name.property.key)
+                else:
+                    visible_name = self.get_column_name(name)
 
             type_name = type(column.type).__name__
             flt = self.filter_converter.convert(type_name,
@@ -467,6 +474,7 @@ class ModelView(BaseModelView):
                     self._filter_joins[column.table.name] = join_tables
                 elif self._need_join(column.table):
                     self._filter_joins[column.table.name] = [column.table]
+
             return flt
 
     def is_valid_filter(self, filter):
@@ -594,12 +602,15 @@ class ModelView(BaseModelView):
             for idx, value in filters:
                 flt = self._filters[idx]
 
-                # Figure out join
+                # Figure out joins
                 tbl = flt.column.table.name
+
                 join_tables = self._filter_joins.get(tbl, [])
+
                 for table in join_tables:
-                    query = query.join(table)
-                    joins.add(table)
+                    if table.name not in joins:
+                        query = query.join(table)
+                        joins.add(table)
 
                 # Apply filter
                 query = flt.apply(query, value)
@@ -616,6 +627,7 @@ class ModelView(BaseModelView):
             if sort_column in self._sortable_columns:
                 sort_field = self._sortable_columns[sort_column]
 
+                # TODO: Preprocessing for joins
                 # Try to handle it as a string
                 if isinstance(sort_field, basestring):
                     # Create automatic join against a table if column name
