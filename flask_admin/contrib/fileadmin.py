@@ -375,7 +375,7 @@ class FileAdmin(BaseView, ActionsMixin):
             items.append((f, op.join(path, f), op.isdir(fp), op.getsize(fp)))
 
         # Sort by type
-        items.sort(key=itemgetter(2), reverse=True)
+        items.sort(key=itemgetter(2, 1), reverse=True)
 
         # Generate breadcrumbs
         accumulator = []
