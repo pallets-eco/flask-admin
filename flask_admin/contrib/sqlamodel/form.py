@@ -467,7 +467,7 @@ class InlineModelConverter(InlineModelConverterBase):
                 InlineModelFormList(child_form,
                                     self.session,
                                     info.model,
-                                    forward_prop.key,
+                                    reverse_prop.key,
                                     **kwargs))
 
         return form_class
