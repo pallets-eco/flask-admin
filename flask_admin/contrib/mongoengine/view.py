@@ -22,6 +22,7 @@ SORTABLE_FIELDS = set((
     mongoengine.FloatField,
     mongoengine.BooleanField,
     mongoengine.DateTimeField,
+    mongoengine.ComplexDateTimeField,
     mongoengine.ObjectIdField,
     mongoengine.DecimalField,
     mongoengine.ReferenceField,
