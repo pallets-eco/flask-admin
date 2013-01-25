@@ -27,7 +27,8 @@ SORTABLE_FIELDS = set((
     mongoengine.DecimalField,
     mongoengine.ReferenceField,
     mongoengine.EmailField,
-    mongoengine.UUIDField
+    mongoengine.UUIDField,
+    mongoengine.URLField
     ))
 
 
