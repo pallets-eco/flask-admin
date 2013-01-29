@@ -87,6 +87,7 @@
           {% endif %}
         </div>
         <div class="controls">
+        <div>
           {% if not focus_set %}
           {{ f(autofocus='autofocus')|safe }}
           {% set focus_set = True %}
@@ -104,8 +105,8 @@
           {% endfor %}
           </ul>
         {% endif %}
+        </div>
       </div>
-    </div>
     {% endfor %}
 {% endmacro %}
 
