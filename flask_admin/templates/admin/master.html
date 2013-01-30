@@ -50,9 +50,11 @@
           </ul>
           <ul class="nav pull-right">
             {% for item in admin_view.admin.menu_links() %}
-              <li>
-                <a href="{{ item.get_url() }}">{{ item.name }}</a>
-              </li>
+              {% if item.is_accessible() %}
+                <li>
+                  <a href="{{ item.get_url() }}">{{ item.name }}</a>
+                </li>
+              {% endif %}
             {% endfor %}
           </ul>
         </div>

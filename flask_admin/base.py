@@ -353,13 +353,16 @@ class MenuLink(object):
     """
         Menu additional links hierarchy.
     """
-    def __init__(self, name, url=None, view=None):
+    def __init__(self, name, url=None, endpoint=None):
         self.name = name
         self.url = url
-        self.view = view
+        self.endpoint = endpoint
 
     def get_url(self):
-        return self.url or url_for(self.view)
+        return self.url or url_for(self.endpoint)
+
+    def is_accessible(self):
+        return True
 
 
 class Admin(object):
