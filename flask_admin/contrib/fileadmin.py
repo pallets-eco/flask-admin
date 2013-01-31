@@ -162,7 +162,7 @@ class FileAdmin(BaseView, ActionsMixin):
             :param base_url:
                 Base URL for the files
             :param name:
-                Name of this view. If not provided, will be defaulted to the class name.
+                Name of this view. If not provided, will default to the class name.
             :param category:
                 View category
             :param endpoint:
@@ -171,7 +171,7 @@ class FileAdmin(BaseView, ActionsMixin):
                 URL for view
             :param verify_path:
                 Verify if path exists. If set to `True` and path does not exist
-                will throw exception.
+                will raise an exception.
         """
         self.base_path = base_path
         self.base_url = base_url
@@ -198,7 +198,7 @@ class FileAdmin(BaseView, ActionsMixin):
 
     def is_accessible_path(self, path):
         """
-            Verify if path is accessible for current user.
+            Verify if the provided path is accessible for the current user.
 
             Override to customize behavior.
 
@@ -242,7 +242,7 @@ class FileAdmin(BaseView, ActionsMixin):
 
     def is_file_editable(self, filename):
         """
-            Verify if file can be edited.
+            Determine if the file can be edited.
 
             Override to customize behavior.
 
@@ -261,7 +261,7 @@ class FileAdmin(BaseView, ActionsMixin):
 
     def is_in_folder(self, base_path, directory):
         """
-            Verify if `directory` is in `base_path` folder
+            Verify that `directory` is in `base_path` folder
 
             :param base_path:
                 Base directory path
@@ -319,9 +319,9 @@ class FileAdmin(BaseView, ActionsMixin):
         """
             Verify and normalize path.
 
-            If path is not relative to the base directory, will throw 404 exception.
+            If the path is not relative to the base directory, will raise a 404 exception.
 
-            If path does not exist, will also throw 404 exception.
+            If the path does not exist, this will also raise a 404 exception.
         """
         base_path = self.get_base_path()
 
@@ -353,7 +353,7 @@ class FileAdmin(BaseView, ActionsMixin):
             Index view method
 
             :param path:
-                Optional directory path. If not provided, will use base directory
+                Optional directory path. If not provided, will use the base directory
         """
         # Get path and verify if it is valid
         base_path, directory, path = self._normalize_path(path)
@@ -406,7 +406,7 @@ class FileAdmin(BaseView, ActionsMixin):
             Upload view method
 
             :param path:
-                Optional directory path. If not provided, will use base directory
+                Optional directory path. If not provided, will use the base directory
         """
         # Get path and verify if it is valid
         base_path, directory, path = self._normalize_path(path)
@@ -439,7 +439,7 @@ class FileAdmin(BaseView, ActionsMixin):
             Directory creation view method
 
             :param path:
-                Optional directory path. If not provided, will use base directory
+                Optional directory path. If not provided, will use the base directory
         """
         # Get path and verify if it is valid
         base_path, directory, path = self._normalize_path(path)

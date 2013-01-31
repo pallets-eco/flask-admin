@@ -30,7 +30,7 @@ def import_attribute(name):
         :param name:
             String reference.
 
-        Throws ImportError or AttributeError if module or attribute do not exist.
+        Raises ImportError or AttributeError if module or attribute do not exist.
 
         Example::
 
@@ -80,7 +80,7 @@ def rec_getattr(obj, attr, default=None):
 
 def get_dict_attr(obj, attr, default=None):
     """
-        Get attibute of the object without triggering its __getattr__.
+        Get attribute of the object without triggering its __getattr__.
 
         :param obj:
             Object
@@ -98,7 +98,7 @@ def get_dict_attr(obj, attr, default=None):
 
 def get_property(obj, name, old_name, default=None):
     """
-        Check if old property name exists and if it is - show warning message
+        Check if old property name exists and if it does - show warning message
         and return value.
 
         Otherwise, return new property value
