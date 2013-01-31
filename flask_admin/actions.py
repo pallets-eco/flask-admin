@@ -29,10 +29,10 @@ class ActionsMixin(object):
         Actions mixin.
 
         In some cases, you might work with more than one "entity" (model, file, etc) in
-        your admin view and will want to perform actions on group of entities at once.
+        your admin view and will want to perform actions on a group of entities simultaneously.
 
         In this case, you can add this functionality by doing this:
-        1. Add mixin to your administrative view class
+        1. Add this mixin to your administrative view class
         2. Call `init_actions` in your class constructor
         3. Expose actions view
         4. Import `actions.html` library and add call library macros in your template
@@ -76,7 +76,7 @@ class ActionsMixin(object):
 
     def get_actions_list(self):
         """
-            Return list and a dictionary of allowed actions.
+            Return a list and a dictionary of allowed actions.
         """
         actions = []
         actions_confirmation = {}
