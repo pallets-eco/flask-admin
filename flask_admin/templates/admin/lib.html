@@ -73,40 +73,44 @@
 {% endif %}
 {%- endmacro %}
 
+{% macro render_field(form, field, focus_set=False) %}
+  <div class="control-group{{ ' error' if field.errors }}">
+    <div class="control-label">
+      {{ field.label.text }}
+      {% if h.is_required_form_field(field) %}
+        <strong style="color: red">&#42;</strong>
+      {% else %}
+        &nbsp;
+      {% endif %}
+    </div>
+    <div class="controls">
+    <div>
+      {% if not focus_set %}
+      {{ field(autofocus='autofocus')|safe }}
+      {% set focus_set = True %}
+      {% else %}
+      {{ field()|safe }}
+      {% endif %}
+    </div>
+    {% if field.description %}
+    <p class="help-block">{{ field.description }}</p>
+    {% endif %}
+    {% if field.errors %}
+      <ul>
+      {% for e in field.errors if e is string %}
+        <li>{{ e }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
 {% macro render_form_fields(form, focus_set=False) %}
     {{ form.hidden_tag() if form.hidden_tag is defined }}
 
     {% for f in form if f.type != 'HiddenField' and f.type != 'CSRFTokenField' %}
-      <div class="control-group{{ ' error' if f.errors }}">
-        <div class="control-label">
-          {{ f.label.text }}
-          {% if h.is_required_form_field(f) %}
-            <strong style="color: red">&#42;</strong>
-          {% else %}
-            &nbsp;
-          {% endif %}
-        </div>
-        <div class="controls">
-        <div>
-          {% if not focus_set %}
-          {{ f(autofocus='autofocus')|safe }}
-          {% set focus_set = True %}
-          {% else %}
-          {{ f()|safe }}
-          {% endif %}
-        </div>
-        {% if f.description %}
-        <p class="help-block">{{ f.description }}</p>
-        {% endif %}
-        {% if f.errors %}
-          <ul>
-          {% for e in f.errors if e is string %}
-            <li>{{ e }}</li>
-          {% endfor %}
-          </ul>
-        {% endif %}
-        </div>
-      </div>
+      {{ render_field(form, f, focus_set) }}
     {% endfor %}
 {% endmacro %}
 

@@ -316,9 +316,8 @@ class ModelView(BaseModelView):
             if hasattr(p, 'columns'):
                 # Sanity check
                 if len(p.columns) > 1:
-                    raise Exception('Automatic form scaffolding is not supported' +
-                                    ' for multi-column properties (%s.%s)' % (
-                                                    self.model.__name__, p.key))
+                    # Multi-column properties are not supported
+                    continue
 
                 column = p.columns[0]
 
