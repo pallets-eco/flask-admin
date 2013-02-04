@@ -18,7 +18,7 @@ from .typefmt import DEFAULT_FORMATTERS
 
 class ModelView(BaseModelView):
     """
-        SQLALchemy model view
+        SQLAlchemy model view
 
         Usage sample::
 
@@ -90,7 +90,7 @@ class ModelView(BaseModelView):
             class MyModelView(ModelView):
                 column_searchable_list = (User.name, User.email)
 
-        Following search rules apply:
+        The following search rules apply:
 
         - If you enter *ZZZ* in the UI search field, it will generate *ILIKE '%ZZZ%'*
           statement against searchable columns.
@@ -103,8 +103,8 @@ class ModelView(BaseModelView):
         - If you prefix your search term with ^, it will find all rows
           that start with ^. So, if you entered *^ZZZ*, *ILIKE 'ZZZ%'* will be used.
 
-        - If you prefix your search term with =, it will do exact match.
-          For example, if you entered *=ZZZ*, *ILIKE 'ZZZ'* statement will be used.
+        - If you prefix your search term with =, it will perform an exact match.
+          For example, if you entered *=ZZZ*, the statement *ILIKE 'ZZZ'* will be used.
     """
 
     column_filters = None
@@ -163,11 +163,11 @@ class ModelView(BaseModelView):
     """
         If set to `False` and user deletes more than one model using built in action,
         all models will be read from the database and then deleted one by one
-        giving SQLAlchemy chance to manually cleanup any dependencies (many-to-many
+        giving SQLAlchemy a chance to manually cleanup any dependencies (many-to-many
         relationships, etc).
 
-        If set to `True`, will run `DELETE` statement which is somewhat faster,
-        but might leave corrupted data if you forget to configure `DELETE
+        If set to `True`, will run a `DELETE` statement which is somewhat faster,
+        but may leave corrupted data if you forget to configure `DELETE
         CASCADE` for your model.
     """
 
@@ -195,9 +195,9 @@ class ModelView(BaseModelView):
             class MyModelView(ModelView):
                 inline_models = (MyInlineModelForm(MyInlineModel),)
 
-        You can customize generated field name by:
+        You can customize the generated field name by:
 
-        1. Using `form_name` property as option:
+        1. Using the `form_name` property as a key to the options dictionary:
 
             class MyModelView(ModelView):
                 inline_models = ((Post, dict(form_label='Hello')))
@@ -226,15 +226,15 @@ class ModelView(BaseModelView):
             :param model:
                 Model class
             :param session:
-                SQLALchemy session
+                SQLAlchemy session
             :param name:
-                View name. If not set, will default to model name
+                View name. If not set, defaults to the model name
             :param category:
                 Category name
             :param endpoint:
-                Endpoint name. If not set, will default to model name
+                Endpoint name. If not set, defaults to the model name
             :param url:
-                Base URL. If not set, will default to '/admin/' + endpoint
+                Base URL. If not set, defaults to '/admin/' + endpoint
         """
         self.session = session
 
@@ -270,19 +270,19 @@ class ModelView(BaseModelView):
     # Scaffolding
     def scaffold_pk(self):
         """
-            Return primary key name from a model
+            Return the primary key name from a model
         """
         return tools.get_primary_key(self.model)
 
     def get_pk_value(self, model):
         """
-            Return PK value from a model object.
+            Return the PK value from a model object.
         """
         return getattr(model, self._primary_key)
 
     def scaffold_list_columns(self):
         """
-            Return list of columns from the model.
+            Return a list of columns from the model.
         """
         columns = []
 
@@ -307,7 +307,7 @@ class ModelView(BaseModelView):
 
     def scaffold_sortable_columns(self):
         """
-            Return dictionary of sortable columns.
+            Return a dictionary of sortable columns.
             Key is column name, value is sort column/field.
         """
         columns = dict()
@@ -321,7 +321,7 @@ class ModelView(BaseModelView):
 
                 column = p.columns[0]
 
-                # Can't sort by on primary and foreign keys by default
+                # Can't sort on primary or foreign keys by default
                 if column.foreign_keys:
                     continue
 
@@ -382,7 +382,7 @@ class ModelView(BaseModelView):
 
     def is_text_column_type(self, name):
         """
-            Verify if column type is text-based.
+            Verify if the provided column type is text-based.
 
             :returns:
                 ``True`` for ``String``, ``Unicode``, ``Text``, ``UnicodeText``
@@ -478,7 +478,7 @@ class ModelView(BaseModelView):
 
     def is_valid_filter(self, filter):
         """
-            Verify that provided filter object is derived from the
+            Verify that the provided filter object is derived from the
             SQLAlchemy-compatible filter class.
 
             :param filter:
@@ -521,7 +521,7 @@ class ModelView(BaseModelView):
 
     def scaffold_auto_joins(self):
         """
-            Return list of joined tables by going through the
+            Return a list of joined tables by going through the
             displayed columns.
         """
         if not self.column_auto_select_related:
@@ -668,7 +668,7 @@ class ModelView(BaseModelView):
 
     def get_one(self, id):
         """
-            Return one model by its id.
+            Return a single model by its id.
 
             :param id:
                 Model id
