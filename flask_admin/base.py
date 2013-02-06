@@ -349,6 +349,22 @@ class MenuItem(object):
         return [c for c in self._children if c.is_accessible()]
 
 
+class MenuLink(object):
+    """
+        Menu additional links hierarchy.
+    """
+    def __init__(self, name, url=None, endpoint=None):
+        self.name = name
+        self.url = url
+        self.endpoint = endpoint
+
+    def get_url(self):
+        return self.url or url_for(self.endpoint)
+
+    def is_accessible(self):
+        return True
+
+
 class Admin(object):
     """
         Collection of the admin views. Also manages menu structure.
@@ -385,6 +401,7 @@ class Admin(object):
         self._views = []
         self._menu = []
         self._menu_categories = dict()
+        self._menu_links = []
 
         if name is None:
             name = 'Admin'
@@ -419,6 +436,15 @@ class Admin(object):
         if self.app is not None:
             self.app.register_blueprint(view.create_blueprint(self))
             self._add_view_to_menu(view)
+
+    def add_link(self, link):
+        """
+            Add link to menu links collection.
+
+            :param link:
+                Link to add.
+        """
+        self._menu_links.append(link)
 
     def locale_selector(self, f):
         """
@@ -509,3 +535,9 @@ class Admin(object):
             Return the menu hierarchy.
         """
         return self._menu
+
+    def menu_links(self):
+        """
+            Return menu links.
+        """
+        return self._menu_links
