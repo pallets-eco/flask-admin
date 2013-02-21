@@ -73,7 +73,7 @@
 {% endif %}
 {%- endmacro %}
 
-{% macro render_field(form, field, focus_set=False) %}
+{% macro render_field(form, field, set_focus=False) %}
   <div class="control-group{{ ' error' if field.errors }}">
     <div class="control-label">
       {{ field.label.text }}
@@ -85,9 +85,8 @@
     </div>
     <div class="controls">
     <div>
-      {% if not focus_set %}
+      {% if set_focus %}
       {{ field(autofocus='autofocus')|safe }}
-      {% set focus_set = True %}
       {% else %}
       {{ field()|safe }}
       {% endif %}
@@ -106,11 +105,11 @@
   </div>
 {% endmacro %}
 
-{% macro render_form_fields(form, focus_set=False) %}
+{% macro render_form_fields(form, set_focus=True) %}
     {{ form.hidden_tag() if form.hidden_tag is defined }}
 
     {% for f in form if f.type != 'HiddenField' and f.type != 'CSRFTokenField' %}
-      {{ render_field(form, f, focus_set) }}
+      {{ render_field(form, f, not loop.index0 and set_focus) }}
     {% endfor %}
 {% endmacro %}
 
