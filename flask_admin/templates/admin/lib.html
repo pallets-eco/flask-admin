@@ -95,7 +95,7 @@
     <p class="help-block">{{ field.description }}</p>
     {% endif %}
     {% if field.errors %}
-      <ul>
+      <ul class="input-errors">
       {% for e in field.errors if e is string %}
         <li>{{ e }}</li>
       {% endfor %}
