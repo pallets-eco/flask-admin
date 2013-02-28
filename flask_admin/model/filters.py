@@ -29,7 +29,10 @@ class BaseFilter(object):
             :param view:
                 Associated administrative view class.
         """
-        return self.options
+        if self.options:
+            return [(v, unicode(n)) for v, n in self.options]
+
+        return None
 
     def validate(self, value):
         """

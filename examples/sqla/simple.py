@@ -71,6 +71,16 @@ class UserInfo(db.Model):
         return '%s - %s' % (self.key, self.value)
 
 
+class Tree(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+    parent_id = db.Column(db.Integer, db.ForeignKey('tree.id'))
+    parent = db.relationship('Tree', remote_side=[id], backref='children')
+
+    def __unicode__(self):
+        return self.name
+
+
 # Flask views
 @app.route('/')
 def index():
@@ -112,6 +122,10 @@ class PostAdmin(sqlamodel.ModelView):
         super(PostAdmin, self).__init__(Post, session)
 
 
+class TreeView(sqlamodel.ModelView):
+    inline_models = (Tree,)
+
+
 if __name__ == '__main__':
     # Create admin
     admin = admin.Admin(app, 'Simple Models')
@@ -120,6 +134,7 @@ if __name__ == '__main__':
     admin.add_view(UserAdmin(User, db.session))
     admin.add_view(sqlamodel.ModelView(Tag, db.session))
     admin.add_view(PostAdmin(db.session))
+    admin.add_view(TreeView(Tree, db.session))
 
     # Create DB
     db.create_all()

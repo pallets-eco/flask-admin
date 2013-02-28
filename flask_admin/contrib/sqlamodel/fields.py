@@ -234,9 +234,6 @@ class InlineModelFormList(InlineFieldList):
 
             field.populate_obj(model, None)
 
-            # Force relation
-            setattr(model, self.prop, obj)
-
 
 def get_pk_from_identity(obj):
     # TODO: Remove me

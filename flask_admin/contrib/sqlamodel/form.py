@@ -283,6 +283,20 @@ class AdminModelConverter(ModelConverterBase):
         return form.Select2TagsField(save_as_list=True, **field_args)
 
 
+def _resolve_prop(prop):
+    """
+        Resolve proxied property
+
+        :param prop:
+            Property to resolve
+    """
+    # Try to see if it is proxied property
+    if hasattr(prop, '_proxied_property'):
+        return prop._proxied_property
+
+    return prop
+
+
 # Get list of fields and generate form
 def get_form(model, converter,
             base_class=form.BaseForm,
@@ -326,11 +340,8 @@ def get_form(model, converter,
         def find(name):
             # Try to look it up in properties list first
             p = props.get(name)
-            if p is not None:
-                # Try to see if it is proxied property
-                if hasattr(p, '_proxied_property'):
-                    return p._proxied_property
 
+            if p is not None:
                 return p
 
             # If it is hybrid property or alias, look it up in a model itself
@@ -346,10 +357,12 @@ def get_form(model, converter,
         properties = (x for x in properties if x[0] not in exclude)
 
     field_dict = {}
-    for name, prop in properties:
+    for name, p in properties:
         # Ignore protected properties
         if ignore_hidden and name.startswith('_'):
             continue
+
+        prop = _resolve_prop(p)
 
         field = converter.convert(model, mapper, prop, field_args.get(name), hidden_pk)
         if field is not None:
@@ -473,7 +486,7 @@ class InlineModelConverter(InlineModelConverterBase):
                 InlineModelFormList(child_form,
                                     self.session,
                                     info.model,
-                                    forward_prop.key,
+                                    reverse_prop.key,
                                     **kwargs))
 
         return form_class

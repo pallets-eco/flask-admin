@@ -115,7 +115,7 @@ Steps to add new model backend:
 
         class MyBaseFilter(BaseFilter):
             def __init__(self, column, name, options=None, data_type=None):
-                super(MyBaeFilter, self).__init__(name, options, data_type)
+                super(MyBaseFilter, self).__init__(name, options, data_type)
 
                 self.column = column
 

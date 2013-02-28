@@ -94,8 +94,8 @@ def test_model():
     model = Model1.select().get()
     eq_(model.test1, 'test1large')
     eq_(model.test2, 'test2')
-    eq_(model.test3, None)
-    eq_(model.test4, None)
+    ok_(model.test3 is None or model.test3 == '')
+    ok_(model.test4 is None or model.test4 == '')
 
     rv = client.get('/admin/model1view/')
     eq_(rv.status_code, 200)
@@ -112,8 +112,8 @@ def test_model():
     model = Model1.select().get()
     eq_(model.test1, 'test1small')
     eq_(model.test2, 'test2large')
-    eq_(model.test3, None)
-    eq_(model.test4, None)
+    ok_(model.test3 is None or model.test3 == '')
+    ok_(model.test4 is None or model.test4 == '')
 
     url = '/admin/model1view/delete/?id=%s' % model.id
     rv = client.post(url)

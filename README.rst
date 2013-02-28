@@ -8,15 +8,14 @@ Flask-Admin
 Introduction
 ------------
 
-This is library for building adminstrative interface on top of Flask framework.
+This is a library for building an administrative interface on top of the Flask framework.
 
-Flask-Admin comes with few batteries out of the box: model scaffolding for `SQLAlchemy <http://www.sqlalchemy.org/>`_,
-`MongoEngine <http://mongoengine.org/>`_ and `Peewee <https://github.com/coleifer/peewee>`_ ORMs and
-simple file management interface.
+Flask-Admin comes with a few batteries included: model scaffolding for `SQLAlchemy <http://www.sqlalchemy.org/>`_,
+`MongoEngine <http://mongoengine.org/>`_ and `Peewee <https://github.com/coleifer/peewee>`_ ORMs as well as a simple file management interface.
 
-However, you're not limited by provided functionality - instead of providing simple scaffolding for the ORM
-models, Flask-Admin provides tools that can be used to build adminstrative interface of any complexity,
-using consistent look and feel.
+You're not limited by the default functionality - instead of providing simple scaffolding for the ORM
+models, Flask-Admin provides tools that can be used to construct administrative interfaces of any complexity,
+using a consistent look and feel.
 
 Documentation
 -------------
@@ -26,7 +25,7 @@ Flask-Admin is extensively documented, you can find `documentation here <http://
 3rd Party Stuff
 ---------------
 
-Flask-Admin is built with help of `Twitter Bootstrap <http://twitter.github.com/bootstrap/>`_ and `Select2 <https://github.com/ivaynberg/select2>`_.
+Flask-Admin is built with the help of `Twitter Bootstrap <http://twitter.github.com/bootstrap/>`_ and `Select2 <https://github.com/ivaynberg/select2>`_.
 
 Kudos
 -----
@@ -36,4 +35,4 @@ Some ideas were taken from the `Flask-Admin <https://github.com/wilsaj/flask-adm
 Examples
 --------
 
-Library comes with few examples, you can find them in `examples` directory.
+The library comes with a few examples, you can find them in the `examples` directory.

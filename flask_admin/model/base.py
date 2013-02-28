@@ -14,17 +14,17 @@ class BaseModelView(BaseView, ActionsMixin):
     """
         Base model view.
 
-        View does not make any assumptions on how models are stored or managed, but expects following:
+        This view does not make any assumptions on how models are stored or managed, but expects the following:
 
-            1. Model is an object
-            2. Model contains properties
-            3. Each model contains attribute which uniquely identifies it (i.e. primary key for database model)
-            4. You can get list of sorted models with pagination applied from a data source
+            1. The provided model is an object
+            2. The model contains properties
+            3. Each model contains an attribute which uniquely identifies it (i.e. a primary key for a database model)
+            4. It is possible to retrieve a list of sorted models with pagination applied from a data source
             5. You can get one model by its identifier from the data source
 
-        Essentially, if you want to support new data store, all you have to do:
+        Essentially, if you want to support a new data store, all you have to do is:
 
-            1. Derive from `BaseModelView` class
+            1. Derive from the `BaseModelView` class
             2. Implement various data-related methods (`get_list`, `get_one`, `create_model`, etc)
             3. Implement automatic form generation from the model representation (`scaffold_form`)
     """
@@ -81,7 +81,7 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(BaseModelView):
                 column_formatters = dict(price=lambda c, m, p: m.price*2)
 
-        Callback function has following prototype::
+        The Callback function has the prototype::
 
             def formatter(context, model, name):
                 # context is instance of jinja2.runtime.Context
@@ -92,19 +92,19 @@ class BaseModelView(BaseView, ActionsMixin):
 
     column_type_formatters = ObsoleteAttr('column_type_formatters', 'list_type_formatters', None)
     """
-        Dictionary of value type formatters to be used in list view.
+        Dictionary of value type formatters to be used in the list view.
 
         By default, two types are formatted:
-        1. ``None`` will be displayed as empty string
-        2. ``bool`` will be displayed as check if it is ``True``
+        1. ``None`` will be displayed as an empty string
+        2. ``bool`` will be displayed as a checkmark if it is ``True``
 
-        If you don't like default behavior and don't want any type formatters
-        applied, just override this property with empty dictionary::
+        If you don't like the default behavior and don't want any type formatters
+        applied, just override this property with an empty dictionary::
 
             class MyModelView(BaseModelView):
                 column_type_formatters = dict()
 
-        If you want to display `NULL` instead of empty string, you can do
+        If you want to display `NULL` instead of an empty string, you can do
         something like this::
 
             from flask.ext.admin import typefmt
@@ -155,13 +155,13 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_sortable_list = ('name', 'last_name')
 
         If you want to explicitly specify field/column to be used while
-        sorting, you can use tuple::
+        sorting, you can use a tuple::
 
             class MyModelView(BaseModelView):
                 column_sortable_list = ('name', ('user', 'user.username'))
 
         When using SQLAlchemy models, model attributes can be used instead
-        of the string::
+        of strings::
 
             class MyModelView(BaseModelView):
                 column_sortable_list = ('name', ('user', User.username))
@@ -171,9 +171,9 @@ class BaseModelView(BaseView, ActionsMixin):
                                           'searchable_columns',
                                           None)
     """
-        Collection of the searchable columns. It is assumed that only
-        text-only fields are searchable, but it is up for a model
-        implementation to make decision.
+        A collection of the searchable columns. It is assumed that only
+        text-only fields are searchable, but it is up to the model
+        implementation to decide.
 
         Example::
 
@@ -211,7 +211,7 @@ class BaseModelView(BaseView, ActionsMixin):
                                      'list_display_pk',
                                      False)
     """
-        Controls if primary key should be displayed in list view.
+        Controls if the primary key should be displayed in the list view.
     """
 
     form = None
@@ -288,7 +288,7 @@ class BaseModelView(BaseView, ActionsMixin):
     # Various settings
     page_size = 20
     """
-        Default page size.
+        Default page size for pagination.
     """
 
     def __init__(self, model,
@@ -299,11 +299,11 @@ class BaseModelView(BaseView, ActionsMixin):
             :param model:
                 Model class
             :param name:
-                View name. If not provided, will use model class name
+                View name. If not provided, will use the model class name
             :param category:
                 View category
             :param endpoint:
-                Base endpoint. If not provided, will use model name + 'view'.
+                Base endpoint. If not provided, will use the model name + 'view'.
                 For example if model name was 'User', endpoint will be
                 'userview'
             :param url:
@@ -406,7 +406,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
     def get_column_name(self, field):
         """
-            Return human-readable column name.
+            Return a human-readable column name.
 
             :param field:
                 Model field name.
@@ -418,9 +418,9 @@ class BaseModelView(BaseView, ActionsMixin):
 
     def get_list_columns(self):
         """
-            Returns list of the model field names. If `column_list` was
+            Returns a list of the model field names. If `column_list` was
             set, returns it. Otherwise calls `scaffold_list_columns`
-            to generate list from the model.
+            to generate the list from the model.
         """
         columns = self.column_list
 
@@ -438,14 +438,14 @@ class BaseModelView(BaseView, ActionsMixin):
             Returns dictionary of sortable columns. Must be implemented in
             the child class.
 
-            Expected return format is dictionary, where key is field name and
-            value is property name.
+            Expected return format is a dictionary, where keys are field names and
+            values are property names.
         """
         raise NotImplemented('Please implement scaffold_sortable_columns method')
 
     def get_sortable_columns(self):
         """
-            Returns dictionary of the sortable columns. Key is a model
+            Returns a dictionary of the sortable columns. Key is a model
             field name and value is sort column (for example - attribute).
 
             If `column_sortable_list` is set, will use it. Otherwise, will call
@@ -482,10 +482,10 @@ class BaseModelView(BaseView, ActionsMixin):
 
     def is_valid_filter(self, filter):
         """
-            Verify that provided filter object is valid.
+            Verify that the provided filter object is valid.
 
             Override in model backend implementation to verify if
-            provided filter type is allowed.
+            the provided filter type is allowed.
 
             :param filter:
                 Filter object to verify.
@@ -494,7 +494,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
     def get_filters(self):
         """
-            Return list of filter objects.
+            Return a list of filter objects.
 
             If your model backend implementation does not support filters,
             override this method and return `None`.
@@ -590,10 +590,9 @@ class BaseModelView(BaseView, ActionsMixin):
     # Database-related API
     def get_list(self, page, sort_field, sort_desc, search, filters):
         """
-            Return list of models from the data source with applied pagination
-            and sorting.
-
-            Must be implemented in child class.
+            Return a paginated and sorted list of models from the data source.
+            
+            Must be implemented in the child class.
 
             :param page:
                 Page number, 0 based. Can be set to None if it is first page.
@@ -623,7 +622,7 @@ class BaseModelView(BaseView, ActionsMixin):
     # Model handlers
     def on_model_change(self, form, model):
         """
-            Allow to do some actions after a model was created or updated.
+            Perform some actions after a model is created or updated.
 
             Called from create_model and update_model in the same transaction
             (if it has any meaning for a store backend).
@@ -634,7 +633,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
     def on_model_delete(self, model):
         """
-            Allow to do some actions before a model will be deleted.
+            Perform some actions before a model is deleted.
 
             Called from delete_model in the same transaction
             (if it has any meaning for a store backend).
@@ -775,7 +774,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Override this method to allow or disallow actions based
             on some condition.
 
-            Default implementation only checks if particular action
+            The default implementation only checks if the particular action
             is not in `action_disallowed_list`.
         """
         return name not in self.action_disallowed_list
@@ -783,7 +782,7 @@ class BaseModelView(BaseView, ActionsMixin):
     @contextfunction
     def get_list_value(self, context, model, name):
         """
-            Returns value to be displayed in list view
+            Returns the value to be displayed in the list view
 
             :param context:
                 :py:class:`jinja2.runtime.Context`

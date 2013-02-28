@@ -32,9 +32,9 @@
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ item.name }}<b class="caret"></b></a>
                     <ul class="dropdown-menu">
                       {% for child in children %}
-                      {% if child.is_active(admin_view) %}<li class="active">{% else %}<li>{% endif %}
-                        <a href="{{ child.get_url() }}">{{ child.name }}</a>
-                      </li>
+                        {% if child.is_active(admin_view) %}<li class="active">{% else %}<li>{% endif %}
+                          <a href="{{ child.get_url() }}">{{ child.name }}</a>
+                        </li>
                       {% endfor %}
                     </ul>
                   </li>
@@ -45,6 +45,15 @@
                     <a href="{{ item.get_url() }}">{{ item.name }}</a>
                   </li>
                 {% endif %}
+              {% endif %}
+            {% endfor %}
+          </ul>
+          <ul class="nav pull-right">
+            {% for item in admin_view.admin.menu_links() %}
+              {% if item.is_accessible() %}
+                <li>
+                  <a href="{{ item.get_url() }}">{{ item.name }}</a>
+                </li>
               {% endif %}
             {% endfor %}
           </ul>

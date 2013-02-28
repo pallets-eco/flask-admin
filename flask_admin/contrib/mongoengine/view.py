@@ -22,11 +22,13 @@ SORTABLE_FIELDS = set((
     mongoengine.FloatField,
     mongoengine.BooleanField,
     mongoengine.DateTimeField,
+    mongoengine.ComplexDateTimeField,
     mongoengine.ObjectIdField,
     mongoengine.DecimalField,
     mongoengine.ReferenceField,
     mongoengine.EmailField,
-    mongoengine.UUIDField
+    mongoengine.UUIDField,
+    mongoengine.URLField
     ))
 
 
@@ -73,7 +75,7 @@ class ModelView(BaseModelView):
     """
         Field to filter converter.
 
-        Override this attribute to use non-default converter.
+        Override this attribute to use a non-default converter.
     """
 
     column_type_formatters = DEFAULT_FORMATTERS
@@ -121,7 +123,7 @@ class ModelView(BaseModelView):
 
     def get_pk_value(self, model):
         """
-            Return primary key value from the model instance
+            Return the primary key value from the model instance
 
             :param model:
                 Model instance
@@ -152,7 +154,7 @@ class ModelView(BaseModelView):
 
     def scaffold_sortable_columns(self):
         """
-            Return sortable columns dictionary (name, field)
+            Return a dictionary of sortable columns (name, field)
         """
         columns = {}
 
@@ -220,7 +222,7 @@ class ModelView(BaseModelView):
 
     def is_valid_filter(self, filter):
         """
-            Validate if it is valid MongoEngine filter
+            Validate if the provided filter is a valid MongoEngine filter
 
             :param filter:
                 Filter object
@@ -252,7 +254,7 @@ class ModelView(BaseModelView):
             :param search:
                 Search criteria
             :param filters:
-                List of applied fiters
+                List of applied filters
             :param execute:
                 Run query immediately or not
         """
@@ -305,7 +307,7 @@ class ModelView(BaseModelView):
 
     def get_one(self, id):
         """
-            Return single model instance by ID
+            Return a single model instance by its ID
 
             :param id:
                 Model ID

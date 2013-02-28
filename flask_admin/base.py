@@ -2,10 +2,8 @@ from functools import wraps
 from re import sub
 
 from flask import Blueprint, render_template, url_for, abort, g
-
 from flask.ext.admin import babel
-
-from .helpers import set_current_view
+from flask.ext.admin import helpers as h
 
 
 def expose(url='/', methods=('GET',)):
@@ -45,13 +43,12 @@ def _wrap_view(f):
     @wraps(f)
     def inner(self, **kwargs):
         # Store current admin view
-        set_current_view(self)
+        h.set_current_view(self)
 
         # Check if administrative piece is accessible
-        h = self._handle_view(f.__name__, **kwargs)
-
-        if h is not None:
-            return h
+        abort = self._handle_view(f.__name__, **kwargs)
+        if abort is not None:
+            return abort
 
         return f(self, **kwargs)
 
@@ -110,7 +107,7 @@ class BaseView(object):
             arguments you want to pass to the template and call parent view.
 
             These arguments are local for this request and will be discarded
-            in next request.
+            in the next request.
 
             Any value passed through ``_template_args`` will override whatever
             parent view function passed to the template.
@@ -136,17 +133,17 @@ class BaseView(object):
             Constructor.
 
             :param name:
-                Name of this view. If not provided, will be defaulted to the class name.
+                Name of this view. If not provided, will default to the class name.
             :param category:
-                View category. If not provided, will be shown as a top-level menu item. Otherwise, will
+                View category. If not provided, this view will be shown as a top-level menu item. Otherwise, it will
                 be in a submenu.
             :param endpoint:
-                Base endpoint name for the view. For example, if there's view method called "index" and
-                endpoint was set to "myadmin", you can use `url_for('myadmin.index')` to get URL to the
-                view method. By default, equals to the class name in lower case.
+                Base endpoint name for the view. For example, if there's a view method called "index" and
+                endpoint is set to "myadmin", you can use `url_for('myadmin.index')` to get the URL to the
+                view method. Defaults to the class name in lower case.
             :param url:
-                Base URL. If provided, affects how URLs are generated. For example, if url parameter
-                equals to "test", resulting URL will look like "/admin/test/". If not provided, will
+                Base URL. If provided, affects how URLs are generated. For example, if the url parameter
+                is "test", the resulting URL will look like "/admin/test/". If not provided, will
                 use endpoint as a base url. However, if URL starts with '/', absolute path is assumed
                 and '/admin/' prefix won't be applied.
         """
@@ -224,6 +221,7 @@ class BaseView(object):
         # or enabled.
         kwargs['_gettext'] = babel.gettext
         kwargs['_ngettext'] = babel.ngettext
+        kwargs['h'] = h
 
         # Contribute extra arguments
         kwargs.update(self._template_args)
@@ -232,7 +230,7 @@ class BaseView(object):
 
     def _prettify_name(self, name):
         """
-            Prettify class name by splitting name by capital characters. So, 'MySuperClass' will look like 'My Super Class'
+            Prettify a class name by splitting the name on capitalized characters. So, 'MySuperClass' becomes 'My Super Class'
 
             :param name:
                 String to prettify
@@ -243,10 +241,10 @@ class BaseView(object):
         """
             Override this method to add permission checks.
 
-            Flask-Admin does not make any assumptions about authentication system used in your application, so it is
-            up for you to implement it.
+            Flask-Admin does not make any assumptions about the authentication system used in your application, so it is
+            up to you to implement it.
 
-            By default, it will allow access for the everyone.
+            By default, it will allow access for everyone.
         """
         return True
 
@@ -254,7 +252,7 @@ class BaseView(object):
         """
             This method will be executed before calling any view method.
 
-            By default, it will check if admin class is accessible and if it is not - will
+            By default, it will check if the admin class is accessible and if it is not it will
             throw HTTP 404 error.
 
             :param name:
@@ -280,10 +278,10 @@ class AdminIndexView(BaseView):
 
             admin = Admin(index_view=MyHomeView())
 
-        Default values for the index page are following:
+        Default values for the index page are:
 
-        * If name is not provided, 'Home' will be used.
-        * If endpoint is not provided, will use ``admin``
+        * If a name is not provided, 'Home' will be used.
+        * If an endpoint is not provided, will default to ``admin``
         * Default URL route is ``/admin``.
         * Automatically associates with static folder.
         * Default template is ``admin/index.html``
@@ -351,9 +349,25 @@ class MenuItem(object):
         return [c for c in self._children if c.is_accessible()]
 
 
+class MenuLink(object):
+    """
+        Menu additional links hierarchy.
+    """
+    def __init__(self, name, url=None, endpoint=None):
+        self.name = name
+        self.url = url
+        self.endpoint = endpoint
+
+    def get_url(self):
+        return self.url or url_for(self.endpoint)
+
+    def is_accessible(self):
+        return True
+
+
 class Admin(object):
     """
-        Collection of the views. Also manages menu structure.
+        Collection of the admin views. Also manages menu structure.
     """
     def __init__(self, app=None, name=None,
                  url=None, subdomain=None,
@@ -366,19 +380,19 @@ class Admin(object):
             :param app:
                 Flask application object
             :param name:
-                Application name. Will be displayed in main menu and as a page title. If not provided, defaulted to "Admin"
+                Application name. Will be displayed in the main menu and as a page title. Defaults to "Admin"
             :param url:
                 Base URL
             :param subdomain:
                 Subdomain to use
             :param index_view:
-                Home page view to use. If not provided, will use `AdminIndexView`.
+                Home page view to use. Defaults to `AdminIndexView`.
             :param translations_path:
-                Location of the translation message catalogs. By default will use translations
-                shipped with the Flask-Admin.
+                Location of the translation message catalogs. By default will use the translations
+                shipped with Flask-Admin.
             :param endpoint:
-                Base endpoint name for index view. If you use multiple instances of `Admin` class with
-                one Flask application, you have to set unique endpoint name for each instance.
+                Base endpoint name for index view. If you use multiple instances of the `Admin` class with
+                a single Flask application, you have to set a unique endpoint name for each instance.
         """
         self.app = app
 
@@ -387,6 +401,7 @@ class Admin(object):
         self._views = []
         self._menu = []
         self._menu_categories = dict()
+        self._menu_links = []
 
         if name is None:
             name = 'Admin'
@@ -409,7 +424,7 @@ class Admin(object):
 
     def add_view(self, view):
         """
-            Add view to the collection.
+            Add a view to the collection.
 
             :param view:
                 View to add.
@@ -422,9 +437,18 @@ class Admin(object):
             self.app.register_blueprint(view.create_blueprint(self))
             self._add_view_to_menu(view)
 
+    def add_link(self, link):
+        """
+            Add link to menu links collection.
+
+            :param link:
+                Link to add.
+        """
+        self._menu_links.append(link)
+
     def locale_selector(self, f):
         """
-            Installs locale selector for current ``Admin`` instance.
+            Installs a locale selector for the current ``Admin`` instance.
 
             Example::
 
@@ -455,7 +479,7 @@ class Admin(object):
 
     def _add_view_to_menu(self, view):
         """
-            Add view to the menu tree
+            Add a view to the menu tree
 
             :param view:
                 View to add
@@ -474,7 +498,7 @@ class Admin(object):
 
     def init_app(self, app):
         """
-            Register all views with Flask application.
+            Register all views with the Flask application.
 
             :param app:
                 Flask application instance
@@ -508,6 +532,12 @@ class Admin(object):
 
     def menu(self):
         """
-            Return menu hierarchy.
+            Return the menu hierarchy.
         """
         return self._menu
+
+    def menu_links(self):
+        """
+            Return menu links.
+        """
+        return self._menu_links
