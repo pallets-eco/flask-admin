@@ -469,9 +469,11 @@ class ModelView(BaseModelView):
 
             column = columns[0]
 
-            if self._need_join(column.table):
-                visible_name = '%s / %s' % (self.get_column_name(column.table.name),
-                                            self.get_column_name(column.name))
+            if self._need_join(column.table) and name not in self.column_labels:
+                visible_name = '%s / %s' % (
+                    self.get_column_name(column.table.name),
+                    self.get_column_name(column.name)
+                )
             else:
                 if not isinstance(name, basestring):
                     visible_name = self.get_column_name(name.property.key)
@@ -479,6 +481,9 @@ class ModelView(BaseModelView):
                     visible_name = self.get_column_name(name)
 
             type_name = type(column.type).__name__
+
+            if join_tables:
+                self._filter_joins[column.table.name] = join_tables
 
             if name in self.column_choices:
                 choices = self.column_choices[name]
@@ -491,12 +496,8 @@ class ModelView(BaseModelView):
                                                 column,
                                                 visible_name)
 
-            if flt:
-                # If there's relation to other table, do it
-                if join_tables:
-                    self._filter_joins[column.table.name] = join_tables
-                elif self._need_join(column.table):
-                    self._filter_joins[column.table.name] = [column.table]
+            if flt and not join_tables and self._need_join(column.table):
+                self._filter_joins[column.table.name] = [column.table]
 
             return flt
 
