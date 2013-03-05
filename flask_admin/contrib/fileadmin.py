@@ -346,6 +346,66 @@ class FileAdmin(BaseView, ActionsMixin):
 
         return True
 
+    def on_rename(self, full_path, dir_base, filename):
+        """
+            Perform some actions after a file or directory has been renamed.
+
+            Called from rename method
+
+            By default do nothing.
+        """
+        pass
+
+    def on_edit_file(self, full_path, path):
+        """
+            Perform some actions after a file has been successfully changed.
+
+            Called from edit method
+
+            By default do nothing.
+        """
+        pass
+
+    def on_file_upload(self, directory, path, filename):
+        """
+            Perform some actions after a file has been successfully uploaded.
+
+            Called from upload method
+
+            By default do nothing.
+        """
+        pass
+
+    def on_mkdir(self, parent_dir, dir_name):
+        """
+            Perform some actions after a directory has successfully been created.
+
+            Called from mkdir method
+
+            By default do nothing.
+        """
+        pass
+
+    def on_directory_delete(self, full_path, dir_name):
+        """
+            Perform some actions after a directory has successfully been deleted.
+
+            Called from delete method
+
+            By default do nothing.
+        """
+        pass
+
+    def on_file_delete(self, full_path, filename):
+        """
+            Perform some actions after a file has successfully been deleted.
+
+            Called from delete method
+
+            By default do nothing.
+        """
+        pass
+
     @expose('/')
     @expose('/b/<path:path>')
     def index(self, path=None):
@@ -421,11 +481,12 @@ class FileAdmin(BaseView, ActionsMixin):
                                secure_filename(form.upload.data.filename))
 
             if op.exists(filename):
-                flash(gettext('File "%(name)s" already exists.', name=form.upload.data.filename),
+                flash(gettext('File "%(name)s" already exists.', name=filename),
                       'error')
             else:
                 try:
                     self.save_file(filename, form.upload.data)
+                    self.on_file_upload(directory, path, filename)
                     return redirect(self._get_dir_url('.index', path))
                 except Exception, ex:
                     flash(gettext('Failed to save file: %(error)s', error=ex))
@@ -455,6 +516,7 @@ class FileAdmin(BaseView, ActionsMixin):
         if form.validate_on_submit():
             try:
                 os.mkdir(op.join(directory, form.name.data))
+                self.on_mkdir(directory, form.name.data)
                 return redirect(dir_url)
             except Exception, ex:
                 flash(gettext('Failed to create directory: %(error)s', ex), 'error')
@@ -489,12 +551,14 @@ class FileAdmin(BaseView, ActionsMixin):
 
             try:
                 shutil.rmtree(full_path)
+                self.on_diretory_delete(full_path, path)
                 flash(gettext('Directory "%s" was successfully deleted.' % path))
             except Exception, ex:
                 flash(gettext('Failed to delete directory: %(error)s', error=ex), 'error')
         else:
             try:
                 os.remove(full_path)
+                self.on_file_delete(full_path, path)
                 flash(gettext('File "%(name)s" was successfully deleted.', name=path))
             except Exception, ex:
                 flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
@@ -530,6 +594,7 @@ class FileAdmin(BaseView, ActionsMixin):
                 filename = secure_filename(form.name.data)
 
                 os.rename(full_path, op.join(dir_base, filename))
+                self.on_rename(full_path, dir_base, filename)
                 flash(gettext('Successfully renamed "%(src)s" to "%(dst)s"',
                       src=op.basename(path),
                       dst=filename))
@@ -575,6 +640,7 @@ class FileAdmin(BaseView, ActionsMixin):
                     flash(gettext("Error saving changes to %(name)s.", name=path), 'error')
                     error = True
                 else:
+                    self.on_edit_file(full_path, path)
                     flash(gettext("Changes to %(name)s saved successfully.", name=path))
                     return redirect(next_url)
         else:
@@ -600,7 +666,7 @@ class FileAdmin(BaseView, ActionsMixin):
                     form.content.data = content
 
         return self.render(self.edit_template, dir_url=dir_url, path=path,
-                        form=form, error=error)
+                           form=form, error=error)
 
     @expose('/action/', methods=('POST',))
     def action_view(self):
