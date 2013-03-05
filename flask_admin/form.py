@@ -27,7 +27,9 @@ class BaseForm(wtf.Form):
         """
         # TODO: Optimize me
         for f in self:
-            if isinstance(f, wtf.FileField):
+            if f.name.startswith('_'):
+                continue
+            if isinstance(f, wtf.FileField) or (hasattr(f, 'form') and f.form.has_file_field):
                 return True
 
         return False
