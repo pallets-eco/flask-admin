@@ -1,3 +1,5 @@
+This fork has been made to contribute to mrjoes's repo, with a focus on file upload handling
+
 Flask-Admin
 ===========
 
