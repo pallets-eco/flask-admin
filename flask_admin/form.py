@@ -29,9 +29,14 @@ class BaseForm(wtf.Form):
         for f in self:
             if f.name.startswith('_'):
                 continue
-            if isinstance(f, wtf.FileField) or (hasattr(f, 'form') and f.form.has_file_field):
+            if isinstance(f, wtf.FileField):
                 return True
-
+            else:
+                try:
+                    if f.form.has_file_field:
+                        return True
+                except AttributeError:
+                        continue
         return False
 
 
