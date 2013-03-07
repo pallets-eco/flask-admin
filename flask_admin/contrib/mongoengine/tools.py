@@ -3,7 +3,7 @@ def parse_like_term(term):
         Parse search term into (operation, term) tuple. Recognizes operators
         in the begining of the search term.
         
-        * = case insensitive (can preceed other operators)
+        * = case insensitive (can precede other operators)
         ^ = starts with
         = = exact
 
