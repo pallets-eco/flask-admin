@@ -1,7 +1,7 @@
 def parse_like_term(term):
     """
         Parse search term into (operation, term) tuple. Recognizes operators
-        in the begining of the search term.
+        in the beginning of the search term.
         
         * = case insensitive (can precede other operators)
         ^ = starts with
