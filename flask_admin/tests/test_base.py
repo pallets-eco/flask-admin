@@ -105,9 +105,10 @@ def test_base_registration():
 
 def test_admin_customizations():
     app = Flask(__name__)
-    admin = base.Admin(app, name='Test', url='/foobar')
+    admin = base.Admin(app, name='Test', url='/foobar', static_url_path='/static/my/admin')
     eq_(admin.name, 'Test')
     eq_(admin.url, '/foobar')
+    eq_(admin.index_view.blueprint.static_url_path, '/static/my/admin')
 
     client = app.test_client()
     rv = client.get('/foobar/')
@@ -154,6 +155,10 @@ def test_baseview_registration():
     view = MockView(endpoint='test')
     view.create_blueprint(base.Admin(url='/'))
     eq_(view.url, '/test')
+    
+    view = MockView(static_url_path='/static/my/test')
+    view.create_blueprint(base.Admin())
+    eq_(view.blueprint.static_url_path, '/static/my/test')
 
 
 def test_baseview_urls():

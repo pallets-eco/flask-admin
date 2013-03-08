@@ -128,7 +128,7 @@ class BaseView(object):
 
         return args
 
-    def __init__(self, name=None, category=None, endpoint=None, url=None, static_folder=None):
+    def __init__(self, name=None, category=None, endpoint=None, url=None, static_folder=None, static_url_path=None):
         """
             Constructor.
 
@@ -146,12 +146,15 @@ class BaseView(object):
                 is "test", the resulting URL will look like "/admin/test/". If not provided, will
                 use endpoint as a base url. However, if URL starts with '/', absolute path is assumed
                 and '/admin/' prefix won't be applied.
+            :param static_url_path:
+                Static URL Path. If provided, this specifies the path to the static url directory.
         """
         self.name = name
         self.category = category
         self.endpoint = endpoint
         self.url = url
         self.static_folder = static_folder
+        self.static_url_path = static_url_path
 
         # Initialized from create_blueprint
         self.admin = None
@@ -171,6 +174,10 @@ class BaseView(object):
         # If endpoint name is not provided, get it from the class name
         if self.endpoint is None:
             self.endpoint = self.__class__.__name__.lower()
+            
+        # If the static_url_path is not provided, use the admin's
+        if not self.static_url_path:
+            self.static_url_path = admin.static_url_path
 
         # If url is not provided, generate it from endpoint name
         if self.url is None:
@@ -198,7 +205,8 @@ class BaseView(object):
                                    url_prefix=self.url,
                                    subdomain=self.admin.subdomain,
                                    template_folder='templates',
-                                   static_folder=self.static_folder)
+                                   static_folder=self.static_folder,
+                                   static_url_path=self.static_url_path)
 
         for url, name, methods in self._urls:
             self.blueprint.add_url_rule(url,
@@ -376,7 +384,8 @@ class Admin(object):
                  url=None, subdomain=None,
                  index_view=None,
                  translations_path=None,
-                 endpoint=None):
+                 endpoint=None,
+                 static_url_path=None):
         """
             Constructor.
 
@@ -396,6 +405,9 @@ class Admin(object):
             :param endpoint:
                 Base endpoint name for index view. If you use multiple instances of the `Admin` class with
                 a single Flask application, you have to set a unique endpoint name for each instance.
+            :param static_url_path:
+                Static URL Path. If provided, this specifies the default path to the static url directory for
+                all its views. Can be overriden in view configuration.
         """
         self.app = app
 
@@ -413,6 +425,7 @@ class Admin(object):
         self.index_view = index_view or AdminIndexView(endpoint=endpoint, url=url)
         self.endpoint = endpoint or self.index_view.endpoint
         self.url = url or self.index_view.url
+        self.static_url_path = static_url_path
         self.subdomain = subdomain
 
         # Add predefined index view
