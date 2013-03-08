@@ -150,6 +150,10 @@ def test_baseview_registration():
     view = MockView(url='/test/test')
     view.create_blueprint(base.Admin())
     eq_(view.url, '/test/test')
+    
+    view = MockView(endpoint='test')
+    view.create_blueprint(base.Admin(url='/'))
+    eq_(view.url, '/test')
 
 
 def test_baseview_urls():

@@ -177,7 +177,10 @@ class BaseView(object):
             if self.admin.url != '/':
                 self.url = '%s/%s' % (self.admin.url, self.endpoint)
             else:
-                self.url = '/'
+                if self == admin.index_view:
+                    self.url = '/'
+                else:
+                    self.url = '/%s' % self.endpoint
         else:
             if not self.url.startswith('/'):
                 self.url = '%s/%s' % (self.admin.url, self.url)
