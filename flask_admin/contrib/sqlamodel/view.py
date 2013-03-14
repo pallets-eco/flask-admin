@@ -6,13 +6,11 @@ from sqlalchemy.sql.expression import desc
 from sqlalchemy import or_, Column
 
 from flask import flash
-from flask.ext.admin.contrib.sqlamodel.filters import ChoicesEqualFilter, ChoicesNotEqualFilter
 
 from flask.ext.admin.tools import ObsoleteAttr
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
 from flask.ext.admin.actions import action
-
 from flask.ext.admin.contrib.sqlamodel import form, filters, tools
 from .typefmt import DEFAULT_FORMATTERS
 
@@ -485,16 +483,12 @@ class ModelView(BaseModelView):
             if join_tables:
                 self._filter_joins[column.table.name] = join_tables
 
-            if name in self.column_choices:
-                choices = self.column_choices[name]
-                return [
-                    ChoicesEqualFilter(column, visible_name, options=choices),
-                    ChoicesNotEqualFilter(column, visible_name, options=choices),
-                ]
-
-            flt = self.filter_converter.convert(type_name,
-                                                column,
-                                                visible_name)
+            flt = self.filter_converter.convert(
+                type_name,
+                column,
+                visible_name,
+                options=self.column_choices.get(name),
+            )
 
             if flt and not join_tables and self._need_join(column.table):
                 self._filter_joins[column.table.name] = [column.table]

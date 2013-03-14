@@ -86,43 +86,38 @@ class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
     pass
 
 
-
-class ChoicesEqualFilter(FilterEqual, filters.BaseFilter):
-    pass
-
-
-class ChoicesNotEqualFilter(FilterNotEqual, filters.BaseFilter):
-    pass
-
-
 # Base SQLA filter field converter
 class FilterConverter(filters.BaseFilterConverter):
     strings = (FilterEqual, FilterNotEqual, FilterLike, FilterNotLike)
     numeric = (FilterEqual, FilterNotEqual, FilterGreater, FilterSmaller)
+    bool = (BooleanEqualFilter, BooleanNotEqualFilter)
+    emun = (FilterEqual, FilterNotEqual)
 
-    def convert(self, type_name, column, name):
+    def convert(self, type_name, column, name, **kwargs):
         if type_name in self.converters:
-            return self.converters[type_name](column, name)
-
+            return self.converters[type_name](column, name, **kwargs)
         return None
 
     @filters.convert('String', 'Unicode', 'Text', 'UnicodeText')
-    def conv_string(self, column, name):
-        return [f(column, name) for f in self.strings]
+    def conv_string(self, column, name, **kwargs):
+        return [f(column, name, **kwargs) for f in self.strings]
 
     @filters.convert('Boolean')
-    def conv_bool(self, column, name):
-        return [BooleanEqualFilter(column, name),
-                BooleanNotEqualFilter(column, name)]
+    def conv_bool(self, column, name, **kwargs):
+        return [f(column, name, **kwargs) for f in self.bool]
 
     @filters.convert('Integer', 'SmallInteger', 'Numeric', 'Float')
-    def conv_int(self, column, name):
-        return [f(column, name) for f in self.numeric]
+    def conv_int(self, column, name, **kwargs):
+        return [f(column, name, **kwargs) for f in self.numeric]
 
     @filters.convert('Date')
-    def conv_date(self, column, name):
-        return [f(column, name, data_type='datepicker') for f in self.numeric]
+    def conv_date(self, column, name, **kwargs):
+        return [f(column, name, data_type='datepicker', **kwargs) for f in self.numeric]
 
     @filters.convert('DateTime')
-    def conv_datetime(self, column, name):
-        return [f(column, name, data_type='datetimepicker') for f in self.numeric]
+    def conv_datetime(self, column, name, **kwargs):
+        return [f(column, name, data_type='datetimepicker', **kwargs) for f in self.numeric]
+
+    @filters.convert('Enum', 'ENUM')
+    def conv_enum(self, column, name, options, **kwargs):
+        return [f(column, name, options, **kwargs) for f in self.emun]
