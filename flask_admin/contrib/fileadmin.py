@@ -254,7 +254,7 @@ class FileAdmin(BaseView, ActionsMixin):
         if ext.startswith('.'):
             ext = ext[1:]
 
-        if self.editable_extensions and ext not in self.editable_extensions:
+        if not self.editable_extensions or ext not in self.editable_extensions:
             return False
 
         return True
