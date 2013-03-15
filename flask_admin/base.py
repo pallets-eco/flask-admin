@@ -174,7 +174,7 @@ class BaseView(object):
         # If endpoint name is not provided, get it from the class name
         if self.endpoint is None:
             self.endpoint = self.__class__.__name__.lower()
-            
+
         # If the static_url_path is not provided, use the admin's
         if not self.static_url_path:
             self.static_url_path = admin.static_url_path
@@ -227,6 +227,7 @@ class BaseView(object):
         """
         # Store self as admin_view
         kwargs['admin_view'] = self
+        kwargs['admin_base_template'] = self.admin.base_template
 
         # Provide i18n support even if flask-babel is not installed
         # or enabled.
@@ -385,7 +386,8 @@ class Admin(object):
                  index_view=None,
                  translations_path=None,
                  endpoint=None,
-                 static_url_path=None):
+                 static_url_path=None,
+                 base_template=None):
         """
             Constructor.
 
@@ -407,7 +409,9 @@ class Admin(object):
                 a single Flask application, you have to set a unique endpoint name for each instance.
             :param static_url_path:
                 Static URL Path. If provided, this specifies the default path to the static url directory for
-                all its views. Can be overriden in view configuration.
+                all its views. Can be overridden in view configuration.
+            :param base_template:
+                Override base HTML template for all static views. Defaults to `admin/base.html`.
         """
         self.app = app
 
@@ -427,6 +431,7 @@ class Admin(object):
         self.url = url or self.index_view.url
         self.static_url_path = static_url_path
         self.subdomain = subdomain
+        self.base_template = base_template or 'admin/base.html'
 
         # Add predefined index view
         self.add_view(self.index_view)
