@@ -73,7 +73,7 @@
 {% endif %}
 {%- endmacro %}
 
-{% macro render_field(form, field, set_focus=False) %}
+{% macro render_field(form, field, set_focus=False, kwargs={}) %}
   <div class="control-group{{ ' error' if field.errors }}">
     <div class="control-label">
       {{ field.label.text }}
@@ -86,9 +86,9 @@
     <div class="controls">
     <div>
       {% if set_focus %}
-      {{ field(autofocus='autofocus')|safe }}
+      {{ field(autofocus='autofocus', **kwargs)|safe }}
       {% else %}
-      {{ field()|safe }}
+      {{ field(**kwargs)|safe }}
       {% endif %}
     </div>
     {% if field.description %}
@@ -105,11 +105,12 @@
   </div>
 {% endmacro %}
 
-{% macro render_form_fields(form, set_focus=True) %}
+{% macro render_form_fields(form, set_focus=True, widget_args={}) %}
     {{ form.hidden_tag() if form.hidden_tag is defined }}
 
     {% for f in form if f.type != 'HiddenField' and f.type != 'CSRFTokenField' %}
-      {{ render_field(form, f, not loop.index0 and set_focus) }}
+      {% set kwargs = widget_args.get(f.name, {}) %}
+      {{ render_field(form, f, not loop.index0 and set_focus, kwargs) }}
     {% endfor %}
 {% endmacro %}
 
@@ -135,9 +136,9 @@
     </div>
 {% endmacro %}
 
-{% macro render_form(form, cancel_url, extra=None) -%}
+{% macro render_form(form, cancel_url, extra=None, widget_args={}) -%}
     {% call form_tag() %}
-        {{ render_form_fields(form) }}
+        {{ render_form_fields(form, widget_args) }}
         {{ render_form_buttons(cancel_url, extra) }}
     {% endcall %}
 {% endmacro %}

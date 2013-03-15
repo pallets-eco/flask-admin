@@ -259,6 +259,22 @@ class BaseModelView(BaseView, ActionsMixin):
                 form_overrides = dict(name=wtf.FileField)
     """
 
+    form_widget_args = None
+    """
+        Dictionary of form widget rendering arguments.
+        Use this to customize how widget is rendered without using custom template.
+
+        Example::
+
+            class MyModelView(BaseModelView):
+                form_widget_args = {
+                    'description': {
+                        'rows': 10,
+                        'style': 'color: black'
+                    }
+                }
+    """
+
     # Actions
     action_disallowed_list = ObsoleteAttr('action_disallowed_list',
                                           'disallowed_actions',
@@ -326,6 +342,9 @@ class BaseModelView(BaseView, ActionsMixin):
         # Forms
         self._create_form_class = self.get_create_form()
         self._edit_form_class = self.get_edit_form()
+
+        if self.form_widget_args is None:
+            self.form_widget_args = {}
 
         # Search
         self._search_supported = self.init_search()
@@ -569,7 +588,7 @@ class BaseModelView(BaseView, ActionsMixin):
     def get_list(self, page, sort_field, sort_desc, search, filters):
         """
             Return a paginated and sorted list of models from the data source.
-            
+
             Must be implemented in the child class.
 
             :param page:
@@ -902,6 +921,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return self.render(self.create_template,
                            form=form,
+                           form_widget_args=self.form_widget_args,
                            return_url=return_url)
 
     @expose('/edit/', methods=('GET', 'POST'))
@@ -931,6 +951,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return self.render(self.edit_template,
                                form=form,
+                               form_widget_args=self.form_widget_args,
                                return_url=return_url)
 
     @expose('/delete/', methods=('POST',))
