@@ -2,6 +2,7 @@ from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
 
 from flask.ext.admin import form
+from flask.ext.admin.form import Select2Field
 from flask.ext.admin.tools import get_property
 from flask.ext.admin.model.form import (converts, ModelConverterBase,
                                         InlineFormAdmin, InlineModelConverterBase)
@@ -185,6 +186,16 @@ class AdminModelConverter(ModelConverterBase):
                 override = self._get_field_override(prop.key)
                 if override:
                     return override(**kwargs)
+
+                # Check choices
+                if mapper.class_ == self.view.model and self.view.form_choices:
+                    choices = self.view.form_choices.get(column.key)
+                    if choices:
+                        return Select2Field(
+                            choices=choices,
+                            allow_blank=column.nullable,
+                            **kwargs
+                        )
 
                 # Run converter
                 converter = self.get_converter(column)
