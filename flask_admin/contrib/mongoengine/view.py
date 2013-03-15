@@ -323,6 +323,7 @@ class ModelView(BaseModelView):
         """
         try:
             model = self.model()
+            self.pre_model_change(form, model)
             form.populate_obj(model)
             self.on_model_change(form, model)
             model.save()
@@ -343,6 +344,7 @@ class ModelView(BaseModelView):
                 Model instance to update
         """
         try:
+            self.pre_model_change(form, model)
             form.populate_obj(model)
             self.on_model_change(form, model)
             model.save()

@@ -685,6 +685,7 @@ class ModelView(BaseModelView):
         """
         try:
             model = self.model()
+            self.pre_model_change(form, model)
             form.populate_obj(model)
             self.session.add(model)
             self.on_model_change(form, model)
@@ -706,6 +707,7 @@ class ModelView(BaseModelView):
                 Model instance
         """
         try:
+            self.pre_model_change(form, model)
             form.populate_obj(model)
             self.on_model_change(form, model)
             self.session.commit()

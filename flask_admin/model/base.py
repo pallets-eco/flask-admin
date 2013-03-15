@@ -569,7 +569,7 @@ class BaseModelView(BaseView, ActionsMixin):
     def get_list(self, page, sort_field, sort_desc, search, filters):
         """
             Return a paginated and sorted list of models from the data source.
-            
+
             Must be implemented in the child class.
 
             :param page:
@@ -608,6 +608,19 @@ class BaseModelView(BaseView, ActionsMixin):
             By default do nothing.
         """
         pass
+
+    def pre_model_change(self, form, model):
+        """
+            Perform some actions before a model is created or updated.
+
+            Called from create_model and update_model in the same transaction
+            (if it has any meaning for a store backend).
+
+            By default do nothing.
+        """
+        pass
+
+
 
     def on_model_delete(self, model):
         """
