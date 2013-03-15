@@ -28,9 +28,16 @@ class BaseForm(wtf.Form):
         """
         # TODO: Optimize me
         for f in self:
+            if f.name.startswith('_'):
+                continue
             if isinstance(f, wtf.FileField):
                 return True
-
+            else:
+                try:
+                    if f.form.has_file_field:
+                        return True
+                except AttributeError:
+                        continue
         return False
 
 
