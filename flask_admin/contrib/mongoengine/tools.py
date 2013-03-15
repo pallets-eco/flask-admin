@@ -1,13 +1,28 @@
 def parse_like_term(term):
     """
-        Parse search term into (operation, term) tuple
+        Parse search term into (operation, term) tuple. Recognizes operators
+        in the beginning of the search term.
+        
+        * = case insensitive (can precede other operators)
+        ^ = starts with
+        = = exact
 
         :param term:
             Search term
     """
+    case_insensitive = term.startswith('*')
+    if case_insensitive:
+        term = term[1:]
+    # apply operators
     if term.startswith('^'):
-        return 'startswith', term[1:]
+        oper = 'startswith'
+        term = term[1:]
     elif term.startswith('='):
-        return 'exact', term[1:]
-
-    return 'contains', term
+        oper = 'exact'
+        term = term[1:]
+    else:
+        oper = 'contains'
+    # add case insensitive flag
+    if case_insensitive:
+        oper = 'i'+oper
+    return oper, term
