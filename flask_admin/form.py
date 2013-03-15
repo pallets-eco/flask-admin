@@ -24,6 +24,7 @@ class BaseForm(wtf.Form):
     def has_file_field(self):
         """
             Return True if form contains at least one FileField.
+            Does not check for child form fields.
         """
         # TODO: Optimize me
         for f in self:
