@@ -33,6 +33,7 @@ def create_models(db):
         test3 = db.Column(db.Text)
         test4 = db.Column(db.UnicodeText)
         bool_field = db.Column(db.Boolean)
+        enum_field = db.Column(db.Enum('model1_v1', 'model1_v1'), nullable=True)
 
     class Model2(db.Model):
         def __init__(self, string_field=None, int_field=None, bool_field=None, model1=None):
@@ -45,6 +46,9 @@ def create_models(db):
         string_field = db.Column(db.String)
         int_field = db.Column(db.Integer)
         bool_field = db.Column(db.Boolean)
+        enum_field = db.Column(db.Enum('model2_v1', 'model2_v2'), nullable=True)
+
+        # Relation
         model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
         model1 = db.relationship(Model1)
 
@@ -162,8 +166,10 @@ def test_exclude_columns():
 
     Model1, Model2 = create_models(db)
 
-    view = CustomModelView(Model1, db.session,
-                           column_exclude_list=['test2', 'test4'])
+    view = CustomModelView(
+        Model1, db.session,
+       column_exclude_list=['test2', 'test4', 'enum_field']
+    )
     admin.add_view(view)
 
     eq_(
@@ -210,8 +216,10 @@ def test_column_filters():
 
     Model1, Model2 = create_models(db)
 
-    view = CustomModelView(Model1, db.session,
-                           column_filters=['test1'])
+    view = CustomModelView(
+        Model1, db.session,
+        column_filters=['test1']
+    )
     admin.add_view(view)
 
     eq_(len(view._filters), 4)
@@ -258,6 +266,10 @@ def test_column_filters():
             (16, 'equals'),
             (17, 'not equal'),
         ],
+        'Model1 / Enum Field': [
+            (18, u'equals'),
+            (19, u'not equal'),
+        ]
     })
 
     # Test filter with a dot
