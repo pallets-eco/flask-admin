@@ -432,7 +432,7 @@ class InlineModelConverter(InlineModelConverterBase):
 
         for prop in target_mapper.iterate_properties:
             if hasattr(prop, 'direction') and prop.direction.name == 'MANYTOONE':
-                if prop.mapper.class_ == model:
+                if issubclass(model, prop.mapper.class_):
                     reverse_prop = prop
                     break
         else:
