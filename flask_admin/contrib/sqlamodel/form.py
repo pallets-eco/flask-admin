@@ -78,7 +78,7 @@ class AdminModelConverter(ModelConverterBase):
             if local_column.nullable:
                 kwargs['validators'].append(validators.Optional())
             elif prop.direction.name != 'MANYTOMANY':
-                kwargs['validators'].append(validators.Required())
+                kwargs['validators'].append(validators.InputRequired())
 
             # Override field type if necessary
             override = self._get_field_override(prop.key)
@@ -153,7 +153,7 @@ class AdminModelConverter(ModelConverterBase):
                                                        column))
 
                 if not column.nullable and not isinstance(column.type, Boolean):
-                    kwargs['validators'].append(validators.Required())
+                    kwargs['validators'].append(validators.InputRequired())
 
                 # Apply label and description if it isn't inline form field
                 if self.view.model == mapper.class_:
