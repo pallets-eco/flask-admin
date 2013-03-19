@@ -260,6 +260,7 @@ class ModelView(BaseModelView):
                 Form instance
         """
         try:
+            self.pre_model_change(form, form.data)
             model = form.data
             self.on_model_change(form, model)
             self.coll.insert(model)
@@ -280,6 +281,7 @@ class ModelView(BaseModelView):
                 Model instance to update
         """
         try:
+            self.pre_model_change(form, model)
             model.update(form.data)
             self.on_model_change(form, model)
 

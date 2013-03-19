@@ -654,6 +654,19 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         pass
 
+    def pre_model_change(self, form, model):
+        """
+            Perform some actions before a model is created or updated.
+
+            Called from create_model and update_model in the same transaction
+            (if it has any meaning for a store backend).
+
+            By default do nothing.
+        """
+        pass
+
+
+
     def on_model_delete(self, model):
         """
             Perform some actions before a model is deleted.

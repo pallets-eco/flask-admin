@@ -322,6 +322,7 @@ class ModelView(BaseModelView):
     def create_model(self, form):
         try:
             model = self.model()
+            self.pre_model_change(form, model)
             form.populate_obj(model)
             self.on_model_change(form, model)
             model.save()
@@ -337,6 +338,7 @@ class ModelView(BaseModelView):
 
     def update_model(self, form, model):
         try:
+            self.pre_model_change(form, model)
             form.populate_obj(model)
             self.on_model_change(form, model)
             model.save()
