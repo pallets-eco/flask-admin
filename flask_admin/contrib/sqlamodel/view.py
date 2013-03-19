@@ -218,6 +218,18 @@ class ModelView(BaseModelView):
 
     column_type_formatters = DEFAULT_FORMATTERS
 
+    form_choices = None
+    """
+        Map choices to form fields
+
+        Example::
+
+            class MyModelView(BaseModelView):
+                form_choices = {'my_form_field': [
+                    ('db_value', 'display_value'),
+                ]
+    """
+
     def __init__(self, model, session,
                  name=None, category=None, endpoint=None, url=None):
         """
@@ -242,6 +254,9 @@ class ModelView(BaseModelView):
         self._search_joins = dict()
 
         self._filter_joins = dict()
+
+        if self.form_choices is None:
+            self.form_choices = {}
 
         super(ModelView, self).__init__(model, name, category, endpoint, url)
 
@@ -453,9 +468,11 @@ class ModelView(BaseModelView):
 
             column = columns[0]
 
-            if self._need_join(column.table):
-                visible_name = '%s / %s' % (self.get_column_name(column.table.name),
-                                            self.get_column_name(column.name))
+            if self._need_join(column.table) and name not in self.column_labels:
+                visible_name = '%s / %s' % (
+                    self.get_column_name(column.table.name),
+                    self.get_column_name(column.name)
+                )
             else:
                 if not isinstance(name, basestring):
                     visible_name = self.get_column_name(name.property.key)
@@ -463,16 +480,19 @@ class ModelView(BaseModelView):
                     visible_name = self.get_column_name(name)
 
             type_name = type(column.type).__name__
-            flt = self.filter_converter.convert(type_name,
-                                                column,
-                                                visible_name)
 
-            if flt:
-                # If there's relation to other table, do it
-                if join_tables:
-                    self._filter_joins[column.table.name] = join_tables
-                elif self._need_join(column.table):
-                    self._filter_joins[column.table.name] = [column.table]
+            if join_tables:
+                self._filter_joins[column.table.name] = join_tables
+
+            flt = self.filter_converter.convert(
+                type_name,
+                column,
+                visible_name,
+                options=self.column_choices.get(name),
+            )
+
+            if flt and not join_tables and self._need_join(column.table):
+                self._filter_joins[column.table.name] = [column.table]
 
             return flt
 
