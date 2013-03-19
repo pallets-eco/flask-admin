@@ -1,3 +1,4 @@
+{# ---------------------- Pager -------------------------- #}
 {% macro pager(page, pages, generator) -%}
 {% if pages > 1 %}
 <div class="pagination">
@@ -73,6 +74,7 @@
 {% endif %}
 {%- endmacro %}
 
+{# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field, set_focus=False, kwargs={}) %}
   <div class="control-group{{ ' error' if field.errors }}">
     <div class="control-label">
@@ -142,4 +144,3 @@
         {{ render_form_buttons(cancel_url, extra) }}
     {% endcall %}
 {% endmacro %}
-
