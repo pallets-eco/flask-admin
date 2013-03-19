@@ -170,7 +170,7 @@ class AdminModelConverter(ModelConverterBase):
 
                     if value is not None:
                         if getattr(default, 'is_callable', False):
-                            value = value(None)
+                            value = lambda: default.arg(None)
                         else:
                             if not getattr(default, 'is_scalar', True):
                                 value = None
