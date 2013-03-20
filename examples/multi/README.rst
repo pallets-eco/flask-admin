@@ -1,0 +1,1 @@
+This example shows how to create two separate instances of Flask-Admin for one Flask application.

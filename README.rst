@@ -2,7 +2,7 @@ Flask-Admin
 ===========
 
 .. image:: https://travis-ci.org/mrjoes/flask-admin.png?branch=master
-	:target: https://secure.travis-ci.org/mrjoes/flask-admin
+	:target: https://travis-ci.org/mrjoes/flask-admin
 
 
 Introduction
@@ -35,4 +35,4 @@ Some ideas were taken from the `Flask-Admin <https://github.com/wilsaj/flask-adm
 Examples
 --------
 
-The library comes with a few examples, you can find them in the `examples` directory.
+The library comes with a few examples, you can find them in the `examples <https://github.com/mrjoes/flask-admin/tree/master/examples` directory.

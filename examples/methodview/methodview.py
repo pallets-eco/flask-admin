@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, request
 
 from flask.ext import admin
 from flask.views import MethodView
@@ -13,6 +13,7 @@ class ViewWithMethodViews(admin.BaseView):
     class API_v1(MethodView):
         def get(self, cls):
             return cls.render('test.html', request=request, name="API_v1")
+
         def post(self, cls):
             return cls.render('test.html', request=request, name="API_v1")
 
@@ -20,8 +21,10 @@ class ViewWithMethodViews(admin.BaseView):
     class API_v2(MethodView):
         def get(self, cls):
             return cls.render('test.html', request=request, name="API_v2")
+
         def post(self, cls):
             return cls.render('test.html', request=request, name="API_v2")
+
 
 # Create flask app
 app = Flask(__name__, template_folder='templates')

@@ -4,7 +4,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext import admin, login, wtf
 from flask.ext.admin.contrib import sqlamodel
 
-# Create application
+# Create Flask application
 app = Flask(__name__)
 
 # Create dummy secrey key so we can use sessions

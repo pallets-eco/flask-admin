@@ -1,0 +1,1 @@
+Example which shows how to integrate Flask `MethodView` with Flask-Admin.

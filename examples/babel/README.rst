@@ -1,0 +1,1 @@
+This example show how to translate Flask-Admin into different language using customized version of the `Flask-Babel <https://github.com/mrjoes/flask-babel>`

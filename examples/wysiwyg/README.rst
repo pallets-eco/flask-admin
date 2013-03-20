@@ -1,0 +1,1 @@
+Simple CKEditor integration example.

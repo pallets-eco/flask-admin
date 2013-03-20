@@ -1,0 +1,1 @@
+Simple Flask-Admin examples used by the quickstart tutorial.

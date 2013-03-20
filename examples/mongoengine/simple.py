@@ -18,6 +18,7 @@ db = MongoEngine()
 db.init_app(app)
 
 
+# Define mongoengine documents
 class User(db.Document):
     name = db.StringField(max_length=40)
     tags = db.ListField(db.ReferenceField('Tag'))
