@@ -658,11 +658,18 @@ class ModelView(BaseModelView):
                             query = query.join(parts[0])
                             joins.add(parts[0])
                 elif isinstance(sort_field, InstrumentedAttribute):
-                    table = sort_field.parententity.tables[0]
+                    # SQLAlchemy 0.8+ uses 'parent' as a name
+                    mapper = getattr(sort_field, 'parent', None)
+                    if mapper is None:
+                        # SQLAlchemy 0.7.x uses parententity
+                        mapper = getattr(sort_field, 'parententity', None)
 
-                    if table.name not in joins:
-                        query = query.join(table)
-                        joins.add(table.name)
+                    if mapper is not None:
+                        table = mapper.tables[0]
+
+                        if table.name not in joins:
+                            query = query.join(table)
+                            joins.add(table.name)
                 elif isinstance(sort_field, Column):
                     pass
                 else:
