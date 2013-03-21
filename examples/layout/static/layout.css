@@ -1,3 +1,45 @@
-.btn-title {
+body {
+	background: #EEE;
+}
+
+#content {
+	background: white;
+	border: 1px solid #CCC;
+	padding: 12px;
+}
+
+#brand {
+	float: left;
+	font-weight: 300;
+	margin: 0;
+}
+
+.search-form {
+	margin: 0 5px;
+}
+
+.search-form form {
+	margin: 0;
+}
+
+.btn-menu {
+    margin: 4px 5px 0 0;
     float: right;
+}
+
+.btn-menu a, .btn-menu input {
+	padding: 7px 16px !important;
+	border-radius: 0 !important;
+}
+
+.model-list {
+	border-radius: 0;
+}
+
+.form-buttons a, .form-buttons input, .form-buttons button {
+	border-radius: 0;
+}
+
+.nav-pills li > a {
+	border-radius: 0;
 }

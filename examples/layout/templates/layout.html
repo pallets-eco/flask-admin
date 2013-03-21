@@ -16,9 +16,14 @@
       </ul>
     </div>
     <div class="span10">
-      {% block brand %}<h1>{{ admin_view.name|capitalize }}</h1>{% endblock %}
-      {{ layout.messages() }}
-      {% block body %}{% endblock %}
+      <div id="content">
+        {% block brand %}
+          <h2 id="brand">{{ admin_view.name|capitalize }}</h2>
+          <div class="clearfix"></div>
+        {% endblock %}
+        {{ layout.messages() }}
+        {% block body %}{% endblock %}
+      </div>
     </div>
   </div>
 </div>

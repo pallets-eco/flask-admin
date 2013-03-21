@@ -1,6 +1,10 @@
 {% extends 'admin/master.html' %}
 {% import 'admin/lib.html' as lib with context %}
 
+{% macro extra() %}
+  <input name="_add_another" type="submit" class="btn btn-large" value="{{ _gettext('Save and Add') }}" />
+{% endmacro %}
+
 {% block head %}
     <link href="{{ url_for('admin.static', filename='select2/select2.css') }}" rel="stylesheet">
     <link href="{{ url_for('admin.static', filename='css/datepicker.css') }}" rel="stylesheet">
@@ -15,10 +19,6 @@
           <a href="#">{{ _gettext('Create') }}</a>
       </li>
 	</ul>
-
-  {% macro extra() %}
-    <input name="_add_another" type="submit" class="btn btn-large" value="{{ _gettext('Save and Add') }}" />
-  {% endmacro %}
 
   {% call lib.form_tag() %}
       {{ lib.render_form_fields(form, widget_args=form_widget_args) }}

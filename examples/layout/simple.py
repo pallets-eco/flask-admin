@@ -41,6 +41,9 @@ class CustomView(ModelView):
     create_template = 'create.html'
     edit_template = 'edit.html'
 
+    column_searchable_list = ('name',)
+    column_filters = ('name',)
+
 
 # Flask views
 @app.route('/')
@@ -61,4 +64,4 @@ if __name__ == '__main__':
 
     # Start app
     app.debug = True
-    app.run('0.0.0.0', 8000)
+    app.run('0.0.0.0', 8001)

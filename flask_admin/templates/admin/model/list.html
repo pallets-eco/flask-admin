@@ -4,6 +4,7 @@
 {% import 'admin/actions.html' as actionlib with context %}
 
 {% block head %}
+    {{ super() }}
     <link href="{{ url_for('admin.static', filename='select2/select2.css') }}" rel="stylesheet">
     <link href="{{ url_for('admin.static', filename='css/datepicker.css') }}" rel="stylesheet">
 {% endblock %}
@@ -44,6 +45,7 @@
         {{ model_layout.filter_form() }}
     {% endif %}
 
+    {% block model_list_table %}
     <table class="table table-striped table-bordered model-list">
         <thead>
             <tr>
@@ -117,6 +119,7 @@
         {% endfor %}
     </table>
     {{ lib.pager(page, num_pages, pager_url) }}
+    {% endblock %}
 
     {{ actionlib.form(actions, url_for('.action_view')) }}
 {% endblock %}

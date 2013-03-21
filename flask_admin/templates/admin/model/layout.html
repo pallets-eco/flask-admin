@@ -1,5 +1,5 @@
-{% macro filter_options() %}
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+{% macro filter_options(btn_class='dropdown-toggle') %}
+    <a class="{{ btn_class }}" data-toggle="dropdown" href="#">
         {{ _gettext('Add Filter') }}<b class="caret"></b>
     </a>
     <ul class="dropdown-menu field-filters">
@@ -47,7 +47,7 @@
     </form>
 {% endmacro %}
 
-{% macro search_form() %}
+{% macro search_form(input_class="search-query span2") %}
 <form method="GET" action="{{ return_url }}" class="search-form">
     {% if sort_column is not none %}
     <input type="hidden" name="sort" value="{{ sort_column }}"></input>
@@ -55,11 +55,13 @@
     {% if sort_desc %}
     <input type="hidden" name="desc" value="{{ sort_desc }}"></input>
     {% endif %}
-    <input type="text" name="search" value="{{ search or '' }}" class="search-query span2" placeholder="{{ _gettext('Search') }}"></input>
-    {% if search %}
-        <a href="{{ clear_search_url }}" class="clear">
-            <i class="icon-remove"></i>
-        </a>
-    {% endif %}
+    <div class="input-append">
+        <input type="text" name="search" value="{{ search or '' }}" class="{{ input_class }}" placeholder="{{ _gettext('Search') }}"></input>
+        {% if search %}
+            <a href="{{ clear_search_url }}" class="clear add-on">
+                <i class="icon-remove"></i>
+            </a>
+        {% endif %}
+    </div>
 </form>
 {% endmacro %}
