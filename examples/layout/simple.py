@@ -2,7 +2,7 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 
 from flask.ext import admin, wtf
-from flask.ext.admin.contrib import sqlamodel
+from flask.ext.admin.contrib.sqlamodel import ModelView
 
 # Create application
 app = Flask(__name__)
@@ -16,18 +16,16 @@ app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
 
-# Define wtforms widget and field
-class CKTextAreaWidget(wtf.TextArea):
-    def __call__(self, field, **kwargs):
-        kwargs.setdefault('class_', 'ckeditor')
-        return super(CKTextAreaWidget, self).__call__(field, **kwargs)
+# Models
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode(64))
+    email = db.Column(db.Unicode(64))
+
+    def __unicode__(self):
+        return self.name
 
 
-class CKTextAreaField(wtf.TextAreaField):
-    widget = CKTextAreaWidget()
-
-
-# Model
 class Page(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
@@ -38,9 +36,8 @@ class Page(db.Model):
 
 
 # Customized admin interface
-class PageAdmin(sqlamodel.ModelView):
-    form_overrides = dict(text=CKTextAreaField)
-
+class CustomView(ModelView):
+    list_template = 'list.html'
     create_template = 'create.html'
     edit_template = 'edit.html'
 
@@ -53,10 +50,11 @@ def index():
 
 if __name__ == '__main__':
     # Create admin
-    admin = admin.Admin(app)
+    admin = admin.Admin(app, base_template='layout.html')
 
     # Add views
-    admin.add_view(PageAdmin(Page, db.session))
+    admin.add_view(CustomView(User, db.session))
+    admin.add_view(CustomView(Page, db.session))
 
     # Create DB
     db.create_all()

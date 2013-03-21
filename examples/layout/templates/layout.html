@@ -1,0 +1,25 @@
+{% import 'admin/layout.html' as layout with context -%}
+{% extends 'admin/base.html' %}
+
+{% block head_css %}
+  {{ super() }}
+  <link href="{{ url_for('static', filename='layout.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block page_body %}
+<div class="container">
+  <div class="row">
+    <div class="span2">
+      <ul class="nav nav-pills nav-stacked">
+        {{ layout.menu() }}
+        {{ layout.menu_links() }}
+      </ul>
+    </div>
+    <div class="span10">
+      {% block brand %}<h1>{{ admin_view.name|capitalize }}</h1>{% endblock %}
+      {{ layout.messages() }}
+      {% block body %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}
