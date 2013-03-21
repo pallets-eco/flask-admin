@@ -41,8 +41,10 @@ class CustomView(ModelView):
     create_template = 'create.html'
     edit_template = 'edit.html'
 
+
+class UserAdmin(CustomView):
     column_searchable_list = ('name',)
-    column_filters = ('name',)
+    column_filters = ('name', 'email')
 
 
 # Flask views
@@ -52,11 +54,11 @@ def index():
 
 
 if __name__ == '__main__':
-    # Create admin
+    # Create admin with custom base template
     admin = admin.Admin(app, base_template='layout.html')
 
     # Add views
-    admin.add_view(CustomView(User, db.session))
+    admin.add_view(UserAdmin(User, db.session))
     admin.add_view(CustomView(Page, db.session))
 
     # Create DB
