@@ -203,7 +203,9 @@ is not provided. Model-based views will be explained in the next section.
 Model Views
 -----------
 
-Flask-Admin comes with built-in SQLAlchemy model administrative interface. It is very easy to use::
+Flask-Admin comes with built-in few ORM backends.
+
+Lets pick SQLAlchemy backend. It is very easy to use::
 
     from flask.ext.admin.contrib.sqlamodel import ModelView
 

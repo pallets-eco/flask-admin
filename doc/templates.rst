@@ -16,10 +16,11 @@ Flask Core
 
 All Flask-Admin templates should derive from `admin/master.html`.
 
-`admin/master.html` contains following blocks:
+`admin/master.html` is a proxy which points to `admin/base.html`. It contains following blocks:
 
 ============= ========================================================================
 head_meta     Page metadata in the header
+title         Page title
 head_css      Various CSS includes in the header
 head          Empty block in HTML head, in case you want to put something there
 page_body     Page layout
@@ -38,6 +39,8 @@ There are 3 main templates that are used to display models:
 `admin/model/list.html` is list view template and contains following blocks:
 
 ================= ============================================
+model_menu_bar    Menu bar
+model_list_table  Table container
 list_header       Table header row
 list_row          Row block
 list_row_actions  Row action cell with edit/remove/etc buttons
@@ -51,8 +54,8 @@ Customizing templates
 
 You can override any used template in your Flask application by creating template with same name and relative path in your main `templates` directory.
 
-For example, if you want to override `admin/master.html`, create `admin/templates/admin/master.html` in your application and it will be used instead of
-original `admin/master.html` found in Flask-Admin package.
+If you need to override master template, you can pass template name to the `Admin` constructor::
 
-If you don't want to replace template completely, you can create new template, derive it from existing template, override one or more blocks and
-tell Flask-Admin to use it. For model view, there is `list_template` and related properties.
+    admin = Admin(app, base_template='my_master.html')
+
+For model views, use `list_template`, `create_template` and `edit_template` properties to use non-default template.
