@@ -252,9 +252,12 @@ class ModelView(BaseModelView):
 
         return query
 
+    def get_query(self):
+        return self.model.select()
+
     def get_list(self, page, sort_column, sort_desc, search, filters,
                  execute=True):
-        query = self.model.select()
+        query = self.get_query()
 
         joins = set()
 
