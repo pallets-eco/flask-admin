@@ -4,6 +4,20 @@ Changelog
 1.0.5
 -----
 
+* SQLAlchemy 0.8 support
+* Choices and PostgreSQL Enum field type support
+* Flask-BabelEx will be used to localize administrative interface
+* Simple text file editor
+* File admin has additional hooks: rename, edit, upload, etc
+* Simple text file editor
+* External links in menu
+* Column descriptions
+* Possibility to override master template
+* Reworked templates. New 'layout' sample with completely different administrative UI
+* Ability to customize wtforms widget rendering through `form_widget_args` property
+* German translation (WIP)
+* Updated documentation
+* Lots of bug fixes
 
 
 1.0.4
