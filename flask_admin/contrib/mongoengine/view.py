@@ -240,6 +240,13 @@ class ModelView(BaseModelView):
 
         return form_class
 
+    def get_queryset(self):
+        """
+        Returns the QuerySet for this view.  By default, it returns all the
+        objects for the current model.
+        """
+        return self.model.objects
+
     def get_list(self, page, sort_column, sort_desc, search, filters,
                  execute=True):
         """
@@ -258,7 +265,7 @@ class ModelView(BaseModelView):
             :param execute:
                 Run query immediately or not
         """
-        query = self.model.objects
+        query = self.get_queryset()
 
         # Filters
         if self._filters:
@@ -312,7 +319,7 @@ class ModelView(BaseModelView):
             :param id:
                 Model ID
         """
-        return self.model.objects.with_id(id)
+        return self.get_queryset().filter(pk=id).first()
 
     def create_model(self, form):
         """
@@ -386,7 +393,7 @@ class ModelView(BaseModelView):
             count = 0
 
             all_ids = [ObjectId(pk) for pk in ids]
-            for obj in self.model.objects.in_bulk(all_ids).values():
+            for obj in self.get_queryset().in_bulk(all_ids).values():
                 obj.delete()
                 count += 1
 
