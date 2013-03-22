@@ -2,7 +2,7 @@ from flask import Flask, request, session
 from flask.ext.sqlalchemy import SQLAlchemy
 
 from flask.ext import admin
-from flask.ext.babel import Babel
+from flask.ext.babelex import Babel
 
 from flask.ext.admin.contrib import sqlamodel
 
