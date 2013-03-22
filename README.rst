@@ -27,6 +27,8 @@ Flask-Admin is extensively documented, you can find `documentation here <http://
 
 Flask-Admin is built with the help of `Twitter Bootstrap <http://twitter.github.com/bootstrap/>`_ and `Select2 <https://github.com/ivaynberg/select2>`_.
 
+If you want to localize administrative interface, install `Flask-BabelEx <https://pypi.python.org/pypi/Flask-BabelEx>` package.
+
 Kudos
 -----
 
