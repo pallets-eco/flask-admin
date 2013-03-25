@@ -8,9 +8,9 @@ Flask-Admin
 Introduction
 ------------
 
-Flask-Admin is advanced, extensible and simple to use administrative interface building library for Flask framework.
+Flask-Admin is advanced, extensible and simple to use administrative interface building extension for Flask framework.
 
-Library comes with batteries included: model scaffolding for `SQLAlchemy <http://www.sqlalchemy.org/>`_,
+It comes with batteries included: model scaffolding for `SQLAlchemy <http://www.sqlalchemy.org/>`_,
 `MongoEngine <http://mongoengine.org/>`_, MongoDB and `Peewee <https://github.com/coleifer/peewee>`_ ORMs, simple
 file management interface and a lot of usage samples.
 
