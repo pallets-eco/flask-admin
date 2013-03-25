@@ -31,34 +31,41 @@ form.search-form a.clear i {
 }
 
 /* Filters */
-.filter-row {
-    margin: 4px;
+table.filters {
+    border-collapse: none;
+    border-spacing: 4px;
 }
 
-.filter-row a, .filter-row select {
-    margin-right: 4px;
-}
-
-.filter-row input
+.filters input
 {
-    margin-bottom: 0px;
-    width: 208px;
+    margin-bottom: 0;
 }
 
-.filter-row .remove-filter
+.filters a.remove-filter {
+    margin-bottom: 0;
+    display: block;
+    text-align: left;
+}
+
+.filters .remove-filter
 {
     vertical-align: middle;
 }
 
-.filter-row .remove-filter .close-icon
+.filters .remove-filter .close-icon
 {
     font-size: 16px;
 }
 
-.filter-row .remove-filter .close-icon:hover
+.filters .remove-filter .close-icon:hover
 {
     color: black;
     opacity: 0.4;
+}
+
+.filters .filter-op > a {
+    height: 28px;
+    line-height: 28px;
 }
 
 /* Inline forms */

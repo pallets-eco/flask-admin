@@ -629,7 +629,7 @@ class ModelView(BaseModelView):
                 for table in join_tables:
                     if table.name not in joins:
                         query = query.join(table)
-                        joins.add(table)
+                        joins.add(table.name)
 
                 # Apply filter
                 query = flt.apply(query, value)

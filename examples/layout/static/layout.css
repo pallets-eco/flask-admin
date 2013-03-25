@@ -32,14 +32,18 @@ body {
 	border-radius: 0 !important;
 }
 
+.btn, textarea, input[type], button, .model-list {
+	border-radius: 0;
+}
+
 .model-list {
 	border-radius: 0;
 }
 
-.form-buttons a, .form-buttons input, .form-buttons button {
+.nav-pills li > a {
 	border-radius: 0;
 }
 
-.nav-pills li > a {
+.select2-container .select2-choice {
 	border-radius: 0;
 }
