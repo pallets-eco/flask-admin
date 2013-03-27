@@ -34,7 +34,13 @@ def expose_plugview(url='/'):
         .. versionadded:: 1.0.4
     """
     def wrap(v):
-        return expose(url, v.methods)(v.as_view(v.__name__))
+        handler = expose(url, v.methods)
+
+        if hasattr(v, 'as_view'):
+            return handler(v.as_view(v.__name__))
+        else:
+            return handler(v)
+
     return wrap
 
 
