@@ -20,9 +20,9 @@
   </head>
   <body>
     {% block page_body %}
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
+    <div class="container">
+      <div class="navbar">
+        <div class="navbar-inner">
           {% block brand %}
           <span class="brand">{{ admin_view.admin.name }}</span>
           {% endblock %}
@@ -34,11 +34,9 @@
           </ul>
         </div>
       </div>
-    </div>
 
-    {{ layout.messages() }}
+      {{ layout.messages() }}
 
-    <div class="container">
       {% block body %}{% endblock %}
     </div>
     {% endblock %}

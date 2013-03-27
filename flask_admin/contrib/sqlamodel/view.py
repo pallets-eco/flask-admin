@@ -3,7 +3,7 @@ import logging
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import subqueryload
 from sqlalchemy.sql.expression import desc
-from sqlalchemy import or_, Column
+from sqlalchemy import or_, Column, func
 
 from flask import flash
 
@@ -569,9 +569,17 @@ class ModelView(BaseModelView):
     # Database-related API
     def get_query(self):
         """
-            Return a query for the model type
+            Return a query for the model type.
+            
+            If you override this method, don't forget to override `get_count_query` as well.
         """
         return self.session.query(self.model)
+
+    def get_count_query(self):
+        """
+            Return a the count query for the model type
+        """
+        return self.session.query( func.count('*') ).select_from(self.model)
 
     def get_list(self, page, sort_column, sort_desc, search, filters, execute=True):
         """
@@ -595,6 +603,7 @@ class ModelView(BaseModelView):
         joins = set()
 
         query = self.get_query()
+        count_query = self.get_count_query()
 
         # Apply search criteria
         if self._search_supported and search:
@@ -602,6 +611,7 @@ class ModelView(BaseModelView):
             if self._search_joins:
                 for jn in self._search_joins.values():
                     query = query.join(jn)
+                    count_query = count_query.join(jn)
 
                 joins = set(self._search_joins.keys())
 
@@ -615,6 +625,7 @@ class ModelView(BaseModelView):
                 stmt = tools.parse_like_term(term)
                 filter_stmt = [c.ilike(stmt) for c in self._search_fields]
                 query = query.filter(or_(*filter_stmt))
+                count_query = count_query.filter(or_(*filter_stmt))
 
         # Apply filters
         if filters and self._filters:
@@ -629,13 +640,15 @@ class ModelView(BaseModelView):
                 for table in join_tables:
                     if table.name not in joins:
                         query = query.join(table)
+                        count_query = count_query.join(table)
                         joins.add(table.name)
 
                 # Apply filter
                 query = flt.apply(query, value)
+                count_query = flt.apply(count_query, value)
 
         # Calculate number of rows
-        count = query.count()
+        count = count_query.scalar()
 
         # Auto join
         for j in self._auto_joins:
