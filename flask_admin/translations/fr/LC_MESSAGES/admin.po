@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Flask-Admin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-24 03:54+0200\n"
-"PO-Revision-Date: 2013-03-28 00:07+0100\n"
+"PO-Revision-Date: 2013-03-28 00:48+0100\n"
 "Last-Translator: CeReynAud\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -160,7 +160,7 @@ msgstr "plus petit que"
 #: ../flask_admin/contrib/sqlamodel/view.py:627
 #, python-format
 msgid "Failed to create model. %(error)s"
-msgstr "Échec dans la création de l'objet: %(error)s"
+msgstr "Échec dans la création de l'objet. %(error)s"
 
 #: ../flask_admin/contrib/peeweemodel/view.py:332
 #: ../flask_admin/contrib/sqlamodel/view.py:647
