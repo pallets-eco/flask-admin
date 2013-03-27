@@ -569,7 +569,9 @@ class ModelView(BaseModelView):
     # Database-related API
     def get_query(self):
         """
-            Return a query for the model type
+            Return a query for the model type.
+            
+            If you override this method, don't forget to override `get_count_query` as well.
         """
         return self.session.query(self.model)
 
