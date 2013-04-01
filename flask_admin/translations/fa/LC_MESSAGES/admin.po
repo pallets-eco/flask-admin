@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Flask-Admin VERSION\n"
 "Report-Msgid-Bugs-To: hamid.rs90{in}gmail\n"
 "POT-Creation-Date: 2013-04-01 12:40+0430\n"
-"PO-Revision-Date: 2013-04-01 14:30+0430\n"
+"PO-Revision-Date: 2013-04-02 01:13+0430\n"
 "Last-Translator: hamid <hamid.rs90{in}gmail>\n"
 "Language-Team: \n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
@@ -63,7 +63,7 @@ msgstr "فایل \"%(name)s\" قبلا وجود داشته است"
 #: ../flask_admin/contrib/fileadmin.py:492
 #, python-format
 msgid "Failed to save file: %(error)s"
-msgstr "ذخیره ی فایل  بامشکل روبرو شد %(error)"
+msgstr "ذخیره ی فایل  بامشکل روبرو شد %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:511
 msgid "Directory creation is disabled."
@@ -72,7 +72,7 @@ msgstr "ساخت پوشه غیر فعال است"
 #: ../flask_admin/contrib/fileadmin.py:522
 #, python-format
 msgid "Failed to create directory: %(error)s"
-msgstr "ساخت پوشه ی  با مشکل روبرو شد %(error)"
+msgstr "ساخت پوشه ی  با مشکل روبرو شد %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:544
 msgid "Deletion is disabled."
@@ -90,7 +90,7 @@ msgstr "پوشه ی \"%s\" با موفقیت حذف شد"
 #: ../flask_admin/contrib/fileadmin.py:557
 #, python-format
 msgid "Failed to delete directory: %(error)s"
-msgstr "حذف پوشه ی  با مشکل روبرو شد %(error)"
+msgstr "حذف پوشه ی  با مشکل روبرو شد %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:562
 #: ../flask_admin/contrib/fileadmin.py:685
@@ -102,7 +102,7 @@ msgstr "فایل \"%(name)s\" با موفقیت حذف شد"
 #: ../flask_admin/contrib/fileadmin.py:687
 #, python-format
 msgid "Failed to delete file: %(name)s"
-msgstr "حذف فایل%(name)  با مشکل روبرو شد"
+msgstr "حذف فایل%(name)s  با مشکل روبرو شد"
 
 #: ../flask_admin/contrib/fileadmin.py:583
 msgid "Renaming is disabled."
@@ -120,33 +120,33 @@ msgstr "با موفقیت از\"%(src)s\"  به \"%(dst)s\" تغییر نام د
 #: ../flask_admin/contrib/fileadmin.py:602
 #, python-format
 msgid "Failed to rename: %(error)s"
-msgstr "تغییر نام  با مشکل روبرو شد %(error)"
+msgstr "تغییر نام  با مشکل روبرو شد %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:640
 #, python-format
 msgid "Error saving changes to %(name)s."
-msgstr "مشکل در ذخیره ی تغییرات %(name)"
+msgstr "مشکل در ذخیره ی تغییرات %(name)s"
 
 #: ../flask_admin/contrib/fileadmin.py:644
 #, python-format
 msgid "Changes to %(name)s saved successfully."
-msgstr "تغییرات%(name)  با موفقیت صورت گرفت"
+msgstr "تغییرات%(name)s  با موفقیت صورت گرفت"
 
 #: ../flask_admin/contrib/fileadmin.py:651
 #, python-format
 msgid "Error reading %(name)s."
-msgstr "مشکل در خواندن %(name)"
+msgstr "مشکل در خواندن %(name)s"
 
 #: ../flask_admin/contrib/fileadmin.py:654
 #: ../flask_admin/contrib/fileadmin.py:663
 #, python-format
 msgid "Unexpected error while reading from %(name)s"
-msgstr "خطای غیر منتظره در حال خواندن %(name)"
+msgstr "خطای غیر منتظره در حال خواندن %(name)s"
 
 #: ../flask_admin/contrib/fileadmin.py:660
 #, python-format
 msgid "Cannot edit %(name)s."
-msgstr "عدم توانایی در ویرایش %(name)"
+msgstr "عدم توانایی در ویرایش %(name)s"
 
 #: ../flask_admin/contrib/fileadmin.py:677
 #: ../flask_admin/contrib/mongoengine/view.py:389
@@ -212,7 +212,7 @@ msgstr "کوچکتر از"
 #: ../flask_admin/contrib/sqlamodel/view.py:734
 #, python-format
 msgid "Failed to create model. %(error)s"
-msgstr "ساخت مدل با مشکل روبرو شد %(error)"
+msgstr "ساخت مدل با مشکل روبرو شد %(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:358
 #: ../flask_admin/contrib/peeweemodel/view.py:352
@@ -220,7 +220,7 @@ msgstr "ساخت مدل با مشکل روبرو شد %(error)"
 #: ../flask_admin/contrib/sqlamodel/view.py:754
 #, python-format
 msgid "Failed to update model. %(error)s"
-msgstr "بروزرسانی مدل با مشکل روبرو شد%(error)"
+msgstr "بروزرسانی مدل با مشکل روبرو شد%(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:375
 #: ../flask_admin/contrib/peeweemodel/view.py:362
@@ -228,7 +228,7 @@ msgstr "بروزرسانی مدل با مشکل روبرو شد%(error)"
 #: ../flask_admin/contrib/sqlamodel/view.py:773
 #, python-format
 msgid "Failed to delete model. %(error)s"
-msgstr "حذف مدل با مشکل روبرو شد %(error)"
+msgstr "حذف مدل با مشکل روبرو شد %(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:390
 #: ../flask_admin/contrib/peeweemodel/view.py:376
@@ -245,7 +245,7 @@ msgstr "آیا از خذف مدل ها اطمینان دارید"
 msgid "Model was successfully deleted."
 msgid_plural "%(count)s models were successfully deleted."
 msgstr[0] "مدل با موفقیت حذف شد"
-msgstr[1] "%(count)  مدل با موفقیت خذف شدند"
+msgstr[1] "%(count)s  مدل با موفقیت خذف شدند"
 msgstr[2] ""
 
 #: ../flask_admin/contrib/mongoengine/view.py:405
@@ -254,7 +254,7 @@ msgstr[2] ""
 #: ../flask_admin/contrib/sqlamodel/view.py:811
 #, python-format
 msgid "Failed to delete models. %(error)s"
-msgstr "حذف مدل ها با مشکل روبرو شد %(error)"
+msgstr "حذف مدل ها با مشکل روبرو شد %(error)s"
 
 #: ../flask_admin/contrib/sqlamodel/fields.py:125
 #: ../flask_admin/contrib/sqlamodel/fields.py:175
@@ -293,7 +293,7 @@ msgstr "لغو"
 #: ../flask_admin/templates/admin/file/edit.html:5
 #, python-format
 msgid "You are editing %(path)s"
-msgstr "شما در حال ویرایش %(path) هستید"
+msgstr "شما در حال ویرایش %(path)s هستید"
 
 #: ../flask_admin/templates/admin/file/list.html:8
 msgid "Root"
@@ -324,7 +324,7 @@ msgstr "حداقل یک فایل انتخاب کنید"
 #: ../flask_admin/templates/admin/file/rename.html:5
 #, python-format
 msgid "Please provide new name for %(name)s"
-msgstr "لطفا یک نام جدید%(name)  برای وارد کنید"
+msgstr "لطفا یک نام جدید%(name)s  برای وارد کنید"
 
 #: ../flask_admin/templates/admin/model/create.html:5
 msgid "Save and Add"
@@ -338,7 +338,7 @@ msgstr "لیست"
 #: ../flask_admin/templates/admin/model/create.html:20
 #: ../flask_admin/templates/admin/model/list.html:20
 msgid "Create"
-msgstr "ساخت"
+msgstr "ایجاد"
 
 #: ../flask_admin/templates/admin/model/inline_list_base.html:18
 msgid "Delete?"
