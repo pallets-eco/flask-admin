@@ -1,11 +1,11 @@
 {% macro filter_options(btn_class='dropdown-toggle') %}
-    <a class="{{ btn_class }}" data-toggle="dropdown" href="#">
+    <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
         {{ _gettext('Add Filter') }}<b class="caret"></b>
     </a>
     <ul class="dropdown-menu field-filters">
         {% for k in filter_groups %}
         <li>
-            <a href="#" class="filter" onclick="return false;">{{ k[0] }}</a>
+            <a href="javascript:void(0)" class="filter" onclick="return false;">{{ k[0] }}</a>
         </li>
         {% endfor %}
     </ul>
@@ -25,7 +25,7 @@
             <tr>
                 {% set filter = admin_view._filters[flt[0]] %}
                 <td>
-                    <a href="#" class="btn remove-filter" title="{{ _gettext('Remove Filter') }}">
+                    <a href="javascript:void(0)" class="btn remove-filter" title="{{ _gettext('Remove Filter') }}">
                         <span class="close-icon">&times;</span>&nbsp;{{ filters[flt[0]] }}
                     </a>
                 </td>

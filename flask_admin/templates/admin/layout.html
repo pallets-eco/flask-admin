@@ -4,7 +4,7 @@
       {% set children = item.get_children() %}
       {% if children %}
         {% if item.is_active(admin_view) %}<li class="active dropdown">{% else %}<li class="dropdown">{% endif %}
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ item.name }}<b class="caret"></b></a>
+          <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">{{ item.name }}<b class="caret"></b></a>
           <ul class="dropdown-menu">
             {% for child in children %}
               {% if child.is_active(admin_view) %}<li class="active">{% else %}<li>{% endif %}
@@ -43,7 +43,7 @@
         {% else %}
         <div class="alert">
         {% endif %}
-          <a href="#" class="close" data-dismiss="alert">x</a>
+          <a href="javascript:void(0)" class="close" data-dismiss="alert">x</a>
           {{ m }}
         </div>
       {% endfor %}
