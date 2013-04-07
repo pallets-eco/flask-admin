@@ -1,5 +1,5 @@
 from flask import g
-from wtforms.validators import Required
+from wtforms.validators import DataRequired, InputRequired
 
 
 def set_current_view(view):
@@ -12,6 +12,6 @@ def get_current_view():
 
 def is_required_form_field(field):
     for validator in field.validators:
-        if isinstance(validator, Required):
+        if isinstance(validator, (DataRequired, InputRequired)):
             return True
     return False
