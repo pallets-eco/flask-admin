@@ -76,7 +76,7 @@
 
 {# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field, set_focus=False, kwargs={}) %}
-  <div class="control-group{{ ' error' if field.errors }}">
+  <div class="control-group{{ ' error' if field.errors else '' }}">
     <div class="control-label">
       {{ field.label.text }}
       {% if h.is_required_form_field(field) %}
