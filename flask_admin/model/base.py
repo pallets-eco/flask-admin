@@ -180,7 +180,7 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(BaseModelView):
                 column_searchable_list = ('name', 'email')
     """
-    
+
     column_choices = None
     """
         Map choices to columns in list view
@@ -980,9 +980,10 @@ class BaseModelView(BaseView, ActionsMixin):
                 return redirect(return_url)
 
         return self.render(self.edit_template,
-                               form=form,
-                               form_widget_args=self.form_widget_args,
-                               return_url=return_url)
+                           model=model,
+                           form=form,
+                           form_widget_args=self.form_widget_args,
+                           return_url=return_url)
 
     @expose('/delete/', methods=('POST',))
     def delete_view(self):
