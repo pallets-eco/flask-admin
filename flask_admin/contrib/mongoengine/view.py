@@ -4,6 +4,7 @@ from flask import flash
 
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
+from flask.ext.admin.model.helpers import get_default_order
 
 import mongoengine
 from bson.objectid import ObjectId
@@ -300,6 +301,11 @@ class ModelView(BaseModelView):
         # Sorting
         if sort_column:
             query = query.order_by('%s%s' % ('-' if sort_desc else '', sort_column))
+        else:
+            order = get_default_order(self)
+
+            if order:
+                query = query.order_by('%s%s' % ('-' if order[1] else '', order[0]))
 
         # Pagination
         if page is not None:

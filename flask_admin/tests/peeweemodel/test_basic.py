@@ -119,3 +119,23 @@ def test_model():
     rv = client.post(url)
     eq_(rv.status_code, 302)
     eq_(Model1.select().count(), 0)
+
+
+def test_default_sort():
+    app, db, admin = setup()
+    M1, _ = create_models(db)
+
+    M1('c', 1).save()
+    M1('b', 2).save()
+    M1('a', 3).save()
+
+    eq_(M1.select().count(), 3)
+
+    view = CustomModelView(M1, column_default_sort='test1')
+    admin.add_view(view)
+
+    _, data = view.get_list(0, None, None, None, None)
+
+    eq_(data[0].test1, 'a')
+    eq_(data[1].test1, 'b')
+    eq_(data[2].test1, 'c')

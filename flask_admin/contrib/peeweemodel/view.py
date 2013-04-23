@@ -5,6 +5,7 @@ from flask import flash
 from flask.ext.admin import form
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
+from flask.ext.admin.model.helpers import get_default_order
 
 from peewee import PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
 from wtfpeewee.orm import model_form
@@ -252,6 +253,18 @@ class ModelView(BaseModelView):
 
         return query
 
+    def _order_by(self, query, joins, sort_field, sort_desc):
+        if isinstance(sort_field, basestring):
+            field = getattr(self.model, sort_field)
+            query = query.order_by(field.desc() if sort_desc else field.asc())
+        elif isinstance(sort_field, Field):
+            if sort_field.model_class != self.model:
+                query = self._handle_join(query, sort_field, joins)
+
+            query = query.order_by(sort_field.desc() if sort_desc else sort_field.asc())
+
+        return query, joins
+
     def get_query(self):
         return self.model.select()
 
@@ -299,14 +312,12 @@ class ModelView(BaseModelView):
         if sort_column is not None:
             sort_field = self._sortable_columns[sort_column]
 
-            if isinstance(sort_field, basestring):
-                field = getattr(self.model, sort_field)
-                query = query.order_by(field.desc() if sort_desc else field.asc())
-            elif isinstance(sort_field, Field):
-                if sort_field.model_class != self.model:
-                    query = self._handle_join(query, sort_field, joins)
+            query, joins = self._order_by(query, joins, sort_field, sort_desc)
+        else:
+            order = get_default_order(self)
 
-                query = query.order_by(sort_field.desc() if sort_desc else sort_field.asc())
+            if order:
+                query, joins = self._order_by(query, joins, order[0], order[1])
 
         # Pagination
         if page is not None:
@@ -315,7 +326,7 @@ class ModelView(BaseModelView):
         query = query.limit(self.page_size)
 
         if execute:
-            query = query.execute()
+            query = list(query.execute())
 
         return count, query
 

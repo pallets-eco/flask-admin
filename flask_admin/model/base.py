@@ -167,6 +167,22 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_sortable_list = ('name', ('user', User.username))
     """
 
+    column_default_sort = None
+    """
+        Default sort column if no sorting is applied.
+
+        Example::
+
+            class MyModelView(BaseModelView):
+                column_default_sort = 'user'
+
+        You can use tuple to control ascending descending order. In following example, items
+        will be sorted in descending order::
+
+            class MyModelView(BaseModelView):
+                column_default_sort = ('user', True)
+    """
+
     column_searchable_list = ObsoleteAttr('column_searchable_list',
                                           'searchable_columns',
                                           None)

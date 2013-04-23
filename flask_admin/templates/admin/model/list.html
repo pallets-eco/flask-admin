@@ -56,7 +56,9 @@
                         <input type="checkbox" name="rowtoggle" class="action-rowtoggle" />
                     </th>
                     {% endif %}
+                    {% block list_row_actions_header %}
                     <th class="span1">&nbsp;</th>
+                    {% endblock %}
                     {% set column = 0 %}
                     {% for c, name in list_columns %}
                     <th>
@@ -106,7 +108,7 @@
                         {%- if admin_view.can_delete -%}
                         <form class="icon" method="POST" action="{{ url_for('.delete_view', id=get_pk_value(row), url=return_url) }}">
                             <button onclick="return confirm('{{ _gettext('You sure you want to delete this item?') }}');">
-                                <i class="icon-remove"></i>
+                                <i class="icon-trash"></i>
                             </button>
                         </form>
                         {%- endif -%}

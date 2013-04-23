@@ -502,3 +502,22 @@ def test_multiple_delete():
     rv = client.post('/admin/model1view/action/', data=dict(action='delete', rowid=[1,2,3]))
     eq_(rv.status_code, 302)
     eq_(M1.query.count(), 0)
+
+
+def test_default_sort():
+    app, db, admin = setup()
+    M1, _ = create_models(db)
+
+    db.session.add_all([M1('c'), M1('b'), M1('a')])
+    db.session.commit()
+    eq_(M1.query.count(), 3)
+
+    view = CustomModelView(M1, db.session, column_default_sort='test1')
+    admin.add_view(view)
+
+    _, data = view.get_list(0, None, None, None, None)
+
+    eq_(len(data), 3)
+    eq_(data[0].test1, 'a')
+    eq_(data[1].test1, 'b')
+    eq_(data[2].test1, 'c')

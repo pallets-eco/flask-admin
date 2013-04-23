@@ -123,11 +123,6 @@ class FilterConverter(filters.BaseFilterConverter):
     @filters.convert('Enum', 'ENUM')
     def conv_enum(self, column, name, options=None, **kwargs):
         if not options:
-            warnings.warn(
-                'You can make SQ field with `Enum` type '
-                'more human readable in the form by using '
-                '`column_choices` in your `ModelView`'
-            )
             options = [
                 (v, v)
                 for v in column.type.enums
