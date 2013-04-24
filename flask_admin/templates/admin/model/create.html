@@ -21,7 +21,7 @@
       </li>
 	</ul>
 
-  {% call lib.form_tag() %}
+  {% call lib.form_tag(form) %}
       {{ lib.render_form_fields(form, widget_args=form_widget_args) }}
       {{ lib.render_form_buttons(return_url, extra()) }}
   {% endcall %}

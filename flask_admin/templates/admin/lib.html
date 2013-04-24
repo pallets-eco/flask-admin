@@ -116,7 +116,7 @@
     {% endfor %}
 {% endmacro %}
 
-{% macro form_tag() %}
+{% macro form_tag(form=None) %}
     <form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
       <fieldset>
         {{ caller() }}
