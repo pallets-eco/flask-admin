@@ -1,7 +1,6 @@
 import logging
 
 import pymongo
-from bson.objectid import ObjectId
 
 from flask import flash
 from jinja2 import contextfunction
@@ -250,7 +249,7 @@ class ModelView(BaseModelView):
                 Model ID
         """
         # TODO: Validate if it is valid ID
-        return self.coll.find_one({'_id': ObjectId(id)})
+        return self.coll.find_one({'_id': id})
 
     def edit_form(self, obj):
         """
@@ -337,7 +336,7 @@ class ModelView(BaseModelView):
 
             # TODO: Optimize me
             for pk in ids:
-                self.coll.remove({'_id': ObjectId(pk)})
+                self.coll.remove({'_id': pk})
                 count += 1
 
             flash(ngettext('Model was successfully deleted.',
