@@ -658,7 +658,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         raise NotImplemented('Please implement get_one method')
 
-    # Model handlers
+    # Model event handlers
     def on_model_change(self, form, model):
         """
             Perform some actions after a model is created or updated.
@@ -666,7 +666,30 @@ class BaseModelView(BaseView, ActionsMixin):
             Called from create_model and update_model in the same transaction
             (if it has any meaning for a store backend).
 
-            By default do nothing.
+            By default does nothing.
+
+            :param form:
+                Form used to create/update model
+            :param model:
+                Model that will be created/updated
+        """
+        pass
+
+    def after_model_change(self, form, model, is_created):
+        """
+            Perform some actions after a model was created or updated and
+            committed to the database.
+
+            Called from create_model after successful database commit.
+
+            By default does nothing.
+
+            :param form:
+                Form used to create/update model
+            :param model:
+                Model that was created/updated
+            :param is_created:
+                True if model was created, False if model was updated
         """
         pass
 

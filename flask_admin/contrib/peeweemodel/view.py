@@ -342,12 +342,14 @@ class ModelView(BaseModelView):
 
             # For peewee have to save inline forms after model was saved
             save_inline(form, model)
-
-            return True
         except Exception, ex:
             flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
             logging.exception('Failed to create model')
             return False
+        else:
+            self.after_model_change(form, model, True)
+
+        return True
 
     def update_model(self, form, model):
         try:
@@ -357,12 +359,14 @@ class ModelView(BaseModelView):
 
             # For peewee have to save inline forms after model was saved
             save_inline(form, model)
-
-            return True
         except Exception, ex:
             flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')
             logging.exception('Failed to update model')
             return False
+        else:
+            self.after_model_change(form, model, False)
+
+        return True
 
     def delete_model(self, model):
         try:

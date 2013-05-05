@@ -752,12 +752,15 @@ class ModelView(BaseModelView):
             self.session.add(model)
             self.on_model_change(form, model)
             self.session.commit()
-            return True
         except Exception, ex:
             flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
             logging.exception('Failed to create model')
             self.session.rollback()
             return False
+        else:
+            self.after_model_change(form, model, True)
+
+        return True
 
     def update_model(self, form, model):
         """
@@ -772,12 +775,15 @@ class ModelView(BaseModelView):
             form.populate_obj(model)
             self.on_model_change(form, model)
             self.session.commit()
-            return True
         except Exception, ex:
             flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')
             logging.exception('Failed to update model')
             self.session.rollback()
             return False
+        else:
+            self.after_model_change(form, model, False)
+
+        return True
 
     def delete_model(self, model):
         """

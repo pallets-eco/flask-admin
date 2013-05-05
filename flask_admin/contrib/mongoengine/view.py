@@ -339,12 +339,15 @@ class ModelView(BaseModelView):
             form.populate_obj(model)
             self.on_model_change(form, model)
             model.save()
-            return True
         except Exception, ex:
             flash(gettext('Failed to create model. %(error)s', error=str(ex)),
-                'error')
+                  'error')
             logging.exception('Failed to create model')
             return False
+        else:
+            self.after_model_change(form, model, True)
+
+        return True
 
     def update_model(self, form, model):
         """
@@ -359,12 +362,15 @@ class ModelView(BaseModelView):
             form.populate_obj(model)
             self.on_model_change(form, model)
             model.save()
-            return True
         except Exception, ex:
             flash(gettext('Failed to update model. %(error)s', error=str(ex)),
-                'error')
+                  'error')
             logging.exception('Failed to update model')
             return False
+        else:
+            self.after_model_change(form, model, False)
+
+        return True
 
     def delete_model(self, model):
         """
@@ -379,7 +385,7 @@ class ModelView(BaseModelView):
             return True
         except Exception, ex:
             flash(gettext('Failed to delete model. %(error)s', error=str(ex)),
-                'error')
+                  'error')
             logging.exception('Failed to delete model')
             return False
 
@@ -408,4 +414,4 @@ class ModelView(BaseModelView):
                            count=count))
         except Exception, ex:
             flash(gettext('Failed to delete models. %(error)s', error=str(ex)),
-                'error')
+                  'error')
