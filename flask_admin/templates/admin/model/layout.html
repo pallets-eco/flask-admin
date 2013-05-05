@@ -55,7 +55,7 @@
     <div class="clearfix"></div>
 {% endmacro %}
 
-{% macro search_form(input_class="search-query span2") %}
+{% macro search_form(input_class="span2") %}
 <form method="GET" action="{{ return_url }}" class="search-form">
     {% if sort_column is not none %}
     <input type="hidden" name="sort" value="{{ sort_column }}"></input>
@@ -63,13 +63,17 @@
     {% if sort_desc %}
     <input type="hidden" name="desc" value="{{ sort_desc }}"></input>
     {% endif %}
+    {% if search %}
     <div class="input-append">
-        <input type="text" name="search" value="{{ search or '' }}" class="{{ input_class }}" placeholder="{{ _gettext('Search') }}"></input>
-        {% if search %}
+            <input type="text" name="search" value="{{ search }}" class="{{ input_class }}" placeholder="{{ _gettext('Search') }}"></input>
             <a href="{{ clear_search_url }}" class="clear add-on">
                 <i class="icon-remove"></i>
             </a>
-        {% endif %}
     </div>
+    {% else %}
+    <div>
+        <input type="text" name="search" value="" class="{{ input_class }}" placeholder="{{ _gettext('Search') }}"></input>
+    </div>
+    {% endif %}
 </form>
 {% endmacro %}

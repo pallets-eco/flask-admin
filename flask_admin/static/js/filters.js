@@ -62,20 +62,17 @@ var AdminFilters = function(element, filters_element, operations, options, types
 
             $(options[optId]).each(function() {
                 $field.append($('<option/>')
-                    .val(this[0]).text(this[1]))
-                    .appendTo($el);
+                    .val(this[0]).text(this[1]));
             });
 
-            $field.select2();
+            $el.append($('<td/>').append($field));
+            $field.select2({width: 'resolve'});
         } else
         {
             $field = $('<input type="text" class="filter-val" />')
                         .attr('name', 'flt' + lastCount + '_' + optId);
+            $el.append($('<td/>').append($field));
         }
-
-        $el.append(
-                $('<td/>').append($field)
-            );
 
         if (optId in types) {
             $field.attr('data-role', types[optId]);
