@@ -1,7 +1,8 @@
 import logging
 
 import pymongo
-from bson.objectid import ObjectId
+from bson import ObjectId
+from bson.errors import InvalidId
 
 from flask import flash
 from jinja2 import contextfunction
@@ -242,6 +243,13 @@ class ModelView(BaseModelView):
 
         return count, results
 
+    def _get_valid_id(self, id):
+        try:
+            return ObjectId(id)
+        except InvalidId:
+            return id
+
+
     def get_one(self, id):
         """
             Return single model instance by ID
@@ -249,8 +257,7 @@ class ModelView(BaseModelView):
             :param id:
                 Model ID
         """
-        # TODO: Validate if it is valid ID
-        return self.coll.find_one({'_id': ObjectId(id)})
+        return self.coll.find_one({'_id': self._get_valid_id(id)})
 
     def edit_form(self, obj):
         """
@@ -343,7 +350,7 @@ class ModelView(BaseModelView):
 
             # TODO: Optimize me
             for pk in ids:
-                self.coll.remove({'_id': ObjectId(pk)})
+                self.coll.remove({'_id': self._get_valid_id(pk)})
                 count += 1
 
             flash(ngettext('Model was successfully deleted.',
