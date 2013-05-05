@@ -88,7 +88,7 @@ class AdminModelConverter(ModelConverterBase):
 
             # Contribute model-related parameters
             if 'allow_blank' not in kwargs:
-                kwargs['allow_blank'] = local_column.nullable,
+                kwargs['allow_blank'] = local_column.nullable
             if 'query_factory' not in kwargs:
                 kwargs['query_factory'] = lambda: self.session.query(remote_model)
 
