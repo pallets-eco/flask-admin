@@ -179,7 +179,7 @@ class ModelView(BaseModelView):
                 if len(data) == 1:
                     query = data[0]
                 else:
-                    query['$AND'] = data
+                    query['$and'] = data
 
         # Search
         if self._search_supported and search:
@@ -248,7 +248,6 @@ class ModelView(BaseModelView):
             return ObjectId(id)
         except InvalidId:
             return id
-
 
     def get_one(self, id):
         """
