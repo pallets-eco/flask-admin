@@ -117,6 +117,9 @@ class PostAdmin(sqlamodel.ModelView):
                     text=dict(label='Big Text', validators=[wtf.required()])
                 )
 
+    def is_visible(self):
+        return False
+
     def __init__(self, session):
         # Just call parent class with predefined model.
         super(PostAdmin, self).__init__(Post, session)

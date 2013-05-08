@@ -255,6 +255,17 @@ class BaseView(object):
         """
         return sub(r'(?<=.)([A-Z])', r' \1', name)
 
+    def is_visible(self):
+        """
+            Override this method if you want dynamically hide or show administrative views
+            from Flask-Admin menu structure
+
+            By default, item is visible in menu.
+
+            Please note that item should be both visible and accessible to be displayed in menu.
+        """
+        return True
+
     def is_accessible(self):
         """
             Override this method to add permission checks.
@@ -354,6 +365,12 @@ class MenuItem(object):
 
         return view.url in self._children_urls
 
+    def is_visible(self):
+        if self._view is None:
+            return False
+
+        return self._view.is_visible()
+
     def is_accessible(self):
         if self._view is None:
             return False
@@ -364,12 +381,12 @@ class MenuItem(object):
         return self._view is None
 
     def get_children(self):
-        return [c for c in self._children if c.is_accessible()]
+        return [c for c in self._children if c.is_accessible() and c.is_visible()]
 
 
 class MenuLink(object):
     """
-        Menu additional links hierarchy.
+        Additional menu links.
     """
     def __init__(self, name, url=None, endpoint=None):
         self.name = name
@@ -378,6 +395,9 @@ class MenuLink(object):
 
     def get_url(self):
         return self.url or url_for(self.endpoint)
+
+    def is_visible(self):
+        return True
 
     def is_accessible(self):
         return True

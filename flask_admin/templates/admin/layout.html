@@ -15,7 +15,7 @@
         </li>
       {% endif %}
     {% else %}
-      {% if item.is_accessible() %}
+      {% if item.is_accessible() and item.is_visible() %}
         {% if item.is_active(admin_view) %}<li class="active">{% else %}<li>{% endif %}
           <a href="{{ item.get_url() }}">{{ item.name }}</a>
         </li>
@@ -26,7 +26,7 @@
 
 {% macro menu_links() %}
   {% for item in admin_view.admin.menu_links() %}
-    {% if item.is_accessible() %}
+    {% if item.is_accessible() and item.is_visible() %}
       <li>
         <a href="{{ item.get_url() }}">{{ item.name }}</a>
       </li>
