@@ -123,29 +123,11 @@ class ModelView(BaseModelView):
     def scaffold_form(self):
         raise NotImplemented()
 
-    @contextfunction
-    def get_list_value(self, context, model, name):
+    def _get_field_value(self, model, name):
         """
-            Returns value to be displayed in list view
-
-            :param context:
-                :py:class:`jinja2.runtime.Context`
-            :param model:
-                Model instance
-            :param name:
-                Field name
+            Get unformatted field value from the model
         """
-        column_fmt = self.column_formatters.get(name)
-        if column_fmt is not None:
-            return column_fmt(context, model, name)
-
-        value = model.get(name)
-
-        type_fmt = self.column_type_formatters.get(type(value))
-        if type_fmt is not None:
-            value = type_fmt(value)
-
-        return value
+        return model.get(name)
 
     def get_list(self, page, sort_column, sort_desc, search, filters,
                  execute=True):

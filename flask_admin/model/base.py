@@ -1,3 +1,5 @@
+import warnings
+
 from flask import request, url_for, redirect, flash
 
 from jinja2 import contextfunction
@@ -79,14 +81,15 @@ class BaseModelView(BaseView, ActionsMixin):
         two, you can do something like this::
 
             class MyModelView(BaseModelView):
-                column_formatters = dict(price=lambda c, m, p: m.price*2)
+                column_formatters = dict(price=lambda v, c, m, p: m.price*2)
 
         The Callback function has the prototype::
 
-            def formatter(context, model, name):
-                # context is instance of jinja2.runtime.Context
-                # model is model instance
-                # name is property name
+            def formatter(view, context, model, name):
+                # `view` is current administrative view
+                # `context` is instance of jinja2.runtime.Context
+                # `model` is model instance
+                # `name` is property name
                 pass
     """
 
@@ -117,6 +120,13 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_type_formatters = MY_DEFAULT_FORMATTERS
 
         Type formatters have lower priority than list column formatters.
+
+        The callback function has following prototype::
+
+            def type_formatter(view, value):
+                # `view` is current administrative view
+                # `value` value to format
+                pass
     """
 
     column_labels = ObsoleteAttr('column_labels', 'rename_columns', None)
@@ -841,6 +851,12 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return name not in self.action_disallowed_list
 
+    def _get_field_value(self, model, name):
+        """
+            Get unformatted field value from the model
+        """
+        return rec_getattr(model, name)
+
     @contextfunction
     def get_list_value(self, context, model, name):
         """
@@ -855,9 +871,17 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         column_fmt = self.column_formatters.get(name)
         if column_fmt is not None:
-            return column_fmt(context, model, name)
+            try:
+                return column_fmt(self, context, model, name)
+            except TypeError:
+                warnings.warn('Column formatter prototype was changed to accept view as first input parameter.\n' +
+                              'Please update %s %s formatter to accept 4 parameters.' % (self.name, name),
+                              stacklevel=2)
+                self.column_formatters[name] = lambda _, c, m, n: column_fmt(c, m, n)
 
-        value = rec_getattr(model, name)
+                return column_fmt(context, model, name)
+
+        value = self._get_field_value(model, name)
 
         choices_map = self._column_choices_map.get(name, {})
         if choices_map:
@@ -865,7 +889,15 @@ class BaseModelView(BaseView, ActionsMixin):
 
         type_fmt = self.column_type_formatters.get(type(value))
         if type_fmt is not None:
-            value = type_fmt(value)
+            try:
+                value = type_fmt(self, value)
+            except TypeError:
+                warnings.warn('Type formatter prototype was changed to accept view as first input parameter.\n' +
+                              'Please update %s %s formatter to accept 2 parameters.' % (self.name, type(value)),
+                              stacklevel=2)
+                self.column_type_formatters[type(value)] = lambda _, value: type_fmt(value)
+
+                value = type_fmt(value)
 
         return value
 
