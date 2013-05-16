@@ -128,6 +128,7 @@
 {% endblock %}
 
 {% block tail %}
+    {{ super() }}
     <script src="{{ url_for('admin.static', filename='js/bootstrap-datepicker.js') }}"></script>
     <script src="{{ url_for('admin.static', filename='js/form.js') }}"></script>
     <script src="{{ url_for('admin.static', filename='js/filters.js') }}"></script>
