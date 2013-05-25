@@ -1,7 +1,7 @@
 import logging
 
 from sqlalchemy.orm.attributes import InstrumentedAttribute
-from sqlalchemy.orm import subqueryload
+from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import desc
 from sqlalchemy import or_, Column, func
 
@@ -703,7 +703,7 @@ class ModelView(BaseModelView):
 
         # Auto join
         for j in self._auto_joins:
-            query = query.options(subqueryload(j))
+            query = query.options(joinedload(j))
 
         # Sorting
         if sort_column is not None:
