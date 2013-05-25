@@ -874,9 +874,11 @@ class BaseModelView(BaseView, ActionsMixin):
             try:
                 return column_fmt(self, context, model, name)
             except TypeError:
-                warnings.warn('Column formatter prototype was changed to accept view as first input parameter.\n' +
-                              'Please update %s %s formatter to accept 4 parameters.' % (self.name, name),
-                              stacklevel=2)
+                warnings.warn(
+                    u'Column formatter prototype was changed to accept view as first input parameter.\n'
+                    u'Please update %s %s formatter to accept 4 parameters.' % (self.name, name),
+                    stacklevel=2
+                )
                 self.column_formatters[name] = lambda _, c, m, n: column_fmt(c, m, n)
 
                 return column_fmt(context, model, name)
