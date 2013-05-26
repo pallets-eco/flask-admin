@@ -140,7 +140,7 @@
 
 {% macro render_form(form, cancel_url, extra=None, widget_args={}) -%}
     {% call form_tag() %}
-        {{ render_form_fields(form, widget_args) }}
+        {{ render_form_fields(form, widget_args=widget_args) }}
         {{ render_form_buttons(cancel_url, extra) }}
     {% endcall %}
 {% endmacro %}
