@@ -214,6 +214,10 @@ class BaseView(object):
                                    static_folder=self.static_folder,
                                    static_url_path=self.static_url_path)
 
+        # If before_request function is provided, set it to blueprint
+        if admin.before_request is not None:
+            self.blueprint.before_request(admin.before_request)
+
         for url, name, methods in self._urls:
             self.blueprint.add_url_rule(url,
                                         name,
@@ -413,7 +417,8 @@ class Admin(object):
                  translations_path=None,
                  endpoint=None,
                  static_url_path=None,
-                 base_template=None):
+                 base_template=None,
+                 before_request=None):
         """
             Constructor.
 
@@ -438,6 +443,8 @@ class Admin(object):
                 all its views. Can be overridden in view configuration.
             :param base_template:
                 Override base HTML template for all static views. Defaults to `admin/base.html`.
+            :param before_request:
+                Function to trigger before all blueprints created by admin package
         """
         self.app = app
 
@@ -458,6 +465,7 @@ class Admin(object):
         self.static_url_path = static_url_path
         self.subdomain = subdomain
         self.base_template = base_template or 'admin/base.html'
+        self.before_request = before_request
 
         # Add predefined index view
         self.add_view(self.index_view)
