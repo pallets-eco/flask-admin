@@ -206,7 +206,7 @@ class ModelView(BaseModelView):
         if sort_column:
             sort_by = [(sort_column, pymongo.DESCENDING if sort_desc else pymongo.ASCENDING)]
         else:
-            order = self.get_default_order()
+            order = self._get_default_order()
 
             if order:
                 sort_by = [(order[0], pymongo.DESCENDING if order[1] else pymongo.ASCENDING)]
@@ -256,7 +256,7 @@ class ModelView(BaseModelView):
             model = form.data
             self.on_model_change(form, model)
             self.coll.insert(model)
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to create model. %(error)s', error=str(ex)),
                   'error')
             logging.exception('Failed to create model')
@@ -281,7 +281,7 @@ class ModelView(BaseModelView):
 
             pk = self.get_pk_value(model)
             self.coll.update({'_id': pk}, model)
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to update model. %(error)s', error=str(ex)),
                   'error')
             logging.exception('Failed to update model')
@@ -307,7 +307,7 @@ class ModelView(BaseModelView):
             self.on_model_delete(model)
             self.coll.remove({'_id': pk})
             return True
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to delete model. %(error)s', error=str(ex)),
                   'error')
             logging.exception('Failed to delete model')
@@ -337,6 +337,6 @@ class ModelView(BaseModelView):
                            '%(count)s models were successfully deleted.',
                            count,
                            count=count))
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to delete models. %(error)s', error=str(ex)),
                 'error')

@@ -8,7 +8,7 @@ from wtforms import form, fields
 
 from flask.ext.admin.form import Select2Widget
 from flask.ext.admin.contrib.pymongo import ModelView, filters
-from flask.ext.admin.model import InlineFormField, InlineFieldList
+from flask.ext.admin.model.fields import InlineFormField, InlineFieldList
 
 # Create application
 app = Flask(__name__)
@@ -98,9 +98,7 @@ class TweetView(ModelView):
     # Correct user_id reference before saving
     def on_model_change(self, form, model):
         user_id = model.get('user_id')
-
-        if isinstance(user_id, basestring):
-            model['user_id'] = ObjectId(user_id)
+        model['user_id'] = ObjectId(user_id)
 
         return model
 
