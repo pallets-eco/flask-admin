@@ -164,6 +164,6 @@ class InlineModelConverter(InlineModelConverterBase):
 
 
 def save_inline(form, model):
-    for _, f in _compat(form._fields):
+    for f in _compat.itervalues(form._fields):
         if f.type == 'InlineModelFormList':
             f.save_related(model)

@@ -44,7 +44,7 @@ else:
     def as_unicode(text):
         return unicode(text)
 
-    reduce = __builtins__.reduce
+    reduce = __builtins__['reduce']
 
 
 def with_metaclass(meta, *bases):
