@@ -106,8 +106,6 @@ class BaseView(six.with_metaclass(AdminViewMeta, BaseMeta)):
                 def index(self):
                     return 'Hello World!'
     """
-    __metaclass__ = AdminViewMeta
-
     @property
     def _template_args(self):
         """

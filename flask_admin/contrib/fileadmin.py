@@ -15,7 +15,7 @@ from wtforms import fields, validators
 from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.actions import action, ActionsMixin
 from flask.ext.admin.babel import gettext, lazy_gettext
-from flask.ext.admin import form
+from flask.ext.admin import form, helpers
 
 
 class NameForm(form.BaseForm):
@@ -43,7 +43,7 @@ class UploadForm(form.BaseForm):
     def __init__(self, admin):
         self.admin = admin
 
-        super(UploadForm, self).__init__()
+        super(UploadForm, self).__init__(helpers.get_form_data())
 
     def validate_upload(self, field):
         if not self.upload.has_file():
@@ -476,7 +476,7 @@ class FileAdmin(BaseView, ActionsMixin):
             return redirect(self._get_dir_url('.index', path))
 
         form = UploadForm(self)
-        if form.validate_on_submit():
+        if helpers.validate_form_on_submit(form):
             filename = op.join(directory,
                                secure_filename(form.upload.data.filename))
 
@@ -511,9 +511,9 @@ class FileAdmin(BaseView, ActionsMixin):
             flash(gettext('Directory creation is disabled.'), 'error')
             return redirect(dir_url)
 
-        form = NameForm(request.form)
+        form = NameForm(helpers.get_form_data())
 
-        if form.validate_on_submit():
+        if helpers.validate_form_on_submit(form):
             try:
                 os.mkdir(op.join(directory, form.name.data))
                 self.on_mkdir(directory, form.name.data)
@@ -587,8 +587,8 @@ class FileAdmin(BaseView, ActionsMixin):
             flash(gettext('Path does not exist.'))
             return redirect(return_url)
 
-        form = NameForm(request.form, name=op.basename(path))
-        if form.validate_on_submit():
+        form = NameForm(helpers.get_form_data(), name=op.basename(path))
+        if helpers.validate_form_on_submit(form):
             try:
                 dir_base = op.dirname(full_path)
                 filename = secure_filename(form.name.data)
@@ -627,10 +627,10 @@ class FileAdmin(BaseView, ActionsMixin):
         dir_url = self._get_dir_url('.index', os.path.dirname(path))
         next_url = next_url or dir_url
 
-        form = EditForm()
+        form = EditForm(helpers.get_form_data())
         error = False
 
-        if request.method == 'POST':
+        if helpers.validate_form_on_submit(form):
             form.process(request.form, content='')
             if form.validate():
                 try:

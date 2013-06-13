@@ -5,6 +5,7 @@ from wtforms import form, fields, validators
 
 from flask.ext import admin, login
 from flask.ext.admin.contrib.mongoengine import ModelView
+from flask.ext.admin import helpers
 
 # Create application
 app = Flask(__name__)
@@ -103,7 +104,7 @@ def index():
 @app.route('/login/', methods=('GET', 'POST'))
 def login_view():
     form = LoginForm(request.form)
-    if form.validate_on_submit():
+    if helpers.validate_form_on_submit(form):
         user = form.get_user()
         login.login_user(user)
         return redirect(url_for('index'))
@@ -114,7 +115,7 @@ def login_view():
 @app.route('/register/', methods=('GET', 'POST'))
 def register_view():
     form = RegistrationForm(request.form)
-    if form.validate_on_submit():
+    if helpers.validate_form_on_submit(form):
         user = User()
 
         form.populate_obj(user)

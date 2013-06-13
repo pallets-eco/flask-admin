@@ -10,6 +10,7 @@ from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.tools import rec_getattr, ObsoleteAttr
 from flask.ext.admin.model import filters, typefmt
 from flask.ext.admin.actions import ActionsMixin
+from flask.ext.admin import get_form_data, validate_form_on_submit
 
 
 class BaseModelView(BaseView, ActionsMixin):
@@ -607,7 +608,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             Override to implement custom behavior.
         """
-        return self._create_form_class(obj=obj)
+        return self._create_form_class(get_form_data(), obj=obj)
 
     def edit_form(self, obj=None):
         """
@@ -615,7 +616,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             Override to implement custom behavior.
         """
-        return self._edit_form_class(obj=obj)
+        return self._edit_form_class(get_form_data(), obj=obj)
 
     # Helpers
     def is_sortable(self, name):
@@ -1028,7 +1029,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         form = self.create_form()
 
-        if form.validate_on_submit():
+        if validate_form_on_submit(form):
             if self.create_model(form):
                 if '_add_another' in request.form:
                     flash(gettext('Model was successfully created.'))
@@ -1062,7 +1063,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         form = self.edit_form(obj=model)
 
-        if form.validate_on_submit():
+        if validate_form_on_submit(form):
             if self.update_model(form, model):
                 return redirect(return_url)
 

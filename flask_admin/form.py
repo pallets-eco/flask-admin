@@ -7,30 +7,9 @@ from flask.ext.admin.babel import gettext, ngettext
 from flask.ext.admin import helpers as h
 
 
+# TODO: Use flask.ext.wtf if possible
 class BaseForm(form.Form):
-    """
-        Customized form class.
-    """
-    def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
-        if formdata:
-            super(BaseForm, self).__init__(formdata, obj, prefix, **kwargs)
-        else:
-            super(BaseForm, self).__init__(obj=obj, prefix=prefix, **kwargs)
-
-        self._obj = obj
-
-    @property
-    def has_file_field(self):
-        """
-            Return True if form contains at least one FileField.
-            Does not check for child form fields.
-        """
-        # TODO: Optimize me
-        for f in self:
-            if isinstance(f, fields.FileField):
-                return True
-
-        return False
+    pass
 
 
 class TimeField(fields.Field):
