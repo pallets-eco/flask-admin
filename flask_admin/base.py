@@ -90,11 +90,11 @@ class AdminViewMeta(type):
                 setattr(cls, p, _wrap_view(attr))
 
 
-class BaseMeta(object):
+class BaseClass(object):
     pass
 
 
-class BaseView(_compat.with_metaclass(AdminViewMeta, BaseMeta)):
+class BaseView(_compat.with_metaclass(AdminViewMeta, BaseClass)):
     """
         Base administrative view.
 
