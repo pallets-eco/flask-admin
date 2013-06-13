@@ -77,7 +77,7 @@ class MockModelView(base.BaseModelView):
     # Data
     def get_list(self, page, sort_field, sort_desc, search, filters):
         self.search_arguments.append((page, sort_field, sort_desc, search, filters))
-        return len(self.all_models), self.all_models.itervalues()
+        return len(self.all_models), _compat.itervalues(self.all_models)
 
     def get_one(self, id):
         return self.all_models.get(int(id))
@@ -153,7 +153,8 @@ def test_mockview():
     # Try model edit view
     rv = client.get('/admin/modelview/edit/?id=3')
     eq_(rv.status_code, 200)
-    ok_('test1' in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('test1' in data)
 
     rv = client.post('/admin/modelview/edit/?id=3',
                      data=dict(col1='test!', col2='test@', col3='test#'))
@@ -208,13 +209,13 @@ def test_templates():
     view.edit_template = 'mock.html'
 
     rv = client.get('/admin/modelview/')
-    eq_(rv.data, 'Success!')
+    eq_(rv.data, b'Success!')
 
     rv = client.get('/admin/modelview/new/')
-    eq_(rv.data, 'Success!')
+    eq_(rv.data, b'Success!')
 
     rv = client.get('/admin/modelview/edit/?id=1')
-    eq_(rv.data, 'Success!')
+    eq_(rv.data, b'Success!')
 
 
 def test_list_columns():
@@ -231,8 +232,9 @@ def test_list_columns():
     client = app.test_client()
 
     rv = client.get('/admin/modelview/')
-    ok_('Column1' in rv.data)
-    ok_('Col2' not in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('Column1' in data)
+    ok_('Col2' not in data)
 
 
 def test_exclude_columns():
@@ -246,8 +248,9 @@ def test_exclude_columns():
     client = app.test_client()
 
     rv = client.get('/admin/modelview/')
-    ok_('Col1' in rv.data)
-    ok_('Col2' not in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('Col1' in data)
+    ok_('Col2' not in data)
 
 
 def test_sortable_columns():

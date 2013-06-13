@@ -8,6 +8,7 @@ from flask.ext.admin.contrib.sqlamodel.fields import InlineModelFormList
 
 from . import setup
 
+
 def test_inline_form():
     app, db, admin = setup()
     client = app.test_client()

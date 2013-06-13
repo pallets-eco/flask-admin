@@ -339,7 +339,7 @@ class ModelView(BaseModelView):
             form.populate_obj(model)
             self.on_model_change(form, model)
             model.save()
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to create model. %(error)s', error=str(ex)),
                   'error')
             logging.exception('Failed to create model')
@@ -362,7 +362,7 @@ class ModelView(BaseModelView):
             form.populate_obj(model)
             self.on_model_change(form, model)
             model.save()
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to update model. %(error)s', error=str(ex)),
                   'error')
             logging.exception('Failed to update model')
@@ -383,7 +383,7 @@ class ModelView(BaseModelView):
             self.on_model_delete(model)
             model.delete()
             return True
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to delete model. %(error)s', error=str(ex)),
                   'error')
             logging.exception('Failed to delete model')
@@ -412,6 +412,6 @@ class ModelView(BaseModelView):
                            '%(count)s models were successfully deleted.',
                            count,
                            count=count))
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to delete models. %(error)s', error=str(ex)),
                   'error')

@@ -25,6 +25,9 @@ if not PY2:
     iteritems = lambda d: iter(d.items())
 
     def as_unicode(text):
+        if isinstance(text, bytes):
+            return text.decode('utf-8')
+
         return str(text)
 
     from functools import reduce

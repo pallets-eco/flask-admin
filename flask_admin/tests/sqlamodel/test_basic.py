@@ -84,10 +84,10 @@ def test_model():
     eq_(view._filters, None)
 
     # Verify form
-    eq_(view._create_form_class.test1.field_class, wtf.TextField)
-    eq_(view._create_form_class.test2.field_class, wtf.TextField)
-    eq_(view._create_form_class.test3.field_class, wtf.TextAreaField)
-    eq_(view._create_form_class.test4.field_class, wtf.TextAreaField)
+    eq_(view._create_form_class.test1.field_class, fields.TextField)
+    eq_(view._create_form_class.test2.field_class, fields.TextField)
+    eq_(view._create_form_class.test3.field_class, fields.TextAreaField)
+    eq_(view._create_form_class.test4.field_class, fields.TextAreaField)
 
     # Make some test clients
     client = app.test_client()
@@ -110,7 +110,7 @@ def test_model():
 
     rv = client.get('/admin/model1view/')
     eq_(rv.status_code, 200)
-    ok_('test1large' in rv.data)
+    ok_('test1large' in _compat.as_unicode(rv.data))
 
     url = '/admin/model1view/edit/?id=%s' % model.id
     rv = client.get(url)
@@ -159,8 +159,9 @@ def test_list_columns():
     client = app.test_client()
 
     rv = client.get('/admin/model1view/')
-    ok_('Column1' in rv.data)
-    ok_('Test2' not in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('Column1' in data)
+    ok_('Test2' not in data)
 
 
 def test_exclude_columns():
@@ -170,7 +171,7 @@ def test_exclude_columns():
 
     view = CustomModelView(
         Model1, db.session,
-       column_exclude_list=['test2', 'test4', 'enum_field']
+        column_exclude_list=['test2', 'test4', 'enum_field']
     )
     admin.add_view(view)
 
@@ -182,8 +183,9 @@ def test_exclude_columns():
     client = app.test_client()
 
     rv = client.get('/admin/model1view/')
-    ok_('Test1' in rv.data)
-    ok_('Test2' not in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('Test1' in data)
+    ok_('Test2' not in data)
 
 
 def test_column_searchable_list():
@@ -209,8 +211,9 @@ def test_column_searchable_list():
     client = app.test_client()
 
     rv = client.get('/admin/model1view/?search=model1')
-    ok_('model1' in rv.data)
-    ok_('model2' not in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('model1' in data)
+    ok_('model2' not in data)
 
 
 def test_column_filters():
@@ -304,13 +307,15 @@ def test_column_filters():
 
     rv = client.get('/admin/model1view/?flt0_0=model1_obj1')
     eq_(rv.status_code, 200)
-    ok_('model1_obj1' in rv.data)
-    ok_('model1_obj2' not in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('model1_obj1' in data)
+    ok_('model1_obj2' not in data)
 
     rv = client.get('/admin/model1view/?flt0_5=model1_obj1')
     eq_(rv.status_code, 200)
-    ok_('model1_obj1' in rv.data)
-    ok_('model1_obj2' in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('model1_obj1' in data)
+    ok_('model1_obj2' in data)
 
     # Test different filter types
     view = CustomModelView(Model2, db.session,
@@ -336,10 +341,11 @@ def test_column_filters():
 
     rv = client.get('/admin/_model2/?flt1_0=1')
     eq_(rv.status_code, 200)
-    ok_('model2_obj1' in rv.data)
-    ok_('model2_obj2' in rv.data)
-    ok_('model2_obj3' not in rv.data)
-    ok_('model2_obj4' not in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('model2_obj1' in data)
+    ok_('model2_obj2' in data)
+    ok_('model2_obj3' not in data)
+    ok_('model2_obj4' not in data)
 
 
 def test_url_args():
@@ -362,35 +368,42 @@ def test_url_args():
     client = app.test_client()
 
     rv = client.get('/admin/model1view/')
-    ok_('data1' in rv.data)
-    ok_('data3' not in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('data1' in data)
+    ok_('data3' not in data)
 
     # page
     rv = client.get('/admin/model1view/?page=1')
-    ok_('data1' not in rv.data)
-    ok_('data3' in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('data1' not in data)
+    ok_('data3' in data)
 
     # sort
     rv = client.get('/admin/model1view/?sort=0&desc=1')
-    ok_('data1' not in rv.data)
-    ok_('data3' in rv.data)
-    ok_('data4' in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('data1' not in data)
+    ok_('data3' in data)
+    ok_('data4' in data)
 
     # search
     rv = client.get('/admin/model1view/?search=data1')
-    ok_('data1' in rv.data)
-    ok_('data2' not in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('data1' in data)
+    ok_('data2' not in data)
 
     rv = client.get('/admin/model1view/?search=^data1')
-    ok_('data2' not in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('data2' not in data)
 
     # like
     rv = client.get('/admin/model1view/?flt0=0&flt0v=data1')
-    ok_('data1' in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('data1' in data)
 
     # not like
     rv = client.get('/admin/model1view/?flt0=1&flt0v=data1')
-    ok_('data2' in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('data2' in data)
 
 
 def test_non_int_pk():
@@ -416,11 +429,13 @@ def test_non_int_pk():
 
     rv = client.get('/admin/modelview/')
     eq_(rv.status_code, 200)
-    ok_('test1' in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('test1' in data)
 
     rv = client.get('/admin/modelview/edit/?id=test1')
     eq_(rv.status_code, 200)
-    ok_('test2' in rv.data)
+    data = _compat.as_unicode(rv.data)
+    ok_('test2' in data)
 
 
 def test_form():
@@ -472,7 +487,7 @@ def test_on_model_change_delete():
     client = app.test_client()
 
     client.post('/admin/model1view/new/',
-                     data=dict(test1='test1large', test2='test2'))
+                data=dict(test1='test1large', test2='test2'))
 
     model = db.session.query(Model1).first()
     eq_(model.test1, 'TEST1LARGE')
