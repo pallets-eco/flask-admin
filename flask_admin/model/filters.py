@@ -1,3 +1,4 @@
+from flask.ext.admin import _compat
 from flask.ext.admin.babel import lazy_gettext
 
 
@@ -30,7 +31,7 @@ class BaseFilter(object):
                 Associated administrative view class.
         """
         if self.options:
-            return [(v, unicode(n)) for v, n in self.options]
+            return [(v, _compat.as_unicode(n)) for v, n in self.options]
 
         return None
 

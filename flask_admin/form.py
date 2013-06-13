@@ -5,11 +5,15 @@ from wtforms import form, fields, widgets
 from flask.globals import _request_ctx_stack
 from flask.ext.admin.babel import gettext, ngettext
 from flask.ext.admin import helpers as h
+from flask.ext.admin import _compat
 
 
 # TODO: Use flask.ext.wtf if possible
 class BaseForm(form.Form):
-    pass
+    def __init__(self, formdata=None, obj=None, prefix=u'', **kwargs):
+        self._obj = obj
+
+        super(BaseForm, self).__init__(formdata=formdata, obj=obj, prefix=prefix, **kwargs)
 
 
 class TimeField(fields.Field):
@@ -88,7 +92,7 @@ class Select2Field(fields.SelectField):
     """
     widget = Select2Widget()
 
-    def __init__(self, label=None, validators=None, coerce=unicode,
+    def __init__(self, label=None, validators=None, coerce=_compat.text_type,
                  choices=None, allow_blank=False, blank_text=None, **kwargs):
         super(Select2Field, self).__init__(
             label, validators, coerce, choices, **kwargs

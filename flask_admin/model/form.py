@@ -1,6 +1,7 @@
 import inspect
 
 from flask.ext.admin.form import BaseForm
+from flask.ext.admin import _compat
 
 
 def converts(*args):
@@ -37,7 +38,7 @@ class InlineFormAdmin(object):
             if not hasattr(self, k):
                 setattr(self, k, None)
 
-        for k, v in kwargs.iteritems():
+        for k, v in _compat.iteritems(kwargs):
             setattr(self, k, v)
 
     def postprocess_form(self, form_class):

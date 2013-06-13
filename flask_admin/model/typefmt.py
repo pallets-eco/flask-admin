@@ -1,4 +1,5 @@
 from jinja2 import Markup
+from flask.ext.admin import _compat
 
 
 def null_formatter(view, value):
@@ -38,7 +39,7 @@ def list_formatter(view, values):
         :param values:
             Value to check
     """
-    return u', '.join(unicode(v) for v in values)
+    return u', '.join(_compat.as_unicode(v) for v in values)
 
 
 BASE_FORMATTERS = {

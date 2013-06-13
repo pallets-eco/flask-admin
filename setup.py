@@ -42,7 +42,6 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
-        'six>=1.2',
         'Flask>=0.7'
     ],
     tests_require=[

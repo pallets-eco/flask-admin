@@ -2,7 +2,7 @@ import logging
 
 from flask import flash
 
-from flask.ext.admin import form
+from flask.ext.admin import form, _compat
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
 
@@ -173,7 +173,7 @@ class ModelView(BaseModelView):
     def init_search(self):
         if self.column_searchable_list:
             for p in self.column_searchable_list:
-                if isinstance(p, basestring):
+                if isinstance(p, _compat.string_types):
                     p = getattr(self.model, p)
 
                 field_type = type(p)
@@ -189,7 +189,7 @@ class ModelView(BaseModelView):
         return bool(self._search_fields)
 
     def scaffold_filters(self, name):
-        if isinstance(name, basestring):
+        if isinstance(name, _compat.string_types):
             attr = getattr(self.model, name, None)
         else:
             attr = name
@@ -202,7 +202,7 @@ class ModelView(BaseModelView):
             visible_name = '%s / %s' % (self.get_column_name(attr.model_class.__name__),
                                         self.get_column_name(attr.name))
         else:
-            if not isinstance(name, basestring):
+            if not isinstance(name, _compat.string_types):
                 visible_name = self.get_column_name(attr.name)
             else:
                 visible_name = self.get_column_name(name)
@@ -253,7 +253,7 @@ class ModelView(BaseModelView):
         return query
 
     def _order_by(self, query, joins, sort_field, sort_desc):
-        if isinstance(sort_field, basestring):
+        if isinstance(sort_field, _compat.string_types):
             field = getattr(self.model, sort_field)
             query = query.order_by(field.desc() if sort_desc else field.asc())
         elif isinstance(sort_field, Field):

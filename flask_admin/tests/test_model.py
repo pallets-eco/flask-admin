@@ -4,7 +4,7 @@ from flask import Flask
 
 from wtforms import fields
 
-from flask.ext.admin import Admin, form
+from flask.ext.admin import Admin, form, _compat
 from flask.ext.admin.model import base, filters
 
 
@@ -35,7 +35,7 @@ class MockModelView(base.BaseModelView):
     def __init__(self, model, name=None, category=None, endpoint=None, url=None,
                  **kwargs):
         # Allow to set any attributes from parameters
-        for k, v in kwargs.iteritems():
+        for k, v in _compat.iteritems(kwargs):
             setattr(self, k, v)
 
         super(MockModelView, self).__init__(model, name, category, endpoint, url)

@@ -1,9 +1,8 @@
 from functools import wraps
 from re import sub
-import six
 
 from flask import Blueprint, render_template, url_for, abort, g
-from flask.ext.admin import babel
+from flask.ext.admin import babel, _compat
 from flask.ext.admin import helpers as h
 
 
@@ -95,7 +94,7 @@ class BaseMeta(object):
     pass
 
 
-class BaseView(six.with_metaclass(AdminViewMeta, BaseMeta)):
+class BaseView(_compat.with_metaclass(AdminViewMeta, BaseMeta)):
     """
         Base administrative view.
 

@@ -1,7 +1,7 @@
 from flask import request, url_for, redirect
 
 
-from flask.ext.admin.tools import get_dict_attr
+from flask.ext.admin import tools, _compat
 
 
 def action(name, text, confirmation=None):
@@ -53,7 +53,7 @@ class ActionsMixin(object):
         self._actions_data = {}
 
         for p in dir(self):
-            attr = get_dict_attr(self, p)
+            attr = tools.get_dict_attr(self, p)
 
             if hasattr(attr, '_action'):
                 name, text, desc = attr._action
@@ -85,12 +85,12 @@ class ActionsMixin(object):
             name, text = act
 
             if self.is_action_allowed(name):
-                text = unicode(text)
+                text = _compat.as_unicode(text)
 
                 actions.append((name, text))
                 confirmation = self._actions_data[name][2]
                 if confirmation:
-                    actions_confirmation[name] = unicode(confirmation)
+                    actions_confirmation[name] = _compat.text_type(confirmation)
 
         return actions, actions_confirmation
 

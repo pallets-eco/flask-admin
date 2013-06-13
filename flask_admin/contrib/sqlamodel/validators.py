@@ -26,7 +26,8 @@ class Unique(object):
     def __call__(self, form, field):
         try:
             obj = (self.db_session.query(self.model)
-                       .filter(self.column == field.data).one())
+                   .filter(self.column == field.data)
+                   .one())
 
             if not hasattr(form, '_obj') or not form._obj == obj:
                 if self.message is None:

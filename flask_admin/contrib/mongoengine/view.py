@@ -4,6 +4,7 @@ from flask import flash
 
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
+from flask.ext.admin import _compat
 
 import mongoengine
 from bson.objectid import ObjectId
@@ -115,7 +116,7 @@ class ModelView(BaseModelView):
         if model is None:
             model = self.model
 
-        return sorted(model._fields.iteritems(), key=lambda n: n[1].creation_counter)
+        return sorted(_compat.iteritems(model._fields), key=lambda n: n[1].creation_counter)
 
     def scaffold_pk(self):
         # MongoEngine models have predefined 'id' as a key
@@ -171,7 +172,7 @@ class ModelView(BaseModelView):
         """
         if self.column_searchable_list:
             for p in self.column_searchable_list:
-                if isinstance(p, basestring):
+                if isinstance(p, _compat.string_types):
                     p = self.model._fields.get(p)
 
                 if p is None:
@@ -195,7 +196,7 @@ class ModelView(BaseModelView):
             :param name:
                 Either field name or field instance
         """
-        if isinstance(name, basestring):
+        if isinstance(name, _compat.string_types):
             attr = self.model._fields.get(name)
         else:
             attr = name
@@ -206,7 +207,7 @@ class ModelView(BaseModelView):
         # Find name
         visible_name = None
 
-        if not isinstance(name, basestring):
+        if not isinstance(name, _compat.string_types):
             visible_name = self.get_column_name(attr.name)
 
         if not visible_name:

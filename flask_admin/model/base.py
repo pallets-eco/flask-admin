@@ -10,7 +10,7 @@ from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.tools import rec_getattr, ObsoleteAttr
 from flask.ext.admin.model import filters, typefmt
 from flask.ext.admin.actions import ActionsMixin
-from flask.ext.admin import get_form_data, validate_form_on_submit
+from flask.ext.admin.helpers import get_form_data, validate_form_on_submit
 
 
 class BaseModelView(BaseView, ActionsMixin):
@@ -937,7 +937,7 @@ class BaseModelView(BaseView, ActionsMixin):
                                     search, filters)
 
         # Calculate number of pages
-        num_pages = count / self.page_size
+        num_pages = count // self.page_size
         if count % self.page_size != 0:
             num_pages += 1
 
@@ -1014,8 +1014,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
                                # Actions
                                actions=actions,
-                               actions_confirmation=actions_confirmation
-                               )
+                               actions_confirmation=actions_confirmation)
 
     @expose('/new/', methods=('GET', 'POST'))
     def create_view(self):
