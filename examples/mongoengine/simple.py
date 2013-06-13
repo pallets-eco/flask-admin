@@ -66,6 +66,10 @@ class UserView(ModelView):
     column_searchable_list = ('name', 'password')
 
 
+class TodoView(ModelView):
+    column_filters = ['done']
+
+
 # Flask views
 @app.route('/')
 def index():
@@ -78,7 +82,7 @@ if __name__ == '__main__':
 
     # Add views
     admin.add_view(UserView(User))
-    admin.add_view(ModelView(Todo))
+    admin.add_view(TodoView(Todo))
     admin.add_view(ModelView(Tag))
     admin.add_view(ModelView(Post))
 
