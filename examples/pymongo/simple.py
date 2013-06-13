@@ -2,12 +2,13 @@ import pymongo
 from bson.objectid import ObjectId
 
 from flask import Flask
+from flask.ext import admin
 
-from flask.ext import admin, wtf
+from wtforms import form, fields
 
 from flask.ext.admin.form import Select2Widget
 from flask.ext.admin.contrib.pymongo import ModelView, filters
-from flask.ext.admin.model import fields
+from flask.ext.admin.model import InlineFormField, InlineFieldList
 
 # Create application
 app = Flask(__name__)
@@ -21,21 +22,21 @@ db = conn.test
 
 
 # User admin
-class InnerForm(wtf.Form):
-    name = wtf.TextField('Name')
-    test = wtf.TextField('Test')
+class InnerForm(form.Form):
+    name = fields.TextField('Name')
+    test = fields.TextField('Test')
 
 
-class UserForm(wtf.Form):
-    name = wtf.TextField('Name')
-    email = wtf.TextField('Email')
-    password = wtf.TextField('Password')
+class UserForm(form.Form):
+    name = fields.TextField('Name')
+    email = fields.TextField('Email')
+    password = fields.TextField('Password')
 
     # Inner form
-    inner = fields.InlineFormField(InnerForm)
+    inner = InlineFormField(InnerForm)
 
     # Form list
-    form_list = fields.InlineFieldList(fields.InlineFormField(InnerForm))
+    form_list = InlineFieldList(InlineFormField(InnerForm))
 
 
 class UserView(ModelView):
@@ -46,10 +47,10 @@ class UserView(ModelView):
 
 
 # Tweet view
-class TweetForm(wtf.Form):
-    name = wtf.TextField('Name')
-    user_id = wtf.SelectField('User', widget=Select2Widget())
-    text = wtf.TextField('Text')
+class TweetForm(form.Form):
+    name = fields.TextField('Name')
+    user_id = fields.SelectField('User', widget=Select2Widget())
+    text = fields.TextField('Text')
 
 
 class TweetView(ModelView):

@@ -15,9 +15,9 @@ with PyMongo:
 
 This is minimal PyMongo view::
 
-  class UserForm(wtf.Form):
-      name = wtf.TextForm('Name')
-      email = wtf.TextForm('Email')
+  class UserForm(Form):
+      name = TextField('Name')
+      email = TextField('Email')
 
   class UserView(ModelView):
       column_list = ('name', 'email')

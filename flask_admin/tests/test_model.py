@@ -1,12 +1,11 @@
-from nose.tools import eq_, ok_, raises
+from nose.tools import eq_, ok_
 
 from flask import Flask
-from flask.helpers import get_flashed_messages
 
-from flask.ext.admin import Admin
+from wtforms import fields
+
+from flask.ext.admin import Admin, form
 from flask.ext.admin.model import base, filters
-
-from flask.ext import wtf
 
 
 class Model(object):
@@ -17,10 +16,10 @@ class Model(object):
         self.col3 = c3
 
 
-class Form(wtf.Form):
-    col1 = wtf.TextField()
-    col2 = wtf.TextField()
-    col3 = wtf.TextField()
+class Form(form.BaseForm):
+    col1 = fields.TextField()
+    col2 = fields.TextField()
+    col3 = fields.TextField()
 
 
 class SimpleFilter(filters.BaseFilter):
@@ -298,7 +297,7 @@ def test_form():
 def test_custom_form():
     app, admin = setup()
 
-    class TestForm(wtf.Form):
+    class TestForm(form.BaseForm):
         pass
 
     view = MockModelView(Model, form=TestForm)

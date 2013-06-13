@@ -1,7 +1,9 @@
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 
-from flask.ext import admin, wtf
+from wtforms import validators
+
+from flask.ext import admin
 from flask.ext.admin.contrib import sqlamodel
 from flask.ext.admin.contrib.sqlamodel import filters
 
@@ -114,7 +116,7 @@ class PostAdmin(sqlamodel.ModelView):
     # Pass arguments to WTForms. In this case, change label for text field to
     # be 'Big Text' and add required() validator.
     form_args = dict(
-                    text=dict(label='Big Text', validators=[wtf.required()])
+                    text=dict(label='Big Text', validators=[validators.required()])
                 )
 
     def __init__(self, session):

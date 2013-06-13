@@ -1,7 +1,9 @@
 from flask import Flask, url_for, redirect, render_template, request
 from flask.ext.mongoengine import MongoEngine
 
-from flask.ext import admin, login, wtf
+from wtforms import form, fields, validators
+
+from flask.ext import admin, login
 from flask.ext.admin.contrib.mongoengine import ModelView
 
 # Create application
@@ -42,31 +44,31 @@ class User(db.Document):
 
 
 # Define login and registration forms (for flask-login)
-class LoginForm(wtf.Form):
-    login = wtf.TextField(validators=[wtf.required()])
-    password = wtf.PasswordField(validators=[wtf.required()])
+class LoginForm(form.Form):
+    login = fields.TextField(validators=[validators.required()])
+    password = fields.PasswordField(validators=[validators.required()])
 
     def validate_login(self, field):
         user = self.get_user()
 
         if user is None:
-            raise wtf.ValidationError('Invalid user')
+            raise validators.ValidationError('Invalid user')
 
         if user.password != self.password.data:
-            raise wtf.ValidationError('Invalid password')
+            raise validators.ValidationError('Invalid password')
 
     def get_user(self):
         return User.objects(login=self.login.data).first()
 
 
-class RegistrationForm(wtf.Form):
-    login = wtf.TextField(validators=[wtf.required()])
-    email = wtf.TextField()
-    password = wtf.PasswordField(validators=[wtf.required()])
+class RegistrationForm(form.Form):
+    login = fields.TextField(validators=[validators.required()])
+    email = fields.TextField()
+    password = fields.PasswordField(validators=[validators.required()])
 
     def validate_login(self, field):
         if User.objects(login=self.login.data):
-            raise wtf.ValidationError('Duplicate username')
+            raise validators.ValidationError('Duplicate username')
 
 
 # Initialize flask-login

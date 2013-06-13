@@ -6,16 +6,16 @@ import re
 import shutil
 
 from operator import itemgetter
-
 from werkzeug import secure_filename
 
 from flask import flash, url_for, redirect, abort, request
+
+from wtforms import fields, validators
 
 from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.actions import action, ActionsMixin
 from flask.ext.admin.babel import gettext, lazy_gettext
 from flask.ext.admin import form
-from flask.ext import wtf
 
 
 class NameForm(form.BaseForm):
@@ -24,13 +24,13 @@ class NameForm(form.BaseForm):
 
         Validates if provided name is valid for *nix and Windows systems.
     """
-    name = wtf.TextField()
+    name = fields.TextField()
 
     regexp = re.compile(r'^(?!^(PRN|AUX|CLOCK\$|NUL|CON|COM\d|LPT\d|\..*)(\..+)?$)[^\x00-\x1f\\?*:\";|/]+$')
 
     def validate_name(self, field):
         if not self.regexp.match(field.data):
-            raise wtf.ValidationError(gettext('Invalid directory name'))
+            raise validators.ValidationError(gettext('Invalid directory name'))
 
 
 class UploadForm(form.BaseForm):
@@ -38,7 +38,7 @@ class UploadForm(form.BaseForm):
         File upload form. Works with FileAdmin instance to check if it is allowed
         to upload file with given extension.
     """
-    upload = wtf.FileField(lazy_gettext('File to upload'))
+    upload = fields.FileField(lazy_gettext('File to upload'))
 
     def __init__(self, admin):
         self.admin = admin
@@ -47,17 +47,17 @@ class UploadForm(form.BaseForm):
 
     def validate_upload(self, field):
         if not self.upload.has_file():
-            raise wtf.ValidationError(gettext('File required.'))
+            raise validators.ValidationError(gettext('File required.'))
 
         filename = self.upload.data.filename
 
         if not self.admin.is_file_allowed(filename):
-            raise wtf.ValidationError(gettext('Invalid file type.'))
+            raise validators.ValidationError(gettext('Invalid file type.'))
 
 
 class EditForm(form.BaseForm):
-    content = wtf.TextAreaField(lazy_gettext('Content'),
-                                [wtf.validators.required()])
+    content = fields.TextAreaField(lazy_gettext('Content'),
+                                   (validators.required(),))
 
 
 class FileAdmin(BaseView, ActionsMixin):
@@ -181,13 +181,13 @@ class FileAdmin(BaseView, ActionsMixin):
         self._on_windows = platform.system() == 'Windows'
 
         # Convert allowed_extensions to set for quick validation
-        if (self.allowed_extensions
-            and not isinstance(self.allowed_extensions, set)):
+        if (self.allowed_extensions and
+            not isinstance(self.allowed_extensions, set)):
             self.allowed_extensions = set(self.allowed_extensions)
 
         # Convert editable_extensions to set for quick validation
-        if (self.editable_extensions
-            and not isinstance(self.editable_extensions, set)):
+        if (self.editable_extensions and
+            not isinstance(self.editable_extensions, set)):
             self.editable_extensions = set(self.editable_extensions)
 
         # Check if path exists

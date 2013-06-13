@@ -24,5 +24,5 @@ field. In this case, you need to manually contribute field::
     class MyView(ModelView):
         def scaffold_form(self):
             form_class = super(UserView, self).scaffold_form()
-            form_class.extra = wtf.TextField('Extra')
+            form_class.extra = TextField('Extra')
             return form_class

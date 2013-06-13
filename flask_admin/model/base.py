@@ -246,7 +246,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         For example::
 
-            class MyForm(wtf.Form):
+            class MyForm(Form):
                 pass
 
             class MyModelView(BaseModelView):
@@ -262,7 +262,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 form_args = dict(
-                    name=dict(label='First Name', validators=[wtf.required()])
+                    name=dict(label='First Name', validators=[required()])
                 )
     """
 

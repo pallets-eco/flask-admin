@@ -48,7 +48,7 @@ class InlineFormAdmin(object):
 
                 class MyInlineForm(InlineFormAdmin):
                     def postprocess_form(self, form):
-                        form.value = wtf.TextField('value')
+                        form.value = TextField('value')
                         return form
 
                 class MyAdmin(ModelView):

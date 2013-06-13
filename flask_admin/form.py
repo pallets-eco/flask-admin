@@ -1,14 +1,13 @@
 import time
 import datetime
 
-from wtforms import fields, widgets
+from wtforms import form, fields, widgets
 from flask.globals import _request_ctx_stack
-from flask.ext import wtf
 from flask.ext.admin.babel import gettext, ngettext
 from flask.ext.admin import helpers as h
 
 
-class BaseForm(wtf.Form):
+class BaseForm(form.Form):
     """
         Customized form class.
     """
@@ -28,7 +27,7 @@ class BaseForm(wtf.Form):
         """
         # TODO: Optimize me
         for f in self:
-            if isinstance(f, wtf.FileField):
+            if isinstance(f, fields.FileField):
                 return True
 
         return False

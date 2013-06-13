@@ -1,6 +1,6 @@
 from nose.tools import eq_, ok_, raises
 
-from flask.ext import wtf
+from wtforms import fields
 from flask.ext.admin.contrib.sqlamodel import ModelView
 
 from . import setup
@@ -439,12 +439,12 @@ def test_form_override():
     db.create_all()
 
     view1 = CustomModelView(Model, db.session, endpoint='view1')
-    view2 = CustomModelView(Model, db.session, endpoint='view2', form_overrides=dict(test=wtf.FileField))
+    view2 = CustomModelView(Model, db.session, endpoint='view2', form_overrides=dict(test=fields.FileField))
     admin.add_view(view1)
     admin.add_view(view2)
 
-    eq_(view1._create_form_class.test.field_class, wtf.TextField)
-    eq_(view2._create_form_class.test.field_class, wtf.FileField)
+    eq_(view1._create_form_class.test.field_class, fields.TextField)
+    eq_(view2._create_form_class.test.field_class, fields.FileField)
 
 
 def test_relations():
@@ -499,7 +499,7 @@ def test_multiple_delete():
 
     client = app.test_client()
 
-    rv = client.post('/admin/model1view/action/', data=dict(action='delete', rowid=[1,2,3]))
+    rv = client.post('/admin/model1view/action/', data=dict(action='delete', rowid=[1, 2, 3]))
     eq_(rv.status_code, 302)
     eq_(M1.query.count(), 0)
 
