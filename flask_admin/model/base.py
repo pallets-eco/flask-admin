@@ -636,6 +636,20 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return self._list_columns[idx]
 
+    def _get_default_order(self):
+        """
+            Return default sort order
+        """
+        if self.column_default_sort:
+            if isinstance(self.column_default_sort, tuple):
+                return self.column_default_sort
+            else:
+                return self.column_default_sort, False
+
+            return field, direction
+
+        return None
+
     # Database-related API
     def get_list(self, page, sort_field, sort_desc, search, filters):
         """

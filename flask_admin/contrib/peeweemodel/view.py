@@ -5,7 +5,6 @@ from flask import flash
 from flask.ext.admin import form
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
-from flask.ext.admin.model.helpers import get_default_order
 
 from peewee import PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
 from wtfpeewee.orm import model_form
@@ -314,7 +313,7 @@ class ModelView(BaseModelView):
 
             query, joins = self._order_by(query, joins, sort_field, sort_desc)
         else:
-            order = get_default_order(self)
+            order = self._get_default_order()
 
             if order:
                 query, joins = self._order_by(query, joins, order[0], order[1])

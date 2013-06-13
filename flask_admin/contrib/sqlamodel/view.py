@@ -10,7 +10,6 @@ from flask import flash
 from flask.ext.admin.tools import ObsoleteAttr
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
-from flask.ext.admin.model.helpers import get_default_order
 from flask.ext.admin.actions import action
 
 from flask.ext.admin.contrib.sqlamodel import form, filters, tools
@@ -616,7 +615,7 @@ class ModelView(BaseModelView):
             if mapper is not None:
                 table = mapper.tables[0]
 
-                if table.name not in joins:
+                if self._need_join(table) and table.name not in joins:
                     query = query.join(table)
                     joins.add(table.name)
         elif isinstance(sort_field, Column):
@@ -631,6 +630,19 @@ class ModelView(BaseModelView):
                 query = query.order_by(sort_field)
 
         return query, joins
+
+    def _get_default_order(self):
+        order = super(ModelView, self)._get_default_order()
+
+        if order is not None:
+            field, direction = order
+
+            if isinstance(field, basestring):
+                field = getattr(self.model, field)
+
+            return field, direction
+
+        return None
 
     def get_list(self, page, sort_column, sort_desc, search, filters, execute=True):
         """
@@ -712,7 +724,7 @@ class ModelView(BaseModelView):
 
                 query, joins = self._order_by(query, joins, sort_field, sort_desc)
         else:
-            order = get_default_order(self)
+            order = self._get_default_order()
 
             if order:
                 query, joins = self._order_by(query, joins, order[0], order[1])

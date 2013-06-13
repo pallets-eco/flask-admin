@@ -9,7 +9,6 @@ from jinja2 import contextfunction
 
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
-from flask.ext.admin.model.helpers import get_default_order
 from flask.ext.admin.actions import action
 
 from .filters import BasePyMongoFilter
@@ -207,7 +206,7 @@ class ModelView(BaseModelView):
         if sort_column:
             sort_by = [(sort_column, pymongo.DESCENDING if sort_desc else pymongo.ASCENDING)]
         else:
-            order = get_default_order(self)
+            order = self.get_default_order()
 
             if order:
                 sort_by = [(order[0], pymongo.DESCENDING if order[1] else pymongo.ASCENDING)]
