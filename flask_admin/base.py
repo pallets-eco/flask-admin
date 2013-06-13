@@ -1,5 +1,6 @@
 from functools import wraps
 from re import sub
+import six
 
 from flask import Blueprint, render_template, url_for, abort, g
 from flask.ext.admin import babel
@@ -90,7 +91,11 @@ class AdminViewMeta(type):
                 setattr(cls, p, _wrap_view(attr))
 
 
-class BaseView(object):
+class BaseMeta(object):
+    pass
+
+
+class BaseView(six.with_metaclass(AdminViewMeta, BaseMeta)):
     """
         Base administrative view.
 

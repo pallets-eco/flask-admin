@@ -42,8 +42,9 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
+        'six>=1.2',
         'Flask>=0.7',
-        'Flask-WTF>=0.6'
+        'Flask-WTF>=0.6',
     ],
     tests_require=[
         'nose>=1.0'
