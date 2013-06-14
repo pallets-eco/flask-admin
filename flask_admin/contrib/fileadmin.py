@@ -1,7 +1,6 @@
 import os
 import os.path as op
 import platform
-import urlparse
 import re
 import shutil
 
@@ -12,10 +11,10 @@ from flask import flash, url_for, redirect, abort, request
 
 from wtforms import fields, validators
 
+from flask.ext.admin import form, helpers, _compat
 from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.actions import action, ActionsMixin
 from flask.ext.admin.babel import gettext, lazy_gettext
-from flask.ext.admin import form, helpers
 
 
 class NameForm(form.BaseForm):
@@ -313,7 +312,7 @@ class FileAdmin(BaseView, ActionsMixin):
             return url_for(".edit", path=path)
         else:
             base_url = self.get_base_url()
-            return urlparse.urljoin(base_url, path)
+            return _compat.urljoin(base_url, path)
 
     def _normalize_path(self, path):
         """
@@ -488,7 +487,7 @@ class FileAdmin(BaseView, ActionsMixin):
                     self.save_file(filename, form.upload.data)
                     self.on_file_upload(directory, path, filename)
                     return redirect(self._get_dir_url('.index', path))
-                except Exception, ex:
+                except Exception as ex:
                     flash(gettext('Failed to save file: %(error)s', error=ex))
 
         return self.render(self.upload_template, form=form)
@@ -518,7 +517,7 @@ class FileAdmin(BaseView, ActionsMixin):
                 os.mkdir(op.join(directory, form.name.data))
                 self.on_mkdir(directory, form.name.data)
                 return redirect(dir_url)
-            except Exception, ex:
+            except Exception as ex:
                 flash(gettext('Failed to create directory: %(error)s', ex), 'error')
 
         return self.render(self.mkdir_template,
@@ -553,14 +552,14 @@ class FileAdmin(BaseView, ActionsMixin):
                 shutil.rmtree(full_path)
                 self.on_directory_delete(full_path, path)
                 flash(gettext('Directory "%s" was successfully deleted.' % path))
-            except Exception, ex:
+            except Exception as ex:
                 flash(gettext('Failed to delete directory: %(error)s', error=ex), 'error')
         else:
             try:
                 os.remove(full_path)
                 self.on_file_delete(full_path, path)
                 flash(gettext('File "%(name)s" was successfully deleted.', name=path))
-            except Exception, ex:
+            except Exception as ex:
                 flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
 
         return redirect(return_url)
@@ -598,7 +597,7 @@ class FileAdmin(BaseView, ActionsMixin):
                 flash(gettext('Successfully renamed "%(src)s" to "%(dst)s"',
                       src=op.basename(path),
                       dst=filename))
-            except Exception, ex:
+            except Exception as ex:
                 flash(gettext('Failed to rename: %(error)s', error=ex), 'error')
 
             return redirect(return_url)
@@ -683,7 +682,7 @@ class FileAdmin(BaseView, ActionsMixin):
             try:
                 os.remove(full_path)
                 flash(gettext('File "%(name)s" was successfully deleted.', name=path))
-            except Exception, ex:
+            except Exception as ex:
                 flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
 
     @action('edit', lazy_gettext('Edit'))

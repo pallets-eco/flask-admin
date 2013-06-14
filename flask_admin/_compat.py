@@ -30,7 +30,9 @@ if not PY2:
 
         return str(text)
 
+    # Various tools
     from functools import reduce
+    from urllib.parse import urljoin
 else:
     unicode_type = unicode
     text_type = unicode
@@ -44,7 +46,9 @@ else:
     def as_unicode(text):
         return unicode(text)
 
+    # Helpers
     reduce = __builtins__['reduce']
+    from urlparse import urljoin
 
 
 def with_metaclass(meta, *bases):

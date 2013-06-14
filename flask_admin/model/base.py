@@ -647,8 +647,6 @@ class BaseModelView(BaseView, ActionsMixin):
             else:
                 return self.column_default_sort, False
 
-            return field, direction
-
         return None
 
     # Database-related API

@@ -468,7 +468,7 @@ class Admin(object):
         self.locale_selector_func = None
 
         # Register with application
-        if app:
+        if app is not None:
             self._init_extension()
 
     def add_view(self, view):
