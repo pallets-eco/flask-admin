@@ -2,7 +2,8 @@ from functools import wraps
 from re import sub
 
 from flask import Blueprint, render_template, url_for, abort, g
-from flask.ext.admin import babel, _compat
+from flask.ext.admin import babel
+from flask.ext.admin._compat import with_metaclass
 from flask.ext.admin import helpers as h
 
 
@@ -90,11 +91,11 @@ class AdminViewMeta(type):
                 setattr(cls, p, _wrap_view(attr))
 
 
-class BaseClass(object):
+class BaseViewClass(object):
     pass
 
 
-class BaseView(_compat.with_metaclass(AdminViewMeta, BaseClass)):
+class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
     """
         Base administrative view.
 

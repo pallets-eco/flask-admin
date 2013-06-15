@@ -4,7 +4,7 @@ import peewee
 
 from wtforms import fields
 
-from flask.ext.admin import _compat
+from flask.ext.admin._compat import iteritems
 from flask.ext.admin.contrib.peeweemodel import ModelView
 
 from . import setup
@@ -14,7 +14,7 @@ class CustomModelView(ModelView):
     def __init__(self, model,
                  name=None, category=None, endpoint=None, url=None,
                  **kwargs):
-        for k, v in _compat.iteritems(kwargs):
+        for k, v in iteritems(kwargs):
             setattr(self, k, v)
 
         super(CustomModelView, self).__init__(model,

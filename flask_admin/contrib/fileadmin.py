@@ -11,7 +11,8 @@ from flask import flash, url_for, redirect, abort, request
 
 from wtforms import fields, validators
 
-from flask.ext.admin import form, helpers, _compat
+from flask.ext.admin import form, helpers
+from flask.ext.admin._compat import urljoin
 from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.actions import action, ActionsMixin
 from flask.ext.admin.babel import gettext, lazy_gettext
@@ -312,7 +313,7 @@ class FileAdmin(BaseView, ActionsMixin):
             return url_for(".edit", path=path)
         else:
             base_url = self.get_base_url()
-            return _compat.urljoin(base_url, path)
+            return urljoin(base_url, path)
 
     def _normalize_path(self, path):
         """

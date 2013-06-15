@@ -5,7 +5,7 @@ from wtforms import form, fields, widgets
 from flask.globals import _request_ctx_stack
 from flask.ext.admin.babel import gettext, ngettext
 from flask.ext.admin import helpers as h
-from flask.ext.admin import _compat
+from flask.ext.admin._compat import text_type
 
 
 # TODO: Use flask.ext.wtf if possible
@@ -92,7 +92,7 @@ class Select2Field(fields.SelectField):
     """
     widget = Select2Widget()
 
-    def __init__(self, label=None, validators=None, coerce=_compat.text_type,
+    def __init__(self, label=None, validators=None, coerce=text_type,
                  choices=None, allow_blank=False, blank_text=None, **kwargs):
         super(Select2Field, self).__init__(
             label, validators, coerce, choices, **kwargs

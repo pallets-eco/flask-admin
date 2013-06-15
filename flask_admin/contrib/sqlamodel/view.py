@@ -7,7 +7,7 @@ from sqlalchemy import or_, Column, func
 
 from flask import flash
 
-from flask.ext.admin import _compat
+from flask.ext.admin._compat import string_types
 from flask.ext.admin.tools import ObsoleteAttr
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
@@ -349,7 +349,7 @@ class ModelView(BaseModelView):
         return columns
 
     def _get_columns_for_field(self, field):
-        if isinstance(field, _compat.string_types):
+        if isinstance(field, string_types):
             attr = getattr(self.model, field, None)
 
             if field is None:
@@ -411,7 +411,7 @@ class ModelView(BaseModelView):
         """
 
         join_tables = []
-        if isinstance(name, _compat.string_types):
+        if isinstance(name, string_types):
             model = self.model
 
             for attribute in name.split('.'):
@@ -475,7 +475,7 @@ class ModelView(BaseModelView):
                     self.get_column_name(column.name)
                 )
             else:
-                if not isinstance(name, _compat.string_types):
+                if not isinstance(name, string_types):
                     visible_name = self.get_column_name(name.property.key)
                 else:
                     visible_name = self.get_column_name(name)
@@ -597,7 +597,7 @@ class ModelView(BaseModelView):
         """
         # TODO: Preprocessing for joins
         # Try to handle it as a string
-        if isinstance(sort_field, _compat.string_types):
+        if isinstance(sort_field, string_types):
             # Create automatic join against a table if column name
             # contains dot.
             if '.' in sort_field:
@@ -638,7 +638,7 @@ class ModelView(BaseModelView):
         if order is not None:
             field, direction = order
 
-            if isinstance(field, _compat.string_types):
+            if isinstance(field, string_types):
                 field = getattr(self.model, field)
 
             return field, direction
