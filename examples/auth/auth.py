@@ -149,5 +149,4 @@ if __name__ == '__main__':
     db.create_all()
 
     # Start app
-    app.debug = True
-    app.run()
+    app.run(debug=True)

@@ -12,4 +12,4 @@ app = Flask(__name__)
 admin = Admin(app)
 admin.add_view(MyView(name='Hello'))
 
-app.run()
+app.run(debug=True)

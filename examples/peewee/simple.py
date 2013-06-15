@@ -89,5 +89,4 @@ if __name__ == '__main__':
     except:
         pass
 
-    app.debug = True
-    app.run('0.0.0.0', 8000)
+    app.run(debug=True)

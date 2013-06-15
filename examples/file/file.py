@@ -33,5 +33,4 @@ if __name__ == '__main__':
     admin.add_view(fileadmin.FileAdmin(path, '/files/', name='Files'))
 
     # Start app
-    app.debug = True
-    app.run()
+    app.run(debug=True)

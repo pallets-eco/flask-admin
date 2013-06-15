@@ -118,5 +118,4 @@ if __name__ == '__main__':
     admin.add_view(TweetView(db.tweet, 'Tweets'))
 
     # Start app
-    app.debug = True
-    app.run('0.0.0.0', 8000)
+    app.run(debug=True)

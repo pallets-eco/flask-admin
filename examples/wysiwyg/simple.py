@@ -64,5 +64,4 @@ if __name__ == '__main__':
     db.create_all()
 
     # Start app
-    app.debug = True
-    app.run('0.0.0.0', 8000)
+    app.run(debug=True)
