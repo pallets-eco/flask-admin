@@ -24,17 +24,16 @@ if not PY2:
     itervalues = lambda d: iter(d.values())
     iteritems = lambda d: iter(d.items())
 
-    def as_unicode(text):
-        if isinstance(text, bytes):
-            return text.decode('utf-8')
+    def as_unicode(s):
+        if isinstance(s, bytes):
+            return s.decode('utf-8')
 
-        return str(text)
+        return str(s)
 
     # Various tools
     from functools import reduce
     from urllib.parse import urljoin
 else:
-    unicode_type = unicode
     text_type = unicode
     string_types = (str, unicode)
     integer_types = (int, long)
@@ -43,8 +42,11 @@ else:
     itervalues = lambda d: d.itervalues()
     iteritems = lambda d: d.iteritems()
 
-    def as_unicode(text):
-        return unicode(text)
+    def as_unicode(s):
+        if isinstance(s, str):
+            return s.decode('utf-8')
+
+        return unicode(s)
 
     # Helpers
     reduce = __builtins__['reduce']

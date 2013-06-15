@@ -1,4 +1,4 @@
-from flask.ext.admin import _compat
+from flask.ext.admin._compat import text_type
 from flask.ext.admin.babel import lazy_gettext
 
 
@@ -31,7 +31,7 @@ class BaseFilter(object):
                 Associated administrative view class.
         """
         if self.options:
-            return [(v, _compat.as_unicode(n)) for v, n in self.options]
+            return [(v, text_type(n)) for v, n in self.options]
 
         return None
 
@@ -83,8 +83,8 @@ class BaseBooleanFilter(BaseFilter):
     """
     def __init__(self, name, options=None, data_type=None):
         super(BaseBooleanFilter, self).__init__(name,
-                                                (('1', lazy_gettext('Yes')),
-                                                 ('0', lazy_gettext('No'))),
+                                                (('1', lazy_gettext(u'Yes')),
+                                                 ('0', lazy_gettext(u'No'))),
                                                 data_type)
 
     def validate(self, value):

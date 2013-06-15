@@ -4,7 +4,8 @@ from flask import Flask
 
 from wtforms import fields
 
-from flask.ext.admin import Admin, form, _compat
+from flask.ext.admin import Admin, form
+from flask.ext.admin._compat import iteritems, itervalues
 from flask.ext.admin.model import base, filters
 
 
@@ -35,7 +36,7 @@ class MockModelView(base.BaseModelView):
     def __init__(self, model, name=None, category=None, endpoint=None, url=None,
                  **kwargs):
         # Allow to set any attributes from parameters
-        for k, v in _compat.iteritems(kwargs):
+        for k, v in iteritems(kwargs):
             setattr(self, k, v)
 
         super(MockModelView, self).__init__(model, name, category, endpoint, url)
@@ -77,7 +78,7 @@ class MockModelView(base.BaseModelView):
     # Data
     def get_list(self, page, sort_field, sort_desc, search, filters):
         self.search_arguments.append((page, sort_field, sort_desc, search, filters))
-        return len(self.all_models), _compat.itervalues(self.all_models)
+        return len(self.all_models), itervalues(self.all_models)
 
     def get_one(self, id):
         return self.all_models.get(int(id))
@@ -153,7 +154,7 @@ def test_mockview():
     # Try model edit view
     rv = client.get('/admin/modelview/edit/?id=3')
     eq_(rv.status_code, 200)
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('test1' in data)
 
     rv = client.post('/admin/modelview/edit/?id=3',
@@ -232,7 +233,7 @@ def test_list_columns():
     client = app.test_client()
 
     rv = client.get('/admin/modelview/')
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('Column1' in data)
     ok_('Col2' not in data)
 
@@ -248,7 +249,7 @@ def test_exclude_columns():
     client = app.test_client()
 
     rv = client.get('/admin/modelview/')
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('Col1' in data)
     ok_('Col2' not in data)
 

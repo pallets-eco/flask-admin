@@ -233,11 +233,11 @@ class ModelView(BaseModelView):
     def scaffold_form(self):
         # TODO: Fix base_class
         form_class = model_form(self.model,
-                        base_class=BaseForm,
-                        only=self.form_columns,
-                        exclude=self.form_excluded_columns,
-                        field_args=self.form_args,
-                        converter=self.model_form_converter())
+                                base_class=BaseForm,
+                                only=self.form_columns,
+                                exclude=self.form_excluded_columns,
+                                field_args=self.form_args,
+                                converter=self.model_form_converter())
 
         return form_class
 

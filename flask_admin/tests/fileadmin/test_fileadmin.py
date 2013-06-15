@@ -1,7 +1,6 @@
 from nose.tools import eq_, ok_
 import os.path as op
 
-from flask.ext.admin import _compat
 from flask.ext.admin.contrib import fileadmin
 
 from . import setup
@@ -24,6 +23,6 @@ def test_file_admin():
 
     rv = client.get('/admin/fileadmin/')
     eq_(rv.status_code, 200)
-    ok_('dummy.txt' in _compat.as_unicode(rv.data))
+    ok_('dummy.txt' in rv.data.decode('utf-8'))
 
     # TODO: Check actions, etc

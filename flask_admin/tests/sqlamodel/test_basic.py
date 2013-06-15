@@ -2,7 +2,7 @@ from nose.tools import eq_, ok_, raises
 
 from wtforms import fields
 
-from flask.ext.admin import _compat
+from flask.ext.admin._compat import iteritems
 from flask.ext.admin.contrib.sqlamodel import ModelView
 
 from . import setup
@@ -12,7 +12,7 @@ class CustomModelView(ModelView):
     def __init__(self, model, session,
                  name=None, category=None, endpoint=None, url=None,
                  **kwargs):
-        for k, v in _compat.iteritems(kwargs):
+        for k, v in iteritems(kwargs):
             setattr(self, k, v)
 
         super(CustomModelView, self).__init__(model, session,
@@ -103,14 +103,14 @@ def test_model():
     eq_(rv.status_code, 302)
 
     model = db.session.query(Model1).first()
-    eq_(model.test1, 'test1large')
-    eq_(model.test2, 'test2')
-    eq_(model.test3, '')
-    eq_(model.test4, '')
+    eq_(model.test1, u'test1large')
+    eq_(model.test2, u'test2')
+    eq_(model.test3, u'')
+    eq_(model.test4, u'')
 
     rv = client.get('/admin/model1view/')
     eq_(rv.status_code, 200)
-    ok_('test1large' in _compat.as_unicode(rv.data))
+    ok_(u'test1large' in rv.data.decode('utf-8'))
 
     url = '/admin/model1view/edit/?id=%s' % model.id
     rv = client.get(url)
@@ -159,7 +159,7 @@ def test_list_columns():
     client = app.test_client()
 
     rv = client.get('/admin/model1view/')
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('Column1' in data)
     ok_('Test2' not in data)
 
@@ -183,7 +183,7 @@ def test_exclude_columns():
     client = app.test_client()
 
     rv = client.get('/admin/model1view/')
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('Test1' in data)
     ok_('Test2' not in data)
 
@@ -211,7 +211,7 @@ def test_column_searchable_list():
     client = app.test_client()
 
     rv = client.get('/admin/model1view/?search=model1')
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('model1' in data)
     ok_('model2' not in data)
 
@@ -230,24 +230,23 @@ def test_column_filters():
     eq_(len(view._filters), 4)
 
     eq_(view._filter_dict, {
-        'Test1': [
-            (0, 'equals'),
-            (1, 'not equal'),
-            (2, 'contains'),
-            (3, 'not contains')
-        ],
-    })
+        u'Test1': [
+            (0, u'equals'),
+            (1, u'not equal'),
+            (2, u'contains'),
+            (3, u'not contains')
+        ]})
 
     # Test filter that references property
     view = CustomModelView(Model2, db.session,
                            column_filters=['model1'])
 
     eq_(view._filter_dict, {
-        'Model1 / Test1': [
-            (0, 'equals'),
-            (1, 'not equal'),
-            (2, 'contains'),
-            (3, 'not contains')
+        u'Model1 / Test1': [
+            (0, u'equals'),
+            (1, u'not equal'),
+            (2, u'contains'),
+            (3, u'not contains')
         ],
         'Model1 / Test2': [
             (4, 'equals'),
@@ -255,27 +254,26 @@ def test_column_filters():
             (6, 'contains'),
             (7, 'not contains')
         ],
-        'Model1 / Test3': [
-            (8, 'equals'),
-            (9, 'not equal'),
-            (10, 'contains'),
-            (11, 'not contains')
+        u'Model1 / Test3': [
+            (8, u'equals'),
+            (9, u'not equal'),
+            (10, u'contains'),
+            (11, u'not contains')
         ],
-        'Model1 / Test4': [
-            (12, 'equals'),
-            (13, 'not equal'),
-            (14, 'contains'),
-            (15, 'not contains')
+        u'Model1 / Test4': [
+            (12, u'equals'),
+            (13, u'not equal'),
+            (14, u'contains'),
+            (15, u'not contains')
         ],
-        'Model1 / Bool Field': [
-            (16, 'equals'),
-            (17, 'not equal'),
+        u'Model1 / Bool Field': [
+            (16, u'equals'),
+            (17, u'not equal'),
         ],
-        'Model1 / Enum Field': [
+        u'Model1 / Enum Field': [
             (18, u'equals'),
             (19, u'not equal'),
-        ]
-    })
+        ]})
 
     # Test filter with a dot
     view = CustomModelView(Model2, db.session,
@@ -285,8 +283,8 @@ def test_column_filters():
         'Model1 / Bool Field': [
             (0, 'equals'),
             (1, 'not equal'),
-        ],
-    })
+        ]})
+
     # Fill DB
     model1_obj1 = Model1('model1_obj1', bool_field=True)
     model1_obj2 = Model1('model1_obj2')
@@ -307,13 +305,13 @@ def test_column_filters():
 
     rv = client.get('/admin/model1view/?flt0_0=model1_obj1')
     eq_(rv.status_code, 200)
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('model1_obj1' in data)
     ok_('model1_obj2' not in data)
 
     rv = client.get('/admin/model1view/?flt0_5=model1_obj1')
     eq_(rv.status_code, 200)
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('model1_obj1' in data)
     ok_('model1_obj2' in data)
 
@@ -341,7 +339,7 @@ def test_column_filters():
 
     rv = client.get('/admin/_model2/?flt1_0=1')
     eq_(rv.status_code, 200)
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('model2_obj1' in data)
     ok_('model2_obj2' in data)
     ok_('model2_obj3' not in data)
@@ -368,41 +366,41 @@ def test_url_args():
     client = app.test_client()
 
     rv = client.get('/admin/model1view/')
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('data1' in data)
     ok_('data3' not in data)
 
     # page
     rv = client.get('/admin/model1view/?page=1')
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('data1' not in data)
     ok_('data3' in data)
 
     # sort
     rv = client.get('/admin/model1view/?sort=0&desc=1')
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('data1' not in data)
     ok_('data3' in data)
     ok_('data4' in data)
 
     # search
     rv = client.get('/admin/model1view/?search=data1')
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('data1' in data)
     ok_('data2' not in data)
 
     rv = client.get('/admin/model1view/?search=^data1')
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('data2' not in data)
 
     # like
     rv = client.get('/admin/model1view/?flt0=0&flt0v=data1')
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('data1' in data)
 
     # not like
     rv = client.get('/admin/model1view/?flt0=1&flt0v=data1')
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('data2' in data)
 
 
@@ -429,12 +427,12 @@ def test_non_int_pk():
 
     rv = client.get('/admin/modelview/')
     eq_(rv.status_code, 200)
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('test1' in data)
 
     rv = client.get('/admin/modelview/edit/?id=test1')
     eq_(rv.status_code, 200)
-    data = _compat.as_unicode(rv.data)
+    data = rv.data.decode('utf-8')
     ok_('test2' in data)
 
 

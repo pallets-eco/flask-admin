@@ -1,7 +1,8 @@
 from flask import request, url_for, redirect
 
 
-from flask.ext.admin import tools, _compat
+from flask.ext.admin import tools
+from flask.ext.admin._compat import text_type
 
 
 def action(name, text, confirmation=None):
@@ -85,12 +86,11 @@ class ActionsMixin(object):
             name, text = act
 
             if self.is_action_allowed(name):
-                text = _compat.as_unicode(text)
+                actions.append((name, text_type(text)))
 
-                actions.append((name, text))
                 confirmation = self._actions_data[name][2]
                 if confirmation:
-                    actions_confirmation[name] = _compat.text_type(confirmation)
+                    actions_confirmation[name] = text_type(confirmation)
 
         return actions, actions_confirmation
 
