@@ -142,12 +142,12 @@ class InlineModelConverter(InlineModelConverterBase):
 
         # Create field
         child_form = model_form(info.model,
-                            base_class=form.BaseForm,
-                            only=info.form_columns,
-                            exclude=exclude,
-                            field_args=info.form_args,
-                            allow_pk=True,
-                            converter=converter)
+                                base_class=form.BaseForm,
+                                only=info.form_columns,
+                                exclude=exclude,
+                                field_args=info.form_args,
+                                allow_pk=True,
+                                converter=converter)
 
         prop_name = 'fa_%s' % model.__name__
 
@@ -158,8 +158,8 @@ class InlineModelConverter(InlineModelConverterBase):
                 InlineModelFormList(child_form,
                                     info.model,
                                     reverse_field.name,
-                                    label=label or info.model.__name__,
-                                    info))
+                                    info,
+                                    label=label or info.model.__name__))
 
         setattr(field.rel_model,
                 prop_name,
