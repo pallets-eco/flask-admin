@@ -3,6 +3,7 @@ import logging
 from flask import flash
 
 from flask.ext.admin import form
+from flask.ext.admin._compat import string_types
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
 
@@ -55,7 +56,7 @@ class ModelView(BaseModelView):
 
             class MyInlineModelConverter(AdminModelConverter):
                 def post_process(self, form_class, info):
-                    form_class.value = wtf.TextField('value')
+                    form_class.value = TextField('value')
                     return form_class
 
             class MyAdminView(ModelView):
@@ -173,14 +174,13 @@ class ModelView(BaseModelView):
     def init_search(self):
         if self.column_searchable_list:
             for p in self.column_searchable_list:
-                if isinstance(p, basestring):
+                if isinstance(p, string_types):
                     p = getattr(self.model, p)
 
                 field_type = type(p)
 
                 # Check type
-                if (field_type != CharField and
-                    field_type != TextField):
+                if (field_type != CharField and field_type != TextField):
                         raise Exception('Can only search on text columns. ' +
                                         'Failed to setup search for "%s"' % p)
 
@@ -189,7 +189,7 @@ class ModelView(BaseModelView):
         return bool(self._search_fields)
 
     def scaffold_filters(self, name):
-        if isinstance(name, basestring):
+        if isinstance(name, string_types):
             attr = getattr(self.model, name, None)
         else:
             attr = name
@@ -202,7 +202,7 @@ class ModelView(BaseModelView):
             visible_name = '%s / %s' % (self.get_column_name(attr.model_class.__name__),
                                         self.get_column_name(attr.name))
         else:
-            if not isinstance(name, basestring):
+            if not isinstance(name, string_types):
                 visible_name = self.get_column_name(attr.name)
             else:
                 visible_name = self.get_column_name(name)
@@ -253,7 +253,7 @@ class ModelView(BaseModelView):
         return query
 
     def _order_by(self, query, joins, sort_field, sort_desc):
-        if isinstance(sort_field, basestring):
+        if isinstance(sort_field, string_types):
             field = getattr(self.model, sort_field)
             query = query.order_by(field.desc() if sort_desc else field.asc())
         elif isinstance(sort_field, Field):
@@ -341,7 +341,7 @@ class ModelView(BaseModelView):
 
             # For peewee have to save inline forms after model was saved
             save_inline(form, model)
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
             logging.exception('Failed to create model')
             return False
@@ -358,7 +358,7 @@ class ModelView(BaseModelView):
 
             # For peewee have to save inline forms after model was saved
             save_inline(form, model)
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')
             logging.exception('Failed to update model')
             return False
@@ -372,7 +372,7 @@ class ModelView(BaseModelView):
             self.on_model_delete(model)
             model.delete_instance(recursive=True)
             return True
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to delete model. %(error)s', error=str(ex)), 'error')
             logging.exception('Failed to delete model')
             return False
@@ -407,5 +407,5 @@ class ModelView(BaseModelView):
                            '%(count)s models were successfully deleted.',
                            count,
                            count=count))
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to delete models. %(error)s', error=str(ex)), 'error')

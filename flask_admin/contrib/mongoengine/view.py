@@ -4,6 +4,7 @@ from flask import flash
 
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
+from flask.ext.admin._compat import iteritems, string_types
 
 import mongoengine
 from bson.objectid import ObjectId
@@ -115,7 +116,7 @@ class ModelView(BaseModelView):
         if model is None:
             model = self.model
 
-        return sorted(model._fields.iteritems(), key=lambda n: n[1].creation_counter)
+        return sorted(iteritems(model._fields), key=lambda n: n[1].creation_counter)
 
     def scaffold_pk(self):
         # MongoEngine models have predefined 'id' as a key
@@ -171,7 +172,7 @@ class ModelView(BaseModelView):
         """
         if self.column_searchable_list:
             for p in self.column_searchable_list:
-                if isinstance(p, basestring):
+                if isinstance(p, string_types):
                     p = self.model._fields.get(p)
 
                 if p is None:
@@ -195,7 +196,7 @@ class ModelView(BaseModelView):
             :param name:
                 Either field name or field instance
         """
-        if isinstance(name, basestring):
+        if isinstance(name, string_types):
             attr = self.model._fields.get(name)
         else:
             attr = name
@@ -206,7 +207,7 @@ class ModelView(BaseModelView):
         # Find name
         visible_name = None
 
-        if not isinstance(name, basestring):
+        if not isinstance(name, string_types):
             visible_name = self.get_column_name(attr.name)
 
         if not visible_name:
@@ -232,11 +233,11 @@ class ModelView(BaseModelView):
     def scaffold_form(self):
         # TODO: Fix base_class
         form_class = model_form(self.model,
-                        base_class=BaseForm,
-                        only=self.form_columns,
-                        exclude=self.form_excluded_columns,
-                        field_args=self.form_args,
-                        converter=self.model_form_converter())
+                                base_class=BaseForm,
+                                only=self.form_columns,
+                                exclude=self.form_excluded_columns,
+                                field_args=self.form_args,
+                                converter=self.model_form_converter())
 
         return form_class
 
@@ -338,7 +339,7 @@ class ModelView(BaseModelView):
             form.populate_obj(model)
             self.on_model_change(form, model)
             model.save()
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to create model. %(error)s', error=str(ex)),
                   'error')
             logging.exception('Failed to create model')
@@ -361,7 +362,7 @@ class ModelView(BaseModelView):
             form.populate_obj(model)
             self.on_model_change(form, model)
             model.save()
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to update model. %(error)s', error=str(ex)),
                   'error')
             logging.exception('Failed to update model')
@@ -382,7 +383,7 @@ class ModelView(BaseModelView):
             self.on_model_delete(model)
             model.delete()
             return True
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to delete model. %(error)s', error=str(ex)),
                   'error')
             logging.exception('Failed to delete model')
@@ -411,6 +412,6 @@ class ModelView(BaseModelView):
                            '%(count)s models were successfully deleted.',
                            count,
                            count=count))
-        except Exception, ex:
+        except Exception as ex:
             flash(gettext('Failed to delete models. %(error)s', error=str(ex)),
                   'error')

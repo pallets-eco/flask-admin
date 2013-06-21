@@ -43,5 +43,4 @@ if __name__ == '__main__':
     admin.init_app(app)
 
     # Start app
-    app.debug = True
-    app.run()
+    app.run(debug=True)

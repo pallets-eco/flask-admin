@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 from nose.tools import eq_, ok_, raises
 
-from flask.ext import wtf
-from flask.ext.admin.contrib.sqlamodel import ModelView, fields
+from wtforms import fields
+
+from flask.ext.admin.contrib.sqlamodel import ModelView
+from flask.ext.admin.contrib.sqlamodel.fields import InlineModelFormList
 
 from . import setup
+
 
 def test_inline_form():
     app, db, admin = setup()
@@ -42,8 +45,8 @@ def test_inline_form():
     eq_(view.endpoint, 'userview')
 
     # Verify form
-    eq_(view._create_form_class.name.field_class, wtf.TextField)
-    eq_(view._create_form_class.info.field_class, fields.InlineModelFormList)
+    eq_(view._create_form_class.name.field_class, fields.TextField)
+    eq_(view._create_form_class.info.field_class, InlineModelFormList)
 
     rv = client.get('/admin/userview/')
     eq_(rv.status_code, 200)

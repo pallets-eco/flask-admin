@@ -6,6 +6,7 @@ from peewee import (DateTimeField, DateField, TimeField,
 from wtfpeewee.orm import ModelConverter, model_form
 
 from flask.ext.admin import form
+from flask.ext.admin._compat import itervalues
 from flask.ext.admin.model.form import InlineFormAdmin, InlineModelConverterBase
 from flask.ext.admin.model.fields import InlineModelFormField, InlineFieldList
 
@@ -167,6 +168,6 @@ class InlineModelConverter(InlineModelConverterBase):
 
 
 def save_inline(form, model):
-    for _, f in form._fields.iteritems():
+    for f in itervalues(form._fields):
         if f.type == 'InlineModelFormList':
             f.save_related(model)

@@ -3,6 +3,7 @@ from re import sub
 
 from flask import Blueprint, render_template, url_for, abort, g
 from flask.ext.admin import babel
+from flask.ext.admin._compat import with_metaclass
 from flask.ext.admin import helpers as h
 
 
@@ -90,7 +91,11 @@ class AdminViewMeta(type):
                 setattr(cls, p, _wrap_view(attr))
 
 
-class BaseView(object):
+class BaseViewClass(object):
+    pass
+
+
+class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
     """
         Base administrative view.
 
@@ -101,8 +106,6 @@ class BaseView(object):
                 def index(self):
                     return 'Hello World!'
     """
-    __metaclass__ = AdminViewMeta
-
     @property
     def _template_args(self):
         """
@@ -168,7 +171,7 @@ class BaseView(object):
 
         # Default view
         if self._default_view is None:
-            raise Exception('Attempted to instantiate admin view %s without default view' % self.__class__.__name__)
+            raise Exception(u'Attempted to instantiate admin view %s without default view' % self.__class__.__name__)
 
     def create_blueprint(self, admin):
         """
@@ -466,7 +469,7 @@ class Admin(object):
         self.locale_selector_func = None
 
         # Register with application
-        if app:
+        if app is not None:
             self._init_extension()
 
     def add_view(self, view):
@@ -520,7 +523,7 @@ class Admin(object):
                         return request.args.get('lang', 'en')
         """
         if self.locale_selector_func is not None:
-            raise Exception('Can not add locale_selector second time.')
+            raise Exception(u'Can not add locale_selector second time.')
 
         self.locale_selector_func = f
 
@@ -567,12 +570,12 @@ class Admin(object):
 
         for p in admins:
             if p.endpoint == self.endpoint:
-                raise Exception('Cannot have two Admin() instances with same'
-                                ' endpoint name.')
+                raise Exception(u'Cannot have two Admin() instances with same'
+                                u' endpoint name.')
 
             if p.url == self.url and p.subdomain == self.subdomain:
-                raise Exception('Cannot assign two Admin() instances with same'
-                                ' URL and subdomain to the same application.')
+                raise Exception(u'Cannot assign two Admin() instances with same'
+                                u' URL and subdomain to the same application.')
 
         admins.append(self)
         self.app.extensions['admin'] = admins

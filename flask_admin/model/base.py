@@ -10,6 +10,7 @@ from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.tools import rec_getattr, ObsoleteAttr
 from flask.ext.admin.model import filters, typefmt
 from flask.ext.admin.actions import ActionsMixin
+from flask.ext.admin.helpers import get_form_data, validate_form_on_submit
 
 
 class BaseModelView(BaseView, ActionsMixin):
@@ -246,7 +247,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         For example::
 
-            class MyForm(wtf.Form):
+            class MyForm(Form):
                 pass
 
             class MyModelView(BaseModelView):
@@ -262,7 +263,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 form_args = dict(
-                    name=dict(label='First Name', validators=[wtf.required()])
+                    name=dict(label='First Name', validators=[required()])
                 )
     """
 
@@ -607,7 +608,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             Override to implement custom behavior.
         """
-        return self._create_form_class(obj=obj)
+        return self._create_form_class(get_form_data(), obj=obj)
 
     def edit_form(self, obj=None):
         """
@@ -615,7 +616,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             Override to implement custom behavior.
         """
-        return self._edit_form_class(obj=obj)
+        return self._edit_form_class(get_form_data(), obj=obj)
 
     # Helpers
     def is_sortable(self, name):
@@ -645,8 +646,6 @@ class BaseModelView(BaseView, ActionsMixin):
                 return self.column_default_sort
             else:
                 return self.column_default_sort, False
-
-            return field, direction
 
         return None
 
@@ -936,7 +935,7 @@ class BaseModelView(BaseView, ActionsMixin):
                                     search, filters)
 
         # Calculate number of pages
-        num_pages = count / self.page_size
+        num_pages = count // self.page_size
         if count % self.page_size != 0:
             num_pages += 1
 
@@ -1013,8 +1012,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
                                # Actions
                                actions=actions,
-                               actions_confirmation=actions_confirmation
-                               )
+                               actions_confirmation=actions_confirmation)
 
     @expose('/new/', methods=('GET', 'POST'))
     def create_view(self):
@@ -1028,7 +1026,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         form = self.create_form()
 
-        if form.validate_on_submit():
+        if validate_form_on_submit(form):
             if self.create_model(form):
                 if '_add_another' in request.form:
                     flash(gettext('Model was successfully created.'))
@@ -1062,7 +1060,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         form = self.edit_form(obj=model)
 
-        if form.validate_on_submit():
+        if validate_form_on_submit(form):
             if self.update_model(form, model):
                 return redirect(return_url)
 

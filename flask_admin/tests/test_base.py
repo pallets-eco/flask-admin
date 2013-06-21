@@ -30,6 +30,7 @@ class MockView(base.BaseView):
         else:
             return False
 
+
 class MockMethodView(base.BaseView):
     @base.expose('/')
     def index(self):
@@ -39,10 +40,13 @@ class MockMethodView(base.BaseView):
     class API1(MethodView):
         def get(self, cls):
             return cls.render('method.html', request=request, name='API1')
+
         def post(self, cls):
             return cls.render('method.html', request=request, name='API1')
+
         def put(self, cls):
             return cls.render('method.html', request=request, name='API1')
+
         def delete(self, cls):
             return cls.render('method.html', request=request, name='API1')
 
@@ -50,8 +54,10 @@ class MockMethodView(base.BaseView):
     class API2(MethodView):
         def get(self, cls):
             return cls.render('method.html', request=request, name='API2')
+
         def post(self, cls):
             return cls.render('method.html', request=request, name='API2')
+
 
 def test_baseview_defaults():
     view = MockView()
@@ -151,11 +157,11 @@ def test_baseview_registration():
     view = MockView(url='/test/test')
     view.create_blueprint(base.Admin())
     eq_(view.url, '/test/test')
-    
+
     view = MockView(endpoint='test')
     view.create_blueprint(base.Admin(url='/'))
     eq_(view.url, '/test')
-    
+
     view = MockView(static_url_path='/static/my/test')
     view.create_blueprint(base.Admin())
     eq_(view.blueprint.static_url_path, '/static/my/test')
@@ -189,15 +195,15 @@ def test_call():
     eq_(rv.status_code, 200)
 
     rv = client.get('/admin/mockview/')
-    eq_(rv.data, 'Success!')
+    eq_(rv.data, b'Success!')
 
     rv = client.get('/admin/mockview/test/')
-    eq_(rv.data, 'Success!')
+    eq_(rv.data, b'Success!')
 
     # Check authentication failure
     view.allow_call = False
     rv = client.get('/admin/mockview/')
-    eq_(rv.data, 'Failure!')
+    eq_(rv.data, b'Failure!')
 
 
 def test_permissions():
@@ -244,16 +250,17 @@ def test_delayed_init():
     client = app.test_client()
 
     rv = client.get('/admin/mockview/')
-    eq_(rv.data, 'Success!')
+    eq_(rv.data, b'Success!')
 
 
 def test_multi_instances_init():
     app = Flask(__name__)
-    admin = base.Admin(app)
+    _ = base.Admin(app)
 
     class ManageIndex(base.AdminIndexView):
         pass
-    manage = base.Admin(app, index_view=ManageIndex(url='/manage', endpoint='manage'))
+
+    _ = base.Admin(app, index_view=ManageIndex(url='/manage', endpoint='manage'))
 
 
 @raises(Exception)
@@ -261,6 +268,7 @@ def test_double_init():
     app = Flask(__name__)
     admin = base.Admin(app)
     admin.init_app(app)
+
 
 def test_nested_flask_views():
     app = Flask(__name__)
@@ -272,19 +280,20 @@ def test_nested_flask_views():
     client = app.test_client()
 
     rv = client.get('/admin/mockmethodview/_api/1')
-    assert rv.data == 'GET - API1'
+    print('"', rv.data, '"')
+    eq_(rv.data, b'GET - API1')
     rv = client.put('/admin/mockmethodview/_api/1')
-    assert rv.data == 'PUT - API1'
+    eq_(rv.data, b'PUT - API1')
     rv = client.post('/admin/mockmethodview/_api/1')
-    assert rv.data == 'POST - API1'
+    eq_(rv.data, b'POST - API1')
     rv = client.delete('/admin/mockmethodview/_api/1')
-    assert rv.data == 'DELETE - API1'
+    eq_(rv.data, b'DELETE - API1')
 
     rv = client.get('/admin/mockmethodview/_api/2')
-    assert rv.data == 'GET - API2'
+    eq_(rv.data, b'GET - API2')
     rv = client.post('/admin/mockmethodview/_api/2')
-    assert rv.data == 'POST - API2'
+    eq_(rv.data, b'POST - API2')
     rv = client.delete('/admin/mockmethodview/_api/2')
-    assert rv.status_code == 405
+    eq_(rv.status_code, 405)
     rv = client.put('/admin/mockmethodview/_api/2')
-    assert rv.status_code == 405
+    eq_(rv.status_code, 405)

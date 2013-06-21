@@ -2,6 +2,7 @@ import itertools
 
 from wtforms.fields import FieldList, FormField
 
+from flask.ext.admin._compat import iteritems
 from .widgets import InlineFieldListWidget, InlineFormWidget
 
 
@@ -22,9 +23,9 @@ class InlineFieldList(FieldList):
 
     def __call__(self, **kwargs):
         return self.widget(self,
-                    template=self.template,
-                    check=self.display_row_controls,
-                    **kwargs)
+                           template=self.template,
+                           check=self.display_row_controls,
+                           **kwargs)
 
     def display_row_controls(self, field):
         return True
@@ -82,7 +83,7 @@ class InlineModelFormField(FormField):
         return getattr(self.form, self._pk).data
 
     def populate_obj(self, obj, name):
-        for name, field in self.form._fields.iteritems():
+        for name, field in iteritems(self.form._fields):
             if name != self._pk:
                 field.populate_obj(obj, name)
 

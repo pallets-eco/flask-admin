@@ -36,5 +36,4 @@ if __name__ == '__main__':
     admin2.add_view(SecondView())
 
     # Start app
-    app.debug = True
-    app.run()
+    app.run(debug=True)

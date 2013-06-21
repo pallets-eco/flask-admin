@@ -1,6 +1,7 @@
 from nose.tools import eq_, ok_
 
-from flask.ext import wtf
+from wtforms import fields
+
 from flask.ext.admin.contrib.mongoengine import ModelView
 
 from . import setup
@@ -62,14 +63,14 @@ def test_model():
     # Verify form
     # TODO: Figure out why there's inconsistency
     try:
-        eq_(view._create_form_class.test1.field_class, wtf.TextField)
-        eq_(view._create_form_class.test2.field_class, wtf.TextField)
+        eq_(view._create_form_class.test1.field_class, fields.TextField)
+        eq_(view._create_form_class.test2.field_class, fields.TextField)
     except AssertionError:
-        eq_(view._create_form_class.test1.field_class, wtf.StringField)
-        eq_(view._create_form_class.test2.field_class, wtf.StringField)
+        eq_(view._create_form_class.test1.field_class, fields.StringField)
+        eq_(view._create_form_class.test2.field_class, fields.StringField)
 
-    eq_(view._create_form_class.test3.field_class, wtf.TextAreaField)
-    eq_(view._create_form_class.test4.field_class, wtf.TextAreaField)
+    eq_(view._create_form_class.test3.field_class, fields.TextAreaField)
+    eq_(view._create_form_class.test4.field_class, fields.TextAreaField)
 
     # Make some test clients
     client = app.test_client()

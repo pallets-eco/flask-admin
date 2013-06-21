@@ -1,12 +1,3 @@
-{% macro render_template(template, render) -%}
-<div class="fa-inline-field">
-    <div class="fa-inline-field-control">
-        <a href="javascript:void(0)" class="fa-remove-field"><i class="icon-remove"></i></a>
-    </div>
-    {{ render(template) }}
-</div>
-{%- endmacro %}
-
 {% macro render_inline_fields(field, template, render, check=None) %}
 <div class="well">
     <div id="{{ field.id }}-fields">
@@ -23,6 +14,14 @@
         </div>
         {% endfor %}
     </div>
-    <a href="javascript:void(0)" class="btn" onclick="faForm.addInlineField('{{ field.id }}', '#{{ field.id }}-fields', {{ render_template(template, render)|tojson }});">{{ _gettext('Add') }} {{ field.label.text }}</a>
+    <div id="{{ field.id }}-template" class="hide">
+        <div class="fa-inline-field">
+            <div class="fa-inline-field-control">
+                <a href="javascript:void(0)" class="fa-remove-field"><i class="icon-remove"></i></a>
+            </div>
+            {{ render(template) }}
+        </div>
+    </div>
+    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn" onclick="faForm.addInlineField('{{ field.id }}', '#{{ field.id }}-fields', '#{{ field.id }}-template');">{{ _gettext('Add') }} {{ field.label.text }}</a>
 </div>
 {% endmacro %}

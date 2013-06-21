@@ -2,6 +2,9 @@ import sys
 import warnings
 import traceback
 
+# Python 3 compatibility
+from ._compat import reduce
+
 
 def import_module(name, required=True):
     """

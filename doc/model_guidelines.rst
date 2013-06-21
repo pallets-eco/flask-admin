@@ -163,7 +163,7 @@ Steps to add new model backend:
 
             class MyDbModel(BaseModelView):
                 def scaffold_form(self):
-                    class MyForm(wtf.Form):
+                    class MyForm(Form):
                         pass
 
                     # Do something

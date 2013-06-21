@@ -8,6 +8,7 @@ from wtforms.fields import SelectFieldBase
 from wtforms.validators import ValidationError
 
 from .tools import get_primary_key
+from flask.ext.admin._compat import text_type, string_types
 from flask.ext.admin.model.fields import InlineFieldList, InlineModelFormField
 
 
@@ -58,14 +59,14 @@ class QuerySelectField(SelectFieldBase):
 
         if get_pk is None:
             if not has_identity_key:
-                raise Exception('The sqlalchemy identity_key function could not be imported.')
+                raise Exception(u'The sqlalchemy identity_key function could not be imported.')
             self.get_pk = get_pk_from_identity
         else:
             self.get_pk = get_pk
 
         if get_label is None:
             self.get_label = lambda x: x
-        elif isinstance(get_label, basestring):
+        elif isinstance(get_label, string_types):
             self.get_label = operator.attrgetter(get_label)
         else:
             self.get_label = get_label
@@ -93,7 +94,7 @@ class QuerySelectField(SelectFieldBase):
         if self._object_list is None:
             query = self.query or self.query_factory()
             get_pk = self.get_pk
-            self._object_list = list((unicode(get_pk(obj)), obj) for obj in query)
+            self._object_list = [(text_type(get_pk(obj)), obj) for obj in query]
         return self._object_list
 
     def iter_choices(self):
@@ -172,7 +173,7 @@ class QuerySelectMultipleField(QuerySelectField):
             obj_list = list(x[1] for x in self._get_object_list())
             for v in self.data:
                 if v not in obj_list:
-                    raise ValidationError(self.gettext('Not a valid choice'))
+                    raise ValidationError(self.gettext(u'Not a valid choice'))
 
 
 class InlineModelFormList(InlineFieldList):
@@ -238,4 +239,4 @@ class InlineModelFormList(InlineFieldList):
 def get_pk_from_identity(obj):
     # TODO: Remove me
     cls, key = identity_key(instance=obj)
-    return u':'.join(unicode(x) for x in key)
+    return u':'.join(text_type(x) for x in key)

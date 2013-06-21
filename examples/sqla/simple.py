@@ -1,7 +1,9 @@
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 
-from flask.ext import admin, wtf
+from wtforms import validators
+
+from flask.ext import admin
 from flask.ext.admin.contrib import sqlamodel
 from flask.ext.admin.contrib.sqlamodel import filters
 
@@ -24,7 +26,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True)
 
     # Required for administrative interface
-    def __unicode__(self):
+    def __str__(self):
         return self.username
 
 
@@ -46,7 +48,7 @@ class Post(db.Model):
 
     tags = db.relationship('Tag', secondary=post_tags_table)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
@@ -54,7 +56,7 @@ class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -67,7 +69,7 @@ class UserInfo(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
     user = db.relationship(User, backref='info')
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.key, self.value)
 
 
@@ -77,7 +79,7 @@ class Tree(db.Model):
     parent_id = db.Column(db.Integer, db.ForeignKey('tree.id'))
     parent = db.relationship('Tree', remote_side=[id], backref='children')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -114,7 +116,7 @@ class PostAdmin(sqlamodel.ModelView):
     # Pass arguments to WTForms. In this case, change label for text field to
     # be 'Big Text' and add required() validator.
     form_args = dict(
-                    text=dict(label='Big Text', validators=[wtf.required()])
+                    text=dict(label='Big Text', validators=[validators.required()])
                 )
 
     def __init__(self, session):
@@ -140,5 +142,4 @@ if __name__ == '__main__':
     db.create_all()
 
     # Start app
-    app.debug = True
-    app.run('0.0.0.0', 8000)
+    app.run(debug=True)

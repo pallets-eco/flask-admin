@@ -1,37 +1,19 @@
 import time
 import datetime
 
-from wtforms import fields, widgets
+from wtforms import form, fields, widgets
 from flask.globals import _request_ctx_stack
-from flask.ext import wtf
 from flask.ext.admin.babel import gettext, ngettext
 from flask.ext.admin import helpers as h
+from flask.ext.admin._compat import text_type
 
 
-class BaseForm(wtf.Form):
-    """
-        Customized form class.
-    """
-    def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
-        if formdata:
-            super(BaseForm, self).__init__(formdata, obj, prefix, **kwargs)
-        else:
-            super(BaseForm, self).__init__(obj=obj, prefix=prefix, **kwargs)
-
+# TODO: Use flask.ext.wtf if possible
+class BaseForm(form.Form):
+    def __init__(self, formdata=None, obj=None, prefix=u'', **kwargs):
         self._obj = obj
 
-    @property
-    def has_file_field(self):
-        """
-            Return True if form contains at least one FileField.
-            Does not check for child form fields.
-        """
-        # TODO: Optimize me
-        for f in self:
-            if isinstance(f, wtf.FileField):
-                return True
-
-        return False
+        super(BaseForm, self).__init__(formdata=formdata, obj=obj, prefix=prefix, **kwargs)
 
 
 class TimeField(fields.Field):
@@ -110,7 +92,7 @@ class Select2Field(fields.SelectField):
     """
     widget = Select2Widget()
 
-    def __init__(self, label=None, validators=None, coerce=unicode,
+    def __init__(self, label=None, validators=None, coerce=text_type,
                  choices=None, allow_blank=False, blank_text=None, **kwargs):
         super(Select2Field, self).__init__(
             label, validators, coerce, choices, **kwargs

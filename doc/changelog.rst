@@ -12,7 +12,7 @@ Changelog
 * Bootstrap 2.3.1
 * Bulk deletes go through `delete_model`
 * Flask-Admin no longer uses floating navigation bar
-* Translations: French, Persian (Farsi), Chinese (Simplified/Traditional), Chech
+* Translations: French, Persian (Farsi), Chinese (Simplified/Traditional), Czech
 * Bug fixes
 
 1.0.5

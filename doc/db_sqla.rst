@@ -97,7 +97,7 @@ you can do something like this::
     class UserView(ModelView):
         def scaffold_form(self):
             form_class = super(UserView, self).scaffold_form()
-            form_class.extra = wtf.TextField('Extra')
+            form_class.extra = TextField('Extra')
             return form_class
 
 Check :doc:`api/mod_contrib_sqlamodel` documentation for list of
