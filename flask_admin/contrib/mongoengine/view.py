@@ -62,6 +62,9 @@ class ModelView(BaseModelView):
         Model form conversion class. Use this to implement custom
         field conversion logic.
 
+        Custom class should be derived from the
+        `flask.ext.admin.contrib.mongoengine.form.CustomModelConverter`.
+
         For example::
 
             class MyModelConverter(AdminModelConverter):
@@ -237,7 +240,7 @@ class ModelView(BaseModelView):
                                 only=self.form_columns,
                                 exclude=self.form_excluded_columns,
                                 field_args=self.form_args,
-                                converter=self.model_form_converter())
+                                converter=self.model_form_converter(self))
 
         return form_class
 

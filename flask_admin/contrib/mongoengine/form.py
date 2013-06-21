@@ -1,5 +1,6 @@
 from mongoengine import ReferenceField
 
+from wtforms import validators
 from flask.ext.mongoengine.wtf import orm, fields
 
 from flask.ext.admin import form
@@ -16,6 +17,59 @@ class CustomModelConverter(orm.ModelConverter):
         Injects various Flask-Admin widgets and handles lists with
         customized InlineFieldList field.
     """
+    def __init__(self, view):
+        super(CustomModelConverter, self).__init__()
+
+        self.view = view
+
+    def _get_field_override(self, name):
+        form_overrides = getattr(self.view, 'form_overrides', None)
+
+        if form_overrides:
+            return form_overrides.get(name)
+
+        return None
+
+    def convert(self, model, field, field_args):
+        kwargs = {
+            'label': getattr(field, 'verbose_name', field.name),
+            'description': field.help_text or '',
+            'validators': [],
+            'filters': [],
+            'default': field.default,
+        }
+
+        if field_args:
+            kwargs.update(field_args)
+
+        if field.required:
+            kwargs['validators'].append(validators.Required())
+        else:
+            kwargs['validators'].append(validators.Optional())
+
+        ftype = type(field).__name__
+
+        if field.choices:
+            kwargs['choices'] = field.choices
+
+            if ftype in self.converters:
+                kwargs["coerce"] = self.coerce(ftype)
+            if kwargs.pop('multiple', False):
+                return fields.SelectMultipleField(**kwargs)
+            return fields.SelectField(**kwargs)
+
+        ftype = type(field).__name__
+
+        if hasattr(field, 'to_form_field'):
+            return field.to_form_field(model, kwargs)
+
+        override = self._get_field_override(field.name)
+        if override:
+            return override(**kwargs)
+
+        if ftype in self.converters:
+            return self.converters[ftype](model, field, kwargs)
+
     @orm.converts('DateTimeField')
     def conv_DateTime(self, model, field, kwargs):
         kwargs['widget'] = form.DateTimePickerWidget()
