@@ -18,11 +18,6 @@ except ImportError:
     has_identity_key = False
 
 
-__all__ = (
-    'QuerySelectField', 'QuerySelectMultipleField',
-)
-
-
 class QuerySelectField(SelectFieldBase):
     """
     Will display a select drop-down field to choose between ORM results in a
@@ -184,7 +179,7 @@ class InlineModelFormList(InlineFieldList):
     """
         TODO: Documentation
     """
-    def __init__(self, form, session, model, prop, **kwargs):
+    def __init__(self, form, session, model, prop, inline_view, **kwargs):
         """
             Default constructor.
 
@@ -196,11 +191,14 @@ class InlineModelFormList(InlineFieldList):
                 Related model
             :param prop:
                 Related property name
+            :param inline_view:
+                Inline view
         """
         self.form = form
         self.session = session
         self.model = model
         self.prop = prop
+        self.inline_view = inline_view
 
         self._pk = get_primary_key(model)
 
@@ -233,6 +231,8 @@ class InlineModelFormList(InlineFieldList):
                 values.append(model)
 
             field.populate_obj(model, None)
+
+            self.inline_view.on_model_change(field, model)
 
 
 def get_pk_from_identity(obj):

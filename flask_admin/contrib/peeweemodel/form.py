@@ -13,10 +13,11 @@ from .tools import get_primary_key
 
 
 class InlineModelFormList(InlineFieldList):
-    def __init__(self, form, model, prop, **kwargs):
+    def __init__(self, form, model, prop, inline_view, **kwargs):
         self.form = form
         self.model = model
         self.prop = prop
+        self.inline_view = inline_view
 
         self._pk = get_primary_key(model)
 
@@ -62,6 +63,8 @@ class InlineModelFormList(InlineFieldList):
 
             # Force relation
             setattr(model, self.prop, model_id)
+
+            self.inline_view.on_model_change(field, model)
 
             model.save()
 

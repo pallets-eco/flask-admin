@@ -85,11 +85,15 @@ class FilterSmaller(BaseMongoEngineFilter):
 
 # Customized type filters
 class BooleanEqualFilter(FilterEqual, filters.BaseBooleanFilter):
-    pass
+    def apply(self, query, value):
+        flt = {'%s' % self.column.name: value == '1'}
+        return query.filter(**flt)
 
 
 class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
-    pass
+    def apply(self, query, value):
+        flt = {'%s' % self.column.name: value != '1'}
+        return query.filter(**flt)
 
 
 # Base peewee filter field converter

@@ -56,6 +56,17 @@ class InlineFormAdmin(object):
         """
         return form_class
 
+    def on_model_change(self, form, model):
+        """
+            Called when inline model is about to be saved.
+
+            :param form:
+                Inline form
+            :param model:
+                Model
+        """
+        pass
+
 
 class ModelConverterBase(object):
     def __init__(self, converters=None, use_mro=True):
@@ -93,8 +104,8 @@ class ModelConverterBase(object):
         return None
 
     def get_form(self, model, base_class=BaseForm,
-                only=None, exclude=None,
-                field_args=None):
+                 only=None, exclude=None,
+                 field_args=None):
         raise NotImplemented()
 
 
