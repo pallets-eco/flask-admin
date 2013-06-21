@@ -158,7 +158,8 @@ class InlineModelConverter(InlineModelConverterBase):
                 InlineModelFormList(child_form,
                                     info.model,
                                     reverse_field.name,
-                                    label=label or info.model.__name__))
+                                    label=label or info.model.__name__,
+                                    info))
 
         setattr(field.rel_model,
                 prop_name,

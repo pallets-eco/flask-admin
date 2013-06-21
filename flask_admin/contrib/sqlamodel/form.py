@@ -492,7 +492,7 @@ class InlineModelConverter(InlineModelConverterBase):
                                     self.session,
                                     info.model,
                                     reverse_prop.key,
-                                    info
+                                    info,
                                     **kwargs))
 
         return form_class
