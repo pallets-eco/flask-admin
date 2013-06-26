@@ -682,7 +682,7 @@ class BaseModelView(BaseView, ActionsMixin):
         raise NotImplemented('Please implement get_one method')
 
     # Model event handlers
-    def on_model_change(self, form, model):
+    def on_model_change(self, form, model, is_creating):
         """
             Perform some actions after a model is created or updated.
 
@@ -695,6 +695,8 @@ class BaseModelView(BaseView, ActionsMixin):
                 Form used to create/update model
             :param model:
                 Model that will be created/updated
+            :param is_creating:
+                True if model will be created, False if model will be updated
         """
         pass
 

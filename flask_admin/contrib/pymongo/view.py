@@ -254,7 +254,7 @@ class ModelView(BaseModelView):
         """
         try:
             model = form.data
-            self.on_model_change(form, model)
+            self.on_model_change(form, model, True)
             self.coll.insert(model)
         except Exception as ex:
             flash(gettext('Failed to create model. %(error)s', error=str(ex)),
@@ -277,7 +277,7 @@ class ModelView(BaseModelView):
         """
         try:
             model.update(form.data)
-            self.on_model_change(form, model)
+            self.on_model_change(form, model, False)
 
             pk = self.get_pk_value(model)
             self.coll.update({'_id': pk}, model)
