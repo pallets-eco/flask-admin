@@ -95,6 +95,18 @@ class CustomModelConverter(ModelConverter):
 
 
 class InlineModelConverter(InlineModelConverterBase):
+    """
+        Inline model form helper.
+    """
+
+    inline_field_list_type = InlineModelFormList
+    """
+        Used field list type.
+
+        If you want to do some custom rendering of inline field lists,
+        you can create your own wtforms field and use it instead
+    """
+
     def get_info(self, p):
         info = super(InlineModelConverter, self).get_info(p)
 
@@ -155,11 +167,11 @@ class InlineModelConverter(InlineModelConverterBase):
 
         setattr(form_class,
                 prop_name,
-                InlineModelFormList(child_form,
-                                    info.model,
-                                    reverse_field.name,
-                                    info,
-                                    label=label or info.model.__name__))
+                self.inline_field_list_type(child_form,
+                                            info.model,
+                                            reverse_field.name,
+                                            info,
+                                            label=label or info.model.__name__))
 
         setattr(field.rel_model,
                 prop_name,

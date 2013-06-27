@@ -11,8 +11,8 @@ Introduction
 Flask-Admin is advanced, extensible and simple to use administrative interface building extension for Flask framework.
 
 It comes with batteries included: model scaffolding for `SQLAlchemy <http://www.sqlalchemy.org/>`_,
-`MongoEngine <http://mongoengine.org/>`_, MongoDB and `Peewee <https://github.com/coleifer/peewee>`_ ORMs, simple
-file management interface and a lot of usage samples.
+`MongoEngine <http://mongoengine.org/>`_, `pymongo <http://api.mongodb.org/python/current/>`_ and `Peewee <https://github.com/coleifer/peewee>`_ ORMs, simple
+file management interface and a lot of usage examples.
 
 You're not limited by the default functionality - instead of providing simple scaffolding for the ORM
 models, Flask-Admin provides tools that can be used to construct administrative interfaces of any complexity,

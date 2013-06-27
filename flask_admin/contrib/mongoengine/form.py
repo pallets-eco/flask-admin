@@ -17,6 +17,7 @@ class CustomModelConverter(orm.ModelConverter):
         Injects various Flask-Admin widgets and handles lists with
         customized InlineFieldList field.
     """
+
     def __init__(self, view):
         super(CustomModelConverter, self).__init__()
 

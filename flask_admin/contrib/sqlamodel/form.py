@@ -380,6 +380,15 @@ class InlineModelConverter(InlineModelConverterBase):
     """
         Inline model form helper.
     """
+
+    inline_field_list_type = InlineModelFormList
+    """
+        Used field list type.
+
+        If you want to do some custom rendering of inline field lists,
+        you can create your own wtforms field and use it instead
+    """
+
     def __init__(self, session, view):
         super(InlineModelConverter, self).__init__(view)
         self.session = session
@@ -488,11 +497,11 @@ class InlineModelConverter(InlineModelConverterBase):
         # Contribute field
         setattr(form_class,
                 forward_prop.key,
-                InlineModelFormList(child_form,
-                                    self.session,
-                                    info.model,
-                                    reverse_prop.key,
-                                    info,
-                                    **kwargs))
+                self.inline_field_list_type(child_form,
+                                            self.session,
+                                            info.model,
+                                            reverse_prop.key,
+                                            info,
+                                            **kwargs))
 
         return form_class
