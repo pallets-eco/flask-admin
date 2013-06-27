@@ -178,8 +178,14 @@ class QuerySelectMultipleField(QuerySelectField):
 
 class InlineModelFormList(InlineFieldList):
     """
-        TODO: Documentation
+        Customized inline model form list field.
     """
+
+    form_field_type = InlineModelFormField
+    """
+        Form field type. Override to use custom field for each inline form
+    """
+
     def __init__(self, form, session, model, prop, inline_view, **kwargs):
         """
             Default constructor.
@@ -203,7 +209,7 @@ class InlineModelFormList(InlineFieldList):
 
         self._pk = get_primary_key(model)
 
-        super(InlineModelFormList, self).__init__(InlineModelFormField(form, self._pk), **kwargs)
+        super(InlineModelFormList, self).__init__(self.form_field_type(form, self._pk), **kwargs)
 
     def display_row_controls(self, field):
         return field.get_pk() is not None

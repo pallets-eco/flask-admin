@@ -14,6 +14,15 @@ from .tools import get_primary_key
 
 
 class InlineModelFormList(InlineFieldList):
+    """
+        Customized inline model form list field.
+    """
+
+    form_field_type = InlineModelFormField
+    """
+        Form field type. Override to use custom field for each inline form
+    """
+
     def __init__(self, form, model, prop, inline_view, **kwargs):
         self.form = form
         self.model = model
@@ -22,7 +31,7 @@ class InlineModelFormList(InlineFieldList):
 
         self._pk = get_primary_key(model)
 
-        super(InlineModelFormList, self).__init__(InlineModelFormField(form, self._pk), **kwargs)
+        super(InlineModelFormList, self).__init__(self.form_field_type(form, self._pk), **kwargs)
 
     def display_row_controls(self, field):
         return field.get_pk() is not None
