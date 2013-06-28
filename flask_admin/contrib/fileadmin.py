@@ -46,7 +46,7 @@ class UploadForm(form.BaseForm):
         super(UploadForm, self).__init__(helpers.get_form_data())
 
     def validate_upload(self, field):
-        if not self.upload.has_file():
+        if not self.upload.data:
             raise validators.ValidationError(gettext('File required.'))
 
         filename = self.upload.data.filename
