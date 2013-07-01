@@ -1,7 +1,7 @@
 from mongoengine import ReferenceField
 
-from wtforms import validators
-from flask.ext.mongoengine.wtf import orm, fields
+from wtforms import fields, validators
+from flask.ext.mongoengine.wtf import orm, fields as mongo_fields
 
 from flask.ext.admin import form
 from flask.ext.admin.model.fields import InlineFieldList
@@ -82,7 +82,7 @@ class CustomModelConverter(orm.ModelConverter):
             kwargs['widget'] = form.Select2Widget(multiple=True)
 
             doc_type = field.field.document_type
-            return fields.ModelSelectMultipleField(model=doc_type, **kwargs)
+            return mongo_fields.ModelSelectMultipleField(model=doc_type, **kwargs)
         if field.field.choices:
             kwargs['multiple'] = True
             return self.convert(model, field.field, kwargs)
