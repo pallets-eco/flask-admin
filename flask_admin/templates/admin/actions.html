@@ -21,7 +21,7 @@
     {% if actions %}
     <script src="{{ url_for('admin.static', filename='js/actions.js') }}"></script>
     <script language="javascript">
-        var modelActions = new AdminModelActions({{ message|tojson|safe }}, {{ actions_confirmation|tojson|safe }});
+        var modelActions = new AdminModelActions({{ message|tojson }}, {{ actions_confirmation|tojson }});
     </script>
     {% endif %}
 {% endmacro %}

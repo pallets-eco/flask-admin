@@ -145,9 +145,9 @@
             {% if filter_groups is not none and filter_data is not none %}
                 var filter = new AdminFilters(
                     '#filter_form', '.field-filters',
-                    {{ admin_view._filter_dict|tojson|safe }},
-                    {{ filter_data|tojson|safe }},
-                    {{ filter_types|tojson|safe }}
+                    {{ admin_view._filter_dict|tojson }},
+                    {{ filter_data|tojson }},
+                    {{ filter_types|tojson }}
                 );
             {% endif %}
         })(jQuery);
