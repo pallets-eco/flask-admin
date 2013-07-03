@@ -108,7 +108,13 @@
 {% endmacro %}
 
 {% macro render_form_fields(form, set_focus=True, widget_args={}) %}
-    {{ form.hidden_tag() if form.hidden_tag is defined }}
+    {% if form.hidden_tag is defined %}
+        {{ form.hidden_tag() }}
+    {% else %}
+        {% for f in form if f.type == 'HiddenField' %}
+            {{ f }}
+        {% endfor %}
+    {% endif %}
 
     {% for f in form if f.type != 'HiddenField' and f.type != 'CSRFTokenField' %}
       {% set kwargs = widget_args.get(f.name, {}) %}
