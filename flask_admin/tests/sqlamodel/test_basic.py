@@ -15,8 +15,7 @@ class CustomModelView(ModelView):
         for k, v in iteritems(kwargs):
             setattr(self, k, v)
 
-        super(CustomModelView, self).__init__(model, session,
-                                              name, category,
+        super(CustomModelView, self).__init__(model, session, name, category,
                                               endpoint, url)
 
 
@@ -436,12 +435,42 @@ def test_non_int_pk():
     ok_('test2' in data)
 
 
-def test_form():
-    # TODO: form_columns
-    # TODO: form_excluded_columns
+def test_form_columns():
+    app, db, admin = setup()
+
+    class Model(db.Model):
+        id = db.Column(db.String, primary_key=True)
+        int_field = db.Column(db.Integer)
+        datetime_field = db.Column(db.DateTime)
+        text_field = db.Column(db.UnicodeText)
+        excluded_column = db.Column(db.String)
+
+    class ChildModel(db.Model):
+        id = db.Column(db.String, primary_key=True)
+        model_id = db.Column(db.Integer, db.ForeignKey(Model.id))
+        model = db.relationship(Model, backref='backref')
+
+    db.create_all()
+
+    view1 = CustomModelView(Model, db.session, endpoint='view1',
+                            form_columns=('int_field', 'text_field'))
+    view2 = CustomModelView(Model, db.session, endpoint='view2',
+                            form_excluded_columns=('excluded_column',))
+    view3 = CustomModelView(ChildModel, db.session, endpoint='view3')
+
+    form1 = view1.create_form()
+    form2 = view2.create_form()
+    form3 = view3.create_form()
+
+    ok_('int_field' in form1._fields)
+    ok_('text_field' in form1._fields)
+    ok_('datetime_field' not in form1._fields)
+
+    ok_('excluded_column' not in form2._fields)
+
+    ok_(type(form3.model).__name__ == 'QuerySelectField')
+
     # TODO: form_args
-    # TODO: Select columns
-    pass
 
 
 def test_form_override():
