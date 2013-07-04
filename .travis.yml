@@ -8,4 +8,4 @@ install: "pip install -r requirements.txt --use-mirrors"
 
 services: mongodb
 
-script: nosetests
+script: nosetests flask_admin/tests
