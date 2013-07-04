@@ -352,5 +352,5 @@ def test_menu_links():
     rv = client.get('/admin/')
 
     data = rv.data.decode('utf-8')
-    ok_('TestMenuLink1' in data.decode('utf-8'))
-    ok_('TestMenuLink2' in data.decode('utf-8'))
+    ok_('TestMenuLink1' in data)
+    ok_('TestMenuLink2' in data)

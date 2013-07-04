@@ -1,4 +1,10 @@
 from nose.tools import eq_, ok_
+from nose.plugins.skip import SkipTest
+
+# Skip test on PY3
+from flask.ext.admin._compat import PY2
+if not PY2:
+    raise SkipTest('MongoEngine is not Python 3 compatible')
 
 from wtforms import fields
 

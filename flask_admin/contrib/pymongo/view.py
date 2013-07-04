@@ -10,6 +10,7 @@ from flask.ext.admin._compat import string_types
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
 from flask.ext.admin.actions import action
+from flask.ext.admin.helpers import get_form_data
 
 from .filters import BasePyMongoFilter
 from .tools import parse_like_term
@@ -237,13 +238,14 @@ class ModelView(BaseModelView):
             :param id:
                 Model ID
         """
+        print('get', id)
         return self.coll.find_one({'_id': self._get_valid_id(id)})
 
     def edit_form(self, obj):
         """
             Create edit form from the MongoDB document
         """
-        return self._edit_form_class(**obj)
+        return self._edit_form_class(get_form_data(), **obj)
 
     def create_model(self, form):
         """
@@ -338,5 +340,4 @@ class ModelView(BaseModelView):
                            count,
                            count=count))
         except Exception as ex:
-            flash(gettext('Failed to delete models. %(error)s', error=str(ex)),
-                'error')
+            flash(gettext('Failed to delete models. %(error)s', error=str(ex)), 'error')
