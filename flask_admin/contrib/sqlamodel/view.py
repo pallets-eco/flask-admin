@@ -513,9 +513,9 @@ class ModelView(BaseModelView):
         """
         converter = self.model_form_converter(self.session, self)
         form_class = form.get_form(self.model, converter,
-                          only=self.form_columns,
-                          exclude=self.form_excluded_columns,
-                          field_args=self.form_args)
+                                   only=self.form_columns,
+                                   exclude=self.form_excluded_columns,
+                                   field_args=self.form_args)
 
         if self.inline_models:
             form_class = self.scaffold_inline_form_models(form_class)
@@ -534,9 +534,9 @@ class ModelView(BaseModelView):
 
         for m in self.inline_models:
             form_class = inline_converter.contribute(converter,
-                                                self.model,
-                                                form_class,
-                                                m)
+                                                     self.model,
+                                                     form_class,
+                                                     m)
 
         return form_class
 

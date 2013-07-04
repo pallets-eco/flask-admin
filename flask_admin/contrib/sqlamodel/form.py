@@ -304,11 +304,12 @@ def _resolve_prop(prop):
 
 # Get list of fields and generate form
 def get_form(model, converter,
-            base_class=form.BaseForm,
-            only=None, exclude=None,
-            field_args=None,
-            hidden_pk=False,
-            ignore_hidden=True):
+             base_class=form.BaseForm,
+             only=None,
+             exclude=None,
+             field_args=None,
+             hidden_pk=False,
+             ignore_hidden=True):
     """
         Generate form from the model.
 
@@ -473,17 +474,20 @@ class InlineModelConverter(InlineModelConverterBase):
         ignore = [reverse_prop.key]
 
         if info.form_excluded_columns:
-            exclude = ignore + info.form_excluded_columns
+            exclude = ignore + list(info.form_excluded_columns)
         else:
             exclude = ignore
 
         # Create form
-        child_form = get_form(info.model,
-                              converter,
-                              only=info.form_columns,
-                              exclude=exclude,
-                              field_args=info.form_args,
-                              hidden_pk=True)
+        child_form = info.get_form()
+
+        if child_form is None:
+            child_form = get_form(info.model,
+                                  converter,
+                                  only=info.form_columns,
+                                  exclude=exclude,
+                                  field_args=info.form_args,
+                                  hidden_pk=True)
 
         # Post-process form
         child_form = info.postprocess_form(child_form)

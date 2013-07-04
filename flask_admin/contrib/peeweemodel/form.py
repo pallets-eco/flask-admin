@@ -162,13 +162,16 @@ class InlineModelConverter(InlineModelConverterBase):
             exclude = ignore
 
         # Create field
-        child_form = model_form(info.model,
-                                base_class=form.BaseForm,
-                                only=info.form_columns,
-                                exclude=exclude,
-                                field_args=info.form_args,
-                                allow_pk=True,
-                                converter=converter)
+        child_form = info.get_form()
+
+        if child_form is None:
+            child_form = model_form(info.model,
+                                    base_class=form.BaseForm,
+                                    only=info.form_columns,
+                                    exclude=exclude,
+                                    field_args=info.form_args,
+                                    allow_pk=True,
+                                    converter=converter)
 
         prop_name = 'fa_%s' % model.__name__
 
