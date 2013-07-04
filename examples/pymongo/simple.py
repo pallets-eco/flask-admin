@@ -96,7 +96,7 @@ class TweetView(ModelView):
         return self._feed_user_choices(form)
 
     # Correct user_id reference before saving
-    def on_model_change(self, form, model):
+    def on_model_change(self, form, model, is_creating):
         user_id = model.get('user_id')
         model['user_id'] = ObjectId(user_id)
 
