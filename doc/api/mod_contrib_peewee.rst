@@ -1,9 +1,9 @@
-``flask.ext.admin.contrib.peeweemodel``
-=======================================
+``flask.ext.admin.contrib.peewee``
+==================================
 
 Peewee model backend implementation.
 
-.. automodule:: flask.ext.admin.contrib.peeweemodel
+.. automodule:: flask.ext.admin.contrib.peewee
 
     .. autoclass:: ModelView
         :members:

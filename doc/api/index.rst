@@ -10,8 +10,8 @@ API
    mod_tools
    mod_actions
 
-   mod_contrib_sqlamodel
+   mod_contrib_sqla
    mod_contrib_mongoengine
-   mod_contrib_peeweemodel
+   mod_contrib_peewee
    mod_contrib_pymongo
    mod_contrib_fileadmin

@@ -4,7 +4,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext import admin
 from flask.ext.babelex import Babel
 
-from flask.ext.admin.contrib import sqlamodel
+from flask.ext.admin.contrib import sqla
 
 # Create application
 app = Flask(__name__)
@@ -67,8 +67,8 @@ if __name__ == '__main__':
     admin.locale_selector(get_locale)
 
     # Add views
-    admin.add_view(sqlamodel.ModelView(User, db.session))
-    admin.add_view(sqlamodel.ModelView(Post, db.session))
+    admin.add_view(sqla.ModelView(User, db.session))
+    admin.add_view(sqla.ModelView(Post, db.session))
 
     # Create DB
     db.create_all()

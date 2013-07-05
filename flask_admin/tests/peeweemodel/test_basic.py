@@ -11,7 +11,7 @@ import peewee
 from wtforms import fields
 
 from flask.ext.admin._compat import iteritems
-from flask.ext.admin.contrib.peeweemodel import ModelView
+from flask.ext.admin.contrib.peewee import ModelView
 
 from . import setup
 

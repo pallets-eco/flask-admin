@@ -36,7 +36,7 @@ but you don't have to use it, Flask-Admin will work with SQLAlchemy declarative 
 
     from flask import Flask
     from flask.ext.admin import Admin
-    from flask.ext.admin.contrib.sqlamodel import ModelView
+    from flask.ext.admin.contrib.sqla import ModelView
     from flask.ext.sqlalchemy import SQLAlchemy
 
     app = Flask(__name__)
@@ -95,7 +95,7 @@ change_form_template						:attr:`~flask.ext.admin.model.BaseModelView.change_for
 =========================================== ==============================================
 
 You might want to check :doc:`api/mod_model` for basic model configuration options (reused by all model
-backends) and specific backend documentation, for example :doc:`api/mod_contrib_sqlamodel`. There's much more
+backends) and specific backend documentation, for example :doc:`api/mod_contrib_sqla`. There's much more
 than displayed in this table.
 
 Authentication

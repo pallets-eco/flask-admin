@@ -3,8 +3,8 @@ from nose.tools import eq_, ok_, raises
 
 from wtforms import fields
 
-from flask.ext.admin.contrib.sqlamodel import ModelView
-from flask.ext.admin.contrib.sqlamodel.fields import InlineModelFormList
+from flask.ext.admin.contrib.sqla import ModelView
+from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
 
 from . import setup
 

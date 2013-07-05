@@ -1,9 +1,9 @@
-``flask.ext.admin.contrib.sqlamodel``
-=====================================
+``flask.ext.admin.contrib.sqla``
+================================
 
 SQLAlchemy model backend implementation.
 
-.. automodule:: flask.ext.admin.contrib.sqlamodel
+.. automodule:: flask.ext.admin.contrib.sqla
 
     .. autoclass:: ModelView
         :members:

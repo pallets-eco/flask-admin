@@ -12,9 +12,9 @@ from wtforms import fields
 from flask.ext import admin
 from flask.ext.admin.form import RenderTemplateWidget
 from flask.ext.admin.model.form import InlineFormAdmin
-from flask.ext.admin.contrib.sqlamodel import ModelView
-from flask.ext.admin.contrib.sqlamodel.form import InlineModelConverter
-from flask.ext.admin.contrib.sqlamodel.fields import InlineModelFormList
+from flask.ext.admin.contrib.sqla import ModelView
+from flask.ext.admin.contrib.sqla.form import InlineModelConverter
+from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
 
 # Create application
 app = Flask(__name__)

@@ -4,8 +4,8 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from wtforms import validators
 
 from flask.ext import admin
-from flask.ext.admin.contrib import sqlamodel
-from flask.ext.admin.contrib.sqlamodel import filters
+from flask.ext.admin.contrib import sqla
+from flask.ext.admin.contrib.sqla import filters
 
 # Create application
 app = Flask(__name__)
@@ -90,12 +90,12 @@ def index():
 
 
 # Customized User model admin
-class UserAdmin(sqlamodel.ModelView):
+class UserAdmin(sqla.ModelView):
     inline_models = (UserInfo,)
 
 
 # Customized Post model admin
-class PostAdmin(sqlamodel.ModelView):
+class PostAdmin(sqla.ModelView):
     # Visible columns in the list view
     column_exclude_list = ['text']
 
@@ -124,7 +124,7 @@ class PostAdmin(sqlamodel.ModelView):
         super(PostAdmin, self).__init__(Post, session)
 
 
-class TreeView(sqlamodel.ModelView):
+class TreeView(sqla.ModelView):
     inline_models = (Tree,)
 
 
@@ -134,7 +134,7 @@ if __name__ == '__main__':
 
     # Add views
     admin.add_view(UserAdmin(User, db.session))
-    admin.add_view(sqlamodel.ModelView(Tag, db.session))
+    admin.add_view(sqla.ModelView(Tag, db.session))
     admin.add_view(PostAdmin(db.session))
     admin.add_view(TreeView(Tree, db.session))
 

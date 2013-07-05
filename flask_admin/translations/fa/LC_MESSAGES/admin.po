@@ -150,9 +150,9 @@ msgstr "عدم توانایی در ویرایش %(name)s"
 
 #: ../flask_admin/contrib/fileadmin.py:677
 #: ../flask_admin/contrib/mongoengine/view.py:389
-#: ../flask_admin/contrib/peeweemodel/view.py:375
+#: ../flask_admin/contrib/peewee/view.py:375
 #: ../flask_admin/contrib/pymongo/view.py:326
-#: ../flask_admin/contrib/sqlamodel/view.py:787
+#: ../flask_admin/contrib/sqla/view.py:787
 msgid "Delete"
 msgstr "حذف"
 
@@ -165,82 +165,82 @@ msgid "Edit"
 msgstr "ویرایش"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:36
-#: ../flask_admin/contrib/peeweemodel/filters.py:35
+#: ../flask_admin/contrib/peewee/filters.py:35
 #: ../flask_admin/contrib/pymongo/filters.py:38
-#: ../flask_admin/contrib/sqlamodel/filters.py:36
+#: ../flask_admin/contrib/sqla/filters.py:36
 msgid "equals"
 msgstr "برابر با"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:45
-#: ../flask_admin/contrib/peeweemodel/filters.py:43
+#: ../flask_admin/contrib/peewee/filters.py:43
 #: ../flask_admin/contrib/pymongo/filters.py:47
-#: ../flask_admin/contrib/sqlamodel/filters.py:44
+#: ../flask_admin/contrib/sqla/filters.py:44
 msgid "not equal"
 msgstr "برابر نیست با"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:55
-#: ../flask_admin/contrib/peeweemodel/filters.py:52
+#: ../flask_admin/contrib/peewee/filters.py:52
 #: ../flask_admin/contrib/pymongo/filters.py:57
-#: ../flask_admin/contrib/sqlamodel/filters.py:53
+#: ../flask_admin/contrib/sqla/filters.py:53
 msgid "contains"
 msgstr "محتوی"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:65
-#: ../flask_admin/contrib/peeweemodel/filters.py:61
+#: ../flask_admin/contrib/peewee/filters.py:61
 #: ../flask_admin/contrib/pymongo/filters.py:67
-#: ../flask_admin/contrib/sqlamodel/filters.py:62
+#: ../flask_admin/contrib/sqla/filters.py:62
 msgid "not contains"
 msgstr "محتوی نیست"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:74
-#: ../flask_admin/contrib/peeweemodel/filters.py:69
+#: ../flask_admin/contrib/peewee/filters.py:69
 #: ../flask_admin/contrib/pymongo/filters.py:76
-#: ../flask_admin/contrib/sqlamodel/filters.py:70
+#: ../flask_admin/contrib/sqla/filters.py:70
 msgid "greater than"
 msgstr "بزرگتر از"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:83
-#: ../flask_admin/contrib/peeweemodel/filters.py:77
+#: ../flask_admin/contrib/peewee/filters.py:77
 #: ../flask_admin/contrib/pymongo/filters.py:85
-#: ../flask_admin/contrib/sqlamodel/filters.py:78
+#: ../flask_admin/contrib/sqla/filters.py:78
 msgid "smaller than"
 msgstr "کوچکتر از"
 
 #: ../flask_admin/contrib/mongoengine/view.py:338
-#: ../flask_admin/contrib/peeweemodel/view.py:337
+#: ../flask_admin/contrib/peewee/view.py:337
 #: ../flask_admin/contrib/pymongo/view.py:268
-#: ../flask_admin/contrib/sqlamodel/view.py:734
+#: ../flask_admin/contrib/sqla/view.py:734
 #, python-format
 msgid "Failed to create model. %(error)s"
 msgstr "ساخت مدل با مشکل روبرو شد %(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:358
-#: ../flask_admin/contrib/peeweemodel/view.py:352
+#: ../flask_admin/contrib/peewee/view.py:352
 #: ../flask_admin/contrib/pymongo/view.py:290
-#: ../flask_admin/contrib/sqlamodel/view.py:754
+#: ../flask_admin/contrib/sqla/view.py:754
 #, python-format
 msgid "Failed to update model. %(error)s"
 msgstr "بروزرسانی مدل با مشکل روبرو شد%(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:375
-#: ../flask_admin/contrib/peeweemodel/view.py:362
+#: ../flask_admin/contrib/peewee/view.py:362
 #: ../flask_admin/contrib/pymongo/view.py:312
-#: ../flask_admin/contrib/sqlamodel/view.py:773
+#: ../flask_admin/contrib/sqla/view.py:773
 #, python-format
 msgid "Failed to delete model. %(error)s"
 msgstr "حذف مدل با مشکل روبرو شد %(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:390
-#: ../flask_admin/contrib/peeweemodel/view.py:376
+#: ../flask_admin/contrib/peewee/view.py:376
 #: ../flask_admin/contrib/pymongo/view.py:327
-#: ../flask_admin/contrib/sqlamodel/view.py:788
+#: ../flask_admin/contrib/sqla/view.py:788
 msgid "Are you sure you want to delete selected models?"
 msgstr "آیا از خذف مدل ها اطمینان دارید"
 
 #: ../flask_admin/contrib/mongoengine/view.py:400
-#: ../flask_admin/contrib/peeweemodel/view.py:392
+#: ../flask_admin/contrib/peewee/view.py:392
 #: ../flask_admin/contrib/pymongo/view.py:337
-#: ../flask_admin/contrib/sqlamodel/view.py:806
+#: ../flask_admin/contrib/sqla/view.py:806
 #, python-format
 msgid "Model was successfully deleted."
 msgid_plural "%(count)s models were successfully deleted."
@@ -249,20 +249,20 @@ msgstr[1] "%(count)s  مدل با موفقیت خذف شدند"
 msgstr[2] ""
 
 #: ../flask_admin/contrib/mongoengine/view.py:405
-#: ../flask_admin/contrib/peeweemodel/view.py:397
+#: ../flask_admin/contrib/peewee/view.py:397
 #: ../flask_admin/contrib/pymongo/view.py:342
-#: ../flask_admin/contrib/sqlamodel/view.py:811
+#: ../flask_admin/contrib/sqla/view.py:811
 #, python-format
 msgid "Failed to delete models. %(error)s"
 msgstr "حذف مدل ها با مشکل روبرو شد %(error)s"
 
-#: ../flask_admin/contrib/sqlamodel/fields.py:125
-#: ../flask_admin/contrib/sqlamodel/fields.py:175
-#: ../flask_admin/contrib/sqlamodel/fields.py:180
+#: ../flask_admin/contrib/sqla/fields.py:125
+#: ../flask_admin/contrib/sqla/fields.py:175
+#: ../flask_admin/contrib/sqla/fields.py:180
 msgid "Not a valid choice"
 msgstr "انتخاب مناسبی نیست"
 
-#: ../flask_admin/contrib/sqlamodel/validators.py:33
+#: ../flask_admin/contrib/sqla/validators.py:33
 msgid "Already exists."
 msgstr "قبلا وجود داشته است"
 

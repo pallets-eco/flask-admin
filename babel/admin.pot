@@ -114,7 +114,7 @@ msgid "Failed to rename: %(error)s"
 msgstr ""
 
 #: ../flask_admin/contrib/fileadmin.py:503
-#: ../flask_admin/contrib/peeweemodel/view.py:355
+#: ../flask_admin/contrib/peewee/view.py:355
 #: ../flask_admin/contrib/sqlamodel/view.py:680
 msgid "Delete"
 msgstr ""
@@ -123,60 +123,60 @@ msgstr ""
 msgid "Are you sure you want to delete these files?"
 msgstr ""
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:35
+#: ../flask_admin/contrib/peewee/filters.py:35
 #: ../flask_admin/contrib/sqlamodel/filters.py:35
 msgid "equals"
 msgstr ""
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:43
+#: ../flask_admin/contrib/peewee/filters.py:43
 #: ../flask_admin/contrib/sqlamodel/filters.py:43
 msgid "not equal"
 msgstr ""
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:52
+#: ../flask_admin/contrib/peewee/filters.py:52
 #: ../flask_admin/contrib/sqlamodel/filters.py:52
 msgid "contains"
 msgstr ""
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:61
+#: ../flask_admin/contrib/peewee/filters.py:61
 #: ../flask_admin/contrib/sqlamodel/filters.py:61
 msgid "not contains"
 msgstr ""
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:69
+#: ../flask_admin/contrib/peewee/filters.py:69
 #: ../flask_admin/contrib/sqlamodel/filters.py:69
 msgid "greater than"
 msgstr ""
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:77
+#: ../flask_admin/contrib/peewee/filters.py:77
 #: ../flask_admin/contrib/sqlamodel/filters.py:77
 msgid "smaller than"
 msgstr ""
 
-#: ../flask_admin/contrib/peeweemodel/view.py:317
+#: ../flask_admin/contrib/peewee/view.py:317
 #: ../flask_admin/contrib/sqlamodel/view.py:627
 #, python-format
 msgid "Failed to create model. %(error)s"
 msgstr ""
 
-#: ../flask_admin/contrib/peeweemodel/view.py:332
+#: ../flask_admin/contrib/peewee/view.py:332
 #: ../flask_admin/contrib/sqlamodel/view.py:647
 #, python-format
 msgid "Failed to update model. %(error)s"
 msgstr ""
 
-#: ../flask_admin/contrib/peeweemodel/view.py:342
+#: ../flask_admin/contrib/peewee/view.py:342
 #: ../flask_admin/contrib/sqlamodel/view.py:666
 #, python-format
 msgid "Failed to delete model. %(error)s"
 msgstr ""
 
-#: ../flask_admin/contrib/peeweemodel/view.py:356
+#: ../flask_admin/contrib/peewee/view.py:356
 #: ../flask_admin/contrib/sqlamodel/view.py:681
 msgid "Are you sure you want to delete selected models?"
 msgstr ""
 
-#: ../flask_admin/contrib/peeweemodel/view.py:372
+#: ../flask_admin/contrib/peewee/view.py:372
 #: ../flask_admin/contrib/sqlamodel/view.py:699
 #, python-format
 msgid "Model was successfully deleted."
@@ -184,7 +184,7 @@ msgid_plural "%(count)s models were successfully deleted."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../flask_admin/contrib/peeweemodel/view.py:377
+#: ../flask_admin/contrib/peewee/view.py:377
 #: ../flask_admin/contrib/sqlamodel/view.py:704
 #, python-format
 msgid "Failed to delete models. %(error)s"

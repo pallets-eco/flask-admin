@@ -4,7 +4,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from wtforms import fields, widgets
 
 from flask.ext import admin
-from flask.ext.admin.contrib import sqlamodel
+from flask.ext.admin.contrib import sqla
 
 # Create application
 app = Flask(__name__)
@@ -40,7 +40,7 @@ class Page(db.Model):
 
 
 # Customized admin interface
-class PageAdmin(sqlamodel.ModelView):
+class PageAdmin(sqla.ModelView):
     form_overrides = dict(text=CKTextAreaField)
 
     create_template = 'create.html'

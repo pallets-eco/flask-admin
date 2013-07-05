@@ -13,7 +13,7 @@ from flask.ext.admin.model import BaseModelView
 from flask.ext.admin.actions import action
 from flask.ext.admin._backwards import ObsoleteAttr
 
-from flask.ext.admin.contrib.sqlamodel import form, filters, tools
+from flask.ext.admin.contrib.sqla import form, filters, tools
 from .typefmt import DEFAULT_FORMATTERS
 
 
@@ -112,7 +112,7 @@ class ModelView(BaseModelView):
     """
         Collection of the column filters.
 
-        Can contain either field names or instances of :class:`flask.ext.admin.contrib.sqlamodel.filters.BaseFilter` classes.
+        Can contain either field names or instances of :class:`flask.ext.admin.contrib.sqla.filters.BaseFilter` classes.
 
         For example::
 

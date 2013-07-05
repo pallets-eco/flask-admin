@@ -116,8 +116,8 @@ msgid "Failed to rename: %(error)s"
 msgstr "重新命名的時候發生異常：%(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:503
-#: ../flask_admin/contrib/peeweemodel/view.py:355
-#: ../flask_admin/contrib/sqlamodel/view.py:680
+#: ../flask_admin/contrib/peewee/view.py:355
+#: ../flask_admin/contrib/sqla/view.py:680
 msgid "Delete"
 msgstr "刪除"
 
@@ -125,79 +125,79 @@ msgstr "刪除"
 msgid "Are you sure you want to delete these files?"
 msgstr "您確定要刪除這些檔案嗎？"
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:35
-#: ../flask_admin/contrib/sqlamodel/filters.py:35
+#: ../flask_admin/contrib/peewee/filters.py:35
+#: ../flask_admin/contrib/sqla/filters.py:35
 msgid "equals"
 msgstr "等於"
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:43
-#: ../flask_admin/contrib/sqlamodel/filters.py:43
+#: ../flask_admin/contrib/peewee/filters.py:43
+#: ../flask_admin/contrib/sqla/filters.py:43
 msgid "not equal"
 msgstr "不等於"
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:52
-#: ../flask_admin/contrib/sqlamodel/filters.py:52
+#: ../flask_admin/contrib/peewee/filters.py:52
+#: ../flask_admin/contrib/sqla/filters.py:52
 msgid "contains"
 msgstr "包含"
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:61
-#: ../flask_admin/contrib/sqlamodel/filters.py:61
+#: ../flask_admin/contrib/peewee/filters.py:61
+#: ../flask_admin/contrib/sqla/filters.py:61
 msgid "not contains"
 msgstr "不包含"
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:69
-#: ../flask_admin/contrib/sqlamodel/filters.py:69
+#: ../flask_admin/contrib/peewee/filters.py:69
+#: ../flask_admin/contrib/sqla/filters.py:69
 msgid "greater than"
 msgstr "大於"
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:77
-#: ../flask_admin/contrib/sqlamodel/filters.py:77
+#: ../flask_admin/contrib/peewee/filters.py:77
+#: ../flask_admin/contrib/sqla/filters.py:77
 msgid "smaller than"
 msgstr "小於"
 
-#: ../flask_admin/contrib/peeweemodel/view.py:317
-#: ../flask_admin/contrib/sqlamodel/view.py:627
+#: ../flask_admin/contrib/peewee/view.py:317
+#: ../flask_admin/contrib/sqla/view.py:627
 #, python-format
 msgid "Failed to create model. %(error)s"
 msgstr "建立模型的時候發生異常：%(error)s"
 
-#: ../flask_admin/contrib/peeweemodel/view.py:332
-#: ../flask_admin/contrib/sqlamodel/view.py:647
+#: ../flask_admin/contrib/peewee/view.py:332
+#: ../flask_admin/contrib/sqla/view.py:647
 #, python-format
 msgid "Failed to update model. %(error)s"
 msgstr "更新模型的時候發生異常：%(error)s"
 
-#: ../flask_admin/contrib/peeweemodel/view.py:342
-#: ../flask_admin/contrib/sqlamodel/view.py:666
+#: ../flask_admin/contrib/peewee/view.py:342
+#: ../flask_admin/contrib/sqla/view.py:666
 #, python-format
 msgid "Failed to delete model. %(error)s"
 msgstr "刪除模型的時候發生異常：%(error)s"
 
-#: ../flask_admin/contrib/peeweemodel/view.py:356
-#: ../flask_admin/contrib/sqlamodel/view.py:681
+#: ../flask_admin/contrib/peewee/view.py:356
+#: ../flask_admin/contrib/sqla/view.py:681
 msgid "Are you sure you want to delete selected models?"
 msgstr "您確定要刪除這些模型嗎？"
 
-#: ../flask_admin/contrib/peeweemodel/view.py:372
-#: ../flask_admin/contrib/sqlamodel/view.py:699
+#: ../flask_admin/contrib/peewee/view.py:372
+#: ../flask_admin/contrib/sqla/view.py:699
 #, python-format
 msgid "Model was successfully deleted."
 msgid_plural "%(count)s 個模型已被成功刪除。"
 msgstr[0] "刪除作業成功完成。"
 
-#: ../flask_admin/contrib/peeweemodel/view.py:377
-#: ../flask_admin/contrib/sqlamodel/view.py:704
+#: ../flask_admin/contrib/peewee/view.py:377
+#: ../flask_admin/contrib/sqla/view.py:704
 #, python-format
 msgid "Failed to delete models. %(error)s"
 msgstr "刪除模型的時候發生異常：%(error)s"
 
-#: ../flask_admin/contrib/sqlamodel/fields.py:125
-#: ../flask_admin/contrib/sqlamodel/fields.py:175
-#: ../flask_admin/contrib/sqlamodel/fields.py:180
+#: ../flask_admin/contrib/sqla/fields.py:125
+#: ../flask_admin/contrib/sqla/fields.py:175
+#: ../flask_admin/contrib/sqla/fields.py:180
 msgid "Not a valid choice"
 msgstr "炫則的值不正確。"
 
-#: ../flask_admin/contrib/sqlamodel/validators.py:33
+#: ../flask_admin/contrib/sqla/validators.py:33
 msgid "Already exists."
 msgstr "資料已經存在。"
 

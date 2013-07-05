@@ -11,7 +11,7 @@ from peewee import PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
 from wtfpeewee.orm import model_form
 
 from flask.ext.admin.actions import action
-from flask.ext.admin.contrib.peeweemodel import filters
+from flask.ext.admin.contrib.peewee import filters
 from .form import CustomModelConverter, InlineModelConverter, save_inline
 from .tools import get_primary_key, parse_like_term
 
@@ -22,7 +22,7 @@ class ModelView(BaseModelView):
         Collection of the column filters.
 
         Can contain either field names or instances of
-        :class:`flask.ext.admin.contrib.peeweemodel.filters.BaseFilter` classes.
+        :class:`flask.ext.admin.contrib.peewee.filters.BaseFilter` classes.
 
         For example::
 

@@ -4,7 +4,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from wtforms import form, fields, validators
 
 from flask.ext import admin, login
-from flask.ext.admin.contrib import sqlamodel
+from flask.ext.admin.contrib import sqla
 from flask.ext.admin import helpers
 
 # Create Flask application
@@ -85,7 +85,7 @@ def init_login():
 
 
 # Create customized model view class
-class MyModelView(sqlamodel.ModelView):
+class MyModelView(sqla.ModelView):
     def is_accessible(self):
         return login.current_user.is_authenticated()
 

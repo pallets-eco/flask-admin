@@ -2,7 +2,7 @@ import warnings
 
 from flask.ext.admin.babel import gettext
 from flask.ext.admin.model import filters
-from flask.ext.admin.contrib.sqlamodel import tools
+from flask.ext.admin.contrib.sqla import tools
 
 
 class BaseSQLAFilter(filters.BaseFilter):

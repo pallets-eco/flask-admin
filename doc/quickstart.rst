@@ -207,7 +207,7 @@ Flask-Admin comes with built-in few ORM backends.
 
 Lets pick SQLAlchemy backend. It is very easy to use::
 
-    from flask.ext.admin.contrib.sqlamodel import ModelView
+    from flask.ext.admin.contrib.sqla import ModelView
 
     # Flask and Flask-SQLAlchemy initialization here
 
@@ -230,7 +230,7 @@ If you want to customize model views, you have two options:
 For example, if you want to disable model creation, show only 'login' and 'email' columns in the list view,
 you can do something like this::
 
-    from flask.ext.admin.contrib.sqlamodel import ModelView
+    from flask.ext.admin.contrib.sqla import ModelView
 
     # Flask and Flask-SQLAlchemy initialization here
 
@@ -266,7 +266,7 @@ therefore should use a ``SelectField``::
 It is relatively easy to add support for different database backends (Mongo, etc) by inheriting from :class:`~flask.ext.admin.model.BaseModelView`.
 class and implementing database-related methods.
 
-Please refer to :mod:`flask.ext.admin.contrib.sqlamodel` documentation on how to customize behavior of model-based administrative views.
+Please refer to :mod:`flask.ext.admin.contrib.sqla` documentation on how to customize behavior of model-based administrative views.
 
 File Admin
 ----------

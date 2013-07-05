@@ -117,8 +117,8 @@ msgid "Failed to rename: %(error)s"
 msgstr "Chyba při přejmenování: %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:503
-#: ../flask_admin/contrib/peeweemodel/view.py:355
-#: ../flask_admin/contrib/sqlamodel/view.py:680
+#: ../flask_admin/contrib/peewee/view.py:355
+#: ../flask_admin/contrib/sqla/view.py:680
 msgid "Delete"
 msgstr "Smazat"
 
@@ -126,61 +126,61 @@ msgstr "Smazat"
 msgid "Are you sure you want to delete these files?"
 msgstr "Skutečně chcete vymazat následující soubory?"
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:35
-#: ../flask_admin/contrib/sqlamodel/filters.py:35
+#: ../flask_admin/contrib/peewee/filters.py:35
+#: ../flask_admin/contrib/sqla/filters.py:35
 msgid "equals"
 msgstr "rovno"
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:43
-#: ../flask_admin/contrib/sqlamodel/filters.py:43
+#: ../flask_admin/contrib/peewee/filters.py:43
+#: ../flask_admin/contrib/sqla/filters.py:43
 msgid "not equal"
 msgstr "není rovno"
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:52
-#: ../flask_admin/contrib/sqlamodel/filters.py:52
+#: ../flask_admin/contrib/peewee/filters.py:52
+#: ../flask_admin/contrib/sqla/filters.py:52
 msgid "contains"
 msgstr "obsahuje"
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:61
-#: ../flask_admin/contrib/sqlamodel/filters.py:61
+#: ../flask_admin/contrib/peewee/filters.py:61
+#: ../flask_admin/contrib/sqla/filters.py:61
 msgid "not contains"
 msgstr "neobsahuje"
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:69
-#: ../flask_admin/contrib/sqlamodel/filters.py:69
+#: ../flask_admin/contrib/peewee/filters.py:69
+#: ../flask_admin/contrib/sqla/filters.py:69
 msgid "greater than"
 msgstr "větší než"
 
-#: ../flask_admin/contrib/peeweemodel/filters.py:77
-#: ../flask_admin/contrib/sqlamodel/filters.py:77
+#: ../flask_admin/contrib/peewee/filters.py:77
+#: ../flask_admin/contrib/sqla/filters.py:77
 msgid "smaller than"
 msgstr "menší než"
 
-#: ../flask_admin/contrib/peeweemodel/view.py:317
-#: ../flask_admin/contrib/sqlamodel/view.py:627
+#: ../flask_admin/contrib/peewee/view.py:317
+#: ../flask_admin/contrib/sqla/view.py:627
 #, python-format
 msgid "Failed to create model. %(error)s"
 msgstr "Chyba při vytváření modelu. %(error)s"
 
-#: ../flask_admin/contrib/peeweemodel/view.py:332
-#: ../flask_admin/contrib/sqlamodel/view.py:647
+#: ../flask_admin/contrib/peewee/view.py:332
+#: ../flask_admin/contrib/sqla/view.py:647
 #, python-format
 msgid "Failed to update model. %(error)s"
 msgstr "Chyba při aktualizaci modelu. %(error)s"
 
-#: ../flask_admin/contrib/peeweemodel/view.py:342
-#: ../flask_admin/contrib/sqlamodel/view.py:666
+#: ../flask_admin/contrib/peewee/view.py:342
+#: ../flask_admin/contrib/sqla/view.py:666
 #, python-format
 msgid "Failed to delete model. %(error)s"
 msgstr "Chyba při mazání modelu. %(error)s"
 
-#: ../flask_admin/contrib/peeweemodel/view.py:356
-#: ../flask_admin/contrib/sqlamodel/view.py:681
+#: ../flask_admin/contrib/peewee/view.py:356
+#: ../flask_admin/contrib/sqla/view.py:681
 msgid "Are you sure you want to delete selected models?"
 msgstr "Skutečně chcete vymazat vybrané modely?"
 
-#: ../flask_admin/contrib/peeweemodel/view.py:372
-#: ../flask_admin/contrib/sqlamodel/view.py:699
+#: ../flask_admin/contrib/peewee/view.py:372
+#: ../flask_admin/contrib/sqla/view.py:699
 #, python-format
 msgid "Model was successfully deleted."
 msgid_plural "%(count)s models were successfully deleted."
@@ -188,19 +188,19 @@ msgstr[0] "%(count)s model byl úspěšně smazán."
 msgstr[1] "%(count)s modely byly úspěšně smazány."
 msgstr[2] "%(count)s modelů bylo úspěšně smazáno."
 
-#: ../flask_admin/contrib/peeweemodel/view.py:377
-#: ../flask_admin/contrib/sqlamodel/view.py:704
+#: ../flask_admin/contrib/peewee/view.py:377
+#: ../flask_admin/contrib/sqla/view.py:704
 #, python-format
 msgid "Failed to delete models. %(error)s"
 msgstr "Chyba při mazání modelu. %(error)s"
 
-#: ../flask_admin/contrib/sqlamodel/fields.py:125
-#: ../flask_admin/contrib/sqlamodel/fields.py:175
-#: ../flask_admin/contrib/sqlamodel/fields.py:180
+#: ../flask_admin/contrib/sqla/fields.py:125
+#: ../flask_admin/contrib/sqla/fields.py:175
+#: ../flask_admin/contrib/sqla/fields.py:180
 msgid "Not a valid choice"
 msgstr "Tato volba není přípustná"
 
-#: ../flask_admin/contrib/sqlamodel/validators.py:33
+#: ../flask_admin/contrib/sqla/validators.py:33
 msgid "Already exists."
 msgstr "Již existuje."
 

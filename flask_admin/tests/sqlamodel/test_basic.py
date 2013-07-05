@@ -3,7 +3,7 @@ from nose.tools import eq_, ok_, raises
 from wtforms import fields
 
 from flask.ext.admin._compat import iteritems
-from flask.ext.admin.contrib.sqlamodel import ModelView
+from flask.ext.admin.contrib.sqla import ModelView
 
 from . import setup
 

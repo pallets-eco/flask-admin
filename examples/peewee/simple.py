@@ -3,7 +3,7 @@ from flask import Flask
 import peewee
 
 from flask.ext import admin
-from flask.ext.admin.contrib import peeweemodel
+from flask.ext.admin.contrib import peewee
 
 
 app = Flask(__name__)
@@ -46,11 +46,11 @@ class Post(BaseModel):
         return self.title
 
 
-class UserAdmin(peeweemodel.ModelView):
+class UserAdmin(peewee.ModelView):
     inline_models = (UserInfo,)
 
 
-class PostAdmin(peeweemodel.ModelView):
+class PostAdmin(peewee.ModelView):
     # Visible columns in the list view
     column_exclude_list = ['text']
 
