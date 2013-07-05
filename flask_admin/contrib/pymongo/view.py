@@ -238,7 +238,6 @@ class ModelView(BaseModelView):
             :param id:
                 Model ID
         """
-        print('get', id)
         return self.coll.find_one({'_id': self._get_valid_id(id)})
 
     def edit_form(self, obj):
