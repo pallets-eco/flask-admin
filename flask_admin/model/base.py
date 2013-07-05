@@ -871,6 +871,12 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return rec_getattr(model, name)
 
+    def _get_filter_dict(self):
+        """
+            Return flattened filter dictionary which can be JSON-serialized.
+        """
+        return dict((unicode(k), v) for k, v in self._filter_dict.iteritems())
+
     @contextfunction
     def get_list_value(self, context, model, name):
         """
