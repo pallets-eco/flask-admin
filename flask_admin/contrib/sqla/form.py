@@ -3,9 +3,9 @@ from sqlalchemy import Boolean, Column
 
 from flask.ext.admin import form
 from flask.ext.admin.form import Select2Field
-from flask.ext.admin.tools import get_property
 from flask.ext.admin.model.form import (converts, ModelConverterBase,
                                         InlineFormAdmin, InlineModelConverterBase)
+from flask.ext.admin._backwards import get_property
 
 from .validators import Unique
 from .fields import QuerySelectField, QuerySelectMultipleField, InlineModelFormList

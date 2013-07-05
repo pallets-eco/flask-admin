@@ -8,10 +8,10 @@ from sqlalchemy import or_, Column, func
 from flask import flash
 
 from flask.ext.admin._compat import string_types
-from flask.ext.admin.tools import ObsoleteAttr
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
 from flask.ext.admin.actions import action
+from flask.ext.admin._backwards import ObsoleteAttr
 
 from flask.ext.admin.contrib.sqlamodel import form, filters, tools
 from .typefmt import DEFAULT_FORMATTERS
