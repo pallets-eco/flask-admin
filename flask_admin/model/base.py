@@ -12,6 +12,7 @@ from flask.ext.admin.actions import ActionsMixin
 from flask.ext.admin.helpers import get_form_data, validate_form_on_submit
 from flask.ext.admin.tools import rec_getattr
 from flask.ext.admin._backwards import ObsoleteAttr
+from flask.ext.admin._compat import as_unicode
 
 
 class BaseModelView(BaseView, ActionsMixin):
@@ -875,7 +876,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Return flattened filter dictionary which can be JSON-serialized.
         """
-        return dict((unicode(k), v) for k, v in self._filter_dict.iteritems())
+        return dict((as_unicode(k), v) for k, v in self._filter_dict.iteritems())
 
     @contextfunction
     def get_list_value(self, context, model, name):
