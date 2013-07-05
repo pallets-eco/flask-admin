@@ -13,7 +13,7 @@
 import sys
 
 PY2 = sys.version_info[0] == 2
-
+VER = sys.version_info
 
 if not PY2:
     text_type = str

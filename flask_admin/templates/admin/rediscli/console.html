@@ -1,0 +1,29 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('admin.static', filename='admin/css/rediscli.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="console">
+  <div class="console-container">
+  </div>
+  <div class="console-line">
+    <form action="#">
+      <input type="text"></input>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  <script src="{{ url_for('admin.static', filename='admin/js/rediscli.js') }}"></script>
+  <script language="javascript">
+    $(function() {
+      var redisCli = new RedisCli({{ url_for('.execute_view')|tojson }});
+    });
+  </script>
+{% endblock %}

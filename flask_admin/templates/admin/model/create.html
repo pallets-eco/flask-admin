@@ -8,7 +8,7 @@
 {% block head %}
     {{ super() }}
     <link href="{{ url_for('admin.static', filename='select2/select2.css') }}" rel="stylesheet">
-    <link href="{{ url_for('admin.static', filename='css/datepicker.css') }}" rel="stylesheet">
+    <link href="{{ url_for('admin.static', filename='datepicker/bootstrap-datepicker.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
@@ -29,6 +29,6 @@
 
 {% block tail %}
   {{ super() }}
-  <script src="{{ url_for('admin.static', filename='js/bootstrap-datepicker.js') }}"></script>
-  <script src="{{ url_for('admin.static', filename='js/form.js') }}"></script>
+  <script src="{{ url_for('admin.static', filename='datepicker/bootstrap-datepicker.js') }}"></script>
+  <script src="{{ url_for('admin.static', filename='admin/js/form.js') }}"></script>
 {% endblock %}
