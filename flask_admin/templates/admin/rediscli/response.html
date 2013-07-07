@@ -17,7 +17,7 @@
     {% endif %}
   {% elif type == 'str' or type == 'unicode' %}
     "{{ item }}"
-  {% elif type == 'binary' %}
+  {% elif type == 'bytes' %}
     "{{ item.decode('utf-8') }}"
   {% elif type == 'TextWrapper' %}
     <pre>{{ item }}</pre>

@@ -94,7 +94,7 @@ class RedisCli(BaseView):
                     doc = (getattr(attr, '__doc__', '') or '').strip()
                     self.commands[name] = (attr, doc)
 
-        for old, new in self.remapped_commands:
+        for new, old in self.remapped_commands.items():
             self.commands[new] = self.commands[old]
 
     def _contribute_commands(self):
