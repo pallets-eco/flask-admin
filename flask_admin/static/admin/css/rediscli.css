@@ -33,10 +33,14 @@
 
 .console .cmd {
 	background-color: #f5f5f5;
+	padding: 2px;
+	margin: 1px;
 }
 
 .console .response {
 	background-color: #f0f0f0;
+	padding: 2px;
+	margin: 1px;
 }
 
 .console .error {

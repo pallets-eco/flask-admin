@@ -19,6 +19,12 @@
     "{{ item }}"
   {% elif type == 'binary' %}
     "{{ item.decode('utf-8') }}"
+  {% elif type == 'TextWrapper' %}
+    <pre>{{ item }}</pre>
+  {% elif type == 'dict' %}
+    {% for k, v in item.items() %}
+      {{ loop.index }}) {{ k }} - {{ render(v, depth + 1) }}<br/>
+    {% endfor %}
   {% else %}
     {{ item }}
   {% endif %}
