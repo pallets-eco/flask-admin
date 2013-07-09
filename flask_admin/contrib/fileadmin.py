@@ -418,6 +418,10 @@ class FileAdmin(BaseView, ActionsMixin):
         # Get path and verify if it is valid
         base_path, directory, path = self._normalize_path(path)
 
+        if not self.is_accessible_path(path):
+            flash(gettext(gettext('Permission denied.')))
+            return redirect(self._get_dir_url('.index'))
+
         # Get directory listing
         items = []
 
@@ -431,8 +435,10 @@ class FileAdmin(BaseView, ActionsMixin):
 
         for f in os.listdir(directory):
             fp = op.join(directory, f)
+            rel_path = op.join(path, f)
 
-            items.append((f, op.join(path, f), op.isdir(fp), op.getsize(fp)))
+            if self.is_accessible_path(rel_path):
+                items.append((f, rel_path, op.isdir(fp), op.getsize(fp)))
 
         # Sort by name
         items.sort(key=itemgetter(0))
@@ -475,6 +481,10 @@ class FileAdmin(BaseView, ActionsMixin):
             flash(gettext('File uploading is disabled.'), 'error')
             return redirect(self._get_dir_url('.index', path))
 
+        if not self.is_accessible_path(path):
+            flash(gettext(gettext('Permission denied.')))
+            return redirect(self._get_dir_url('.index'))
+
         form = UploadForm(self)
         if helpers.validate_form_on_submit(form):
             filename = op.join(directory,
@@ -511,6 +521,10 @@ class FileAdmin(BaseView, ActionsMixin):
             flash(gettext('Directory creation is disabled.'), 'error')
             return redirect(dir_url)
 
+        if not self.is_accessible_path(path):
+            flash(gettext(gettext('Permission denied.')))
+            return redirect(self._get_dir_url('.index'))
+
         form = NameForm(helpers.get_form_data())
 
         if helpers.validate_form_on_submit(form):
@@ -543,6 +557,10 @@ class FileAdmin(BaseView, ActionsMixin):
         if not self.can_delete:
             flash(gettext('Deletion is disabled.'))
             return redirect(return_url)
+
+        if not self.is_accessible_path(path):
+            flash(gettext(gettext('Permission denied.')))
+            return redirect(self._get_dir_url('.index'))
 
         if op.isdir(full_path):
             if not self.can_delete_dirs:
@@ -582,6 +600,10 @@ class FileAdmin(BaseView, ActionsMixin):
         if not self.can_rename:
             flash(gettext('Renaming is disabled.'))
             return redirect(return_url)
+
+        if not self.is_accessible_path(path):
+            flash(gettext(gettext('Permission denied.')))
+            return redirect(self._get_dir_url('.index'))
 
         if not op.exists(full_path):
             flash(gettext('Path does not exist.'))
@@ -624,6 +646,11 @@ class FileAdmin(BaseView, ActionsMixin):
         path = path[0]
 
         base_path, full_path, path = self._normalize_path(path)
+
+        if not self.is_accessible_path(path):
+            flash(gettext(gettext('Permission denied.')))
+            return redirect(self._get_dir_url('.index'))
+
         dir_url = self._get_dir_url('.index', os.path.dirname(path))
         next_url = next_url or dir_url
 
@@ -677,14 +704,19 @@ class FileAdmin(BaseView, ActionsMixin):
             lazy_gettext('Delete'),
             lazy_gettext('Are you sure you want to delete these files?'))
     def action_delete(self, items):
+        if not self.can_delete:
+            flash(gettext('File deletion is disabled.'), 'error')
+            return
+
         for path in items:
             base_path, full_path, path = self._normalize_path(path)
 
-            try:
-                os.remove(full_path)
-                flash(gettext('File "%(name)s" was successfully deleted.', name=path))
-            except Exception as ex:
-                flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
+            if self.is_accessible_path(path):
+                try:
+                    os.remove(full_path)
+                    flash(gettext('File "%(name)s" was successfully deleted.', name=path))
+                except Exception as ex:
+                    flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
 
     @action('edit', lazy_gettext('Edit'))
     def action_edit(self, items):
