@@ -19,7 +19,7 @@ models, Flask-Admin provides tools that can be used to build administrative inte
 using a consistent look and feel. Flask-Admin architecture is very flexible, there's no need to monkey-patch 
 anything, every single aspect of the library can be customized.
 
-While Flask-Admin is constantly evolving, its production ready and being used in quite a few projects.
+While Flask-Admin is constantly evolving, extensively tested and production ready.
 
 Documentation
 -------------
