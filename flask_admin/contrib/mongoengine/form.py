@@ -78,6 +78,9 @@ class CustomModelConverter(orm.ModelConverter):
 
     @orm.converts('ListField')
     def conv_List(self, model, field, kwargs):
+        if field.field is None:
+            raise ValueError('ListField "%s" must have field specified for model %s' % (field.name, model))
+
         if isinstance(field.field, ReferenceField):
             kwargs['widget'] = form.Select2Widget(multiple=True)
 
