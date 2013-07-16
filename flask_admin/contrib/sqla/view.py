@@ -56,12 +56,12 @@ class ModelView(BaseModelView):
 
         For example::
 
-            class PostAdmin(ModelAdmin):
+            class PostAdmin(ModelView):
                 column_select_related_list = ('user', 'city')
 
         You can also use properties::
 
-            class PostAdmin(ModelAdmin):
+            class PostAdmin(ModelView):
                 column_select_related_list = (Post.user, Post.city)
 
         Please refer to the `subqueryload` on list of possible values.
