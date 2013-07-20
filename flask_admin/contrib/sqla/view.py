@@ -557,7 +557,7 @@ class ModelView(BaseModelView):
                 if p.mapper.class_ == self.model:
                     continue
 
-                if p.direction.name == 'MANYTOONE':
+                if p.direction.name in ['MANYTOONE', 'MANYTOMANY']:
                     relations.add(p.key)
 
         joined = []
