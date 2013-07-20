@@ -6,7 +6,7 @@ from peewee import (DateTimeField, DateField, TimeField,
 from wtfpeewee.orm import ModelConverter, model_form
 
 from flask.ext.admin import form
-from flask.ext.admin._compat import itervalues
+from flask.ext.admin._compat import iteritems, itervalues
 from flask.ext.admin.model.form import InlineFormAdmin, InlineModelConverterBase
 from flask.ext.admin.model.fields import InlineModelFormField, InlineFieldList
 
@@ -101,6 +101,31 @@ class CustomModelConverter(ModelConverter):
 
     def handle_time(self, model, field, **kwargs):
         return field.name, form.TimeField(**kwargs)
+
+
+def get_form(model, converter,
+             base_class=form.BaseForm,
+             only=None,
+             exclude=None,
+             field_args=None,
+             allow_pk=True,
+             extra_fields=None):
+    """
+        Create form from peewee model and contribute extra fields, if necessary
+    """
+    result = model_form(model,
+                        base_class=base_class,
+                        only=only,
+                        exclude=exclude,
+                        field_args=field_args,
+                        allow_pk=allow_pk,
+                        converter=converter)
+
+    if extra_fields:
+        for name, field in iteritems(extra_fields):
+            setattr(result, name, form.recreate_field(field))
+
+    return result
 
 
 class InlineModelConverter(InlineModelConverterBase):

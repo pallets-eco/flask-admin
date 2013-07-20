@@ -2,6 +2,7 @@ import time
 import datetime
 
 from wtforms import form, fields, widgets
+from wtforms.fields.core import UnboundField
 from flask.globals import _request_ctx_stack
 from flask.ext.admin.babel import gettext, ngettext
 from flask.ext.admin import helpers as h
@@ -214,3 +215,16 @@ class Select2TagsField(fields.TextField):
 
     def _value(self):
         return u', '.join(self.data) if isinstance(self.data, list) else self.data
+
+
+def recreate_field(unbound):
+    """
+        Create new instance of the unbound field, resetting wtforms creation counter.
+
+        :param unbound:
+            UnboundField instance
+    """
+    if not isinstance(unbound, UnboundField):
+        raise ValueError('recreate_field expects UnboundField instance, %s was passed.' % type(unbound))
+
+    return unbound.field_class(*unbound.args, **unbound.kwargs)

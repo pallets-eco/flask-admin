@@ -515,7 +515,8 @@ class ModelView(BaseModelView):
         form_class = form.get_form(self.model, converter,
                                    only=self.form_columns,
                                    exclude=self.form_excluded_columns,
-                                   field_args=self.form_args)
+                                   field_args=self.form_args,
+                                   extra_fields=self.form_extra_fields)
 
         if self.inline_models:
             form_class = self.scaffold_inline_form_models(form_class)

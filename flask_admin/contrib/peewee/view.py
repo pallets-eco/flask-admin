@@ -8,11 +8,10 @@ from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
 
 from peewee import PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
-from wtfpeewee.orm import model_form
 
 from flask.ext.admin.actions import action
 from flask.ext.admin.contrib.peewee import filters
-from .form import CustomModelConverter, InlineModelConverter, save_inline
+from .form import get_form, CustomModelConverter, InlineModelConverter, save_inline
 from .tools import get_primary_key, parse_like_term
 
 
@@ -218,12 +217,12 @@ class ModelView(BaseModelView):
         return isinstance(filter, filters.BasePeeweeFilter)
 
     def scaffold_form(self):
-        form_class = model_form(self.model,
-                        base_class=form.BaseForm,
-                        only=self.form_columns,
-                        exclude=self.form_excluded_columns,
-                        field_args=self.form_args,
-                        converter=self.model_form_converter())
+        form_class = get_form(self.model, self.model_form_converter(),
+                              base_class=form.BaseForm,
+                              only=self.form_columns,
+                              exclude=self.form_excluded_columns,
+                              field_args=self.form_args,
+                              extra_fields=self.form_extra_fields)
 
         if self.inline_models:
             form_class = self.scaffold_inline_form_models(form_class)

@@ -4,8 +4,10 @@ from sqlalchemy import Boolean, Column
 from flask.ext.admin import form
 from flask.ext.admin.form import Select2Field
 from flask.ext.admin.model.form import (converts, ModelConverterBase,
-                                        InlineFormAdmin, InlineModelConverterBase)
+                                        InlineFormAdmin, InlineModelConverterBase,
+                                        FieldPlaceholder)
 from flask.ext.admin._backwards import get_property
+from flask.ext.admin._compat import iteritems
 
 from .validators import Unique
 from .fields import QuerySelectField, QuerySelectMultipleField, InlineModelFormList
@@ -60,6 +62,10 @@ class AdminModelConverter(ModelConverterBase):
         return None
 
     def convert(self, model, mapper, prop, field_args, hidden_pk):
+        # Properly handle forced fields
+        if isinstance(prop, FieldPlaceholder):
+            return form.recreate_field(prop.field)
+
         kwargs = {
             'validators': [],
             'filters': []
@@ -309,7 +315,8 @@ def get_form(model, converter,
              exclude=None,
              field_args=None,
              hidden_pk=False,
-             ignore_hidden=True):
+             ignore_hidden=True,
+             extra_fields=None):
     """
         Generate form from the model.
 
@@ -344,6 +351,10 @@ def get_form(model, converter,
         props = dict(properties)
 
         def find(name):
+            # If field is in extra_fields, it has higher priority
+            if extra_fields and name in extra_fields:
+                return FieldPlaceholder(extra_fields[name])
+
             # Try to look it up in properties list first
             p = props.get(name)
 
@@ -373,6 +384,11 @@ def get_form(model, converter,
         field = converter.convert(model, mapper, prop, field_args.get(name), hidden_pk)
         if field is not None:
             field_dict[name] = field
+
+    # Contribute extra fields
+    if not only and extra_fields:
+        for name, field in iteritems(extra_fields):
+            field_dict[name] = form.recreate_field(field)
 
     return type(model.__name__ + 'Form', (base_class, ), field_dict)
 

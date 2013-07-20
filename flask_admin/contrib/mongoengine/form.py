@@ -1,11 +1,16 @@
+from operator import itemgetter
+
 from mongoengine import ReferenceField
+from mongoengine.base import BaseDocument, DocumentMetaclass
 
 from wtforms import fields, validators
 from flask.ext.mongoengine.wtf import orm, fields as mongo_fields
 
 from flask.ext.admin import form
+from flask.ext.admin.model.form import FieldPlaceholder
 from flask.ext.admin.model.fields import InlineFieldList
 from flask.ext.admin.model.widgets import InlineFormWidget
+from flask.ext.admin._compat import iteritems
 
 from .fields import ModelFormField
 
@@ -32,6 +37,10 @@ class CustomModelConverter(orm.ModelConverter):
         return None
 
     def convert(self, model, field, field_args):
+        # Check if it is overridden field
+        if isinstance(field, FieldPlaceholder):
+            return form.recreate_field(field.field)
+
         kwargs = {
             'label': getattr(field, 'verbose_name', field.name),
             'description': field.help_text or '',
@@ -86,6 +95,7 @@ class CustomModelConverter(orm.ModelConverter):
 
             doc_type = field.field.document_type
             return mongo_fields.ModelSelectMultipleField(model=doc_type, **kwargs)
+
         if field.field.choices:
             kwargs['multiple'] = True
             return self.convert(model, field.field, kwargs)
@@ -105,7 +115,8 @@ class CustomModelConverter(orm.ModelConverter):
             'widget': InlineFormWidget()
         }
 
-        form_class = model_form(field.document_type_obj, field_args={})
+        # TODO: Configurable params?
+        form_class = get_form(field.document_type_obj, self, field_args={})
         return ModelFormField(field.document_type_obj, form_class, **kwargs)
 
     @orm.converts('ReferenceField')
@@ -114,8 +125,72 @@ class CustomModelConverter(orm.ModelConverter):
         return orm.ModelConverter.conv_Reference(self, model, field, kwargs)
 
 
-def model_form(model, base_class=form.BaseForm, only=None, exclude=None,
-               field_args=None, converter=None):
-    return orm.model_form(model, base_class=base_class, only=only,
-                          exclude=exclude, field_args=field_args,
-                          converter=converter)
+def get_form(model, converter,
+             base_class=form.BaseForm,
+             only=None,
+             exclude=None,
+             field_args=None,
+             extra_fields=None):
+    """
+    Create a wtforms Form for a given mongoengine Document schema::
+
+        from flask.ext.mongoengine.wtf import model_form
+        from myproject.myapp.schemas import Article
+        ArticleForm = model_form(Article)
+
+    :param model:
+        A mongoengine Document schema class
+    :param base_class:
+        Base form class to extend from. Must be a ``wtforms.Form`` subclass.
+    :param only:
+        An optional iterable with the property names that should be included in
+        the form. Only these properties will have fields.
+    :param exclude:
+        An optional iterable with the property names that should be excluded
+        from the form. All other properties will have fields.
+    :param field_args:
+        An optional dictionary of field names mapping to keyword arguments used
+        to construct each field object.
+    :param converter:
+        A converter to generate the fields based on the model properties. If
+        not set, ``ModelConverter`` is used.
+    """
+    if not isinstance(model, (BaseDocument, DocumentMetaclass)):
+        raise TypeError('Model must be a mongoengine Document schema')
+
+    field_args = field_args or {}
+
+    # Find properties
+    properties = ((k, v) for k, v in iteritems(model._fields))
+
+    if only:
+        props = dict(properties)
+
+        def find(name):
+            if extra_fields and name in extra_fields:
+                return FieldPlaceholder(extra_fields[name])
+
+            p = props.get(name)
+            if p is not None:
+                return p
+
+            raise ValueError('Invalid model property name %s.%s' % (model, name))
+
+        properties = ((p, find(p)) for p in only)
+    elif exclude:
+        properties = (p for p in properties in p[0] not in exclude)
+
+    # Create fields
+    field_dict = {}
+    for name, p in properties:
+        field = converter.convert(model, p, field_args.get(name))
+        if field is not None:
+            field_dict[name] = field
+
+    # Contribute extra fields
+    if not only and extra_fields:
+        for name, field in iteritems(extra_fields):
+            field_dict[name] = form.recreate_field(field)
+
+    field_dict['model_class'] = model
+    return type(model.__name__ + 'Form', (base_class,), field_dict)

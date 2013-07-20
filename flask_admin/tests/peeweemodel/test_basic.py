@@ -147,3 +147,29 @@ def test_default_sort():
     eq_(data[0].test1, 'a')
     eq_(data[1].test1, 'b')
     eq_(data[2].test1, 'c')
+
+
+def test_extra_fields():
+    app, db, admin = setup()
+
+    Model1, _ = create_models(db)
+
+    view = CustomModelView(
+        Model1,
+        form_extra_fields={
+            'extra_field': fields.TextField('Extra Field')
+        }
+    )
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model1view/new/')
+    eq_(rv.status_code, 200)
+
+    # Check presence and order
+    data = rv.data.decode('utf-8')
+    ok_('Extra Field' in data)
+    pos1 = data.find('Extra Field')
+    pos2 = data.find('Test1')
+    ok_(pos2 < pos1)

@@ -12,7 +12,7 @@ from bson.objectid import ObjectId
 from flask.ext.admin.actions import action
 from flask.ext.admin.form import BaseForm
 from .filters import FilterConverter, BaseMongoEngineFilter
-from .form import model_form, CustomModelConverter
+from .form import get_form, CustomModelConverter
 from .typefmt import DEFAULT_FORMATTERS
 from .tools import parse_like_term
 
@@ -234,13 +234,16 @@ class ModelView(BaseModelView):
         return isinstance(filter, BaseMongoEngineFilter)
 
     def scaffold_form(self):
-        # TODO: Fix base_class
-        form_class = model_form(self.model,
-                                base_class=BaseForm,
-                                only=self.form_columns,
-                                exclude=self.form_excluded_columns,
-                                field_args=self.form_args,
-                                converter=self.model_form_converter(self))
+        """
+            Create form from the model.
+        """
+        form_class = get_form(self.model,
+                              self.model_form_converter(self),
+                              base_class=BaseForm,
+                              only=self.form_columns,
+                              exclude=self.form_excluded_columns,
+                              field_args=self.form_args,
+                              extra_fields=self.form_extra_fields)
 
         return form_class
 

@@ -567,4 +567,55 @@ def test_default_sort():
     eq_(data[2].test1, 'c')
 
 
+def test_extra_fields():
+    app, db, admin = setup()
+
+    Model1, _ = create_models(db)
+
+    view = CustomModelView(
+        Model1, db.session,
+        form_extra_fields={
+            'extra_field': fields.TextField('Extra Field')
+        }
+    )
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model1view/new/')
+    eq_(rv.status_code, 200)
+
+    # Check presence and order
+    data = rv.data.decode('utf-8')
+    ok_('Extra Field' in data)
+    pos1 = data.find('Extra Field')
+    pos2 = data.find('Test1')
+    ok_(pos2 < pos1)
+
+
+def test_extra_field_order():
+    app, db, admin = setup()
+
+    Model1, _ = create_models(db)
+
+    view = CustomModelView(
+        Model1, db.session,
+        form_columns=('extra_field', 'test1'),
+        form_extra_fields={
+            'extra_field': fields.TextField('Extra Field')
+        }
+    )
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model1view/new/')
+    eq_(rv.status_code, 200)
+
+    # Check presence and order
+    data = rv.data.decode('utf-8')
+    pos1 = data.find('Extra Field')
+    pos2 = data.find('Test1')
+    ok_(pos2 > pos1)
+
 # TODO: Babel tests
