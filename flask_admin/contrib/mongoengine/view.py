@@ -87,6 +87,13 @@ class ModelView(BaseModelView):
         Customized type formatters for MongoEngine backend
     """
 
+    allowed_search_types = (mongoengine.StringField,
+                            mongoengine.URLField,
+                            mongoengine.EmailField)
+    """
+        List of allowed search field types.
+    """
+
     def __init__(self, model, name=None,
                  category=None, endpoint=None, url=None):
         """
@@ -184,7 +191,7 @@ class ModelView(BaseModelView):
                 field_type = type(p)
 
                 # Check type
-                if (field_type != mongoengine.StringField):
+                if (field_type not in self.allowed_search_types):
                         raise Exception('Can only search on text columns. ' +
                                         'Failed to setup search for "%s"' % p)
 
