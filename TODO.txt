@@ -1,2 +1,7 @@
 - Python 3
   - Test for raw wtforms form
+- Model backends
+  - Contribute field declaratively with sort
+  - model_changed callback to accept 3rd parameter
+- MongoEngine
+  - ImageField support

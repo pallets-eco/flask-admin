@@ -108,7 +108,7 @@ def get_form(model, converter,
              only=None,
              exclude=None,
              field_args=None,
-             allow_pk=True,
+             allow_pk=False,
              extra_fields=None):
     """
         Create form from peewee model and contribute extra fields, if necessary

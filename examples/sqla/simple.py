@@ -7,6 +7,8 @@ from flask.ext import admin
 from flask.ext.admin.contrib import sqla
 from flask.ext.admin.contrib.sqla import filters
 
+from flask.ext import wtf
+
 # Create application
 app = Flask(__name__)
 

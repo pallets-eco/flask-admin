@@ -235,9 +235,9 @@ class ModelView(BaseModelView):
 
         for m in self.inline_models:
             form_class = inline_converter.contribute(converter,
-                                                self.model,
-                                                form_class,
-                                                m)
+                                                     self.model,
+                                                     form_class,
+                                                     m)
 
         return form_class
 

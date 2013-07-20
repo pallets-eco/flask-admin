@@ -2,7 +2,7 @@ import datetime
 
 from flask import Flask
 
-from flask.ext import admin
+from flask.ext import admin, wtf
 from flask.ext.mongoengine import MongoEngine
 from flask.ext.admin.contrib.mongoengine import ModelView
 
