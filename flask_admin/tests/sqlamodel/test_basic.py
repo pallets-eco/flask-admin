@@ -502,7 +502,7 @@ def test_on_model_change_delete():
     db.create_all()
 
     class ModelView(CustomModelView):
-        def on_model_change(self, form, model):
+        def on_model_change(self, form, model, is_created):
             model.test1 = model.test1.upper()
 
         def on_model_delete(self, model):

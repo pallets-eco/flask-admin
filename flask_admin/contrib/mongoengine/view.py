@@ -343,7 +343,7 @@ class ModelView(BaseModelView):
         try:
             model = self.model()
             form.populate_obj(model)
-            self.on_model_change(form, model)
+            self._on_model_change(form, model, True)
             model.save()
         except Exception as ex:
             flash(gettext('Failed to create model. %(error)s', error=str(ex)),
@@ -366,7 +366,7 @@ class ModelView(BaseModelView):
         """
         try:
             form.populate_obj(model)
-            self.on_model_change(form, model)
+            self._on_model_change(form, model, False)
             model.save()
         except Exception as ex:
             flash(gettext('Failed to update model. %(error)s', error=str(ex)),
