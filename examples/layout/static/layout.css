@@ -6,6 +6,7 @@ body {
 	background: white;
 	border: 1px solid #CCC;
 	padding: 12px;
+	overflow: scroll;
 }
 
 #brand {
