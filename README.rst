@@ -5,7 +5,7 @@ Flask-Admin
 	:target: https://travis-ci.org/mrjoes/flask-admin
 
 .. image:: http://badge.waffle.io/mrjoes/flask-admin.png
-        :target: http://waffle.io/mrjoes/flask-admin/
+        :target: http://waffle.io/mrjoes/flask-admin
 
 Introduction
 ------------
