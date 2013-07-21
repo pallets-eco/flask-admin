@@ -17,10 +17,10 @@ class MongoFileInput(object):
 
         placeholder = ''
         if field.data:
-            data = field.data.fs
+            data = field.data
 
             placeholder = self.template % {
-                'name': escape(data.filename),
+                'name': escape(data.name),
                 'content_type': escape(data.content_type),
                 'size': data.length // 1024
             }

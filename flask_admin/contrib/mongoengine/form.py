@@ -1,3 +1,5 @@
+from operator import attrgetter
+
 from mongoengine import ReferenceField
 from mongoengine.base import BaseDocument, DocumentMetaclass
 
@@ -167,7 +169,8 @@ def get_form(model, converter,
     field_args = field_args or {}
 
     # Find properties
-    properties = ((k, v) for k, v in iteritems(model._fields))
+    properties = sorted(((k, v) for k, v in iteritems(model._fields)),
+                        key=lambda v: v[1].creation_counter)
 
     if only:
         props = dict(properties)

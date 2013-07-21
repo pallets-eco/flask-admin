@@ -1,5 +1,5 @@
 {% macro render_inline_fields(field, template, render, check=None) %}
-<div class="well">
+<div class="inline-field">
     <div id="{{ field.id }}-fields">
         {% for subfield in field %}
         <div id="{{ subfield.id }}" class="fa-inline-field">

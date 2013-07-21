@@ -18,7 +18,7 @@ def grid_formatter(view, value):
          '</a> %(size)dk (%(content_type)s)') %
         {
             'url': url_for('.api_file_view', **args),
-            'name': escape(value.filename),
+            'name': escape(value.name),
             'size': value.length // 1024,
             'content_type': escape(value.content_type)
         })
