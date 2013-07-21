@@ -59,6 +59,11 @@ class Post(db.Document):
     lols = db.ListField(db.StringField(max_length=20))
 
 
+class File(db.Document):
+    name = db.StringField(max_length=20)
+    data = db.FileField()
+
+
 # Customized admin views
 class UserView(ModelView):
     column_filters = ['name']
@@ -85,6 +90,7 @@ if __name__ == '__main__':
     admin.add_view(TodoView(Todo))
     admin.add_view(ModelView(Tag))
     admin.add_view(ModelView(Post))
+    admin.add_view(ModelView(File))
 
     # Start app
     app.run(debug=True)

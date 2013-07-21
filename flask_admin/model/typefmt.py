@@ -2,7 +2,7 @@ from jinja2 import Markup
 from flask.ext.admin._compat import text_type
 
 
-def null_formatter(view, value):
+def null_formatter(view, model, name, value):
     """
         Return `NULL` as the string for `None` value
 
@@ -12,7 +12,7 @@ def null_formatter(view, value):
     return Markup('<i>NULL</i>')
 
 
-def empty_formatter(view, value):
+def empty_formatter(view, model, name, value):
     """
         Return empty string for `None` value
 
@@ -22,7 +22,7 @@ def empty_formatter(view, value):
     return ''
 
 
-def bool_formatter(view, value):
+def bool_formatter(view, model, name, value):
     """
         Return check icon if value is `True` or empty string otherwise.
 
@@ -32,7 +32,7 @@ def bool_formatter(view, value):
     return Markup('<i class="icon-ok"></i>' if value else '')
 
 
-def list_formatter(view, values):
+def list_formatter(view, model, name, values):
     """
         Return string with comma separated values
 

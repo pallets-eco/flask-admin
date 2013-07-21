@@ -2,6 +2,7 @@
 *.swo
 *.pyc
 *.*~
+*.rdb
 *.egg-info
 pyenv
 #*#

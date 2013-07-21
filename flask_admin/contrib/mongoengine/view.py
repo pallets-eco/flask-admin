@@ -1,12 +1,14 @@
 import logging
 
-from flask import flash
+from flask import request, flash, abort, Response
 
+from flask.ext.admin import expose
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
 from flask.ext.admin._compat import iteritems, string_types
 
 import mongoengine
+from mongoengine.fields import GridFSProxy
 from bson.objectid import ObjectId
 
 from flask.ext.admin.actions import action
@@ -30,7 +32,7 @@ SORTABLE_FIELDS = set((
     mongoengine.EmailField,
     mongoengine.UUIDField,
     mongoengine.URLField
-    ))
+))
 
 
 class ModelView(BaseModelView):
@@ -401,6 +403,32 @@ class ModelView(BaseModelView):
                   'error')
             logging.exception('Failed to delete model')
             return False
+
+    # FileField access API
+    @expose('/api/file/')
+    def api_file_view(self):
+        pk = request.args.get('id')
+        name = request.args.get('name')
+
+        if not pk or not name:
+            abort(404)
+
+        model = self.get_one(pk)
+        if model is None:
+            abort(404)
+
+        attr = getattr(model, name, None)
+        if attr is None:
+            abort(404)
+
+        if type(attr) != GridFSProxy:
+            abort(404)
+
+        return Response(attr.read(),
+                        content_type=attr.content_type,
+                        headers={
+                            'Content-Length': attr.length
+                        })
 
     # Default model actions
     def is_action_allowed(self, name):

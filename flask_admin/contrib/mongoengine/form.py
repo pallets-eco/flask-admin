@@ -1,5 +1,3 @@
-from operator import itemgetter
-
 from mongoengine import ReferenceField
 from mongoengine.base import BaseDocument, DocumentMetaclass
 
@@ -12,7 +10,7 @@ from flask.ext.admin.model.fields import InlineFieldList
 from flask.ext.admin.model.widgets import InlineFormWidget
 from flask.ext.admin._compat import iteritems
 
-from .fields import ModelFormField
+from .fields import ModelFormField, MongoFileField
 
 
 class CustomModelConverter(orm.ModelConverter):
@@ -123,6 +121,10 @@ class CustomModelConverter(orm.ModelConverter):
     def conv_Reference(self, model, field, kwargs):
         kwargs['widget'] = form.Select2Widget()
         return orm.ModelConverter.conv_Reference(self, model, field, kwargs)
+
+    @orm.converts('FileField')
+    def conv_File(self, model, field, kwargs):
+        return MongoFileField(**kwargs)
 
 
 def get_form(model, converter,

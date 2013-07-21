@@ -930,17 +930,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         column_fmt = self.column_formatters.get(name)
         if column_fmt is not None:
-            try:
-                return column_fmt(self, context, model, name)
-            except TypeError:
-                warnings.warn(
-                    u'Column formatter prototype was changed to accept view as first input parameter.\n'
-                    u'Please update %s %s formatter to accept 4 parameters.' % (self.name, name),
-                    stacklevel=2
-                )
-                self.column_formatters[name] = lambda _, c, m, n: column_fmt(c, m, n)
-
-                return column_fmt(context, model, name)
+            return column_fmt(self, context, model, name)
 
         value = self._get_field_value(model, name)
 
@@ -951,14 +941,14 @@ class BaseModelView(BaseView, ActionsMixin):
         type_fmt = self.column_type_formatters.get(type(value))
         if type_fmt is not None:
             try:
-                value = type_fmt(self, value)
+                value = type_fmt(self, model, name, value)
             except TypeError:
-                warnings.warn('Type formatter prototype was changed to accept view as first input parameter.\n' +
-                              'Please update %s %s formatter to accept 2 parameters.' % (self.name, type(value)),
+                warnings.warn('Type formatter prototype was changed to accept view, model, name and value as input parameters.\n' +
+                              'Please update %s %s formatter to accept 4 parameters.' % (self.name, type(value)),
                               stacklevel=2)
-                self.column_type_formatters[type(value)] = lambda _, value: type_fmt(value)
+                self.column_type_formatters[type(value)] = lambda view, _model, _name, value: type_fmt(view, value)
 
-                value = type_fmt(value)
+                value = type_fmt(self, value)
 
         return value
 

@@ -1,7 +1,10 @@
-from wtforms.fields import FormField
+from flask import request
+from wtforms import fields
+
+from . import widgets
 
 
-class ModelFormField(FormField):
+class ModelFormField(fields.FormField):
     """
         Customized ModelFormField for MongoEngine EmbeddedDocuments.
     """
@@ -17,3 +20,24 @@ class ModelFormField(FormField):
             setattr(obj, name, candidate)
 
         self.form.populate_obj(candidate)
+
+
+class MongoFileField(fields.FileField):
+    widget = widgets.MongoFileInput()
+
+    def populate_obj(self, obj, name):
+        field = getattr(obj, name, None)
+        if field is not None:
+            data = request.files.get(self.name)
+
+            print data.filename
+
+            if data:
+                if not field.grid_id:
+                    field.put(data.stream,
+                              filename=data.filename,
+                              content_type=data.content_type)
+                else:
+                    field.replace(data.stream,
+                                  filename=data.filename,
+                                  content_type=data.content_type)
