@@ -64,6 +64,11 @@ class File(db.Document):
     data = db.FileField()
 
 
+class Image(db.Document):
+    name = db.StringField(max_length=20)
+    image = db.ImageField(thumbnail_size=(100, 100, True))
+
+
 # Customized admin views
 class UserView(ModelView):
     column_filters = ['name']
@@ -91,6 +96,7 @@ if __name__ == '__main__':
     admin.add_view(ModelView(Tag))
     admin.add_view(ModelView(Post))
     admin.add_view(ModelView(File))
+    admin.add_view(ModelView(Image))
 
     # Start app
     app.run(debug=True)

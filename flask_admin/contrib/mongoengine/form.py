@@ -10,7 +10,7 @@ from flask.ext.admin.model.fields import InlineFieldList
 from flask.ext.admin.model.widgets import InlineFormWidget
 from flask.ext.admin._compat import iteritems
 
-from .fields import ModelFormField, MongoFileField
+from .fields import ModelFormField, MongoFileField, MongoImageField
 
 
 class CustomModelConverter(orm.ModelConverter):
@@ -125,6 +125,10 @@ class CustomModelConverter(orm.ModelConverter):
     @orm.converts('FileField')
     def conv_File(self, model, field, kwargs):
         return MongoFileField(**kwargs)
+
+    @orm.converts('ImageField')
+    def conv_image(self, model, field, kwargs):
+        return MongoImageField(**kwargs)
 
 
 def get_form(model, converter,

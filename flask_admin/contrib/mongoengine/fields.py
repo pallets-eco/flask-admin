@@ -30,8 +30,6 @@ class MongoFileField(fields.FileField):
         if field is not None:
             data = request.files.get(self.name)
 
-            print data.filename
-
             if data:
                 if not field.grid_id:
                     field.put(data.stream,
@@ -41,3 +39,7 @@ class MongoFileField(fields.FileField):
                     field.replace(data.stream,
                                   filename=data.filename,
                                   content_type=data.content_type)
+
+
+class MongoImageField(MongoFileField):
+    widget = widgets.MongoImageInput()

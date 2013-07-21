@@ -77,6 +77,11 @@ table.filters {
     float: right;
 }
 
+/* Image thumbnails */
+.image-thumbnail img {
+    max-width: 100px;
+    max-height: 100px;
+}
 
 /* Patch Select2 */
 .select2-results li {

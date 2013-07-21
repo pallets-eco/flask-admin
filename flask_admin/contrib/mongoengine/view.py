@@ -8,7 +8,9 @@ from flask.ext.admin.model import BaseModelView
 from flask.ext.admin._compat import iteritems, string_types
 
 import mongoengine
-from mongoengine.fields import GridFSProxy
+import gridfs
+from mongoengine.fields import GridFSProxy, ImageGridFsProxy
+from mongoengine.connection import get_db
 from bson.objectid import ObjectId
 
 from flask.ext.admin.actions import action
@@ -408,26 +410,22 @@ class ModelView(BaseModelView):
     @expose('/api/file/')
     def api_file_view(self):
         pk = request.args.get('id')
-        name = request.args.get('name')
+        coll = request.args.get('coll')
+        db = request.args.get('db', 'default')
 
-        if not pk or not name:
+        if not pk or not coll or not db:
             abort(404)
 
-        model = self.get_one(pk)
-        if model is None:
+        fs = gridfs.GridFS(get_db(db), coll)
+
+        data = fs.get(ObjectId(pk))
+        if not data:
             abort(404)
 
-        attr = getattr(model, name, None)
-        if attr is None:
-            abort(404)
-
-        if type(attr) != GridFSProxy:
-            abort(404)
-
-        return Response(attr.read(),
-                        content_type=attr.content_type,
+        return Response(data.read(),
+                        content_type=data.content_type,
                         headers={
-                            'Content-Length': attr.length
+                            'Content-Length': data.length
                         })
 
     # Default model actions

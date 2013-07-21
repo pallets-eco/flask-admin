@@ -940,15 +940,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         type_fmt = self.column_type_formatters.get(type(value))
         if type_fmt is not None:
-            try:
-                value = type_fmt(self, model, name, value)
-            except TypeError:
-                warnings.warn('Type formatter prototype was changed to accept view, model, name and value as input parameters.\n' +
-                              'Please update %s %s formatter to accept 4 parameters.' % (self.name, type(value)),
-                              stacklevel=2)
-                self.column_type_formatters[type(value)] = lambda view, _model, _name, value: type_fmt(view, value)
-
-                value = type_fmt(self, value)
+            value = type_fmt(self, value)
 
         return value
 
