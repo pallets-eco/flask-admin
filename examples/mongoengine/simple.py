@@ -48,12 +48,12 @@ class Tag(db.Document):
 
 
 class Comment(db.EmbeddedDocument):
-    name = db.StringField(max_length=20)
+    name = db.StringField(max_length=20, required=True)
     value = db.StringField(max_length=20)
 
 
 class Post(db.Document):
-    name = db.StringField(max_length=20)
+    name = db.StringField(max_length=20, required=True)
     value = db.StringField(max_length=20)
     inner = db.ListField(db.EmbeddedDocumentField(Comment))
     lols = db.ListField(db.StringField(max_length=20))
