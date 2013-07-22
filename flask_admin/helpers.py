@@ -1,6 +1,8 @@
 from flask import g, request
 from wtforms.validators import DataRequired, InputRequired
 
+from ._compat import string_types
+
 
 def set_current_view(view):
     g._admin_view = view
@@ -53,3 +55,17 @@ def get_form_data():
         return formdata
 
     return None
+
+
+def is_field_error(errors):
+    """
+        Check if wtforms field has direct error.
+
+        :param errors:
+            Errors list.
+    """
+    for e in errors:
+        if isinstance(e, string_types):
+            return True
+
+    return False

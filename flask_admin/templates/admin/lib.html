@@ -76,7 +76,8 @@
 
 {# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field, set_focus=False, kwargs={}) %}
-  <div class="control-group{{ ' error' if field.errors else '' }}">
+  {% set direct_error = h.is_field_error(field.errors) %}
+  <div class="control-group{{ ' error' if direct_error else '' }}">
     <div class="control-label">
       {{ field.label.text }}
       {% if h.is_required_form_field(field) %}
@@ -96,8 +97,8 @@
     {% if field.description %}
     <p class="help-block">{{ field.description }}</p>
     {% endif %}
-    {% if field.errors %}
-      <ul class="input-errors">
+    {% if direct_error %}
+      <ul{% if direct_error %} class="input-errors"{% endif %}>
       {% for e in field.errors if e is string %}
         <li>{{ e }}</li>
       {% endfor %}
