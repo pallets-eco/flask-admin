@@ -22,7 +22,7 @@
 
       this.addInlineField = function(id, el, template) {
         var $el = $(el);
-        var $template = $($(template).html());
+        var $template = $($(template).text());
 
         // Figure out new field ID
         var lastField = $el.children('.fa-inline-field').last();
