@@ -26,12 +26,16 @@
           {% block brand %}
           <span class="brand">{{ admin_view.admin.name }}</span>
           {% endblock %}
+          {% block main_menu %}
           <ul class="nav">
             {{ layout.menu() }}
           </ul>
+          {% endblock %}
+          {% block menu_links %}
           <ul class="nav pull-right">
             {{ layout.menu_links() }}
           </ul>
+          {% endblock %}
         </div>
       </div>
 
