@@ -46,7 +46,7 @@ class CustomModelConverter(orm.ModelConverter):
             'description': field.help_text or '',
             'validators': [],
             'filters': [],
-            'default': field.default,
+            'default': field.default
         }
 
         if field_args:
@@ -122,6 +122,8 @@ class CustomModelConverter(orm.ModelConverter):
     @orm.converts('ReferenceField')
     def conv_Reference(self, model, field, kwargs):
         kwargs['widget'] = form.Select2Widget()
+        kwargs['allow_blank'] = not field.required
+
         return orm.ModelConverter.conv_Reference(self, model, field, kwargs)
 
     @orm.converts('FileField')
