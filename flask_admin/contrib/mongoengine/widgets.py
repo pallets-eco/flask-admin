@@ -3,6 +3,8 @@ from wtforms.widgets import HTMLString, html_params
 from jinja2 import escape
 from flask import url_for
 
+from mongoengine.fields import GridFSProxy, ImageGridFsProxy
+
 from . import helpers
 
 
@@ -16,7 +18,7 @@ class MongoFileInput(object):
         kwargs.setdefault('id', field.id)
 
         placeholder = ''
-        if field.data:
+        if field.data and isinstance(field.data, GridFSProxy):
             data = field.data
 
             placeholder = self.template % {
@@ -41,7 +43,7 @@ class MongoImageInput(object):
         kwargs.setdefault('id', field.id)
 
         placeholder = ''
-        if field.data:
+        if field.data and isinstance(field.data, ImageGridFsProxy):
             args = helpers.make_thumb_args(field.data)
             placeholder = self.template % {
                 'thumb': url_for('.api_file_view', **args)

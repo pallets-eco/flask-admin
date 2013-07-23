@@ -11,7 +11,7 @@ def make_gridfs_args(value):
 
 
 def make_thumb_args(value):
-    if value.thumbnail:
+    if getattr(value, 'thumbnail', None):
         args = {
             'id': value.thumbnail._id,
             'coll': value.collection_name
