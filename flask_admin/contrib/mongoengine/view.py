@@ -19,6 +19,7 @@ from .filters import FilterConverter, BaseMongoEngineFilter
 from .form import get_form, CustomModelConverter
 from .typefmt import DEFAULT_FORMATTERS
 from .tools import parse_like_term
+from .helpers import format_error
 
 
 SORTABLE_FIELDS = set((
@@ -357,7 +358,8 @@ class ModelView(BaseModelView):
             self._on_model_change(form, model, True)
             model.save()
         except Exception as ex:
-            flash(gettext('Failed to create model. %(error)s', error=str(ex)),
+            flash(gettext('Failed to create model. %(error)s',
+                          error=format_error(ex)),
                   'error')
             logging.exception('Failed to create model')
             return False
@@ -380,7 +382,8 @@ class ModelView(BaseModelView):
             self._on_model_change(form, model, False)
             model.save()
         except Exception as ex:
-            flash(gettext('Failed to update model. %(error)s', error=str(ex)),
+            flash(gettext('Failed to update model. %(error)s',
+                          error=format_error(ex)),
                   'error')
             logging.exception('Failed to update model')
             return False
@@ -401,7 +404,8 @@ class ModelView(BaseModelView):
             model.delete()
             return True
         except Exception as ex:
-            flash(gettext('Failed to delete model. %(error)s', error=str(ex)),
+            flash(gettext('Failed to delete model. %(error)s',
+                          error=format_error(ex)),
                   'error')
             logging.exception('Failed to delete model')
             return False

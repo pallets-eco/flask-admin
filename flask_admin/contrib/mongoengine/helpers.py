@@ -1,3 +1,7 @@
+from mongoengine import ValidationError
+from flask.ext.admin._compat import itervalues, as_unicode
+
+
 def make_gridfs_args(value):
     args = {
         'id': value.grid_id,
@@ -23,3 +27,10 @@ def make_thumb_args(value):
         return args
     else:
         return make_gridfs_args(value)
+
+
+def format_error(error):
+    if isinstance(error, ValidationError):
+        return '. '.join(itervalues(error.to_dict()))
+
+    return as_unicode(error)
