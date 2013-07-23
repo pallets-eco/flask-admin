@@ -151,3 +151,22 @@
         {{ render_form_buttons(cancel_url, extra) }}
     {% endcall %}
 {% endmacro %}
+
+
+{# ---------------------- Modal Window -------------------------- #}
+{% macro add_modal_window(modalWindowId='flaskAdminModalWindow') %}
+    <div id="flaskAdminModalWindow" class="hide" style="position: absolute; left: 50%; top: 10%">
+        <div class="modal" style="display: inline-block; width: auto; position: relative; left: -50%; margin-left: 0">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+
+                </div>
+                <div class="modal-body">
+                </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro show_modal_window(url='', content='', modalWindowId='flaskAdminModalWindow') %}
+    <a href="#{{ modalWindowId }}" data-backdrop="false" data-toggle="modal" data-remote="{{ url }}">{{ content|safe }}</a>
+{% endmacro %}
