@@ -343,7 +343,13 @@ class ModelView(BaseModelView):
             :param id:
                 Model ID
         """
-        return self.get_query().filter(pk=id).first()
+        try:
+            return self.get_query().filter(pk=id).first()
+        except mongoengine.ValidationError as ex:
+            flash(gettext('Failed to get model. %(error)s',
+                          error=format_error(ex)),
+                  'error')
+            return None
 
     def create_model(self, form):
         """

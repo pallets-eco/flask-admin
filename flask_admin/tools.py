@@ -1,5 +1,4 @@
 import sys
-import warnings
 import traceback
 
 # Python 3 compatibility

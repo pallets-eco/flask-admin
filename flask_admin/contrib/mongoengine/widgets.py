@@ -12,7 +12,10 @@ class MongoFileInput(object):
     """
         Renders a file input chooser field.
     """
-    template = '<div><i class="icon-file"></i>%(name)s %(size)dk (%(content_type)s)</div>'
+    template = ('<div>'
+                ' <i class="icon-file"></i>%(name)s %(size)dk (%(content_type)s)'
+                ' <input type="checkbox" name="%(marker)s">Delete</input>'
+                '</div>')
 
     def __call__(self, field, **kwargs):
         kwargs.setdefault('id', field.id)
@@ -24,7 +27,8 @@ class MongoFileInput(object):
             placeholder = self.template % {
                 'name': escape(data.name),
                 'content_type': escape(data.content_type),
-                'size': data.length // 1024
+                'size': data.length // 1024,
+                'marker': '_%s-delete' % field.name
             }
 
         return HTMLString('%s<input %s>' % (placeholder,
@@ -37,7 +41,10 @@ class MongoImageInput(object):
     """
         Renders a file input chooser field.
     """
-    template = '<div class="image-thumbnail"><img src="%(thumb)s"/></div>'
+    template = ('<div class="image-thumbnail">'
+                ' <img src="%(thumb)s"/>'
+                ' <input type="checkbox" name="%(marker)s">Delete</input>'
+                '</div>')
 
     def __call__(self, field, **kwargs):
         kwargs.setdefault('id', field.id)
@@ -46,7 +53,8 @@ class MongoImageInput(object):
         if field.data and isinstance(field.data, ImageGridFsProxy):
             args = helpers.make_thumb_args(field.data)
             placeholder = self.template % {
-                'thumb': url_for('.api_file_view', **args)
+                'thumb': url_for('.api_file_view', **args),
+                'marker': '_%s-delete' % field.name
             }
 
         return HTMLString('%s<input %s>' % (placeholder,

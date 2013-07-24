@@ -10,6 +10,9 @@ from . import helpers
 
 
 def grid_formatter(view, value):
+    if not value.grid_id:
+        return ''
+
     args = helpers.make_gridfs_args(value)
 
     return Markup(
@@ -25,6 +28,9 @@ def grid_formatter(view, value):
 
 
 def grid_image_formatter(view, value):
+    if not value.grid_id:
+        return ''
+
     return Markup(
         ('<div class="image-thumbnail">' +
             '<a href="%(url)s" target="_blank"><img src="%(thumb)s"/></a>' +
