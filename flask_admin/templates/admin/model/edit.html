@@ -1,6 +1,10 @@
 {% extends 'admin/master.html' %}
 {% import 'admin/lib.html' as lib with context %}
 
+{% macro extra() %}
+  <input name="_continue_editing" type="submit" class="btn btn-large" value="{{ _gettext('Save and Continue') }}" />
+{% endmacro %}
+
 {% block head %}
     {{ super() }}
     <link href="{{ url_for('admin.static', filename='select2/select2.css') }}" rel="stylesheet">
@@ -10,7 +14,7 @@
 {% block body %}
     {% call lib.form_tag(form) %}
         {{ lib.render_form_fields(form, widget_args=form_widget_args) }}
-        {{ lib.render_form_buttons(return_url) }}
+        {{ lib.render_form_buttons(return_url, extra()) }}
     {% endcall %}
 {% endblock %}
 

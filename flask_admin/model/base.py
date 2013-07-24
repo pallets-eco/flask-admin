@@ -1090,7 +1090,13 @@ class BaseModelView(BaseView, ActionsMixin):
 
         if validate_form_on_submit(form):
             if self.update_model(form, model):
-                return redirect(return_url)
+                if '_continue_editing' in request.form:
+                    flash(gettext('Model was successfully saved.'))
+
+                    # Recreate form
+                    form = self.edit_form(obj=model)
+                else:
+                    return redirect(return_url)
 
         return self.render(self.edit_template,
                            model=model,
