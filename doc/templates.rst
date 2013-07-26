@@ -66,17 +66,18 @@ Modal window
 
 You can  use modal window to show different info for example user details.
 
-You must override view and pass into body `lib.add_modal_window` call and use `lib.show_modal_window` to show your info:
+You must override view and pass into body `lib.fa_add_modal_window` call and use `lib.fa_show_modal_window` to show your info:
 
     {% extends 'admin/model/list.html' %}
     {% block body %}
-        {{ lib.add_modal_window() }}
+        {{ lib.fa_add_modal_window() }}
         {{ super() }}
     {% endblock %}
     {% block list_row_actions scoped %}
         {{ super() }}
-        {{ lib.show_modal_window(url='/admin/single/'+get_pk_value(row).__str__(), content='<i class="icon-info-sign"></i>') }}
+        {{ lib.fa_show_modal_window(url='/admin/single/'+get_pk_value(row).__str__(), content='<i class="icon-info-sign"></i>') }}
     {% endblock %}
+
 
 Model view example:
 
@@ -103,3 +104,4 @@ Model view example:
             return super(SingleUserView, self).get_query().filter(pk=self.single_user_id)
 
     admin.add_view(SingleUserView(User, endpoint='single'))
+
