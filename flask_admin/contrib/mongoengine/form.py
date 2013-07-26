@@ -189,7 +189,7 @@ def get_form(model, converter,
 
         properties = ((p, find(p)) for p in only)
     elif exclude:
-        properties = (p for p in properties in p[0] not in exclude)
+        properties = (p for p in properties if p[0] not in exclude)
 
     # Create fields
     field_dict = {}
