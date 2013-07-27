@@ -59,3 +59,49 @@ If you need to override master template, you can pass template name to the `Admi
     admin = Admin(app, base_template='my_master.html')
 
 For model views, use `list_template`, `create_template` and `edit_template` properties to use non-default template.
+
+
+Modal window
+------------
+
+You can  use modal window to show different info for example user details.
+
+You must override view and pass into body `lib.fa_add_modal_window` call and use `lib.fa_show_modal_window` to show your info:
+
+    {% extends 'admin/model/list.html' %}
+    {% block body %}
+        {{ lib.fa_add_modal_window() }}
+        {{ super() }}
+    {% endblock %}
+    {% block list_row_actions scoped %}
+        {{ super() }}
+        {{ lib.fa_show_modal_window(url='/admin/single/'+get_pk_value(row).__str__(), content='<i class="icon-info-sign"></i>') }}
+    {% endblock %}
+
+
+Model view example:
+
+    class UserView(ModelView):
+
+        list_template = 'admin/user_list_view.html'
+
+    class SingleUserView(UserView):
+
+        can_edit = False
+
+        list_template = 'admin/single_user_list_view.html'
+
+        def is_visible(self):
+            return False
+
+        @ext.admin.expose('/')
+        @ext.admin.expose('/<string:single_user_id>/')
+        def index_view(self, single_user_id=None):
+            self.single_user_id = single_user_id
+            return super(SingleUserView, self).index_view()
+
+        def get_query(self):
+            return super(SingleUserView, self).get_query().filter(pk=self.single_user_id)
+
+    admin.add_view(SingleUserView(User, endpoint='single'))
+
