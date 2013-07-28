@@ -322,7 +322,7 @@ class ImageUploadField(FileUploadField):
                     thumb = self.image.copy().thumbnail((width, height), Image.ANTIALIAS)
 
             path = op.join(self.path, self.thumbnail_fn(filename))
-            with file(path, 'wb') as fp:
+            with open(path, 'wb') as fp:
                 thumb.save(fp, 'JPEG')
 
 

@@ -1,6 +1,7 @@
 import os
 import os.path as op
-from StringIO import StringIO
+
+from io import BytesIO
 
 from nose.tools import eq_, ok_
 
@@ -45,7 +46,7 @@ def test_upload_field():
     dummy = Dummy()
 
     # Check upload
-    with app.test_request_context(method='POST', data={'upload': (StringIO('Hello World'), 'test1.txt')}):
+    with app.test_request_context(method='POST', data={'upload': (BytesIO(b'Hello World 1'), 'test1.txt')}):
         my_form = TestForm(helpers.get_form_data())
 
         ok_(my_form.validate())
@@ -56,7 +57,7 @@ def test_upload_field():
         ok_(op.exists(op.join(path, 'test1.txt')))
 
     # Check replace
-    with app.test_request_context(method='POST', data={'upload': (StringIO('Hello World'), 'test2.txt')}):
+    with app.test_request_context(method='POST', data={'upload': (BytesIO(b'Hello World 2'), 'test2.txt')}):
         my_form = TestForm(helpers.get_form_data())
 
         ok_(my_form.validate())
@@ -107,7 +108,9 @@ def test_image_upload_field():
     dummy = Dummy()
 
     # Check upload
-    with file(op.join(op.dirname(__file__), 'data', 'copyleft.png'), 'rb') as fp:
+    filename = op.join(op.dirname(__file__), 'data', 'copyleft.png')
+
+    with open(filename, 'rb') as fp:
         with app.test_request_context(method='POST', data={'upload': (fp, 'test1.png')}):
             my_form = TestForm(helpers.get_form_data())
 
@@ -120,7 +123,7 @@ def test_image_upload_field():
             ok_(op.exists(op.join(path, 'test1_thumb.jpg')))
 
     # Check replace
-    with file(op.join(op.dirname(__file__), 'data', 'copyleft.png'), 'rb') as fp:
+    with open(filename, 'rb') as fp:
         with app.test_request_context(method='POST', data={'upload': (fp, 'test2.png')}):
             my_form = TestForm(helpers.get_form_data())
 
@@ -148,7 +151,7 @@ def test_image_upload_field():
         ok_(not op.exists(op.join(path, 'test2_thumb.jpg')))
 
     # Check upload no-resize
-    with file(op.join(op.dirname(__file__), 'data', 'copyleft.png'), 'rb') as fp:
+    with open(filename, 'rb') as fp:
         with app.test_request_context(method='POST', data={'upload': (fp, 'test1.png')}):
             my_form = TestNoResizeForm(helpers.get_form_data())
 
