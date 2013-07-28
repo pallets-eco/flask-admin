@@ -73,6 +73,7 @@ def test_upload_field():
         ok_(my_form.validate())
 
         my_form.populate_obj(dummy)
+        eq_(dummy.upload, None)
 
         ok_(not op.exists(op.join(path, 'test2.txt')))
 
@@ -141,6 +142,7 @@ def test_image_upload_field():
         ok_(my_form.validate())
 
         my_form.populate_obj(dummy)
+        eq_(dummy.upload, None)
 
         ok_(not op.exists(op.join(path, 'test2.png')))
         ok_(not op.exists(op.join(path, 'test2_thumb.jpg')))

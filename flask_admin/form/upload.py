@@ -7,8 +7,6 @@ from flask import url_for
 from werkzeug import secure_filename
 from werkzeug.datastructures import FileStorage
 
-from jinja2 import escape
-
 from wtforms import ValidationError, fields
 from wtforms.widgets import HTMLString, html_params
 from wtforms.fields.core import _unset_value
@@ -34,6 +32,9 @@ __all__ = ['FileUploadInput', 'FileUploadField',
 class FileUploadInput(object):
     """
         Renders a file input chooser field.
+
+        You can customize `empty_template` and `data_template` members to customize
+        look and feel.
     """
     empty_template = ('<input %(file)s>')
 
@@ -52,7 +53,7 @@ class FileUploadInput(object):
         return HTMLString(template % {
             'text': html_params(type='text',
                                 readonly='readonly',
-                                value=kwargs.get('value')),
+                                value=field.data),
             'file': html_params(type='file',
                                 **kwargs),
             'marker': '_%s-delete' % field.name
@@ -61,7 +62,10 @@ class FileUploadInput(object):
 
 class ImageUploadInput(object):
     """
-        Renders a file input chooser field.
+        Renders a image input chooser field.
+
+        You can customize `empty_template` and `data_template` members to customize
+        look and feel.
     """
     empty_template = ('<input %(file)s>')
 
@@ -81,10 +85,9 @@ class ImageUploadInput(object):
             'marker': '_%s-delete' % field.name
         }
 
-        value = kwargs.get('value')
-        if value and isinstance(value, string_types):
+        if field.data and isinstance(field.data, string_types):
             args['image'] = html_params(src=url_for(field.endpoint,
-                                                    filename=field.thumnbnail_fn(value)))
+                                                    filename=field.thumbnail_fn(field.data)))
 
             template = self.data_template
         else:
@@ -96,13 +99,43 @@ class ImageUploadInput(object):
 # Fields
 class FileUploadField(fields.TextField):
     """
-        Customizable file-upload field
+        Customizable file-upload field.
+
+        Saves file to configured path, handles updates and deletions. Inherits from `TextField`,
+        resulting filename will be stored as string.
     """
     widget = FileUploadInput()
 
     def __init__(self, label=None, validators=None,
                  path=None, namegen=None, allowed_extensions=None,
                  **kwargs):
+        """
+            Constructor.
+
+            :param label:
+                Display label
+            :param validators:
+                Validators
+            :param path:
+                Full path to the directory which will store files
+            :param namegen:
+                Function that will generate filename from the model and uploaded file object.
+                Please note, that model is "dirty" model object, before it was committed to database.
+
+                For example::
+
+                    import os.path as op
+
+                    def prefix_name(obj, file_data):
+                        parts = op.splitext(file_data.filename)
+                        return secure_filename('file-%s%s' % parts)
+
+                    class MyForm(BaseForm):
+                        upload = FileUploadField('File', namegen=prefix_name)
+
+            :param allowed_extensions:
+                List of allowed extensions. If not provided, will allow any file.
+        """
         if not path:
             raise ValueError('FileUploadField field requires target path.')
 
@@ -114,6 +147,12 @@ class FileUploadField(fields.TextField):
         super(FileUploadField, self).__init__(label, validators, **kwargs)
 
     def is_file_allowed(self, filename):
+        """
+            Check if file extension is allowed.
+
+            :param filename:
+                File name to check
+        """
         if not self.allowed_extensions:
             return True
 
@@ -121,7 +160,9 @@ class FileUploadField(fields.TextField):
                 filename.rsplit('.', 1)[1] in self.allowed_extensions)
 
     def pre_validate(self, form):
-        if isinstance(self.data, FileStorage) and not self.is_file_allowed(self.data.filename):
+        if (self.data and
+                isinstance(self.data, FileStorage) and
+                not self.is_file_allowed(self.data.filename)):
             raise ValidationError(gettext('Invalid file extension'))
 
     def process(self, formdata, data=_unset_value):
@@ -138,11 +179,10 @@ class FileUploadField(fields.TextField):
             # If field should be deleted, clean it up
             if self._should_delete:
                 self._delete_file(field)
+                setattr(obj, name, None)
                 return
 
-        print field, type(self.data)
-
-        if isinstance(self.data, FileStorage):
+        if self.data and isinstance(self.data, FileStorage):
             if field:
                 self._delete_file(field)
 
@@ -162,12 +202,68 @@ class FileUploadField(fields.TextField):
 
 
 class ImageUploadField(FileUploadField):
+    """
+        Image upload field.
+
+        Does image validation, thumbnail generation, updating and deleting images.
+
+        Requires PIL (or Pillow) to be installed.
+    """
     widget = ImageUploadInput()
 
     def __init__(self, label=None, validators=None,
                  path=None, namegen=None, allowed_extensions=None,
                  thumbgen=None, thumbnail_size=None, endpoint='static',
                  **kwargs):
+        """
+            Constructor.
+
+            :param label:
+                Display label
+            :param validators:
+                Validators
+            :param path:
+                Full path to the directory which will store files
+            :param namegen:
+                Function that will generate filename from the model and uploaded file object.
+                Please note, that model is "dirty" model object, before it was committed to database.
+
+                For example::
+
+                    import os.path as op
+
+                    def prefix_name(obj, file_data):
+                        parts = op.splitext(file_data.filename)
+                        return secure_filename('file-%s%s' % parts)
+
+                    class MyForm(BaseForm):
+                        upload = FileUploadField('File', namegen=prefix_name)
+
+            :param allowed_extensions:
+                List of allowed extensions. If not provided, will allow any file.
+            :param thumbgen:
+                Thumbnail filename generation function. All thumbnails will be saved as JPEG files,
+                so there's no need to keep original file extension.
+
+                For example::
+
+                    import os.path as op
+
+                    def thumb_name(filename):
+                        name, _ = op.splitext(filename)
+                        return secure_filename('%s-thumb.jpg' % name)
+
+                    class MyForm(BaseForm):
+                        upload = ImageUploadField('File', thumbgen=prefix_name)
+
+            :param thumbnail_size:
+                Tuple or (width, height, force) values. If not provided, uses `(128, 128, True)` as default value.
+
+                Width and height is in pixels. If `force` is set to `True`, will try to fit image into dimensions and
+                keep aspect ratio, otherwise will just resize to target size.
+            :param endpoint:
+                Static endpoint for images. Used by widget to display previews. Defaults to 'static'.
+        """
         # Check if PIL is installed
         if Image is None:
             raise Exception('PIL library was not found')
@@ -189,7 +285,7 @@ class ImageUploadField(FileUploadField):
     def pre_validate(self, form):
         super(ImageUploadField, self).pre_validate(form)
 
-        if isinstance(self.data, FileStorage):
+        if self.data and isinstance(self.data, FileStorage):
             try:
                 self.image = Image.open(self.data)
             except Exception as e:
@@ -232,9 +328,15 @@ class ImageUploadField(FileUploadField):
 
 # Helpers
 def namegen_filename(obj, file_data):
+    """
+        Generate secure filename for uploaded file.
+    """
     return secure_filename(file_data.filename)
 
 
 def thumbgen_filename(filename):
+    """
+        Generate thumbnail name from filename.
+    """
     name, ext = op.splitext(filename)
     return '%s_thumb.jpg' % name
