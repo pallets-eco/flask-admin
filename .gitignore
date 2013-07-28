@@ -9,6 +9,7 @@ pyenv
 build
 source/_static*
 source/_templates*
+flask_admin/tests/tmp
 dist/*
 make.bat
 venv

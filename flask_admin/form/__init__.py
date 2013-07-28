@@ -3,6 +3,7 @@ from wtforms.fields.core import UnboundField
 
 from .fields import *
 from .widgets import *
+from .upload import *
 
 
 class BaseForm(form.Form):
