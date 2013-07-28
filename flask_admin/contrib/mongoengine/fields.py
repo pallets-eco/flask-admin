@@ -1,4 +1,5 @@
-from flask import request
+from werkzeug.datastructures import FileStorage
+
 from wtforms import fields
 from wtforms.fields.core import _unset_value
 
@@ -29,13 +30,13 @@ class MongoFileField(fields.FileField):
     def __init__(self, label=None, validators=None, **kwargs):
         super(MongoFileField, self).__init__(label, validators, **kwargs)
 
-        self.should_delete = False
+        self._should_delete = False
 
     def process(self, formdata, data=_unset_value):
         if formdata:
             marker = '_%s-delete' % self.name
             if marker in formdata:
-                self.should_delete = True
+                self._should_delete = True
 
         return super(MongoFileField, self).process(formdata, data)
 
@@ -43,21 +44,19 @@ class MongoFileField(fields.FileField):
         field = getattr(obj, name, None)
         if field is not None:
             # If field should be deleted, clean it up
-            if self.should_delete:
+            if self._should_delete:
                 field.delete()
                 return
 
-            data = request.files.get(self.name)
-
-            if data:
+            if isinstance(self.data, FileStorage):
                 if not field.grid_id:
-                    field.put(data.stream,
-                              filename=data.filename,
-                              content_type=data.content_type)
+                    func = field.put
                 else:
-                    field.replace(data.stream,
-                                  filename=data.filename,
-                                  content_type=data.content_type)
+                    func = field.replace
+
+                func(self.data.stream,
+                     filename=self.data.filename,
+                     content_type=self.data.content_type)
 
 
 class MongoImageField(MongoFileField):
