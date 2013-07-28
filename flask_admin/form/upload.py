@@ -45,6 +45,7 @@ class FileUploadInput(object):
 
     def __call__(self, field, **kwargs):
         kwargs.setdefault('id', field.id)
+        kwargs.setdefault('name', field.name)
 
         template = self.data_template if field.data else self.empty_template
 
@@ -72,6 +73,7 @@ class ImageUploadInput(object):
 
     def __call__(self, field, **kwargs):
         kwargs.setdefault('id', field.id)
+        kwargs.setdefault('name', field.name)
 
         args = {
             'file': html_params(type='file',
@@ -138,6 +140,8 @@ class FileUploadField(fields.TextField):
                 self._delete_file(field)
                 return
 
+        print field, type(self.data)
+
         if isinstance(self.data, FileStorage):
             if field:
                 self._delete_file(field)
@@ -169,7 +173,7 @@ class ImageUploadField(FileUploadField):
             raise Exception('PIL library was not found')
 
         self.thumbnail_fn = thumbgen or thumbgen_filename
-        self.thumbnail_size = thumbnail_size
+        self.thumbnail_size = thumbnail_size or (128, 128, True)
         self.endpoint = endpoint
         self.image = None
 
