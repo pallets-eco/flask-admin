@@ -19,6 +19,7 @@ form.icon button {
 
 a.icon {
     text-decoration: none;
+    color: black;
 }
 
 /* Model search form */
