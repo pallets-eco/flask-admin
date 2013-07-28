@@ -161,4 +161,4 @@ def test_image_upload_field():
 
             eq_(dummy.upload, 'test1.png')
             ok_(op.exists(op.join(path, 'test1.png')))
-            ok_(op.exists(op.join(path, 'test1_thumb.jpg')))
+            ok_(not op.exists(op.join(path, 'test1_thumb.jpg')))

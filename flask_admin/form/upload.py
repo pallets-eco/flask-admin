@@ -257,7 +257,7 @@ class ImageUploadField(FileUploadField):
                         upload = ImageUploadField('File', thumbgen=prefix_name)
 
             :param thumbnail_size:
-                Tuple or (width, height, force) values. If not provided, uses `(128, 128, True)` as default value.
+                Tuple or (width, height, force) values. If not provided, thumbnail won't be created.
 
                 Width and height is in pixels. If `force` is set to `True`, will try to fit image into dimensions and
                 keep aspect ratio, otherwise will just resize to target size.
@@ -269,7 +269,7 @@ class ImageUploadField(FileUploadField):
             raise Exception('PIL library was not found')
 
         self.thumbnail_fn = thumbgen or thumbgen_filename
-        self.thumbnail_size = thumbnail_size or (128, 128, True)
+        self.thumbnail_size = thumbnail_size
         self.endpoint = endpoint
         self.image = None
 

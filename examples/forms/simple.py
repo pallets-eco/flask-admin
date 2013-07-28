@@ -39,6 +39,7 @@ class File(db.Model):
     def __unicode__(self):
         return self.name
 
+
 class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
@@ -75,6 +76,7 @@ def del_image(mapper, connection, target):
         except OSError:
             pass
 
+
 # Administrative views
 class FileView(sqla.ModelView):
     # Override form field to use Flask-Admin FileUploadField
@@ -106,7 +108,9 @@ class ImageView(sqla.ModelView):
     # Alternative way to contribute field is to override it completely.
     # In this case, Flask-Admin won't attempt to merge various parameters for the field.
     form_extra_fields = {
-        'path': form.ImageUploadField('Image', path=file_path)
+        'path': form.ImageUploadField('Image',
+                                      path=file_path,
+                                      thumbnail_size=(100, 100, True))
     }
 
 
