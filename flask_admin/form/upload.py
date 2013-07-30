@@ -1,6 +1,5 @@
 import os
 import os.path as op
-from urlparse import urljoin
 
 from flask import url_for
 
@@ -13,7 +12,7 @@ from wtforms.fields.core import _unset_value
 
 from flask.ext.admin.babel import gettext
 
-from flask.ext.admin._compat import string_types
+from flask.ext.admin._compat import string_types, urljoin
 
 
 try:
