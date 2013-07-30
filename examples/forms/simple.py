@@ -88,7 +88,7 @@ class FileView(sqla.ModelView):
     form_args = {
         'path': {
             'label': 'File',
-            'path': file_path
+            'base_path': file_path
         }
     }
 
@@ -109,7 +109,7 @@ class ImageView(sqla.ModelView):
     # In this case, Flask-Admin won't attempt to merge various parameters for the field.
     form_extra_fields = {
         'path': form.ImageUploadField('Image',
-                                      path=file_path,
+                                      base_path=file_path,
                                       thumbnail_size=(100, 100, True))
     }
 
