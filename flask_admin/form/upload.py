@@ -1,6 +1,6 @@
 import os
 import os.path as op
-import logging
+from urlparse import urljoin
 
 from flask import url_for
 
@@ -86,8 +86,12 @@ class ImageUploadInput(object):
         }
 
         if field.data and isinstance(field.data, string_types):
-            args['image'] = html_params(src=url_for(field.endpoint,
-                                                    filename=field.thumbnail_fn(field.data)))
+            if field.thumbnail_size:
+                url = url_for(field.endpoint, filename=field.thumbnail_fn(field.data))
+            else:
+                url = url_for(field.endpoint, filename=field.data)
+
+            args['image'] = html_params(src=url)
 
             template = self.data_template
         else:
@@ -107,7 +111,8 @@ class FileUploadField(fields.TextField):
     widget = FileUploadInput()
 
     def __init__(self, label=None, validators=None,
-                 path=None, namegen=None, allowed_extensions=None,
+                 base_path=None, relative_path=None,
+                 namegen=None, allowed_extensions=None,
                  **kwargs):
         """
             Constructor.
@@ -116,8 +121,12 @@ class FileUploadField(fields.TextField):
                 Display label
             :param validators:
                 Validators
-            :param path:
-                Full path to the directory which will store files
+            :param base_path:
+                Absolute path to the directory which will store files
+            :param relative_path:
+                Relative path from the directory. Will be prepended to the file name for uploaded files.
+                Flask-Admin uses `urlparse.urljoin` to generate resulting filename, so make sure you have
+                trailing slash.
             :param namegen:
                 Function that will generate filename from the model and uploaded file object.
                 Please note, that model is "dirty" model object, before it was committed to database.
@@ -136,10 +145,12 @@ class FileUploadField(fields.TextField):
             :param allowed_extensions:
                 List of allowed extensions. If not provided, will allow any file.
         """
-        if not path:
+        if not base_path:
             raise ValueError('FileUploadField field requires target path.')
 
-        self.path = path
+        self.base_path = base_path
+        self.relative_path = relative_path
+
         self.namegen = namegen or namegen_filename
         self.allowed_extensions = allowed_extensions
         self._should_delete = False
@@ -186,19 +197,31 @@ class FileUploadField(fields.TextField):
             if field:
                 self._delete_file(field)
 
-            filename = self.namegen(obj, self.data)
+            filename = self.generate_name(obj, self.data)
             self._save_file(self.data, filename)
 
             setattr(obj, name, filename)
 
+    def generate_name(self, obj, file_data):
+        filename = self.namegen(obj, file_data)
+
+        if not self.relative_path:
+            return filename
+
+        return urljoin(self.relative_path, filename)
+
+    def _get_path(self, filename):
+        return op.join(self.base_path, filename)
+
     def _delete_file(self, filename):
-        path = op.join(self.path, filename)
+        path = self._get_path(filename)
 
         if op.exists(path):
             os.remove(path)
 
     def _save_file(self, data, filename):
-        data.save(op.join(self.path, filename))
+        path = self._get_path(filename)
+        data.save(path)
 
 
 class ImageUploadField(FileUploadField):
@@ -212,7 +235,8 @@ class ImageUploadField(FileUploadField):
     widget = ImageUploadInput()
 
     def __init__(self, label=None, validators=None,
-                 path=None, namegen=None, allowed_extensions=None,
+                 base_path=None, relative_path=None,
+                 namegen=None, allowed_extensions=None,
                  thumbgen=None, thumbnail_size=None, endpoint='static',
                  **kwargs):
         """
@@ -222,8 +246,12 @@ class ImageUploadField(FileUploadField):
                 Display label
             :param validators:
                 Validators
-            :param path:
-                Full path to the directory which will store files
+            :param base_path:
+                Absolute path to the directory which will store files
+            :param relative_path:
+                Relative path from the directory. Will be prepended to the file name for uploaded files.
+                Flask-Admin uses `urlparse.urljoin` to generate resulting filename, so make sure you have
+                trailing slash.
             :param namegen:
                 Function that will generate filename from the model and uploaded file object.
                 Please note, that model is "dirty" model object, before it was committed to database.
@@ -277,7 +305,8 @@ class ImageUploadField(FileUploadField):
             allowed_extensions = ('gif', 'jpg', 'jpeg', 'png')
 
         super(ImageUploadField, self).__init__(label, validators,
-                                               path=path,
+                                               base_path=base_path,
+                                               relative_path=relative_path,
                                                namegen=namegen,
                                                allowed_extensions=allowed_extensions,
                                                **kwargs)
@@ -298,14 +327,14 @@ class ImageUploadField(FileUploadField):
         self._delete_thumbnail(filename)
 
     def _delete_thumbnail(self, filename):
-        path = op.join(self.path, self.thumbnail_fn(filename))
+        path = self._get_path(self.thumbnail_fn(filename))
 
         if op.exists(path):
             os.remove(path)
 
     # Saving
     def _save_file(self, data, filename):
-        data.save(op.join(self.path, filename))
+        data.save(self._get_path(filename))
 
         self._save_thumbnail(data, filename)
 
@@ -321,7 +350,7 @@ class ImageUploadField(FileUploadField):
                 else:
                     thumb = self.image.copy().thumbnail((width, height), Image.ANTIALIAS)
 
-            path = op.join(self.path, self.thumbnail_fn(filename))
+            path = self._get_path(self.thumbnail_fn(filename))
             with open(path, 'wb') as fp:
                 thumb.save(fp, 'JPEG')
 

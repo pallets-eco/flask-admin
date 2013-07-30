@@ -5,7 +5,7 @@ from io import BytesIO
 
 from nose.tools import eq_, ok_
 
-from flask import Flask
+from flask import Flask, url_for
 from flask.ext.admin import form, helpers
 
 
@@ -13,6 +13,11 @@ def _create_temp():
     path = op.join(op.dirname(__file__), 'tmp')
     if not op.exists(path):
         os.mkdir(path)
+
+    inner = op.join(path, 'inner')
+    if not op.exists(inner):
+        os.mkdir(inner)
+
     return path
 
 
@@ -33,13 +38,13 @@ def test_upload_field():
         safe_delete(path, 'test2.txt')
 
     class TestForm(form.BaseForm):
-        upload = form.FileUploadField('Upload', path=path)
+        upload = form.FileUploadField('Upload', base_path=path)
 
     class Dummy(object):
         pass
 
     my_form = TestForm()
-    eq_(my_form.upload.path, path)
+    eq_(my_form.upload.base_path, path)
 
     _remove_testfiles()
 
@@ -91,16 +96,18 @@ def test_image_upload_field():
         safe_delete(path, 'test2_thumb.jpg')
 
     class TestForm(form.BaseForm):
-        upload = form.ImageUploadField('Upload', path=path, thumbnail_size=(100, 100, True))
+        upload = form.ImageUploadField('Upload',
+                                       base_path=path,
+                                       thumbnail_size=(100, 100, True))
 
     class TestNoResizeForm(form.BaseForm):
-        upload = form.ImageUploadField('Upload', path=path)
+        upload = form.ImageUploadField('Upload', base_path=path, endpoint='test')
 
     class Dummy(object):
         pass
 
     my_form = TestForm()
-    eq_(my_form.upload.path, path)
+    eq_(my_form.upload.base_path, path)
     eq_(my_form.upload.endpoint, 'static')
 
     _remove_testimages()
@@ -162,3 +169,39 @@ def test_image_upload_field():
             eq_(dummy.upload, 'test1.png')
             ok_(op.exists(op.join(path, 'test1.png')))
             ok_(not op.exists(op.join(path, 'test1_thumb.jpg')))
+
+
+def test_relative_path():
+    app = Flask(__name__)
+
+    path = _create_temp()
+
+    def _remove_testfiles():
+        safe_delete(path, 'test1.txt')
+
+    class TestForm(form.BaseForm):
+        upload = form.FileUploadField('Upload', base_path=path, relative_path='inner/')
+
+    class Dummy(object):
+        pass
+
+    my_form = TestForm()
+    eq_(my_form.upload.base_path, path)
+    eq_(my_form.upload.relative_path, 'inner/')
+
+    _remove_testfiles()
+
+    dummy = Dummy()
+
+    # Check upload
+    with app.test_request_context(method='POST', data={'upload': (BytesIO(b'Hello World 1'), 'test1.txt')}):
+        my_form = TestForm(helpers.get_form_data())
+
+        ok_(my_form.validate())
+
+        my_form.populate_obj(dummy)
+
+        eq_(dummy.upload, 'inner/test1.txt')
+        ok_(op.exists(op.join(path, 'inner/test1.txt')))
+
+        eq_(url_for('static', filename=dummy.upload), '/static/inner/test1.txt')
