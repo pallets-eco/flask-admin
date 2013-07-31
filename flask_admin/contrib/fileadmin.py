@@ -682,7 +682,7 @@ class FileAdmin(BaseView, ActionsMixin):
                 error = True
             else:
                 try:
-                    content.decode('utf8')
+                    content = content.decode('utf8')
                 except UnicodeDecodeError:
                     flash(gettext("Cannot edit %(name)s.", name=path), 'error')
                     error = True
