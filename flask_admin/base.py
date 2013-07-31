@@ -415,7 +415,7 @@ class Admin(object):
                  index_view=None,
                  translations_path=None,
                  endpoint=None,
-                 static_url_path=None,
+                 static_url_path='/admin',
                  base_template=None):
         """
             Constructor.
