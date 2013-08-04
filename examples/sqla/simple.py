@@ -46,7 +46,7 @@ class Post(db.Model):
     date = db.Column(db.DateTime)
 
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
-    user = db.relationship(User, backref='posts')
+    user = db.relationship(User, backref=db.backref('posts', collection_class=set))
 
     tags = db.relationship('Tag', secondary=post_tags_table)
 

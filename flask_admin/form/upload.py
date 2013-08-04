@@ -68,7 +68,7 @@ class ImageUploadInput(object):
     """
     empty_template = ('<input %(file)s>')
 
-    data_template = ('<div>'
+    data_template = ('<div class="image-thumbnail">'
                      ' <img %(image)s>'
                      ' <input type="checkbox" name="%(marker)s">Delete</input>'
                      '</div>'

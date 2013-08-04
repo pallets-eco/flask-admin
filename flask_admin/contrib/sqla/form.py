@@ -87,32 +87,35 @@ class AdminModelConverter(ModelConverterBase):
             elif prop.direction.name != 'MANYTOMANY':
                 kwargs['validators'].append(validators.InputRequired())
 
-            # Override field type if necessary
-            override = self._get_field_override(prop.key)
-            if override:
-                return override(**kwargs)
-
             # Contribute model-related parameters
             if 'allow_blank' not in kwargs:
                 kwargs['allow_blank'] = local_column.nullable
             if 'query_factory' not in kwargs:
                 kwargs['query_factory'] = lambda: self.session.query(remote_model)
 
+            if 'widget' not in kwargs:
+                if prop.direction.name == 'MANYTOONE':
+                    kwargs['widget'] = form.Select2Widget()
+                elif prop.direction.name == 'ONETOMANY':
+                    kwargs['widget'] = form.Select2Widget(multiple=True)
+                elif prop.direction.name == 'MANYTOMANY':
+                    kwargs['widget'] = form.Select2Widget(multiple=True)
+
+            # Override field type if necessary
+            override = self._get_field_override(prop.key)
+            if override:
+                return override(**kwargs)
+
             if prop.direction.name == 'MANYTOONE':
-                return QuerySelectField(widget=form.Select2Widget(),
-                                        **kwargs)
+                return QuerySelectField(**kwargs)
             elif prop.direction.name == 'ONETOMANY':
                 # Skip backrefs
                 if not local_column.foreign_keys and getattr(self.view, 'column_hide_backrefs', False):
                     return None
 
-                return QuerySelectMultipleField(
-                                widget=form.Select2Widget(multiple=True),
-                                **kwargs)
+                return QuerySelectMultipleField(**kwargs)
             elif prop.direction.name == 'MANYTOMANY':
-                return QuerySelectMultipleField(
-                                widget=form.Select2Widget(multiple=True),
-                                **kwargs)
+                return QuerySelectMultipleField(**kwargs)
         else:
             # Ignore pk/fk
             if hasattr(prop, 'columns'):
