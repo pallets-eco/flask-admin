@@ -239,13 +239,14 @@ class AdminModelConverter(ModelConverterBase):
     def conv_String(self, column, field_args, **extra):
         if hasattr(column.type, 'enums'):
             field_args['validators'].append(validators.AnyOf(column.type.enums))
-            field_args['choices'] = [(f,f) for f in column.type.enums]
+            field_args['choices'] = [(f, f) for f in column.type.enums]
             return form.Select2Field(**field_args)
+
         self._string_common(column=column, field_args=field_args, **extra)
         return fields.TextField(**field_args)
 
     @converts('Text', 'UnicodeText',
-            'sqlalchemy.types.LargeBinary', 'sqlalchemy.types.Binary')
+              'sqlalchemy.types.LargeBinary', 'sqlalchemy.types.Binary')
     def conv_Text(self, field_args, **extra):
         self._string_common(field_args=field_args, **extra)
         return fields.TextAreaField(**field_args)
@@ -423,6 +424,17 @@ class InlineModelConverter(InlineModelConverterBase):
     """
 
     def __init__(self, session, view, model_converter):
+        """
+            Constructor.
+
+            :param session:
+                SQLAlchemy session
+            :param view:
+                Flask-Admin view object
+            :param model_converter:
+                Model converter class. Will be automatically instantiated with
+                appropriate `InlineFormAdmin` instance.
+        """
         super(InlineModelConverter, self).__init__(view)
         self.session = session
         self.model_converter = model_converter
