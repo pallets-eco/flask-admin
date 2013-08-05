@@ -85,11 +85,7 @@ class ImageUploadInput(object):
         }
 
         if field.data and isinstance(field.data, string_types):
-            if field.thumbnail_size:
-                url = url_for(field.endpoint, filename=field.thumbnail_fn(field.data))
-            else:
-                url = url_for(field.endpoint, filename=field.data)
-
+            url = self.get_url()
             args['image'] = html_params(src=url)
 
             template = self.data_template
@@ -97,6 +93,12 @@ class ImageUploadInput(object):
             template = self.empty_template
 
         return HTMLString(template % args)
+
+    def get_url(self, field):
+        if field.thumbnail_size:
+            return url_for(field.endpoint, filename=field.thumbnail_fn(field.data))
+
+        return url_for(field.endpoint, filename=field.data)
 
 
 # Fields
