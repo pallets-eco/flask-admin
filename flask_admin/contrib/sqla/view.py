@@ -513,6 +513,7 @@ class ModelView(BaseModelView):
         """
         converter = self.model_form_converter(self.session, self)
         form_class = form.get_form(self.model, converter,
+                                   base_class=self.form_base_class,
                                    only=self.form_columns,
                                    exclude=self.form_excluded_columns,
                                    field_args=self.form_args,

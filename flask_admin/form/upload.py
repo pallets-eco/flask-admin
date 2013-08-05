@@ -144,9 +144,6 @@ class FileUploadField(fields.TextField):
             :param allowed_extensions:
                 List of allowed extensions. If not provided, will allow any file.
         """
-        if not base_path:
-            raise ValueError('FileUploadField field requires target path.')
-
         self.base_path = base_path
         self.relative_path = relative_path
 
@@ -210,6 +207,9 @@ class FileUploadField(fields.TextField):
         return urljoin(self.relative_path, filename)
 
     def _get_path(self, filename):
+        if not self.base_path:
+            raise ValueError('FileUploadField field requires base_path to be set.')
+
         return op.join(self.base_path, filename)
 
     def _delete_file(self, filename):

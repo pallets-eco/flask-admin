@@ -2,6 +2,7 @@ from nose.tools import eq_, ok_, raises
 
 from wtforms import fields
 
+from flask.ext.admin import form
 from flask.ext.admin._compat import iteritems
 from flask.ext.admin.contrib.sqla import ModelView
 
@@ -618,4 +619,23 @@ def test_extra_field_order():
     pos2 = data.find('Test1')
     ok_(pos2 > pos1)
 
+
 # TODO: Babel tests
+def test_custom_form_base():
+    app, db, admin = setup()
+
+    class TestForm(form.BaseForm):
+        pass
+
+    Model1, _ = create_models(db)
+
+    view = CustomModelView(
+        Model1, db.session,
+        form_base_class=TestForm
+    )
+    admin.add_view(view)
+
+    ok_(hasattr(view._create_form_class, 'test1'))
+
+    create_form = view.create_form()
+    ok_(isinstance(create_form, TestForm))

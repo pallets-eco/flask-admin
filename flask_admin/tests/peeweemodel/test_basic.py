@@ -10,6 +10,7 @@ import peewee
 
 from wtforms import fields
 
+from flask.ext.admin import form
 from flask.ext.admin._compat import iteritems
 from flask.ext.admin.contrib.peewee import ModelView
 
@@ -173,3 +174,23 @@ def test_extra_fields():
     pos1 = data.find('Extra Field')
     pos2 = data.find('Test1')
     ok_(pos2 < pos1)
+
+
+def test_custom_form_base():
+    app, db, admin = setup()
+
+    class TestForm(form.BaseForm):
+        pass
+
+    Model1, _ = create_models(db)
+
+    view = CustomModelView(
+        Model1,
+        form_base_class=TestForm
+    )
+    admin.add_view(view)
+
+    ok_(hasattr(view._create_form_class, 'test1'))
+
+    create_form = view.create_form()
+    ok_(isinstance(create_form, TestForm))

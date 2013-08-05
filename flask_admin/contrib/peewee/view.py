@@ -218,7 +218,7 @@ class ModelView(BaseModelView):
 
     def scaffold_form(self):
         form_class = get_form(self.model, self.model_form_converter(),
-                              base_class=form.BaseForm,
+                              base_class=self.form_base_class,
                               only=self.form_columns,
                               exclude=self.form_excluded_columns,
                               field_args=self.form_args,

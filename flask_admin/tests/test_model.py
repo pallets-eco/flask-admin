@@ -309,3 +309,5 @@ def test_custom_form():
 
     eq_(view._create_form_class, TestForm)
     eq_(view._edit_form_class, TestForm)
+
+    ok_(not hasattr(view._create_form_class, 'col1'))
