@@ -85,7 +85,7 @@ class ImageUploadInput(object):
         }
 
         if field.data and isinstance(field.data, string_types):
-            url = self.get_url()
+            url = self.get_url(field)
             args['image'] = html_params(src=url)
 
             template = self.data_template
