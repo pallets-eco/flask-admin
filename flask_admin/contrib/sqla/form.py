@@ -6,6 +6,7 @@ from flask.ext.admin.form import Select2Field
 from flask.ext.admin.model.form import (converts, ModelConverterBase,
                                         InlineFormAdmin, InlineModelConverterBase,
                                         FieldPlaceholder)
+from flask.ext.admin.model.helpers import prettify_name
 from flask.ext.admin._backwards import get_property
 from flask.ext.admin._compat import iteritems
 
@@ -45,13 +46,20 @@ class AdminModelConverter(ModelConverterBase):
         if column_labels:
             return column_labels.get(name)
 
-        return self.view.prettify_name(name)
+        prettify_override = getattr(self.view, 'prettify_name', None)
+        if prettify_override:
+            return prettify_override(name)
+
+        return prettify_name(name)
 
     def _get_description(self, name, field_args):
         if 'description' in field_args:
             return field_args['description']
-        if self.view.column_descriptions:
-            return self.view.column_descriptions.get(name)
+
+        column_descriptions = getattr(self.view, 'column_descriptions', None)
+
+        if column_descriptions:
+            return column_descriptions.get(name)
 
     def _get_field_override(self, name):
         form_overrides = getattr(self.view, 'form_overrides', None)
@@ -409,9 +417,10 @@ class InlineModelConverter(InlineModelConverterBase):
         you can create your own wtforms field and use it instead
     """
 
-    def __init__(self, session, view):
+    def __init__(self, session, view, model_converter):
         super(InlineModelConverter, self).__init__(view)
         self.session = session
+        self.model_converter = model_converter
 
     def get_info(self, p):
         info = super(InlineModelConverter, self).get_info(p)
@@ -437,7 +446,7 @@ class InlineModelConverter(InlineModelConverterBase):
 
         return info
 
-    def contribute(self, converter, model, form_class, inline_model):
+    def contribute(self, model, form_class, inline_model):
         """
             Generate form fields for inline forms and contribute them to
             the `form_class`
@@ -496,6 +505,9 @@ class InlineModelConverter(InlineModelConverterBase):
             exclude = ignore + list(info.form_excluded_columns)
         else:
             exclude = ignore
+
+        # Create converter
+        converter = self.model_converter(self.session, info)
 
         # Create form
         child_form = info.get_form()

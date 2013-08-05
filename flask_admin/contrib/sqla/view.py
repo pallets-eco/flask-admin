@@ -530,12 +530,12 @@ class ModelView(BaseModelView):
             :param form_class:
                 Form class
         """
-        converter = self.model_form_converter(self.session, self)
-        inline_converter = self.inline_model_form_converter(self.session, self)
+        inline_converter = self.inline_model_form_converter(self.session,
+                                                            self,
+                                                            self.model_form_converter)
 
         for m in self.inline_models:
-            form_class = inline_converter.contribute(converter,
-                                                     self.model,
+            form_class = inline_converter.contribute(self.model,
                                                      form_class,
                                                      m)
 

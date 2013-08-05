@@ -13,6 +13,7 @@ from flask.ext.admin.helpers import get_form_data, validate_form_on_submit
 from flask.ext.admin.tools import rec_getattr
 from flask.ext.admin._backwards import ObsoleteAttr
 from flask.ext.admin._compat import iteritems, as_unicode
+from .helpers import prettify_name
 
 
 class BaseModelView(BaseView, ActionsMixin):
@@ -380,7 +381,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # If name not provided, it is model name
         if name is None:
-            name = '%s' % self._prettify_name(model.__name__)
+            name = '%s' % self.prettify_name(model.__name__)
 
         # If endpoint not provided, it is model name + 'view'
         if endpoint is None:
@@ -818,7 +819,7 @@ class BaseModelView(BaseView, ActionsMixin):
             :param name:
                 Name to prettify
         """
-        return name.replace('_', ' ').title()
+        return prettify_name(name)
 
     # URL generation helper
     def _get_extra_args(self):
