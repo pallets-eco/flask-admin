@@ -768,6 +768,9 @@ class ModelView(BaseModelView):
             self._on_model_change(form, model, True)
             self.session.commit()
         except Exception as ex:
+            if self._debug:
+                raise
+
             flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
             logging.exception('Failed to create model')
             self.session.rollback()
@@ -791,9 +794,13 @@ class ModelView(BaseModelView):
             self._on_model_change(form, model, False)
             self.session.commit()
         except Exception as ex:
+            if self._debug:
+                raise
+
             flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')
             logging.exception('Failed to update model')
             self.session.rollback()
+
             return False
         else:
             self.after_model_change(form, model, False)
@@ -814,6 +821,9 @@ class ModelView(BaseModelView):
             self.session.commit()
             return True
         except Exception as ex:
+            if self._debug:
+                raise
+
             flash(gettext('Failed to delete model. %(error)s', error=str(ex)), 'error')
             logging.exception('Failed to delete model')
             self.session.rollback()
@@ -852,4 +862,7 @@ class ModelView(BaseModelView):
                            count,
                            count=count))
         except Exception as ex:
+            if self._debug:
+                raise
+
             flash(gettext('Failed to delete models. %(error)s', error=str(ex)), 'error')

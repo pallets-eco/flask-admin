@@ -137,7 +137,8 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
         return args
 
-    def __init__(self, name=None, category=None, endpoint=None, url=None, static_folder=None, static_url_path=None):
+    def __init__(self, name=None, category=None, endpoint=None, url=None,
+                 static_folder=None, static_url_path=None):
         """
             Constructor.
 
@@ -157,6 +158,9 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
                 and '/admin/' prefix won't be applied.
             :param static_url_path:
                 Static URL Path. If provided, this specifies the path to the static url directory.
+            :param debug:
+                Optional debug flag. If set to `True`, will rethrow exceptions in some cases, so Werkzeug
+                debugger can catch them.
         """
         self.name = name
         self.category = category
@@ -294,6 +298,13 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         """
         if not self.is_accessible():
             return abort(404)
+
+    @property
+    def _debug(self):
+        if not self.admin or not self.admin.app:
+            return False
+
+        return self.admin.app.debug
 
 
 class AdminIndexView(BaseView):

@@ -363,6 +363,9 @@ class ModelView(BaseModelView):
             self._on_model_change(form, model, True)
             model.save()
         except Exception as ex:
+            if self._debug:
+                raise
+
             flash(gettext('Failed to create model. %(error)s',
                           error=format_error(ex)),
                   'error')
@@ -387,6 +390,9 @@ class ModelView(BaseModelView):
             self._on_model_change(form, model, False)
             model.save()
         except Exception as ex:
+            if self._debug:
+                raise
+
             flash(gettext('Failed to update model. %(error)s',
                           error=format_error(ex)),
                   'error')
@@ -409,6 +415,9 @@ class ModelView(BaseModelView):
             model.delete()
             return True
         except Exception as ex:
+            if self._debug:
+                raise
+
             flash(gettext('Failed to delete model. %(error)s',
                           error=format_error(ex)),
                   'error')
@@ -461,5 +470,8 @@ class ModelView(BaseModelView):
                            count,
                            count=count))
         except Exception as ex:
+            if self._debug:
+                raise
+
             flash(gettext('Failed to delete models. %(error)s', error=str(ex)),
                   'error')

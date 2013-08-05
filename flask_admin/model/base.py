@@ -396,6 +396,9 @@ class BaseModelView(BaseView, ActionsMixin):
                 'userview'
             :param url:
                 Base URL. If not provided, will use endpoint as a URL.
+            :param debug:
+                Enable debugging mode. Won't catch exceptions on model
+                save failures.
         """
 
         # If name not provided, it is model name
