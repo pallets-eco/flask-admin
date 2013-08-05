@@ -205,8 +205,10 @@ class AdminModelConverter(ModelConverterBase):
                     return override(**kwargs)
 
                 # Check choices
-                if mapper.class_ == self.view.model and self.view.form_choices:
-                    choices = self.view.form_choices.get(column.key)
+                form_choices = getattr(self.view, 'form_choices', None)
+
+                if mapper.class_ == self.view.model and form_choices:
+                    choices = form_choices.get(column.key)
                     if choices:
                         return Select2Field(
                             choices=choices,
@@ -221,7 +223,7 @@ class AdminModelConverter(ModelConverterBase):
                     return None
 
                 return converter(model=model, mapper=mapper, prop=prop,
-                                column=column, field_args=kwargs)
+                                 column=column, field_args=kwargs)
 
         return None
 
