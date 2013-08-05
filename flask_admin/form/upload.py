@@ -194,7 +194,7 @@ class FileUploadField(fields.TextField):
                 self._delete_file(field)
 
             filename = self.generate_name(obj, self.data)
-            self._save_file(self.data, filename)
+            filename = self._save_file(self.data, filename)
 
             setattr(obj, name, filename)
 
@@ -222,6 +222,8 @@ class FileUploadField(fields.TextField):
         path = self._get_path(filename)
         data.save(path)
 
+        return filename
+
 
 class ImageUploadField(FileUploadField):
     """
@@ -233,10 +235,18 @@ class ImageUploadField(FileUploadField):
     """
     widget = ImageUploadInput()
 
+    keep_image_formats = ('PNG',)
+    """
+        If field detects that uploaded image is not in this list, it will save image
+        as PNG.
+    """
+
     def __init__(self, label=None, validators=None,
                  base_path=None, relative_path=None,
                  namegen=None, allowed_extensions=None,
-                 thumbgen=None, thumbnail_size=None, endpoint='static',
+                 max_size=None,
+                 thumbgen=None, thumbnail_size=None,
+                 endpoint='static',
                  **kwargs):
         """
             Constructor.
@@ -268,6 +278,9 @@ class ImageUploadField(FileUploadField):
 
             :param allowed_extensions:
                 List of allowed extensions. If not provided, will allow any file.
+            :param max_size:
+                Tuple of (width, height, force) or None. If provided, Flask-Admin will
+                resize image to the desired size.
             :param thumbgen:
                 Thumbnail filename generation function. All thumbnails will be saved as JPEG files,
                 so there's no need to keep original file extension.
@@ -295,13 +308,14 @@ class ImageUploadField(FileUploadField):
         if Image is None:
             raise Exception('PIL library was not found')
 
+        self.max_size = max_size
         self.thumbnail_fn = thumbgen or thumbgen_filename
         self.thumbnail_size = thumbnail_size
         self.endpoint = endpoint
         self.image = None
 
         if not allowed_extensions:
-            allowed_extensions = ('gif', 'jpg', 'jpeg', 'png')
+            allowed_extensions = ('gif', 'jpg', 'jpeg', 'png', 'tiff')
 
         super(ImageUploadField, self).__init__(label, validators,
                                                base_path=base_path,
@@ -333,25 +347,48 @@ class ImageUploadField(FileUploadField):
 
     # Saving
     def _save_file(self, data, filename):
-        data.save(self._get_path(filename))
+        if self.image and self.max_size:
+            filename, format = self._get_save_format(filename, self.image)
+
+            self._save_image(self._resize(self.image, self.max_size),
+                             self._get_path(filename),
+                             format)
+        else:
+            data.save(self._get_path(filename))
 
         self._save_thumbnail(data, filename)
 
+        return filename
+
     def _save_thumbnail(self, data, filename):
         if self.image and self.thumbnail_size:
-            thumb = self.image
-
-            (width, height, force) = self.thumbnail_size
-
-            if self.image.size[0] > width or self.image.size[1] > height:
-                if force:
-                    thumb = ImageOps.fit(self.image, (width, height), Image.ANTIALIAS)
-                else:
-                    thumb = self.image.copy().thumbnail((width, height), Image.ANTIALIAS)
-
             path = self._get_path(self.thumbnail_fn(filename))
-            with open(path, 'wb') as fp:
-                thumb.save(fp, 'JPEG')
+
+            self._save_image(self._resize(self.image, self.thumbnail_size),
+                             path)
+
+    def _resize(self, image, size):
+        (width, height, force) = size
+
+        if image.size[0] > width or image.size[1] > height:
+            if force:
+                return ImageOps.fit(self.image, (width, height), Image.ANTIALIAS)
+            else:
+                return self.image.copy().thumbnail((width, height), Image.ANTIALIAS)
+
+        return image
+
+    def _save_image(self, image, path, format='JPEG'):
+        with open(path, 'wb') as fp:
+            image.save(fp, format)
+
+    def _get_save_format(self, filename, image):
+        if not image.format in self.keep_image_formats:
+            name, ext = op.splitext(filename)
+            filename = '%s.jpg' % name
+            return filename, 'JPEG'
+
+        return filename, image.format
 
 
 # Helpers
