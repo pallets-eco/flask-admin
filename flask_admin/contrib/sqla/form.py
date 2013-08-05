@@ -69,6 +69,48 @@ class AdminModelConverter(ModelConverterBase):
 
         return None
 
+    def _convert_relation(self, prop, kwargs):
+        remote_model = prop.mapper.class_
+        local_column = prop.local_remote_pairs[0][0]
+
+        kwargs['label'] = self._get_label(prop.key, kwargs)
+        kwargs['description'] = self._get_description(prop.key, kwargs)
+
+        if local_column.nullable:
+            kwargs['validators'].append(validators.Optional())
+        elif prop.direction.name != 'MANYTOMANY':
+            kwargs['validators'].append(validators.InputRequired())
+
+        # Contribute model-related parameters
+        if 'allow_blank' not in kwargs:
+            kwargs['allow_blank'] = local_column.nullable
+        if 'query_factory' not in kwargs:
+            kwargs['query_factory'] = lambda: self.session.query(remote_model)
+
+        if 'widget' not in kwargs:
+            if prop.direction.name == 'MANYTOONE':
+                kwargs['widget'] = form.Select2Widget()
+            elif prop.direction.name == 'ONETOMANY':
+                kwargs['widget'] = form.Select2Widget(multiple=True)
+            elif prop.direction.name == 'MANYTOMANY':
+                kwargs['widget'] = form.Select2Widget(multiple=True)
+
+        # Override field type if necessary
+        override = self._get_field_override(prop.key)
+        if override:
+            return override(**kwargs)
+
+        if prop.direction.name == 'MANYTOONE':
+            return QuerySelectField(**kwargs)
+        elif prop.direction.name == 'ONETOMANY':
+            # Skip backrefs
+            if not local_column.foreign_keys and getattr(self.view, 'column_hide_backrefs', False):
+                return None
+
+            return QuerySelectMultipleField(**kwargs)
+        elif prop.direction.name == 'MANYTOMANY':
+            return QuerySelectMultipleField(**kwargs)
+
     def convert(self, model, mapper, prop, field_args, hidden_pk):
         # Properly handle forced fields
         if isinstance(prop, FieldPlaceholder):
@@ -84,46 +126,7 @@ class AdminModelConverter(ModelConverterBase):
 
         # Check if it is relation or property
         if hasattr(prop, 'direction'):
-            remote_model = prop.mapper.class_
-            local_column = prop.local_remote_pairs[0][0]
-
-            kwargs['label'] = self._get_label(prop.key, kwargs)
-            kwargs['description'] = self._get_description(prop.key, kwargs)
-
-            if local_column.nullable:
-                kwargs['validators'].append(validators.Optional())
-            elif prop.direction.name != 'MANYTOMANY':
-                kwargs['validators'].append(validators.InputRequired())
-
-            # Contribute model-related parameters
-            if 'allow_blank' not in kwargs:
-                kwargs['allow_blank'] = local_column.nullable
-            if 'query_factory' not in kwargs:
-                kwargs['query_factory'] = lambda: self.session.query(remote_model)
-
-            if 'widget' not in kwargs:
-                if prop.direction.name == 'MANYTOONE':
-                    kwargs['widget'] = form.Select2Widget()
-                elif prop.direction.name == 'ONETOMANY':
-                    kwargs['widget'] = form.Select2Widget(multiple=True)
-                elif prop.direction.name == 'MANYTOMANY':
-                    kwargs['widget'] = form.Select2Widget(multiple=True)
-
-            # Override field type if necessary
-            override = self._get_field_override(prop.key)
-            if override:
-                return override(**kwargs)
-
-            if prop.direction.name == 'MANYTOONE':
-                return QuerySelectField(**kwargs)
-            elif prop.direction.name == 'ONETOMANY':
-                # Skip backrefs
-                if not local_column.foreign_keys and getattr(self.view, 'column_hide_backrefs', False):
-                    return None
-
-                return QuerySelectMultipleField(**kwargs)
-            elif prop.direction.name == 'MANYTOMANY':
-                return QuerySelectMultipleField(**kwargs)
+            return self._convert_relation(prop, kwargs)
         else:
             # Ignore pk/fk
             if hasattr(prop, 'columns'):
