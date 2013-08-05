@@ -94,6 +94,7 @@ def test_image_upload_field():
         safe_delete(path, 'test1_thumb.jpg')
         safe_delete(path, 'test2.png')
         safe_delete(path, 'test2_thumb.jpg')
+        safe_delete(path, 'test1.jpg')
 
     class TestForm(form.BaseForm):
         upload = form.ImageUploadField('Upload',
@@ -102,6 +103,11 @@ def test_image_upload_field():
 
     class TestNoResizeForm(form.BaseForm):
         upload = form.ImageUploadField('Upload', base_path=path, endpoint='test')
+
+    class TestAutoResizeForm(form.BaseForm):
+        upload = form.ImageUploadField('Upload',
+                                       base_path=path,
+                                       max_size=(64, 64, True))
 
     class Dummy(object):
         pass
@@ -169,6 +175,33 @@ def test_image_upload_field():
             eq_(dummy.upload, 'test1.png')
             ok_(op.exists(op.join(path, 'test1.png')))
             ok_(not op.exists(op.join(path, 'test1_thumb.jpg')))
+
+    # Check upload, auto-resize
+    filename = op.join(op.dirname(__file__), 'data', 'copyleft.png')
+
+    with open(filename, 'rb') as fp:
+        with app.test_request_context(method='POST', data={'upload': (fp, 'test1.png')}):
+            my_form = TestAutoResizeForm(helpers.get_form_data())
+
+            ok_(my_form.validate())
+
+            my_form.populate_obj(dummy)
+
+            eq_(dummy.upload, 'test1.png')
+            ok_(op.exists(op.join(path, 'test1.png')))
+
+    filename = op.join(op.dirname(__file__), 'data', 'copyleft.tiff')
+
+    with open(filename, 'rb') as fp:
+        with app.test_request_context(method='POST', data={'upload': (fp, 'test1.tiff')}):
+            my_form = TestAutoResizeForm(helpers.get_form_data())
+
+            ok_(my_form.validate())
+
+            my_form.populate_obj(dummy)
+
+            eq_(dummy.upload, 'test1.jpg')
+            ok_(op.exists(op.join(path, 'test1.jpg')))
 
 
 def test_relative_path():
