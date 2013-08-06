@@ -5,7 +5,7 @@ def macro(name):
         :param name:
             Macro name in the current template
     '''
-    def inner(context, model, column):
+    def inner(view, context, model, column):
         m = context.resolve(name)
 
         if not m:
