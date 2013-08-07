@@ -96,7 +96,14 @@ class ImageUploadInput(object):
 
     def get_url(self, field):
         if field.thumbnail_size:
-            return url_for(field.endpoint, filename=field.thumbnail_fn(field.data))
+            filename = field.thumbnail_fn(field.data)
+        else:
+            filename = field.data
+
+        if field.url_relative_path:
+            filename = urljoin(field.url_relative_path, filename)
+
+        return url_for(field.endpoint, filename)
 
         return url_for(field.endpoint, filename=field.data)
 
@@ -248,7 +255,7 @@ class ImageUploadField(FileUploadField):
                  namegen=None, allowed_extensions=None,
                  max_size=None,
                  thumbgen=None, thumbnail_size=None,
-                 endpoint='static',
+                 url_relative_path=None, endpoint='static',
                  **kwargs):
         """
             Constructor.
@@ -303,6 +310,12 @@ class ImageUploadField(FileUploadField):
 
                 Width and height is in pixels. If `force` is set to `True`, will try to fit image into dimensions and
                 keep aspect ratio, otherwise will just resize to target size.
+            :param url_relative_path:
+                Relative path from the root of the static directory URL. Only gets used when generating
+                preview image URLs.
+
+                For example, your model might store just file names (`relative_path` set to `None`), but
+                `base_path` is pointing to subdirectory.
             :param endpoint:
                 Static endpoint for images. Used by widget to display previews. Defaults to 'static'.
         """
