@@ -132,10 +132,22 @@ class AdminModelConverter(ModelConverterBase):
             if hasattr(prop, 'columns'):
                 # Check if more than one column mapped to the property
                 if len(prop.columns) != 1:
-                    raise TypeError('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
-
-                # Grab column
-                column = prop.columns[0]
+                    # Check if all columns are primary keys and _one_ does not have a foreign key -> looks like joined
+                    # table inheritance: http://docs.sqlalchemy.org/en/latest/orm/inheritance.html with "standard
+                    # practice" of same column name
+                    if len([column for column in prop.columns if column.primary_key]) == len(prop.columns) and \
+                            len([column for column in prop.columns if column.foreign_keys]) == len(prop.columns)-1:
+                        # Get the column(s) of the current model - should always be only one, I think (but not sure)
+                        candidates = [column for column in prop.columns if column.expression == prop.expression]
+                        if len(candidates) != 1:
+                            raise TypeError('Can not convert multiple-column pk-Property (%s.%s)' % (model, prop.key))
+                        else:
+                            column = candidates[0]
+                    else:
+                        raise TypeError('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
+                else:
+                    # Grab column
+                    column = prop.columns[0]
 
                 # Do not display foreign keys - use relations
                 if column.foreign_keys:
