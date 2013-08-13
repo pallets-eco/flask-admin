@@ -115,9 +115,10 @@ class BaseModelView(BaseView, ActionsMixin):
         If you want to display `NULL` instead of an empty string, you can do
         something like this::
 
-            from flask.ext.admin import typefmt
+            from flask.ext.admin.model import typefmt
 
-            MY_DEFAULT_FORMATTERS = dict(typefmt.BASE_FORMATTERS).extend({
+            MY_DEFAULT_FORMATTERS = dict(typefmt.BASE_FORMATTERS)
+            MY_DEFAULT_FORMATTERS.update({
                     type(None): typefmt.null_formatter
                 })
 
