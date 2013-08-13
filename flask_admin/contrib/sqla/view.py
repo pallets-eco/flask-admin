@@ -15,7 +15,7 @@ from flask.ext.admin._backwards import ObsoleteAttr
 
 from flask.ext.admin.contrib.sqla import form, filters, tools
 from .typefmt import DEFAULT_FORMATTERS
-
+from .tools import is_inherited_primary_key, get_column_for_current_model
 
 class ModelView(BaseModelView):
     """
@@ -310,25 +310,16 @@ class ModelView(BaseModelView):
             elif hasattr(p, 'columns'):
                 column_inherited_primary_key = False
                 if len(p.columns) != 1:
-                    # Check if all columns are primary keys and _one_ does not have a foreign key -> looks like joined
-                    # table inheritance: http://docs.sqlalchemy.org/en/latest/orm/inheritance.html with "standard
-                    # practice" of same column name
-                    if len([column for column in p.columns if column.primary_key]) == len(p.columns) and \
-                            len([column for column in p.columns if column.foreign_keys]) == len(p.columns)-1:
-                        # Get the column(s) of the current model - should always be only one, I think (but not sure)
-                        candidates = [column for column in p.columns if column.expression == p.expression]
-                        if len(candidates) != 1:
-                            raise TypeError('Can not convert multiple-column pk-Property (%s.%s)' % (model, p.key))
-                        else:
-                            column = candidates[0]
-                            column_inherited_primary_key = True
+                    if is_inherited_primary_key(p):
+                        column = get_column_for_current_model(p)
                     else:
                         raise TypeError('Can not convert multiple-column properties (%s.%s)' % (model, p.key))
                 else:
                     # Grab column
                     column = p.columns[0]
 
-                if column.foreign_keys and not column_inherited_primary_key:
+                # An inherited primary key has a foreign key as well
+                if column.foreign_keys and not is_inherited_primary_key(p):
                     continue
 
                 if not self.column_display_pk and column.primary_key:
