@@ -15,7 +15,7 @@ from flask.ext.admin._backwards import ObsoleteAttr
 
 from flask.ext.admin.contrib.sqla import form, filters, tools
 from .typefmt import DEFAULT_FORMATTERS
-
+from .tools import is_inherited_primary_key, get_column_for_current_model
 
 class ModelView(BaseModelView):
     """
@@ -308,10 +308,18 @@ class ModelView(BaseModelView):
                 if self.column_display_all_relations or p.direction.name == 'MANYTOONE':
                     columns.append(p.key)
             elif hasattr(p, 'columns'):
-                # TODO: Check for multiple columns
-                column = p.columns[0]
+                column_inherited_primary_key = False
+                if len(p.columns) != 1:
+                    if is_inherited_primary_key(p):
+                        column = get_column_for_current_model(p)
+                    else:
+                        raise TypeError('Can not convert multiple-column properties (%s.%s)' % (model, p.key))
+                else:
+                    # Grab column
+                    column = p.columns[0]
 
-                if column.foreign_keys:
+                # An inherited primary key has a foreign key as well
+                if column.foreign_keys and not is_inherited_primary_key(p):
                     continue
 
                 if not self.column_display_pk and column.primary_key:
