@@ -12,6 +12,7 @@ from flask.ext.admin._compat import iteritems
 
 from .validators import Unique
 from .fields import QuerySelectField, QuerySelectMultipleField, InlineModelFormList
+from .tools import is_inherited_primary_key, get_column_for_current_model
 
 try:
     # Field has better input parsing capabilities.
@@ -132,10 +133,13 @@ class AdminModelConverter(ModelConverterBase):
             if hasattr(prop, 'columns'):
                 # Check if more than one column mapped to the property
                 if len(prop.columns) != 1:
-                    raise TypeError('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
-
-                # Grab column
-                column = prop.columns[0]
+                    if is_inherited_primary_key(prop):
+                        column = get_column_for_current_model(prop)
+                    else:
+                        raise TypeError('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
+                else:
+                    # Grab column
+                    column = prop.columns[0]
 
                 # Do not display foreign keys - use relations
                 if column.foreign_keys:
