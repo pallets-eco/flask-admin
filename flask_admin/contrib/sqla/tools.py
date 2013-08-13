@@ -11,20 +11,26 @@ def parse_like_term(term):
 
 def get_primary_key(model):
     """
-        Return primary key name from a model
+        Return primary key name from a model. If the primary key consists of multiple columns,
+        return the corresponding tuple
 
         :param model:
             Model class
     """
     props = model._sa_class_manager.mapper.iterate_properties
 
+    pks = []
     for p in props:
         if hasattr(p, 'columns'):
             for c in p.columns:
                 if c.primary_key:
-                    return p.key
-
-    return None
+                    pks.append(c.key)
+    if len(pks) == 1:
+        return pks[0]
+    elif len(pks) > 1:
+        return tuple(pks)
+    else:
+        return None
 
 def is_inherited_primary_key(prop):
     """

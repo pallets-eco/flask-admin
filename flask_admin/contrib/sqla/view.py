@@ -259,6 +259,9 @@ class ModelView(BaseModelView):
         if self.form_choices is None:
             self.form_choices = {}
 
+        if self.form_excluded_pk_columns_from_unique_validation is None:
+            self.form_excluded_pk_columns_from_unique_validation = ()
+
         super(ModelView, self).__init__(model, name, category, endpoint, url)
 
         # Primary key
@@ -287,14 +290,22 @@ class ModelView(BaseModelView):
     def scaffold_pk(self):
         """
             Return the primary key name from a model
+            PK can be a single value or a tuple if multiple PKs exist
         """
         return tools.get_primary_key(self.model)
 
     def get_pk_value(self, model):
         """
             Return the PK value from a model object.
+            PK can be a single value or a tuple if multiple PKs exist
         """
-        return getattr(model, self._primary_key)
+        try:
+            return getattr(model, self._primary_key)
+        except TypeError:
+            v = []
+            for attr in self._primary_key:
+                v.append(getattr(model, attr))
+            return tuple(v)
 
     def scaffold_list_columns(self):
         """

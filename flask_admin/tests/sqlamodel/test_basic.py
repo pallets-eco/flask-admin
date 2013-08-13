@@ -435,6 +435,42 @@ def test_non_int_pk():
     data = rv.data.decode('utf-8')
     ok_('test2' in data)
 
+def test_multiple__pk():
+    # Test multiple primary keys - mix int and string together
+    app, db, admin = setup()
+
+    class Model(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        id2 = db.Column(db.String(20), primary_key=True)
+        test = db.Column(db.String)
+
+    db.create_all()
+
+    view = CustomModelView(Model, db.session, form_columns=['id', 'id2', 'test'])
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/modelview/')
+    eq_(rv.status_code, 200)
+
+    rv = client.post('/admin/modelview/new/',
+                     data=dict(id=1, id2='two', test='test3'))
+    eq_(rv.status_code, 302)
+
+    rv = client.get('/admin/modelview/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test3' in data)
+
+    rv = client.get('/admin/modelview/edit/?id=1&id=two')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test3' in data)
+
+    # Correct order is mandatory -> fail here
+    rv = client.get('/admin/modelview/edit/?id=two&id=1')
+    eq_(rv.status_code, 302)
 
 def test_form_columns():
     app, db, admin = setup()

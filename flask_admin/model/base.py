@@ -14,7 +14,7 @@ from flask.ext.admin.helpers import get_form_data, validate_form_on_submit
 from flask.ext.admin.tools import rec_getattr
 from flask.ext.admin._backwards import ObsoleteAttr
 from flask.ext.admin._compat import iteritems, as_unicode
-from .helpers import prettify_name
+from .helpers import prettify_name, get_mdict_item_or_list
 
 
 class BaseModelView(BaseView, ActionsMixin):
@@ -310,6 +310,22 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 form_excluded_columns = ('last_name', 'email')
+    """
+
+    form_excluded_pk_columns_from_unique_validation = None
+    """
+        Primary Key Columns, that should explicitely excluded from Validation for uniquenes.
+        Primary Keys are automatically checked for uniqueness *prior* to the database-save operation.
+        If your model consists of multiple primary keys, list them here, so the built-in validation
+        is disabled.
+
+        The constraints-check of the database will, of course, still prevent you from saving two identical
+        primary keys, regardless of how many columns are part of your primary key.
+
+        For example::
+
+            class MyModelView(BaseModelView):
+                form_excluded_pk_columns_from_unique_validation = ('id', 'secondid')
     """
 
     form_overrides = None
@@ -1100,7 +1116,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if not self.can_edit:
             return redirect(return_url)
 
-        id = request.args.get('id')
+        id = get_mdict_item_or_list(request.args, 'id')
         if id is None:
             return redirect(return_url)
 
@@ -1136,7 +1152,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if not self.can_delete:
             return redirect(return_url)
 
-        id = request.args.get('id')
+        id = get_mdict_item_or_list(request.args, 'id')
         if id is None:
             return redirect(return_url)
 

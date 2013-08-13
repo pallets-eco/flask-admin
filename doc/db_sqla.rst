@@ -103,6 +103,49 @@ you can do something like this::
 Check :doc:`api/mod_contrib_sqla` documentation for list of
 configuration properties and methods.
 
+Multiple Primary Keys
+---------------------
+
+Models with multiple primary keys have limited support, as a few pitfalls are waiting for you.
+With using multiple primary keys, weak entities can be used with Flask-Admin.
+
+Lets Model a car with it's tyres::
+
+    class Car(db.Model):
+        __tablename__ = 'cars'
+        id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+        desc = db.Column(db.String(50))
+
+        def __unicode__(self):
+            return self.desc
+
+    class Tyre(db.Model):
+        __tablename__ = 'tyres'
+        car_id = db.Column(db.Integer, db.ForeignKey('cars.id'), primary_key=True)
+        tyre_id = db.Column(db.Integer, primary_key=True)
+        car = db.relationship('Car', backref='tyres')
+        desc = db.Column(db.String(50))
+
+A specific tyre is identified by using the two primary key columns of the ``Tyre`` class, of which the ``car_id`` key
+is itself a foreign key to the class ``Car``.
+
+To be able to CRUD the ``Tyre`` class, two steps are necessary, when definig the AdminView::
+
+    class TyreAdmin(sqla.ModelView):
+        form_columns = ['car', 'tyre_id', 'desc']
+        form_excluded_pk_columns_from_unique_validation = ('car_id', 'tyre_id')
+
+The ``form_columns`` needs to be explizit, as per default only one primary key is displayed. When, like in this
+example, one part of the key is a foreign key, do not include the foreign-key-columns here, but the
+coresponding relationship.
+
+Per default, all pimary-key-columns are validated for uniquenes. As describe in :doc:`api/mod_model`
+the ``form_excluded_pk_columns_from_unique_validation`` attribute can, and must, be used, to exclude *all*
+primary-key-columns from this check. Your database will tell you via ``Sqlalchemy``, if the operation
+was successfull or not. (Watch out for IntegrityErrors).
+
+A standalone script with the Examples from above can be found in the examples directory.
+
 Example
 -------
 

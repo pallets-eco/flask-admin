@@ -166,10 +166,12 @@ class AdminModelConverter(ModelConverterBase):
                         if prop.key not in form_columns:
                             return None
 
-                        kwargs['validators'].append(Unique(self.session,
-                                                           model,
-                                                           column))
-                        unique = True
+                        # PK can be explicitely excluded from uniquenes-validation
+                        if prop.key not in self.view.form_excluded_pk_columns_from_unique_validation:
+                            kwargs['validators'].append(Unique(self.session,
+                                                               model,
+                                                               column))
+                            unique = True
 
                 # If field is unique, validate it
                 if column.unique and not unique:
