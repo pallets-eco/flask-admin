@@ -118,10 +118,7 @@ class ModelView(BaseModelView):
             class MyAdmin(ModelView):
                 form_subdocuments = {
                     'data': {
-                        'form_subdocuments': {
-                            'form_columns': ('name',)
-                        }
-
+                        'form_columns': ('name',)
                     }
                 }
 
