@@ -844,6 +844,9 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return prettify_name(name)
 
+    def get_empty_list_message(self):
+        return gettext('There are no items in the table.')
+
     # URL generation helper
     def _get_extra_args(self):
         """

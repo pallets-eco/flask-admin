@@ -119,6 +119,16 @@
                 {% endfor %}
             {% endblock %}
         </tr>
+        {% else %}
+        <tr>
+            <td colspan="999">
+                {% block empty_list_message %}
+                <div class="text-center">
+                    {{ admin_view.get_empty_list_message() }}
+                </div>
+                {% endblock %}
+            </td>
+        </tr>
         {% endfor %}
     </table>
     {{ lib.pager(page, num_pages, pager_url) }}
