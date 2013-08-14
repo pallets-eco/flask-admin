@@ -7,7 +7,7 @@ from wtforms import fields, validators
 from flask.ext.mongoengine.wtf import orm, fields as mongo_fields
 
 from flask.ext.admin import form
-from flask.ext.admin.model.form import FieldPlaceholder
+from flask.ext.admin.model.form import FieldPlaceholder, InlineFormAdmin
 from flask.ext.admin.model.fields import InlineFieldList
 from flask.ext.admin.model.widgets import InlineFormWidget
 from flask.ext.admin._compat import iteritems
@@ -35,6 +35,25 @@ class CustomModelConverter(orm.ModelConverter):
             return form_overrides.get(name)
 
         return None
+
+    def _get_subdocument_config(self, name):
+        config = getattr(self.view, 'form_subdocuments', {})
+
+        print 'x', name, config
+
+        p = config.get(name)
+        if not p:
+            return InlineFormAdmin()
+
+        if isinstance(p, dict):
+            return InlineFormAdmin(**p)
+        elif isinstance(p, InlineFormAdmin):
+            return p
+
+        raise ValueError('Invalid subdocument type: expecting dict or instance of InlineFormAdmin, got %s' % type(p))
+
+    def clone_converter(self, view):
+        return self.__class__(view)
 
     def convert(self, model, field, field_args):
         # Check if it is overridden field
@@ -96,11 +115,15 @@ class CustomModelConverter(orm.ModelConverter):
             doc_type = field.field.document_type
             return mongo_fields.ModelSelectMultipleField(model=doc_type, **kwargs)
 
+        # Create converter
+        view = self._get_subdocument_config(field.name)
+        converter = self.clone_converter(view)
+
         if field.field.choices:
             kwargs['multiple'] = True
-            return self.convert(model, field.field, kwargs)
+            return converter.convert(model, field.field, kwargs)
 
-        unbound_field = self.convert(model, field.field, {})
+        unbound_field = converter.convert(model, field.field, {})
         kwargs = {
             'validators': [],
             'filters': [],
@@ -115,9 +138,21 @@ class CustomModelConverter(orm.ModelConverter):
             'widget': InlineFormWidget()
         }
 
-        # TODO: Configurable params?
-        form_class = get_form(field.document_type_obj, self, field_args={})
-        return ModelFormField(field.document_type_obj, form_class, **kwargs)
+        view = self._get_subdocument_config(field.name)
+
+        form_class = view.get_form()
+        if form_class is None:
+            converter = self.clone_converter(view)
+            form_class = get_form(field.document_type_obj, converter,
+                                  base_class=view.form_base_class or form.BaseForm,
+                                  only=view.form_columns,
+                                  exclude=view.form_excluded_columns,
+                                  field_args=view.form_args,
+                                  extra_fields=view.form_extra_fields)
+
+            form_class = view.postprocess_form(form_class)
+
+        return ModelFormField(field.document_type_obj, view, form_class, **kwargs)
 
     @orm.converts('ReferenceField')
     def conv_Reference(self, model, field, kwargs):

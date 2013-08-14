@@ -98,6 +98,92 @@ class ModelView(BaseModelView):
         List of allowed search field types.
     """
 
+    form_subdocuments = None
+    """
+        Subdocument configuration options.
+
+        This field accepts dictionary, where key is field name and value is either dictionary or instance of the
+        `InlineFormAdmin`.
+
+        Consider following example::
+
+            class Comment(db.EmbeddedDocument):
+                name = db.StringField(max_length=20, required=True)
+                value = db.StringField(max_length=20)
+
+            class Post(db.Document):
+                text = db.StringField(max_length=30)
+                data = db.EmbeddedDocumentField(Comment)
+
+            class MyAdmin(ModelView):
+                form_subdocuments = {
+                    'data': {
+                        'form_subdocuments': {
+                            'form_columns': ('name',)
+                        }
+
+                    }
+                }
+
+        In this example, `Post` model has child `Comment` subdocument. When generating form for `Comment` embedded
+        document, Flask-Admin will only create `name` field.
+
+        It is also possible to use class-based embedded document configuration:
+
+            class CommentEmbed(InlineFormAdmin):
+                form_columns = ('name',)
+
+            class MyAdmin(ModelView):
+                form_subdocuments = {
+                    'data': CommentEmbed()
+                }
+
+        Arbitrary depth nesting is supported::
+
+            class SomeEmbed(InlineFormAdmin):
+                form_excluded_columns = ('test',)
+
+            class CommentEmbed(InlineFormAdmin):
+                form_columns = ('name',)
+                form_subdocuments = {
+                    'inner': SomeEmbed()
+                }
+
+            class MyAdmin(ModelView):
+                form_subdocuments = {
+                    'data': CommentEmbed()
+                }
+
+        There's also support for forms embedded into `ListField`. All you have
+        to do is to create nested rule with `None` as a name. Even though it
+        is slightly confusing, but that's how Flask-MongoEngine creates
+        form fields embedded into ListField::
+
+            class Comment(db.EmbeddedDocument):
+                name = db.StringField(max_length=20, required=True)
+                value = db.StringField(max_length=20)
+
+            class Post(db.Document):
+                text = db.StringField(max_length=30)
+                data = db.ListField(db.EmbeddedDocumentField(Comment))
+
+            class MyAdmin(ModelView):
+                form_subdocuments = {
+                    'data': {
+                        'form_subdocuments': {
+                            data: {
+                                'form_subdocuments': {
+                                    None: {
+                                        'form_columns': ('name',)
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+    """
+
     def __init__(self, model, name=None,
                  category=None, endpoint=None, url=None):
         """

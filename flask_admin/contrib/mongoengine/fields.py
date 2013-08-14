@@ -10,10 +10,11 @@ class ModelFormField(fields.FormField):
     """
         Customized ModelFormField for MongoEngine EmbeddedDocuments.
     """
-    def __init__(self, model, *args, **kwargs):
+    def __init__(self, model, view, *args, **kwargs):
         super(ModelFormField, self).__init__(*args, **kwargs)
 
         self.model = model
+        self.view = view
 
     def populate_obj(self, obj, name):
         candidate = getattr(obj, name, None)
@@ -22,6 +23,8 @@ class ModelFormField(fields.FormField):
             setattr(obj, name, candidate)
 
         self.form.populate_obj(candidate)
+
+        self.view.on_model_change(self.form, candidate)
 
 
 class MongoFileField(fields.FileField):

@@ -21,19 +21,15 @@ class InlineFormAdmin(object):
             class MyUserInfoForm(InlineFormAdmin):
                 form_columns = ('name', 'email')
     """
-    _defaults = ['form_columns', 'form_excluded_columns', 'form_args']
+    _defaults = ['form_base_class', 'form_columns', 'form_excluded_columns', 'form_args', 'form_extra_fields']
 
-    def __init__(self, model, **kwargs):
+    def __init__(self, **kwargs):
         """
             Constructor
 
-            :param model:
-                Target model class
             :param kwargs:
                 Additional options
         """
-        self.model = model
-
         for k in self._defaults:
             if not hasattr(self, k):
                 setattr(self, k, None)
@@ -74,6 +70,23 @@ class InlineFormAdmin(object):
                 Model
         """
         pass
+
+
+class InlineModelFormAdmin(InlineFormAdmin):
+    """
+        Settings for inline form administration. Used by relational backends (SQLAlchemy, Peewee), where model
+        class can not be inherited from the parent model definition.
+    """
+    def __init__(self, model, **kwargs):
+        """
+            Constructor
+
+            :param model:
+                Model class
+        """
+        self.model = model
+
+        super(InlineModelFormAdmin, self).__init__(**kwargs)
 
 
 class ModelConverterBase(object):
@@ -160,8 +173,8 @@ class InlineModelConverterBase(object):
                  - Model class
         """
         if isinstance(p, tuple):
-            return InlineFormAdmin(p[0], **p[1])
-        elif isinstance(p, InlineFormAdmin):
+            return InlineModelFormAdmin(p[0], **p[1])
+        elif isinstance(p, InlineModelFormAdmin):
             return p
 
         return None

@@ -212,3 +212,141 @@ def test_custom_form_base():
 
     create_form = view.create_form()
     ok_(isinstance(create_form, TestForm))
+
+
+def test_subdocument_config():
+    app, db, admin = setup()
+
+    class Comment(db.EmbeddedDocument):
+        name = db.StringField(max_length=20, required=True)
+        value = db.StringField(max_length=20)
+
+    class Model1(db.Document):
+        test1 = db.StringField(max_length=20)
+        subdoc = db.EmbeddedDocumentField(Comment)
+
+    # Check only
+    view1 = CustomModelView(
+        Model1,
+        form_subdocuments = {
+            'subdoc': {
+                'form_columns': ('name',)
+            }
+        }
+    )
+
+    ok_(hasattr(view1._create_form_class, 'subdoc'))
+
+    form = view1.create_form()
+    ok_('name' in dir(form.subdoc.form))
+    ok_('value' not in dir(form.subdoc.form))
+
+    # Check exclude
+    view2 = CustomModelView(
+        Model1,
+        form_subdocuments = {
+            'subdoc': {
+                'form_excluded_columns': ('value',)
+            }
+        }
+    )
+
+    form = view2.create_form()
+    ok_('name' in dir(form.subdoc.form))
+    ok_('value' not in dir(form.subdoc.form))
+
+
+def test_subdocument_class_config():
+    app, db, admin = setup()
+
+    from flask.ext.admin.model.form import InlineFormAdmin
+
+    class Comment(db.EmbeddedDocument):
+        name = db.StringField(max_length=20, required=True)
+        value = db.StringField(max_length=20)
+
+    class Model1(db.Document):
+        test1 = db.StringField(max_length=20)
+        subdoc = db.EmbeddedDocumentField(Comment)
+
+    class EmbeddedConfig(InlineFormAdmin):
+        form_columns = ('name',)
+
+    # Check only
+    view1 = CustomModelView(
+        Model1,
+        form_subdocuments = {
+            'subdoc': EmbeddedConfig()
+        }
+    )
+
+    form = view1.create_form()
+    ok_('name' in dir(form.subdoc.form))
+    ok_('value' not in dir(form.subdoc.form))
+
+
+def test_nested_subdocument_config():
+    app, db, admin = setup()
+
+    # Check recursive
+    class Comment(db.EmbeddedDocument):
+        name = db.StringField(max_length=20, required=True)
+        value = db.StringField(max_length=20)
+
+    class Nested(db.EmbeddedDocument):
+        name = db.StringField(max_length=20, required=True)
+        comment = db.EmbeddedDocumentField(Comment)
+
+    class Model1(db.Document):
+        test1 = db.StringField(max_length=20)
+        nested = db.EmbeddedDocumentField(Nested)
+
+    view1 = CustomModelView(
+        Model1,
+        form_subdocuments = {
+            'nested': {
+                'form_subdocuments': {
+                    'comment': {
+                        'form_columns': ('name',)
+                    }
+                }
+            }
+        }
+    )
+
+    form = view1.create_form()
+    ok_('name' in dir(form.nested.form.comment.form))
+    ok_('value' not in dir(form.nested.form.comment.form))
+
+
+def test_nested_list_subdocument():
+    app, db, admin = setup()
+
+    class Comment(db.EmbeddedDocument):
+        name = db.StringField(max_length=20, required=True)
+        value = db.StringField(max_length=20)
+
+    class Model1(db.Document):
+        test1 = db.StringField(max_length=20)
+        subdoc = db.ListField(db.EmbeddedDocumentField(Comment))
+
+    # Check only
+    view1 = CustomModelView(
+        Model1,
+        form_subdocuments = {
+            'subdoc': {
+                'form_subdocuments': {
+                    None: {
+                        'form_columns': ('name',)
+                    }
+                }
+
+            }
+        }
+    )
+
+    form = view1.create_form()
+    inline_form = form.subdoc.unbound_field.args[2]
+
+    ok_('name' in dir(inline_form))
+    ok_('value' not in dir(inline_form))
