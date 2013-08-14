@@ -103,7 +103,7 @@ class ModelView(BaseModelView):
         Subdocument configuration options.
 
         This field accepts dictionary, where key is field name and value is either dictionary or instance of the
-        `InlineFormAdmin`.
+        `flask.ext.admin.contrib.EmbeddedForm`.
 
         Consider following example::
 
@@ -130,7 +130,7 @@ class ModelView(BaseModelView):
 
         It is also possible to use class-based embedded document configuration:
 
-            class CommentEmbed(InlineFormAdmin):
+            class CommentEmbed(EmbeddedForm):
                 form_columns = ('name',)
 
             class MyAdmin(ModelView):
@@ -140,10 +140,10 @@ class ModelView(BaseModelView):
 
         Arbitrary depth nesting is supported::
 
-            class SomeEmbed(InlineFormAdmin):
+            class SomeEmbed(EmbeddedForm):
                 form_excluded_columns = ('test',)
 
-            class CommentEmbed(InlineFormAdmin):
+            class CommentEmbed(EmbeddedForm):
                 form_columns = ('name',)
                 form_subdocuments = {
                     'inner': SomeEmbed()

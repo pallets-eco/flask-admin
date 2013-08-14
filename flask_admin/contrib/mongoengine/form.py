@@ -7,12 +7,16 @@ from wtforms import fields, validators
 from flask.ext.mongoengine.wtf import orm, fields as mongo_fields
 
 from flask.ext.admin import form
-from flask.ext.admin.model.form import FieldPlaceholder, InlineFormAdmin
+from flask.ext.admin.model.form import FieldPlaceholder, InlineBaseFormAdmin
 from flask.ext.admin.model.fields import InlineFieldList
 from flask.ext.admin.model.widgets import InlineFormWidget
 from flask.ext.admin._compat import iteritems
 
 from .fields import ModelFormField, MongoFileField, MongoImageField
+
+
+class EmbeddedForm(InlineBaseFormAdmin):
+    pass
 
 
 class CustomModelConverter(orm.ModelConverter):
@@ -39,18 +43,16 @@ class CustomModelConverter(orm.ModelConverter):
     def _get_subdocument_config(self, name):
         config = getattr(self.view, 'form_subdocuments', {})
 
-        print 'x', name, config
-
         p = config.get(name)
         if not p:
-            return InlineFormAdmin()
+            return EmbeddedForm()
 
         if isinstance(p, dict):
-            return InlineFormAdmin(**p)
-        elif isinstance(p, InlineFormAdmin):
+            return EmbeddedForm(**p)
+        elif isinstance(p, EmbeddedForm):
             return p
 
-        raise ValueError('Invalid subdocument type: expecting dict or instance of InlineFormAdmin, got %s' % type(p))
+        raise ValueError('Invalid subdocument type: expecting dict or instance of flask.ext.admin.contrib.mongoengine.EmbeddedForm, got %s' % type(p))
 
     def clone_converter(self, view):
         return self.__class__(view)
