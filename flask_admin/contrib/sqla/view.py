@@ -259,9 +259,6 @@ class ModelView(BaseModelView):
         if self.form_choices is None:
             self.form_choices = {}
 
-        if self.form_excluded_pk_columns_from_unique_validation is None:
-            self.form_excluded_pk_columns_from_unique_validation = ()
-
         super(ModelView, self).__init__(model, name, category, endpoint, url)
 
         # Primary key

@@ -67,3 +67,11 @@ def get_column_for_current_model(prop):
     else:
         return candidates[0]
 
+
+def has_multiple_pks(model):
+    """Return True, if the model has more than one primary key
+    """
+    if not hasattr(model, '_sa_class_manager'):
+        raise TypeError('model must be a sqlalchemy mapped model')
+    pks = model._sa_class_manager.mapper.primary_key
+    return len(pks) > 1

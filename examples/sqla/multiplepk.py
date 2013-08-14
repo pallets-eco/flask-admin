@@ -39,12 +39,11 @@ class Tyre(db.Model):
 
 class CarAdmin(sqla.ModelView):
     column_display_pk = True
+    form_columns = ['id', 'desc']
 
 class TyreAdmin(sqla.ModelView):
     column_display_pk = True
     form_columns = ['car', 'tyre_id', 'desc']
-    form_excluded_pk_columns_from_unique_validation = ('car_id', 'tyre_id')
-
 
 if __name__ == '__main__':
     # Create admin

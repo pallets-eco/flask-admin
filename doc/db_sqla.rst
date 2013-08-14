@@ -133,16 +133,15 @@ To be able to CRUD the ``Tyre`` class, two steps are necessary, when definig the
 
     class TyreAdmin(sqla.ModelView):
         form_columns = ['car', 'tyre_id', 'desc']
-        form_excluded_pk_columns_from_unique_validation = ('car_id', 'tyre_id')
 
 The ``form_columns`` needs to be explizit, as per default only one primary key is displayed. When, like in this
 example, one part of the key is a foreign key, do not include the foreign-key-columns here, but the
-coresponding relationship.
+corresponding relationship.
 
-Per default, all pimary-key-columns are validated for uniquenes. As describe in :doc:`api/mod_model`
-the ``form_excluded_pk_columns_from_unique_validation`` attribute can, and must, be used, to exclude *all*
-primary-key-columns from this check. Your database will tell you via ``Sqlalchemy``, if the operation
-was successfull or not. (Watch out for IntegrityErrors).
+When having multiple primary keys, **no** validation for uniqueness *prior* to saving of the object will be done. Saving
+a model that violates a unique-constraint leads to an Sqlalchemy-Integrity-Error. In this case, ``Flask-Admin`` displays
+a proper error message and you can change the data in the form. When the application has been started with ``debug=True``
+the ``werkzeug`` debugger catches the exception and displays the stacktrace.
 
 A standalone script with the Examples from above can be found in the examples directory.
 
