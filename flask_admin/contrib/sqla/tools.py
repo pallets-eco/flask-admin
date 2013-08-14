@@ -21,10 +21,12 @@ def get_primary_key(model):
 
     pks = []
     for p in props:
-        if hasattr(p, 'columns'):
-            for c in p.columns:
-                if c.primary_key:
-                    pks.append(c.key)
+        if hasattr(p, 'expression'):    # expression = primary column or expression for this ColumnProperty
+            if p.expression.primary_key:
+                if is_inherited_primary_key(p):
+                    pks.append(get_column_for_current_model(p).key)
+                else:
+                    pks.append(p.columns[0].key)
     if len(pks) == 1:
         return pks[0]
     elif len(pks) > 1:
