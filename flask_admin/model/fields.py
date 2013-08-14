@@ -41,6 +41,26 @@ class InlineFieldList(FieldList):
 
         return res
 
+    def validate(self, form, extra_validators=tuple()):
+        """
+            Validate this FieldList.
+
+            Note that FieldList validation differs from normal field validation in
+            that FieldList validates all its enclosed fields first before running any
+            of its own validators.
+        """
+        self.errors = []
+
+        # Run validators on all entries within
+        for subfield in self.entries:
+            if not self.should_delete(subfield) and not subfield.validate(form):
+                self.errors.append(subfield.errors)
+
+        chain = itertools.chain(self.validators, extra_validators)
+        self._run_validation_chain(form, chain)
+
+        return len(self.errors) == 0
+
     def should_delete(self, field):
         return getattr(field, '_should_delete', False)
 
