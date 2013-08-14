@@ -12,7 +12,7 @@ from flask.ext.admin._compat import iteritems
 
 from .validators import Unique
 from .fields import QuerySelectField, QuerySelectMultipleField, InlineModelFormList
-from .tools import is_inherited_primary_key, get_column_for_current_model
+from .tools import is_inherited_primary_key, get_column_for_current_model, has_multiple_pks
 
 try:
     # Field has better input parsing capabilities.
@@ -166,10 +166,12 @@ class AdminModelConverter(ModelConverterBase):
                         if prop.key not in form_columns:
                             return None
 
-                        kwargs['validators'].append(Unique(self.session,
-                                                           model,
-                                                           column))
-                        unique = True
+                        # Current Unique Validator does not work with multicolumns-pks
+                        if not has_multiple_pks(model):
+                            kwargs['validators'].append(Unique(self.session,
+                                                               model,
+                                                               column))
+                            unique = True
 
                 # If field is unique, validate it
                 if column.unique and not unique:
