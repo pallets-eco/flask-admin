@@ -105,7 +105,7 @@ class AdminModelConverter(ModelConverterBase):
             return QuerySelectField(**kwargs)
         elif prop.direction.name == 'ONETOMANY':
             # Skip backrefs
-            if not local_column.foreign_keys and getattr(self.view, 'column_hide_backrefs', False):
+            if not local_column.foreign_keys and getattr(self.view, 'column_hide_backrefs', True):
                 return None
 
             return QuerySelectMultipleField(**kwargs)
