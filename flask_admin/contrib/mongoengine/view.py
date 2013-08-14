@@ -171,12 +171,8 @@ class ModelView(BaseModelView):
                 form_subdocuments = {
                     'data': {
                         'form_subdocuments': {
-                            data: {
-                                'form_subdocuments': {
-                                    None: {
-                                        'form_columns': ('name',)
-                                    }
-                                }
+                            None: {
+                                'form_columns': ('name',)
                             }
                         }
 
