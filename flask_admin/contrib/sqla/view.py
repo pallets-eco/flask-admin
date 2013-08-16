@@ -15,7 +15,7 @@ from flask.ext.admin._backwards import ObsoleteAttr
 
 from flask.ext.admin.contrib.sqla import form, filters, tools
 from .typefmt import DEFAULT_FORMATTERS
-from .tools import is_inherited_primary_key, get_column_for_current_model
+from .tools import is_inherited_primary_key, get_column_for_current_model, get_query_for_ids
 
 class ModelView(BaseModelView):
     """
@@ -858,9 +858,8 @@ class ModelView(BaseModelView):
             lazy_gettext('Are you sure you want to delete selected models?'))
     def action_delete(self, ids):
         try:
-            model_pk = getattr(self.model, self._primary_key)
 
-            query = self.get_query().filter(model_pk.in_(ids))
+            query = get_query_for_ids(self.get_query(), self.model, ids)
 
             if self.fast_mass_delete:
                 count = query.delete(synchronize_session=False)
