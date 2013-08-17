@@ -97,7 +97,7 @@ class ModelView(BaseModelView):
         List of allowed search field types.
     """
 
-    form_subdocuments = None
+    form_subdocuments = {}
     """
         Subdocument configuration options.
 
