@@ -9,7 +9,6 @@ from flask.ext.admin._compat import iteritems, string_types
 
 import mongoengine
 import gridfs
-from mongoengine.fields import GridFSProxy, ImageGridFsProxy
 from mongoengine.connection import get_db
 from bson.objectid import ObjectId
 
@@ -98,7 +97,7 @@ class ModelView(BaseModelView):
         List of allowed search field types.
     """
 
-    form_subdocuments = None
+    form_subdocuments = {}
     """
         Subdocument configuration options.
 
