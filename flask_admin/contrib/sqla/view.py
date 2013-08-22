@@ -15,7 +15,7 @@ from flask.ext.admin._backwards import ObsoleteAttr
 
 from flask.ext.admin.contrib.sqla import form, filters, tools
 from .typefmt import DEFAULT_FORMATTERS
-from .tools import is_inherited_primary_key, get_column_for_current_model
+from .tools import is_inherited_primary_key, get_column_for_current_model, get_query_for_ids
 
 class ModelView(BaseModelView):
     """
@@ -287,14 +287,22 @@ class ModelView(BaseModelView):
     def scaffold_pk(self):
         """
             Return the primary key name from a model
+            PK can be a single value or a tuple if multiple PKs exist
         """
         return tools.get_primary_key(self.model)
 
     def get_pk_value(self, model):
         """
             Return the PK value from a model object.
+            PK can be a single value or a tuple if multiple PKs exist
         """
-        return getattr(model, self._primary_key)
+        try:
+            return getattr(model, self._primary_key)
+        except TypeError:
+            v = []
+            for attr in self._primary_key:
+                v.append(getattr(model, attr))
+            return tuple(v)
 
     def scaffold_list_columns(self):
         """
@@ -850,9 +858,8 @@ class ModelView(BaseModelView):
             lazy_gettext('Are you sure you want to delete selected models?'))
     def action_delete(self, ids):
         try:
-            model_pk = getattr(self.model, self._primary_key)
 
-            query = self.get_query().filter(model_pk.in_(ids))
+            query = get_query_for_ids(self.get_query(), self.model, ids)
 
             if self.fast_mass_delete:
                 count = query.delete(synchronize_session=False)
