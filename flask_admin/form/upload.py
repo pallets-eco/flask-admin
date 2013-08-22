@@ -371,7 +371,7 @@ class ImageUploadField(FileUploadField):
             filename, format = self._get_save_format(filename, self.image)
 
             self._save_image(self._resize(self.image, self.max_size),
-                             path,
+                             self._get_path(filename),
                              format)
         else:
             data.seek(0)
