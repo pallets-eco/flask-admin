@@ -14,7 +14,7 @@ from flask.ext.admin.helpers import get_form_data, validate_form_on_submit
 from flask.ext.admin.tools import rec_getattr
 from flask.ext.admin._backwards import ObsoleteAttr
 from flask.ext.admin._compat import iteritems, as_unicode
-from .helpers import prettify_name
+from .helpers import prettify_name, get_mdict_item_or_list
 
 
 class BaseModelView(BaseView, ActionsMixin):
@@ -1104,7 +1104,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if not self.can_edit:
             return redirect(return_url)
 
-        id = request.args.get('id')
+        id = get_mdict_item_or_list(request.args, 'id')
         if id is None:
             return redirect(return_url)
 
@@ -1140,7 +1140,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if not self.can_delete:
             return redirect(return_url)
 
-        id = request.args.get('id')
+        id = get_mdict_item_or_list(request.args, 'id')
         if id is None:
             return redirect(return_url)
 

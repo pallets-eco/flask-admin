@@ -103,6 +103,48 @@ you can do something like this::
 Check :doc:`api/mod_contrib_sqla` documentation for list of
 configuration properties and methods.
 
+Multiple Primary Keys
+---------------------
+
+Models with multiple primary keys have limited support, as a few pitfalls are waiting for you.
+With using multiple primary keys, weak entities can be used with Flask-Admin.
+
+Lets Model a car with it's tyres::
+
+    class Car(db.Model):
+        __tablename__ = 'cars'
+        id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+        desc = db.Column(db.String(50))
+
+        def __unicode__(self):
+            return self.desc
+
+    class Tyre(db.Model):
+        __tablename__ = 'tyres'
+        car_id = db.Column(db.Integer, db.ForeignKey('cars.id'), primary_key=True)
+        tyre_id = db.Column(db.Integer, primary_key=True)
+        car = db.relationship('Car', backref='tyres')
+        desc = db.Column(db.String(50))
+
+A specific tyre is identified by using the two primary key columns of the ``Tyre`` class, of which the ``car_id`` key
+is itself a foreign key to the class ``Car``.
+
+To be able to CRUD the ``Tyre`` class, two steps are necessary, when definig the AdminView::
+
+    class TyreAdmin(sqla.ModelView):
+        form_columns = ['car', 'tyre_id', 'desc']
+
+The ``form_columns`` needs to be explizit, as per default only one primary key is displayed. When, like in this
+example, one part of the key is a foreign key, do not include the foreign-key-columns here, but the
+corresponding relationship.
+
+When having multiple primary keys, **no** validation for uniqueness *prior* to saving of the object will be done. Saving
+a model that violates a unique-constraint leads to an Sqlalchemy-Integrity-Error. In this case, ``Flask-Admin`` displays
+a proper error message and you can change the data in the form. When the application has been started with ``debug=True``
+the ``werkzeug`` debugger catches the exception and displays the stacktrace.
+
+A standalone script with the Examples from above can be found in the examples directory.
+
 Example
 -------
 
