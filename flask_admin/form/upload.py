@@ -227,7 +227,7 @@ class FileUploadField(fields.TextField):
     def _save_file(self, data, filename):
         path = self._get_path(filename)
         if not op.exists(op.dirname(path)):
-            os.makedirs(os.path.dirname(path), 0666)
+            os.makedirs(os.path.dirname(path), 0o666)
 
         data.save(path)
 
@@ -365,7 +365,7 @@ class ImageUploadField(FileUploadField):
     def _save_file(self, data, filename):
         path = self._get_path(filename)
         if not op.exists(op.dirname(path)):
-            os.makedirs(os.path.dirname(path), 0666)
+            os.makedirs(os.path.dirname(path), 0o666)
 
         if self.image and self.max_size:
             filename, format = self._get_save_format(filename, self.image)
