@@ -21,7 +21,6 @@ except ImportError:
     Image = None
     ImageOps = None
 
-
 __all__ = ['FileUploadInput', 'FileUploadField',
            'ImageUploadInput', 'ImageUploadField',
            'namegen_filename', 'thumbgen_filename']
@@ -102,8 +101,6 @@ class ImageUploadInput(object):
 
         if field.url_relative_path:
             filename = urljoin(field.url_relative_path, filename)
-
-        return url_for(field.endpoint, filename)
 
         return url_for(field.endpoint, filename=field.data)
 
@@ -229,6 +226,9 @@ class FileUploadField(fields.TextField):
 
     def _save_file(self, data, filename):
         path = self._get_path(filename)
+        if not op.exists(op.dirname(path)):
+            os.makedirs(os.path.dirname(path), 0o666)
+
         data.save(path)
 
         return filename
@@ -328,6 +328,7 @@ class ImageUploadField(FileUploadField):
         self.thumbnail_size = thumbnail_size
         self.endpoint = endpoint
         self.image = None
+        self.url_relative_path = url_relative_path
 
         if not allowed_extensions:
             allowed_extensions = ('gif', 'jpg', 'jpeg', 'png', 'tiff')
@@ -362,6 +363,10 @@ class ImageUploadField(FileUploadField):
 
     # Saving
     def _save_file(self, data, filename):
+        path = self._get_path(filename)
+        if not op.exists(op.dirname(path)):
+            os.makedirs(os.path.dirname(path), 0o666)
+
         if self.image and self.max_size:
             filename, format = self._get_save_format(filename, self.image)
 
@@ -369,7 +374,8 @@ class ImageUploadField(FileUploadField):
                              self._get_path(filename),
                              format)
         else:
-            data.save(self._get_path(filename))
+            data.seek(0)
+            data.save(path)
 
         self._save_thumbnail(data, filename)
 
@@ -389,11 +395,14 @@ class ImageUploadField(FileUploadField):
             if force:
                 return ImageOps.fit(self.image, (width, height), Image.ANTIALIAS)
             else:
-                return self.image.copy().thumbnail((width, height), Image.ANTIALIAS)
+                thumb = self.image.copy()
+                thumb.thumbnail((width, height), Image.ANTIALIAS)
+                return thumb
 
         return image
 
     def _save_image(self, image, path, format='JPEG'):
+        image = image.convert('RGB')
         with open(path, 'wb') as fp:
             image.save(fp, format)
 
