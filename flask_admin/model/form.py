@@ -11,14 +11,14 @@ def converts(*args):
     return _inner
 
 
-class InlineFormAdmin(object):
+class InlineBaseFormAdmin(object):
     """
         Settings for inline form administration.
 
         You can use this class to customize displayed form.
         For example::
 
-            class MyUserInfoForm(InlineFormAdmin):
+            class MyUserInfoForm(InlineBaseFormAdmin):
                 form_columns = ('name', 'email')
     """
     _defaults = ['form_base_class', 'form_columns', 'form_excluded_columns', 'form_args', 'form_extra_fields']
@@ -72,7 +72,7 @@ class InlineFormAdmin(object):
         pass
 
 
-class InlineModelFormAdmin(InlineFormAdmin):
+class InlineFormAdmin(InlineBaseFormAdmin):
     """
         Settings for inline form administration. Used by relational backends (SQLAlchemy, Peewee), where model
         class can not be inherited from the parent model definition.
@@ -86,7 +86,7 @@ class InlineModelFormAdmin(InlineFormAdmin):
         """
         self.model = model
 
-        super(InlineModelFormAdmin, self).__init__(**kwargs)
+        super(InlineFormAdmin, self).__init__(**kwargs)
 
 
 class ModelConverterBase(object):
@@ -173,8 +173,8 @@ class InlineModelConverterBase(object):
                  - Model class
         """
         if isinstance(p, tuple):
-            return InlineModelFormAdmin(p[0], **p[1])
-        elif isinstance(p, InlineModelFormAdmin):
+            return InlineFormAdmin(p[0], **p[1])
+        elif isinstance(p, InlineFormAdmin):
             return p
 
         return None

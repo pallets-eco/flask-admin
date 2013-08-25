@@ -259,7 +259,7 @@ def test_subdocument_config():
 def test_subdocument_class_config():
     app, db, admin = setup()
 
-    from flask.ext.admin.model.form import InlineFormAdmin
+    from flask.ext.admin.contrib.mongoengine import EmbeddedForm
 
     class Comment(db.EmbeddedDocument):
         name = db.StringField(max_length=20, required=True)
@@ -269,7 +269,7 @@ def test_subdocument_class_config():
         test1 = db.StringField(max_length=20)
         subdoc = db.EmbeddedDocumentField(Comment)
 
-    class EmbeddedConfig(InlineFormAdmin):
+    class EmbeddedConfig(EmbeddedForm):
         form_columns = ('name',)
 
     # Check only

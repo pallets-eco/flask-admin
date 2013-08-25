@@ -4,7 +4,7 @@ from sqlalchemy import Boolean, Column
 from flask.ext.admin import form
 from flask.ext.admin.form import Select2Field
 from flask.ext.admin.model.form import (converts, ModelConverterBase,
-                                        InlineModelFormAdmin, InlineModelConverterBase,
+                                        InlineFormAdmin, InlineModelConverterBase,
                                         FieldPlaceholder)
 from flask.ext.admin.model.helpers import prettify_name
 from flask.ext.admin._backwards import get_property
@@ -439,7 +439,7 @@ class InlineModelConverter(InlineModelConverterBase):
                 Flask-Admin view object
             :param model_converter:
                 Model converter class. Will be automatically instantiated with
-                appropriate `InlineModelFormAdmin` instance.
+                appropriate `InlineFormAdmin` instance.
         """
         super(InlineModelConverter, self).__init__(view)
         self.session = session
@@ -451,7 +451,7 @@ class InlineModelConverter(InlineModelConverterBase):
         # Special case for model instances
         if info is None:
             if hasattr(p, '_sa_class_manager'):
-                return InlineModelFormAdmin(p)
+                return InlineFormAdmin(p)
             else:
                 model = getattr(p, 'model', None)
 
@@ -463,9 +463,9 @@ class InlineModelConverter(InlineModelConverterBase):
                     if not attr.startswith('_') and attr != 'model':
                         attrs[attr] = getattr(p, attr)
 
-                return InlineModelFormAdmin(model, **attrs)
+                return InlineFormAdmin(model, **attrs)
 
-            info = InlineModelFormAdmin(model, **attrs)
+            info = InlineFormAdmin(model, **attrs)
 
         return info
 
