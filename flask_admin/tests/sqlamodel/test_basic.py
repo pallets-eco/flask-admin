@@ -730,7 +730,7 @@ def test_ajax_fk():
     client = app.test_client()
 
     req = client.get(u'/admin/view/ajax/lookup/?name=model1&query=foo')
-    eq_(req.data, u'[[%s, "foo"]]' % model2.id)
+    eq_(req.data.decode('utf-8'), u'[[%s, "foo"]]' % model2.id)
 
     # Check submitting
     req = client.post('/admin/view/new/', data={u'model1': as_unicode(model.id)})
