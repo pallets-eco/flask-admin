@@ -10,6 +10,9 @@ from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.babel import gettext
 from flask.ext.admin._compat import VER
 
+# Set up logger
+log = logging.getLogger("flask-admin.redis")
+
 
 class CommandError(Exception):
     """
@@ -203,5 +206,5 @@ class RedisCli(BaseView):
         except CommandError as err:
             return self._error('Cli: %s' % err)
         except Exception as ex:
-            logging.exception(ex)
+            log.exception(ex)
             return self._error('Cli: %s' % ex)

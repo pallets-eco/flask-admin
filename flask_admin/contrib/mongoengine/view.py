@@ -22,6 +22,10 @@ from .ajax import process_ajax_references, create_ajax_loader
 from .subdoc import convert_subdocuments
 
 
+# Set up logger
+log = logging.getLogger("flask-admin.mongo")
+
+
 SORTABLE_FIELDS = set((
     mongoengine.StringField,
     mongoengine.IntField,
@@ -478,7 +482,7 @@ class ModelView(BaseModelView):
             flash(gettext('Failed to create model. %(error)s',
                           error=format_error(ex)),
                   'error')
-            logging.exception('Failed to create model')
+            log.exception('Failed to create model')
             return False
         else:
             self.after_model_change(form, model, True)
@@ -505,7 +509,7 @@ class ModelView(BaseModelView):
             flash(gettext('Failed to update model. %(error)s',
                           error=format_error(ex)),
                   'error')
-            logging.exception('Failed to update model')
+            log.exception('Failed to update model')
             return False
         else:
             self.after_model_change(form, model, False)
@@ -530,7 +534,7 @@ class ModelView(BaseModelView):
             flash(gettext('Failed to delete model. %(error)s',
                           error=format_error(ex)),
                   'error')
-            logging.exception('Failed to delete model')
+            log.exception('Failed to delete model')
             return False
 
     # FileField access API
