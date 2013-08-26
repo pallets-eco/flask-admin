@@ -18,6 +18,7 @@ from .form import get_form, CustomModelConverter
 from .typefmt import DEFAULT_FORMATTERS
 from .tools import parse_like_term
 from .helpers import format_error
+from .ajax import QueryAjaxModelLoader
 
 
 SORTABLE_FIELDS = set((
@@ -335,6 +336,31 @@ class ModelView(BaseModelView):
                               extra_fields=self.form_extra_fields)
 
         return form_class
+
+    # AJAX foreignkey support
+    def _create_ajax_loader(self, name, fields):
+        prop = getattr(self.model, name, None)
+
+        if prop is None:
+            raise ValueError('Model %s does not have field %s.' % (self.model, name))
+
+        # TODO: Check for field
+
+        remote_model = prop.document_type
+        remote_fields = []
+
+        for field in fields:
+            if isinstance(field, string_types):
+                attr = getattr(remote_model, field, None)
+
+                if not attr:
+                    raise ValueError('%s.%s does not exist.' % (remote_model, field))
+
+                remote_fields.append(attr)
+            else:
+                remote_fields.append(field)
+
+        return QueryAjaxModelLoader(name, remote_model, remote_fields)
 
     def get_query(self):
         """

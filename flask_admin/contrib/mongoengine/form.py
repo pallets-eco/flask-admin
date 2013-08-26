@@ -1,5 +1,3 @@
-from operator import attrgetter
-
 from mongoengine import ReferenceField
 from mongoengine.base import BaseDocument, DocumentMetaclass
 
@@ -8,7 +6,7 @@ from flask.ext.mongoengine.wtf import orm, fields as mongo_fields
 
 from flask.ext.admin import form
 from flask.ext.admin.model.form import FieldPlaceholder, InlineBaseFormAdmin
-from flask.ext.admin.model.fields import InlineFieldList
+from flask.ext.admin.model.fields import InlineFieldList, AjaxSelectField, AjaxSelectMultipleField
 from flask.ext.admin.model.widgets import InlineFormWidget
 from flask.ext.admin._compat import iteritems
 
@@ -158,8 +156,13 @@ class CustomModelConverter(orm.ModelConverter):
 
     @orm.converts('ReferenceField')
     def conv_Reference(self, model, field, kwargs):
-        kwargs['widget'] = form.Select2Widget()
         kwargs['allow_blank'] = not field.required
+
+        loader = self.view._form_ajax_refs.get(field.name)
+        if loader:
+            return AjaxSelectField(loader, **kwargs)
+
+        kwargs['widget'] = form.Select2Widget()
 
         return orm.ModelConverter.conv_Reference(self, model, field, kwargs)
 
