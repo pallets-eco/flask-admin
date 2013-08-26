@@ -122,6 +122,8 @@ class AjaxSelectField(SelectFieldBase):
     """
     widget = AjaxSelect2Widget()
 
+    separator = ','
+
     def __init__(self, loader, label=None, validators=None, allow_blank=False, blank_text=u'', **kwargs):
         super(AjaxSelectField, self).__init__(label, validators, **kwargs)
         self.loader = loader
@@ -170,6 +172,7 @@ class AjaxSelectMultipleField(AjaxSelectField):
     def __init__(self, loader, label=None, validators=None, default=None, **kwargs):
         if default is None:
             default = []
+
         super(AjaxSelectMultipleField, self).__init__(loader, label, validators, default=default, **kwargs)
         self._invalid_formdata = False
 
@@ -198,12 +201,12 @@ class AjaxSelectMultipleField(AjaxSelectField):
     data = property(_get_data, _set_data)
 
     def process_formdata(self, valuelist):
-        self._formdata = set(valuelist)
+        self._formdata = set()
+
+        for field in valuelist:
+            for n in field.split(self.separator):
+                self._formdata.add(n)
 
     def pre_validate(self, form):
         if self._invalid_formdata:
             raise ValidationError(self.gettext(u'Not a valid choice'))
-        elif self.data:
-            for item in self.data:
-                if not self.loader.get_one(item):
-                    raise ValidationError(self.gettext(u'Not a valid choice'))

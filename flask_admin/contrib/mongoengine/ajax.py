@@ -39,4 +39,9 @@ class QueryAjaxModelLoader(AjaxModelLoader):
             else:
                 criteria |= mongoengine.Q(**flt)
 
-        return query.filter(criteria).skip(offset).limit(limit)
+        query = query.filter(criteria)
+
+        if offset:
+            query = query.skip(offset)
+
+        return query.limit(limit).all()

@@ -37,7 +37,8 @@
             }
           },
           initSelection: function(element, callback) {
-            var value = jQuery.parseJSON(element.val());
+            $el = $(element);
+            var value = jQuery.parseJSON($el.attr('data-json'));
             var result = null;
 
             if (value) {

@@ -1,6 +1,7 @@
 from flask import url_for, json
 from wtforms.widgets import HTMLString, html_params
 
+from flask.ext.admin._compat import as_unicode
 from flask.ext.admin.form import RenderTemplateWidget
 
 
@@ -31,13 +32,23 @@ class AjaxSelect2Widget(object):
 
         if self.multiple:
             result = []
+            ids = []
 
             for value in field.data:
-                result.append(field.loader.format(value))
+                data = field.loader.format(value)
+                result.append(data)
+                ids.append(as_unicode(data[0]))
 
-            kwargs['value'] = json.dumps(result)
+            separator = getattr(field, 'separator', ',')
+
+            kwargs['value'] = separator.join(ids)
+            kwargs['data-json'] = json.dumps(result)
             kwargs['data-multiple'] = u'1'
         else:
-            kwargs['value'] = json.dumps(field.loader.format(field.data))
+            data = field.loader.format(field.data)
+
+            if data:
+                kwargs['value'] = data[0]
+                kwargs['data-json'] = json.dumps(data)
 
         return HTMLString('<input %s>' % html_params(name=field.name, **kwargs))
