@@ -17,12 +17,23 @@ class Select2Widget(widgets.Select):
     def __call__(self, field, **kwargs):
         allow_blank = getattr(field, 'allow_blank', False)
 
+        kwargs['data-role'] = u'select2'
+
         if allow_blank and not self.multiple:
-            kwargs['data-role'] = u'select2blank'
-        else:
-            kwargs['data-role'] = u'select2'
+            kwargs['data-allow-blank'] = u'1'
 
         return super(Select2Widget, self).__call__(field, **kwargs)
+
+
+class Select2TagsWidget(widgets.TextInput):
+    """`Select2 <http://ivaynberg.github.com/select2/#tags>`_ styled text widget.
+    You must include select2.js, form.js and select2 stylesheet for it to work.
+    """
+    def __call__(self, field, **kwargs):
+        kwargs['data-role'] = u'select'
+        kwargs['data-tags'] = u'1'
+        return super(Select2TagsWidget, self).__call__(field, **kwargs)
+
 
 
 class DatePickerWidget(widgets.TextInput):
@@ -73,12 +84,3 @@ class RenderTemplateWidget(object):
 
         template = jinja_env.get_template(self.template)
         return template.render(kwargs)
-
-
-class Select2TagsWidget(widgets.TextInput):
-    """`Select2 <http://ivaynberg.github.com/select2/#tags>`_ styled text widget.
-    You must include select2.js, form.js and select2 stylesheet for it to work.
-    """
-    def __call__(self, field, **kwargs):
-        kwargs['data-role'] = u'select2tags'
-        return super(Select2TagsWidget, self).__call__(field, **kwargs)
