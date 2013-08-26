@@ -8,7 +8,7 @@ from wtfpeewee.orm import ModelConverter, model_form
 from flask.ext.admin import form
 from flask.ext.admin._compat import iteritems, itervalues
 from flask.ext.admin.model.form import InlineFormAdmin, InlineModelConverterBase
-from flask.ext.admin.model.fields import InlineModelFormField, InlineFieldList
+from flask.ext.admin.model.fields import InlineModelFormField, InlineFieldList, AjaxSelectField
 
 from .tools import get_primary_key
 
@@ -80,12 +80,25 @@ class InlineModelFormList(InlineFieldList):
 
 
 class CustomModelConverter(ModelConverter):
-    def __init__(self, additional=None):
+    def __init__(self, view, additional=None):
         super(CustomModelConverter, self).__init__(additional)
+        self.view = view
+
         self.converters[PrimaryKeyField] = self.handle_pk
         self.converters[DateTimeField] = self.handle_datetime
         self.converters[DateField] = self.handle_date
         self.converters[TimeField] = self.handle_time
+
+    def handle_foreign_key(self, model, field, **kwargs):
+        loader = self.view._form_ajax_refs.get(field.name)
+
+        if loader:
+            if field.null:
+                kwargs['allow_blank'] = True
+
+            return field.name, AjaxSelectField(loader, **kwargs)
+
+        return super(CustomModelConverter, self).handle_foreign_key(model, field, **kwargs)
 
     def handle_pk(self, model, field, **kwargs):
         kwargs['validators'] = []

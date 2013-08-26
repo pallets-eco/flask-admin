@@ -2,7 +2,7 @@ from nose.tools import eq_, ok_
 from nose.plugins.skip import SkipTest
 
 # Skip test on PY3
-from flask.ext.admin._compat import PY2
+from flask.ext.admin._compat import PY2, as_unicode
 if not PY2:
     raise SkipTest('Peewee is not Python 3 compatible')
 
@@ -194,3 +194,80 @@ def test_custom_form_base():
 
     create_form = view.create_form()
     ok_(isinstance(create_form, TestForm))
+
+
+def test_ajax_fk():
+    app, db, admin = setup()
+
+    class BaseModel(peewee.Model):
+        class Meta:
+            database = db
+
+    class Model1(BaseModel):
+        test1 = peewee.CharField(max_length=20)
+        test2 = peewee.CharField(max_length=20)
+
+        def __str__(self):
+            return self.test1
+
+    class Model2(BaseModel):
+        model1 = peewee.ForeignKeyField(Model1)
+
+    Model1.create_table()
+    Model2.create_table()
+
+    view = CustomModelView(
+        Model2,
+        url='view',
+        form_ajax_refs={
+            'model1': ('test1', 'test2')
+        }
+    )
+    admin.add_view(view)
+
+    ok_(u'model1' in view._form_ajax_refs)
+
+    model = Model1(test1=u'first', test2=u'')
+    model.save()
+    model2 = Model1(test1=u'foo', test2=u'bar')
+    model2.save()
+
+    # Check loader
+    loader = view._form_ajax_refs[u'model1']
+    mdl = loader.get_one(model.id)
+    eq_(mdl.test1, model.test1)
+
+    items = loader.get_list(u'fir')
+    eq_(len(items), 1)
+    eq_(items[0].id, model.id)
+
+    items = loader.get_list(u'bar')
+    eq_(len(items), 1)
+    eq_(items[0].test1, u'foo')
+
+    # Check form generation
+    form = view.create_form()
+    eq_(form.model1.__class__.__name__, u'AjaxSelectField')
+
+    with app.test_request_context('/admin/view/'):
+        ok_(u'value=""' not in form.model1())
+
+        form.model1.data = model
+        needle = u'data-json="[%s, &quot;first&quot;]"' % as_unicode(model.id)
+        ok_(needle in form.model1())
+        ok_(u'value="%s"' % as_unicode(model.id) in form.model1())
+
+    # Check querying
+    client = app.test_client()
+
+    req = client.get(u'/admin/view/ajax/lookup/?name=model1&query=foo')
+    eq_(req.data, u'[[%s, "foo"]]' % model2.id)
+
+    # Check submitting
+    client.post('/admin/view/new/', data={u'model1': as_unicode(model.id)})
+    mdl = Model2.select().first()
+
+    ok_(mdl is not None)
+    ok_(mdl.model1 is not None)
+    eq_(mdl.model1.id, model.id)
+    eq_(mdl.model1.test1, u'first')

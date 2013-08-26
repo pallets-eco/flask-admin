@@ -32,7 +32,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         criteria = None
 
         for field in self.fields:
-            flt = {'%s__icontains' % field.name: term}
+            flt = {u'%s__icontains' % field.name: term}
 
             if not criteria:
                 criteria = mongoengine.Q(**flt)
