@@ -8,6 +8,7 @@ def setup():
     app.config['SECRET_KEY'] = '1'
     app.config['CSRF_ENABLED'] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'
+    #app.config['SQLALCHEMY_ECHO'] = True
 
     db = SQLAlchemy(app)
     admin = Admin(app)

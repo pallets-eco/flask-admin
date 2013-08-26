@@ -1213,5 +1213,5 @@ class BaseModelView(BaseView, ActionsMixin):
         if not loader:
             abort(404)
 
-        data = [loader.format(m) for m in loader.get_models(query, offset, limit)]
+        data = [loader.format(m) for m in loader.get_list(query, offset, limit)]
         return Response(json.dumps(data), mimetype='application/json')
