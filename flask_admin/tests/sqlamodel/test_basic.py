@@ -790,7 +790,6 @@ def test_ajax_fk_multi():
     eq_(form.model1.__class__.__name__, u'AjaxSelectMultipleField')
 
     with app.test_request_context('/admin/view/'):
-        print form.model1()
         ok_(u'data-json="[]"' in form.model1())
 
         form.model1.data = [model]
