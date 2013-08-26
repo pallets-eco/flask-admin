@@ -66,6 +66,10 @@ class PostAdmin(ModelView):
                       'date',
                       User.username)
 
+    form_ajax_refs = {
+        'user': (User.username, 'email')
+    }
+
 
 @app.route('/')
 def index():
