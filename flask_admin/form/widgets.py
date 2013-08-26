@@ -30,7 +30,7 @@ class Select2TagsWidget(widgets.TextInput):
     You must include select2.js, form.js and select2 stylesheet for it to work.
     """
     def __call__(self, field, **kwargs):
-        kwargs['data-role'] = u'select'
+        kwargs['data-role'] = u'select2'
         kwargs['data-tags'] = u'1'
         return super(Select2TagsWidget, self).__call__(field, **kwargs)
 

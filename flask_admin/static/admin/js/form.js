@@ -4,6 +4,70 @@
       var fieldConverters = [];
 
       /**
+      * Process AJAX fk-widget
+      */
+      function processAjaxWidget($el, name) {
+        var multiple = $el.attr('data-multiple') == '1';
+
+        var opts = {
+          width: 'resolve',
+          minimumInputLength: 1,
+          ajax: {
+            url: $el.attr('data-url'),
+            data: function(term, page) {
+              return {
+                query: term,
+                offset: (page - 1) * 10,
+                limit: 10
+              };
+            },
+            results: function(data, page) {
+              var results = [];
+
+              for (var k in data) {
+                var v = data[k];
+
+                results.push({id: v[0], text: v[1]});
+              }
+
+              return {
+                results: results,
+                more: results.length == 10
+              };
+            }
+          },
+          initSelection: function(element, callback) {
+            var value = jQuery.parseJSON(element.val());
+            var result = null;
+
+            if (value) {
+              if (multiple) {
+                result = [];
+
+                for (var k in value) {
+                  var v = value[k];
+                  result.push({id: v[0], text: v[1]});
+                }
+
+                callback(result);
+              } else {
+                result = {id: value[0], text: value[1]};
+              }
+            }
+
+            callback(result);
+          }
+        };
+
+        if ($el.attr('data-allow-blank'))
+          opts['allowClear'] = true;
+
+        opts['multiple'] = multiple;
+
+        $el.select2(opts);
+      }
+
+      /**
       * Process data-role attribute for the given input element. Feel free to override
       *
       * @param {Selector} $el jQuery selector
@@ -20,7 +84,7 @@
 
         switch (name) {
             case 'select2':
-                opts = {
+                var opts = {
                     width: 'resolve'
                 };
 
@@ -35,6 +99,9 @@
                 }
 
                 $el.select2(opts);
+                return true;
+            case 'select2-ajax':
+                processAjaxWidget($el, name);
                 return true;
             case 'datepicker':
                 $el.datepicker();
