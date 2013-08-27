@@ -18,7 +18,7 @@ from .form import get_form, CustomModelConverter
 from .typefmt import DEFAULT_FORMATTERS
 from .tools import parse_like_term
 from .helpers import format_error
-from .ajax import QueryAjaxModelLoader, create_ajax_loader
+from .ajax import process_ajax_references, create_ajax_loader
 from .subdoc import convert_subdocuments
 
 
@@ -213,6 +213,18 @@ class ModelView(BaseModelView):
         # Cache other properties
         super(ModelView, self)._refresh_cache()
 
+    def _process_ajax_references(self):
+        """
+            AJAX endpoint is exposed by top-level admin view class, but
+            subdocuments might have AJAX references too.
+
+            This method will recursively go over subdocument configuration
+            and will precompute AJAX references for them ensuring that
+            subdocuments can also use AJAX to populate their ReferenceFields.
+        """
+        references = super(ModelView, self)._process_ajax_references()
+        return process_ajax_references(references, self)
+
     def _get_model_fields(self, model=None):
         """
             Inspect model and return list of model fields
@@ -353,7 +365,7 @@ class ModelView(BaseModelView):
 
     # AJAX foreignkey support
     def _create_ajax_loader(self, name, fields):
-        return create_ajax_loader(self.model, name, fields)
+        return create_ajax_loader(self.model, name, name, fields)
 
     def get_query(self):
         """

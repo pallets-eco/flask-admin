@@ -495,7 +495,7 @@ class InlineModelConverter(InlineModelConverterBase):
 
         if refs:
             for name, opts in iteritems(refs):
-                new_name = '%s.%s' % (info.model.__name__.lower(), name)
+                new_name = '%s-%s' % (info.model.__name__.lower(), name)
 
                 loader = None
                 if isinstance(opts, (list, tuple)):

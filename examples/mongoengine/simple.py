@@ -50,6 +50,7 @@ class Tag(db.Document):
 class Comment(db.EmbeddedDocument):
     name = db.StringField(max_length=20, required=True)
     value = db.StringField(max_length=20)
+    tag = db.ReferenceField(Tag)
 
 
 class Post(db.Document):

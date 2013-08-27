@@ -425,3 +425,36 @@ def test_ajax_fk():
     ok_(mdl.model1 is not None)
     eq_(mdl.model1.id, model.id)
     eq_(mdl.model1.test1, u'first')
+
+
+def test_nested_ajax_refs():
+    app, db, admin = setup()
+
+    # Check recursive
+    class Comment(db.Document):
+        name = db.StringField(max_length=20, required=True)
+        value = db.StringField(max_length=20)
+
+    class Nested(db.EmbeddedDocument):
+        name = db.StringField(max_length=20, required=True)
+        comment = db.ReferenceField(Comment)
+
+    class Model1(db.Document):
+        test1 = db.StringField(max_length=20)
+        nested = db.EmbeddedDocumentField(Nested)
+
+    view1 = CustomModelView(
+        Model1,
+        form_subdocuments = {
+            'nested': {
+                'form_ajax_refs': {
+                    'comment': ['name']
+                }
+            }
+        }
+    )
+
+    form = view1.create_form()
+    eq_(type(form.nested.form.comment).__name__, 'AjaxSelectField')
+    print view1._form_ajax_refs
+    ok_('nested-comment' in view1._form_ajax_refs)

@@ -137,7 +137,7 @@ def test_inline_form_ajax_fk():
     form = view.create_form()
     user_info_form = form.info.unbound_field.args[0]
     loader = user_info_form.tag.args[0]
-    eq_(loader.name, 'userinfo.tag')
+    eq_(loader.name, 'userinfo-tag')
     eq_(loader.model, Tag)
 
-    ok_('userinfo.tag' in view._form_ajax_refs)
+    ok_('userinfo-tag' in view._form_ajax_refs)

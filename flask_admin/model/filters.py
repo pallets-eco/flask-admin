@@ -123,7 +123,7 @@ def convert(*args):
     """
         Decorator for field to filter conversion routine.
 
-        See :mod:`flask.ext.admin.contrib.sqlamodel.filters` for usage example.
+        See :mod:`flask.ext.admin.contrib.sqla.filters` for usage example.
     """
     def _inner(func):
         func._converter_for = args
