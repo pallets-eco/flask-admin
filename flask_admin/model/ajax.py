@@ -5,7 +5,7 @@ class AjaxModelLoader(object):
     """
         Ajax related model loader. Override this to implement custom loading behavior.
     """
-    def __init__(self, name):
+    def __init__(self, name, options):
         """
             Constructor.
 
@@ -13,6 +13,7 @@ class AjaxModelLoader(object):
                 Field name
         """
         self.name = name
+        self.options = options
 
     def format(self, model):
         """

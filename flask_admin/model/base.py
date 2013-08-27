@@ -367,15 +367,28 @@ class BaseModelView(BaseView, ActionsMixin):
     """
         Use AJAX for foreign key model loading.
 
-        Should contain dictionary, where key is field name and value is enumerable with list to fields
-        to check against (in remote model).
+        Should contain dictionary, where key is field name and value is either a dictionary which
+        configures AJAX lookups or backend-specific `AjaxModelLoader` class instance.
 
         For example, it can look like::
 
             class MyModelView(BaseModelView):
                 form_ajax_refs = {
-                    'user': ('first_name', 'last_name', 'email')
+                    'user': {
+                        'fields': ('first_name', 'last_name', 'email')
+                        'page_size': 10
+                    }
                 }
+
+        Or with SQLAlchemy backend like this::
+
+            class MyModelView(BaseModelView):
+                form_ajax_refs = {
+                    'user': QueryAjaxModelLoader('user', db.session, User, page_size=10)
+                }
+
+        If you need custom loading functionality, you can implement your custom loading behavior
+        in your `AjaxModelLoader` class.
     """
 
     # Actions
@@ -998,17 +1011,17 @@ class BaseModelView(BaseView, ActionsMixin):
         result = {}
 
         if self.form_ajax_refs:
-            for name, value in iteritems(self.form_ajax_refs):
-                if isinstance(value, AjaxModelLoader):
-                    result[name] = value
-                elif isinstance(value, (list, tuple)):
-                    result[name] = self._create_ajax_loader(name, value)
+            for name, options in iteritems(self.form_ajax_refs):
+                if isinstance(options, dict):
+                    result[name] = self._create_ajax_loader(name, options)
+                elif isinstance(options, AjaxModelLoader):
+                    result[name] = options
                 else:
-                    raise ValueError('%s.form_ajax_refs can not handle %s types' % (self, type(value)))
+                    raise ValueError('%s.form_ajax_refs can not handle %s types' % (self, type(options)))
 
         return result
 
-    def _create_ajax_loader(self, name, fields):
+    def _create_ajax_loader(self, name, options):
         """
             Model backend will override this to implement AJAX model loading.
         """

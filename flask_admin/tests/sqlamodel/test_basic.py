@@ -690,7 +690,9 @@ def test_ajax_fk():
         Model2, db.session,
         url='view',
         form_ajax_refs={
-            'model1': ('test1', 'test2')
+            'model1': {
+                'fields': ('test1', 'test2')
+            }
         }
     )
     admin.add_view(view)
@@ -774,7 +776,9 @@ def test_ajax_fk_multi():
         Model2, db.session,
         url='view',
         form_ajax_refs={
-            'model1': ('name',)
+            'model1': {
+                'fields': ['name']
+            }
         }
     )
     admin.add_view(view)

@@ -122,8 +122,12 @@ class PostAdmin(sqla.ModelView):
                 )
 
     form_ajax_refs = {
-        'user': (User.username, User.email),
-        'tags': (Tag.name,)
+        'user': {
+            'fields': (User.username, User.email)
+        },
+        'tags': {
+            'fields': (Tag.name,)
+        }
     }
 
     def __init__(self, session):

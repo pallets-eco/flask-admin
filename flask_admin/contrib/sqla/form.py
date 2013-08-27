@@ -498,7 +498,7 @@ class InlineModelConverter(InlineModelConverterBase):
                 new_name = '%s-%s' % (info.model.__name__.lower(), name)
 
                 loader = None
-                if isinstance(opts, (list, tuple)):
+                if isinstance(opts, dict):
                     loader = create_ajax_loader(info.model, self.session, new_name, name, opts)
                 else:
                     loader = opts

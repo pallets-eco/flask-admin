@@ -586,8 +586,8 @@ class ModelView(BaseModelView):
         return joined
 
     # AJAX foreignkey support
-    def _create_ajax_loader(self, name, fields):
-        return create_ajax_loader(self.model, self.session, name, name, fields)
+    def _create_ajax_loader(self, name, options):
+        return create_ajax_loader(self.model, self.session, name, name, options)
 
     # Database-related API
     def get_query(self):

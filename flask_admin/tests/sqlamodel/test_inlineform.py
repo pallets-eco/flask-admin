@@ -129,7 +129,15 @@ def test_inline_form_ajax_fk():
 
     # Set up Admin
     class UserModelView(ModelView):
-        inline_models = [(UserInfo, {'form_ajax_refs': {'tag': ('name',)}})]
+        opts = {
+            'form_ajax_refs': {
+                'tag': {
+                    'fields': ['name']
+                }
+            }
+        }
+
+        inline_models = [(UserInfo, opts)]
 
     view = UserModelView(User, db.session)
     admin.add_view(view)
