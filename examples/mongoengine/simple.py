@@ -79,6 +79,10 @@ class UserView(ModelView):
 class TodoView(ModelView):
     column_filters = ['done']
 
+    form_ajax_refs = {
+        'user': ('name',)
+    }
+
 
 # Flask views
 @app.route('/')

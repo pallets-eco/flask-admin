@@ -121,6 +121,11 @@ class PostAdmin(sqla.ModelView):
                     text=dict(label='Big Text', validators=[validators.required()])
                 )
 
+    form_ajax_refs = {
+        'user': (User.username, User.email),
+        'tags': (Tag.name,)
+    }
+
     def __init__(self, session):
         # Just call parent class with predefined model.
         super(PostAdmin, self).__init__(Post, session)

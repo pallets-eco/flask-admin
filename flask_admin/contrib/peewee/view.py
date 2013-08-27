@@ -2,7 +2,6 @@ import logging
 
 from flask import flash
 
-from flask.ext.admin import form
 from flask.ext.admin._compat import string_types
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
@@ -11,8 +10,10 @@ from peewee import PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
 
 from flask.ext.admin.actions import action
 from flask.ext.admin.contrib.peewee import filters
+
 from .form import get_form, CustomModelConverter, InlineModelConverter, save_inline
 from .tools import get_primary_key, parse_like_term
+from .ajax import QueryAjaxModelLoader
 
 
 class ModelView(BaseModelView):
@@ -217,7 +218,7 @@ class ModelView(BaseModelView):
         return isinstance(filter, filters.BasePeeweeFilter)
 
     def scaffold_form(self):
-        form_class = get_form(self.model, self.model_form_converter(),
+        form_class = get_form(self.model, self.model_form_converter(self),
                               base_class=self.form_base_class,
                               only=self.form_columns,
                               exclude=self.form_excluded_columns,
@@ -230,7 +231,7 @@ class ModelView(BaseModelView):
         return form_class
 
     def scaffold_inline_form_models(self, form_class):
-        converter = self.model_form_converter()
+        converter = self.model_form_converter(self)
         inline_converter = self.inline_model_form_converter(self)
 
         for m in self.inline_models:
@@ -240,6 +241,30 @@ class ModelView(BaseModelView):
                                                      m)
 
         return form_class
+
+    # AJAX foreignkey support
+    def _create_ajax_loader(self, name, fields):
+        prop = getattr(self.model, name, None)
+
+        if prop is None:
+            raise ValueError('Model %s does not have field %s.' % (self.model, name))
+
+        # TODO: Check for field
+        remote_model = prop.rel_model
+        remote_fields = []
+
+        for field in fields:
+            if isinstance(field, string_types):
+                attr = getattr(remote_model, field, None)
+
+                if not attr:
+                    raise ValueError('%s.%s does not exist.' % (remote_model, field))
+
+                remote_fields.append(attr)
+            else:
+                remote_fields.append(field)
+
+        return QueryAjaxModelLoader(name, remote_model, remote_fields)
 
     def _handle_join(self, query, field, joins):
         if field.model_class != self.model:

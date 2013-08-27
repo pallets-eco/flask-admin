@@ -1,25 +1,126 @@
 (function() {
     var AdminForm = function() {
-      this.applyStyle = function(el, name) {
+      // Field converters
+      var fieldConverters = [];
+
+      /**
+      * Process AJAX fk-widget
+      */
+      function processAjaxWidget($el, name) {
+        var multiple = $el.attr('data-multiple') == '1';
+
+        var opts = {
+          width: 'resolve',
+          minimumInputLength: 1,
+          ajax: {
+            url: $el.attr('data-url'),
+            data: function(term, page) {
+              return {
+                query: term,
+                offset: (page - 1) * 10,
+                limit: 10
+              };
+            },
+            results: function(data, page) {
+              var results = [];
+
+              for (var k in data) {
+                var v = data[k];
+
+                results.push({id: v[0], text: v[1]});
+              }
+
+              return {
+                results: results,
+                more: results.length == 10
+              };
+            }
+          },
+          initSelection: function(element, callback) {
+            $el = $(element);
+            var value = jQuery.parseJSON($el.attr('data-json'));
+            var result = null;
+
+            if (value) {
+              if (multiple) {
+                result = [];
+
+                for (var k in value) {
+                  var v = value[k];
+                  result.push({id: v[0], text: v[1]});
+                }
+
+                callback(result);
+              } else {
+                result = {id: value[0], text: value[1]};
+              }
+            }
+
+            callback(result);
+          }
+        };
+
+        if ($el.attr('data-allow-blank'))
+          opts['allowClear'] = true;
+
+        opts['multiple'] = multiple;
+
+        $el.select2(opts);
+      }
+
+      /**
+      * Process data-role attribute for the given input element. Feel free to override
+      *
+      * @param {Selector} $el jQuery selector
+      * @param {String} name data-role value
+      */
+      this.applyStyle = function($el, name) {
+        // Process converters first
+        for (var conv in fieldConverters) {
+            var fildConv = fieldConverters[conv];
+
+            if (fieldConv($el, name))
+                return true;
+        }
+
         switch (name) {
             case 'select2':
-                $(el).select2({width: 'resolve'});
-                break;
-            case 'select2blank':
-                $(el).select2({allowClear: true, width: 'resolve'});
-                break;
-            case 'select2tags':
-                $(el).select2({tags: [], tokenSeparators: [','], width: 'resolve'});
-                break;
+                var opts = {
+                    width: 'resolve'
+                };
+
+                if ($el.attr('data-allow-blank'))
+                    opts['allowClear'] = true;
+
+                if ($el.attr('data-tags')) {
+                    $.extend(opts, {
+                        multiple: true,
+                        tokenSeparators: [',']
+                    });
+                }
+
+                $el.select2(opts);
+                return true;
+            case 'select2-ajax':
+                processAjaxWidget($el, name);
+                return true;
             case 'datepicker':
-                $(el).datepicker();
-                break;
+                $el.datepicker();
+                return true;
             case 'datetimepicker':
-                $(el).datepicker({displayTime: true});
-                break;
+                $el.datepicker({displayTime: true});
+                return true;
         }
       };
 
+      /**
+      * Add inline form field
+      *
+      * @method addInlineField
+      * @param {String} id Form ID
+      * @param {Node} el Form element
+      * @param {String} template Form template
+      */
       this.addInlineField = function(id, el, template) {
         var $el = $(el);
         var $template = $($(template).text());
@@ -60,12 +161,19 @@
         this.applyGlobalStyles($template);
       };
 
+      /**
+      * Apply global input styles.
+      *
+      * @method applyGlobalStyles
+      * @param {Selector} jQuery element
+      */
       this.applyGlobalStyles = function(parent) {
-        $('[data-role=select2]', parent).select2({width: 'resolve'});
-        $('[data-role=select2blank]', parent).select2({allowClear: true, width: 'resolve'});
-        $('[data-role=select2tags]', parent).select2({multiple: true, tokenSeparators: [','], width: 'resolve'});
-        $('[data-role=datepicker]', parent).datepicker();
-        $('[data-role=datetimepicker]', parent).datepicker({displayTime: true});
+        var self = this;
+
+        $('[data-role]', parent).each(function() {
+            var $el = $(this);
+            self.applyStyle($el, $el.attr('data-role'));
+        });
       };
     };
 
@@ -80,6 +188,8 @@
     // Expose faForm globally
     var faForm = window.faForm = new AdminForm();
 
-    // Apply global styles
-    faForm.applyGlobalStyles(document);
+    // Apply global styles for current page after page loaded
+    $(function() {
+        faForm.applyGlobalStyles(document);
+    });
 })();

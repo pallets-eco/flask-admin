@@ -12,7 +12,7 @@ from flask import flash, url_for, redirect, abort, request
 from wtforms import fields, validators
 
 from flask.ext.admin import form, helpers
-from flask.ext.admin._compat import urljoin
+from flask.ext.admin._compat import urljoin, as_unicode
 from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.actions import action, ActionsMixin
 from flask.ext.admin.babel import gettext, lazy_gettext
@@ -173,7 +173,7 @@ class FileAdmin(BaseView, ActionsMixin):
                 Verify if path exists. If set to `True` and path does not exist
                 will raise an exception.
         """
-        self.base_path = base_path
+        self.base_path = as_unicode(base_path)
         self.base_url = base_url
 
         self.init_actions()

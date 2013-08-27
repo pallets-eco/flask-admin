@@ -3,6 +3,7 @@ from nose.tools import eq_, ok_, raises
 from wtforms import fields
 
 from flask.ext.admin import form
+from flask.ext.admin._compat import as_unicode
 from flask.ext.admin._compat import iteritems
 from flask.ext.admin.contrib.sqla import ModelView
 
@@ -36,6 +37,9 @@ def create_models(db):
         test4 = db.Column(db.UnicodeText)
         bool_field = db.Column(db.Boolean)
         enum_field = db.Column(db.Enum('model1_v1', 'model1_v1'), nullable=True)
+
+        def __str__(self):
+            return self.test1
 
     class Model2(db.Model):
         def __init__(self, string_field=None, int_field=None, bool_field=None, model1=None):
@@ -675,3 +679,127 @@ def test_custom_form_base():
 
     create_form = view.create_form()
     ok_(isinstance(create_form, TestForm))
+
+
+def test_ajax_fk():
+    app, db, admin = setup()
+
+    Model1, Model2 = create_models(db)
+
+    view = CustomModelView(
+        Model2, db.session,
+        url='view',
+        form_ajax_refs={
+            'model1': ('test1', 'test2')
+        }
+    )
+    admin.add_view(view)
+
+    ok_(u'model1' in view._form_ajax_refs)
+
+    model = Model1(u'first')
+    model2 = Model1(u'foo', u'bar')
+    db.session.add_all([model, model2])
+    db.session.commit()
+
+    # Check loader
+    loader = view._form_ajax_refs[u'model1']
+    mdl = loader.get_one(model.id)
+    eq_(mdl.test1, model.test1)
+
+    items = loader.get_list(u'fir')
+    eq_(len(items), 1)
+    eq_(items[0].id, model.id)
+
+    items = loader.get_list(u'bar')
+    eq_(len(items), 1)
+    eq_(items[0].test1, u'foo')
+
+    # Check form generation
+    form = view.create_form()
+    eq_(form.model1.__class__.__name__, u'AjaxSelectField')
+
+    with app.test_request_context('/admin/view/'):
+        ok_(u'value=""' not in form.model1())
+
+        form.model1.data = model
+        ok_(u'data-json="[%s, &quot;first&quot;]"' % model.id in form.model1())
+        ok_(u'value="1"' in form.model1())
+
+    # Check querying
+    client = app.test_client()
+
+    req = client.get(u'/admin/view/ajax/lookup/?name=model1&query=foo')
+    eq_(req.data.decode('utf-8'), u'[[%s, "foo"]]' % model2.id)
+
+    # Check submitting
+    req = client.post('/admin/view/new/', data={u'model1': as_unicode(model.id)})
+    mdl = db.session.query(Model2).first()
+
+    ok_(mdl is not None)
+    ok_(mdl.model1 is not None)
+    eq_(mdl.model1.id, model.id)
+    eq_(mdl.model1.test1, u'first')
+
+
+def test_ajax_fk_multi():
+    app, db, admin = setup()
+
+    class Model1(db.Model):
+        __tablename__ = 'model1'
+
+        id = db.Column(db.Integer, primary_key=True)
+        name = db.Column(db.String(20))
+
+        def __str__(self):
+            return self.name
+
+    table = db.Table('m2m', db.Model.metadata,
+                     db.Column('model1_id', db.Integer, db.ForeignKey('model1.id')),
+                     db.Column('model2_id', db.Integer, db.ForeignKey('model2.id'))
+                     )
+
+    class Model2(db.Model):
+        __tablename__ = 'model2'
+
+        id = db.Column(db.Integer, primary_key=True)
+        name = db.Column(db.String(20))
+
+        model1_id = db.Column(db.Integer(), db.ForeignKey(Model1.id))
+        model1 = db.relationship(Model1, backref='models2', secondary=table)
+
+    db.create_all()
+
+    view = CustomModelView(
+        Model2, db.session,
+        url='view',
+        form_ajax_refs={
+            'model1': ('name',)
+        }
+    )
+    admin.add_view(view)
+
+    ok_(u'model1' in view._form_ajax_refs)
+
+    model = Model1(name=u'first')
+    db.session.add_all([model, Model1(name=u'foo')])
+    db.session.commit()
+
+    # Check form generation
+    form = view.create_form()
+    eq_(form.model1.__class__.__name__, u'AjaxSelectMultipleField')
+
+    with app.test_request_context('/admin/view/'):
+        ok_(u'data-json="[]"' in form.model1())
+
+        form.model1.data = [model]
+        ok_(u'data-json="[[1, &quot;first&quot;]]"' in form.model1())
+
+    # Check submitting
+    client = app.test_client()
+    client.post('/admin/view/new/', data={u'model1': as_unicode(model.id)})
+    mdl = db.session.query(Model2).first()
+
+    ok_(mdl is not None)
+    ok_(mdl.model1 is not None)
+    eq_(len(mdl.model1), 1)

@@ -6,6 +6,7 @@ from flask.ext.admin.form import Select2Field
 from flask.ext.admin.model.form import (converts, ModelConverterBase,
                                         InlineFormAdmin, InlineModelConverterBase,
                                         FieldPlaceholder)
+from flask.ext.admin.model.fields import AjaxSelectField, AjaxSelectMultipleField
 from flask.ext.admin.model.helpers import prettify_name
 from flask.ext.admin._backwards import get_property
 from flask.ext.admin._compat import iteritems
@@ -70,6 +71,31 @@ class AdminModelConverter(ModelConverterBase):
 
         return None
 
+    def _model_select_field(self, prop, multiple, remote_model, **kwargs):
+        loader = self.view._form_ajax_refs.get(prop.key)
+
+        if loader:
+            if multiple:
+                return AjaxSelectMultipleField(loader, **kwargs)
+            else:
+                return AjaxSelectField(loader, **kwargs)
+
+        if 'query_factory' not in kwargs:
+            kwargs['query_factory'] = lambda: self.session.query(remote_model)
+
+        if 'widget' not in kwargs:
+            if prop.direction.name == 'MANYTOONE':
+                kwargs['widget'] = form.Select2Widget()
+            elif prop.direction.name == 'ONETOMANY':
+                kwargs['widget'] = form.Select2Widget(multiple=True)
+            elif prop.direction.name == 'MANYTOMANY':
+                kwargs['widget'] = form.Select2Widget(multiple=True)
+
+        if multiple:
+            return QuerySelectMultipleField(**kwargs)
+        else:
+            return QuerySelectField(**kwargs)
+
     def _convert_relation(self, prop, kwargs):
         remote_model = prop.mapper.class_
         local_column = prop.local_remote_pairs[0][0]
@@ -85,16 +111,6 @@ class AdminModelConverter(ModelConverterBase):
         # Contribute model-related parameters
         if 'allow_blank' not in kwargs:
             kwargs['allow_blank'] = local_column.nullable
-        if 'query_factory' not in kwargs:
-            kwargs['query_factory'] = lambda: self.session.query(remote_model)
-
-        if 'widget' not in kwargs:
-            if prop.direction.name == 'MANYTOONE':
-                kwargs['widget'] = form.Select2Widget()
-            elif prop.direction.name == 'ONETOMANY':
-                kwargs['widget'] = form.Select2Widget(multiple=True)
-            elif prop.direction.name == 'MANYTOMANY':
-                kwargs['widget'] = form.Select2Widget(multiple=True)
 
         # Override field type if necessary
         override = self._get_field_override(prop.key)
@@ -102,15 +118,15 @@ class AdminModelConverter(ModelConverterBase):
             return override(**kwargs)
 
         if prop.direction.name == 'MANYTOONE':
-            return QuerySelectField(**kwargs)
+            return self._model_select_field(prop, False, remote_model, **kwargs)
         elif prop.direction.name == 'ONETOMANY':
             # Skip backrefs
             if not local_column.foreign_keys and getattr(self.view, 'column_hide_backrefs', True):
                 return None
 
-            return QuerySelectMultipleField(**kwargs)
+            return self._model_select_field(prop, True, remote_model, **kwargs)
         elif prop.direction.name == 'MANYTOMANY':
-            return QuerySelectMultipleField(**kwargs)
+            return self._model_select_field(prop, True, remote_model, **kwargs)
 
     def convert(self, model, mapper, prop, field_args, hidden_pk):
         # Properly handle forced fields
