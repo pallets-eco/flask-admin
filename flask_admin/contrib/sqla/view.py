@@ -16,7 +16,7 @@ from flask.ext.admin._backwards import ObsoleteAttr
 from flask.ext.admin.contrib.sqla import form, filters, tools
 from .typefmt import DEFAULT_FORMATTERS
 from .tools import is_inherited_primary_key, get_column_for_current_model, get_query_for_ids
-from .ajax import QueryAjaxModelLoader
+from .ajax import create_ajax_loader
 
 
 class ModelView(BaseModelView):
@@ -554,9 +554,7 @@ class ModelView(BaseModelView):
                                                             self.model_form_converter)
 
         for m in self.inline_models:
-            form_class = inline_converter.contribute(self.model,
-                                                     form_class,
-                                                     m)
+            form_class = inline_converter.contribute(self.model, form_class, m)
 
         return form_class
 
@@ -589,30 +587,7 @@ class ModelView(BaseModelView):
 
     # AJAX foreignkey support
     def _create_ajax_loader(self, name, fields):
-        attr = getattr(self.model, name, None)
-
-        if attr is None:
-            raise ValueError('Model %s does not have field %s.' % (self.model, name))
-
-        if not hasattr(attr, 'property') or not hasattr(attr.property, 'direction'):
-            raise ValueError('%s.%s is not a relation.' % (self.model, name))
-
-        remote_model = attr.prop.mapper.class_
-        remote_fields = []
-
-        for field in fields:
-            if isinstance(field, string_types):
-                attr = getattr(remote_model, field, None)
-
-                if not attr:
-                    raise ValueError('%s.%s does not exist.' % (remote_model, field))
-
-                remote_fields.append(attr)
-            else:
-                # TODO: Figure out if it is valid SQLAlchemy property?
-                remote_fields.append(field)
-
-        return QueryAjaxModelLoader(name, self.session, remote_model, remote_fields)
+        return create_ajax_loader(self.model, self.session, name, name, fields)
 
     # Database-related API
     def get_query(self):

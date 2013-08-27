@@ -1,6 +1,6 @@
 from sqlalchemy import or_
 
-from flask.ext.admin._compat import as_unicode
+from flask.ext.admin._compat import as_unicode, string_types
 from flask.ext.admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
 
 
@@ -40,3 +40,30 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         query = query.filter(or_(*filters))
 
         return query.offset(offset).limit(limit).all()
+
+
+def create_ajax_loader(model, session, name, field_name, fields):
+        attr = getattr(model, field_name, None)
+
+        if attr is None:
+            raise ValueError('Model %s does not have field %s.' % (model, field_name))
+
+        if not hasattr(attr, 'property') or not hasattr(attr.property, 'direction'):
+            raise ValueError('%s.%s is not a relation.' % (model, field_name))
+
+        remote_model = attr.prop.mapper.class_
+        remote_fields = []
+
+        for field in fields:
+            if isinstance(field, string_types):
+                attr = getattr(remote_model, field, None)
+
+                if not attr:
+                    raise ValueError('%s.%s does not exist.' % (remote_model, field))
+
+                remote_fields.append(attr)
+            else:
+                # TODO: Figure out if it is valid SQLAlchemy property?
+                remote_fields.append(field)
+
+        return QueryAjaxModelLoader(name, session, remote_model, remote_fields)

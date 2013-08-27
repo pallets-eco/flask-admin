@@ -131,6 +131,8 @@ class ModelConverterBase(object):
 
 
 class InlineModelConverterBase(object):
+    form_admin_class = InlineFormAdmin
+
     def __init__(self, view):
         """
             Base constructor
@@ -173,8 +175,8 @@ class InlineModelConverterBase(object):
                  - Model class
         """
         if isinstance(p, tuple):
-            return InlineFormAdmin(p[0], **p[1])
-        elif isinstance(p, InlineFormAdmin):
+            return self.form_admin_class(p[0], **p[1])
+        elif isinstance(p, self.form_admin_class):
             return p
 
         return None

@@ -93,3 +93,51 @@ def test_inline_form():
     eq_(rv.status_code, 302)
     eq_(User.query.count(), 0)
     eq_(UserInfo.query.count(), 0)
+
+
+def test_inline_form_ajax_fk():
+    app, db, admin = setup()
+
+    # Set up models and database
+    class User(db.Model):
+        __tablename__ = 'users'
+        id = db.Column(db.Integer, primary_key=True)
+        name = db.Column(db.String, unique=True)
+
+        def __init__(self, name=None):
+            self.name = name
+
+    class Tag(db.Model):
+        __tablename__ = 'tags'
+
+        id = db.Column(db.Integer, primary_key=True)
+        name = db.Column(db.String, unique=True)
+
+    class UserInfo(db.Model):
+        __tablename__ = 'user_info'
+        id = db.Column(db.Integer, primary_key=True)
+        key = db.Column(db.String, nullable=False)
+        val = db.Column(db.String)
+
+        user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+        user = db.relationship(User, backref=db.backref('info', cascade="all, delete-orphan", single_parent=True))
+
+        tag_id = db.Column(db.Integer, db.ForeignKey(Tag.id))
+        tag = db.relationship(Tag, backref='user_info')
+
+    db.create_all()
+
+    # Set up Admin
+    class UserModelView(ModelView):
+        inline_models = [(UserInfo, {'form_ajax_refs': {'tag': ('name',)}})]
+
+    view = UserModelView(User, db.session)
+    admin.add_view(view)
+
+    form = view.create_form()
+    user_info_form = form.info.unbound_field.args[0]
+    loader = user_info_form.tag.args[0]
+    eq_(loader.name, 'userinfo.tag')
+    eq_(loader.model, Tag)
+
+    ok_('userinfo.tag' in view._form_ajax_refs)

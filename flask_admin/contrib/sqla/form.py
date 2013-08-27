@@ -4,8 +4,7 @@ from sqlalchemy import Boolean, Column
 from flask.ext.admin import form
 from flask.ext.admin.form import Select2Field
 from flask.ext.admin.model.form import (converts, ModelConverterBase,
-                                        InlineFormAdmin, InlineModelConverterBase,
-                                        FieldPlaceholder)
+                                        InlineModelConverterBase, FieldPlaceholder)
 from flask.ext.admin.model.fields import AjaxSelectField, AjaxSelectMultipleField
 from flask.ext.admin.model.helpers import prettify_name
 from flask.ext.admin._backwards import get_property
@@ -14,6 +13,7 @@ from flask.ext.admin._compat import iteritems
 from .validators import Unique
 from .fields import QuerySelectField, QuerySelectMultipleField, InlineModelFormList
 from .tools import is_inherited_primary_key, get_column_for_current_model, has_multiple_pks
+from .ajax import create_ajax_loader
 
 try:
     # Field has better input parsing capabilities.
@@ -72,7 +72,7 @@ class AdminModelConverter(ModelConverterBase):
         return None
 
     def _model_select_field(self, prop, multiple, remote_model, **kwargs):
-        loader = self.view._form_ajax_refs.get(prop.key)
+        loader = getattr(self.view, '_form_ajax_refs', {}).get(prop.key)
 
         if loader:
             if multiple:
@@ -467,7 +467,7 @@ class InlineModelConverter(InlineModelConverterBase):
         # Special case for model instances
         if info is None:
             if hasattr(p, '_sa_class_manager'):
-                return InlineFormAdmin(p)
+                return self.form_admin_class(p)
             else:
                 model = getattr(p, 'model', None)
 
@@ -479,11 +479,35 @@ class InlineModelConverter(InlineModelConverterBase):
                     if not attr.startswith('_') and attr != 'model':
                         attrs[attr] = getattr(p, attr)
 
-                return InlineFormAdmin(model, **attrs)
+                return self.form_admin_class(model, **attrs)
 
-            info = InlineFormAdmin(model, **attrs)
+            info = self.form_admin_class(model, **attrs)
+
+        # Resolve AJAX FKs
+        info._form_ajax_refs = self.process_ajax_refs(info)
 
         return info
+
+    def process_ajax_refs(self, info):
+        refs = getattr(info, 'form_ajax_refs', None)
+
+        result = {}
+
+        if refs:
+            for name, opts in iteritems(refs):
+                new_name = '%s.%s' % (info.model.__name__.lower(), name)
+
+                loader = None
+                if isinstance(opts, (list, tuple)):
+                    loader = create_ajax_loader(info.model, self.session, new_name, name, opts)
+                else:
+                    loader = opts
+
+                result[name] = loader
+                self.view._form_ajax_refs[new_name] = loader
+
+        return result
+
 
     def contribute(self, model, form_class, inline_model):
         """
