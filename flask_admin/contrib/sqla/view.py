@@ -323,7 +323,7 @@ class ModelView(BaseModelView):
                     if is_inherited_primary_key(p):
                         column = get_column_for_current_model(p)
                     else:
-                        raise TypeError('Can not convert multiple-column properties (%s.%s)' % (model, p.key))
+                        raise TypeError('Can not convert multiple-column properties (%s.%s)' % (self.model, p.key))
                 else:
                     # Grab column
                     column = p.columns[0]

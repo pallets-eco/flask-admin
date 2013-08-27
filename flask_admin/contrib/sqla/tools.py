@@ -51,8 +51,9 @@ def is_inherited_primary_key(prop):
         :return: Boolean
         :raises: Exceptions as they occur - no ExceptionHandling here
     """
-    return (len([column for column in prop.columns if column.primary_key]) == len(prop.columns) and
-            len([column for column in prop.columns if column.foreign_keys]) == len(prop.columns) - 1)
+    if prop.expression.primary_key:
+        return len(prop._orig_columns) == len(prop.columns)-1
+    return False
 
 def get_column_for_current_model(prop):
     """
