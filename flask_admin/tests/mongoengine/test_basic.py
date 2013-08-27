@@ -460,5 +460,4 @@ def test_nested_ajax_refs():
 
     form = view1.create_form()
     eq_(type(form.nested.form.comment).__name__, 'AjaxSelectField')
-    print view1._form_ajax_refs
     ok_('nested-comment' in view1._form_ajax_refs)
