@@ -81,7 +81,9 @@ class TodoView(ModelView):
     column_filters = ['done']
 
     form_ajax_refs = {
-        'user': ('name',)
+        'user': {
+            'fields': ('name',)
+        }
     }
 
 

@@ -12,6 +12,7 @@
         var opts = {
           width: 'resolve',
           minimumInputLength: 1,
+          placeholder: 'data-placeholder',
           ajax: {
             url: $el.attr('data-url'),
             data: function(term, page) {

@@ -2,6 +2,7 @@ from flask import url_for, json
 from wtforms.widgets import HTMLString, html_params
 
 from flask.ext.admin._compat import as_unicode
+from flask.ext.admin.babel import gettext
 from flask.ext.admin.form import RenderTemplateWidget
 
 
@@ -50,5 +51,8 @@ class AjaxSelect2Widget(object):
             if data:
                 kwargs['value'] = data[0]
                 kwargs['data-json'] = json.dumps(data)
+
+        placeholder = gettext(field.loader.options.get('placeholder', 'Please select model'))
+        kwargs.setdefault('data-placeholder', placeholder)
 
         return HTMLString('<input %s>' % html_params(name=field.name, **kwargs))

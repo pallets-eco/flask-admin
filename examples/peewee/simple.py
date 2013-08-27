@@ -67,7 +67,9 @@ class PostAdmin(ModelView):
                       User.username)
 
     form_ajax_refs = {
-        'user': (User.username, 'email')
+        'user': {
+            'fields': (User.username, 'email')
+        }
     }
 
 
