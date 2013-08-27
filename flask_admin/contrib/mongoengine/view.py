@@ -18,7 +18,8 @@ from .form import get_form, CustomModelConverter
 from .typefmt import DEFAULT_FORMATTERS
 from .tools import parse_like_term
 from .helpers import format_error
-from .ajax import QueryAjaxModelLoader
+from .ajax import QueryAjaxModelLoader, create_ajax_loader
+from .subdoc import convert_subdocuments
 
 
 SORTABLE_FIELDS = set((
@@ -98,7 +99,7 @@ class ModelView(BaseModelView):
         List of allowed search field types.
     """
 
-    form_subdocuments = {}
+    form_subdocuments = None
     """
         Subdocument configuration options.
 
@@ -198,6 +199,16 @@ class ModelView(BaseModelView):
         super(ModelView, self).__init__(model, name, category, endpoint, url)
 
         self._primary_key = self.scaffold_pk()
+
+    def _refresh_cache(self):
+        # Process subdocuments
+        if self.form_subdocuments is None:
+            self.form_subdocuments = {}
+
+        self._form_subdocuments = convert_subdocuments(self.form_subdocuments)
+
+        # Cache other properties
+        super(ModelView, self)._refresh_cache()
 
     def _get_model_fields(self, model=None):
         """
@@ -339,28 +350,7 @@ class ModelView(BaseModelView):
 
     # AJAX foreignkey support
     def _create_ajax_loader(self, name, fields):
-        prop = getattr(self.model, name, None)
-
-        if prop is None:
-            raise ValueError('Model %s does not have field %s.' % (self.model, name))
-
-        # TODO: Check for field
-
-        remote_model = prop.document_type
-        remote_fields = []
-
-        for field in fields:
-            if isinstance(field, string_types):
-                attr = getattr(remote_model, field, None)
-
-                if not attr:
-                    raise ValueError('%s.%s does not exist.' % (remote_model, field))
-
-                remote_fields.append(attr)
-            else:
-                remote_fields.append(field)
-
-        return QueryAjaxModelLoader(name, remote_model, remote_fields)
+        return create_ajax_loader(self.model, name, fields)
 
     def get_query(self):
         """

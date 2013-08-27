@@ -5,16 +5,13 @@ from wtforms import fields, validators
 from flask.ext.mongoengine.wtf import orm, fields as mongo_fields
 
 from flask.ext.admin import form
-from flask.ext.admin.model.form import FieldPlaceholder, InlineBaseFormAdmin
-from flask.ext.admin.model.fields import InlineFieldList, AjaxSelectField, AjaxSelectMultipleField
+from flask.ext.admin.model.form import FieldPlaceholder
+from flask.ext.admin.model.fields import InlineFieldList, AjaxSelectField
 from flask.ext.admin.model.widgets import InlineFormWidget
 from flask.ext.admin._compat import iteritems
 
 from .fields import ModelFormField, MongoFileField, MongoImageField
-
-
-class EmbeddedForm(InlineBaseFormAdmin):
-    pass
+from .subdoc import EmbeddedForm
 
 
 class CustomModelConverter(orm.ModelConverter):
@@ -39,18 +36,13 @@ class CustomModelConverter(orm.ModelConverter):
         return None
 
     def _get_subdocument_config(self, name):
-        config = getattr(self.view, 'form_subdocuments', {})
+        config = getattr(self.view, '_form_subdocuments', {})
 
         p = config.get(name)
         if not p:
             return EmbeddedForm()
 
-        if isinstance(p, dict):
-            return EmbeddedForm(**p)
-        elif isinstance(p, EmbeddedForm):
-            return p
-
-        raise ValueError('Invalid subdocument type: expecting dict or instance of flask.ext.admin.contrib.mongoengine.EmbeddedForm, got %s' % type(p))
+        return p
 
     def clone_converter(self, view):
         return self.__class__(view)

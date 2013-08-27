@@ -1,6 +1,6 @@
 import mongoengine
 
-from flask.ext.admin._compat import as_unicode
+from flask.ext.admin._compat import string_types, as_unicode
 from flask.ext.admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
 
 
@@ -45,3 +45,28 @@ class QueryAjaxModelLoader(AjaxModelLoader):
             query = query.skip(offset)
 
         return query.limit(limit).all()
+
+
+def create_ajax_loader(model, name, fields):
+    prop = getattr(model, name, None)
+
+    if prop is None:
+        raise ValueError('Model %s does not have field %s.' % (model, name))
+
+    # TODO: Check for field
+
+    remote_model = prop.document_type
+    remote_fields = []
+
+    for field in fields:
+        if isinstance(field, string_types):
+            attr = getattr(remote_model, field, None)
+
+            if not attr:
+                raise ValueError('%s.%s does not exist.' % (remote_model, field))
+
+            remote_fields.append(attr)
+        else:
+            remote_fields.append(field)
+
+    return QueryAjaxModelLoader(name, remote_model, remote_fields)
