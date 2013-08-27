@@ -5,17 +5,38 @@ from flask.ext.admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
 
 
 class QueryAjaxModelLoader(AjaxModelLoader):
-    def __init__(self, name, model, fields):
+    def __init__(self, name, model, **options):
         """
             Constructor.
 
             :param fields:
                 Fields to run query against
         """
-        super(QueryAjaxModelLoader, self).__init__(name)
+        super(QueryAjaxModelLoader, self).__init__(name, options)
 
         self.model = model
-        self.fields = fields
+        self.fields = options.get('fields')
+
+        self._cached_fields = self._process_fields()
+
+        if not self.fields:
+            raise ValueError('AJAX loading requires `fields` to be specified for %s.%s' % (model, self.name))
+
+    def _process_fields(self):
+        remote_fields = []
+
+        for field in self.fields:
+            if isinstance(field, string_types):
+                attr = getattr(self.model, field, None)
+
+                if not attr:
+                    raise ValueError('%s.%s does not exist.' % (self.model, field))
+
+                remote_fields.append(attr)
+            else:
+                remote_fields.append(field)
+
+        return remote_fields
 
     def format(self, model):
         if not model:
@@ -31,7 +52,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         criteria = None
 
-        for field in self.fields:
+        for field in self._cached_fields:
             flt = {u'%s__icontains' % field.name: term}
 
             if not criteria:
@@ -47,7 +68,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         return query.limit(limit).all()
 
 
-def create_ajax_loader(model, name, field_name, fields):
+def create_ajax_loader(model, name, field_name, opts):
     prop = getattr(model, field_name, None)
 
     if prop is None:
@@ -56,20 +77,7 @@ def create_ajax_loader(model, name, field_name, fields):
     # TODO: Check for field
 
     remote_model = prop.document_type
-    remote_fields = []
-
-    for field in fields:
-        if isinstance(field, string_types):
-            attr = getattr(remote_model, field, None)
-
-            if not attr:
-                raise ValueError('%s.%s does not exist.' % (remote_model, field))
-
-            remote_fields.append(attr)
-        else:
-            remote_fields.append(field)
-
-    return QueryAjaxModelLoader(name, remote_model, remote_fields)
+    return QueryAjaxModelLoader(name, remote_model, **opts)
 
 
 def process_ajax_references(references, view):
@@ -95,7 +103,7 @@ def process_ajax_references(references, view):
             for field_name, opts in iteritems(ajax_refs):
                 child_name = make_name(base, field_name)
 
-                if isinstance(opts, (list, tuple)):
+                if isinstance(opts, dict):
                     loader = create_ajax_loader(field.document_type_obj, child_name, field_name, opts)
                 else:
                     loader = opts

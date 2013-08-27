@@ -364,8 +364,8 @@ class ModelView(BaseModelView):
         return form_class
 
     # AJAX foreignkey support
-    def _create_ajax_loader(self, name, fields):
-        return create_ajax_loader(self.model, name, name, fields)
+    def _create_ajax_loader(self, name, opts):
+        return create_ajax_loader(self.model, name, name, opts)
 
     def get_query(self):
         """

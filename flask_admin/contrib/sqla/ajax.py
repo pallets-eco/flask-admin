@@ -5,7 +5,7 @@ from flask.ext.admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
 
 
 class QueryAjaxModelLoader(AjaxModelLoader):
-    def __init__(self, name, session, model, options):
+    def __init__(self, name, session, model, **options):
         """
             Constructor.
 
@@ -74,4 +74,4 @@ def create_ajax_loader(model, session, name, field_name, options):
         raise ValueError('%s.%s is not a relation.' % (model, field_name))
 
     remote_model = attr.prop.mapper.class_
-    return QueryAjaxModelLoader(name, session, remote_model, options)
+    return QueryAjaxModelLoader(name, session, remote_model, **options)

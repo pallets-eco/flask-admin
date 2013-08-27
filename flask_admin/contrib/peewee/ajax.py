@@ -5,18 +5,40 @@ from .tools import get_primary_key
 
 
 class QueryAjaxModelLoader(AjaxModelLoader):
-    def __init__(self, name, model, fields):
+    def __init__(self, name, model, **options):
         """
             Constructor.
 
             :param fields:
                 Fields to run query against
         """
-        super(QueryAjaxModelLoader, self).__init__(name)
+        super(QueryAjaxModelLoader, self).__init__(name, options)
 
         self.model = model
-        self.fields = fields
+        self.fields = options.get('fields')
+
+        if not self.fields:
+            raise ValueError('AJAX loading requires `fields` to be specified for %s.%s' % (model, self.name))
+
+        self._cached_fields = self._process_fields()
+
         self.pk = get_primary_key(model)
+
+    def _process_fields(self):
+        remote_fields = []
+
+        for field in self.fields:
+            if isinstance(field, string_types):
+                attr = getattr(self.model, field, None)
+
+                if not attr:
+                    raise ValueError('%s.%s does not exist.' % (self.model, field))
+
+                remote_fields.append(attr)
+            else:
+                remote_fields.append(field)
+
+        return remote_fields
 
     def format(self, model):
         if not model:
@@ -31,7 +53,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         query = self.model.select()
 
         stmt = None
-        for field in self.fields:
+        for field in self._cached_fields:
             q = field ** (u'%%%s%%' % term)
 
             if stmt is None:
@@ -47,7 +69,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         return list(query.limit(limit).execute())
 
 
-def create_ajax_loader(model, name, field_name, fields):
+def create_ajax_loader(model, name, field_name, options):
     prop = getattr(model, field_name, None)
 
     if prop is None:
@@ -55,17 +77,4 @@ def create_ajax_loader(model, name, field_name, fields):
 
     # TODO: Check for field
     remote_model = prop.rel_model
-    remote_fields = []
-
-    for field in fields:
-        if isinstance(field, string_types):
-            attr = getattr(remote_model, field, None)
-
-            if not attr:
-                raise ValueError('%s.%s does not exist.' % (remote_model, field))
-
-            remote_fields.append(attr)
-        else:
-            remote_fields.append(field)
-
-    return QueryAjaxModelLoader(name, remote_model, remote_fields)
+    return QueryAjaxModelLoader(name, remote_model, **options)

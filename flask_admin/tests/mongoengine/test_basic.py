@@ -375,7 +375,9 @@ def test_ajax_fk():
         Model2,
         url='view',
         form_ajax_refs={
-            'model1': ('test1', 'test2')
+            'model1': {
+                'fields': ('test1', 'test2')
+            }
         }
     )
     admin.add_view(view)
@@ -448,7 +450,9 @@ def test_nested_ajax_refs():
         form_subdocuments = {
             'nested': {
                 'form_ajax_refs': {
-                    'comment': ['name']
+                    'comment': {
+                        'fields': ['name']
+                    }
                 }
             }
         }

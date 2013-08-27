@@ -13,7 +13,7 @@ from flask.ext.admin.contrib.peewee import filters
 
 from .form import get_form, CustomModelConverter, InlineModelConverter, save_inline
 from .tools import get_primary_key, parse_like_term
-from .ajax import QueryAjaxModelLoader, create_ajax_loader
+from .ajax import create_ajax_loader
 
 
 class ModelView(BaseModelView):
@@ -243,8 +243,8 @@ class ModelView(BaseModelView):
         return form_class
 
     # AJAX foreignkey support
-    def _create_ajax_loader(self, name, fields):
-        return create_ajax_loader(self.model, name, name, fields)
+    def _create_ajax_loader(self, name, options):
+        return create_ajax_loader(self.model, name, name, options)
 
     def _handle_join(self, query, field, joins):
         if field.model_class != self.model:

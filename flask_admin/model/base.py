@@ -384,7 +384,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 form_ajax_refs = {
-                    'user': QueryAjaxModelLoader('user', db.session, User, page_size=10)
+                    'user': QueryAjaxModelLoader('user', db.session, User, fields=['email'], page_size=10)
                 }
 
         If you need custom loading functionality, you can implement your custom loading behavior
