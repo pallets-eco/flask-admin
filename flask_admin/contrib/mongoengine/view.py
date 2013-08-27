@@ -201,6 +201,9 @@ class ModelView(BaseModelView):
         self._primary_key = self.scaffold_pk()
 
     def _refresh_cache(self):
+        """
+            Refresh cache.
+        """
         # Process subdocuments
         if self.form_subdocuments is None:
             self.form_subdocuments = {}

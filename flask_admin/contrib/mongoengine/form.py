@@ -104,6 +104,7 @@ class CustomModelConverter(orm.ModelConverter):
         if isinstance(field.field, ReferenceField):
             kwargs['widget'] = form.Select2Widget(multiple=True)
 
+            # TODO: Support AJAX multi-select
             doc_type = field.field.document_type
             return mongo_fields.ModelSelectMultipleField(model=doc_type, **kwargs)
 
@@ -150,7 +151,7 @@ class CustomModelConverter(orm.ModelConverter):
     def conv_Reference(self, model, field, kwargs):
         kwargs['allow_blank'] = not field.required
 
-        loader = self.view._form_ajax_refs.get(field.name)
+        loader = getattr(self.view, '_form_ajax_refs', {}).get(field.name)
         if loader:
             return AjaxSelectField(loader, **kwargs)
 
