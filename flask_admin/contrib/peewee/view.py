@@ -13,7 +13,7 @@ from flask.ext.admin.contrib.peewee import filters
 
 from .form import get_form, CustomModelConverter, InlineModelConverter, save_inline
 from .tools import get_primary_key, parse_like_term
-from .ajax import QueryAjaxModelLoader
+from .ajax import QueryAjaxModelLoader, create_ajax_loader
 
 
 class ModelView(BaseModelView):
@@ -244,27 +244,7 @@ class ModelView(BaseModelView):
 
     # AJAX foreignkey support
     def _create_ajax_loader(self, name, fields):
-        prop = getattr(self.model, name, None)
-
-        if prop is None:
-            raise ValueError('Model %s does not have field %s.' % (self.model, name))
-
-        # TODO: Check for field
-        remote_model = prop.rel_model
-        remote_fields = []
-
-        for field in fields:
-            if isinstance(field, string_types):
-                attr = getattr(remote_model, field, None)
-
-                if not attr:
-                    raise ValueError('%s.%s does not exist.' % (remote_model, field))
-
-                remote_fields.append(attr)
-            else:
-                remote_fields.append(field)
-
-        return QueryAjaxModelLoader(name, remote_model, remote_fields)
+        return create_ajax_loader(self.model, name, name, fields)
 
     def _handle_join(self, query, field, joins):
         if field.model_class != self.model:

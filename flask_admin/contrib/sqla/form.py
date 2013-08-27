@@ -508,7 +508,6 @@ class InlineModelConverter(InlineModelConverterBase):
 
         return result
 
-
     def contribute(self, model, form_class, inline_model):
         """
             Generate form fields for inline forms and contribute them to

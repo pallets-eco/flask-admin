@@ -11,6 +11,7 @@ from flask.ext.admin.model.form import InlineFormAdmin, InlineModelConverterBase
 from flask.ext.admin.model.fields import InlineModelFormField, InlineFieldList, AjaxSelectField
 
 from .tools import get_primary_key
+from .ajax import create_ajax_loader
 
 
 class InlineModelFormList(InlineFieldList):
@@ -90,7 +91,7 @@ class CustomModelConverter(ModelConverter):
         self.converters[TimeField] = self.handle_time
 
     def handle_foreign_key(self, model, field, **kwargs):
-        loader = self.view._form_ajax_refs.get(field.name)
+        loader = getattr(self.view, '_form_ajax_refs', {}).get(field.name)
 
         if loader:
             if field.null:
@@ -173,7 +174,30 @@ class InlineModelConverter(InlineModelConverterBase):
 
                 info = InlineFormAdmin(model, **attrs)
 
+        # Resolve AJAX FKs
+        info._form_ajax_refs = self.process_ajax_refs(info)
+
         return info
+
+    def process_ajax_refs(self, info):
+        refs = getattr(info, 'form_ajax_refs', None)
+
+        result = {}
+
+        if refs:
+            for name, opts in iteritems(refs):
+                new_name = '%s.%s' % (info.model.__name__.lower(), name)
+
+                loader = None
+                if isinstance(opts, (list, tuple)):
+                    loader = create_ajax_loader(info.model, new_name, name, opts)
+                else:
+                    loader = opts
+
+                result[name] = loader
+                self.view._form_ajax_refs[new_name] = loader
+
+        return result
 
     def contribute(self, converter, model, form_class, inline_model):
         # Find property from target model to current model
