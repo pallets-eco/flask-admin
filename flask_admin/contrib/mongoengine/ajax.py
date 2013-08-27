@@ -74,7 +74,14 @@ def create_ajax_loader(model, name, field_name, opts):
     if prop is None:
         raise ValueError('Model %s does not have field %s.' % (model, field_name))
 
-    # TODO: Check for field
+    ftype = type(prop).__name__
+
+    if ftype == 'ListField':
+        prop = prop.field
+        ftype = type(prop).__name__
+
+    if ftype != 'ReferenceField':
+        raise ValueError('Dont know how to convert %s type for AJAX loader' % ftype)
 
     remote_model = prop.document_type
     return QueryAjaxModelLoader(name, remote_model, **opts)

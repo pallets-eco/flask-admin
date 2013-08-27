@@ -76,13 +76,19 @@ class UserView(ModelView):
 
     column_searchable_list = ('name', 'password')
 
+    form_ajax_refs = {
+        'tags': {
+            'fields': ('name',)
+        }
+    }
+
 
 class TodoView(ModelView):
     column_filters = ['done']
 
     form_ajax_refs = {
         'user': {
-            'fields': ('name',)
+            'fields': ['name']
         }
     }
 

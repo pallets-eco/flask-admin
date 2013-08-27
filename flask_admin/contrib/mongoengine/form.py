@@ -6,7 +6,7 @@ from flask.ext.mongoengine.wtf import orm, fields as mongo_fields
 
 from flask.ext.admin import form
 from flask.ext.admin.model.form import FieldPlaceholder
-from flask.ext.admin.model.fields import InlineFieldList, AjaxSelectField
+from flask.ext.admin.model.fields import InlineFieldList, AjaxSelectField, AjaxSelectMultipleField
 from flask.ext.admin.model.widgets import InlineFormWidget
 from flask.ext.admin._compat import iteritems
 
@@ -102,6 +102,10 @@ class CustomModelConverter(orm.ModelConverter):
             raise ValueError('ListField "%s" must have field specified for model %s' % (field.name, model))
 
         if isinstance(field.field, ReferenceField):
+            loader = getattr(self.view, '_form_ajax_refs', {}).get(field.name)
+            if loader:
+                return AjaxSelectMultipleField(loader, **kwargs)
+
             kwargs['widget'] = form.Select2Widget(multiple=True)
 
             # TODO: Support AJAX multi-select
