@@ -133,7 +133,7 @@ def test_image_upload_field():
 
             eq_(dummy.upload, 'test1.png')
             ok_(op.exists(op.join(path, 'test1.png')))
-            ok_(op.exists(op.join(path, 'test1_thumb.jpg')))
+            ok_(op.exists(op.join(path, 'test1_thumb.png')))
 
     # Check replace
     with open(filename, 'rb') as fp:
@@ -146,7 +146,7 @@ def test_image_upload_field():
 
             eq_(dummy.upload, 'test2.png')
             ok_(op.exists(op.join(path, 'test2.png')))
-            ok_(op.exists(op.join(path, 'test2_thumb.jpg')))
+            ok_(op.exists(op.join(path, 'test2_thumb.png')))
 
             ok_(not op.exists(op.join(path, 'test1.png')))
             ok_(not op.exists(op.join(path, 'test1_thumb.jpg')))
@@ -161,7 +161,7 @@ def test_image_upload_field():
         eq_(dummy.upload, None)
 
         ok_(not op.exists(op.join(path, 'test2.png')))
-        ok_(not op.exists(op.join(path, 'test2_thumb.jpg')))
+        ok_(not op.exists(op.join(path, 'test2_thumb.png')))
 
     # Check upload no-resize
     with open(filename, 'rb') as fp:
@@ -174,7 +174,7 @@ def test_image_upload_field():
 
             eq_(dummy.upload, 'test1.png')
             ok_(op.exists(op.join(path, 'test1.png')))
-            ok_(not op.exists(op.join(path, 'test1_thumb.jpg')))
+            ok_(not op.exists(op.join(path, 'test1_thumb.png')))
 
     # Check upload, auto-resize
     filename = op.join(op.dirname(__file__), 'data', 'copyleft.png')

@@ -118,6 +118,7 @@ class FileUploadField(fields.TextField):
     def __init__(self, label=None, validators=None,
                  base_path=None, relative_path=None,
                  namegen=None, allowed_extensions=None,
+                 permission=0o666,
                  **kwargs):
         """
             Constructor.
@@ -155,6 +156,8 @@ class FileUploadField(fields.TextField):
 
         self.namegen = namegen or namegen_filename
         self.allowed_extensions = allowed_extensions
+        self.permission = permission
+
         self._should_delete = False
 
         super(FileUploadField, self).__init__(label, validators, **kwargs)
@@ -227,7 +230,7 @@ class FileUploadField(fields.TextField):
     def _save_file(self, data, filename):
         path = self._get_path(filename)
         if not op.exists(op.dirname(path)):
-            os.makedirs(os.path.dirname(path), 0o666)
+            os.makedirs(os.path.dirname(path), self.permission)
 
         data.save(path)
 
@@ -255,6 +258,7 @@ class ImageUploadField(FileUploadField):
                  namegen=None, allowed_extensions=None,
                  max_size=None,
                  thumbgen=None, thumbnail_size=None,
+                 permission=0o666,
                  url_relative_path=None, endpoint='static',
                  **kwargs):
         """
@@ -338,6 +342,7 @@ class ImageUploadField(FileUploadField):
                                                relative_path=relative_path,
                                                namegen=namegen,
                                                allowed_extensions=allowed_extensions,
+                                               permission=permission,
                                                **kwargs)
 
     def pre_validate(self, form):
@@ -364,29 +369,35 @@ class ImageUploadField(FileUploadField):
     # Saving
     def _save_file(self, data, filename):
         path = self._get_path(filename)
+
         if not op.exists(op.dirname(path)):
-            os.makedirs(os.path.dirname(path), 0o666)
+            os.makedirs(os.path.dirname(path), self.permission)
 
-        if self.image and self.max_size:
-            filename, format = self._get_save_format(filename, self.image)
+        # Figure out format
+        filename, format = self._get_save_format(filename, self.image)
 
-            self._save_image(self._resize(self.image, self.max_size),
-                             self._get_path(filename),
-                             format)
+        if self.image and (self.image.format != format or self.max_size):
+            if self.max_size:
+                image = self._resize(self.image, self.max_size)
+            else:
+                image = self.image
+
+            self._save_image(image, self._get_path(filename), format)
         else:
             data.seek(0)
             data.save(path)
 
-        self._save_thumbnail(data, filename)
+        self._save_thumbnail(data, filename, format)
 
         return filename
 
-    def _save_thumbnail(self, data, filename):
+    def _save_thumbnail(self, data, filename, format):
         if self.image and self.thumbnail_size:
             path = self._get_path(self.thumbnail_fn(filename))
 
             self._save_image(self._resize(self.image, self.thumbnail_size),
-                             path)
+                             path,
+                             format)
 
     def _resize(self, image, size):
         (width, height, force) = size
@@ -402,12 +413,14 @@ class ImageUploadField(FileUploadField):
         return image
 
     def _save_image(self, image, path, format='JPEG'):
-        image = image.convert('RGB')
+        if image.mode not in ('RGB', 'RGBA'):
+            image = image.convert('RGBA')
+
         with open(path, 'wb') as fp:
             image.save(fp, format)
 
     def _get_save_format(self, filename, image):
-        if not image.format in self.keep_image_formats:
+        if image.format not in self.keep_image_formats:
             name, ext = op.splitext(filename)
             filename = '%s.jpg' % name
             return filename, 'JPEG'
@@ -428,4 +441,4 @@ def thumbgen_filename(filename):
         Generate thumbnail name from filename.
     """
     name, ext = op.splitext(filename)
-    return '%s_thumb.jpg' % name
+    return '%s_thumb%s' % (name, ext)
