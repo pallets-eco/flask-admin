@@ -132,7 +132,7 @@ class AjaxSelectField(SelectFieldBase):
         self.blank_text = blank_text
 
     def _get_data(self):
-        if self._formdata is not None:
+        if self._formdata:
             model = self.loader.get_one(self._formdata)
 
             if model is not None:
@@ -178,7 +178,7 @@ class AjaxSelectMultipleField(AjaxSelectField):
 
     def _get_data(self):
         formdata = self._formdata
-        if formdata is not None:
+        if formdata:
             data = []
 
             # TODO: Optimize?

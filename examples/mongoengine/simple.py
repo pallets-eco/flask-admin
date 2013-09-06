@@ -33,7 +33,7 @@ class Todo(db.Document):
     text = db.StringField()
     done = db.BooleanField(default=False)
     pub_date = db.DateTimeField(default=datetime.datetime.now)
-    user = db.ReferenceField(User)
+    user = db.ReferenceField(User, required=False)
 
     # Required for administrative interface
     def __unicode__(self):
