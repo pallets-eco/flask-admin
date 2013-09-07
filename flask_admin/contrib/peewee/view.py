@@ -15,6 +15,9 @@ from .form import get_form, CustomModelConverter, InlineModelConverter, save_inl
 from .tools import get_primary_key, parse_like_term
 from .ajax import create_ajax_loader
 
+# Set up logger
+log = logging.getLogger("flask-admin.peewee")
+
 
 class ModelView(BaseModelView):
     column_filters = None
@@ -350,7 +353,7 @@ class ModelView(BaseModelView):
                 raise
 
             flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
-            logging.exception('Failed to create model')
+            log.exception('Failed to create model')
             return False
         else:
             self.after_model_change(form, model, True)
@@ -370,7 +373,7 @@ class ModelView(BaseModelView):
                 raise
 
             flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')
-            logging.exception('Failed to update model')
+            log.exception('Failed to update model')
             return False
         else:
             self.after_model_change(form, model, False)
@@ -387,7 +390,7 @@ class ModelView(BaseModelView):
                 raise
 
             flash(gettext('Failed to delete model. %(error)s', error=str(ex)), 'error')
-            logging.exception('Failed to delete model')
+            log.exception('Failed to delete model')
             return False
 
     # Default model actions

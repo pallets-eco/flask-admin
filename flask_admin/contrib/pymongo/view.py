@@ -15,6 +15,9 @@ from flask.ext.admin.helpers import get_form_data
 from .filters import BasePyMongoFilter
 from .tools import parse_like_term
 
+# Set up logger
+log = logging.getLogger("flask-admin.pymongo")
+
 
 class ModelView(BaseModelView):
     """
@@ -260,7 +263,7 @@ class ModelView(BaseModelView):
         except Exception as ex:
             flash(gettext('Failed to create model. %(error)s', error=str(ex)),
                   'error')
-            logging.exception('Failed to create model')
+            log.exception('Failed to create model')
             return False
         else:
             self.after_model_change(form, model, True)
@@ -285,7 +288,7 @@ class ModelView(BaseModelView):
         except Exception as ex:
             flash(gettext('Failed to update model. %(error)s', error=str(ex)),
                   'error')
-            logging.exception('Failed to update model')
+            log.exception('Failed to update model')
             return False
         else:
             self.after_model_change(form, model, False)
@@ -311,7 +314,7 @@ class ModelView(BaseModelView):
         except Exception as ex:
             flash(gettext('Failed to delete model. %(error)s', error=str(ex)),
                   'error')
-            logging.exception('Failed to delete model')
+            log.exception('Failed to delete model')
             return False
 
     # Default model actions
