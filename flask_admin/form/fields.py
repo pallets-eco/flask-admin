@@ -130,4 +130,4 @@ class Select2TagsField(fields.TextField):
             self.data = valuelist[0]
 
     def _value(self):
-        return u', '.join(self.data) if isinstance(self.data, list) else self.data
+        return u', '.join(self.data or [])
