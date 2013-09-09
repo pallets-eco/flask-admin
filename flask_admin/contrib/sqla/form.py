@@ -120,10 +120,6 @@ class AdminModelConverter(ModelConverterBase):
         if prop.direction.name == 'MANYTOONE':
             return self._model_select_field(prop, False, remote_model, **kwargs)
         elif prop.direction.name == 'ONETOMANY':
-            # Skip backrefs
-            if not local_column.foreign_keys and getattr(self.view, 'column_hide_backrefs', True):
-                return None
-
             return self._model_select_field(prop, True, remote_model, **kwargs)
         elif prop.direction.name == 'MANYTOMANY':
             return self._model_select_field(prop, True, remote_model, **kwargs)

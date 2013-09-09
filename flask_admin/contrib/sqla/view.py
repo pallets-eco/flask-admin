@@ -29,13 +29,6 @@ class ModelView(BaseModelView):
             admin.add_view(ModelView(User, db.session))
     """
 
-    column_hide_backrefs = ObsoleteAttr('column_hide_backrefs',
-                                        'hide_backrefs',
-                                        True)
-    """
-        Set this to False if you want to see multiselect for model backrefs.
-    """
-
     column_auto_select_related = ObsoleteAttr('column_auto_select_related',
                                               'auto_select_related',
                                               True)
