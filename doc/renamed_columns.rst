@@ -18,7 +18,6 @@ rename_columns              column_labels
 sortable_columns            column_sortable_list
 searchable_columns          column_searchable_list
 list_display_pk             column_display_pk
-hide_backrefs               column_hide_backrefs
 auto_select_related         column_auto_select_related
 list_select_related         column_select_related_list
 list_display_all_relations  column_display_all_relations

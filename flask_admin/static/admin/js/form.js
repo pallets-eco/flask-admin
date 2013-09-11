@@ -95,8 +95,8 @@
 
                 if ($el.attr('data-tags')) {
                     $.extend(opts, {
-                        multiple: true,
-                        tokenSeparators: [',']
+                        tokenSeparators: [','],
+                        tags: []
                     });
                 }
 
