@@ -461,3 +461,16 @@ def test_nested_ajax_refs():
     form = view1.create_form()
     eq_(type(form.nested.form.comment).__name__, 'AjaxSelectField')
     ok_('nested-comment' in view1._form_ajax_refs)
+
+
+def test_form_flat_choices():
+    app, db, admin = setup()
+
+    class Model(db.Document):
+        name = db.StringField(max_length=20, choices=('a', 'b', 'c'))
+
+    view = CustomModelView(Model)
+    admin.add_view(view)
+
+    form = view.create_form()
+    eq_(form.name.choices, [('a', 'a'), ('b', 'b'), ('c', 'c')])

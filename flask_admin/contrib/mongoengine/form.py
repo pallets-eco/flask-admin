@@ -44,6 +44,13 @@ class CustomModelConverter(orm.ModelConverter):
 
         return p
 
+    def _convert_choices(self, choices):
+        for c in choices:
+            if isinstance(c, tuple):
+                yield c
+            else:
+                yield (c, c)
+
     def clone_converter(self, view):
         return self.__class__(view)
 
@@ -71,7 +78,7 @@ class CustomModelConverter(orm.ModelConverter):
         ftype = type(field).__name__
 
         if field.choices:
-            kwargs['choices'] = field.choices
+            kwargs['choices'] = list(self._convert_choices(field.choices))
 
             if ftype in self.converters:
                 kwargs["coerce"] = self.coerce(ftype)
