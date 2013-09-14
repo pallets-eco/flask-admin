@@ -3,7 +3,7 @@ import datetime
 
 from wtforms import fields, widgets
 from flask.ext.admin.babel import gettext
-from flask.ext.admin._compat import text_type
+from flask.ext.admin._compat import text_type, as_unicode
 
 from . import widgets as admin_widgets
 
@@ -105,6 +105,7 @@ class Select2Field(fields.SelectField):
     def pre_validate(self, form):
         if self.allow_blank and self.data is None:
             return
+
         super(Select2Field, self).pre_validate(form)
 
 
@@ -114,20 +115,25 @@ class Select2TagsField(fields.TextField):
     """
     widget = admin_widgets.Select2TagsWidget()
 
-    def __init__(self, label=None, validators=None, save_as_list=False, **kwargs):
+    def __init__(self, label=None, validators=None, save_as_list=False, coerce=text_type, **kwargs):
         """Initialization
 
         :param save_as_list:
             If `True` then populate ``obj`` using list else string
         """
         self.save_as_list = save_as_list
+        self.coerce = coerce
+
         super(Select2TagsField, self).__init__(label, validators, **kwargs)
 
     def process_formdata(self, valuelist):
         if self.save_as_list:
-            self.data = [v.strip() for v in valuelist[0].split(',') if v.strip()]
+            self.data = [self.coerce(v.strip()) for v in valuelist[0].split(',') if v.strip()]
         else:
-            self.data = valuelist[0]
+            self.data = self.coerce(valuelist[0])
 
     def _value(self):
-        return u', '.join(self.data) if isinstance(self.data, list) else self.data
+        if isinstance(self.data, (list, tuple)):
+            return u','.join(as_unicode(v) for v in self.data)
+        else:
+            return as_unicode(self.data)
