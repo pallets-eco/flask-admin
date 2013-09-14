@@ -135,5 +135,7 @@ class Select2TagsField(fields.TextField):
     def _value(self):
         if isinstance(self.data, (list, tuple)):
             return u','.join(as_unicode(v) for v in self.data)
-        else:
+        elif self.data:
             return as_unicode(self.data)
+        else:
+            return u''

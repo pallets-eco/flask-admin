@@ -19,6 +19,10 @@ from .tools import is_inherited_primary_key, get_column_for_current_model, get_q
 from .ajax import create_ajax_loader
 
 
+# Set up logger
+log = logging.getLogger("flask-admin.sqla")
+
+
 class ModelView(BaseModelView):
     """
         SQLAlchemy model view
@@ -27,13 +31,6 @@ class ModelView(BaseModelView):
 
             admin = Admin()
             admin.add_view(ModelView(User, db.session))
-    """
-
-    column_hide_backrefs = ObsoleteAttr('column_hide_backrefs',
-                                        'hide_backrefs',
-                                        True)
-    """
-        Set this to False if you want to see multiselect for model backrefs.
     """
 
     column_auto_select_related = ObsoleteAttr('column_auto_select_related',
@@ -792,7 +789,7 @@ class ModelView(BaseModelView):
                 raise
 
             flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
-            logging.exception('Failed to create model')
+            log.exception('Failed to create model')
             self.session.rollback()
             return False
         else:
@@ -818,7 +815,7 @@ class ModelView(BaseModelView):
                 raise
 
             flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')
-            logging.exception('Failed to update model')
+            log.exception('Failed to update model')
             self.session.rollback()
 
             return False
@@ -845,7 +842,7 @@ class ModelView(BaseModelView):
                 raise
 
             flash(gettext('Failed to delete model. %(error)s', error=str(ex)), 'error')
-            logging.exception('Failed to delete model')
+            log.exception('Failed to delete model')
             self.session.rollback()
             return False
 
