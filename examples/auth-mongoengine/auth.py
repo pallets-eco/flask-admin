@@ -37,7 +37,7 @@ class User(db.Document):
         return False
 
     def get_id(self):
-        return self.id
+        return str(self.id)
 
     # Required for administrative interface
     def __unicode__(self):
@@ -104,7 +104,7 @@ def index():
 @app.route('/login/', methods=('GET', 'POST'))
 def login_view():
     form = LoginForm(request.form)
-    if helpers.validate_form_on_submit(form):
+    if request.method == 'POST' and form.validate():
         user = form.get_user()
         login.login_user(user)
         return redirect(url_for('index'))
@@ -115,7 +115,7 @@ def login_view():
 @app.route('/register/', methods=('GET', 'POST'))
 def register_view():
     form = RegistrationForm(request.form)
-    if helpers.validate_form_on_submit(form):
+    if request.method == 'POST' and form.validate():
         user = User()
 
         form.populate_obj(user)
