@@ -183,7 +183,7 @@ class AjaxSelectMultipleField(AjaxSelectField):
 
             # TODO: Optimize?
             for item in formdata:
-                model = self.loader.get_one(item)
+                model = self.loader.get_one(item) if item else None
 
                 if model:
                     data.append(model)
