@@ -1,3 +1,4 @@
+import jinja2
 from flask import g, request
 from wtforms.validators import DataRequired, InputRequired
 
@@ -6,6 +7,11 @@ from ._compat import string_types
 
 def set_current_view(view):
     g._admin_view = view
+
+
+@jinja2.contextfunction
+def get_context(c):
+    return c
 
 
 def get_current_view():

@@ -115,7 +115,13 @@
                     {% endblock %}
                 </td>
                 {% for c, name in list_columns %}
-                <td>{{ get_value(row, c) }}</td>
+                <td>
+                    {% if c in h.get_context() %}
+                        {{ h.get_context()[c](row) }}
+                    {% else %}
+                        {{ get_value(row, c) }}
+                    {% endif %}
+                </td>
                 {% endfor %}
             {% endblock %}
         </tr>
