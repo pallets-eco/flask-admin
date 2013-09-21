@@ -89,6 +89,18 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(BaseModelView):
                 column_formatters = dict(price=lambda v, c, m, p: m.price*2)
 
+        or using Jinja2 `macro` in template::
+
+            from flask.ext.admin.model.template import macro
+
+            class MyModelView(BaseModelView):
+                column_formatters = dict(price=macro('render_price'))
+
+            # in template
+            {% macro render_price(model, column) %}
+                {{ model.price * 2 }}
+            {% endmacro %}
+
         The Callback function has the prototype::
 
             def formatter(view, context, model, name):
