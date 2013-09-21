@@ -106,10 +106,10 @@
                 processAjaxWidget($el, name);
                 return true;
             case 'datepicker':
-                $el.datepicker();
+                $el.datetimepicker({pickTime: false});
                 return true;
             case 'datetimepicker':
-                $el.datepicker({displayTime: true});
+                $el.datetimepicker();
                 return true;
         }
       };
