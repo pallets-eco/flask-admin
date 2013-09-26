@@ -3,8 +3,8 @@ from flask.globals import _request_ctx_stack
 from flask.ext.admin.babel import gettext, ngettext
 from flask.ext.admin import helpers as h
 
-__all__ = ['Select2Widget', 'DatePickerWidget', 'DateTimePickerWidget', 'RenderTemplateWidget',
-           'Select2TagsWidget', ]
+__all__ = ['Select2Widget', 'DatePickerWidget', 'DateTimePickerWidget',
+           'RenderTemplateWidget', 'Select2TagsWidget', 'MarkItUpWidget', ]
 
 
 class Select2Widget(widgets.Select):
@@ -40,7 +40,7 @@ class DatePickerWidget(widgets.TextInput):
     """
         Date picker widget.
 
-        You must include bootstrap-datepicker.js and form.js for styling to work.
+        You must include bootstrap-datetimepicker.js and form.js for styling to work.
     """
     def __call__(self, field, **kwargs):
         kwargs['data-role'] = u'datepicker'
@@ -51,11 +51,21 @@ class DateTimePickerWidget(widgets.TextInput):
     """
         Datetime picker widget.
 
-        You must include bootstrap-datepicker.js and form.js for styling to work.
+        You must include bootstrap-datetimepicker.js and form.js for styling to work.
     """
     def __call__(self, field, **kwargs):
         kwargs['data-role'] = u'datetimepicker'
+        kwargs['data-format'] = u'yyyy-MM-dd hh:mm:ss'
         return super(DateTimePickerWidget, self).__call__(field, **kwargs)
+
+
+class MarkItUpWidget(widgets.TextArea):
+    """ MarkItUp <http://markitup.jaysalvat.com/home/> widget.
+
+    """
+    def __call__(self, field, **kwargs):
+        kwargs['data-role'] = u'markitup'
+        return super(MarkItUpWidget, self).__call__(field, **kwargs)
 
 
 class RenderTemplateWidget(object):
