@@ -32,9 +32,9 @@ class TimeField(fields.Field):
         """
         super(TimeField, self).__init__(label, validators, **kwargs)
 
-        self.format = formats or ('%H:%M:%S', '%H:%M',
-                                  '%I:%M:%S%p', '%I:%M%p',
-                                  '%I:%M:%S %p', '%I:%M %p')
+        self.formats = formats or ('%H:%M:%S', '%H:%M',
+                                   '%I:%M:%S%p', '%I:%M%p',
+                                   '%I:%M:%S %p', '%I:%M %p')
 
     def _value(self):
         if self.raw_data:
