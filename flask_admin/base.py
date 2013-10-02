@@ -297,7 +297,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
                 View function arguments
         """
         if not self.is_accessible():
-            return abort(404)
+            return abort(403)
 
     @property
     def _debug(self):

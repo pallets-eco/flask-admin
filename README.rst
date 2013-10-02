@@ -35,4 +35,4 @@ If you want to localize administrative interface, install `Flask-BabelEx <https:
 Examples
 --------
 
-The library comes with a quite a few examples, you can find them in the `examples <https://github.com/mrjoes/flask-admin/tree/master/examples` directory.
+The library comes with a quite a few examples, you can find them in the `examples <https://github.com/mrjoes/flask-admin/tree/master/examples>` directory.
