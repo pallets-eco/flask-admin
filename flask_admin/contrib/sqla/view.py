@@ -636,7 +636,7 @@ class ModelView(BaseModelView):
                 table = mapper.tables[0]
 
                 if self._need_join(table) and table.name not in joins:
-                    query = query.join(table)
+                    query = query.outerjoin(table)
                     joins.add(table.name)
         elif isinstance(sort_field, Column):
             pass
