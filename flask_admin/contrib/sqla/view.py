@@ -3,7 +3,7 @@ import logging
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import desc
-from sqlalchemy import or_, Column, func
+from sqlalchemy import Column, Boolean, func, or_
 
 from flask import flash
 
@@ -228,6 +228,16 @@ class ModelView(BaseModelView):
                 form_choices = {'my_form_field': [
                     ('db_value', 'display_value'),
                 ]
+    """
+
+    form_optional_types = (Boolean,)
+    """
+        List of field types that should be optional if column is not nullable.
+
+        Example::
+
+            class MyModelView(BaseModelView):
+                form_optional_types = (Boolean, Unicode)
     """
 
     def __init__(self, model, session,

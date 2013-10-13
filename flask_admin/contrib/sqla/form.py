@@ -196,7 +196,9 @@ class AdminModelConverter(ModelConverterBase):
                                                        model,
                                                        column))
 
-                if not column.nullable and not isinstance(column.type, Boolean):
+                optional_types = getattr(self.view, 'form_optional_types', (Boolean,))
+
+                if not column.nullable and not isinstance(column.type, optional_types):
                     kwargs['validators'].append(validators.InputRequired())
 
                 # Apply label and description if it isn't inline form field
