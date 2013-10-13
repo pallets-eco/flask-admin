@@ -15,9 +15,10 @@ class TimeField(fields.Field):
         A text field which stores a `datetime.time` object.
         Accepts time string in multiple formats: 20:10, 20:10:00, 10:00 am, 9:30pm, etc.
     """
-    widget = widgets.TextInput()
+    widget = admin_widgets.TimePickerWidget()
 
-    def __init__(self, label=None, validators=None, formats=None, **kwargs):
+    def __init__(self, label=None, validators=None, formats=None,
+                 default_format=None, widget_format=None, **kwargs):
         """
             Constructor
 
@@ -27,6 +28,10 @@ class TimeField(fields.Field):
                 Field validators
             :param formats:
                 Supported time formats, as a enumerable.
+            :param default_format:
+                Default time format. Defaults to '%H:%M:%S'
+            :param widget_format:
+                Widget date format. Defaults to 'hh:ii:ss'
             :param kwargs:
                 Any additional parameters
         """
@@ -36,11 +41,14 @@ class TimeField(fields.Field):
                                    '%I:%M:%S%p', '%I:%M%p',
                                    '%I:%M:%S %p', '%I:%M %p')
 
+        self.default_format = default_format or '%H:%M:%S'
+        self.widget_format = widget_format or 'hh:ii:ss'
+
     def _value(self):
         if self.raw_data:
             return u' '.join(self.raw_data)
         else:
-            return self.data and self.data.strftime(self.format) or u''
+            return self.data and self.data.strftime(self.default_format) or u''
 
     def process_formdata(self, valuelist):
         if valuelist:

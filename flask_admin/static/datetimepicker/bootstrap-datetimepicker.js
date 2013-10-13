@@ -481,6 +481,7 @@
 			if (this.date == null || this.viewDate == null) {
 				return;
 			}
+
 			var d = new Date(this.viewDate),
 				year = d.getUTCFullYear(),
 				month = d.getUTCMonth(),
@@ -493,8 +494,10 @@
 				endMonth = this.endDate !== Infinity ? this.endDate.getUTCMonth() : Infinity,
 				currentDate = (new UTCDate(this.date.getUTCFullYear(), this.date.getUTCMonth(), this.date.getUTCDate())).valueOf(),
 				today = new Date();
-			this.picker.find('.datetimepicker-days thead th:eq(1)')
+
+				this.picker.find('.datetimepicker-days thead th:eq(1)')
 						.text(dates[this.language].months[month]+' '+year);
+
 				if (this.formatViewType == "time") {
 						var hourConverted = hours % 12 ? hours % 12 : 12;
 						var hoursDisplay = (hourConverted < 10 ? '0' : '') + hourConverted;
@@ -510,6 +513,7 @@
 						this.picker.find('.datetimepicker-minutes thead th:eq(1)')
 								.text(dayMonth + ' ' + dates[this.language].months[month] + ' ' + year);
 				}
+
 				this.picker.find('tfoot th.today')
 						.text(dates[this.language].today)
 						.toggle(this.todayBtn !== false);

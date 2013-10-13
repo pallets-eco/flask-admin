@@ -64,6 +64,19 @@ class DateTimePickerWidget(widgets.TextInput):
         return super(DateTimePickerWidget, self).__call__(field, **kwargs)
 
 
+class TimePickerWidget(widgets.TextInput):
+    """
+        Date picker widget.
+
+        You must include bootstrap-datepicker.js and form.js for styling to work.
+    """
+    def __call__(self, field, **kwargs):
+        kwargs['data-role'] = u'timepicker'
+        kwargs['data-date-format'] = field.widget_format or 'hh:ii:ss'
+        kwargs['data-date-autoclose'] = u'true'
+        return super(TimePickerWidget, self).__call__(field, **kwargs)
+
+
 class RenderTemplateWidget(object):
     """
         WTForms widget that renders Jinja2 template

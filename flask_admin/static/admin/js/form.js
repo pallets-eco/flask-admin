@@ -106,10 +106,19 @@
                 processAjaxWidget($el, name);
                 return true;
             case 'datepicker':
-                $el.datetimepicker({minView: 'month'});
+                $el.datetimepicker({
+                  minView: 'month'
+                });
                 return true;
             case 'datetimepicker':
                 $el.datetimepicker();
+                return true;
+            case 'timepicker':
+                $el.datetimepicker({
+                  startView: 'day',
+                  maxView: 'day',
+                  formatViewType: 'time'
+                });
                 return true;
         }
       };
