@@ -26,6 +26,13 @@ class AdminModelConverter(ModelConverterBase):
     """
         SQLAlchemy model to form converter
     """
+
+    nullable_not_required_types = [Boolean]
+    """
+        Types which do not produce required fields if they are
+        non-nullable.
+    """
+    
     def __init__(self, session, view):
         super(AdminModelConverter, self).__init__()
 
@@ -196,7 +203,9 @@ class AdminModelConverter(ModelConverterBase):
                                                        model,
                                                        column))
 
-                if not column.nullable and not isinstance(column.type, Boolean):
+                if not column.nullable and not any(
+                        isinstance(column.type, _type)
+                        for _type in self.nullable_not_required_types):
                     kwargs['validators'].append(validators.InputRequired())
 
                 # Apply label and description if it isn't inline form field
