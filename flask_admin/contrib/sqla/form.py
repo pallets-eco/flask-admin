@@ -98,19 +98,24 @@ class AdminModelConverter(ModelConverterBase):
 
     def _convert_relation(self, prop, kwargs):
         remote_model = prop.mapper.class_
-        local_column = prop.local_remote_pairs[0][0]
+        column = prop.local_remote_pairs[0][0]
+
+        # If this relation points to local column that's not foreign key, assume
+        # that it is backref and use remote column data
+        if not column.foreign_keys:
+            column = prop.local_remote_pairs[0][1]
 
         kwargs['label'] = self._get_label(prop.key, kwargs)
         kwargs['description'] = self._get_description(prop.key, kwargs)
 
-        if local_column.nullable:
+        if column.nullable:
             kwargs['validators'].append(validators.Optional())
         elif prop.direction.name != 'MANYTOMANY':
             kwargs['validators'].append(validators.InputRequired())
 
         # Contribute model-related parameters
         if 'allow_blank' not in kwargs:
-            kwargs['allow_blank'] = local_column.nullable
+            kwargs['allow_blank'] = column.nullable
 
         # Override field type if necessary
         override = self._get_field_override(prop.key)
