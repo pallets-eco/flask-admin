@@ -128,19 +128,15 @@ class CustomModelConverter(orm.ModelConverter):
             return converter.convert(model, field.field, kwargs)
 
         unbound_field = converter.convert(model, field.field, {})
-        kwargs = {
-            'validators': [],
-            'filters': [],
-        }
         return InlineFieldList(unbound_field, min_entries=0, **kwargs)
 
     @orm.converts('EmbeddedDocumentField')
     def conv_EmbeddedDocument(self, model, field, kwargs):
-        kwargs = {
-            'validators': [],
-            'filters': [],
-            'widget': InlineFormWidget()
-        }
+        # FormField does not support validators
+        kwargs['validators'] = []
+
+        if 'widget' not in kwargs:
+            kwargs['widget'] = InlineFormWidget()
 
         view = self._get_subdocument_config(field.name)
 

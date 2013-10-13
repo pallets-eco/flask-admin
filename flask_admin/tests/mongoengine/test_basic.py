@@ -474,3 +474,28 @@ def test_form_flat_choices():
 
     form = view.create_form()
     eq_(form.name.choices, [('a', 'a'), ('b', 'b'), ('c', 'c')])
+
+
+def test_form_args_embeddeddoc():
+    app, db, admin = setup()
+
+    class Info(db.EmbeddedDocument):
+        name = db.StringField()
+        age = db.StringField()
+
+    class Model(db.Document):
+        info = db.EmbeddedDocumentField('Info')
+        timestamp = db.DateTimeField()
+
+    view = CustomModelView(
+        Model,
+        form_args= {
+            'info': {'label': 'Information'},
+            'timestamp': {'label': 'Last Updated Time'}
+        }
+    )
+    admin.add_view(view)
+    form = view.create_form()
+    eq_(form.timestamp.label.text, 'Last Updated Time')
+    # This is the failure
+    eq_(form.info.label.text, 'Information')
