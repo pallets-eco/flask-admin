@@ -48,7 +48,7 @@ def expose_plugview(url='/'):
 # Base views
 def _wrap_view(f):
     @wraps(f)
-    def inner(self, **kwargs):
+    def inner(self, *args, **kwargs):
         # Store current admin view
         h.set_current_view(self)
 
@@ -57,7 +57,7 @@ def _wrap_view(f):
         if abort is not None:
             return abort
 
-        return f(self, **kwargs)
+        return f(self, *args, **kwargs)
 
     return inner
 
