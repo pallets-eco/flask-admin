@@ -93,6 +93,17 @@ class TodoView(ModelView):
     }
 
 
+class PostView(ModelView):
+    form_subdocuments = {
+        'inner': {
+            'form_subdocuments': {
+                None: {
+                    'form_rules': ('value', 'name')
+                }
+            }
+        }
+    }
+
 # Flask views
 @app.route('/')
 def index():
@@ -107,7 +118,7 @@ if __name__ == '__main__':
     admin.add_view(UserView(User))
     admin.add_view(TodoView(Todo))
     admin.add_view(ModelView(Tag))
-    admin.add_view(ModelView(Post))
+    admin.add_view(PostView(Post))
     admin.add_view(ModelView(File))
     admin.add_view(ModelView(Image))
 
