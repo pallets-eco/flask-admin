@@ -93,6 +93,39 @@ class NestedRule(BaseRule):
         return Markup(self.separator.join(result))
 
 
+class Text(BaseRule):
+    """
+        Render text (or HTML snippet) from string.
+    """
+    def __init__(self, text, escape=True):
+        """
+            Constructor.
+
+            :param text:
+                Text snippet to render
+            :param escape:
+                Should text be escaped or not. Default is `True`.
+        """
+        super(Text, self).__init__()
+
+        self.text = text
+        self.escape = escape
+
+    def __call__(self, form, form_opts=None, field_args={}):
+        if self.escape:
+            return self.text
+
+        return Markup(self.text)
+
+
+class HTML(Text):
+    """
+        Shortcut for `Text` rule with `escape` set to `False.
+    """
+    def __init__(self, html):
+        super(HTML, self).__init__(html, escape=False)
+
+
 class Macro(BaseRule):
     """
         Render macro by its name from current Jinja2 context.

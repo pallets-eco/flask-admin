@@ -99,7 +99,8 @@ class PostView(ModelView):
         'inner': {
             'form_subdocuments': {
                 None: {
-                    'form_rules': ('name', 'tags', rules.Header('Comment'), 'value')
+                    # Add <hr> at the end of the form
+                    'form_rules': ('name', 'tag', 'value', rules.HTML('<hr>'))
                 }
             }
         }
