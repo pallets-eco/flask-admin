@@ -7,7 +7,7 @@ from jinja2 import contextfunction
 from flask.ext.admin.babel import gettext
 
 from flask.ext.admin.base import BaseView, expose
-from flask.ext.admin.form import BaseForm
+from flask.ext.admin.form import BaseForm, rules, get_form_opts
 from flask.ext.admin.model import filters, typefmt
 from flask.ext.admin.actions import ActionsMixin
 from flask.ext.admin.helpers import get_form_data, validate_form_on_submit
@@ -403,6 +403,39 @@ class BaseModelView(BaseView, ActionsMixin):
         in your `AjaxModelLoader` class.
     """
 
+    form_create_rules = None
+    """
+        List of rendering rules for model creation form.
+
+        This property changed default form rendering behavior and makes possible to rearrange order
+        of rendered fields, add some text between fields, group them, etc. If not set, will use
+        default Flask-Admin form rendering logic.
+
+        Here's simple example which illustrates how to use::
+
+            from flask.ext.admin.form import rules
+
+            class MyModelView(ModelView):
+                form_rules = [
+                    # Define field set with header text and four fields
+                    rules.FieldSet('User', ('first_name', 'last_name', 'email', 'phone')),
+                    # ... and it is just shortcut for:
+                    rules.Header('User'),
+                    rules.Field('first_name'),
+                    rules.Field('last_name'),
+                    # ...
+                    # It is possible to create custom rule blocks:
+                    MyBlock('Hello World'),
+                    # It is possible to call macros from current context
+                    rules.Macro('my_macro', foobar='baz')
+                ]
+    """
+
+    form_edit_rules = None
+    """
+        Same as `form_create_rules`, just for model edit form.
+    """
+
     # Actions
     action_disallowed_list = ObsoleteAttr('action_disallowed_list',
                                           'disallowed_actions',
@@ -525,6 +558,17 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             self._filter_groups = None
             self._filter_types = None
+
+        # Form rendering rules
+        if self.form_create_rules:
+            self._form_create_rules = rules.RuleSet(self, self.form_create_rules)
+        else:
+            self._form_create_rules = None
+
+        if self.form_edit_rules:
+            self._form_edit_rules = rules.RuleSet(self, self.form_edit_rules)
+        else:
+            self._form_edit_rules = None
 
     # Primary key
     def get_pk_value(self, model):
@@ -1159,7 +1203,8 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return self.render(self.create_template,
                            form=form,
-                           form_widget_args=self.form_widget_args,
+                           form_opts=get_form_opts(self),
+                           form_rules=self._form_create_rules,
                            return_url=return_url)
 
     @expose('/edit/', methods=('GET', 'POST'))
@@ -1194,7 +1239,8 @@ class BaseModelView(BaseView, ActionsMixin):
         return self.render(self.edit_template,
                            model=model,
                            form=form,
-                           form_widget_args=self.form_widget_args,
+                           form_opts=get_form_opts(self),
+                           form_rules=self._form_edit_rules,
                            return_url=return_url)
 
     @expose('/delete/', methods=('POST',))

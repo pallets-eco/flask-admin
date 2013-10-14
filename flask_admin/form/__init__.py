@@ -13,6 +13,13 @@ class BaseForm(form.Form):
         super(BaseForm, self).__init__(formdata=formdata, obj=obj, prefix=prefix, **kwargs)
 
 
+class FormOpts(object):
+    __slots__ = ['widget_args']
+
+    def __init__(self, widget_args):
+        self.widget_args = widget_args
+
+
 def recreate_field(unbound):
     """
         Create new instance of the unbound field, resetting wtforms creation counter.
@@ -24,3 +31,13 @@ def recreate_field(unbound):
         raise ValueError('recreate_field expects UnboundField instance, %s was passed.' % type(unbound))
 
     return unbound.field_class(*unbound.args, **unbound.kwargs)
+
+
+def get_form_opts(view):
+    """
+        Return form options object from the view.
+
+        :param view:
+            Administrative view or inline model configuration class.
+    """
+    return FormOpts(getattr(view, 'form_widget_args', {}))

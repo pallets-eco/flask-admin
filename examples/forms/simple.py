@@ -8,6 +8,7 @@ from sqlalchemy.event import listens_for
 from jinja2 import Markup
 
 from flask.ext.admin import Admin, form
+from flask.ext.admin.form import rules
 from flask.ext.admin.contrib import sqla
 
 
@@ -47,6 +48,20 @@ class Image(db.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class RuleSample(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.Unicode(64))
+    last_name = db.Column(db.Unicode(64))
+    email = db.Column(db.Unicode(128))
+    phone = db.Column(db.Unicode(32))
+
+    address = db.Column(db.Unicode(128))
+    city = db.Column(db.Unicode(128))
+    zip = db.Column(db.Unicode(8))
+
+    notes = db.Column(db.UnicodeText)
 
 
 # Delete hooks for models, delete files if models are getting deleted
@@ -114,6 +129,27 @@ class ImageView(sqla.ModelView):
     }
 
 
+class RuleView(sqla.ModelView):
+    form_create_rules = [
+        # Header and four fields. Email field will go above phone field.
+        rules.FieldSet(('first_name', 'last_name', 'email', 'phone'), 'Personal'),
+        # Separate header and few fields
+        rules.Header('Address'),
+        rules.Field('address'),
+        # String is resolved to form field, so there's no need to explicitly use `rules.Field`
+        'city',
+        'zip',
+        # Show macro from Flask-Admin lib.html (it is included with 'lib' prefix)
+        rules.Container('rule_demo.wrap', rules.Field('notes'))
+    ]
+
+    # Use same rule set for edit page
+    form_edit_rules = form_create_rules
+
+    create_template = 'rule_create.html'
+    edit_template = 'rule_edit.html'
+
+
 # Flask views
 @app.route('/')
 def index():
@@ -127,6 +163,7 @@ if __name__ == '__main__':
     # Add views
     admin.add_view(FileView(File, db.session))
     admin.add_view(ImageView(Image, db.session))
+    admin.add_view(RuleView(RuleSample, db.session, name='Rule'))
 
     # Create DB
     db.create_all()

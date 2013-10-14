@@ -8,7 +8,7 @@
 
 {% block body %}
   {% call lib.form_tag(form) %}
-      {{ lib.render_form_fields(form, widget_args=form_widget_args) }}
+      {{ lib.render_form_fields(h.get_render_ctx(), admin_view, form, form_rules=form_rules) }}
       <div class="form-buttons">
         {{ lib.render_form_buttons(return_url, extra()) }}
       </div>

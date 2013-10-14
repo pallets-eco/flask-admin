@@ -43,6 +43,8 @@
 
       {{ layout.messages() }}
 
+      {% set render_ctx = h.resolve_ctx() %}
+
       {% block body %}{% endblock %}
     </div>
     {% endblock %}

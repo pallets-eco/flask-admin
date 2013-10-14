@@ -75,7 +75,7 @@
 {%- endmacro %}
 
 {# ---------------------- Forms -------------------------- #}
-{% macro render_field(form, field, set_focus=False, kwargs={}) %}
+{% macro render_field(form, field, kwargs={}) %}
   {% set direct_error = h.is_field_error(field.errors) %}
   <div class="control-group{{ ' error' if direct_error else '' }}">
     <div class="control-label">
@@ -88,11 +88,7 @@
     </div>
     <div class="controls">
     <div>
-      {% if set_focus %}
-      {{ field(autofocus='autofocus', **kwargs)|safe }}
-      {% else %}
       {{ field(**kwargs)|safe }}
-      {% endif %}
     </div>
     {% if field.description %}
     <p class="help-block">{{ field.description }}</p>
@@ -108,7 +104,11 @@
   </div>
 {% endmacro %}
 
-{% macro render_form_fields(form, set_focus=True, widget_args={}) %}
+{% macro render_header(form, text) %}
+    <h3>{{ text }}</h3>
+{% endmacro %}
+
+{% macro render_form_fields(form, form_opts={}, form_rules=None) %}
     {% if form.hidden_tag is defined %}
         {{ form.hidden_tag() }}
     {% else %}
@@ -117,10 +117,20 @@
         {% endfor %}
     {% endif %}
 
-    {% for f in form if f.type != 'HiddenField' and f.type != 'CSRFTokenField' %}
-      {% set kwargs = widget_args.get(f.name, {}) %}
-      {{ render_field(form, f, not loop.index0 and set_focus, kwargs) }}
-    {% endfor %}
+    {% if form_rules %}
+        {% for r in form_rules %}
+            {{ r(form, form_opts=form_opts) }}
+        {% endfor %}
+    {% else %}
+        {% for f in form if f.type != 'HiddenField' and f.type != 'CSRFTokenField' %}
+          {% if form_opts %}
+            {% set kwargs = form_opts.widget_args.get(f.name, {}) %}
+          {% else %}
+            {% set kwargs = {} %}
+          {% endif %}
+          {{ render_field(form, f, kwargs) }}
+        {% endfor %}
+    {% endif %}
 {% endmacro %}
 
 {% macro form_tag(form=None) %}
@@ -145,9 +155,9 @@
     </div>
 {% endmacro %}
 
-{% macro render_form(form, cancel_url, extra=None, widget_args={}) -%}
+{% macro render_form(form, cancel_url, extra=None, form_opts={}, form_rules=None) -%}
     {% call form_tag() %}
-        {{ render_form_fields(form, widget_args=widget_args) }}
+        {{ render_form_fields(form, form_opts=form_opts, form_rules=form_rules) }}
         {{ render_form_buttons(cancel_url, extra) }}
     {% endcall %}
 {% endmacro %}
