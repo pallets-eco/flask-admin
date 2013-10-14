@@ -2,8 +2,9 @@ import datetime
 
 from flask import Flask
 
-from flask.ext import admin, wtf
+from flask.ext import admin
 from flask.ext.mongoengine import MongoEngine
+from flask.ext.admin.form import rules
 from flask.ext.admin.contrib.mongoengine import ModelView
 
 # Create application
@@ -98,7 +99,7 @@ class PostView(ModelView):
         'inner': {
             'form_subdocuments': {
                 None: {
-                    'form_rules': ('value', 'name')
+                    'form_rules': ('name', 'tags', rules.Header('Comment'), 'value')
                 }
             }
         }
