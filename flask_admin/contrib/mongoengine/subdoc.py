@@ -1,4 +1,5 @@
 from flask.ext.admin._compat import iteritems
+from flask.ext.admin.form import rules
 from flask.ext.admin.model.form import InlineBaseFormAdmin
 
 
@@ -7,6 +8,13 @@ class EmbeddedForm(InlineBaseFormAdmin):
         super(EmbeddedForm, self).__init__(**kwargs)
 
         self._form_subdocuments = convert_subdocuments(getattr(self, 'form_subdocuments', {}))
+
+        form_rules = getattr(self, 'form_rules', None)
+
+        if form_rules:
+            self._form_rules = rules.RuleSet(self, form_rules)
+        else:
+            self._form_rules = None
 
 
 def convert_subdocuments(values):

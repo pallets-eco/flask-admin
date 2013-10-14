@@ -1,4 +1,4 @@
 {% import 'admin/lib.html' as lib with context %}
 <div class="fa-inline-field">
-  {{ lib.render_form_fields(field) }}
+  {{ lib.render_form_fields(field.form, form_rules=form_rules) }}
 </div>

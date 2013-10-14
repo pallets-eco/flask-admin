@@ -239,7 +239,7 @@ class Field(Macro):
         field = getattr(form, self.field_name, None)
 
         if not field:
-            raise ValueError('Form %s does not have field %s' % (form, form_opts, self.field_name))
+            raise ValueError('Form %s does not have field %s' % (form, self.field_name))
 
         opts = {}
 

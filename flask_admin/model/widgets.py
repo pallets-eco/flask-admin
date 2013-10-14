@@ -16,7 +16,18 @@ class InlineFormWidget(RenderTemplateWidget):
         super(InlineFormWidget, self).__init__('admin/model/inline_form.html')
 
     def __call__(self, field, **kwargs):
+        kwargs.setdefault('form_rules', None)
         return super(InlineFormWidget, self).__call__(field, **kwargs)
+
+
+class InlineFormRuleWidget(InlineFormWidget):
+    def __init__(self, rule_set):
+        super(InlineFormRuleWidget, self).__init__()
+        self.rule_set = rule_set
+
+    def __call__(self, field, **kwargs):
+        kwargs['form_rules'] = self.rule_set
+        return super(InlineFormRuleWidget, self).__call__(field, **kwargs)
 
 
 class AjaxSelect2Widget(object):
