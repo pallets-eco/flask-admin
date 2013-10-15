@@ -108,7 +108,7 @@ class FilterConverter(filters.BaseFilterConverter):
     def conv_bool(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.bool]
 
-    @filters.convert('Integer', 'SmallInteger', 'Numeric', 'Float')
+    @filters.convert('Integer', 'SmallInteger', 'Numeric', 'Float', 'BigInteger')
     def conv_int(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.numeric]
 
