@@ -26,8 +26,8 @@ For example, here is an absolutely valid administrative piece::
         def test(self):
             return self.render('admin/test.html')
 
-If the user visits the `index` view, the `admin/myindex.html` template will be rendered. In the same way, visiting
-the `test` view will result in the `admin/test.html` view being rendered.
+If the user visits the *index* view, the *admin/myindex.html* template will be rendered. In the same way, visiting
+the *test* view will result in the *admin/test.html* view being rendered.
 
 So, how does this approach help in structuring an admin interface? With such building blocks, you're
 implementing reusable functional pieces that are highly customizable.
@@ -61,7 +61,7 @@ you should see an empty "Home" page with a navigation bar on top
     .. image:: images/quickstart/quickstart_1.png
         :target: ../_images/quickstart_1.png
 
-You can change the application name by passing a value for the `name` parameter to the
+You can change the application name by passing a value for the *name* parameter to the
 :class:`~flask.ext.admin.base.Admin` class constructor::
 
     admin = Admin(app, name='My App')
@@ -76,8 +76,8 @@ As an alternative to passing a Flask application object to the Admin constructor
 Adding views
 ------------
 
-Now, lets add an administrative view. The next example will result in two items appearing in the navbar menu: 'Home'
-and 'Hello'. To do this, you need to derive from the :class:`~flask.ext.admin.base.BaseView` class::
+Now, lets add an administrative view. The next example will result in two items appearing in the navbar menu: *Home*
+and *Hello*. To do this, you need to derive from the :class:`~flask.ext.admin.base.BaseView` class::
 
     from flask import Flask
     from flask.ext.admin import Admin, BaseView, expose
@@ -95,7 +95,8 @@ and 'Hello'. To do this, you need to derive from the :class:`~flask.ext.admin.ba
     app.run()
 
 One important restriction on admin views is that each view class should have a default page-view method with a root
-url, '/'. The following example is correct
+url, '/'. The following example is correct::
+
     class MyView(BaseView):
         @expose('/')
         def index(self):
@@ -108,23 +109,23 @@ but, this wouldn't work::
         def index(self):
             return self.render('index.html')
 
-Now, create a new `index.html` file with following content
+Now, create a new *index.html* file with following content::
 
     {% extends 'admin/master.html' %}
     {% block body %}
         Hello World from MyView!
     {% endblock %}
 
-and place it in a `templates` directory. To maintain a consistent look and feel, all administrative pages should extend
-the 'admin/master.html' template.
+and place it in a *templates* directory. To maintain a consistent look and feel, all administrative pages should extend
+the *admin/master.html* template.
 
-You should now see your new admin page in action on the 'Hello' page::
+You should now see your new admin page in action on the *Hello* page
 
     .. image:: images/quickstart/quickstart_2.png
         :width: 640
         :target: ../_images/quickstart_2.png
 
-To add another level of menu items, you can specify a value for the `category` parameter when passing admin views to
+To add another level of menu items, you can specify a value for the *category* parameter when passing admin views to
 the Admin instance. The category specifies the name of the top-level menu item, and all of the views that are associated
 with it, will be accessible from a drop-down menu. For example::
 
@@ -144,7 +145,7 @@ with it, will be accessible from a drop-down menu. For example::
     admin.add_view(MyView(name='Hello 3', endpoint='test3', category='Test'))
     app.run()
 
-will look like this:
+will look like
 
     .. image:: images/quickstart/quickstart_3.png
         :width: 640
@@ -156,7 +157,7 @@ Authentication
 Flask-Admin does not make any assumptions about the authentication system you might be using. So, by default, the admin
 interface is completely open.
 
-To control access to the admin interface, you can specify an `is_accessible` method when extending the `BaseView` class.
+To control access to the admin interface, you can specify an *is_accessible* method when extending the *BaseView* class.
 So, for example, if you are using Flask-Login for authentication, the following will ensure that only logged-in users
 have access to the view in question::
 
@@ -171,7 +172,7 @@ administrative interface. If a user does not have access to a particular view, t
 Generating URLs
 ---------------
 
-Internally, view classes work on top of Flask blueprints, so you can use `url_for` with a dot
+Internally, view classes work on top of Flask blueprints, so you can use *url_for* with a dot
 prefix to get the URL for a local view::
 
     from flask import url_for
@@ -189,12 +190,12 @@ prefix to get the URL for a local view::
 
 If you want to generate a URL for a particular view method from outside, the following rules apply:
 
-1. You can override the endpoint name by passing `endpoint` parameter to the view class constructor::
+1. You can override the endpoint name by passing *endpoint* parameter to the view class constructor::
 
     admin = Admin(app)
     admin.add_view(MyView(endpoint='testadmin'))
 
-In this case, you can generate links by concatenating the view method name with an endpoint::
+    In this case, you can generate links by concatenating the view method name with an endpoint::
 
     url_for('testadmin.index')
 
@@ -202,15 +203,14 @@ In this case, you can generate links by concatenating the view method name with 
 
     url_for('myview.index')
 
-3. For model-based views the rules differ - the model class name should be used, if an endpoint name is not provided.
-Model-based views will be explained in the next section.
+3. For model-based views the rules differ - the model class name should be used if an endpoint name is not provided. Model-based views will be explained in the next section.
 
 
 Model Views
 -----------
 
 Model views allow you to add dedicated admin pages for each of the models in your database. Do this by creating
-instances of the `ModelView` class, which you can import from one of Flask-Admin's built-in ORM backends. An example
+instances of the *ModelView* class, which you can import from one of Flask-Admin's built-in ORM backends. An example
 is the SQLAlchemy backend, which you can use as follows::
 
     from flask.ext.admin.contrib.sqla import ModelView
@@ -220,13 +220,13 @@ is the SQLAlchemy backend, which you can use as follows::
     admin = Admin(app)
     admin.add_view(ModelView(User, db.session))
 
-This creates an admin page for the `User` model. By default, the list view looks like::
+This creates an admin page for the *User* model. By default, the list view looks like
 
     .. image:: images/quickstart/quickstart_4.png
         :width: 640
         :target: ../_images/quickstart_4.png
 
-To customize these model views, you have two options: Either you can override the public properties of the `ModelView`
+To customize these model views, you have two options: Either you can override the public properties of the *ModelView*
 class, or you can override its methods.
 
 For example, if you want to disable model creation and only show certain columns in the list view, you can do
@@ -251,8 +251,8 @@ something like::
     admin.add_view(MyView(db.session))
 
 Overriding form elements can be a bit trickier, but it is still possible. Here's an example of
-how to set up a form that includes a column named ``status`` that allows only predefined values and
-therefore should use a ``SelectField``::
+how to set up a form that includes a column named *status* that allows only predefined values and
+therefore should use a *SelectField*::
 
     from wtforms.fields import SelectField
 
@@ -305,8 +305,7 @@ Examples
 
 Flask-Admin comes with few examples:
 
-- `Simple administrative interface <https://github.com/MrJoes/Flask-Admin/tree/master/examples/simple>`_ with custom
-administrative views
+- `Simple administrative interface <https://github.com/MrJoes/Flask-Admin/tree/master/examples/simple>`_ with custom administrative views
 - `SQLAlchemy model example <https://github.com/MrJoes/Flask-Admin/tree/master/examples/sqla>`_
 - `Flask-Login integration example <https://github.com/MrJoes/Flask-Admin/tree/master/examples/auth>`_
 - `File management interface <https://github.com/MrJoes/Flask-Admin/tree/master/examples/file>`_
