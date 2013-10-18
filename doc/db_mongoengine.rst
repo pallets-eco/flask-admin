@@ -3,11 +3,12 @@ MongoEngine backend
 
 Features:
 
- - MongoEngine 0.7+ support;
- - Paging, sorting, filters, etc;
- - Inline editing of related models;
+ - MongoEngine 0.7+ support
+ - Paging, sorting, filters, etc
+ - Supports complex document structure (lists, subdocuments and so on)
+ - GridFS support for file and image uploads
 
-In order to use MongoEngine integration, you need to install `flask-mongoengine` package,
+In order to use MongoEngine integration, you need to install the `flask-mongoengine` package,
 as Flask-Admin uses form scaffolding from it.
 
 You don't have to use Flask-MongoEngine in your project - Flask-Admin will work with "raw"
@@ -15,7 +16,6 @@ MongoEngine models without any problems.
 
 Known issues:
 
- - There's no way to configure EmbeddedDocument display options
  - Search functionality can't split query into multiple terms due to
    MongoEngine query language limitations
 

@@ -5,10 +5,10 @@ Flask-Admin comes with SQLAlchemy ORM backend.
 
 Notable features:
 
- - SQLAlchemy 0.6+ support;
- - Paging, sorting, filters;
- - Proper model relationship handling;
- - Inline editing of related models.
+ - SQLAlchemy 0.6+ support
+ - Paging, sorting, filters
+ - Proper model relationship handling
+ - Inline editing of related models
 
 Getting Started
 ---------------
