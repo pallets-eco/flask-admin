@@ -12,13 +12,18 @@ applications. It is inspired by the *django-admin* package, but implemented in s
 of the look, feel and functionality of the resulting application.
 
 Out-of-the-box, Flask-Admin plays nicely with various ORM's, including
-    `SQLAlchemy <http://www.sqlalchemy.org/>`_,
-    `MongoEngine <http://mongoengine.org/>`_,
-    `pymongo <http://api.mongodb.org/python/current/>`_ and
-    `Peewee <https://github.com/coleifer/peewee>`_.
+
+- `SQLAlchemy <http://www.sqlalchemy.org/>`_,
+
+- `MongoEngine <http://mongoengine.org/>`_,
+
+- `pymongo <http://api.mongodb.org/python/current/>`_ and
+
+- `Peewee <https://github.com/coleifer/peewee>`_.
+
 It also boasts a simple file management interface and a `redis client <http://redis.io/>`_ console.
 
-Several usage examples are included in the */examples* folder. Feel free to add your own, or improve some of the existing ones, and submit them as a *pull-request*.
+Several usage examples are included in the */examples* folder. Feel free to add your own examples, or improve some of the existing ones, and submit them as a *pull-request*.
 
 The biggest feature of Flask-Admin is flexibility. It aims to provide a set of simple tools that can be used for
 building admin interfaces of any complexity. So, to start off with you can create a very simple application in no time,
@@ -29,7 +34,7 @@ Flask-Admin is an active project, well-tested and production ready.
 
 Documentation
 -------------
-Flask-Admin is extensively documented, you can find `documentation here <http://readthedocs.org/docs/flask-admin>`_.
+Flask-Admin is extensively documented, you can find all of the documentation at `http://readthedocs.org/docs/flask-admin <http://readthedocs.org/docs/flask-admin>`_.
 
 The docs are auto-generated for the *.rst* files in the */doc* folder. So if you come across any errors, or think of anything that should be included, then please make the changes and submit them as a *pull-request*.
 
@@ -47,18 +52,18 @@ Or alternatively, you can download the repository and install manually by doing:
 
 Tests
 -----
-Test are run with *nose*. If you are not familiar with this package you can get some more info from `their website <http://nose.readthedocs.org/`_.
+Test are run with *nose*. If you are not familiar with this package you can get some more info from `their website <http://nose.readthedocs.org/>`_.
 
-To run the tests, simply
+To run the tests, simply::
 
     pip install nose
 
-and then
+and then::
 
     cd flask-admin
     nosetests
 
-You should see output such as:
+You should see output such as::
 
     ----------------------------------------------------------------------
     Ran 41 tests in 2.092s
