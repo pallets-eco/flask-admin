@@ -15,6 +15,7 @@ API
 
    mod_contrib_sqla
    mod_contrib_mongoengine
+   mod_contrib_mongoengine_fields
    mod_contrib_peewee
    mod_contrib_pymongo
    mod_contrib_fileadmin

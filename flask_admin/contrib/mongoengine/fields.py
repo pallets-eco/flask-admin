@@ -28,6 +28,9 @@ class ModelFormField(fields.FormField):
 
 
 class MongoFileField(fields.FileField):
+    """
+        GridFS file field.
+    """
     widget = widgets.MongoFileInput()
 
     def __init__(self, label=None, validators=None, **kwargs):
@@ -63,4 +66,8 @@ class MongoFileField(fields.FileField):
 
 
 class MongoImageField(MongoFileField):
+    """
+        GridFS image field.
+    """
+
     widget = widgets.MongoImageInput()
