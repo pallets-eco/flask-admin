@@ -9,6 +9,7 @@ Flask-Admin is simple and extensible administrative interface framework for `Fla
    quickstart
    django_migration
    templates
+   localization
    tips
    db
    form_rules

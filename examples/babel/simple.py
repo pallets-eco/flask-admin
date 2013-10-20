@@ -64,7 +64,7 @@ if __name__ == '__main__':
     # Create admin
     admin = admin.Admin(app, 'Simple Models')
 
-    admin.locale_selector(get_locale)
+    #admin.locale_selector(get_locale)
 
     # Add views
     admin.add_view(sqla.ModelView(User, db.session))

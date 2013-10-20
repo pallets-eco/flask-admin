@@ -476,9 +476,6 @@ class Admin(object):
         # Add predefined index view
         self.add_view(self.index_view)
 
-        # Localizations
-        self.locale_selector_func = None
-
         # Register with application
         if app is not None:
             self._init_extension()
@@ -506,37 +503,6 @@ class Admin(object):
                 Link to add.
         """
         self._menu_links.append(link)
-
-    def locale_selector(self, f):
-        """
-            Installs a locale selector for the current ``Admin`` instance.
-
-            Example::
-
-                def admin_locale_selector():
-                    return request.args.get('lang', 'en')
-
-                admin = Admin(app)
-                admin.locale_selector(admin_locale_selector)
-
-            It is also possible to use the ``@admin`` decorator::
-
-                admin = Admin(app)
-
-                @admin.locale_selector
-                def admin_locale_selector():
-                    return request.args.get('lang', 'en')
-
-            Or by subclassing the ``Admin``::
-
-                class MyAdmin(Admin):
-                    def locale_selector(self):
-                        return request.args.get('lang', 'en')
-        """
-        if self.locale_selector_func is not None:
-            raise Exception(u'Can not add locale_selector second time.')
-
-        self.locale_selector_func = f
 
     def _add_view_to_menu(self, view):
         """
