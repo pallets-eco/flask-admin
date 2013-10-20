@@ -48,7 +48,7 @@ class NestedRule(BaseRule):
             Constructor.
 
             :param rules:
-                Rule list
+                Child rule list
             :param separator:
                 Default separator between rules when rendering them.
         """
@@ -102,7 +102,7 @@ class Text(BaseRule):
             Constructor.
 
             :param text:
-                Text snippet to render
+                Text to render
             :param escape:
                 Should text be escaped or not. Default is `True`.
         """
