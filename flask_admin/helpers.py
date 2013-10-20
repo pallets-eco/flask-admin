@@ -60,7 +60,7 @@ def get_form_data():
 
 def is_field_error(errors):
     """
-        Check if wtforms field has direct error.
+        Check if wtforms field has error without checking its children.
 
         :param errors:
             Errors list.

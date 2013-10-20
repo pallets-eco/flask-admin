@@ -18,16 +18,20 @@ All Flask-Admin templates should derive from `admin/master.html`.
 
 `admin/master.html` is a proxy which points to `admin/base.html`. It contains following blocks:
 
-============= ========================================================================
-head_meta     Page metadata in the header
-title         Page title
-head_css      Various CSS includes in the header
-head          Empty block in HTML head, in case you want to put something there
-page_body     Page layout
-brand         Logo in the menu bar
-body          Content (that's where your view will be displayed)
-tail          Empty area below content
-============= ========================================================================
+============== ========================================================================
+head_meta      Page metadata in the header
+title          Page title
+head_css       Various CSS includes in the header
+head           Empty block in HTML head, in case you want to put something  there
+page_body      Page layout
+brand          Logo in the menu bar
+main_menu      Main menu
+menu_links     Links menu
+access_control Section to the right of the menu (can be used to add login/logout buttons)
+messages       Alerts and various messages
+body           Content (that's where your view will be displayed)
+tail           Empty area below content
+============== ========================================================================
 
 `admin/index.html` will be used display default `Home` admin page. By default it is empty.
 
@@ -38,16 +42,32 @@ There are 3 main templates that are used to display models:
 
 `admin/model/list.html` is list view template and contains following blocks:
 
-================= ============================================
-model_menu_bar    Menu bar
-model_list_table  Table container
-list_header       Table header row
-list_row          Row block
-list_row_actions  Row action cell with edit/remove/etc buttons
-================= ============================================
+======================= ============================================
+model_menu_bar          Menu bar
+model_list_table  		Table container
+list_header       		Table header row
+list_row_actions_header Actions header
+list_row                Single row
+list_row_actions        Row action cell with edit/remove/etc buttons
+empty_list_message      Message that will be displayed if there are no models found
+======================= ============================================
 
 `admin/model/create.html` and `admin/model/edit.html` are used to display model creation editing forms respectively. They don't contain any custom
 blocks and if you want to change something, you can do it using any of the blocks found in `admin/master.html`.
+
+Environment variables
+---------------------
+
+There are few variables and methods that are always accessible in administrative templates:
+
+==================== ================================
+admin_view           Current administrative view
+admin_base_template  Base template name
+_gettext             Babel gettext
+_ngettext            Babel ngettext
+h                    Helpers from :mod:`~flask.ext.admin.helpers` module
+==================== ================================
+
 
 Customizing templates
 ---------------------

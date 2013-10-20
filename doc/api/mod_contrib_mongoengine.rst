@@ -8,9 +8,9 @@ MongoEngine model backend implementation.
     .. autoclass:: ModelView
         :members:
         :inherited-members:
-        :exclude-members: column_filters, column_type_formatter,
+        :exclude-members: column_filters, column_type_formatters,
                           filter_converter, model_form_converter
-
+                          allowed_search_types, form_subdocuments
 
 		Class inherits configuration options from :class:`~flask.ext.admin.model.BaseModelView` and they're not displayed here.
 
@@ -18,3 +18,5 @@ MongoEngine model backend implementation.
         .. autoattribute:: column_type_formatters
         .. autoattribute:: filter_converter
         .. autoattribute:: model_form_converter
+        .. autoattribute:: allowed_search_types
+        .. autoattribute:: form_subdocuments

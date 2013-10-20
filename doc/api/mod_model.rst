@@ -30,7 +30,7 @@
         .. autoattribute:: column_list
         .. autoattribute:: column_exclude_list
         .. autoattribute:: column_labels
-        :: autoattribute:: column_descriptions
+        .. autoattribute:: column_descriptions
         .. autoattribute:: column_formatters
         .. autoattribute:: column_type_formatters
         .. autoattribute:: column_display_pk

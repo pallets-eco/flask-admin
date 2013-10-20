@@ -5,8 +5,11 @@ API
    :maxdepth: 2
 
    mod_base
+   mod_helpers
    mod_model
    mod_form
+   mod_form_fields
+   mod_form_upload
    mod_tools
    mod_actions
 
@@ -15,3 +18,5 @@ API
    mod_contrib_peewee
    mod_contrib_pymongo
    mod_contrib_fileadmin
+
+   mod_model_template

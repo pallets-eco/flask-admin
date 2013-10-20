@@ -41,7 +41,9 @@
         </div>
       </div>
 
+      {% block messages %}
       {{ layout.messages() }}
+      {% endblock %}
 
       {% set render_ctx = h.resolve_ctx() %}
 

@@ -130,7 +130,7 @@ class ModelView(BaseModelView):
         In this example, `Post` model has child `Comment` subdocument. When generating form for `Comment` embedded
         document, Flask-Admin will only create `name` field.
 
-        It is also possible to use class-based embedded document configuration:
+        It is also possible to use class-based embedded document configuration::
 
             class CommentEmbed(EmbeddedForm):
                 form_columns = ('name',)

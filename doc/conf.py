@@ -43,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'flask-admin'
-copyright = u'2012, Serge S. Koval'
+copyright = u'2012-2013, Serge S. Koval'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -76,7 +76,7 @@ exclude_patterns = []
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
-#add_module_names = True
+add_module_names = False
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
