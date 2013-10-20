@@ -4,13 +4,13 @@
 .. automodule:: flask.ext.admin.form.upload
 
 	.. autoclass:: FileUploadField
-		:members:
+		:members: __init__
 
 	.. autoclass:: ImageUploadField
-		:members:
+		:members: __init__
 
 	.. autoclass:: FileUploadInput
-		:members:
+		:members: __init__
 
 	.. autoclass:: ImageUploadInput
-		:members:
+		:members: __init__
