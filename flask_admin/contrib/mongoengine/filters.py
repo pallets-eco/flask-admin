@@ -17,7 +17,7 @@ class BaseMongoEngineFilter(filters.BaseFilter):
             :param name:
                 Display name
             :param options:
-                Fixed set of options
+                Fixed set of options. If provided, will use drop down instead of textbox.
             :param data_type:
                 Client data type
         """
