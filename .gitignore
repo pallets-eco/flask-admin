@@ -20,3 +20,5 @@ __pycache__
 examples/sqla-inline/static
 examples/file/files
 examples/forms/files
+.DS_Store
+.idea/
