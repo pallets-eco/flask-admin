@@ -6,7 +6,7 @@ add admin interfaces to Flask applications. It is inspired by the *django-admin*
 a way that the developer has total control of the look, feel and functionality of the resulting application.
 
 Browse through the documentation below to learn more about what you can do with Flask-Admin. Or head over to
-`our GitHub repository <http://github.com/mrjoes/flask-admin>` to find out how you can contribute to the project.
+`our GitHub repository <http://github.com/mrjoes/flask-admin>`_ to find out how you can contribute to the project.
 
 .. toctree::
    :maxdepth: 2
