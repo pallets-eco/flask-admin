@@ -7,9 +7,9 @@ Flask-Admin
 Introduction
 ------------
 
-Flask-Admin is a batteries-included, simple-to-use Flask extension that lets you add admin interfaces to Flask
-applications. It is inspired by the *django-admin* package, but implemented in such a way that the developer has total control
-of the look, feel and functionality of the resulting application.
+Flask-Admin is a batteries-included, simple-to-use `Flask <http://flask.pocoo.org/>`_ extension that lets you
+add admin interfaces to Flask applications. It is inspired by the *django-admin* package, but implemented in such
+a way that the developer has total control of the look, feel and functionality of the resulting application.
 
 Out-of-the-box, Flask-Admin plays nicely with various ORM's, including
 
