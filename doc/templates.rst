@@ -1,23 +1,57 @@
 Working with templates
 ======================
 
-Flask-Admin is built on top of standard Flask template management functionality.
+One great advantage of building an extension on top of Flask, is the great templating engine that
+comes with the package. Jinja2 allows you to use most of the Python syntax that you are used to, inside
+of your templates, helping you generate either text or code in a powerful, yet flexible way.
 
-If you're not familiar with Jinja2 templates, take a look `here <http://jinja.pocoo.org/docs/templates/>`_. Short summary:
+To get explore some more of what Jinja2 can offer you, head over to their documentation at
+`http://jinja.pocoo.org/docs/ <http://jinja.pocoo.org/docs/>`_. But the most important features for you to
+understand in order to get started with Flask-Admin are given below.
 
-1. You can derive from template;
-2. You can override template block(s);
-3. When you override template block, you can render or not render parent block;
-4. It does not matter how blocks are nested - you override them by name.
+Inheritance
+-----------
 
+Templates can extend other templates. This enables you, for example, to build the standard components of
+your site into a *base* template, where they are defined only once. This template can then be extended by
+other templates, where more specific content may be added.
 
-Flask Core
-----------
+Large applications may end up having several layers of templates, starting for example with a very general HTML
+structure, and then growing more and more specific at each level, until the final layer of templates define unique
+pages in the application. But it needs not be very complicated, and the majority of applications will only really
+need a handful of well-designed templates.
 
-All Flask-Admin templates should derive from `admin/master.html`.
+Building blocks
+---------------
 
-`admin/master.html` is a proxy which points to `admin/base.html`. It contains following blocks:
+With Jinja2, templates are made up of *blocks* of code, which define where a child template's contents fit into the
+bigger picture, as defined by the parent template.
 
+A parent template may define any number of these code blocks, and a child template may define content for any number
+of those. So, by extending an existing template, you get to just fill-in the blanks, rather than having to deal
+with lots of boilerplate code that is not really relevant to the problem at hand.
+
+Power & Flexibility
+-------------------
+
+When a block is defined in a parent template, it can already be given some content, ensuring that something
+will be rendered in that place, even if a child template chooses to ignore that block completely.
+
+If content is defined in a child template, you have the option of also rendering the code that the parent template
+may have defined in that block. But the default behaviour is to simply override the block completely.
+
+Since these template blocks are defined by name, you have a lot of freedom in how you decide to arrange / nest them
+in your code.
+
+Jinja2 & Flask Admin
+--------------------
+
+Flask-Admin defines one *base* template at `admin/master.html` that all the other admin templates are derived
+from. This template is a proxy which points to `admin/base.html`, which defines
+the following blocks:
+
+============== ========================================================================
+Block Name     Description
 ============== ========================================================================
 head_meta      Page metadata in the header
 title          Page title
@@ -33,7 +67,12 @@ body           Content (that's where your view will be displayed)
 tail           Empty area below content
 ============== ========================================================================
 
-`admin/index.html` will be used display default `Home` admin page. By default it is empty.
+Index Page
+----------
+
+You'll notice that the 'Home' page that is created by Flask-Admin at `/admin` is largely empty. By default, the
+only content on the page is a set of controls for navigating to the views that you have defined. You can change this by
+creating a template at `admin/index.html` in your `templates` directory.
 
 Models
 ------
