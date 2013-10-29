@@ -188,7 +188,7 @@
     };
 
     // Add on event handler
-    $('.fa-remove-field').on('click', function(e) {
+    $('body').on('click', '.fa-remove-field' , function(e) {
         e.preventDefault();
 
         var form = $(this).closest('.fa-inline-field');
