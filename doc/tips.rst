@@ -4,38 +4,42 @@ Usage Tips
 General tips
 ------------
 
- 1. Whenever your administrative views share common functionality such as authentication,
-    form validation, make use of read-only views and so on - create your own base class which
-    inherits from proper Flask-Admin view class.
+ 1. A reasonably obvious, but very useful, pattern is to wrap any shared functionality that your different admin views
+    might need into a base class that they can all inherit from (to help you keep things
+    `DRY <http://en.wikipedia.org/wiki/Don't_repeat_yourself>`_).
 
-    For example, if you need to check user permissions for every call, don't implement
-    `is_accessible` in  every administrative view. Create your own base class, implement
-    `is_accessible` there and use this class for all your views.
+    For example, rather than manually checking user permissions in each of your admin views, you can implement a
+    base class such as ::
 
- 2. You can override used templates either by using `ModelView` properties (such as
-    `list_template`, `create_template`, `edit_template`) or
-    putting customized version of the template into your `templates/admin/` directory
+        class MyView(BaseView):
+            def is_accessible(self):
+                return login.current_user.is_authenticated()
 
- 3. If you need to customize look and feel of model forms, there are two options:
-    - Override create/edit template
-    - Use new :mod:`flask.ext.admin.form.rules` form rendering rules
+    and every view that inherits from this, will have the permission checking done automatically. The important thing
+    to notice, is that your base class needs to inherit from a built-in Flask-Admin view.
 
- 4. Flask-Admin has that manage file/image uploads and store result in model field. You can
-    find documentation here :mod:`flask.ext.admin.form.upload`.
+ 2. You can override a default template either by passing the path to your own template in to the relevant `ModelView`
+    property (either `list_template`, `create_template` or `edit_template`) or by putting your own customized
+    version of a default template into your `templates/admin/` directory.
 
- 5. If you don't want to use Flask-Admin form scaffolding logic, you can override
-    :meth:`~flask.ext.admin.model.base.scaffold_form` and put your own form creation
-    logic there. For example, if you use `WTForms-Alchemy <https://github.com/kvesteri/wtforms-alchemy>`_, all you have to do
-    is to put appropriate form generation code into your `ModelView` class into the
-    `scaffold_form` method.
+ 3. To customize the overall look and feel of the default model forms, you have two options: Either, you could
+    override the default create/edit templates. Or, alternatively, you could make use of the form rendering rules
+    (:mod:`flask.ext.admin.form.rules`) that were introduced in version 1.0.7.
+
+ 4. To simplify the management of file uploads, Flask-Admin comes with a dedicated tool, for which you can find
+    documentation at: :mod:`flask.ext.admin.form.upload`.
+
+ 5. If you don't want to the use the built-in Flask-Admin form scaffolding logic, you are free to roll your own
+    by simply overriding :meth:`~flask.ext.admin.model.base.scaffold_form`. For example, if you use
+    `WTForms-Alchemy <https://github.com/kvesteri/wtforms-alchemy>`_, you could put your form generation code
+    into a `scaffold_form` method in your `ModelView` class.
 
 
 SQLAlchemy
 ----------
 
-1. If `synonym_property` does not return SQLAlchemy field, Flask-Admin
-   won't be able to figure out what to do with it and won't generate form
-   field. In this case, you need to manually contribute field::
+1. If the `synonym_property` does not return a SQLAlchemy field, then Flask-Admin won't be able to figure out what to
+   do with it, so it won't generate a form field. In this case, you would need to manually contribute your own field::
 
     class MyView(ModelView):
         def scaffold_form(self):
@@ -46,5 +50,5 @@ SQLAlchemy
 MongoEngine
 -----------
 
-1. Flask-Admin supports GridFS backed image and file uploads. Done through
-   WTForms fields and documentation can be found here :mod:`flask.ext.admin.contrib.mongoengine.fields`.
+1. Flask-Admin supports GridFS-backed image- and file uploads, done through WTForms fields. Documentation can be found
+   at :mod:`flask.ext.admin.contrib.mongoengine.fields`.
