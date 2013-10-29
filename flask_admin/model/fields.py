@@ -76,7 +76,7 @@ class InlineFieldList(FieldList):
         _fake = type(str('_fake'), (object, ), {})
 
         output = []
-        for field, data in itertools.izip(self.entries, candidates):
+        for field, data in zip(self.entries, candidates):
             if not self.should_delete(field):
                 fake_obj = _fake()
                 fake_obj.data = data
