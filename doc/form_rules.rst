@@ -1,43 +1,49 @@
 Form rendering rules
---------------------
+====================
 
-Before version 1.0.7, all model backends were rendering the creation and editing forms
-using the special Jinja2 macro, which was looping over WTForms form object fields and displaying
-them one by one.
+Before version 1.0.7, all model backends were rendering the *create* and *edit* forms
+using a special Jinja2 macro, which was looping over the fields of a WTForms form object and displaying
+them one by one. This works well, but it is difficult to customize.
 
-Starting from version 1.0.7, Flask-Admin supports so called form rendering rules.
+Starting from version 1.0.7, Flask-Admin supports form rendering rules, to give you fine grained control of how
+the forms for your modules should be displayed.
 
-Idea is pretty simple: instead of having non-configurable macro that renders the form,
-have a set of rules that tell Flask-Admin how form should be rendered. As an extension
-of the idea, rules can output HTML, call Jinja2 macros, render fields and so on.
+The basic idea is pretty simple: the customizable rendering rules replace a static macro, so that you can tell
+Flask-Admin how each form should be rendered. As an extension, however, the rendering rules also let you do a
+bit more: You can use them to output HTML, call Jinja2 macros, render fields and so on.
 
-Essentially, form rendering rules abstract form rendering away from the form definition. And it
-no longer matters what is sequence of the fields in the form.
+Essentially, form rendering rules abstract the rendering, so that it becomes separate from the form definition. So,
+for example, it no longer matters in which sequence yur form fields are defined.
 
 Getting started
 ---------------
 
-To start using form rendering rules, you need to put list of form field names into `form_create_rules`
-property of your administrative view::
+To start using the form rendering rules, put a list of form field names into the `form_create_rules`
+property one of your admin views::
 
 	class RuleView(sqla.ModelView):
 	    form_create_rules = ('email', 'first_name', 'last_name')
 
 In this example, only three fields will be rendered and `email` field will be above other two fields.
 
-Whenever Flask-Admin sees string as a value in `form_create_rules`, it automatically assumes that it is
-form field reference and created :class:`flask.ext.admin.form.rules.Field` class instance.
+Whenever Flask-Admin sees a string value in `form_create_rules`, it automatically assumes that it is a
+form field reference and creates a :class:`flask.ext.admin.form.rules.Field` class instance for that field.
 
-Lets say we want to display 'Foobar' text between `email` and `first_name` fields. This can be accomplished by
-using :class:`flask.ext.admin.form.rules.Text` class::
+Lets say we want to display some text between the `email` and `first_name` fields. This can be accomplished by
+using the :class:`flask.ext.admin.form.rules.Text` class::
 
 	from flask.ext.admin.form import rules
 
 	class RuleView(sqla.ModelView):
 	    form_create_rules = ('email', rules.Text('Foobar'), 'first_name', 'last_name')
 
-Flask-Admin comes with few built-in rules that can be found in :mod:`flask.ext.admin.form.rules` module:
+Built-in rules
+--------------
 
+Flask-Admin comes with few built-in rules that can be found in the :mod:`flask.ext.admin.form.rules` module:
+
+======================================================= ========================================================
+Form Rendering Rule                                     Description
 ======================================================= ========================================================
 :class:`flask.ext.admin.form.rules.BaseRule`            All rules derive from this class
 :class:`flask.ext.admin.form.rules.NestedRule`          Allows rule nesting, useful for HTML containers
@@ -50,5 +56,8 @@ Flask-Admin comes with few built-in rules that can be found in :mod:`flask.ext.a
 :class:`flask.ext.admin.form.rules.FieldSet`            Renders form header and child rules
 ======================================================= ========================================================
 
+Further reading
+---------------
+
 For additional documentation, check :mod:`flask.ext.admin.form.rules` module source code (it is quite short) and
-look at the `forms` example.
+look at the `forms example <https://github.com/mrjoes/flask-admin/tree/master/examples/forms>`_ on GitHub.
