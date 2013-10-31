@@ -23,5 +23,6 @@ If you're looking for something simpler, or your data models are reasonably self
 *NoSQL* database called `MongoDB <http://www.mongodb.org/>`_.
 
 Of course, if you feel that there's an awesome database wrapper that is missing from the list above, we'd greatly
-appreciate it if you could write the plugin for it and submit it as a pull request.
+appreciate it if you could write the plugin for it and submit it as a pull request. A special section of these docs
+are dedicated to helping you through this process. See :doc:`model_guidelines`.
 
