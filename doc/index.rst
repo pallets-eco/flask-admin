@@ -17,8 +17,8 @@ Browse through the documentation below to learn more about what you can do with 
    localization
    tips
    db
-   form_rules
    model_guidelines
+   form_rules
    api/index
    changelog
    renamed_columns
