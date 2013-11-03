@@ -187,8 +187,8 @@
       };
     };
 
-    // Add live event handler
-    $('.fa-remove-field').live('click', function(e) {
+    // Add on event handler
+    $('body').on('click', '.fa-remove-field' , function(e) {
         e.preventDefault();
 
         var form = $(this).closest('.fa-inline-field');
