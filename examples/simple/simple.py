@@ -22,7 +22,7 @@ class AnotherAdminView(admin.BaseView):
 
 # Create flask app
 app = Flask(__name__, template_folder='templates')
-
+app.debug = True
 
 # Flask views
 @app.route('/')
@@ -38,4 +38,4 @@ admin.init_app(app)
 if __name__ == '__main__':
 
     # Start app
-    app.run(debug=True)
+    app.run()
