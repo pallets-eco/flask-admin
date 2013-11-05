@@ -4,7 +4,7 @@ Changelog
 1.0.7
 -----
 
-Full change log and feature walkthrough can be found `here <http://mrjoes.github.io/2013/03/22/flask-admin-107.html>`_.
+Full change log and feature walkthrough can be found `here <http://mrjoes.github.io/2013/10/21/flask-admin-107.html>`_.
 
 Highlights:
 
