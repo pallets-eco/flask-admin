@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = '123456790'
 
 # Create in-memory database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dummy.sqlite'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sample_db.sqlite'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
@@ -53,13 +53,14 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
-if __name__ == '__main__':
-    # Create admin with custom base template
-    admin = admin.Admin(app, base_template='layout.html')
+# Create admin with custom base template
+admin = admin.Admin(app, base_template='layout.html')
 
-    # Add views
-    admin.add_view(UserAdmin(User, db.session))
-    admin.add_view(CustomView(Page, db.session))
+# Add views
+admin.add_view(UserAdmin(User, db.session))
+admin.add_view(CustomView(Page, db.session))
+
+if __name__ == '__main__':
 
     # Create DB
     db.create_all()
