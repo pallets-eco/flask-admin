@@ -16,7 +16,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = '123456790'
 
 # Create in-memory database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.sqlite'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sample_db.sqlite'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
@@ -139,15 +139,16 @@ class TreeView(sqla.ModelView):
     inline_models = (Tree,)
 
 
-if __name__ == '__main__':
-    # Create admin
-    admin = admin.Admin(app, 'Simple Models')
+# Create admin
+admin = admin.Admin(app, 'Simple Models')
 
-    # Add views
-    admin.add_view(UserAdmin(User, db.session))
-    admin.add_view(sqla.ModelView(Tag, db.session))
-    admin.add_view(PostAdmin(db.session))
-    admin.add_view(TreeView(Tree, db.session))
+# Add views
+admin.add_view(UserAdmin(User, db.session))
+admin.add_view(sqla.ModelView(Tag, db.session))
+admin.add_view(PostAdmin(db.session))
+admin.add_view(TreeView(Tree, db.session))
+
+if __name__ == '__main__':
 
     # Create DB
     db.create_all()
