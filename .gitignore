@@ -13,7 +13,6 @@ flask_admin/tests/tmp
 dist/*
 make.bat
 venv
-*.sqlite
 *.sublime-*
 .coverage
 __pycache__
