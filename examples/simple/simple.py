@@ -22,20 +22,20 @@ class AnotherAdminView(admin.BaseView):
 
 # Create flask app
 app = Flask(__name__, template_folder='templates')
-
+app.debug = True
 
 # Flask views
 @app.route('/')
 def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
+# Create admin interface
+admin = admin.Admin()
+admin.add_view(MyAdminView(category='Test'))
+admin.add_view(AnotherAdminView(category='Test'))
+admin.init_app(app)
 
 if __name__ == '__main__':
-    # Create admin interface
-    admin = admin.Admin()
-    admin.add_view(MyAdminView(category='Test'))
-    admin.add_view(AnotherAdminView(category='Test'))
-    admin.init_app(app)
 
     # Start app
-    app.run(debug=True)
+    app.run()

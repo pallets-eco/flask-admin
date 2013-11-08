@@ -8,8 +8,12 @@ class MyView(BaseView):
         return self.render('index.html')
 
 app = Flask(__name__)
+app.debug = True
 
 admin = Admin(app)
 admin.add_view(MyView(name='Hello'))
 
-app.run(debug=True)
+if __name__ == '__main__':
+
+    # Start app
+    app.run()

@@ -23,9 +23,6 @@ Out-of-the-box, Flask-Admin plays nicely with various ORM's, including
 
 It also boasts a simple file management interface and a `redis client <http://redis.io/>`_ console.
 
-Several usage examples are included in the */examples* folder. Please feel free to add your own examples, or improve
-on some of the existing ones, and then submit them via GitHub as a *pull-request*.
-
 The biggest feature of Flask-Admin is flexibility. It aims to provide a set of simple tools that can be used for
 building admin interfaces of any complexity. So, to start off with you can create a very simple application in no time,
 with auto-generated CRUD-views for each of your models. But then you can go further and customize those views & forms
@@ -33,12 +30,32 @@ as the need arises.
 
 Flask-Admin is an active project, well-tested and production ready.
 
+Examples
+--------
+Several usage examples are included in the */examples* folder. Please feel free to add your own examples, or improve
+on some of the existing ones, and then submit them via GitHub as a *pull-request*.
+
+You can see some of these examples in action at `http://examples.flask-admin.org <http://examples.flask-admin.org/>`_.
+
+To run one of the examples in your local environment, simply::
+
+    cd flask-admin
+    python examples/simple/simple.py
+
 Documentation
 -------------
 Flask-Admin is extensively documented, you can find all of the documentation at `http://readthedocs.org/docs/flask-admin <http://readthedocs.org/docs/flask-admin>`_.
 
 The docs are auto-generated from the *.rst* files in the */doc* folder. So if you come across any errors, or
 if you think of anything else that should be included, then please make the changes and submit them as a *pull-request*.
+
+To build the docs in your local environment::
+
+    sudo pip install sphinx
+    cd flask-admin
+    sudo make html
+
+Or, if you want to preview any *.rst* snippets that you may want to contribute, go to `http://rst.ninjs.org/ <http://rst.ninjs.org/>`_.
 
 Installation
 ------------
