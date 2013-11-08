@@ -37,10 +37,10 @@ on some of the existing ones, and then submit them via GitHub as a *pull-request
 
 You can see some of these examples in action at `http://examples.flask-admin.org <http://examples.flask-admin.org/>`_.
 
-To run one of the examples in your local environment, simply run::
+To run one of the examples in your local environment, simply::
 
     cd flask-admin
-    python examples/sqla/simple.py
+    python examples/simple/simple.py
 
 Documentation
 -------------
@@ -55,9 +55,7 @@ To build the docs in your local environment::
     cd flask-admin
     sudo make html
 
-And to preview any .rst snippets that you want to contribute, go to::
-
-    http://rst.ninjs.org/
+Or, if you want to preview any *.rst* snippets that you may want to contribute, go to `http://rst.ninjs.org/ <http://rst.ninjs.org/>`_.
 
 Installation
 ------------
