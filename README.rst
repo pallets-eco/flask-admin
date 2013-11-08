@@ -33,6 +33,15 @@ as the need arises.
 
 Flask-Admin is an active project, well-tested and production ready.
 
+Examples
+--------
+You can see some examples of how Flask-Admin can be used at `http://examples.flask-admin.org <http://examples.flask-admin.org/>`_.
+The code for these examples, and several more, are available in this repo in the *examples/* directory.
+
+To run one of the examples in your local environment, simply run:
+
+    python examples/sqla/simple.py
+
 Documentation
 -------------
 Flask-Admin is extensively documented, you can find all of the documentation at `http://readthedocs.org/docs/flask-admin <http://readthedocs.org/docs/flask-admin>`_.
