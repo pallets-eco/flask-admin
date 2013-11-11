@@ -78,7 +78,7 @@
       this.applyStyle = function($el, name) {
         // Process converters first
         for (var conv in fieldConverters) {
-            var fildConv = fieldConverters[conv];
+            var fieldConv = fieldConverters[conv];
 
             if (fieldConv($el, name))
                 return true;
@@ -184,6 +184,16 @@
             var $el = $(this);
             self.applyStyle($el, $el.attr('data-role'));
         });
+      };
+
+      /**
+      * Add a field converter for customizing styles
+      *
+      * @method addFieldConverter
+      * @param {converter} function($el, name)
+      */
+      this.addFieldConverter = function(converter) {
+          fieldConverters.push(converter);
       };
     };
 
