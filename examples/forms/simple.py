@@ -19,7 +19,7 @@ app = Flask(__name__, static_folder='files')
 app.config['SECRET_KEY'] = '123456790'
 
 # Create in-memory database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.sqlite'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sample.sqlite'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
@@ -155,15 +155,15 @@ class RuleView(sqla.ModelView):
 def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
+# Create admin
+admin = Admin(app, 'Simple Models')
+
+# Add views
+admin.add_view(FileView(File, db.session))
+admin.add_view(ImageView(Image, db.session))
+admin.add_view(RuleView(RuleSample, db.session, name='Rule'))
 
 if __name__ == '__main__':
-    # Create admin
-    admin = Admin(app, 'Simple Models')
-
-    # Add views
-    admin.add_view(FileView(File, db.session))
-    admin.add_view(ImageView(Image, db.session))
-    admin.add_view(RuleView(RuleSample, db.session, name='Rule'))
 
     # Create DB
     db.create_all()
