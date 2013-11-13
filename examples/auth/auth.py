@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = '123456790'
 
 # Create in-memory database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.sqlite'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sample.sqlite'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
@@ -135,15 +135,16 @@ def logout_view():
     login.logout_user()
     return redirect(url_for('index'))
 
+# Initialize flask-login
+init_login()
+
+# Create admin
+admin = admin.Admin(app, 'Auth', index_view=MyAdminIndexView())
+
+# Add view
+admin.add_view(MyModelView(User, db.session))
+
 if __name__ == '__main__':
-    # Initialize flask-login
-    init_login()
-
-    # Create admin
-    admin = admin.Admin(app, 'Auth', index_view=MyAdminIndexView())
-
-    # Add view
-    admin.add_view(MyModelView(User, db.session))
 
     # Create DB
     db.create_all()
