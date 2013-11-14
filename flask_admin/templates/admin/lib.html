@@ -112,11 +112,10 @@
     {% if form.hidden_tag is defined %}
         {{ form.hidden_tag() }}
     {% else %}
-
-    {% if csrf_token %}
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-    {% endif %}
-    {% for f in form if f.type == 'HiddenField' %}
+        {% if csrf_token %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        {% endif %}
+        {% for f in form if f.type == 'HiddenField' %}
             {{ f }}
         {% endfor %}
     {% endif %}
