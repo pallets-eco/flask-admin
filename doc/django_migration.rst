@@ -1,38 +1,46 @@
 Migrating from Django
 =====================
 
-If you used `Django <https://www.djangoproject.com/>`_ before, you might find Flask-Admin work slightly different than you expect.
+If you are used to `Django <https://www.djangoproject.com/>`_ and the *django-admin* package, you will find
+Flask-Admin to work slightly different from what you would expect.
 
-This guide will help you to get acquainted with the Flask-Admin library. Some prior Flask knowledge will be required.
+This guide will help you to get acquainted with the Flask-Admin library. It is assumed that you have some prior
+knowledge of `Flask <http://flask.pocoo.org/>`_ .
 
-Architecture
-------------
+Design Philosophy
+-----------------
 
-Django does lots of things automatically. For example, it is importing models from the `models.py`, administrative interface
-declarations from `admin.py` and so on.
+In general, Django and *django-admin* strives to make life easier by implementing sensible defaults. So a developer
+will be able to get an application up in no time, but it will have to conform to most of the defaults. Of course it
+is possible to customize things, but this often requires a good understanding of what's going on behind the scenes,
+and it can be rather tricky and time-consuming.
 
-Flask philosophy is slightly different - explicit is better than implicit. If something should be initialized, it should be
-initialized by the developer.
+The design philosophy behind Flask is slightly different. It embraces the diversity that one tends to find in web
+applications by not forcing design decisions onto the developer. Rather than making it very easy to build an
+application that *almost* solves your whole problem, and then letting you figure out the last bit, Flask aims to make it
+possible for you to build the *whole* application. It might take a little more effort to get started, but once you've
+got the hang of it, the sky is the limit... Even when your application is a little different from most other
+applications out there on the web.
 
-Flask-Admin follows this convention. It is up for you, as a developer, to tell Flask-Admin what should be displayed and how.
+Flask-Admin follows this same design philosophy. So even though it provides you with several tools for getting up &
+running quickly, it will be up to you, as a developer, to tell Flask-Admin what should be displayed and how. Even
+though it is easy to get started with a simple `CRUD <http://en.wikipedia.org/wiki/Create,_read,_update_and_delete>`_
+interface for each model in your application, Flask-Admin doesn't fix you to this approach, and you are free to
+define other ways of interacting with some, or all, of your models.
 
-Sometimes this will require writing a bit of boilerplate code, but it will pay off in the future, especially if you
-will have to implement some custom logic.
-
-All Flask-Admin functionality is incapsulated into classes with view methods. Class should be instantiated and plugged to the
-administrative framework for its views to be accessible by the users. Nothing prevents from creating more than one instance
-of the class and plug them using different base URL - it will work as expected.
-
-Another big difference - Flask-Admin is not built around model CRUD interface. CRUD is just extension of the base administrative
-framework. In a nutshell, it is just a class which accepts model in its constructor and exposes few views (list, create, edit, etc).
-And as Flask-Admin supports more than one ORM (SQLAlchemy, MongoEngine, Peewee, raw pymongo), developer can mix different model
-types in one application by instantiating appropriate CRUD classes.
+Due to Flask-Admin supporting more than one ORM (SQLAlchemy, MongoEngine, Peewee, raw pymongo), the developer is even
+free to mix different model types into one application by instantiating appropriate CRUD classes.
 
 Getting started
 ---------------
 
-Lets write a bit of code to create CRUD interface for `Post` SQLAlchemy model. This example uses Flask-SQLAlchemy extension,
-but you don't have to use it, Flask-Admin will work with SQLAlchemy declarative extension too. To the code::
+At the basis of Flask-Admin is the idea that you can add components to your admin interface by declaring a separate
+class for each component, and then adding a method to that class for every view that should be associated to the
+component. Since classes can inherit from one another, and since several instances of the same class can be created,
+this approach allows for a great deal of flexibility.
+
+Let's write a bit of code to create a simple CRUD interface for the `Post` SQLAlchemy model. The example below uses the
+Flask-SQLAlchemy extension, but you don't have to use it (you could also use the SQLAlchemy declarative extension)::
 
     from flask import Flask
     from flask.ext.admin import Admin
@@ -50,7 +58,8 @@ but you don't have to use it, Flask-Admin will work with SQLAlchemy declarative 
     admin = Admin(app)
     admin.add_view(ModelView(Post, db.session))
 
-You can customize behavior of CRUD interface by using special properties, like Django does::
+To customize the behavior of the model's CRUD interface, you can set values for some of the special
+properties (as listed below) that are made available through `model.BaseModelView`, or one of the ORM wrappers::
 
     # ... imports
 
@@ -64,7 +73,7 @@ You can customize behavior of CRUD interface by using special properties, like D
 
     admin.add_view(PostView())
 
-But because administrative interface is implemented as class, you can customize it in constructor as well::
+Because each component is implemented as a class, you can also customize it in the constructor::
 
     class PostView(ModelView):
         list_columns = ('title',)
@@ -75,7 +84,8 @@ But because administrative interface is implemented as class, you can customize 
 
             super(PostView, self).__init__(Post, db.session)
 
-Here is comparison table between some Django configuration properties and Flask-Admin SQLAlchemy backend properties:
+Here is a list of some of the configuration properties that are made available by Flask-Admin and the
+SQLAlchemy backend. You can also see which *django-admin* properties they correspond to:
 
 =========================================== ==============================================
 Django                                      Flask-Admin
@@ -96,18 +106,19 @@ change_form_template						:attr:`~flask.ext.admin.model.BaseModelView.change_for
 
 You might want to check :doc:`api/mod_model` for basic model configuration options (reused by all model
 backends) and specific backend documentation, for example :doc:`api/mod_contrib_sqla`. There's much more
-than displayed in this table.
+than what is displayed in this table.
 
 Authentication
 --------------
 
-If you need to restrict access to the administrative interface, you need to override `is_accessible` method. For example::
+To restrict access to your admin interface, you can implement your own class for creating admin components, and
+override the `is_accessible` method::
 
     class MyModelView(ModelView):
         def is_accessible(self):
             return login.current_user.is_authenticated()
 
-If administrative piece is not accessible by the user, it won't be displayed in the menu as well.
+Components that are not accessible to a particular user, will also not be displayed in the menu for that user.
 
 Templates
 ---------
@@ -115,7 +126,7 @@ Templates
 Flask-Admin uses Jinja2 templating engine. Jinja2 is pretty advanced templating engine and Flask-Admin templates were made
 to be easily extensible.
 
-For example, if you need to include javascript snippet on edit page for your model, it is easy to do::
+For example, if you need to include a javascript snippet on the *Edit* page for one of your models, you could::
 
     {% extends 'admin/model/edit.html' %}
 
@@ -124,27 +135,27 @@ For example, if you need to include javascript snippet on edit page for your mod
         <script language="javascript">alert('Hello World!')</script>
     {% endblock %}
 
-And then point your class to this new template::
+and then point your class to this new template::
 
     class MyModelView(ModelView):
         edit_template = 'my_edit_template.html'
 
-For list of template blocks, check :doc:`templates`.
+For list of available template blocks, check :doc:`templates`.
 
 Tips and hints
 --------------
 
- 1. Programming with Flask-Admin is not very different from normal application development - write some views, expose
-    them to the user in constistent user interface.
+ 1. Programming with Flask-Admin is not very different from normal application development - write some views and expose
+    them to the user, using templates to create a consistent user experience.
 
- 2. If you're missing some functionality which can be used more than once, you can create your own "base" class and use
-    it instead of default implementation
+ 2. If you are missing some functionality which can be used more than once, you can create your own "base" class and use
+    it instead of default implementation.
 
- 3. Due to more advanced templating engine, you can easily extend existing templates. You can even change look and feel
-    of the administrative UI completely, if you want to. Check `this example <https://github.com/mrjoes/flask-admin/tree/master/examples/layout>`_.
+ 3. Using Jinja2, you can easily extend the existing templates. You can even change the look and feel of the admin
+    interface completely, if you want to. Check `this example <https://github.com/mrjoes/flask-admin/tree/master/examples/layout>`_.
 
- 4. You're not limited to CRUD interface. Want to add some kind of realtime monitoring via websockets? No problem at all
+ 4. You are not limited to a simple CRUD interface for every model. Want to add some kind of realtime monitoring via websockets? No problem.
 
- 5. There's so called "index view". By default it is empty, but you can put any information you need there. It is displayed
-    under Home menu option.
+ 5. There's a so called "index view". By default it is empty, but you can put any information you need there. It is displayed
+    under the *Home* menu option.
 

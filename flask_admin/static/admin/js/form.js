@@ -78,7 +78,7 @@
       this.applyStyle = function($el, name) {
         // Process converters first
         for (var conv in fieldConverters) {
-            var fildConv = fieldConverters[conv];
+            var fieldConv = fieldConverters[conv];
 
             if (fieldConv($el, name))
                 return true;
@@ -185,10 +185,20 @@
             self.applyStyle($el, $el.attr('data-role'));
         });
       };
+
+      /**
+      * Add a field converter for customizing styles
+      *
+      * @method addFieldConverter
+      * @param {converter} function($el, name)
+      */
+      this.addFieldConverter = function(converter) {
+          fieldConverters.push(converter);
+      };
     };
 
-    // Add live event handler
-    $('.fa-remove-field').live('click', function(e) {
+    // Add on event handler
+    $('body').on('click', '.fa-remove-field' , function(e) {
         e.preventDefault();
 
         var form = $(this).closest('.fa-inline-field');

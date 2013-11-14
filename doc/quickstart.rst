@@ -165,7 +165,6 @@ have access to the view in question::
         def is_accessible(self):
             return login.current_user.is_authenticated()
 
-
 You can also implement policy-based security, conditionally allowing or disallowing access to parts of the
 administrative interface. If a user does not have access to a particular view, the menu item won't be visible.
 
