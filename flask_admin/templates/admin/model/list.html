@@ -107,7 +107,10 @@
                         {%- endif -%}
                         {%- if admin_view.can_delete -%}
                         <form class="icon" method="POST" action="{{ url_for('.delete_view', id=get_pk_value(row), url=return_url) }}">
-                            <button onclick="return confirm('{{ _gettext('You sure you want to delete this item?') }}');">
+                            {% if csrf_token %}
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            {% endif %}
+                                <button onclick="return confirm('{{ _gettext('You sure you want to delete this item?') }}');">
                                 <i class="icon-trash"></i>
                             </button>
                         </form>

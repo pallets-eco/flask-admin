@@ -21,3 +21,4 @@ examples/file/files
 examples/forms/files
 .DS_Store
 .idea/
+*.sqlite
