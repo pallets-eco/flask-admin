@@ -1,0 +1,12 @@
+{% extends 'admin/base.html' %}
+
+{% block access_control %}
+<div class="btn-group pull-right">
+    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+        <i class="icon-user"></i> {{ user.login }} <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+        <li><a href="/logout/">Log out</a></li>
+    </ul>
+</div>
+{% endblock %}

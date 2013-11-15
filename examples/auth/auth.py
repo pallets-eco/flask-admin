@@ -5,7 +5,7 @@ from wtforms import form, fields, validators
 
 from flask.ext import admin, login
 from flask.ext.admin.contrib import sqla
-from flask.ext.admin import helpers
+from flask.ext.admin import helpers, BaseView, expose
 
 # Create Flask application
 app = Flask(__name__)
@@ -86,12 +86,42 @@ def init_login():
 
 # Create customized model view class
 class MyModelView(sqla.ModelView):
+
+    # make current_user available in template
+    @expose('/')
+    def index_view(self):
+        self._template_args['user'] = login.current_user
+        return super(MyModelView, self).index_view()
+
+    @expose('/new/', methods=('GET', 'POST'))
+    def create_view(self):
+        self._template_args['user'] = login.current_user
+        return super(MyModelView, self).create_view()
+
+    @expose('/edit/', methods=('GET', 'POST'))
+    def edit_view(self):
+        self._template_args['user'] = login.current_user
+        return super(MyModelView, self).edit_view()
+
+    @expose('/delete/', methods=('POST',))
+    def delete_view(self):
+        self._template_args['user'] = login.current_user
+        return super(MyModelView, self).delete_view()
+
     def is_accessible(self):
         return login.current_user.is_authenticated()
 
 
 # Create customized index view class
 class MyAdminIndexView(admin.AdminIndexView):
+
+    @expose('/')
+    # make current_user available in template
+    def index(self):
+        self._template_args['user'] = login.current_user
+        return super(MyAdminIndexView, self).index()
+
+    # restrict access to logged-in users
     def is_accessible(self):
         return login.current_user.is_authenticated()
 
@@ -135,11 +165,12 @@ def logout_view():
     login.logout_user()
     return redirect(url_for('index'))
 
+
 # Initialize flask-login
 init_login()
 
 # Create admin
-admin = admin.Admin(app, 'Auth', index_view=MyAdminIndexView())
+admin = admin.Admin(app, 'Auth', index_view=MyAdminIndexView(), base_template='my_master.html')
 
 # Add view
 admin.add_view(MyModelView(User, db.session))
