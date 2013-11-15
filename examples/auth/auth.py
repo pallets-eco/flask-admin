@@ -112,58 +112,63 @@ class MyModelView(sqla.ModelView):
         return login.current_user.is_authenticated()
 
 
-# Create customized index view class
+# Create customized index view class that handles login & registration
 class MyAdminIndexView(admin.AdminIndexView):
 
     @expose('/')
-    # make current_user available in template
     def index(self):
-        self._template_args['user'] = login.current_user
+        if not login.current_user.is_authenticated():
+            return redirect(url_for('.login_view'))
+        # make current_user available in template
+        user = login.current_user
+        self._template_args['user'] = user
         return super(MyAdminIndexView, self).index()
 
-    # restrict access to logged-in users
-    def is_accessible(self):
-        return login.current_user.is_authenticated()
+    @expose('/login/', methods=('GET', 'POST'))
+    def login_view(self):
+        # handle user login
+        form = LoginForm(request.form)
+        if helpers.validate_form_on_submit(form):
+            user = form.get_user()
+            login.login_user(user)
+
+        if login.current_user.is_authenticated():
+            return redirect(url_for('.index'))
+        link = '<p>Don\'t have an account? <a href="' + url_for('.register_view') + '">Click here to register.</a></p>'
+        self._template_args['user'] = None
+        self._template_args['form'] = form
+        self._template_args['link'] = link
+        return super(MyAdminIndexView, self).index()
+
+    @expose('/register/', methods=('GET', 'POST'))
+    def register_view(self):
+        form = RegistrationForm(request.form)
+        if helpers.validate_form_on_submit(form):
+            user = User()
+
+            form.populate_obj(user)
+
+            db.session.add(user)
+            db.session.commit()
+
+            login.login_user(user)
+            return redirect(url_for('.index'))
+        link = '<p>Already have an account? <a href="' + url_for('.login_view') + '">Click here to log in.</a></p>'
+        self._template_args['user'] = None
+        self._template_args['form'] = form
+        self._template_args['link'] = link
+        return super(MyAdminIndexView, self).index()
+
+    @expose('/logout/')
+    def logout_view(self):
+        login.logout_user()
+        return redirect(url_for('.index'))
 
 
 # Flask views
 @app.route('/')
 def index():
     return render_template('index.html', user=login.current_user)
-
-
-@app.route('/login/', methods=('GET', 'POST'))
-def login_view():
-    form = LoginForm(request.form)
-    if helpers.validate_form_on_submit(form):
-        user = form.get_user()
-        login.login_user(user)
-        return redirect(url_for('index'))
-
-    return render_template('form.html', form=form)
-
-
-@app.route('/register/', methods=('GET', 'POST'))
-def register_view():
-    form = RegistrationForm(request.form)
-    if helpers.validate_form_on_submit(form):
-        user = User()
-
-        form.populate_obj(user)
-
-        db.session.add(user)
-        db.session.commit()
-
-        login.login_user(user)
-        return redirect(url_for('index'))
-
-    return render_template('form.html', form=form)
-
-
-@app.route('/logout/')
-def logout_view():
-    login.logout_user()
-    return redirect(url_for('index'))
 
 
 # Initialize flask-login
