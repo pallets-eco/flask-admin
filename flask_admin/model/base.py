@@ -403,7 +403,7 @@ class BaseModelView(BaseView, ActionsMixin):
         in your `AjaxModelLoader` class.
     """
 
-    form_create_rules = None
+    form_rules = None
     """
         List of rendering rules for model creation form.
 
@@ -418,7 +418,7 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(ModelView):
                 form_rules = [
                     # Define field set with header text and four fields
-                    rules.FieldSet('User', ('first_name', 'last_name', 'email', 'phone')),
+                    rules.FieldSet(('first_name', 'last_name', 'email', 'phone'), 'User'),
                     # ... and it is just shortcut for:
                     rules.Header('User'),
                     rules.Field('first_name'),
@@ -433,7 +433,12 @@ class BaseModelView(BaseView, ActionsMixin):
 
     form_edit_rules = None
     """
-        Same as `form_create_rules`, just for model edit form.
+        Customized rules for the edit form. Override `form_rules` if present.
+    """
+
+    form_create_rules = None
+    """
+        Customized rules for the create form. Override `form_rules` if present.
     """
 
     # Actions
@@ -569,6 +574,15 @@ class BaseModelView(BaseView, ActionsMixin):
             self._form_edit_rules = rules.RuleSet(self, self.form_edit_rules)
         else:
             self._form_edit_rules = None
+
+        if self.form_rules:
+            form_rules = rules.RuleSet(self, self.form_rules)
+
+            if not self._form_create_rules:
+                self._form_create_rules = form_rules
+
+            if not self._form_edit_rules:
+                self._form_edit_rules = form_rules
 
     # Primary key
     def get_pk_value(self, model):

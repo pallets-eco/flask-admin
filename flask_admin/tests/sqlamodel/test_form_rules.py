@@ -13,7 +13,7 @@ def test_form_rules():
     db.create_all()
 
     view = CustomModelView(Model1, db.session,
-                           form_create_rules=('test2', 'test1', rules.Field('test4')))
+                           form_rules=('test2', 'test1', rules.Field('test4')))
     admin.add_view(view)
 
     client = app.test_client()
