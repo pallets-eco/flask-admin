@@ -84,12 +84,10 @@ class AdminModelConverter(ModelConverterBase):
             kwargs['query_factory'] = lambda: self.session.query(remote_model)
 
         if 'widget' not in kwargs:
-            if prop.direction.name == 'MANYTOONE':
+            if multiple:
+                kwargs['widget'] = form.Select2Widget(multiple=True)
+            else:
                 kwargs['widget'] = form.Select2Widget()
-            elif prop.direction.name == 'ONETOMANY':
-                kwargs['widget'] = form.Select2Widget(multiple=True)
-            elif prop.direction.name == 'MANYTOMANY':
-                kwargs['widget'] = form.Select2Widget(multiple=True)
 
         if multiple:
             return QuerySelectMultipleField(**kwargs)
@@ -122,7 +120,7 @@ class AdminModelConverter(ModelConverterBase):
         if override:
             return override(**kwargs)
 
-        if prop.direction.name == 'MANYTOONE':
+        if prop.direction.name == 'MANYTOONE' or not prop.uselist:
             return self._model_select_field(prop, False, remote_model, **kwargs)
         elif prop.direction.name == 'ONETOMANY':
             return self._model_select_field(prop, True, remote_model, **kwargs)

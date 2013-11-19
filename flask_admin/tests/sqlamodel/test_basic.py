@@ -532,6 +532,39 @@ def test_form_override():
     eq_(view2._create_form_class.test.field_class, fields.FileField)
 
 
+def test_form_onetoone():
+    app, db, admin = setup()
+
+    class Model1(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        test = db.Column(db.String)
+
+    class Model2(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+
+        model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
+        model1 = db.relationship(Model1, backref=db.backref('model2', uselist=False))
+
+    db.create_all()
+
+    view1 = CustomModelView(Model1, db.session, endpoint='view1')
+    view2 = CustomModelView(Model2, db.session, endpoint='view2')
+    admin.add_view(view1)
+    admin.add_view(view2)
+
+    model1 = Model1(test='test')
+    model2 = Model2(model1=model1)
+    db.session.add(model1)
+    db.session.add(model2)
+    db.session.commit()
+
+    eq_(model1.model2, model2)
+    eq_(model2.model1, model1)
+
+    eq_(view1._create_form_class.model2.kwargs['widget'].multiple, False)
+    eq_(view2._create_form_class.model1.kwargs['widget'].multiple, False)
+
+
 def test_relations():
     # TODO: test relations
     pass
