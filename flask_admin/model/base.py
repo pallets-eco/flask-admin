@@ -1246,7 +1246,7 @@ class BaseModelView(BaseView, ActionsMixin):
             if self.update_model(form, model):
                 if '_continue_editing' in request.form:
                     flash(gettext('Model was successfully saved.'))
-                    return redirect(request.full_path)
+                    return redirect(request.url)
                 else:
                     return redirect(return_url)
 
