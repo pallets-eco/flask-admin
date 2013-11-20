@@ -1,12 +1,13 @@
 {% extends 'admin/master.html' %}
 {% import 'admin/lib.html' as lib with context %}
+{% import 'admin/static.html' as admin_static with context%}
 {% import 'admin/model/layout.html' as model_layout with context %}
 {% import 'admin/actions.html' as actionlib with context %}
 
 {% block head %}
     {{ super() }}
-    <link href="{{ url_for('admin.static', filename='select2/select2.css') }}" rel="stylesheet">
-    <link href="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.css') }}" rel="stylesheet">
+    <link href="{{ admin_static.url(filename='select2/select2.css') }}" rel="stylesheet">
+    <link href="{{ admin_static.url(filename='datetimepicker/bootstrap-datetimepicker.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
@@ -142,9 +143,9 @@
 
 {% block tail %}
     {{ super() }}
-    <script src="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
-    <script src="{{ url_for('admin.static', filename='admin/js/form.js') }}"></script>
-    <script src="{{ url_for('admin.static', filename='admin/js/filters.js') }}"></script>
+    <script src="{{ admin_static.url(filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
+    <script src="{{ admin_static.url(filename='admin/js/form.js') }}"></script>
+    <script src="{{ admin_static.url(filename='admin/js/filters.js') }}"></script>
 
     {{ actionlib.script(_gettext('Please select at least one model.'),
                       actions,
