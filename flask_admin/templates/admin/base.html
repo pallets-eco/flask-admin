@@ -1,4 +1,5 @@
 {% import 'admin/layout.html' as layout with context -%}
+{% import 'admin/static.html' as admin_static with context %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -9,9 +10,9 @@
         <meta name="author" content="">
     {% endblock %}
     {% block head_css %}
-        <link href="{{ url_for('admin.static', filename='bootstrap/css/bootstrap.css') }}" rel="stylesheet">
-        <link href="{{ url_for('admin.static', filename='bootstrap/css/bootstrap-responsive.css') }}" rel="stylesheet">
-        <link href="{{ url_for('admin.static', filename='admin/css/admin.css') }}" rel="stylesheet">
+        <link href="{{ admin_static.url(filename='bootstrap/css/bootstrap.css') }}" rel="stylesheet">
+        <link href="{{ admin_static.url(filename='bootstrap/css/bootstrap-responsive.css') }}" rel="stylesheet">
+        <link href="{{ admin_static.url(filename='admin/css/admin.css') }}" rel="stylesheet">
     {% endblock %}
     {% block head %}
     {% endblock %}
@@ -52,9 +53,9 @@
     {% endblock %}
 
     {% block tail_js %}
-    <script src="{{ url_for('admin.static', filename='vendor/jquery-1.8.3.min.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('admin.static', filename='bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('admin.static', filename='select2/select2.min.js') }}" type="text/javascript"></script>
+    <script src="{{ admin_static.url(filename='vendor/jquery-1.8.3.min.js') }}" type="text/javascript"></script>
+    <script src="{{ admin_static.url(filename='bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
+    <script src="{{ admin_static.url(filename='select2/select2.min.js') }}" type="text/javascript"></script>
     {% endblock %}
 
     {% block tail %}
