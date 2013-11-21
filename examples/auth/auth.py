@@ -87,27 +87,6 @@ def init_login():
 # Create customized model view class
 class MyModelView(sqla.ModelView):
 
-    # make current_user available in template
-    @expose('/')
-    def index_view(self):
-        self._template_args['user'] = login.current_user
-        return super(MyModelView, self).index_view()
-
-    @expose('/new/', methods=('GET', 'POST'))
-    def create_view(self):
-        self._template_args['user'] = login.current_user
-        return super(MyModelView, self).create_view()
-
-    @expose('/edit/', methods=('GET', 'POST'))
-    def edit_view(self):
-        self._template_args['user'] = login.current_user
-        return super(MyModelView, self).edit_view()
-
-    @expose('/delete/', methods=('POST',))
-    def delete_view(self):
-        self._template_args['user'] = login.current_user
-        return super(MyModelView, self).delete_view()
-
     def is_accessible(self):
         return login.current_user.is_authenticated()
 
@@ -119,9 +98,6 @@ class MyAdminIndexView(admin.AdminIndexView):
     def index(self):
         if not login.current_user.is_authenticated():
             return redirect(url_for('.login_view'))
-        # make current_user available in template
-        user = login.current_user
-        self._template_args['user'] = user
         return super(MyAdminIndexView, self).index()
 
     @expose('/login/', methods=('GET', 'POST'))
@@ -135,7 +111,6 @@ class MyAdminIndexView(admin.AdminIndexView):
         if login.current_user.is_authenticated():
             return redirect(url_for('.index'))
         link = '<p>Don\'t have an account? <a href="' + url_for('.register_view') + '">Click here to register.</a></p>'
-        self._template_args['user'] = None
         self._template_args['form'] = form
         self._template_args['link'] = link
         return super(MyAdminIndexView, self).index()
@@ -154,7 +129,6 @@ class MyAdminIndexView(admin.AdminIndexView):
             login.login_user(user)
             return redirect(url_for('.index'))
         link = '<p>Already have an account? <a href="' + url_for('.login_view') + '">Click here to log in.</a></p>'
-        self._template_args['user'] = None
         self._template_args['form'] = form
         self._template_args['link'] = link
         return super(MyAdminIndexView, self).index()
@@ -168,7 +142,7 @@ class MyAdminIndexView(admin.AdminIndexView):
 # Flask views
 @app.route('/')
 def index():
-    return render_template('index.html', user=login.current_user)
+    return render_template('index.html')
 
 
 # Initialize flask-login
