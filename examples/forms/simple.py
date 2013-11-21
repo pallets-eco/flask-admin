@@ -50,17 +50,14 @@ class Image(db.Model):
         return self.name
 
 
-class RuleSample(db.Model):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.Unicode(64))
     last_name = db.Column(db.Unicode(64))
     email = db.Column(db.Unicode(128))
     phone = db.Column(db.Unicode(32))
-
-    address = db.Column(db.Unicode(128))
     city = db.Column(db.Unicode(128))
-    zip = db.Column(db.Unicode(8))
-
+    country = db.Column(db.Unicode(128))
     notes = db.Column(db.UnicodeText)
 
 
@@ -129,16 +126,18 @@ class ImageView(sqla.ModelView):
     }
 
 
-class RuleView(sqla.ModelView):
+class UserView(sqla.ModelView):
+    """
+    This class demonstrates the use of 'rules' for controlling the rendering of forms.
+    """
     form_create_rules = [
         # Header and four fields. Email field will go above phone field.
         rules.FieldSet(('first_name', 'last_name', 'email', 'phone'), 'Personal'),
         # Separate header and few fields
-        rules.Header('Address'),
-        rules.Field('address'),
+        rules.Header('Location'),
+        rules.Field('city'),
         # String is resolved to form field, so there's no need to explicitly use `rules.Field`
-        'city',
-        'zip',
+        'country',
         # Show macro from Flask-Admin lib.html (it is included with 'lib' prefix)
         rules.Container('rule_demo.wrap', rules.Field('notes'))
     ]
@@ -161,12 +160,88 @@ admin = Admin(app, 'Simple Models')
 # Add views
 admin.add_view(FileView(File, db.session))
 admin.add_view(ImageView(Image, db.session))
-admin.add_view(RuleView(RuleSample, db.session, name='Rule'))
+admin.add_view(UserView(User, db.session, name='User'))
+
+
+def build_sample_db():
+    """
+    Populate a small db with some example entries.
+    """
+
+    import random
+    import string
+
+    db.drop_all()
+    db.create_all()
+
+    first_names = [
+        'Harry', 'Amelia', 'Oliver', 'Jack', 'Isabella', 'Charlie','Sophie', 'Mia',
+        'Jacob', 'Thomas', 'Emily', 'Lily', 'Ava', 'Isla', 'Alfie', 'Olivia', 'Jessica',
+        'Riley', 'William', 'James', 'Geoffrey', 'Lisa', 'Benjamin', 'Stacey', 'Lucy'
+    ]
+    last_names = [
+        'Brown', 'Smith', 'Patel', 'Jones', 'Williams', 'Johnson', 'Taylor', 'Thomas',
+        'Roberts', 'Khan', 'Lewis', 'Jackson', 'Clarke', 'James', 'Phillips', 'Wilson',
+        'Ali', 'Mason', 'Mitchell', 'Rose', 'Davis', 'Davies', 'Rodriguez', 'Cox', 'Alexander'
+    ]
+    locations = [
+        ("Shanghai", "China"),
+        ("Istanbul", "Turkey"),
+        ("Karachi", "Pakistan"),
+        ("Mumbai", "India"),
+        ("Moscow", "Russia"),
+        ("Sao Paulo", "Brazil"),
+        ("Beijing", "China"),
+        ("Tianjin", "China"),
+        ("Guangzhou", "China"),
+        ("Delhi", "India"),
+        ("Seoul", "South Korea"),
+        ("Shenzhen", "China"),
+        ("Jakarta", "Indonesia"),
+        ("Tokyo", "Japan"),
+        ("Mexico City", "Mexico"),
+        ("Kinshasa", "Democratic Republic of the Congo"),
+        ("Bangalore", "India"),
+        ("New York City", "United States"),
+        ("London", "United Kingdom"),
+        ("Bangkok", "Thailand"),
+        ("Tehran", "Iran"),
+        ("Dongguan", "China"),
+        ("Lagos", "Nigeria"),
+        ("Lima", "Peru"),
+        ("Ho Chi Minh City", "Vietnam"),
+        ]
+
+    for i in range(len(first_names)):
+        user = User()
+        user.first_name = first_names[i]
+        user.last_name = last_names[i]
+        user.email = user.first_name.lower() + "@example.com"
+        tmp = ''.join(random.choice(string.digits) for i in range(10))
+        user.phone = "(" + tmp[0:3] + ") " + tmp[3:6] + " " + tmp[6::]
+        user.city = locations[i][0]
+        user.country = locations[i][1]
+        db.session.add(user)
+
+    images = ["Buffalo", "Elephant", "Leopard", "Lion", "Rhino"]
+    for name in images:
+        image = Image()
+        image.name = name
+        image.path = name.lower() + ".jpg"
+        db.session.add(image)
+
+    for i in [1, 2, 3]:
+        file = File()
+        file.name = "Example " + str(i)
+        file.path = "example_" + str(i) + ".pdf"
+        db.session.add(file)
+
+    db.session.commit()
+    return
 
 if __name__ == '__main__':
 
-    # Create DB
-    db.create_all()
+    build_sample_db()
 
     # Start app
     app.run(debug=True)
