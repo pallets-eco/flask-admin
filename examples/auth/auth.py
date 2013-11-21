@@ -5,7 +5,7 @@ from wtforms import form, fields, validators
 
 from flask.ext import admin, login
 from flask.ext.admin.contrib import sqla
-from flask.ext.admin import helpers, BaseView, expose
+from flask.ext.admin import helpers, expose
 
 # Create Flask application
 app = Flask(__name__)
@@ -23,6 +23,8 @@ db = SQLAlchemy(app)
 # Obviously that's not right thing to do in real world application.
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(100))
+    last_name = db.Column(db.String(100))
     login = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120))
     password = db.Column(db.String(64))
@@ -154,10 +156,46 @@ admin = admin.Admin(app, 'Auth', index_view=MyAdminIndexView(), base_template='m
 # Add view
 admin.add_view(MyModelView(User, db.session))
 
+
+def build_sample_db():
+    """
+    Populate a small db with some example entries.
+    """
+
+    import string
+    import random
+
+    db.drop_all()
+    db.create_all()
+    test_user = User(login="test", password="test")
+    db.session.add(test_user)
+
+    first_names = [
+        'Harry', 'Amelia', 'Oliver', 'Jack', 'Isabella', 'Charlie','Sophie', 'Mia',
+        'Jacob', 'Thomas', 'Emily', 'Lily', 'Ava', 'Isla', 'Alfie', 'Olivia', 'Jessica',
+        'Riley', 'William', 'James', 'Geoffrey', 'Lisa', 'Benjamin', 'Stacey', 'Lucy'
+    ]
+    last_names = [
+        'Brown', 'Smith', 'Patel', 'Jones', 'Williams', 'Johnson', 'Taylor', 'Thomas',
+        'Roberts', 'Khan', 'Lewis', 'Jackson', 'Clarke', 'James', 'Phillips', 'Wilson',
+        'Ali', 'Mason', 'Mitchell', 'Rose', 'Davis', 'Davies', 'Rodriguez', 'Cox', 'Alexander'
+    ]
+
+    for i in range(len(first_names)):
+        user = User()
+        user.first_name = first_names[i]
+        user.last_name = last_names[i]
+        user.login = user.first_name.lower()
+        user.email = user.login + "@example.com"
+        user.password = ''.join(random.choice(string.ascii_lowercase + string.digits) for i in range(10))
+        db.session.add(user)
+
+    db.session.commit()
+    return
+
 if __name__ == '__main__':
 
-    # Create DB
-    db.create_all()
+    build_sample_db()
 
     # Start app
     app.run(debug=True)
