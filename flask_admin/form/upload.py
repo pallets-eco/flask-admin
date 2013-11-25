@@ -8,7 +8,11 @@ from werkzeug.datastructures import FileStorage
 
 from wtforms import ValidationError, fields
 from wtforms.widgets import HTMLString, html_params
-from wtforms.fields.core import _unset_value
+
+try:
+    from wtforms.fields.core import _unset_value as unset_value
+except ImportError:
+    from wtforms.utils import unset_value
 
 from flask.ext.admin.babel import gettext
 
@@ -181,7 +185,7 @@ class FileUploadField(fields.TextField):
                 not self.is_file_allowed(self.data.filename)):
             raise ValidationError(gettext('Invalid file extension'))
 
-    def process(self, formdata, data=_unset_value):
+    def process(self, formdata, data=unset_value):
         if formdata:
             marker = '_%s-delete' % self.name
             if marker in formdata:
