@@ -39,11 +39,11 @@
     {% if messages %}
       {% for category, m in messages %}
         {% if category %}
-        <div class="alert alert-{{ category }}">
+        <div class="alert alert-{{ category }} alert-dismissable">
         {% else %}
-        <div class="alert">
+        <div class="alert alert-dismissable">
         {% endif %}
-          <a href="javascript:void(0)" class="close" data-dismiss="alert">x</a>
+	  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
           {{ m }}
         </div>
       {% endfor %}

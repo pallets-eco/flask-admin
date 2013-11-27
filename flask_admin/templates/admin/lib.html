@@ -77,22 +77,20 @@
 {# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field, kwargs={}) %}
   {% set direct_error = h.is_field_error(field.errors) %}
-  <div class="control-group{{ ' error' if direct_error else '' }}">
-    <div class="control-label">
-      {{ field.label.text }}
+  <div class="form-group{{ ' error' if direct_error else '' }}">
+    <label for="{{ field.id }}" class="col-sm-2 control-label">{{ field.label.text }}
       {% if h.is_required_form_field(field) %}
         <strong style="color: red">&#42;</strong>
       {% else %}
         &nbsp;
       {% endif %}
+    </label>
+    <div class="col-sm-8">
+      {{ field(class="form-control", **kwargs)|safe }}
+      {% if field.description %}
+      <p class="help-block">{{ field.description }}</p>
+      {% endif %}
     </div>
-    <div class="controls">
-    <div>
-      {{ field(**kwargs)|safe }}
-    </div>
-    {% if field.description %}
-    <p class="help-block">{{ field.description }}</p>
-    {% endif %}
     {% if direct_error %}
       <ul{% if direct_error %} class="input-errors"{% endif %}>
       {% for e in field.errors if e is string %}
@@ -100,7 +98,6 @@
       {% endfor %}
       </ul>
     {% endif %}
-    </div>
   </div>
 {% endmacro %}
 
@@ -137,23 +134,21 @@
 {% endmacro %}
 
 {% macro form_tag(form=None) %}
-    <form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
-      <fieldset>
-        {{ caller() }}
-      </fieldset>
+    <form action="" method="POST" role="form" class="form-horizontal" enctype="multipart/form-data">
+      {{ caller() }}
     </form>
 {% endmacro %}
 
 {% macro render_form_buttons(cancel_url, extra=None) %}
-    <div class="control-group">
-      <div class="controls">
-        <input type="submit" class="btn btn-primary btn-large" value="{{ _gettext('Submit') }}" />
-        {% if extra %}
-        {{ extra }}
-        {% endif %}
-        {% if cancel_url %}
-        <a href="{{ cancel_url }}" class="btn btn-large">{{ _gettext('Cancel') }}</a>
-        {% endif %}
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+	<input type="submit" class="btn btn-primary" value="{{ _gettext('Submit') }}" />
+	{% if extra %}
+	{{ extra }}
+	{% endif %}
+	{% if cancel_url %}
+	<a href="{{ cancel_url }}" class="btn btn-cancel" role="button">{{ _gettext('Cancel') }}</a>
+	{% endif %}
       </div>
     </div>
 {% endmacro %}

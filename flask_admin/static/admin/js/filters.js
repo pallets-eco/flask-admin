@@ -29,7 +29,7 @@ var AdminFilters = function(element, filters_element, operations, options, types
         // Filter list
         $el.append(
                 $('<td/>').append(
-                    $('<a href="#" class="btn remove-filter" />')
+                    $('<a href="#" class="btn btn-link remove-filter" />')
                         .append($('<span class="close-icon">&times;</span>'))
                         .append('&nbsp;')
                         .append(name)
@@ -69,7 +69,7 @@ var AdminFilters = function(element, filters_element, operations, options, types
             $field.select2({width: 'resolve'});
         } else
         {
-            $field = $('<input type="text" class="filter-val" />')
+            $field = $('<input type="text" class="filter-val form-control" />')
                         .attr('name', 'flt' + lastCount + '_' + optId);
             $el.append($('<td/>').append($field));
         }

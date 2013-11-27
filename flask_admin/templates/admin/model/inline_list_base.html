@@ -2,7 +2,7 @@
 <div class="inline-field">
     <div id="{{ field.id }}-fields">
         {% for subfield in field %}
-        <div id="{{ subfield.id }}" class="fa-inline-field">
+        <div id="{{ subfield.id }}" class="fa-inline-field well">
             {%- if not check or check(subfield) %}
             <div class="fa-inline-field-control">
                 <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
@@ -16,14 +16,14 @@
     </div>
     <div id="{{ field.id }}-template" class="hide">
         {% filter forceescape %}
-        <div class="fa-inline-field">
+        <div class="fa-inline-field panel panel-info">
             <div class="fa-inline-field-control">
-                <a href="javascript:void(0)" class="fa-remove-field"><i class="icon-remove"></i></a>
+                <a href="javascript:void(0)" class="fa-remove-field"><span class="glyphicon glyphicon-remove"></span></a>
             </div>
             {{ render(template) }}
         </div>
         {% endfilter %}
     </div>
-    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn" onclick="faForm.addInlineField('{{ field.id }}', '#{{ field.id }}-fields', '#{{ field.id }}-template');">{{ _gettext('Add') }} {{ field.label.text }}</a>
+    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn btn-default col-xs-offset-10" onclick="faForm.addInlineField('{{ field.id }}', '#{{ field.id }}-fields', '#{{ field.id }}-template');">{{ _gettext('Add') }} {{ field.label.text }}</a>
 </div>
 {% endmacro %}
