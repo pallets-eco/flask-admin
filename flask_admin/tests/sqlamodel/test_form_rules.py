@@ -122,3 +122,20 @@ def test_rule_field_set():
     ok_(pos1 > pos2)
     ok_(pos4 > pos1)
     ok_(pos3 == -1)
+
+
+def test_rule_inlinefieldlist():
+    app, db, admin = setup()
+
+    Model1, Model2 = create_models(db)
+    db.create_all()
+
+    view = CustomModelView(Model1, db.session,
+                           inline_models=(Model2,),
+                           form_create_rules=('test1', 'model2'))
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model1view/new/')
+    eq_(rv.status_code, 200)
