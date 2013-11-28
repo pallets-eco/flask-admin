@@ -9,22 +9,21 @@
 {% block page_body %}
 <div class="container">
   <div class="row">
-    <div class="span2">
+    <div class="col-md-2" role="navigation">
       <ul class="nav nav-pills nav-stacked">
-        {{ layout.menu() }}
-        {{ layout.menu_links() }}
+	{{ layout.menu() }}
+	{{ layout.menu_links() }}
       </ul>
     </div>
-    <div class="span10">
-      <div id="content">
-        {% block brand %}
-          <h2 id="brand">{{ admin_view.name|capitalize }}</h2>
-          <div class="clearfix"></div>
-        {% endblock %}
-        {{ layout.messages() }}
-        {% block body %}{% endblock %}
+    <div class="col-md-10">
+      <div id="content" class="row">
+	{% block brand %}
+	<h2 id="brand">{{ admin_view.name|capitalize }}</h2>
+	{% endblock %}
+	{{ layout.messages() }}
+	{% block body %}{% endblock %}
       </div>
-    </div>
+     </div>
   </div>
 </div>
 {% endblock %}
