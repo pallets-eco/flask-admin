@@ -19,7 +19,8 @@ app = Flask(__name__, static_folder='files')
 app.config['SECRET_KEY'] = '123456790'
 
 # Create in-memory database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sample.sqlite'
+app.config['DATABASE_FILE'] = 'sample_db.sqlite'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.config['DATABASE_FILE']
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
@@ -241,7 +242,11 @@ def build_sample_db():
 
 if __name__ == '__main__':
 
-    build_sample_db()
+    # Build a sample db on the fly, if one does not exist yet.
+    app_dir = op.realpath(os.path.dirname(__file__))
+    database_path = op.join(app_dir, app.config['DATABASE_FILE'])
+    if not os.path.exists(database_path):
+        build_sample_db()
 
     # Start app
     app.run(debug=True)
