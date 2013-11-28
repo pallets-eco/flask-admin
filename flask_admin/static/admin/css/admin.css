@@ -42,7 +42,7 @@ form.navbar-form div.input-append {
 table.filters {
     border-collapse: none;
     border-spacing: 4px;
-    margin: 12px 0;
+    margin: 12px 0px 20px 0px;
 }
 
 
@@ -168,4 +168,12 @@ a.btn-cancel {
 a.btn-link {
     border-radius: 4px;
     border-color: #95bee2;
+}
+
+a.btn-filter, a.btn-filter:hover {
+    border-radius: 4px;
+    border-color: #adadad;
+    color: #333;
+    background-color: #ebebeb;
+    max-height: 32px;
 }

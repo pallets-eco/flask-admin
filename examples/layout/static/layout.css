@@ -5,7 +5,15 @@ body {
 #content {
 	background: white;
 	border: 1px solid #CCC;
-	padding: 5px 20px 30px 35px;
+	padding: 15px 20px 30px 35px;
+}
+
+#content .row {
+    margin-left: 0px;
+}
+
+#brand {
+    display: inline;
 }
 
 html, body, .container, .row, .col-md-2, .col-md-10, #content {

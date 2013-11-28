@@ -29,7 +29,7 @@ var AdminFilters = function(element, filters_element, operations, options, types
         // Filter list
         $el.append(
                 $('<td/>').append(
-                    $('<a href="#" class="btn btn-link remove-filter" />')
+                    $('<a href="#" class="btn btn-filter remove-filter" />')
                         .append($('<span class="close-icon">&times;</span>'))
                         .append('&nbsp;')
                         .append(name)
