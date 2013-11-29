@@ -29,7 +29,8 @@ def bool_formatter(view, value):
         :param value:
             Value to check
     """
-    return Markup('<i class="icon-ok"></i>' if value else '')
+    glyph = 'ok-circle' if value else 'minus-sign'
+    return Markup('<span class="glyphicon glyphicon-%s"></span>' % glyph)
 
 
 def list_formatter(view, values):
