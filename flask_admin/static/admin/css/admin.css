@@ -137,6 +137,14 @@ table.flters tr td:nth-child(2){
     margin-top: 35px;
 }
 
+.submit-row {
+    margin-top: 35px;
+}
+
+td>span.glyphicon {
+    padding-left: 35%;
+}
+
 /* Patch Select2 */
 .select2-results li {
     min-height: 24px !important;
@@ -176,4 +184,22 @@ a.btn-filter, a.btn-filter:hover {
     color: #333;
     background-color: #ebebeb;
     max-height: 32px;
+}
+
+.help-block {
+    margin-bottom: 0px;
+}
+
+ul.has-error {
+    margin-bottom: -8px;
+}
+
+.tooltip.top {
+    font-size: 1.1em;
+    top: -35px;
+}
+
+.checkbox input[type="checkbox"] {
+    margin-left: 0px;
+    margin-right: 15px;
 }

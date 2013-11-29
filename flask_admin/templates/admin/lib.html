@@ -77,27 +77,36 @@
 {# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field, kwargs={}) %}
   {% set direct_error = h.is_field_error(field.errors) %}
-  <div class="form-group{{ ' error' if direct_error else '' }}">
-    <label for="{{ field.id }}" class="col-sm-2 control-label">{{ field.label.text }}
+  <div class="form-group{{ ' has-error' if direct_error else '' }}">
+    {% if field.type == 'BooleanField' %}
+    <div class="col-md-8 col-md-offset-2 checkbox">
+      <label class="control-label">{{ field(**kwargs)|safe }}{{ field.label.text }}</label>
+    {% else %}
+    <label for="{{ field.id }}" class="col-md-2 control-label">{{ field.label.text }}
       {% if h.is_required_form_field(field) %}
         <strong style="color: red">&#42;</strong>
       {% else %}
         &nbsp;
       {% endif %}
     </label>
-    <div class="col-sm-8">
+    <div class="col-md-{% if field.type in ['DateTimeField', 'DateField'] %}2{% else %}4{% endif %}">
       {{ field(class="form-control", **kwargs)|safe }}
-      {% if field.description %}
-      <p class="help-block">{{ field.description }}</p>
+      {% endif %}
+      {% if direct_error %}
+      <span class="help-block">
+	{% if field.description %}
+	  <p>{{ field.description }}<p>
+	  {% endif %}
+	<ul class="has-error">
+	  {% for e in field.errors if e is string %}
+          <li>{{ e }}</li>
+	  {% endfor %}
+	</ul>
+      </span>
+      {% elif field.description %}
+      <span class="help-block">{{ field.description }}</span>
       {% endif %}
     </div>
-    {% if direct_error %}
-      <ul{% if direct_error %} class="input-errors"{% endif %}>
-      {% for e in field.errors if e is string %}
-        <li>{{ e }}</li>
-      {% endfor %}
-      </ul>
-    {% endif %}
   </div>
 {% endmacro %}
 
@@ -141,7 +150,7 @@
 
 {% macro render_form_buttons(cancel_url, extra=None) %}
     <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
+      <div class="col-sm-offset-2 col-sm-10 submit-row">
 	<input type="submit" class="btn btn-primary" value="{{ _gettext('Submit') }}" />
 	{% if extra %}
 	{{ extra }}
