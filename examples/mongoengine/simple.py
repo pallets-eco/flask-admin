@@ -100,7 +100,12 @@ class PostView(ModelView):
             'form_subdocuments': {
                 None: {
                     # Add <hr> at the end of the form
-                    'form_rules': ('name', 'tag', 'value', rules.HTML('<hr>'))
+                    'form_rules': ('name', 'tag', 'value', rules.HTML('<hr>')),
+                    'form_widget_args': {
+                        'name': {
+                            'style': 'color: red'
+                        }
+                    }
                 }
             }
         }

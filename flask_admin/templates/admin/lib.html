@@ -108,7 +108,7 @@
     <h3>{{ text }}</h3>
 {% endmacro %}
 
-{% macro render_form_fields(form, form_opts={}, form_rules=None) %}
+{% macro render_form_fields(form, form_opts=None) %}
     {% if form.hidden_tag is defined %}
         {{ form.hidden_tag() }}
     {% else %}
@@ -120,8 +120,8 @@
         {% endfor %}
     {% endif %}
 
-    {% if form_rules %}
-        {% for r in form_rules %}
+    {% if form_opts and form_opts.form_rules %}
+        {% for r in form_opts.form_rules %}
             {{ r(form, form_opts=form_opts) }}
         {% endfor %}
     {% else %}
@@ -158,9 +158,9 @@
     </div>
 {% endmacro %}
 
-{% macro render_form(form, cancel_url, extra=None, form_opts={}, form_rules=None) -%}
+{% macro render_form(form, cancel_url, extra=None, form_opts=None) -%}
     {% call form_tag() %}
-        {{ render_form_fields(form, form_opts=form_opts, form_rules=form_rules) }}
+        {{ render_form_fields(form, form_opts=form_opts) }}
         {{ render_form_buttons(cancel_url, extra) }}
     {% endcall %}
 {% endmacro %}

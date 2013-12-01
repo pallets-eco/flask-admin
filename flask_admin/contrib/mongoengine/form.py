@@ -7,7 +7,7 @@ from flask.ext.mongoengine.wtf import orm, fields as mongo_fields
 from flask.ext.admin import form
 from flask.ext.admin.model.form import FieldPlaceholder
 from flask.ext.admin.model.fields import InlineFieldList, AjaxSelectField, AjaxSelectMultipleField
-from flask.ext.admin.model.widgets import InlineFormRuleWidget
+from flask.ext.admin.model.widgets import InlineFormWidget
 from flask.ext.admin._compat import iteritems
 
 from .fields import ModelFormField, MongoFileField, MongoImageField
@@ -138,7 +138,10 @@ class CustomModelConverter(orm.ModelConverter):
         view = self._get_subdocument_config(field.name)
 
         if 'widget' not in kwargs:
-            kwargs['widget'] = InlineFormRuleWidget(view._form_rules)
+            form_opts = form.FormOpts(widget_args=getattr(view, 'form_widget_args', None),
+                                      form_rules=view._form_rules)
+
+            kwargs['widget'] = InlineFormWidget(form_opts)
 
         form_class = view.get_form()
         if form_class is None:

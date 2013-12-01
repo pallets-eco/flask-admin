@@ -7,7 +7,7 @@ from jinja2 import contextfunction
 from flask.ext.admin.babel import gettext
 
 from flask.ext.admin.base import BaseView, expose
-from flask.ext.admin.form import BaseForm, rules, get_form_opts
+from flask.ext.admin.form import BaseForm, FormOpts, rules
 from flask.ext.admin.model import filters, typefmt
 from flask.ext.admin.actions import ActionsMixin
 from flask.ext.admin.helpers import get_form_data, validate_form_on_submit
@@ -1215,10 +1215,12 @@ class BaseModelView(BaseView, ActionsMixin):
                 else:
                     return redirect(return_url)
 
+        form_opts = FormOpts(widget_args=self.form_widget_args,
+                             form_rules=self._form_create_rules)
+
         return self.render(self.create_template,
                            form=form,
-                           form_opts=get_form_opts(self),
-                           form_rules=self._form_create_rules,
+                           form_opts=form_opts,
                            return_url=return_url)
 
     @expose('/edit/', methods=('GET', 'POST'))
@@ -1250,11 +1252,13 @@ class BaseModelView(BaseView, ActionsMixin):
                 else:
                     return redirect(return_url)
 
+        form_opts = FormOpts(widget_args=self.form_widget_args,
+                             form_rules=self._form_create_rules)
+
         return self.render(self.edit_template,
                            model=model,
                            form=form,
-                           form_opts=get_form_opts(self),
-                           form_rules=self._form_edit_rules,
+                           form_opts=form_opts,
                            return_url=return_url)
 
     @expose('/delete/', methods=('POST',))
