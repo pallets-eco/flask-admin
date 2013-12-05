@@ -65,14 +65,7 @@
                     <th>
                         {% if admin_view.is_sortable(c) %}
                             {% if sort_column == column %}
-                                <a href="{{ sort_url(column, True) }}">
-                                    {{ name }}
-                                    {% if sort_desc %}
-                                        <i class="icon-chevron-up"></i>
-                                    {% else %}
-                                        <i class="icon-chevron-down"></i>
-                                    {% endif %}
-                                </a>
+                                <a href="{{ sort_url(column, True) }}">{{ name }}</a><span class="arrow">{{ '↑' if sort_desc else '↓' }}</span>
                             {% else %}
                                 <a href="{{ sort_url(column) }}">{{ name }}</a>
                             {% endif %}
