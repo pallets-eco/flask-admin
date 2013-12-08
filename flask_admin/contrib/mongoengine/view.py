@@ -84,6 +84,22 @@ class ModelView(BaseModelView):
                 model_form_converter = MyModelConverter
     """
 
+    object_id_converter = ObjectId
+    """
+        Mongodb ``_id`` value conversion function. Default is `bson.ObjectId`.
+        Use this if you are using String, Binary and etc.
+
+        For example::
+
+            class MyModelView(BaseModelView):
+                object_id_converter = int
+
+        or::
+
+            class MyModelView(BaseModelView):
+                object_id_converter = str
+    """
+
     filter_converter = FilterConverter()
     """
         Field to filter converter.
@@ -549,7 +565,7 @@ class ModelView(BaseModelView):
 
         fs = gridfs.GridFS(get_db(db), coll)
 
-        data = fs.get(ObjectId(pk))
+        data = fs.get(self.object_id_converter(pk))
         if not data:
             abort(404)
 
@@ -574,7 +590,7 @@ class ModelView(BaseModelView):
         try:
             count = 0
 
-            all_ids = [ObjectId(pk) for pk in ids]
+            all_ids = [self.object_id_converter(pk) for pk in ids]
             for obj in self.get_query().in_bulk(all_ids).values():
                 count += self.delete_model(obj)
 
