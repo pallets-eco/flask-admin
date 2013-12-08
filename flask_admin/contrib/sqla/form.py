@@ -156,8 +156,10 @@ class AdminModelConverter(ModelConverterBase):
                     # Grab column
                     column = prop.columns[0]
 
-                # Do not display foreign keys - use relations
-                if column.foreign_keys:
+                form_columns = getattr(self.view, 'form_columns', None) or ()
+
+                # Do not display foreign keys - use relations, except when explicitly instructed
+                if column.foreign_keys and prop.key not in form_columns:
                     return None
 
                 # Only display "real" columns
@@ -172,11 +174,6 @@ class AdminModelConverter(ModelConverterBase):
                         return fields.HiddenField()
                     else:
                         # By default, don't show primary keys either
-                        form_columns = getattr(self.view, 'form_columns', None)
-
-                        if form_columns is None:
-                            return None
-
                         # If PK is not explicitly allowed, ignore it
                         if prop.key not in form_columns:
                             return None
