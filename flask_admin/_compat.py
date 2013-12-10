@@ -49,7 +49,7 @@ else:
         return unicode(s)
 
     # Helpers
-    reduce = __builtins__['reduce']
+    reduce = __builtins__['reduce'] if isinstance(__builtins__, dict) else __builtins__.reduce
     from urlparse import urljoin
 
 
