@@ -32,7 +32,7 @@ class InlineModelFormList(InlineFieldList):
 
         self._pk = get_primary_key(model)
 
-        super(InlineModelFormList, self).__init__(self.form_field_type(form, self._pk), **kwargs)
+        super(InlineModelFormList, self).__init__(self.form_field_type(form, self._pk, inline_view), **kwargs)
 
     def display_row_controls(self, field):
         return field.get_pk() is not None
