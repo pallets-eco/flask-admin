@@ -1016,12 +1016,12 @@ class BaseModelView(BaseView, ActionsMixin):
         kwargs = dict(page=page, sort=sort, desc=sort_desc, search=search)
 
         if filters:
-            for i, flt in enumerate(filters):
-                key = 'flt%d_%d' % (i, flt[0])
+            for flt in filters:
+                key = 'flt_%s' % self._filters[flt[0]].query_label()
                 kwargs[key] = flt[1]
 
         return url_for(view, **kwargs)
-
+        
     def is_action_allowed(self, name):
         """
             Override this method to allow or disallow actions based
