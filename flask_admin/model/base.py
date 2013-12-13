@@ -958,29 +958,36 @@ class BaseModelView(BaseView, ActionsMixin):
         sort_desc = request.args.get('desc', None, type=int)
         search = request.args.get('search', None)
 
+        filter_idx_by_label = dict((flt.query_label(), i) for i, flt in enumerate(self._filters))
         # Gather filters
         if self._filters:
             sfilters = []
 
             for n in request.args:
-                if n.startswith('flt'):
-                    ofs = n.find('_')
-                    if ofs == -1:
-                        continue
+                if not n.startswith('flt'):
+                    continue
 
+                pos, filter_label = n[3:].split('_', 1)
+                
+                # If pos not specified, just add incrementally to the list.
+                pos = int(pos) if pos else len(sfilters)
+
+                try:
+                    # See if filter is numeric
+                    idx = int(filter_label)
+                except ValueError:
+                    # If non-numeric, look filter up by name
                     try:
-                        pos = int(n[3:ofs])
-                        idx = int(n[ofs + 1:])
-                    except ValueError:
+                        idx = filter_idx_by_label[filter_label]
+                    except KeyError:
+                        # No matching filter name
                         continue
 
-                    if idx >= 0 and idx < len(self._filters):
-                        flt = self._filters[idx]
-
-                        value = request.args[n]
-
-                        if flt.validate(value):
-                            sfilters.append((pos, (idx, flt.clean(value))))
+                if 0 <= idx < len(self._filters):
+                    flt = self._filters[idx]
+                    value = request.args[n]
+                    if flt.validate(value):
+                        sfilters.append((pos, (idx, flt.clean(value))))
 
             filters = [v[1] for v in sorted(sfilters, key=lambda n: n[0])]
         else:
