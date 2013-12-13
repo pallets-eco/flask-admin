@@ -42,7 +42,8 @@ var AdminFilters = function(element, filters_element, operations, options, types
                       .change(changeOperation);
 
         $(op).each(function() {
-            $select.append($('<option/>').attr('value', this[0]).text(this[1]));
+           var filter_label = (name + '_' + this[1]).toLowerCase().replace(/ /g, '_');
+            $select.append($('<option/>').attr('value', filter_label).text(this[1]));
         });
 
         $el.append(
@@ -53,12 +54,13 @@ var AdminFilters = function(element, filters_element, operations, options, types
 
         // Input
         var optId = op[0][0];
+        var filter_label = (name + '_' + op[0][1]).toLowerCase().replace(/ /g, '_');
 
         var $field;
 
         if (optId in options) {
             $field = $('<select class="filter-val" />')
-                        .attr('name', 'flt' + lastCount + '_' + optId);
+                        .attr('name', 'flt' + lastCount + '_' + filter_label);
 
             $(options[optId]).each(function() {
                 $field.append($('<option/>')
@@ -70,7 +72,7 @@ var AdminFilters = function(element, filters_element, operations, options, types
         } else
         {
             $field = $('<input type="text" class="filter-val" />')
-                        .attr('name', 'flt' + lastCount + '_' + optId);
+                        .attr('name', 'flt' + lastCount + '_' + filter_label);
             $el.append($('<td/>').append($field));
         }
 
@@ -84,7 +86,6 @@ var AdminFilters = function(element, filters_element, operations, options, types
 
     $('a.filter', filters_element).click(function() {
         var name = $(this).text().trim();
-
         addFilter(name, operations[name]);
 
         $('button', $root).show();
