@@ -967,6 +967,8 @@ class BaseModelView(BaseView, ActionsMixin):
         for n in request.args:
             if not n.startswith('flt'):
                 continue
+            if '_' not in n:
+                continue
 
             pos, filter_label = n[3:].split('_', 1)
             
