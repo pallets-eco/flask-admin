@@ -31,7 +31,6 @@ class InlineModelFormList(InlineFieldList):
         self.inline_view = inline_view
 
         self._pk = get_primary_key(model)
-
         super(InlineModelFormList, self).__init__(self.form_field_type(form, self._pk), **kwargs)
 
     def display_row_controls(self, field):
