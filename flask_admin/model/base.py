@@ -957,10 +957,10 @@ class BaseModelView(BaseView, ActionsMixin):
             
             Override this method to provide your own URL filter format.
         """
-        filter_idx_by_label = dict((flt.query_label(), i) for i, flt in enumerate(self._filters))
-        # Gather filters
         if not self._filters:
             return None
+
+        filter_idx_by_label = dict((flt.query_label(), i) for i, flt in enumerate(self._filters))
         
         sfilters = []
 
