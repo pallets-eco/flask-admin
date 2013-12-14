@@ -948,45 +948,61 @@ class BaseModelView(BaseView, ActionsMixin):
     def get_empty_list_message(self):
         return gettext('There are no items in the table.')
 
-    # URL generation helper
-    def _get_extra_args(self):
+    def get_filter_args(self):
         """
-            Return arguments from query string.
+            Retrieve and parse filter parameters from the request URL.
+            
+            Returns a list of 2-tuples in the format [(idx, value), ...],
+            where idx is the index into the list returned by get_filters().
+            
+            Override this method to provide your own URL filter format.
+        """
+        if not self._filters:
+            return None
+
+        filter_idx_by_label = dict((flt.query_label(), i) for i, flt in enumerate(self._filters))
+        
+        sfilters = []
+
+        for n in request.args:
+            if not n.startswith('flt'):
+                continue
+            if '_' not in n:
+                continue
+
+            pos, filter_label = n[3:].split('_', 1)
+            
+            # If pos not specified, just add incrementally to the list.
+            pos = int(pos) if pos else len(sfilters)
+
+            try:
+                # See if filter is numeric
+                idx = int(filter_label)
+            except ValueError:
+                # If non-numeric, look filter up by name
+                try:
+                    idx = filter_idx_by_label[filter_label]
+                except KeyError:
+                    # No matching filter name
+                    continue
+
+            if 0 <= idx < len(self._filters):
+                flt = self._filters[idx]
+                value = request.args[n]
+                if flt.validate(value):
+                    sfilters.append((pos, (idx, flt.clean(value))))
+
+        return [v[1] for v in sorted(sfilters, key=lambda n: n[0])]
+
+    def _get_listing_args(self):
+        """
+            Return generic list view arguments from query string.
         """
         page = request.args.get('page', 0, type=int)
         sort = request.args.get('sort', None, type=int)
         sort_desc = request.args.get('desc', None, type=int)
         search = request.args.get('search', None)
-
-        # Gather filters
-        if self._filters:
-            sfilters = []
-
-            for n in request.args:
-                if n.startswith('flt'):
-                    ofs = n.find('_')
-                    if ofs == -1:
-                        continue
-
-                    try:
-                        pos = int(n[3:ofs])
-                        idx = int(n[ofs + 1:])
-                    except ValueError:
-                        continue
-
-                    if idx >= 0 and idx < len(self._filters):
-                        flt = self._filters[idx]
-
-                        value = request.args[n]
-
-                        if flt.validate(value):
-                            sfilters.append((pos, (idx, flt.clean(value))))
-
-            filters = [v[1] for v in sorted(sfilters, key=lambda n: n[0])]
-        else:
-            filters = None
-
-        return page, sort, sort_desc, search, filters
+        return page, sort, sort_desc, search
 
     def _get_url(self, view=None, page=None, sort=None, sort_desc=None,
                  search=None, filters=None):
@@ -1104,7 +1120,8 @@ class BaseModelView(BaseView, ActionsMixin):
             List view
         """
         # Grab parameters from URL
-        page, sort_idx, sort_desc, search, filters = self._get_extra_args()
+        page, sort_idx, sort_desc, search = self._get_listing_args()
+        filters = self.get_filter_args()
 
         # Map column index to column name
         sort_column = self._get_column_by_idx(sort_idx)
