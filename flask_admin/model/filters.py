@@ -72,14 +72,6 @@ class BaseFilter(object):
         """
         raise NotImplemented()
 
-    def query_label(self):
-        """
-            Return a string that can be used in a url to identify this filter.
-            
-            For example u'username_equals'
-        """
-        return '{name}_{operation}'.format(name=self.name, operation=self.operation()).lower().replace(' ', '_')
-
     def __unicode__(self):
         return self.name
 
