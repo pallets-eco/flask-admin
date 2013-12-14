@@ -32,20 +32,22 @@
                 <td>
                     <select class="filter-op" data-role="select2">
                         {% for op in admin_view._filter_dict[filter.name] %}
-                        <option value="{{ op[0] }}"{% if flt[0] == op[0] %} selected="selected"{% endif %}>{{ op[1] }}</option>
+                        {{ op }}
+                        {%- set filter_label = filter.name.lower() + '_' + op[1].replace(' ', '_') -%}
+                        <option value="{{ filter_label }}"{% if flt[0] == op[0] %} selected="selected"{% endif %}>{{ op[1] }}</option>
                         {% endfor %}
                     </select>
                 </td>
                 <td>
                     {%- set data = filter_data.get(flt[0]) -%}
                     {%- if data -%}
-                    <select name="flt{{ i }}_{{ flt[0] }}" class="filter-val" data-role="select2">
+                    <select name="flt{{ i }}_{{ filter.query_label() }}" class="filter-val" data-role="select2">
                         {%- for d in data %}
                         <option value="{{ d[0] }}"{% if flt[1] == d[0] %} selected{% endif %}>{{ d[1] }}</option>
                         {%- endfor %}
                     </select>
                     {%- else -%}
-                        <input name="flt{{ i }}_{{ flt[0] }}" type="text" value="{{ flt[1] or '' }}" class="filter-val"{% if flt[0] in filter_types %} data-role="{{ filter_types[flt[0]] }}"{% endif %}></input>
+                        <input name="flt{{ i }}_{{ filter.query_label() }}" type="text" value="{{ flt[1] or '' }}" class="filter-val"{% if flt[0] in filter_types %} data-role="{{ filter_types[flt[0]] }}"{% endif %}></input>
                     {%- endif -%}
                 </td>
             </tr>
