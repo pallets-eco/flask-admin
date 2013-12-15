@@ -1,3 +1,4 @@
+import re
 import warnings
 
 from flask import request, url_for, redirect, flash, abort, json, Response
@@ -990,7 +991,7 @@ class BaseModelView(BaseView, ActionsMixin):
             will no longer work.
         """
         if self.named_filter_urls:
-            return u'{name}_{operation}'.format(name=flt.name, operation=flt.operation()).lower().replace(' ', '_')
+            return re.sub('\W', '_', u'{name}_{operation}'.format(name=flt.name, operation=flt.operation())).lower()
         else:
             return str(self._filters.index(flt))
 
