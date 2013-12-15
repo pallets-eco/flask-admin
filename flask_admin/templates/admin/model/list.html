@@ -62,7 +62,7 @@
                     {% endblock %}
                     {% set column = 0 %}
                     {% for c, name in list_columns %}
-                    <th>
+                    <th class="column-header">
                         {% if admin_view.is_sortable(c) %}
                             {% if sort_column == column %}
                                 <a href="{{ sort_url(column, True) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">
