@@ -11,7 +11,6 @@ var AdminFilters = function(element, filters_element, operations, options, types
     function changeOperation() {
         var $row = $(this).closest('tr');
         var $el = $('.filter-val:input', $row);
-        console.log($el);
         var count = getCount($el.attr('name'));
         $el.attr('name', 'flt' + count + '_' + $(this).val());
         $('button', $root).show();
