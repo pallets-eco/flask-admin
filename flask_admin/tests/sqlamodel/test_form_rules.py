@@ -139,3 +139,22 @@ def test_rule_inlinefieldlist():
 
     rv = client.get('/admin/model1view/new/')
     eq_(rv.status_code, 200)
+
+
+def test_inline_model_rules():
+    app, db, admin = setup()
+
+    Model1, Model2 = create_models(db)
+    db.create_all()
+
+    view = CustomModelView(Model1, db.session,
+                           inline_models=[(Model2, dict(form_rules=('string_field', 'bool_field')))])
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model1view/new/')
+    eq_(rv.status_code, 200)
+
+    data = rv.data.decode('utf-8')
+    ok_('int_field' not in data)
