@@ -992,7 +992,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if self.named_filter_urls:
             return u'{name}_{operation}'.format(name=flt.name, operation=flt.operation()).lower().replace(' ', '_')
         else:
-            return unicode(self._filters.index(flt))
+            return str(self._filters.index(flt))
 
     def get_filter_args(self):
         """

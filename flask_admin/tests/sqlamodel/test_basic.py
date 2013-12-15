@@ -233,61 +233,52 @@ def test_column_filters():
 
     eq_(len(view._filters), 4)
 
-    eq_(view._filter_dict, {
-        u'Test1': [
-            (0, u'equals'),
-            (1, u'not equal'),
-            (2, u'contains'),
-            (3, u'not contains')
-        ]})
+    eq_([ (f['label'], f['operation']) for f in view._flattened_filters_by_group['Test1'] ],
+        [('0', u'equals')
+         ('1', u'not equal')
+         ('2', u'contains')
+         ('3', u'not contains')])
 
     # Test filter that references property
     view = CustomModelView(Model2, db.session,
                            column_filters=['model1'])
 
-    eq_(view._filter_dict, {
-        u'Model1 / Test1': [
-            (0, u'equals'),
-            (1, u'not equal'),
-            (2, u'contains'),
-            (3, u'not contains')
-        ],
-        'Model1 / Test2': [
-            (4, 'equals'),
-            (5, 'not equal'),
-            (6, 'contains'),
-            (7, 'not contains')
-        ],
-        u'Model1 / Test3': [
-            (8, u'equals'),
-            (9, u'not equal'),
-            (10, u'contains'),
-            (11, u'not contains')
-        ],
-        u'Model1 / Test4': [
-            (12, u'equals'),
-            (13, u'not equal'),
-            (14, u'contains'),
-            (15, u'not contains')
-        ],
-        u'Model1 / Bool Field': [
-            (16, u'equals'),
-            (17, u'not equal'),
-        ],
-        u'Model1 / Enum Field': [
-            (18, u'equals'),
-            (19, u'not equal'),
-        ]})
+
+    eq_([ (f['label'], f['operation']) for f in view._flattened_filters_by_group['Model1 / Test1'] ],
+        [('0', u'equals')
+         ('1', u'not equal')
+         ('2', u'contains')
+         ('3', u'not contains')])
+    eq_([ (f['label'], f['operation']) for f in view._flattened_filters_by_group['Model1 / Test2'] ],
+        [('4', u'equals')
+         ('5', u'not equal')
+         ('6', u'contains')
+         ('7', u'not contains')])
+    eq_([ (f['label'], f['operation']) for f in view._flattened_filters_by_group['Model1 / Test3'] ],
+        [('8', u'equals')
+         ('9', u'not equal')
+         ('10', u'contains')
+         ('11', u'not contains')])
+    eq_([ (f['label'], f['operation']) for f in view._flattened_filters_by_group['Model1 / Test4'] ],
+        [('12', u'equals')
+         ('13', u'not equal')
+         ('14', u'contains')
+         ('15', u'not contains')])
+    eq_([ (f['label'], f['operation']) for f in view._flattened_filters_by_group['Model1 / Bool Field'] ],
+        [('16', u'equals')
+         ('17', u'not equal')])
+    eq_([ (f['label'], f['operation']) for f in view._flattened_filters_by_group['Model1 / Enum Field'] ],
+        [('18', u'equals')
+         ('19', u'not equal')])
+
 
     # Test filter with a dot
     view = CustomModelView(Model2, db.session,
                            column_filters=['model1.bool_field'])
 
-    eq_(view._filter_dict, {
-        'Model1 / Bool Field': [
-            (0, 'equals'),
-            (1, 'not equal'),
-        ]})
+    eq_([ (f['label'], f['operation']) for f in view._flattened_filters_by_group['Model1 / Bool Field'] ],
+        [('0', u'equals')
+         ('1', u'not equal')])
 
     # Fill DB
     model1_obj1 = Model1('model1_obj1', bool_field=True)
@@ -324,9 +315,11 @@ def test_column_filters():
                            column_filters=['int_field'])
     admin.add_view(view)
 
-    eq_(view._filter_dict, {'Int Field': [(0, 'equals'), (1, 'not equal'),
-                                          (2, 'greater than'), (3, 'smaller than')]})
-
+    eq_([ (f['label'], f['operation']) for f in view._flattened_filters_by_group['Int Field'] ],
+        [('0', u'equals')
+         ('1', u'not equal')
+         ('2', u'greater than')
+         ('3', u'smaller than')])
 
     #Test filters to joined table field
     view = CustomModelView(

@@ -302,8 +302,8 @@ def test_column_filters():
     eq_(view._filters[0].name, 'col1')
     eq_(view._filters[1].name, 'col2')
 
-    eq_(view._filter_dict, {'col1': [(0, 'test')],
-                            'col2': [(1, 'test')]})
+    eq_([ (f['label'], f['operation']) for f in view._flattened_filters_by_group['col1'] ], [('0', 'test')])
+    eq_([ (f['label'], f['operation']) for f in view._flattened_filters_by_group['col2'] ], [('1', 'test')])
 
     # TODO: Make calls with filters
 
