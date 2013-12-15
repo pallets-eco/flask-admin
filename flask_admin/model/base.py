@@ -251,6 +251,15 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(BaseModelView):
                 column_filters = ('user', 'email')
     """
+    
+    named_filter_urls = False
+    """
+        Set to True to use human-readable names for filters in URL parameters.
+        
+        False by default so as to be robust across translations.
+        
+        If you override unique_filter_label(), this has no effect.
+    """
 
     column_display_pk = ObsoleteAttr('column_display_pk',
                                      'list_display_pk',
@@ -544,25 +553,19 @@ class BaseModelView(BaseView, ActionsMixin):
             self.column_descriptions = dict()
 
         if self._filters:
-            self._filter_groups = []
-            self._filter_dict = dict()
+            self._flattened_filters_by_group = {}
 
-            for i, n in enumerate(self._filters):
-                if n.name not in self._filter_dict:
-                    group = []
-                    self._filter_dict[n.name] = group
-                    self._filter_groups.append((n.name, group))
-                else:
-                    group = self._filter_dict[n.name]
-
-                group.append((i, n.operation()))
-
-            self._filter_types = dict((i, f.data_type)
-                                      for i, f in enumerate(self._filters)
-                                      if f.data_type)
+            for flt in self._filters:
+                if flt.name not in self._flattened_filters_by_group:
+                    self._flattened_filters_by_group[flt.name] = []
+                group = self._flattened_filters_by_group[flt.name]
+                group.append({'name': flt.name,
+                              'label': self.unique_filter_label(flt),
+                              'operation': flt.operation(),
+                              'options': flt.get_options(self) or None,
+                              'data_type': flt.data_type})
         else:
-            self._filter_groups = None
-            self._filter_types = None
+            self._flattened_filters_by_group = None
 
         # Form rendering rules
         if self.form_create_rules:
@@ -948,6 +951,24 @@ class BaseModelView(BaseView, ActionsMixin):
     def get_empty_list_message(self):
         return gettext('There are no items in the table.')
 
+    def unique_filter_label(self, flt):
+        """
+            Given a filter `flt`, return a unique name for that filter in
+            this view.
+            
+            By default, returns a numeric index or a human-readable filter name
+            
+            
+            Does not include the `flt[n]_` portion of the filter name.
+            
+            To use custom names, override this function, eg
+            `def unique_filter_label(self, flt): return flt.__class__.__name__`
+        """
+        if self.named_filter_urls:
+            return u'{name}_{operation}'.format(name=flt.name, operation=flt.operation()).lower().replace(' ', '_')
+        else:
+            return unicode(self._filters.index(flt))
+
     def get_filter_args(self):
         """
             Retrieve and parse filter parameters from the request URL.
@@ -960,7 +981,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if not self._filters:
             return None
 
-        filter_idx_by_label = dict((flt.query_label(), i) for i, flt in enumerate(self._filters))
+        filter_idx_by_label = dict((self.unique_filter_label(flt), i) for i, flt in enumerate(self._filters))
         
         sfilters = []
 
@@ -1033,7 +1054,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         if filters:
             for flt in filters:
-                key = 'flt_%s' % self._filters[flt[0]].query_label()
+                key = 'flt_%s' % self.unique_filter_label(self._filters[flt[0]])
                 kwargs[key] = flt[1]
 
         return url_for(view, **kwargs)
@@ -1054,11 +1075,11 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return rec_getattr(model, name)
 
-    def _get_filter_dict(self):
+    def filters_by_label(self):
         """
-            Return flattened filter dictionary which can be JSON-serialized.
+            Flattened dict of all filters, indexed by their label.
         """
-        return dict((as_unicode(k), v) for k, v in iteritems(self._filter_dict))
+        return dict((self.unique_filter_label(flt), flt) for flt in self._filters)
 
     @contextfunction
     def get_list_value(self, context, model, name):
@@ -1137,18 +1158,6 @@ class BaseModelView(BaseView, ActionsMixin):
         if count % self.page_size != 0:
             num_pages += 1
 
-        # Pregenerate filters
-        if self._filters:
-            filters_data = dict()
-
-            for idx, f in enumerate(self._filters):
-                flt_data = f.get_options(self)
-
-                if flt_data:
-                    filters_data[idx] = flt_data
-        else:
-            filters_data = None
-
         # Various URL generation helpers
         def pager_url(p):
             # Do not add page number if it is first page
@@ -1203,9 +1212,7 @@ class BaseModelView(BaseView, ActionsMixin):
                                search=search,
                                # Filters
                                filters=self._filters,
-                               filter_groups=self._filter_groups,
-                               filter_types=self._filter_types,
-                               filter_data=filters_data,
+                               filter_groups=self._flattened_filters_by_group,
                                active_filters=filters,
 
                                # Actions

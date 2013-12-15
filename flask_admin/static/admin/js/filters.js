@@ -1,4 +1,4 @@
-var AdminFilters = function(element, filters_element, operations, options, types) {
+var AdminFilters = function(element, filters_element, filters_by_group) {
     var $root = $(element);
     var $container = $('.filters', $root);
     var lastCount = 0;
@@ -23,7 +23,7 @@ var AdminFilters = function(element, filters_element, operations, options, types
         return false;
     }
 
-    function addFilter(name, op) {
+    function addFilter(name, subfilters) {
         var $el = $('<tr />').appendTo($container);
 
         // Filter list
@@ -41,9 +41,9 @@ var AdminFilters = function(element, filters_element, operations, options, types
         var $select = $('<select class="filter-op" />')
                       .change(changeOperation);
 
-        $(op).each(function() {
-           var filter_label = (name + '_' + this[1]).toLowerCase().replace(/ /g, '_');
-            $select.append($('<option/>').attr('value', filter_label).text(this[1]));
+        $(subfilters).each(function() {
+            console.log(this);
+            $select.append($('<option/>').attr('value', this.label).text(this.operation));
         });
 
         $el.append(
@@ -52,17 +52,14 @@ var AdminFilters = function(element, filters_element, operations, options, types
 
         $select.select2({width: 'resolve'});
 
-        // Input
-        var optId = op[0][0];
-        var filter_label = (name + '_' + op[0][1]).toLowerCase().replace(/ /g, '_');
-
         var $field;
 
-        if (optId in options) {
+        var firstFilter = subfilters[0];
+        if (firstFilter.options) {
             $field = $('<select class="filter-val" />')
-                        .attr('name', 'flt' + lastCount + '_' + filter_label);
+                        .attr('name', 'flt' + lastCount + '_' + firstFilter.label);
 
-            $(options[optId]).each(function() {
+            $(firstFilter.options).each(function() {
                 $field.append($('<option/>')
                     .val(this[0]).text(this[1]));
             });
@@ -72,13 +69,13 @@ var AdminFilters = function(element, filters_element, operations, options, types
         } else
         {
             $field = $('<input type="text" class="filter-val" />')
-                        .attr('name', 'flt' + lastCount + '_' + filter_label);
+                        .attr('name', 'flt' + lastCount + '_' + firstFilter.label);
             $el.append($('<td/>').append($field));
         }
 
-        if (optId in types) {
-            $field.attr('data-role', types[optId]);
-            faForm.applyStyle($field, types[optId]);
+        if (firstFilter.data_type) {
+            $field.attr('data-role', firstFilter.data_type);
+            faForm.applyStyle($field, firstFilter.data_type);
         }
 
         lastCount += 1;
@@ -86,7 +83,7 @@ var AdminFilters = function(element, filters_element, operations, options, types
 
     $('a.filter', filters_element).click(function() {
         var name = $(this).text().trim();
-        addFilter(name, operations[name]);
+        addFilter(name, filters_by_group[name]);
 
         $('button', $root).show();
 
