@@ -42,7 +42,6 @@ var AdminFilters = function(element, filters_element, filters_by_group) {
                       .change(changeOperation);
 
         $(subfilters).each(function() {
-            console.log(this);
             $select.append($('<option/>').attr('value', this.label).text(this.operation));
         });
 

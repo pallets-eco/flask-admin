@@ -18,6 +18,25 @@ from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
 
 
+try:
+    from collections import OrderedDict
+except ImportError:
+    # Bare-bones OrderedDict implementation for Python2.6 compatibility
+    class OrderedDict(dict):
+        def __init__(self, *args, **kwargs):
+            dict.__init__(self, *args, **kwargs)
+            self.ordered_keys = []
+        def __setitem__(self, key, value):
+            self.ordered_keys.append(key)
+            dict.__setitem__(self, key, value)
+        def __iter__(self):
+            return (k for k in self.ordered_keys)
+        def iteritems(self):
+            return ((k, self[k]) for k in self.ordered_keys)
+        def items(self):
+            return list(self.iteritems())
+
+
 class BaseModelView(BaseView, ActionsMixin):
     """
         Base model view.
@@ -258,7 +277,10 @@ class BaseModelView(BaseView, ActionsMixin):
         
         False by default so as to be robust across translations.
         
-        If you override unique_filter_label(), this has no effect.
+        Changing this parameter will break any existing URLs.
+        
+        Override unique_filter_label() if you want to change the default format
+        of filter urls. This parameter only controls the default method.
     """
 
     column_display_pk = ObsoleteAttr('column_display_pk',
@@ -553,7 +575,7 @@ class BaseModelView(BaseView, ActionsMixin):
             self.column_descriptions = dict()
 
         if self._filters:
-            self._flattened_filters_by_group = {}
+            self._flattened_filters_by_group = OrderedDict()
 
             for flt in self._filters:
                 if flt.name not in self._flattened_filters_by_group:
@@ -958,11 +980,14 @@ class BaseModelView(BaseView, ActionsMixin):
             
             By default, returns a numeric index or a human-readable filter name
             
-            
             Does not include the `flt[n]_` portion of the filter name.
             
             To use custom names, override this function, eg
-            `def unique_filter_label(self, flt): return flt.__class__.__name__`
+            def unique_filter_label(self, flt):
+                return flt.name + flt.__class__.__name__
+                
+            Be aware that if you override this method, the default URL format
+            will no longer work.
         """
         if self.named_filter_urls:
             return u'{name}_{operation}'.format(name=flt.name, operation=flt.operation()).lower().replace(' ', '_')
