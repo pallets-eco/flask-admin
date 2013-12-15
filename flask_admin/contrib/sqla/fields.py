@@ -9,7 +9,9 @@ from wtforms.validators import ValidationError
 
 from .tools import get_primary_key
 from flask.ext.admin._compat import text_type, string_types
+from flask.ext.admin.form import FormOpts
 from flask.ext.admin.model.fields import InlineFieldList, InlineModelFormField
+from flask.ext.admin.model.widgets import InlineFormWidget
 
 
 try:
@@ -186,7 +188,7 @@ class InlineModelFormList(InlineFieldList):
         Form field type. Override to use custom field for each inline form
     """
 
-    def __init__(self, form, session, model, prop, inline_view, **kwargs):
+    def __init__(self, form, session, model, prop, inline_view, form_widget=None, **kwargs):
         """
             Default constructor.
 
@@ -209,7 +211,16 @@ class InlineModelFormList(InlineFieldList):
 
         self._pk = get_primary_key(model)
 
-        super(InlineModelFormList, self).__init__(self.form_field_type(form, self._pk), **kwargs)
+        # Generate inline form field
+        if form_widget is None:
+            form_opts = FormOpts(widget_args=getattr(inline_view, 'form_widget_args', None),
+                                 form_rules=inline_view._form_rules)
+
+            form_widget = InlineFormWidget(form_opts)
+
+        form_field = self.form_field_type(form, self._pk, widget=form_widget)
+
+        super(InlineModelFormList, self).__init__(form_field, **kwargs)
 
     def display_row_controls(self, field):
         return field.get_pk() is not None
