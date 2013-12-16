@@ -79,17 +79,14 @@
   {% set direct_error = h.is_field_error(field.errors) %}
   <div class="control-group{{ ' error' if direct_error else '' }}">
     <div class="control-label">
-      <label for="{{ field.id }}">{{ field.label.text }}
-          {% if h.is_required_form_field(field) %}
-            <strong style="color: red">&#42;</strong>
-          {%- else -%}
-            &nbsp;
-          {%- endif %}
-      </label>
+      <label for="{{ field.id }}">{{ field.label.text }}</label>
     </div>
     <div class="controls">
     <div>
       {{ field(**kwargs)|safe }}
+      {% if h.is_required_form_field(field) %}
+        <span class="required-mark">&#42;</span>
+      {% endif %}
     </div>
     {% if field.description %}
     <p class="help-block">{{ field.description }}</p>

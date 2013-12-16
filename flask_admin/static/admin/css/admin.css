@@ -87,12 +87,17 @@ table.filters {
 /* Forms */
 .form-horizontal .control-label {
     width: 100px;
-    text-align: left;
-    margin-left: 4px;
+    text-align: right;
+    margin-right: 20px;
+    font-weight: bold;
 }
 
 .form-horizontal .controls {
     margin-left: 110px;
+}
+
+.form-horizontal .required-mark {
+    color: red;
 }
 
 /* Inline forms */
