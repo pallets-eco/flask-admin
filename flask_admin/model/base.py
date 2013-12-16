@@ -1,3 +1,4 @@
+import re
 import warnings
 
 from flask import request, url_for, redirect, flash, abort, json, Response
@@ -16,6 +17,25 @@ from flask.ext.admin._backwards import ObsoleteAttr
 from flask.ext.admin._compat import iteritems, as_unicode
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
+
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    # Bare-bones OrderedDict implementation for Python2.6 compatibility
+    class OrderedDict(dict):
+        def __init__(self, *args, **kwargs):
+            dict.__init__(self, *args, **kwargs)
+            self.ordered_keys = []
+        def __setitem__(self, key, value):
+            self.ordered_keys.append(key)
+            dict.__setitem__(self, key, value)
+        def __iter__(self):
+            return (k for k in self.ordered_keys)
+        def iteritems(self):
+            return ((k, self[k]) for k in self.ordered_keys)
+        def items(self):
+            return list(self.iteritems())
 
 
 class BaseModelView(BaseView, ActionsMixin):
@@ -250,6 +270,18 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 column_filters = ('user', 'email')
+    """
+    
+    named_filter_urls = False
+    """
+        Set to True to use human-readable names for filters in URL parameters.
+        
+        False by default so as to be robust across translations.
+        
+        Changing this parameter will break any existing URLs.
+        
+        Override unique_filter_label() if you want to change the default format
+        of filter urls. This parameter only controls the default method.
     """
 
     column_display_pk = ObsoleteAttr('column_display_pk',
@@ -544,25 +576,19 @@ class BaseModelView(BaseView, ActionsMixin):
             self.column_descriptions = dict()
 
         if self._filters:
-            self._filter_groups = []
-            self._filter_dict = dict()
+            self._flattened_filters_by_group = OrderedDict()
 
-            for i, n in enumerate(self._filters):
-                if n.name not in self._filter_dict:
-                    group = []
-                    self._filter_dict[n.name] = group
-                    self._filter_groups.append((n.name, group))
-                else:
-                    group = self._filter_dict[n.name]
-
-                group.append((i, n.operation()))
-
-            self._filter_types = dict((i, f.data_type)
-                                      for i, f in enumerate(self._filters)
-                                      if f.data_type)
+            for flt in self._filters:
+                if flt.name not in self._flattened_filters_by_group:
+                    self._flattened_filters_by_group[flt.name] = []
+                group = self._flattened_filters_by_group[flt.name]
+                group.append({'name': flt.name,
+                              'label': self.unique_filter_label(flt),
+                              'operation': flt.operation(),
+                              'options': flt.get_options(self) or None,
+                              'data_type': flt.data_type})
         else:
-            self._filter_groups = None
-            self._filter_types = None
+            self._flattened_filters_by_group = None
 
         # Form rendering rules
         if self.form_create_rules:
@@ -948,45 +974,82 @@ class BaseModelView(BaseView, ActionsMixin):
     def get_empty_list_message(self):
         return gettext('There are no items in the table.')
 
-    # URL generation helper
-    def _get_extra_args(self):
+    def unique_filter_label(self, flt):
         """
-            Return arguments from query string.
+            Given a filter `flt`, return a unique name for that filter in
+            this view.
+            
+            By default, returns a numeric index or a human-readable filter name
+            
+            Does not include the `flt[n]_` portion of the filter name.
+            
+            To use custom names, override this function, eg
+            def unique_filter_label(self, flt):
+                return flt.name + flt.__class__.__name__
+                
+            Be aware that if you override this method, the default URL format
+            will no longer work.
+        """
+        if self.named_filter_urls:
+            return re.sub('\W', '_', u'{name}_{operation}'.format(name=flt.name, operation=flt.operation())).lower()
+        else:
+            return str(self._filters.index(flt))
+
+    def get_filter_args(self):
+        """
+            Retrieve and parse filter parameters from the request URL.
+            
+            Returns a list of 2-tuples in the format [(idx, value), ...],
+            where idx is the index into the list returned by get_filters().
+            
+            Override this method to provide your own URL filter format.
+        """
+        if not self._filters:
+            return None
+
+        filter_idx_by_label = dict((self.unique_filter_label(flt), i) for i, flt in enumerate(self._filters))
+        
+        sfilters = []
+
+        for n in request.args:
+            if not n.startswith('flt'):
+                continue
+            if '_' not in n:
+                continue
+
+            pos, filter_label = n[3:].split('_', 1)
+            
+            # If pos not specified, just add incrementally to the list.
+            pos = int(pos) if pos else len(sfilters)
+
+            try:
+                # See if filter is numeric
+                idx = int(filter_label)
+            except ValueError:
+                # If non-numeric, look filter up by name
+                try:
+                    idx = filter_idx_by_label[filter_label]
+                except KeyError:
+                    # No matching filter name
+                    continue
+
+            if 0 <= idx < len(self._filters):
+                flt = self._filters[idx]
+                value = request.args[n]
+                if flt.validate(value):
+                    sfilters.append((pos, (idx, flt.clean(value))))
+
+        return [v[1] for v in sorted(sfilters, key=lambda n: n[0])]
+
+    def _get_listing_args(self):
+        """
+            Return generic list view arguments from query string.
         """
         page = request.args.get('page', 0, type=int)
         sort = request.args.get('sort', None, type=int)
         sort_desc = request.args.get('desc', None, type=int)
         search = request.args.get('search', None)
-
-        # Gather filters
-        if self._filters:
-            sfilters = []
-
-            for n in request.args:
-                if n.startswith('flt'):
-                    ofs = n.find('_')
-                    if ofs == -1:
-                        continue
-
-                    try:
-                        pos = int(n[3:ofs])
-                        idx = int(n[ofs + 1:])
-                    except ValueError:
-                        continue
-
-                    if idx >= 0 and idx < len(self._filters):
-                        flt = self._filters[idx]
-
-                        value = request.args[n]
-
-                        if flt.validate(value):
-                            sfilters.append((pos, (idx, flt.clean(value))))
-
-            filters = [v[1] for v in sorted(sfilters, key=lambda n: n[0])]
-        else:
-            filters = None
-
-        return page, sort, sort_desc, search, filters
+        return page, sort, sort_desc, search
 
     def _get_url(self, view=None, page=None, sort=None, sort_desc=None,
                  search=None, filters=None):
@@ -1016,12 +1079,12 @@ class BaseModelView(BaseView, ActionsMixin):
         kwargs = dict(page=page, sort=sort, desc=sort_desc, search=search)
 
         if filters:
-            for i, flt in enumerate(filters):
-                key = 'flt%d_%d' % (i, flt[0])
+            for flt in filters:
+                key = 'flt_%s' % self.unique_filter_label(self._filters[flt[0]])
                 kwargs[key] = flt[1]
 
         return url_for(view, **kwargs)
-
+        
     def is_action_allowed(self, name):
         """
             Override this method to allow or disallow actions based
@@ -1038,11 +1101,11 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return rec_getattr(model, name)
 
-    def _get_filter_dict(self):
+    def filters_by_label(self):
         """
-            Return flattened filter dictionary which can be JSON-serialized.
+            Flattened dict of all filters, indexed by their label.
         """
-        return dict((as_unicode(k), v) for k, v in iteritems(self._filter_dict))
+        return dict((self.unique_filter_label(flt), flt) for flt in self._filters)
 
     @contextfunction
     def get_list_value(self, context, model, name):
@@ -1104,7 +1167,8 @@ class BaseModelView(BaseView, ActionsMixin):
             List view
         """
         # Grab parameters from URL
-        page, sort_idx, sort_desc, search, filters = self._get_extra_args()
+        page, sort_idx, sort_desc, search = self._get_listing_args()
+        filters = self.get_filter_args()
 
         # Map column index to column name
         sort_column = self._get_column_by_idx(sort_idx)
@@ -1119,18 +1183,6 @@ class BaseModelView(BaseView, ActionsMixin):
         num_pages = count // self.page_size
         if count % self.page_size != 0:
             num_pages += 1
-
-        # Pregenerate filters
-        if self._filters:
-            filters_data = dict()
-
-            for idx, f in enumerate(self._filters):
-                flt_data = f.get_options(self)
-
-                if flt_data:
-                    filters_data[idx] = flt_data
-        else:
-            filters_data = None
 
         # Various URL generation helpers
         def pager_url(p):
@@ -1186,9 +1238,7 @@ class BaseModelView(BaseView, ActionsMixin):
                                search=search,
                                # Filters
                                filters=self._filters,
-                               filter_groups=self._filter_groups,
-                               filter_types=self._filter_types,
-                               filter_data=filters_data,
+                               filter_groups=self._flattened_filters_by_group,
                                active_filters=filters,
 
                                # Actions
