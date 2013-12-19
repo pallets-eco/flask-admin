@@ -31,7 +31,7 @@ def get_primary_key(model):
                 if is_inherited_primary_key(p):
                     pks.append(get_column_for_current_model(p).key)
                 else:
-                    pks.append(p.columns[0].key)
+                    pks.append(p.key)
     if len(pks) == 1:
         return pks[0]
     elif len(pks) > 1:
