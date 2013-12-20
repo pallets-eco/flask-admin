@@ -7,7 +7,7 @@ import shutil
 from operator import itemgetter
 from werkzeug import secure_filename
 
-from flask import flash, url_for, redirect, abort, request, send_from_directory
+from flask import flash, url_for, redirect, abort, request, send_file
 
 from wtforms import fields, validators
 
@@ -526,7 +526,7 @@ class FileAdmin(BaseView, ActionsMixin):
             base_url = urljoin(url_for('.index'), base_url)
             return redirect(urljoin(base_url, path))
 
-        return send_from_directory(base_path, path)
+        return send_file(directory)
 
     @expose('/mkdir/', methods=('GET', 'POST'))
     @expose('/mkdir/<path:path>', methods=('GET', 'POST'))
