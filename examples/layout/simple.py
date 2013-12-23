@@ -1,4 +1,5 @@
 import os
+import os.path as op
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 
