@@ -7,7 +7,7 @@ import shutil
 from operator import itemgetter
 from werkzeug import secure_filename
 
-from flask import flash, url_for, redirect, abort, request
+from flask import flash, url_for, redirect, abort, request, send_file
 
 from wtforms import fields, validators
 
@@ -64,13 +64,12 @@ class FileAdmin(BaseView, ActionsMixin):
     """
         Simple file-management interface.
 
-        Requires two parameters:
-
         :param path:
             Path to the directory which will be managed
-        :param url:
-            Base URL for the directory. Will be used to generate
-            static links to the files.
+        :param base_url:
+            Optional base URL for the directory. Will be used to generate
+            static links to the files. If not defined, a route will be created
+            to serve uploaded files.
 
         Sample usage::
 
@@ -84,6 +83,11 @@ class FileAdmin(BaseView, ActionsMixin):
     can_upload = True
     """
         Is file upload allowed.
+    """
+
+    can_download = True
+    """
+        Is file download allowed.
     """
 
     can_delete = True
@@ -151,7 +155,7 @@ class FileAdmin(BaseView, ActionsMixin):
         Edit template
     """
 
-    def __init__(self, base_path, base_url,
+    def __init__(self, base_path, base_url=None,
                  name=None, category=None, endpoint=None, url=None,
                  verify_path=True):
         """
@@ -310,10 +314,10 @@ class FileAdmin(BaseView, ActionsMixin):
                 Static file path
         """
         if self.is_file_editable(path):
-            return url_for(".edit", path=path)
+            route = '.edit'
         else:
-            base_url = self.get_base_url()
-            return urljoin(base_url, path)
+            route = '.download'
+        return url_for(route, path=path)
 
     def _normalize_path(self, path):
         """
@@ -502,6 +506,27 @@ class FileAdmin(BaseView, ActionsMixin):
                     flash(gettext('Failed to save file: %(error)s', error=ex))
 
         return self.render(self.upload_template, form=form)
+
+    @expose('/download/<path:path>')
+    def download(self, path=None):
+        """
+            Download view method.
+
+            :param path:
+                File path.
+        """
+        if not self.can_download:
+            abort(404)
+
+        base_path, directory, path = self._normalize_path(path)
+
+        # backward compatibility with base_url
+        base_url = self.get_base_url()
+        if base_url:
+            base_url = urljoin(url_for('.index'), base_url)
+            return redirect(urljoin(base_url, path))
+
+        return send_file(directory)
 
     @expose('/mkdir/', methods=('GET', 'POST'))
     @expose('/mkdir/<path:path>', methods=('GET', 'POST'))

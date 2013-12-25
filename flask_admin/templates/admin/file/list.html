@@ -83,7 +83,11 @@
             </td>
             {% else %}
             <td>
+                {% if admin_view.can_download %}
                 <a href="{{ get_file_url(path)|safe }}">{{ name }}</a>
+                {% else %}
+                {{ name }}
+                {% endif %}
             </td>
             <td>
                 {{ size }}

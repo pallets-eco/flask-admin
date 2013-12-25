@@ -107,7 +107,7 @@ class FilterConverter(filters.BaseFilterConverter):
 
         return None
 
-    @filters.convert('StringField')
+    @filters.convert('StringField', 'EmailField')
     def conv_string(self, column, name):
         return [f(column, name) for f in self.strings]
 

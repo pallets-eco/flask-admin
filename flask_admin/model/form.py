@@ -1,6 +1,6 @@
 import inspect
 
-from flask.ext.admin.form import BaseForm
+from flask.ext.admin.form import BaseForm, rules
 from flask.ext.admin._compat import iteritems
 
 
@@ -36,6 +36,14 @@ class InlineBaseFormAdmin(object):
 
         for k, v in iteritems(kwargs):
             setattr(self, k, v)
+
+        # Convert form rules
+        form_rules = getattr(self, 'form_rules', None)
+
+        if form_rules:
+            self._form_rules = rules.RuleSet(self, form_rules)
+        else:
+            self._form_rules = None
 
     def get_form(self):
         """
