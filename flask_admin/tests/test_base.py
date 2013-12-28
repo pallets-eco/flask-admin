@@ -354,3 +354,8 @@ def test_menu_links():
     data = rv.data.decode('utf-8')
     ok_('TestMenuLink1' in data)
     ok_('TestMenuLink2' in data)
+
+
+def check_class_name():
+    view = MockView()
+    eq_(view.name, 'Mock View')

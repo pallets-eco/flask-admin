@@ -1,5 +1,4 @@
 from functools import wraps
-from re import sub
 
 from flask import Blueprint, render_template, url_for, abort, g
 from flask.ext.admin import babel
@@ -211,7 +210,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
         # If name is not povided, use capitalized endpoint name
         if self.name is None:
-            self.name = self._prettify_name(self.__class__.__name__)
+            self.name = self._prettify_class_name(self.__class__.__name__)
 
         # Create blueprint and register rules
         self.blueprint = Blueprint(self.endpoint, __name__,
@@ -253,14 +252,14 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
         return render_template(template, **kwargs)
 
-    def _prettify_name(self, name):
+    def _prettify_class_name(self, name):
         """
-            Prettify a class name by splitting the name on capitalized characters. So, 'MySuperClass' becomes 'My Super Class'
+            Split words in PascalCase string into separate words.
 
             :param name:
                 String to prettify
         """
-        return sub(r'(?<=.)([A-Z])', r' \1', name)
+        return h.prettify_class_name(name)
 
     def is_visible(self):
         """
