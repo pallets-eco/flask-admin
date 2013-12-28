@@ -262,11 +262,16 @@ def test_submenu():
     eq_(admin._menu[1].name, 'Test')
     eq_(len(admin._menu[1]._children), 2)
 
-    # Categories don't have URLs and they're not accessible
+    # Categories don't have URLs
     eq_(admin._menu[1].get_url(), None)
-    eq_(admin._menu[1].is_accessible(), False)
 
-    eq_(len(admin._menu[1].get_children()), 1)
+    # Categories are only accessible if there is at least one accessible child
+    eq_(admin._menu[1].is_accessible(), True)
+
+    children = admin._menu[1].get_children()
+    eq_(len(children), 1)
+
+    ok_(children[0].is_accessible())
 
 
 def test_delayed_init():
