@@ -116,7 +116,7 @@ class ModelView(BaseModelView):
             class MyModelView(ModelView):
                 inline_models = ((Post, dict(form_label='Hello')))
 
-        2. Using target model name with `fa_` prefis:
+        2. Using field's related_name:
 
             class Model1(Base):
                 # ...
@@ -124,11 +124,11 @@ class ModelView(BaseModelView):
 
             class Model2(Base):
                 # ...
-                pass
+                model1 = ForeignKeyField(related_name="model_twos")
 
             class MyModel1View(Base):
                 inline_models = (Model2,)
-                column_labels = {'fa_Model2': 'Hello'}
+                column_labels = {'model_ones': 'Hello'}
     """
 
     def __init__(self, model, name=None,

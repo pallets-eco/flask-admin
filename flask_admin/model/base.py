@@ -515,7 +515,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # If name not provided, it is model name
         if name is None:
-            name = '%s' % self.prettify_name(model.__name__)
+            name = '%s' % self._prettify_class_name(model.__name__)
 
         # If endpoint not provided, it is model name + 'view'
         if endpoint is None:
@@ -640,7 +640,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if self.column_labels and field in self.column_labels:
             return self.column_labels[field]
         else:
-            return self.prettify_name(field)
+            return self._prettify_name(field)
 
     def get_list_columns(self):
         """
@@ -960,7 +960,7 @@ class BaseModelView(BaseView, ActionsMixin):
         raise NotImplemented()
 
     # Various helpers
-    def prettify_name(self, name):
+    def _prettify_name(self, name):
         """
             Prettify pythonic variable name.
 

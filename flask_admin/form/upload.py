@@ -106,7 +106,7 @@ class ImageUploadInput(object):
         if field.url_relative_path:
             filename = urljoin(field.url_relative_path, filename)
 
-        return url_for(field.endpoint, filename=field.data)
+        return url_for(field.endpoint, filename=filename)
 
 
 # Fields

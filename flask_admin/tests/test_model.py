@@ -329,3 +329,11 @@ def test_custom_form():
     eq_(view._edit_form_class, TestForm)
 
     ok_(not hasattr(view._create_form_class, 'col1'))
+
+
+def check_class_name():
+    class DummyView(MockModelView):
+        pass
+
+    view = DummyView(Model)
+    eq_(view.name, 'Dummy View')

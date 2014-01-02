@@ -84,6 +84,10 @@ if __name__ == '__main__':
     admin.add_link(NotAuthenticatedMenuLink(name='Login',
                                             endpoint='login_view'))
 
+    # Add links with categories
+    admin.add_link(MenuLink(name='Google', category='Links', url='http://www.google.com/'))
+    admin.add_link(MenuLink(name='Mozilla', category='Links', url='http://mozilla.org/'))
+
     # Add logout link by endpoint
     admin.add_link(AuthenticatedMenuLink(name='Logout',
                                          endpoint='logout_view'))

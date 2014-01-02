@@ -1,10 +1,12 @@
 from functools import wraps
-from re import sub
 
-from flask import Blueprint, render_template, url_for, abort, g
+from flask import Blueprint, render_template, abort, g
 from flask.ext.admin import babel
 from flask.ext.admin._compat import with_metaclass
 from flask.ext.admin import helpers as h
+
+# For compatibility reasons import MenuLink
+from flask.ext.admin.menu import MenuCategory, MenuView, MenuLink
 
 
 def expose(url='/', methods=('GET',)):
@@ -211,7 +213,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
         # If name is not povided, use capitalized endpoint name
         if self.name is None:
-            self.name = self._prettify_name(self.__class__.__name__)
+            self.name = self._prettify_class_name(self.__class__.__name__)
 
         # Create blueprint and register rules
         self.blueprint = Blueprint(self.endpoint, __name__,
@@ -253,14 +255,14 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
         return render_template(template, **kwargs)
 
-    def _prettify_name(self, name):
+    def _prettify_class_name(self, name):
         """
-            Prettify a class name by splitting the name on capitalized characters. So, 'MySuperClass' becomes 'My Super Class'
+            Split words in PascalCase string into separate words.
 
             :param name:
                 String to prettify
         """
-        return sub(r'(?<=.)([A-Z])', r' \1', name)
+        return h.prettify_class_name(name)
 
     def is_visible(self):
         """
@@ -344,79 +346,6 @@ class AdminIndexView(BaseView):
         return self.render(self._template)
 
 
-class MenuItem(object):
-    """
-        Simple menu tree hierarchy.
-    """
-    def __init__(self, name, view=None):
-        self.name = name
-        self._view = view
-        self._children = []
-        self._children_urls = set()
-        self._cached_url = None
-
-        self.url = None
-        if view is not None:
-            self.url = view.url
-
-    def add_child(self, view):
-        self._children.append(view)
-        self._children_urls.add(view.url)
-
-    def get_url(self):
-        if self._view is None:
-            return None
-
-        if self._cached_url:
-            return self._cached_url
-
-        self._cached_url = url_for('%s.%s' % (self._view.endpoint, self._view._default_view))
-        return self._cached_url
-
-    def is_active(self, view):
-        if view == self._view:
-            return True
-
-        return view.url in self._children_urls
-
-    def is_visible(self):
-        if self._view is None:
-            return False
-
-        return self._view.is_visible()
-
-    def is_accessible(self):
-        if self._view is None:
-            return False
-
-        return self._view.is_accessible()
-
-    def is_category(self):
-        return self._view is None
-
-    def get_children(self):
-        return [c for c in self._children if c.is_accessible() and c.is_visible()]
-
-
-class MenuLink(object):
-    """
-        Additional menu links.
-    """
-    def __init__(self, name, url=None, endpoint=None):
-        self.name = name
-        self.url = url
-        self.endpoint = endpoint
-
-    def get_url(self):
-        return self.url or url_for(self.endpoint)
-
-    def is_visible(self):
-        return True
-
-    def is_accessible(self):
-        return True
-
-
 class Admin(object):
     """
         Collection of the admin views. Also manages menu structure.
@@ -493,7 +422,8 @@ class Admin(object):
         # If app was provided in constructor, register view with Flask app
         if self.app is not None:
             self.app.register_blueprint(view.create_blueprint(self))
-            self._add_view_to_menu(view)
+
+        self._add_view_to_menu(view)
 
     def add_link(self, link):
         """
@@ -502,26 +432,33 @@ class Admin(object):
             :param link:
                 Link to add.
         """
-        self._menu_links.append(link)
+        if link.category:
+            self._add_menu_item(link, link.category)
+        else:
+            self._menu_links.append(link)
 
-    def _add_view_to_menu(self, view):
+    def _add_menu_item(self, menu_item, target_category):
         """
             Add a view to the menu tree
 
             :param view:
                 View to add
         """
-        if view.category:
-            category = self._menu_categories.get(view.category)
+        if target_category:
+            category = self._menu_categories.get(target_category)
 
             if category is None:
-                category = MenuItem(view.category)
-                self._menu_categories[view.category] = category
+                category = MenuCategory(target_category)
+                self._menu_categories[target_category] = category
+
                 self._menu.append(category)
 
-            category.add_child(MenuItem(view.name, view))
+            category.add_child(menu_item)
         else:
-            self._menu.append(MenuItem(view.name, view))
+            self._menu.append(menu_item)
+
+    def _add_view_to_menu(self, view):
+        self._add_menu_item(MenuView(view.name, view), view.category)
 
     def init_app(self, app):
         """
@@ -537,7 +474,6 @@ class Admin(object):
         # Register views
         for view in self._views:
             app.register_blueprint(view.create_blueprint(self))
-            self._add_view_to_menu(view)
 
     def _init_extension(self):
         if not hasattr(self.app, 'extensions'):
