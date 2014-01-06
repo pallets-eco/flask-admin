@@ -90,6 +90,8 @@ class CustomModelConverter(ModelConverter):
         self.converters[DateField] = self.handle_date
         self.converters[TimeField] = self.handle_time
 
+        self.overrides = getattr(self.view, 'form_overrides', None) or {}
+
     def handle_foreign_key(self, model, field, **kwargs):
         loader = getattr(self.view, '_form_ajax_refs', {}).get(field.name)
 
