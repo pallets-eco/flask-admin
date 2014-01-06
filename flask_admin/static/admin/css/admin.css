@@ -27,13 +27,13 @@ form.search-form {
     margin: 4px 0 0 0;
 }
 
-form.search-form a.clear i {
+form.search-form .clear i {
     margin: 2px 0 0 0;
 }
 
 /* Filters */
 table.filters {
-    border-collapse: none;
+    border-collapse: collapse;
     border-spacing: 4px;
 }
 
@@ -70,12 +70,18 @@ table.filters {
 }
 
 /* Inline forms */
-.fa-inline-field {
+.inline-field {
     padding-bottom: 0.5em;
 }
 
-.fa-inline-field-control {
+.inline-field-control {
     float: right;
+}
+
+.inline-field .inline-form-field {
+    border-left: 1px solid #eeeeee;
+    padding-left: 8px;
+    margin-bottom: 4px;
 }
 
 /* Image thumbnails */
@@ -93,13 +99,6 @@ table.filters {
 
 .form-horizontal .controls {
     margin-left: 110px;
-}
-
-/* Inline forms */
-.inline-field .inline-form {
-    border-left: 1px solid #eeeeee;
-    padding-left: 8px;
-    margin-bottom: 4px;
 }
 
 /* Patch Select2 */
