@@ -1,17 +1,17 @@
 {% macro render_inline_fields(field, template, render, check=None) %}
 <div class="inline-field">
-    <div id="{{ field.id }}-fields">
+    <div class="inline-field-list">
         {% for subfield in field %}
-        <div id="{{ subfield.id }}" class="fa-inline-field">
+        <div id="{{ subfield.id }}" class="inline-field">
             {%- if not check or check(subfield) %}
                 {% if subfield.get_pk and subfield.get_pk() %}
-                <div class="fa-inline-field-control">
+                <div class="inline-field-control">
                     <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
                     <label for="del-{{ subfield.id }}" style="display: inline">{{ _gettext('Delete?') }}</label>
                 </div>
                 {% else %}
-                <div class="fa-inline-field-control">
-                    <a href="javascript:void(0)" class="fa-remove-field"><i class="icon-remove"></i></a>
+                <div class="inline-field-control">
+                    <a href="javascript:void(0)" class="inline-remove-field"><i class="icon-remove"></i></a>
                 </div>
                 {% endif %}
             {%- endif -%}
@@ -20,16 +20,16 @@
         </div>
         {% endfor %}
     </div>
-    <div id="{{ field.id }}-template" class="hide">
+    <div class="inline-field-template hide">
         {% filter forceescape %}
-        <div class="fa-inline-field">
-            <div class="fa-inline-field-control">
-                <a href="javascript:void(0)" class="fa-remove-field"><i class="icon-remove"></i></a>
+        <div class="inline-field">
+            <div class="inline-field-control">
+                <a href="javascript:void(0)" class="inline-remove-field"><i class="icon-remove"></i></a>
             </div>
             {{ render(template) }}
         </div>
         {% endfilter %}
     </div>
-    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn" onclick="faForm.addInlineField('{{ field.id }}', '#{{ field.id }}-fields', '#{{ field.id }}-template');">{{ _gettext('Add') }} {{ field.label.text }}</a>
+    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn" onclick="faForm.addInlineField(this, '{{ field.id }}');">{{ _gettext('Add') }} {{ field.label.text }}</a>
 </div>
 {% endmacro %}
