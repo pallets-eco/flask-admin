@@ -1,7 +1,9 @@
 from re import sub
+from urlparse import urlparse, urljoin
 from jinja2 import contextfunction
 from flask import g, request
 from wtforms.validators import DataRequired, InputRequired
+
 
 from ._compat import string_types
 
@@ -96,3 +98,17 @@ def prettify_class_name(name):
             String to split
     """
     return sub(r'(?<=.)([A-Z])', r' \1', name)
+
+
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return (test_url.scheme in ('http', 'https') and
+            ref_url.netloc == test_url.netloc)
+
+
+def get_redirect_target(param_name='url'):
+    target = request.values.get(param_name)
+
+    if target and is_safe_url(target):
+        return target

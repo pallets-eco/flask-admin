@@ -10,7 +10,7 @@ from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.form import BaseForm, FormOpts, rules
 from flask.ext.admin.model import filters, typefmt
 from flask.ext.admin.actions import ActionsMixin
-from flask.ext.admin.helpers import get_form_data, validate_form_on_submit
+from flask.ext.admin.helpers import get_form_data, validate_form_on_submit, get_redirect_target
 from flask.ext.admin.tools import rec_getattr
 from flask.ext.admin._backwards import ObsoleteAttr
 from flask.ext.admin._compat import iteritems, as_unicode
@@ -1200,7 +1200,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Create model view
         """
-        return_url = request.args.get('url') or url_for('.index_view')
+        return_url = get_redirect_target() or url_for('.index_view')
 
         if not self.can_create:
             return redirect(return_url)
@@ -1228,7 +1228,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Edit model view
         """
-        return_url = request.args.get('url') or url_for('.index_view')
+        return_url = get_redirect_target() or url_for('.index_view')
 
         if not self.can_edit:
             return redirect(return_url)
@@ -1266,7 +1266,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Delete model view. Only POST method is allowed.
         """
-        return_url = request.args.get('url') or url_for('.index_view')
+        return_url = get_redirect_target() or url_for('.index_view')
 
         # TODO: Use post
         if not self.can_delete:
