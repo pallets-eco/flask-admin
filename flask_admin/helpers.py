@@ -1,8 +1,9 @@
 from re import sub
-from urlparse import urlparse, urljoin
 from jinja2 import contextfunction
 from flask import g, request
 from wtforms.validators import DataRequired, InputRequired
+
+from flask.ext.admin._compat import urljoin, urlparse
 
 
 from ._compat import string_types
