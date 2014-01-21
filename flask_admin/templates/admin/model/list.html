@@ -58,7 +58,9 @@
                     </th>
                     {% endif %}
                     {% block list_row_actions_header %}
-                    <th class="span1">&nbsp;</th>
+                    	{%- if admin_view.can_edit or admin_view.can_delete -%}
+					    	<th class="span1">&nbsp;</th>
+						{% endif %}
                     {% endblock %}
                     {% set column = 0 %}
                     {% for c, name in list_columns %}
