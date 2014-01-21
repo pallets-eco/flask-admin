@@ -108,6 +108,8 @@ class AdminModelConverter(ModelConverterBase):
 
         if column.nullable or prop.direction.name != 'MANYTOONE':
             kwargs['validators'].append(validators.Optional())
+        else:
+            kwargs['validators'].append(validators.InputRequired())
 
         # Contribute model-related parameters
         if 'allow_blank' not in kwargs:
