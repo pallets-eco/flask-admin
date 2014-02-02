@@ -1058,9 +1058,9 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         column_fmt = self.column_formatters.get(name)
         if column_fmt is not None:
-            return column_fmt(self, context, model, name)
-
-        value = self._get_field_value(model, name)
+            value = column_fmt(self, context, model, name)
+        else:
+            value = self._get_field_value(model, name)
 
         choices_map = self._column_choices_map.get(name, {})
         if choices_map:
