@@ -99,6 +99,7 @@
                     <input type="checkbox" name="rowid" class="action-checkbox" value="{{ get_pk_value(row) }}" title="{{ _gettext('Select record') }}" />
                 </td>
                 {% endif %}
+                {% block list_row_actions_column scoped %}
                 <td>
                     {% block list_row_actions scoped %}
                         {%- if admin_view.can_edit -%}
@@ -118,6 +119,7 @@
                         {%- endif -%}
                     {% endblock %}
                 </td>
+                {% endblock %}
                 {% for c, name in list_columns %}
                 <td>{{ get_value(row, c) }}</td>
                 {% endfor %}
