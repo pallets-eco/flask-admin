@@ -672,7 +672,7 @@ class FileAdmin(BaseView, ActionsMixin):
 
         base_path, full_path, path = self._normalize_path(path)
 
-        if not self.is_accessible_path(path):
+        if not self.is_accessible_path(path) or not self.is_file_editable(path):
             flash(gettext(gettext('Permission denied.')))
             return redirect(self._get_dir_url('.index'))
 
