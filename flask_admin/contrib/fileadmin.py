@@ -423,7 +423,7 @@ class FileAdmin(BaseView, ActionsMixin):
         base_path, directory, path = self._normalize_path(path)
 
         if not self.is_accessible_path(path):
-            flash(gettext(gettext('Permission denied.')))
+            flash(gettext('Permission denied.'))
             return redirect(self._get_dir_url('.index'))
 
         # Get directory listing
@@ -486,7 +486,7 @@ class FileAdmin(BaseView, ActionsMixin):
             return redirect(self._get_dir_url('.index', path))
 
         if not self.is_accessible_path(path):
-            flash(gettext(gettext('Permission denied.')))
+            flash(gettext('Permission denied.'))
             return redirect(self._get_dir_url('.index'))
 
         form = UploadForm(self)
@@ -547,7 +547,7 @@ class FileAdmin(BaseView, ActionsMixin):
             return redirect(dir_url)
 
         if not self.is_accessible_path(path):
-            flash(gettext(gettext('Permission denied.')))
+            flash(gettext('Permission denied.'))
             return redirect(self._get_dir_url('.index'))
 
         form = NameForm(helpers.get_form_data())
@@ -558,7 +558,7 @@ class FileAdmin(BaseView, ActionsMixin):
                 self.on_mkdir(directory, form.name.data)
                 return redirect(dir_url)
             except Exception as ex:
-                flash(gettext('Failed to create directory: %(error)s', ex), 'error')
+                flash(gettext('Failed to create directory: %(error)s', error=ex), 'error')
 
         return self.render(self.mkdir_template,
                            form=form,
@@ -584,7 +584,7 @@ class FileAdmin(BaseView, ActionsMixin):
             return redirect(return_url)
 
         if not self.is_accessible_path(path):
-            flash(gettext(gettext('Permission denied.')))
+            flash(gettext('Permission denied.'))
             return redirect(self._get_dir_url('.index'))
 
         if op.isdir(full_path):
@@ -627,7 +627,7 @@ class FileAdmin(BaseView, ActionsMixin):
             return redirect(return_url)
 
         if not self.is_accessible_path(path):
-            flash(gettext(gettext('Permission denied.')))
+            flash(gettext('Permission denied.'))
             return redirect(self._get_dir_url('.index'))
 
         if not op.exists(full_path):
@@ -673,7 +673,7 @@ class FileAdmin(BaseView, ActionsMixin):
         base_path, full_path, path = self._normalize_path(path)
 
         if not self.is_accessible_path(path) or not self.is_file_editable(path):
-            flash(gettext(gettext('Permission denied.')))
+            flash(gettext('Permission denied.'))
             return redirect(self._get_dir_url('.index'))
 
         dir_url = self._get_dir_url('.index', os.path.dirname(path))
