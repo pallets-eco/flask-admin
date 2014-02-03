@@ -285,7 +285,7 @@ class FileAdmin(BaseView, ActionsMixin):
         """
         file_data.save(path)
 
-    def _get_dir_url(self, endpoint, path, **kwargs):
+    def _get_dir_url(self, endpoint, path=None, **kwargs):
         """
             Return prettified URL
 
