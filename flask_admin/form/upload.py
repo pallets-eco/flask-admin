@@ -332,7 +332,7 @@ class ImageUploadField(FileUploadField):
         """
         # Check if PIL is installed
         if Image is None:
-            raise Exception('PIL library was not found')
+            raise ImportError('PIL library was not found')
 
         self.max_size = max_size
         self.thumbnail_fn = thumbgen or thumbgen_filename
