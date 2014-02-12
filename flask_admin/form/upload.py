@@ -208,6 +208,8 @@ class FileUploadField(fields.TextField):
 
             filename = self.generate_name(obj, self.data)
             filename = self._save_file(self.data, filename)
+            # update filename of FileStorage to our validated name
+            self.data.filename = filename
 
             setattr(obj, name, filename)
 
