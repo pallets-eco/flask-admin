@@ -155,6 +155,11 @@ class FileAdmin(BaseView, ActionsMixin):
         Edit template
     """
 
+    upload_form = UploadForm
+    """
+        Upload form class
+    """
+
     def __init__(self, base_path, base_url=None,
                  name=None, category=None, endpoint=None, url=None,
                  verify_path=True):
@@ -410,6 +415,17 @@ class FileAdmin(BaseView, ActionsMixin):
         """
         pass
 
+    def _save_form_files(self, directory, path, form):
+        filename = op.join(directory,
+                           secure_filename(form.upload.data.filename))
+
+        if op.exists(filename):
+            flash(gettext('File "%(name)s" already exists.', name=filename),
+                  'error')
+        else:
+            self.save_file(filename, form.upload.data)
+            self.on_file_upload(directory, path, filename)
+
     @expose('/')
     @expose('/b/<path:path>')
     def index(self, path=None):
@@ -489,21 +505,13 @@ class FileAdmin(BaseView, ActionsMixin):
             flash(gettext(gettext('Permission denied.')))
             return redirect(self._get_dir_url('.index'))
 
-        form = UploadForm(self)
+        form = self.upload_form(self)
         if helpers.validate_form_on_submit(form):
-            filename = op.join(directory,
-                               secure_filename(form.upload.data.filename))
-
-            if op.exists(filename):
-                flash(gettext('File "%(name)s" already exists.', name=filename),
-                      'error')
-            else:
-                try:
-                    self.save_file(filename, form.upload.data)
-                    self.on_file_upload(directory, path, filename)
-                    return redirect(self._get_dir_url('.index', path))
-                except Exception as ex:
-                    flash(gettext('Failed to save file: %(error)s', error=ex))
+            try:
+                self._save_form_files(directory, path, form)
+                return redirect(self._get_dir_url('.index', path))
+            except Exception as ex:
+                flash(gettext('Failed to save file: %(error)s', error=ex))
 
         return self.render(self.upload_template, form=form)
 
