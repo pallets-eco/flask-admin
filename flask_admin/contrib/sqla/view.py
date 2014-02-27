@@ -428,7 +428,10 @@ class ModelView(BaseModelView):
             :returns:
                 ``True`` for ``String``, ``Unicode``, ``Text``, ``UnicodeText``
         """
-        return name in ('String', 'Unicode', 'Text', 'UnicodeText')
+        if name:
+            name = name.lower()
+
+        return name in ('string', 'unicode', 'text', 'unicodetext')
 
     def scaffold_filters(self, name):
         """

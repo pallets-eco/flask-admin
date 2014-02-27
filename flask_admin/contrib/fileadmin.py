@@ -155,6 +155,11 @@ class FileAdmin(BaseView, ActionsMixin):
         Edit template
     """
 
+    upload_form = UploadForm
+    """
+        Upload form class
+    """
+
     def __init__(self, base_path, base_url=None,
                  name=None, category=None, endpoint=None, url=None,
                  verify_path=True):
@@ -285,7 +290,7 @@ class FileAdmin(BaseView, ActionsMixin):
         """
         file_data.save(path)
 
-    def _get_dir_url(self, endpoint, path, **kwargs):
+    def _get_dir_url(self, endpoint, path=None, **kwargs):
         """
             Return prettified URL
 
@@ -410,6 +415,17 @@ class FileAdmin(BaseView, ActionsMixin):
         """
         pass
 
+    def _save_form_files(self, directory, path, form):
+        filename = op.join(directory,
+                           secure_filename(form.upload.data.filename))
+
+        if op.exists(filename):
+            flash(gettext('File "%(name)s" already exists.', name=filename),
+                  'error')
+        else:
+            self.save_file(filename, form.upload.data)
+            self.on_file_upload(directory, path, filename)
+
     @expose('/')
     @expose('/b/<path:path>')
     def index(self, path=None):
@@ -423,7 +439,7 @@ class FileAdmin(BaseView, ActionsMixin):
         base_path, directory, path = self._normalize_path(path)
 
         if not self.is_accessible_path(path):
-            flash(gettext(gettext('Permission denied.')))
+            flash(gettext('Permission denied.'))
             return redirect(self._get_dir_url('.index'))
 
         # Get directory listing
@@ -486,24 +502,16 @@ class FileAdmin(BaseView, ActionsMixin):
             return redirect(self._get_dir_url('.index', path))
 
         if not self.is_accessible_path(path):
-            flash(gettext(gettext('Permission denied.')))
+            flash(gettext('Permission denied.'))
             return redirect(self._get_dir_url('.index'))
 
-        form = UploadForm(self)
+        form = self.upload_form(self)
         if helpers.validate_form_on_submit(form):
-            filename = op.join(directory,
-                               secure_filename(form.upload.data.filename))
-
-            if op.exists(filename):
-                flash(gettext('File "%(name)s" already exists.', name=filename),
-                      'error')
-            else:
-                try:
-                    self.save_file(filename, form.upload.data)
-                    self.on_file_upload(directory, path, filename)
-                    return redirect(self._get_dir_url('.index', path))
-                except Exception as ex:
-                    flash(gettext('Failed to save file: %(error)s', error=ex))
+            try:
+                self._save_form_files(directory, path, form)
+                return redirect(self._get_dir_url('.index', path))
+            except Exception as ex:
+                flash(gettext('Failed to save file: %(error)s', error=ex))
 
         return self.render(self.upload_template, form=form)
 
@@ -547,7 +555,7 @@ class FileAdmin(BaseView, ActionsMixin):
             return redirect(dir_url)
 
         if not self.is_accessible_path(path):
-            flash(gettext(gettext('Permission denied.')))
+            flash(gettext('Permission denied.'))
             return redirect(self._get_dir_url('.index'))
 
         form = NameForm(helpers.get_form_data())
@@ -558,7 +566,7 @@ class FileAdmin(BaseView, ActionsMixin):
                 self.on_mkdir(directory, form.name.data)
                 return redirect(dir_url)
             except Exception as ex:
-                flash(gettext('Failed to create directory: %(error)s', ex), 'error')
+                flash(gettext('Failed to create directory: %(error)s', error=ex), 'error')
 
         return self.render(self.mkdir_template,
                            form=form,
@@ -584,7 +592,7 @@ class FileAdmin(BaseView, ActionsMixin):
             return redirect(return_url)
 
         if not self.is_accessible_path(path):
-            flash(gettext(gettext('Permission denied.')))
+            flash(gettext('Permission denied.'))
             return redirect(self._get_dir_url('.index'))
 
         if op.isdir(full_path):
@@ -627,7 +635,7 @@ class FileAdmin(BaseView, ActionsMixin):
             return redirect(return_url)
 
         if not self.is_accessible_path(path):
-            flash(gettext(gettext('Permission denied.')))
+            flash(gettext('Permission denied.'))
             return redirect(self._get_dir_url('.index'))
 
         if not op.exists(full_path):
@@ -672,8 +680,8 @@ class FileAdmin(BaseView, ActionsMixin):
 
         base_path, full_path, path = self._normalize_path(path)
 
-        if not self.is_accessible_path(path):
-            flash(gettext(gettext('Permission denied.')))
+        if not self.is_accessible_path(path) or not self.is_file_editable(path):
+            flash(gettext('Permission denied.'))
             return redirect(self._get_dir_url('.index'))
 
         dir_url = self._get_dir_url('.index', os.path.dirname(path))

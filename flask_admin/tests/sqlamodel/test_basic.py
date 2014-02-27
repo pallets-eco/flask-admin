@@ -833,3 +833,26 @@ def test_ajax_fk_multi():
     ok_(mdl is not None)
     ok_(mdl.model1 is not None)
     eq_(len(mdl.model1), 1)
+
+
+def test_safe_redirect():
+    app, db, admin = setup()
+    Model1, _ = create_models(db)
+    db.create_all()
+
+    view = CustomModelView(Model1, db.session)
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.post('/admin/model1view/new/?url=http://localhost/admin/model2view/',
+                     data=dict(test1='test1large', test2='test2'))
+
+    eq_(rv.status_code, 302)
+    eq_(rv.location, 'http://localhost/admin/model2view/')
+
+    rv = client.post('/admin/model1view/new/?url=http://google.com/evil/',
+                     data=dict(test1='test1large', test2='test2'))
+
+    eq_(rv.status_code, 302)
+    eq_(rv.location, 'http://localhost/admin/model1view/')
