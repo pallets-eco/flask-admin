@@ -32,8 +32,11 @@ def get_primary_key(model):
                     pks.append(get_column_for_current_model(p).key)
                 else:
                     pks.append(p.key)
-        elif p.is_primary():
-            pks.append(p.key)
+        else:
+            for c in p.columns:
+                if c.primary_key:
+                    pks.append(p.key)
+                    break
 
     if len(pks) == 1:
         return pks[0]
