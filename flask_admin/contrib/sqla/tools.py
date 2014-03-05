@@ -32,6 +32,8 @@ def get_primary_key(model):
                     pks.append(get_column_for_current_model(p).key)
                 else:
                     pks.append(p.key)
+        elif p.is_primary():
+            pks.append(p.key)
 
     if len(pks) == 1:
         return pks[0]
@@ -52,8 +54,12 @@ def is_inherited_primary_key(prop):
         :return: Boolean
         :raises: Exceptions as they occur - no ExceptionHandling here
     """
+    if not hasattr(prop, 'expression'):
+        return False
+
     if prop.expression.primary_key:
         return len(prop._orig_columns) == len(prop.columns)-1
+
     return False
 
 def get_column_for_current_model(prop):
