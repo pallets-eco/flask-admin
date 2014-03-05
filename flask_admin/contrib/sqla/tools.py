@@ -33,10 +33,11 @@ def get_primary_key(model):
                 else:
                     pks.append(p.key)
         else:
-            for c in p.columns:
-                if c.primary_key:
-                    pks.append(p.key)
-                    break
+            if hasattr(p, 'columns'):
+                for c in p.columns:
+                    if c.primary_key:
+                        pks.append(p.key)
+                        break
 
     if len(pks) == 1:
         return pks[0]
