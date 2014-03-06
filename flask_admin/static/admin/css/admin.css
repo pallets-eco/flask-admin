@@ -105,3 +105,7 @@ table.filters {
 .select2-results li {
     min-height: 24px !important;
 }
+
+.list-checkbox-column {
+    width: 14px;
+}
