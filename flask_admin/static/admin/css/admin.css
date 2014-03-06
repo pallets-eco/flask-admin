@@ -111,5 +111,6 @@ table.filters {
 }
 
 .list-button-column {
+    text-align: center;
 	width: 36px;
 }
