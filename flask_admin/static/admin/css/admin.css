@@ -110,7 +110,7 @@ table.filters {
     width: 14px;
 }
 
-.list-button-column {
+td.list-button-column, th.list-button-column {
     text-align: center;
 	width: 36px;
 }
