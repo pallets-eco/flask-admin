@@ -326,6 +326,7 @@ class ModelView(BaseModelView):
                     columns.append(p.key)
             elif hasattr(p, 'columns'):
                 column_inherited_primary_key = False
+
                 if len(p.columns) != 1:
                     if is_inherited_primary_key(p):
                         column = get_column_for_current_model(p)
@@ -428,7 +429,10 @@ class ModelView(BaseModelView):
             :returns:
                 ``True`` for ``String``, ``Unicode``, ``Text``, ``UnicodeText``
         """
-        return name in ('String', 'Unicode', 'Text', 'UnicodeText')
+        if name:
+            name = name.lower()
+
+        return name in ('string', 'unicode', 'text', 'unicodetext')
 
     def scaffold_filters(self, name):
         """

@@ -233,61 +233,71 @@ def test_column_filters():
 
     eq_(len(view._filters), 4)
 
-    eq_(view._filter_dict, {
-        u'Test1': [
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
+        [
             (0, u'equals'),
             (1, u'not equal'),
             (2, u'contains'),
             (3, u'not contains')
-        ]})
+        ])
 
     # Test filter that references property
     view = CustomModelView(Model2, db.session,
                            column_filters=['model1'])
 
-    eq_(view._filter_dict, {
-        u'Model1 / Test1': [
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Test1']],
+        [
             (0, u'equals'),
             (1, u'not equal'),
             (2, u'contains'),
             (3, u'not contains')
-        ],
-        'Model1 / Test2': [
+        ])
+
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Test2']],
+        [
             (4, 'equals'),
             (5, 'not equal'),
             (6, 'contains'),
             (7, 'not contains')
-        ],
-        u'Model1 / Test3': [
+        ])
+
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Test3']],
+        [
             (8, u'equals'),
             (9, u'not equal'),
             (10, u'contains'),
             (11, u'not contains')
-        ],
-        u'Model1 / Test4': [
+        ])
+
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Test4']],
+        [
             (12, u'equals'),
             (13, u'not equal'),
             (14, u'contains'),
             (15, u'not contains')
-        ],
-        u'Model1 / Bool Field': [
+        ])
+
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Bool Field']],
+        [
             (16, u'equals'),
             (17, u'not equal'),
-        ],
-        u'Model1 / Enum Field': [
+        ])
+
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Enum Field']],
+        [
             (18, u'equals'),
             (19, u'not equal'),
-        ]})
+        ])
 
     # Test filter with a dot
     view = CustomModelView(Model2, db.session,
                            column_filters=['model1.bool_field'])
 
-    eq_(view._filter_dict, {
-        'Model1 / Bool Field': [
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Bool Field']],
+        [
             (0, 'equals'),
             (1, 'not equal'),
-        ]})
+        ])
 
     # Fill DB
     model1_obj1 = Model1('model1_obj1', bool_field=True)
@@ -324,11 +334,15 @@ def test_column_filters():
                            column_filters=['int_field'])
     admin.add_view(view)
 
-    eq_(view._filter_dict, {'Int Field': [(0, 'equals'), (1, 'not equal'),
-                                          (2, 'greater than'), (3, 'smaller than')]})
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Int Field']],
+        [
+            (0, 'equals'),
+            (1, 'not equal'),
+            (2, 'greater than'),
+            (3, 'smaller than')
+        ])
 
-
-    #Test filters to joined table field
+    # Test filters to joined table field
     view = CustomModelView(
         Model2, db.session,
         endpoint='_model2',
@@ -348,6 +362,21 @@ def test_column_filters():
     ok_('model2_obj2' in data)
     ok_('model2_obj3' not in data)
     ok_('model2_obj4' not in data)
+
+    # Test human readable URLs
+    view = CustomModelView(
+        Model1, db.session,
+        column_filters=['test1'],
+        endpoint='_model3',
+        named_filter_urls=True
+    )
+    admin.add_view(view)
+
+    rv = client.get('/admin/_model3/?flt1_test1_equals=model1_obj1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('model1_obj1' in data)
+    ok_('model1_obj2' not in data)
 
 
 def test_url_args():

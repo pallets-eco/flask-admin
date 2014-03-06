@@ -254,6 +254,10 @@ msgstr "Создать"
 msgid "Save and Add"
 msgstr "Сохранить и Добавить"
 
+#: ../flask_admin/templates/admin/model/edit.html:6
+msgid "Save and Continue"
+msgstr "Сохранить и Продолжить"
+
 #: ../flask_admin/templates/admin/model/inline_form_list.html:24
 msgid "Delete?"
 msgstr "Удалить?"

@@ -22,7 +22,7 @@
         </li>
         {% endif %}
 
-        {% if filter_groups %}
+        {% if filters %}
         <li class="dropdown">
             {{ model_layout.filter_options() }}
         </li>
@@ -42,7 +42,7 @@
     </ul>
     {% endblock %}
 
-    {% if filter_groups %}
+    {% if filters %}
         {{ model_layout.filter_form() }}
         <div class="clearfix"></div>
     {% endif %}
@@ -99,6 +99,7 @@
                     <input type="checkbox" name="rowid" class="action-checkbox" value="{{ get_pk_value(row) }}" title="{{ _gettext('Select record') }}" />
                 </td>
                 {% endif %}
+                {% block list_row_actions_column scoped %}
                 <td>
                     {% block list_row_actions scoped %}
                         {%- if admin_view.can_edit -%}
@@ -118,6 +119,7 @@
                         {%- endif -%}
                     {% endblock %}
                 </td>
+                {% endblock %}
                 {% for c, name in list_columns %}
                 <td>{{ get_value(row, c) }}</td>
                 {% endfor %}
@@ -157,12 +159,10 @@
                 html: true,
                 placement: 'bottom'
             });
-            {% if filter_groups is not none and filter_data is not none %}
+            {% if filter_groups %}
                 var filter = new AdminFilters(
                     '#filter_form', '.field-filters',
-                    {{ admin_view._get_filter_dict()|tojson|safe }},
-                    {{ filter_data|tojson|safe }},
-                    {{ filter_types|tojson|safe }}
+                    {{ filter_groups|tojson|safe }}
                 );
             {% endif %}
         })(jQuery);

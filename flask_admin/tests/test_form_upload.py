@@ -95,6 +95,10 @@ def test_image_upload_field():
         safe_delete(path, 'test2.png')
         safe_delete(path, 'test2_thumb.jpg')
         safe_delete(path, 'test1.jpg')
+        safe_delete(path, 'test1.jpeg')
+        safe_delete(path, 'test1.gif')
+        safe_delete(path, 'test1.png')
+        safe_delete(path, 'test1.tiff')
 
     class TestForm(form.BaseForm):
         upload = form.ImageUploadField('Upload',
@@ -202,6 +206,25 @@ def test_image_upload_field():
 
             eq_(dummy.upload, 'test1.jpg')
             ok_(op.exists(op.join(path, 'test1.jpg')))
+
+
+    # check allowed extensions
+    for extension in ('gif', 'jpg', 'jpeg', 'png', 'tiff'):
+        filename = 'copyleft.' + extension
+        filepath = op.join(op.dirname(__file__), 'data', filename)
+        with open(filepath, 'rb') as fp:
+            with app.test_request_context(method='POST', data={'upload': (fp, filename)}):
+                my_form = TestNoResizeForm(helpers.get_form_data())
+                ok_(my_form.validate())
+                my_form.populate_obj(dummy)
+                eq_(dummy.upload, my_form.upload.data.filename)
+
+    # check case-sensitivity for extensions
+    filename = op.join(op.dirname(__file__), 'data', 'copyleft.jpg')
+    with open(filename, 'rb') as fp:
+        with app.test_request_context(method='POST', data={'upload': (fp, 'copyleft.JPG')}):
+            my_form = TestNoResizeForm(helpers.get_form_data())
+            ok_(my_form.validate())
 
 
 def test_relative_path():

@@ -106,9 +106,9 @@ class AdminModelConverter(ModelConverterBase):
         kwargs['label'] = self._get_label(prop.key, kwargs)
         kwargs['description'] = self._get_description(prop.key, kwargs)
 
-        if column.nullable:
+        if column.nullable or prop.direction.name != 'MANYTOONE':
             kwargs['validators'].append(validators.Optional())
-        elif prop.direction.name != 'MANYTOMANY':
+        else:
             kwargs['validators'].append(validators.InputRequired())
 
         # Contribute model-related parameters

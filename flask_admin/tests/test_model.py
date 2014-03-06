@@ -302,8 +302,8 @@ def test_column_filters():
     eq_(view._filters[0].name, 'col1')
     eq_(view._filters[1].name, 'col2')
 
-    eq_(view._filter_dict, {'col1': [(0, 'test')],
-                            'col2': [(1, 'test')]})
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'col1']], [(0, 'test')])
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'col2']], [(1, 'test')])
 
     # TODO: Make calls with filters
 
