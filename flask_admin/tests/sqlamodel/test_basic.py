@@ -233,7 +233,7 @@ def test_column_filters():
 
     eq_(len(view._filters), 4)
 
-    eq_([(f['index'], f['operation']) for f in view._filter_data[u'Test1']],
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
         [
             (0, u'equals'),
             (1, u'not equal'),
@@ -245,7 +245,7 @@ def test_column_filters():
     view = CustomModelView(Model2, db.session,
                            column_filters=['model1'])
 
-    eq_([(f['index'], f['operation']) for f in view._filter_data[u'Model1 / Test1']],
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Test1']],
         [
             (0, u'equals'),
             (1, u'not equal'),
@@ -253,7 +253,7 @@ def test_column_filters():
             (3, u'not contains')
         ])
 
-    eq_([(f['index'], f['operation']) for f in view._filter_data[u'Model1 / Test2']],
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Test2']],
         [
             (4, 'equals'),
             (5, 'not equal'),
@@ -261,7 +261,7 @@ def test_column_filters():
             (7, 'not contains')
         ])
 
-    eq_([(f['index'], f['operation']) for f in view._filter_data[u'Model1 / Test3']],
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Test3']],
         [
             (8, u'equals'),
             (9, u'not equal'),
@@ -269,7 +269,7 @@ def test_column_filters():
             (11, u'not contains')
         ])
 
-    eq_([(f['index'], f['operation']) for f in view._filter_data[u'Model1 / Test4']],
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Test4']],
         [
             (12, u'equals'),
             (13, u'not equal'),
@@ -277,13 +277,13 @@ def test_column_filters():
             (15, u'not contains')
         ])
 
-    eq_([(f['index'], f['operation']) for f in view._filter_data[u'Model1 / Bool Field']],
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Bool Field']],
         [
             (16, u'equals'),
             (17, u'not equal'),
         ])
 
-    eq_([(f['index'], f['operation']) for f in view._filter_data[u'Model1 / Enum Field']],
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Enum Field']],
         [
             (18, u'equals'),
             (19, u'not equal'),
@@ -293,7 +293,7 @@ def test_column_filters():
     view = CustomModelView(Model2, db.session,
                            column_filters=['model1.bool_field'])
 
-    eq_([(f['index'], f['operation']) for f in view._filter_data[u'Model1 / Bool Field']],
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Bool Field']],
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -334,7 +334,7 @@ def test_column_filters():
                            column_filters=['int_field'])
     admin.add_view(view)
 
-    eq_([(f['index'], f['operation']) for f in view._filter_data[u'Int Field']],
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Int Field']],
         [
             (0, 'equals'),
             (1, 'not equal'),

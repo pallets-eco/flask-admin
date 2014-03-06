@@ -567,13 +567,17 @@ class BaseModelView(BaseView, ActionsMixin):
                 if flt.name not in self._filter_groups:
                     self._filter_groups[flt.name] = []
 
-                self._filter_groups[flt.name].append((i, flt))
-                self._filter_args[self.get_filter_arg(i, flt)] = (i, flt)
+                self._filter_groups[flt.name].append({
+                    'index': i,
+                    'arg': self.get_filter_arg(i, flt),
+                    'operation': flt.operation(),
+                    'options': flt.get_options(self) or None,
+                    'type': flt.data_type
+                })
 
-            self._filter_data = self._serialize_filter_args()
+                self._filter_args[self.get_filter_arg(i, flt)] = (i, flt)
         else:
             self._filter_groups = None
-            self._filter_data = None
             self._filter_args = None
 
         # Form rendering rules
@@ -747,31 +751,6 @@ class BaseModelView(BaseView, ActionsMixin):
             return name
         else:
             return str(index)
-
-    def _serialize_filter_args(self):
-        """
-            Convert filter information into JSON-serializable object.
-        """
-        if self._filters:
-            result = {}
-
-            for name, group in iteritems(self._filter_groups):
-                data = []
-
-                for idx, flt in group:
-                    data.append({
-                        'index': idx,
-                        'arg': self.get_filter_arg(idx, flt),
-                        'operation': flt.operation(),
-                        'options': flt.get_options(self) or None,
-                        'type': flt.data_type
-                    })
-
-                result[name] = data
-
-            return result
-
-        return self._filters
 
     # Form helpers
     def scaffold_form(self):
@@ -1228,7 +1207,7 @@ class BaseModelView(BaseView, ActionsMixin):
                                search=search,
                                # Filters
                                filters=self._filters,
-                               filter_groups=self._filter_data,
+                               filter_groups=self._filter_groups,
                                active_filters=filters,
 
                                # Actions
