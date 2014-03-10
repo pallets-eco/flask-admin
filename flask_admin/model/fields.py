@@ -102,10 +102,11 @@ class InlineModelFormField(FormField):
     """
     widget = InlineFormWidget()
 
-    def __init__(self, form_class, pk, **kwargs):
+    def __init__(self, form_class, pk, form_opts=None, **kwargs):
         super(InlineModelFormField, self).__init__(form_class, **kwargs)
 
         self._pk = pk
+        self.form_opts = form_opts
 
     def get_pk(self):
         return getattr(self.form, self._pk).data

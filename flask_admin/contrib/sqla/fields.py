@@ -188,7 +188,7 @@ class InlineModelFormList(InlineFieldList):
         Form field type. Override to use custom field for each inline form
     """
 
-    def __init__(self, form, session, model, prop, inline_view, form_widget=None, **kwargs):
+    def __init__(self, form, session, model, prop, inline_view, **kwargs):
         """
             Default constructor.
 
@@ -212,13 +212,10 @@ class InlineModelFormList(InlineFieldList):
         self._pk = get_primary_key(model)
 
         # Generate inline form field
-        if form_widget is None:
-            form_opts = FormOpts(widget_args=getattr(inline_view, 'form_widget_args', None),
-                                 form_rules=inline_view._form_rules)
+        form_opts = FormOpts(widget_args=getattr(inline_view, 'form_widget_args', None),
+                             form_rules=inline_view._form_rules)
 
-            form_widget = InlineFormWidget(form_opts)
-
-        form_field = self.form_field_type(form, self._pk, widget=form_widget)
+        form_field = self.form_field_type(form, self._pk, form_opts=form_opts)
 
         super(InlineModelFormList, self).__init__(form_field, **kwargs)
 
