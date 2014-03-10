@@ -178,7 +178,7 @@ class FileUploadField(fields.TextField):
 
         return ('.' in filename and
                 filename.rsplit('.', 1)[1].lower() in
-                map(str.lower, self.allowed_extensions))
+                map(lambda x: x.lower(), self.allowed_extensions))
 
     def pre_validate(self, form):
         if (self.data and
