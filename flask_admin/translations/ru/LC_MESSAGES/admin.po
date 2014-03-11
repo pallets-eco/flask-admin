@@ -189,6 +189,10 @@ msgstr "Уже существует."
 msgid "Model was successfully created."
 msgstr "Запись была создана."
 
+#: ../flask_admin/model/base.py:1268
+msgid "Model was successfully saved."
+msgstr "Запись была сохранена."
+
 #: ../flask_admin/model/filters.py:82
 msgid "Yes"
 msgstr "Да"
