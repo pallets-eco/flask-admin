@@ -109,3 +109,8 @@ table.filters {
 .list-checkbox-column {
     width: 14px;
 }
+
+td.list-button-column, th.list-button-column {
+    text-align: center;
+	width: 36px;
+}
