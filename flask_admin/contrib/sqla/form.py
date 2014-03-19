@@ -95,6 +95,11 @@ class AdminModelConverter(ModelConverterBase):
             return QuerySelectField(**kwargs)
 
     def _convert_relation(self, prop, kwargs):
+        # Check if relation is specified
+        form_columns = getattr(self.view, 'form_columns', None)
+        if form_columns and prop.key not in form_columns:
+            return None
+
         remote_model = prop.mapper.class_
         column = prop.local_remote_pairs[0][0]
 
