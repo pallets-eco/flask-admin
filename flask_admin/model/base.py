@@ -1272,7 +1272,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     return redirect(return_url)
 
         form_opts = FormOpts(widget_args=self.form_widget_args,
-                             form_rules=self._form_create_rules)
+                             form_rules=self._form_edit_rules)
 
         return self.render(self.edit_template,
                            model=model,
