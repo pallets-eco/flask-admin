@@ -24,6 +24,10 @@ class Unique(object):
         self.message = message
 
     def __call__(self, form, field):
+        # databases allow multiple NULL values for unique columns
+        if field.data is None:
+            return
+
         try:
             obj = (self.db_session.query(self.model)
                    .filter(self.column == field.data)
