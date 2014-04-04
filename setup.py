@@ -46,7 +46,12 @@ setup(
         'wtforms'
     ],
     tests_require=[
-        'nose>=1.0'
+        'nose>=1.0',
+        'pillow',
+        'python-mongoengine',
+        'pymongo',
+        'wtf-peewee',
+        'sqlalchemy'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
