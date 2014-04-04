@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, abort, g
 from flask.ext.admin import babel
 from flask.ext.admin._compat import with_metaclass
 from flask.ext.admin import helpers as h
+from flask.ext.admin.tools import slugify
 
 # For compatibility reasons import MenuLink
 from flask.ext.admin.menu import MenuCategory, MenuView, MenuLink
@@ -139,13 +140,17 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
         return args
 
-    def __init__(self, name=None, category=None, endpoint=None, url=None,
-                 static_folder=None, static_url_path=None):
+    def __init__(self, name=None, name_prefix=None, visible_name=None, category=None,
+                 endpoint=None, url=None, static_folder=None, static_url_path=None):
         """
             Constructor.
 
             :param name:
                 Name of this view. If not provided, will default to the class name.
+            :param name_prefix:
+                Prefix for name. Useful to avoid blueprint naming collision.
+            :param visible_name:
+                Name visible in the interface.
             :param category:
                 View category. If not provided, this view will be shown as a top-level menu item. Otherwise, it will
                 be in a submenu.
@@ -164,10 +169,17 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
                 Optional debug flag. If set to `True`, will rethrow exceptions in some cases, so Werkzeug
                 debugger can catch them.
         """
+        visible_name = visible_name or self._prettify_class_name(self.__class__.__name__)
+        name = name or slugify(visible_name)
+
+        if name_prefix is not None:
+            name = slugify(name_prefix, '.') + '.' + name
+
         self.name = name
+        self.visible_name = visible_name
         self.category = category
-        self.endpoint = endpoint
-        self.url = url
+        self.endpoint = endpoint or name
+        self.url = url or '/' + name.replace('.', '/')
         self.static_folder = static_folder
         self.static_url_path = static_url_path
 
@@ -196,27 +208,14 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
         # If url is not provided, generate it from endpoint name
         if self.url is None:
-            if self.admin.url != '/':
-                self.url = '%s/%s' % (self.admin.url, self.endpoint)
-            else:
-                if self == admin.index_view:
-                    self.url = '/'
-                else:
-                    self.url = '/%s' % self.endpoint
-        else:
-            if not self.url.startswith('/'):
-                self.url = '%s/%s' % (self.admin.url, self.url)
+            self.url = '/' + self.name.replace('.', '/')
 
         # If we're working from the root of the site, set prefix to None
         if self.url == '/':
             self.url = None
 
-        # If name is not povided, use capitalized endpoint name
-        if self.name is None:
-            self.name = self._prettify_class_name(self.__class__.__name__)
-
         # Create blueprint and register rules
-        self.blueprint = Blueprint(self.endpoint, __name__,
+        self.blueprint = Blueprint(self.name, __name__,
                                    url_prefix=self.url,
                                    subdomain=self.admin.subdomain,
                                    template_folder='templates',
@@ -331,10 +330,12 @@ class AdminIndexView(BaseView):
         * Automatically associates with static folder.
         * Default template is ``admin/index.html``
     """
-    def __init__(self, name=None, category=None,
-                 endpoint=None, url=None,
+    def __init__(self, name='admin', name_prefix=None, visible_name=None,
+                 category=None, endpoint=None, url=None,
                  template='admin/index.html'):
-        super(AdminIndexView, self).__init__(name or babel.lazy_gettext('Home'),
+        super(AdminIndexView, self).__init__(name,
+                                             name_prefix,
+                                             visible_name or babel.lazy_gettext('Home'),
                                              category,
                                              endpoint or 'admin',
                                              url or '/admin',
