@@ -146,11 +146,11 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             Constructor.
 
             :param name:
-                Name of this view. If not provided, will default to the class name.
+                Name of this view. If not provided, will default to a slugified version of visible_name.
             :param name_prefix:
                 Prefix for name. Useful to avoid blueprint naming collision.
             :param visible_name:
-                Name visible in the interface.
+                Name visible in the interface. If not provided will default to class name.
             :param category:
                 View category. If not provided, this view will be shown as a top-level menu item. Otherwise, it will
                 be in a submenu.
@@ -161,8 +161,8 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             :param url:
                 Base URL. If provided, affects how URLs are generated. For example, if the url parameter
                 is "test", the resulting URL will look like "/admin/test/". If not provided, will
-                use endpoint as a base url. However, if URL starts with '/', absolute path is assumed
-                and '/admin/' prefix won't be applied.
+                use a modified version of name as the base url. However, if URL starts with '/', absolute
+                path is assumed and '/admin/' prefix won't be applied.
             :param static_url_path:
                 Static URL Path. If provided, this specifies the path to the static url directory.
             :param debug:
