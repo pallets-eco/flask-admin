@@ -51,7 +51,7 @@ setup(
         'python-mongoengine',
         'pymongo',
         'wtf-peewee',
-        'sqlalchemy'
+        'flask-sqlalchemy'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
