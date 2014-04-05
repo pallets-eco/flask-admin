@@ -48,7 +48,7 @@ setup(
     tests_require=[
         'nose>=1.0',
         'pillow',
-        'python-mongoengine',
+        'mongoengine',
         'pymongo',
         'wtf-peewee',
         'flask-sqlalchemy'
