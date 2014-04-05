@@ -123,8 +123,8 @@ def test_mockview():
 
     eq_(view.model, Model)
 
-    eq_(view.name, 'Model')
-    eq_(view.endpoint, 'modelview')
+    eq_(view.name, 'admin.model')
+    eq_(view.endpoint, 'admin.model')
 
     # Verify scaffolding
     eq_(view._sortable_columns, ['col1', 'col2', 'col3'])
@@ -136,14 +136,14 @@ def test_mockview():
     client = app.test_client()
 
     # Make model view requests
-    rv = client.get('/admin/modelview/')
+    rv = client.get('/admin/model/')
     eq_(rv.status_code, 200)
 
     # Test model creation view
-    rv = client.get('/admin/modelview/new/')
+    rv = client.get('/admin/model/new/')
     eq_(rv.status_code, 200)
 
-    rv = client.post('/admin/modelview/new/',
+    rv = client.post('/admin/model/new/',
                      data=dict(col1='test1', col2='test2', col3='test3'))
     eq_(rv.status_code, 302)
     eq_(len(view.created_models), 1)
@@ -155,12 +155,12 @@ def test_mockview():
     eq_(model.col3, 'test3')
 
     # Try model edit view
-    rv = client.get('/admin/modelview/edit/?id=3')
+    rv = client.get('/admin/model/edit/?id=3')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('test1' in data)
 
-    rv = client.post('/admin/modelview/edit/?id=3',
+    rv = client.post('/admin/model/edit/?id=3',
                      data=dict(col1='test!', col2='test@', col3='test#'))
     eq_(rv.status_code, 302)
     eq_(len(view.updated_models), 1)
@@ -170,13 +170,13 @@ def test_mockview():
     eq_(model.col2, 'test@')
     eq_(model.col3, 'test#')
 
-    rv = client.get('/admin/modelview/edit/?id=4')
+    rv = client.get('/admin/model/edit/?id=4')
     eq_(rv.status_code, 302)
 
     # Attempt to delete model
-    rv = client.post('/admin/modelview/delete/?id=3')
+    rv = client.post('/admin/model/delete/?id=3')
     eq_(rv.status_code, 302)
-    eq_(rv.headers['location'], 'http://localhost/admin/modelview/')
+    eq_(rv.headers['location'], 'http://localhost/admin/model/')
 
     # Create a dispatched application to test that edit view's "save and
     # continue" functionality works when app is not located at root
@@ -185,11 +185,11 @@ def test_mockview():
     dispatched_client = Client(dispatched_app)
 
     app_iter, status, headers = dispatched_client.post(
-        '/dispatched/admin/modelview/edit/?id=3',
+        '/dispatched/admin/model/edit/?id=3',
         data=dict(col1='another test!', col2='test@', col3='test#', _continue_editing='True'))
 
     eq_(status, '302 FOUND')
-    eq_(headers['Location'], 'http://localhost/dispatched/admin/modelview/edit/?id=3')
+    eq_(headers['Location'], 'http://localhost/dispatched/admin/model/edit/?id=3')
     model = view.updated_models.pop()
     eq_(model.col1, 'another test!')
 
@@ -203,15 +203,15 @@ def test_permissions():
     client = app.test_client()
 
     view.can_create = False
-    rv = client.get('/admin/modelview/new/')
+    rv = client.get('/admin/model/new/')
     eq_(rv.status_code, 302)
 
     view.can_edit = False
-    rv = client.get('/admin/modelview/edit/?id=1')
+    rv = client.get('/admin/model/edit/?id=1')
     eq_(rv.status_code, 302)
 
     view.can_delete = False
-    rv = client.post('/admin/modelview/delete/?id=1')
+    rv = client.post('/admin/model/delete/?id=1')
     eq_(rv.status_code, 302)
 
 
@@ -227,13 +227,13 @@ def test_templates():
     view.create_template = 'mock.html'
     view.edit_template = 'mock.html'
 
-    rv = client.get('/admin/modelview/')
+    rv = client.get('/admin/model/')
     eq_(rv.data, b'Success!')
 
-    rv = client.get('/admin/modelview/new/')
+    rv = client.get('/admin/model/new/')
     eq_(rv.data, b'Success!')
 
-    rv = client.get('/admin/modelview/edit/?id=1')
+    rv = client.get('/admin/model/edit/?id=1')
     eq_(rv.data, b'Success!')
 
 
@@ -250,7 +250,7 @@ def test_list_columns():
 
     client = app.test_client()
 
-    rv = client.get('/admin/modelview/')
+    rv = client.get('/admin/model/')
     data = rv.data.decode('utf-8')
     ok_('Column1' in data)
     ok_('Col2' not in data)
@@ -266,7 +266,7 @@ def test_exclude_columns():
 
     client = app.test_client()
 
-    rv = client.get('/admin/modelview/')
+    rv = client.get('/admin/model/')
     data = rv.data.decode('utf-8')
     ok_('Col1' in data)
     ok_('Col2' not in data)

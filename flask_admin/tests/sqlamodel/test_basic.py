@@ -755,7 +755,7 @@ def test_ajax_fk():
 
     view = CustomModelView(
         Model2, db.session,
-        url='/view',
+        url='/admin/view',
         form_ajax_refs={
             'model1': {
                 'fields': ('test1', 'test2')
@@ -841,7 +841,7 @@ def test_ajax_fk_multi():
 
     view = CustomModelView(
         Model2, db.session,
-        url='/view',
+        url='/admin/view',
         form_ajax_refs={
             'model1': {
                 'fields': ['name']
@@ -886,14 +886,14 @@ def test_safe_redirect():
 
     client = app.test_client()
 
-    rv = client.post('/admin/model1view/new/?url=http://localhost/admin/model2view/',
+    rv = client.post('/admin/model1/new/?url=http://localhost/admin/model2/',
                      data=dict(test1='test1large', test2='test2'))
 
     eq_(rv.status_code, 302)
-    eq_(rv.location, 'http://localhost/admin/model2view/')
+    eq_(rv.location, 'http://localhost/admin/model2/')
 
-    rv = client.post('/admin/model1view/new/?url=http://google.com/evil/',
+    rv = client.post('/admin/model1/new/?url=http://google.com/evil/',
                      data=dict(test1='test1large', test2='test2'))
 
     eq_(rv.status_code, 302)
-    eq_(rv.location, 'http://localhost/admin/model1view/')
+    eq_(rv.location, 'http://localhost/admin/model1/')
