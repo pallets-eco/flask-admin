@@ -59,10 +59,8 @@ class ModelView(BaseModelView):
         if name is None:
             name = self._prettify_name(coll.name)
 
-        if endpoint is None:
-            endpoint = ('%sview' % coll.name).lower()
-
-        super(ModelView, self).__init__(None, name, category, endpoint, url)
+        super(ModelView, self).__init__(None, name=name, category=category,
+                                        endpoint=endpoint, url=url)
 
         self.coll = coll
 

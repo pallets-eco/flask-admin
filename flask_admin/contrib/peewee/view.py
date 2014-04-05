@@ -135,7 +135,8 @@ class ModelView(BaseModelView):
                  category=None, endpoint=None, url=None):
         self._search_fields = []
 
-        super(ModelView, self).__init__(model, name, category, endpoint, url)
+        super(ModelView, self).__init__(model, name=name, category=category,
+                                        endpoint=endpoint, url=url)
 
         self._primary_key = self.scaffold_pk()
 
