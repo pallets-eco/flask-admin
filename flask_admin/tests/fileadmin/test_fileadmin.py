@@ -10,7 +10,7 @@ def create_view():
     app, admin = setup()
 
     path = op.join(op.dirname(__file__), 'files')
-    view = fileadmin.FileAdmin(path, '/files/', name='Files')
+    view = fileadmin.FileAdmin(path, '/files/', name='files', visible_name='Files')
     admin.add_view(view)
 
     return app, admin, view
@@ -21,7 +21,7 @@ def test_file_admin():
 
     client = app.test_client()
 
-    rv = client.get('/admin/fileadmin/')
+    rv = client.get('/admin/files/')
     eq_(rv.status_code, 200)
     ok_('dummy.txt' in rv.data.decode('utf-8'))
 

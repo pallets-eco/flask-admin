@@ -36,13 +36,13 @@ class SimpleFilter(filters.BaseFilter):
 
 
 class MockModelView(base.BaseModelView):
-    def __init__(self, model, name=None, category=None, endpoint=None, url=None,
-                 **kwargs):
+    def __init__(self, model, name=None,
+                 category=None, endpoint=None, url=None, **kwargs):
         # Allow to set any attributes from parameters
         for k, v in iteritems(kwargs):
             setattr(self, k, v)
 
-        super(MockModelView, self).__init__(model, name, category, endpoint, url)
+        super(MockModelView, self).__init__(model, name, category=category, endpoint=endpoint, url=url)
 
         self.created_models = []
         self.updated_models = []
