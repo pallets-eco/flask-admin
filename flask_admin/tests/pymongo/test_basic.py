@@ -22,14 +22,14 @@ class TestView(ModelView):
 def test_model():
     app, db, admin = setup()
 
-    view = TestView(db.test, 'Test')
+    view = TestView(db.test, name='test')
     admin.add_view(view)
 
     # Drop existing data (if any)
     db.test.remove()
 
-    eq_(view.name, 'Test')
-    eq_(view.endpoint, 'testview')
+    eq_(view.name, 'admin.test')
+    eq_(view.endpoint, 'admin.test')
 
     ok_('test1' in view._sortable_columns)
     ok_('test2' in view._sortable_columns)
@@ -42,26 +42,26 @@ def test_model():
     # Make some test clients
     client = app.test_client()
 
-    rv = client.get('/admin/testview/')
+    rv = client.get('/admin/test/')
     eq_(rv.status_code, 200)
 
-    rv = client.get('/admin/testview/new/')
+    rv = client.get('/admin/test/new/')
     eq_(rv.status_code, 200)
 
-    rv = client.post('/admin/testview/new/',
+    rv = client.post('/admin/test/new/',
                      data=dict(test1='test1large', test2='test2'))
     eq_(rv.status_code, 302)
 
     model = db.test.find()[0]
-    print(model)
+
     eq_(model['test1'], 'test1large')
     eq_(model['test2'], 'test2')
 
-    rv = client.get('/admin/testview/')
+    rv = client.get('/admin/test/')
     eq_(rv.status_code, 200)
     ok_('test1large' in rv.data.decode('utf-8'))
 
-    url = '/admin/testview/edit/?id=%s' % model['_id']
+    url = '/admin/test/edit/?id=%s' % model['_id']
     rv = client.get(url)
     eq_(rv.status_code, 200)
 
@@ -69,13 +69,11 @@ def test_model():
                      data=dict(test1='test1small', test2='test2large'))
     eq_(rv.status_code, 302)
 
-    print(db.test.find()[0])
-
     model = db.test.find()[0]
     eq_(model['test1'], 'test1small')
     eq_(model['test2'], 'test2large')
 
-    url = '/admin/testview/delete/?id=%s' % model['_id']
+    url = '/admin/test/delete/?id=%s' % model['_id']
     rv = client.post(url)
     eq_(rv.status_code, 302)
     eq_(db.test.count(), 0)

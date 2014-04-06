@@ -1,4 +1,5 @@
 import sys
+import string
 import traceback
 
 # Python 3 compatibility
@@ -96,3 +97,21 @@ def get_dict_attr(obj, attr, default=None):
             return obj.__dict__[attr]
 
     return default
+
+
+def slugify(value, ignore=''):
+    """
+    Returns a lowercase string striped of non-(letters, numbers, underscores or hyphens).
+    Empty spaces are converted to hyphen.
+
+    Slug is a newspaper term. A slug is a short label for something, containing
+    only letters, numbers, underscores or hyphens.
+    Reference: https://docs.djangoproject.com/en/1.7/glossary/#term-slug
+
+    :param value
+    String to convert
+    """
+
+    return ''.join([
+        c for c in value.lower().replace(' ', '-')
+        if c in ('-_' + string.ascii_letters + string.digits + ignore)])

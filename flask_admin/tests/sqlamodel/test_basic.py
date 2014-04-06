@@ -72,8 +72,8 @@ def test_model():
     admin.add_view(view)
 
     eq_(view.model, Model1)
-    eq_(view.name, 'Model1')
-    eq_(view.endpoint, 'model1view')
+    eq_(view.name, 'admin.model1')
+    eq_(view.endpoint, 'admin.model1')
 
     eq_(view._primary_key, 'id')
 
@@ -96,13 +96,13 @@ def test_model():
     # Make some test clients
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/')
+    rv = client.get('/admin/model1/')
     eq_(rv.status_code, 200)
 
-    rv = client.get('/admin/model1view/new/')
+    rv = client.get('/admin/model1/new/')
     eq_(rv.status_code, 200)
 
-    rv = client.post('/admin/model1view/new/',
+    rv = client.post('/admin/model1/new/',
                      data=dict(test1='test1large', test2='test2'))
     eq_(rv.status_code, 302)
 
@@ -112,11 +112,11 @@ def test_model():
     eq_(model.test3, u'')
     eq_(model.test4, u'')
 
-    rv = client.get('/admin/model1view/')
+    rv = client.get('/admin/model1/')
     eq_(rv.status_code, 200)
     ok_(u'test1large' in rv.data.decode('utf-8'))
 
-    url = '/admin/model1view/edit/?id=%s' % model.id
+    url = '/admin/model1/edit/?id=%s' % model.id
     rv = client.get(url)
     eq_(rv.status_code, 200)
 
@@ -130,7 +130,7 @@ def test_model():
     eq_(model.test3, '')
     eq_(model.test4, '')
 
-    url = '/admin/model1view/delete/?id=%s' % model.id
+    url = '/admin/model1/delete/?id=%s' % model.id
     rv = client.post(url)
     eq_(rv.status_code, 302)
     eq_(db.session.query(Model1).count(), 0)
@@ -162,7 +162,7 @@ def test_list_columns():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/')
+    rv = client.get('/admin/model1/')
     data = rv.data.decode('utf-8')
     ok_('Column1' in data)
     ok_('Test2' not in data)
@@ -186,7 +186,7 @@ def test_exclude_columns():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/')
+    rv = client.get('/admin/model1/')
     data = rv.data.decode('utf-8')
     ok_('Test1' in data)
     ok_('Test2' not in data)
@@ -214,7 +214,7 @@ def test_column_searchable_list():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/?search=model1')
+    rv = client.get('/admin/model1/?search=model1')
     data = rv.data.decode('utf-8')
     ok_('model1' in data)
     ok_('model2' not in data)
@@ -317,13 +317,13 @@ def test_column_filters():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/?flt0_0=model1_obj1')
+    rv = client.get('/admin/model1/?flt0_0=model1_obj1')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('model1_obj1' in data)
     ok_('model1_obj2' not in data)
 
-    rv = client.get('/admin/model1view/?flt0_5=model1_obj1')
+    rv = client.get('/admin/model1/?flt0_5=model1_obj1')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('model1_obj1' in data)
@@ -345,7 +345,8 @@ def test_column_filters():
     # Test filters to joined table field
     view = CustomModelView(
         Model2, db.session,
-        endpoint='_model2',
+        name='other_model2',
+        #endpoint='_model2',
         column_filters=['model1.bool_field'],
         column_list=[
             'string_field',
@@ -355,9 +356,10 @@ def test_column_filters():
     )
     admin.add_view(view)
 
-    rv = client.get('/admin/_model2/?flt1_0=1')
+    rv = client.get('/admin/other_model2/?flt1_0=1')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
+
     ok_('model2_obj1' in data)
     ok_('model2_obj2' in data)
     ok_('model2_obj3' not in data)
@@ -366,13 +368,16 @@ def test_column_filters():
     # Test human readable URLs
     view = CustomModelView(
         Model1, db.session,
+        name='other_model3',
         column_filters=['test1'],
-        endpoint='_model3',
+        #endpoint='model3',
         named_filter_urls=True
     )
     admin.add_view(view)
 
-    rv = client.get('/admin/_model3/?flt1_test1_equals=model1_obj1')
+    print app.url_map
+
+    rv = client.get('/admin/other_model3/?flt1_test1_equals=model1_obj1')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('model1_obj1' in data)
@@ -398,41 +403,41 @@ def test_url_args():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/')
+    rv = client.get('/admin/model1/')
     data = rv.data.decode('utf-8')
     ok_('data1' in data)
     ok_('data3' not in data)
 
     # page
-    rv = client.get('/admin/model1view/?page=1')
+    rv = client.get('/admin/model1/?page=1')
     data = rv.data.decode('utf-8')
     ok_('data1' not in data)
     ok_('data3' in data)
 
     # sort
-    rv = client.get('/admin/model1view/?sort=0&desc=1')
+    rv = client.get('/admin/model1/?sort=0&desc=1')
     data = rv.data.decode('utf-8')
     ok_('data1' not in data)
     ok_('data3' in data)
     ok_('data4' in data)
 
     # search
-    rv = client.get('/admin/model1view/?search=data1')
+    rv = client.get('/admin/model1/?search=data1')
     data = rv.data.decode('utf-8')
     ok_('data1' in data)
     ok_('data2' not in data)
 
-    rv = client.get('/admin/model1view/?search=^data1')
+    rv = client.get('/admin/model1/?search=^data1')
     data = rv.data.decode('utf-8')
     ok_('data2' not in data)
 
     # like
-    rv = client.get('/admin/model1view/?flt0=0&flt0v=data1')
+    rv = client.get('/admin/model1/?flt0=0&flt0v=data1')
     data = rv.data.decode('utf-8')
     ok_('data1' in data)
 
     # not like
-    rv = client.get('/admin/model1view/?flt0=1&flt0v=data1')
+    rv = client.get('/admin/model1/?flt0=1&flt0v=data1')
     data = rv.data.decode('utf-8')
     ok_('data2' in data)
 
@@ -451,19 +456,19 @@ def test_non_int_pk():
 
     client = app.test_client()
 
-    rv = client.get('/admin/modelview/')
+    rv = client.get('/admin/model/')
     eq_(rv.status_code, 200)
 
-    rv = client.post('/admin/modelview/new/',
+    rv = client.post('/admin/model/new/',
                      data=dict(id='test1', test='test2'))
     eq_(rv.status_code, 302)
 
-    rv = client.get('/admin/modelview/')
+    rv = client.get('/admin/model/')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('test1' in data)
 
-    rv = client.get('/admin/modelview/edit/?id=test1')
+    rv = client.get('/admin/model/edit/?id=test1')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('test2' in data)
@@ -484,25 +489,25 @@ def test_multiple__pk():
 
     client = app.test_client()
 
-    rv = client.get('/admin/modelview/')
+    rv = client.get('/admin/model/')
     eq_(rv.status_code, 200)
 
-    rv = client.post('/admin/modelview/new/',
+    rv = client.post('/admin/model/new/',
                      data=dict(id=1, id2='two', test='test3'))
     eq_(rv.status_code, 302)
 
-    rv = client.get('/admin/modelview/')
+    rv = client.get('/admin/model/')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('test3' in data)
 
-    rv = client.get('/admin/modelview/edit/?id=1&id=two')
+    rv = client.get('/admin/model/edit/?id=1&id=two')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('test3' in data)
 
     # Correct order is mandatory -> fail here
-    rv = client.get('/admin/modelview/edit/?id=two&id=1')
+    rv = client.get('/admin/model/edit/?id=two&id=1')
     eq_(rv.status_code, 302)
 
 def test_form_columns():
@@ -552,8 +557,8 @@ def test_form_override():
 
     db.create_all()
 
-    view1 = CustomModelView(Model, db.session, endpoint='view1')
-    view2 = CustomModelView(Model, db.session, endpoint='view2', form_overrides=dict(test=fields.FileField))
+    view1 = CustomModelView(Model, db.session, name='model_v0', endpoint='view1')
+    view2 = CustomModelView(Model, db.session, name='model_v1', endpoint='view2', form_overrides=dict(test=fields.FileField))
     admin.add_view(view1)
     admin.add_view(view2)
 
@@ -616,19 +621,19 @@ def test_on_model_change_delete():
 
     client = app.test_client()
 
-    client.post('/admin/model1view/new/',
+    client.post('/admin/model1/new/',
                 data=dict(test1='test1large', test2='test2'))
 
     model = db.session.query(Model1).first()
     eq_(model.test1, 'TEST1LARGE')
 
-    url = '/admin/model1view/edit/?id=%s' % model.id
+    url = '/admin/model1/edit/?id=%s' % model.id
     client.post(url, data=dict(test1='test1small', test2='test2large'))
 
     model = db.session.query(Model1).first()
     eq_(model.test1, 'TEST1SMALL')
 
-    url = '/admin/model1view/delete/?id=%s' % model.id
+    url = '/admin/model1/delete/?id=%s' % model.id
     client.post(url)
     ok_(view.deleted)
 
@@ -646,7 +651,7 @@ def test_multiple_delete():
 
     client = app.test_client()
 
-    rv = client.post('/admin/model1view/action/', data=dict(action='delete', rowid=[1, 2, 3]))
+    rv = client.post('/admin/model1/action/', data=dict(action='delete', rowid=[1, 2, 3]))
     eq_(rv.status_code, 302)
     eq_(M1.query.count(), 0)
 
@@ -685,7 +690,7 @@ def test_extra_fields():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/new/')
+    rv = client.get('/admin/model1/new/')
     eq_(rv.status_code, 200)
 
     # Check presence and order
@@ -712,7 +717,7 @@ def test_extra_field_order():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/new/')
+    rv = client.get('/admin/model1/new/')
     eq_(rv.status_code, 200)
 
     # Check presence and order
@@ -750,7 +755,7 @@ def test_ajax_fk():
 
     view = CustomModelView(
         Model2, db.session,
-        url='view',
+        url='/admin/view',
         form_ajax_refs={
             'model1': {
                 'fields': ('test1', 'test2')
@@ -836,7 +841,7 @@ def test_ajax_fk_multi():
 
     view = CustomModelView(
         Model2, db.session,
-        url='view',
+        url='/admin/view',
         form_ajax_refs={
             'model1': {
                 'fields': ['name']
@@ -881,14 +886,14 @@ def test_safe_redirect():
 
     client = app.test_client()
 
-    rv = client.post('/admin/model1view/new/?url=http://localhost/admin/model2view/',
+    rv = client.post('/admin/model1/new/?url=http://localhost/admin/model2/',
                      data=dict(test1='test1large', test2='test2'))
 
     eq_(rv.status_code, 302)
-    eq_(rv.location, 'http://localhost/admin/model2view/')
+    eq_(rv.location, 'http://localhost/admin/model2/')
 
-    rv = client.post('/admin/model1view/new/?url=http://google.com/evil/',
+    rv = client.post('/admin/model1/new/?url=http://google.com/evil/',
                      data=dict(test1='test1large', test2='test2'))
 
     eq_(rv.status_code, 302)
-    eq_(rv.location, 'http://localhost/admin/model1view/')
+    eq_(rv.location, 'http://localhost/admin/model1/')

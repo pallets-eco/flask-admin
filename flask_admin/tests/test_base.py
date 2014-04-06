@@ -74,10 +74,12 @@ class MockMethodView(base.BaseView):
 
 def test_baseview_defaults():
     view = MockView()
-    eq_(view.name, None)
+
+    eq_(view.name, 'mock-view')
+    eq_(view.visible_name, 'Mock View')
     eq_(view.category, None)
-    eq_(view.endpoint, None)
-    eq_(view.url, None)
+    eq_(view.endpoint, 'mock-view')
+    eq_(view.url, '/mock-view')
     eq_(view.static_folder, None)
     eq_(view.admin, None)
     eq_(view.blueprint, None)
@@ -137,7 +139,7 @@ def test_admin_customizations():
 def test_baseview_registration():
     admin = base.Admin()
 
-    view = MockView()
+    view = MockView(name_prefix='admin')
     bp = view.create_blueprint(admin)
 
     # Base properties
@@ -145,9 +147,10 @@ def test_baseview_registration():
     ok_(view.blueprint is not None)
 
     # Calculated properties
-    eq_(view.endpoint, 'mockview')
-    eq_(view.url, '/admin/mockview')
-    eq_(view.name, 'Mock View')
+    eq_(view.endpoint, 'admin.mock-view')
+    eq_(view.url, '/admin/mock-view')
+    eq_(view.name, 'admin.mock-view')
+    eq_(view.visible_name, 'Mock View')
 
     # Verify generated blueprint properties
     eq_(bp.name, view.endpoint)
@@ -156,14 +159,15 @@ def test_baseview_registration():
     eq_(bp.static_folder, view.static_folder)
 
     # Verify customizations
-    view = MockView(name='Test', endpoint='foobar')
+    view = MockView(visible_name='Test', endpoint='foobar')
     view.create_blueprint(base.Admin())
 
-    eq_(view.name, 'Test')
+    eq_(view.name, 'test')
+    eq_(view.visible_name, 'Test')
     eq_(view.endpoint, 'foobar')
-    eq_(view.url, '/admin/foobar')
+    eq_(view.url, '/test')
 
-    view = MockView(url='test')
+    view = MockView(url='/admin/test')
     view.create_blueprint(base.Admin())
     eq_(view.url, '/admin/test')
 
@@ -171,7 +175,7 @@ def test_baseview_registration():
     view.create_blueprint(base.Admin())
     eq_(view.url, '/test/test')
 
-    view = MockView(endpoint='test')
+    view = MockView(name='test')
     view.create_blueprint(base.Admin(url='/'))
     eq_(view.url, '/test')
 
@@ -200,35 +204,35 @@ def test_no_default():
 def test_call():
     app = Flask(__name__)
     admin = base.Admin(app)
-    view = MockView()
+    view = MockView(url='/admin/mock-view')
     admin.add_view(view)
     client = app.test_client()
 
     rv = client.get('/admin/')
     eq_(rv.status_code, 200)
 
-    rv = client.get('/admin/mockview/')
+    rv = client.get('/admin/mock-view/')
     eq_(rv.data, b'Success!')
 
-    rv = client.get('/admin/mockview/test/')
+    rv = client.get('/admin/mock-view/test/')
     eq_(rv.data, b'Success!')
 
     # Check authentication failure
     view.allow_call = False
-    rv = client.get('/admin/mockview/')
+    rv = client.get('/admin/mock-view/')
     eq_(rv.data, b'Failure!')
 
 
 def test_permissions():
     app = Flask(__name__)
     admin = base.Admin(app)
-    view = MockView()
+    view = MockView(url='/admin/mock-view/')
     admin.add_view(view)
     client = app.test_client()
 
     view.allow_access = False
 
-    rv = client.get('/admin/mockview/')
+    rv = client.get('/admin/mock-view/')
     eq_(rv.status_code, 403)
 
 
@@ -277,12 +281,12 @@ def test_submenu():
 def test_delayed_init():
     app = Flask(__name__)
     admin = base.Admin()
-    admin.add_view(MockView())
+    admin.add_view(MockView(url='/admin/mock-view/'))
     admin.init_app(app)
 
     client = app.test_client()
 
-    rv = client.get('/admin/mockview/')
+    rv = client.get('/admin/mock-view/')
     eq_(rv.data, b'Success!')
 
 
@@ -293,7 +297,7 @@ def test_multi_instances_init():
     class ManageIndex(base.AdminIndexView):
         pass
 
-    _ = base.Admin(app, index_view=ManageIndex(url='/manage', endpoint='manage'))
+    _ = base.Admin(app, index_view=ManageIndex(name='manage', url='/manage', endpoint='manage'))
 
 
 @raises(Exception)
@@ -307,33 +311,32 @@ def test_nested_flask_views():
     app = Flask(__name__)
     admin = base.Admin(app)
 
-    view = MockMethodView()
+    view = MockMethodView(name_prefix='admin')
     admin.add_view(view)
 
     client = app.test_client()
 
-    rv = client.get('/admin/mockmethodview/_api/1')
-    print('"', rv.data, '"')
+    rv = client.get('/admin/mock-method-view/_api/1')
     eq_(rv.data, b'GET - API1')
-    rv = client.put('/admin/mockmethodview/_api/1')
+    rv = client.put('/admin/mock-method-view/_api/1')
     eq_(rv.data, b'PUT - API1')
-    rv = client.post('/admin/mockmethodview/_api/1')
+    rv = client.post('/admin/mock-method-view/_api/1')
     eq_(rv.data, b'POST - API1')
-    rv = client.delete('/admin/mockmethodview/_api/1')
+    rv = client.delete('/admin/mock-method-view/_api/1')
     eq_(rv.data, b'DELETE - API1')
 
-    rv = client.get('/admin/mockmethodview/_api/2')
+    rv = client.get('/admin/mock-method-view/_api/2')
     eq_(rv.data, b'GET - API2')
-    rv = client.post('/admin/mockmethodview/_api/2')
+    rv = client.post('/admin/mock-method-view/_api/2')
     eq_(rv.data, b'POST - API2')
-    rv = client.delete('/admin/mockmethodview/_api/2')
+    rv = client.delete('/admin/mock-method-view/_api/2')
     eq_(rv.status_code, 405)
-    rv = client.put('/admin/mockmethodview/_api/2')
+    rv = client.put('/admin/mock-method-view/_api/2')
     eq_(rv.status_code, 405)
 
-    rv = client.get('/admin/mockmethodview/_api/3')
+    rv = client.get('/admin/mock-method-view/_api/3')
     eq_(rv.data, b'GET - API3')
-    rv = client.get('/admin/mockmethodview/_api/4')
+    rv = client.get('/admin/mock-method-view/_api/4')
     eq_(rv.data, b'GET - API3')
 
 
@@ -343,7 +346,7 @@ def test_root_mount():
     admin.add_view(MockView())
 
     client = app.test_client()
-    rv = client.get('/mockview/')
+    rv = client.get('/mock-view/')
     eq_(rv.data, b'Success!')
 
 

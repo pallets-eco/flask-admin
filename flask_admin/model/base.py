@@ -475,7 +475,8 @@ class BaseModelView(BaseView, ActionsMixin):
     """
 
     def __init__(self, model,
-                 name=None, category=None, endpoint=None, url=None):
+                 name=None, name_prefix='admin', visible_name=None,
+                 category=None, endpoint=None, url=None):
         """
             Constructor.
 
@@ -483,6 +484,10 @@ class BaseModelView(BaseView, ActionsMixin):
                 Model class
             :param name:
                 View name. If not provided, will use the model class name
+            :param name_prefix:
+                Prefix to name. TODO: better description
+            :param visible_name:
+                Name show in the inteface.
             :param category:
                 View category
             :param endpoint:
@@ -498,13 +503,13 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # If name not provided, it is model name
         if name is None:
-            name = '%s' % self._prettify_class_name(model.__name__)
+            name = '%s' % self._prettify_class_name(model.__name__).lower()
 
-        # If endpoint not provided, it is model name + 'view'
-        if endpoint is None:
-            endpoint = ('%sview' % model.__name__).lower()
+        if name_prefix is None:
+            raise Exception('qual o lance?!')
 
-        super(BaseModelView, self).__init__(name, category, endpoint, url)
+        super(BaseModelView, self).__init__(name, name_prefix, visible_name,
+                                            category, endpoint, url)
 
         self.model = model
 
