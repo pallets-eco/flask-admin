@@ -82,8 +82,6 @@ def test_model():
     # Make some test clients
     client = app.test_client()
 
-    print app.url_map
-
     rv = client.get('/admin/model1/')
     eq_(rv.status_code, 200)
 
