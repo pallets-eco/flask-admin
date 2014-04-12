@@ -375,8 +375,6 @@ def test_column_filters():
     )
     admin.add_view(view)
 
-    print app.url_map
-
     rv = client.get('/admin/other_model3/?flt1_test1_equals=model1_obj1')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
