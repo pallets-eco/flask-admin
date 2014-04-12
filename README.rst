@@ -90,7 +90,7 @@ You should see output similar to::
 
     ...
     ----------------------------------------------------------------------
-    Ran 41 tests in 2.092s
+    Ran 81 tests in 5.151s
 
 Please note that you will need to install some additional dependencies in order for all of the tests to be executed successfully.
 
