@@ -137,11 +137,8 @@ class CustomModelConverter(orm.ModelConverter):
 
         view = self._get_subdocument_config(field.name)
 
-        if 'widget' not in kwargs:
-            form_opts = form.FormOpts(widget_args=getattr(view, 'form_widget_args', None),
-                                      form_rules=view._form_rules)
-
-            kwargs['widget'] = InlineFormWidget(form_opts)
+        form_opts = form.FormOpts(widget_args=getattr(view, 'form_widget_args', None),
+                                  form_rules=view._form_rules)
 
         form_class = view.get_form()
         if form_class is None:
@@ -155,7 +152,7 @@ class CustomModelConverter(orm.ModelConverter):
 
             form_class = view.postprocess_form(form_class)
 
-        return ModelFormField(field.document_type_obj, view, form_class, **kwargs)
+        return ModelFormField(field.document_type_obj, view, form_class, form_opts=form_opts, **kwargs)
 
     @orm.converts('ReferenceField')
     def conv_Reference(self, model, field, kwargs):

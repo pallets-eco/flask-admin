@@ -1,4 +1,5 @@
 import warnings
+import re
 
 from flask import request, url_for, redirect, flash, abort, json, Response
 
@@ -13,9 +14,14 @@ from flask.ext.admin.actions import ActionsMixin
 from flask.ext.admin.helpers import get_form_data, validate_form_on_submit, get_redirect_target
 from flask.ext.admin.tools import rec_getattr
 from flask.ext.admin._backwards import ObsoleteAttr
-from flask.ext.admin._compat import iteritems, as_unicode
+from flask.ext.admin._compat import iteritems, OrderedDict
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
+
+
+# Used to generate filter query string name
+filter_char_re = re.compile('[^a-z0-9 ]')
+filter_compact_re = re.compile(' +')
 
 
 class BaseModelView(BaseView, ActionsMixin):
@@ -250,6 +256,15 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 column_filters = ('user', 'email')
+    """
+
+    named_filter_urls = False
+    """
+        Set to True to use human-readable names for filters in URL parameters.
+
+        False by default so as to be robust across translations.
+
+        Changing this parameter will break any existing URLs that have filters.
     """
 
     column_display_pk = ObsoleteAttr('column_display_pk',
@@ -543,26 +558,27 @@ class BaseModelView(BaseView, ActionsMixin):
         if self.column_descriptions is None:
             self.column_descriptions = dict()
 
+        # Group filters by field name
         if self._filters:
-            self._filter_groups = []
-            self._filter_dict = dict()
+            self._filter_groups = OrderedDict()
+            self._filter_args = {}
 
-            for i, n in enumerate(self._filters):
-                if n.name not in self._filter_dict:
-                    group = []
-                    self._filter_dict[n.name] = group
-                    self._filter_groups.append((n.name, group))
-                else:
-                    group = self._filter_dict[n.name]
+            for i, flt in enumerate(self._filters):
+                if flt.name not in self._filter_groups:
+                    self._filter_groups[flt.name] = []
 
-                group.append((i, n.operation()))
+                self._filter_groups[flt.name].append({
+                    'index': i,
+                    'arg': self.get_filter_arg(i, flt),
+                    'operation': flt.operation(),
+                    'options': flt.get_options(self) or None,
+                    'type': flt.data_type
+                })
 
-            self._filter_types = dict((i, f.data_type)
-                                      for i, f in enumerate(self._filters)
-                                      if f.data_type)
+                self._filter_args[self.get_filter_arg(i, flt)] = (i, flt)
         else:
             self._filter_groups = None
-            self._filter_types = None
+            self._filter_args = None
 
         # Form rendering rules
         if self.form_create_rules:
@@ -671,6 +687,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return False
 
+    # Filter helpers
     def scaffold_filters(self, name):
         """
             Generate filter object for the given name
@@ -715,6 +732,27 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             return None
 
+    def get_filter_arg(self, index, flt):
+        """
+            Given a filter `flt`, return a unique name for that filter in
+            this view.
+
+            Does not include the `flt[n]_` portion of the filter name.
+
+            :param index:
+                Filter index in _filters array
+            :param flt:
+                Filter instance
+        """
+        if self.named_filter_urls:
+            name = ('%s %s' % (flt.name, flt.operation())).lower()
+            name = filter_char_re.sub('', name)
+            name = filter_compact_re.sub('_', name)
+            return name
+        else:
+            return str(index)
+
+    # Form helpers
     def scaffold_form(self):
         """
             Create `form.BaseForm` inherited class from the model. Must be
@@ -948,8 +986,34 @@ class BaseModelView(BaseView, ActionsMixin):
     def get_empty_list_message(self):
         return gettext('There are no items in the table.')
 
-    # URL generation helper
-    def _get_extra_args(self):
+    # URL generation helpers
+    def _get_list_filter_args(self):
+        if self._filters:
+            filters = []
+
+            for n in request.args:
+                if not n.startswith('flt'):
+                    continue
+
+                if '_' not in n:
+                    continue
+
+                pos, key = n[3:].split('_', 1)
+
+                if key in self._filter_args:
+                    idx, flt = self._filter_args[key]
+
+                    value = request.args[n]
+
+                    if flt.validate(value):
+                        filters.append((pos, (idx, flt.clean(value))))
+
+            # Sort filters
+            return [v[1] for v in sorted(filters, key=lambda n: n[0])]
+
+        return None
+
+    def _get_list_extra_args(self):
         """
             Return arguments from query string.
         """
@@ -957,34 +1021,7 @@ class BaseModelView(BaseView, ActionsMixin):
         sort = request.args.get('sort', None, type=int)
         sort_desc = request.args.get('desc', None, type=int)
         search = request.args.get('search', None)
-
-        # Gather filters
-        if self._filters:
-            sfilters = []
-
-            for n in request.args:
-                if n.startswith('flt'):
-                    ofs = n.find('_')
-                    if ofs == -1:
-                        continue
-
-                    try:
-                        pos = int(n[3:ofs])
-                        idx = int(n[ofs + 1:])
-                    except ValueError:
-                        continue
-
-                    if idx >= 0 and idx < len(self._filters):
-                        flt = self._filters[idx]
-
-                        value = request.args[n]
-
-                        if flt.validate(value):
-                            sfilters.append((pos, (idx, flt.clean(value))))
-
-            filters = [v[1] for v in sorted(sfilters, key=lambda n: n[0])]
-        else:
-            filters = None
+        filters = self._get_list_filter_args()
 
         return page, sort, sort_desc, search, filters
 
@@ -1016,9 +1053,11 @@ class BaseModelView(BaseView, ActionsMixin):
         kwargs = dict(page=page, sort=sort, desc=sort_desc, search=search)
 
         if filters:
-            for i, flt in enumerate(filters):
-                key = 'flt%d_%d' % (i, flt[0])
-                kwargs[key] = flt[1]
+            for i, pair in enumerate(filters):
+                idx, value = pair
+
+                key = 'flt%d_%s' % (i, self.get_filter_arg(idx, self._filters[idx]))
+                kwargs[key] = value
 
         return url_for(view, **kwargs)
 
@@ -1037,12 +1076,6 @@ class BaseModelView(BaseView, ActionsMixin):
             Get unformatted field value from the model
         """
         return rec_getattr(model, name)
-
-    def _get_filter_dict(self):
-        """
-            Return flattened filter dictionary which can be JSON-serialized.
-        """
-        return dict((as_unicode(k), v) for k, v in iteritems(self._filter_dict))
 
     @contextfunction
     def get_list_value(self, context, model, name):
@@ -1104,7 +1137,7 @@ class BaseModelView(BaseView, ActionsMixin):
             List view
         """
         # Grab parameters from URL
-        page, sort_idx, sort_desc, search, filters = self._get_extra_args()
+        page, sort_idx, sort_desc, search, filters = self._get_list_extra_args()
 
         # Map column index to column name
         sort_column = self._get_column_by_idx(sort_idx)
@@ -1119,18 +1152,6 @@ class BaseModelView(BaseView, ActionsMixin):
         num_pages = count // self.page_size
         if count % self.page_size != 0:
             num_pages += 1
-
-        # Pregenerate filters
-        if self._filters:
-            filters_data = dict()
-
-            for idx, f in enumerate(self._filters):
-                flt_data = f.get_options(self)
-
-                if flt_data:
-                    filters_data[idx] = flt_data
-        else:
-            filters_data = None
 
         # Various URL generation helpers
         def pager_url(p):
@@ -1187,8 +1208,6 @@ class BaseModelView(BaseView, ActionsMixin):
                                # Filters
                                filters=self._filters,
                                filter_groups=self._filter_groups,
-                               filter_types=self._filter_types,
-                               filter_data=filters_data,
                                active_filters=filters,
 
                                # Actions
@@ -1253,7 +1272,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     return redirect(return_url)
 
         form_opts = FormOpts(widget_args=self.form_widget_args,
-                             form_rules=self._form_create_rules)
+                             form_rules=self._form_edit_rules)
 
         return self.render(self.edit_template,
                            model=model,

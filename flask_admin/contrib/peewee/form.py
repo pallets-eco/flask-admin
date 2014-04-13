@@ -171,7 +171,7 @@ class InlineModelConverter(InlineModelConverterBase):
                 attrs = dict()
 
                 for attr in dir(p):
-                    if not attr.startswith('_') and attr != model:
+                    if not attr.startswith('_') and attr != 'model':
                         attrs[attr] = getattr(p, attr)
 
                 info = InlineFormAdmin(model, **attrs)

@@ -36,8 +36,12 @@ Several usage examples are included in the */examples* folder. Please feel free 
 on some of the existing ones, and then submit them via GitHub as a *pull-request*.
 
 You can see some of these examples in action at `http://examples.flask-admin.org <http://examples.flask-admin.org/>`_.
+To run that same page in your local environment, simply::
 
-To run one of the examples in your local environment, simply::
+    cd flask-admin
+    python examples/runserver.py
+
+Alternatively, you can run the examples one at a time, with something like::
 
     cd flask-admin
     python examples/simple/simple.py

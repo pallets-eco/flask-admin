@@ -5,7 +5,7 @@
     <ul class="dropdown-menu field-filters">
         {% for k in filter_groups %}
         <li>
-            <a href="javascript:void(0)" class="filter" onclick="return false;">{{ k[0] }}</a>
+            <a href="javascript:void(0)" class="filter" onclick="return false;">{{ k }}</a>
         </li>
         {% endfor %}
     </ul>
@@ -21,31 +21,32 @@
         </div>
 
         <table class="filters">
-            {%- for i, flt in enumerate(active_filters) -%}
+            {%- for n, values in enumerate(active_filters) -%}
             <tr>
-                {% set filter = admin_view._filters[flt[0]] %}
+                {% set idx, value = values %}
+                {% set filter = filters[idx] %}
+                {% set filter_arg = admin_view.get_filter_arg(idx, filter) %}
                 <td>
                     <a href="javascript:void(0)" class="btn remove-filter" title="{{ _gettext('Remove Filter') }}">
-                        <span class="close-icon">&times;</span>&nbsp;{{ filters[flt[0]] }}
+                        <span class="close-icon">&times;</span>&nbsp;{{ filter.name }}
                     </a>
                 </td>
                 <td>
                     <select class="filter-op" data-role="select2">
-                        {% for op in admin_view._filter_dict[filter.name] %}
-                        <option value="{{ op[0] }}"{% if flt[0] == op[0] %} selected="selected"{% endif %}>{{ op[1] }}</option>
+                        {% for op in filter_groups[filter.name] %}
+                        <option value="{{ op['arg'] }}"{% if idx == op['index'] %} selected="selected"{% endif %}>{{ op['operation'] }}</option>
                         {% endfor %}
                     </select>
                 </td>
                 <td>
-                    {%- set data = filter_data.get(flt[0]) -%}
-                    {%- if data -%}
-                    <select name="flt{{ i }}_{{ flt[0] }}" class="filter-val" data-role="select2">
-                        {%- for d in data %}
-                        <option value="{{ d[0] }}"{% if flt[1] == d[0] %} selected{% endif %}>{{ d[1] }}</option>
+                    {%- if filter.options -%}
+                    <select name="flt{{n}}_{{ filter_arg }}" class="filter-val" data-role="select2">
+                        {%- for d in filter.options %}
+                        <option value="{{ d[0] }}"{% if value == d[0] %} selected{% endif %}>{{ d[1] }}</option>
                         {%- endfor %}
                     </select>
                     {%- else -%}
-                        <input name="flt{{ i }}_{{ flt[0] }}" type="text" value="{{ flt[1] or '' }}" class="filter-val"{% if flt[0] in filter_types %} data-role="{{ filter_types[flt[0]] }}"{% endif %}></input>
+                        <input name="flt{{n}}_{{ filter_arg }}" type="text" value="{{ value or '' }}" class="filter-val"{% if filter.data_type %} data-role="{{ filter.data_type }}"{% endif %}></input>
                     {%- endif -%}
                 </td>
             </tr>

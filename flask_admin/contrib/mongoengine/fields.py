@@ -4,6 +4,7 @@ from wtforms import fields
 from wtforms.fields.core import _unset_value
 
 from . import widgets
+from flask.ext.admin.model.fields import InlineFormField
 
 
 def is_empty(file_object):
@@ -13,15 +14,16 @@ def is_empty(file_object):
     return not bool(first_char)
 
 
-class ModelFormField(fields.FormField):
+class ModelFormField(InlineFormField):
     """
         Customized ModelFormField for MongoEngine EmbeddedDocuments.
     """
-    def __init__(self, model, view, *args, **kwargs):
-        super(ModelFormField, self).__init__(*args, **kwargs)
+    def __init__(self, model, view, form_class, form_opts=None, **kwargs):
+        super(ModelFormField, self).__init__(form_class, **kwargs)
 
         self.model = model
         self.view = view
+        self.form_opts = form_opts
 
     def populate_obj(self, obj, name):
         candidate = getattr(obj, name, None)

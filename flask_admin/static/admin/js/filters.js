@@ -1,11 +1,22 @@
-var AdminFilters = function(element, filters_element, operations, options, types) {
+var AdminFilters = function(element, filtersElement, filterGroups) {
     var $root = $(element);
     var $container = $('.filters', $root);
     var lastCount = 0;
 
     function getCount(name) {
         var idx = name.indexOf('_');
-        return parseInt(name.substr(3, idx - 3));
+
+        if (idx === -1) {
+            return 0;
+        }
+
+        return parseInt(name.substr(3, idx - 3), 10);
+    }
+
+    function makeName(name) {
+        var result = 'flt' + lastCount + '_' + name;
+        lastCount += 1;
+        return result;
     }
 
     function changeOperation() {
@@ -23,44 +34,44 @@ var AdminFilters = function(element, filters_element, operations, options, types
         return false;
     }
 
-    function addFilter(name, op) {
+    function addFilter(name, subfilters) {
         var $el = $('<tr />').appendTo($container);
 
         // Filter list
         $el.append(
-                $('<td/>').append(
-                    $('<a href="#" class="btn remove-filter" />')
-                        .append($('<span class="close-icon">&times;</span>'))
-                        .append('&nbsp;')
-                        .append(name)
-                        .click(removeFilter)
-                    )
-            );
+            $('<td/>').append(
+                $('<a href="#" class="btn remove-filter" />')
+                    .append($('<span class="close-icon">&times;</span>'))
+                    .append('&nbsp;')
+                    .append(name)
+                    .click(removeFilter)
+                )
+        );
 
         // Filter type
         var $select = $('<select class="filter-op" />')
                       .change(changeOperation);
 
-        $(op).each(function() {
-            $select.append($('<option/>').attr('value', this[0]).text(this[1]));
+        $(subfilters).each(function() {
+            $select.append($('<option/>').attr('value', this.arg).text(this.operation));
         });
 
         $el.append(
-                $('<td/>').append($select)
-            );
+            $('<td/>').append($select)
+        );
 
         $select.select2({width: 'resolve'});
 
         // Input
-        var optId = op[0][0];
+        var filter = subfilters[0];
 
         var $field;
 
-        if (optId in options) {
+        if (filter.options) {
             $field = $('<select class="filter-val" />')
-                        .attr('name', 'flt' + lastCount + '_' + optId);
+                        .attr('name', makeName(filter.arg));
 
-            $(options[optId]).each(function() {
+            $(filter.options).each(function() {
                 $field.append($('<option/>')
                     .val(this[0]).text(this[1]));
             });
@@ -70,22 +81,20 @@ var AdminFilters = function(element, filters_element, operations, options, types
         } else
         {
             $field = $('<input type="text" class="filter-val" />')
-                        .attr('name', 'flt' + lastCount + '_' + optId);
+                        .attr('name', makeName(filter.arg));
             $el.append($('<td/>').append($field));
         }
 
-        if (optId in types) {
-            $field.attr('data-role', types[optId]);
-            faForm.applyStyle($field, types[optId]);
+        if (filter.type) {
+            $field.attr('data-role', filter.type);
+            faForm.applyStyle($field, filter.type);
         }
-
-        lastCount += 1;
     }
 
-    $('a.filter', filters_element).click(function() {
+    $('a.filter', filtersElement).click(function() {
         var name = $(this).text().trim();
 
-        addFilter(name, operations[name]);
+        addFilter(name, filterGroups[name]);
 
         $('button', $root).show();
 
