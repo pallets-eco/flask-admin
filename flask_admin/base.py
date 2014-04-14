@@ -287,9 +287,6 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         """
         return True
 
-    def __repr__(self):
-        return self
-
     def __str__(self):
         return unicode(self)
 

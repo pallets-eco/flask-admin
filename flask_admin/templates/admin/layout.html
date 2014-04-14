@@ -8,7 +8,7 @@
           <ul class="dropdown-menu">
             {% for child in children %}
               {% if child.is_active(admin_view) %}<li class="active">{% else %}<li>{% endif %}
-                <a href="{{ child.get_url() }}">{{ child }}</a>
+                <a href="{{ child.get_url() }}">{{ child.visible_name }}</a>
               </li>
             {% endfor %}
           </ul>
@@ -17,7 +17,7 @@
     {% else %}
       {% if item.is_accessible() and item.is_visible() %}
         {% if item.is_active(admin_view) %}<li class="active">{% else %}<li>{% endif %}
-          <a href="{{ item.get_url() }}">{{ item.name }}</a>
+          <a href="{{ item.get_url() }}">{{ item.visible_name }}</a>
         </li>
       {% endif %}
     {% endif %}
@@ -28,7 +28,7 @@
   {% for item in admin_view.admin.menu_links() %}
     {% if item.is_accessible() and item.is_visible() %}
       <li>
-        <a href="{{ item.get_url() }}">{{ item.name }}</a>
+        <a href="{{ item.get_url() }}">{{ item.visible_name }}</a>
       </li>
     {% endif %}
   {% endfor %}
