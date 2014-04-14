@@ -179,7 +179,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         self.visible_name = visible_name
         self.category = category
         self.endpoint = endpoint or name
-        self.url = url or '/' + name.replace('.', '/')
+        self.url = url
         self.static_folder = static_folder
         self.static_url_path = static_url_path
 
@@ -207,8 +207,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             self.static_url_path = admin.static_url_path
 
         # If url is not provided, generate it from endpoint name
-        if self.url is None:
-            self.url = '/' + self.name.replace('.', '/')
+        self.url = self.url or self.generate_url()
 
         # If we're working from the root of the site, set prefix to None
         if self.url == '/':
@@ -262,6 +261,9 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
                 String to prettify
         """
         return h.prettify_class_name(name)
+
+    def generate_url(self):
+        return '/' + self.name.replace('.', '/')
 
     def is_visible(self):
         """

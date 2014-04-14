@@ -79,7 +79,7 @@ def test_baseview_defaults():
     eq_(view.visible_name, 'Mock View')
     eq_(view.category, None)
     eq_(view.endpoint, 'mock-view')
-    eq_(view.url, '/mock-view')
+    eq_(view.url, None)
     eq_(view.static_folder, None)
     eq_(view.admin, None)
     eq_(view.blueprint, None)
