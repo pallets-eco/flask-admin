@@ -287,6 +287,15 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         """
         return True
 
+    def __repr__(self):
+        return self
+
+    def __str__(self):
+        return unicode(self)
+
+    def __unicode__(self):
+        return self.visible_name
+
     def _handle_view(self, name, **kwargs):
         """
             This method will be executed before calling any view method.
