@@ -467,7 +467,7 @@ class Admin(object):
             self._menu.append(menu_item)
 
     def _add_view_to_menu(self, view):
-        self._add_menu_item(MenuView(view.name, view), view.category)
+        self._add_menu_item(MenuView(view.visible_name, view), view.category)
 
     def init_app(self, app):
         """
