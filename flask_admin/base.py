@@ -170,7 +170,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
                 debugger can catch them.
         """
         visible_name = visible_name or self._prettify_class_name(self.__class__.__name__)
-        name = name or slugify(visible_name)
+        name = slugify(name or visible_name)
 
         if name_prefix is not None:
             name = slugify(name_prefix, '.') + '.' + name
