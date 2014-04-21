@@ -30,8 +30,13 @@ class BaseFilter(object):
             :param view:
                 Associated administrative view class.
         """
-        if self.options:
-            return [(v, text_type(n)) for v, n in self.options]
+        options = self.options
+
+        if options:
+            if callable(options):
+                options = options()
+
+            return [(v, text_type(n)) for v, n in options]
 
         return None
 
