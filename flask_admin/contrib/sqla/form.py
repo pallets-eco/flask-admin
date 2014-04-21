@@ -267,6 +267,11 @@ class AdminModelConverter(ModelConverterBase):
             field_args['choices'] = [(f, f) for f in column.type.enums]
             return form.Select2Field(**field_args)
 
+        if column.nullable:
+            filters = field_args.get('filters', [])
+            filters.append(lambda x: x or None)
+            field_args['filters'] = filters
+
         self._string_common(column=column, field_args=field_args, **extra)
         return fields.TextField(**field_args)
 
