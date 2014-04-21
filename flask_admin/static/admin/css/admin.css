@@ -31,6 +31,10 @@ form.search-form .clear i {
     margin: 2px 0 0 0;
 }
 
+form.search-form div input {
+    margin: 0;
+}
+
 /* Filters */
 table.filters {
     border-collapse: collapse;
