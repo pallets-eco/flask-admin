@@ -52,6 +52,8 @@ class TweetForm(form.Form):
     user_id = fields.SelectField('User', widget=Select2Widget())
     text = fields.TextField('Text')
 
+    testie = fields.BooleanField('Test')
+
 
 class TweetView(ModelView):
     column_list = ('name', 'user_name', 'text')
@@ -60,7 +62,8 @@ class TweetView(ModelView):
     column_filters = (filters.FilterEqual('name', 'Name'),
                       filters.FilterNotEqual('name', 'Name'),
                       filters.FilterLike('name', 'Name'),
-                      filters.FilterNotLike('name', 'Name'))
+                      filters.FilterNotLike('name', 'Name'),
+                      filters.BooleanEqualFilter('testie', 'Testie'))
 
     column_searchable_list = ('name', 'text')
 

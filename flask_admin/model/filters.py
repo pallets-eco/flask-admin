@@ -93,7 +93,7 @@ class BaseBooleanFilter(BaseFilter):
                                                 data_type)
 
     def validate(self, value):
-        return value == '0' or value == '1'
+        return value in ('0', '1')
 
 
 class BaseDateFilter(BaseFilter):

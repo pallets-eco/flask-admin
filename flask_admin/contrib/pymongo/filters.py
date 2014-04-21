@@ -87,8 +87,10 @@ class FilterSmaller(BasePyMongoFilter):
 
 # Customized type filters
 class BooleanEqualFilter(FilterEqual, filters.BaseBooleanFilter):
-    pass
+    def clean(self, value):
+        return value == '1'
 
 
 class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
-    pass
+    def clean(self, value):
+        return value == '1'
