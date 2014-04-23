@@ -67,7 +67,7 @@ def test_model():
 
     eq_(view.model, Model1)
     eq_(view.name, 'Model1')
-    eq_(view.endpoint, 'model1view')
+    eq_(view.endpoint, 'model1')
 
     eq_(view._primary_key, 'id')
 
@@ -90,13 +90,13 @@ def test_model():
     # Make some test clients
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/')
+    rv = client.get('/admin/model1/')
     eq_(rv.status_code, 200)
 
-    rv = client.get('/admin/model1view/new/')
+    rv = client.get('/admin/model1/new/')
     eq_(rv.status_code, 200)
 
-    rv = client.post('/admin/model1view/new/',
+    rv = client.post('/admin/model1/new/',
                      data=dict(test1='test1large', test2='test2'))
     eq_(rv.status_code, 302)
 
@@ -106,11 +106,11 @@ def test_model():
     ok_(model.test3 is None or model.test3 == '')
     ok_(model.test4 is None or model.test4 == '')
 
-    rv = client.get('/admin/model1view/')
+    rv = client.get('/admin/model1/')
     eq_(rv.status_code, 200)
     ok_('test1large' in rv.data)
 
-    url = '/admin/model1view/edit/?id=%s' % model.id
+    url = '/admin/model1/edit/?id=%s' % model.id
     rv = client.get(url)
     eq_(rv.status_code, 200)
 
@@ -124,7 +124,7 @@ def test_model():
     ok_(model.test3 is None or model.test3 == '')
     ok_(model.test4 is None or model.test4 == '')
 
-    url = '/admin/model1view/delete/?id=%s' % model.id
+    url = '/admin/model1/delete/?id=%s' % model.id
     rv = client.post(url)
     eq_(rv.status_code, 302)
     eq_(Model1.select().count(), 0)
@@ -165,7 +165,7 @@ def test_extra_fields():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/new/')
+    rv = client.get('/admin/model1/new/')
     eq_(rv.status_code, 200)
 
     # Check presence and order
