@@ -161,8 +161,8 @@ class FileAdmin(BaseView, ActionsMixin):
     """
 
     def __init__(self, base_path, base_url=None,
-                 name=None, category=None, endpoint=None, url=None,
-                 verify_path=True):
+                 name=None, name_prefix='admin', visible_name=None,
+                 category=None, endpoint=None, url=None, verify_path=True):
         """
             Constructor.
 
@@ -172,6 +172,10 @@ class FileAdmin(BaseView, ActionsMixin):
                 Base URL for the files
             :param name:
                 Name of this view. If not provided, will default to the class name.
+            :param name_prefix:
+                Prefix for name. Useful to avoid blueprint naming collision.
+            :param visible_name:
+                View name used for rendering.
             :param category:
                 View category
             :param endpoint:
@@ -203,7 +207,7 @@ class FileAdmin(BaseView, ActionsMixin):
         if not op.exists(base_path):
             raise IOError('FileAdmin path "%s" does not exist or is not accessible' % base_path)
 
-        super(FileAdmin, self).__init__(name, category, endpoint, url)
+        super(FileAdmin, self).__init__(name, name_prefix, visible_name, category, endpoint, url)
 
     def is_accessible_path(self, path):
         """

@@ -268,7 +268,8 @@ class ModelView(BaseModelView):
         if self.form_choices is None:
             self.form_choices = {}
 
-        super(ModelView, self).__init__(model, name, category, endpoint, url)
+        super(ModelView, self).__init__(model, name=name, category=category,
+                                        endpoint=endpoint, url=url)
 
         # Primary key
         self._primary_key = self.scaffold_pk()

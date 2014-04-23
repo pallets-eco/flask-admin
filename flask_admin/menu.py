@@ -98,6 +98,10 @@ class MenuView(BaseMenu):
 
         return self._view.is_accessible()
 
+    @property
+    def visible_name(self):
+        return unicode(self._view)
+
 
 class MenuLink(BaseMenu):
     """

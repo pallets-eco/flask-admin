@@ -42,41 +42,41 @@ def test_inline_form():
     # Basic tests
     ok_(view._create_form_class is not None)
     ok_(view._edit_form_class is not None)
-    eq_(view.endpoint, 'userview')
+    eq_(view.endpoint, 'admin.user')
 
     # Verify form
     eq_(view._create_form_class.name.field_class, fields.TextField)
     eq_(view._create_form_class.info.field_class, InlineModelFormList)
 
-    rv = client.get('/admin/userview/')
+    rv = client.get('/admin/user/')
     eq_(rv.status_code, 200)
 
-    rv = client.get('/admin/userview/new/')
+    rv = client.get('/admin/user/new/')
     eq_(rv.status_code, 200)
 
     # Create
-    rv = client.post('/admin/userview/new/', data=dict(name=u'äõüxyz'))
+    rv = client.post('/admin/user/new/', data=dict(name=u'äõüxyz'))
     eq_(rv.status_code, 302)
     eq_(User.query.count(), 1)
     eq_(UserInfo.query.count(), 0)
 
-    rv = client.post('/admin/userview/new/', data={'name': u'fbar', \
+    rv = client.post('/admin/user/new/', data={'name': u'fbar', \
                      'info-0-key': 'foo', 'info-0-val' : 'bar'})
     eq_(rv.status_code, 302)
     eq_(User.query.count(), 2)
     eq_(UserInfo.query.count(), 1)
 
     # Edit
-    rv = client.get('/admin/userview/edit/?id=2')
+    rv = client.get('/admin/user/edit/?id=2')
     eq_(rv.status_code, 200)
     # Edit - update
-    rv = client.post('/admin/userview/edit/?id=2', data={'name': u'barfoo', \
+    rv = client.post('/admin/user/edit/?id=2', data={'name': u'barfoo', \
                      'info-0-id': 1, 'info-0-key': u'xxx', 'info-0-val':u'yyy'})
     eq_(UserInfo.query.count(), 1)
     eq_(UserInfo.query.one().key, u'xxx')
 
     # Edit - add & delete
-    rv = client.post('/admin/userview/edit/?id=2', data={'name': u'barf', \
+    rv = client.post('/admin/user/edit/?id=2', data={'name': u'barf', \
                      'del-info-0': 'on', 'info-0-id': '1', 'info-0-key': 'yyy', 'info-0-val': 'xxx',
                      'info-1-id': None, 'info-1-key': u'bar', 'info-1-val' : u'foo'})
     eq_(rv.status_code, 302)
@@ -86,10 +86,10 @@ def test_inline_form():
     eq_(UserInfo.query.one().key, u'bar')
 
     # Delete
-    rv = client.post('/admin/userview/delete/?id=2')
+    rv = client.post('/admin/user/delete/?id=2')
     eq_(rv.status_code, 302)
     eq_(User.query.count(), 1)
-    rv = client.post('/admin/userview/delete/?id=1')
+    rv = client.post('/admin/user/delete/?id=1')
     eq_(rv.status_code, 302)
     eq_(User.query.count(), 0)
     eq_(UserInfo.query.count(), 0)
