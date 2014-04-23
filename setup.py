@@ -48,10 +48,12 @@ setup(
     tests_require=[
         'nose>=1.0',
         'pillow',
-        'python-mongoengine',
+        'mongoengine',
         'pymongo',
         'wtf-peewee',
-        'sqlalchemy'
+        'sqlalchemy',
+        'flask-mongoengine',
+        'flask-sqlalchemy'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
