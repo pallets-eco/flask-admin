@@ -22,6 +22,8 @@ def desc():
 
 # grep flask_admin/__init__.py since python 3.x cannot import it before using 2to3
 file_text = read(fpath('flask_admin/__init__.py'))
+
+
 def grep(attrname):
     pattern = r"{0}\W*=\W*'([^']+)'".format(attrname)
     strval, = re.findall(pattern, file_text)
@@ -46,7 +48,14 @@ setup(
         'wtforms'
     ],
     tests_require=[
-        'nose>=1.0'
+        'nose>=1.0',
+        'pillow',
+        'mongoengine',
+        'pymongo',
+        'wtf-peewee',
+        'sqlalchemy',
+        'flask-mongoengine',
+        'flask-sqlalchemy'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
