@@ -500,9 +500,9 @@ class BaseModelView(BaseView, ActionsMixin):
         if name is None:
             name = '%s' % self._prettify_class_name(model.__name__)
 
-        # If endpoint not provided, it is model name + 'view'
+        # If endpoint not provided, it is model name
         if endpoint is None:
-            endpoint = ('%sview' % model.__name__).lower()
+            endpoint = model.__name__.lower()
 
         super(BaseModelView, self).__init__(name, category, endpoint, url)
 

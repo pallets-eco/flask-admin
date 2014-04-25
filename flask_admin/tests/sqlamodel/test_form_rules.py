@@ -18,7 +18,7 @@ def test_form_rules():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/new/')
+    rv = client.get('/admin/model1/new/')
     eq_(rv.status_code, 200)
 
     data = rv.data.decode('utf-8')
@@ -45,7 +45,7 @@ def test_rule_macro():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/new/')
+    rv = client.get('/admin/model1/new/')
     eq_(rv.status_code, 200)
 
     data = rv.data.decode('utf-8')
@@ -66,7 +66,7 @@ def test_rule_container():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/new/')
+    rv = client.get('/admin/model1/new/')
     eq_(rv.status_code, 200)
 
     data = rv.data.decode('utf-8')
@@ -91,7 +91,7 @@ def test_rule_header():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/new/')
+    rv = client.get('/admin/model1/new/')
     eq_(rv.status_code, 200)
 
     data = rv.data.decode('utf-8')
@@ -110,7 +110,7 @@ def test_rule_field_set():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/new/')
+    rv = client.get('/admin/model1/new/')
     eq_(rv.status_code, 200)
 
     data = rv.data.decode('utf-8')
@@ -137,7 +137,7 @@ def test_rule_inlinefieldlist():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/new/')
+    rv = client.get('/admin/model1/new/')
     eq_(rv.status_code, 200)
 
 
@@ -153,7 +153,7 @@ def test_inline_model_rules():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1view/new/')
+    rv = client.get('/admin/model1/new/')
     eq_(rv.status_code, 200)
 
     data = rv.data.decode('utf-8')
