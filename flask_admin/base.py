@@ -1,3 +1,5 @@
+import os.path as op
+
 from functools import wraps
 
 from flask import Blueprint, render_template, abort, g
@@ -219,7 +221,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         self.blueprint = Blueprint(self.endpoint, __name__,
                                    url_prefix=self.url,
                                    subdomain=self.admin.subdomain,
-                                   template_folder='templates',
+                                   template_folder=op.join('templates', self.admin.template_mode),
                                    static_folder=self.static_folder,
                                    static_url_path=self.static_url_path)
 
@@ -356,7 +358,8 @@ class Admin(object):
                  translations_path=None,
                  endpoint=None,
                  static_url_path=None,
-                 base_template=None):
+                 base_template=None,
+                 template_mode=None):
         """
             Constructor.
 
@@ -381,6 +384,9 @@ class Admin(object):
                 all its views. Can be overridden in view configuration.
             :param base_template:
                 Override base HTML template for all static views. Defaults to `admin/base.html`.
+            :param template_mode:
+                Base template path. Defaults to `bootstrap2`. If you want to use
+                Bootstrap 3 integration, change it to `bootstrap3`.
         """
         self.app = app
 
@@ -401,6 +407,7 @@ class Admin(object):
         self.static_url_path = static_url_path
         self.subdomain = subdomain
         self.base_template = base_template or 'admin/base.html'
+        self.template_mode = template_mode or 'bootstrap2'
 
         # Add predefined index view
         self.add_view(self.index_view)

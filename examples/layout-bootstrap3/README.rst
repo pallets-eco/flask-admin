@@ -1,0 +1,1 @@
+This example shows how to customize Flask-Admin layout and overall look and feel.

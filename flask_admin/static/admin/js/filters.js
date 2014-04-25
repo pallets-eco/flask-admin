@@ -40,7 +40,7 @@ var AdminFilters = function(element, filtersElement, filterGroups) {
         // Filter list
         $el.append(
             $('<td/>').append(
-                $('<a href="#" class="btn remove-filter" />')
+                $('<a href="#" class="btn btn-filter remove-filter" />')
                     .append($('<span class="close-icon">&times;</span>'))
                     .append('&nbsp;')
                     .append(name)
@@ -80,7 +80,7 @@ var AdminFilters = function(element, filtersElement, filterGroups) {
             $field.select2({width: 'resolve'});
         } else
         {
-            $field = $('<input type="text" class="filter-val" />')
+            $field = $('<input type="text" class="filter-val form-control" />')
                         .attr('name', makeName(filter.arg));
             $el.append($('<td/>').append($field));
         }

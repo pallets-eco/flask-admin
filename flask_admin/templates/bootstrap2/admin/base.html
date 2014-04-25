@@ -10,9 +10,9 @@
         <meta name="author" content="">
     {% endblock %}
     {% block head_css %}
-        <link href="{{ admin_static.url(filename='bootstrap/css/bootstrap.css') }}" rel="stylesheet">
-        <link href="{{ admin_static.url(filename='bootstrap/css/bootstrap-responsive.css') }}" rel="stylesheet">
-        <link href="{{ admin_static.url(filename='admin/css/admin.css') }}" rel="stylesheet">
+        <link href="{{ admin_static.url(filename='bootstrap/bootstrap2/css/bootstrap.css') }}" rel="stylesheet">
+        <link href="{{ admin_static.url(filename='bootstrap/bootstrap2/css/bootstrap-responsive.css') }}" rel="stylesheet">
+        <link href="{{ admin_static.url(filename='admin/css/bootstrap2/admin.css') }}" rel="stylesheet">
     {% endblock %}
     {% block head %}
     {% endblock %}
@@ -53,8 +53,8 @@
     {% endblock %}
 
     {% block tail_js %}
-    <script src="{{ admin_static.url(filename='vendor/jquery-1.8.3.min.js') }}" type="text/javascript"></script>
-    <script src="{{ admin_static.url(filename='bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
+    <script src="{{ admin_static.url(filename='vendor/jquery-2.0.3.min.js') }}" type="text/javascript"></script>
+    <script src="{{ admin_static.url(filename='bootstrap/bootstrap2/js/bootstrap.min.js') }}" type="text/javascript"></script>
     <script src="{{ admin_static.url(filename='select2/select2.min.js') }}" type="text/javascript"></script>
     {% endblock %}
 
