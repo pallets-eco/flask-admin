@@ -1076,7 +1076,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Get unformatted field value from the model
         """
         return rec_getattr(model, name)
-    def _get_filter_dict(self):
+    def _get_filter_groups(self):
         """
             Return flattened filter dictionary which can be JSON-serialized.
         """
