@@ -14,7 +14,7 @@ from flask.ext.admin.actions import ActionsMixin
 from flask.ext.admin.helpers import get_form_data, validate_form_on_submit, get_redirect_target
 from flask.ext.admin.tools import rec_getattr
 from flask.ext.admin._backwards import ObsoleteAttr
-from flask.ext.admin._compat import iteritems, OrderedDict
+from flask.ext.admin._compat import iteritems, OrderedDict, as_unicode
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
 
@@ -1076,6 +1076,11 @@ class BaseModelView(BaseView, ActionsMixin):
             Get unformatted field value from the model
         """
         return rec_getattr(model, name)
+    def _get_filter_dict(self):
+        """
+            Return flattened filter dictionary which can be JSON-serialized.
+        """
+            return OrderedDict((as_unicode(k), v) for k, v in iteritems(self._filter_groups))
 
     @contextfunction
     def get_list_value(self, context, model, name):
