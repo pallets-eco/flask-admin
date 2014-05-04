@@ -162,7 +162,7 @@
             {% if filter_groups %}
                 var filter = new AdminFilters(
                     '#filter_form', '.field-filters',
-                    {{ filter_groups|tojson|safe }}
+                    {{ admin_view._get_filter_dict()|tojson|safe }}
                 );
             {% endif %}
         })(jQuery);
