@@ -878,6 +878,13 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         raise NotImplemented('Please implement get_one method')
 
+    # Exception handler
+    def handle_view_exception(self, exc):
+        if self._debug:
+            return False
+
+        return True
+
     # Model event handlers
     def on_model_change(self, form, model, is_created):
         """
