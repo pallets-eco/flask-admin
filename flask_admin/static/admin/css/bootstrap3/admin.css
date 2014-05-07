@@ -20,7 +20,6 @@ form.icon button {
 a.icon, button span.glyphicon {
     text-decoration: none;
     margin-left: 10px;
-    color: black;
 }
 
 /* Model search form */
@@ -45,9 +44,11 @@ form.search-form div input {
 table.filters {
     border-collapse: collapse;
     border-spacing: 4px;
-    margin: 12px 0px 20px 0px;
 }
 
+table.filters:not(:empty) {
+    margin: 12px 0px 20px 0px;
+}
 
 table.filters tr td {
     padding-right: 5px;
@@ -70,6 +71,7 @@ table.flters tr td:nth-child(2){
     margin-bottom: 0;
     display: block;
     text-align: left;
+    text-decoration: none;
 }
 
 .filters .remove-filter
