@@ -515,18 +515,7 @@ class BaseModelView(BaseView, ActionsMixin):
         self._refresh_cache()
 
     # Caching
-    def _refresh_cache(self):
-        """
-            Refresh various cached variables.
-        """
-        # List view
-        self._list_columns = self.get_list_columns()
-        self._sortable_columns = self.get_sortable_columns()
-
-        # Labels
-        if self.column_labels is None:
-            self.column_labels = {}
-
+    def _refresh_forms_cache(self):
         # Forms
         self._form_ajax_refs = self._process_ajax_references()
 
@@ -536,29 +525,9 @@ class BaseModelView(BaseView, ActionsMixin):
         self._create_form_class = self.get_create_form()
         self._edit_form_class = self.get_edit_form()
 
-        # Search
-        self._search_supported = self.init_search()
-
-        # Choices
-        if self.column_choices:
-            self._column_choices_map = dict([
-                (column, dict(choices))
-                for column, choices in self.column_choices.items()
-            ])
-        else:
-            self.column_choices = self._column_choices_map = dict()
-
-        # Filters
+    def _refresh_filters_cache(self):
         self._filters = self.get_filters()
 
-        # Type formatters
-        if self.column_type_formatters is None:
-            self.column_type_formatters = dict(typefmt.BASE_FORMATTERS)
-
-        if self.column_descriptions is None:
-            self.column_descriptions = dict()
-
-        # Group filters by field name
         if self._filters:
             self._filter_groups = OrderedDict()
             self._filter_args = {}
@@ -580,7 +549,7 @@ class BaseModelView(BaseView, ActionsMixin):
             self._filter_groups = None
             self._filter_args = None
 
-        # Form rendering rules
+    def _refresh_form_rules_cache(self):
         if self.form_create_rules:
             self._form_create_rules = rules.RuleSet(self, self.form_create_rules)
         else:
@@ -599,6 +568,46 @@ class BaseModelView(BaseView, ActionsMixin):
 
             if not self._form_edit_rules:
                 self._form_edit_rules = form_rules
+
+    def _refresh_cache(self):
+        """
+            Refresh various cached variables.
+        """
+        # List view
+        self._list_columns = self.get_list_columns()
+        self._sortable_columns = self.get_sortable_columns()
+
+        # Labels
+        if self.column_labels is None:
+            self.column_labels = {}
+
+        # Forms
+        self._refresh_forms_cache()
+
+        # Search
+        self._search_supported = self.init_search()
+
+        # Choices
+        if self.column_choices:
+            self._column_choices_map = dict([
+                (column, dict(choices))
+                for column, choices in self.column_choices.items()
+            ])
+        else:
+            self.column_choices = self._column_choices_map = dict()
+
+        # Type formatters
+        if self.column_type_formatters is None:
+            self.column_type_formatters = dict(typefmt.BASE_FORMATTERS)
+
+        if self.column_descriptions is None:
+            self.column_descriptions = dict()
+
+        # Filters
+        self._refresh_filters_cache()
+
+        # Form rendering rules
+        self._refresh_form_rules_cache()
 
     # Primary key
     def get_pk_value(self, model):
