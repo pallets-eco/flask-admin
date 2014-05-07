@@ -132,8 +132,8 @@
     {% endif %}
 {% endmacro %}
 
-{% macro form_tag(form=None) %}
-    <form action="" method="POST" role="form" class="form-horizontal" enctype="multipart/form-data">
+{% macro form_tag(form=None, action=None) %}
+    <form action="{{ action or '' }}" method="POST" role="form" class="form-horizontal" enctype="multipart/form-data">
       {{ caller() }}
     </form>
 {% endmacro %}
@@ -152,8 +152,8 @@
     </div>
 {% endmacro %}
 
-{% macro render_form(form, cancel_url, extra=None, form_opts=None) -%}
-    {% call form_tag() %}
+{% macro render_form(form, cancel_url, extra=None, form_opts=None, action=None) -%}
+    {% call form_tag(action=action) %}
         {{ render_form_fields(form, form_opts=form_opts) }}
         {{ render_form_buttons(cancel_url, extra) }}
     {% endcall %}
