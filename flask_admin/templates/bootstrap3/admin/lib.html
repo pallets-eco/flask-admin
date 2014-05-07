@@ -111,7 +111,7 @@
         {% if csrf_token %}
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         {% endif %}
-        {% for f in form if f.type == 'HiddenField' %}
+        {% for f in form if f.widget.input_type == 'hidden' %}
             {{ f }}
         {% endfor %}
     {% endif %}
@@ -121,7 +121,7 @@
             {{ r(form, form_opts=form_opts) }}
         {% endfor %}
     {% else %}
-        {% for f in form if f.type != 'HiddenField' and f.type != 'CSRFTokenField' %}
+        {% for f in form if f.widget.input_type != 'hidden' %}
           {% if form_opts %}
             {% set kwargs = form_opts.widget_args.get(f.name, {}) %}
           {% else %}
