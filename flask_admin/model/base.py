@@ -1080,7 +1080,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Return flattened filter dictionary which can be JSON-serialized.
         """
-            return OrderedDict((as_unicode(k), v) for k, v in iteritems(self._filter_groups))
+        return OrderedDict((as_unicode(k), v) for k, v in iteritems(self._filter_groups))
 
     @contextfunction
     def get_list_value(self, context, model, name):
