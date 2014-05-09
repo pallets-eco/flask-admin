@@ -563,7 +563,7 @@ class InlineModelConverter(InlineModelConverterBase):
         if prop.direction.name == 'MANYTOONE':
             candidate = 'ONETOMANY'
         else:
-            candidate = 'MANYTOONE'
+            candidate = 'MANYTOMANY'
 
         for prop in mapper.iterate_properties:
             if hasattr(prop, 'direction') and prop.direction.name == candidate:
