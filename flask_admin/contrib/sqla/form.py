@@ -550,7 +550,7 @@ class InlineModelConverter(InlineModelConverterBase):
         reverse_prop = None
 
         for prop in target_mapper.iterate_properties:
-            if hasattr(prop, 'direction'):
+            if hasattr(prop, 'direction') and prop.direction.name in ('MANYTOONE', 'MANYTOMANY'):
                 if issubclass(model, prop.mapper.class_):
                     reverse_prop = prop
                     break
@@ -560,8 +560,13 @@ class InlineModelConverter(InlineModelConverterBase):
         # Find forward property
         forward_prop = None
 
+        if prop.direction.name == 'MANYTOONE':
+            candidate = 'ONETOMANY'
+        else:
+            candidate = 'MANYTOONE'
+
         for prop in mapper.iterate_properties:
-            if hasattr(prop, 'direction'):
+            if hasattr(prop, 'direction') and prop.direction.name == candidate:
                 if prop.mapper.class_ == target_mapper.class_:
                     forward_prop = prop
                     break

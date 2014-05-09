@@ -149,3 +149,23 @@ def test_inline_form_ajax_fk():
     eq_(loader.model, Tag)
 
     ok_('userinfo-tag' in view._form_ajax_refs)
+
+def test_inline_form_self():
+    app, db, admin = setup()
+
+    class Tree(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        parent_id = db.Column(db.Integer, db.ForeignKey('tree.id'))
+        parent = db.relationship('Tree', remote_side=[id], backref='children')
+
+    db.create_all()
+
+    class TreeView(ModelView):
+        inline_models = (Tree,)
+
+    view = TreeView(Tree, db.session)
+
+    parent = Tree()
+    child = Tree(parent=parent)
+    form = view.edit_form(child)
+    eq_(form.parent.data, parent)
