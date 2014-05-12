@@ -392,7 +392,7 @@ class ImageUploadField(FileUploadField):
             self._save_image(image, self._get_path(filename), format)
         else:
             data.seek(0)
-            data.save(path)
+            data.save( self._get_path(filename) )
 
         self._save_thumbnail(data, filename, format)
 
