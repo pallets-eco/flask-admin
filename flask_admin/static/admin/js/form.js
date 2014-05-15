@@ -11,7 +11,7 @@
 
         var opts = {
           width: 'resolve',
-          minimumInputLength: 1,
+          minimumInputLength: $el.attr('data-minimum-input-length'),
           placeholder: 'data-placeholder',
           ajax: {
             url: $el.attr('data-url'),
@@ -92,6 +92,8 @@
 
                 if ($el.attr('data-allow-blank'))
                     opts['allowClear'] = true;
+
+                opts['minimumInputLength'] = $el.attr('data-minimum-input-length');
 
                 if ($el.attr('data-tags')) {
                     $.extend(opts, {
