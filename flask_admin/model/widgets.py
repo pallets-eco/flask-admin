@@ -27,7 +27,6 @@ class AjaxSelect2Widget(object):
     def __call__(self, field, **kwargs):
         kwargs['data-role'] = u'select2-ajax'
         kwargs['data-url'] = url_for('.ajax_lookup', name=field.loader.name)
-        kwargs['data-minimum-input-length'] = int( getattr(field, 'minimum_input_length', 1) )
 
         allow_blank = getattr(field, 'allow_blank', False)
         if allow_blank and not self.multiple:
@@ -59,5 +58,8 @@ class AjaxSelect2Widget(object):
 
         placeholder = gettext(field.loader.options.get('placeholder', 'Please select model'))
         kwargs.setdefault('data-placeholder', placeholder)
+
+        minimum_input_length = int( field.loader.options.get( 'minimum_input_length', 1 ) )
+        kwargs.setdefault('data-minimum-input-length', minimum_input_length)
 
         return HTMLString('<input %s>' % html_params(name=field.name, **kwargs))
