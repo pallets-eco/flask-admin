@@ -58,8 +58,9 @@ class QueryAjaxModelLoader(AjaxModelLoader):
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
         query = self.session.query(self.model)
 
-        filters = (field.like(u'%%%s%%' % term) for field in self._cached_fields)
-        query = query.filter(or_(*filters))
+        if len(term) > 0:
+            filters = (field.like(u'%%%s%%' % term) for field in self._cached_fields)
+            query = query.filter(or_(*filters))
 
         return query.offset(offset).limit(limit).all()
 

@@ -52,16 +52,17 @@ class QueryAjaxModelLoader(AjaxModelLoader):
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
         query = self.model.select()
 
-        stmt = None
-        for field in self._cached_fields:
-            q = field ** (u'%%%s%%' % term)
+        if len(term) > 0:
+            stmt = None
+            for field in self._cached_fields:
+                q = field ** (u'%%%s%%' % term)
 
-            if stmt is None:
-                stmt = q
-            else:
-                stmt |= q
+                if stmt is None:
+                    stmt = q
+                else:
+                    stmt |= q
 
-        query = query.where(stmt)
+            query = query.where(stmt)
 
         if offset:
             query = query.offset(offset)
