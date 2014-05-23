@@ -603,7 +603,7 @@ class FileAdmin(BaseView, ActionsMixin):
             try:
                 shutil.rmtree(full_path)
                 self.on_directory_delete(full_path, path)
-                flash(gettext('Directory "%s" was successfully deleted.' % path))
+                flash(gettext('Directory "%(path)s" was successfully deleted.', path=path))
             except Exception as ex:
                 flash(gettext('Failed to delete directory: %(error)s', error=ex), 'error')
         else:
