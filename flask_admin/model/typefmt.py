@@ -30,7 +30,7 @@ def bool_formatter(view, value):
             Value to check
     """
     glyph = 'ok-circle' if value else 'minus-sign'
-    return Markup('<span class="glyphicon glyphicon-%s"></span>' % glyph)
+    return Markup('<span class="glyphicon glyphicon-%s icon-%s"></span>' % (glyph, glyph))
 
 
 def list_formatter(view, values):
