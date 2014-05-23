@@ -1,5 +1,5 @@
 Flask>=0.7
-wtforms
+wtforms<2.0
 Flask-SQLAlchemy>=0.15
 peewee
 wtf-peewee
