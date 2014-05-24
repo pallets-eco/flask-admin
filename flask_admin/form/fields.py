@@ -10,6 +10,9 @@ from . import widgets as admin_widgets
 __all__ = ['DateTimeField', 'TimeField', 'Select2Field', 'Select2TagsField']
 
 class DateTimeField(fields.DateTimeField):
+    """
+       Allows modifying the datetime format of a DateTimeField using form_args.
+    """
     widget = admin_widgets.DateTimePickerWidget()
     def __init__(self, label=None, validators=None, widget_format=None, **kwargs):
         """
@@ -20,7 +23,7 @@ class DateTimeField(fields.DateTimeField):
             :param validators:
                 Field validators
             :param widget_format:
-                Widget date format. Defaults to 'hh:ii:ss'
+                Widget date format. Defaults to 'yyyy-mm-dd hh:ii:ss'
             :param kwargs:
                 Any additional parameters
         """
