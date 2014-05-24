@@ -57,7 +57,7 @@ class DateTimePickerWidget(widgets.TextInput):
     """
     def __call__(self, field, **kwargs):
         kwargs['data-role'] = u'datetimepicker'
-        kwargs['data-date-format'] = u'yyyy-mm-dd hh:ii:ss'
+        kwargs['data-date-format'] = field.widget_format or u'yyyy-mm-dd hh:ii:ss'
         kwargs['data-date-autoclose'] = u'true'
         kwargs['data-date-today-btn'] = u'linked'
         kwargs['data-date-today-highlight'] = u'true'
