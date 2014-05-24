@@ -10,7 +10,7 @@ from . import widgets as admin_widgets
 __all__ = ['TimeField', 'Select2Field', 'Select2TagsField']
 
 class DateTimeField(fields.DateTimeField):
-	widget = admin_widgets.DateTimePickerWidget()
+    widget = admin_widgets.DateTimePickerWidget()
     def __init__(self, label=None, validators=None, widget_format=None, **kwargs):
         """
             Constructor
@@ -25,9 +25,9 @@ class DateTimeField(fields.DateTimeField):
                 Any additional parameters
         """
         super(DateTimeField, self).__init__(label, validators, **kwargs)
-		
+        
         self.widget_format = widget_format or 'yyyy-mm-dd hh:ii:ss'
-		
+        
 class TimeField(fields.Field):
     """
         A text field which stores a `datetime.time` object.
