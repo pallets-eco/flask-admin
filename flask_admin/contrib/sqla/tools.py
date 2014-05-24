@@ -3,6 +3,7 @@ from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
 from ast import literal_eval
 
+from flask.ext.admin._compat import filter_list
 from flask.ext.admin.tools import iterencode, iterdecode
 
 
@@ -24,7 +25,7 @@ def filter_foreign_columns(base_table, columns):
         :param base_table: Table to check against
         :param columns: List of columns to filter
     """
-    return filter(lambda c: c.table == base_table, columns)
+    return filter_list(lambda c: c.table == base_table, columns)
 
 
 def get_primary_key(model):

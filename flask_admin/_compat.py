@@ -23,6 +23,7 @@ if not PY2:
     iterkeys = lambda d: iter(d.keys())
     itervalues = lambda d: iter(d.values())
     iteritems = lambda d: iter(d.items())
+    filter_list = lambda f, l: list(filter(f, l))
 
     def as_unicode(s):
         if isinstance(s, bytes):
@@ -41,6 +42,7 @@ else:
     iterkeys = lambda d: d.iterkeys()
     itervalues = lambda d: d.itervalues()
     iteritems = lambda d: d.iteritems()
+    filter_list = filter
 
     def as_unicode(s):
         if isinstance(s, str):
