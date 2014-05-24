@@ -14,8 +14,7 @@ class DateTimeField(fields.DateTimeField):
        Allows modifying the datetime format of a DateTimeField using form_args.
     """
     widget = admin_widgets.DateTimePickerWidget()
-    def __init__(self, label=None, validators=None, format=None,
-                 widget_format=None, **kwargs):
+    def __init__(self, label=None, validators=None, format=None, formats=None, widget_format=None, **kwargs):
         """
             Constructor
 
