@@ -7,9 +7,34 @@ from flask.ext.admin._compat import text_type, as_unicode
 
 from . import widgets as admin_widgets
 
-__all__ = ['TimeField', 'Select2Field', 'Select2TagsField']
+__all__ = ['DateTimeField', 'TimeField', 'Select2Field', 'Select2TagsField']
 
+class DateTimeField(fields.DateTimeField):
+    """
+       Allows modifying the datetime format of a DateTimeField using form_args.
+    """
+    widget = admin_widgets.DateTimePickerWidget()
+    def __init__(self, label=None, validators=None, format=None, widget_format=None, **kwargs):
+        """
+            Constructor
 
+            :param label:
+                Label
+            :param validators:
+                Field validators
+	        :param format:
+                Format for text to date conversion. Defaults to '%Y-%m-%d %H:%M:%S'
+            :param widget_format:
+                Widget date format. Defaults to 'yyyy-mm-dd hh:ii:ss'
+            :param kwargs:
+                Any additional parameters
+        """
+        super(DateTimeField, self).__init__(label, validators, **kwargs)
+		
+        self.format = format or '%Y-%m-%d %H:%M:%S'
+								   
+        self.widget_format = widget_format or 'yyyy-mm-dd hh:ii:ss'
+        
 class TimeField(fields.Field):
     """
         A text field which stores a `datetime.time` object.

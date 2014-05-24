@@ -2,7 +2,6 @@ from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
 
 from flask.ext.admin import form
-from flask.ext.admin.form import Select2Field
 from flask.ext.admin.model.form import (converts, ModelConverterBase,
                                         InlineModelConverterBase, FieldPlaceholder)
 from flask.ext.admin.model.fields import AjaxSelectField, AjaxSelectMultipleField
@@ -238,7 +237,7 @@ class AdminModelConverter(ModelConverterBase):
                 if mapper.class_ == self.view.model and form_choices:
                     choices = form_choices.get(column.key)
                     if choices:
-                        return Select2Field(
+                        return form.Select2Field(
                             choices=choices,
                             allow_blank=column.nullable,
                             **kwargs
@@ -292,8 +291,7 @@ class AdminModelConverter(ModelConverterBase):
 
     @converts('DateTime')
     def convert_datetime(self, field_args, **extra):
-        field_args['widget'] = form.DateTimePickerWidget()
-        return DateTimeField(**field_args)
+        return form.DateTimeField(**field_args)
 
     @converts('Time')
     def convert_time(self, field_args, **extra):
