@@ -7,7 +7,7 @@ from flask.ext.admin._compat import text_type, as_unicode
 
 from . import widgets as admin_widgets
 
-__all__ = ['TimeField', 'Select2Field', 'Select2TagsField']
+__all__ = ['DateTimeField', 'TimeField', 'Select2Field', 'Select2TagsField']
 
 class DateTimeField(fields.DateTimeField):
     widget = admin_widgets.DateTimePickerWidget()
