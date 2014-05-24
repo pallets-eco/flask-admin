@@ -14,8 +14,8 @@ class DateTimeField(fields.DateTimeField):
        Allows modifying the datetime format of a DateTimeField using form_args.
     """
     widget = admin_widgets.DateTimePickerWidget()
-    def __init__(self, label=None, validators=None, formats=None,
-                 default_format=None,widget_format=None, **kwargs):
+    def __init__(self, label=None, validators=None, format=None,
+                 widget_format=None, **kwargs):
         """
             Constructor
 
@@ -23,10 +23,8 @@ class DateTimeField(fields.DateTimeField):
                 Label
             :param validators:
                 Field validators
-	        :param formats:
-                Supported time formats, as a enumerable.
-            :param default_format:
-                Default time format. Defaults to '%Y-%m-%d %H:%M:%S'
+	        :param format:
+                Format for text to date conversion. Defaults to '%Y-%m-%d %H:%M:%S'
             :param widget_format:
                 Widget date format. Defaults to 'yyyy-mm-dd hh:ii:ss'
             :param kwargs:
@@ -34,9 +32,8 @@ class DateTimeField(fields.DateTimeField):
         """
         super(DateTimeField, self).__init__(label, validators, **kwargs)
 		
-        self.formats = formats or ('%Y-%m-%d %H:%M:%S', '%Y-%m-%d %H:%M')
+        self.format = format or '%Y-%m-%d %H:%M:%S'
 								   
-        self.default_format = default_format or '%Y-%m-%d %H:%M:%S'								   
         self.widget_format = widget_format or 'yyyy-mm-dd hh:ii:ss'
         
 class TimeField(fields.Field):
