@@ -7,6 +7,10 @@ from flask.ext.admin._compat import text_type, as_unicode
 
 from . import widgets as admin_widgets
 
+"""
+An understanding of WTForms's Custom Widgets is helpful for understanding this code: http://wtforms.simplecodes.com/docs/0.6.2/widgets.html#custom-widgets
+"""
+
 __all__ = ['DateTimeField', 'TimeField', 'Select2Field', 'Select2TagsField']
 
 class DateTimeField(fields.DateTimeField):
@@ -14,7 +18,7 @@ class DateTimeField(fields.DateTimeField):
        Allows modifying the datetime format of a DateTimeField using form_args.
     """
     widget = admin_widgets.DateTimePickerWidget()
-    def __init__(self, label=None, validators=None, format=None, widget_format=None, **kwargs):
+    def __init__(self, label=None, validators=None, format=None, **kwargs):
         """
             Constructor
 
@@ -22,19 +26,15 @@ class DateTimeField(fields.DateTimeField):
                 Label
             :param validators:
                 Field validators
-	        :param format:
+            :param format:
                 Format for text to date conversion. Defaults to '%Y-%m-%d %H:%M:%S'
-            :param widget_format:
-                Widget date format. Defaults to 'yyyy-mm-dd hh:ii:ss'
             :param kwargs:
                 Any additional parameters
         """
         super(DateTimeField, self).__init__(label, validators, **kwargs)
-		
-        self.format = format or '%Y-%m-%d %H:%M:%S'
-								   
-        self.widget_format = widget_format or 'yyyy-mm-dd hh:ii:ss'
         
+        self.format = format or '%Y-%m-%d %H:%M:%S'
+                                           
 class TimeField(fields.Field):
     """
         A text field which stores a `datetime.time` object.
@@ -55,8 +55,6 @@ class TimeField(fields.Field):
                 Supported time formats, as a enumerable.
             :param default_format:
                 Default time format. Defaults to '%H:%M:%S'
-            :param widget_format:
-                Widget date format. Defaults to 'hh:ii:ss'
             :param kwargs:
                 Any additional parameters
         """
@@ -67,7 +65,6 @@ class TimeField(fields.Field):
                                    '%I:%M:%S %p', '%I:%M %p')
 
         self.default_format = default_format or '%H:%M:%S'
-        self.widget_format = widget_format or 'hh:ii:ss'
 
     def _value(self):
         if self.raw_data:
