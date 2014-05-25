@@ -28,8 +28,6 @@ class DateTimeField(fields.DateTimeField):
                 Field validators
             :param format:
                 Format for text to date conversion. Defaults to '%Y-%m-%d %H:%M:%S'
-            :param widget_format:
-                Widget date format. Defaults to 'yyyy-mm-dd hh:ii:ss'
             :param kwargs:
                 Any additional parameters
         """
@@ -57,8 +55,6 @@ class TimeField(fields.Field):
                 Supported time formats, as a enumerable.
             :param default_format:
                 Default time format. Defaults to '%H:%M:%S'
-            :param widget_format:
-                Widget date format. Defaults to 'hh:ii:ss'
             :param kwargs:
                 Any additional parameters
         """
