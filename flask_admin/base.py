@@ -388,6 +388,8 @@ class Admin(object):
                 Base template path. Defaults to `bootstrap2`. If you want to use
                 Bootstrap 3 integration, change it to `bootstrap3`.
         """
+        self.app = None
+        
         self.translations_path = translations_path
 
         self._views = []
