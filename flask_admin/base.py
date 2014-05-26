@@ -407,7 +407,8 @@ class Admin(object):
         self.static_url_path    = static_url_path
         self.subdomain          = subdomain
         self.base_template      = base_template or 'admin/base.html'
-
+        self.template_mode      = template_mode or 'bootstrap2'
+        
         # Register with application
         if app is not None:
             self.init_app(app)
