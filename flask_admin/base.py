@@ -400,10 +400,13 @@ class Admin(object):
         self.name = name
 
         self.index_view = index_view
-        if self.index_view:
-            self.endpoint = self.index_view.endpoint
-            self.url = self.index_view.url
-
+        if self.index_view:  # Allow some defaults
+            self.endpoint = endpoint or self.index_view.endpoint
+            self.url = url or self.index_view.url
+            
+        self.endpoint = endpoint
+        self.url = url
+        
         self.static_url_path    = static_url_path
         self.subdomain          = subdomain
         self.base_template      = base_template or 'admin/base.html'
@@ -472,9 +475,9 @@ class Admin(object):
                 Flask application instance
         """
         # Delay the init of the default admin view
-        self.index_view = self.index_view or AdminIndexView(endpoint=endpoint, url=url)
-        self.endpoint   = self.index_view.endpoint
-        self.url        = self.index_view.url
+        self.index_view = self.index_view or AdminIndexView(endpoint=self.endpoint, url=self.url)
+        self.endpoint   = self.endpoint or self.index_view.endpoint
+        self.url        = self.url or self.index_view.url
 
         # Add predefined index view
         self.add_view(self.index_view)
