@@ -84,7 +84,9 @@ def test_baseview_defaults():
 
 
 def test_base_defaults():
+    app = Flask(__name__)
     admin = base.Admin()
+    admin.init_app(app) # Defaults now set after init_app
     eq_(admin.name, 'Admin')
     eq_(admin.url, '/admin')
     eq_(admin.endpoint, 'admin')
