@@ -111,6 +111,9 @@ def test_custom_index_view():
     eq_(view.category, 'b')
     eq_(view._template, 'e')
 
+    app = Flask(__name__)
+    admin.init_app(app)
+
     # Check if view was added
     eq_(len(admin._views), 1)
     eq_(admin._views[0], view)
@@ -137,7 +140,9 @@ def test_admin_customizations():
 
 
 def test_baseview_registration():
+    app = Flask(__name__)
     admin = base.Admin()
+    admin.init_app(app)
 
     view = MockView()
     bp = view.create_blueprint(admin)
