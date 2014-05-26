@@ -400,12 +400,12 @@ class Admin(object):
         self.name = name
 
         self.index_view = index_view
-        if self.index_view:  # Allow some defaults
-            self.endpoint = endpoint or self.index_view.endpoint
-            self.url = url or self.index_view.url
-            
-        self.endpoint = endpoint
-        self.url = url
+        if self.index_view:     # Allow some defaults
+            self.endpoint   = self.index_view.endpoint
+            self.url        = self.index_view.url
+        else:
+            self.endpoint   = endpoint
+            self.url        = url  
         
         self.static_url_path    = static_url_path
         self.subdomain          = subdomain
