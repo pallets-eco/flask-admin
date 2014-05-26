@@ -385,8 +385,8 @@ class Admin(object):
             :param base_template:
                 Override base HTML template for all static views. Defaults to `admin/base.html`.
             :param template_mode:
-                 Base template path. Defaults to `bootstrap2`. If you want to use
-                 Bootstrap 3 integration, change it to `bootstrap3`.
+                Base template path. Defaults to `bootstrap2`. If you want to use
+                Bootstrap 3 integration, change it to `bootstrap3`.
         """
         self.translations_path = translations_path
 
