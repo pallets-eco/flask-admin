@@ -404,8 +404,8 @@ class Admin(object):
             self.endpoint   = self.index_view.endpoint
             self.url        = self.index_view.url
         else:
-            self.endpoint   = endpoint
-            self.url        = url  
+            self.endpoint   = endpoint or 'admin'
+            self.url        = url  or '/admin'
         
         self.static_url_path    = static_url_path
         self.subdomain          = subdomain
