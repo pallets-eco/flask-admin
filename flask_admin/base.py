@@ -1,5 +1,3 @@
-import os.path as op
-
 from functools import wraps
 
 from flask import Blueprint, render_template, abort, g
@@ -221,7 +219,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         self.blueprint = Blueprint(self.endpoint, __name__,
                                    url_prefix=self.url,
                                    subdomain=self.admin.subdomain,
-                                   template_folder=op.join('templates', self.admin.template_mode),
+                                   template_folder='templates',
                                    static_folder=self.static_folder,
                                    static_url_path=self.static_url_path)
 
@@ -358,8 +356,7 @@ class Admin(object):
                  translations_path=None,
                  endpoint=None,
                  static_url_path=None,
-                 base_template=None,
-                 template_mode=None):
+                 base_template=None):
         """
             Constructor.
 
@@ -384,12 +381,7 @@ class Admin(object):
                 all its views. Can be overridden in view configuration.
             :param base_template:
                 Override base HTML template for all static views. Defaults to `admin/base.html`.
-            :param template_mode:
-                Base template path. Defaults to `bootstrap2`. If you want to use
-                Bootstrap 3 integration, change it to `bootstrap3`.
         """
-        self.app = app
-
         self.translations_path = translations_path
 
         self._views = []
@@ -401,20 +393,18 @@ class Admin(object):
             name = 'Admin'
         self.name = name
 
-        self.index_view = index_view or AdminIndexView(endpoint=endpoint, url=url)
-        self.endpoint = endpoint or self.index_view.endpoint
-        self.url = url or self.index_view.url
-        self.static_url_path = static_url_path
-        self.subdomain = subdomain
-        self.base_template = base_template or 'admin/base.html'
-        self.template_mode = template_mode or 'bootstrap2'
+        self.index_view = index_view
+        if self.index_view:
+            self.endpoint = self.index_view.endpoint
+            self.url = self.index_view.url
 
-        # Add predefined index view
-        self.add_view(self.index_view)
+        self.static_url_path    = static_url_path
+        self.subdomain          = subdomain
+        self.base_template      = base_template or 'admin/base.html'
 
         # Register with application
         if app is not None:
-            self._init_extension()
+            self.init_app(app)
 
     def add_view(self, view):
         """
@@ -427,7 +417,7 @@ class Admin(object):
         self._views.append(view)
 
         # If app was provided in constructor, register view with Flask app
-        if self.app is not None:
+        if getattr(self, 'app', None) is not None:
             self.app.register_blueprint(view.create_blueprint(self))
 
         self._add_view_to_menu(view)
@@ -474,6 +464,14 @@ class Admin(object):
             :param app:
                 Flask application instance
         """
+        # Delay the init of the default admin view
+        self.index_view = self.index_view or AdminIndexView(endpoint=endpoint, url=url)
+        self.endpoint   = self.index_view.endpoint
+        self.url        = self.index_view.url
+
+        # Add predefined index view
+        self.add_view(self.index_view)
+
         self.app = app
 
         self._init_extension()
