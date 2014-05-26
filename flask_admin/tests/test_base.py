@@ -84,13 +84,15 @@ def test_baseview_defaults():
 
 
 def test_base_defaults():
-    app = Flask(__name__)
+    
     admin = base.Admin()
+    eq_(admin.app, None)
+    
+    app = Flask(__name__)
     admin.init_app(app) # Defaults now set after init_app
     eq_(admin.name, 'Admin')
     eq_(admin.url, '/admin')
     eq_(admin.endpoint, 'admin')
-    eq_(admin.app, None)
     ok_(admin.index_view is not None)
     eq_(admin.index_view._template, 'admin/index.html')
 
