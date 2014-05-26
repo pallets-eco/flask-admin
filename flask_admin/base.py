@@ -1,3 +1,5 @@
+import os.path as op
+
 from functools import wraps
 
 from flask import Blueprint, render_template, abort, g
@@ -219,7 +221,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         self.blueprint = Blueprint(self.endpoint, __name__,
                                    url_prefix=self.url,
                                    subdomain=self.admin.subdomain,
-                                   template_folder='templates',
+                                   template_folder=op.join('templates', self.admin.template_mode),
                                    static_folder=self.static_folder,
                                    static_url_path=self.static_url_path)
 
@@ -356,7 +358,8 @@ class Admin(object):
                  translations_path=None,
                  endpoint=None,
                  static_url_path=None,
-                 base_template=None):
+                 base_template=None,
+                 template_mode=None):
         """
             Constructor.
 
