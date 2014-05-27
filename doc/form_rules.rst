@@ -56,6 +56,47 @@ Form Rendering Rule                                     Description
 :class:`flask.ext.admin.form.rules.FieldSet`            Renders form header and child rules
 ======================================================= ========================================================
 
+Enabling CSRF Validation 
+---------------
+
+Flask-Admin does not use Flask-WTF Form class - it uses the wtforms Form class, which does not have CSRF validation.
+Adding CSRF validation will require importing flask_wtf and overriding the :class:`flask.ext.admin.form.BaseForm` class:: by using :attr:`flask.ext.admin.model.BaseModelView.form_base_class`::
+
+	import os
+	import flask
+	**import flask_wtf**
+	import flask_admin
+	import flask_sqlalchemy
+	from flask_admin.contrib.sqla import ModelView
+
+	DBFILE = 'app.db'
+
+	app = flask.Flask(__name__)
+	app.config['SECRET_KEY'] = 'Dnit7qz7mfcP0YuelDrF8vLFvk0snhwP'
+	app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DBFILE
+	**app.config['CSRF_ENABLED'] = True**
+
+	**flask_wtf.CsrfProtect(app)**
+	db = flask_sqlalchemy.SQLAlchemy(app)
+	admin = flask_admin.Admin(app, name='Admin')
+
+	## Here is the fix:
+	class MyModelView(ModelView):
+		**form_base_class = flask_wtf.Form**
+
+	class User(db.Model):
+		id = db.Column(db.Integer, primary_key=True)
+		username = db.Column(db.String)
+		password = db.Column(db.String)
+
+	if not os.path.exists(DBFILE):
+		db.create_all()
+
+	## The subclass is used here:
+	admin.add_view( MyModelView(User, db.session, name='User') )
+
+	app.run(debug=True)
+
 Further reading
 ---------------
 
