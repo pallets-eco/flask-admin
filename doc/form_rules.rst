@@ -60,7 +60,7 @@ Enabling CSRF Validation
 ---------------
 
 Flask-Admin does not use Flask-WTF Form class - it uses the wtforms Form class, which does not have CSRF validation.
-Adding CSRF validation will require importing flask_wtf and overriding the :class:`flask.ext.admin.form.BaseForm` class:: by using :attr:`flask.ext.admin.model.BaseModelView.form_base_class`::
+Adding CSRF validation will require importing flask_wtf and overriding the :class:`flask.ext.admin.form.BaseForm` by using :attr:`flask.ext.admin.model.BaseModelView.form_base_class`::
 
 	import os
 	import flask
