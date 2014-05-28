@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Flask-Admin\n"
 "Report-Msgid-Bugs-To: jonnas@koneksa.com.br\n"
 "POT-Creation-Date: 2014-05-28 13:45-0300\n"
-"PO-Revision-Date: 2014-05-28 14:12-0300\n"
+"PO-Revision-Date: 2014-05-28 14:18-0300\n"
 "Last-Translator: Jonnas Fonini <jonnas@koneksa.com.br>\n"
 "Language-Team: pt <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -325,7 +325,7 @@ msgstr "Com o(s) selecionado(s)"
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:151
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:144
 msgid "Submit"
-msgstr "Enviar"
+msgstr "Salvar"
 
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:156
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:149
