@@ -16,7 +16,7 @@ from flask.ext.admin._backwards import ObsoleteAttr
 
 from flask.ext.admin.contrib.sqla import form, filters, tools
 from .typefmt import DEFAULT_FORMATTERS
-from .tools import is_inherited_primary_key, get_column_for_current_model, get_query_for_ids
+from .tools import get_query_for_ids
 from .ajax import create_ajax_loader
 
 
@@ -296,23 +296,20 @@ class ModelView(BaseModelView):
     # Scaffolding
     def scaffold_pk(self):
         """
-            Return the primary key name from a model
-            PK can be a single value or a tuple if multiple PKs exist
+            Return the primary key name(s) from a model
+            If model has single primary key, will return a string and tuple otherwise
         """
         return tools.get_primary_key(self.model)
 
     def get_pk_value(self, model):
         """
-            Return the PK value from a model object.
-            PK can be a single value or a tuple if multiple PKs exist
+            Return the primary key value from a model object.
+            If there are multiple primary keys, they're encoded into string representation.
         """
-        try:
+        if isinstance(self._primary_key, tuple):
+            return tools.iterencode(getattr(model, attr) for attr in self._primary_key)
+        else:
             return getattr(model, self._primary_key)
-        except TypeError:
-            v = []
-            for attr in self._primary_key:
-                v.append(getattr(model, attr))
-            return tuple(v)
 
     def scaffold_list_columns(self):
         """
@@ -321,25 +318,20 @@ class ModelView(BaseModelView):
         columns = []
 
         for p in self._get_model_iterator():
-            # Verify type
             if hasattr(p, 'direction'):
                 if self.column_display_all_relations or p.direction.name == 'MANYTOONE':
                     columns.append(p.key)
             elif hasattr(p, 'columns'):
-                column_inherited_primary_key = False
+                if len(p.columns) > 1:
+                    filtered = tools.filter_foreign_columns(self.model.__table__, p.columns)
 
-                if len(p.columns) != 1:
-                    if is_inherited_primary_key(p):
-                        column = get_column_for_current_model(p)
-                    else:
+                    if len(filtered) > 1:
+                        # TODO: Skip column and issue a warning
                         raise TypeError('Can not convert multiple-column properties (%s.%s)' % (self.model, p.key))
-                else:
-                    # Grab column
-                    column = p.columns[0]
 
-                # An inherited primary key has a foreign key as well
-                if column.foreign_keys and not is_inherited_primary_key(p):
-                    continue
+                    column = filtered[0]
+                else:
+                    column = p.columns[0]
 
                 if not self.column_display_pk and column.primary_key:
                     continue
@@ -783,7 +775,7 @@ class ModelView(BaseModelView):
             :param id:
                 Model id
         """
-        return self.session.query(self.model).get(id)
+        return self.session.query(self.model).get(tools.iterdecode(id))
 
     # Error handler
     def handle_view_exception(self, exc):
@@ -882,7 +874,6 @@ class ModelView(BaseModelView):
             lazy_gettext('Are you sure you want to delete selected models?'))
     def action_delete(self, ids):
         try:
-
             query = get_query_for_ids(self.get_query(), self.model, ids)
 
             if self.fast_mass_delete:

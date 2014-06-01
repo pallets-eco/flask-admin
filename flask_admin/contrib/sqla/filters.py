@@ -95,32 +95,32 @@ class FilterConverter(filters.BaseFilterConverter):
     enum = (FilterEqual, FilterNotEqual)
 
     def convert(self, type_name, column, name, **kwargs):
-        if type_name in self.converters:
-            return self.converters[type_name](column, name, **kwargs)
+        if type_name.lower() in self.converters:
+            return self.converters[type_name.lower()](column, name, **kwargs)
 
         return None
 
-    @filters.convert('String', 'Unicode', 'Text', 'UnicodeText')
+    @filters.convert('string', 'unicode', 'text', 'unicodetext')
     def conv_string(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.strings]
 
-    @filters.convert('Boolean')
+    @filters.convert('boolean')
     def conv_bool(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.bool]
 
-    @filters.convert('Integer', 'SmallInteger', 'Numeric', 'Float', 'BigInteger')
+    @filters.convert('integer', 'smallinteger', 'numeric', 'float', 'biginteger')
     def conv_int(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.numeric]
 
-    @filters.convert('Date')
+    @filters.convert('date')
     def conv_date(self, column, name, **kwargs):
         return [f(column, name, data_type='datepicker', **kwargs) for f in self.numeric]
 
-    @filters.convert('DateTime')
+    @filters.convert('datetime')
     def conv_datetime(self, column, name, **kwargs):
         return [f(column, name, data_type='datetimepicker', **kwargs) for f in self.numeric]
 
-    @filters.convert('Enum', 'ENUM')
+    @filters.convert('enum')
     def conv_enum(self, column, name, options=None, **kwargs):
         if not options:
             options = [

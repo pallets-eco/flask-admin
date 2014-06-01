@@ -2,7 +2,6 @@ from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
 
 from flask.ext.admin import form
-from flask.ext.admin.form import Select2Field
 from flask.ext.admin.model.form import (converts, ModelConverterBase,
                                         InlineModelConverterBase, FieldPlaceholder)
 from flask.ext.admin.model.fields import AjaxSelectField, AjaxSelectMultipleField
@@ -12,7 +11,7 @@ from flask.ext.admin._compat import iteritems
 
 from .validators import Unique
 from .fields import QuerySelectField, QuerySelectMultipleField, InlineModelFormList
-from .tools import is_inherited_primary_key, get_column_for_current_model, has_multiple_pks
+from .tools import has_multiple_pks, filter_foreign_columns
 from .ajax import create_ajax_loader
 
 try:
@@ -152,11 +151,13 @@ class AdminModelConverter(ModelConverterBase):
             # Ignore pk/fk
             if hasattr(prop, 'columns'):
                 # Check if more than one column mapped to the property
-                if len(prop.columns) != 1:
-                    if is_inherited_primary_key(prop):
-                        column = get_column_for_current_model(prop)
-                    else:
+                if len(prop.columns) > 1:
+                    columns = filter_foreign_columns(model.__table__, prop.columns)
+
+                    if len(columns) > 1:
                         raise TypeError('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
+
+                    column = columns[0]
                 else:
                     # Grab column
                     column = prop.columns[0]
@@ -238,7 +239,7 @@ class AdminModelConverter(ModelConverterBase):
                 if mapper.class_ == self.view.model and form_choices:
                     choices = form_choices.get(column.key)
                     if choices:
-                        return Select2Field(
+                        return form.Select2Field(
                             choices=choices,
                             allow_blank=column.nullable,
                             **kwargs
@@ -292,8 +293,7 @@ class AdminModelConverter(ModelConverterBase):
 
     @converts('DateTime')
     def convert_datetime(self, field_args, **extra):
-        field_args['widget'] = form.DateTimePickerWidget()
-        return DateTimeField(**field_args)
+        return form.DateTimeField(**field_args)
 
     @converts('Time')
     def convert_time(self, field_args, **extra):
