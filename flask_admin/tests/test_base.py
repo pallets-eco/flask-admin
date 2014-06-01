@@ -1,6 +1,6 @@
 from nose.tools import ok_, eq_, raises
 
-from flask import Flask, request
+from flask import Flask, request, abort
 from flask.views import MethodView
 from flask.ext.admin import base
 
@@ -230,6 +230,20 @@ def test_permissions():
 
     rv = client.get('/admin/mockview/')
     eq_(rv.status_code, 403)
+
+
+def test_inaccessible_callback():
+    app = Flask(__name__)
+    admin = base.Admin(app)
+    view = MockView()
+    admin.add_view(view)
+    client = app.test_client()
+
+    view.allow_access = False
+    view.inaccessible_callback = lambda *args, **kwargs: abort(418)
+
+    rv = client.get('/admin/mockview/')
+    eq_(rv.status_code, 418)
 
 
 def get_visibility():
