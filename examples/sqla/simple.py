@@ -122,7 +122,7 @@ class PostAdmin(sqla.ModelView):
     # Pass arguments to WTForms. In this case, change label for text field to
     # be 'Big Text' and add required() validator.
     form_args = dict(
-                    text=dict(label='Big Text', validators=[validators.required()])
+                    text=dict(label='Big Text', validators=[validators.DataRequired()])
                 )
 
     form_ajax_refs = {

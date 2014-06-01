@@ -50,8 +50,8 @@ class User(db.Model):
 
 # Define login and registration forms (for flask-login)
 class LoginForm(form.Form):
-    login = fields.TextField(validators=[validators.required()])
-    password = fields.PasswordField(validators=[validators.required()])
+    login = fields.TextField(validators=[validators.DataRequired()])
+    password = fields.PasswordField(validators=[validators.DataRequired()])
 
     def validate_login(self, field):
         user = self.get_user()
@@ -67,9 +67,9 @@ class LoginForm(form.Form):
 
 
 class RegistrationForm(form.Form):
-    login = fields.TextField(validators=[validators.required()])
+    login = fields.TextField(validators=[validators.DataRequired()])
     email = fields.TextField()
-    password = fields.PasswordField(validators=[validators.required()])
+    password = fields.PasswordField(validators=[validators.DataRequired()])
 
     def validate_login(self, field):
         if db.session.query(User).filter_by(login=self.login.data).count() > 0:

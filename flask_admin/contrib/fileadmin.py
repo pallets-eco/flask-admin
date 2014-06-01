@@ -57,7 +57,7 @@ class UploadForm(form.BaseForm):
 
 class EditForm(form.BaseForm):
     content = fields.TextAreaField(lazy_gettext('Content'),
-                                   (validators.required(),))
+                                   (validators.DataRequired(),))
 
 
 class FileAdmin(BaseView, ActionsMixin):
