@@ -23,14 +23,14 @@ db = conn.test
 
 # User admin
 class InnerForm(form.Form):
-    name = fields.TextField('Name')
-    test = fields.TextField('Test')
+    name = fields.StringField('Name')
+    test = fields.StringField('Test')
 
 
 class UserForm(form.Form):
-    name = fields.TextField('Name')
-    email = fields.TextField('Email')
-    password = fields.TextField('Password')
+    name = fields.StringField('Name')
+    email = fields.StringField('Email')
+    password = fields.StringField('Password')
 
     # Inner form
     inner = InlineFormField(InnerForm)
@@ -48,9 +48,9 @@ class UserView(ModelView):
 
 # Tweet view
 class TweetForm(form.Form):
-    name = fields.TextField('Name')
+    name = fields.StringField('Name')
     user_id = fields.SelectField('User', widget=Select2Widget())
-    text = fields.TextField('Text')
+    text = fields.StringField('Text')
 
     testie = fields.BooleanField('Test')
 

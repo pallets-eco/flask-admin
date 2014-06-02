@@ -139,7 +139,7 @@ class Select2Field(fields.SelectField):
         super(Select2Field, self).pre_validate(form)
 
 
-class Select2TagsField(fields.TextField):
+class Select2TagsField(fields.StringField):
     """`Select2 <http://ivaynberg.github.com/select2/#tags>`_ styled text field.
     You must include select2.js, form.js and select2 stylesheet for it to work.
     """

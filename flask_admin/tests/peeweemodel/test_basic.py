@@ -82,8 +82,8 @@ def test_model():
     eq_(view._filters, None)
 
     # Verify form
-    eq_(view._create_form_class.test1.field_class, fields.TextField)
-    eq_(view._create_form_class.test2.field_class, fields.TextField)
+    eq_(view._create_form_class.test1.field_class, fields.StringField)
+    eq_(view._create_form_class.test2.field_class, fields.StringField)
     eq_(view._create_form_class.test3.field_class, fields.TextAreaField)
     eq_(view._create_form_class.test4.field_class, fields.TextAreaField)
 
@@ -158,7 +158,7 @@ def test_extra_fields():
     view = CustomModelView(
         Model1,
         form_extra_fields={
-            'extra_field': fields.TextField('Extra Field')
+            'extra_field': fields.StringField('Extra Field')
         }
     )
     admin.add_view(view)

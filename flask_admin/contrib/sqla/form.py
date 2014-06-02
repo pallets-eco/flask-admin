@@ -274,7 +274,7 @@ class AdminModelConverter(ModelConverterBase):
             field_args['filters'] = filters
 
         self._string_common(column=column, field_args=field_args, **extra)
-        return fields.TextField(**field_args)
+        return fields.StringField(**field_args)
 
     @converts('Text', 'UnicodeText',
               'sqlalchemy.types.LargeBinary', 'sqlalchemy.types.Binary')
@@ -316,25 +316,25 @@ class AdminModelConverter(ModelConverterBase):
     @converts('databases.mysql.MSYear')
     def conv_MSYear(self, field_args, **extra):
         field_args['validators'].append(validators.NumberRange(min=1901, max=2155))
-        return fields.TextField(**field_args)
+        return fields.StringField(**field_args)
 
     @converts('databases.postgres.PGInet', 'dialects.postgresql.base.INET')
     def conv_PGInet(self, field_args, **extra):
         field_args.setdefault('label', u'IP Address')
         field_args['validators'].append(validators.IPAddress())
-        return fields.TextField(**field_args)
+        return fields.StringField(**field_args)
 
     @converts('dialects.postgresql.base.MACADDR')
     def conv_PGMacaddr(self, field_args, **extra):
         field_args.setdefault('label', u'MAC Address')
         field_args['validators'].append(validators.MacAddress())
-        return fields.TextField(**field_args)
+        return fields.StringField(**field_args)
 
     @converts('dialects.postgresql.base.UUID')
     def conv_PGUuid(self, field_args, **extra):
         field_args.setdefault('label', u'UUID')
         field_args['validators'].append(validators.UUID())
-        return fields.TextField(**field_args)
+        return fields.StringField(**field_args)
 
     @converts('sqlalchemy.dialects.postgresql.base.ARRAY')
     def conv_ARRAY(self, field_args, **extra):
