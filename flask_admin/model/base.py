@@ -366,7 +366,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     }
                 }
                 
-        Note, changing the format of a DateTimeField will require changes to both form_widget_args and form_args:
+        Note, changing the format of a DateTimeField will require changes to both form_widget_args and form_args::
 
             form_args = dict(
                 start=dict(format='%Y-%m-%d %H:%M') # changes how the input is parsed by strptime
