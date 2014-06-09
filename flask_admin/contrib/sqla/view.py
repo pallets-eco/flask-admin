@@ -786,7 +786,7 @@ class ModelView(BaseModelView):
             flash(gettext('Integrity error. %(message)s', message=exc.message), 'error')
             return True
 
-        return super(BaseModelView, self).handle_view_exception(exc)
+        return super(ModelView, self).handle_view_exception(exc)
 
     # Model handlers
     def create_model(self, form):
