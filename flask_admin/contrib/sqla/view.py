@@ -885,8 +885,8 @@ class ModelView(BaseModelView):
                 count = 0
 
                 for m in query.all():
-                    self.session.delete(m)
-                    count += 1
+                    if self.delete_model(m):
+                        count += 1
 
             self.session.commit()
 
