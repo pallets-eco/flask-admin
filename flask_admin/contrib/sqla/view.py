@@ -333,6 +333,9 @@ class ModelView(BaseModelView):
                 else:
                     column = p.columns[0]
 
+                if column.foreign_keys:
+                    continue
+
                 if not self.column_display_pk and column.primary_key:
                     continue
 
