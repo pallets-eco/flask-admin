@@ -365,6 +365,15 @@ class BaseModelView(BaseView, ActionsMixin):
                         'style': 'color: black'
                     }
                 }
+                
+        Note, changing the format of a DateTimeField will require changes to both form_widget_args and form_args::
+
+            form_args = dict(
+                start=dict(format='%Y-%m-%d %I:%M %p') # changes how the input is parsed by strptime (12 hour time)
+            )
+            form_widget_args = dict(
+                start={'data-date-format': u'yyyy-mm-dd HH:ii P', 'data-show-meridian': 'True'} # changes how the DateTimeField displays the time
+            )
     """
 
     form_extra_fields = None

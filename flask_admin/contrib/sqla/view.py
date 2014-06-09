@@ -423,12 +423,12 @@ class ModelView(BaseModelView):
             Verify if the provided column type is text-based.
 
             :returns:
-                ``True`` for ``String``, ``Unicode``, ``Text``, ``UnicodeText``
+                ``True`` for ``String``, ``Unicode``, ``Text``, ``UnicodeText``, ``varchar``
         """
         if name:
             name = name.lower()
 
-        return name in ('string', 'unicode', 'text', 'unicodetext')
+        return name in ('string', 'unicode', 'text', 'unicodetext', 'varchar')
 
     def scaffold_filters(self, name):
         """

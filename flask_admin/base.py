@@ -292,8 +292,8 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         """
             This method will be executed before calling any view method.
 
-            By default, it will check if the admin class is accessible and if it is not it will
-            throw HTTP 404 error.
+            It will execute the ``inaccessible_callback`` if the view is not
+            accessible.
 
             :param name:
                 View function name
@@ -301,7 +301,17 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
                 View function arguments
         """
         if not self.is_accessible():
-            return abort(403)
+            return self.inaccessible_callback(name, **kwargs)
+
+    def inaccessible_callback(self, name, **kwargs):
+        """
+            Handle the response to inaccessible views.
+
+            By default, it throw HTTP 403 error. Override this method to
+            customize the behaviour.
+        """
+        return abort(403)
+
 
     @property
     def _debug(self):

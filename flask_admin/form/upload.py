@@ -237,7 +237,7 @@ class FileUploadField(fields.TextField):
     def _save_file(self, data, filename):
         path = self._get_path(filename)
         if not op.exists(op.dirname(path)):
-            os.makedirs(os.path.dirname(path), self.permission)
+            os.makedirs(os.path.dirname(path), self.permission | 0o111)
 
         data.save(path)
 
