@@ -334,8 +334,8 @@ class ModelView(BaseModelView):
 
             # TODO: Optimize me
             for pk in ids:
-                self.coll.remove({'_id': self._get_valid_id(pk)})
-                count += 1
+                if self.delete_model(self.get_one(pk)):
+                    count += 1
 
             flash(ngettext('Model was successfully deleted.',
                            '%(count)s models were successfully deleted.',
