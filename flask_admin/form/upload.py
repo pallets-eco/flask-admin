@@ -181,9 +181,10 @@ class FileUploadField(fields.TextField):
                 map(lambda x: x.lower(), self.allowed_extensions))
 
     def pre_validate(self, form):
-        if (self.data and
-                isinstance(self.data, FileStorage) and
-                not self.is_file_allowed(self.data.filename)):
+        if (self.data
+                and len(self.data.filename)
+                and isinstance(self.data, FileStorage)
+                and not self.is_file_allowed(self.data.filename)):
             raise ValidationError(gettext('Invalid file extension'))
 
     def process(self, formdata, data=unset_value):
