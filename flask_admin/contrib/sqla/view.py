@@ -608,6 +608,11 @@ class ModelView(BaseModelView):
     def get_count_query(self):
         """
             Return a the count query for the model type
+
+            A query(self.model).count() approach produces an excessive
+            subquery, so query(func.count('*')) should be used instead.
+
+            See #45a2723 commit message for details.
         """
         return self.session.query(func.count('*')).select_from(self.model)
 
