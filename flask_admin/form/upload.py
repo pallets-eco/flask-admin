@@ -356,7 +356,9 @@ class ImageUploadField(FileUploadField):
     def pre_validate(self, form):
         super(ImageUploadField, self).pre_validate(form)
 
-        if self.data and isinstance(self.data, FileStorage):
+        if (self.data and 
+                isinstance(self.data, FileStorage) and 
+                self.data.filename):
             try:
                 self.image = Image.open(self.data)
             except Exception as e:
