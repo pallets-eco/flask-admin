@@ -140,7 +140,7 @@
 
         var $parentForm = $el.parent().closest('.inline-field');
 
-        if ($parentForm.length > 0) {
+        if ($parentForm.length > 0 && elID.indexOf($parentForm.attr('id')) !== 0) {
           id = $parentForm.attr('id') + '-' + elID;
         }
 
