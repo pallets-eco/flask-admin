@@ -333,6 +333,9 @@ class ModelView(BaseModelView):
                 else:
                     column = p.columns[0]
 
+                if column.foreign_keys:
+                    continue
+
                 if not self.column_display_pk and column.primary_key:
                     continue
 
@@ -420,12 +423,12 @@ class ModelView(BaseModelView):
             Verify if the provided column type is text-based.
 
             :returns:
-                ``True`` for ``String``, ``Unicode``, ``Text``, ``UnicodeText``
+                ``True`` for ``String``, ``Unicode``, ``Text``, ``UnicodeText``, ``varchar``
         """
         if name:
             name = name.lower()
 
-        return name in ('string', 'unicode', 'text', 'unicodetext')
+        return name in ('string', 'unicode', 'text', 'unicodetext', 'varchar')
 
     def scaffold_filters(self, name):
         """
@@ -605,6 +608,11 @@ class ModelView(BaseModelView):
     def get_count_query(self):
         """
             Return a the count query for the model type
+
+            A query(self.model).count() approach produces an excessive
+            subquery, so query(func.count('*')) should be used instead.
+
+            See #45a2723 commit message for details.
         """
         return self.session.query(func.count('*')).select_from(self.model)
 
@@ -783,7 +791,7 @@ class ModelView(BaseModelView):
             flash(gettext('Integrity error. %(message)s', message=exc.message), 'error')
             return True
 
-        return super(BaseModelView, self).handle_view_exception(exc)
+        return super(ModelView, self).handle_view_exception(exc)
 
     # Model handlers
     def create_model(self, form):
@@ -882,8 +890,8 @@ class ModelView(BaseModelView):
                 count = 0
 
                 for m in query.all():
-                    self.session.delete(m)
-                    count += 1
+                    if self.delete_model(m):
+                        count += 1
 
             self.session.commit()
 
