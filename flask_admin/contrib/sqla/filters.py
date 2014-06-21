@@ -100,7 +100,7 @@ class FilterConverter(filters.BaseFilterConverter):
 
         return None
 
-    @filters.convert('string', 'unicode', 'text', 'unicodetext')
+    @filters.convert('string', 'unicode', 'text', 'unicodetext', 'varchar')
     def conv_string(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.strings]
 
