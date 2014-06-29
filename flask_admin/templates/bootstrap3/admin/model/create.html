@@ -13,6 +13,7 @@
 {% endblock %}
 
 {% block body %}
+  {% block navlinks %}
   <ul class="nav nav-tabs">
       <li>
           <a href="{{ return_url }}">{{ _gettext('List') }}</a>
@@ -21,6 +22,7 @@
           <a href="javascript:void(0)">{{ _gettext('Create') }}</a>
       </li>
 	</ul>
+  {% endblock %}
 
   {% call lib.form_tag(form) %}
       {{ lib.render_form_fields(form, form_opts=form_opts) }}
