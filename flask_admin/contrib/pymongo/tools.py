@@ -6,7 +6,7 @@ def parse_like_term(term):
             Search term
     """
     if term.startswith('^'):
-        return '^%s' % term[1]
+        return '^%s' % term[1:]
     elif term.startswith('='):
         return '^%s$' % term[1:]
 
