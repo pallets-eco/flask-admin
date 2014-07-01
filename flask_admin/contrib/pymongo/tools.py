@@ -1,3 +1,5 @@
+import re
+
 def parse_like_term(term):
     """
         Parse search term into (operation, term) tuple
@@ -6,8 +8,8 @@ def parse_like_term(term):
             Search term
     """
     if term.startswith('^'):
-        return '^%s' % term[1:]
+        return '^{}'.format(re.escape(term[1:]))
     elif term.startswith('='):
-        return '^%s$' % term[1:]
+        return '^{}$'.format(re.escape(term[1:]))
 
-    return '%s' % term
+    return re.escape(term)
