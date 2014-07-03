@@ -1290,6 +1290,9 @@ class BaseModelView(BaseView, ActionsMixin):
 
         if validate_form_on_submit(form):
             if self.update_model(form, model):
+                for missing_field in [form._fields[field].name for field in form._fields if not form._fields[field].raw_data]:
+                      model[missing_field] = form._fields[missing_field].default()
+                      model.save()
                 if '_continue_editing' in request.form:
                     flash(gettext('Model was successfully saved.'))
                     return redirect(request.url)
