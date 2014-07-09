@@ -30,7 +30,7 @@ var AdminModelActions = function(actionErrorMessage, actionConfirmations) {
 
     $(function() {
         $('.action-rowtoggle').change(function() {
-            $('input.action-checkbox').attr('checked', this.checked);
+            $('input.action-checkbox').prop('checked', this.checked);
         });
     });
 };
