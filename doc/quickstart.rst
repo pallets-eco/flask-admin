@@ -274,7 +274,7 @@ administrative views.
 File Admin
 ----------
 
-Flask-Admin comes with another handy battery - file admin. It gives you ability to manage files on your server
+Flask-Admin comes with another handy battery - file admin. It gives you the ability to manage files on your server
 (upload, delete, rename, etc).
 
 Here is simple example::
