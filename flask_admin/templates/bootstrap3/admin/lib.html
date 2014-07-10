@@ -83,7 +83,7 @@
           &nbsp;
         {%- endif %}
     </label>
-    <div class="col-md-4">
+    <div class="{{ kwargs.get('column_class', 'col-md-4') }}">
       {% set _dummy = kwargs.setdefault('class', 'form-control') %}
       {{ field(**kwargs)|safe }}
     </div>
