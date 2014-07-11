@@ -51,6 +51,10 @@ def expose_plugview(url='/'):
 
 # Base views
 def _wrap_view(f):
+    # Avoid wrapping view method twice
+    if hasattr(f, '_wrapped'):
+        return f
+
     @wraps(f)
     def inner(self, *args, **kwargs):
         # Store current admin view
@@ -62,6 +66,8 @@ def _wrap_view(f):
             return abort
 
         return f(self, *args, **kwargs)
+
+    inner._wrapped = True
 
     return inner
 
