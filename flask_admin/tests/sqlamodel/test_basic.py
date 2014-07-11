@@ -38,6 +38,9 @@ def create_models(db):
         bool_field = db.Column(db.Boolean)
         enum_field = db.Column(db.Enum('model1_v1', 'model1_v1'), nullable=True)
 
+        def __unicode__(self):
+            return self.test1
+
         def __str__(self):
             return self.test1
 
@@ -218,6 +221,29 @@ def test_column_searchable_list():
     data = rv.data.decode('utf-8')
     ok_('model1' in data)
     ok_('model2' not in data)
+
+
+def test_complex_searchable_list():
+    app, db, admin = setup()
+
+    Model1, Model2 = create_models(db)
+
+    view = CustomModelView(Model2, db.session,
+                           column_searchable_list=['model1.test1'])
+    admin.add_view(view)
+
+    m1 = Model1('model1')
+    db.session.add(m1)
+    db.session.add(Model2('model2', model1=m1))
+    db.session.add(Model2('model3'))
+    db.session.commit()
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model2/?search=model1')
+    data = rv.data.decode('utf-8')
+    ok_('model1' in data)
+    ok_('model3' not in data)
 
 
 def test_column_filters():

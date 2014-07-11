@@ -371,21 +371,36 @@ class ModelView(BaseModelView):
         return columns
 
     def _get_columns_for_field(self, field):
-        if isinstance(field, string_types):
-            attr = getattr(self.model, field, None)
-
-            if field is None:
-                raise Exception('Field %s was not found.' % field)
-        else:
-            attr = field
-
-        if (not attr or
-            not hasattr(attr, 'property') or
-            not hasattr(attr.property, 'columns') or
-            not attr.property.columns):
+        if (not field or
+            not hasattr(field, 'property') or
+            not hasattr(field.property, 'columns') or
+            not field.property.columns):
                 raise Exception('Invalid field %s: does not contains any columns.' % field)
 
-        return attr.property.columns
+        return field.property.columns
+
+    def _get_field_with_path(self, name):
+        join_tables = []
+
+        if isinstance(name, string_types):
+            model = self.model
+
+            for attribute in name.split('.'):
+                value = getattr(model, attribute)
+
+                if (hasattr(value, 'property') and
+                    hasattr(value.property, 'direction')):
+                    model = value.property.mapper.class_
+                    table = model.__table__
+
+                    if self._need_join(table):
+                        join_tables.append(table)
+
+                attr = value
+        else:
+            attr = name
+
+        return join_tables, attr
 
     def _need_join(self, table):
         return table not in self.model._sa_class_manager.mapper.tables
@@ -403,7 +418,12 @@ class ModelView(BaseModelView):
             self._search_joins = dict()
 
             for p in self.column_searchable_list:
-                for column in self._get_columns_for_field(p):
+                join_tables, attr = self._get_field_with_path(p)
+
+                if not attr:
+                    raise Exception('Failed to find field for search field: %s' % p)
+
+                for column in self._get_columns_for_field(attr):
                     column_type = type(column.type).__name__
 
                     if not self.is_text_column_type(column_type):
@@ -412,9 +432,10 @@ class ModelView(BaseModelView):
 
                     self._search_fields.append(column)
 
-                    # If it belongs to different table - add a join
-                    if self._need_join(column.table):
-                        self._search_joins[column.table.name] = column.table
+                    # Store joins, avoid duplicates
+                    if join_tables:
+                        for table in join_tables:
+                            self._search_joins[table.name] = table
 
         return bool(self.column_searchable_list)
 
@@ -435,23 +456,7 @@ class ModelView(BaseModelView):
             Return list of enabled filters
         """
 
-        join_tables = []
-        if isinstance(name, string_types):
-            model = self.model
-
-            for attribute in name.split('.'):
-                value = getattr(model, attribute)
-                if (hasattr(value, 'property') and
-                    hasattr(value.property, 'direction')):
-                    model = value.property.mapper.class_
-                    table = model.__table__
-
-                    if self._need_join(table):
-                        join_tables.append(table)
-
-                attr = value
-        else:
-            attr = name
+        join_tables, attr = self._get_field_with_path(name)
 
         if attr is None:
             raise Exception('Failed to find field for filter: %s' % name)
