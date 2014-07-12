@@ -134,7 +134,7 @@ def process_ajax_references(references, view):
             field = getattr(model, name, None)
 
             if not field:
-                raise ValueError('Invalid subdocument field %s.%s')
+                raise ValueError('Invalid subdocument field %s.%s' % (model, name))
 
             handle_field(field, doc, make_name(base, name))
 
