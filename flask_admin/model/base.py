@@ -365,7 +365,7 @@ class BaseModelView(BaseView, ActionsMixin):
                         'style': 'color: black'
                     }
                 }
-                
+
         Note, changing the format of a DateTimeField will require changes to both form_widget_args and form_args::
 
             form_args = dict(
@@ -890,9 +890,9 @@ class BaseModelView(BaseView, ActionsMixin):
     # Exception handler
     def handle_view_exception(self, exc):
         if self._debug:
-            return False
+            raise
 
-        return True
+        return False
 
     # Model event handlers
     def on_model_change(self, form, model, is_created):

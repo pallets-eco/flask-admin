@@ -350,10 +350,9 @@ class ModelView(BaseModelView):
             save_inline(form, model)
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                raise
+                flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
+                log.exception('Failed to create model')
 
-            flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
-            log.exception('Failed to create model')
             return False
         else:
             self.after_model_change(form, model, True)
@@ -370,10 +369,9 @@ class ModelView(BaseModelView):
             save_inline(form, model)
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                raise
+                flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')
+                log.exception('Failed to update model')
 
-            flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')
-            log.exception('Failed to update model')
             return False
         else:
             self.after_model_change(form, model, False)
@@ -387,10 +385,9 @@ class ModelView(BaseModelView):
             return True
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                raise
+                flash(gettext('Failed to delete model. %(error)s', error=str(ex)), 'error')
+                log.exception('Failed to delete model')
 
-            flash(gettext('Failed to delete model. %(error)s', error=str(ex)), 'error')
-            log.exception('Failed to delete model')
             return False
 
     # Default model actions
@@ -425,6 +422,4 @@ class ModelView(BaseModelView):
                            count=count))
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                raise
-
-            flash(gettext('Failed to delete models. %(error)s', error=str(ex)), 'error')
+                flash(gettext('Failed to delete models. %(error)s', error=str(ex)), 'error')
