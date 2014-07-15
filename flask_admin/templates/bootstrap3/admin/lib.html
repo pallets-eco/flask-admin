@@ -1,3 +1,5 @@
+{% import 'admin/static.html' as admin_static with context %}
+
 {# ---------------------- Pager -------------------------- #}
 {% macro pager(page, pages, generator) -%}
 {% if pages > 1 %}
@@ -157,4 +159,14 @@
         {{ render_form_fields(form, form_opts=form_opts) }}
         {{ render_form_buttons(cancel_url, extra) }}
     {% endcall %}
+{% endmacro %}
+
+{% macro form_css() %}
+  <link href="{{ admin_static.url(filename='vendor/select2/select2.css') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/datetimepicker-bs3/bootstrap-datetimepicker.min.css') }}" rel="stylesheet">
+{% endmacro %}
+
+{% macro form_js() %}
+  <script src="{{ admin_static.url(filename='vendor/datetimepicker-bs3/bootstrap-datetimepicker.min.js') }}"></script>
+  <script src="{{ admin_static.url(filename='admin/js/form.js') }}"></script>
 {% endmacro %}

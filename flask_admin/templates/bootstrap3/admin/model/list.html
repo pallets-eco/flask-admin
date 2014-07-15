@@ -6,8 +6,7 @@
 
 {% block head %}
     {{ super() }}
-    <link href="{{ admin_static.url(filename='select2/select2.css') }}" rel="stylesheet">
-    <link href="{{ admin_static.url(filename='datetimepicker/bootstrap-datetimepicker.css') }}" rel="stylesheet">
+    {{ lib.form_css() }}
 {% endblock %}
 
 {% block body %}
@@ -145,8 +144,7 @@
 
 {% block tail %}
     {{ super() }}
-    <script src="{{ admin_static.url(filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
-    <script src="{{ admin_static.url(filename='admin/js/form.js') }}"></script>
+    {{ lib.form_js() }}
     <script src="{{ admin_static.url(filename='admin/js/filters.js') }}"></script>
 
     {{ actionlib.script(_gettext('Please select at least one model.'),
