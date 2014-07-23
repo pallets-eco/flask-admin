@@ -77,7 +77,7 @@
 {%- endmacro %}
 
 {# ---------------------- Forms -------------------------- #}
-{% macro render_field(form, field, kwargs={}) %}
+{% macro render_field(form, field, kwargs={}, caller=None) %}
   {% set direct_error = h.is_field_error(field.errors) %}
   <div class="control-group{{ ' error' if direct_error else '' }}">
     <div class="control-label">
@@ -104,6 +104,9 @@
       </ul>
     {% endif %}
     </div>
+    {% if caller %}
+      {{ caller(form, field, direct_error, kwargs) }}
+    {% endif %}
   </div>
 {% endmacro %}
 
