@@ -199,7 +199,8 @@ class ModelView(BaseModelView):
     """
 
     def __init__(self, model, name=None,
-                 category=None, endpoint=None, url=None):
+                 category=None, endpoint=None, url=None,
+                 menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
         """
             Constructor
 
@@ -213,10 +214,24 @@ class ModelView(BaseModelView):
                 Endpoint
             :param url:
                 Custom URL
+            :param menu_class_name:
+                Optional class name for the menu item.
+            :param menu_icon_type:
+                Optional icon. Possible icon types:
+
+                 - `flask.ext.admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
+                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
+
+            :param menu_icon_value:
+                Icon glyph name or URL, depending on `menu_icon_type` setting
         """
         self._search_fields = []
 
-        super(ModelView, self).__init__(model, name, category, endpoint, url)
+        super(ModelView, self).__init__(model, name, category, endpoint, url,
+                                        menu_class_name=menu_class_name,
+                                        menu_icon_type=menu_icon_type,
+                                        menu_icon_value=menu_icon_value)
 
         self._primary_key = self.scaffold_pk()
 

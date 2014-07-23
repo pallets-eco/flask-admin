@@ -242,7 +242,8 @@ class ModelView(BaseModelView):
     """
 
     def __init__(self, model, session,
-                 name=None, category=None, endpoint=None, url=None):
+                 name=None, category=None, endpoint=None, url=None,
+                 menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
         """
             Constructor.
 
@@ -258,6 +259,16 @@ class ModelView(BaseModelView):
                 Endpoint name. If not set, defaults to the model name
             :param url:
                 Base URL. If not set, defaults to '/admin/' + endpoint
+            :param menu_class_name:
+                Optional class name for the menu item.
+            :param menu_icon_type:
+                Optional icon. Possible icon types:
+
+                 - `flask.ext.admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
+                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
+            :param menu_icon_value:
+                Icon glyph name or URL, depending on `menu_icon_type` setting
         """
         self.session = session
 
@@ -271,7 +282,10 @@ class ModelView(BaseModelView):
         if self.form_choices is None:
             self.form_choices = {}
 
-        super(ModelView, self).__init__(model, name, category, endpoint, url)
+        super(ModelView, self).__init__(model, name, category, endpoint, url,
+                                        menu_class_name=menu_class_name,
+                                        menu_icon_type=menu_icon_type,
+                                        menu_icon_value=menu_icon_value)
 
         # Primary key
         self._primary_key = self.scaffold_pk()

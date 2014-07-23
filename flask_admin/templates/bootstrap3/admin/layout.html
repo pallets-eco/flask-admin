@@ -1,14 +1,37 @@
+{% macro menu_icon(item) -%}
+{% set icon_type = item.get_icon_type() %}
+{% if icon_type %}
+  {% set icon_value = item.get_icon_value() %}
+  {% if icon_type == 'glyph' %}
+    <i class="glyphicon {{ icon_value }}"></i>
+  {% elif icon_type == 'image' %}
+    <img src="{{ url_for('static', filename=icon_value) }}" alt="menu image"></img>
+  {% elif icon_type == 'image-url' %}
+    <img src="item.icon_value" alt="menu image"></img>
+  {% endif %}
+{% endif %}
+{%- endmacro %}
+
 {% macro menu() %}
   {% for item in admin_view.admin.menu() %}
     {% if item.is_category() %}
       {% set children = item.get_children() %}
       {% if children %}
-        {% if item.is_active(admin_view) %}<li class="active dropdown">{% else %}<li class="dropdown">{% endif %}
-          <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">{{ item.name }}<b class="caret"></b></a>
+        {% if item.is_active(admin_view) %}
+        <li class="active dropdown{% if class_name %} {{class_name}}{% endif %}">
+        {% else %}
+        <li class="dropdown{% if class_name %} {{class_name}}{% endif %}">
+        {% endif %}
+          <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">aaas{{ menu_icon(item) }}{{ item.name }}<b class="caret"></b></a>
           <ul class="dropdown-menu">
             {% for child in children %}
-              {% if child.is_active(admin_view) %}<li class="active">{% else %}<li>{% endif %}
-                <a href="{{ child.get_url() }}">{{ child.name }}</a>
+              {% set class_name = child.get_class_name() %}
+              {% if child.is_active(admin_view) %}
+              <li class="active"{% if class_name %} {{class_name}}{% endif %}>
+              {% else %}
+              <li{% if class_name %} class="{{class_name}}"{% endif %}>
+              {% endif %}
+                <a href="{{ child.get_url() }}">asasdasd{{ menu_icon(item) }}{{ child.name }}</a>
               </li>
             {% endfor %}
           </ul>
@@ -16,8 +39,13 @@
       {% endif %}
     {% else %}
       {% if item.is_accessible() and item.is_visible() %}
-        {% if item.is_active(admin_view) %}<li class="active">{% else %}<li>{% endif %}
-          <a href="{{ item.get_url() }}">{{ item.name }}</a>
+        {% set class_name = item.get_class_name() %}
+        {% if item.is_active(admin_view) %}
+        <li class="active"{% if class_name %} {{class_name}}{% endif %}>
+        {% else %}
+        <li{% if class_name %} class="{{class_name}}"{% endif %}>
+        {% endif %}
+          <a href="{{ item.get_url() }}">{{ menu_icon(item) }}{{ item.name }}</a>
         </li>
       {% endif %}
     {% endif %}

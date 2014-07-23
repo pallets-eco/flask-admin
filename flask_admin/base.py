@@ -148,7 +148,8 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         return args
 
     def __init__(self, name=None, category=None, endpoint=None, url=None,
-                 static_folder=None, static_url_path=None):
+                 static_folder=None, static_url_path=None,
+                 menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
         """
             Constructor.
 
@@ -168,9 +169,16 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
                 and '/admin/' prefix won't be applied.
             :param static_url_path:
                 Static URL Path. If provided, this specifies the path to the static url directory.
-            :param debug:
-                Optional debug flag. If set to `True`, will rethrow exceptions in some cases, so Werkzeug
-                debugger can catch them.
+            :param menu_class_name:
+                Optional class name for the menu item.
+            :param menu_icon_type:
+                Optional icon. Possible icon types:
+
+                 - `flask.ext.admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
+                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
+            :param menu_icon_value:
+                Icon glyph name or URL, depending on `menu_icon_type` setting
         """
         self.name = name
         self.category = category
@@ -178,6 +186,11 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         self.url = url
         self.static_folder = static_folder
         self.static_url_path = static_url_path
+        self.menu = None
+
+        self.menu_class_name = menu_class_name
+        self.menu_icon_type = menu_icon_type
+        self.menu_icon_value = menu_icon_value
 
         # Initialized from create_blueprint
         self.admin = None
@@ -482,6 +495,9 @@ class Admin(object):
 
     def _add_view_to_menu(self, view):
         self._add_menu_item(MenuView(view.name, view), view.category)
+
+    def get_category_menu_item(self, name):
+        return self._menu_categories.get(name)
 
     def init_app(self, app):
         """
