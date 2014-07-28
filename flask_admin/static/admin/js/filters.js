@@ -93,6 +93,9 @@ var AdminFilters = function(element, filtersElement, filterGroups) {
 
         if (filter.type) {
             $field.attr('data-role', filter.type);
+            if (filter.type == "datepicker") {
+                $field.attr('data-date-format', "YYYY-MM-DD");
+            }
             faForm.applyStyle($field, filter.type);
         }
     }
