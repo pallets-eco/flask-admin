@@ -144,8 +144,8 @@
 
 {% block tail %}
     {{ super() }}
-    {{ lib.form_js() }}
     <script src="{{ admin_static.url(filename='admin/js/filters.js') }}"></script>
+    {{ lib.form_js() }}
 
     {{ actionlib.script(_gettext('Please select at least one model.'),
                       actions,
