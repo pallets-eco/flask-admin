@@ -20,6 +20,7 @@ form.icon button {
 a.icon, button span.glyphicon {
     text-decoration: none;
     margin-left: 10px;
+    color: #333;
 }
 
 /* Model search form */
@@ -200,8 +201,4 @@ ul.has-error {
 
 .list-checkbox-column {
     width: 14px;
-}
-
-a > .glyphicon {
-    color: #333;
 }
