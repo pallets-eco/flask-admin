@@ -201,3 +201,7 @@ ul.has-error {
 .list-checkbox-column {
     width: 14px;
 }
+
+a > .glyphicon {
+    color: #333;
+}
