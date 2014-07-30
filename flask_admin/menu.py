@@ -124,8 +124,8 @@ class MenuLink(BaseMenu):
     """
         Link item
     """
-    def __init__(self, name, url=None, endpoint=None, category=None):
-        super(MenuLink, self).__init__(name)
+    def __init__(self, name, url=None, endpoint=None, category=None, class_name=None, icon_type=None, icon_value=None):
+        super(MenuLink, self).__init__(name, class_name, icon_type, icon_value)
 
         self.category = category
 
