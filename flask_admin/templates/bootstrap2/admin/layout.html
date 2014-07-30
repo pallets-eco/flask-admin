@@ -59,7 +59,7 @@
   {% for item in admin_view.admin.menu_links() %}
     {% if item.is_accessible() and item.is_visible() %}
       <li>
-        <a href="{{ item.get_url() }}">{{ item.name }}</a>
+        <a href="{{ item.get_url() }}">{{ menu_icon(item) }}{{ item.name }}</a>
       </li>
     {% endif %}
   {% endfor %}
