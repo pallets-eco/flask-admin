@@ -1330,7 +1330,8 @@ class BaseModelView(BaseView, ActionsMixin):
                 else:
                     return redirect(return_url)
 
-        self.on_form_prefill(form, id)
+        if request.method == 'GET':
+            self.on_form_prefill(form, id)
         
         form_opts = FormOpts(widget_args=self.form_widget_args,
                              form_rules=self._form_edit_rules)
