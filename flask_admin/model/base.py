@@ -965,6 +965,29 @@ class BaseModelView(BaseView, ActionsMixin):
             By default do nothing.
         """
         pass
+    
+    def on_form_prefill (self, form, id):
+        """
+            Perform additional actions to pre-fill the edit form.
+
+            Called from edit_view, if the current action is rendering
+            the form rather than receiving client side input, after
+            default pre-filling has been performed.
+
+            By default does nothing.
+
+            You only need to override this if you have added custom
+            fields that depend on the database contents in a way that
+            Flask-admin can't figure out by itself. Fields that were
+            added by name of a normal column or relationship should
+            work out of the box.
+            
+            :param form:
+                Form instance
+            :param id:
+                id of the object that is going to be edited
+        """
+        pass
 
     def create_model(self, form):
         """
@@ -1307,6 +1330,8 @@ class BaseModelView(BaseView, ActionsMixin):
                 else:
                     return redirect(return_url)
 
+        self.on_form_prefill(form, id)
+        
         form_opts = FormOpts(widget_args=self.form_widget_args,
                              form_rules=self._form_edit_rules)
 
