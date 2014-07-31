@@ -5,6 +5,7 @@ from wtforms import form, fields, validators
 from flask.ext import admin, login
 from flask.ext.admin.contrib import sqla
 from flask.ext.admin import helpers, expose
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 # Create Flask application
@@ -59,7 +60,10 @@ class LoginForm(form.Form):
         if user is None:
             raise validators.ValidationError('Invalid user')
 
-        if user.password != self.password.data:
+        # we're comparing the plaintext pw with the the hash from the db
+        if not check_password_hash(user.password, self.password.data):
+        # to compare plain text passwords use
+        # if user.password != self.password.data:
             raise validators.ValidationError('Invalid password')
 
     def get_user(self):
@@ -125,6 +129,9 @@ class MyAdminIndexView(admin.AdminIndexView):
             user = User()
 
             form.populate_obj(user)
+            # we hash the users password to avoid saving it as plaintext in the db,
+            # remove to use plain text:
+            user.password = generate_password_hash(form.password.data)
 
             db.session.add(user)
             db.session.commit()
@@ -188,7 +195,9 @@ def build_sample_db():
         user.last_name = last_names[i]
         user.login = user.first_name.lower()
         user.email = user.login + "@example.com"
-        user.password = ''.join(random.choice(string.ascii_lowercase + string.digits) for i in range(10))
+        user.password = generate_password_hash(''.join(random.choice(string.ascii_lowercase + string.digits) for i in range(10)))
+        # passwords are hashed, to use plaintext passwords use:
+        # user.password = ''.join(random.choice(string.ascii_lowercase + string.digits) for i in range(10))
         db.session.add(user)
 
     db.session.commit()
