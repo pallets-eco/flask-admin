@@ -175,7 +175,9 @@ def build_sample_db():
 
     db.drop_all()
     db.create_all()
-    test_user = User(login="test", password="test")
+    # passwords are hashed, to use plaintext passwords instead:
+    # test_user = User(login="test", password="test")
+    test_user = User(login="test", password=generate_password_hash("test"))
     db.session.add(test_user)
 
     first_names = [
@@ -196,8 +198,6 @@ def build_sample_db():
         user.login = user.first_name.lower()
         user.email = user.login + "@example.com"
         user.password = generate_password_hash(''.join(random.choice(string.ascii_lowercase + string.digits) for i in range(10)))
-        # passwords are hashed, to use plaintext passwords use:
-        # user.password = ''.join(random.choice(string.ascii_lowercase + string.digits) for i in range(10))
         db.session.add(user)
 
     db.session.commit()
