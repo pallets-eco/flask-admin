@@ -21,8 +21,7 @@ app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
 
-# Create user model. For simplicity, it will store passwords in plain text.
-# Obviously that's not right thing to do in real world application.
+# Create user model.
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100))
