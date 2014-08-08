@@ -31,6 +31,11 @@ def make_thumb_args(value):
 
 def format_error(error):
     if isinstance(error, ValidationError):
-        return '. '.join(itervalues(error.to_dict()))
-
+        resp = ''
+        for v in error.to_dict().values():
+            if isinstance(v, dict):
+                resp += str(v.values())
+            else:
+                resp += str(v)
+                
     return as_unicode(error)
