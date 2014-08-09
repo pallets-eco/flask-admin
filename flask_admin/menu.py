@@ -5,11 +5,18 @@ class BaseMenu(object):
     """
         Base menu item
     """
-    def __init__(self, name):
+    def __init__(self, name, class_name=None, icon_type=None, icon_value=None):
         self.name = name
+        self.class_name = class_name
+        self.icon_type = icon_type
+        self.icon_value = icon_value
+
+        self.parent = None
         self._children = []
 
     def add_child(self, menu):
+        # TODO: Check if menu item is already assigned to some parent
+        menu.parent = self
         self._children.append(menu)
 
     def get_url(self):
@@ -24,6 +31,15 @@ class BaseMenu(object):
                 return True
 
         return False
+
+    def get_class_name(self):
+        return self.class_name
+
+    def get_icon_type(self):
+        return self.icon_type
+
+    def get_icon_value(self):
+        return self.icon_value
 
     def is_visible(self):
         return True
@@ -65,10 +81,15 @@ class MenuView(BaseMenu):
         Admin view menu item
     """
     def __init__(self, name, view=None):
-        super(MenuView, self).__init__(name)
+        super(MenuView, self).__init__(name,
+                                       class_name=view.menu_class_name,
+                                       icon_type=view.menu_icon_type,
+                                       icon_value=view.menu_icon_value)
 
         self._view = view
         self._cached_url = None
+
+        view.menu = self
 
     def get_url(self):
         if self._view is None:
@@ -103,8 +124,8 @@ class MenuLink(BaseMenu):
     """
         Link item
     """
-    def __init__(self, name, url=None, endpoint=None, category=None):
-        super(MenuLink, self).__init__(name)
+    def __init__(self, name, url=None, endpoint=None, category=None, class_name=None, icon_type=None, icon_value=None):
+        super(MenuLink, self).__init__(name, class_name, icon_type, icon_value)
 
         self.category = category
 

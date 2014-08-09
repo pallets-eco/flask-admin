@@ -365,7 +365,7 @@ class BaseModelView(BaseView, ActionsMixin):
                         'style': 'color: black'
                     }
                 }
-                
+
         Note, changing the format of a DateTimeField will require changes to both form_widget_args and form_args::
 
             form_args = dict(
@@ -484,7 +484,8 @@ class BaseModelView(BaseView, ActionsMixin):
     """
 
     def __init__(self, model,
-                 name=None, category=None, endpoint=None, url=None):
+                 name=None, category=None, endpoint=None, url=None,
+                 menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
         """
             Constructor.
 
@@ -500,9 +501,16 @@ class BaseModelView(BaseView, ActionsMixin):
                 'userview'
             :param url:
                 Base URL. If not provided, will use endpoint as a URL.
-            :param debug:
-                Enable debugging mode. Won't catch exceptions on model
-                save failures.
+            :param menu_class_name:
+                Optional class name for the menu item.
+            :param menu_icon_type:
+                Optional icon. Possible icon types:
+
+                 - `flask.ext.admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
+                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
+            :param menu_icon_value:
+                Icon glyph name or URL, depending on `menu_icon_type` setting
         """
 
         # If name not provided, it is model name
@@ -513,7 +521,10 @@ class BaseModelView(BaseView, ActionsMixin):
         if endpoint is None:
             endpoint = model.__name__.lower()
 
-        super(BaseModelView, self).__init__(name, category, endpoint, url)
+        super(BaseModelView, self).__init__(name, category, endpoint, url,
+                                            menu_class_name=menu_class_name,
+                                            menu_icon_type=menu_icon_type,
+                                            menu_icon_value=menu_icon_value)
 
         self.model = model
 
@@ -890,9 +901,9 @@ class BaseModelView(BaseView, ActionsMixin):
     # Exception handler
     def handle_view_exception(self, exc):
         if self._debug:
-            return False
+            raise
 
-        return True
+        return False
 
     # Model event handlers
     def on_model_change(self, form, model, is_created):
@@ -952,6 +963,29 @@ class BaseModelView(BaseView, ActionsMixin):
             (if it has any meaning for a store backend).
 
             By default do nothing.
+        """
+        pass
+    
+    def on_form_prefill (self, form, id):
+        """
+            Perform additional actions to pre-fill the edit form.
+
+            Called from edit_view, if the current action is rendering
+            the form rather than receiving client side input, after
+            default pre-filling has been performed.
+
+            By default does nothing.
+
+            You only need to override this if you have added custom
+            fields that depend on the database contents in a way that
+            Flask-admin can't figure out by itself. Fields that were
+            added by name of a normal column or relationship should
+            work out of the box.
+            
+            :param form:
+                Form instance
+            :param id:
+                id of the object that is going to be edited
         """
         pass
 
@@ -1296,6 +1330,9 @@ class BaseModelView(BaseView, ActionsMixin):
                 else:
                     return redirect(return_url)
 
+        if request.method == 'GET':
+            self.on_form_prefill(form, id)
+        
         form_opts = FormOpts(widget_args=self.form_widget_args,
                              form_rules=self._form_edit_rules)
 

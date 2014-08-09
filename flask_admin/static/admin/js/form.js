@@ -109,17 +109,25 @@
                 return true;
             case 'datepicker':
                 $el.datetimepicker({
-                  minView: 'month'
+                  // TODO: Have separate converters for bs2 and bs3
+                  // Bootstrap 2 option
+                  minView: 'month',
+                  // Bootstrap 3 option
+                  pickTime: false
                 });
                 return true;
             case 'datetimepicker':
-                $el.datetimepicker();
+                $el.datetimepicker({
+                });
                 return true;
             case 'timepicker':
                 $el.datetimepicker({
+                  // Bootstrap 2 option
                   startView: 'day',
                   maxView: 'day',
-                  formatViewType: 'time'
+                  formatViewType: 'time',
+                  // Bootstrap 3 option
+                  pickDate: false
                 });
                 return true;
         }
