@@ -21,8 +21,7 @@ app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
 
-# Create user model. For simplicity, it will store passwords in plain text.
-# Obviously that's not right thing to do in real world application.
+# Create user model.
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100))
@@ -175,7 +174,9 @@ def build_sample_db():
 
     db.drop_all()
     db.create_all()
-    test_user = User(login="test", password="test")
+    # passwords are hashed, to use plaintext passwords instead:
+    # test_user = User(login="test", password="test")
+    test_user = User(login="test", password=generate_password_hash("test"))
     db.session.add(test_user)
 
     first_names = [
@@ -196,8 +197,6 @@ def build_sample_db():
         user.login = user.first_name.lower()
         user.email = user.login + "@example.com"
         user.password = generate_password_hash(''.join(random.choice(string.ascii_lowercase + string.digits) for i in range(10)))
-        # passwords are hashed, to use plaintext passwords use:
-        # user.password = ''.join(random.choice(string.ascii_lowercase + string.digits) for i in range(10))
         db.session.add(user)
 
     db.session.commit()
