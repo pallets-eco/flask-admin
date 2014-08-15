@@ -204,7 +204,7 @@ class FileUploadField(fields.TextField):
                 setattr(obj, name, None)
                 return
 
-        if self.data and isinstance(self.data, FileStorage):
+        if self.data and self.data.filename and isinstance(self.data, FileStorage):
             if field:
                 self._delete_file(field)
 
