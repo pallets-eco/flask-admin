@@ -693,6 +693,7 @@ class ModelView(BaseModelView):
                     joins.add(table.name)
 
         if sort_field is not None:
+            sort_field = getattr(self.model, sort_field, sort_field)
             if sort_desc:
                 query = query.order_by(desc(sort_field))
             else:
