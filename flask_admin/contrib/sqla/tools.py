@@ -1,4 +1,4 @@
-from sqlalchemy import tuple_, or_, and_
+from sqlalchemy import tuple_, or_, and_, inspect
 from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
 from ast import literal_eval
@@ -36,16 +36,8 @@ def get_primary_key(model):
         :param model:
             Model class
     """
-    props = model._sa_class_manager.mapper.iterate_properties
-
-    pks = []
-    for p in props:
-        if hasattr(p, 'columns'):
-            for c in filter_foreign_columns(model.__table__, p.columns):
-                if c.primary_key:
-                    pks.append(p.key)
-                    break
-
+    mapper = inspect(model)
+    pks = [mapper.get_property_by_column(c).key for c in mapper.primary_key]
     if len(pks) == 1:
         return pks[0]
     elif len(pks) > 1:
