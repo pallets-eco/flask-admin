@@ -237,7 +237,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             self.name = self._prettify_class_name(self.__class__.__name__)
 
         # Create blueprint and register rules
-        self.blueprint = Blueprint(self.endpoint, __name__,
+        self.blueprint = Blueprint('admin.%s' % self.endpoint, __name__,
                                    url_prefix=self.url,
                                    subdomain=self.admin.subdomain,
                                    template_folder=op.join('templates', self.admin.template_mode),

@@ -98,7 +98,7 @@ class MenuView(BaseMenu):
         if self._cached_url:
             return self._cached_url
 
-        self._cached_url = url_for('%s.%s' % (self._view.endpoint, self._view._default_view))
+        self._cached_url = url_for('admin.%s.%s' % (self._view.endpoint, self._view._default_view))
         return self._cached_url
 
     def is_active(self, view):
@@ -133,4 +133,4 @@ class MenuLink(BaseMenu):
         self.endpoint = endpoint
 
     def get_url(self):
-        return self.url or url_for(self.endpoint)
+        return self.url or url_for('%s' % self.endpoint)
