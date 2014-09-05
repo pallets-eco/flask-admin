@@ -1,8 +1,9 @@
-from flask import url_for, json
+from flask import json
 from wtforms.widgets import HTMLString, html_params
 
 from flask.ext.admin._compat import as_unicode
 from flask.ext.admin.babel import gettext
+from flask.ext.admin.helpers import get_url
 from flask.ext.admin.form import RenderTemplateWidget
 
 
@@ -26,7 +27,7 @@ class AjaxSelect2Widget(object):
 
     def __call__(self, field, **kwargs):
         kwargs['data-role'] = u'select2-ajax'
-        kwargs['data-url'] = url_for('.ajax_lookup', name=field.loader.name)
+        kwargs['data-url'] = get_url('.ajax_lookup', name=field.loader.name)
 
         allow_blank = getattr(field, 'allow_blank', False)
         if allow_blank and not self.multiple:

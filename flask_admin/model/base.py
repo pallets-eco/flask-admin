@@ -1,7 +1,7 @@
 import warnings
 import re
 
-from flask import request, url_for, redirect, flash, abort, json, Response
+from flask import request, redirect, flash, abort, json, Response
 
 from jinja2 import contextfunction
 
@@ -22,6 +22,38 @@ from .ajax import AjaxModelLoader
 # Used to generate filter query string name
 filter_char_re = re.compile('[^a-z0-9 ]')
 filter_compact_re = re.compile(' +')
+
+
+class ViewArgs(object):
+    """
+        List view arguments.
+    """
+    def __init__(self, page=None, sort=None, sort_desc=None, search=None, filters=None, extra_args=None):
+        self.page = page
+        self.sort = sort
+        self.sort_desc = bool(sort_desc)
+        self.search = search
+        self.filters = filters
+
+        if not self.search:
+            self.search = None
+
+        self.extra_args = extra_args or dict()
+
+    def clone(self, **kwargs):
+        if self.filters:
+            flt = list(self.filters)
+        else:
+            flt = None
+
+        kwargs.setdefault('page', self.page)
+        kwargs.setdefault('sort', self.sort)
+        kwargs.setdefault('sort_desc', self.sort_desc)
+        kwargs.setdefault('search', self.search)
+        kwargs.setdefault('filters', flt)
+        kwargs.setdefault('extra_args', dict(self.extra_args))
+
+        return ViewArgs(**kwargs)
 
 
 class BaseModelView(BaseView, ActionsMixin):
@@ -965,7 +997,7 @@ class BaseModelView(BaseView, ActionsMixin):
             By default do nothing.
         """
         pass
-    
+
     def on_form_prefill (self, form, id):
         """
             Perform additional actions to pre-fill the edit form.
@@ -981,7 +1013,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Flask-admin can't figure out by itself. Fields that were
             added by name of a normal column or relationship should
             work out of the box.
-            
+
             :param form:
                 Form instance
             :param id:
@@ -1076,50 +1108,39 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Return arguments from query string.
         """
-        page = request.args.get('page', 0, type=int)
-        sort = request.args.get('sort', None, type=int)
-        sort_desc = request.args.get('desc', None, type=int)
-        search = request.args.get('search', None)
-        filters = self._get_list_filter_args()
+        return ViewArgs(page=request.args.get('page', 0, type=int),
+                        sort=request.args.get('sort', None, type=int),
+                        sort_desc=request.args.get('desc', None, type=int),
+                        search=request.args.get('search', None),
+                        filters=self._get_list_filter_args())
 
-        return page, sort, sort_desc, search, filters
-
-    def _get_url(self, view=None, page=None, sort=None, sort_desc=None,
-                 search=None, filters=None):
+    # URL generation helpers
+    def _get_list_url(self, view_args):
         """
             Generate page URL with current page, sort column and
             other parameters.
 
             :param view:
                 View name
-            :param page:
-                Page number
-            :param sort:
-                Sort column index
-            :param sort_desc:
-                Use descending sorting order
-            :param search:
-                Search query
-            :param filters:
-                List of active filters
+            :param view_args:
+                ViewArgs object with page number, filters, etc.
         """
-        if not search:
-            search = None
+        page = view_args.page or None
+        desc = 1 if view_args.sort_desc else None
 
-        if not page:
-            page = None
+        kwargs = dict(page=page, sort=view_args.sort, desc=desc, search=view_args.search)
+        kwargs.update(view_args.extra_args)
 
-        kwargs = dict(page=page, sort=sort, desc=sort_desc, search=search)
-
-        if filters:
-            for i, pair in enumerate(filters):
+        if view_args.filters:
+            for i, pair in enumerate(view_args.filters):
                 idx, value = pair
 
                 key = 'flt%d_%s' % (i, self.get_filter_arg(idx, self._filters[idx]))
                 kwargs[key] = value
 
-        return url_for(view, **kwargs)
+        return self.get_url('.index_view', **kwargs)
 
+    # Actions
     def is_action_allowed(self, name):
         """
             Override this method to allow or disallow actions based
@@ -1196,16 +1217,16 @@ class BaseModelView(BaseView, ActionsMixin):
             List view
         """
         # Grab parameters from URL
-        page, sort_idx, sort_desc, search, filters = self._get_list_extra_args()
+        view_args = self._get_list_extra_args()
 
         # Map column index to column name
-        sort_column = self._get_column_by_idx(sort_idx)
+        sort_column = self._get_column_by_idx(view_args.sort)
         if sort_column is not None:
             sort_column = sort_column[0]
 
         # Get count and data
-        count, data = self.get_list(page, sort_column, sort_desc,
-                                    search, filters)
+        count, data = self.get_list(view_args.page, sort_column, view_args.sort_desc,
+                                    view_args.search, view_args.filters)
 
         # Calculate number of pages
         num_pages = count // self.page_size
@@ -1218,20 +1239,24 @@ class BaseModelView(BaseView, ActionsMixin):
             if p == 0:
                 p = None
 
-            return self._get_url('.index_view', p, sort_idx, sort_desc,
-                                 search, filters)
+            return self._get_list_url(view_args.clone(page=p))
 
         def sort_url(column, invert=False):
             desc = None
 
-            if invert and not sort_desc:
+            if invert and not view_args.sort_desc:
                 desc = 1
 
-            return self._get_url('.index_view', page, column, desc,
-                                 search, filters)
+            return self._get_list_url(view_args.clone(sort=column, sort_desc=desc))
 
         # Actions
         actions, actions_confirmation = self.get_actions_list()
+
+        clear_search_url = self._get_list_url(view_args.clone(page=0,
+                                                              sort=view_args.sort,
+                                                              sort_desc=view_args.sort_desc,
+                                                              search=None,
+                                                              filters=None))
 
         return self.render(self.list_template,
                                data=data,
@@ -1242,32 +1267,24 @@ class BaseModelView(BaseView, ActionsMixin):
                                enumerate=enumerate,
                                get_pk_value=self.get_pk_value,
                                get_value=self.get_list_value,
-                               return_url=self._get_url('.index_view',
-                                                        page,
-                                                        sort_idx,
-                                                        sort_desc,
-                                                        search,
-                                                        filters),
+                               return_url=self._get_list_url(view_args),
                                # Pagination
                                count=count,
                                pager_url=pager_url,
                                num_pages=num_pages,
-                               page=page,
+                               page=view_args.page,
                                # Sorting
-                               sort_column=sort_idx,
-                               sort_desc=sort_desc,
+                               sort_column=view_args.sort,
+                               sort_desc=view_args.sort_desc,
                                sort_url=sort_url,
                                # Search
                                search_supported=self._search_supported,
-                               clear_search_url=self._get_url('.index_view',
-                                                              None,
-                                                              sort_idx,
-                                                              sort_desc),
-                               search=search,
+                               clear_search_url=clear_search_url,
+                               search=view_args.search,
                                # Filters
                                filters=self._filters,
                                filter_groups=self._filter_groups,
-                               active_filters=filters,
+                               active_filters=view_args.filters,
 
                                # Actions
                                actions=actions,
@@ -1278,7 +1295,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Create model view
         """
-        return_url = get_redirect_target() or url_for('.index_view')
+        return_url = get_redirect_target() or self.get_url('.index_view')
 
         if not self.can_create:
             return redirect(return_url)
@@ -1289,7 +1306,7 @@ class BaseModelView(BaseView, ActionsMixin):
             if self.create_model(form):
                 if '_add_another' in request.form:
                     flash(gettext('Model was successfully created.'))
-                    return redirect(url_for('.create_view', url=return_url))
+                    return redirect(self._get_create_url(url=return_url))
                 else:
                     return redirect(return_url)
 
@@ -1306,7 +1323,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Edit model view
         """
-        return_url = get_redirect_target() or url_for('.index_view')
+        return_url = get_redirect_target() or self.get_url('.index_view')
 
         if not self.can_edit:
             return redirect(return_url)
@@ -1332,7 +1349,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         if request.method == 'GET':
             self.on_form_prefill(form, id)
-        
+
         form_opts = FormOpts(widget_args=self.form_widget_args,
                              form_rules=self._form_edit_rules)
 
@@ -1347,7 +1364,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Delete model view. Only POST method is allowed.
         """
-        return_url = get_redirect_target() or url_for('.index_view')
+        return_url = get_redirect_target() or self.get_url('.index_view')
 
         # TODO: Use post
         if not self.can_delete:

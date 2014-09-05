@@ -17,7 +17,7 @@
         </li>
         {% if admin_view.can_create %}
         <li>
-            <a href="{{ url_for('.create_view', url=return_url) }}" title="{{ _gettext('Create new record') }}">{{ _gettext('Create') }}</a>
+            <a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create new record') }}">{{ _gettext('Create') }}</a>
         </li>
         {% endif %}
 
@@ -102,12 +102,12 @@
                 <td>
                     {% block list_row_actions scoped %}
                         {%- if admin_view.can_edit -%}
-                        <a class="icon" href="{{ url_for('.edit_view', id=get_pk_value(row), url=return_url) }}" title="{{ _gettext('Edit record') }}">
+                        <a class="icon" href="{{ get_url('.edit_view', id=get_pk_value(row), url=return_url) }}" title="{{ _gettext('Edit record') }}">
                             <i class="icon-pencil"></i>
                         </a>
                         {%- endif -%}
                         {%- if admin_view.can_delete -%}
-                        <form class="icon" method="POST" action="{{ url_for('.delete_view', id=get_pk_value(row), url=return_url) }}">
+                        <form class="icon" method="POST" action="{{ get_url('.delete_view', id=get_pk_value(row), url=return_url) }}">
                             {% if csrf_token %}
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             {% endif %}
@@ -139,7 +139,7 @@
     {{ lib.pager(page, num_pages, pager_url) }}
     {% endblock %}
 
-    {{ actionlib.form(actions, url_for('.action_view')) }}
+    {{ actionlib.form(actions, get_url('.action_view')) }}
 {% endblock %}
 
 {% block tail %}

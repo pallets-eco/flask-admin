@@ -2,7 +2,7 @@ import os.path as op
 
 from functools import wraps
 
-from flask import Blueprint, render_template, abort, g
+from flask import Blueprint, render_template, abort, g, url_for
 from flask.ext.admin import babel
 from flask.ext.admin._compat import with_metaclass
 from flask.ext.admin import helpers as h
@@ -271,6 +271,9 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         kwargs['_ngettext'] = babel.ngettext
         kwargs['h'] = h
 
+        # Expose get_url helper
+        kwargs['get_url'] = self.get_url
+
         # Contribute extra arguments
         kwargs.update(self._template_args)
 
@@ -331,6 +334,18 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         """
         return abort(403)
 
+    def get_url(self, endpoint, **kwargs):
+        """
+            Generate URL for the endpoint. If you want to customize URL generation
+            logic (persist some query string argument, for example), this is
+            right place to do it.
+
+            :param endpoint:
+                Flask endpoint name
+            :param kwargs:
+                Arguments for `url_for`
+        """
+        return url_for(endpoint, **kwargs)
 
     @property
     def _debug(self):

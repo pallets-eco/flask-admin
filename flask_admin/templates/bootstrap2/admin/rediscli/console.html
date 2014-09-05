@@ -24,7 +24,7 @@
   <script src="{{ admin_static.url(filename='admin/js/rediscli.js') }}"></script>
   <script language="javascript">
     $(function() {
-      var redisCli = new RedisCli({{ url_for('.execute_view')|tojson }});
+      var redisCli = new RedisCli({{ get_url('.execute_view')|tojson }});
     });
   </script>
 {% endblock %}

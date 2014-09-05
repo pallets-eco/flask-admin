@@ -1,4 +1,4 @@
-from flask import request, url_for, redirect
+from flask import request, redirect
 
 
 from flask.ext.admin import tools
@@ -114,8 +114,8 @@ class ActionsMixin(object):
                 return response
 
         if not return_view:
-            url = url_for('.' + self._default_view)
+            url = self.get_url('.' + self._default_view)
         else:
-            url = url_for('.' + return_view)
+            url = self.get_url('.' + return_view)
 
         return redirect(url)

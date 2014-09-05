@@ -7,7 +7,7 @@ import shutil
 from operator import itemgetter
 from werkzeug import secure_filename
 
-from flask import flash, url_for, redirect, abort, request, send_file
+from flask import flash, redirect, abort, request, send_file
 
 from wtforms import fields, validators
 
@@ -302,14 +302,14 @@ class FileAdmin(BaseView, ActionsMixin):
                 Additional arguments
         """
         if not path:
-            return url_for(endpoint)
+            return self.get_url(endpoint)
         else:
             if self._on_windows:
                 path = path.replace('\\', '/')
 
             kwargs['path'] = path
 
-            return url_for(endpoint, **kwargs)
+            return self.get_url(endpoint, **kwargs)
 
     def _get_file_url(self, path):
         """
@@ -322,7 +322,8 @@ class FileAdmin(BaseView, ActionsMixin):
             route = '.edit'
         else:
             route = '.download'
-        return url_for(route, path=path)
+
+        return self.get_url(route, path=path)
 
     def _normalize_path(self, path):
         """
@@ -531,7 +532,7 @@ class FileAdmin(BaseView, ActionsMixin):
         # backward compatibility with base_url
         base_url = self.get_base_url()
         if base_url:
-            base_url = urljoin(url_for('.index'), base_url)
+            base_url = urljoin(self.get_url('.index'), base_url)
             return redirect(urljoin(base_url, path))
 
         return send_file(directory)
@@ -580,7 +581,7 @@ class FileAdmin(BaseView, ActionsMixin):
         path = request.form.get('path')
 
         if not path:
-            return redirect(url_for('.index'))
+            return redirect(self.get_url('.index'))
 
         # Get path and verify if it is valid
         base_path, full_path, path = self._normalize_path(path)
@@ -624,7 +625,7 @@ class FileAdmin(BaseView, ActionsMixin):
         path = request.args.get('path')
 
         if not path:
-            return redirect(url_for('.index'))
+            return redirect(self.get_url('.index'))
 
         base_path, full_path, path = self._normalize_path(path)
 
@@ -669,13 +670,15 @@ class FileAdmin(BaseView, ActionsMixin):
         """
             Edit view method
         """
-        path = request.args.getlist('path')
         next_url = None
+
+        path = request.args.getlist('path')
         if not path:
-            return redirect(url_for('.index'))
+            return redirect(self.get_url('.index'))
 
         if len(path) > 1:
-            next_url = url_for('.edit', path=path[1:])
+            next_url = self.get_url('.edit', path=path[1:])
+
         path = path[0]
 
         base_path, full_path, path = self._normalize_path(path)
@@ -753,4 +756,4 @@ class FileAdmin(BaseView, ActionsMixin):
 
     @action('edit', lazy_gettext('Edit'))
     def action_edit(self, items):
-        return redirect(url_for('.edit', path=items))
+        return redirect(self.get_url('.edit', path=items))

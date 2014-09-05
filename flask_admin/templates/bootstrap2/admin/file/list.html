@@ -50,14 +50,14 @@
             <td>
                 {% block list_row_actions scoped %}
                 {% if admin_view.can_rename and path and name != '..' %}
-                <a class="icon" href="{{ url_for('.rename', path=path) }}">
+                <a class="icon" href="{{ get_url('.rename', path=path) }}">
                         <i class="icon-pencil"></i>
                 </a>
                 {% endif %}
                 {%- if admin_view.can_delete and path -%}
                     {% if is_dir %}
                         {% if name != '..' and admin_view.can_delete_dirs %}
-                        <form class="icon" method="POST" action="{{ url_for('.delete') }}">
+                        <form class="icon" method="POST" action="{{ get_url('.delete') }}">
                             <input type="hidden" name="path" value="{{ path }}"></input>
                             <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
                                 <i class="icon-remove"></i>
@@ -65,7 +65,7 @@
                         </form>
                         {% endif %}
                     {% else %}
-                    <form class="icon" method="POST" action="{{ url_for('.delete') }}">
+                    <form class="icon" method="POST" action="{{ get_url('.delete') }}">
                         <input type="hidden" name="path" value="{{ path }}"></input>
                         <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
                             <i class="icon-remove"></i>
@@ -118,7 +118,7 @@
     </div>
     {% endblock %}
     {% block actions %}
-    {{ actionslib.form(actions, url_for('.action_view')) }}
+    {{ actionslib.form(actions, get_url('.action_view')) }}
     {% endblock %}
 {% endblock %}
 
