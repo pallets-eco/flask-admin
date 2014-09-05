@@ -65,7 +65,7 @@ def _wrap_view(f):
         if abort is not None:
             return abort
 
-        return f(self, *args, **kwargs)
+        return self._run_view(f, *args, **kwargs)
 
     inner._wrapped = True
 
@@ -324,6 +324,20 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         """
         if not self.is_accessible():
             return self.inaccessible_callback(name, **kwargs)
+
+    def _run_view(self, fn, *args, **kwargs):
+        """
+            This method will run actual view function.
+
+            While it is similar to _handle_view, can be used to change
+            arguments that are passed to the view.
+
+            :param fn:
+                View function
+            :param kwargs:
+                Arguments
+        """
+        return fn(self, *args, **kwargs)
 
     def inaccessible_callback(self, name, **kwargs):
         """
