@@ -104,7 +104,7 @@ class FilterConverter(filters.BaseFilterConverter):
     def conv_string(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.strings]
 
-    @filters.convert('boolean')
+    @filters.convert('boolean', 'tinyint')
     def conv_bool(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.bool]
 
