@@ -809,7 +809,7 @@ class ModelView(BaseModelView):
         if page_size is False:
             page_size = None
         
-        if page is not None:
+        if page is not None and page_size is not None:
             query = query.offset(page * page_size)
         
         query = query.limit(page_size)
