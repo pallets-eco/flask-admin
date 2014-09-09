@@ -712,7 +712,7 @@ class ModelView(BaseModelView):
 
         return None
 
-    def get_list(self, page, sort_column, sort_desc, search, filters, execute=True):
+    def get_list(self, page, sort_column, sort_desc, search, filters, execute=True, page_size=None):
         """
             Return models from the database.
 
@@ -728,6 +728,8 @@ class ModelView(BaseModelView):
                 Execute query immediately? Default is `True`
             :param filters:
                 List of filter tuples
+            :param page_size:
+                Optional page size override.  False removes pagination
         """
 
         # Will contain names of joined tables to avoid duplicate joins
@@ -801,11 +803,17 @@ class ModelView(BaseModelView):
                 query, joins = self._order_by(query, joins, sort_joins, sort_field, sort_desc)
 
         # Pagination
+        if page_size is None:
+            page_size = self.page_size
+        
+        if page_size is False:
+            page_size = None
+        
         if page is not None:
-            query = query.offset(page * self.page_size)
-
-        query = query.limit(self.page_size)
-
+            query = query.offset(page * page_size)
+        
+        query = query.limit(page_size)
+        
         # Execute if needed
         if execute:
             query = query.all()
