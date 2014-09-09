@@ -343,7 +343,8 @@ class BaseModelView(BaseView, ActionsMixin):
         list of possible options.
 
         Example::
-
+        
+            from wtforms.validators import required
             class MyModelView(BaseModelView):
                 form_args = dict(
                     name=dict(label='First Name', validators=[required()])
