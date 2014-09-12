@@ -1,5 +1,5 @@
 from mongoengine import ReferenceField
-from mongoengine.base import BaseDocument, DocumentMetaclass
+from mongoengine.base import BaseDocument, DocumentMetaclass, get_document
 
 from wtforms import fields, validators
 from flask.ext.mongoengine.wtf import orm, fields as mongo_fields
@@ -205,6 +205,10 @@ def get_form(model, converter,
         A converter to generate the fields based on the model properties. If
         not set, ``ModelConverter`` is used.
     """
+
+    if isinstance(model, str):
+        model = get_document(model)
+
     if not isinstance(model, (BaseDocument, DocumentMetaclass)):
         raise TypeError('Model must be a mongoengine Document schema')
 
