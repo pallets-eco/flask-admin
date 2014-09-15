@@ -343,7 +343,7 @@ class BaseModelView(BaseView, ActionsMixin):
         list of possible options.
 
         Example::
-        
+
             from wtforms.validators import required
             class MyModelView(BaseModelView):
                 form_args = dict(
@@ -1307,7 +1307,7 @@ class BaseModelView(BaseView, ActionsMixin):
             if self.create_model(form):
                 if '_add_another' in request.form:
                     flash(gettext('Model was successfully created.'))
-                    return redirect(self._get_create_url(url=return_url))
+                    return redirect(request.url)
                 else:
                     return redirect(return_url)
 
