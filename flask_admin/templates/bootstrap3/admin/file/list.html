@@ -60,7 +60,7 @@
                         <form class="icon" method="POST" action="{{ get_url('.delete') }}">
                             <input type="hidden" name="path" value="{{ path }}"></input>
                             <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
-                                <i class="icon-remove"></i>
+                                <i class="glyphicon glyphicon-remove"></i>
                             </button>
                         </form>
                         {% endif %}
