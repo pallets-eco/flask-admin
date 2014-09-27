@@ -736,15 +736,23 @@ class ModelView(BaseModelView):
         query = self.get_query()
         count_query = self.get_count_query()
 
+        # Ignore eager-loaded relations (prevent unnecessary joins)
+        # TODO: Separate join detection for query and count query?
+        if hasattr(query, '_join_entities'):
+            for entity in query._join_entities:
+                for table in entity.tables:
+                    joins.add(table.name)
+
         # Apply search criteria
         if self._search_supported and search:
             # Apply search-related joins
             if self._search_joins:
                 for table in self._search_joins:
-                    query = query.join(table)
-                    count_query = count_query.join(table)
+                    if table.name not in joins:
+                        query = query.join(table)
+                        count_query = count_query.join(table)
 
-                    joins.add(table.name)
+                        joins.add(table.name)
 
             # Apply terms
             terms = search.split(' ')
