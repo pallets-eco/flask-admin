@@ -749,8 +749,8 @@ class ModelView(BaseModelView):
             if self._search_joins:
                 for table in self._search_joins:
                     if table.name not in joins:
-                        query = query.join(table)
-                        count_query = count_query.join(table)
+                        query = query.outerjoin(table)
+                        count_query = count_query.outerjoin(table)
 
                         joins.add(table.name)
 

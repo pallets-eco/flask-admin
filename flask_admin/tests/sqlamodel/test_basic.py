@@ -246,6 +246,26 @@ def test_complex_searchable_list():
     ok_('model3' not in data)
 
 
+def test_complex_searchable_list_missing_children():
+    app, db, admin = setup()
+
+    Model1, Model2 = create_models(db)
+
+    view = CustomModelView(Model1, db.session,
+                           column_searchable_list=[
+                               'test1', 'model2.string_field'])
+    admin.add_view(view)
+
+    db.session.add(Model1('magic string'))
+    db.session.commit()
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model1/?search=magic')
+    data = rv.data.decode('utf-8')
+    ok_('magic string' in data)
+
+
 def test_column_filters():
     app, db, admin = setup()
 

@@ -111,6 +111,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
         Derive from this class to implement your administrative interface piece. For example::
 
+            from flask.ext.admin import BaseView, expose
             class MyView(BaseView):
                 @expose('/')
                 def index(self):
