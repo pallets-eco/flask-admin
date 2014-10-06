@@ -2,8 +2,8 @@ import warnings
 import re
 
 from flask import request, redirect, flash, abort, json, Response
-
 from jinja2 import contextfunction
+from wtforms.validators import ValidationError
 
 from flask.ext.admin.babel import gettext
 
@@ -868,6 +868,15 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return self._edit_form_class(get_form_data(), obj=obj)
 
+    def validate_form(self, form):
+        """
+            Validate the form on submit.
+
+            :param form:
+                Form to validate
+        """
+        return validate_form_on_submit(form)
+
     # Helpers
     def is_sortable(self, name):
         """
@@ -933,6 +942,10 @@ class BaseModelView(BaseView, ActionsMixin):
 
     # Exception handler
     def handle_view_exception(self, exc):
+        if isinstance(exc, ValidationError):
+            flash(unicode(exc))
+            return True
+
         if self._debug:
             raise
 
@@ -1303,7 +1316,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         form = self.create_form()
 
-        if validate_form_on_submit(form):
+        if self.validate_form(form):
             if self.create_model(form):
                 if '_add_another' in request.form:
                     flash(gettext('Model was successfully created.'))
@@ -1340,7 +1353,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         form = self.edit_form(obj=model)
 
-        if validate_form_on_submit(form):
+        if self.validate_form(form):
             if self.update_model(form, model):
                 if '_continue_editing' in request.form:
                     flash(gettext('Model was successfully saved.'))
