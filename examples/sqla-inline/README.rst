@@ -1,4 +1,4 @@
-This example shows how you can turn a TextArea field into a rich WYSIWYG editor using WTForms and CKEditor.
+This example shows how to use inline forms when working with related models.
 
 To run this example:
 
@@ -14,9 +14,10 @@ To run this example:
 
 3. Install requirements::
 
-  pip install -r 'examples/wysiwyg/requirements.txt'
+  pip install -r 'examples/sqla-inline/requirements.txt'
 
 4. Run the application::
 
-  python examples/wysiwyg/app.py
+  python examples/sqla-inline/app.py
+
 
