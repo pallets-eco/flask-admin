@@ -1148,7 +1148,12 @@ class BaseModelView(BaseView, ActionsMixin):
         if view_args.filters:
             for i, pair in enumerate(view_args.filters):
                 idx, value = pair
-
+                
+                if type(value) == bool:
+                    if value:
+                        value = '1'
+                    else:
+                        value = '0'
                 key = 'flt%d_%s' % (i, self.get_filter_arg(idx, self._filters[idx]))
                 kwargs[key] = value
 
