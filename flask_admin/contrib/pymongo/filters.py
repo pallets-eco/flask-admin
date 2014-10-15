@@ -69,6 +69,10 @@ class FilterNotLike(BasePyMongoFilter):
 
 class FilterGreater(BasePyMongoFilter):
     def apply(self, query, value):
+        try:
+            value = float(value)
+        except ValueError:
+            value = 0
         query.append({self.column: {'$gt': value}})
         return query
 
@@ -78,6 +82,10 @@ class FilterGreater(BasePyMongoFilter):
 
 class FilterSmaller(BasePyMongoFilter):
     def apply(self, query, value):
+        try:
+            value = float(value)
+        except ValueError:
+            value = 0
         query.append({self.column: {'$lt': value}})
         return query
 
