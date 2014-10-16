@@ -1,0 +1,4 @@
+Flask
+Flask-Admin
+Flask-SQLAlchemy
+WTForms==1.0.5

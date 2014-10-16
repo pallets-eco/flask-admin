@@ -5,8 +5,6 @@ Flask-Admin is a batteries-included, simple-to-use `Flask <http://flask.pocoo.or
 add admin interfaces to Flask applications. It is inspired by the *django-admin* package, but implemented in such
 a way that the developer has total control of the look, feel and functionality of the resulting application.
 
-You can see some examples of how Flask-Admin can be used at `http://examples.flask-admin.org <http://examples.flask-admin.org/>`_.
-
 Browse through the documentation below to learn more about what you can do with Flask-Admin. Or head over to
 `our GitHub repository <http://github.com/mrjoes/flask-admin>`_ to find out how you can contribute to the project.
 
