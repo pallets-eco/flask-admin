@@ -13,7 +13,7 @@ Flask-Admin how each form should be rendered. As an extension, however, the rend
 bit more: You can use them to output HTML, call Jinja2 macros, render fields and so on.
 
 Essentially, form rendering rules abstract the rendering, so that it becomes separate from the form definition. So,
-for example, it no longer matters in which sequence yur form fields are defined.
+for example, it no longer matters in which sequence your form fields are defined.
 
 Getting started
 ---------------
