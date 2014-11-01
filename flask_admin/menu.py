@@ -133,4 +133,4 @@ class MenuLink(BaseMenu):
         self.endpoint = endpoint
 
     def get_url(self):
-        return self.url or url_for('%s' % self.endpoint)
+        return self.url or url_for(self.endpoint)
