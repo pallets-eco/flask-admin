@@ -32,9 +32,9 @@ class DateTimeField(fields.DateTimeField):
                 Any additional parameters
         """
         super(DateTimeField, self).__init__(label, validators, **kwargs)
-        
+
         self.format = format or '%Y-%m-%d %H:%M:%S'
-                                           
+
 class TimeField(fields.Field):
     """
         A text field which stores a `datetime.time` object.
@@ -139,7 +139,7 @@ class Select2Field(fields.SelectField):
         super(Select2Field, self).pre_validate(form)
 
 
-class Select2TagsField(fields.TextField):
+class Select2TagsField(fields.StringField):
     """`Select2 <http://ivaynberg.github.com/select2/#tags>`_ styled text field.
     You must include select2.js, form.js and select2 stylesheet for it to work.
     """

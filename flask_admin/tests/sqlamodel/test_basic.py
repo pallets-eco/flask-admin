@@ -91,8 +91,8 @@ def test_model():
     eq_(view._filters, None)
 
     # Verify form
-    eq_(view._create_form_class.test1.field_class, fields.TextField)
-    eq_(view._create_form_class.test2.field_class, fields.TextField)
+    eq_(view._create_form_class.test1.field_class, fields.StringField)
+    eq_(view._create_form_class.test2.field_class, fields.StringField)
     eq_(view._create_form_class.test3.field_class, fields.TextAreaField)
     eq_(view._create_form_class.test4.field_class, fields.TextAreaField)
 
@@ -567,7 +567,7 @@ def test_form_override():
     admin.add_view(view1)
     admin.add_view(view2)
 
-    eq_(view1._create_form_class.test.field_class, fields.TextField)
+    eq_(view1._create_form_class.test.field_class, fields.StringField)
     eq_(view2._create_form_class.test.field_class, fields.FileField)
 
 
@@ -711,7 +711,7 @@ def test_extra_fields():
     view = CustomModelView(
         Model1, db.session,
         form_extra_fields={
-            'extra_field': fields.TextField('Extra Field')
+            'extra_field': fields.StringField('Extra Field')
         }
     )
     admin.add_view(view)
@@ -738,7 +738,7 @@ def test_extra_field_order():
         Model1, db.session,
         form_columns=('extra_field', 'test1'),
         form_extra_fields={
-            'extra_field': fields.TextField('Extra Field')
+            'extra_field': fields.StringField('Extra Field')
         }
     )
     admin.add_view(view)

@@ -8,8 +8,8 @@ from . import setup
 
 
 class TestForm(form.Form):
-    test1 = fields.TextField('Test1')
-    test2 = fields.TextField('Test2')
+    test1 = fields.StringField('Test1')
+    test2 = fields.StringField('Test2')
 
 
 class TestView(ModelView):
