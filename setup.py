@@ -45,7 +45,7 @@ setup(
     platforms='any',
     install_requires=[
         'Flask>=0.7',
-        'wtforms<2.0'
+        'wtforms'
     ],
     tests_require=[
         'nose>=1.0',
