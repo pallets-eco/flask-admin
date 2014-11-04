@@ -15,17 +15,15 @@ class InlineFieldList(FieldList):
 
     def __call__(self, **kwargs):
         # Create template
-        self.template = self.unbound_field.bind(form=None, name='',
-                                                _meta=self.meta)
-
+        template = self.unbound_field.bind(form=None, name='')
         # Small hack to remove separator from FormField
-        if isinstance(self.template, FormField):
-            self.template.separator = ''
+        if isinstance(template, FormField):
+            template.separator = ''
 
-        self.template.process(None)
+        template.process(None)
 
         return self.widget(self,
-                           template=self.template,
+                           template=template,
                            check=self.display_row_controls,
                            **kwargs)
 
