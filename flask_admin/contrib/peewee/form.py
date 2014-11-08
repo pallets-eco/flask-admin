@@ -1,6 +1,6 @@
 from wtforms import fields
 
-from peewee import (DateTimeField, DateField, TimeField,
+from peewee import (CharField, DateTimeField, DateField, TimeField,
                     PrimaryKeyField, ForeignKeyField, BaseModel)
 
 from wtfpeewee.orm import ModelConverter, model_form
@@ -84,6 +84,9 @@ class CustomModelConverter(ModelConverter):
     def __init__(self, view, additional=None):
         super(CustomModelConverter, self).__init__(additional)
         self.view = view
+
+        # @todo: This really should be done within wtfpeewee
+        self.defaults[CharField] = fields.StringField
 
         self.converters[PrimaryKeyField] = self.handle_pk
         self.converters[DateTimeField] = self.handle_datetime

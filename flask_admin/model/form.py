@@ -60,7 +60,7 @@ class InlineBaseFormAdmin(object):
 
                 class MyInlineForm(InlineFormAdmin):
                     def postprocess_form(self, form):
-                        form.value = TextField('value')
+                        form.value = StringField('value')
                         return form
 
                 class MyAdmin(ModelView):

@@ -23,3 +23,5 @@ examples/forms/files
 .idea/
 *.sqlite
 env
+*.egg
+.eggs

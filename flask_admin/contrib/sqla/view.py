@@ -146,7 +146,7 @@ class ModelView(BaseModelView):
 
             class MyInlineModelConverter(AdminModelConverter):
                 def post_process(self, form_class, info):
-                    form_class.value = wtf.TextField('value')
+                    form_class.value = wtf.StringField('value')
                     return form_class
 
             class MyAdminView(ModelView):

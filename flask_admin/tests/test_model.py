@@ -21,9 +21,9 @@ class Model(object):
 
 
 class Form(form.BaseForm):
-    col1 = fields.TextField()
-    col2 = fields.TextField()
-    col3 = fields.TextField()
+    col1 = fields.StringField()
+    col2 = fields.StringField()
+    col3 = fields.StringField()
 
 
 class SimpleFilter(filters.BaseFilter):

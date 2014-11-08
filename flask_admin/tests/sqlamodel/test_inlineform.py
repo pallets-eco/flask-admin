@@ -45,7 +45,7 @@ def test_inline_form():
     eq_(view.endpoint, 'user')
 
     # Verify form
-    eq_(view._create_form_class.name.field_class, fields.TextField)
+    eq_(view._create_form_class.name.field_class, fields.StringField)
     eq_(view._create_form_class.info.field_class, InlineModelFormList)
 
     rv = client.get('/admin/user/')

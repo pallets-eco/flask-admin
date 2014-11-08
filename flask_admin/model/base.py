@@ -314,7 +314,7 @@ class BaseModelView(BaseView, ActionsMixin):
         For example::
 
             class MyForm(Form):
-                name = TextField('Name')
+                name = StringField('Name')
 
             class MyModelView(BaseModelView):
                 form = MyForm
