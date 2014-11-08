@@ -36,7 +36,7 @@ class BaseRule(object):
             :param field_args:
                 Optional arguments that should be passed to template or the field
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
 
 class NestedRule(BaseRule):
