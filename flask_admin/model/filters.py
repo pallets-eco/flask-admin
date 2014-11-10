@@ -67,7 +67,7 @@ class BaseFilter(object):
             :param query:
                 Query
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def operation(self):
         """
@@ -75,7 +75,7 @@ class BaseFilter(object):
 
             For example: u'equals'
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def __unicode__(self):
         return self.name

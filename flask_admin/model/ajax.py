@@ -19,7 +19,7 @@ class AjaxModelLoader(object):
         """
             Return (id, name) tuple from the model.
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def get_one(self, pk):
         """
@@ -28,7 +28,7 @@ class AjaxModelLoader(object):
             :param pk:
                 Primary key value
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def get_list(self, query, offset=0, limit=DEFAULT_PAGE_SIZE):
         """
@@ -43,4 +43,4 @@ class AjaxModelLoader(object):
             :param limit:
                 Limit
         """
-        raise NotImplemented()
+        raise NotImplementedError()

@@ -20,7 +20,7 @@ class BaseMenu(object):
         self._children.append(menu)
 
     def get_url(self):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def is_category(self):
         return False

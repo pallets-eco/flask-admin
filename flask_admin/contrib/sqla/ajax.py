@@ -25,7 +25,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         primary_keys = model._sa_class_manager.mapper.primary_key
         if len(primary_keys) > 1:
-            raise NotImplemented('Flask-Admin does not support multi-pk AJAX model loading.')
+            raise NotImplementedError('Flask-Admin does not support multi-pk AJAX model loading.')
 
         self.pk = primary_keys[0].name
 

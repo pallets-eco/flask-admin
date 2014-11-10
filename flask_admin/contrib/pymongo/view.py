@@ -96,7 +96,7 @@ class ModelView(BaseModelView):
         """
             Scaffold list columns
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def scaffold_sortable_columns(self):
         """
@@ -126,7 +126,7 @@ class ModelView(BaseModelView):
             :param name:
                 Either field name or field instance
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def is_valid_filter(self, filter):
         """
@@ -138,7 +138,7 @@ class ModelView(BaseModelView):
         return isinstance(filter, BasePyMongoFilter)
 
     def scaffold_form(self):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def _get_field_value(self, model, name):
         """

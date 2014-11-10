@@ -135,7 +135,7 @@ class ModelConverterBase(object):
     def get_form(self, model, base_class=BaseForm,
                  only=None, exclude=None,
                  field_args=None):
-        raise NotImplemented()
+        raise NotImplementedError()
 
 
 class InlineModelConverterBase(object):

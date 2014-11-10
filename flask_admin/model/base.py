@@ -667,7 +667,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Return PK value from a model object.
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     # List view
     def scaffold_list_columns(self):
@@ -680,7 +680,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
                 ['name', 'first_name', 'last_name']
         """
-        raise NotImplemented('Please implement scaffold_list_columns method')
+        raise NotImplementedError('Please implement scaffold_list_columns method')
 
     def get_column_name(self, field):
         """
@@ -719,7 +719,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Expected return format is a dictionary, where keys are field names and
             values are property names.
         """
-        raise NotImplemented('Please implement scaffold_sortable_columns method')
+        raise NotImplementedError('Please implement scaffold_sortable_columns method')
 
     def get_sortable_columns(self):
         """
@@ -820,7 +820,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Create `form.BaseForm` inherited class from the model. Must be
             implemented in the child class.
         """
-        raise NotImplemented('Please implement scaffold_form method')
+        raise NotImplementedError('Please implement scaffold_form method')
 
     def get_form(self):
         """
@@ -927,7 +927,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 List of filter tuples. First value in a tuple is a search
                 index, second value is a search value.
         """
-        raise NotImplemented('Please implement get_list method')
+        raise NotImplementedError('Please implement get_list method')
 
     def get_one(self, id):
         """
@@ -938,7 +938,7 @@ class BaseModelView(BaseView, ActionsMixin):
             :param id:
                 Model id
         """
-        raise NotImplemented('Please implement get_one method')
+        raise NotImplementedError('Please implement get_one method')
 
     # Exception handler
     def handle_view_exception(self, exc):
@@ -1046,7 +1046,7 @@ class BaseModelView(BaseView, ActionsMixin):
             :param form:
                 Form instance
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def update_model(self, form, model):
         """
@@ -1061,7 +1061,7 @@ class BaseModelView(BaseView, ActionsMixin):
             :param model:
                 Model instance
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def delete_model(self, model):
         """
@@ -1074,7 +1074,7 @@ class BaseModelView(BaseView, ActionsMixin):
             :param model:
                 Model instance
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     # Various helpers
     def _prettify_name(self, name):
@@ -1222,7 +1222,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Model backend will override this to implement AJAX model loading.
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     # Views
     @expose('/')
