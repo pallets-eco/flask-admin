@@ -47,13 +47,8 @@ class DatePickerWidget(widgets.TextInput):
     """
     def __call__(self, field, **kwargs):
         kwargs.setdefault('data-role', u'datepicker')
+        kwargs.setdefault('data-date-format', u'YYYY-MM-DD')
 
-        if _is_bootstrap3():
-            kwargs.setdefault('data-date-format', u'YYYY-MM-DD')
-        else:
-            kwargs.setdefault('data-date-format', u'yyyy-mm-dd')
-
-        kwargs.setdefault('data-date-autoclose', u'true')
         self.date_format = kwargs['data-date-format']
         return super(DatePickerWidget, self).__call__(field, **kwargs)
 
@@ -66,15 +61,7 @@ class DateTimePickerWidget(widgets.TextInput):
     """
     def __call__(self, field, **kwargs):
         kwargs.setdefault('data-role', u'datetimepicker')
-
-        if _is_bootstrap3():
-            kwargs.setdefault('data-date-format', u'YYYY-MM-DD hh:mm:ss')
-        else:
-            kwargs.setdefault('data-date-format', u'yyyy-mm-dd hh:ii:ss')
-            kwargs.setdefault('data-date-today-btn', u'linked')
-            kwargs.setdefault('data-date-today-highlight', u'true')
-
-        kwargs.setdefault('data-date-autoclose', u'true')
+        kwargs.setdefault('data-date-format', u'YYYY-MM-DD HH:mm:ss')
         return super(DateTimePickerWidget, self).__call__(field, **kwargs)
 
 
@@ -86,13 +73,7 @@ class TimePickerWidget(widgets.TextInput):
     """
     def __call__(self, field, **kwargs):
         kwargs.setdefault('data-role', u'timepicker')
-
-        if _is_bootstrap3():
-            kwargs.setdefault('data-date-format', u'hh:mm:ss')
-        else:
-            kwargs.setdefault('data-date-format', u'hh:ii:ss')
-
-        kwargs.setdefault('data-date-autoclose', u'true')
+        kwargs.setdefault('data-date-format', u'HH:mm:ss')
         return super(TimePickerWidget, self).__call__(field, **kwargs)
 
 

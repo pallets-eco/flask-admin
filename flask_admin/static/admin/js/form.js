@@ -106,27 +106,50 @@
                 processAjaxWidget($el, name);
                 return true;
             case 'datepicker':
-                $el.datetimepicker({
+                $el.daterangepicker({
                   // TODO: Have separate converters for bs2 and bs3
                   // Bootstrap 2 option
-                  minView: 'month',
                   // Bootstrap 3 option
-                  pickTime: false
-                });
+                  timePicker: false,
+				  showDropdowns: true,
+				  singleDatePicker: true,
+				  format: $el.attr('data-date-format')
+                },
+				function(start, end) {
+					$('.filter-val').trigger("change");
+				});
                 return true;
             case 'datetimepicker':
-                $el.datetimepicker({
-                });
+                $el.daterangepicker({
+				  timePicker: true,
+				  showDropdowns: true,
+				  singleDatePicker: true,
+				  timePickerIncrement: 1,
+				  timePicker12Hour: false,
+				  format: $el.attr('data-date-format')
+				},
+				function(start, end) {
+					$('.filter-val').trigger("change");
+				});
                 return true;
             case 'timepicker':
-                $el.datetimepicker({
+                $el.daterangepicker({
                   // Bootstrap 2 option
-                  startView: 'day',
-                  maxView: 'day',
-                  formatViewType: 'time',
-                  // Bootstrap 3 option
-                  pickDate: false
-                });
+				  timePicker: true,
+				  showDropdowns: true,
+				  format: $el.attr('data-date-format'),
+				  timePicker12Hour: false,
+				  timePickerIncrement: 1,
+				  singleDatePicker: true
+                },
+				function(start, end) {
+					$('.filter-val').trigger("change");
+				});
+				$el.data('daterangepicker').container.find('.calendar-date').hide();
+				$el.on('showCalendar.daterangepicker', function (event, data) {
+					var $container = data.container;
+					$container.find('.calendar-date').remove();
+				});
                 return true;
         }
       };

@@ -173,10 +173,10 @@
 
 {% macro form_css() %}
   <link href="{{ admin_static.url(filename='vendor/select2/select2.css') }}" rel="stylesheet">
-  <link href="{{ admin_static.url(filename='vendor/datetimepicker-bs2/bootstrap-datetimepicker.css') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker-bs2.css') }}" rel="stylesheet">
 {% endmacro %}
 
 {% macro form_js() %}
-  <script src="{{ admin_static.url(filename='vendor/datetimepicker-bs2/bootstrap-datetimepicker.js') }}"></script>
+  <script src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
   <script src="{{ admin_static.url(filename='admin/js/form.js') }}"></script>
 {% endmacro %}

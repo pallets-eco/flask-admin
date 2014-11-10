@@ -97,7 +97,10 @@ var AdminFilters = function(element, filtersElement, filterGroups) {
                 $field.attr('data-date-format', "YYYY-MM-DD");
             }
             else if (filter.type == "datetimepicker") {
-                $field.attr('data-date-format', "YYYY-MM-DD hh:mm:ss");
+                $field.attr('data-date-format', "YYYY-MM-DD HH:mm:ss");
+            }
+			else if (filter.type == "timepicker") {
+                $field.attr('data-date-format', "HH:mm:ss");
             }
             faForm.applyStyle($field, filter.type);
         }
