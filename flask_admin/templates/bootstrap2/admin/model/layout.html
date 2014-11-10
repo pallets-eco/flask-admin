@@ -41,6 +41,11 @@
                 <td>
                     {%- if filter.options -%}
                     <select name="flt{{n}}_{{ filter_arg }}" class="filter-val" data-role="select2">
+                        {% if value == True %}
+                            {% set value = '1' %}
+                        {% elif value == False %}
+                            {% set value = '0' %}
+                        {% endif %}
                         {%- for d in filter.options %}
                         <option value="{{ d[0] }}"{% if value == d[0] %} selected{% endif %}>{{ d[1] }}</option>
                         {%- endfor %}
