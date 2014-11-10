@@ -121,7 +121,7 @@ class FilterConverter(filters.BaseFilterConverter):
         return [f(column, name, data_type='datetimepicker', **kwargs) for f in self.numeric]
 
     @filters.convert('time')
-    def conv_datetime(self, column, name, **kwargs):
+    def conv_time(self, column, name, **kwargs):
         return [f(column, name, data_type='timepicker', **kwargs) for f in self.numeric]
 
     @filters.convert('enum')
