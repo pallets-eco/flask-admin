@@ -4,7 +4,11 @@ python:
   - "2.7"
   - "3.3"
 
-install: "pip install -r travis.txt --use-mirrors"
+env:
+  - REQUIREMENTS=travis_wtf1.txt
+  - REQUIREMENTS=travis_wtf2.txt
+
+install: "pip install -r $REQUIREMENTS --use-mirrors"
 
 services: mongodb
 
