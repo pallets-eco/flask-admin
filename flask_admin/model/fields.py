@@ -15,7 +15,7 @@ class InlineFieldList(FieldList):
 
     def __call__(self, **kwargs):
         # Create template
-        template = self.unbound_field.bind(form=None, name='')
+        template = self.unbound_field.bind(form=None, name='', _meta=self.meta)
         # Small hack to remove separator from FormField
         if isinstance(template, FormField):
             template.separator = ''
