@@ -5,6 +5,7 @@ from wtforms import fields
 
 from flask.ext.admin.contrib.sqla import ModelView
 from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
+from flask.ext.admin.contrib.sqla.validators import ItemsRequired
 
 from . import setup
 
@@ -95,6 +96,54 @@ def test_inline_form():
     eq_(UserInfo.query.count(), 0)
 
 
+def test_inline_form_required():
+    app, db, admin = setup()
+    client = app.test_client()
+
+    # Set up models and database
+    class User(db.Model):
+        __tablename__ = 'users'
+        id = db.Column(db.Integer, primary_key=True)
+        name = db.Column(db.String, unique=True)
+
+        def __init__(self, name=None):
+            self.name = name
+
+    class UserEmail(db.Model):
+        __tablename__ = 'user_info'
+        id = db.Column(db.Integer, primary_key=True)
+        email = db.Column(db.String, nullable=False, unique=True)
+        verified_at = db.Column(db.DateTime)
+        user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+        user = db.relationship(User, backref=db.backref('emails', cascade="all, delete-orphan", single_parent=True))
+
+    db.create_all()
+
+    # Set up Admin
+    class UserModelView(ModelView):
+        inline_models = (UserEmail,)
+        form_args = {
+            "emails": {"validators": [ItemsRequired()]}
+        }
+
+    view = UserModelView(User, db.session)
+    admin.add_view(view)
+
+    # Create
+    rv = client.post('/admin/user/new/', data=dict(name=u'no-email'))
+    eq_(rv.status_code, 200)
+    eq_(User.query.count(), 0)
+
+    data = {
+        'name': 'hasEmail',
+        'emails-0-email': 'foo@bar.com',
+    }
+    rv = client.post('/admin/user/new/', data=data)
+    eq_(rv.status_code, 302)
+    eq_(User.query.count(), 1)
+    eq_(UserEmail.query.count(), 1)
+
+
 def test_inline_form_ajax_fk():
     app, db, admin = setup()
 
@@ -149,6 +198,7 @@ def test_inline_form_ajax_fk():
     eq_(loader.model, Tag)
 
     ok_('userinfo-tag' in view._form_ajax_refs)
+
 
 def test_inline_form_self():
     app, db, admin = setup()

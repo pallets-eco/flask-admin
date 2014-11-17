@@ -110,10 +110,13 @@ class AdminModelConverter(ModelConverterBase):
         kwargs['label'] = self._get_label(prop.key, kwargs)
         kwargs['description'] = self._get_description(prop.key, kwargs)
 
-        if column.nullable or prop.direction.name != 'MANYTOONE':
-            kwargs['validators'].append(validators.Optional())
-        else:
-            kwargs['validators'].append(validators.InputRequired())
+        # determine optional/required, or respect existing
+        requirement_options = (validators.Optional, validators.InputRequired)
+        if not any(isinstance(v, requirement_options) for v in kwargs['validators']):
+            if column.nullable or prop.direction.name != 'MANYTOONE':
+                kwargs['validators'].append(validators.Optional())
+            else:
+                kwargs['validators'].append(validators.InputRequired())
 
         # Contribute model-related parameters
         if 'allow_blank' not in kwargs:
@@ -603,6 +606,11 @@ class InlineModelConverter(InlineModelConverterBase):
         label = self.get_label(info, forward_prop.key)
         if label:
             kwargs['label'] = label
+
+        view_info = self.get_info(self.view)
+        if view_info.form_args:
+            field_args = view_info.form_args.get(forward_prop.key, {})
+            kwargs.update(**field_args)
 
         # Contribute field
         setattr(form_class,
