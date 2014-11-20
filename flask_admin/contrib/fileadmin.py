@@ -469,7 +469,7 @@ class FileAdmin(BaseView, ActionsMixin):
         items.sort(key=itemgetter(2), reverse=True)
 
         # Sort by modified date
-        items.sort(key=lambda (v1, v2, v3, v4, v5): (v1, v2, v3, v4, datetime.fromtimestamp(v5)), reverse=True)
+        items.sort(key=lambda values: (values[0], values[1], values[2], values[3], datetime.fromtimestamp(values[4])), reverse=True)
 
         # Generate breadcrumbs
         accumulator = []
