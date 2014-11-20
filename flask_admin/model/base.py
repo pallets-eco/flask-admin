@@ -1115,7 +1115,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     if flt.validate(value):
                         filters.append((pos, (idx, flt.clean(value))))
                     else:
-                        flash(gettext('Invalid Filter Value: ' + value))
+                        flash(gettext('Invalid Filter Value: %(value)s', value=value))
 
             # Sort filters
             return [v[1] for v in sorted(filters, key=lambda n: n[0])]
