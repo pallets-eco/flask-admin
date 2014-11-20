@@ -4,6 +4,7 @@ import platform
 import re
 import shutil
 
+from datetime import datetime
 from operator import itemgetter
 from werkzeug import secure_filename
 
@@ -459,13 +460,16 @@ class FileAdmin(BaseView, ActionsMixin):
             rel_path = op.join(path, f)
 
             if self.is_accessible_path(rel_path):
-                items.append((f, rel_path, op.isdir(fp), op.getsize(fp)))
+                items.append((f, rel_path, op.isdir(fp), op.getsize(fp), op.getmtime(fp)))
 
         # Sort by name
         items.sort(key=itemgetter(0))
 
         # Sort by type
         items.sort(key=itemgetter(2), reverse=True)
+
+        # Sort by modified date
+        items.sort(key=lambda (v1, v2, v3, v4, v5): (v1, v2, v3, v4, datetime.fromtimestamp(v5)), reverse=True)
 
         # Generate breadcrumbs
         accumulator = []
