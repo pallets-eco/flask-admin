@@ -488,7 +488,7 @@ def test_column_filters():
     ok_('datetime_obj2' not in data)
     
     # time - equals
-    rv = client.get('/admin/_datetime/?flt0_8=11%3A10%3A00')
+    rv = client.get('/admin/_datetime/?flt0_8=11%3A10%3A09')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('time_obj1' in data)

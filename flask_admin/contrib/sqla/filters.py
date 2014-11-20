@@ -1,4 +1,6 @@
 import warnings
+import time
+import datetime
 
 from flask.ext.admin.babel import lazy_gettext
 from flask.ext.admin.model import filters
@@ -81,11 +83,24 @@ class FilterSmaller(BaseSQLAFilter):
 # Customized type filters
 class BooleanEqualFilter(FilterEqual, filters.BaseBooleanFilter):
     pass
-
+    
 
 class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
     pass
+    
+   
+class DateTimeEqualFilter(FilterEqual, filters.BaseDateTimeFilter):
+    def clean(self, value):
+        return datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
 
+        
+class TimeEqualFilter(FilterEqual, filters.BaseTimeFilter):
+    def clean(self, value):
+        timetuple = time.strptime(value, '%H:%M:%S')
+        return datetime.time(timetuple.tm_hour,
+                             timetuple.tm_min,
+                             timetuple.tm_sec)
+                             
 
 # Base SQLA filter field converter
 class FilterConverter(filters.BaseFilterConverter):
@@ -118,11 +133,19 @@ class FilterConverter(filters.BaseFilterConverter):
 
     @filters.convert('datetime')
     def conv_datetime(self, column, name, **kwargs):
-        return [f(column, name, data_type='datetimepicker', **kwargs) for f in self.numeric]
-
+        #return [f(column, name, data_type='datetimepicker', **kwargs) for f in self.numeric]
+        return [DateTimeEqualFilter(column, name),
+                FilterNotEqual(column, name, data_type='datetimepicker', **kwargs),
+                FilterGreater(column, name, data_type='datetimepicker', **kwargs),
+                FilterSmaller(column, name, data_type='datetimepicker', **kwargs)]
+                
     @filters.convert('time')
     def conv_time(self, column, name, **kwargs):
-        return [f(column, name, data_type='timepicker', **kwargs) for f in self.numeric]
+        #return [f(column, name, data_type='timepicker', **kwargs) for f in self.numeric]
+        return [TimeEqualFilter(column, name),
+                FilterNotEqual(column, name, data_type='timepicker', **kwargs),
+                FilterGreater(column, name, data_type='timepicker', **kwargs),
+                FilterSmaller(column, name, data_type='timepicker', **kwargs)]
 
     @filters.convert('enum')
     def conv_enum(self, column, name, options=None, **kwargs):

@@ -100,7 +100,7 @@ class BaseDateFilter(BaseFilter):
     """
         Base Date filter. Uses client-side date picker control.
     """
-    def __init__(self, name, options=None):
+    def __init__(self, name, options=None, data_type=None):
         super(BaseDateFilter, self).__init__(name,
                                              options,
                                              data_type='datepicker')
@@ -112,12 +112,26 @@ class BaseDateFilter(BaseFilter):
 
 class BaseDateTimeFilter(BaseFilter):
     """
-        Base DateTime filter. Uses client-side date picker control.
+        Base DateTime filter. Uses client-side date time picker control.
     """
-    def __init__(self, name, options=None):
+    def __init__(self, name, options=None, data_type=None):
         super(BaseDateTimeFilter, self).__init__(name,
                                                  options,
                                                  data_type='datetimepicker')
+
+    def validate(self, value):
+        # TODO: Validation
+        return True
+        
+        
+class BaseTimeFilter(BaseFilter):
+    """
+        Base Time filter. Uses client-side time picker control.
+    """
+    def __init__(self, name, options=None, data_type=None):
+        super(BaseTimeFilter, self).__init__(name,
+                                             options,
+                                             data_type='timepicker')
 
     def validate(self, value):
         # TODO: Validation
