@@ -133,7 +133,6 @@ class FilterConverter(filters.BaseFilterConverter):
 
     @filters.convert('datetime')
     def conv_datetime(self, column, name, **kwargs):
-        #return [f(column, name, data_type='datetimepicker', **kwargs) for f in self.numeric]
         return [DateTimeEqualFilter(column, name),
                 FilterNotEqual(column, name, data_type='datetimepicker', **kwargs),
                 FilterGreater(column, name, data_type='datetimepicker', **kwargs),
@@ -141,7 +140,6 @@ class FilterConverter(filters.BaseFilterConverter):
                 
     @filters.convert('time')
     def conv_time(self, column, name, **kwargs):
-        #return [f(column, name, data_type='timepicker', **kwargs) for f in self.numeric]
         return [TimeEqualFilter(column, name),
                 FilterNotEqual(column, name, data_type='timepicker', **kwargs),
                 FilterGreater(column, name, data_type='timepicker', **kwargs),
