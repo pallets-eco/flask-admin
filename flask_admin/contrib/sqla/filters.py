@@ -88,11 +88,29 @@ class BooleanEqualFilter(FilterEqual, filters.BaseBooleanFilter):
 class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
     pass
     
-   
+    
+class DateEqualFilter(FilterEqual, filters.BaseDateFilter):
+    def clean(self, value):
+        return datetime.datetime.strptime(value, '%Y-%m-%d').date()
+
+    def validate(self, value):
+        try:
+            self.clean(value)
+            return True
+        except ValueError:
+            return False
+            
+            
 class DateTimeEqualFilter(FilterEqual, filters.BaseDateTimeFilter):
     def clean(self, value):
         return datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
 
+    def validate(self, value):
+        try:
+            self.clean(value)
+            return True
+        except ValueError:
+            return False
         
 class TimeEqualFilter(FilterEqual, filters.BaseTimeFilter):
     def clean(self, value):
@@ -100,7 +118,14 @@ class TimeEqualFilter(FilterEqual, filters.BaseTimeFilter):
         return datetime.time(timetuple.tm_hour,
                              timetuple.tm_min,
                              timetuple.tm_sec)
-                             
+    
+    def validate(self, value):
+        try:
+            self.clean(value)
+            return True
+        except ValueError:
+            return False
+    
 
 # Base SQLA filter field converter
 class FilterConverter(filters.BaseFilterConverter):
@@ -129,7 +154,10 @@ class FilterConverter(filters.BaseFilterConverter):
 
     @filters.convert('date')
     def conv_date(self, column, name, **kwargs):
-        return [f(column, name, data_type='datepicker', **kwargs) for f in self.numeric]
+        return [DateEqualFilter(column, name),
+                FilterNotEqual(column, name, data_type='datepicker', **kwargs),
+                FilterGreater(column, name, data_type='datepicker', **kwargs),
+                FilterSmaller(column, name, data_type='datepicker', **kwargs)]
 
     @filters.convert('datetime')
     def conv_datetime(self, column, name, **kwargs):
