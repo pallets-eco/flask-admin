@@ -9,6 +9,7 @@ from flask.ext.admin.contrib.sqla import ModelView
 
 from . import setup
 
+from datetime import datetime, time, date
 
 class CustomModelView(ModelView):
     def __init__(self, model, session,
@@ -23,12 +24,16 @@ class CustomModelView(ModelView):
 
 def create_models(db):
     class Model1(db.Model):
-        def __init__(self, test1=None, test2=None, test3=None, test4=None, bool_field=False):
+        def __init__(self, test1=None, test2=None, test3=None, test4=None, 
+                     bool_field=False, date_field=None, time_field=None, datetime_field=None):
             self.test1 = test1
             self.test2 = test2
             self.test3 = test3
             self.test4 = test4
             self.bool_field = bool_field
+            self.date_field = date_field
+            self.time_field = time_field
+            self.datetime_field = datetime_field
 
         id = db.Column(db.Integer, primary_key=True)
         test1 = db.Column(db.String(20))
@@ -37,7 +42,11 @@ def create_models(db):
         test4 = db.Column(db.UnicodeText)
         bool_field = db.Column(db.Boolean)
         enum_field = db.Column(db.Enum('model1_v1', 'model1_v1'), nullable=True)
-
+        
+        date_field = db.Column(db.Date)
+        time_field = db.Column(db.Time)
+        datetime_field = db.Column(db.DateTime)
+        
         def __unicode__(self):
             return self.test1
 
@@ -178,7 +187,7 @@ def test_exclude_columns():
 
     view = CustomModelView(
         Model1, db.session,
-        column_exclude_list=['test2', 'test4', 'enum_field']
+        column_exclude_list=['test2', 'test4', 'enum_field', 'date_field', 'time_field', 'datetime_field']
     )
     admin.add_view(view)
 
@@ -355,9 +364,19 @@ def test_column_filters():
     model2_obj2 = Model2('model2_obj2', model1=model1_obj1)
     model2_obj3 = Model2('model2_obj3')
     model2_obj4 = Model2('model2_obj4')
+    
+    date_obj1 = Model1('date_obj1', date_field=date(2014,11,17))
+    date_obj2 = Model1('date_obj2', date_field=date(2013,10,16))
+    time_obj1 = Model1('time_obj1', time_field=time(11,10,9))
+    time_obj2 = Model1('time_obj2', time_field=time(10,9,8))
+    datetime_obj1 = Model1('datetime_obj1', datetime_field=datetime(2014,4,3,1,9,0))
+    datetime_obj2 = Model1('datetime_obj2', datetime_field=datetime(2013,3,2,0,8,0))
+    
     db.session.add_all([
         model1_obj1, model1_obj2, model1_obj3, model1_obj4,
         model2_obj1, model2_obj2, model2_obj3, model2_obj4,
+        date_obj1, time_obj1, datetime_obj1,
+        date_obj2, time_obj2, datetime_obj2
     ])
     db.session.commit()
 
@@ -423,7 +442,57 @@ def test_column_filters():
     data = rv.data.decode('utf-8')
     ok_('model1_obj1' in data)
     ok_('model1_obj2' not in data)
+    
+    # Test date, time, and datetime filters
+    view = CustomModelView(Model1, db.session,
+                           column_filters=['date_field', 'datetime_field', 'time_field'], 
+                           endpoint="_datetime")
+    admin.add_view(view)
 
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Date Field']],
+        [
+            (0, 'equals'),
+            (1, 'not equal'),
+            (2, 'greater than'),
+            (3, 'smaller than')
+        ])
+    
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Datetime Field']],
+        [
+            (4, 'equals'),
+            (5, 'not equal'),
+            (6, 'greater than'),
+            (7, 'smaller than')
+        ])
+    
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Time Field']],
+        [
+            (8, 'equals'),
+            (9, 'not equal'),
+            (10, 'greater than'),
+            (11, 'smaller than')
+        ])
+        
+    # date - equals
+    rv = client.get('/admin/_datetime/?flt0_0=2014-11-17')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('date_obj1' in data)
+    ok_('date_obj2' not in data)
+    
+    # datetime - equals
+    rv = client.get('/admin/_datetime/?flt0_4=2014-04-03+01%3A09%3A00')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' in data)
+    ok_('datetime_obj2' not in data)
+    
+    # time - equals
+    rv = client.get('/admin/_datetime/?flt0_8=11%3A10%3A09')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('time_obj1' in data)
+    ok_('time_obj2' not in data)
 
 def test_url_args():
     app, db, admin = setup()
