@@ -454,23 +454,29 @@ def test_column_filters():
             (0, 'equals'),
             (1, 'not equal'),
             (2, 'greater than'),
-            (3, 'smaller than')
+            (3, 'smaller than'),
+            (4, 'between'),
+            (5, 'not between')
         ])
     
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Datetime Field']],
         [
-            (4, 'equals'),
-            (5, 'not equal'),
-            (6, 'greater than'),
-            (7, 'smaller than')
+            (6, 'equals'),
+            (7, 'not equal'),
+            (8, 'greater than'),
+            (9, 'smaller than'),
+            (10, 'between'),
+            (11, 'not between')
         ])
     
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Time Field']],
         [
-            (8, 'equals'),
-            (9, 'not equal'),
-            (10, 'greater than'),
-            (11, 'smaller than')
+            (12, 'equals'),
+            (13, 'not equal'),
+            (14, 'greater than'),
+            (15, 'smaller than'),
+            (16, 'between'),
+            (17, 'not between')
         ])
         
     # date - equals
@@ -481,19 +487,124 @@ def test_column_filters():
     ok_('date_obj2' not in data)
     
     # datetime - equals
-    rv = client.get('/admin/_datetime/?flt0_4=2014-04-03+01%3A09%3A00')
+    rv = client.get('/admin/_datetime/?flt0_6=2014-04-03+01%3A09%3A00')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('datetime_obj1' in data)
     ok_('datetime_obj2' not in data)
     
     # time - equals
-    rv = client.get('/admin/_datetime/?flt0_8=11%3A10%3A09')
+    rv = client.get('/admin/_datetime/?flt0_12=11%3A10%3A09')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('time_obj1' in data)
+    ok_('time_obj2' not in data)
+    
+    # date - not equal
+    rv = client.get('/admin/_datetime/?flt0_1=2014-11-17')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('date_obj1' not in data)
+    ok_('date_obj2' in data)
+    
+    # datetime - not equal
+    rv = client.get('/admin/_datetime/?flt0_7=2014-04-03+01%3A09%3A00')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' not in data)
+    ok_('datetime_obj2' in data)
+    
+    # time - not equal
+    rv = client.get('/admin/_datetime/?flt0_13=11%3A10%3A09')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('time_obj1' not in data)
+    ok_('time_obj2' in data)
+    
+    # date - greater
+    rv = client.get('/admin/_datetime/?flt0_2=2014-11-16')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('date_obj1' in data)
+    ok_('date_obj2' not in data)
+    
+    # datetime - greater
+    rv = client.get('/admin/_datetime/?flt0_8=2014-04-03+01%3A08%3A00')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' in data)
+    ok_('datetime_obj2' not in data)
+    
+    # time - greater
+    rv = client.get('/admin/_datetime/?flt0_14=11%3A09%3A09')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('time_obj1' in data)
+    ok_('time_obj2' not in data)
+    
+    # date - smaller
+    rv = client.get('/admin/_datetime/?flt0_3=2014-11-16')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('date_obj1' not in data)
+    ok_('date_obj2' in data)
+    
+    # datetime - smaller
+    rv = client.get('/admin/_datetime/?flt0_9=2014-04-03+01%3A08%3A00')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' not in data)
+    ok_('datetime_obj2' in data)
+    
+    # time - smaller
+    rv = client.get('/admin/_datetime/?flt0_15=11%3A09%3A09')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('time_obj1' not in data)
+    ok_('time_obj2' in data)
+
+    # date - between
+    rv = client.get('/admin/_datetime/?flt0_4=2014-11-13+to+2014-11-20')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('date_obj1' in data)
+    ok_('date_obj2' not in data)
+    
+    # datetime - between
+    rv = client.get('/admin/_datetime/?flt0_10=2014-04-02+00%3A00%3A00+to+2014-11-20+23%3A59%3A59')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' in data)
+    ok_('datetime_obj2' not in data)
+    
+    # time - between
+    rv = client.get('/admin/_datetime/?flt0_16=10%3A40%3A00+to+11%3A50%3A59')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('time_obj1' in data)
     ok_('time_obj2' not in data)
 
+    # date - not between
+    rv = client.get('/admin/_datetime/?flt0_5=2014-11-13+to+2014-11-20')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('date_obj1' not in data)
+    ok_('date_obj2' in data)
+    
+    # datetime - not between
+    rv = client.get('/admin/_datetime/?flt0_11=2014-04-02+00%3A00%3A00+to+2014-11-20+23%3A59%3A59')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' not in data)
+    ok_('datetime_obj2' in data)
+    
+    # time - not between
+    rv = client.get('/admin/_datetime/?flt0_17=10%3A40%3A00+to+11%3A50%3A59')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('time_obj1' not in data)
+    ok_('time_obj2' in data)
+    
 def test_url_args():
     app, db, admin = setup()
 

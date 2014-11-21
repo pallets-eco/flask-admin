@@ -1109,11 +1109,11 @@ class BaseModelView(BaseView, ActionsMixin):
 
                 if key in self._filter_args:
                     idx, flt = self._filter_args[key]
-
+                    
                     value = request.args[n]
 
                     if flt.validate(value):
-                        filters.append((pos, (idx, flt.clean(value))))
+                        filters.append((pos, (idx, flt.name, value)))
                     else:
                         flash(gettext('Invalid Filter Value: %(value)s', value=value))
 
@@ -1151,7 +1151,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         if view_args.filters:
             for i, pair in enumerate(view_args.filters):
-                idx, value = pair
+                idx, flt_name, value = pair
 
                 key = 'flt%d_%s' % (i, self.get_filter_arg(idx, self._filters[idx]))
                 kwargs[key] = value

@@ -768,7 +768,7 @@ class ModelView(BaseModelView):
 
         # Apply filters
         if filters and self._filters:
-            for idx, value in filters:
+            for idx, flt_name, value in filters:
                 flt = self._filters[idx]
 
                 # Figure out joins
@@ -782,9 +782,9 @@ class ModelView(BaseModelView):
                         count_query = count_query.join(table)
                         joins.add(table.name)
 
-                # Apply filter
-                query = flt.apply(query, value)
-                count_query = flt.apply(count_query, value)
+                # turn into python format with .clean() and apply filter
+                query = flt.apply(query, flt.clean(value))
+                count_query = flt.apply(count_query, flt.clean(value))
 
         # Calculate number of rows
         count = count_query.scalar()

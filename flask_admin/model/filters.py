@@ -1,3 +1,6 @@
+import time
+import datetime
+
 from flask.ext.admin._compat import text_type
 from flask.ext.admin.babel import lazy_gettext
 
@@ -45,15 +48,20 @@ class BaseFilter(object):
             Validate value.
 
             If value is valid, returns `True` and `False` otherwise.
-
+            
             :param value:
                 Value to validate
         """
-        return True
+        # useful for filters with date conversions, see if conversion in clean() raises ValueError
+        try:
+            self.clean(value)
+            return True
+        except ValueError:
+            return False
 
     def clean(self, value):
         """
-            Parse value into python format.
+            Parse value into python format. Occurs before .apply()
 
             :param value:
                 Value to parse
@@ -105,9 +113,8 @@ class BaseDateFilter(BaseFilter):
                                              options,
                                              data_type='datepicker')
 
-    def validate(self, value):
-        # TODO: Validation
-        return True
+    def clean(self, value):
+        return datetime.datetime.strptime(value, '%Y-%m-%d').date()
 
 
 class BaseDateTimeFilter(BaseFilter):
@@ -118,10 +125,10 @@ class BaseDateTimeFilter(BaseFilter):
         super(BaseDateTimeFilter, self).__init__(name,
                                                  options,
                                                  data_type='datetimepicker')
-
-    def validate(self, value):
-        # TODO: Validation
-        return True
+                                                 
+    def clean(self, value):
+        # datetime filters will not work in SQLite + SQLAlchemy if value not converted to datetime
+        return datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
         
         
 class BaseTimeFilter(BaseFilter):
@@ -133,10 +140,13 @@ class BaseTimeFilter(BaseFilter):
                                              options,
                                              data_type='timepicker')
 
-    def validate(self, value):
-        # TODO: Validation
-        return True
-
+    def clean(self, value):
+        # time filters will not work in SQLite + SQLAlchemy if value not converted to time
+        timetuple = time.strptime(value, '%H:%M:%S')
+        return datetime.time(timetuple.tm_hour,
+                             timetuple.tm_min,
+                             timetuple.tm_sec)
+                             
 
 def convert(*args):
     """
