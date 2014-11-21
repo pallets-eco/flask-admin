@@ -354,6 +354,8 @@ class FileAdmin(BaseView, ActionsMixin):
     def is_action_allowed(self, name):
         if name == 'delete' and not self.can_delete:
             return False
+        elif name == 'edit' and len(self.editable_extensions) == 0:
+            return False
 
         return True
 
