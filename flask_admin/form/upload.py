@@ -226,6 +226,8 @@ class FileUploadField(fields.StringField):
         if not self.base_path:
             raise ValueError('FileUploadField field requires base_path to be set.')
 
+        if callable(self.base_path):
+            return op.join(self.base_path(), filename)
         return op.join(self.base_path, filename)
 
     def _delete_file(self, filename):
