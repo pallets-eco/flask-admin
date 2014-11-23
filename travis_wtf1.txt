@@ -5,3 +5,4 @@ peewee
 wtf-peewee
 flask-mongoengine
 pillow
+flask-babelex
