@@ -55,7 +55,8 @@ setup(
         'wtf-peewee',
         'sqlalchemy',
         'flask-mongoengine',
-        'flask-sqlalchemy'
+        'flask-sqlalchemy',
+        'flask-babelex'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

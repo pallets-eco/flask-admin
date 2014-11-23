@@ -14,7 +14,7 @@ from flask.ext.admin.actions import ActionsMixin
 from flask.ext.admin.helpers import get_form_data, validate_form_on_submit, get_redirect_target
 from flask.ext.admin.tools import rec_getattr
 from flask.ext.admin._backwards import ObsoleteAttr
-from flask.ext.admin._compat import iteritems, OrderedDict
+from flask.ext.admin._compat import iteritems, OrderedDict, as_unicode
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
 
@@ -594,7 +594,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 self._filter_groups[flt.name].append({
                     'index': i,
                     'arg': self.get_filter_arg(i, flt),
-                    'operation': flt.operation(),
+                    'operation': as_unicode(flt.operation()),
                     'options': flt.get_options(self) or None,
                     'type': flt.data_type
                 })
@@ -809,7 +809,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 Filter instance
         """
         if self.named_filter_urls:
-            name = ('%s %s' % (flt.name, flt.operation())).lower()
+            name = ('%s %s' % (flt.name, as_unicode(flt.operation()))).lower()
             name = filter_char_re.sub('', name)
             name = filter_compact_re.sub('_', name)
             return name
@@ -945,7 +945,7 @@ class BaseModelView(BaseView, ActionsMixin):
     # Exception handler
     def handle_view_exception(self, exc):
         if isinstance(exc, ValidationError):
-            flash(unicode(exc))
+            flash(as_unicode(exc))
             return True
 
         if self._debug:

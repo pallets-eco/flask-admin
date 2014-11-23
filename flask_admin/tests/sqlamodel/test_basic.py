@@ -6,6 +6,7 @@ from flask.ext.admin import form
 from flask.ext.admin._compat import as_unicode
 from flask.ext.admin._compat import iteritems
 from flask.ext.admin.contrib.sqla import ModelView
+from flask.ext.babelex import Babel
 
 from . import setup
 
@@ -934,8 +935,34 @@ def test_extra_field_order():
     pos2 = data.find('Test1')
     ok_(pos2 > pos1)
 
-
-# TODO: Babel tests
+def test_modelview_localization():
+    def test_locale(locale):
+        app, db, admin = setup()
+        
+        app.config['BABEL_DEFAULT_LOCALE'] = locale
+        babel = Babel(app)
+        
+        Model1, _ = create_models(db)
+        
+        view = CustomModelView(
+            Model1, db.session,
+            column_filters=['test1', 'bool_field', 'date_field', 'datetime_field', 'time_field']
+        )
+        
+        admin.add_view(view)
+        
+        client = app.test_client()
+        
+        rv = client.get('/admin/model1/')
+        eq_(rv.status_code, 200)
+        
+        rv = client.get('/admin/model1/new/')
+        eq_(rv.status_code, 200)
+    
+    locales = ['en', 'cs', 'de', 'es', 'fa', 'fr', 'pt', 'ru', 'zh_CN', 'zh_TW']
+    for locale in locales:
+        test_locale(locale)
+    
 def test_custom_form_base():
     app, db, admin = setup()
 
