@@ -594,7 +594,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 self._filter_groups[flt.name].append({
                     'index': i,
                     'arg': self.get_filter_arg(i, flt),
-                    'operation': flt.operation(),
+                    'operation': unicode(flt.operation()),
                     'options': flt.get_options(self) or None,
                     'type': flt.data_type
                 })
@@ -809,7 +809,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 Filter instance
         """
         if self.named_filter_urls:
-            name = ('%s %s' % (flt.name, flt.operation())).lower()
+            name = ('%s %s' % (flt.name, unicode(flt.operation()))).lower()
             name = filter_char_re.sub('', name)
             name = filter_compact_re.sub('_', name)
             return name
