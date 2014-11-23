@@ -1323,7 +1323,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if self.validate_form(form):
             if self.create_model(form):
                 if '_add_another' in request.form:
-                    flash(gettext('Model was successfully created.'))
+                    flash(gettext('Record was successfully created.'))
                     return redirect(request.url)
                 else:
                     return redirect(return_url)
@@ -1360,7 +1360,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if self.validate_form(form):
             if self.update_model(form, model):
                 if '_continue_editing' in request.form:
-                    flash(gettext('Model was successfully saved.'))
+                    flash(gettext('Record was successfully saved.'))
                     return redirect(request.url)
                 else:
                     return redirect(return_url)
