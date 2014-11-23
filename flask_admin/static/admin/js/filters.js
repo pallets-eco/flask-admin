@@ -1,4 +1,4 @@
-var AdminFilters = function(element, filtersElement, filterGroups) {
+var AdminFilters = function(element, filtersElement, filterGroups, activeFilters) {
     var $root = $(element);
     var $container = $('.filters', $root);
     var lastCount = 0;
@@ -40,7 +40,7 @@ var AdminFilters = function(element, filtersElement, filterGroups) {
         return false;
     }
 
-    function addFilter(name, subfilters) {
+    function addFilter(name, subfilters, selected, filterValue) {
         var $el = $('<tr />').appendTo($container);
 
         // Filter list
@@ -58,19 +58,45 @@ var AdminFilters = function(element, filtersElement, filterGroups) {
         var $select = $('<select class="filter-op" />')
                       .change(changeOperation);
 
-        $(subfilters).each(function() {
-            $select.append($('<option/>').attr('value', this.arg).text(this.operation));
+        // if one of the subfilters are selected, use that subfilter to create the input field
+        var filter_selection = 0;
+        $.each(subfilters, function( subfilterIndex, subfilter ) {
+            if (this.arg == selected) {
+                $select.append($('<option/>').attr('value', subfilter.arg).attr('selected', true).text(subfilter.operation));
+                filter_selection = subfilterIndex;
+            } else {
+                $select.append($('<option/>').attr('value', subfilter.arg).text(subfilter.operation));
+            }
         });
 
         $el.append(
             $('<td/>').append($select)
         );
 
-        $select.select2({width: 'resolve'});
+        // on change, get the subfilter based on the index of the added element, then modify the input field (turn into date range if necessary)
+        $select.select2({width: 'resolve'}).on("change", function(e) { 
+			styleFilterInput(subfilters[e.added.element[0].index], $el.find('input').last()); 
+		});
 
-        // Input
-        var filter = subfilters[0];
-
+        // add styling to input field, accommodates filters that change the type of the field 
+        function styleFilterInput(filter, field) {
+            if (filter.type) {
+                field.attr('data-role', filter.type);
+                if ((filter.type == "datepicker") || (filter.type == "daterangepicker")) {
+                    field.attr('data-date-format', "YYYY-MM-DD");
+                }
+                else if ((filter.type == "datetimepicker") || (filter.type == "datetimerangepicker")) {
+                    field.attr('data-date-format', "YYYY-MM-DD HH:mm:ss");
+                }
+                else if ((filter.type == "timepicker")  || (filter.type == "timerangepicker")) {
+                    field.attr('data-date-format', "HH:mm:ss");
+                }
+                faForm.applyStyle(field, filter.type);
+            }
+        }
+        
+        // initial filter creation
+        filter = subfilters[filter_selection];
         var $field;
 
         if (filter.options) {
@@ -78,8 +104,14 @@ var AdminFilters = function(element, filtersElement, filterGroups) {
                         .attr('name', makeName(filter.arg));
 
             $(filter.options).each(function() {
-                $field.append($('<option/>')
-                    .val(this[0]).text(this[1]));
+                // for active fields, add "selected" to matching value
+                if (filterValue && (filterValue == this[0])) {
+                    $field.append($('<option/>')
+                        .val(this[0]).text(this[1]).attr('selected', true));
+                } else {
+                    $field.append($('<option/>')
+                        .val(this[0]).text(this[1]));
+                }
             });
 
             $el.append($('<td/>').append($field));
@@ -90,30 +122,35 @@ var AdminFilters = function(element, filtersElement, filterGroups) {
                         .attr('name', makeName(filter.arg));
             $el.append($('<td/>').append($field));
         }
-
-        if (filter.type) {
-            $field.attr('data-role', filter.type);
-            if (filter.type == "datepicker") {
-                $field.attr('data-date-format', "YYYY-MM-DD");
-            }
-            else if (filter.type == "datetimepicker") {
-                $field.attr('data-date-format', "YYYY-MM-DD HH:mm:ss");
-            }
-			else if (filter.type == "timepicker") {
-                $field.attr('data-date-format', "HH:mm:ss");
-            }
-            faForm.applyStyle($field, filter.type);
-        }
+        
+        styleFilterInput(filter, $field);
+        
+        return $field;
     }
 
     $('a.filter', filtersElement).click(function() {
         var name = ($(this).text().trim !== undefined ? $(this).text().trim() : $(this).text().replace(/^\s+|\s+$/g,''));
 
-        addFilter(name, filterGroups[name]);
+        addFilter(name, filterGroups[name], false, false);
 
         $('button', $root).show();
 
         //return false;
+    });
+    
+    if(activeFilters.length > 0){
+        $('button', $root).show();
+    }
+    
+    // add active filters on page load
+    $.each(activeFilters, function( activeIndex, activeFilter ) {
+        var idx = activeFilter[0],
+            name = activeFilter[1],
+            filterValue = activeFilter[2];
+        $field = addFilter(name, filterGroups[name], idx, filterValue);
+        
+        // set value of newly created field
+        $field.val(filterValue);
     });
 
     $('.filter-op', $root).change(changeOperation);
@@ -122,7 +159,7 @@ var AdminFilters = function(element, filtersElement, filterGroups) {
     });
     $('.remove-filter', $root).click(removeFilter);
 
-    $('.filter-val', $root).each(function() {
+    $('.filter-val', $root).not('.select2-container').each(function() {
         var count = getCount($(this).attr('name'));
         if (count > lastCount)
             lastCount = count;

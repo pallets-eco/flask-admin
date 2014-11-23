@@ -160,8 +160,9 @@
             {% if filter_groups %}
                 var filter = new AdminFilters(
                     '#filter_form', '.field-filters',
-                    {{ filter_groups|tojson|safe }}
-                );
+                    {{ filter_groups|tojson|safe }},
+                    {{ active_filters|tojson|safe }}
+                );                
             {% endif %}
         })(jQuery);
     </script>
