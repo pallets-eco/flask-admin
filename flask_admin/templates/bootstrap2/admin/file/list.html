@@ -37,7 +37,7 @@
                 {% endblock %}
             </tr>
         </thead>
-        {% for name, path, is_dir, size in items %}
+        {% for name, path, is_dir, size, date in items %}
         <tr>
             {% block list_row scoped %}
             {% if actions %}

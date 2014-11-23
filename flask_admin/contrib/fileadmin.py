@@ -4,6 +4,7 @@ import platform
 import re
 import shutil
 
+from datetime import datetime
 from operator import itemgetter
 from werkzeug import secure_filename
 
@@ -353,6 +354,8 @@ class FileAdmin(BaseView, ActionsMixin):
     def is_action_allowed(self, name):
         if name == 'delete' and not self.can_delete:
             return False
+        elif name == 'edit' and len(self.editable_extensions) == 0:
+            return False
 
         return True
 
@@ -459,13 +462,16 @@ class FileAdmin(BaseView, ActionsMixin):
             rel_path = op.join(path, f)
 
             if self.is_accessible_path(rel_path):
-                items.append((f, rel_path, op.isdir(fp), op.getsize(fp)))
+                items.append((f, rel_path, op.isdir(fp), op.getsize(fp), op.getmtime(fp)))
 
         # Sort by name
         items.sort(key=itemgetter(0))
 
         # Sort by type
         items.sort(key=itemgetter(2), reverse=True)
+
+        # Sort by modified date
+        items.sort(key=lambda values: (values[0], values[1], values[2], values[3], datetime.fromtimestamp(values[4])), reverse=True)
 
         # Generate breadcrumbs
         accumulator = []
