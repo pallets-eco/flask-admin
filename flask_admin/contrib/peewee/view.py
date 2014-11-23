@@ -354,8 +354,8 @@ class ModelView(BaseModelView):
             save_inline(form, model)
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
-                log.exception('Failed to create model')
+                flash(gettext('Failed to create record. %(error)s', error=str(ex)), 'error')
+                log.exception('Failed to create record.')
 
             return False
         else:
@@ -373,8 +373,8 @@ class ModelView(BaseModelView):
             save_inline(form, model)
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')
-                log.exception('Failed to update model')
+                flash(gettext('Failed to update record. %(error)s', error=str(ex)), 'error')
+                log.exception('Failed to update record.')
 
             return False
         else:
@@ -389,8 +389,8 @@ class ModelView(BaseModelView):
             return True
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                flash(gettext('Failed to delete model. %(error)s', error=str(ex)), 'error')
-                log.exception('Failed to delete model')
+                flash(gettext('Failed to delete record. %(error)s', error=str(ex)), 'error')
+                log.exception('Failed to delete record.')
 
             return False
 
@@ -404,7 +404,7 @@ class ModelView(BaseModelView):
 
     @action('delete',
             lazy_gettext('Delete'),
-            lazy_gettext('Are you sure you want to delete selected models?'))
+            lazy_gettext('Are you sure you want to delete selected records?'))
     def action_delete(self, ids):
         try:
             model_pk = getattr(self.model, self._primary_key)
@@ -420,10 +420,10 @@ class ModelView(BaseModelView):
                     m.delete_instance(recursive=True)
                     count += 1
 
-            flash(ngettext('Model was successfully deleted.',
-                           '%(count)s models were successfully deleted.',
+            flash(ngettext('Record was successfully deleted.',
+                           '%(count)s records were successfully deleted.',
                            count,
                            count=count))
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                flash(gettext('Failed to delete models. %(error)s', error=str(ex)), 'error')
+                flash(gettext('Failed to delete records. %(error)s', error=str(ex)), 'error')

@@ -111,7 +111,7 @@
                             {% if csrf_token %}
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             {% endif %}
-                            <button onclick="return confirm('{{ _gettext('You sure you want to delete this item?') }}');" title="{{ _gettext('Delete record') }}">
+                            <button onclick="return confirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="{{ _gettext('Delete record') }}">
                                 <i class="icon-trash"></i>
                             </button>
                         </form>
@@ -147,7 +147,7 @@
     {{ lib.form_js() }}
     <script src="{{ admin_static.url(filename='admin/js/filters.js') }}"></script>
 
-    {{ actionlib.script(_gettext('Please select at least one model.'),
+    {{ actionlib.script(_gettext('Please select at least one record.'),
                       actions,
                       actions_confirmation) }}
 
