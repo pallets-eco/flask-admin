@@ -2,7 +2,7 @@ import os.path as op
 
 from functools import wraps
 
-from flask import Blueprint, render_template, abort, g, url_for
+from flask import Blueprint, current_app, render_template, abort, g, url_for
 from flask.ext.admin import babel
 from flask.ext.admin._compat import with_metaclass
 from flask.ext.admin import helpers as h
@@ -274,6 +274,9 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
         # Expose get_url helper
         kwargs['get_url'] = self.get_url
+
+        # Expose config info
+        kwargs['config'] = current_app.config
 
         # Contribute extra arguments
         kwargs.update(self._template_args)

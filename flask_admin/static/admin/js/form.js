@@ -70,6 +70,163 @@
       }
 
       /**
+       * Process Leaflet (map) widget
+       */
+      function processLeafletWidget($el, name) {
+        if (!window.MAPBOX_MAP_ID) {
+          console.error("You must set MAPBOX_MAP_ID in your Flask settings to use the map widget");
+          return false;
+        }
+
+        var geometryType = $el.data("geometry-type")
+        if (geometryType) {
+          geometryType = geometryType.toUpperCase();
+        } else {
+          geometryType = "GEOMETRY";
+        }
+        var multiple = geometryType.lastIndexOf("MULTI", geometryType) === 0;
+        var editable = ! $el.is(":disabled");
+
+        var $map = $("<div>").width($el.data("width")).height($el.data("height"));
+        $el.after($map).hide();
+
+        var center = null;
+        if($el.data("lat") && $el.data("lng")) {
+          center = L.latLng($el.data("lat"), $el.data("lng"));
+        }
+
+        var maxBounds = null;
+        if ($el.data("max-bounds-sw-lat") && $el.data("max-bounds-sw-lng") &&
+          $el.data("max-bounds-ne-lat") && $el.data("max-bounds-ne-lng"))
+        {
+          maxBounds = L.latLngBounds(
+            L.latLng($el.data("max-bounds-sw-lat"), $el.data("max-bounds-sw-lng")),
+            L.latLng($el.data("max-bounds-ne-lat"), $el.data("max-bounds-ne-lng"))
+          )
+        }
+
+        var editableLayers;
+        if ($el.val()) {
+          editableLayers = new L.geoJson(JSON.parse($el.val()));
+          center = center || editableLayers.getBounds().getCenter();
+        } else {
+          editableLayers = new L.geoJson();
+        }
+
+        var mapOptions = {
+          center: center,
+          zoom: $el.data("zoom") || 12,
+          minZoom: $el.data("min-zoom"),
+          maxZoom: $el.data("max-zoom"),
+          maxBounds: maxBounds
+        }
+
+        if (!editable) {
+          mapOptions.dragging = false;
+          mapOptions.touchzoom = false;
+          mapOptions.scrollWheelZoom = false;
+          mapOptions.doubleClickZoom = false;
+          mapOptions.boxZoom = false;
+          mapOptions.tap = false;
+          mapOptions.keyboard = false;
+          mapOptions.zoomControl = false;
+        }
+
+        // only show attributions if the map is big enough
+        // (otherwise, it gets in the way)
+        if ($map.width() * $map.height() < 10000) {
+          mapOptions.attributionControl = false;
+        }
+
+        var map = L.map($map.get(0), mapOptions)
+        map.addLayer(editableLayers);
+
+        if (center) {
+          // if we have more than one point, make the map show everything
+          var bounds = editableLayers.getBounds()
+          if (!bounds.getNorthEast().equals(bounds.getSouthWest())) {
+            map.fitBounds(bounds);
+          }
+        } else {
+          // look up user's location by IP address
+          $.getJSON("http://ip-api.com/json/?callback=?", function(data) {
+            map.setView([data["lat"], data["lon"]], 12);
+          });
+        }
+
+        // set up tiles
+        L.tileLayer('http://{s}.tiles.mapbox.com/v3/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png', {
+          attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+          maxZoom: 18
+        }).addTo(map);
+
+
+        // everything below here is to set up editing, so if we're not editable,
+        // we can just return early.
+        if (!editable) {
+          return true;
+        }
+
+        // set up Leaflet.draw editor
+        var drawOptions = {
+          draw: {
+            // circles are not geometries in geojson
+            circle: false
+          },
+          edit: {
+            featureGroup: editableLayers
+          }
+        }
+
+        if ($.inArray(geometryType, ["POINT", "MULTIPOINT"]) > -1) {
+          drawOptions.draw.polyline = false;
+          drawOptions.draw.polygon = false;
+          drawOptions.draw.rectangle = false;
+        } else if ($.inArray(geometryType, ["LINESTRING", "MULTILINESTRING"]) > -1) {
+          drawOptions.draw.marker = false;
+          drawOptions.draw.polygon = false;
+          drawOptions.draw.rectangle = false;
+        } else if ($.inArray(geometryType, ["POLYGON", "MULTIPOLYGON"]) > -1) {
+          drawOptions.draw.marker = false;
+          drawOptions.draw.polyline = false;
+        }
+        var drawControl = new L.Control.Draw(drawOptions);
+        map.addControl(drawControl);
+
+        // save when the editableLayers are edited
+        var saveToTextArea = function() {
+          var geo = editableLayers.toGeoJSON();
+          if (geo.features.length === 0) {
+            $el.val("");
+            return true
+          }
+          if (multiple) {
+            var coords = $.map(geo.features, function(feature) {
+              return [feature.geometry.coordinates];
+            })
+            geo = {
+              "type": geometryType,
+              "coordinates": coords
+            }
+          } else {
+            geo = geo.features[0].geometry;
+          }
+          $el.val(JSON.stringify(geo));
+        }
+
+        // handle creation
+        map.on('draw:created', function (e) {
+          if (!multiple) {
+            editableLayers.clearLayers();
+          }
+          editableLayers.addLayer(e.layer);
+          saveToTextArea();
+        })
+        map.on('draw:edited', saveToTextArea);
+        map.on('draw:deleted', saveToTextArea);
+      }
+
+      /**
       * Process data-role attribute for the given input element. Feel free to override
       *
       * @param {Selector} $el jQuery selector
@@ -196,6 +353,9 @@
                     var $container = data.container;
                     $container.find('.calendar-date').remove();
                 });
+                return true;
+            case 'leaflet':
+                processLeafletWidget($el, name);
                 return true;
         }
       };
