@@ -80,6 +80,17 @@ class FilterSmaller(BaseSQLAFilter):
         return lazy_gettext('smaller than')
 
 
+class FilterEmpty(BaseSQLAFilter, filters.BaseBooleanFilter):
+    def apply(self, query, value):
+        if value == '1':
+            return query.filter(self.column == None)
+        else:
+            return query.filter(self.column != None)
+
+    def operation(self):
+        return lazy_gettext('empty')
+        
+
 # Customized type filters
 class BooleanEqualFilter(FilterEqual, filters.BaseBooleanFilter):
     pass
@@ -88,7 +99,7 @@ class BooleanEqualFilter(FilterEqual, filters.BaseBooleanFilter):
 class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
     pass
     
-    
+
 class DateEqualFilter(FilterEqual, filters.BaseDateFilter):
     pass
 
@@ -242,8 +253,8 @@ class TimeNotBetweenFilter(TimeBetweenFilter):
             
 # Base SQLA filter field converter
 class FilterConverter(filters.BaseFilterConverter):
-    strings = (FilterEqual, FilterNotEqual, FilterLike, FilterNotLike)
-    numeric = (FilterEqual, FilterNotEqual, FilterGreater, FilterSmaller)
+    strings = (FilterEqual, FilterNotEqual, FilterLike, FilterNotLike, FilterEmpty)
+    numeric = (FilterEqual, FilterNotEqual, FilterGreater, FilterSmaller, FilterEmpty)
     bool = (BooleanEqualFilter, BooleanNotEqualFilter)
     enum = (FilterEqual, FilterNotEqual)
 
@@ -271,7 +282,8 @@ class FilterConverter(filters.BaseFilterConverter):
                 DateGreaterFilter(column, name),
                 DateSmallerFilter(column, name),
                 DateBetweenFilter(column, name, data_type='daterangepicker'),
-                DateNotBetweenFilter(column, name, data_type='daterangepicker')]
+                DateNotBetweenFilter(column, name, data_type='daterangepicker'),
+                FilterEmpty(column, name, **kwargs)]
 
     @filters.convert('datetime')
     def conv_datetime(self, column, name, **kwargs):
@@ -280,7 +292,8 @@ class FilterConverter(filters.BaseFilterConverter):
                 DateTimeGreaterFilter(column, name),
                 DateTimeSmallerFilter(column, name),
                 DateTimeBetweenFilter(column, name, data_type='datetimerangepicker'),
-                DateTimeNotBetweenFilter(column, name, data_type='datetimerangepicker')]
+                DateTimeNotBetweenFilter(column, name, data_type='datetimerangepicker'),
+                FilterEmpty(column, name, **kwargs)]
                 
     @filters.convert('time')
     def conv_time(self, column, name, **kwargs):
@@ -289,7 +302,8 @@ class FilterConverter(filters.BaseFilterConverter):
                 TimeGreaterFilter(column, name),
                 TimeSmallerFilter(column, name),
                 TimeBetweenFilter(column, name, data_type='timerangepicker'),
-                TimeNotBetweenFilter(column, name, data_type='timerangepicker')]
+                TimeNotBetweenFilter(column, name, data_type='timerangepicker'),
+                FilterEmpty(column, name, **kwargs)]
 
     @filters.convert('enum')
     def conv_enum(self, column, name, options=None, **kwargs):
