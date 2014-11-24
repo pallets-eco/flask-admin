@@ -287,14 +287,15 @@ def test_column_filters():
     )
     admin.add_view(view)
 
-    eq_(len(view._filters), 4)
+    eq_(len(view._filters), 5)
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
         [
             (0, u'equals'),
             (1, u'not equal'),
             (2, u'contains'),
-            (3, u'not contains')
+            (3, u'not contains'),
+            (4, u'empty'),
         ])
 
     # Test filter that references property
@@ -306,43 +307,47 @@ def test_column_filters():
             (0, u'equals'),
             (1, u'not equal'),
             (2, u'contains'),
-            (3, u'not contains')
+            (3, u'not contains'),
+            (4, u'empty'),
         ])
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Test2']],
         [
-            (4, 'equals'),
-            (5, 'not equal'),
-            (6, 'contains'),
-            (7, 'not contains')
+            (5, u'equals'),
+            (6, u'not equal'),
+            (7, u'contains'),
+            (8, u'not contains'),
+            (9, u'empty'),
         ])
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Test3']],
         [
-            (8, u'equals'),
-            (9, u'not equal'),
-            (10, u'contains'),
-            (11, u'not contains')
+            (10, u'equals'),
+            (11, u'not equal'),
+            (12, u'contains'),
+            (13, u'not contains'),
+            (14, u'empty'),
         ])
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Test4']],
         [
-            (12, u'equals'),
-            (13, u'not equal'),
-            (14, u'contains'),
-            (15, u'not contains')
+            (15, u'equals'),
+            (16, u'not equal'),
+            (17, u'contains'),
+            (18, u'not contains'),
+            (19, u'empty'),
         ])
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Bool Field']],
         [
-            (16, u'equals'),
-            (17, u'not equal'),
+            (20, u'equals'),
+            (21, u'not equal'),
         ])
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Enum Field']],
         [
-            (18, u'equals'),
-            (19, u'not equal'),
+            (22, u'equals'),
+            (23, u'not equal'),
         ])
 
     # Test filter with a dot
@@ -368,16 +373,16 @@ def test_column_filters():
     
     date_obj1 = Model1('date_obj1', date_field=date(2014,11,17))
     date_obj2 = Model1('date_obj2', date_field=date(2013,10,16))
-    time_obj1 = Model1('time_obj1', time_field=time(11,10,9))
-    time_obj2 = Model1('time_obj2', time_field=time(10,9,8))
+    timeonly_obj1 = Model1('timeonly_obj1', time_field=time(11,10,9))
+    timeonly_obj2 = Model1('timeonly_obj2', time_field=time(10,9,8))
     datetime_obj1 = Model1('datetime_obj1', datetime_field=datetime(2014,4,3,1,9,0))
     datetime_obj2 = Model1('datetime_obj2', datetime_field=datetime(2013,3,2,0,8,0))
     
     db.session.add_all([
         model1_obj1, model1_obj2, model1_obj3, model1_obj4,
         model2_obj1, model2_obj2, model2_obj3, model2_obj4,
-        date_obj1, time_obj1, datetime_obj1,
-        date_obj2, time_obj2, datetime_obj2
+        date_obj1, timeonly_obj1, datetime_obj1,
+        date_obj2, timeonly_obj2, datetime_obj2
     ])
     db.session.commit()
 
@@ -389,7 +394,7 @@ def test_column_filters():
     ok_('model1_obj1' in data)
     ok_('model1_obj2' not in data)
 
-    rv = client.get('/admin/model1/?flt0_5=model1_obj1')
+    rv = client.get('/admin/model1/?flt0_6=model1_obj1')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('model1_obj1' in data)
@@ -405,7 +410,8 @@ def test_column_filters():
             (0, 'equals'),
             (1, 'not equal'),
             (2, 'greater than'),
-            (3, 'smaller than')
+            (3, 'smaller than'),
+            (4, 'empty'),
         ])
 
     # Test filters to joined table field
@@ -457,27 +463,30 @@ def test_column_filters():
             (2, 'greater than'),
             (3, 'smaller than'),
             (4, 'between'),
-            (5, 'not between')
+            (5, 'not between'),
+            (6, 'empty'),
         ])
     
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Datetime Field']],
         [
-            (6, 'equals'),
-            (7, 'not equal'),
-            (8, 'greater than'),
-            (9, 'smaller than'),
-            (10, 'between'),
-            (11, 'not between')
+            (7, 'equals'),
+            (8, 'not equal'),
+            (9, 'greater than'),
+            (10, 'smaller than'),
+            (11, 'between'),
+            (12, 'not between'),
+            (13, 'empty'),
         ])
     
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Time Field']],
         [
-            (12, 'equals'),
-            (13, 'not equal'),
-            (14, 'greater than'),
-            (15, 'smaller than'),
-            (16, 'between'),
-            (17, 'not between')
+            (14, 'equals'),
+            (15, 'not equal'),
+            (16, 'greater than'),
+            (17, 'smaller than'),
+            (18, 'between'),
+            (19, 'not between'),
+            (20, 'empty'),
         ])
         
     # date - equals
@@ -487,40 +496,12 @@ def test_column_filters():
     ok_('date_obj1' in data)
     ok_('date_obj2' not in data)
     
-    # datetime - equals
-    rv = client.get('/admin/_datetime/?flt0_6=2014-04-03+01%3A09%3A00')
-    eq_(rv.status_code, 200)
-    data = rv.data.decode('utf-8')
-    ok_('datetime_obj1' in data)
-    ok_('datetime_obj2' not in data)
-    
-    # time - equals
-    rv = client.get('/admin/_datetime/?flt0_12=11%3A10%3A09')
-    eq_(rv.status_code, 200)
-    data = rv.data.decode('utf-8')
-    ok_('time_obj1' in data)
-    ok_('time_obj2' not in data)
-    
     # date - not equal
     rv = client.get('/admin/_datetime/?flt0_1=2014-11-17')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('date_obj1' not in data)
     ok_('date_obj2' in data)
-    
-    # datetime - not equal
-    rv = client.get('/admin/_datetime/?flt0_7=2014-04-03+01%3A09%3A00')
-    eq_(rv.status_code, 200)
-    data = rv.data.decode('utf-8')
-    ok_('datetime_obj1' not in data)
-    ok_('datetime_obj2' in data)
-    
-    # time - not equal
-    rv = client.get('/admin/_datetime/?flt0_13=11%3A10%3A09')
-    eq_(rv.status_code, 200)
-    data = rv.data.decode('utf-8')
-    ok_('time_obj1' not in data)
-    ok_('time_obj2' in data)
     
     # date - greater
     rv = client.get('/admin/_datetime/?flt0_2=2014-11-16')
@@ -529,20 +510,6 @@ def test_column_filters():
     ok_('date_obj1' in data)
     ok_('date_obj2' not in data)
     
-    # datetime - greater
-    rv = client.get('/admin/_datetime/?flt0_8=2014-04-03+01%3A08%3A00')
-    eq_(rv.status_code, 200)
-    data = rv.data.decode('utf-8')
-    ok_('datetime_obj1' in data)
-    ok_('datetime_obj2' not in data)
-    
-    # time - greater
-    rv = client.get('/admin/_datetime/?flt0_14=11%3A09%3A09')
-    eq_(rv.status_code, 200)
-    data = rv.data.decode('utf-8')
-    ok_('time_obj1' in data)
-    ok_('time_obj2' not in data)
-    
     # date - smaller
     rv = client.get('/admin/_datetime/?flt0_3=2014-11-16')
     eq_(rv.status_code, 200)
@@ -550,20 +517,6 @@ def test_column_filters():
     ok_('date_obj1' not in data)
     ok_('date_obj2' in data)
     
-    # datetime - smaller
-    rv = client.get('/admin/_datetime/?flt0_9=2014-04-03+01%3A08%3A00')
-    eq_(rv.status_code, 200)
-    data = rv.data.decode('utf-8')
-    ok_('datetime_obj1' not in data)
-    ok_('datetime_obj2' in data)
-    
-    # time - smaller
-    rv = client.get('/admin/_datetime/?flt0_15=11%3A09%3A09')
-    eq_(rv.status_code, 200)
-    data = rv.data.decode('utf-8')
-    ok_('time_obj1' not in data)
-    ok_('time_obj2' in data)
-
     # date - between
     rv = client.get('/admin/_datetime/?flt0_4=2014-11-13+to+2014-11-20')
     eq_(rv.status_code, 200)
@@ -571,40 +524,144 @@ def test_column_filters():
     ok_('date_obj1' in data)
     ok_('date_obj2' not in data)
     
-    # datetime - between
-    rv = client.get('/admin/_datetime/?flt0_10=2014-04-02+00%3A00%3A00+to+2014-11-20+23%3A59%3A59')
-    eq_(rv.status_code, 200)
-    data = rv.data.decode('utf-8')
-    ok_('datetime_obj1' in data)
-    ok_('datetime_obj2' not in data)
-    
-    # time - between
-    rv = client.get('/admin/_datetime/?flt0_16=10%3A40%3A00+to+11%3A50%3A59')
-    eq_(rv.status_code, 200)
-    data = rv.data.decode('utf-8')
-    ok_('time_obj1' in data)
-    ok_('time_obj2' not in data)
-
     # date - not between
     rv = client.get('/admin/_datetime/?flt0_5=2014-11-13+to+2014-11-20')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('date_obj1' not in data)
     ok_('date_obj2' in data)
+
+    # date - empty
+    rv = client.get('/admin/_datetime/?flt0_6=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('model1_obj1' in data)
+    ok_('date_obj1' not in data)
+    ok_('date_obj2' not in data)
     
-    # datetime - not between
-    rv = client.get('/admin/_datetime/?flt0_11=2014-04-02+00%3A00%3A00+to+2014-11-20+23%3A59%3A59')
+    # date - empty
+    rv = client.get('/admin/_datetime/?flt0_6=0')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('model1_obj1' not in data)
+    ok_('date_obj1' in data)
+    ok_('date_obj2' in data)
+    
+    # datetime - equals
+    rv = client.get('/admin/_datetime/?flt0_7=2014-04-03+01%3A09%3A00')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' in data)
+    ok_('datetime_obj2' not in data)
+    
+    # datetime - not equal
+    rv = client.get('/admin/_datetime/?flt0_8=2014-04-03+01%3A09%3A00')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('datetime_obj1' not in data)
     ok_('datetime_obj2' in data)
     
-    # time - not between
-    rv = client.get('/admin/_datetime/?flt0_17=10%3A40%3A00+to+11%3A50%3A59')
+    # datetime - greater
+    rv = client.get('/admin/_datetime/?flt0_9=2014-04-03+01%3A08%3A00')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
-    ok_('time_obj1' not in data)
-    ok_('time_obj2' in data)
+    ok_('datetime_obj1' in data)
+    ok_('datetime_obj2' not in data)
+    
+    # datetime - smaller
+    rv = client.get('/admin/_datetime/?flt0_10=2014-04-03+01%3A08%3A00')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' not in data)
+    ok_('datetime_obj2' in data)
+    
+    # datetime - between
+    rv = client.get('/admin/_datetime/?flt0_11=2014-04-02+00%3A00%3A00+to+2014-11-20+23%3A59%3A59')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' in data)
+    ok_('datetime_obj2' not in data)
+    
+    # datetime - not between
+    rv = client.get('/admin/_datetime/?flt0_12=2014-04-02+00%3A00%3A00+to+2014-11-20+23%3A59%3A59')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' not in data)
+    ok_('datetime_obj2' in data)
+    
+    # datetime - empty
+    rv = client.get('/admin/_datetime/?flt0_13=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('model1_obj1' in data)
+    ok_('datetime_obj1' not in data)
+    ok_('datetime_obj2' not in data)
+    
+    # datetime - not empty
+    rv = client.get('/admin/_datetime/?flt0_13=0')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('model1_obj1' not in data)
+    ok_('datetime_obj1' in data)
+    ok_('datetime_obj2' in data)
+    
+    # time - equals
+    rv = client.get('/admin/_datetime/?flt0_14=11%3A10%3A09')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('timeonly_obj1' in data)
+    ok_('timeonly_obj2' not in data)
+    
+    # time - not equal
+    rv = client.get('/admin/_datetime/?flt0_15=11%3A10%3A09')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('timeonly_obj1' not in data)
+    ok_('timeonly_obj2' in data)
+    
+    # time - greater
+    rv = client.get('/admin/_datetime/?flt0_16=11%3A09%3A09')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('timeonly_obj1' in data)
+    ok_('timeonly_obj2' not in data)
+    
+    # time - smaller
+    rv = client.get('/admin/_datetime/?flt0_17=11%3A09%3A09')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('timeonly_obj1' not in data)
+    ok_('timeonly_obj2' in data)
+    
+    # time - between
+    rv = client.get('/admin/_datetime/?flt0_18=10%3A40%3A00+to+11%3A50%3A59')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('timeonly_obj1' in data)
+    ok_('timeonly_obj2' not in data)
+    
+    # time - not between
+    rv = client.get('/admin/_datetime/?flt0_19=10%3A40%3A00+to+11%3A50%3A59')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('timeonly_obj1' not in data)
+    ok_('timeonly_obj2' in data)
+    
+    # time - empty
+    rv = client.get('/admin/_datetime/?flt0_20=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('model1_obj1' in data)
+    ok_('timeonly_obj1' not in data)
+    ok_('timeonly_obj2' not in data)
+    
+    # time - not empty
+    rv = client.get('/admin/_datetime/?flt0_20=0')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('model1_obj1' not in data)
+    ok_('timeonly_obj1' in data)
+    ok_('timeonly_obj2' in data)
     
 def test_url_args():
     app, db, admin = setup()
