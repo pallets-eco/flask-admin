@@ -332,8 +332,6 @@ class FilterConverter(filters.BaseFilterConverter):
         
     @filters.convert('enum')
     def conv_enum(self, column, name, options=None, **kwargs):
-        # set all operations to select2
-        kwargs['data_type'] = "select2"
         if not options:
             options = [
                 (v, v)

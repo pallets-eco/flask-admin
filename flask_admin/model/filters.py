@@ -98,7 +98,7 @@ class BaseBooleanFilter(BaseFilter):
         super(BaseBooleanFilter, self).__init__(name,
                                                 (('1', lazy_gettext(u'Yes')),
                                                  ('0', lazy_gettext(u'No'))),
-                                                data_type="select2")
+                                                data_type)
 
     def validate(self, value):
         return value in ('0', '1')

@@ -47,7 +47,10 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
     
     // generate HTML for filter input - allows changing filter input type to one with options or tags
     function createFilterInput(inputContainer, filterValue, filter) {
-        if (filter.type == "select2") {
+        if (filter.type == "select2-tags") {
+            var $field = $('<input type="hidden" class="filter-val form-control" />').attr('name', makeName(filter.arg));
+            $field.val(filterValue);
+        } else if (filter.options) {
             var $field = $('<select class="filter-val" />').attr('name', makeName(filter.arg));
             
             $(filter.options).each(function() {
@@ -60,9 +63,6 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
                         .val(this[0]).text(this[1]));
                 }
             });
-        } else if (filter.type == "select2-tags") {
-            var $field = $('<input type="hidden" class="filter-val form-control" />').attr('name', makeName(filter.arg));
-            $field.val(filterValue);
         } else {
             var $field = $('<input type="text" class="filter-val form-control" />').attr('name', makeName(filter.arg));
             $field.val(filterValue);
@@ -90,8 +90,10 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
                     // save tag options as json on data attribute
                     field.attr('data-tags', JSON.stringify(options));
                 }
-            }
-            
+            } 
+            faForm.applyStyle(field, filter.type);
+        } else if (filter.options) {
+            filter.type = "select2";
             faForm.applyStyle(field, filter.type);
         }
         
