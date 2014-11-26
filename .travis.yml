@@ -5,11 +5,20 @@ python:
   - "3.3"
 
 env:
-  - REQUIREMENTS=travis_wtf1.txt
-  - REQUIREMENTS=travis_wtf2.txt
+  - WTFORMS_VERSION=1
+  - WTFORMS_VERSION=2
 
-install: "pip install -r $REQUIREMENTS --use-mirrors"
+services:
+  - postgresql
+  - mongodb
 
-services: mongodb
+before_script:
+  - psql -U postgres -c 'CREATE DATABASE flask_admin_test;'
+  - psql -U postgres -c "CREATE EXTENSION postgis;" flask_admin_test
+
+install:
+  - pip install "wtforms<$WTFORMS_VERSION.99"
+  - pip install -r dev-requirements.txt
+
 
 script: nosetests flask_admin/tests
