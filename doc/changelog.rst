@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.1 (dev)
+---------
+
+Highlights:
+
+* Added the ``geoa`` contrib module, for working with `geoalchemy2`_
+
+.. _geoalchemy2: http://geoalchemy-2.readthedocs.org/
+
 1.0.8
 -----
 
