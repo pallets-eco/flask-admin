@@ -60,14 +60,6 @@ table.flters tr td:nth-child(2){
     width: 60%;
 }
 
-.filters input, .filters div.select2-container {
-    margin-bottom: 0px;
-}
-
-.filters div.select2-container {
-    width: 100% !important;
-}
-
 .filters a.remove-filter {
     margin-bottom: 0;
     display: block;
@@ -91,9 +83,13 @@ table.flters tr td:nth-child(2){
     opacity: 0.4;
 }
 
-.filters .filter-op > a {
-    height: 28px;
-    line-height: 28px;
+/* filters */
+.filters .filter-op {
+    width: 130px;
+}
+
+.filters .filter-val {
+    width: 220px;
 }
 
 /* Inline forms */
@@ -137,26 +133,6 @@ table.flters tr td:nth-child(2){
 
 td>span.glyphicon {
     padding-left: 35%;
-}
-
-/* Patch Select2 */
-.select2-results li {
-    min-height: 24px !important;
-}
-
-.select2-container.form-control {
-    height: auto !important;
-    padding: 0px;
-    border-width: 0px;
-}
-
-form .select2-choice {
-    height: 30px !important;
-}
-
-.select2-search-choice {
-    height: 24px !important;
-    margin-top: 4px !important;
 }
 
 /* link style */
