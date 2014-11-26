@@ -93,7 +93,7 @@ class Select2Field(fields.SelectField):
     """
         `Select2 <https://github.com/ivaynberg/select2>`_ styled select widget.
 
-        You must include select2.js, form.js and select2 stylesheet for it to
+        You must include select2.js, form-x.x.x.js and select2 stylesheet for it to
         work.
     """
     widget = admin_widgets.Select2Widget()
@@ -141,7 +141,7 @@ class Select2Field(fields.SelectField):
 
 class Select2TagsField(fields.StringField):
     """`Select2 <http://ivaynberg.github.com/select2/#tags>`_ styled text field.
-    You must include select2.js, form.js and select2 stylesheet for it to work.
+    You must include select2.js, form-x.x.x.js and select2 stylesheet for it to work.
     """
     widget = admin_widgets.Select2TagsWidget()
 

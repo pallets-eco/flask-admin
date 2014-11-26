@@ -259,6 +259,39 @@
 
                 $el.select2(opts);
                 return true;
+            case 'select2-tags':
+                // get tags from element
+                if ($el.attr('data-tags')) {
+                    var tags = JSON.parse($el.attr('data-tags'));
+                } else {
+                    var tags = [];
+                }
+                
+                // default to a comma for separating list items
+                // allows using spaces as a token separator
+                if ($el.attr('data-token-separators')) {
+                    var tokenSeparators = JSON.parse($el.attr('data-tags'));
+                } else {
+                    var tokenSeparators = [','];
+                }
+                
+                var opts = {
+                    width: 'resolve',
+                    tags: tags,
+                    tokenSeparators: tokenSeparators,
+                    formatNoMatches: function() {
+                        return 'Enter comma separated values';
+                    }
+                };
+                
+                $el.select2(opts);
+                
+                // submit on ENTER
+                $el.parent().find('input.select2-input').on('keyup', function(e) {
+                   if(e.keyCode === 13) 
+                      $(this).closest('form').submit();
+                });
+                return true;
             case 'select2-ajax':
                 processAjaxWidget($el, name);
                 return true;

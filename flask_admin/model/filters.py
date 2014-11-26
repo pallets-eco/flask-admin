@@ -98,7 +98,7 @@ class BaseBooleanFilter(BaseFilter):
         super(BaseBooleanFilter, self).__init__(name,
                                                 (('1', lazy_gettext(u'Yes')),
                                                  ('0', lazy_gettext(u'No'))),
-                                                data_type)
+                                                data_type="select2")
 
     def validate(self, value):
         return value in ('0', '1')
@@ -112,7 +112,7 @@ class BaseDateFilter(BaseFilter):
         super(BaseDateFilter, self).__init__(name,
                                              options,
                                              data_type='datepicker')
-
+                                             
     def clean(self, value):
         return datetime.datetime.strptime(value, '%Y-%m-%d').date()
 
@@ -139,7 +139,7 @@ class BaseTimeFilter(BaseFilter):
         super(BaseTimeFilter, self).__init__(name,
                                              options,
                                              data_type='timepicker')
-
+                                             
     def clean(self, value):
         # time filters will not work in SQLite + SQLAlchemy if value not converted to time
         timetuple = time.strptime(value, '%H:%M:%S')
