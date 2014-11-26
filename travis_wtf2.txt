@@ -1,8 +1,0 @@
-Flask>=0.7
-wtforms>=2.0
-Flask-SQLAlchemy>=0.15
-peewee
-wtf-peewee
-flask-mongoengine
-pillow
-flask-babelex

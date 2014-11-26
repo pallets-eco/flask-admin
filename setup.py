@@ -56,7 +56,10 @@ setup(
         'sqlalchemy',
         'flask-mongoengine',
         'flask-sqlalchemy',
-        'flask-babelex'
+        'flask-babelex',
+        'shapely',
+        'geoalchemy2',
+        'psycopg2',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

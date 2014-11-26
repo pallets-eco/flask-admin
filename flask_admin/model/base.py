@@ -400,7 +400,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 }
 
         Changing the format of a DateTimeField will require changes to both form_widget_args and form_args.
-		
+
         Example::
 
             form_args = dict(
@@ -1197,7 +1197,11 @@ class BaseModelView(BaseView, ActionsMixin):
         if choices_map:
             return choices_map.get(value) or value
 
-        type_fmt = self.column_type_formatters.get(type(value))
+        type_fmt = None
+        for typeobj, formatter in self.column_type_formatters.items():
+            if isinstance(value, typeobj):
+                type_fmt = formatter
+                break
         if type_fmt is not None:
             value = type_fmt(self, value)
 
