@@ -309,7 +309,7 @@ class ModelView(BaseModelView):
 
         # Filters
         if self._filters:
-            for flt, value in filters:
+            for flt, flt_name, value in filters:
                 f = self._filters[flt]
 
                 query = self._handle_join(query, f.column, joins)
