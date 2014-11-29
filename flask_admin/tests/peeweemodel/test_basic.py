@@ -47,11 +47,22 @@ def create_models(db):
         test2 = peewee.CharField(max_length=20)
         test3 = peewee.TextField(null=True)
         test4 = peewee.TextField(null=True)
+        
+        def __str__(self):
+            return self.test1
 
     class Model2(BaseModel):
+        def __init__(self, char_field=None, int_field=None, bool_field=0):
+            super(Model2, self).__init__()
+
+            self.char_field = char_field
+            self.int_field = int_field
+            self.bool_field = bool_field
+            
+        char_field = peewee.CharField(max_length=20)
         int_field = peewee.IntegerField()
         bool_field = peewee.BooleanField()
-
+        
     Model1.create_table()
     Model2.create_table()
 
@@ -128,6 +139,102 @@ def test_model():
     rv = client.post(url)
     eq_(rv.status_code, 302)
     eq_(Model1.select().count(), 0)
+
+def test_column_filters():
+    app, db, admin = setup()
+    
+    Model1, Model2 = create_models(db)
+    
+    # fill DB with values
+    Model1('test1_val_1', 'test2_val_1').save()
+    Model1('test1_val_2', 'test2_val_2').save()
+    Model2('char_field_val_1', 5000).save()
+    Model2('char_field_val_2', 9000).save()
+
+    # Test string filter
+    view = CustomModelView(Model1, column_filters=['test1'])
+    admin.add_view(view)
+    
+    eq_(len(view._filters), 4)
+
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
+        [
+            (0, 'equals'),
+            (1, 'not equal'),
+            (2, 'contains'),
+            (3, 'not contains'),
+        ])
+        
+    # Make some test clients
+    client = app.test_client()
+    
+    # string - equals
+    rv = client.get('/admin/model1/?flt0_0=test1_val_1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' in data)
+    ok_('test1_val_2' not in data)
+    
+    # string - not equal
+    rv = client.get('/admin/model1/?flt0_1=test1_val_1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' not in data)
+    ok_('test1_val_2' in data)
+    
+    # string - contains
+    rv = client.get('/admin/model1/?flt0_2=test1_val_1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' in data)
+    ok_('test1_val_2' not in data)
+    
+    # string - not contains
+    rv = client.get('/admin/model1/?flt0_3=test1_val_1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' not in data)
+    ok_('test1_val_2' in data)
+    
+    # Test numeric filter
+    view = CustomModelView(Model2, column_filters=['int_field'])
+    admin.add_view(view)
+    
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Int Field']],
+        [
+            (0, 'equals'),
+            (1, 'not equal'),
+            (2, 'greater than'),
+            (3, 'smaller than'),
+        ])
+    
+    # integer - equals
+    rv = client.get('/admin/model2/?flt0_0=5000')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('char_field_val_1' in data)
+    ok_('char_field_val_2' not in data)
+    
+    # integer - not equal
+    rv = client.get('/admin/model2/?flt0_1=5000')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('char_field_val_1' not in data)
+    ok_('char_field_val_2' in data)
+    
+    # integer - greater
+    rv = client.get('/admin/model2/?flt0_2=6000')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('char_field_val_1' not in data)
+    ok_('char_field_val_2' in data)
+    
+    # integer - smaller
+    rv = client.get('/admin/model2/?flt0_3=6000')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('char_field_val_1' in data)
+    ok_('char_field_val_2' not in data)
 
 
 def test_default_sort():

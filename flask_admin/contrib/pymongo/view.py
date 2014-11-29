@@ -170,7 +170,7 @@ class ModelView(BaseModelView):
         if self._filters:
             data = []
 
-            for flt, value in filters:
+            for flt, flt_name, value in filters:
                 f = self._filters[flt]
                 data = f.apply(data, value)
 

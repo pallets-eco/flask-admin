@@ -431,7 +431,7 @@ class ModelView(BaseModelView):
 
         # Filters
         if self._filters:
-            for flt, value in filters:
+            for flt, flt_name, value in filters:
                 f = self._filters[flt]
                 query = f.apply(query, value)
 

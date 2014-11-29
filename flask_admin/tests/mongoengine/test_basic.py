@@ -33,9 +33,15 @@ def create_models(db):
         test3 = db.StringField()
         test4 = db.StringField()
 
+        def __str__(self):
+            return self.test1
+            
     class Model2(db.Document):
+        string_field = db.StringField()
         int_field = db.IntField()
         bool_field = db.BooleanField()
+        
+        model1 = db.ReferenceField(Model1)
 
     Model1.objects.delete()
     Model2.objects.delete()
@@ -115,7 +121,106 @@ def test_model():
     eq_(rv.status_code, 302)
     eq_(Model1.objects.count(), 0)
 
+def test_column_filters():
+    app, db, admin = setup()
+    
+    Model1, Model2 = create_models(db)
+    
+    # fill DB with values
+    model1_obj1 = Model1(test1=u'test1_val_1', test2=u'test2_val_1')
+    model1_obj1.save()
+    model1_obj2 = Model1(test1=u'test1_val_2', test2=u'test2_val_2')
+    model1_obj2.save()
+    model2_obj1 = Model2(string_field=u'string_field_val_1', int_field=5000)
+    model2_obj1.save()
+    model2_obj2 = Model2(string_field=u'string_field_val_2', int_field=9000)
+    model2_obj2.save()
 
+    # Test string filter
+    view = CustomModelView(Model1, column_filters=['test1'])
+    admin.add_view(view)
+    
+    eq_(len(view._filters), 4)
+
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
+        [
+            (0, 'equals'),
+            (1, 'not equal'),
+            (2, 'contains'),
+            (3, 'not contains'),
+        ])
+        
+    # Make some test clients
+    client = app.test_client()
+    
+    # string - equals
+    rv = client.get('/admin/model1/?flt0_0=test1_val_1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' in data)
+    ok_('test1_val_2' not in data)
+    
+    # string - not equal
+    rv = client.get('/admin/model1/?flt0_1=test1_val_1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' not in data)
+    ok_('test1_val_2' in data)
+    
+    # string - contains
+    rv = client.get('/admin/model1/?flt0_2=test1_val_1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' in data)
+    ok_('test1_val_2' not in data)
+    
+    # string - not contains
+    rv = client.get('/admin/model1/?flt0_3=test1_val_1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' not in data)
+    ok_('test1_val_2' in data)
+    
+    # Test numeric filter
+    view = CustomModelView(Model2, column_filters=['int_field'])
+    admin.add_view(view)
+    
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Int Field']],
+        [
+            (0, 'equals'),
+            (1, 'not equal'),
+            (2, 'greater than'),
+            (3, 'smaller than'),
+        ])
+    
+    # integer - equals
+    rv = client.get('/admin/model2/?flt0_0=5000')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_1' in data)
+    ok_('string_field_val_2' not in data)
+    
+    # integer - not equal
+    rv = client.get('/admin/model2/?flt0_1=5000')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_1' not in data)
+    ok_('string_field_val_2' in data)
+    
+    # integer - greater
+    rv = client.get('/admin/model2/?flt0_2=6000')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_1' not in data)
+    ok_('string_field_val_2' in data)
+    
+    # integer - smaller
+    rv = client.get('/admin/model2/?flt0_3=6000')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_1' in data)
+    ok_('string_field_val_2' not in data)
+    
 def test_default_sort():
     app, db, admin = setup()
     M1, _ = create_models(db)
@@ -349,21 +454,7 @@ def test_nested_list_subdocument():
 def test_ajax_fk():
     app, db, admin = setup()
 
-    class Model1(db.Document):
-        test1 = db.StringField(max_length=20)
-        test2 = db.StringField(max_length=20)
-
-        def __str__(self):
-            return self.test1
-
-    class Model2(db.Document):
-        int_field = db.IntField()
-        bool_field = db.BooleanField()
-
-        model1 = db.ReferenceField(Model1)
-
-    Model1.objects.delete()
-    Model2.objects.delete()
+    Model1, Model2 = create_models(db)
 
     view = CustomModelView(
         Model2,
