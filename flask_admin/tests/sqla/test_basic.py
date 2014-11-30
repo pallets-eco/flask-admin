@@ -57,17 +57,20 @@ def create_models(db):
             return self.test1
 
     class Model2(db.Model):
-        def __init__(self, string_field=None, int_field=None, bool_field=None, model1=None):
+        def __init__(self, string_field=None, int_field=None, bool_field=None,
+                     model1=None, float_field=None):
             self.string_field = string_field
             self.int_field = int_field
             self.bool_field = bool_field
             self.model1 = model1
+            self.float_field = float_field
 
         id = db.Column(db.Integer, primary_key=True)
         string_field = db.Column(db.String)
         int_field = db.Column(db.Integer)
         bool_field = db.Column(db.Boolean)
         enum_field = db.Column(db.Enum('model2_v1', 'model2_v2'), nullable=True)
+        float_field = db.Column(db.Float)
 
         # Relation
         model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
@@ -381,10 +384,10 @@ def test_column_filters():
     model1_obj3 = Model1('test1_val_3', 'test2_val_3')
     model1_obj4 = Model1('test1_val_4', 'test2_val_4')
 
-    model2_obj1 = Model2('test2_val_1', model1=model1_obj1)
-    model2_obj2 = Model2('test2_val_2', model1=model1_obj1)
-    model2_obj3 = Model2('test2_val_3', int_field=5000)
-    model2_obj4 = Model2('test2_val_4', int_field=9000)
+    model2_obj1 = Model2('test2_val_1', model1=model1_obj1, float_field=None)
+    model2_obj2 = Model2('test2_val_2', model1=model1_obj1, float_field=None)
+    model2_obj3 = Model2('test2_val_3', int_field=5000, float_field=25.9)
+    model2_obj4 = Model2('test2_val_4', int_field=9000, float_field=75.5)
     
     date_obj1 = Model1('date_obj1', date_field=date(2014,11,17))
     date_obj2 = Model1('date_obj2', date_field=date(2013,10,16))
@@ -501,7 +504,7 @@ def test_column_filters():
     ok_('test1_val_3' in data)
     ok_('test1_val_4' in data)
     
-    # Test numeric filter
+    # Test integer filter
     view = CustomModelView(Model2, db.session,
                            column_filters=['int_field'])
     admin.add_view(view)
@@ -579,7 +582,87 @@ def test_column_filters():
     ok_('test2_val_1' in data)
     ok_('test2_val_2' in data)
     ok_('test2_val_3' not in data)
-    ok_('test2_val_4' not in data)    
+    ok_('test2_val_4' not in data)  
+    
+    # Test float filter
+    view = CustomModelView(Model2, db.session, column_filters=['float_field'],
+                           endpoint="_float")
+    admin.add_view(view)
+    
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Float Field']],
+        [
+            (0, 'equals'),
+            (1, 'not equal'),
+            (2, 'greater than'),
+            (3, 'smaller than'),
+            (4, 'empty'),
+            (5, 'in list'),
+            (6, 'not in list'),
+        ])
+    
+    # float - equals
+    rv = client.get('/admin/_float/?flt0_0=25.9')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_3' in data)
+    ok_('test2_val_4' not in data)
+    
+    # float - not equal
+    rv = client.get('/admin/_float/?flt0_1=25.9')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_3' not in data)
+    ok_('test2_val_4' in data)
+    
+    # float - greater
+    rv = client.get('/admin/_float/?flt0_2=60.5')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_3' not in data)
+    ok_('test2_val_4' in data)
+    
+    # float - smaller
+    rv = client.get('/admin/_float/?flt0_3=60.5')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_3' in data)
+    ok_('test2_val_4' not in data)
+    
+    # float - empty
+    rv = client.get('/admin/_float/?flt0_4=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' in data)
+    ok_('test2_val_2' in data)
+    ok_('test2_val_3' not in data)
+    ok_('test2_val_4' not in data)
+    
+    # float - not empty
+    rv = client.get('/admin/_float/?flt0_4=0')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' not in data)
+    ok_('test2_val_2' not in data)
+    ok_('test2_val_3' in data)
+    ok_('test2_val_4' in data)
+    
+    # float - in list
+    rv = client.get('/admin/_float/?flt0_5=25.9%2C75.5')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' not in data)
+    ok_('test2_val_2' not in data)
+    ok_('test2_val_3' in data)
+    ok_('test2_val_4' in data)
+    
+    # float - not in list
+    rv = client.get('/admin/_float/?flt0_6=25.9%2C75.5')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' in data)
+    ok_('test2_val_2' in data)
+    ok_('test2_val_3' not in data)
+    ok_('test2_val_4' not in data)
     
     # Test filters to joined table field
     view = CustomModelView(

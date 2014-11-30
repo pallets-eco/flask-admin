@@ -102,7 +102,39 @@ class BaseBooleanFilter(BaseFilter):
 
     def validate(self, value):
         return value in ('0', '1')
+        
 
+class BaseIntFilter(BaseFilter):
+    """
+        Base Int filter. Adds validation and changes value to python int.
+    """
+    def clean(self, value):
+        return int(float(value))
+            
+
+class BaseFloatFilter(BaseFilter):
+    """
+        Base Float filter. Adds validation and changes value to python float.
+    """
+    def clean(self, value):
+        return float(value)
+            
+
+class BaseIntListFilter(BaseFilter):
+    """
+        Base Integer list filter. Adds validation for int "In List" filter.
+    """
+    def clean(self, value):
+        return [int(float(v.strip())) for v in value.split(',') if v.strip()]
+        
+
+class BaseFloatListFilter(BaseFilter):
+    """
+        Base Float list filter. Adds validation for float "In List" filter.
+    """
+    def clean(self, value):
+        return [float(v.strip()) for v in value.split(',') if v.strip()]
+        
 
 class BaseDateFilter(BaseFilter):
     """
@@ -115,6 +147,32 @@ class BaseDateFilter(BaseFilter):
                                              
     def clean(self, value):
         return datetime.datetime.strptime(value, '%Y-%m-%d').date()
+        
+
+class BaseDateBetweenFilter(BaseFilter):
+    """
+        Base Date Between filter. Consolidates logic for validation and clean.
+        Apply method is different for each back-end.
+    """
+    def clean(self, value):
+        return [datetime.datetime.strptime(range, '%Y-%m-%d')
+                for range in value.split(' to ')]
+
+    def operation(self):
+        return lazy_gettext('between')
+
+    def validate(self, value):
+        try:
+            value = [datetime.datetime.strptime(range, '%Y-%m-%d') 
+                     for range in value.split(' to ')]
+            # if " to " is missing, fail validation
+            # sqlalchemy's .between() will not work if end date is before start date
+            if (len(value) == 2) and (value[0] <= value[1]):
+                return True
+            else:
+                return False        
+        except ValueError:
+            return False   
 
 
 class BaseDateTimeFilter(BaseFilter):
@@ -130,7 +188,31 @@ class BaseDateTimeFilter(BaseFilter):
         # datetime filters will not work in SQLite + SQLAlchemy if value not converted to datetime
         return datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
         
+
+class BaseDateTimeBetweenFilter(BaseFilter):
+    """
+        Base DateTime Between filter. Consolidates logic for validation and clean.
+        Apply method is different for each back-end.
+    """        
+    def clean(self, value):
+        return [datetime.datetime.strptime(range, '%Y-%m-%d %H:%M:%S') 
+                for range in value.split(' to ')]
+    
+    def operation(self):
+        return lazy_gettext('between')
         
+    def validate(self, value):
+        try:
+            value = [datetime.datetime.strptime(range, '%Y-%m-%d %H:%M:%S') 
+                     for range in value.split(' to ')]
+            if (len(value) == 2) and (value[0] <= value[1]):
+                return True
+            else:
+                return False
+        except ValueError:
+            return False
+        
+
 class BaseTimeFilter(BaseFilter):
     """
         Base Time filter. Uses client-side time picker control.
@@ -147,6 +229,35 @@ class BaseTimeFilter(BaseFilter):
                              timetuple.tm_min,
                              timetuple.tm_sec)
                              
+
+class BaseTimeBetweenFilter(BaseFilter):
+    """
+        Base Time Between filter. Consolidates logic for validation and clean.
+        Apply method is different for each back-end.
+    """
+    def clean(self, value):
+        timetuples = [time.strptime(range, '%H:%M:%S') 
+                      for range in value.split(' to ')]
+        return [datetime.time(timetuple.tm_hour,
+                              timetuple.tm_min,
+                              timetuple.tm_sec)
+                              for timetuple in timetuples]
+
+    def operation(self):
+        return lazy_gettext('between')
+
+    def validate(self, value):
+        try:
+            timetuples = [time.strptime(range, '%H:%M:%S') 
+                          for range in value.split(' to ')]
+            if (len(timetuples) == 2) and (timetuples[0] <= timetuples[1]):
+                return True
+            else:
+                return False
+        except ValueError:
+            raise
+            return False
+            
 
 def convert(*args):
     """

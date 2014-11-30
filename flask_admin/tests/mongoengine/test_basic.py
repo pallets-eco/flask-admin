@@ -41,6 +41,7 @@ def create_models(db):
     class Model2(db.Document):
         string_field = db.StringField()
         int_field = db.IntField()
+        float_field = db.FloatField()
         bool_field = db.BooleanField()
         
         model1 = db.ReferenceField(Model1)
@@ -135,10 +136,10 @@ def test_column_filters():
     Model1('test1_val_4', 'test2_val_4').save()
     Model1(None, 'empty_obj').save()
     
-    Model2('string_field_val_1', None).save()
-    Model2('string_field_val_2', None).save()
-    Model2('string_field_val_3', 5000).save()
-    Model2('string_field_val_4', 9000).save()
+    Model2('string_field_val_1', None, None).save()
+    Model2('string_field_val_2', None, None).save()
+    Model2('string_field_val_3', 5000, 25.9).save()
+    Model2('string_field_val_4', 9000, 75.5).save()
     
     Model1('datetime_obj1', datetime_field=datetime(2014,4,3,1,9,0)).save()
     Model1('datetime_obj2', datetime_field=datetime(2013,3,2,0,8,0)).save()
@@ -297,6 +298,86 @@ def test_column_filters():
     
     # integer - not in list
     rv = client.get('/admin/model2/?flt0_6=5000%2C9000')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_1' in data)
+    ok_('string_field_val_2' in data)
+    ok_('string_field_val_3' not in data)
+    ok_('string_field_val_4' not in data)
+    
+    # Test float filter
+    view = CustomModelView(Model2, column_filters=['float_field'], 
+                           endpoint="_float")
+    admin.add_view(view)
+    
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Float Field']],
+        [
+            (0, 'equals'),
+            (1, 'not equal'),
+            (2, 'greater than'),
+            (3, 'smaller than'),
+            (4, 'empty'),
+            (5, 'in list'),
+            (6, 'not in list'),
+        ])
+    
+    # float - equals
+    rv = client.get('/admin/_float/?flt0_0=25.9')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_3' in data)
+    ok_('string_field_val_4' not in data)
+    
+    # float - not equal
+    rv = client.get('/admin/_float/?flt0_1=25.9')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_3' not in data)
+    ok_('string_field_val_4' in data)
+    
+    # float - greater
+    rv = client.get('/admin/_float/?flt0_2=60.5')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_3' not in data)
+    ok_('string_field_val_4' in data)
+    
+    # float - smaller
+    rv = client.get('/admin/_float/?flt0_3=60.5')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_3' in data)
+    ok_('string_field_val_4' not in data)
+    
+    # float - empty
+    rv = client.get('/admin/_float/?flt0_4=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_1' in data)
+    ok_('string_field_val_2' in data)
+    ok_('string_field_val_3' not in data)
+    ok_('string_field_val_4' not in data)
+    
+    # float - not empty
+    rv = client.get('/admin/_float/?flt0_4=0')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_1' not in data)
+    ok_('string_field_val_2' not in data)
+    ok_('string_field_val_3' in data)
+    ok_('string_field_val_4' in data)
+    
+    # float - in list
+    rv = client.get('/admin/_float/?flt0_5=25.9%2C75.5')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_1' not in data)
+    ok_('string_field_val_2' not in data)
+    ok_('string_field_val_3' in data)
+    ok_('string_field_val_4' in data)
+    
+    # float - not in list
+    rv = client.get('/admin/_float/?flt0_6=25.9%2C75.5')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('string_field_val_1' in data)

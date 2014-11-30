@@ -132,7 +132,55 @@ class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
     def apply(self, query, value):
         flt = {'%s' % self.column.name: value != '1'}
         return query.filter(**flt)
+        
 
+class IntEqualFilter(FilterEqual, filters.BaseIntFilter):
+    pass
+    
+
+class IntNotEqualFilter(FilterNotEqual, filters.BaseIntFilter):
+    pass
+    
+
+class IntGreaterFilter(FilterGreater, filters.BaseIntFilter):
+    pass
+    
+
+class IntSmallerFilter(FilterSmaller, filters.BaseIntFilter):
+    pass
+    
+
+class IntInListFilter(FilterInList, filters.BaseIntListFilter):
+    pass
+    
+
+class IntNotInListFilter(FilterNotInList, filters.BaseIntListFilter):
+    pass
+    
+
+class FloatEqualFilter(FilterEqual, filters.BaseFloatFilter):
+    pass
+    
+
+class FloatNotEqualFilter(FilterNotEqual, filters.BaseFloatFilter):
+    pass
+    
+
+class FloatGreaterFilter(FilterGreater, filters.BaseFloatFilter):
+    pass
+    
+
+class FloatSmallerFilter(FilterSmaller, filters.BaseFloatFilter):
+    pass
+    
+
+class FloatInListFilter(FilterInList, filters.BaseFloatListFilter):
+    pass
+    
+
+class FloatNotInListFilter(FilterNotInList, filters.BaseFloatListFilter):
+    pass
+    
 
 class DateTimeEqualFilter(FilterEqual, filters.BaseDateTimeFilter):
     pass
@@ -150,31 +198,18 @@ class DateTimeSmallerFilter(FilterSmaller, filters.BaseDateTimeFilter):
     pass
     
 
-class DateTimeBetweenFilter(BaseMongoEngineFilter):
+class DateTimeBetweenFilter(BaseMongoEngineFilter, filters.BaseDateTimeBetweenFilter):
     def __init__(self, column, name, options=None, data_type=None):
-        super(DateTimeBetweenFilter, self).__init__(column, name, options, data_type='datetimerangepicker')
-        
-    def clean(self, value):
-        return [datetime.datetime.strptime(range, '%Y-%m-%d %H:%M:%S') for range in value.split(' to ')]
-        
+        super(DateTimeBetweenFilter, self).__init__(column,
+                                                    name, 
+                                                    options,
+                                                    data_type='datetimerangepicker')
+                                                    
     def apply(self, query, value):
         start, end = value
         flt = {'%s__gte' % self.column.name: start, '%s__lte' % self.column.name: end}
         return query.filter(**flt)
-    
-    def operation(self):
-        return lazy_gettext('between')
         
-    def validate(self, value):
-        try:
-            value = [datetime.datetime.strptime(range, '%Y-%m-%d %H:%M:%S') for range in value.split(' to ')]
-            if (len(value) == 2) and (value[0] <= value[1]):
-                return True
-            else:
-                return False
-        except ValueError:
-            return False
-            
 
 class DateTimeNotBetweenFilter(DateTimeBetweenFilter):
     def apply(self, query, value):
@@ -188,12 +223,19 @@ class DateTimeNotBetweenFilter(DateTimeBetweenFilter):
         
 # Base peewee filter field converter
 class FilterConverter(filters.BaseFilterConverter):
-    strings = (FilterEqual, FilterNotEqual, FilterLike, FilterNotLike, FilterEmpty, FilterInList, FilterNotInList)
-    numeric = (FilterEqual, FilterNotEqual, FilterGreater, FilterSmaller, FilterEmpty, FilterInList, FilterNotInList)
-    bool = (BooleanEqualFilter, BooleanNotEqualFilter)
-    datetime_filters = (DateTimeEqualFilter, DateTimeNotEqualFilter, DateTimeGreaterFilter, 
-                DateTimeSmallerFilter, DateTimeBetweenFilter, DateTimeNotBetweenFilter, 
-                FilterEmpty)
+    strings = (FilterEqual, FilterNotEqual, FilterLike, FilterNotLike,
+               FilterEmpty, FilterInList, FilterNotInList)
+    int_filters = (IntEqualFilter, IntNotEqualFilter, IntGreaterFilter,
+                   IntSmallerFilter, FilterEmpty, IntInListFilter,
+                   IntNotInListFilter)
+    float_filters = (FloatEqualFilter, FloatNotEqualFilter, FloatGreaterFilter,
+                     FloatSmallerFilter, FilterEmpty, FloatInListFilter, 
+                     FloatNotInListFilter)
+    bool_filters = (BooleanEqualFilter, BooleanNotEqualFilter)
+    datetime_filters = (DateTimeEqualFilter, DateTimeNotEqualFilter, 
+                        DateTimeGreaterFilter, DateTimeSmallerFilter,
+                        DateTimeBetweenFilter, DateTimeNotBetweenFilter, 
+                        FilterEmpty)
 
     def convert(self, type_name, column, name):
         if type_name in self.converters:
@@ -207,12 +249,16 @@ class FilterConverter(filters.BaseFilterConverter):
 
     @filters.convert('BooleanField')
     def conv_bool(self, column, name):
-        return [f(column, name) for f in self.bool]
+        return [f(column, name) for f in self.bool_filters]
 
-    @filters.convert('IntField', 'DecimalField', 'FloatField', 'LongField')
+    @filters.convert('IntField', 'LongField')
     def conv_int(self, column, name):
-        return [f(column, name) for f in self.numeric]
-
+        return [f(column, name) for f in self.int_filters]
+        
+    @filters.convert('DecimalField', 'FloatField')
+    def conv_float(self, column, name):
+        return [f(column, name) for f in self.float_filters]
+        
     @filters.convert('DateTimeField', 'ComplexDateTimeField')
     def conv_datetime(self, column, name):
         return [f(column, name) for f in self.datetime_filters]
