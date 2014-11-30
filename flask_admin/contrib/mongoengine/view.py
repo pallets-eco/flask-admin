@@ -433,7 +433,7 @@ class ModelView(BaseModelView):
         if self._filters:
             for flt, flt_name, value in filters:
                 f = self._filters[flt]
-                query = f.apply(query, value)
+                query = f.apply(query, f.clean(value))
 
         # Search
         if self._search_supported and search:

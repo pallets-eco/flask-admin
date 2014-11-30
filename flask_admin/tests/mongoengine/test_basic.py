@@ -13,6 +13,7 @@ from flask.ext.admin.contrib.mongoengine import ModelView
 
 from . import setup
 
+from datetime import datetime
 
 class CustomModelView(ModelView):
     def __init__(self, model,
@@ -32,6 +33,7 @@ def create_models(db):
         test2 = db.StringField(max_length=20)
         test3 = db.StringField()
         test4 = db.StringField()
+        datetime_field = db.DateTimeField()
 
         def __str__(self):
             return self.test1
@@ -127,20 +129,25 @@ def test_column_filters():
     Model1, Model2 = create_models(db)
     
     # fill DB with values
-    model1_obj1 = Model1(test1=u'test1_val_1', test2=u'test2_val_1')
-    model1_obj1.save()
-    model1_obj2 = Model1(test1=u'test1_val_2', test2=u'test2_val_2')
-    model1_obj2.save()
-    model2_obj1 = Model2(string_field=u'string_field_val_1', int_field=5000)
-    model2_obj1.save()
-    model2_obj2 = Model2(string_field=u'string_field_val_2', int_field=9000)
-    model2_obj2.save()
+    Model1('test1_val_1', 'test2_val_1').save()
+    Model1('test1_val_2', 'test2_val_2').save()
+    Model1('test1_val_3', 'test2_val_3').save()
+    Model1('test1_val_4', 'test2_val_4').save()
+    Model1(None, 'empty_obj').save()
+    
+    Model2('string_field_val_1', None).save()
+    Model2('string_field_val_2', None).save()
+    Model2('string_field_val_3', 5000).save()
+    Model2('string_field_val_4', 9000).save()
+    
+    Model1('datetime_obj1', datetime_field=datetime(2014,4,3,1,9,0)).save()
+    Model1('datetime_obj2', datetime_field=datetime(2013,3,2,0,8,0)).save()
 
     # Test string filter
     view = CustomModelView(Model1, column_filters=['test1'])
     admin.add_view(view)
     
-    eq_(len(view._filters), 4)
+    eq_(len(view._filters), 7)
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
         [
@@ -148,6 +155,9 @@ def test_column_filters():
             (1, 'not equal'),
             (2, 'contains'),
             (3, 'not contains'),
+            (4, 'empty'),
+            (5, 'in list'),
+            (6, 'not in list'),
         ])
         
     # Make some test clients
@@ -181,6 +191,40 @@ def test_column_filters():
     ok_('test2_val_1' not in data)
     ok_('test1_val_2' in data)
     
+    # string - empty
+    rv = client.get('/admin/model1/?flt0_4=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('empty_obj' in data)
+    ok_('test1_val_1' not in data)
+    ok_('test1_val_2' not in data)
+    
+    # string - not empty
+    rv = client.get('/admin/model1/?flt0_4=0')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('empty_obj' not in data)
+    ok_('test1_val_1' in data)
+    ok_('test1_val_2' in data)
+    
+    # string - in list
+    rv = client.get('/admin/model1/?flt0_5=test1_val_1%2Ctest1_val_2')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' in data)
+    ok_('test2_val_2' in data)
+    ok_('test1_val_3' not in data)
+    ok_('test1_val_4' not in data)
+    
+    # string - not in list
+    rv = client.get('/admin/model1/?flt0_6=test1_val_1%2Ctest1_val_2')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' not in data)
+    ok_('test2_val_2' not in data)
+    ok_('test1_val_3' in data)
+    ok_('test1_val_4' in data)
+    
     # Test numeric filter
     view = CustomModelView(Model2, column_filters=['int_field'])
     admin.add_view(view)
@@ -191,35 +235,149 @@ def test_column_filters():
             (1, 'not equal'),
             (2, 'greater than'),
             (3, 'smaller than'),
+            (4, 'empty'),
+            (5, 'in list'),
+            (6, 'not in list'),
         ])
     
     # integer - equals
     rv = client.get('/admin/model2/?flt0_0=5000')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
-    ok_('string_field_val_1' in data)
-    ok_('string_field_val_2' not in data)
+    ok_('string_field_val_3' in data)
+    ok_('string_field_val_4' not in data)
     
     # integer - not equal
     rv = client.get('/admin/model2/?flt0_1=5000')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
-    ok_('string_field_val_1' not in data)
-    ok_('string_field_val_2' in data)
+    ok_('string_field_val_3' not in data)
+    ok_('string_field_val_4' in data)
     
     # integer - greater
     rv = client.get('/admin/model2/?flt0_2=6000')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
-    ok_('string_field_val_1' not in data)
-    ok_('string_field_val_2' in data)
+    ok_('string_field_val_3' not in data)
+    ok_('string_field_val_4' in data)
     
     # integer - smaller
     rv = client.get('/admin/model2/?flt0_3=6000')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
+    ok_('string_field_val_3' in data)
+    ok_('string_field_val_4' not in data)
+    
+    # integer - empty
+    rv = client.get('/admin/model2/?flt0_4=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
     ok_('string_field_val_1' in data)
+    ok_('string_field_val_2' in data)
+    ok_('string_field_val_3' not in data)
+    ok_('string_field_val_4' not in data)
+    
+    # integer - not empty
+    rv = client.get('/admin/model2/?flt0_4=0')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_1' not in data)
     ok_('string_field_val_2' not in data)
+    ok_('string_field_val_3' in data)
+    ok_('string_field_val_4' in data)
+    
+    # integer - in list
+    rv = client.get('/admin/model2/?flt0_5=5000%2C9000')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_1' not in data)
+    ok_('string_field_val_2' not in data)
+    ok_('string_field_val_3' in data)
+    ok_('string_field_val_4' in data)
+    
+    # integer - not in list
+    rv = client.get('/admin/model2/?flt0_6=5000%2C9000')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_1' in data)
+    ok_('string_field_val_2' in data)
+    ok_('string_field_val_3' not in data)
+    ok_('string_field_val_4' not in data)
+    
+    # Test datetime filter
+    view = CustomModelView(Model1,
+                           column_filters=['datetime_field'], 
+                           endpoint="_datetime")
+    admin.add_view(view)
+    
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Datetime Field']],
+        [
+            (0, 'equals'),
+            (1, 'not equal'),
+            (2, 'greater than'),
+            (3, 'smaller than'),
+            (4, 'between'),
+            (5, 'not between'),
+            (6, 'empty'),
+        ])
+    
+    # datetime - equals
+    rv = client.get('/admin/_datetime/?flt0_0=2014-04-03+01%3A09%3A00')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' in data)
+    ok_('datetime_obj2' not in data)
+    
+    # datetime - not equal
+    rv = client.get('/admin/_datetime/?flt0_1=2014-04-03+01%3A09%3A00')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' not in data)
+    ok_('datetime_obj2' in data)
+    
+    # datetime - greater
+    rv = client.get('/admin/_datetime/?flt0_2=2014-04-03+01%3A08%3A00')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' in data)
+    ok_('datetime_obj2' not in data)
+    
+    # datetime - smaller
+    rv = client.get('/admin/_datetime/?flt0_3=2014-04-03+01%3A08%3A00')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' not in data)
+    ok_('datetime_obj2' in data)
+    
+    # datetime - between
+    rv = client.get('/admin/_datetime/?flt0_4=2014-04-02+00%3A00%3A00+to+2014-11-20+23%3A59%3A59')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' in data)
+    ok_('datetime_obj2' not in data)
+    
+    # datetime - not between
+    rv = client.get('/admin/_datetime/?flt0_5=2014-04-02+00%3A00%3A00+to+2014-11-20+23%3A59%3A59')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('datetime_obj1' not in data)
+    ok_('datetime_obj2' in data)
+    
+    # datetime - empty
+    rv = client.get('/admin/_datetime/?flt0_6=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test1_val_1' in data)
+    ok_('datetime_obj1' not in data)
+    ok_('datetime_obj2' not in data)
+    
+    # datetime - not empty
+    rv = client.get('/admin/_datetime/?flt0_6=0')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test1_val_1' not in data)
+    ok_('datetime_obj1' in data)
+    ok_('datetime_obj2' in data)
     
 def test_default_sort():
     app, db, admin = setup()

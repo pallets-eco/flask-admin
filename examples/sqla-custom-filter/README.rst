@@ -1,4 +1,4 @@
-Custom filter with SQLAlchemy backend example.
+Example of custom filters for the SQLAlchemy backend.
 
 To run this example:
 
@@ -14,11 +14,11 @@ To run this example:
 
 3. Install requirements::
 
-  pip install -r 'examples/custom-filter/requirements.txt'
+  pip install -r 'examples/sqla-custom-filter/requirements.txt'
 
 4. Run the application::
 
-  python examples/custom-filter/app.py
+  python examples/sqla-custom-filter/app.py
 
 The first time you run this example, a sample sqlite database gets populated automatically. To suppress this behaviour,
 comment the following lines in app.py:::
