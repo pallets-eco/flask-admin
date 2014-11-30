@@ -313,7 +313,7 @@ class ModelView(BaseModelView):
                 f = self._filters[flt]
 
                 query = self._handle_join(query, f.column, joins)
-                query = f.apply(query, value)
+                query = f.apply(query, f.clean(value))
 
         # Get count
         count = query.count()
