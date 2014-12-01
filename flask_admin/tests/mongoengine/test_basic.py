@@ -248,6 +248,12 @@ def test_column_filters():
     ok_('string_field_val_3' in data)
     ok_('string_field_val_4' not in data)
     
+    # integer - equals - test validation
+    rv = client.get('/admin/model2/?flt0_0=badval')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('Invalid Filter Value' in data)
+    
     # integer - not equal
     rv = client.get('/admin/model2/?flt0_1=5000')
     eq_(rv.status_code, 200)
@@ -296,6 +302,12 @@ def test_column_filters():
     ok_('string_field_val_3' in data)
     ok_('string_field_val_4' in data)
     
+    # integer - in list - test validation
+    rv = client.get('/admin/model2/?flt0_5=5000%2Cbadval')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('Invalid Filter Value' in data)
+    
     # integer - not in list
     rv = client.get('/admin/model2/?flt0_6=5000%2C9000')
     eq_(rv.status_code, 200)
@@ -327,6 +339,12 @@ def test_column_filters():
     data = rv.data.decode('utf-8')
     ok_('string_field_val_3' in data)
     ok_('string_field_val_4' not in data)
+    
+    # float - equals - test validation
+    rv = client.get('/admin/_float/?flt0_0=badval')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('Invalid Filter Value' in data)
     
     # float - not equal
     rv = client.get('/admin/_float/?flt0_1=25.9')
@@ -375,6 +393,12 @@ def test_column_filters():
     ok_('string_field_val_2' not in data)
     ok_('string_field_val_3' in data)
     ok_('string_field_val_4' in data)
+    
+    # float - in list - test validation
+    rv = client.get('/admin/_float/?flt0_5=25.9%2Cbadval')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('Invalid Filter Value' in data)
     
     # float - not in list
     rv = client.get('/admin/_float/?flt0_6=25.9%2C75.5')

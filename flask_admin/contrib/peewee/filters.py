@@ -139,11 +139,11 @@ class IntSmallerFilter(FilterSmaller, filters.BaseIntFilter):
     pass
     
 
-class IntInListFilter(FilterInList, filters.BaseIntListFilter):
+class IntInListFilter(filters.BaseIntListFilter, FilterInList):
     pass
     
 
-class IntNotInListFilter(FilterNotInList, filters.BaseIntListFilter):
+class IntNotInListFilter(filters.BaseIntListFilter, FilterNotInList):
     pass
     
 
@@ -163,11 +163,11 @@ class FloatSmallerFilter(FilterSmaller, filters.BaseFloatFilter):
     pass
     
 
-class FloatInListFilter(FilterInList, filters.BaseFloatListFilter):
+class FloatInListFilter(filters.BaseFloatListFilter, FilterInList):
     pass
     
 
-class FloatNotInListFilter(FilterNotInList, filters.BaseFloatListFilter):
+class FloatNotInListFilter(filters.BaseFloatListFilter, FilterNotInList):
     pass
     
 
