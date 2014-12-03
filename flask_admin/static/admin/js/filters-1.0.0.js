@@ -120,7 +120,7 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
         // if one of the subfilters are selected, use that subfilter to create the input field
         var filterSelection = 0;
         $.each(subfilters, function( subfilterIndex, subfilter ) {
-            if (this.arg == selectedIndex) {
+            if (this.index == selectedIndex) {
                 $select.append($('<option/>').attr('value', subfilter.arg).attr('selected', true).text(subfilter.operation));
                 filterSelection = subfilterIndex;
             } else {
