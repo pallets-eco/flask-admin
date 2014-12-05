@@ -1,3 +1,5 @@
+from mongoengine.base import get_document
+
 from werkzeug.datastructures import FileStorage
 
 from wtforms import fields
@@ -26,6 +28,9 @@ class ModelFormField(InlineFormField):
         super(ModelFormField, self).__init__(form_class, **kwargs)
 
         self.model = model
+        if isinstance(self.model, str):
+            self.model = get_document(self.model)
+
         self.view = view
         self.form_opts = form_opts
 
