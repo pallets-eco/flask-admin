@@ -460,7 +460,7 @@
       this.applyGlobalStyles = function(parent) {
         var self = this;
 
-        $('[data-role]', parent).each(function() {
+        $(':input[data-role]', parent).each(function() {
             var $el = $(this);
             self.applyStyle($el, $el.attr('data-role'));
         });
