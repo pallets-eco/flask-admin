@@ -3,9 +3,26 @@ from nose.tools import eq_, ok_
 
 from flask.ext.admin.contrib.geoa import ModelView
 from geoalchemy2 import Geometry
+from geoalchemy2.shape import to_shape
 from flask.ext.admin.contrib.geoa.fields import GeoJSONField
 
 from . import setup
+
+#def create_srid_models(db):
+#	class GeoModel(db.Model):
+#        id = db.Column(db.Integer, primary_key=True)
+#        name = db.Column(db.String(20))
+#        point = db.Column(Geometry("POINT", srid=3857))
+#        line = db.Column(Geometry("LINESTRING", srid=4326))
+#        polygon = db.Column(Geometry("POLYGON"))
+#        multi = db.Column(Geometry("MULTIPOINT"))
+#
+#        def __unicode__(self):
+#            return self.name
+#
+#    db.create_all()
+#
+#    return GeoModel
 
 
 def create_models(db):
@@ -66,17 +83,17 @@ def test_model():
 
     model = db.session.query(GeoModel).first()
     eq_(model.name, "test1")
-    eq_(model.point.geom_type, "Point")
-    eq_(list(model.point.coords), [(125.8, 10.0)])
-    eq_(model.line.geom_type, "LineString")
-    eq_(list(model.line.coords), [(50.2345, 94.2), (50.21, 94.87)])
-    eq_(model.polygon.geom_type, "Polygon")
-    eq_(list(model.polygon.exterior.coords),
+    eq_(to_shape(model.point).geom_type, "Point")
+    eq_(list(to_shape(model.point).coords), [(125.8, 10.0)])
+    eq_(to_shape(model.line).geom_type, "LineString")
+    eq_(list(to_shape(model.line).coords), [(50.2345, 94.2), (50.21, 94.87)])
+    eq_(to_shape(model.polygon).geom_type, "Polygon")
+    eq_(list(to_shape(model.polygon).exterior.coords),
         [(100.0, 0.0), (101.0, 0.0), (101.0, 1.0), (100.0, 1.0), (100.0, 0.0)])
     eq_(model.multi.geom_type, "MultiPoint")
-    eq_(len(model.multi.geoms), 2)
-    eq_(list(model.multi.geoms[0].coords), [(100.0, 0.0)])
-    eq_(list(model.multi.geoms[1].coords), [(101.0, 1.0)])
+    eq_(len(to_shape(model.multi).geoms), 2)
+    eq_(list(to_shape(model.multi).geoms[0].coords), [(100.0, 0.0)])
+    eq_(list(to_shape(model.multi).geoms[1].coords), [(101.0, 1.0)])
 
     rv = client.get('/admin/geomodel/')
     eq_(rv.status_code, 200)
@@ -98,16 +115,16 @@ def test_model():
 
     model = db.session.query(GeoModel).first()
     eq_(model.name, "edited")
-    eq_(model.point.geom_type, "Point")
-    eq_(list(model.point.coords), [(99.9, 10.5)])
-    eq_(model.line, None)
-    eq_(model.polygon.geom_type, "Polygon")
-    eq_(list(model.polygon.exterior.coords),
+    eq_(to_shape(model.point).geom_type, "Point")
+    eq_(list(to_shape(model.point).coords), [(99.9, 10.5)])
+    eq_(to_shape(model.line), None)
+    eq_(to_shape(model.polygon).geom_type, "Polygon")
+    eq_(list(to_shape(model.polygon).exterior.coords),
         [(100.0, 0.0), (101.0, 0.0), (101.0, 1.0), (100.0, 1.0), (100.0, 0.0)])
-    eq_(model.multi.geom_type, "MultiPoint")
-    eq_(len(model.multi.geoms), 2)
-    eq_(list(model.multi.geoms[0].coords), [(100.0, 0.0)])
-    eq_(list(model.multi.geoms[1].coords), [(101.0, 1.0)])
+    eq_(to_shape(model.multi).geom_type, "MultiPoint")
+    eq_(len(to_shape(model.multi).geoms), 2)
+    eq_(list(to_shape(model.multi).geoms[0].coords), [(100.0, 0.0)])
+    eq_(list(to_shape(model.multi).geoms[1].coords), [(101.0, 1.0)])
 
     url = '/admin/geomodel/delete/?id=%s' % model.id
     rv = client.post(url)
