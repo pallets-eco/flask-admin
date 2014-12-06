@@ -90,7 +90,7 @@ def test_model():
     eq_(to_shape(model.polygon).geom_type, "Polygon")
     eq_(list(to_shape(model.polygon).exterior.coords),
         [(100.0, 0.0), (101.0, 0.0), (101.0, 1.0), (100.0, 1.0), (100.0, 0.0)])
-    eq_(model.multi.geom_type, "MultiPoint")
+    eq_(to_shape(model.multi).geom_type, "MultiPoint")
     eq_(len(to_shape(model.multi).geoms), 2)
     eq_(list(to_shape(model.multi).geoms[0].coords), [(100.0, 0.0)])
     eq_(list(to_shape(model.multi).geoms[1].coords), [(101.0, 1.0)])
