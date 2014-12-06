@@ -7,4 +7,5 @@ class AdminModelConverter(SQLAAdminConverter):
     @converts('Geometry')
     def convert_geom(self, column, field_args, **extra):
         field_args['geometry_type'] = column.type.geometry_type
+        field_args['session'] = self.session
         return GeoJSONField(**field_args)

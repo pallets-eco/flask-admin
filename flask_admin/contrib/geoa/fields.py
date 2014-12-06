@@ -42,16 +42,17 @@ class GeoJSONField(JSONField):
         self.web_srid = 4326
         self.srid = srid
         self.geometry_type = geometry_type.upper()
+        self.session = session
 
     def _value(self):
         if self.raw_data:
             return self.raw_data[0]
         if type(self.data) is geoalchemy2.elements.WKBElement:
-            self.data = db.session.scalar(func.ST_AsGeoJson(func.ST_Transform(self.data, self.web_srid)))
+            self.data = self.session.scalar(func.ST_AsGeoJson(func.ST_Transform(self.data, self.web_srid)))
         return super(GeoJSONField, self)._value()
 
     def process_formdata(self, valuelist):
         super(GeoJSONField, self).process_formdata(valuelist)
-        web_shape = db.session.scalar(func.ST_AsText(func.ST_Transform(func.ST_GeomFromText(shape(self.data).wkt, self.web_srid), self.srid)))
+        web_shape = self.session.scalar(func.ST_AsText(func.ST_Transform(func.ST_GeomFromText(shape(self.data).wkt, self.web_srid), self.srid)))
         if type(self.data):
             self.data = 'SRID='+str(self.srid)+';'+web_shape
