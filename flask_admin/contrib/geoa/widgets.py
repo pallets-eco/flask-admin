@@ -36,7 +36,6 @@ class LeafletWidget(TextArea):
         kwargs.setdefault('data-geometry-type', gtype)
 
         # set optional values from constructor
-        print kwargs
         if not kwargs.has_key("data-width"):
             kwargs["data-width"] = self.width
         if not kwargs.has_key("data-height"):
@@ -68,5 +67,4 @@ class LeafletWidget(TextArea):
             kwargs["data-max-bounds-ne-lat"] = maxx
             kwargs["data-max-bounds-ne-lng"] = maxy
 
-        print kwargs
         return super(LeafletWidget, self).__call__(field, **kwargs)
