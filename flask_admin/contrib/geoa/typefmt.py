@@ -2,9 +2,10 @@ from flask.ext.admin.contrib.sqla.typefmt import DEFAULT_FORMATTERS as BASE_FORM
 import json
 from jinja2 import Markup
 from wtforms.widgets import html_params
-from shapely.geometry import mapping
 from geoalchemy2.shape import to_shape
 from geoalchemy2.elements import WKBElement
+from sqlalchemy import func
+from flask import current_app
 
 
 def geom_formatter(view, value):
@@ -16,7 +17,7 @@ def geom_formatter(view, value):
         "data-geometry-type": to_shape(value).geom_type,
         "data-zoom": 15,
     })
-    geojson = json.dumps(mapping(to_shape(value)))
+    geojson = current_app.extensions['sqlalchemy'].db.session.scalar(func.ST_AsGeoJson(value.ST_Transform( 4326)))
     return Markup('<textarea %s>%s</textarea>' % (params, geojson))
 
 
