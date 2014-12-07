@@ -4,6 +4,7 @@ from shapely.geometry import shape, mapping
 from .widgets import LeafletWidget
 from sqlalchemy import func
 import geoalchemy2
+from types import NoneType
 #from .. import db how do you get db.session in a Field?
 
 
@@ -60,6 +61,7 @@ class GeoJSONField(JSONField):
 
     def process_formdata(self, valuelist):
         super(GeoJSONField, self).process_formdata(valuelist)
-        web_shape = self.session.scalar(func.ST_AsText(func.ST_Transform(func.ST_GeomFromText(shape(self.data).wkt, self.web_srid), self.transform_srid)))
-        if type(self.data):
+        print type(self.data)
+        if type(self.data) is not NoneType:
+            web_shape = self.session.scalar(func.ST_AsText(func.ST_Transform(func.ST_GeomFromText(shape(self.data).wkt, self.web_srid), self.transform_srid)))
             self.data = 'SRID='+str(self.srid)+';'+str(web_shape)
