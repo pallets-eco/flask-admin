@@ -17,7 +17,10 @@ def geom_formatter(view, value):
         "data-geometry-type": to_shape(value).geom_type,
         "data-zoom": 15,
     })
-    geojson = current_app.extensions['sqlalchemy'].db.session.scalar(func.ST_AsGeoJson(value.ST_Transform( 4326)))
+    if value.srid is -1:
+        geojson = current_app.extensions['sqlalchemy'].db.session.scalar(func.ST_AsGeoJson(value))
+    else:
+        geojson = current_app.extensions['sqlalchemy'].db.session.scalar(func.ST_AsGeoJson(value.ST_Transform( 4326)))
     return Markup('<textarea %s>%s</textarea>' % (params, geojson))
 
 
