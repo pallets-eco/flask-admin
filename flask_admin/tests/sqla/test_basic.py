@@ -5,7 +5,7 @@ from wtforms import fields
 from flask.ext.admin import form
 from flask.ext.admin._compat import as_unicode
 from flask.ext.admin._compat import iteritems
-from flask.ext.admin.contrib.sqla import ModelView
+from flask.ext.admin.contrib.sqla import ModelView, filters
 from flask.ext.babelex import Babel
 
 from . import setup
@@ -377,7 +377,17 @@ def test_column_filters():
             (0, 'equals'),
             (1, 'not equal'),
         ])
-
+        
+    # Test column_labels on filters
+    view = CustomModelView(Model2, db.session,
+                           column_filters=['model1.bool_field', 'string_field'],
+                           column_labels={
+                               'model1.bool_field': 'Test Filter #1',
+                               'string_field': 'Test Filter #2',
+                           })
+    
+    eq_(view._filter_groups.keys(), [u'Test Filter #1', u'Test Filter #2'])
+    
     # Fill DB
     model1_obj1 = Model1('test1_val_1', 'test2_val_1', bool_field=True)
     model1_obj2 = Model1('test1_val_2', 'test2_val_2')
@@ -385,7 +395,7 @@ def test_column_filters():
     model1_obj4 = Model1('test1_val_4', 'test2_val_4')
 
     model2_obj1 = Model2('test2_val_1', model1=model1_obj1, float_field=None)
-    model2_obj2 = Model2('test2_val_2', model1=model1_obj1, float_field=None)
+    model2_obj2 = Model2('test2_val_2', model1=model1_obj2, float_field=None)
     model2_obj3 = Model2('test2_val_3', int_field=5000, float_field=25.9)
     model2_obj4 = Model2('test2_val_4', int_field=9000, float_field=75.5)
     
@@ -705,7 +715,7 @@ def test_column_filters():
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('test2_val_1' in data)
-    ok_('test2_val_2' in data)
+    ok_('test2_val_2' not in data)
     ok_('test2_val_3' not in data)
     ok_('test2_val_4' not in data)
 
@@ -989,6 +999,18 @@ def test_column_filters():
     ok_('enum_obj1' not in data)
     ok_('enum_obj2' not in data)
     
+    # Test single custom filter on relation
+    view = CustomModelView(Model2, db.session,
+                           column_filters = [
+                               filters.FilterEqual(Model1.test1, "Test1")
+                           ], endpoint='_relation_test')
+    admin.add_view(view)
+    
+    rv = client.get('/admin/_relation_test/?flt1_0=test1_val_1')
+    data = rv.data.decode('utf-8')
+    ok_('test1_val_1' in data)
+    ok_('test1_val_2' not in data)
+
 def test_url_args():
     app, db, admin = setup()
 
