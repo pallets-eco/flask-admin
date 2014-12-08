@@ -531,7 +531,6 @@ class ModelView(BaseModelView):
                                                         visible_name)
 
                     if flt:
-                        self._postprocess_filter(flt)
                         table = column.table
 
                         if join_tables:
