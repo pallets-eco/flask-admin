@@ -45,6 +45,7 @@ use this field rather that the one that ships with GeoAlchemy when defining your
 models::
 
     from flask.ext.admin.contrib.geoa.sqltypes import Geometry
+    from flask.ext.admin.contrib.geoa import ModelView
 
     # .. flask initialization
     db = SQLAlchemy(app)
@@ -60,6 +61,9 @@ models::
 
         db.create_all()
         app.run('0.0.0.0', 8000)
+
+Note that you also have to use the ``ModelView`` class imported from ``geoa``,
+rather than the one imported from ``sqla``.
 
 Limitations
 -----------
