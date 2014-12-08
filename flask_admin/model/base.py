@@ -773,6 +773,15 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return isinstance(filter, filters.BaseFilter)
 
+    def handle_filter(self, filter):
+        """
+            Postprocess (add joins, etc) for a filter.
+
+            :param filter:
+                Filter object to postprocess
+        """
+        return filter
+
     def get_filters(self):
         """
             Return a list of filter objects.
@@ -785,7 +794,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             for n in self.column_filters:
                 if self.is_valid_filter(n):
-                    collection.append(n)
+                    collection.append(self.handle_filter(n))
                 else:
                     flt = self.scaffold_filters(n)
                     if flt:
@@ -1109,7 +1118,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
                 if key in self._filter_args:
                     idx, flt = self._filter_args[key]
-                    
+
                     value = request.args[n]
 
                     if flt.validate(value):

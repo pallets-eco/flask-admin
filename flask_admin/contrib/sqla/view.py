@@ -531,6 +531,7 @@ class ModelView(BaseModelView):
                                                         visible_name)
 
                     if flt:
+                        self._postprocess_filter(flt)
                         table = column.table
 
                         if join_tables:
@@ -585,6 +586,14 @@ class ModelView(BaseModelView):
                 Filter object to verify.
         """
         return isinstance(filter, filters.BaseSQLAFilter)
+
+    def handle_filter(self, filter):
+        column = filter.column
+
+        if self._need_join(column.table):
+            self._filter_joins[column.table.name] = [column.table]
+
+        return filter
 
     def scaffold_form(self):
         """
