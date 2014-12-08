@@ -36,9 +36,9 @@ class LeafletWidget(TextArea):
         kwargs.setdefault('data-geometry-type', gtype)
 
         # set optional values from constructor
-        if not kwargs.has_key("data-width"):
+        if not "data-width" in kwargs:
             kwargs["data-width"] = self.width
-        if not kwargs.has_key("data-height"):
+        if not "data-height" in kwargs:
             kwargs["data-height"] = self.height
         if self.center:
             kwargs["data-lat"] = lat(self.center)
