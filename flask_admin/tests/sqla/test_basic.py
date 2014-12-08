@@ -386,7 +386,7 @@ def test_column_filters():
                                'string_field': 'Test Filter #2',
                            })
     
-    eq_(view._filter_groups.keys(), [u'Test Filter #1', u'Test Filter #2'])
+    eq_(list(view._filter_groups.keys()), [u'Test Filter #1', u'Test Filter #2'])
     
     # Fill DB
     model1_obj1 = Model1('test1_val_1', 'test2_val_1', bool_field=True)
