@@ -69,24 +69,29 @@ class TimeField(fields.Field):
     def _value(self):
         if self.raw_data:
             return u' '.join(self.raw_data)
+        elif self.data is not None:
+            return self.data.strftime(self.default_format)
         else:
-            return self.data and self.data.strftime(self.default_format) or u''
+            return u''
 
     def process_formdata(self, valuelist):
         if valuelist:
             date_str = u' '.join(valuelist)
 
-            for format in self.formats:
-                try:
-                    timetuple = time.strptime(date_str, format)
-                    self.data = datetime.time(timetuple.tm_hour,
-                                              timetuple.tm_min,
-                                              timetuple.tm_sec)
-                    return
-                except ValueError:
-                    pass
+            if date_str.strip():
+                for format in self.formats:
+                    try:
+                        timetuple = time.strptime(date_str, format)
+                        self.data = datetime.time(timetuple.tm_hour,
+                                                  timetuple.tm_min,
+                                                  timetuple.tm_sec)
+                        return
+                    except ValueError:
+                        pass
 
-            raise ValueError(gettext('Invalid time format'))
+                raise ValueError(gettext('Invalid time format'))
+            else:
+                self.data = None
 
 
 class Select2Field(fields.SelectField):

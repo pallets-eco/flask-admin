@@ -121,7 +121,9 @@ def test_model():
     eq_(rv.status_code, 200)
 
     rv = client.post('/admin/model1/new/',
-                     data=dict(test1='test1large', test2='test2'))
+                     data=dict(test1='test1large',
+                               test2='test2',
+                               time_field=time(0,0,0)))
     eq_(rv.status_code, 302)
 
     model = db.session.query(Model1).first()
@@ -137,6 +139,9 @@ def test_model():
     url = '/admin/model1/edit/?id=%s' % model.id
     rv = client.get(url)
     eq_(rv.status_code, 200)
+    
+    # verify that midnight does not show as blank
+    ok_(u'00:00:00' in rv.data.decode('utf-8'))
 
     rv = client.post(url,
                      data=dict(test1='test1small', test2='test2large'))
