@@ -229,10 +229,16 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             if not self.url.startswith('/'):
                 self.url = '%s/%s' % (self.admin.url, self.url)
 
+        
         # If we're working from the root of the site, set prefix to None
         if self.url == '/':
             self.url = None
-
+            # prevent admin static files from conflicting with flask static files
+            if not self.static_url_path:
+                self.static_folder='static'
+                self.static_url_path='/static/admin'
+            
+            
         # If name is not povided, use capitalized endpoint name
         if self.name is None:
             self.name = self._prettify_class_name(self.__class__.__name__)
@@ -383,9 +389,21 @@ class AdminIndexView(BaseView):
                 @expose('/')
                 def index(self):
                     arg1 = 'Hello'
-                    return render_template('adminhome.html', arg1=arg1)
+                    return self.render('admin/myhome.html', arg1=arg1)
 
             admin = Admin(index_view=MyHomeView())
+            
+            
+        Also, you can change the root url from /admin to / with the following::
+
+            admin = Admin(
+                app,
+                index_view=AdminIndexView(
+                    name='Home',
+                    template='admin/myhome.html',
+                    url='/'
+                )
+            )
 
         Default values for the index page are:
 
