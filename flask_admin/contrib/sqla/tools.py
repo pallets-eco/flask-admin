@@ -4,7 +4,7 @@ from sqlalchemy.exc import DBAPIError
 from ast import literal_eval
 
 from flask.ext.admin._compat import filter_list
-from flask.ext.admin.tools import iterencode, iterdecode
+from flask.ext.admin.tools import iterencode, iterdecode, escape
 
 
 def parse_like_term(term):

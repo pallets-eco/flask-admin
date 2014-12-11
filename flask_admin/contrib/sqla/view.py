@@ -360,7 +360,7 @@ class ModelView(BaseModelView):
         if isinstance(self._primary_key, tuple):
             return tools.iterencode(getattr(model, attr) for attr in self._primary_key)
         else:
-            return getattr(model, self._primary_key)
+            return tools.escape(getattr(model, self._primary_key))
 
     def scaffold_list_columns(self):
         """
