@@ -102,9 +102,6 @@ def get_dict_attr(obj, attr, default=None):
 
 
 def escape(value):
-    print value
-
-
     return (as_unicode(value)
             .replace(CHAR_ESCAPE, CHAR_ESCAPE + CHAR_ESCAPE)
             .replace(CHAR_SEPARATOR, CHAR_ESCAPE + CHAR_SEPARATOR))
