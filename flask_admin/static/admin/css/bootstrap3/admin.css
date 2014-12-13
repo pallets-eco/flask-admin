@@ -17,6 +17,7 @@ form.icon button {
     line-height: normal;
 }
 
+/* fix delete icon color */
 a.icon, button span.glyphicon {
     text-decoration: none;
     margin-left: 10px;
@@ -54,10 +55,6 @@ table.filters:not(:empty) {
 table.filters tr td {
     padding-right: 5px;
     padding-bottom: 3px;
-}
-
-table.flters tr td:nth-child(2){
-    width: 60%;
 }
 
 .filters a.remove-filter {
@@ -123,7 +120,7 @@ table.flters tr td:nth-child(2){
 }
 
 /* Forms */
-.form-horizontal {
+.admin-form {
     margin-top: 35px;
 }
 
@@ -177,4 +174,11 @@ ul.has-error {
 
 .list-checkbox-column {
     width: 14px;
+}
+
+/* fix overlapping border between actions and table */
+.model-list  {
+    position: relative;
+    margin-top: -1px;
+    z-index: 999;
 }

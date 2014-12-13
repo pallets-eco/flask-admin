@@ -138,7 +138,7 @@
 {% endmacro %}
 
 {% macro form_tag(form=None, action=None) %}
-    <form action="{{ action or '' }}" method="POST" role="form" class="form-horizontal" enctype="multipart/form-data">
+    <form action="{{ action or '' }}" method="POST" role="form" class="admin-form form-horizontal" enctype="multipart/form-data">
       {{ caller() }}
     </form>
 {% endmacro %}
