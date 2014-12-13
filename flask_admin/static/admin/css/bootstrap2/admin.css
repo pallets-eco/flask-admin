@@ -40,6 +40,15 @@ table.filters {
     border-spacing: 4px;
 }
 
+table.filters:not(:empty) {
+    margin: 12px 0px 20px 0px;
+}
+
+table.filters tr td {
+    padding-right: 5px;
+    padding-bottom: 3px;
+}
+
 .filters input
 {
     margin-bottom: 0;
@@ -94,13 +103,13 @@ table.filters {
 }
 
 /* Forms */
-.form-horizontal .control-label {
+.admin-form .control-label {
     width: 100px;
     text-align: left;
     margin-left: 4px;
 }
 
-.form-horizontal .controls {
+.admin-form .controls {
     margin-left: 110px;
 }
 
@@ -111,4 +120,21 @@ table.filters {
 
 .list-checkbox-column {
     width: 14px;
+}
+
+/* Fix gap between actions and table */
+.model-list  {
+    position: relative;
+    margin-top: -1px;
+    z-index: 999;
+}
+
+.actions-nav  {
+margin-bottom: 0;
+margin-left: 4px;
+margin-right: 4px;
+}
+
+#filter_form  {
+    margin-bottom: 0;
 }
