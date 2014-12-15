@@ -266,7 +266,7 @@
                 } else {
                     var tags = [];
                 }
-                
+
                 // default to a comma for separating list items
                 // allows using spaces as a token separator
                 if ($el.attr('data-token-separators')) {
@@ -274,7 +274,7 @@
                 } else {
                     var tokenSeparators = [','];
                 }
-                
+
                 var opts = {
                     width: 'resolve',
                     tags: tags,
@@ -283,12 +283,12 @@
                         return 'Enter comma separated values';
                     }
                 };
-                
+
                 $el.select2(opts);
-                
+
                 // submit on ENTER
                 $el.parent().find('input.select2-input').on('keyup', function(e) {
-                   if(e.keyCode === 13) 
+                   if(e.keyCode === 13)
                       $(this).closest('form').submit();
                 });
                 return true;
@@ -408,7 +408,7 @@
 
         var $parentForm = $el.parent().closest('.inline-field');
 
-        if ($parentForm.length > 0 && elID.indexOf($parentForm.attr('id')) !== 0) {
+        if ($parentForm.hasClass('fresh')) {
           id = $parentForm.attr('id') + '-' + elID;
         }
 
@@ -427,6 +427,9 @@
 
         // Set form ID
         $template.attr('id', prefix);
+
+        // Mark form that we just created
+        $template.addClass('fresh');
 
         // Fix form IDs
         $('[name]', $template).each(function(e) {
