@@ -89,7 +89,7 @@ class FilterEmpty(BaseSQLAFilter, filters.BaseBooleanFilter):
 
     def operation(self):
         return lazy_gettext('empty')
-        
+
 
 class FilterInList(BaseSQLAFilter):
     def __init__(self, column, name, options=None, data_type=None):
@@ -97,145 +97,145 @@ class FilterInList(BaseSQLAFilter):
 
     def clean(self, value):
         return [v.strip() for v in value.split(',') if v.strip()]
-        
+
     def apply(self, query, value):
         return query.filter(self.column.in_(value))
-    
+
     def operation(self):
         return lazy_gettext('in list')
-        
+
 
 class FilterNotInList(FilterInList):
     def apply(self, query, value):
         # NOT IN can exclude NULL values, so "or_ == None" needed to be added
         return query.filter(or_(~self.column.in_(value), self.column == None))
-    
+
     def operation(self):
         return lazy_gettext('not in list')
-        
+
 
 # Customized type filters
 class BooleanEqualFilter(FilterEqual, filters.BaseBooleanFilter):
     pass
-    
+
 
 class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
     pass
-    
+
 
 class IntEqualFilter(FilterEqual, filters.BaseIntFilter):
     pass
-    
+
 
 class IntNotEqualFilter(FilterNotEqual, filters.BaseIntFilter):
     pass
-    
+
 
 class IntGreaterFilter(FilterGreater, filters.BaseIntFilter):
     pass
-    
+
 
 class IntSmallerFilter(FilterSmaller, filters.BaseIntFilter):
     pass
-    
+
 
 class IntInListFilter(filters.BaseIntListFilter, FilterInList):
     pass
-    
+
 
 class IntNotInListFilter(filters.BaseIntListFilter, FilterNotInList):
     pass
-    
+
 
 class FloatEqualFilter(FilterEqual, filters.BaseFloatFilter):
     pass
-    
+
 
 class FloatNotEqualFilter(FilterNotEqual, filters.BaseFloatFilter):
     pass
-    
+
 
 class FloatGreaterFilter(FilterGreater, filters.BaseFloatFilter):
     pass
-    
+
 
 class FloatSmallerFilter(FilterSmaller, filters.BaseFloatFilter):
     pass
-    
+
 
 class FloatInListFilter(filters.BaseFloatListFilter, FilterInList):
     pass
-    
+
 
 class FloatNotInListFilter(filters.BaseFloatListFilter, FilterNotInList):
     pass
-    
+
 
 class DateEqualFilter(FilterEqual, filters.BaseDateFilter):
     pass
 
-    
+
 class DateNotEqualFilter(FilterNotEqual, filters.BaseDateFilter):
     pass
-        
+
 
 class DateGreaterFilter(FilterGreater, filters.BaseDateFilter):
     pass
-        
+
 
 class DateSmallerFilter(FilterSmaller, filters.BaseDateFilter):
     pass
-        
+
 
 class DateBetweenFilter(BaseSQLAFilter, filters.BaseDateBetweenFilter):
     def __init__(self, column, name, options=None, data_type=None):
         super(DateBetweenFilter, self).__init__(column,
-                                                name, 
+                                                name,
                                                 options,
                                                 data_type='daterangepicker')
-                                                
+
     def apply(self, query, value):
         start, end = value
         return query.filter(self.column.between(start, end))
-        
+
 
 class DateNotBetweenFilter(DateBetweenFilter):
     def apply(self, query, value):
         start, end = value
         # ~between() isn't possible until sqlalchemy 1.0.0
         return query.filter(not_(self.column.between(start, end)))
-        
+
     def operation(self):
         return lazy_gettext('not between')
-        
-            
+
+
 class DateTimeEqualFilter(FilterEqual, filters.BaseDateTimeFilter):
     pass
-        
+
 
 class DateTimeNotEqualFilter(FilterNotEqual, filters.BaseDateTimeFilter):
     pass
-        
+
 
 class DateTimeGreaterFilter(FilterGreater, filters.BaseDateTimeFilter):
     pass
-        
+
 
 class DateTimeSmallerFilter(FilterSmaller, filters.BaseDateTimeFilter):
     pass
-        
+
 
 class DateTimeBetweenFilter(BaseSQLAFilter, filters.BaseDateTimeBetweenFilter):
     def __init__(self, column, name, options=None, data_type=None):
         super(DateTimeBetweenFilter, self).__init__(column,
-                                                    name, 
+                                                    name,
                                                     options,
                                                     data_type='datetimerangepicker')
-                                                    
+
     def apply(self, query, value):
         start, end = value
         return query.filter(self.column.between(start, end))
-            
+
 
 class DateTimeNotBetweenFilter(DateTimeBetweenFilter):
     def apply(self, query, value):
@@ -244,45 +244,45 @@ class DateTimeNotBetweenFilter(DateTimeBetweenFilter):
 
     def operation(self):
         return lazy_gettext('not between')
-        
+
 
 class TimeEqualFilter(FilterEqual, filters.BaseTimeFilter):
     pass
-    
+
 
 class TimeNotEqualFilter(FilterNotEqual, filters.BaseTimeFilter):
     pass
-    
+
 
 class TimeGreaterFilter(FilterGreater, filters.BaseTimeFilter):
     pass
-    
+
 
 class TimeSmallerFilter(FilterSmaller, filters.BaseTimeFilter):
     pass
-    
+
 
 class TimeBetweenFilter(BaseSQLAFilter, filters.BaseTimeBetweenFilter):
     def __init__(self, column, name, options=None, data_type=None):
         super(TimeBetweenFilter, self).__init__(column,
-                                                name, 
+                                                name,
                                                 options,
                                                 data_type='timerangepicker')
-                                                
+
     def apply(self, query, value):
         start, end = value
         return query.filter(self.column.between(start, end))
-        
+
 
 class TimeNotBetweenFilter(TimeBetweenFilter):
     def apply(self, query, value):
         start, end = value
         return query.filter(not_(self.column.between(start, end)))
-        
+
     def operation(self):
         return lazy_gettext('not between')
-        
-            
+
+
 # Base SQLA filter field converter
 class FilterConverter(filters.BaseFilterConverter):
     strings = (FilterEqual, FilterNotEqual, FilterLike, FilterNotLike,
@@ -291,7 +291,7 @@ class FilterConverter(filters.BaseFilterConverter):
                    IntSmallerFilter, FilterEmpty, IntInListFilter,
                    IntNotInListFilter)
     float_filters = (FloatEqualFilter, FloatNotEqualFilter, FloatGreaterFilter,
-                     FloatSmallerFilter, FilterEmpty, FloatInListFilter, 
+                     FloatSmallerFilter, FilterEmpty, FloatInListFilter,
                      FloatNotInListFilter)
     bool_filters = (BooleanEqualFilter, BooleanNotEqualFilter)
     enum = (FilterEqual, FilterNotEqual, FilterEmpty, FilterInList,
@@ -306,43 +306,46 @@ class FilterConverter(filters.BaseFilterConverter):
     time_filters = (TimeEqualFilter, TimeNotEqualFilter, TimeGreaterFilter,
                     TimeSmallerFilter, TimeBetweenFilter, TimeNotBetweenFilter,
                     FilterEmpty)
-            
+
     def convert(self, type_name, column, name, **kwargs):
-        if type_name.lower() in self.converters:
-            return self.converters[type_name.lower()](column, name, **kwargs)
+        filter_name = type_name.lower()
+
+        if filter_name in self.converters:
+            return self.converters[filter_name](column, name, **kwargs)
+
         return None
-        
+
     @filters.convert('string', 'char', 'unicode', 'varchar', 'tinytext',
                      'text', 'mediumtext', 'longtext', 'unicodetext',
                      'nchar', 'nvarchar', 'ntext')
     def conv_string(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.strings]
-        
+
     @filters.convert('boolean', 'tinyint')
     def conv_bool(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.bool_filters]
-        
+
     @filters.convert('int', 'integer', 'smallinteger', 'smallint', 'numeric',
                      'biginteger', 'bigint', 'mediumint')
     def conv_int(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.int_filters]
-        
+
     @filters.convert('float', 'real', 'decimal', 'double_precision', 'double')
     def conv_float(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.float_filters]
-        
+
     @filters.convert('date')
     def conv_date(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.date_filters]
-        
+
     @filters.convert('datetime', 'datetime2', 'timestamp', 'smalldatetime')
     def conv_datetime(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.datetime_filters]
-        
+
     @filters.convert('time')
     def conv_time(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.time_filters]
-        
+
     @filters.convert('enum')
     def conv_enum(self, column, name, options=None, **kwargs):
         if not options:

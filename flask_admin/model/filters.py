@@ -48,7 +48,7 @@ class BaseFilter(object):
             Validate value.
 
             If value is valid, returns `True` and `False` otherwise.
-            
+
             :param value:
                 Value to validate
         """
@@ -102,7 +102,7 @@ class BaseBooleanFilter(BaseFilter):
 
     def validate(self, value):
         return value in ('0', '1')
-        
+
 
 class BaseIntFilter(BaseFilter):
     """
@@ -110,7 +110,7 @@ class BaseIntFilter(BaseFilter):
     """
     def clean(self, value):
         return int(float(value))
-            
+
 
 class BaseFloatFilter(BaseFilter):
     """
@@ -118,7 +118,7 @@ class BaseFloatFilter(BaseFilter):
     """
     def clean(self, value):
         return float(value)
-            
+
 
 class BaseIntListFilter(BaseFilter):
     """
@@ -126,7 +126,7 @@ class BaseIntListFilter(BaseFilter):
     """
     def clean(self, value):
         return [int(float(v.strip())) for v in value.split(',') if v.strip()]
-        
+
 
 class BaseFloatListFilter(BaseFilter):
     """
@@ -134,7 +134,7 @@ class BaseFloatListFilter(BaseFilter):
     """
     def clean(self, value):
         return [float(v.strip()) for v in value.split(',') if v.strip()]
-        
+
 
 class BaseDateFilter(BaseFilter):
     """
@@ -144,10 +144,10 @@ class BaseDateFilter(BaseFilter):
         super(BaseDateFilter, self).__init__(name,
                                              options,
                                              data_type='datepicker')
-                                             
+
     def clean(self, value):
         return datetime.datetime.strptime(value, '%Y-%m-%d').date()
-        
+
 
 class BaseDateBetweenFilter(BaseFilter):
     """
@@ -163,16 +163,16 @@ class BaseDateBetweenFilter(BaseFilter):
 
     def validate(self, value):
         try:
-            value = [datetime.datetime.strptime(range, '%Y-%m-%d') 
+            value = [datetime.datetime.strptime(range, '%Y-%m-%d')
                      for range in value.split(' to ')]
             # if " to " is missing, fail validation
             # sqlalchemy's .between() will not work if end date is before start date
             if (len(value) == 2) and (value[0] <= value[1]):
                 return True
             else:
-                return False        
+                return False
         except ValueError:
-            return False   
+            return False
 
 
 class BaseDateTimeFilter(BaseFilter):
@@ -183,27 +183,27 @@ class BaseDateTimeFilter(BaseFilter):
         super(BaseDateTimeFilter, self).__init__(name,
                                                  options,
                                                  data_type='datetimepicker')
-                                                 
+
     def clean(self, value):
         # datetime filters will not work in SQLite + SQLAlchemy if value not converted to datetime
         return datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
-        
+
 
 class BaseDateTimeBetweenFilter(BaseFilter):
     """
         Base DateTime Between filter. Consolidates logic for validation and clean.
         Apply method is different for each back-end.
-    """        
+    """
     def clean(self, value):
-        return [datetime.datetime.strptime(range, '%Y-%m-%d %H:%M:%S') 
+        return [datetime.datetime.strptime(range, '%Y-%m-%d %H:%M:%S')
                 for range in value.split(' to ')]
-    
+
     def operation(self):
         return lazy_gettext('between')
-        
+
     def validate(self, value):
         try:
-            value = [datetime.datetime.strptime(range, '%Y-%m-%d %H:%M:%S') 
+            value = [datetime.datetime.strptime(range, '%Y-%m-%d %H:%M:%S')
                      for range in value.split(' to ')]
             if (len(value) == 2) and (value[0] <= value[1]):
                 return True
@@ -211,7 +211,7 @@ class BaseDateTimeBetweenFilter(BaseFilter):
                 return False
         except ValueError:
             return False
-        
+
 
 class BaseTimeFilter(BaseFilter):
     """
@@ -221,14 +221,14 @@ class BaseTimeFilter(BaseFilter):
         super(BaseTimeFilter, self).__init__(name,
                                              options,
                                              data_type='timepicker')
-                                             
+
     def clean(self, value):
         # time filters will not work in SQLite + SQLAlchemy if value not converted to time
         timetuple = time.strptime(value, '%H:%M:%S')
         return datetime.time(timetuple.tm_hour,
                              timetuple.tm_min,
                              timetuple.tm_sec)
-                             
+
 
 class BaseTimeBetweenFilter(BaseFilter):
     """
@@ -236,7 +236,7 @@ class BaseTimeBetweenFilter(BaseFilter):
         Apply method is different for each back-end.
     """
     def clean(self, value):
-        timetuples = [time.strptime(range, '%H:%M:%S') 
+        timetuples = [time.strptime(range, '%H:%M:%S')
                       for range in value.split(' to ')]
         return [datetime.time(timetuple.tm_hour,
                               timetuple.tm_min,
@@ -248,7 +248,7 @@ class BaseTimeBetweenFilter(BaseFilter):
 
     def validate(self, value):
         try:
-            timetuples = [time.strptime(range, '%H:%M:%S') 
+            timetuples = [time.strptime(range, '%H:%M:%S')
                           for range in value.split(' to ')]
             if (len(timetuples) == 2) and (timetuples[0] <= timetuples[1]):
                 return True
@@ -257,7 +257,7 @@ class BaseTimeBetweenFilter(BaseFilter):
         except ValueError:
             raise
             return False
-            
+
 
 def convert(*args):
     """
@@ -266,7 +266,7 @@ def convert(*args):
         See :mod:`flask.ext.admin.contrib.sqla.filters` for usage example.
     """
     def _inner(func):
-        func._converter_for = args
+        func._converter_for = map(str.lower, args)
         return func
     return _inner
 
