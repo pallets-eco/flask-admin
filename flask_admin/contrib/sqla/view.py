@@ -785,10 +785,10 @@ class ModelView(BaseModelView):
                 join_tables = self._filter_joins.get(tbl, [])
 
                 for table in join_tables:
-                    if table.name not in joins:
+                    if table not in joins:
                         query = query.join(table)
                         count_query = count_query.join(table)
-                        joins.add(table.name)
+                        joins.add(table)
 
                 # turn into python format with .clean() and apply filter
                 query = flt.apply(query, flt.clean(value))
