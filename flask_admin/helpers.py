@@ -56,7 +56,7 @@ def is_form_submitted():
     """
         Check if current method is PUT or POST
     """
-    return request and request.method in ("PUT", "POST")
+    return request and request.method in ('PUT', 'POST')
 
 
 def validate_form_on_submit(form):

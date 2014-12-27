@@ -476,7 +476,7 @@
       * @param {converter} function($el, name)
       */
       this.addFieldConverter = function(converter) {
-          fieldConverters.push(converter);
+        fieldConverters.push(converter);
       };
     };
 

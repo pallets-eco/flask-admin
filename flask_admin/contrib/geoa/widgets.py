@@ -10,6 +10,8 @@ def lng(pt):
 
 
 class LeafletWidget(TextArea):
+    data_role = 'leaflet'
+
     """
         `Leaflet <http://leafletjs.com/>`_ styled map widget. Inherits from
         `TextArea` so that geographic data can be stored via the <textarea>
@@ -31,7 +33,7 @@ class LeafletWidget(TextArea):
         self.max_bounds = max_bounds
 
     def __call__(self, field, **kwargs):
-        kwargs.setdefault('data-role', 'leaflet')
+        kwargs.setdefault('data-role', self.data_role)
         gtype = getattr(field, "geometry_type", "GEOMETRY")
         kwargs.setdefault('data-geometry-type', gtype)
 

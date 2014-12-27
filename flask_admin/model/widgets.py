@@ -26,8 +26,8 @@ class AjaxSelect2Widget(object):
         self.multiple = multiple
 
     def __call__(self, field, **kwargs):
-        kwargs['data-role'] = u'select2-ajax'
-        kwargs['data-url'] = get_url('.ajax_lookup', name=field.loader.name)
+        kwargs.setdefault('data-role', 'select2-ajax')
+        kwargs.setdefault('data-url', get_url('.ajax_lookup', name=field.loader.name))
 
         allow_blank = getattr(field, 'allow_blank', False)
         if allow_blank and not self.multiple:
