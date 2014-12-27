@@ -455,7 +455,7 @@ class FileAdmin(BaseView, ActionsMixin):
             if parent_path == '.':
                 parent_path = None
 
-            items.append(('..', parent_path, True, 0))
+            items.append(('..', parent_path, True, 0, 0))
 
         for f in os.listdir(directory):
             fp = op.join(directory, f)
