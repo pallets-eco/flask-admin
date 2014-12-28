@@ -88,10 +88,10 @@
     <div class="{{ kwargs.get('column_class', 'col-md-10') }}">
       {% set _dummy = kwargs.setdefault('class', 'form-control') %}
       {{ field(**kwargs)|safe }}
+      {% if field.description %}
+      <p class="help-block">{{ field.description }}</p>
+      {% endif %}
     </div>
-    {% if field.description %}
-    <span class="help-block">{{ field.description }}</span>
-    {% endif %}
     {% if direct_error %}
       <ul{% if direct_error %} class="input-errors"{% endif %}>
       {% for e in field.errors if e is string %}
@@ -144,15 +144,16 @@
 {% endmacro %}
 
 {% macro render_form_buttons(cancel_url, extra=None) %}
+    <hr>
     <div class="form-group">
       <div class="col-md-offset-2 col-md-10 submit-row">
-	<input type="submit" class="btn btn-primary" value="{{ _gettext('Submit') }}" />
-	{% if extra %}
-	{{ extra }}
-	{% endif %}
-	{% if cancel_url %}
-	<a href="{{ cancel_url }}" class="btn btn-cancel" role="button">{{ _gettext('Cancel') }}</a>
-	{% endif %}
+	  <input type="submit" class="btn btn-primary" value="{{ _gettext('Submit') }}" />
+	    {% if extra %}
+	    {{ extra }}
+	    {% endif %}
+	    {% if cancel_url %}
+	    <a href="{{ cancel_url }}" class="btn btn-danger" role="button">{{ _gettext('Cancel') }}</a>
+	    {% endif %}
       </div>
     </div>
 {% endmacro %}
