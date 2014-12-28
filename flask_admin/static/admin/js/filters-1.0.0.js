@@ -101,12 +101,12 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
     }
     
     function addFilter(name, subfilters, selectedIndex, filterValue) {
-        var $el = $('<tr />').appendTo($container);
+        var $el = $('<tr class="form-horizontal" />').appendTo($container);
         
         // Filter list
         $el.append(
             $('<td/>').append(
-                $('<a href="#" class="btn btn-filter remove-filter" />')
+                $('<a href="#" class="btn btn-default remove-filter" />')
                     .append($('<span class="close-icon">&times;</span>'))
                     .append('&nbsp;')
                     .append(name)
