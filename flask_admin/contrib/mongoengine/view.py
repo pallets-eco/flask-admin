@@ -6,13 +6,16 @@ from flask.ext.admin import expose
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
 from flask.ext.admin._compat import iteritems, string_types
+from flask.ext.admin.actions import action
+
+from flask.ext.admin.model.fields import ListEditableFieldList
+from wtforms.fields.core import UnboundField
 
 import mongoengine
 import gridfs
 from mongoengine.connection import get_db
 from bson.objectid import ObjectId
 
-from flask.ext.admin.actions import action
 from .filters import FilterConverter, BaseMongoEngineFilter
 from .form import get_form, CustomModelConverter
 from .typefmt import DEFAULT_FORMATTERS
@@ -398,6 +401,23 @@ class ModelView(BaseModelView):
 
         return form_class
 
+    def scaffold_list_form(self):
+        """
+            Create form for the list view editable columns.
+        """
+        form_class = get_form(self.model, self.model_form_converter(self),
+                              base_class=self.form_base_class,
+                              only=self.column_editable_list)
+                
+        # iterate FormMeta to get unbound fields
+        field_dict = {}
+        for name, field_object in iteritems(form_class.__dict__):
+            if not name.startswith('_') and isinstance(field_object, UnboundField):
+                # wrap each field in the form from get_form in FieldList
+                field_dict[name] = ListEditableFieldList(field_object)
+        
+        return type(self.model.__name__ + 'Form', (self.form_base_class, ), field_dict)
+
     # AJAX foreignkey support
     def _create_ajax_loader(self, name, opts):
         return create_ajax_loader(self.model, name, name, opts)
@@ -544,6 +564,37 @@ class ModelView(BaseModelView):
             self.after_model_change(form, model, False)
 
         return True
+
+    def update_list_model(self, form):
+        """
+            Update model from the list view.
+            
+            Only supports updating a single field at a time.
+
+            :param form:
+                Form instance
+        """
+        try:
+            model = self.model()
+            for field in form:
+                # FieldList's last_index will only be set if a field is submitted
+                # last_index will be the primary key of the updated record
+                if getattr(field, 'last_index', None):
+                    record = self.get_one(field.last_index)
+                    setattr(record, field.name, field.data.pop())
+                    self._on_model_change(form, model, False)
+                    record.save()
+
+                    self.after_model_change(form, model, False)
+                    return True
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                log.exception(gettext('Failed to update record. %(error)s', error=str(ex)), 'error')
+
+            self.session.rollback()
+
+        # Error: Unable to update database or no records were changed.
+        return False
 
     def delete_model(self, model):
         """

@@ -61,3 +61,81 @@ class AjaxSelect2Widget(object):
         kwargs.setdefault('data-placeholder', placeholder)
 
         return HTMLString('<input %s>' % html_params(name=field.name, **kwargs))
+
+
+class XEditableWidget(object):
+    """
+        WTForms widget that provides in-line editing for the list view.
+        
+        Determines how to display the x-editable/ajax form based on the 
+        field inside of the FieldList (StringField, IntegerField, etc).
+    """
+    def __call__(self, field, **kwargs):
+        value = kwargs.pop("value", "")
+
+        kwargs.setdefault('data-role', 'x-editable')
+        kwargs.setdefault('data-url', './')
+
+        kwargs.setdefault('id', field.id)
+        kwargs.setdefault('name', field.name)
+        kwargs.setdefault('href', '#')
+
+        if not kwargs.get('pk'):
+            raise Exception('pk required')
+        kwargs['data-pk'] = str(kwargs.pop("pk"))
+
+        kwargs['data-csrf'] = kwargs.pop("csrf", "")
+
+        # get first entry from FieldList to determine field type
+        subfield = field.entries[0]
+
+        if subfield.type == 'StringField':
+            kwargs['data-type'] = 'text'
+        elif subfield.type == 'TextAreaField':
+            kwargs['data-type'] = 'textarea'
+            kwargs['data-rows'] = '5'
+        elif subfield.type == 'BooleanField':
+            kwargs['data-type'] = 'select'
+            # data-source = dropdown options
+            kwargs['data-source'] = {'': 'False', '1': 'True'}
+            kwargs['data-role'] = 'x-editable-boolean'
+        elif subfield.type == 'Select2Field':
+            kwargs['data-type'] = 'select'
+            kwargs['data-source'] = dict(subfield.choices)
+        elif subfield.type in ['QuerySelectField', 'ModelSelectField']:
+            kwargs['data-type'] = 'select'
+            # MongoEngine throws an error on blank object names
+            # this prevents "TypeError: cannot create 'NoneType' instances"
+            choices = {}
+            for choice in subfield:
+                try:
+                    choices[str(choice._value())] = str(choice.label.text)
+                except TypeError:
+                    choices[str(choice._value())] = ""
+            kwargs['data-source'] = choices
+        elif subfield.type == 'DateField':
+            kwargs['data-type'] = 'combodate'
+            kwargs['data-format'] = 'YYYY-MM-DD'
+            kwargs['data-template'] = 'YYYY-MM-DD'
+        elif subfield.type == 'DateTimeField':
+            kwargs['data-type'] = 'combodate'
+            kwargs['data-format'] = 'YYYY-MM-DD HH:mm:ss'
+            kwargs['data-template'] = 'YYYY-MM-DD  HH:mm:ss'
+            # x-editable-combodate uses 1 minute increments
+            kwargs['data-role'] = 'x-editable-combodate'
+        elif subfield.type == 'TimeField':
+            kwargs['data-type'] = 'combodate'
+            kwargs['data-format'] = 'HH:mm:ss'
+            kwargs['data-template'] = 'HH:mm:ss'
+            kwargs['data-role'] = 'x-editable-combodate'
+        elif subfield.type == 'IntegerField':
+            kwargs['data-type'] = 'number'
+        elif subfield.type in ['DecimalField', 'FloatField']:
+            kwargs['data-type'] = 'number'
+            kwargs['data-step'] = 'any'
+        else:
+            raise Exception('Unsupported field type: %s' % (type(subfield),))
+            
+        return HTMLString(
+            '<a %s>%s</a>' % (html_params(**kwargs), value)
+        )

@@ -63,23 +63,47 @@ def create_models(db):
 
     class Model2(BaseModel):
         def __init__(self, char_field=None, int_field=None, float_field=None,
-                     bool_field=0):
+                     bool_field=0, model1=None):
             super(Model2, self).__init__()
 
             self.char_field = char_field
             self.int_field = int_field
             self.float_field = float_field
             self.bool_field = bool_field
+            self.model1 = model1
             
         char_field = peewee.CharField(max_length=20)
         int_field = peewee.IntegerField(null=True)
         float_field = peewee.FloatField(null=True)
         bool_field = peewee.BooleanField()
         
+        # Relation
+        model1 = peewee.ForeignKeyField(Model1, null=True)
+        
     Model1.create_table()
     Model2.create_table()
 
     return Model1, Model2
+
+
+def fill_db(Model1, Model2):
+    Model1('test1_val_1', 'test2_val_1').save()
+    Model1('test1_val_2', 'test2_val_2').save()
+    Model1('test1_val_3', 'test2_val_3').save()
+    Model1('test1_val_4', 'test2_val_4').save()
+    Model1(None, 'empty_obj').save()
+
+    Model2('char_field_val_1', None, None).save()
+    Model2('char_field_val_2', None, None).save()
+    Model2('char_field_val_3', 5000, 25.9).save()
+    Model2('char_field_val_4', 9000, 75.5).save()
+
+    Model1('date_obj1', date_field=date(2014,11,17)).save()
+    Model1('date_obj2', date_field=date(2013,10,16)).save()
+    Model1('timeonly_obj1', timeonly_field=time(11,10,9)).save()
+    Model1('timeonly_obj2', timeonly_field=time(10,9,8)).save()
+    Model1('datetime_obj1', datetime_field=datetime(2014,4,3,1,9,0)).save()
+    Model1('datetime_obj2', datetime_field=datetime(2013,3,2,0,8,0)).save()
 
 
 def test_model():
@@ -153,29 +177,63 @@ def test_model():
     eq_(rv.status_code, 302)
     eq_(Model1.select().count(), 0)
 
+
+def test_column_editable_list():
+    app, db, admin = setup()
+
+    Model1, Model2 = create_models(db)
+
+    view = CustomModelView(Model1,
+                           column_editable_list=[
+                               'test1', 'enum_field'])
+    admin.add_view(view)
+
+    fill_db(Model1, Model2)
+
+    client = app.test_client()
+
+    # Test in-line edit field rendering
+    rv = client.get('/admin/model1/')
+    data = rv.data.decode('utf-8')
+    ok_('data-role="x-editable"' in data)
+
+    # Form - Test basic in-line edit functionality
+    rv = client.post('/admin/model1/', data={
+        'test1-1': 'change-success-1',
+    })
+    data = rv.data.decode('utf-8')
+    ok_('Record was successfully saved.' == data)
+
+    # ensure the value has changed
+    rv = client.get('/admin/model1/')
+    data = rv.data.decode('utf-8')
+    ok_('change-success-1' in data)
+
+    # Test errors
+    rv = client.post('/admin/model1/', data={
+        'enum_field-1': 'problematic-input',
+    })
+    eq_(rv.status_code, 500)
+
+    view = CustomModelView(Model2,
+                           column_editable_list=[
+                               'model1'])
+    admin.add_view(view)
+
+    # Test in-line editing for relations
+    rv = client.post('/admin/model2/', data={
+        'model1-1': '3',
+    })
+    data = rv.data.decode('utf-8')
+    ok_('Record was successfully saved.' == data)
+
+
 def test_column_filters():
     app, db, admin = setup()
     
     Model1, Model2 = create_models(db)
     
-    # fill DB with values
-    Model1('test1_val_1', 'test2_val_1').save()
-    Model1('test1_val_2', 'test2_val_2').save()
-    Model1('test1_val_3', 'test2_val_3').save()
-    Model1('test1_val_4', 'test2_val_4').save()
-    Model1(None, 'empty_obj').save()
-    
-    Model2('char_field_val_1', None, None).save()
-    Model2('char_field_val_2', None, None).save()
-    Model2('char_field_val_3', 5000, 25.9).save()
-    Model2('char_field_val_4', 9000, 75.5).save()
-    
-    Model1('date_obj1', date_field=date(2014,11,17)).save()
-    Model1('date_obj2', date_field=date(2013,10,16)).save()
-    Model1('timeonly_obj1', timeonly_field=time(11,10,9)).save()
-    Model1('timeonly_obj2', timeonly_field=time(10,9,8)).save()
-    Model1('datetime_obj1', datetime_field=datetime(2014,4,3,1,9,0)).save()
-    Model1('datetime_obj2', datetime_field=datetime(2013,3,2,0,8,0)).save()
+    fill_db(Model1, Model2)
 
     # Test string filter
     view = CustomModelView(Model1, column_filters=['test1'])

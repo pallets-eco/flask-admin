@@ -241,6 +241,17 @@
                 return true;
         }
 
+        // make x-editable's POST act like a normal FieldList field
+        // for x-editable, x-editable-combodate, and x-editable-boolean cases
+        var overrideXeditableParams = function(params) {
+            var newParams = {};
+            newParams[params.name + '-' + params.pk] = params.value;
+            if ($(this).data('csrf')) {
+                newParams['csrf_token'] = $(this).data('csrf');
+            }
+            return newParams;
+        }
+
         switch (name) {
             case 'select2':
                 var opts = {
@@ -390,6 +401,32 @@
             case 'leaflet':
                 processLeafletWidget($el, name);
                 return true;
+            case 'x-editable':
+                $el.editable({params: overrideXeditableParams});
+                return true;
+            case 'x-editable-combodate':
+                $el.editable({
+                    params: overrideXeditableParams,
+                    combodate: {
+                        // prevent minutes from showing in 5 minute increments
+                        minuteStep: 1
+                    }
+                });
+                return true;
+            case 'x-editable-boolean':
+                $el.editable({
+                    params: overrideXeditableParams,
+                    display: function(value, sourceData, response) {
+                       // display new boolean value as an icon
+                       if(response) {
+                           if(value == '1') {
+                               $(this).html('<span class="glyphicon glyphicon-ok-circle icon-ok-circle"></span>');
+                           } else {
+                               $(this).html('<span class="glyphicon glyphicon-minus-sign icon-minus-sign"></span>'); 
+                           }
+                       }
+                    }
+                });
         }
       };
 
@@ -463,7 +500,7 @@
       this.applyGlobalStyles = function(parent) {
         var self = this;
 
-        $(':input[data-role]', parent).each(function() {
+        $(':input[data-role], a[data-role]', parent).each(function() {
             var $el = $(this);
             self.applyStyle($el, $el.attr('data-role'));
         });
