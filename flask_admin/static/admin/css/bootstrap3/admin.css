@@ -77,6 +77,6 @@ table.filters tr td {
 /* Form Field Description - Appears when field has 'description' attribute */
 /* Test with: form_args = {'name':{'description': 'test'}} */
 /* prevents awkward gap after help-block - This is default for bootstrap2 */
-.help-block {
+.admin-form  .help-block {
     margin-bottom: 0px;
 }
