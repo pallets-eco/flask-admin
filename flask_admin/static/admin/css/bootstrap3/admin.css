@@ -12,7 +12,7 @@
 }
 
 /* List View - prevent link icons from differing from trash icon */
-a.icon {
+.model-list a.icon {
     text-decoration: none;
     margin-left: 10px;
     color: inherit;
