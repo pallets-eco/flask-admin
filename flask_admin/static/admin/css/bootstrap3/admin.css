@@ -15,7 +15,7 @@
 a.icon {
     text-decoration: none;
     margin-left: 10px;
-    color: initial;
+    color: inherit;
 }
 
 /* List View - fix checkbox column width */
