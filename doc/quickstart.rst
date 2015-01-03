@@ -165,45 +165,18 @@ have access to the view in question::
         def is_accessible(self):
             return login.current_user.is_authenticated()
 
-You can also implement policy-based security, conditionally allowing or disallowing access to parts of the
-administrative interface. If a user does not have access to a particular view, the menu item won't be visible.
-
-Generating URLs
----------------
-
-Internally, view classes work on top of Flask blueprints, so you can use *url_for* with a dot
-prefix to get the URL for a local view::
-
-    from flask import url_for
+To redirect the user to another page if authentication fails, you will need to specify an *_handle_view* method::
 
     class MyView(BaseView):
-        @expose('/')
-        def index(self)
-            # Get URL for the test view method
-            url = url_for('.test')
-            return self.render('index.html', url=url)
+        def is_accessible(self):
+            return login.current_user.is_authenticated()
+            
+        def _handle_view(self, name, **kwargs):
+            if not self.is_accessible():
+                return redirect(url_for('login', next=request.url))
 
-        @expose('/test/')
-        def test(self):
-            return self.render('test.html')
-
-If you want to generate a URL for a particular view method from outside, the following rules apply:
-
-1. You can override the endpoint name by passing *endpoint* parameter to the view class constructor::
-
-    admin = Admin(app)
-    admin.add_view(MyView(endpoint='testadmin'))
-
-    In this case, you can generate links by concatenating the view method name with an endpoint::
-
-    url_for('testadmin.index')
-
-2. If you don't override the endpoint name, the lower-case class name can be used for generating URLs, like in::
-
-    url_for('myview.index')
-
-3. For model-based views the rules differ - the model class name should be used if an endpoint name is not provided. Model-based views will be explained in the next section.
-
+You can also implement policy-based security, conditionally allowing or disallowing access to parts of the
+administrative interface. If a user does not have access to a particular view, the menu item won't be visible.
 
 Model Views
 -----------
@@ -298,6 +271,51 @@ Sample screenshot:
 
 You can disable uploads, disable file or directory deletion, restrict file uploads to certain types and so on.
 Check :mod:`flask.ext.admin.contrib.fileadmin` documentation on how to do it.
+
+Generating URLs
+---------------
+
+Internally, view classes work on top of Flask blueprints, so you can use *url_for* with a dot
+prefix to get the URL for a local view::
+
+    from flask import url_for
+
+    class MyView(BaseView):
+        @expose('/')
+        def index(self)
+            # Get URL for the test view method
+            url = url_for('.test')
+            return self.render('index.html', url=url)
+
+        @expose('/test/')
+        def test(self):
+            return self.render('test.html')
+
+If you want to generate a URL for a particular view method from outside, the following rules apply:
+
+1. You can override the endpoint name by passing *endpoint* parameter to the view class constructor::
+
+    admin = Admin(app)
+    admin.add_view(MyView(endpoint='testadmin'))
+
+    In this case, you can generate links by concatenating the view method name with an endpoint::
+
+    url_for('testadmin.index')
+
+2. If you don't override the endpoint name, the lower-case class name can be used for generating URLs, like in::
+
+    url_for('myview.index')
+
+3. For model-based views the rules differ - the model class name should be used if an endpoint name is not provided. The ModelView also has these endpoints by default: *.index_view*, *.create_view*, and *.edit_view*. So, the following urls can be generated for a model named "User"::
+
+    # List View
+    url_for('user.index_view')
+    
+    # Create View (redirect back to index_view)
+    url_for('user.create_view', url=url_for('user.index_view'))
+    
+    # Edit View for record #1 (redirect back to index_view)
+    url_for('user.edit_view', id=1, url=url_for('user.index_view'))
 
 Examples
 --------
