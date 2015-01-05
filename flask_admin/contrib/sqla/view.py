@@ -716,7 +716,7 @@ class ModelView(BaseModelView):
 
             join_tables, attr = self._get_field_with_path(field)
 
-            return join_tables, field, direction
+            return join_tables, attr, direction
 
         return None
 
