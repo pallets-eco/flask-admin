@@ -1,7 +1,8 @@
 import warnings
 import re
 
-from flask import request, redirect, flash, abort, json, Response
+from flask import (request, redirect, flash, abort, json, Response,
+                   get_flashed_messages)
 from jinja2 import contextfunction
 from wtforms.validators import ValidationError
 
@@ -11,8 +12,8 @@ from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.form import BaseForm, FormOpts, rules
 from flask.ext.admin.model import filters, typefmt
 from flask.ext.admin.actions import ActionsMixin
-from flask.ext.admin.helpers import (get_form_data, validate_form_on_submit, 
-                                     get_redirect_target, is_form_submitted)
+from flask.ext.admin.helpers import (get_form_data, validate_form_on_submit,
+                                     get_redirect_target)
 from flask.ext.admin.tools import rec_getattr
 from flask.ext.admin._backwards import ObsoleteAttr
 from flask.ext.admin._compat import iteritems, OrderedDict, as_unicode
@@ -274,7 +275,7 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(BaseModelView):
                 column_editable_list = ('name', 'last_name')
     """
-    
+
     column_choices = None
     """
         Map choices to columns in list view
@@ -590,9 +591,9 @@ class BaseModelView(BaseView, ActionsMixin):
 
         self._create_form_class = self.get_create_form()
         self._edit_form_class = self.get_edit_form()
-        
+
         # List View In-Line Editing
-        if self.column_editable_list:            
+        if self.column_editable_list:
             self._list_form_class = self.scaffold_list_form()
         else:
             self.column_editable_list = {}
@@ -852,7 +853,8 @@ class BaseModelView(BaseView, ActionsMixin):
 
     def scaffold_list_form(self):
         """
-            Create form class for list view in-line editing.
+            Create form for the `index_view` using only the columns from
+            `self.column_editable_list`. Must be implemented in the child class.
         """
         raise NotImplementedError('Please implement scaffold_list_form method')
 
@@ -937,7 +939,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 Column name.
         """
         return name in self.column_editable_list
-        
+
     def _get_column_by_idx(self, idx):
         """
             Return column index by
@@ -1114,15 +1116,6 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         raise NotImplementedError()
 
-    def update_list_model(self, form, model):
-        """
-            Update model from the list view.
-            
-            :param form:
-                Form instance
-        """
-        raise NotImplementedError()
-
     def delete_model(self, model):
         """
             Delete model.
@@ -1291,42 +1284,13 @@ class BaseModelView(BaseView, ActionsMixin):
         raise NotImplementedError()
 
     # Views
-    @expose('/', methods=('POST', 'GET'))
+    @expose('/')
     def index_view(self):
         """
             List view
         """
         if self.column_editable_list:
             form = self.list_form()
-
-            # prevent validation issues due to submitting a single field
-            # delete all fields except the field being submitted
-            if is_form_submitted():
-                for field in form:
-                    # only submitted fields have last_index
-                    if getattr(field, 'last_index', None):
-                        pass
-                    elif field.name == 'csrf_token':
-                        pass
-                    else:
-                        form.__delitem__(field.name)
-
-            if self.validate_form(form):
-                if self.update_list_model(form):
-                    return gettext('Record was successfully saved.')
-                else:
-                    # No records changed, or error saving to database.
-                    return gettext('Failed to update record. %(error)s',
-                                   error=''), 500
-
-            if form.errors:
-                for field in form:
-                    for error in field.errors:
-                        # return error to x-editable
-                        if isinstance(error, list):
-                            return ", ".join(error), 500
-                        else:
-                            return error, 500
         else:
             form = None
 
@@ -1376,7 +1340,7 @@ class BaseModelView(BaseView, ActionsMixin):
             self.list_template,
             data=data,
             form=form,
-            
+
             # List
             list_columns=self._list_columns,
             sortable_columns=self._sortable_columns,
@@ -1526,3 +1490,46 @@ class BaseModelView(BaseView, ActionsMixin):
 
         data = [loader.format(m) for m in loader.get_list(query, offset, limit)]
         return Response(json.dumps(data), mimetype='application/json')
+
+    @expose('/ajax/update/', methods=('POST',))
+    def ajax_update(self):
+        """
+            Edits a single column of a record in list view.
+        """
+        if not self.column_editable_list:
+            abort(404)
+
+        record = None
+        form = self.list_form()
+
+        # prevent validation issues due to submitting a single field
+        # delete all fields except the field being submitted
+        for field in form:
+            # only the submitted field has a positive last_index
+            if getattr(field, 'last_index', 0):
+                record = self.get_one(str(field.last_index))
+            elif field.name == 'csrf_token':
+                pass
+            else:
+                form.__delitem__(field.name)
+
+        if record is None:
+            return gettext('Failed to update record. %(error)s', error=''), 500
+
+        if self.validate_form(form):
+            if self.update_model(form, record):
+                # Success
+                return gettext('Record was successfully saved.')
+            else:
+                # Error: No records changed, or problem saving to database.
+                msgs = ", ".join([msg for msg in get_flashed_messages()])
+                return gettext('Failed to update record. %(error)s',
+                               error=msgs), 500
+        else:
+            for field in form:
+                for error in field.errors:
+                    # return validation error to x-editable
+                    if isinstance(error, list):
+                        return ", ".join(error), 500
+                    else:
+                        return error, 500

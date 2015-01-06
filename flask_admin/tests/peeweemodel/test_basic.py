@@ -57,29 +57,30 @@ def create_models(db):
         date_field = peewee.DateField(null=True)
         timeonly_field = peewee.TimeField(null=True)
         datetime_field = peewee.DateTimeField(null=True)
-        
+
         def __str__(self):
-            return self.test1
+            # "or ''" fixes error when loading choices for relation field:
+            # TypeError: coercing to Unicode: need string or buffer, NoneType found
+            return self.test1 or ''
 
     class Model2(BaseModel):
         def __init__(self, char_field=None, int_field=None, float_field=None,
-                     bool_field=0, model1=None):
+                     bool_field=0):
             super(Model2, self).__init__()
 
             self.char_field = char_field
             self.int_field = int_field
             self.float_field = float_field
             self.bool_field = bool_field
-            self.model1 = model1
-            
+
         char_field = peewee.CharField(max_length=20)
         int_field = peewee.IntegerField(null=True)
         float_field = peewee.FloatField(null=True)
         bool_field = peewee.BooleanField()
-        
+
         # Relation
         model1 = peewee.ForeignKeyField(Model1, null=True)
-        
+
     Model1.create_table()
     Model2.create_table()
 
@@ -198,7 +199,7 @@ def test_column_editable_list():
     ok_('data-role="x-editable"' in data)
 
     # Form - Test basic in-line edit functionality
-    rv = client.post('/admin/model1/', data={
+    rv = client.post('/admin/model1/ajax/update/', data={
         'test1-1': 'change-success-1',
     })
     data = rv.data.decode('utf-8')
@@ -209,23 +210,42 @@ def test_column_editable_list():
     data = rv.data.decode('utf-8')
     ok_('change-success-1' in data)
 
-    # Test errors
-    rv = client.post('/admin/model1/', data={
+    # Test validation error
+    rv = client.post('/admin/model1/ajax/update/', data={
         'enum_field-1': 'problematic-input',
     })
     eq_(rv.status_code, 500)
 
+    # Test invalid primary key
+    rv = client.post('/admin/model1/ajax/update/', data={
+        'test1-1000': 'problematic-input',
+    })
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 500)
+
+    # Test editing column not in column_editable_list
+    rv = client.post('/admin/model1/ajax/update/', data={
+        'test2-1': 'problematic-input',
+    })
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 500)
+
+    # Test in-line editing for relations
     view = CustomModelView(Model2,
                            column_editable_list=[
                                'model1'])
     admin.add_view(view)
 
-    # Test in-line editing for relations
-    rv = client.post('/admin/model2/', data={
+    rv = client.post('/admin/model2/ajax/update/', data={
         'model1-1': '3',
     })
     data = rv.data.decode('utf-8')
     ok_('Record was successfully saved.' == data)
+
+    # confirm the value has changed
+    rv = client.get('/admin/model2/')
+    data = rv.data.decode('utf-8')
+    ok_('test1_val_3' in data)
 
 
 def test_column_filters():

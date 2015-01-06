@@ -3,12 +3,36 @@ import inspect
 from flask.ext.admin.form import BaseForm, rules
 from flask.ext.admin._compat import iteritems
 
+from .fields import ListEditableFieldList
+from wtforms.fields.core import UnboundField
+
 
 def converts(*args):
     def _inner(func):
         func._converter_for = frozenset(args)
         return func
     return _inner
+
+
+def wrap_fields_in_fieldlist(form_base_class, form_class):
+    """
+        Create a form class with all the fields wrapped in a FieldList.
+
+        Wrapping each field in FieldList allows submitting POST requests
+        in this format: ('<field_name>-<primary_key>', '<value>')
+
+        Used in the editable list view.
+    """
+    class FieldListForm(form_base_class):
+        pass
+
+    # iterate FormMeta to get unbound fields
+    for name, obj in iteritems(form_class.__dict__):
+        if isinstance(obj, UnboundField):
+            # wrap field in a WTForms FieldList
+            setattr(FieldListForm, name, ListEditableFieldList(obj))
+
+    return FieldListForm
 
 
 class InlineBaseFormAdmin(object):

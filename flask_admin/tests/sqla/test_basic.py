@@ -339,7 +339,7 @@ def test_column_editable_list():
     ok_('data-role="x-editable"' in data)
 
     # Form - Test basic in-line edit functionality
-    rv = client.post('/admin/model1/', data={
+    rv = client.post('/admin/model1/ajax/update/', data={
         'test1-1': 'change-success-1',
     })
     data = rv.data.decode('utf-8')
@@ -350,23 +350,42 @@ def test_column_editable_list():
     data = rv.data.decode('utf-8')
     ok_('change-success-1' in data)
 
-    # Test errors
-    rv = client.post('/admin/model1/', data={
+    # Test validation error
+    rv = client.post('/admin/model1/ajax/update/', data={
         'enum_field-1': 'problematic-input',
     })
     eq_(rv.status_code, 500)
 
+    # Test invalid primary key
+    rv = client.post('/admin/model1/ajax/update/', data={
+        'test1-1000': 'problematic-input',
+    })
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 500)
+
+    # Test editing column not in column_editable_list
+    rv = client.post('/admin/model1/ajax/update/', data={
+        'test2-1': 'problematic-input',
+    })
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 500)
+
+    # Test in-line editing for relations
     view = CustomModelView(Model2, db.session,
                            column_editable_list=[
                                'model1'])
     admin.add_view(view)
 
-    # Test in-line editing for relations
-    rv = client.post('/admin/model2/', data={
+    rv = client.post('/admin/model2/ajax/update/', data={
         'model1-1': '3',
     })
     data = rv.data.decode('utf-8')
     ok_('Record was successfully saved.' == data)
+
+    # confirm the value has changed
+    rv = client.get('/admin/model2/')
+    data = rv.data.decode('utf-8')
+    ok_('test1_val_3' in data)
 
 
 def test_column_filters():

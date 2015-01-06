@@ -162,7 +162,7 @@ def test_column_editable_list():
 
     # Form - Test basic in-line edit functionality
     obj1 = Model1.objects.get(test1 = 'test1_val_3')
-    rv = client.post('/admin/model1/', data={
+    rv = client.post('/admin/model1/ajax/update/', data={
         'test1-' + str(obj1.id): 'change-success-1',
     })
     data = rv.data.decode('utf-8')
@@ -173,21 +173,35 @@ def test_column_editable_list():
     data = rv.data.decode('utf-8')
     ok_('change-success-1' in data)
 
-    # Test errors
+    # Test validation error
     obj2 = Model1.objects.get(test1 = 'datetime_obj1')
-    rv = client.post('/admin/model1/', data={
+    rv = client.post('/admin/model1/ajax/update/', data={
         'datetime_field-' + str(obj2.id): 'problematic-input',
     })
     eq_(rv.status_code, 500)
-
+    
+    # Test invalid primary key
+    rv = client.post('/admin/model1/ajax/update/', data={
+        'test1-1000': 'problematic-input',
+    })
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 500)
+    
+    # Test editing column not in column_editable_list
+    rv = client.post('/admin/model1/ajax/update/', data={
+        'test2-1': 'problematic-input',
+    })
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 500)
+    
+    # Test in-line editing for relations
     view = CustomModelView(Model2,
                            column_editable_list=[
                                'model1'])
     admin.add_view(view)
-
-    # Test in-line editing for relations
+    
     obj3 = Model2.objects.get(string_field = 'string_field_val_1')
-    rv = client.post('/admin/model2/', data={
+    rv = client.post('/admin/model2/ajax/update/', data={
         'model1-' + str(obj3.id): str(obj1.id),
     })
     data = rv.data.decode('utf-8')

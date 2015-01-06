@@ -2,17 +2,15 @@ import logging
 
 from flask import flash
 
-from flask.ext.admin._compat import string_types, iteritems
+from flask.ext.admin._compat import string_types
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
+from flask.ext.admin.model.form import wrap_fields_in_fieldlist
 
 from peewee import PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
 
 from flask.ext.admin.actions import action
 from flask.ext.admin.contrib.peewee import filters
-
-from flask.ext.admin.model.fields import ListEditableFieldList
-from wtforms.fields.core import UnboundField
 
 from .form import get_form, CustomModelConverter, InlineModelConverter, save_inline
 from .tools import get_primary_key, parse_like_term
@@ -242,20 +240,14 @@ class ModelView(BaseModelView):
 
     def scaffold_list_form(self):
         """
-            Create form for the list view editable columns.
+            Create form for the `index_view` using only the columns from
+            `self.column_editable_list`.
         """
         form_class = get_form(self.model, self.model_form_converter(self),
                               base_class=self.form_base_class,
                               only=self.column_editable_list)
-                              
-        # iterate FormMeta to get unbound fields
-        field_dict = {}
-        for name, field_object in iteritems(form_class.__dict__):
-            if not name.startswith('_') and isinstance(field_object, UnboundField):
-                # wrap each field in the form from get_form in FieldList
-                field_dict[name] = ListEditableFieldList(field_object)
-        
-        return type(self.model.__name__ + 'Form', (self.form_base_class, ), field_dict)
+
+        return wrap_fields_in_fieldlist(self.form_base_class, form_class)
 
     def scaffold_inline_form_models(self, form_class):
         converter = self.model_form_converter(self)
@@ -401,40 +393,6 @@ class ModelView(BaseModelView):
             self.after_model_change(form, model, False)
 
         return True
-
-    def update_list_model(self, form):
-        """
-            Update model from the list view.
-            
-            Only supports updating a single field at a time.
-
-            :param form:
-                Form instance
-        """
-        try:
-            model = self.model()
-            for field in form:
-                # FieldList's last_index will only be set if a field is submitted
-                # last_index will be the primary key of the updated record
-                if getattr(field, 'last_index', None):
-                    record = self.get_one(field.last_index)
-                    setattr(record, field.name, field.data.pop())
-                    self._on_model_change(form, model, False)
-                    record.save()
-
-                    # For peewee have to save inline forms after model was saved
-                    save_inline(form, model)
-
-                    self.after_model_change(form, model, False)
-                    return True
-        except Exception as ex:
-            if not self.handle_view_exception(ex):
-                log.exception(gettext('Failed to update record. %(error)s', error=str(ex)), 'error')
-
-            self.session.rollback()
-
-        # Error: Unable to update database or no records were changed.
-        return False
 
     def delete_model(self, model):
         try:

@@ -9,7 +9,7 @@ except ImportError:
     from wtforms.utils import unset_value
 
 from flask.ext.admin._compat import iteritems
-from .widgets import (InlineFieldListWidget, InlineFormWidget, 
+from .widgets import (InlineFieldListWidget, InlineFormWidget,
                       AjaxSelect2Widget, XEditableWidget)
 
 
@@ -129,7 +129,7 @@ class InlineModelFormField(FormField):
 class ListEditableFieldList(FieldList):
     """
         Modified FieldList to allow for alphanumeric primary keys.
-        
+
         Used in the editable list view.
     """
     widget = XEditableWidget()
@@ -172,6 +172,10 @@ class ListEditableFieldList(FieldList):
         field.process(formdata, data)
         self.entries.append(field)
         return field
+
+    def populate_obj(self, obj, name):
+        # return data from first item, instead of a list of items
+        setattr(obj, name, self.data.pop())
 
 
 class AjaxSelectField(SelectFieldBase):
