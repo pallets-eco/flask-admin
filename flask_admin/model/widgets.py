@@ -66,8 +66,8 @@ class AjaxSelect2Widget(object):
 class XEditableWidget(object):
     """
         WTForms widget that provides in-line editing for the list view.
-        
-        Determines how to display the x-editable/ajax form based on the 
+
+        Determines how to display the x-editable/ajax form based on the
         field inside of the FieldList (StringField, IntegerField, etc).
     """
     def __call__(self, field, **kwargs):
@@ -86,56 +86,87 @@ class XEditableWidget(object):
 
         kwargs['data-csrf'] = kwargs.pop("csrf", "")
 
-        # get first entry from FieldList to determine field type
+        # gets the first entry (subfield) from FieldList (field) and uses the
+        # subfield.type (`kwargs_` method) to determine kwargs
         subfield = field.entries[0]
-
-        if subfield.type == 'StringField':
-            kwargs['data-type'] = 'text'
-        elif subfield.type == 'TextAreaField':
-            kwargs['data-type'] = 'textarea'
-            kwargs['data-rows'] = '5'
-        elif subfield.type == 'BooleanField':
-            kwargs['data-type'] = 'select'
-            # data-source = dropdown options
-            kwargs['data-source'] = {'': 'False', '1': 'True'}
-            kwargs['data-role'] = 'x-editable-boolean'
-        elif subfield.type == 'Select2Field':
-            kwargs['data-type'] = 'select'
-            kwargs['data-source'] = dict(subfield.choices)
-        elif subfield.type in ['QuerySelectField', 'ModelSelectField']:
-            kwargs['data-type'] = 'select'
-            # MongoEngine throws an error on blank object names
-            # this prevents "TypeError: cannot create 'NoneType' instances"
-            choices = {}
-            for choice in subfield:
-                try:
-                    choices[str(choice._value())] = str(choice.label.text)
-                except TypeError:
-                    choices[str(choice._value())] = ""
-            kwargs['data-source'] = choices
-        elif subfield.type == 'DateField':
-            kwargs['data-type'] = 'combodate'
-            kwargs['data-format'] = 'YYYY-MM-DD'
-            kwargs['data-template'] = 'YYYY-MM-DD'
-        elif subfield.type == 'DateTimeField':
-            kwargs['data-type'] = 'combodate'
-            kwargs['data-format'] = 'YYYY-MM-DD HH:mm:ss'
-            kwargs['data-template'] = 'YYYY-MM-DD  HH:mm:ss'
-            # x-editable-combodate uses 1 minute increments
-            kwargs['data-role'] = 'x-editable-combodate'
-        elif subfield.type == 'TimeField':
-            kwargs['data-type'] = 'combodate'
-            kwargs['data-format'] = 'HH:mm:ss'
-            kwargs['data-template'] = 'HH:mm:ss'
-            kwargs['data-role'] = 'x-editable-combodate'
-        elif subfield.type == 'IntegerField':
-            kwargs['data-type'] = 'number'
-        elif subfield.type in ['DecimalField', 'FloatField']:
-            kwargs['data-type'] = 'number'
-            kwargs['data-step'] = 'any'
-        else:
+        try:
+            kwargs = getattr(self, 'kwargs_' + subfield.type)(subfield, kwargs)
+        except AttributeError:
             raise Exception('Unsupported field type: %s' % (type(subfield),))
-            
+
         return HTMLString(
             '<a %s>%s</a>' % (html_params(**kwargs), value)
         )
+
+    """
+        `kwargs_` methods are used to allow overriding XEditableWidget and
+        adding new kwargs_ methods for custom fields (without much code)
+    """
+    def kwargs_StringField(self, subfield, kwargs):
+        kwargs['data-type'] = 'text'
+        return kwargs
+
+    def kwargs_TextAreaField(self, subfield, kwargs):
+        kwargs['data-type'] = 'textarea'
+        kwargs['data-rows'] = '5'
+        return kwargs
+
+    def kwargs_BooleanField(self, subfield, kwargs):
+        kwargs['data-type'] = 'select'
+        # data-source = dropdown options
+        kwargs['data-source'] = {'': 'False', '1': 'True'}
+        kwargs['data-role'] = 'x-editable-boolean'
+        return kwargs
+
+    def kwargs_Select2Field(self, subfield, kwargs):
+        kwargs['data-type'] = 'select'
+        kwargs['data-source'] = dict(subfield.choices)
+        return kwargs
+
+    def kwargs_DateField(self, subfield, kwargs):
+        kwargs['data-type'] = 'combodate'
+        kwargs['data-format'] = 'YYYY-MM-DD'
+        kwargs['data-template'] = 'YYYY-MM-DD'
+        return kwargs
+
+    def kwargs_DateTimeField(self, subfield, kwargs):
+        kwargs['data-type'] = 'combodate'
+        kwargs['data-format'] = 'YYYY-MM-DD HH:mm:ss'
+        kwargs['data-template'] = 'YYYY-MM-DD  HH:mm:ss'
+        # x-editable-combodate uses 1 minute increments
+        kwargs['data-role'] = 'x-editable-combodate'
+        return kwargs
+
+    def kwargs_TimeField(self, subfield, kwargs):
+        kwargs['data-type'] = 'combodate'
+        kwargs['data-format'] = 'HH:mm:ss'
+        kwargs['data-template'] = 'HH:mm:ss'
+        kwargs['data-role'] = 'x-editable-combodate'
+        return kwargs
+
+    def kwargs_IntegerField(self, subfield, kwargs):
+        kwargs['data-type'] = 'number'
+        return kwargs
+
+    def kwargs_FloatField(self, subfield, kwargs):
+        kwargs['data-type'] = 'number'
+        kwargs['data-step'] = 'any'
+        return kwargs
+
+    def kwargs_DecimalField(self, subfield, kwargs):
+        return self.kwargs_FloatField(subfield, kwargs)
+
+    def kwargs_QuerySelectField(self, subfield, kwargs):
+        kwargs['data-type'] = 'select'
+        
+        choices = {}
+        for choice in subfield:
+            try:
+                choices[str(choice._value())] = str(choice.label.text)
+            except TypeError:
+                choices[str(choice._value())] = ""
+        kwargs['data-source'] = choices
+        return kwargs
+
+    def kwargs_ModelSelectField(self, subfield, kwargs):
+        return self.kwargs_QuerySelectField(subfield, kwargs)
