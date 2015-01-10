@@ -11,6 +11,8 @@ from flask import flash
 from flask.ext.admin._compat import string_types
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
+from flask.ext.admin.model.form import wrap_fields_in_fieldlist
+
 from flask.ext.admin.actions import action
 from flask.ext.admin._backwards import ObsoleteAttr
 
@@ -18,7 +20,6 @@ from flask.ext.admin.contrib.sqla import form, filters, tools
 from .typefmt import DEFAULT_FORMATTERS
 from .tools import get_query_for_ids
 from .ajax import create_ajax_loader
-
 
 # Set up logger
 log = logging.getLogger("flask-admin.sqla")
@@ -610,6 +611,18 @@ class ModelView(BaseModelView):
             form_class = self.scaffold_inline_form_models(form_class)
 
         return form_class
+
+    def scaffold_list_form(self):
+        """
+            Create form for the `index_view` using only the columns from
+            `self.column_editable_list`.
+        """
+        converter = self.model_form_converter(self.session, self)
+        form_class = form.get_form(self.model, converter,
+                                   base_class=self.form_base_class,
+                                   only=self.column_editable_list)
+
+        return wrap_fields_in_fieldlist(self.form_base_class, form_class)
 
     def scaffold_inline_form_models(self, form_class):
         """

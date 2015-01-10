@@ -81,6 +81,39 @@ def create_models(db):
     return Model1, Model2
 
 
+def fill_db(db, Model1, Model2):
+    model1_obj1 = Model1('test1_val_1', 'test2_val_1', bool_field=True)
+    model1_obj2 = Model1('test1_val_2', 'test2_val_2')
+    model1_obj3 = Model1('test1_val_3', 'test2_val_3')
+    model1_obj4 = Model1('test1_val_4', 'test2_val_4')
+
+    model2_obj1 = Model2('test2_val_1', model1=model1_obj1, float_field=None)
+    model2_obj2 = Model2('test2_val_2', model1=model1_obj2, float_field=None)
+    model2_obj3 = Model2('test2_val_3', int_field=5000, float_field=25.9)
+    model2_obj4 = Model2('test2_val_4', int_field=9000, float_field=75.5)
+
+    date_obj1 = Model1('date_obj1', date_field=date(2014,11,17))
+    date_obj2 = Model1('date_obj2', date_field=date(2013,10,16))
+    timeonly_obj1 = Model1('timeonly_obj1', time_field=time(11,10,9))
+    timeonly_obj2 = Model1('timeonly_obj2', time_field=time(10,9,8))
+    datetime_obj1 = Model1('datetime_obj1', datetime_field=datetime(2014,4,3,1,9,0))
+    datetime_obj2 = Model1('datetime_obj2', datetime_field=datetime(2013,3,2,0,8,0))
+
+    enum_obj1 = Model1('enum_obj1', enum_field="model1_v1")
+    enum_obj2 = Model1('enum_obj2', enum_field="model1_v2")
+
+    empty_obj = Model1(test2="empty_obj")
+
+    db.session.add_all([
+        model1_obj1, model1_obj2, model1_obj3, model1_obj4,
+        model2_obj1, model2_obj2, model2_obj3, model2_obj4,
+        date_obj1, timeonly_obj1, datetime_obj1,
+        date_obj2, timeonly_obj2, datetime_obj2,
+        enum_obj1, enum_obj2, empty_obj
+    ])
+    db.session.commit()
+
+
 def test_model():
     app, db, admin = setup()
     Model1, Model2 = create_models(db)
@@ -286,6 +319,75 @@ def test_complex_searchable_list_missing_children():
     ok_('magic string' in data)
 
 
+def test_column_editable_list():
+    app, db, admin = setup()
+
+    Model1, Model2 = create_models(db)
+
+    view = CustomModelView(Model1, db.session,
+                           column_editable_list=[
+                               'test1', 'enum_field'])
+    admin.add_view(view)
+
+    fill_db(db, Model1, Model2)
+
+    client = app.test_client()
+
+    # Test in-line edit field rendering
+    rv = client.get('/admin/model1/')
+    data = rv.data.decode('utf-8')
+    ok_('data-role="x-editable"' in data)
+
+    # Form - Test basic in-line edit functionality
+    rv = client.post('/admin/model1/ajax/update/', data={
+        'test1-1': 'change-success-1',
+    })
+    data = rv.data.decode('utf-8')
+    ok_('Record was successfully saved.' == data)
+
+    # ensure the value has changed
+    rv = client.get('/admin/model1/')
+    data = rv.data.decode('utf-8')
+    ok_('change-success-1' in data)
+
+    # Test validation error
+    rv = client.post('/admin/model1/ajax/update/', data={
+        'enum_field-1': 'problematic-input',
+    })
+    eq_(rv.status_code, 500)
+
+    # Test invalid primary key
+    rv = client.post('/admin/model1/ajax/update/', data={
+        'test1-1000': 'problematic-input',
+    })
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 500)
+
+    # Test editing column not in column_editable_list
+    rv = client.post('/admin/model1/ajax/update/', data={
+        'test2-1': 'problematic-input',
+    })
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 500)
+
+    # Test in-line editing for relations
+    view = CustomModelView(Model2, db.session,
+                           column_editable_list=[
+                               'model1'])
+    admin.add_view(view)
+
+    rv = client.post('/admin/model2/ajax/update/', data={
+        'model1-1': '3',
+    })
+    data = rv.data.decode('utf-8')
+    ok_('Record was successfully saved.' == data)
+
+    # confirm the value has changed
+    rv = client.get('/admin/model2/')
+    data = rv.data.decode('utf-8')
+    ok_('test1_val_3' in data)
+
+
 def test_column_filters():
     app, db, admin = setup()
 
@@ -393,37 +495,7 @@ def test_column_filters():
     
     eq_(list(view._filter_groups.keys()), [u'Test Filter #1', u'Test Filter #2'])
     
-    # Fill DB
-    model1_obj1 = Model1('test1_val_1', 'test2_val_1', bool_field=True)
-    model1_obj2 = Model1('test1_val_2', 'test2_val_2')
-    model1_obj3 = Model1('test1_val_3', 'test2_val_3')
-    model1_obj4 = Model1('test1_val_4', 'test2_val_4')
-
-    model2_obj1 = Model2('test2_val_1', model1=model1_obj1, float_field=None)
-    model2_obj2 = Model2('test2_val_2', model1=model1_obj2, float_field=None)
-    model2_obj3 = Model2('test2_val_3', int_field=5000, float_field=25.9)
-    model2_obj4 = Model2('test2_val_4', int_field=9000, float_field=75.5)
-    
-    date_obj1 = Model1('date_obj1', date_field=date(2014,11,17))
-    date_obj2 = Model1('date_obj2', date_field=date(2013,10,16))
-    timeonly_obj1 = Model1('timeonly_obj1', time_field=time(11,10,9))
-    timeonly_obj2 = Model1('timeonly_obj2', time_field=time(10,9,8))
-    datetime_obj1 = Model1('datetime_obj1', datetime_field=datetime(2014,4,3,1,9,0))
-    datetime_obj2 = Model1('datetime_obj2', datetime_field=datetime(2013,3,2,0,8,0))
-    
-    enum_obj1 = Model1('enum_obj1', enum_field="model1_v1")
-    enum_obj2 = Model1('enum_obj2', enum_field="model1_v2")
-    
-    empty_obj = Model1(test2="empty_obj")
-    
-    db.session.add_all([
-        model1_obj1, model1_obj2, model1_obj3, model1_obj4,
-        model2_obj1, model2_obj2, model2_obj3, model2_obj4,
-        date_obj1, timeonly_obj1, datetime_obj1,
-        date_obj2, timeonly_obj2, datetime_obj2,
-        enum_obj1, enum_obj2, empty_obj
-    ])
-    db.session.commit()
+    fill_db(db, Model1, Model2)
 
     client = app.test_client()
 

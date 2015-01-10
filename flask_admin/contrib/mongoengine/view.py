@@ -5,6 +5,7 @@ from flask import request, flash, abort, Response
 from flask.ext.admin import expose
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
+from flask.ext.admin.model.form import wrap_fields_in_fieldlist
 from flask.ext.admin._compat import iteritems, string_types
 
 import mongoengine
@@ -397,6 +398,18 @@ class ModelView(BaseModelView):
                               extra_fields=self.form_extra_fields)
 
         return form_class
+
+    def scaffold_list_form(self):
+        """
+            Create form for the `index_view` using only the columns from
+            `self.column_editable_list`.
+        """
+        form_class = get_form(self.model,
+                              self.model_form_converter(self),
+                              base_class=self.form_base_class,
+                              only=self.column_editable_list)
+
+        return wrap_fields_in_fieldlist(self.form_base_class, form_class)
 
     # AJAX foreignkey support
     def _create_ajax_loader(self, name, opts):

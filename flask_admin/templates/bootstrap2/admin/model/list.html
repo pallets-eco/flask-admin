@@ -119,8 +119,17 @@
                     {% endblock %}
                 </td>
                 {% endblock %}
+                
                 {% for c, name in list_columns %}
-                <td>{{ get_value(row, c) }}</td>
+                    {% if admin_view.is_editable(c) %}
+                        {% if form.csrf_token %}
+                        <td>{{ form[c](pk=get_pk_value(row), value=get_value(row, c), csrf=form.csrf_token._value()) }}</td>
+                        {% else %}
+                        <td>{{ form[c](pk=get_pk_value(row), value=get_value(row, c)) }}</td>
+                        {% endif %}
+                    {% else %}
+                    <td>{{ get_value(row, c) }}</td>
+                    {% endif %}
                 {% endfor %}
             {% endblock %}
         </tr>
@@ -148,8 +157,8 @@
     <script src="{{ admin_static.url(filename='admin/js/filters-1.0.0.js') }}"></script>
 
     {{ actionlib.script(_gettext('Please select at least one record.'),
-                      actions,
-                      actions_confirmation) }}
+                        actions,
+                        actions_confirmation) }}
 
     <script language="javascript">
         (function($) {

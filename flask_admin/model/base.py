@@ -1,7 +1,8 @@
 import warnings
 import re
 
-from flask import request, redirect, flash, abort, json, Response
+from flask import (request, redirect, flash, abort, json, Response,
+                   get_flashed_messages)
 from jinja2 import contextfunction
 from wtforms.validators import ValidationError
 
@@ -11,7 +12,8 @@ from flask.ext.admin.base import BaseView, expose
 from flask.ext.admin.form import BaseForm, FormOpts, rules
 from flask.ext.admin.model import filters, typefmt
 from flask.ext.admin.actions import ActionsMixin
-from flask.ext.admin.helpers import get_form_data, validate_form_on_submit, get_redirect_target
+from flask.ext.admin.helpers import (get_form_data, validate_form_on_submit,
+                                     get_redirect_target)
 from flask.ext.admin.tools import rec_getattr
 from flask.ext.admin._backwards import ObsoleteAttr
 from flask.ext.admin._compat import iteritems, OrderedDict, as_unicode
@@ -262,6 +264,16 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 column_searchable_list = ('name', 'email')
+    """
+
+    column_editable_list = None
+    """
+        Collection of the columns which can be edited from the list view.
+
+        For example::
+
+            class MyModelView(BaseModelView):
+                column_editable_list = ('name', 'last_name')
     """
 
     column_choices = None
@@ -580,6 +592,12 @@ class BaseModelView(BaseView, ActionsMixin):
         self._create_form_class = self.get_create_form()
         self._edit_form_class = self.get_edit_form()
 
+        # List View In-Line Editing
+        if self.column_editable_list:
+            self._list_form_class = self.scaffold_list_form()
+        else:
+            self.column_editable_list = {}
+
     def _refresh_filters_cache(self):
         self._filters = self.get_filters()
 
@@ -833,6 +851,13 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         raise NotImplementedError('Please implement scaffold_form method')
 
+    def scaffold_list_form(self):
+        """
+            Create form for the `index_view` using only the columns from
+            `self.column_editable_list`. Must be implemented in the child class.
+        """
+        raise NotImplementedError('Please implement scaffold_list_form method')
+
     def get_form(self):
         """
             Get form class.
@@ -879,6 +904,14 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return self._edit_form_class(get_form_data(), obj=obj)
 
+    def list_form(self, obj=None):
+        """
+            Instantiate model editing form for list view and return it.
+
+            Override to implement custom behavior.
+        """
+        return self._list_form_class(get_form_data(), obj=obj)
+
     def validate_form(self, form):
         """
             Validate the form on submit.
@@ -897,6 +930,15 @@ class BaseModelView(BaseView, ActionsMixin):
                 Column name.
         """
         return name in self._sortable_columns
+
+    def is_editable(self, name):
+        """
+            Verify if column is editable.
+
+            :param name:
+                Column name.
+        """
+        return name in self.column_editable_list
 
     def _get_column_by_idx(self, idx):
         """
@@ -1247,6 +1289,11 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             List view
         """
+        if self.column_editable_list:
+            form = self.list_form()
+        else:
+            form = None
+
         # Grab parameters from URL
         view_args = self._get_list_extra_args()
 
@@ -1289,37 +1336,47 @@ class BaseModelView(BaseView, ActionsMixin):
                                                               search=None,
                                                               filters=None))
 
-        return self.render(self.list_template,
-                               data=data,
-                               # List
-                               list_columns=self._list_columns,
-                               sortable_columns=self._sortable_columns,
-                               # Stuff
-                               enumerate=enumerate,
-                               get_pk_value=self.get_pk_value,
-                               get_value=self.get_list_value,
-                               return_url=self._get_list_url(view_args),
-                               # Pagination
-                               count=count,
-                               pager_url=pager_url,
-                               num_pages=num_pages,
-                               page=view_args.page,
-                               # Sorting
-                               sort_column=view_args.sort,
-                               sort_desc=view_args.sort_desc,
-                               sort_url=sort_url,
-                               # Search
-                               search_supported=self._search_supported,
-                               clear_search_url=clear_search_url,
-                               search=view_args.search,
-                               # Filters
-                               filters=self._filters,
-                               filter_groups=self._filter_groups,
-                               active_filters=view_args.filters,
+        return self.render(
+            self.list_template,
+            data=data,
+            form=form,
 
-                               # Actions
-                               actions=actions,
-                               actions_confirmation=actions_confirmation)
+            # List
+            list_columns=self._list_columns,
+            sortable_columns=self._sortable_columns,
+            editable_columns=self.column_editable_list,
+
+            # Pagination
+            count=count,
+            pager_url=pager_url,
+            num_pages=num_pages,
+            page=view_args.page,
+
+            # Sorting
+            sort_column=view_args.sort,
+            sort_desc=view_args.sort_desc,
+            sort_url=sort_url,
+
+            # Search
+            search_supported=self._search_supported,
+            clear_search_url=clear_search_url,
+            search=view_args.search,
+
+            # Filters
+            filters=self._filters,
+            filter_groups=self._filter_groups,
+            active_filters=view_args.filters,
+
+            # Actions
+            actions=actions,
+            actions_confirmation=actions_confirmation,
+
+            # Misc
+            enumerate=enumerate,
+            get_pk_value=self.get_pk_value,
+            get_value=self.get_list_value,
+            return_url=self._get_list_url(view_args),
+        )
 
     @expose('/new/', methods=('GET', 'POST'))
     def create_view(self):
@@ -1433,3 +1490,46 @@ class BaseModelView(BaseView, ActionsMixin):
 
         data = [loader.format(m) for m in loader.get_list(query, offset, limit)]
         return Response(json.dumps(data), mimetype='application/json')
+
+    @expose('/ajax/update/', methods=('POST',))
+    def ajax_update(self):
+        """
+            Edits a single column of a record in list view.
+        """
+        if not self.column_editable_list:
+            abort(404)
+
+        record = None
+        form = self.list_form()
+
+        # prevent validation issues due to submitting a single field
+        # delete all fields except the field being submitted
+        for field in form:
+            # only the submitted field has a positive last_index
+            if getattr(field, 'last_index', 0):
+                record = self.get_one(str(field.last_index))
+            elif field.name == 'csrf_token':
+                pass
+            else:
+                form.__delitem__(field.name)
+
+        if record is None:
+            return gettext('Failed to update record. %(error)s', error=''), 500
+
+        if self.validate_form(form):
+            if self.update_model(form, record):
+                # Success
+                return gettext('Record was successfully saved.')
+            else:
+                # Error: No records changed, or problem saving to database.
+                msgs = ", ".join([msg for msg in get_flashed_messages()])
+                return gettext('Failed to update record. %(error)s',
+                               error=msgs), 500
+        else:
+            for field in form:
+                for error in field.errors:
+                    # return validation error to x-editable
+                    if isinstance(error, list):
+                        return ", ".join(error), 500
+                    else:
+                        return error, 500

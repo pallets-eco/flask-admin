@@ -147,13 +147,13 @@
     <hr>
     <div class="form-group">
       <div class="col-md-offset-2 col-md-10 submit-row">
-	  <input type="submit" class="btn btn-primary" value="{{ _gettext('Submit') }}" />
-	    {% if extra %}
-	    {{ extra }}
-	    {% endif %}
-	    {% if cancel_url %}
-	    <a href="{{ cancel_url }}" class="btn btn-danger" role="button">{{ _gettext('Cancel') }}</a>
-	    {% endif %}
+        <input type="submit" class="btn btn-primary" value="{{ _gettext('Submit') }}" />
+        {% if extra %}
+        {{ extra }}
+        {% endif %}
+        {% if cancel_url %}
+        <a href="{{ cancel_url }}" class="btn btn-danger" role="button">{{ _gettext('Cancel') }}</a>
+        {% endif %}
       </div>
     </div>
 {% endmacro %}
@@ -173,6 +173,9 @@
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css') }}" rel="stylesheet">
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css') }}" rel="stylesheet">
   {% endif %}
+  {% if editable_columns %}
+  <link href="{{ admin_static.url(filename='vendor/x-editable/css/bootstrap3-editable-1.5.1.css') }}" rel="stylesheet">
+  {% endif %}
 {% endmacro %}
 
 {% macro form_js() %}
@@ -184,5 +187,8 @@
   <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js') }}"></script>
   {% endif %}
   <script src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+  {% if editable_columns %}
+  <script src="{{ admin_static.url(filename='vendor/x-editable/js/bootstrap3-editable-1.5.1.min.js') }}"></script>
+  {% endif %}
   <script src="{{ admin_static.url(filename='admin/js/form-1.0.0.js') }}"></script>
 {% endmacro %}
