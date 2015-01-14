@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Flask-Admin VERSION\n"
 "Report-Msgid-Bugs-To: hamid.rs90{in}gmail\n"
-"POT-Creation-Date: 2013-04-01 12:40+0430\n"
+"POT-Creation-Date: 2014-12-28 03:33-0600\n"
 "PO-Revision-Date: 2013-04-02 01:13+0430\n"
 "Last-Translator: hamid <hamid.rs90{in}gmail>\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 0.9.6\n"
+"Generated-By: Babel 1.3\n"
 
 #: ../flask_admin/base.py:310
 msgid "Home"
@@ -47,6 +47,12 @@ msgstr "فایل لازم است"
 msgid "Invalid file type."
 msgstr "نوع فایل غیرمجاز است"
 
+msgid "At least %d item is required"
+msgid_plural "At least %d item is required"
+msgstr[0] "حداقل یک مورد لازم است"
+msgstr[1] "حداقل %d مورد لازم است"
+msgstr[2] ""
+
 #: ../flask_admin/contrib/fileadmin.py:59
 msgid "Content"
 msgstr "محتوا"
@@ -56,6 +62,9 @@ msgid "File uploading is disabled."
 msgstr "آپلود فایل غیر فعال است"
 
 #: ../flask_admin/contrib/fileadmin.py:484
+msgid "Cli: Invalid command."
+msgstr "Cli: دستور نامعتبر است."
+
 #, python-format
 msgid "File \"%(name)s\" already exists."
 msgstr "فایل \"%(name)s\" قبلا وجود داشته است"
@@ -65,9 +74,15 @@ msgstr "فایل \"%(name)s\" قبلا وجود داشته است"
 msgid "Failed to save file: %(error)s"
 msgstr "ذخیره ی فایل  بامشکل روبرو شد %(error)s"
 
+msgid "Create new record"
+msgstr "ایجاد رکورد جدید"
+
 #: ../flask_admin/contrib/fileadmin.py:511
 msgid "Directory creation is disabled."
 msgstr "ساخت پوشه غیر فعال است"
+msgid "Delete record"
+msgstr "حذف رکورد"
+
 
 #: ../flask_admin/contrib/fileadmin.py:522
 #, python-format
@@ -84,8 +99,11 @@ msgstr "حذف پوشه غیر فعال است"
 
 #: ../flask_admin/contrib/fileadmin.py:555
 #, python-format
-msgid "Directory \"%s\" was successfully deleted."
-msgstr "پوشه ی \"%s\" با موفقیت حذف شد"
+msgid "Directory \"%(path)s\" was successfully deleted."
+msgstr "پوشه %(path)s با موفقیت حذف شد"
+
+msgid "Edit record"
+msgstr "ویرایش رکورد"
 
 #: ../flask_admin/contrib/fileadmin.py:557
 #, python-format
@@ -111,6 +129,9 @@ msgstr "تغییر نام غیر فعال است"
 #: ../flask_admin/contrib/fileadmin.py:587
 msgid "Path does not exist."
 msgstr "مسیر وجود ندارد"
+msgid "Failed to get model. %(error)s"
+msgstr "خواندن مدل با مشکل روبرو شد. %(error)s"
+
 
 #: ../flask_admin/contrib/fileadmin.py:599
 #, python-format
@@ -126,6 +147,9 @@ msgstr "تغییر نام  با مشکل روبرو شد %(error)s"
 #, python-format
 msgid "Error saving changes to %(name)s."
 msgstr "مشکل در ذخیره ی تغییرات %(name)s"
+msgid "File deletion is disabled."
+msgstr "امکان حذف فایل وجود ندارد"
+
 
 #: ../flask_admin/contrib/fileadmin.py:644
 #, python-format
@@ -137,11 +161,23 @@ msgstr "تغییرات%(name)s  با موفقیت صورت گرفت"
 msgid "Error reading %(name)s."
 msgstr "مشکل در خواندن %(name)s"
 
+msgid "Integrity error. %(message)s"
+msgstr "خطای یکپارچگی داده. %(message)s"
+
 #: ../flask_admin/contrib/fileadmin.py:654
 #: ../flask_admin/contrib/fileadmin.py:663
 #, python-format
+msgid "Invalid Filter Value: %(value)s"
+msgstr "مقدار فیلتر معتبر نیست: %(value)s"
+
+msgid "Invalid JSON"
+msgstr "JSON نامعتبر است"
+
 msgid "Unexpected error while reading from %(name)s"
 msgstr "خطای غیر منتظره در حال خواندن %(name)s"
+
+msgid "Invalid file extension"
+msgstr "پسوند فایل غیرمجاز است"
 
 #: ../flask_admin/contrib/fileadmin.py:660
 #, python-format
@@ -161,6 +197,9 @@ msgid "Are you sure you want to delete these files?"
 msgstr "آیا از حذف این فایل ها اطمینان دارید؟"
 
 #: ../flask_admin/contrib/fileadmin.py:689
+msgid "Permission denied."
+msgstr "خطای دسترسی"
+
 msgid "Edit"
 msgstr "ویرایش"
 
@@ -361,8 +400,8 @@ msgid "Reset Filters"
 msgstr "برگرداندن فیلتر ها به حالت اول"
 
 #: ../flask_admin/templates/admin/model/layout.html:28
-msgid "Remove Filter"
-msgstr "حذف فیلتر"
+msgid "Record was successfully saved."
+msgstr "مدل با موفقیت ذخیره شد"
 
 #: ../flask_admin/templates/admin/model/layout.html:67
 msgid "Search"
@@ -376,3 +415,34 @@ msgstr "آیا از حذف این موارد اطمینان دارید؟"
 msgid "Please select at least one record."
 msgstr "حداقل یک پوشه انتخاب کنید"
 
+msgid "Save and Continue"
+msgstr "ذخیره و ادامه"
+
+
+msgid "Select all records"
+msgstr "انتخاب همه رکوردها"
+
+msgid "Select record"
+msgstr "انتخاب رکورد"
+
+msgid "Sort by %(name)s"
+msgstr "مرتب سازی بر اساس %(name)s"
+
+msgid "There are no items in the table."
+msgstr "هیچ موردی در این جدول وجود ندارد."
+
+msgid "between"
+msgstr "بین این دو باشد"
+
+msgid "empty"
+msgstr "خالی باشد"
+
+msgid "in list"
+msgstr "در این لیست باشد"
+
+msgid "not between"
+msgstr "بین این دو نباشد"
+
+
+msgid "not in list"
+msgstr "در این لیست نباشد"
