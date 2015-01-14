@@ -12,8 +12,7 @@ msgstr ""
 "PO-Revision-Date: 2013-04-02 01:13+0430\n"
 "Last-Translator: hamid <hamid.rs90{in}gmail>\n"
 "Language-Team: \n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -51,7 +50,6 @@ msgid "At least %d item is required"
 msgid_plural "At least %d item is required"
 msgstr[0] "حداقل یک مورد لازم است"
 msgstr[1] "حداقل %d مورد لازم است"
-msgstr[2] ""
 
 #: ../flask_admin/contrib/fileadmin.py:59
 msgid "Content"
@@ -274,7 +272,7 @@ msgstr "حذف مدل با مشکل روبرو شد %(error)s"
 #: ../flask_admin/contrib/pymongo/view.py:327
 #: ../flask_admin/contrib/sqla/view.py:788
 msgid "Are you sure you want to delete selected records?"
-msgstr "آیا از خذف مدل ها اطمینان دارید"
+msgstr "آیا از حذف مدل ها اطمینان دارید"
 
 #: ../flask_admin/contrib/mongoengine/view.py:400
 #: ../flask_admin/contrib/peewee/view.py:392
@@ -284,8 +282,7 @@ msgstr "آیا از خذف مدل ها اطمینان دارید"
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
 msgstr[0] "مدل با موفقیت حذف شد"
-msgstr[1] "%(count)s  مدل با موفقیت خذف شدند"
-msgstr[2] ""
+msgstr[1] "%(count)s  مدل با موفقیت حذف شد."
 
 #: ../flask_admin/contrib/mongoengine/view.py:405
 #: ../flask_admin/contrib/peewee/view.py:397
