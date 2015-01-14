@@ -107,11 +107,13 @@
                         </a>
                         {%- endif -%}
                         {%- if admin_view.can_delete -%}
-                        <form class="icon" method="POST" action="{{ get_url('.delete_view', id=get_pk_value(row), url=return_url) }}">
-                            {% if csrf_token %}
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <form class="icon" method="POST" action="{{ get_url('.delete_view') }}">
+                            <input type="hidden" name="id" value="{{ get_pk_value(row) }}"/>
+                            <input type="hidden" name="url" value="{{ return_url }}"/>
+                            {% if delete_form.csrf_token %}
+                            <input type="hidden" name="csrf_token" value="{{ delete_form.csrf_token() }}"/>
                             {% endif %}
-                                <button onclick="return confirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="Delete record">
+                            <button onclick="return confirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="Delete record">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </button>
                         </form>

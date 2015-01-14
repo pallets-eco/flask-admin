@@ -4,7 +4,8 @@ import re
 from flask import (request, redirect, flash, abort, json, Response,
                    get_flashed_messages)
 from jinja2 import contextfunction
-from wtforms.validators import ValidationError
+from wtforms.fields import HiddenField
+from wtforms.validators import ValidationError, Required
 
 from flask.ext.admin.babel import gettext
 
@@ -591,6 +592,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         self._create_form_class = self.get_create_form()
         self._edit_form_class = self.get_edit_form()
+        self._delete_form_class = self.get_delete_form()
 
         # List View In-Line Editing
         if self.column_editable_list:
@@ -888,6 +890,18 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return self.get_form()
 
+    def get_delete_form(self):
+        """
+            Create form class for model delete view.
+
+            Override to implement customized behavior.
+        """
+        class DeleteForm(self.form_base_class):
+            id = HiddenField(validators=[Required()])
+            url = HiddenField()
+            
+        return DeleteForm
+
     def create_form(self, obj=None):
         """
             Instantiate model creation form and return it.
@@ -903,6 +917,20 @@ class BaseModelView(BaseView, ActionsMixin):
             Override to implement custom behavior.
         """
         return self._edit_form_class(get_form_data(), obj=obj)
+
+    def delete_form(self):
+        """
+            Instantiate model delete form and return it.
+
+            Override to implement custom behavior.
+        """
+        if request.form:
+            return self._delete_form_class(request.form)
+        elif request.args:
+            # allow request.args for backward compatibility
+            return self._delete_form_class(request.args)
+        else:
+            return self._delete_form_class()
 
     def list_form(self, obj=None):
         """
@@ -1293,6 +1321,11 @@ class BaseModelView(BaseView, ActionsMixin):
             form = self.list_form()
         else:
             form = None
+            
+        if self.can_delete:
+            delete_form = self.delete_form()
+        else:
+            delete_form = None
 
         # Grab parameters from URL
         view_args = self._get_list_extra_args()
@@ -1340,6 +1373,7 @@ class BaseModelView(BaseView, ActionsMixin):
             self.list_template,
             data=data,
             form=form,
+            delete_form=delete_form,
 
             # List
             list_columns=self._list_columns,
@@ -1454,18 +1488,30 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return_url = get_redirect_target() or self.get_url('.index_view')
 
-        # TODO: Use post
         if not self.can_delete:
             return redirect(return_url)
 
-        id = get_mdict_item_or_list(request.args, 'id')
-        if id is None:
-            return redirect(return_url)
+        form = self.delete_form()
 
-        model = self.get_one(id)
+        if self.validate_form(form):
+            id = form.id.data # id is Required()
 
-        if model:
-            self.delete_model(model)
+            model = self.get_one(id)
+
+            if model is None:
+                return redirect(return_url)
+
+            # message is flashed from within delete_model if it fails
+            if self.delete_model(model):
+                flash(gettext('Record was successfully deleted.'))
+                return redirect(return_url)
+        else:
+            # flash validation errors
+            for field_name, errors in iteritems(form.errors):
+                errors = field_name + u": " + u", ".join(errors)
+                flash(gettext('Failed to delete record. %(error)s',
+                              error=str(errors)),
+                      'error')
 
         return redirect(return_url)
 
