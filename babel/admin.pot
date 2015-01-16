@@ -1,15 +1,15 @@
 # Translations template for Flask-Admin.
-# Copyright (C) 2014 ORGANIZATION
+# Copyright (C) 2015 ORGANIZATION
 # This file is distributed under the same license as the Flask-Admin
 # project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Flask-Admin VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-12-28 03:33-0600\n"
+"POT-Creation-Date: 2015-01-16 12:12-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -149,10 +149,10 @@ msgid "Cannot edit %(name)s."
 msgstr ""
 
 #: ../flask_admin/contrib/fileadmin.py:746
-#: ../flask_admin/contrib/mongoengine/view.py:599
-#: ../flask_admin/contrib/peewee/view.py:406
+#: ../flask_admin/contrib/mongoengine/view.py:612
+#: ../flask_admin/contrib/peewee/view.py:418
 #: ../flask_admin/contrib/pymongo/view.py:343
-#: ../flask_admin/contrib/sqla/view.py:932
+#: ../flask_admin/contrib/sqla/view.py:945
 msgid "Delete"
 msgstr ""
 
@@ -246,64 +246,65 @@ msgstr ""
 msgid "not between"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/view.py:493
+#: ../flask_admin/contrib/mongoengine/view.py:506
 #, python-format
 msgid "Failed to get model. %(error)s"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/view.py:512
-#: ../flask_admin/contrib/peewee/view.py:357
+#: ../flask_admin/contrib/mongoengine/view.py:525
+#: ../flask_admin/contrib/peewee/view.py:369
 #: ../flask_admin/contrib/pymongo/view.py:278
-#: ../flask_admin/contrib/sqla/view.py:864
+#: ../flask_admin/contrib/sqla/view.py:877
 #, python-format
 msgid "Failed to create record. %(error)s"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/view.py:538
-#: ../flask_admin/contrib/peewee/view.py:376
+#: ../flask_admin/contrib/mongoengine/view.py:551
+#: ../flask_admin/contrib/peewee/view.py:388
 #: ../flask_admin/contrib/pymongo/view.py:303
-#: ../flask_admin/contrib/sqla/view.py:890
+#: ../flask_admin/contrib/sqla/view.py:903 ../flask_admin/model/base.py:1563
+#: ../flask_admin/model/base.py:1572
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/view.py:562
-#: ../flask_admin/contrib/peewee/view.py:392
+#: ../flask_admin/contrib/mongoengine/view.py:575
+#: ../flask_admin/contrib/peewee/view.py:404
 #: ../flask_admin/contrib/pymongo/view.py:329
-#: ../flask_admin/contrib/sqla/view.py:916
+#: ../flask_admin/contrib/sqla/view.py:929 ../flask_admin/model/base.py:1513
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/view.py:600
-#: ../flask_admin/contrib/peewee/view.py:407
+#: ../flask_admin/contrib/mongoengine/view.py:613
+#: ../flask_admin/contrib/peewee/view.py:419
 #: ../flask_admin/contrib/pymongo/view.py:344
-#: ../flask_admin/contrib/sqla/view.py:933
+#: ../flask_admin/contrib/sqla/view.py:946
 msgid "Are you sure you want to delete selected records?"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/view.py:609
-#: ../flask_admin/contrib/peewee/view.py:423
+#: ../flask_admin/contrib/mongoengine/view.py:622
+#: ../flask_admin/contrib/peewee/view.py:435
 #: ../flask_admin/contrib/pymongo/view.py:354
-#: ../flask_admin/contrib/sqla/view.py:949
+#: ../flask_admin/contrib/sqla/view.py:962 ../flask_admin/model/base.py:1506
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../flask_admin/contrib/mongoengine/view.py:615
-#: ../flask_admin/contrib/peewee/view.py:429
+#: ../flask_admin/contrib/mongoengine/view.py:628
+#: ../flask_admin/contrib/peewee/view.py:441
 #: ../flask_admin/contrib/pymongo/view.py:359
-#: ../flask_admin/contrib/sqla/view.py:957
+#: ../flask_admin/contrib/sqla/view.py:970
 #, python-format
 msgid "Failed to delete records. %(error)s"
 msgstr ""
 
 #: ../flask_admin/contrib/sqla/fields.py:123
 #: ../flask_admin/contrib/sqla/fields.py:173
-#: ../flask_admin/contrib/sqla/fields.py:178 ../flask_admin/model/fields.py:167
-#: ../flask_admin/model/fields.py:216
+#: ../flask_admin/contrib/sqla/fields.py:178 ../flask_admin/model/fields.py:225
+#: ../flask_admin/model/fields.py:274
 msgid "Not a valid choice"
 msgstr ""
 
@@ -318,7 +319,7 @@ msgid_plural "At least %d items are required"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../flask_admin/contrib/sqla/view.py:843
+#: ../flask_admin/contrib/sqla/view.py:856
 #, python-format
 msgid "Integrity error. %(message)s"
 msgstr ""
@@ -335,20 +336,20 @@ msgstr ""
 msgid "Invalid file extension"
 msgstr ""
 
-#: ../flask_admin/model/base.py:1103
+#: ../flask_admin/model/base.py:1173
 msgid "There are no items in the table."
 msgstr ""
 
-#: ../flask_admin/model/base.py:1127
+#: ../flask_admin/model/base.py:1197
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
 msgstr ""
 
-#: ../flask_admin/model/base.py:1339
+#: ../flask_admin/model/base.py:1430
 msgid "Record was successfully created."
 msgstr ""
 
-#: ../flask_admin/model/base.py:1376
+#: ../flask_admin/model/base.py:1467 ../flask_admin/model/base.py:1568
 msgid "Record was successfully saved."
 msgstr ""
 
@@ -371,12 +372,12 @@ msgid "With selected"
 msgstr ""
 
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:156
-#: ../flask_admin/templates/bootstrap3/admin/lib.html:149
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:150
 msgid "Submit"
 msgstr ""
 
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:161
-#: ../flask_admin/templates/bootstrap3/admin/lib.html:154
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:155
 msgid "Cancel"
 msgstr ""
 
@@ -389,6 +390,16 @@ msgstr ""
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
 msgid "Root"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:35
+msgid "Name"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:36
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:36
+msgid "Size"
 msgstr ""
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:62
@@ -448,13 +459,13 @@ msgstr ""
 msgid "Save and Continue"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:10
-#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:10
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:14
 msgid "Delete?"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:33
-#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:33
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:40
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:43
 msgid "Add"
 msgstr ""
 
@@ -476,7 +487,7 @@ msgstr ""
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:38
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:45
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:38
-#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:45
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:43
 msgid "Search"
 msgstr ""
 
@@ -508,17 +519,17 @@ msgstr ""
 msgid "Edit record"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:114
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:116
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:116
 msgid "Are you sure you want to delete this record?"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:116
 msgid "Delete record"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:150
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:150
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:161
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:160
 msgid "Please select at least one record."
 msgstr ""
 
