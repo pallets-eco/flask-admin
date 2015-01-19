@@ -6,6 +6,7 @@ from flask.ext.admin._compat import string_types
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
 from flask.ext.admin.model.form import wrap_fields_in_fieldlist
+from flask.ext.admin.model.fields import ListEditableFieldList
 
 from peewee import PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
 
@@ -238,16 +239,26 @@ class ModelView(BaseModelView):
 
         return form_class
 
-    def scaffold_list_form(self):
+    def scaffold_list_form(self, custom_fieldlist=ListEditableFieldList,
+                           validators=None):
         """
             Create form for the `index_view` using only the columns from
             `self.column_editable_list`.
+
+            :param validators:
+                `form_args` dict with only validators
+                {'name': {'validators': [required()]}}
+            :param custom_fieldlist:
+                A WTForm FieldList class. By default, `ListEditableFieldList`.
         """
         form_class = get_form(self.model, self.model_form_converter(self),
                               base_class=self.form_base_class,
-                              only=self.column_editable_list)
+                              only=self.column_editable_list,
+                              field_args=validators)
 
-        return wrap_fields_in_fieldlist(self.form_base_class, form_class)
+        return wrap_fields_in_fieldlist(self.form_base_class,
+                                        form_class,
+                                        custom_fieldlist)
 
     def scaffold_inline_form_models(self, form_class):
         converter = self.model_form_converter(self)
