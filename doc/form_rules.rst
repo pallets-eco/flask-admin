@@ -21,8 +21,8 @@ Getting started
 To start using the form rendering rules, put a list of form field names into the `form_create_rules`
 property one of your admin views::
 
-	class RuleView(sqla.ModelView):
-	    form_create_rules = ('email', 'first_name', 'last_name')
+    class RuleView(sqla.ModelView):
+        form_create_rules = ('email', 'first_name', 'last_name')
 
 In this example, only three fields will be rendered and `email` field will be above other two fields.
 
@@ -32,10 +32,10 @@ form field reference and creates a :class:`flask.ext.admin.form.rules.Field` cla
 Lets say we want to display some text between the `email` and `first_name` fields. This can be accomplished by
 using the :class:`flask.ext.admin.form.rules.Text` class::
 
-	from flask.ext.admin.form import rules
+    from flask.ext.admin.form import rules
 
-	class RuleView(sqla.ModelView):
-	    form_create_rules = ('email', rules.Text('Foobar'), 'first_name', 'last_name')
+    class RuleView(sqla.ModelView):
+        form_create_rules = ('email', rules.Text('Foobar'), 'first_name', 'last_name')
 
 Built-in rules
 --------------
@@ -58,44 +58,66 @@ Form Rendering Rule                                     Description
 
 Enabling CSRF Validation 
 ---------------
+Adding CSRF validation will require overriding the :class:`flask.ext.admin.form.BaseForm` by using :attr:`flask.ext.admin.model.BaseModelView.form_base_class`.
 
-Flask-Admin does not use Flask-WTF Form class - it uses the wtforms Form class, which does not have CSRF validation.
-Adding CSRF validation will require importing flask_wtf and overriding the :class:`flask.ext.admin.form.BaseForm` by using :attr:`flask.ext.admin.model.BaseModelView.form_base_class`::
+WTForms >=2::
 
-	import os
-	import flask
-	**import flask_wtf**
-	import flask_admin
-	import flask_sqlalchemy
-	from flask_admin.contrib.sqla import ModelView
+    from wtforms.csrf.session import SessionCSRF
+    from wtforms.meta import DefaultMeta
+    from flask import session
+    from datetime import timedelta
+    from flask.ext.admin import form
+    from flask.ext.admin.contrib import sqla
 
-	DBFILE = 'app.db'
+    class SecureForm(form.BaseForm):
+        class Meta(DefaultMeta):
+            csrf = True
+            csrf_class = SessionCSRF
+            csrf_secret = b'EPj00jpfj8Gx1SjnyLxwBBSQfnQ9DJYe0Ym'
+            csrf_time_limit = timedelta(minutes=20)
+            
+            @property
+            def csrf_context(self):
+                return session
+    
+    class ModelAdmin(sqla.ModelView):
+        form_base_class = SecureForm
 
-	app = flask.Flask(__name__)
-	app.config['SECRET_KEY'] = 'Dnit7qz7mfcP0YuelDrF8vLFvk0snhwP'
-	app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DBFILE
-	**app.config['CSRF_ENABLED'] = True**
+For WTForms 1, you can use use Flask-WTF's Form class::
 
-	**flask_wtf.CsrfProtect(app)**
-	db = flask_sqlalchemy.SQLAlchemy(app)
-	admin = flask_admin.Admin(app, name='Admin')
+    import os
+    import flask
+    import flask_wtf
+    import flask_admin
+    import flask_sqlalchemy
+    from flask_admin.contrib.sqla import ModelView
 
-	## Here is the fix:
-	class MyModelView(ModelView):
-		**form_base_class = flask_wtf.Form**
+    DBFILE = 'app.db'
 
-	class User(db.Model):
-		id = db.Column(db.Integer, primary_key=True)
-		username = db.Column(db.String)
-		password = db.Column(db.String)
+    app = flask.Flask(__name__)
+    app.config['SECRET_KEY'] = 'Dnit7qz7mfcP0YuelDrF8vLFvk0snhwP'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DBFILE
+    app.config['CSRF_ENABLED'] = True
 
-	if not os.path.exists(DBFILE):
-		db.create_all()
+    flask_wtf.CsrfProtect(app)
+    db = flask_sqlalchemy.SQLAlchemy(app)
+    admin = flask_admin.Admin(app, name='Admin')
 
-	## The subclass is used here:
-	admin.add_view( MyModelView(User, db.session, name='User') )
+    class MyModelView(ModelView):
+        # Here is the fix:
+        form_base_class = flask_wtf.Form
 
-	app.run(debug=True)
+    class User(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        username = db.Column(db.String)
+        password = db.Column(db.String)
+
+    if not os.path.exists(DBFILE):
+        db.create_all()
+
+    admin.add_view( MyModelView(User, db.session, name='User') )
+
+    app.run(debug=True)
 
 Further reading
 ---------------

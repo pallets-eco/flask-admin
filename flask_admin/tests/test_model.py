@@ -366,7 +366,7 @@ def test_csrf():
 
     def get_csrf_token(data):
         data = data.split('name="csrf_token" type="hidden" value="')[1]
-        token = data.split('">')[0]
+        token = data.split('"')[0]
         return token
 
     app, admin = setup()
