@@ -20,6 +20,7 @@ from flask.ext.admin._backwards import ObsoleteAttr
 from flask.ext.admin._compat import iteritems, OrderedDict, as_unicode
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
+from .fields import ListEditableFieldList
 
 
 # Used to generate filter query string name
@@ -596,7 +597,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # List View In-Line Editing
         if self.column_editable_list:
-            self._list_form_class = self.scaffold_list_form()
+            self._list_form_class = self.get_list_form()
         else:
             self.column_editable_list = {}
 
@@ -853,10 +854,18 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         raise NotImplementedError('Please implement scaffold_form method')
 
-    def scaffold_list_form(self):
+    def scaffold_list_form(self, CustomFieldList, validators=None):
         """
             Create form for the `index_view` using only the columns from
-            `self.column_editable_list`. Must be implemented in the child class.
+            `self.column_editable_list`.
+
+            :param validators:
+                `form_args` dict with only validators
+                {'name': {'validators': [required()]}}
+            :param CustomFieldList:
+                A WTForm FieldList class. By default, `ListEditableFieldList`.
+
+            Must be implemented in the child class.
         """
         raise NotImplementedError('Please implement scaffold_list_form method')
 
@@ -873,6 +882,45 @@ class BaseModelView(BaseView, ActionsMixin):
             return self.form
 
         return self.scaffold_form()
+
+    def get_list_form(self):
+        """
+            Get form class for the editable list view.
+
+            Uses only validators from `form_args` to build the form class.
+
+            Allows overriding the editable list view field/widget. For example::
+
+                from flask.ext.admin.model.fields import ListEditableFieldList
+                from flask.ext.admin.model.widgets import XEditableWidget
+
+                class CustomWidget(XEditableWidget):
+                    def get_kwargs(self, subfield, kwargs):
+                        if subfield.type == 'TextAreaField':
+                            kwargs['data-type'] = 'textarea'
+                            kwargs['data-rows'] = '20'
+                        # elif: kwargs for other fields
+
+                        return kwargs
+
+                class CustomFieldList(ListEditableFieldList):
+                    widget = CustomWidget()
+
+                class MyModelView(BaseModelView):
+                    def get_list_form(self):
+                        return self.scaffold_list_form(CustomFieldList)
+        """
+        if self.form_args:
+            # get only validators, other form_args can break FieldList wrapper
+            validators = dict(
+                (key, {'validators': value["validators"]})
+                for key, value in iteritems(self.form_args)
+                if value.get("validators")
+            )
+        else:
+            validators = None
+
+        return self.scaffold_list_form(ListEditableFieldList, validators)
 
     def get_create_form(self):
         """

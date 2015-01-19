@@ -612,17 +612,26 @@ class ModelView(BaseModelView):
 
         return form_class
 
-    def scaffold_list_form(self):
+    def scaffold_list_form(self, CustomFieldList, validators=None):
         """
             Create form for the `index_view` using only the columns from
             `self.column_editable_list`.
+
+            :param validators:
+                `form_args` dict with only validators
+                {'name': {'validators': [required()]}}
+            :param CustomFieldList:
+                A WTForm FieldList class. By default, `ListEditableFieldList`.
         """
         converter = self.model_form_converter(self.session, self)
         form_class = form.get_form(self.model, converter,
                                    base_class=self.form_base_class,
-                                   only=self.column_editable_list)
+                                   only=self.column_editable_list,
+                                   field_args=validators)
 
-        return wrap_fields_in_fieldlist(self.form_base_class, form_class)
+        return wrap_fields_in_fieldlist(self.form_base_class,
+                                        form_class,
+                                        CustomFieldList)
 
     def scaffold_inline_form_models(self, form_class):
         """
