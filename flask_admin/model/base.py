@@ -854,7 +854,8 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         raise NotImplementedError('Please implement scaffold_form method')
 
-    def scaffold_list_form(self, CustomFieldList, validators=None):
+    def scaffold_list_form(self, custom_fieldlist=ListEditableFieldList,
+                           validators=None):
         """
             Create form for the `index_view` using only the columns from
             `self.column_editable_list`.
@@ -862,7 +863,7 @@ class BaseModelView(BaseView, ActionsMixin):
             :param validators:
                 `form_args` dict with only validators
                 {'name': {'validators': [required()]}}
-            :param CustomFieldList:
+            :param custom_fieldlist:
                 A WTForm FieldList class. By default, `ListEditableFieldList`.
 
             Must be implemented in the child class.
@@ -920,7 +921,7 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             validators = None
 
-        return self.scaffold_list_form(ListEditableFieldList, validators)
+        return self.scaffold_list_form(validators=validators)
 
     def get_create_form(self):
         """
