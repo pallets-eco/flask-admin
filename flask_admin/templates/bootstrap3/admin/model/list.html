@@ -111,7 +111,7 @@
                             <input type="hidden" name="id" value="{{ get_pk_value(row) }}"/>
                             <input type="hidden" name="url" value="{{ return_url }}"/>
                             {% if delete_form.csrf_token %}
-                            <input name="csrf_token" type="hidden" value="{{ delete_form.csrf_token() }}"/>
+                            <input name="csrf_token" type="hidden" value="{{ delete_form.csrf_token._value() }}"/>
                             {% endif %}
                             <button onclick="return confirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="Delete record">
                                 <span class="glyphicon glyphicon-trash"></span>
