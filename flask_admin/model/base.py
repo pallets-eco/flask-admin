@@ -948,7 +948,7 @@ class BaseModelView(BaseView, ActionsMixin):
         class DeleteForm(self.form_base_class):
             id = HiddenField(validators=[Required()])
             url = HiddenField()
-            
+
         return DeleteForm
 
     def create_form(self, obj=None):
@@ -1370,7 +1370,7 @@ class BaseModelView(BaseView, ActionsMixin):
             form = self.list_form()
         else:
             form = None
-            
+
         if self.can_delete:
             delete_form = self.delete_form()
         else:
@@ -1543,7 +1543,8 @@ class BaseModelView(BaseView, ActionsMixin):
         form = self.delete_form()
 
         if self.validate_form(form):
-            id = form.id.data # id is Required()
+             # id is Required()
+            id = form.id.data
 
             model = self.get_one(id)
 

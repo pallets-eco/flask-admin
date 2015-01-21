@@ -25,7 +25,13 @@ def get_mdict_item_or_list(mdict, key):
     if hasattr(mdict, 'getlist'):
         v = mdict.getlist(key)
         if len(v) == 1:
-            return v[0]
+            value = v[0]
+
+            # Special case for empty strings, treat them as "no-value"
+            if value == '':
+                value = None
+
+            return value
         elif len(v) == 0:
             return None
         else:
