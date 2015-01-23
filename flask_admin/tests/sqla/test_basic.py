@@ -1343,6 +1343,31 @@ def test_default_sort():
     eq_(data[2].test1, 'c')
 
 
+def test_complex_sort():
+    app, db, admin = setup()
+    M1, M2 = create_models(db)
+
+    m1 = M1('b')
+    db.session.add(m1)
+    db.session.add(M2('c', model1=m1))
+
+    m2 = M1('a')
+    db.session.add(m2)
+    db.session.add(M2('c', model1=m2))
+
+    db.session.commit()
+
+    view = CustomModelView(M2, db.session,
+                           column_list = ['string_field', 'model1.test1'],
+                           column_sortable_list = ['model1.test1'])
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model2/?sort=1')
+    eq_(rv.status_code, 200)
+
+
 def test_default_complex_sort():
     app, db, admin = setup()
     M1, M2 = create_models(db)
@@ -1365,6 +1390,7 @@ def test_default_complex_sort():
     eq_(len(data), 2)
     eq_(data[0].model1.test1, 'a')
     eq_(data[1].model1.test1, 'b')
+
 
 def test_extra_fields():
     app, db, admin = setup()
