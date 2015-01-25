@@ -71,8 +71,8 @@ class XEditableWidget(object):
         field inside of the FieldList (StringField, IntegerField, etc).
     """
     def __call__(self, field, **kwargs):
-        value = kwargs.pop("value", "")
-
+        kwargs.setdefault('data-value', kwargs.pop('value', ''))
+        
         kwargs.setdefault('data-role', 'x-editable')
         kwargs.setdefault('data-url', './ajax/update/')
 
@@ -92,7 +92,7 @@ class XEditableWidget(object):
         kwargs = self.get_kwargs(subfield, kwargs)
 
         return HTMLString(
-            '<a %s>%s</a>' % (html_params(**kwargs), value)
+            '<a %s>%s</a>' % (html_params(**kwargs), kwargs['data-value'])
         )
 
     def get_kwargs(self, subfield, kwargs):
