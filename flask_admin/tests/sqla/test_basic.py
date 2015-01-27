@@ -285,18 +285,31 @@ def test_complex_searchable_list():
                            column_searchable_list=['model1.test1'])
     admin.add_view(view)
 
-    m1 = Model1('model1')
+    m1 = Model1('model1-test1-val')
+    m2 = Model1('model1-test2-val')
     db.session.add(m1)
-    db.session.add(Model2('model2', model1=m1))
-    db.session.add(Model2('model3'))
+    db.session.add(m2)
+    db.session.add(Model2('model2-test1-val', model1=m1))
+    db.session.add(Model2('model2-test2-val', model1=m2))
     db.session.commit()
 
     client = app.test_client()
 
-    rv = client.get('/admin/model2/?search=model1')
+    # test relation string - 'model1.test1'
+    rv = client.get('/admin/model2/?search=model1-test1')
     data = rv.data.decode('utf-8')
-    ok_('model1' in data)
-    ok_('model3' not in data)
+    ok_('model2-test1-val' in data)
+    ok_('model2-test2-val' not in data)
+
+    view2 = CustomModelView(Model1, db.session,
+                           column_searchable_list=[Model2.string_field])
+    admin.add_view(view2)
+
+    # test relation object - Model2.string_field
+    rv = client.get('/admin/model1/?search=model2-test1')
+    data = rv.data.decode('utf-8')
+    ok_('model1-test1-val' in data)
+    ok_('model1-test2-val' not in data)
 
 
 def test_complex_searchable_list_missing_children():
@@ -1357,6 +1370,7 @@ def test_complex_sort():
 
     db.session.commit()
 
+    # test sorting on relation string - 'model1.test1'
     view = CustomModelView(M2, db.session,
                            column_list = ['string_field', 'model1.test1'],
                            column_sortable_list = ['model1.test1'])
@@ -1366,6 +1380,19 @@ def test_complex_sort():
 
     rv = client.get('/admin/model2/?sort=1')
     eq_(rv.status_code, 200)
+
+    # test sorting on relation object - M2.string_field
+    view2 = CustomModelView(M1, db.session,
+                           column_list = ['model2.string_field'],
+                           column_sortable_list = [M2.string_field])
+    admin.add_view(view2)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model1/?sort=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('Sort by' in data)
 
 
 def test_default_complex_sort():

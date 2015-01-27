@@ -1003,10 +1003,12 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Verify if column is sortable.
 
+            Not case-sensitive.
+
             :param name:
                 Column name.
         """
-        return name in self._sortable_columns
+        return name.lower() in (x.lower() for x in self._sortable_columns)
 
     def is_editable(self, name):
         """
