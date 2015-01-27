@@ -341,6 +341,18 @@ class ModelView(BaseModelView):
         else:
             attr = name
 
+            # determine joins if Table.column (relation object) is given
+            if isinstance(name, InstrumentedAttribute):
+                columns = self._get_columns_for_field(name)
+
+                if len(columns) > 1:
+                    raise Exception('Can only handle one column for %s' % name)
+
+                column = columns[0]
+
+                if self._need_join(column.table):
+                    join_tables.append(column.table)
+
         return join_tables, attr
 
     def _need_join(self, table):
@@ -441,18 +453,18 @@ class ModelView(BaseModelView):
             for c in self.column_sortable_list:
                 if isinstance(c, tuple):
                     join_tables, column = self._get_field_with_path(c[1])
-
-                    result[c[0]] = column
-
-                    if join_tables:
-                        self._sortable_joins[c[0]] = join_tables
+                    column_name = c[0]
+                elif isinstance(c, InstrumentedAttribute):
+                    join_tables, column = self._get_field_with_path(c)
+                    column_name = str(c)
                 else:
                     join_tables, column = self._get_field_with_path(c)
+                    column_name = c
 
-                    result[c] = column
+                result[column_name] = column
 
-                    if join_tables:
-                        self._sortable_joins[c] = join_tables
+                if join_tables:
+                    self._sortable_joins[column_name] = join_tables
 
             return result
 
