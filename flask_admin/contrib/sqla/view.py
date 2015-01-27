@@ -451,6 +451,9 @@ class ModelView(BaseModelView):
 
                     result[c] = column
 
+                    if join_tables:
+                        self._sortable_joins[c] = join_tables
+
             return result
 
     def init_search(self):
