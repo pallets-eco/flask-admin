@@ -432,6 +432,26 @@ class ModelView(BaseModelView):
         """
         return self.model.objects
 
+    def _search(self, query, search_term):
+        # TODO: Unfortunately, MongoEngine contains bug which
+        # prevents running complex Q queries and, as a result,
+        # Flask-Admin does not support per-word searching like
+        # in other backends
+        op, term = parse_like_term(search_term)
+
+        criteria = None
+
+        for field in self._search_fields:
+            flt = {'%s__%s' % (field.name, op): term}
+            q = mongoengine.Q(**flt)
+
+            if criteria is None:
+                criteria = q
+            else:
+                criteria |= q
+
+        return query.filter(criteria)
+
     def get_list(self, page, sort_column, sort_desc, search, filters,
                  execute=True):
         """
@@ -460,24 +480,7 @@ class ModelView(BaseModelView):
 
         # Search
         if self._search_supported and search:
-            # TODO: Unfortunately, MongoEngine contains bug which
-            # prevents running complex Q queries and, as a result,
-            # Flask-Admin does not support per-word searching like
-            # in other backends
-            op, term = parse_like_term(search)
-
-            criteria = None
-
-            for field in self._search_fields:
-                flt = {'%s__%s' % (field.name, op): term}
-                q = mongoengine.Q(**flt)
-
-                if criteria is None:
-                    criteria = q
-                else:
-                    criteria |= q
-
-            query = query.filter(criteria)
+            query = self._search(query, search)
 
         # Get count
         count = query.count()
