@@ -169,7 +169,7 @@
   <link href="{{ admin_static.url(filename='vendor/select2/select2.css') }}" rel="stylesheet">
   <link href="{{ admin_static.url(filename='vendor/select2/select2-bootstrap3.css') }}" rel="stylesheet">
   <link href="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker-bs3.css') }}" rel="stylesheet">
-  {% if config.MAPBOX_MAP_ID %}
+  {% if config.MAPBOX_MAP_ID and config.MAPBOX_ACCESS_TOKEN %}
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css') }}" rel="stylesheet">
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css') }}" rel="stylesheet">
   {% endif %}
@@ -179,9 +179,13 @@
 {% endmacro %}
 
 {% macro form_js() %}
-  {% if config.MAPBOX_MAP_ID %}
+  {% if config.MAPBOX_MAP_ID and config.MAPBOX_ACCESS_TOKEN %}
   <script>
   window.MAPBOX_MAP_ID = "{{ config.MAPBOX_MAP_ID }}";
+  {% if config.get('MAPBOX_API_VERSION') == 4 %}
+  window.MAPBOX_ACCESS_TOKEN = "{{ config.MAPBOX_ACCESS_TOKEN }}";
+  window.MAPBOX_API_VERSION = "{{ config.MAPBOX_API_VERSION }}";
+  {% endif %}
   </script>
   <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js') }}"></script>
   <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js') }}"></script>
