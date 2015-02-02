@@ -703,6 +703,14 @@ class ModelView(BaseModelView):
             Return a query for the model type.
 
             If you override this method, don't forget to override `get_count_query` as well.
+            
+            This method can be used to set a "persistent filter" on an index_view.
+            
+            Example::
+            
+                class MyView(ModelView):
+                    def get_query(self):
+                        return super(MyView, self).get_query().filter(User.username == current_user.username)
         """
         return self.session.query(self.model)
 
