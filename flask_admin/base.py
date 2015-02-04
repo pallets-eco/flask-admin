@@ -116,6 +116,10 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
                 @expose('/')
                 def index(self):
                     return 'Hello World!'
+
+        Icons can be added to the menu by using `menu_icon_type` and `menu_icon_value`. For example::
+
+            admin.add_view(MyView(name='My View', menu_icon_type='glyph', menu_icon_value='glyphicon-home'))
     """
     @property
     def _template_args(self):
