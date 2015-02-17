@@ -607,9 +607,8 @@ class InlineModelConverter(InlineModelConverterBase):
         if label:
             kwargs['label'] = label
 
-        view_info = self.get_info(self.view)
-        if view_info.form_args:
-            field_args = view_info.form_args.get(forward_prop.key, {})
+        if self.view.form_args:
+            field_args = self.view.form_args.get(forward_prop.key, {})
             kwargs.update(**field_args)
 
         # Contribute field
