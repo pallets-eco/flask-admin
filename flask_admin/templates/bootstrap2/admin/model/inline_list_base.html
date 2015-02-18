@@ -1,5 +1,5 @@
 {% macro render_inline_fields(field, template, render, check=None) %}
-<div class="inline-field">
+<div class="inline-field" id="{{ field.id }}">
     {# existing inline form fields #}
     <div class="inline-field-list">
         {% for subfield in field %}
