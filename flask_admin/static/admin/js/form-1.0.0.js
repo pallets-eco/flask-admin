@@ -266,10 +266,11 @@
           return false;
         }
 
+        console.log($el);
         // Add geocoding feature
-        if ($el.data('geocoding-field')) {
+        if ($el.data('geocoding')) {
           var $geocodingBtn = $("<button/>",  { text: 'Lookup', type: 'button', class: 'btn'});
-          var $geocodingEl = $('#' + $el.data('geocoding-el'));
+          var $geocodingEl = $('#' + $el.data('geocoding'));
 
           if ($geocodingEl.length > 0) {
             $geocodingEl.parent().addClass('input-append');
