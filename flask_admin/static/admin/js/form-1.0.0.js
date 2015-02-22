@@ -266,7 +266,6 @@
           return false;
         }
 
-        console.log($el);
         // Add geocoding feature
         if ($el.data('geocoding')) {
           var $geocodingBtn = $("<button/>",  { text: 'Lookup', type: 'button', class: 'btn'});
