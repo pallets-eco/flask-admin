@@ -78,6 +78,11 @@
           return false;
         }
 
+        if (!window.MAPBOX_ACCESS_TOKEN) {
+            console.error("You must set MAPBOX_ACCESS_TOKEN in your Flask settings to use the map widget");
+            return false;
+        }
+
         var geometryType = $el.data("geometry-type")
         if (geometryType) {
           geometryType = geometryType.toUpperCase();
@@ -155,7 +160,7 @@
         }
 
         // set up tiles
-        L.tileLayer('http://{s}.tiles.mapbox.com/v3/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png', {
+        L.tileLayer('http://{s}.tiles.mapbox.com/v4/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png?access_token=' + MAPBOX_ACCESS_TOKEN, {
           attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
           maxZoom: 18
         }).addTo(map);
@@ -224,6 +229,56 @@
         })
         map.on('draw:edited', saveToTextArea);
         map.on('draw:deleted', saveToTextArea);
+
+        // executes geocoding ajax request to mapbox api
+        var geocode = function (e) {
+          e.preventDefault();
+
+          var address = encodeURIComponent($('#address').val());
+
+          if (!address) {
+            return;
+          }
+
+          var url = 'http://api.tiles.mapbox.com/v4/geocode/mapbox.places/' + address + '.json?access_token=' + MAPBOX_ACCESS_TOKEN;
+
+          $.getJSON(url, function (data) {
+            if (data.features.length == 0) {
+              alert('Address not found');
+              return;
+            }
+
+            var coordinates = data.features[0].geometry.coordinates;
+
+            center = L.latLng(coordinates[1], coordinates[0]);
+
+            map.setView(center, 15);
+
+            editableLayers.clearLayers();
+            editableLayers.addData(data.features[0].geometry);
+
+            saveToTextArea();
+          })
+          .fail(function () {
+            alert('Geocoding error');
+          });
+
+          return false;
+        }
+
+        // Add geocoding feature
+        if ($el.data('geocoding')) {
+          var $geocodingBtn = $("<button/>",  { text: 'Lookup', type: 'button', class: 'btn'});
+          var $geocodingEl = $('#' + $el.data('geocoding'));
+
+          if ($geocodingEl.length > 0) {
+            $geocodingEl.parent().addClass('input-append');
+            $geocodingEl.after($geocodingBtn);
+            $geocodingBtn.on('click', geocode);
+          } else {
+            console.error("Geocoding field not found");
+          }
+        }
       }
 
       /**
