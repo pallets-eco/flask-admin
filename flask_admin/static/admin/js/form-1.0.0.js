@@ -229,6 +229,56 @@
         })
         map.on('draw:edited', saveToTextArea);
         map.on('draw:deleted', saveToTextArea);
+
+        // executes geocoding ajax request to mapbox api
+        var geocode = function (e) {
+          e.preventDefault();
+
+          var address = encodeURIComponent($('#address').val());
+
+          if (!address) {
+            return;
+          }
+
+          var url = 'http://api.tiles.mapbox.com/v4/geocode/mapbox.places/' + address + '.json?access_token=' + MAPBOX_ACCESS_TOKEN;
+
+          $.getJSON(url, function (data) {
+            if (data.features.length == 0) {
+              alert('Address not found');
+              return;
+            }
+
+            var coordinates = data.features[0].geometry.coordinates;
+
+            center = L.latLng(coordinates[1], coordinates[0]);
+
+            map.setView(center, 15);
+
+            editableLayers.clearLayers();
+            editableLayers.addData(data.features[0].geometry);
+
+            saveToTextArea();
+          })
+          .fail(function () {
+            alert('Geocoding error');
+          });
+
+          return false;
+        }
+
+        // Add geocoding feature
+        if ($el.data('geocoding-field')) {
+          var $geocodingBtn = $("<button/>",  { text: 'Lookup', type: 'button', class: 'btn'});
+          var $geocodingEl = $('#' + $el.data('geocoding-el'));
+
+          if ($geocodingEl.length > 0) {
+            $geocodingEl.parent().addClass('input-append');
+            $geocodingEl.after($geocodingBtn);
+            $geocodingBtn.on('click', geocode);
+          } else {
+            console.error("Geocoding field not found");
+          }
+        }
       }
 
       /**

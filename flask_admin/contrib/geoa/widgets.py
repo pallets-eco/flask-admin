@@ -36,6 +36,7 @@ class LeafletWidget(TextArea):
         kwargs.setdefault('data-role', self.data_role)
         gtype = getattr(field, "geometry_type", "GEOMETRY")
         kwargs.setdefault('data-geometry-type', gtype)
+        geocoding = getattr(field, 'geocoding', False)
 
         # set optional values from constructor
         if not "data-width" in kwargs:
@@ -68,5 +69,8 @@ class LeafletWidget(TextArea):
             kwargs["data-max-bounds-sw-lng"] = miny
             kwargs["data-max-bounds-ne-lat"] = maxx
             kwargs["data-max-bounds-ne-lng"] = maxy
+
+        if geocoding:
+            kwargs["data-geocoding"] = geocoding
 
         return super(LeafletWidget, self).__call__(field, **kwargs)
