@@ -16,7 +16,7 @@ class NdbModelView(BaseModelView):
 		return model.key.urlsafe()
 
 	def scaffold_list_columns(self):
-		return [k for (k, v) in self.model.__dict__.iteritems() if isinstance(v, ndb.Property)]
+		return sorted([k for (k, v) in self.model.__dict__.iteritems() if isinstance(v, ndb.Property)])
 
 	def scaffold_sortable_columns(self):
 		return [k for (k, v) in self.model.__dict__.iteritems() if isinstance(v, ndb.Property) and v._indexed]
@@ -98,7 +98,7 @@ class DbModelView(BaseModelView):
 		return str(model.key())
 
 	def scaffold_list_columns(self):
-		return [k for (k, v) in self.model.__dict__.iteritems() if isinstance(v, db.Property)]
+		return sorted([k for (k, v) in self.model.__dict__.iteritems() if isinstance(v, db.Property)])
 
 	def scaffold_sortable_columns(self):
 		return [k for (k, v) in self.model.__dict__.iteritems() if isinstance(v, db.Property) and v._indexed]
