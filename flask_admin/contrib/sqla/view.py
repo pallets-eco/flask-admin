@@ -80,8 +80,7 @@ class ModelView(BaseModelView):
                                           'searchable_columns',
                                           None)
     """
-        Collection of the searchable columns. Only text-based columns
-        are searchable (`String`, `Unicode`, `Text`, `UnicodeText`).
+        Collection of the searchable columns.
 
         Example::
 
@@ -490,10 +489,6 @@ class ModelView(BaseModelView):
 
                 for column in self._get_columns_for_field(attr):
                     column_type = type(column.type).__name__
-
-                    if not self.is_text_column_type(column_type):
-                        raise Exception('Can only search on text columns. ' +
-                                        'Failed to setup search for "%s"' % p)
 
                     self._search_fields.append(column)
 
