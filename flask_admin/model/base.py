@@ -1223,6 +1223,37 @@ class BaseModelView(BaseView, ActionsMixin):
     def get_empty_list_message(self):
         return gettext('There are no items in the table.')
 
+    def _clear_empty_multiple_select_fields(self, form, model):
+        """
+            Detect any multiple-select fields that the user cleared, and so
+            too need to be cleared in the model. This extra attention is
+            needed because:
+            - select fields with no items selected are not included by
+            browsers in the submitted form POST data, and
+            - the multiple-select Select2 widget does not use a special item
+            to signify "no selection" (i.e., '---') as does a single-select.
+
+            :param form:
+                Form instance
+
+            :param model:
+                Model instance
+        """
+        # Look for multiple-select fields that the user has cleared.
+        cleared_selects = [form._fields[field].name for field in form._fields
+            if form._fields[field].type.find('SelectMultiple') > -1 and
+            form._fields[field].raw_data == []]
+
+        # Clear the corresponding model data for each of these fields.
+        for cleared_select in cleared_selects:
+            if cleared_select in model:
+                if isinstance(model[cleared_select], list):
+                    # Clear the values one at a time to support list
+                    # implementations that watch changes on themselves.
+                    while model[cleared_select]:
+                        model[cleared_select].pop()
+                    model.save()
+
     # URL generation helpers
     def _get_list_filter_args(self):
         if self._filters:
@@ -1514,6 +1545,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         if self.validate_form(form):
             if self.update_model(form, model):
+                self._clear_empty_multiple_select_fields(form, model)
                 if '_continue_editing' in request.form:
                     flash(gettext('Record was successfully saved.'))
                     return redirect(request.url)
