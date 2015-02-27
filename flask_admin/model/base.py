@@ -1245,14 +1245,15 @@ class BaseModelView(BaseView, ActionsMixin):
                 form._fields[field].raw_data == []]
 
         # Clear the corresponding model data for each of these fields.
-        for cleared_select in cleared_selects:
-            if cleared_select in model:
-                if isinstance(model[cleared_select], list):
-                    # Clear the values one at a time to support list
-                    # implementations that watch changes on themselves.
-                    while model[cleared_select]:
-                        model[cleared_select].pop()
-                    model.save()
+        if model:
+            for cleared_select in cleared_selects:
+                if cleared_select in model:
+                    if isinstance(model[cleared_select], list):
+                        # Clear the values one at a time to support list
+                        # implementations that watch changes on themselves.
+                        while model[cleared_select]:
+                            model[cleared_select].pop()
+                        model.save()
 
     # URL generation helpers
     def _get_list_filter_args(self):
