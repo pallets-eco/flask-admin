@@ -1245,7 +1245,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 form._fields[field].raw_data == []]
 
         # Clear the corresponding model data for each of these fields.
-        if model:
+        if model and hasattr(model, '__iter__'):
             for cleared_select in cleared_selects:
                 if cleared_select in model:
                     if isinstance(model[cleared_select], list):
