@@ -1242,7 +1242,7 @@ class BaseModelView(BaseView, ActionsMixin):
         # Look for multiple-select fields that the user has cleared.
         cleared_selects = [form._fields[field].name for field in form._fields
             if form._fields[field].type.find('SelectMultiple') > -1 and
-            form._fields[field].raw_data == []]
+                form._fields[field].raw_data == []]
 
         # Clear the corresponding model data for each of these fields.
         for cleared_select in cleared_selects:
