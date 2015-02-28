@@ -640,3 +640,11 @@ class ModelView(BaseModelView):
             if not self.handle_view_exception(ex):
                 flash(gettext('Failed to delete records. %(error)s', error=str(ex)),
                       'error')
+
+    def get_column_name(self,field):
+        if self.column_labels and field in self.column_labels:
+            return self.column_labels[field]
+        else:
+            f = getattr(self.model,field)  # the field
+            verbose_name =  getattr(f,'verbose_name') # maybe verbose_name a better choice
+            return verbose_name or self._prettify_name(field)
