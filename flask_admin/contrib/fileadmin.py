@@ -33,10 +33,10 @@ class FileAdmin(BaseView, ActionsMixin):
         Sample usage::
 
             import os.path as op
-            
+
             from flask.ext.admin import Admin
             from flask.ext.admin.contrib.fileadmin import FileAdmin
-            
+
             admin = Admin()
 
             path = op.join(op.dirname(__file__), 'static')
@@ -117,7 +117,7 @@ class FileAdmin(BaseView, ActionsMixin):
     """
         Edit template
     """
-    
+
     form_base_class = form.BaseForm
     """
         Base form class. Will be used to create the upload, rename, edit, and delete form.
@@ -398,7 +398,7 @@ class FileAdmin(BaseView, ActionsMixin):
                 Werkzeug `FileStorage` object
         """
         file_data.save(path)
-        
+
     def validate_form(self, form):
         """
             Validate the form on submit.
@@ -560,12 +560,12 @@ class FileAdmin(BaseView, ActionsMixin):
             delete_form = self.delete_form()
         else:
             delete_form = None
-        
+
         # Get path and verify if it is valid
         base_path, directory, path = self._normalize_path(path)
 
         if not self.is_accessible_path(path):
-            flash(gettext('Permission denied.', 'error'))
+            flash(gettext('Permission denied.'), 'error')
             return redirect(self._get_dir_url('.index'))
 
         # Get directory listing
@@ -632,7 +632,7 @@ class FileAdmin(BaseView, ActionsMixin):
             return redirect(self._get_dir_url('.index', path))
 
         if not self.is_accessible_path(path):
-            flash(gettext('Permission denied.', 'error'))
+            flash(gettext('Permission denied.'), 'error')
             return redirect(self._get_dir_url('.index'))
 
         form = self.upload_form()

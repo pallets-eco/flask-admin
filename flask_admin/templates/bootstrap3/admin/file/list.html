@@ -57,7 +57,7 @@
                 {%- if admin_view.can_delete and path -%}
                     {% if is_dir %}
                         {% if name != '..' and admin_view.can_delete_dirs %}
-                        <form class="icon" method="POST" action="{{ get_url('.delete') }}">                           
+                        <form class="icon" method="POST" action="{{ get_url('.delete') }}">
                             {{ delete_form.path(value=path) }}
                             {{ delete_form.csrf_token }}
                             <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
