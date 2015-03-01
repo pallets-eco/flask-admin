@@ -14,7 +14,7 @@ from flask.ext.admin.form import BaseForm, FormOpts, rules
 from flask.ext.admin.model import filters, typefmt
 from flask.ext.admin.actions import ActionsMixin
 from flask.ext.admin.helpers import (get_form_data, validate_form_on_submit,
-                                     get_redirect_target)
+                                     get_redirect_target, flash_errors)
 from flask.ext.admin.tools import rec_getattr
 from flask.ext.admin._backwards import ObsoleteAttr
 from flask.ext.admin._compat import iteritems, OrderedDict, as_unicode
@@ -972,6 +972,9 @@ class BaseModelView(BaseView, ActionsMixin):
             Instantiate model delete form and return it.
 
             Override to implement custom behavior.
+            
+            The delete form originally used a GET request, so delete_form
+            accepts both GET and POST request for backwards compatibility.
         """
         if request.form:
             return self._delete_form_class(request.form)
@@ -1558,12 +1561,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 flash(gettext('Record was successfully deleted.'))
                 return redirect(return_url)
         else:
-            # flash validation errors
-            for field_name, errors in iteritems(form.errors):
-                errors = field_name + u": " + u", ".join(errors)
-                flash(gettext('Failed to delete record. %(error)s',
-                              error=str(errors)),
-                      'error')
+            flash_errors(form, message='Failed to delete record. %(error)s')
 
         return redirect(return_url)
 

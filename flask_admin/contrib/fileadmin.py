@@ -19,48 +19,6 @@ from flask.ext.admin.actions import action, ActionsMixin
 from flask.ext.admin.babel import gettext, lazy_gettext
 
 
-class NameForm(form.BaseForm):
-    """
-        Form with a filename input field.
-
-        Validates if provided name is valid for *nix and Windows systems.
-    """
-    name = fields.StringField()
-
-    regexp = re.compile(r'^(?!^(PRN|AUX|CLOCK\$|NUL|CON|COM\d|LPT\d|\..*)(\..+)?$)[^\x00-\x1f\\?*:\";|/]+$')
-
-    def validate_name(self, field):
-        if not self.regexp.match(field.data):
-            raise validators.ValidationError(gettext('Invalid directory name'))
-
-
-class UploadForm(form.BaseForm):
-    """
-        File upload form. Works with FileAdmin instance to check if it is allowed
-        to upload file with given extension.
-    """
-    upload = fields.FileField(lazy_gettext('File to upload'))
-
-    def __init__(self, admin):
-        self.admin = admin
-
-        super(UploadForm, self).__init__(helpers.get_form_data())
-
-    def validate_upload(self, field):
-        if not self.upload.data:
-            raise validators.ValidationError(gettext('File required.'))
-
-        filename = self.upload.data.filename
-
-        if not self.admin.is_file_allowed(filename):
-            raise validators.ValidationError(gettext('Invalid file type.'))
-
-
-class EditForm(form.BaseForm):
-    content = fields.TextAreaField(lazy_gettext('Content'),
-                                   (validators.required(),))
-
-
 class FileAdmin(BaseView, ActionsMixin):
     """
         Simple file-management interface.
@@ -74,11 +32,15 @@ class FileAdmin(BaseView, ActionsMixin):
 
         Sample usage::
 
+            import os.path as op
+
+            from flask.ext.admin import Admin
+            from flask.ext.admin.contrib.fileadmin import FileAdmin
+
             admin = Admin()
 
             path = op.join(op.dirname(__file__), 'static')
             admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
-            admin.setup_app(app)
     """
 
     can_upload = True
@@ -156,9 +118,22 @@ class FileAdmin(BaseView, ActionsMixin):
         Edit template
     """
 
-    upload_form = UploadForm
+    form_base_class = form.BaseForm
     """
-        Upload form class
+        Base form class. Will be used to create the upload, rename, edit, and delete form.
+
+        Allows enabling CSRF validation and useful if you want to have custom
+        contructor or override some fields.
+
+        Example::
+
+            class MyBaseForm(Form):
+                def do_something(self):
+                    pass
+
+            class MyAdmin(FileAdmin):
+                form_base_class = MyBaseForm
+
     """
 
     def __init__(self, base_path, base_url=None,
@@ -231,6 +206,139 @@ class FileAdmin(BaseView, ActionsMixin):
         """
         return self.base_url
 
+    def get_upload_form(self):
+        """
+            Upload form class for file upload view.
+
+            Override to implement customized behavior.
+        """
+        class UploadForm(self.form_base_class):
+            """
+                File upload form. Works with FileAdmin instance to check if it
+                is allowed to upload file with given extension.
+            """
+            upload = fields.FileField(lazy_gettext('File to upload'))
+
+            def __init__(self, *args, **kwargs):
+                super(UploadForm, self).__init__(*args, **kwargs)
+                self.admin = kwargs['admin']
+
+            def validate_upload(self, field):
+                if not self.upload.data:
+                    raise validators.ValidationError(gettext('File required.'))
+
+                filename = self.upload.data.filename
+
+                if not self.admin.is_file_allowed(filename):
+                    raise validators.ValidationError(gettext('Invalid file type.'))
+
+        return UploadForm
+
+    def get_edit_form(self):
+        """
+            Create form class for file editing view.
+
+            Override to implement customized behavior.
+        """
+        class EditForm(self.form_base_class):
+            content = fields.TextAreaField(lazy_gettext('Content'),
+                                           (validators.required(),))
+
+        return EditForm
+
+    def get_name_form(self):
+        """
+            Create form class for renaming and mkdir views.
+
+            Override to implement customized behavior.
+        """
+        def validate_name(self, field):
+            regexp = re.compile(r'^(?!^(PRN|AUX|CLOCK\$|NUL|CON|COM\d|LPT\d|\..*)(\..+)?$)[^\x00-\x1f\\?*:\";|/]+$')
+            if not regexp.match(field.data):
+                raise validators.ValidationError(gettext('Invalid name'))
+
+        class NameForm(self.form_base_class):
+            """
+                Form with a filename input field.
+
+                Validates if provided name is valid for *nix and Windows systems.
+            """
+            name = fields.StringField(lazy_gettext('Name'),
+                                      validators=[validators.Required(),
+                                                  validate_name])
+            path = fields.HiddenField()
+
+        return NameForm
+
+    def get_delete_form(self):
+        """
+            Create form class for model delete view.
+
+            Override to implement customized behavior.
+        """
+        class DeleteForm(self.form_base_class):
+            path = fields.HiddenField(validators=[validators.Required()])
+
+        return DeleteForm
+
+    def upload_form(self):
+        """
+            Instantiate file upload form and return it.
+
+            Override to implement custom behavior.
+        """
+        upload_form_class = self.get_upload_form()
+        if request.form:
+            # Workaround for allowing both CSRF token + FileField to be submitted
+            # https://bitbucket.org/danjac/flask-wtf/issue/12/fieldlist-filefield-does-not-follow
+            formdata = request.form.copy() # as request.form is immutable
+            formdata.update(request.files)
+
+            # admin=self allows the form to use self.is_file_allowed
+            return upload_form_class(formdata, admin=self)
+        elif request.files:
+            return upload_form_class(request.files, admin=self)
+        else:
+            return upload_form_class(admin=self)
+
+    def name_form(self):
+        """
+            Instantiate form used in rename and mkdir then return it.
+
+            Override to implement custom behavior.
+        """
+        name_form_class = self.get_name_form()
+        if request.form:
+            return name_form_class(request.form)
+        elif request.args:
+            return name_form_class(request.args)
+        else:
+            return name_form_class()
+
+    def edit_form(self):
+        """
+            Instantiate file editing form and return it.
+
+            Override to implement custom behavior.
+        """
+        edit_form_class = self.get_edit_form()
+        if request.form:
+            return edit_form_class(request.form)
+        else:
+            return edit_form_class()
+
+    def delete_form(self):
+        """
+            Instantiate file delete form and return it.
+
+            Override to implement custom behavior.
+        """
+        delete_form_class = self.get_delete_form()
+        if request.form:
+            return delete_form_class(request.form)
+        else:
+            return delete_form_class()
+
     def is_file_allowed(self, filename):
         """
             Verify if file can be uploaded.
@@ -290,6 +398,15 @@ class FileAdmin(BaseView, ActionsMixin):
                 Werkzeug `FileStorage` object
         """
         file_data.save(path)
+
+    def validate_form(self, form):
+        """
+            Validate the form on submit.
+
+            :param form:
+                Form to validate
+        """
+        return helpers.validate_form_on_submit(form)
 
     def _get_dir_url(self, endpoint, path=None, **kwargs):
         """
@@ -439,11 +556,16 @@ class FileAdmin(BaseView, ActionsMixin):
             :param path:
                 Optional directory path. If not provided, will use the base directory
         """
+        if self.can_delete:
+            delete_form = self.delete_form()
+        else:
+            delete_form = None
+
         # Get path and verify if it is valid
         base_path, directory, path = self._normalize_path(path)
 
         if not self.is_accessible_path(path):
-            flash(gettext('Permission denied.'))
+            flash(gettext('Permission denied.'), 'error')
             return redirect(self._get_dir_url('.index'))
 
         # Get directory listing
@@ -490,7 +612,8 @@ class FileAdmin(BaseView, ActionsMixin):
                            get_file_url=self._get_file_url,
                            items=items,
                            actions=actions,
-                           actions_confirmation=actions_confirmation)
+                           actions_confirmation=actions_confirmation,
+                           delete_form=delete_form)
 
     @expose('/upload/', methods=('GET', 'POST'))
     @expose('/upload/<path:path>', methods=('GET', 'POST'))
@@ -509,16 +632,16 @@ class FileAdmin(BaseView, ActionsMixin):
             return redirect(self._get_dir_url('.index', path))
 
         if not self.is_accessible_path(path):
-            flash(gettext('Permission denied.'))
+            flash(gettext('Permission denied.'), 'error')
             return redirect(self._get_dir_url('.index'))
 
-        form = self.upload_form(self)
-        if helpers.validate_form_on_submit(form):
+        form = self.upload_form()
+        if self.validate_form(form):
             try:
                 self._save_form_files(directory, path, form)
                 return redirect(self._get_dir_url('.index', path))
             except Exception as ex:
-                flash(gettext('Failed to save file: %(error)s', error=ex))
+                flash(gettext('Failed to save file: %(error)s', error=ex), 'error')
 
         return self.render(self.upload_template, form=form)
 
@@ -562,18 +685,20 @@ class FileAdmin(BaseView, ActionsMixin):
             return redirect(dir_url)
 
         if not self.is_accessible_path(path):
-            flash(gettext('Permission denied.'))
+            flash(gettext('Permission denied.'), 'error')
             return redirect(self._get_dir_url('.index'))
 
-        form = NameForm(helpers.get_form_data())
+        form = self.name_form()
 
-        if helpers.validate_form_on_submit(form):
+        if self.validate_form(form):
             try:
                 os.mkdir(op.join(directory, form.name.data))
                 self.on_mkdir(directory, form.name.data)
                 return redirect(dir_url)
             except Exception as ex:
                 flash(gettext('Failed to create directory: %(error)s', error=ex), 'error')
+        else:
+            helpers.flash_errors(form, message='Failed to create directory: %(error)s')
 
         return self.render(self.mkdir_template,
                            form=form,
@@ -584,42 +709,46 @@ class FileAdmin(BaseView, ActionsMixin):
         """
             Delete view method
         """
-        path = request.form.get('path')
+        form = self.delete_form()
 
-        if not path:
-            return redirect(self.get_url('.index'))
+        path = form.path.data
+        if path:
+            return_url = self._get_dir_url('.index', op.dirname(path))
+        else:
+            return_url = self.get_url('.index')
 
-        # Get path and verify if it is valid
-        base_path, full_path, path = self._normalize_path(path)
+        if self.validate_form(form):
+            # Get path and verify if it is valid
+            base_path, full_path, path = self._normalize_path(path)
 
-        return_url = self._get_dir_url('.index', op.dirname(path))
-
-        if not self.can_delete:
-            flash(gettext('Deletion is disabled.'))
-            return redirect(return_url)
-
-        if not self.is_accessible_path(path):
-            flash(gettext('Permission denied.'))
-            return redirect(self._get_dir_url('.index'))
-
-        if op.isdir(full_path):
-            if not self.can_delete_dirs:
-                flash(gettext('Directory deletion is disabled.'))
+            if not self.can_delete:
+                flash(gettext('Deletion is disabled.'), 'error')
                 return redirect(return_url)
 
-            try:
-                shutil.rmtree(full_path)
-                self.on_directory_delete(full_path, path)
-                flash(gettext('Directory "%(path)s" was successfully deleted.', path=path))
-            except Exception as ex:
-                flash(gettext('Failed to delete directory: %(error)s', error=ex), 'error')
+            if not self.is_accessible_path(path):
+                flash(gettext('Permission denied.'), 'error')
+                return redirect(self._get_dir_url('.index'))
+
+            if op.isdir(full_path):
+                if not self.can_delete_dirs:
+                    flash(gettext('Directory deletion is disabled.'), 'error')
+                    return redirect(return_url)
+
+                try:
+                    shutil.rmtree(full_path)
+                    self.on_directory_delete(full_path, path)
+                    flash(gettext('Directory "%(path)s" was successfully deleted.', path=path))
+                except Exception as ex:
+                    flash(gettext('Failed to delete directory: %(error)s', error=ex), 'error')
+            else:
+                try:
+                    os.remove(full_path)
+                    self.on_file_delete(full_path, path)
+                    flash(gettext('File "%(name)s" was successfully deleted.', name=path))
+                except Exception as ex:
+                    flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
         else:
-            try:
-                os.remove(full_path)
-                self.on_file_delete(full_path, path)
-                flash(gettext('File "%(name)s" was successfully deleted.', name=path))
-            except Exception as ex:
-                flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
+            helpers.flash_errors(form, message='Failed to delete file. %(error)s')
 
         return redirect(return_url)
 
@@ -628,29 +757,29 @@ class FileAdmin(BaseView, ActionsMixin):
         """
             Rename view method
         """
-        path = request.args.get('path')
+        form = self.name_form()
 
-        if not path:
+        path = form.path.data
+        if path:
+            base_path, full_path, path = self._normalize_path(path)
+
+            return_url = self._get_dir_url('.index', op.dirname(path))
+        else:
             return redirect(self.get_url('.index'))
 
-        base_path, full_path, path = self._normalize_path(path)
-
-        return_url = self._get_dir_url('.index', op.dirname(path))
-
         if not self.can_rename:
-            flash(gettext('Renaming is disabled.'))
+            flash(gettext('Renaming is disabled.'), 'error')
             return redirect(return_url)
 
         if not self.is_accessible_path(path):
-            flash(gettext('Permission denied.'))
+            flash(gettext('Permission denied.'), 'error')
             return redirect(self._get_dir_url('.index'))
 
         if not op.exists(full_path):
-            flash(gettext('Path does not exist.'))
+            flash(gettext('Path does not exist.'), 'error')
             return redirect(return_url)
 
-        form = NameForm(helpers.get_form_data(), name=op.basename(path))
-        if helpers.validate_form_on_submit(form):
+        if self.validate_form(form):
             try:
                 dir_base = op.dirname(full_path)
                 filename = secure_filename(form.name.data)
@@ -664,6 +793,8 @@ class FileAdmin(BaseView, ActionsMixin):
                 flash(gettext('Failed to rename: %(error)s', error=ex), 'error')
 
             return redirect(return_url)
+        else:
+            helpers.flash_errors(form, message='Failed to rename: %(error)s')
 
         return self.render(self.rename_template,
                            form=form,
@@ -690,16 +821,16 @@ class FileAdmin(BaseView, ActionsMixin):
         base_path, full_path, path = self._normalize_path(path)
 
         if not self.is_accessible_path(path) or not self.is_file_editable(path):
-            flash(gettext('Permission denied.'))
+            flash(gettext('Permission denied.'), 'error')
             return redirect(self._get_dir_url('.index'))
 
         dir_url = self._get_dir_url('.index', os.path.dirname(path))
         next_url = next_url or dir_url
 
-        form = EditForm(helpers.get_form_data())
+        form = self.edit_form()
         error = False
 
-        if helpers.validate_form_on_submit(form):
+        if self.validate_form(form):
             form.process(request.form, content='')
             if form.validate():
                 try:
@@ -713,8 +844,10 @@ class FileAdmin(BaseView, ActionsMixin):
                     flash(gettext("Changes to %(name)s saved successfully.", name=path))
                     return redirect(next_url)
         else:
+            helpers.flash_errors(form, message='Failed to edit file. %(error)s')
+
             try:
-                with open(full_path, 'r') as f:
+                with open(full_path, 'rb') as f:
                     content = f.read()
             except IOError:
                 flash(gettext("Error reading %(name)s.", name=path), 'error')
