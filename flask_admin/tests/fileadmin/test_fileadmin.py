@@ -34,7 +34,7 @@ def test_file_admin():
     rv = client.get('/admin/myfileadmin/')
     eq_(rv.status_code, 200)
     ok_('path=dummy.txt' in rv.data.decode('utf-8'))
-    
+
     # edit
     rv = client.get('/admin/myfileadmin/edit/?path=dummy.txt')
     eq_(rv.status_code, 200)

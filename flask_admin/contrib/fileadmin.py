@@ -122,7 +122,7 @@ class FileAdmin(BaseView, ActionsMixin):
     """
         Base form class. Will be used to create the upload, rename, edit, and delete form.
 
-        Allows enabling CSRF validation and useful if you want to have custom 
+        Allows enabling CSRF validation and useful if you want to have custom
         contructor or override some fields.
 
         Example::
@@ -205,7 +205,7 @@ class FileAdmin(BaseView, ActionsMixin):
             directories, etc)
         """
         return self.base_url
-        
+
     def get_upload_form(self):
         """
             Upload form class for file upload view.
@@ -219,10 +219,10 @@ class FileAdmin(BaseView, ActionsMixin):
             """
             upload = fields.FileField(lazy_gettext('File to upload'))
 
-            def __init__(self, *args, **kwargs):                                        
+            def __init__(self, *args, **kwargs):
                 super(UploadForm, self).__init__(*args, **kwargs)
                 self.admin = kwargs['admin']
-                
+
             def validate_upload(self, field):
                 if not self.upload.data:
                     raise validators.ValidationError(gettext('File required.'))
@@ -245,7 +245,7 @@ class FileAdmin(BaseView, ActionsMixin):
                                            (validators.required(),))
 
         return EditForm
-        
+
     def get_name_form(self):
         """
             Create form class for renaming and mkdir views.
@@ -280,7 +280,7 @@ class FileAdmin(BaseView, ActionsMixin):
             path = fields.HiddenField(validators=[validators.Required()])
 
         return DeleteForm
-        
+
     def upload_form(self):
         """
             Instantiate file upload form and return it.
@@ -293,7 +293,7 @@ class FileAdmin(BaseView, ActionsMixin):
             # https://bitbucket.org/danjac/flask-wtf/issue/12/fieldlist-filefield-does-not-follow
             formdata = request.form.copy() # as request.form is immutable
             formdata.update(request.files)
-            
+
             # admin=self allows the form to use self.is_file_allowed
             return upload_form_class(formdata, admin=self)
         elif request.files:
@@ -314,7 +314,7 @@ class FileAdmin(BaseView, ActionsMixin):
             return name_form_class(request.args)
         else:
             return name_form_class()
-    
+
     def edit_form(self):
         """
             Instantiate file editing form and return it.
@@ -699,7 +699,7 @@ class FileAdmin(BaseView, ActionsMixin):
                 flash(gettext('Failed to create directory: %(error)s', error=ex), 'error')
         else:
             helpers.flash_errors(form, message='Failed to create directory: %(error)s')
-            
+
         return self.render(self.mkdir_template,
                            form=form,
                            dir_url=dir_url)
@@ -717,7 +717,7 @@ class FileAdmin(BaseView, ActionsMixin):
         else:
             return_url = self.get_url('.index')
 
-        if self.validate_form(form):            
+        if self.validate_form(form):
             # Get path and verify if it is valid
             base_path, full_path, path = self._normalize_path(path)
 
@@ -847,7 +847,7 @@ class FileAdmin(BaseView, ActionsMixin):
             helpers.flash_errors(form, message='Failed to edit file. %(error)s')
 
             try:
-                with open(full_path, 'r') as f:
+                with open(full_path, 'rb') as f:
                     content = f.read()
             except IOError:
                 flash(gettext("Error reading %(name)s.", name=path), 'error')
