@@ -57,8 +57,9 @@
                 {%- if admin_view.can_delete and path -%}
                     {% if is_dir %}
                         {% if name != '..' and admin_view.can_delete_dirs %}
-                        <form class="icon" method="POST" action="{{ get_url('.delete') }}">
-                            <input type="hidden" name="path" value="{{ path }}"></input>
+                        <form class="icon" method="POST" action="{{ get_url('.delete') }}">                           
+                            {{ delete_form.path(value=path) }}
+                            {{ delete_form.csrf_token }}
                             <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
                                 <i class="glyphicon glyphicon-remove"></i>
                             </button>
@@ -66,7 +67,8 @@
                         {% endif %}
                     {% else %}
                     <form class="icon" method="POST" action="{{ get_url('.delete') }}">
-                        <input type="hidden" name="path" value="{{ path }}"></input>
+                        {{ delete_form.path(value=path) }}
+                        {{ delete_form.csrf_token }}
                         <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
                             <i class="glyphicon glyphicon-trash"></i>
                         </button>
