@@ -179,11 +179,13 @@ class FileUploadField(fields.StringField):
                 filename.rsplit('.', 1)[1].lower() in
                 map(lambda x: x.lower(), self.allowed_extensions))
 
+    def _is_uploaded_file(self, data):
+        return (data
+                and isinstance(data, FileStorage)
+                and data.filename)
+
     def pre_validate(self, form):
-        if (self.data
-                and self.data.filename
-                and isinstance(self.data, FileStorage)
-                and not self.is_file_allowed(self.data.filename)):
+        if self._is_uploaded_file(self.data) and not self.is_file_allowed(self.data.filename):
             raise ValidationError(gettext('Invalid file extension'))
 
     def process(self, formdata, data=unset_value):
@@ -194,6 +196,15 @@ class FileUploadField(fields.StringField):
 
         return super(FileUploadField, self).process(formdata, data)
 
+    def process_formdata(self, valuelist):
+        if self._should_delete:
+            self.data = None
+        elif valuelist:
+            data = valuelist[0]
+
+            if self._is_uploaded_file(data):
+                self.data = data
+
     def populate_obj(self, obj, name):
         field = getattr(obj, name, None)
         if field:
@@ -203,7 +214,7 @@ class FileUploadField(fields.StringField):
                 setattr(obj, name, None)
                 return
 
-        if self.data and self.data.filename and isinstance(self.data, FileStorage):
+        if self._is_uploaded_file(self.data):
             if field:
                 self._delete_file(field)
 
@@ -357,9 +368,7 @@ class ImageUploadField(FileUploadField):
     def pre_validate(self, form):
         super(ImageUploadField, self).pre_validate(form)
 
-        if (self.data and
-                isinstance(self.data, FileStorage) and
-                self.data.filename):
+        if self._is_uploaded_file(self.data):
             try:
                 self.image = Image.open(self.data)
             except Exception as e:
@@ -396,7 +405,7 @@ class ImageUploadField(FileUploadField):
             self._save_image(image, self._get_path(filename), format)
         else:
             data.seek(0)
-            data.save( self._get_path(filename) )
+            data.save(self._get_path(filename))
 
         self._save_thumbnail(data, filename, format)
 
