@@ -253,27 +253,32 @@ def test_column_searchable_list():
 
     Model1, Model2 = create_models(db)
 
-    view = CustomModelView(Model1, db.session,
-                           column_searchable_list=['test1', 'test2'])
+    view = CustomModelView(Model2, db.session,
+                           column_searchable_list=['string_field', 'int_field'])
     admin.add_view(view)
 
     eq_(view._search_supported, True)
     eq_(len(view._search_fields), 2)
     ok_(isinstance(view._search_fields[0], db.Column))
     ok_(isinstance(view._search_fields[1], db.Column))
-    eq_(view._search_fields[0].name, 'test1')
-    eq_(view._search_fields[1].name, 'test2')
+    eq_(view._search_fields[0].name, 'string_field')
+    eq_(view._search_fields[1].name, 'int_field')
 
-    db.session.add(Model1('model1'))
-    db.session.add(Model1('model2'))
+    db.session.add(Model2('model1-test', 5000))
+    db.session.add(Model2('model2-test', 9000))
     db.session.commit()
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1/?search=model1')
+    rv = client.get('/admin/model2/?search=model1')
     data = rv.data.decode('utf-8')
-    ok_('model1' in data)
-    ok_('model2' not in data)
+    ok_('model1-test' in data)
+    ok_('model2-test' not in data)
+    
+    rv = client.get('/admin/model2/?search=9000')
+    data = rv.data.decode('utf-8')
+    ok_('model1-test' not in data)
+    ok_('model2-test' in data)
 
 
 def test_complex_searchable_list():
