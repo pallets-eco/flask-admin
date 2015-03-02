@@ -1,6 +1,17 @@
 Changelog
 =========
 
+1.1.0
+-----
+
+Mostly bug fix release. Highlights:
+
+* Inline model editing on the list page
+* FileAdmin refactoring and fixes
+* FileUploadField and ImageUploadField will work with Required() validator
+* Bug fixes
+
+
 1.0.9
 -----
 
