@@ -450,14 +450,20 @@
         }
 
         var $fieldList = $el.find('> .inline-field-list');
-        var $lastField = $fieldList.children('.inline-field').last();
+        var maxId = 0;
 
-        var prefix = id + '-0';
-        if ($lastField.length > 0) {
-            var parts = $lastField.attr('id').split('-');
+        $fieldList.children('.inline-field').each(function(idx, field) {
+            var $field = $(field);
+
+            var parts = $field.attr('id').split('-');
             idx = parseInt(parts[parts.length - 1], 10) + 1;
-            prefix = id + '-' + idx;
-        }
+
+            if (idx > maxId) {
+                maxId = idx;
+            }               
+        });
+
+        var prefix = id + '-' + maxId;        
 
         // Get template
         var $template = $($el.find('> .inline-field-template').text());
