@@ -500,18 +500,6 @@ class ModelView(BaseModelView):
 
         return bool(self.column_searchable_list)
 
-    def is_text_column_type(self, name):
-        """
-            Verify if the provided column type is text-based.
-
-            :returns:
-                ``True`` for ``String``, ``Unicode``, ``Text``, ``UnicodeText``, ``varchar``
-        """
-        if name:
-            name = name.lower()
-
-        return name in ('string', 'unicode', 'text', 'unicodetext', 'varchar')
-
     def scaffold_filters(self, name):
         """
             Return list of enabled filters
@@ -698,11 +686,11 @@ class ModelView(BaseModelView):
             Return a query for the model type.
 
             If you override this method, don't forget to override `get_count_query` as well.
-            
+
             This method can be used to set a "persistent filter" on an index_view.
-            
+
             Example::
-            
+
                 class MyView(ModelView):
                     def get_query(self):
                         return super(MyView, self).get_query().filter(User.username == current_user.username)
