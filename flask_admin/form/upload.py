@@ -152,7 +152,7 @@ class FileUploadField(fields.StringField):
                         upload = FileUploadField('File', namegen=prefix_name)
 
             :param allowed_extensions:
-                List of allowed extensions. If not provided, then gif, jpg, jpeg, png and tiff will be allowed.
+                List of allowed extensions. If not provided, will allow any file.
         """
         self.base_path = base_path
         self.relative_path = relative_path
@@ -310,7 +310,7 @@ class ImageUploadField(FileUploadField):
                         upload = FileUploadField('File', namegen=prefix_name)
 
             :param allowed_extensions:
-                List of allowed extensions. If not provided, will allow any file.
+                List of allowed extensions. If not provided, then gif, jpg, jpeg, png and tiff will be allowed.
             :param max_size:
                 Tuple of (width, height, force) or None. If provided, Flask-Admin will
                 resize image to the desired size.
