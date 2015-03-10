@@ -4,7 +4,6 @@ from flask import g, request, url_for, flash
 from wtforms.validators import DataRequired, InputRequired
 
 from flask.ext.admin._compat import urljoin, urlparse, iteritems
-from flask.ext.admin.babel import gettext
 
 from ._compat import string_types
 
@@ -96,6 +95,7 @@ def is_field_error(errors):
     
     
 def flash_errors(form, message):
+    from flask.ext.admin.babel import gettext
     for field_name, errors in iteritems(form.errors):
         errors = form[field_name].label.text + u": " + u", ".join(errors)
         flash(gettext(message, error=str(errors)), 'error')
