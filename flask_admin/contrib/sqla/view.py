@@ -535,7 +535,7 @@ class ModelView(BaseModelView):
 
                         if join_tables:
                             self._filter_joins[table.name] = join_tables
-                        elif self._need_join(table.name):
+                        elif self._need_join(table):
                             self._filter_joins[table.name] = [table]
                         filters.extend(flt)
 
