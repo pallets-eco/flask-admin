@@ -440,6 +440,7 @@ class ModelView(BaseModelView):
                 query = self.model.select().filter(model_pk << ids)
 
                 for m in query:
+                    self.on_model_delete(m)
                     m.delete_instance(recursive=True)
                     count += 1
 
