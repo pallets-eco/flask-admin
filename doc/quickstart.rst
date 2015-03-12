@@ -298,7 +298,7 @@ If you want to generate a URL for a particular view method from outside, the fol
     admin = Admin(app)
     admin.add_view(MyView(endpoint='testadmin'))
 
-    In this case, you can generate links by concatenating the view method name with an endpoint::
+   In this case, you can generate links by concatenating the view method name with an endpoint::
 
     url_for('testadmin.index')
 
