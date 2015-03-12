@@ -1,31 +1,41 @@
 {% macro render_inline_fields(field, template, render, check=None) %}
-<div class="inline-field">
+<div class="inline-field" id="{{ field.id }}">
+    {# existing inline form fields #}
     <div class="inline-field-list">
         {% for subfield in field %}
-        <div id="{{ subfield.id }}" class="inline-field well">
+        <div id="{{ subfield.id }}" class="inline-field well well-sm">
             {%- if not check or check(subfield) %}
-                {% if subfield.get_pk and subfield.get_pk() %}
-                <div class="inline-field-control">
-                    <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
-                    <label for="del-{{ subfield.id }}" style="display: inline">{{ _gettext('Delete?') }}</label>
-                </div>
-                {% else %}
-                <div class="inline-field-control">
-                    <a href="javascript:void(0)" class="inline-remove-field"><i class="glyphicon glyphicon-remove"></i></a>
-                </div>
-                {% endif %}
+            <legend>
+                <small>
+                    {{ field.label.text }} #{{ loop.index }}
+                    <div class="pull-right">
+                        {% if subfield.get_pk and subfield.get_pk() %}
+                        <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
+                        <label for="del-{{ subfield.id }}" style="display: inline">{{ _gettext('Delete?') }}</label>
+                        {% else %}
+                        <a href="javascript:void(0)" class="inline-remove-field"><i class="glyphicon glyphicon-remove"></i></a>
+                        {% endif %}
+                    </div>
+                </small>
+            </legend>
+            <div class='clearfix'></div>
             {%- endif -%}
-
             {{ render(subfield) }}
         </div>
         {% endfor %}
     </div>
+    
+    {# template for new inline form fields #}
     <div class="inline-field-template hide">
         {% filter forceescape %}
-        <div class="inline-field panel panel-info">
-            <div class="inline-field-control">
-                <a href="javascript:void(0)" class="inline-remove-field"><span class="glyphicon glyphicon-remove"></span></a>
-            </div>
+        <div class="inline-field well well-sm">
+            <legend>
+                <small>New {{ field.label.text }}</small>
+                <div class="pull-right">
+                    <a href="javascript:void(0)" class="inline-remove-field"><span class="glyphicon glyphicon-remove"></span></a>
+                </div>
+            </legend>
+            <div class='clearfix'></div>
             {{ render(template) }}
         </div>
         {% endfilter %}

@@ -11,6 +11,9 @@ from flask import flash
 from flask.ext.admin._compat import string_types
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
+from flask.ext.admin.model.form import wrap_fields_in_fieldlist
+from flask.ext.admin.model.fields import ListEditableFieldList
+
 from flask.ext.admin.actions import action
 from flask.ext.admin._backwards import ObsoleteAttr
 
@@ -18,7 +21,6 @@ from flask.ext.admin.contrib.sqla import form, filters, tools
 from .typefmt import DEFAULT_FORMATTERS
 from .tools import get_query_for_ids
 from .ajax import create_ajax_loader
-
 
 # Set up logger
 log = logging.getLogger("flask-admin.sqla")
@@ -78,8 +80,7 @@ class ModelView(BaseModelView):
                                           'searchable_columns',
                                           None)
     """
-        Collection of the searchable columns. Only text-based columns
-        are searchable (`String`, `Unicode`, `Text`, `UnicodeText`).
+        Collection of the searchable columns.
 
         Example::
 
@@ -339,6 +340,18 @@ class ModelView(BaseModelView):
         else:
             attr = name
 
+            # determine joins if Table.column (relation object) is given
+            if isinstance(name, InstrumentedAttribute):
+                columns = self._get_columns_for_field(name)
+
+                if len(columns) > 1:
+                    raise Exception('Can only handle one column for %s' % name)
+
+                column = columns[0]
+
+                if self._need_join(column.table):
+                    join_tables.append(column.table)
+
         return join_tables, attr
 
     def _need_join(self, table):
@@ -360,7 +373,7 @@ class ModelView(BaseModelView):
         if isinstance(self._primary_key, tuple):
             return tools.iterencode(getattr(model, attr) for attr in self._primary_key)
         else:
-            return getattr(model, self._primary_key)
+            return tools.escape(getattr(model, self._primary_key))
 
     def scaffold_list_columns(self):
         """
@@ -439,15 +452,18 @@ class ModelView(BaseModelView):
             for c in self.column_sortable_list:
                 if isinstance(c, tuple):
                     join_tables, column = self._get_field_with_path(c[1])
-
-                    result[c[0]] = column
-
-                    if join_tables:
-                        self._sortable_joins[c[0]] = join_tables
+                    column_name = c[0]
+                elif isinstance(c, InstrumentedAttribute):
+                    join_tables, column = self._get_field_with_path(c)
+                    column_name = str(c)
                 else:
                     join_tables, column = self._get_field_with_path(c)
+                    column_name = c
 
-                    result[c] = column
+                result[column_name] = column
+
+                if join_tables:
+                    self._sortable_joins[column_name] = join_tables
 
             return result
 
@@ -474,10 +490,6 @@ class ModelView(BaseModelView):
                 for column in self._get_columns_for_field(attr):
                     column_type = type(column.type).__name__
 
-                    if not self.is_text_column_type(column_type):
-                        raise Exception('Can only search on text columns. ' +
-                                        'Failed to setup search for "%s"' % p)
-
                     self._search_fields.append(column)
 
                     # Store joins, avoid duplicates
@@ -487,18 +499,6 @@ class ModelView(BaseModelView):
                             joins.add(table.name)
 
         return bool(self.column_searchable_list)
-
-    def is_text_column_type(self, name):
-        """
-            Verify if the provided column type is text-based.
-
-            :returns:
-                ``True`` for ``String``, ``Unicode``, ``Text``, ``UnicodeText``, ``varchar``
-        """
-        if name:
-            name = name.lower()
-
-        return name in ('string', 'unicode', 'text', 'unicodetext', 'varchar')
 
     def scaffold_filters(self, name):
         """
@@ -535,8 +535,8 @@ class ModelView(BaseModelView):
 
                         if join_tables:
                             self._filter_joins[table.name] = join_tables
-                        elif self._need_join(table.name):
-                            self._filter_joins[table.name] = [table.name]
+                        elif self._need_join(table):
+                            self._filter_joins[table.name] = [table]
                         filters.extend(flt)
 
             return filters
@@ -611,6 +611,28 @@ class ModelView(BaseModelView):
 
         return form_class
 
+    def scaffold_list_form(self, custom_fieldlist=ListEditableFieldList,
+                           validators=None):
+        """
+            Create form for the `index_view` using only the columns from
+            `self.column_editable_list`.
+
+            :param validators:
+                `form_args` dict with only validators
+                {'name': {'validators': [required()]}}
+            :param custom_fieldlist:
+                A WTForm FieldList class. By default, `ListEditableFieldList`.
+        """
+        converter = self.model_form_converter(self.session, self)
+        form_class = form.get_form(self.model, converter,
+                                   base_class=self.form_base_class,
+                                   only=self.column_editable_list,
+                                   field_args=validators)
+
+        return wrap_fields_in_fieldlist(self.form_base_class,
+                                        form_class,
+                                        custom_fieldlist)
+
     def scaffold_inline_form_models(self, form_class):
         """
             Contribute inline models to the form
@@ -664,6 +686,14 @@ class ModelView(BaseModelView):
             Return a query for the model type.
 
             If you override this method, don't forget to override `get_count_query` as well.
+
+            This method can be used to set a "persistent filter" on an index_view.
+
+            Example::
+
+                class MyView(ModelView):
+                    def get_query(self):
+                        return super(MyView, self).get_query().filter(User.username == current_user.username)
         """
         return self.session.query(self.model)
 
@@ -716,7 +746,7 @@ class ModelView(BaseModelView):
 
             join_tables, attr = self._get_field_with_path(field)
 
-            return join_tables, field, direction
+            return join_tables, attr, direction
 
         return None
 

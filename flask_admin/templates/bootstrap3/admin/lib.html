@@ -88,10 +88,10 @@
     <div class="{{ kwargs.get('column_class', 'col-md-10') }}">
       {% set _dummy = kwargs.setdefault('class', 'form-control') %}
       {{ field(**kwargs)|safe }}
+      {% if field.description %}
+      <p class="help-block">{{ field.description }}</p>
+      {% endif %}
     </div>
-    {% if field.description %}
-    <span class="help-block">{{ field.description }}</span>
-    {% endif %}
     {% if direct_error %}
       <ul{% if direct_error %} class="input-errors"{% endif %}>
       {% for e in field.errors if e is string %}
@@ -138,21 +138,22 @@
 {% endmacro %}
 
 {% macro form_tag(form=None, action=None) %}
-    <form action="{{ action or '' }}" method="POST" role="form" class="form-horizontal" enctype="multipart/form-data">
+    <form action="{{ action or '' }}" method="POST" role="form" class="admin-form form-horizontal" enctype="multipart/form-data">
       {{ caller() }}
     </form>
 {% endmacro %}
 
 {% macro render_form_buttons(cancel_url, extra=None) %}
+    <hr>
     <div class="form-group">
       <div class="col-md-offset-2 col-md-10 submit-row">
-	<input type="submit" class="btn btn-primary" value="{{ _gettext('Submit') }}" />
-	{% if extra %}
-	{{ extra }}
-	{% endif %}
-	{% if cancel_url %}
-	<a href="{{ cancel_url }}" class="btn btn-cancel" role="button">{{ _gettext('Cancel') }}</a>
-	{% endif %}
+        <input type="submit" class="btn btn-primary" value="{{ _gettext('Submit') }}" />
+        {% if extra %}
+        {{ extra }}
+        {% endif %}
+        {% if cancel_url %}
+        <a href="{{ cancel_url }}" class="btn btn-danger" role="button">{{ _gettext('Cancel') }}</a>
+        {% endif %}
       </div>
     </div>
 {% endmacro %}
@@ -172,6 +173,9 @@
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css') }}" rel="stylesheet">
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css') }}" rel="stylesheet">
   {% endif %}
+  {% if editable_columns %}
+  <link href="{{ admin_static.url(filename='vendor/x-editable/css/bootstrap3-editable-1.5.1.css') }}" rel="stylesheet">
+  {% endif %}
 {% endmacro %}
 
 {% macro form_js() %}
@@ -183,5 +187,8 @@
   <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js') }}"></script>
   {% endif %}
   <script src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+  {% if editable_columns %}
+  <script src="{{ admin_static.url(filename='vendor/x-editable/js/bootstrap3-editable-1.5.1.min.js') }}"></script>
+  {% endif %}
   <script src="{{ admin_static.url(filename='admin/js/form-1.0.0.js') }}"></script>
 {% endmacro %}

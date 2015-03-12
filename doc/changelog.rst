@@ -1,14 +1,32 @@
 Changelog
 =========
 
-1.1 (dev)
----------
+1.1.0
+-----
+
+Mostly bug fix release. Highlights:
+
+* Inline model editing on the list page
+* FileAdmin refactoring and fixes
+* FileUploadField and ImageUploadField will work with Required() validator
+* Bug fixes
+
+
+1.0.9
+-----
 
 Highlights:
 
-* Added the ``geoa`` contrib module, for working with `geoalchemy2`_
+* Bootstrap 3 support
+* WTForms 2.x support
+* Updated DateTime picker
+* SQLAlchemy backend: support for complex sortables, ability to search for related models, model inheritance support
+* Customizable URL generation logic for all views
+* New generic filter types: in list, empty, date range
+* Added the ``geoa`` contrib module, for working with `geoalchemy2 <http://geoalchemy-2.readthedocs.org/>`_
+* Portugese translation
+* Lots of bug fixes
 
-.. _geoalchemy2: http://geoalchemy-2.readthedocs.org/
 
 1.0.8
 -----
@@ -43,17 +61,3 @@ Highlights:
 * Redis cli
 * SQLAlchemy backend can handle inherited models with multiple PKs
 * Lots of bug fixes
-
-1.0.6
------
-
-* Model views now support default sorting order
-* Model type/column formatters now accept additional `view` parameter
-* `is_visible` for administrative views
-* Model views have `after_model_change` method that can be overridden
-* In model views, `get_query` was split into `get_count_query` and `get_query`
-* Bootstrap 2.3.1
-* Bulk deletes go through `delete_model`
-* Flask-Admin no longer uses floating navigation bar
-* Translations: French, Persian (Farsi), Chinese (Simplified/Traditional), Czech
-* Bug fixes

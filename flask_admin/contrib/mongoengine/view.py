@@ -5,6 +5,8 @@ from flask import request, flash, abort, Response
 from flask.ext.admin import expose
 from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
 from flask.ext.admin.model import BaseModelView
+from flask.ext.admin.model.form import wrap_fields_in_fieldlist
+from flask.ext.admin.model.fields import ListEditableFieldList
 from flask.ext.admin._compat import iteritems, string_types
 
 import mongoengine
@@ -20,7 +22,6 @@ from .tools import parse_like_term
 from .helpers import format_error
 from .ajax import process_ajax_references, create_ajax_loader
 from .subdoc import convert_subdocuments
-
 
 # Set up logger
 log = logging.getLogger("flask-admin.mongo")
@@ -398,6 +399,28 @@ class ModelView(BaseModelView):
 
         return form_class
 
+    def scaffold_list_form(self, custom_fieldlist=ListEditableFieldList,
+                           validators=None):
+        """
+            Create form for the `index_view` using only the columns from
+            `self.column_editable_list`.
+
+            :param validators:
+                `form_args` dict with only validators
+                {'name': {'validators': [required()]}}
+            :param custom_fieldlist:
+                A WTForm FieldList class. By default, `ListEditableFieldList`.
+        """
+        form_class = get_form(self.model,
+                              self.model_form_converter(self),
+                              base_class=self.form_base_class,
+                              only=self.column_editable_list,
+                              field_args=validators)
+
+        return wrap_fields_in_fieldlist(self.form_base_class,
+                                        form_class,
+                                        custom_fieldlist)
+
     # AJAX foreignkey support
     def _create_ajax_loader(self, name, opts):
         return create_ajax_loader(self.model, name, name, opts)
@@ -408,6 +431,26 @@ class ModelView(BaseModelView):
         objects for the current model.
         """
         return self.model.objects
+
+    def _search(self, query, search_term):
+        # TODO: Unfortunately, MongoEngine contains bug which
+        # prevents running complex Q queries and, as a result,
+        # Flask-Admin does not support per-word searching like
+        # in other backends
+        op, term = parse_like_term(search_term)
+
+        criteria = None
+
+        for field in self._search_fields:
+            flt = {'%s__%s' % (field.name, op): term}
+            q = mongoengine.Q(**flt)
+
+            if criteria is None:
+                criteria = q
+            else:
+                criteria |= q
+
+        return query.filter(criteria)
 
     def get_list(self, page, sort_column, sort_desc, search, filters,
                  execute=True):
@@ -437,24 +480,7 @@ class ModelView(BaseModelView):
 
         # Search
         if self._search_supported and search:
-            # TODO: Unfortunately, MongoEngine contains bug which
-            # prevents running complex Q queries and, as a result,
-            # Flask-Admin does not support per-word searching like
-            # in other backends
-            op, term = parse_like_term(search)
-
-            criteria = None
-
-            for field in self._search_fields:
-                flt = {'%s__%s' % (field.name, op): term}
-                q = mongoengine.Q(**flt)
-
-                if criteria is None:
-                    criteria = q
-                else:
-                    criteria |= q
-
-            query = query.filter(criteria)
+            query = self._search(query, search)
 
         # Get count
         count = query.count()

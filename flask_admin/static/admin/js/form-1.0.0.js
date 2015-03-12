@@ -241,6 +241,17 @@
                 return true;
         }
 
+        // make x-editable's POST act like a normal FieldList field
+        // for x-editable, x-editable-combodate, and x-editable-boolean cases
+        var overrideXeditableParams = function(params) {
+            var newParams = {};
+            newParams[params.name + '-' + params.pk] = params.value;
+            if ($(this).data('csrf')) {
+                newParams['csrf_token'] = $(this).data('csrf');
+            }
+            return newParams;
+        }
+
         switch (name) {
             case 'select2':
                 var opts = {
@@ -266,7 +277,7 @@
                 } else {
                     var tags = [];
                 }
-                
+
                 // default to a comma for separating list items
                 // allows using spaces as a token separator
                 if ($el.attr('data-token-separators')) {
@@ -274,7 +285,7 @@
                 } else {
                     var tokenSeparators = [','];
                 }
-                
+
                 var opts = {
                     width: 'resolve',
                     tags: tags,
@@ -283,12 +294,12 @@
                         return 'Enter comma separated values';
                     }
                 };
-                
+
                 $el.select2(opts);
-                
+
                 // submit on ENTER
                 $el.parent().find('input.select2-input').on('keyup', function(e) {
-                   if(e.keyCode === 13) 
+                   if(e.keyCode === 13)
                       $(this).closest('form').submit();
                 });
                 return true;
@@ -390,6 +401,32 @@
             case 'leaflet':
                 processLeafletWidget($el, name);
                 return true;
+            case 'x-editable':
+                $el.editable({params: overrideXeditableParams});
+                return true;
+            case 'x-editable-combodate':
+                $el.editable({
+                    params: overrideXeditableParams,
+                    combodate: {
+                        // prevent minutes from showing in 5 minute increments
+                        minuteStep: 1
+                    }
+                });
+                return true;
+            case 'x-editable-boolean':
+                $el.editable({
+                    params: overrideXeditableParams,
+                    display: function(value, sourceData, response) {
+                       // display new boolean value as an icon
+                       if(response) {
+                           if(value == '1') {
+                               $(this).html('<span class="glyphicon glyphicon-ok-circle icon-ok-circle"></span>');
+                           } else {
+                               $(this).html('<span class="glyphicon glyphicon-minus-sign icon-minus-sign"></span>'); 
+                           }
+                       }
+                    }
+                });
         }
       };
 
@@ -408,25 +445,34 @@
 
         var $parentForm = $el.parent().closest('.inline-field');
 
-        if ($parentForm.length > 0 && elID.indexOf($parentForm.attr('id')) !== 0) {
+        if ($parentForm.hasClass('fresh')) {
           id = $parentForm.attr('id') + '-' + elID;
         }
 
         var $fieldList = $el.find('> .inline-field-list');
-        var $lastField = $fieldList.children('.inline-field').last();
+        var maxId = 0;
 
-        var prefix = id + '-0';
-        if ($lastField.length > 0) {
-            var parts = $lastField.attr('id').split('-');
+        $fieldList.children('.inline-field').each(function(idx, field) {
+            var $field = $(field);
+
+            var parts = $field.attr('id').split('-');
             idx = parseInt(parts[parts.length - 1], 10) + 1;
-            prefix = id + '-' + idx;
-        }
+
+            if (idx > maxId) {
+                maxId = idx;
+            }               
+        });
+
+        var prefix = id + '-' + maxId;        
 
         // Get template
         var $template = $($el.find('> .inline-field-template').text());
 
         // Set form ID
         $template.attr('id', prefix);
+
+        // Mark form that we just created
+        $template.addClass('fresh');
 
         // Fix form IDs
         $('[name]', $template).each(function(e) {
@@ -460,7 +506,7 @@
       this.applyGlobalStyles = function(parent) {
         var self = this;
 
-        $(':input[data-role]', parent).each(function() {
+        $(':input[data-role], a[data-role]', parent).each(function() {
             var $el = $(this);
             self.applyStyle($el, $el.attr('data-role'));
         });
@@ -473,7 +519,7 @@
       * @param {converter} function($el, name)
       */
       this.addFieldConverter = function(converter) {
-          fieldConverters.push(converter);
+        fieldConverters.push(converter);
       };
     };
 

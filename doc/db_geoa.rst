@@ -37,14 +37,11 @@ Creating simple model
 ---------------------
 
 GeoAlchemy comes with a `Geometry`_ field that is carefully divorced from the
-`Shapely`_ library. Flask-Admin takes the approach that if you're using spatial
-objects in your database, and you want an admin interface to edit those objects,
-you're probably already using Shapely, so we provide a Geometry field that is
-integrated with Shapely objects. To make your admin interface works, be sure to
-use this field rather that the one that ships with GeoAlchemy when defining your
-models::
+`Shapely`_ library. Flask-Admin will use this field so that there are no 
+changes necessary to other code. ``ModelView`` should be imported from 
+``geoa`` rather than the one imported from ``sqla``::
 
-    from flask.ext.admin.contrib.geoa.sqltypes import Geometry
+    from geoalchemy2 import Geometry
     from flask.ext.admin.contrib.geoa import ModelView
 
     # .. flask initialization
@@ -61,9 +58,6 @@ models::
 
         db.create_all()
         app.run('0.0.0.0', 8000)
-
-Note that you also have to use the ``ModelView`` class imported from ``geoa``,
-rather than the one imported from ``sqla``.
 
 Limitations
 -----------

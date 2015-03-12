@@ -11,7 +11,7 @@
 
 {% block body %}
     {% block model_menu_bar %}
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs actions-nav">
         <li class="active">
             <a href="javascript:void(0)">{{ _gettext('List') }} ({{ count }})</a>
         </li>
@@ -107,11 +107,11 @@
                         </a>
                         {%- endif -%}
                         {%- if admin_view.can_delete -%}
-                        <form class="icon" method="POST" action="{{ get_url('.delete_view', id=get_pk_value(row), url=return_url) }}">
-                            {% if csrf_token %}
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                            {% endif %}
-                                <button onclick="return confirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="Delete record">
+                        <form class="icon" method="POST" action="{{ get_url('.delete_view') }}">
+                            {{ delete_form.id(value=get_pk_value(row)) }}
+                            {{ delete_form.url(value=return_url) }}
+                            {{ delete_form.csrf_token }}
+                            <button onclick="return confirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="Delete record">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </button>
                         </form>
@@ -120,7 +120,15 @@
                 </td>
                 {% endblock %}
                 {% for c, name in list_columns %}
-                <td>{{ get_value(row, c) }}</td>
+                    {% if admin_view.is_editable(c) %}
+                        {% if form.csrf_token %}
+                        <td>{{ form[c](pk=get_pk_value(row), value=get_value(row, c), csrf=form.csrf_token._value()) }}</td>
+                        {% else %}
+                        <td>{{ form[c](pk=get_pk_value(row), value=get_value(row, c)) }}</td>
+                        {% endif %}
+                    {% else %}
+                    <td>{{ get_value(row, c) }}</td>
+                    {% endif %}
                 {% endfor %}
             {% endblock %}
         </tr>
@@ -148,8 +156,8 @@
     {{ lib.form_js() }}
 
     {{ actionlib.script(_gettext('Please select at least one record.'),
-                      actions,
-                      actions_confirmation) }}
+                        actions,
+                        actions_confirmation) }}
 
     <script language="javascript">
         (function($) {

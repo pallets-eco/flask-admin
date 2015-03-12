@@ -26,8 +26,8 @@ class AjaxSelect2Widget(object):
         self.multiple = multiple
 
     def __call__(self, field, **kwargs):
-        kwargs['data-role'] = u'select2-ajax'
-        kwargs['data-url'] = get_url('.ajax_lookup', name=field.loader.name)
+        kwargs.setdefault('data-role', 'select2-ajax')
+        kwargs.setdefault('data-url', get_url('.ajax_lookup', name=field.loader.name))
 
         allow_blank = getattr(field, 'allow_blank', False)
         if allow_blank and not self.multiple:
@@ -61,3 +61,88 @@ class AjaxSelect2Widget(object):
         kwargs.setdefault('data-placeholder', placeholder)
 
         return HTMLString('<input %s>' % html_params(name=field.name, **kwargs))
+
+
+class XEditableWidget(object):
+    """
+        WTForms widget that provides in-line editing for the list view.
+
+        Determines how to display the x-editable/ajax form based on the
+        field inside of the FieldList (StringField, IntegerField, etc).
+    """
+    def __call__(self, field, **kwargs):
+        kwargs.setdefault('data-value', kwargs.pop('value', ''))
+        
+        kwargs.setdefault('data-role', 'x-editable')
+        kwargs.setdefault('data-url', './ajax/update/')
+
+        kwargs.setdefault('id', field.id)
+        kwargs.setdefault('name', field.name)
+        kwargs.setdefault('href', '#')
+
+        if not kwargs.get('pk'):
+            raise Exception('pk required')
+        kwargs['data-pk'] = str(kwargs.pop("pk"))
+
+        kwargs['data-csrf'] = kwargs.pop("csrf", "")
+
+        # subfield is the first entry (subfield) from FieldList (field)
+        subfield = field.entries[0]
+
+        kwargs = self.get_kwargs(subfield, kwargs)
+
+        return HTMLString(
+            '<a %s>%s</a>' % (html_params(**kwargs), kwargs['data-value'])
+        )
+
+    def get_kwargs(self, subfield, kwargs):
+        """
+            Return extra kwargs based on the subfield type.
+        """
+        if subfield.type == 'StringField':
+            kwargs['data-type'] = 'text'
+        elif subfield.type == 'TextAreaField':
+            kwargs['data-type'] = 'textarea'
+            kwargs['data-rows'] = '5'
+        elif subfield.type == 'BooleanField':
+            kwargs['data-type'] = 'select'
+            # data-source = dropdown options
+            kwargs['data-source'] = {'': 'False', '1': 'True'}
+            kwargs['data-role'] = 'x-editable-boolean'
+        elif subfield.type == 'Select2Field':
+            kwargs['data-type'] = 'select'
+            kwargs['data-source'] = dict(subfield.choices)
+        elif subfield.type == 'DateField':
+            kwargs['data-type'] = 'combodate'
+            kwargs['data-format'] = 'YYYY-MM-DD'
+            kwargs['data-template'] = 'YYYY-MM-DD'
+        elif subfield.type == 'DateTimeField':
+            kwargs['data-type'] = 'combodate'
+            kwargs['data-format'] = 'YYYY-MM-DD HH:mm:ss'
+            kwargs['data-template'] = 'YYYY-MM-DD  HH:mm:ss'
+            # x-editable-combodate uses 1 minute increments
+            kwargs['data-role'] = 'x-editable-combodate'
+        elif subfield.type == 'TimeField':
+            kwargs['data-type'] = 'combodate'
+            kwargs['data-format'] = 'HH:mm:ss'
+            kwargs['data-template'] = 'HH:mm:ss'
+            kwargs['data-role'] = 'x-editable-combodate'
+        elif subfield.type == 'IntegerField':
+            kwargs['data-type'] = 'number'
+        elif subfield.type in ['FloatField', 'DecimalField']:
+            kwargs['data-type'] = 'number'
+            kwargs['data-step'] = 'any'
+        elif subfield.type in ['QuerySelectField', 'ModelSelectField']:
+            kwargs['data-type'] = 'select'
+
+            choices = {}
+            for choice in subfield:
+                try:
+                    choices[str(choice._value())] = str(choice.label.text)
+                except TypeError:
+                    choices[str(choice._value())] = ""
+            kwargs['data-source'] = choices
+        else:
+            raise Exception('Unsupported field type: %s' % (type(subfield),))
+
+        return kwargs

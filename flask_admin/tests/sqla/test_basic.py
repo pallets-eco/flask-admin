@@ -5,7 +5,7 @@ from wtforms import fields
 from flask.ext.admin import form
 from flask.ext.admin._compat import as_unicode
 from flask.ext.admin._compat import iteritems
-from flask.ext.admin.contrib.sqla import ModelView
+from flask.ext.admin.contrib.sqla import ModelView, filters
 from flask.ext.babelex import Babel
 
 from . import setup
@@ -81,6 +81,39 @@ def create_models(db):
     return Model1, Model2
 
 
+def fill_db(db, Model1, Model2):
+    model1_obj1 = Model1('test1_val_1', 'test2_val_1', bool_field=True)
+    model1_obj2 = Model1('test1_val_2', 'test2_val_2')
+    model1_obj3 = Model1('test1_val_3', 'test2_val_3')
+    model1_obj4 = Model1('test1_val_4', 'test2_val_4')
+
+    model2_obj1 = Model2('test2_val_1', model1=model1_obj1, float_field=None)
+    model2_obj2 = Model2('test2_val_2', model1=model1_obj2, float_field=None)
+    model2_obj3 = Model2('test2_val_3', int_field=5000, float_field=25.9)
+    model2_obj4 = Model2('test2_val_4', int_field=9000, float_field=75.5)
+
+    date_obj1 = Model1('date_obj1', date_field=date(2014,11,17))
+    date_obj2 = Model1('date_obj2', date_field=date(2013,10,16))
+    timeonly_obj1 = Model1('timeonly_obj1', time_field=time(11,10,9))
+    timeonly_obj2 = Model1('timeonly_obj2', time_field=time(10,9,8))
+    datetime_obj1 = Model1('datetime_obj1', datetime_field=datetime(2014,4,3,1,9,0))
+    datetime_obj2 = Model1('datetime_obj2', datetime_field=datetime(2013,3,2,0,8,0))
+
+    enum_obj1 = Model1('enum_obj1', enum_field="model1_v1")
+    enum_obj2 = Model1('enum_obj2', enum_field="model1_v2")
+
+    empty_obj = Model1(test2="empty_obj")
+
+    db.session.add_all([
+        model1_obj1, model1_obj2, model1_obj3, model1_obj4,
+        model2_obj1, model2_obj2, model2_obj3, model2_obj4,
+        date_obj1, timeonly_obj1, datetime_obj1,
+        date_obj2, timeonly_obj2, datetime_obj2,
+        enum_obj1, enum_obj2, empty_obj
+    ])
+    db.session.commit()
+
+
 def test_model():
     app, db, admin = setup()
     Model1, Model2 = create_models(db)
@@ -121,7 +154,9 @@ def test_model():
     eq_(rv.status_code, 200)
 
     rv = client.post('/admin/model1/new/',
-                     data=dict(test1='test1large', test2='test2'))
+                     data=dict(test1='test1large',
+                               test2='test2',
+                               time_field=time(0,0,0)))
     eq_(rv.status_code, 302)
 
     model = db.session.query(Model1).first()
@@ -137,6 +172,9 @@ def test_model():
     url = '/admin/model1/edit/?id=%s' % model.id
     rv = client.get(url)
     eq_(rv.status_code, 200)
+    
+    # verify that midnight does not show as blank
+    ok_(u'00:00:00' in rv.data.decode('utf-8'))
 
     rv = client.post(url,
                      data=dict(test1='test1small', test2='test2large'))
@@ -215,27 +253,32 @@ def test_column_searchable_list():
 
     Model1, Model2 = create_models(db)
 
-    view = CustomModelView(Model1, db.session,
-                           column_searchable_list=['test1', 'test2'])
+    view = CustomModelView(Model2, db.session,
+                           column_searchable_list=['string_field', 'int_field'])
     admin.add_view(view)
 
     eq_(view._search_supported, True)
     eq_(len(view._search_fields), 2)
     ok_(isinstance(view._search_fields[0], db.Column))
     ok_(isinstance(view._search_fields[1], db.Column))
-    eq_(view._search_fields[0].name, 'test1')
-    eq_(view._search_fields[1].name, 'test2')
+    eq_(view._search_fields[0].name, 'string_field')
+    eq_(view._search_fields[1].name, 'int_field')
 
-    db.session.add(Model1('model1'))
-    db.session.add(Model1('model2'))
+    db.session.add(Model2('model1-test', 5000))
+    db.session.add(Model2('model2-test', 9000))
     db.session.commit()
 
     client = app.test_client()
 
-    rv = client.get('/admin/model1/?search=model1')
+    rv = client.get('/admin/model2/?search=model1')
     data = rv.data.decode('utf-8')
-    ok_('model1' in data)
-    ok_('model2' not in data)
+    ok_('model1-test' in data)
+    ok_('model2-test' not in data)
+    
+    rv = client.get('/admin/model2/?search=9000')
+    data = rv.data.decode('utf-8')
+    ok_('model1-test' not in data)
+    ok_('model2-test' in data)
 
 
 def test_complex_searchable_list():
@@ -247,18 +290,31 @@ def test_complex_searchable_list():
                            column_searchable_list=['model1.test1'])
     admin.add_view(view)
 
-    m1 = Model1('model1')
+    m1 = Model1('model1-test1-val')
+    m2 = Model1('model1-test2-val')
     db.session.add(m1)
-    db.session.add(Model2('model2', model1=m1))
-    db.session.add(Model2('model3'))
+    db.session.add(m2)
+    db.session.add(Model2('model2-test1-val', model1=m1))
+    db.session.add(Model2('model2-test2-val', model1=m2))
     db.session.commit()
 
     client = app.test_client()
 
-    rv = client.get('/admin/model2/?search=model1')
+    # test relation string - 'model1.test1'
+    rv = client.get('/admin/model2/?search=model1-test1')
     data = rv.data.decode('utf-8')
-    ok_('model1' in data)
-    ok_('model3' not in data)
+    ok_('model2-test1-val' in data)
+    ok_('model2-test2-val' not in data)
+
+    view2 = CustomModelView(Model1, db.session,
+                           column_searchable_list=[Model2.string_field])
+    admin.add_view(view2)
+
+    # test relation object - Model2.string_field
+    rv = client.get('/admin/model1/?search=model2-test1')
+    data = rv.data.decode('utf-8')
+    ok_('model1-test1-val' in data)
+    ok_('model1-test2-val' not in data)
 
 
 def test_complex_searchable_list_missing_children():
@@ -279,6 +335,75 @@ def test_complex_searchable_list_missing_children():
     rv = client.get('/admin/model1/?search=magic')
     data = rv.data.decode('utf-8')
     ok_('magic string' in data)
+
+
+def test_column_editable_list():
+    app, db, admin = setup()
+
+    Model1, Model2 = create_models(db)
+
+    view = CustomModelView(Model1, db.session,
+                           column_editable_list=[
+                               'test1', 'enum_field'])
+    admin.add_view(view)
+
+    fill_db(db, Model1, Model2)
+
+    client = app.test_client()
+
+    # Test in-line edit field rendering
+    rv = client.get('/admin/model1/')
+    data = rv.data.decode('utf-8')
+    ok_('data-role="x-editable"' in data)
+
+    # Form - Test basic in-line edit functionality
+    rv = client.post('/admin/model1/ajax/update/', data={
+        'test1-1': 'change-success-1',
+    })
+    data = rv.data.decode('utf-8')
+    ok_('Record was successfully saved.' == data)
+
+    # ensure the value has changed
+    rv = client.get('/admin/model1/')
+    data = rv.data.decode('utf-8')
+    ok_('change-success-1' in data)
+
+    # Test validation error
+    rv = client.post('/admin/model1/ajax/update/', data={
+        'enum_field-1': 'problematic-input',
+    })
+    eq_(rv.status_code, 500)
+
+    # Test invalid primary key
+    rv = client.post('/admin/model1/ajax/update/', data={
+        'test1-1000': 'problematic-input',
+    })
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 500)
+
+    # Test editing column not in column_editable_list
+    rv = client.post('/admin/model1/ajax/update/', data={
+        'test2-1': 'problematic-input',
+    })
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 500)
+
+    # Test in-line editing for relations
+    view = CustomModelView(Model2, db.session,
+                           column_editable_list=[
+                               'model1'])
+    admin.add_view(view)
+
+    rv = client.post('/admin/model2/ajax/update/', data={
+        'model1-1': '3',
+    })
+    data = rv.data.decode('utf-8')
+    ok_('Record was successfully saved.' == data)
+
+    # confirm the value has changed
+    rv = client.get('/admin/model2/')
+    data = rv.data.decode('utf-8')
+    ok_('test1_val_3' in data)
 
 
 def test_column_filters():
@@ -377,38 +502,18 @@ def test_column_filters():
             (0, 'equals'),
             (1, 'not equal'),
         ])
-
-    # Fill DB
-    model1_obj1 = Model1('test1_val_1', 'test2_val_1', bool_field=True)
-    model1_obj2 = Model1('test1_val_2', 'test2_val_2')
-    model1_obj3 = Model1('test1_val_3', 'test2_val_3')
-    model1_obj4 = Model1('test1_val_4', 'test2_val_4')
-
-    model2_obj1 = Model2('test2_val_1', model1=model1_obj1, float_field=None)
-    model2_obj2 = Model2('test2_val_2', model1=model1_obj1, float_field=None)
-    model2_obj3 = Model2('test2_val_3', int_field=5000, float_field=25.9)
-    model2_obj4 = Model2('test2_val_4', int_field=9000, float_field=75.5)
+        
+    # Test column_labels on filters
+    view = CustomModelView(Model2, db.session,
+                           column_filters=['model1.bool_field', 'string_field'],
+                           column_labels={
+                               'model1.bool_field': 'Test Filter #1',
+                               'string_field': 'Test Filter #2',
+                           })
     
-    date_obj1 = Model1('date_obj1', date_field=date(2014,11,17))
-    date_obj2 = Model1('date_obj2', date_field=date(2013,10,16))
-    timeonly_obj1 = Model1('timeonly_obj1', time_field=time(11,10,9))
-    timeonly_obj2 = Model1('timeonly_obj2', time_field=time(10,9,8))
-    datetime_obj1 = Model1('datetime_obj1', datetime_field=datetime(2014,4,3,1,9,0))
-    datetime_obj2 = Model1('datetime_obj2', datetime_field=datetime(2013,3,2,0,8,0))
+    eq_(list(view._filter_groups.keys()), [u'Test Filter #1', u'Test Filter #2'])
     
-    enum_obj1 = Model1('enum_obj1', enum_field="model1_v1")
-    enum_obj2 = Model1('enum_obj2', enum_field="model1_v2")
-    
-    empty_obj = Model1(test2="empty_obj")
-    
-    db.session.add_all([
-        model1_obj1, model1_obj2, model1_obj3, model1_obj4,
-        model2_obj1, model2_obj2, model2_obj3, model2_obj4,
-        date_obj1, timeonly_obj1, datetime_obj1,
-        date_obj2, timeonly_obj2, datetime_obj2,
-        enum_obj1, enum_obj2, empty_obj
-    ])
-    db.session.commit()
+    fill_db(db, Model1, Model2)
 
     client = app.test_client()
 
@@ -705,7 +810,7 @@ def test_column_filters():
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('test2_val_1' in data)
-    ok_('test2_val_2' in data)
+    ok_('test2_val_2' not in data)
     ok_('test2_val_3' not in data)
     ok_('test2_val_4' not in data)
 
@@ -989,6 +1094,18 @@ def test_column_filters():
     ok_('enum_obj1' not in data)
     ok_('enum_obj2' not in data)
     
+    # Test single custom filter on relation
+    view = CustomModelView(Model2, db.session,
+                           column_filters = [
+                               filters.FilterEqual(Model1.test1, "Test1")
+                           ], endpoint='_relation_test')
+    admin.add_view(view)
+    
+    rv = client.get('/admin/_relation_test/?flt1_0=test1_val_1')
+    data = rv.data.decode('utf-8')
+    ok_('test1_val_1' in data)
+    ok_('test1_val_2' not in data)
+
 def test_url_args():
     app, db, admin = setup()
 
@@ -1244,6 +1361,45 @@ def test_default_sort():
     eq_(data[2].test1, 'c')
 
 
+def test_complex_sort():
+    app, db, admin = setup()
+    M1, M2 = create_models(db)
+
+    m1 = M1('b')
+    db.session.add(m1)
+    db.session.add(M2('c', model1=m1))
+
+    m2 = M1('a')
+    db.session.add(m2)
+    db.session.add(M2('c', model1=m2))
+
+    db.session.commit()
+
+    # test sorting on relation string - 'model1.test1'
+    view = CustomModelView(M2, db.session,
+                           column_list = ['string_field', 'model1.test1'],
+                           column_sortable_list = ['model1.test1'])
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model2/?sort=1')
+    eq_(rv.status_code, 200)
+
+    # test sorting on relation object - M2.string_field
+    view2 = CustomModelView(M1, db.session,
+                           column_list = ['model2.string_field'],
+                           column_sortable_list = [M2.string_field])
+    admin.add_view(view2)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model1/?sort=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('Sort by' in data)
+
+
 def test_default_complex_sort():
     app, db, admin = setup()
     M1, M2 = create_models(db)
@@ -1266,6 +1422,7 @@ def test_default_complex_sort():
     eq_(len(data), 2)
     eq_(data[0].model1.test1, 'a')
     eq_(data[1].model1.test1, 'b')
+
 
 def test_extra_fields():
     app, db, admin = setup()

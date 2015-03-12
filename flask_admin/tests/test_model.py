@@ -1,6 +1,8 @@
+import wtforms
+
 from nose.tools import eq_, ok_
 
-from flask import Flask
+from flask import Flask, session
 
 from werkzeug.wsgi import DispatcherMiddleware
 from werkzeug.test import Client
@@ -10,6 +12,14 @@ from wtforms import fields
 from flask.ext.admin import Admin, form
 from flask.ext.admin._compat import iteritems, itervalues
 from flask.ext.admin.model import base, filters
+
+
+def wtforms2_and_up(func):
+    """Decorator for skipping test if wtforms <2
+    """
+    if int(wtforms.__version__[0]) < 2:
+        func.__test__ = False
+    return func
 
 
 class Model(object):
@@ -327,6 +337,104 @@ def test_form():
     # TODO: form_args
     # TODO: form_widget_args
     pass
+
+
+@wtforms2_and_up
+def test_csrf():
+    from datetime import timedelta
+
+    from wtforms.csrf.session import SessionCSRF
+    from wtforms.meta import DefaultMeta
+
+    # BaseForm w/ CSRF
+    class SecureForm(form.BaseForm):
+        class Meta(DefaultMeta):
+            csrf = True
+            csrf_class = SessionCSRF
+            csrf_secret = b'EPj00jpfj8Gx1SjnyLxwBBSQfnQ9DJYe0Ym'
+            csrf_time_limit = timedelta(minutes=20)
+
+            @property
+            def csrf_context(self):
+                return session
+
+    class SecureModelView(MockModelView):
+        form_base_class = SecureForm
+
+        def scaffold_form(self):
+            return SecureForm
+
+    def get_csrf_token(data):
+        data = data.split('name="csrf_token" type="hidden" value="')[1]
+        token = data.split('"')[0]
+        return token
+
+    app, admin = setup()
+
+    view = SecureModelView(Model, endpoint='secure')
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    ################
+    # create_view
+    ################
+    rv = client.get('/admin/secure/new/')
+    eq_(rv.status_code, 200)
+    ok_(u'name="csrf_token"' in rv.data.decode('utf-8'))
+
+    csrf_token = get_csrf_token(rv.data.decode('utf-8'))
+
+    # Create without CSRF token
+    rv = client.post('/admin/secure/new/', data=dict(name='test1'))
+    eq_(rv.status_code, 200)
+
+    # Create with CSRF token
+    rv = client.post('/admin/secure/new/', data=dict(name='test1',
+                                                   csrf_token=csrf_token))
+    eq_(rv.status_code, 302)
+
+    ###############
+    # edit_view
+    ###############
+    rv = client.get('/admin/secure/edit/?url=%2Fadmin%2Fsecure%2F&id=1')
+    eq_(rv.status_code, 200)
+    ok_(u'name="csrf_token"' in rv.data.decode('utf-8'))
+
+    csrf_token = get_csrf_token(rv.data.decode('utf-8'))
+
+    # Edit without CSRF token
+    rv = client.post('/admin/secure/edit/?url=%2Fadmin%2Fsecure%2F&id=1', 
+                     data=dict(name='test1'))
+    eq_(rv.status_code, 200)
+
+    # Edit with CSRF token
+    rv = client.post('/admin/secure/edit/?url=%2Fadmin%2Fsecure%2F&id=1',
+                     data=dict(name='test1', csrf_token=csrf_token))
+    eq_(rv.status_code, 302)
+
+    ################
+    # delete_view
+    ################
+    rv = client.get('/admin/secure/')
+    eq_(rv.status_code, 200)
+    ok_(u'name="csrf_token"' in rv.data.decode('utf-8'))
+
+    csrf_token = get_csrf_token(rv.data.decode('utf-8'))
+
+    # Delete without CSRF token, test validation errors
+    rv = client.post('/admin/secure/delete/', 
+                     data=dict(id="1", url="/admin/secure/"), follow_redirects=True)
+    eq_(rv.status_code, 200)
+    ok_(u'Record was successfully deleted.' not in rv.data.decode('utf-8'))
+    ok_(u'Failed to delete record.' in rv.data.decode('utf-8'))
+
+    # Delete with CSRF token
+    rv = client.post('/admin/secure/delete/',
+                     data=dict(id="1", url="/admin/secure/", csrf_token=csrf_token),
+                     follow_redirects=True)
+    eq_(rv.status_code, 200)
+    ok_(u'Record was successfully deleted.' in rv.data.decode('utf-8'))
 
 
 def test_custom_form():
