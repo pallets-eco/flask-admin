@@ -1,5 +1,5 @@
 from mongoengine import ValidationError
-from flask.ext.admin._compat import itervalues, as_unicode
+from flask_admin._compat import itervalues, as_unicode
 
 
 def make_gridfs_args(value):

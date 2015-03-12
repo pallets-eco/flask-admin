@@ -2,10 +2,10 @@ import datetime
 
 from flask import Flask
 
-from flask.ext import admin
-from flask.ext.mongoengine import MongoEngine
-from flask.ext.admin.form import rules
-from flask.ext.admin.contrib.mongoengine import ModelView
+import flask_admin as admin
+from flask_mongoengine import MongoEngine
+from flask_admin.form import rules
+from flask_admin.contrib.mongoengine import ModelView
 
 # Create application
 app = Flask(__name__)

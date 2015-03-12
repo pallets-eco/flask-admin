@@ -1,6 +1,6 @@
 from flask import Flask
 
-from flask.ext import admin
+import flask_admin as admin
 
 
 # Create custom admin view

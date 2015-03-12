@@ -6,11 +6,11 @@ from bson.errors import InvalidId
 
 from flask import flash
 
-from flask.ext.admin._compat import string_types
-from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
-from flask.ext.admin.model import BaseModelView
-from flask.ext.admin.actions import action
-from flask.ext.admin.helpers import get_form_data
+from flask_admin._compat import string_types
+from flask_admin.babel import gettext, ngettext, lazy_gettext
+from flask_admin.model import BaseModelView
+from flask_admin.actions import action
+from flask_admin.helpers import get_form_data
 
 from .filters import BasePyMongoFilter
 from .tools import parse_like_term
@@ -29,7 +29,7 @@ class ModelView(BaseModelView):
         Collection of the column filters.
 
         Should contain instances of
-        :class:`flask.ext.admin.contrib.pymongo.filters.BasePyMongoFilter`
+        :class:`flask_admin.contrib.pymongo.filters.BasePyMongoFilter`
         classes.
 
         For example::
@@ -59,9 +59,9 @@ class ModelView(BaseModelView):
             :param menu_icon_type:
                 Optional icon. Possible icon types:
 
-                 - `flask.ext.admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
+                 - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
+                 - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+                 - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
             :param menu_icon_value:
                 Icon glyph name or URL, depending on `menu_icon_type` setting
         """

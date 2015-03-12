@@ -1,11 +1,12 @@
 from flask import Flask, url_for, redirect, render_template, request
-from flask.ext.mongoengine import MongoEngine
+from flask_mongoengine import MongoEngine
 
 from wtforms import form, fields, validators
 
-from flask.ext import admin, login
-from flask.ext.admin.contrib.mongoengine import ModelView
-from flask.ext.admin import helpers
+import flask_admin as admin
+import flask_login as login
+from flask_admin.contrib.mongoengine import ModelView
+from flask_admin import helpers
 
 # Create application
 app = Flask(__name__)

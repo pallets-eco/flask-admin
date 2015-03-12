@@ -41,12 +41,12 @@ or extend existing functionality by adding more views.
 Initialization
 --------------
 
-To start using Flask-Admin, you have to create a :class:`~flask.ext.admin.base.Admin` class instance and associate it
+To start using Flask-Admin, you have to create a :class:`~flask_admin.base.Admin` class instance and associate it
 with the Flask
 application instance::
 
     from flask import Flask
-    from flask.ext.admin import Admin
+    from flask_admin import Admin
 
     app = Flask(__name__)
 
@@ -62,12 +62,12 @@ you should see an empty "Home" page with a navigation bar on top
         :target: ../_images/quickstart_1.png
 
 You can change the application name by passing a value for the *name* parameter to the
-:class:`~flask.ext.admin.base.Admin` class constructor::
+:class:`~flask_admin.base.Admin` class constructor::
 
     admin = Admin(app, name='My App')
 
 As an alternative to passing a Flask application object to the Admin constructor, you can also call the
-:meth:`~flask.ext.admin.base.Admin.init_app` function, after the Admin instance has been initialized::
+:meth:`~flask_admin.base.Admin.init_app` function, after the Admin instance has been initialized::
 
     admin = Admin(name='My App')
     # Add views here
@@ -77,10 +77,10 @@ Adding views
 ------------
 
 Now, lets add an administrative view. The next example will result in two items appearing in the navbar menu: *Home*
-and *Hello*. To do this, you need to derive from the :class:`~flask.ext.admin.base.BaseView` class::
+and *Hello*. To do this, you need to derive from the :class:`~flask_admin.base.BaseView` class::
 
     from flask import Flask
-    from flask.ext.admin import Admin, BaseView, expose
+    from flask_admin import Admin, BaseView, expose
 
     class MyView(BaseView):
         @expose('/')
@@ -130,7 +130,7 @@ the Admin instance. The category specifies the name of the top-level menu item, 
 with it, will be accessible from a drop-down menu. For example::
 
     from flask import Flask
-    from flask.ext.admin import Admin, BaseView, expose
+    from flask_admin import Admin, BaseView, expose
 
     class MyView(BaseView):
         @expose('/')
@@ -170,7 +170,7 @@ To redirect the user to another page if authentication fails, you will need to s
     class MyView(BaseView):
         def is_accessible(self):
             return login.current_user.is_authenticated()
-            
+
         def _handle_view(self, name, **kwargs):
             if not self.is_accessible():
                 return redirect(url_for('login', next=request.url))
@@ -185,7 +185,7 @@ Model views allow you to add dedicated admin pages for each of the models in you
 instances of the *ModelView* class, which you can import from one of Flask-Admin's built-in ORM backends. An example
 is the SQLAlchemy backend, which you can use as follows::
 
-    from flask.ext.admin.contrib.sqla import ModelView
+    from flask_admin.contrib.sqla import ModelView
 
     # Flask and Flask-SQLAlchemy initialization here
 
@@ -204,7 +204,7 @@ class, or you can override its methods.
 For example, if you want to disable model creation and only show certain columns in the list view, you can do
 something like::
 
-    from flask.ext.admin.contrib.sqla import ModelView
+    from flask_admin.contrib.sqla import ModelView
 
     # Flask and Flask-SQLAlchemy initialization here
 
@@ -238,10 +238,10 @@ therefore should use a *SelectField*::
 
 
 It is relatively easy to add support for different database backends (Mongo, etc) by inheriting from
-:class:`~flask.ext.admin.model.BaseModelView`.
+:class:`~flask_admin.model.BaseModelView`.
 class and implementing database-related methods.
 
-Please refer to :mod:`flask.ext.admin.contrib.sqla` documentation on how to customize the behavior of model-based
+Please refer to :mod:`flask_admin.contrib.sqla` documentation on how to customize the behavior of model-based
 administrative views.
 
 File Admin
@@ -252,7 +252,7 @@ Flask-Admin comes with another handy battery - file admin. It gives you the abil
 
 Here is simple example::
 
-    from flask.ext.admin.contrib.fileadmin import FileAdmin
+    from flask_admin.contrib.fileadmin import FileAdmin
 
     import os.path as op
 
@@ -270,7 +270,7 @@ Sample screenshot:
         :target: ../_images/quickstart_5.png
 
 You can disable uploads, disable file or directory deletion, restrict file uploads to certain types and so on.
-Check :mod:`flask.ext.admin.contrib.fileadmin` documentation on how to do it.
+Check :mod:`flask_admin.contrib.fileadmin` documentation on how to do it.
 
 Generating URLs
 ---------------
@@ -310,10 +310,10 @@ If you want to generate a URL for a particular view method from outside, the fol
 
     # List View
     url_for('user.index_view')
-    
+
     # Create View (redirect back to index_view)
     url_for('user.create_view', url=url_for('user.index_view'))
-    
+
     # Edit View for record #1 (redirect back to index_view)
     url_for('user.edit_view', id=1, url=url_for('user.index_view'))
 
@@ -354,4 +354,3 @@ Browse through them in the GitHub repo, and then run them locally to get yoursel
 - `Redis terminal <https://github.com/MrJoes/Flask-Admin/tree/master/examples/rediscli>`_
    If you use Redis for caching, then check this example to see how easy it is to add a Redis terminal to your Admin
    interface, so you can reach your Redis instance straight from a browser.
-

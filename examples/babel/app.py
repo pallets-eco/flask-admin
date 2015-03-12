@@ -1,10 +1,10 @@
 from flask import Flask, request, session
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
-from flask.ext import admin
-from flask.ext.babelex import Babel
+import flask_admin as admin
+from flask_babelex import Babel
 
-from flask.ext.admin.contrib import sqla
+from flask_admin.contrib import sqla
 
 # Create application
 app = Flask(__name__)

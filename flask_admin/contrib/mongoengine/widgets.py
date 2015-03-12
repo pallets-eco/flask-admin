@@ -4,7 +4,7 @@ from jinja2 import escape
 
 from mongoengine.fields import GridFSProxy, ImageGridFsProxy
 
-from flask.ext.admin.helpers import get_url
+from flask_admin.helpers import get_url
 from . import helpers
 
 

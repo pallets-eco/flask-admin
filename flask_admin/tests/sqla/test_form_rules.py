@@ -3,7 +3,7 @@ from nose.tools import eq_, ok_, raises
 from . import setup
 from .test_basic import CustomModelView, create_models
 
-from flask.ext.admin.form import rules
+from flask_admin.form import rules
 
 
 def test_form_rules():

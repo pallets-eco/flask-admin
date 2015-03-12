@@ -12,11 +12,11 @@ from flask import flash, redirect, abort, request, send_file
 
 from wtforms import fields, validators
 
-from flask.ext.admin import form, helpers
-from flask.ext.admin._compat import urljoin, as_unicode
-from flask.ext.admin.base import BaseView, expose
-from flask.ext.admin.actions import action, ActionsMixin
-from flask.ext.admin.babel import gettext, lazy_gettext
+from flask_admin import form, helpers
+from flask_admin._compat import urljoin, as_unicode
+from flask_admin.base import BaseView, expose
+from flask_admin.actions import action, ActionsMixin
+from flask_admin.babel import gettext, lazy_gettext
 
 
 class FileAdmin(BaseView, ActionsMixin):
@@ -34,8 +34,8 @@ class FileAdmin(BaseView, ActionsMixin):
 
             import os.path as op
 
-            from flask.ext.admin import Admin
-            from flask.ext.admin.contrib.fileadmin import FileAdmin
+            from flask_admin import Admin
+            from flask_admin.contrib.fileadmin import FileAdmin
 
             admin = Admin()
 

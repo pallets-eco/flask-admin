@@ -1,5 +1,5 @@
 from jinja2 import Markup
-from flask.ext.admin._compat import text_type
+from flask_admin._compat import text_type
 
 
 def null_formatter(view, value):

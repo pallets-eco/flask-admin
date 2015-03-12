@@ -1,7 +1,7 @@
-``flask.ext.admin.contrib.fileadmin``
+``flask_admin.contrib.fileadmin``
 =====================================
 
-.. automodule:: flask.ext.admin.contrib.fileadmin
+.. automodule:: flask_admin.contrib.fileadmin
 
     .. autoclass:: FileAdmin
         :members:

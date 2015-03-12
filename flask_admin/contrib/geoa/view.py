@@ -1,5 +1,5 @@
-from flask.ext.admin.contrib.sqla import ModelView as SQLAModelView
-from flask.ext.admin.contrib.geoa import form, typefmt
+from flask_admin.contrib.sqla import ModelView as SQLAModelView
+from flask_admin.contrib.geoa import form, typefmt
 
 
 class ModelView(SQLAModelView):

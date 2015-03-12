@@ -1,7 +1,7 @@
 from jinja2 import Markup
 
-from flask.ext.admin._compat import string_types
-from flask.ext.admin import helpers
+from flask_admin._compat import string_types
+from flask_admin import helpers
 
 
 class BaseRule(object):
@@ -120,7 +120,7 @@ class Text(BaseRule):
 
 class HTML(Text):
     """
-        Shortcut for `Text` rule with `escape` set to `False.
+        Shortcut for `Text` rule with `escape` set to `False`.
     """
     def __init__(self, html):
         super(HTML, self).__init__(html, escape=False)

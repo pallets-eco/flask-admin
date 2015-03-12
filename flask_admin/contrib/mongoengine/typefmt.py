@@ -3,7 +3,7 @@ from jinja2 import Markup, escape
 from mongoengine.base import BaseList
 from mongoengine.fields import GridFSProxy, ImageGridFsProxy
 
-from flask.ext.admin.model.typefmt import BASE_FORMATTERS, list_formatter
+from flask_admin.model.typefmt import BASE_FORMATTERS, list_formatter
 
 from . import helpers
 

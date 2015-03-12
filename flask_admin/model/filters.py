@@ -1,8 +1,8 @@
 import time
 import datetime
 
-from flask.ext.admin._compat import text_type
-from flask.ext.admin.babel import lazy_gettext
+from flask_admin._compat import text_type
+from flask_admin.babel import lazy_gettext
 
 
 class BaseFilter(object):
@@ -263,7 +263,7 @@ def convert(*args):
     """
         Decorator for field to filter conversion routine.
 
-        See :mod:`flask.ext.admin.contrib.sqla.filters` for usage example.
+        See :mod:`flask_admin.contrib.sqla.filters` for usage example.
     """
     def _inner(func):
         func._converter_for = list(map(str.lower, args))

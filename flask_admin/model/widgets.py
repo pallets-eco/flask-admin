@@ -1,10 +1,10 @@
 from flask import json
 from wtforms.widgets import HTMLString, html_params
 
-from flask.ext.admin._compat import as_unicode
-from flask.ext.admin.babel import gettext
-from flask.ext.admin.helpers import get_url
-from flask.ext.admin.form import RenderTemplateWidget
+from flask_admin._compat import as_unicode
+from flask_admin.babel import gettext
+from flask_admin.helpers import get_url
+from flask_admin.form import RenderTemplateWidget
 
 
 class InlineFieldListWidget(RenderTemplateWidget):
@@ -72,7 +72,7 @@ class XEditableWidget(object):
     """
     def __call__(self, field, **kwargs):
         kwargs.setdefault('data-value', kwargs.pop('value', ''))
-        
+
         kwargs.setdefault('data-role', 'x-editable')
         kwargs.setdefault('data-url', './ajax/update/')
 

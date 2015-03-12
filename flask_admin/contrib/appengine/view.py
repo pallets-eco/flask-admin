@@ -1,6 +1,6 @@
 import logging
 
-from flask.ext.admin.model import BaseModelView
+from flask_admin.model import BaseModelView
 from wtforms_appengine import db as wt_db
 from wtforms_appengine import ndb as wt_ndb
 
@@ -176,4 +176,3 @@ def ModelView(model):
 		return DbModelView(model)
 	else:
 		raise ValueError("Unsupported model: %s" % model)
-

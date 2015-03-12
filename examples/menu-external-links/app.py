@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for
 from flask.ext import login
-from flask.ext.login import current_user, UserMixin
-from flask.ext.admin.base import MenuLink, Admin, BaseView, expose
+from flask_login import current_user, UserMixin
+from flask_admin.base import MenuLink, Admin, BaseView, expose
 
 
 # Create fake user class for authentication

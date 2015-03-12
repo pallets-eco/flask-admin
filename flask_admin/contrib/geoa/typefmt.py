@@ -1,4 +1,4 @@
-from flask.ext.admin.contrib.sqla.typefmt import DEFAULT_FORMATTERS as BASE_FORMATTERS
+from flask_admin.contrib.sqla.typefmt import DEFAULT_FORMATTERS as BASE_FORMATTERS
 import json
 from jinja2 import Markup
 from wtforms.widgets import html_params

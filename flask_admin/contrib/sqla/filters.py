@@ -2,9 +2,9 @@ import warnings
 import time
 import datetime
 
-from flask.ext.admin.babel import lazy_gettext
-from flask.ext.admin.model import filters
-from flask.ext.admin.contrib.sqla import tools
+from flask_admin.babel import lazy_gettext
+from flask_admin.model import filters
+from flask_admin.contrib.sqla import tools
 from sqlalchemy.sql import not_, or_
 
 class BaseSQLAFilter(filters.BaseFilter):

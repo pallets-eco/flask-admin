@@ -3,8 +3,8 @@ from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
 from ast import literal_eval
 
-from flask.ext.admin._compat import filter_list
-from flask.ext.admin.tools import iterencode, iterdecode, escape
+from flask_admin._compat import filter_list
+from flask_admin.tools import iterencode, iterdecode, escape
 
 
 def parse_like_term(term):
