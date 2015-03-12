@@ -6,7 +6,7 @@ from flask_admin import form
 from flask_admin._compat import as_unicode
 from flask_admin._compat import iteritems
 from flask_admin.contrib.sqla import ModelView, filters
-from flask_babel import Babel
+from flask.ext.babel import Babel
 
 from . import setup
 

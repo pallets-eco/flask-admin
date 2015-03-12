@@ -2,7 +2,7 @@ from flask import Flask, request, session
 from flask_sqlalchemy import SQLAlchemy
 
 import flask_admin as admin
-from flask_babel import Babel
+from flask.ext.babel import Babel
 
 from flask_admin.contrib import sqla
 
