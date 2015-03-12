@@ -2,7 +2,7 @@ from nose.tools import eq_, ok_
 
 from wtforms import form, fields
 
-from flask.ext.admin.contrib.pymongo import ModelView
+from flask_admin.contrib.pymongo import ModelView
 
 from . import setup
 

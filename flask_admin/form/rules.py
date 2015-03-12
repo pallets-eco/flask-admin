@@ -1,7 +1,7 @@
 from jinja2 import Markup
 
-from flask.ext.admin._compat import string_types
-from flask.ext.admin import helpers
+from flask_admin._compat import string_types
+from flask_admin import helpers
 
 
 class BaseRule(object):

@@ -6,7 +6,7 @@ from io import BytesIO
 from nose.tools import eq_, ok_
 
 from flask import Flask, url_for
-from flask.ext.admin import form, helpers
+from flask_admin import form, helpers
 
 
 def _create_temp():

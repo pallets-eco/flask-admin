@@ -5,7 +5,7 @@ from flask_admin.contrib import sqla
 from flask_admin import expose, Admin
 
 # required for creating custom filters
-from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter, FilterEqual
+from flask_admin.contrib.sqla.filters import BaseSQLAFilter, FilterEqual
 
 # Create application
 app = Flask(__name__)

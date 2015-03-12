@@ -51,4 +51,4 @@ MongoEngine
 -----------
 
 1. Flask-Admin supports GridFS-backed image- and file uploads, done through WTForms fields. Documentation can be found
-   at :mod:`flask.ext.admin.contrib.mongoengine.fields`.
+   at :mod:`flask_admin.contrib.mongoengine.fields`.

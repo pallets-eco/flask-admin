@@ -2,7 +2,7 @@ import os.path as op
 
 from nose.tools import eq_, ok_
 
-from flask.ext.admin.contrib import fileadmin
+from flask_admin.contrib import fileadmin
 
 from . import setup
 

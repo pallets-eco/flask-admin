@@ -9,9 +9,9 @@ from werkzeug.test import Client
 
 from wtforms import fields
 
-from flask.ext.admin import Admin, form
-from flask.ext.admin._compat import iteritems, itervalues
-from flask.ext.admin.model import base, filters
+from flask_admin import Admin, form
+from flask_admin._compat import iteritems, itervalues
+from flask_admin.model import base, filters
 
 
 def wtforms2_and_up(func):
@@ -404,7 +404,7 @@ def test_csrf():
     csrf_token = get_csrf_token(rv.data.decode('utf-8'))
 
     # Edit without CSRF token
-    rv = client.post('/admin/secure/edit/?url=%2Fadmin%2Fsecure%2F&id=1', 
+    rv = client.post('/admin/secure/edit/?url=%2Fadmin%2Fsecure%2F&id=1',
                      data=dict(name='test1'))
     eq_(rv.status_code, 200)
 
@@ -423,7 +423,7 @@ def test_csrf():
     csrf_token = get_csrf_token(rv.data.decode('utf-8'))
 
     # Delete without CSRF token, test validation errors
-    rv = client.post('/admin/secure/delete/', 
+    rv = client.post('/admin/secure/delete/',
                      data=dict(id="1", url="/admin/secure/"), follow_redirects=True)
     eq_(rv.status_code, 200)
     ok_(u'Record was successfully deleted.' not in rv.data.decode('utf-8'))
