@@ -1,7 +1,7 @@
 try:
     from .helpers import get_current_view
 
-    from flask.ext.babel import Domain
+    from flask_babelex import Domain
 
     from flask_admin import translations
 

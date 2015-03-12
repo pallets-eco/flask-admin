@@ -21,7 +21,7 @@ How to enable localization
 2. Initialize Flask-BabelEx by creating instance of `Babel` class::
 
 	from flask import app
-	from flask.ext.babel import Babel
+	from flask_babelex import Babel
 
 	app = Flask(__name__)
 	babel = Babel(app)
