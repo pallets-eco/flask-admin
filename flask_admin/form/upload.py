@@ -12,10 +12,10 @@ try:
 except ImportError:
     from wtforms.utils import unset_value
 
-from flask.ext.admin.babel import gettext
-from flask.ext.admin.helpers import get_url
+from flask_admin.babel import gettext
+from flask_admin.helpers import get_url
 
-from flask.ext.admin._compat import string_types, urljoin
+from flask_admin._compat import string_types, urljoin
 
 
 try:

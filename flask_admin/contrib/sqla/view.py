@@ -8,16 +8,16 @@ from sqlalchemy.exc import IntegrityError
 
 from flask import flash
 
-from flask.ext.admin._compat import string_types
-from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
-from flask.ext.admin.model import BaseModelView
-from flask.ext.admin.model.form import wrap_fields_in_fieldlist
-from flask.ext.admin.model.fields import ListEditableFieldList
+from flask_admin._compat import string_types
+from flask_admin.babel import gettext, ngettext, lazy_gettext
+from flask_admin.model import BaseModelView
+from flask_admin.model.form import wrap_fields_in_fieldlist
+from flask_admin.model.fields import ListEditableFieldList
 
-from flask.ext.admin.actions import action
-from flask.ext.admin._backwards import ObsoleteAttr
+from flask_admin.actions import action
+from flask_admin._backwards import ObsoleteAttr
 
-from flask.ext.admin.contrib.sqla import form, filters, tools
+from flask_admin.contrib.sqla import form, filters, tools
 from .typefmt import DEFAULT_FORMATTERS
 from .tools import get_query_for_ids
 from .ajax import create_ajax_loader
@@ -113,7 +113,7 @@ class ModelView(BaseModelView):
     """
         Collection of the column filters.
 
-        Can contain either field names or instances of :class:`flask.ext.admin.contrib.sqla.filters.BaseFilter` classes.
+        Can contain either field names or instances of :class:`flask_admin.contrib.sqla.filters.BaseFilter` classes.
 
         For example::
 
@@ -265,9 +265,9 @@ class ModelView(BaseModelView):
             :param menu_icon_type:
                 Optional icon. Possible icon types:
 
-                 - `flask.ext.admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
+                 - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
+                 - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+                 - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
             :param menu_icon_value:
                 Icon glyph name or URL, depending on `menu_icon_type` setting
         """

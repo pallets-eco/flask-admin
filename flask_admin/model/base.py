@@ -7,17 +7,17 @@ from jinja2 import contextfunction
 from wtforms.fields import HiddenField
 from wtforms.validators import ValidationError, Required
 
-from flask.ext.admin.babel import gettext
+from flask_admin.babel import gettext
 
-from flask.ext.admin.base import BaseView, expose
-from flask.ext.admin.form import BaseForm, FormOpts, rules
-from flask.ext.admin.model import filters, typefmt
-from flask.ext.admin.actions import ActionsMixin
-from flask.ext.admin.helpers import (get_form_data, validate_form_on_submit,
+from flask_admin.base import BaseView, expose
+from flask_admin.form import BaseForm, FormOpts, rules
+from flask_admin.model import filters, typefmt
+from flask_admin.actions import ActionsMixin
+from flask_admin.helpers import (get_form_data, validate_form_on_submit,
                                      get_redirect_target, flash_errors)
-from flask.ext.admin.tools import rec_getattr
-from flask.ext.admin._backwards import ObsoleteAttr
-from flask.ext.admin._compat import iteritems, OrderedDict, as_unicode
+from flask_admin.tools import rec_getattr
+from flask_admin._backwards import ObsoleteAttr
+from flask_admin._compat import iteritems, OrderedDict, as_unicode
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
 from .fields import ListEditableFieldList
@@ -133,7 +133,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         or using Jinja2 `macro` in template::
 
-            from flask.ext.admin.model.template import macro
+            from flask_admin.model.template import macro
 
             class MyModelView(BaseModelView):
                 column_formatters = dict(price=macro('render_price'))
@@ -170,7 +170,7 @@ class BaseModelView(BaseView, ActionsMixin):
         If you want to display `NULL` instead of an empty string, you can do
         something like this::
 
-            from flask.ext.admin.model import typefmt
+            from flask_admin.model import typefmt
 
             MY_DEFAULT_FORMATTERS = dict(typefmt.BASE_FORMATTERS)
             MY_DEFAULT_FORMATTERS.update({
@@ -296,7 +296,7 @@ class BaseModelView(BaseView, ActionsMixin):
     """
         Collection of the column filters.
 
-        Can contain either field names or instances of :class:`~flask.ext.admin.model.filters.BaseFilter` classes.
+        Can contain either field names or instances of :class:`~flask_admin.model.filters.BaseFilter` classes.
 
         Example::
 
@@ -486,7 +486,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         Here's simple example which illustrates how to use::
 
-            from flask.ext.admin.form import rules
+            from flask_admin.form import rules
 
             class MyModelView(ModelView):
                 form_rules = [
@@ -555,9 +555,9 @@ class BaseModelView(BaseView, ActionsMixin):
             :param menu_icon_type:
                 Optional icon. Possible icon types:
 
-                 - `flask.ext.admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
+                 - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
+                 - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+                 - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
             :param menu_icon_value:
                 Icon glyph name or URL, depending on `menu_icon_type` setting
         """
@@ -892,8 +892,8 @@ class BaseModelView(BaseView, ActionsMixin):
 
             Allows overriding the editable list view field/widget. For example::
 
-                from flask.ext.admin.model.fields import ListEditableFieldList
-                from flask.ext.admin.model.widgets import XEditableWidget
+                from flask_admin.model.fields import ListEditableFieldList
+                from flask_admin.model.widgets import XEditableWidget
 
                 class CustomWidget(XEditableWidget):
                     def get_kwargs(self, subfield, kwargs):
@@ -972,7 +972,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Instantiate model delete form and return it.
 
             Override to implement custom behavior.
-            
+
             The delete form originally used a GET request, so delete_form
             accepts both GET and POST request for backwards compatibility.
         """

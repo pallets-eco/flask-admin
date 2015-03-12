@@ -2,13 +2,13 @@ from mongoengine import ReferenceField
 from mongoengine.base import BaseDocument, DocumentMetaclass, get_document
 
 from wtforms import fields, validators
-from flask.ext.mongoengine.wtf import orm, fields as mongo_fields
+from flask_mongoengine.wtf import orm, fields as mongo_fields
 
-from flask.ext.admin import form
-from flask.ext.admin.model.form import FieldPlaceholder
-from flask.ext.admin.model.fields import InlineFieldList, AjaxSelectField, AjaxSelectMultipleField
-from flask.ext.admin.model.widgets import InlineFormWidget
-from flask.ext.admin._compat import iteritems
+from flask_admin import form
+from flask_admin.model.form import FieldPlaceholder
+from flask_admin.model.fields import InlineFieldList, AjaxSelectField, AjaxSelectMultipleField
+from flask_admin.model.widgets import InlineFormWidget
+from flask_admin._compat import iteritems
 
 from .fields import ModelFormField, MongoFileField, MongoImageField
 from .subdoc import EmbeddedForm
@@ -184,7 +184,7 @@ def get_form(model, converter,
     """
     Create a wtforms Form for a given mongoengine Document schema::
 
-        from flask.ext.mongoengine.wtf import model_form
+        from flask_mongoengine.wtf import model_form
         from myproject.myapp.schemas import Article
         ArticleForm = model_form(Article)
 

@@ -1,7 +1,7 @@
 from wtforms import widgets
 from flask.globals import _request_ctx_stack
-from flask.ext.admin.babel import gettext, ngettext
-from flask.ext.admin import helpers as h
+from flask_admin.babel import gettext, ngettext
+from flask_admin import helpers as h
 
 __all__ = ['Select2Widget', 'DatePickerWidget', 'DateTimePickerWidget', 'RenderTemplateWidget', 'Select2TagsWidget', ]
 

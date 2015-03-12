@@ -1,9 +1,9 @@
 try:
     from .helpers import get_current_view
 
-    from flask.ext.babelex import Domain
+    from flask_babel import Domain
 
-    from flask.ext.admin import translations
+    from flask_admin import translations
 
     class CustomDomain(Domain):
         def __init__(self):

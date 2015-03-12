@@ -34,8 +34,8 @@ class FileAdmin(BaseView, ActionsMixin):
 
             import os.path as op
 
-            from flask.ext.admin import Admin
-            from flask.ext.admin.contrib.fileadmin import FileAdmin
+            from flask_admin import Admin
+            from flask_admin.contrib.fileadmin import FileAdmin
 
             admin = Admin()
 

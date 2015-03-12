@@ -2,16 +2,16 @@ import logging
 
 from flask import flash
 
-from flask.ext.admin._compat import string_types
-from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
-from flask.ext.admin.model import BaseModelView
-from flask.ext.admin.model.form import wrap_fields_in_fieldlist
-from flask.ext.admin.model.fields import ListEditableFieldList
+from flask_admin._compat import string_types
+from flask_admin.babel import gettext, ngettext, lazy_gettext
+from flask_admin.model import BaseModelView
+from flask_admin.model.form import wrap_fields_in_fieldlist
+from flask_admin.model.fields import ListEditableFieldList
 
 from peewee import PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
 
-from flask.ext.admin.actions import action
-from flask.ext.admin.contrib.peewee import filters
+from flask_admin.actions import action
+from flask_admin.contrib.peewee import filters
 
 from .form import get_form, CustomModelConverter, InlineModelConverter, save_inline
 from .tools import get_primary_key, parse_like_term

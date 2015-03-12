@@ -120,7 +120,7 @@ class Text(BaseRule):
 
 class HTML(Text):
     """
-        Shortcut for `Text` rule with `escape` set to `False.
+        Shortcut for `Text` rule with `escape` set to `False`.
     """
     def __init__(self, html):
         super(HTML, self).__init__(html, escape=False)

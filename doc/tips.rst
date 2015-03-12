@@ -24,13 +24,13 @@ General tips
 
  3. To customize the overall look and feel of the default model forms, you have two options: Either, you could
     override the default create/edit templates. Or, alternatively, you could make use of the form rendering rules
-    (:mod:`flask.ext.admin.form.rules`) that were introduced in version 1.0.7.
+    (:mod:`flask_admin.form.rules`) that were introduced in version 1.0.7.
 
  4. To simplify the management of file uploads, Flask-Admin comes with a dedicated tool, for which you can find
-    documentation at: :mod:`flask.ext.admin.form.upload`.
+    documentation at: :mod:`flask_admin.form.upload`.
 
  5. If you don't want to the use the built-in Flask-Admin form scaffolding logic, you are free to roll your own
-    by simply overriding :meth:`~flask.ext.admin.model.base.scaffold_form`. For example, if you use
+    by simply overriding :meth:`~flask_admin.model.base.scaffold_form`. For example, if you use
     `WTForms-Alchemy <https://github.com/kvesteri/wtforms-alchemy>`_, you could put your form generation code
     into a `scaffold_form` method in your `ModelView` class.
 

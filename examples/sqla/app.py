@@ -1,13 +1,13 @@
 import os
 import os.path as op
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 from wtforms import validators
 
-from flask.ext import admin
-from flask.ext.admin.contrib import sqla
-from flask.ext.admin.contrib.sqla import filters
+import flask_admin as admin
+from flask_admin.contrib import sqla
+from flask_admin.contrib.sqla import filters
 
 
 # Create application

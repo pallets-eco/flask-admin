@@ -37,12 +37,12 @@ Creating simple model
 ---------------------
 
 GeoAlchemy comes with a `Geometry`_ field that is carefully divorced from the
-`Shapely`_ library. Flask-Admin will use this field so that there are no 
-changes necessary to other code. ``ModelView`` should be imported from 
+`Shapely`_ library. Flask-Admin will use this field so that there are no
+changes necessary to other code. ``ModelView`` should be imported from
 ``geoa`` rather than the one imported from ``sqla``::
 
     from geoalchemy2 import Geometry
-    from flask.ext.admin.contrib.geoa import ModelView
+    from flask_admin.contrib.geoa import ModelView
 
     # .. flask initialization
     db = SQLAlchemy(app)

@@ -1,13 +1,13 @@
 from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
 
-from flask.ext.admin import form
-from flask.ext.admin.model.form import (converts, ModelConverterBase,
+from flask_admin import form
+from flask_admin.model.form import (converts, ModelConverterBase,
                                         InlineModelConverterBase, FieldPlaceholder)
-from flask.ext.admin.model.fields import AjaxSelectField, AjaxSelectMultipleField
-from flask.ext.admin.model.helpers import prettify_name
-from flask.ext.admin._backwards import get_property
-from flask.ext.admin._compat import iteritems
+from flask_admin.model.fields import AjaxSelectField, AjaxSelectMultipleField
+from flask_admin.model.helpers import prettify_name
+from flask_admin._backwards import get_property
+from flask_admin._compat import iteritems
 
 from .validators import Unique
 from .fields import QuerySelectField, QuerySelectMultipleField, InlineModelFormList

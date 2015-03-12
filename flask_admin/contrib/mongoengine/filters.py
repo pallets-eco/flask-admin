@@ -1,7 +1,7 @@
 import datetime
 
-from flask.ext.admin.babel import lazy_gettext
-from flask.ext.admin.model import filters
+from flask_admin.babel import lazy_gettext
+from flask_admin.model import filters
 
 from .tools import parse_like_term
 from mongoengine.queryset import Q

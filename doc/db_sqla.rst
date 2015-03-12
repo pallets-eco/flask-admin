@@ -22,9 +22,9 @@ If you use Flask-SQLAlchemy, this is how you initialize Flask-Admin
 and get session from the `SQLAlchemy` object::
 
     from flask import Flask
-    from flask.ext.sqlalchemy import SQLAlchemy
-    from flask.ext.admin import Admin
-    from flask.ext.admin.contrib.sqla import ModelView
+    from flask_sqlalchemy import SQLAlchemy
+    from flask_admin import Admin
+    from flask_admin.contrib.sqla import ModelView
 
     app = Flask(__name__)
     # .. read settings
@@ -73,7 +73,7 @@ Customizing administrative interface
 List view can be customized in different ways.
 
 First of all, you can use various class-level properties to configure
-what should be displayed and how. For example, :attr:`~flask.ext.admin.contrib.sqla.ModelView.column_list` can be used to show some of
+what should be displayed and how. For example, :attr:`~flask_admin.contrib.sqla.ModelView.column_list` can be used to show some of
 the column or include extra columns from related models.
 
 For example::
@@ -89,7 +89,7 @@ For example::
         # Add filters for name and email columns
         column_filters = ('name', 'email')
 
-Alternatively, you can override some of the :class:`~flask.ext.admin.contrib.sqla.ModelView` methods and implement your custom logic.
+Alternatively, you can override some of the :class:`~flask_admin.contrib.sqla.ModelView` methods and implement your custom logic.
 
 For example, if you need to contribute additional field to the generated form,
 you can do something like this::

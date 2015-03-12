@@ -1,7 +1,7 @@
 from sqlalchemy import or_
 
-from flask.ext.admin._compat import as_unicode, string_types
-from flask.ext.admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
+from flask_admin._compat import as_unicode, string_types
+from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
 
 
 class QueryAjaxModelLoader(AjaxModelLoader):

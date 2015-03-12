@@ -1,10 +1,11 @@
 import os
 from flask import Flask, url_for, redirect, render_template, request
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from wtforms import form, fields, validators
-from flask.ext import admin, login
-from flask.ext.admin.contrib import sqla
-from flask.ext.admin import helpers, expose
+import flask_admin as admin
+import flask_login as login
+from flask_admin.contrib import sqla
+from flask_admin import helpers, expose
 from werkzeug.security import generate_password_hash, check_password_hash
 
 

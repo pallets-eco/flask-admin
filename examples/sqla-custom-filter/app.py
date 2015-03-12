@@ -1,8 +1,8 @@
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
-from flask.ext.admin.contrib import sqla
-from flask.ext.admin import expose, Admin
+from flask_admin.contrib import sqla
+from flask_admin import expose, Admin
 
 # required for creating custom filters
 from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter, FilterEqual
@@ -26,7 +26,7 @@ class User(db.Model):
         self.last_name = last_name
         self.username = username
         self.email = email
-    
+
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
@@ -53,10 +53,10 @@ class UserAdmin(sqla.ModelView):
     # each filter in the list is a filter operation (equals, not equals, etc)
     # filters with the same name will appear as operations under the same filter
     column_filters = [
-        FilterEqual(User.last_name, 'Last Name'), 
+        FilterEqual(User.last_name, 'Last Name'),
         FilterLastNameBrown(User.last_name, 'Last Name', options=(('1', 'Yes'),('0', 'No')))
     ]
-    
+
 admin = Admin(app, template_mode="bootstrap3")
 admin.add_view(UserAdmin(User, db.session))
 
@@ -66,7 +66,7 @@ def build_sample_db():
     user_obj1 = User("Paul", "Brown", "pbrown", "paul@gmail.com")
     user_obj2 = User("Luke", "Brown", "lbrown", "luke@gmail.com")
     user_obj3 = User("Serge", "Koval", "skoval", "serge@gmail.com")
-        
+
     db.session.add_all([user_obj1, user_obj2, user_obj3])
     db.session.commit()
 

@@ -1,7 +1,7 @@
 import inspect
 
-from flask.ext.admin.form import BaseForm, rules
-from flask.ext.admin._compat import iteritems
+from flask_admin.form import BaseForm, rules
+from flask_admin._compat import iteritems
 
 from wtforms.fields.core import UnboundField
 
@@ -21,7 +21,7 @@ def wrap_fields_in_fieldlist(form_base_class, form_class, CustomFieldList):
         in this format: ('<field_name>-<primary_key>', '<value>')
 
         Used in the editable list view.
-        
+
         :param form_base_class:
             WTForms form class, by default `form_base_class` from base.
         :param form_class:
