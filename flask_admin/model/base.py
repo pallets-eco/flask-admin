@@ -1477,6 +1477,10 @@ class BaseModelView(BaseView, ActionsMixin):
             return redirect(return_url)
 
         form = self.create_form()
+        if self._form_create_rules:
+            for field in form:
+                if field.name not in self._form_create_rules.visible_fields:
+                    form.__delitem__(field.name)
 
         if self.validate_form(form):
             if self.create_model(form):
@@ -1514,6 +1518,10 @@ class BaseModelView(BaseView, ActionsMixin):
             return redirect(return_url)
 
         form = self.edit_form(obj=model)
+        if self._form_edit_rules:
+            for field in form:
+                if field.name not in self._form_edit_rules.visible_fields:
+                    form.__delitem__(field.name)
 
         if self.validate_form(form):
             if self.update_model(form, model):
