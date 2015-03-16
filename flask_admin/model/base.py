@@ -5,6 +5,7 @@ from flask import (request, redirect, flash, abort, json, Response,
                    get_flashed_messages)
 from jinja2 import contextfunction
 from wtforms.fields import HiddenField
+from wtforms.fields.core import UnboundField
 from wtforms.validators import ValidationError, Required
 
 from flask_admin.babel import gettext
@@ -685,6 +686,10 @@ class BaseModelView(BaseView, ActionsMixin):
         # Form rendering rules
         self._refresh_form_rules_cache()
 
+        # Process form rules
+        self._validate_form_class(self._form_edit_rules, self._edit_form_class)
+        self._validate_form_class(self._form_create_rules, self._create_form_class)
+
     # Primary key
     def get_pk_value(self, model):
         """
@@ -1000,6 +1005,51 @@ class BaseModelView(BaseView, ActionsMixin):
                 Form to validate
         """
         return validate_form_on_submit(form)
+
+
+    def _get_ruleset_missing_fields(self, ruleset, form):
+        missing_fields = []
+
+        if ruleset:
+            visible_fields = ruleset.visible_fields
+            for field in form:
+                if field.name not in visible_fields:
+                    missing_fields.append(field.name)
+
+        return missing_fields
+
+    def _validate_form_class(self, ruleset, form_class, remove_missing=True):
+        form_fields = []
+        for name, obj in iteritems(form_class.__dict__):
+            if isinstance(obj, UnboundField):
+                form_fields.append(name)
+
+        missing_fields = []
+        if ruleset:
+            visible_fields = ruleset.visible_fields
+            for field_name in form_fields:
+                if field_name not in visible_fields:
+                    missing_fields.append(field_name)
+
+        if missing_fields:
+            warnings.warn('Fields missing from ruleset: %s' % (','.join(missing_fields)))
+        if remove_missing:
+            self._remove_fields_from_form_class(missing_fields, form_class)
+
+    def _validate_form_instance(self, ruleset, form, remove_missing=True):
+        missing_fields = self._get_ruleset_missing_fields(ruleset=ruleset, form=form)
+        if missing_fields:
+            warnings.warn('Fields missing from ruleset: %s' % (','.join(missing_fields)))
+        if remove_missing:
+            self._remove_fields_from_form_instance(missing_fields, form)
+
+    def _remove_fields_from_form_instance(self, field_names, form):
+        for field_name in field_names:
+            form.__delitem__(field_name)
+
+    def _remove_fields_from_form_class(self, field_names, form_class):
+        for field_name in field_names:
+            delattr(form_class, field_name)
 
     # Helpers
     def is_sortable(self, name):
@@ -1477,10 +1527,8 @@ class BaseModelView(BaseView, ActionsMixin):
             return redirect(return_url)
 
         form = self.create_form()
-        if self._form_create_rules:
-            for field in form:
-                if field.name not in self._form_create_rules.visible_fields:
-                    form.__delitem__(field.name)
+        if not hasattr(form, '_validated_ruleset') or not form._validated_ruleset:
+            self._validate_form_instance(ruleset=self._form_create_rules, form=form)
 
         if self.validate_form(form):
             if self.create_model(form):
@@ -1518,10 +1566,8 @@ class BaseModelView(BaseView, ActionsMixin):
             return redirect(return_url)
 
         form = self.edit_form(obj=model)
-        if self._form_edit_rules:
-            for field in form:
-                if field.name not in self._form_edit_rules.visible_fields:
-                    form.__delitem__(field.name)
+        if not hasattr(form, '_validated_ruleset') or not form._validated_ruleset:
+            self._validate_form_instance(ruleset=self._form_create_rules, form=form)
 
         if self.validate_form(form):
             if self.update_model(form, model):
