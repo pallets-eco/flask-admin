@@ -4,7 +4,7 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import desc
 from sqlalchemy import Column, Boolean, func, or_
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
 from flask import flash
 
@@ -334,7 +334,7 @@ class ModelView(BaseModelView):
                     table = model.__table__
 
                     if self._need_join(table):
-                        join_tables.append(table)
+                        join_tables.append((table, value))
 
                 attr = value
         else:
@@ -350,7 +350,7 @@ class ModelView(BaseModelView):
                 column = columns[0]
 
                 if self._need_join(column.table):
-                    join_tables.append(column.table)
+                    join_tables.append((column.table, column))
 
         return join_tables, attr
 
@@ -494,9 +494,9 @@ class ModelView(BaseModelView):
 
                     # Store joins, avoid duplicates
                     for table in join_tables:
-                        if table.name not in joins:
+                        if table[0].name not in joins:
                             self._search_joins.append(table)
-                            joins.add(table.name)
+                            joins.add(table[0].name)
 
         return bool(self.column_searchable_list)
 
@@ -536,7 +536,7 @@ class ModelView(BaseModelView):
                         if join_tables:
                             self._filter_joins[table.name] = join_tables
                         elif self._need_join(table):
-                            self._filter_joins[table.name] = [table]
+                            self._filter_joins[table.name] = [(table, column)]
                         filters.extend(flt)
 
             return filters
@@ -572,7 +572,8 @@ class ModelView(BaseModelView):
             )
 
             if flt and not join_tables and self._need_join(column.table):
-                self._filter_joins[column.table.name] = [column.table]
+                self._filter_joins[column.table.name] = [(column.table,
+                                                          column)]
 
             return flt
 
@@ -590,7 +591,7 @@ class ModelView(BaseModelView):
         column = filter.column
 
         if self._need_join(column.table):
-            self._filter_joins[column.table.name] = [column.table]
+            self._filter_joins[column.table.name] = [(column.table, column)]
 
         return filter
 
@@ -725,10 +726,13 @@ class ModelView(BaseModelView):
         # Handle joins
         if sort_joins:
             for table in sort_joins:
-                if table.name not in joins:
-                    query = query.outerjoin(table)
+                if table[0].name not in joins:
+                    try:
+                        query = query.outerjoin(table[0])
+                    except InvalidRequestError:
+                        query = query.outerjoin(table)
 
-                    joins.add(table.name)
+                    joins.add(table[0].name)
 
         if sort_field is not None:
             if sort_desc:
@@ -786,11 +790,16 @@ class ModelView(BaseModelView):
             # Apply search-related joins
             if self._search_joins:
                 for table in self._search_joins:
-                    if table.name not in joins:
-                        query = query.outerjoin(table)
-                        count_query = count_query.outerjoin(table)
+                    if table[0].name not in joins:
+                        try:
+                            query, count_query = (
+                                query.outerjoin(table[0]),
+                                count_query.outerjoin(table[0]))
+                        except InvalidRequestError:
+                            query, count_query = (query.outerjoin(table),
+                                                  count_query.outerjoin(table))
 
-                        joins.add(table.name)
+                        joins.add(table[0].name)
 
             # Apply terms
             terms = search.split(' ')
@@ -815,10 +824,14 @@ class ModelView(BaseModelView):
                 join_tables = self._filter_joins.get(tbl, [])
 
                 for table in join_tables:
-                    if table.name not in joins:
-                        query = query.join(table)
-                        count_query = count_query.join(table)
-                        joins.add(table.name)
+                    if table[0].name not in joins:
+                        try:
+                            query, count_query = (query.join(table[0]),
+                                                  count_query.join(table[0]))
+                        except InvalidRequestError:
+                            query, count_query = (query.join(table),
+                                                  count_query.join(table))
+                        joins.add(table[0].name)
 
                 # turn into python format with .clean() and apply filter
                 query = flt.apply(query, flt.clean(value))
