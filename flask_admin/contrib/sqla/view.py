@@ -17,7 +17,7 @@ from flask_admin.model.fields import ListEditableFieldList
 from flask_admin.actions import action
 from flask_admin._backwards import ObsoleteAttr
 
-from flask_admin.contrib.sqla import form, filters, tools
+from flask_admin.contrib.sqla import form, filters as sqla_filters, tools
 from .typefmt import DEFAULT_FORMATTERS
 from .tools import get_query_for_ids
 from .ajax import create_ajax_loader
@@ -154,7 +154,7 @@ class ModelView(BaseModelView):
                 inline_model_form_converter = MyInlineModelConverter
     """
 
-    filter_converter = filters.FilterConverter()
+    filter_converter = sqla_filters.FilterConverter()
     """
         Field to filter converter.
 
@@ -576,21 +576,12 @@ class ModelView(BaseModelView):
 
             return flt
 
-    def is_valid_filter(self, filter):
-        """
-            Verify that the provided filter object is derived from the
-            SQLAlchemy-compatible filter class.
-
-            :param filter:
-                Filter object to verify.
-        """
-        return isinstance(filter, filters.BaseSQLAFilter)
-
     def handle_filter(self, filter):
-        column = filter.column
+        if isinstance(filter, sqla_filters.BaseSQLAFilter):
+            column = filter.column
 
-        if self._need_join(column.table):
-            self._filter_joins[column.table.name] = [column.table]
+            if self._need_join(column.table):
+                self._filter_joins[column.table.name] = [column.table]
 
         return filter
 
@@ -810,15 +801,16 @@ class ModelView(BaseModelView):
                 flt = self._filters[idx]
 
                 # Figure out joins
-                tbl = flt.column.table.name
+                if isinstance(flt, sqla_filters.BaseSQLAFilter):
+                    tbl = flt.column.table.name
 
-                join_tables = self._filter_joins.get(tbl, [])
+                    join_tables = self._filter_joins.get(tbl, [])
 
-                for table in join_tables:
-                    if table.name not in joins:
-                        query = query.join(table)
-                        count_query = count_query.join(table)
-                        joins.add(table.name)
+                    for table in join_tables:
+                        if table.name not in joins:
+                            query = query.join(table)
+                            count_query = count_query.join(table)
+                            joins.add(table.name)
 
                 # turn into python format with .clean() and apply filter
                 query = flt.apply(query, flt.clean(value))
