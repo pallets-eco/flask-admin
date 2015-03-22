@@ -3,8 +3,8 @@ import os.path as op
 
 from flask import Flask
 
-from flask.ext import admin
-from flask.ext.admin.contrib import fileadmin
+import flask_admin as admin
+from flask_admin.contrib import fileadmin
 
 
 # Create flask app

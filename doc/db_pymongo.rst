@@ -11,7 +11,7 @@ with PyMongo:
 
  1. Provide list of columns by setting `column_list` property
  2. Provide form to use by setting `form` property
- 3. When instantiating :class:`flask.ext.admin.contrib.pymongo.ModelView` class, you have to provide PyMongo collection object
+ 3. When instantiating :class:`flask_admin.contrib.pymongo.ModelView` class, you have to provide PyMongo collection object
 
 This is minimal PyMongo view::
 

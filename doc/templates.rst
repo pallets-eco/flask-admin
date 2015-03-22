@@ -122,7 +122,7 @@ admin_view           Current administrative view
 admin_base_template  Base template name
 _gettext             Babel gettext
 _ngettext            Babel ngettext
-h                    Helpers from :mod:`~flask.ext.admin.helpers` module
+h                    Helpers from :mod:`~flask_admin.helpers` module
 ==================== ================================
 
 

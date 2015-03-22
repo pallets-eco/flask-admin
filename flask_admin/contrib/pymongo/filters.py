@@ -1,7 +1,7 @@
 import re
 
-from flask.ext.admin.babel import gettext
-from flask.ext.admin.model import filters
+from flask_admin.babel import gettext
+from flask_admin.model import filters
 
 from .tools import parse_like_term
 

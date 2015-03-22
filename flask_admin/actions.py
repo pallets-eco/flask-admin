@@ -1,8 +1,8 @@
 from flask import request, redirect
 
 
-from flask.ext.admin import tools
-from flask.ext.admin._compat import text_type
+from flask_admin import tools
+from flask_admin._compat import text_type
 
 
 def action(name, text, confirmation=None):

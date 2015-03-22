@@ -2,14 +2,14 @@ import os
 import os.path as op
 
 from flask import Flask, url_for
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 from sqlalchemy.event import listens_for
 from jinja2 import Markup
 
-from flask.ext.admin import Admin, form
-from flask.ext.admin.form import rules
-from flask.ext.admin.contrib import sqla
+from flask_admin import Admin, form
+from flask_admin.form import rules
+from flask_admin.contrib import sqla
 
 
 # Create application

@@ -1,7 +1,7 @@
 import pymongo
 
 from flask import Flask
-from flask.ext.admin import Admin
+from flask_admin import Admin
 
 
 def setup():

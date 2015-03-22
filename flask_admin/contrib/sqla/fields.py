@@ -8,10 +8,10 @@ from wtforms.fields import SelectFieldBase
 from wtforms.validators import ValidationError
 
 from .tools import get_primary_key
-from flask.ext.admin._compat import text_type, string_types
-from flask.ext.admin.form import FormOpts
-from flask.ext.admin.model.fields import InlineFieldList, InlineModelFormField
-from flask.ext.admin.model.widgets import InlineFormWidget
+from flask_admin._compat import text_type, string_types
+from flask_admin.form import FormOpts
+from flask_admin.model.fields import InlineFieldList, InlineModelFormField
+from flask_admin.model.widgets import InlineFormWidget
 
 
 try:

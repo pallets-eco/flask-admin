@@ -3,12 +3,12 @@ import os.path as op
 from functools import wraps
 
 from flask import Blueprint, current_app, render_template, abort, g, url_for
-from flask.ext.admin import babel
-from flask.ext.admin._compat import with_metaclass
-from flask.ext.admin import helpers as h
+from flask_admin import babel
+from flask_admin._compat import with_metaclass
+from flask_admin import helpers as h
 
 # For compatibility reasons import MenuLink
-from flask.ext.admin.menu import MenuCategory, MenuView, MenuLink
+from flask_admin.menu import MenuCategory, MenuView, MenuLink
 
 
 def expose(url='/', methods=('GET',)):
@@ -111,7 +111,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
         Derive from this class to implement your administrative interface piece. For example::
 
-            from flask.ext.admin import BaseView, expose
+            from flask_admin import BaseView, expose
             class MyView(BaseView):
                 @expose('/')
                 def index(self):
@@ -179,9 +179,9 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             :param menu_icon_type:
                 Optional icon. Possible icon types:
 
-                 - `flask.ext.admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
+                 - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
+                 - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+                 - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
             :param menu_icon_value:
                 Icon glyph name or URL, depending on `menu_icon_type` setting
         """
@@ -233,7 +233,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             if not self.url.startswith('/'):
                 self.url = '%s/%s' % (self.admin.url, self.url)
 
-        
+
         # If we're working from the root of the site, set prefix to None
         if self.url == '/':
             self.url = None
@@ -241,8 +241,8 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             if not self.static_url_path:
                 self.static_folder='static'
                 self.static_url_path='/static/admin'
-            
-            
+
+
         # If name is not povided, use capitalized endpoint name
         if self.name is None:
             self.name = self._prettify_class_name(self.__class__.__name__)
@@ -396,8 +396,8 @@ class AdminIndexView(BaseView):
                     return self.render('admin/myhome.html', arg1=arg1)
 
             admin = Admin(index_view=MyHomeView())
-            
-            
+
+
         Also, you can change the root url from /admin to / with the following::
 
             admin = Admin(

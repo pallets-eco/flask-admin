@@ -2,7 +2,7 @@ from nose.tools import ok_, eq_, raises
 
 from flask import Flask, request, abort, url_for
 from flask.views import MethodView
-from flask.ext.admin import base
+from flask_admin import base
 
 
 class MockView(base.BaseView):
@@ -132,11 +132,11 @@ def test_admin_customizations():
     client = app.test_client()
     rv = client.get('/foobar/')
     eq_(rv.status_code, 200)
-    
+
     # test custom static_url_path
     with app.test_request_context('/'):
         rv = client.get(url_for('admin.static', filename='bootstrap/bootstrap2/css/bootstrap.css'))
-    eq_(rv.status_code, 200)    
+    eq_(rv.status_code, 200)
 
 
 def test_baseview_registration():
@@ -364,7 +364,7 @@ def test_root_mount():
     client = app.test_client()
     rv = client.get('/mockview/')
     eq_(rv.data, b'Success!')
-    
+
     # test static files when url='/'
     with app.test_request_context('/'):
         rv = client.get(url_for('admin.static', filename='bootstrap/bootstrap2/css/bootstrap.css'))

@@ -2,8 +2,8 @@ import time
 import datetime
 
 from wtforms import fields, widgets
-from flask.ext.admin.babel import gettext
-from flask.ext.admin._compat import text_type, as_unicode
+from flask_admin.babel import gettext
+from flask_admin._compat import text_type, as_unicode
 
 from . import widgets as admin_widgets
 

@@ -6,9 +6,9 @@ from flask import request
 
 from jinja2 import Markup
 
-from flask.ext.admin.base import BaseView, expose
-from flask.ext.admin.babel import gettext
-from flask.ext.admin._compat import VER
+from flask_admin.base import BaseView, expose
+from flask_admin.babel import gettext
+from flask_admin._compat import VER
 
 # Set up logger
 log = logging.getLogger("flask-admin.redis")

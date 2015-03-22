@@ -1,7 +1,7 @@
-``flask.ext.admin.actions``
+``flask_admin.actions``
 ===========================
 
-.. automodule:: flask.ext.admin.actions
+.. automodule:: flask_admin.actions
 
     .. autofunction:: action
 

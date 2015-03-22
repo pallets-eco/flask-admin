@@ -1,4 +1,4 @@
-from flask.ext.admin.model.typefmt import BASE_FORMATTERS, list_formatter
+from flask_admin.model.typefmt import BASE_FORMATTERS, list_formatter
 from sqlalchemy.orm.collections import InstrumentedList
 
 

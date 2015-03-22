@@ -1,7 +1,7 @@
-``flask.ext.admin.form.fields``
-===============================
+``flask_admin.form.fields``
+===========================
 
-.. automodule:: flask.ext.admin.form.fields
+.. automodule:: flask_admin.form.fields
 
 	.. autoclass:: TimeField
 		:members:

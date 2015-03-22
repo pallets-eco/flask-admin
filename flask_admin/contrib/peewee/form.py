@@ -5,10 +5,10 @@ from peewee import (CharField, DateTimeField, DateField, TimeField,
 
 from wtfpeewee.orm import ModelConverter, model_form
 
-from flask.ext.admin import form
-from flask.ext.admin._compat import iteritems, itervalues
-from flask.ext.admin.model.form import InlineFormAdmin, InlineModelConverterBase
-from flask.ext.admin.model.fields import InlineModelFormField, InlineFieldList, AjaxSelectField
+from flask_admin import form
+from flask_admin._compat import iteritems, itervalues
+from flask_admin.model.form import InlineFormAdmin, InlineModelConverterBase
+from flask_admin.model.fields import InlineModelFormField, InlineFieldList, AjaxSelectField
 
 from .tools import get_primary_key
 from .ajax import create_ajax_loader

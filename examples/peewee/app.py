@@ -2,8 +2,8 @@ from flask import Flask
 
 import peewee
 
-from flask.ext import admin
-from flask.ext.admin.contrib.peewee import ModelView
+import flask_admin as admin
+from flask_admin.contrib.peewee import ModelView
 
 
 app = Flask(__name__)

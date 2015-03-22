@@ -1,6 +1,6 @@
 from flask import Flask
-from flask.ext.admin import Admin
-from flask.ext.mongoengine import MongoEngine
+from flask_admin import Admin
+from flask_mongoengine import MongoEngine
 
 
 def setup():
