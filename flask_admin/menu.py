@@ -25,6 +25,9 @@ class BaseMenu(object):
     def is_category(self):
         return False
 
+    def is_divider(self):
+        return False
+
     def is_active(self, view):
         for c in self._children:
             if c.is_active(view):
@@ -134,3 +137,15 @@ class MenuLink(BaseMenu):
 
     def get_url(self):
         return self.url or url_for(self.endpoint)
+
+
+class MenuDivider(BaseMenu):
+    """
+        Divider item
+    """
+
+    def __init__(self):
+        super(MenuDivider, self).__init__('-')
+
+    def is_divider(self):
+        return True
