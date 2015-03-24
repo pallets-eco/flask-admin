@@ -8,7 +8,7 @@ from flask_admin._compat import with_metaclass
 from flask_admin import helpers as h
 
 # For compatibility reasons import MenuLink
-from flask_admin.menu import MenuCategory, MenuView, MenuLink
+from flask_admin.menu import MenuCategory, MenuView, MenuLink, MenuDivider
 
 
 def expose(url='/', methods=('GET',)):
@@ -533,6 +533,16 @@ class Admin(object):
             self._add_menu_item(link, link.category)
         else:
             self._menu_links.append(link)
+
+    def add_divider(self, category):
+        """
+            Add divider to menu links collection.
+
+            :param divider:
+                Which category the divider should be put in
+        """
+
+        self._add_menu_item(MenuDivider(), category)
 
     def _add_menu_item(self, menu_item, target_category):
         """
