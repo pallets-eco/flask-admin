@@ -21,7 +21,10 @@
     	<h2 id="brand">{{ admin_view.name|capitalize }}</h2>
     	{% endblock %}
     	{{ layout.messages() }}
-	     {% block body %}{% endblock %}
+
+	{% set render_ctx = h.resolve_ctx() %}
+
+        {% block body %}{% endblock %}
       </div>
      </div>
   </div>
