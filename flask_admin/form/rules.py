@@ -30,7 +30,7 @@ class BaseRule(object):
         """
             A list of visible fields for the given rule.
         """
-        raise []
+        return []
 
     def __call__(self, form, form_opts=None, field_args={}):
         """
