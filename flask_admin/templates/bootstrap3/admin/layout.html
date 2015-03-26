@@ -4,6 +4,8 @@
   {% set icon_value = item.get_icon_value() %}
   {% if icon_type == 'glyph' %}
     <i class="glyphicon {{ icon_value }}"></i>
+  {% elif icon_type == 'fa' %}
+    <i class="fa {{ icon_value }}"></i>
   {% elif icon_type == 'image' %}
     <img src="{{ url_for('static', filename=icon_value) }}" alt="menu image"></img>
   {% elif icon_type == 'image-url' %}

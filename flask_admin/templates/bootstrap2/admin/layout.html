@@ -2,7 +2,7 @@
 {% set icon_type = item.get_icon_type() %}
 {%- if icon_type %}
   {% set icon_value = item.get_icon_value() %}
-  {% if icon_type == 'glyph' %}
+  {% if icon_type == 'glyph' or icon_type == 'fa' %}
     <i class="{{ icon_value }}"></i>
   {% elif icon_type == 'image' %}
     <img src="{{ url_for('static', filename=icon_value) }}" alt="menu image"></img>
