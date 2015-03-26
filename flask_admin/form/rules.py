@@ -30,7 +30,7 @@ class BaseRule(object):
         """
             A list of visible fields for the given rule.
         """
-        raise NotImplementedError()
+        raise []
 
     def __call__(self, form, form_opts=None, field_args={}):
         """
@@ -129,10 +129,6 @@ class Text(BaseRule):
         self.text = text
         self.escape = escape
 
-    @property
-    def visible_fields(self):
-        return []
-
     def __call__(self, form, form_opts=None, field_args={}):
         if self.escape:
             return self.text
@@ -189,10 +185,6 @@ class Macro(BaseRule):
                 return field
 
         return field
-
-    @property
-    def visible_fields(self):
-        return []
 
     def __call__(self, form, form_opts=None, field_args={}):
         """
