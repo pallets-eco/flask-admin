@@ -1164,8 +1164,8 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         try:
             self.on_model_change(form, model, is_created)
-        except TypeError, e:
-            if e.message == 'on_model_change() takes exactly 3 arguments (4 given)':
+        except TypeError as e:
+            if re.match(r'on_model_change\(\) takes .* 3 .* arguments .* 4 .* given .*', e.message):
                 msg = ('%s.on_model_change() now accepts third ' +
                        'parameter is_created. Please update your code') % self.model
                 warnings.warn(msg)
