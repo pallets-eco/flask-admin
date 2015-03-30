@@ -1,4 +1,4 @@
-from nose.tools import eq_, ok_, raises
+from nose.tools import eq_, ok_, raises, assert_true
 
 from wtforms import fields
 
@@ -1669,10 +1669,14 @@ def test_safe_redirect():
                      data=dict(test1='test1large', test2='test2'))
 
     eq_(rv.status_code, 302)
-    eq_(rv.location, 'http://localhost/admin/model2view/')
+    assert_true(rv.location.startswith('http://localhost/admin/model1/edit/'))
+    assert_true('url=http%3A%2F%2Flocalhost%2Fadmin%2Fmodel2view%2F' in rv.location)
+    assert_true('id=1' in rv.location)
 
     rv = client.post('/admin/model1/new/?url=http://google.com/evil/',
                      data=dict(test1='test1large', test2='test2'))
 
     eq_(rv.status_code, 302)
-    eq_(rv.location, 'http://localhost/admin/model1/')
+    assert_true(rv.location.startswith('http://localhost/admin/model1/edit/'))
+    assert_true('url=%2Fadmin%2Fmodel1%2F' in rv.location)
+    assert_true('id=2' in rv.location)
