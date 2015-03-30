@@ -61,7 +61,7 @@
                     {% endblock %}
                     {% set column = 0 %}
                     {% for c, name in list_columns %}
-                    <th class="column-header">
+                    <th class="column-{{c}}">
                         {% if admin_view.is_sortable(c) %}
                             {% if sort_column == column %}
                                 <a href="{{ sort_url(column, True) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">
@@ -120,15 +120,17 @@
                 </td>
                 {% endblock %}
                 {% for c, name in list_columns %}
+                    <td class="column-{{c}}">
                     {% if admin_view.is_editable(c) %}
                         {% if form.csrf_token %}
-                        <td>{{ form[c](pk=get_pk_value(row), value=get_value(row, c), csrf=form.csrf_token._value()) }}</td>
+                        {{ form[c](pk=get_pk_value(row), value=get_value(row, c), csrf=form.csrf_token._value()) }}
                         {% else %}
-                        <td>{{ form[c](pk=get_pk_value(row), value=get_value(row, c)) }}</td>
+                        {{ form[c](pk=get_pk_value(row), value=get_value(row, c)) }}
                         {% endif %}
                     {% else %}
-                    <td>{{ get_value(row, c) }}</td>
+                    {{ get_value(row, c) }}
                     {% endif %}
+                    </td>
                 {% endfor %}
             {% endblock %}
         </tr>
