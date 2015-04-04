@@ -51,7 +51,7 @@
                 {% block list_row_actions scoped %}
                 {% if admin_view.can_rename and path and name != '..' %}
                 <a class="icon" href="{{ get_url('.rename', path=path) }}">
-                        <i class="icon-pencil"></i>
+                        <i class="fa fa-pencil icon-pencil"></i>
                 </a>
                 {% endif %}
                 {%- if admin_view.can_delete and path -%}
@@ -61,7 +61,7 @@
                             {{ delete_form.path(value=path) }}
                             {{ delete_form.csrf_token }}
                             <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
-                                <i class="icon-remove"></i>
+                                <i class="fa fa-times icon-remove"></i>
                             </button>
                         </form>
                         {% endif %}
@@ -70,7 +70,7 @@
                         {{ delete_form.path(value=path) }}
                         {{ delete_form.csrf_token }}
                         <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
-                            <i class="icon-remove"></i>
+                            <i class="fa fa-times icon-remove"></i>
                         </button>
                     </form>
                     {% endif %}
@@ -80,7 +80,7 @@
             {% if is_dir %}
             <td colspan="2">
                 <a href="{{ get_dir_url('.index', path)|safe }}">
-                    <i class="icon-folder-close"></i> <span>{{ name }}</span>
+                    <i class="fa fa-folder-o icon-folder-close"></i> <span>{{ name }}</span>
                 </a>
             </td>
             {% else %}
