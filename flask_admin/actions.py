@@ -59,7 +59,7 @@ class ActionsMixin(object):
             if hasattr(attr, '_action'):
                 name, text, desc = attr._action
 
-                self._actions.append((name, text))
+                self._actions.append((text_type(name), text_type(text)))
 
                 # TODO: Use namedtuple
                 # Reason why we need getattr here - what's in attr is not

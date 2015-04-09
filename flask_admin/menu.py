@@ -1,4 +1,8 @@
+from __future__ import unicode_literals
+
 from flask import url_for
+
+from flask_admin._compat import text_type
 
 
 class BaseMenu(object):
@@ -6,10 +10,10 @@ class BaseMenu(object):
         Base menu item
     """
     def __init__(self, name, class_name=None, icon_type=None, icon_value=None):
-        self.name = name
-        self.class_name = class_name
-        self.icon_type = icon_type
-        self.icon_value = icon_value
+        self.name = text_type(name)
+        self.class_name = text_type(class_name)
+        self.icon_type = text_type(icon_type)
+        self.icon_value = text_type(icon_value)
 
         self.parent = None
         self._children = []
@@ -98,7 +102,10 @@ class MenuView(BaseMenu):
         if self._cached_url:
             return self._cached_url
 
-        self._cached_url = self._view.get_url('%s.%s' % (self._view.endpoint, self._view._default_view))
+        self._cached_url = text_type(
+            self._view.get_url('%s.%s' %
+                               (self._view.endpoint,
+                                self._view._default_view)))
         return self._cached_url
 
     def is_active(self, view):
@@ -129,7 +136,7 @@ class MenuLink(BaseMenu):
 
         self.category = category
 
-        self.url = url
+        self.url = text_type(url)
         self.endpoint = endpoint
 
     def get_url(self):
