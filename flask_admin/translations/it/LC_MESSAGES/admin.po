@@ -1,8 +1,7 @@
-# Traduction française pour Flask_Admin
-# Copyright (C) 2012 CeReynAud
+# Traduzione italiana di Flask_Admin
+# Copyright (C) 2015 Manuel Bua
 # This file is distributed under the same license as the Flask-Admin
 # project.
-# CeReynAud 2013.
 #
 msgid ""
 msgstr ""
