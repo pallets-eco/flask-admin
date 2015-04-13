@@ -178,7 +178,7 @@ prefix to get the URL for a local view::
 
     class MyView(BaseView):
         @expose('/')
-        def index(self)
+        def index(self):
             # Get URL for the test view method
             url = url_for('.test')
             return self.render('index.html', url=url)
