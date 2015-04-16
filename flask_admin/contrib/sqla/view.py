@@ -393,6 +393,7 @@ class ModelView(BaseModelView):
 
                     if len(filtered) > 1:
                         warnings.warn('Can not convert multiple-column properties (%s.%s)' % (self.model, p.key))
+                        continue
 
                     column = filtered[0]
                 else:
