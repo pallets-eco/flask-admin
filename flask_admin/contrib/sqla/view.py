@@ -1,4 +1,5 @@
 import logging
+import warnings
 
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import joinedload
@@ -391,8 +392,7 @@ class ModelView(BaseModelView):
                     filtered = tools.filter_foreign_columns(self.model.__table__, p.columns)
 
                     if len(filtered) > 1:
-                        # TODO: Skip column and issue a warning
-                        raise TypeError('Can not convert multiple-column properties (%s.%s)' % (self.model, p.key))
+                        warnings.warn('Can not convert multiple-column properties (%s.%s)' % (self.model, p.key))
 
                     column = filtered[0]
                 else:
