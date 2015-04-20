@@ -1,2 +1,2 @@
 # flask-admin
-Simple and extensible administrative interface framework for Flask
+Project was moved to its own organization: https://github.com/flask-admin
