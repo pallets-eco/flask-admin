@@ -1,10 +1,12 @@
+from __future__ import unicode_literals
+
 import os.path as op
 
 from functools import wraps
 
 from flask import Blueprint, current_app, render_template, abort, g, url_for
 from flask_admin import babel
-from flask_admin._compat import with_metaclass
+from flask_admin._compat import with_metaclass, text_type
 from flask_admin import helpers as h
 
 # For compatibility reasons import MenuLink
@@ -374,7 +376,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             :param kwargs:
                 Arguments for `url_for`
         """
-        return url_for(endpoint, **kwargs)
+        return text_type(url_for(endpoint, **kwargs))
 
     @property
     def _debug(self):
