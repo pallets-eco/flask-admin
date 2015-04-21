@@ -75,6 +75,7 @@ Test are run with *nose*. If you are not familiar with this package you can get 
 To run the tests, simply::
 
     pip install nose
+    pip install -r dev-requirements.txt
 
 and then::
 
