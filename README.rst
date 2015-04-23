@@ -1,6 +1,9 @@
 Flask-Admin
 ===========
 
+.. image:: https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.png
+	:target: https://crowdin.com/project/flask-admin
+
 .. image:: https://travis-ci.org/flask-admin/flask-admin.png?branch=master
 	:target: https://travis-ci.org/flask-admin/flask-admin
 
@@ -96,3 +99,5 @@ Please note that you will need to install some additional dependencies in order 
 Flask-Admin is built with the help of `Bootstrap <http://getbootstrap.com/>`_ and `Select2 <https://github.com/ivaynberg/select2>`_.
 
 If you want to localize your application, install the `Flask-BabelEx <https://pypi.python.org/pypi/Flask-BabelEx>`_ package.
+
+You can help improve Flask-Admin's translations through Crowdin: https://crowdin.com/project/flask-admin 
