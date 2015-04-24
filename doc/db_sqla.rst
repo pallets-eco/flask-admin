@@ -148,4 +148,4 @@ Example
 -------
 
 Flask-Admin comes with relatively advanced example, which you can
-see `here <https://github.com/mrjoes/flask-admin/tree/master/examples/sqla>`_.
+see `here <https://github.com/flask-admin/flask-admin/tree/master/examples/sqla>`_.

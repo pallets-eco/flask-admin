@@ -15,4 +15,4 @@ Known issues:
 
 For more documentation, check :doc:`api/mod_contrib_peewee` documentation.
 
-Peewee example is `here <https://github.com/mrjoes/flask-admin/tree/master/examples/peewee>`_.
+Peewee example is `here <https://github.com/flask-admin/flask-admin/tree/master/examples/peewee>`_.
