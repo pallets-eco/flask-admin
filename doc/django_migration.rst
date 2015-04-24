@@ -152,7 +152,7 @@ Tips and hints
     it instead of default implementation.
 
  3. Using Jinja2, you can easily extend the existing templates. You can even change the look and feel of the admin
-    interface completely, if you want to. Check `this example <https://github.com/mrjoes/flask-admin/tree/master/examples/layout>`_.
+    interface completely, if you want to. Check `this example <https://github.com/flask-admin/flask-admin/tree/master/examples/layout>`_.
 
  4. You are not limited to a simple CRUD interface for every model. Want to add some kind of realtime monitoring via websockets? No problem.
 

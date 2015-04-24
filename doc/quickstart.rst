@@ -323,34 +323,34 @@ Examples
 Flask-Admin comes with several examples, that will really help you get a grip on what's possible.
 Browse through them in the GitHub repo, and then run them locally to get yourself up to speed in no time:
 
-- `Simple views <https://github.com/MrJoes/Flask-Admin/tree/master/examples/simple>`_
+- `Simple views <https://github.com/flask-admin/Flask-Admin/tree/master/examples/simple>`_
     Here we show how to add some simple custom views to your admin interface. They don't have to
     be associated to any of your database models. You can fill them with whatever content you want.
 
-- `Custom layout <https://github.com/MrJoes/Flask-Admin/tree/master/examples/layout>`_
+- `Custom layout <https://github.com/flask-admin/Flask-Admin/tree/master/examples/layout>`_
     Override some of the built-in templates to get complete control over the look and feel of your Admin interface. Either
-    while using the default Bootstrap 2, or the newer `Bootstrap 3 <https://github.com/MrJoes/Flask-Admin/tree/master/examples/layout-bootstrap3>`_.
+    while using the default Bootstrap 2, or the newer `Bootstrap 3 <https://github.com/flask-admin/Flask-Admin/tree/master/examples/layout-bootstrap3>`_.
 
-- `SQLAlchemy model example <https://github.com/MrJoes/Flask-Admin/tree/master/examples/sqla>`_
+- `SQLAlchemy model example <https://github.com/flask-admin/Flask-Admin/tree/master/examples/sqla>`_
     Model-based views provide heaps of builtin goodness, making it really easy to get a set of the default CRUD views in place.
     This example shows some of the basics.
 
-- `SQLAlchemy model views with custom forms and file handling <https://github.com/MrJoes/Flask-Admin/tree/master/examples/forms>`_
+- `SQLAlchemy model views with custom forms and file handling <https://github.com/flask-admin/Flask-Admin/tree/master/examples/forms>`_
     Here, we show some of the more interesting things you can do with very little effort, including customizing the
     builtin forms, and adding support for handling file/image uploads.
 
-- `Flask-Login integration example <https://github.com/MrJoes/Flask-Admin/tree/master/examples/auth>`_
+- `Flask-Login integration example <https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth>`_
     Use Flask-Login for authentication to hide some of your admin views behind a login wall.
 
-- `Peewee model example <https://github.com/MrJoes/Flask-Admin/tree/master/examples/peewee>`_
+- `Peewee model example <https://github.com/flask-admin/Flask-Admin/tree/master/examples/peewee>`_
     Not so keen on SQLAlchemy? Perhaps you'd rather use Peewee?
 
-- `MongoEngine model example <https://github.com/MrJoes/Flask-Admin/tree/master/examples/mongoengine>`_
+- `MongoEngine model example <https://github.com/flask-admin/Flask-Admin/tree/master/examples/mongoengine>`_
    ... or check this example if MongoDB is more your style.
 
-- `I18n and L10n with Flask-BabelEx <https://github.com/MrJoes/Flask-Admin/tree/master/examples/babel>`_
+- `I18n and L10n with Flask-BabelEx <https://github.com/flask-admin/Flask-Admin/tree/master/examples/babel>`_
    Do you need to make your Admin interface available in other languages? Luckily, Flask-Admin is built for just that kind of thing.
 
-- `Redis terminal <https://github.com/MrJoes/Flask-Admin/tree/master/examples/rediscli>`_
+- `Redis terminal <https://github.com/flask-admin/Flask-Admin/tree/master/examples/rediscli>`_
    If you use Redis for caching, then check this example to see how easy it is to add a Redis terminal to your Admin
    interface, so you can reach your Redis instance straight from a browser.

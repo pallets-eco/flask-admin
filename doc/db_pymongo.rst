@@ -33,4 +33,4 @@ On top of that you can add sortable columns, filters, text search, etc.
 
 For more documentation, check :doc:`api/mod_contrib_pymongo` documentation.
 
-PyMongo integration example is `here <https://github.com/mrjoes/flask-admin/tree/master/examples/pymongo>`_.
+PyMongo integration example is `here <https://github.com/flask-admin/flask-admin/tree/master/examples/pymongo>`_.

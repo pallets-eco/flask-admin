@@ -123,4 +123,4 @@ Further reading
 ---------------
 
 For additional documentation, check :mod:`flask_admin.form.rules` module source code (it is quite short) and
-look at the `forms example <https://github.com/mrjoes/flask-admin/tree/master/examples/forms>`_ on GitHub.
+look at the `forms example <https://github.com/flask-admin/flask-admin/tree/master/examples/forms>`_ on GitHub.
