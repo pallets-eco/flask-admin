@@ -187,6 +187,10 @@
   {% if config.MAPBOX_MAP_ID %}
   <script>
   window.MAPBOX_MAP_ID = "{{ config.MAPBOX_MAP_ID }}";
+  {% if config.get(MAPBOX_API_VERSION) == 4 %}
+  window.MAPBOX_ACCESS_TOKEN = "{{ config.MAPBOX_ACCESS_TOKEN }}";
+  window.MAPBOX_API_VERSION = "{{ config.MAPBOX_API_VERSION }}";
+  {% endif %}
   </script>
   <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js') }}"></script>
   <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js') }}"></script>
