@@ -28,10 +28,9 @@ settings::
     app = Flask(__name__)
     app.config['MAPBOX_MAP_ID'] = "example.abc123"
 
-To use the v4 of their API: (Note that while 4 is parameterized here, only v3 and v4 are currently supported.)::
+To use the v4 of their API (the default is v3):::
 
     app.config['MAPBOX_ACCESS_TOKEN'] = "pk.def456"
-    app.config['MAPBOX_API_VERSION'] = 4
 
 .. note::
   Leaflet supports loading map tiles from any arbitrary map tile provider, but
