@@ -78,6 +78,10 @@
           return false;
         }
 
+        if (!window.MAPBOX_ACCESS_TOKEN) {
+          console.warn("You must set MAPBOX_ACCESS_TOKEN in your Flask settings to use the map widget with mapbox v4 API");
+        }
+
         var geometryType = $el.data("geometry-type")
         if (geometryType) {
           geometryType = geometryType.toUpperCase();
@@ -155,7 +159,8 @@
         }
 
         // set up tiles
-        L.tileLayer('http://{s}.tiles.mapbox.com/v3/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png', {
+        mapboxVersion = window.MAPBOX_ACCESS_TOKEN ? 4 : 3
+        L.tileLayer('http://{s}.tiles.mapbox.com/v'+mapboxVersion+'/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png?access_token='+window.MAPBOX_ACCESS_TOKEN, {
           attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
           maxZoom: 18
         }).addTo(map);
