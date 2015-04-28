@@ -62,9 +62,12 @@ class CustomInlineFieldListWidget(RenderTemplateWidget):
         super(CustomInlineFieldListWidget, self).__init__('field_list.html')
 
 
-# This InlineModelFormList will use our custom widget
+# This InlineModelFormList will use our custom widget and hide row controls
 class CustomInlineModelFormList(InlineModelFormList):
     widget = CustomInlineFieldListWidget()
+
+    def display_row_controls(self, field):
+        return False
 
 
 # Create custom InlineModelConverter and tell it to use our InlineModelFormList
