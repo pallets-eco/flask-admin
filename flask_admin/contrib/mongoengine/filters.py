@@ -221,9 +221,9 @@ class DateTimeNotBetweenFilter(DateTimeBetweenFilter):
         return lazy_gettext('not between')
 
 
-# Base peewee filter field converter
+# Base MongoEngine filter field converter
 class FilterConverter(filters.BaseFilterConverter):
-    strings = (FilterEqual, FilterNotEqual, FilterLike, FilterNotLike,
+    strings = (FilterLike, FilterNotLike, FilterEqual, FilterNotEqual,
                FilterEmpty, FilterInList, FilterNotInList)
     int_filters = (IntEqualFilter, IntNotEqualFilter, IntGreaterFilter,
                    IntSmallerFilter, FilterEmpty, IntInListFilter,

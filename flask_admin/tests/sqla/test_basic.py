@@ -421,10 +421,10 @@ def test_column_filters():
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
         [
-            (0, u'equals'),
-            (1, u'not equal'),
-            (2, u'contains'),
-            (3, u'not contains'),
+            (0, u'contains'),
+            (1, u'not contains'),
+            (2, u'equals'),
+            (3, u'not equal'),
             (4, u'empty'),
             (5, u'in list'),
             (6, u'not in list'),
