@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-04-22 20:22-0500\n"
-"PO-Revision-Date: 2015-04-22 21:56-0400\n"
+"POT-Creation-Date: 2015-05-02 18:11-0500\n"
+"PO-Revision-Date: 2015-05-02 19:12-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Chinese Simplified\n"
 "MIME-Version: 1.0\n"
@@ -39,13 +39,13 @@ msgstr "内容"
 
 #: ../flask_admin/contrib/fileadmin.py:260
 msgid "Invalid name"
-msgstr "Invalid name"
+msgstr "无效的名称。"
 
 #: ../flask_admin/contrib/fileadmin.py:268
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:35
 msgid "Name"
-msgstr "Name"
+msgstr "名称"
 
 #: ../flask_admin/contrib/fileadmin.py:546
 #, python-format
@@ -59,7 +59,7 @@ msgstr "文件 %(name)s 已经存在。"
 #: ../flask_admin/contrib/fileadmin.py:777
 #: ../flask_admin/contrib/fileadmin.py:826
 msgid "Permission denied."
-msgstr "Permission denied."
+msgstr "权限被拒绝。"
 
 #: ../flask_admin/contrib/fileadmin.py:633
 msgid "File uploading is disabled."
@@ -90,7 +90,7 @@ msgstr "删除文件夹功能已被禁用。"
 #: ../flask_admin/contrib/fileadmin.py:742
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
-msgstr "Directory \"%(path)s\" was successfully deleted."
+msgstr "已成功删除目录\"%(path)s\"。"
 
 #: ../flask_admin/contrib/fileadmin.py:744
 #, python-format
@@ -179,7 +179,7 @@ msgstr "Cli：无效命令。"
 
 #: ../flask_admin/contrib/geoa/fields.py:29
 msgid "Invalid JSON"
-msgstr "Invalid JSON"
+msgstr "无效的 JSON"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:38
 #: ../flask_admin/contrib/peewee/filters.py:38
@@ -227,19 +227,19 @@ msgstr "小于"
 #: ../flask_admin/contrib/peewee/filters.py:91
 #: ../flask_admin/contrib/sqla/filters.py:91
 msgid "empty"
-msgstr "empty"
+msgstr "空"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:112
 #: ../flask_admin/contrib/peewee/filters.py:105
 #: ../flask_admin/contrib/sqla/filters.py:105
 msgid "in list"
-msgstr "in list"
+msgstr "在列表中"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:121
 #: ../flask_admin/contrib/peewee/filters.py:114
 #: ../flask_admin/contrib/sqla/filters.py:114
 msgid "not in list"
-msgstr "not in list"
+msgstr "不在列表中"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:221
 #: ../flask_admin/contrib/peewee/filters.py:208
@@ -249,7 +249,7 @@ msgstr "not in list"
 #: ../flask_admin/contrib/sqla/filters.py:246
 #: ../flask_admin/contrib/sqla/filters.py:283
 msgid "not between"
-msgstr "not between"
+msgstr "不是之间"
 
 #: ../flask_admin/contrib/mongoengine/view.py:520
 #, python-format
@@ -320,12 +320,12 @@ msgstr "已经存在。"
 #, python-format
 msgid "At least %d item is required"
 msgid_plural "At least %d items are required"
-msgstr[0] "At least %d items are required"
+msgstr[0] "至少 %d 为必填项"
 
 #: ../flask_admin/contrib/sqla/view.py:867
 #, python-format
 msgid "Integrity error. %(message)s"
-msgstr "Integrity error. %(message)s"
+msgstr "完整性错误。%(message)s"
 
 #: ../flask_admin/form/fields.py:92
 msgid "Invalid time format"
@@ -346,7 +346,7 @@ msgstr "表中没有任何记录"
 #: ../flask_admin/model/base.py:1305
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
-msgstr "Invalid Filter Value: %(value)s"
+msgstr "无效的筛选器值： %(value)s"
 
 #: ../flask_admin/model/base.py:1539
 msgid "Record was successfully created."
@@ -367,7 +367,7 @@ msgstr "否"
 #: ../flask_admin/model/filters.py:162 ../flask_admin/model/filters.py:202
 #: ../flask_admin/model/filters.py:247
 msgid "between"
-msgstr "between"
+msgstr "之间"
 
 #: ../flask_admin/templates/bootstrap2/admin/actions.html:4
 #: ../flask_admin/templates/bootstrap3/admin/actions.html:4
@@ -377,7 +377,7 @@ msgstr "选中的"
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:156
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:150
 msgid "Save"
-msgstr "Save"
+msgstr "保存"
 
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:161
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:155
@@ -393,12 +393,12 @@ msgstr "你正在编辑 %(path)s"
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
 msgid "Root"
-msgstr "Root"
+msgstr "根"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:36
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:36
 msgid "Size"
-msgstr "Size"
+msgstr "大小"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:63
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:63
@@ -492,12 +492,12 @@ msgstr "搜索"
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:20
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:20
 msgid "Create new record"
-msgstr "Create new record"
+msgstr "创建新记录"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:56
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:56
 msgid "Select all records"
-msgstr "Select all records"
+msgstr "选择所有记录"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:76
@@ -505,17 +505,17 @@ msgstr "Select all records"
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:76
 #, python-format
 msgid "Sort by %(name)s"
-msgstr "Sort by %(name)s"
+msgstr "按 %(name)s 进行排序"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:98
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:98
 msgid "Select record"
-msgstr "Select record"
+msgstr "选择记录"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:105
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:105
 msgid "Edit record"
-msgstr "Edit record"
+msgstr "编辑记录"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:114
@@ -524,10 +524,10 @@ msgstr "你打算删除这条记录？"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
 msgid "Delete record"
-msgstr "Delete record"
+msgstr "删除记录"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:159
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:158
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:161
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:160
 msgid "Please select at least one record."
 msgstr "请至少选择一个 model。"
 
