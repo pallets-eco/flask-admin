@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-04-22 20:22-0500\n"
-"PO-Revision-Date: 2015-04-22 21:56-0400\n"
+"POT-Creation-Date: 2015-05-02 18:11-0500\n"
+"PO-Revision-Date: 2015-05-02 19:12-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Portuguese\n"
 "MIME-Version: 1.0\n"
@@ -39,13 +39,13 @@ msgstr "Conteúdo"
 
 #: ../flask_admin/contrib/fileadmin.py:260
 msgid "Invalid name"
-msgstr "Invalid name"
+msgstr "Nome inválido"
 
 #: ../flask_admin/contrib/fileadmin.py:268
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:35
 msgid "Name"
-msgstr "Name"
+msgstr "Nome"
 
 #: ../flask_admin/contrib/fileadmin.py:546
 #, python-format
@@ -179,7 +179,7 @@ msgstr "Cli: Comando inválido"
 
 #: ../flask_admin/contrib/geoa/fields.py:29
 msgid "Invalid JSON"
-msgstr "Invalid JSON"
+msgstr "JSON inválido"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:38
 #: ../flask_admin/contrib/peewee/filters.py:38
@@ -227,19 +227,19 @@ msgstr "menor que"
 #: ../flask_admin/contrib/peewee/filters.py:91
 #: ../flask_admin/contrib/sqla/filters.py:91
 msgid "empty"
-msgstr "empty"
+msgstr "vazio"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:112
 #: ../flask_admin/contrib/peewee/filters.py:105
 #: ../flask_admin/contrib/sqla/filters.py:105
 msgid "in list"
-msgstr "in list"
+msgstr "na lista"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:121
 #: ../flask_admin/contrib/peewee/filters.py:114
 #: ../flask_admin/contrib/sqla/filters.py:114
 msgid "not in list"
-msgstr "not in list"
+msgstr "Não está na lista"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:221
 #: ../flask_admin/contrib/peewee/filters.py:208
@@ -249,7 +249,7 @@ msgstr "not in list"
 #: ../flask_admin/contrib/sqla/filters.py:246
 #: ../flask_admin/contrib/sqla/filters.py:283
 msgid "not between"
-msgstr "not between"
+msgstr "Não entre"
 
 #: ../flask_admin/contrib/mongoengine/view.py:520
 #, python-format
@@ -321,8 +321,8 @@ msgstr "Já existe."
 #, python-format
 msgid "At least %d item is required"
 msgid_plural "At least %d items are required"
-msgstr[0] "At least %d item is required"
-msgstr[1] "At least %d items are required"
+msgstr[0] "Pelo menos %d item é exigido"
+msgstr[1] "Pelo menos %d itens são obrigatórios"
 
 #: ../flask_admin/contrib/sqla/view.py:867
 #, python-format
@@ -348,7 +348,7 @@ msgstr "Não existem itens na tabela."
 #: ../flask_admin/model/base.py:1305
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
-msgstr "Invalid Filter Value: %(value)s"
+msgstr "Valor de filtro inválido: %(value)s"
 
 #: ../flask_admin/model/base.py:1539
 msgid "Record was successfully created."
@@ -369,7 +369,7 @@ msgstr "Não"
 #: ../flask_admin/model/filters.py:162 ../flask_admin/model/filters.py:202
 #: ../flask_admin/model/filters.py:247
 msgid "between"
-msgstr "between"
+msgstr "entre"
 
 #: ../flask_admin/templates/bootstrap2/admin/actions.html:4
 #: ../flask_admin/templates/bootstrap3/admin/actions.html:4
@@ -379,7 +379,7 @@ msgstr "Com o(s) selecionado(s)"
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:156
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:150
 msgid "Save"
-msgstr "Save"
+msgstr "Salvar"
 
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:161
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:155
@@ -400,7 +400,7 @@ msgstr "Raíz"
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:36
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:36
 msgid "Size"
-msgstr "Size"
+msgstr "Tamanho"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:63
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:63
@@ -517,7 +517,7 @@ msgstr "Selecionar registro"
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:105
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:105
 msgid "Edit record"
-msgstr "Edit record"
+msgstr "Editar registro"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:114
@@ -526,10 +526,10 @@ msgstr "Você tem certeza que deseja excluir este item?"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
 msgid "Delete record"
-msgstr "Delete record"
+msgstr "Excluir registro"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:159
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:158
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:161
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:160
 msgid "Please select at least one record."
 msgstr "Por favor, selecione pelo menos um model."
 

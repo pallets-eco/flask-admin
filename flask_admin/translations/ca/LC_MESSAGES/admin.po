@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-04-22 20:22-0500\n"
-"PO-Revision-Date: 2015-04-22 21:56-0400\n"
+"POT-Creation-Date: 2015-05-02 18:11-0500\n"
+"PO-Revision-Date: 2015-05-02 19:12-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Catalan\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../flask_admin/base.py:427
 msgid "Home"
-msgstr "Home"
+msgstr "Inici"
 
 #: ../flask_admin/contrib/fileadmin.py:222
 msgid "File to upload"
@@ -39,13 +39,13 @@ msgstr "Contingut"
 
 #: ../flask_admin/contrib/fileadmin.py:260
 msgid "Invalid name"
-msgstr "Invalid name"
+msgstr "Nom no vàlid"
 
 #: ../flask_admin/contrib/fileadmin.py:268
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:35
 msgid "Name"
-msgstr "Name"
+msgstr "Nom"
 
 #: ../flask_admin/contrib/fileadmin.py:546
 #, python-format
@@ -379,7 +379,7 @@ msgstr "Amb la selecció"
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:156
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:150
 msgid "Save"
-msgstr "Save"
+msgstr "Desa"
 
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:161
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:155
@@ -400,7 +400,7 @@ msgstr "Arrel"
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:36
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:36
 msgid "Size"
-msgstr "Size"
+msgstr "Duplicar"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:63
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:63
@@ -528,8 +528,8 @@ msgstr "Esteu segurs que voleu eliminar el registre?"
 msgid "Delete record"
 msgstr "Borrar registre"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:159
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:158
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:161
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:160
 msgid "Please select at least one record."
 msgstr "Seleccionar almenys un registre."
 

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-04-22 20:22-0500\n"
-"PO-Revision-Date: 2015-04-22 21:56-0400\n"
+"POT-Creation-Date: 2015-05-02 18:11-0500\n"
+"PO-Revision-Date: 2015-05-02 19:12-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Chinese Traditional\n"
 "MIME-Version: 1.0\n"
@@ -35,17 +35,17 @@ msgstr "檔案格式不允許上傳。"
 
 #: ../flask_admin/contrib/fileadmin.py:246
 msgid "Content"
-msgstr "Content"
+msgstr "內容"
 
 #: ../flask_admin/contrib/fileadmin.py:260
 msgid "Invalid name"
-msgstr "Invalid name"
+msgstr "不正確名稱"
 
 #: ../flask_admin/contrib/fileadmin.py:268
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:35
 msgid "Name"
-msgstr "Name"
+msgstr "名稱"
 
 #: ../flask_admin/contrib/fileadmin.py:546
 #, python-format
@@ -59,7 +59,7 @@ msgstr "檔案 \"%(name)s\" 已經存在。"
 #: ../flask_admin/contrib/fileadmin.py:777
 #: ../flask_admin/contrib/fileadmin.py:826
 msgid "Permission denied."
-msgstr "Permission denied."
+msgstr "許可權被拒絕。"
 
 #: ../flask_admin/contrib/fileadmin.py:633
 msgid "File uploading is disabled."
@@ -90,7 +90,7 @@ msgstr "刪除目錄已被禁用。"
 #: ../flask_admin/contrib/fileadmin.py:742
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
-msgstr "Directory \"%(path)s\" was successfully deleted."
+msgstr "已成功刪除目錄\"%(path)s\"。"
 
 #: ../flask_admin/contrib/fileadmin.py:744
 #, python-format
@@ -130,28 +130,28 @@ msgstr "重新命名的時候發生異常：%(error)s"
 #: ../flask_admin/contrib/fileadmin.py:842
 #, python-format
 msgid "Error saving changes to %(name)s."
-msgstr "Error saving changes to %(name)s."
+msgstr "將更改保存到 %(name)s 時出錯。"
 
 #: ../flask_admin/contrib/fileadmin.py:846
 #, python-format
 msgid "Changes to %(name)s saved successfully."
-msgstr "Changes to %(name)s saved successfully."
+msgstr "對 %(name)s 成功保存的更改。"
 
 #: ../flask_admin/contrib/fileadmin.py:855
 #, python-format
 msgid "Error reading %(name)s."
-msgstr "Error reading %(name)s."
+msgstr "閱讀 %(name)s 錯誤。"
 
 #: ../flask_admin/contrib/fileadmin.py:858
 #: ../flask_admin/contrib/fileadmin.py:867
 #, python-format
 msgid "Unexpected error while reading from %(name)s"
-msgstr "Unexpected error while reading from %(name)s"
+msgstr "從 %(name)s 中讀取時出現意外的錯誤"
 
 #: ../flask_admin/contrib/fileadmin.py:864
 #, python-format
 msgid "Cannot edit %(name)s."
-msgstr "Cannot edit %(name)s."
+msgstr "不能編輯 %(name)s。"
 
 #: ../flask_admin/contrib/fileadmin.py:881
 #: ../flask_admin/contrib/mongoengine/view.py:626
@@ -167,19 +167,19 @@ msgstr "您確定要刪除這些檔案嗎？"
 
 #: ../flask_admin/contrib/fileadmin.py:885
 msgid "File deletion is disabled."
-msgstr "File deletion is disabled."
+msgstr "刪除檔將被禁用。"
 
 #: ../flask_admin/contrib/fileadmin.py:898
 msgid "Edit"
-msgstr "Edit"
+msgstr "編輯"
 
 #: ../flask_admin/contrib/rediscli.py:125
 msgid "Cli: Invalid command."
-msgstr "Cli: Invalid command."
+msgstr "Cli： 不正確命令。"
 
 #: ../flask_admin/contrib/geoa/fields.py:29
 msgid "Invalid JSON"
-msgstr "Invalid JSON"
+msgstr "不正確 JSON"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:38
 #: ../flask_admin/contrib/peewee/filters.py:38
@@ -227,19 +227,19 @@ msgstr "小於"
 #: ../flask_admin/contrib/peewee/filters.py:91
 #: ../flask_admin/contrib/sqla/filters.py:91
 msgid "empty"
-msgstr "empty"
+msgstr "空"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:112
 #: ../flask_admin/contrib/peewee/filters.py:105
 #: ../flask_admin/contrib/sqla/filters.py:105
 msgid "in list"
-msgstr "in list"
+msgstr "在清單中"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:121
 #: ../flask_admin/contrib/peewee/filters.py:114
 #: ../flask_admin/contrib/sqla/filters.py:114
 msgid "not in list"
-msgstr "not in list"
+msgstr "不在清單中"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:221
 #: ../flask_admin/contrib/peewee/filters.py:208
@@ -249,12 +249,12 @@ msgstr "not in list"
 #: ../flask_admin/contrib/sqla/filters.py:246
 #: ../flask_admin/contrib/sqla/filters.py:283
 msgid "not between"
-msgstr "not between"
+msgstr "不是之間"
 
 #: ../flask_admin/contrib/mongoengine/view.py:520
 #, python-format
 msgid "Failed to get model. %(error)s"
-msgstr "Failed to get model. %(error)s"
+msgstr "未能獲取模型。%(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:539
 #: ../flask_admin/contrib/peewee/view.py:380
@@ -320,12 +320,12 @@ msgstr "資料已經存在。"
 #, python-format
 msgid "At least %d item is required"
 msgid_plural "At least %d items are required"
-msgstr[0] "At least %d items are required"
+msgstr[0] "至少 %d 為必填項"
 
 #: ../flask_admin/contrib/sqla/view.py:867
 #, python-format
 msgid "Integrity error. %(message)s"
-msgstr "Integrity error. %(message)s"
+msgstr "完整性錯誤。%(message)s"
 
 #: ../flask_admin/form/fields.py:92
 msgid "Invalid time format"
@@ -333,20 +333,20 @@ msgstr "時間格式錯誤"
 
 #: ../flask_admin/form/fields.py:138
 msgid "Invalid Choice: could not coerce"
-msgstr "Invalid Choice: could not coerce"
+msgstr "不正確選擇： 不能強迫"
 
 #: ../flask_admin/form/upload.py:189
 msgid "Invalid file extension"
-msgstr "Invalid file extension"
+msgstr "不正確檔副檔名"
 
 #: ../flask_admin/model/base.py:1281
 msgid "There are no items in the table."
-msgstr "There are no items in the table."
+msgstr "在表中沒有專案。"
 
 #: ../flask_admin/model/base.py:1305
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
-msgstr "Invalid Filter Value: %(value)s"
+msgstr "不正確篩選器值： %(value)s"
 
 #: ../flask_admin/model/base.py:1539
 msgid "Record was successfully created."
@@ -354,7 +354,7 @@ msgstr "模型建立成功。"
 
 #: ../flask_admin/model/base.py:1578 ../flask_admin/model/base.py:1676
 msgid "Record was successfully saved."
-msgstr "Record was successfully saved."
+msgstr "記錄已成功保存。"
 
 #: ../flask_admin/model/filters.py:99
 msgid "Yes"
@@ -367,7 +367,7 @@ msgstr "否"
 #: ../flask_admin/model/filters.py:162 ../flask_admin/model/filters.py:202
 #: ../flask_admin/model/filters.py:247
 msgid "between"
-msgstr "between"
+msgstr "之間"
 
 #: ../flask_admin/templates/bootstrap2/admin/actions.html:4
 #: ../flask_admin/templates/bootstrap3/admin/actions.html:4
@@ -377,7 +377,7 @@ msgstr "選中的"
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:156
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:150
 msgid "Save"
-msgstr "Save"
+msgstr "保存"
 
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:161
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:155
@@ -388,7 +388,7 @@ msgstr "取消"
 #: ../flask_admin/templates/bootstrap3/admin/file/edit.html:5
 #, python-format
 msgid "You are editing %(path)s"
-msgstr "You are editing %(path)s"
+msgstr "您正在編輯 %(path)s"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
@@ -398,7 +398,7 @@ msgstr "根"
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:36
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:36
 msgid "Size"
-msgstr "Size"
+msgstr "大小"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:63
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:63
@@ -455,7 +455,7 @@ msgstr "建立"
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
 msgid "Save and Continue"
-msgstr "Save and Continue"
+msgstr "保存並繼續"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
 #: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:14
@@ -492,12 +492,12 @@ msgstr "搜尋"
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:20
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:20
 msgid "Create new record"
-msgstr "Create new record"
+msgstr "創建新記錄"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:56
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:56
 msgid "Select all records"
-msgstr "Select all records"
+msgstr "選擇所有記錄"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:76
@@ -505,17 +505,17 @@ msgstr "Select all records"
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:76
 #, python-format
 msgid "Sort by %(name)s"
-msgstr "Sort by %(name)s"
+msgstr "按 %(name)s 進行排序"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:98
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:98
 msgid "Select record"
-msgstr "Select record"
+msgstr "選擇記錄"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:105
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:105
 msgid "Edit record"
-msgstr "Edit record"
+msgstr "編輯記錄"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:114
@@ -524,10 +524,10 @@ msgstr "您確定要刪除這個東西嗎？"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
 msgid "Delete record"
-msgstr "Delete record"
+msgstr "刪除記錄"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:159
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:158
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:161
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:160
 msgid "Please select at least one record."
 msgstr "請至少選擇一個模型。"
 
