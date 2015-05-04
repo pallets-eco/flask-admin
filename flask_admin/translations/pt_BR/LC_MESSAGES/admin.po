@@ -3,54 +3,54 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-05-02 18:11-0500\n"
-"PO-Revision-Date: 2015-05-02 19:12-0400\n"
+"PO-Revision-Date: 2015-05-03 17:47-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
-"Language-Team: Chinese Simplified\n"
+"Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: flask-admin\n"
-"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-Language: pt-BR\n"
 "X-Crowdin-File: admin.pot\n"
-"Language: zh_CN\n"
+"Language: pt_BR\n"
 
 #: ../flask_admin/base.py:427
 msgid "Home"
-msgstr "首页"
+msgstr "Início"
 
 #: ../flask_admin/contrib/fileadmin.py:222
 msgid "File to upload"
-msgstr "要上传的文件"
+msgstr "Arquivo para upload"
 
 #: ../flask_admin/contrib/fileadmin.py:230
 msgid "File required."
-msgstr "请上传有效的文件。"
+msgstr "Arquivo requerido."
 
 #: ../flask_admin/contrib/fileadmin.py:235
 msgid "Invalid file type."
-msgstr "不允许的文件类型。"
+msgstr "Tipo de arquivo inválido."
 
 #: ../flask_admin/contrib/fileadmin.py:246
 msgid "Content"
-msgstr "内容"
+msgstr "Conteúdo"
 
 #: ../flask_admin/contrib/fileadmin.py:260
 msgid "Invalid name"
-msgstr "无效的名称。"
+msgstr "Nome inválido"
 
 #: ../flask_admin/contrib/fileadmin.py:268
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:35
 msgid "Name"
-msgstr "名称"
+msgstr "Nome"
 
 #: ../flask_admin/contrib/fileadmin.py:546
 #, python-format
 msgid "File \"%(name)s\" already exists."
-msgstr "文件 %(name)s 已经存在。"
+msgstr "O arquivo \"%(name)s\" já existe."
 
 #: ../flask_admin/contrib/fileadmin.py:570
 #: ../flask_admin/contrib/fileadmin.py:637
@@ -59,99 +59,99 @@ msgstr "文件 %(name)s 已经存在。"
 #: ../flask_admin/contrib/fileadmin.py:777
 #: ../flask_admin/contrib/fileadmin.py:826
 msgid "Permission denied."
-msgstr "权限被拒绝。"
+msgstr "Permissão negada."
 
 #: ../flask_admin/contrib/fileadmin.py:633
 msgid "File uploading is disabled."
-msgstr "文件上传功能已被禁用。"
+msgstr "O Upload de arquivos está desabilitado."
 
 #: ../flask_admin/contrib/fileadmin.py:646
 #, python-format
 msgid "Failed to save file: %(error)s"
-msgstr "保存文件失败：%(error)s"
+msgstr "Falha ao gravar arquivo: %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:686
 msgid "Directory creation is disabled."
-msgstr "文件夹创建功能已被禁用。"
+msgstr "A criação de diretórios está desabilitada."
 
 #: ../flask_admin/contrib/fileadmin.py:701
 #, python-format
 msgid "Failed to create directory: %(error)s"
-msgstr "创建文件夹失败：%(error)s"
+msgstr "Falha ao criar diretório: %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:727
 msgid "Deletion is disabled."
-msgstr "删除功能已被禁用。"
+msgstr "Exclusão está desabilitada."
 
 #: ../flask_admin/contrib/fileadmin.py:736
 msgid "Directory deletion is disabled."
-msgstr "删除文件夹功能已被禁用。"
+msgstr "Exclusão de diretórios está desabilitada."
 
 #: ../flask_admin/contrib/fileadmin.py:742
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
-msgstr "已成功删除目录\"%(path)s\"。"
+msgstr "Diretório \"%(path)s\" foi excluído com sucesso."
 
 #: ../flask_admin/contrib/fileadmin.py:744
 #, python-format
 msgid "Failed to delete directory: %(error)s"
-msgstr "删除文件夹失败：$(error)s"
+msgstr "Falha ao excluir diretório: %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:749
 #: ../flask_admin/contrib/fileadmin.py:894
 #, python-format
 msgid "File \"%(name)s\" was successfully deleted."
-msgstr "删除文件 %(name)s 成功。"
+msgstr "Arquivo \"%(name)s\" foi excluído com sucesso."
 
 #: ../flask_admin/contrib/fileadmin.py:751
 #: ../flask_admin/contrib/fileadmin.py:896
 #, python-format
 msgid "Failed to delete file: %(name)s"
-msgstr "删除文件 %(name)s 失败"
+msgstr "Falha ao excluir arquivo: %(name)s"
 
 #: ../flask_admin/contrib/fileadmin.py:773
 msgid "Renaming is disabled."
-msgstr "重命名功能已被禁用。"
+msgstr "Renomear está desabilitado."
 
 #: ../flask_admin/contrib/fileadmin.py:781
 msgid "Path does not exist."
-msgstr "路径不存在。"
+msgstr "O caminho não existe."
 
 #: ../flask_admin/contrib/fileadmin.py:792
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
-msgstr "重命名文件 %(src)s 为 %(dst)s 成功"
+msgstr "Renomeado com sucesso: de \"%(src)s\" para \"%(dst)s\""
 
 #: ../flask_admin/contrib/fileadmin.py:795
 #, python-format
 msgid "Failed to rename: %(error)s"
-msgstr "重命名文件失败：%(error)s"
+msgstr "Falha ao renomear: %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:842
 #, python-format
 msgid "Error saving changes to %(name)s."
-msgstr "保存修改到 %(name)s 出现错误。"
+msgstr "Erro ao salvar alterações para %(name)s."
 
 #: ../flask_admin/contrib/fileadmin.py:846
 #, python-format
 msgid "Changes to %(name)s saved successfully."
-msgstr "保存修改到 %(name)s 成功。"
+msgstr "Alterações para %(name)s salvas com sucesso."
 
 #: ../flask_admin/contrib/fileadmin.py:855
 #, python-format
 msgid "Error reading %(name)s."
-msgstr "读取 %(name)s 错误。"
+msgstr "Erro ao ler %(name)s."
 
 #: ../flask_admin/contrib/fileadmin.py:858
 #: ../flask_admin/contrib/fileadmin.py:867
 #, python-format
 msgid "Unexpected error while reading from %(name)s"
-msgstr "读取文件文件 %(name)s 出现未知错误"
+msgstr "Erro inesperado ao ler %(name)s"
 
 #: ../flask_admin/contrib/fileadmin.py:864
 #, python-format
 msgid "Cannot edit %(name)s."
-msgstr "无法编辑 %(name)s。"
+msgstr "Não é ṕossível editar %(name)s."
 
 #: ../flask_admin/contrib/fileadmin.py:881
 #: ../flask_admin/contrib/mongoengine/view.py:626
@@ -159,87 +159,87 @@ msgstr "无法编辑 %(name)s。"
 #: ../flask_admin/contrib/pymongo/view.py:349
 #: ../flask_admin/contrib/sqla/view.py:956
 msgid "Delete"
-msgstr "删除"
+msgstr "Excluir"
 
 #: ../flask_admin/contrib/fileadmin.py:882
 msgid "Are you sure you want to delete these files?"
-msgstr "你打算要删除这些文件吗？"
+msgstr "Você tem certeza que deseja excluir estes arquivos?"
 
 #: ../flask_admin/contrib/fileadmin.py:885
 msgid "File deletion is disabled."
-msgstr "删除文件功能已被禁用"
+msgstr "Exclusão de arquivos desabilitada."
 
 #: ../flask_admin/contrib/fileadmin.py:898
 msgid "Edit"
-msgstr "编辑"
+msgstr "Editar"
 
 #: ../flask_admin/contrib/rediscli.py:125
 msgid "Cli: Invalid command."
-msgstr "Cli：无效命令。"
+msgstr "Cli: Comando inválido."
 
 #: ../flask_admin/contrib/geoa/fields.py:29
 msgid "Invalid JSON"
-msgstr "无效的 JSON"
+msgstr "JSON inválido"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:38
 #: ../flask_admin/contrib/peewee/filters.py:38
 #: ../flask_admin/contrib/pymongo/filters.py:38
 #: ../flask_admin/contrib/sqla/filters.py:38
 msgid "equals"
-msgstr "等于"
+msgstr "igual"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:47
 #: ../flask_admin/contrib/peewee/filters.py:46
 #: ../flask_admin/contrib/pymongo/filters.py:47
 #: ../flask_admin/contrib/sqla/filters.py:46
 msgid "not equal"
-msgstr "不等于"
+msgstr "diferente"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:57
 #: ../flask_admin/contrib/peewee/filters.py:55
 #: ../flask_admin/contrib/pymongo/filters.py:57
 #: ../flask_admin/contrib/sqla/filters.py:55
 msgid "contains"
-msgstr "包含"
+msgstr "contém"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:67
 #: ../flask_admin/contrib/peewee/filters.py:64
 #: ../flask_admin/contrib/pymongo/filters.py:67
 #: ../flask_admin/contrib/sqla/filters.py:64
 msgid "not contains"
-msgstr "不包含"
+msgstr "não contém"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:76
 #: ../flask_admin/contrib/peewee/filters.py:72
 #: ../flask_admin/contrib/pymongo/filters.py:80
 #: ../flask_admin/contrib/sqla/filters.py:72
 msgid "greater than"
-msgstr "大于"
+msgstr "maior que"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:85
 #: ../flask_admin/contrib/peewee/filters.py:80
 #: ../flask_admin/contrib/pymongo/filters.py:93
 #: ../flask_admin/contrib/sqla/filters.py:80
 msgid "smaller than"
-msgstr "小于"
+msgstr "menor que"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:97
 #: ../flask_admin/contrib/peewee/filters.py:91
 #: ../flask_admin/contrib/sqla/filters.py:91
 msgid "empty"
-msgstr "空"
+msgstr "vazio"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:112
 #: ../flask_admin/contrib/peewee/filters.py:105
 #: ../flask_admin/contrib/sqla/filters.py:105
 msgid "in list"
-msgstr "在列表中"
+msgstr "na lista"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:121
 #: ../flask_admin/contrib/peewee/filters.py:114
 #: ../flask_admin/contrib/sqla/filters.py:114
 msgid "not in list"
-msgstr "不在列表中"
+msgstr "Não está na lista"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:221
 #: ../flask_admin/contrib/peewee/filters.py:208
@@ -249,12 +249,12 @@ msgstr "不在列表中"
 #: ../flask_admin/contrib/sqla/filters.py:246
 #: ../flask_admin/contrib/sqla/filters.py:283
 msgid "not between"
-msgstr "不是之间"
+msgstr "Não entre"
 
 #: ../flask_admin/contrib/mongoengine/view.py:520
 #, python-format
 msgid "Failed to get model. %(error)s"
-msgstr "获取 model 失败。%(error)s"
+msgstr "Falha ao obter model. %(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:539
 #: ../flask_admin/contrib/peewee/view.py:380
@@ -262,7 +262,7 @@ msgstr "获取 model 失败。%(error)s"
 #: ../flask_admin/contrib/sqla/view.py:888
 #, python-format
 msgid "Failed to create record. %(error)s"
-msgstr "创建 model 失败。%(error)s"
+msgstr "Falha ao criar model. %(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:565
 #: ../flask_admin/contrib/peewee/view.py:399
@@ -271,7 +271,7 @@ msgstr "创建 model 失败。%(error)s"
 #: ../flask_admin/model/base.py:1680
 #, python-format
 msgid "Failed to update record. %(error)s"
-msgstr "更新 model 失败。%(error)s"
+msgstr "Falha ao atualizar model. %(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:589
 #: ../flask_admin/contrib/peewee/view.py:415
@@ -279,14 +279,14 @@ msgstr "更新 model 失败。%(error)s"
 #: ../flask_admin/contrib/sqla/view.py:940
 #, python-format
 msgid "Failed to delete record. %(error)s"
-msgstr "删除 model 失败。%(error)s"
+msgstr "Falha ao excluir model. %(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:627
 #: ../flask_admin/contrib/peewee/view.py:430
 #: ../flask_admin/contrib/pymongo/view.py:350
 #: ../flask_admin/contrib/sqla/view.py:957
 msgid "Are you sure you want to delete selected records?"
-msgstr "你打算要删除这些 model 吗？"
+msgstr "Você tem certeza que deseja excluir os models selecionados?"
 
 #: ../flask_admin/contrib/mongoengine/view.py:636
 #: ../flask_admin/contrib/peewee/view.py:446
@@ -295,7 +295,8 @@ msgstr "你打算要删除这些 model 吗？"
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
-msgstr[0] "删除 model 成功。"
+msgstr[0] "Registro foi excluído com êxito."
+msgstr[1] "%(count)s registros foram excluídos com êxito."
 
 #: ../flask_admin/contrib/mongoengine/view.py:642
 #: ../flask_admin/contrib/peewee/view.py:452
@@ -303,201 +304,202 @@ msgstr[0] "删除 model 成功。"
 #: ../flask_admin/contrib/sqla/view.py:981
 #, python-format
 msgid "Failed to delete records. %(error)s"
-msgstr "删除 model 失败。%(error)s"
+msgstr "Falha ao excluir models. %(error)s"
 
 #: ../flask_admin/contrib/sqla/fields.py:123
 #: ../flask_admin/contrib/sqla/fields.py:173
 #: ../flask_admin/contrib/sqla/fields.py:178 ../flask_admin/model/fields.py:225
 #: ../flask_admin/model/fields.py:274
 msgid "Not a valid choice"
-msgstr "选择的值无效"
+msgstr "Não é uma escolha válida"
 
 #: ../flask_admin/contrib/sqla/validators.py:42
 msgid "Already exists."
-msgstr "已经存在。"
+msgstr "Já existe."
 
 #: ../flask_admin/contrib/sqla/validators.py:60
 #, python-format
 msgid "At least %d item is required"
 msgid_plural "At least %d items are required"
-msgstr[0] "至少 %d 为必填项"
+msgstr[0] "Pelo menos %d item é exigido"
+msgstr[1] "Pelo menos %d itens são obrigatórios"
 
 #: ../flask_admin/contrib/sqla/view.py:867
 #, python-format
 msgid "Integrity error. %(message)s"
-msgstr "完整性错误。%(message)s"
+msgstr "Erro de integridade. %(message)s"
 
 #: ../flask_admin/form/fields.py:92
 msgid "Invalid time format"
-msgstr "无效时间格式"
+msgstr "Formato de hora inválido"
 
 #: ../flask_admin/form/fields.py:138
 msgid "Invalid Choice: could not coerce"
-msgstr "无效选择的值：强制格式转换失败"
+msgstr "Escolha inválida: não é possível converter"
 
 #: ../flask_admin/form/upload.py:189
 msgid "Invalid file extension"
-msgstr "无效文件扩展名"
+msgstr "Extensão de arquivo inválida"
 
 #: ../flask_admin/model/base.py:1281
 msgid "There are no items in the table."
-msgstr "表中没有任何记录"
+msgstr "Não existem itens na tabela."
 
 #: ../flask_admin/model/base.py:1305
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
-msgstr "无效的筛选器值： %(value)s"
+msgstr "Valor de filtro inválido: %(value)s"
 
 #: ../flask_admin/model/base.py:1539
 msgid "Record was successfully created."
-msgstr "创建 model 成功。"
+msgstr "Model criado com sucesso."
 
 #: ../flask_admin/model/base.py:1578 ../flask_admin/model/base.py:1676
 msgid "Record was successfully saved."
-msgstr "保存 model 成功"
+msgstr "Model salvo com sucesso."
 
 #: ../flask_admin/model/filters.py:99
 msgid "Yes"
-msgstr "是"
+msgstr "Sim"
 
 #: ../flask_admin/model/filters.py:100
 msgid "No"
-msgstr "否"
+msgstr "Não"
 
 #: ../flask_admin/model/filters.py:162 ../flask_admin/model/filters.py:202
 #: ../flask_admin/model/filters.py:247
 msgid "between"
-msgstr "之间"
+msgstr "entre"
 
 #: ../flask_admin/templates/bootstrap2/admin/actions.html:4
 #: ../flask_admin/templates/bootstrap3/admin/actions.html:4
 msgid "With selected"
-msgstr "选中的"
+msgstr "Com selecionado"
 
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:156
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:150
 msgid "Save"
-msgstr "保存"
+msgstr "Salvar"
 
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:161
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:155
 msgid "Cancel"
-msgstr "取消"
+msgstr "Cancelar"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/edit.html:5
 #: ../flask_admin/templates/bootstrap3/admin/file/edit.html:5
 #, python-format
 msgid "You are editing %(path)s"
-msgstr "你正在编辑 %(path)s"
+msgstr "Você está editando %(path)s"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
 msgid "Root"
-msgstr "根"
+msgstr "Raíz"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:36
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:36
 msgid "Size"
-msgstr "大小"
+msgstr "Tamanho"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:63
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:63
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
-msgstr "你打算递归地删除 %(name)s 吗？"
+msgstr "Você tem certeza que deseja excluir \\'%(name)s\\' recursivamente?"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:72
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:72
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\'?"
-msgstr "你打算删除 %(name)s 吗？"
+msgstr "Você tem certeza que deseja excluir \\'%(name)s\\'?"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:107
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:107
 msgid "Upload File"
-msgstr "上传文件"
+msgstr "Upload de arquivo"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:112
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:112
 msgid "Create Directory"
-msgstr "创建文件夹"
+msgstr "Criar diretório"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:129
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:129
 msgid "Please select at least one file."
-msgstr "请至少选择一个文件。"
+msgstr "Por favor, selecione pelo menos um arquivo."
 
 #: ../flask_admin/templates/bootstrap2/admin/file/rename.html:5
 #: ../flask_admin/templates/bootstrap3/admin/file/rename.html:5
 #, python-format
 msgid "Please provide new name for %(name)s"
-msgstr "请输入 %(name)s 的新名字"
+msgstr "Por favor, informe um novo nome para %(name)s"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
 msgid "Save and Add"
-msgstr "保存并继续创建"
+msgstr "Salvar e Adicionar"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:16
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:16
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:17
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:16
 msgid "List"
-msgstr "列表"
+msgstr "Listar"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:19
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:20
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:20
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:20
 msgid "Create"
-msgstr "创建"
+msgstr "Criar"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
 msgid "Save and Continue"
-msgstr "保存并继续编辑"
+msgstr "Salvar e Continuar"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
 #: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:14
 msgid "Delete?"
-msgstr "删除？"
+msgstr "Excluir?"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:40
 #: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:43
 msgid "Add"
-msgstr "增加"
+msgstr "Adicionar"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:3
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:3
 msgid "Add Filter"
-msgstr "新增筛选器"
+msgstr "Adicionar Filtro"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:17
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:17
 msgid "Apply"
-msgstr "应用"
+msgstr "Aplicar"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:19
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:19
 msgid "Reset Filters"
-msgstr "重置"
+msgstr "Limpar Filtros"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:38
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:45
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:38
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:43
 msgid "Search"
-msgstr "搜索"
+msgstr "Pesquisar"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:20
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:20
 msgid "Create new record"
-msgstr "创建新记录"
+msgstr "Criar novo registro"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:56
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:56
 msgid "Select all records"
-msgstr "选择所有记录"
+msgstr "Selecionar todos os registros"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:76
@@ -505,29 +507,29 @@ msgstr "选择所有记录"
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:76
 #, python-format
 msgid "Sort by %(name)s"
-msgstr "按 %(name)s 进行排序"
+msgstr "Ordenar por %(name)s"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:98
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:98
 msgid "Select record"
-msgstr "选择记录"
+msgstr "Selecionar registro"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:105
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:105
 msgid "Edit record"
-msgstr "编辑记录"
+msgstr "Editar registro"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:114
 msgid "Are you sure you want to delete this record?"
-msgstr "你打算删除这条记录？"
+msgstr "Você tem certeza que deseja excluir este item?"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
 msgid "Delete record"
-msgstr "删除记录"
+msgstr "Excluir registro"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:161
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:160
 msgid "Please select at least one record."
-msgstr "请至少选择一个 model。"
+msgstr "Por favor, selecione pelo menos um model."
 
