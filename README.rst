@@ -67,7 +67,7 @@ To install Flask-Admin, simply::
 
 Or alternatively, you can download the repository and install manually by doing::
 
-    git clone git@github.com:mrjoes/flask-admin.git
+    git clone git@github.com:flask-admin/flask-admin.git
     cd flask-admin
     python setup.py install
 
@@ -100,4 +100,4 @@ Flask-Admin is built with the help of `Bootstrap <http://getbootstrap.com/>`_ an
 
 If you want to localize your application, install the `Flask-BabelEx <https://pypi.python.org/pypi/Flask-BabelEx>`_ package.
 
-You can help improve Flask-Admin's translations through Crowdin: https://crowdin.com/project/flask-admin 
+You can help improve Flask-Admin's translations through Crowdin: https://crowdin.com/project/flask-admin
