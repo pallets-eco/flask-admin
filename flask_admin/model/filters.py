@@ -266,7 +266,7 @@ def convert(*args):
         See :mod:`flask_admin.contrib.sqla.filters` for usage example.
     """
     def _inner(func):
-        func._converter_for = list(map(str.lower, args))
+        func._converter_for = list(map(lambda x: x.lower(), args))
         return func
     return _inner
 
