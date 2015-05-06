@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 
 from flask import flash
 
-from flask_admin._compat import string_types
+from flask_admin._compat import string_types, text_type
 from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import wrap_fields_in_fieldlist
@@ -864,7 +864,7 @@ class ModelView(BaseModelView):
     # Error handler
     def handle_view_exception(self, exc):
         if isinstance(exc, IntegrityError):
-            flash(gettext('Integrity error. %(message)s', message=exc.message), 'error')
+            flash(gettext('Integrity error. %(message)s', message=text_type(exc)), 'error')
             return True
 
         return super(ModelView, self).handle_view_exception(exc)
