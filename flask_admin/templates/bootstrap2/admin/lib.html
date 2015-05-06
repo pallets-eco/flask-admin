@@ -188,7 +188,7 @@
   <script>
   window.MAPBOX_MAP_ID = "{{ config.MAPBOX_MAP_ID }}";
   {% if config.MAPBOX_ACCESS_TOKEN %}
-  window.MAPBOX_ACCESS_TOKEN = "{{ config.MAPBOX_MAP_ID }}";
+  window.MAPBOX_ACCESS_TOKEN = "{{ config.MAPBOX_ACCESS_TOKEN }}";
   {% endif %}
   </script>
   <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js') }}"></script>
