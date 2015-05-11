@@ -72,26 +72,19 @@
       // this function fixes the lack of support for multipolygon in Leaflet.draw
       function splitMultiPolygonIntoPolygonFeatures(geojson) {
         var splitFeatures = [];
-        if (!geojson.features) {
-          return geojson;
-        }
-        geojson.features.forEach(function (feature) {
-          if (feature.geometry.type === 'MultiPolygon') {
-            geometry.coordinates.forEach(function (polygon) {
-              splitFeatures.push({
-                type: "Feature",
-                geometry: {
-                  type: "Polygon",
-                  coordinates: polygon
-                }
-              });
-            });
-          } else {
-            splitFeatures.push(feature);
-          }
+        geojson.coordinates.forEach(function (polygon) {
+          splitFeatures.push({
+            type: "Feature",
+            geometry: {
+              type: "Polygon",
+              coordinates: polygon
+            }
+          });
         });
-        geojson.features = splitFeatures;
-        return geojson;
+        return {
+          type: "FeatureCollection",
+          features: splitFeatures
+        };
       }
       /**
        * Process Leaflet (map) widget
