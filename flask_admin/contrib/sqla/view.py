@@ -934,7 +934,6 @@ class ModelView(BaseModelView):
             self.session.flush()
             self.session.delete(model)
             self.session.commit()
-            return True
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 flash(gettext('Failed to delete record. %(error)s', error=str(ex)), 'error')
@@ -943,6 +942,10 @@ class ModelView(BaseModelView):
             self.session.rollback()
 
             return False
+        else:
+            self.after_model_delete(model)
+        
+        return True
 
     # Default model actions
     def is_action_allowed(self, name):

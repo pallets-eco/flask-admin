@@ -1200,6 +1200,21 @@ class BaseModelView(BaseView, ActionsMixin):
             By default do nothing.
         """
         pass
+        
+    def after_model_delete(self, model):
+        """
+            Perform some actions after a model was deleted and
+            committed to the database.
+
+            Called from delete_model after successful database commit
+            (if it has any meaning for a store backend).
+
+            By default does nothing.
+
+            :param model:
+                Model that was deleted
+        """
+        pass        
 
     def on_form_prefill (self, form, id):
         """
