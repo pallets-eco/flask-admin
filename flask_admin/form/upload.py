@@ -54,7 +54,8 @@ class FileUploadInput(object):
         return HTMLString(template % {
             'text': html_params(type='text',
                                 readonly='readonly',
-                                value=field.data),
+                                value=field.data
+                                name=field.name),
             'file': html_params(type='file',
                                 **kwargs),
             'marker': '_%s-delete' % field.name
