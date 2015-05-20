@@ -1,4 +1,4 @@
-from mongoengine import ReferenceField
+from mongoengine import ReferenceField, ListField
 from mongoengine.base import BaseDocument, DocumentMetaclass, get_document
 
 from wtforms import fields, validators
@@ -72,7 +72,7 @@ class CustomModelConverter(orm.ModelConverter):
 
         if field.required:
             kwargs['validators'].append(validators.Required())
-        else:
+        elif not isinstance(field, ListField):
             kwargs['validators'].append(validators.Optional())
 
         ftype = type(field).__name__
