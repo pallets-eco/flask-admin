@@ -330,12 +330,15 @@ class ModelView(BaseModelView):
 
             self.on_model_delete(model)
             self.coll.remove({'_id': pk})
-            return True
         except Exception as ex:
             flash(gettext('Failed to delete record. %(error)s', error=str(ex)),
                   'error')
             log.exception('Failed to delete record.')
             return False
+        else:
+            self.after_model_delete(model)
+            
+        return True
 
     # Default model actions
     def is_action_allowed(self, name):
