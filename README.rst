@@ -84,11 +84,16 @@ To run the tests, from the project directory, simply::
 
 You should see output similar to::
 
-    ...
+    .............................................
     ----------------------------------------------------------------------
-    Ran 41 tests in 2.092s
+    Ran 102 tests in 13.132s
 
-Please note that you will need to install some additional dependencies in order for all of the tests to be executed successfully.
+    OK
+
+For all the tests to pass successfully, you'll need Postgres & MongoDB to be running locally. For Postgres::
+
+    CREATE DATABASE flask_admin_test;
+    CREATE EXTENSION postgis;
 
 3rd Party Stuff
 ---------------
