@@ -284,7 +284,7 @@ class TimeNotBetweenFilter(TimeBetweenFilter):
 
 # Base peewee filter field converter
 class FilterConverter(filters.BaseFilterConverter):
-    strings = (FilterEqual, FilterNotEqual, FilterLike, FilterNotLike,
+    strings = (FilterLike, FilterNotLike, FilterEqual, FilterNotEqual,
                FilterEmpty, FilterInList, FilterNotInList)
     int_filters = (IntEqualFilter, IntNotEqualFilter, IntGreaterFilter,
                    IntSmallerFilter, FilterEmpty, IntInListFilter,
