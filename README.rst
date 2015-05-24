@@ -1,6 +1,9 @@
 Flask-Admin
 ===========
 
+The project was recently moved into its own organization. Please update your
+references to *git@github.com:flask-admin/flask-admin.git*.
+
 .. image:: https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.png
 	:target: https://crowdin.com/project/flask-admin
 
@@ -46,7 +49,7 @@ To run the examples on your local environment, one at a time, do something like:
 
 Documentation
 -------------
-Flask-Admin is extensively documented, you can find all of the documentation at `http://readthedocs.org/docs/flask-admin <http://readthedocs.org/docs/flask-admin>`_.
+Flask-Admin is extensively documented, you can find all of the documentation at `http://flask-admin.readthedocs.org/en/latest/ <http://flask-admin.readthedocs.org/en/latest/>`_.
 
 The docs are auto-generated from the *.rst* files in the */doc* folder. So if you come across any errors, or
 if you think of anything else that should be included, then please make the changes and submit them as a *pull-request*.
