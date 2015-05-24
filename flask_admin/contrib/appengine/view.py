@@ -56,7 +56,7 @@ class NdbModelView(BaseModelView):
 			model = self.model()
 			form.populate_obj(model)
 			model.put()
-			return True
+			return model
 		except Exception as ex:
 			if not self.handle_view_exception(ex):
 				#flash(gettext('Failed to create record. %(error)s',
@@ -137,7 +137,7 @@ class DbModelView(BaseModelView):
 			model = self.model()
 			form.populate_obj(model)
 			model.put()
-			return True
+			return model
 		except Exception as ex:
 			if not self.handle_view_exception(ex):
 				#flash(gettext('Failed to create record. %(error)s',
