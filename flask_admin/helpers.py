@@ -87,9 +87,10 @@ def is_field_error(errors):
         :param errors:
             Errors list.
     """
-    for e in errors:
-        if isinstance(e, string_types):
-            return True
+    if isinstance(errors, (list, tuple)):
+        for e in errors:
+            if isinstance(e, string_types):
+                return True
 
     return False
 
