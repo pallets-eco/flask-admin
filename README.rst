@@ -54,13 +54,12 @@ Flask-Admin is extensively documented, you can find all of the documentation at 
 The docs are auto-generated from the *.rst* files in the */doc* folder. So if you come across any errors, or
 if you think of anything else that should be included, then please make the changes and submit them as a *pull-request*.
 
-To build the docs in your local environment::
+To build the docs in your local environment, from the project directory::
 
-    sudo pip install sphinx
-    cd flask-admin
+    pip install -r requirements-dev.txt
     sudo make html
 
-Or, if you want to preview any *.rst* snippets that you may want to contribute, go to `http://rst.ninjs.org/ <http://rst.ninjs.org/>`_.
+And if you want to preview any *.rst* snippets that you may want to contribute, go to `http://rst.ninjs.org/ <http://rst.ninjs.org/>`_.
 
 Installation
 ------------
@@ -78,14 +77,9 @@ Tests
 -----
 Test are run with *nose*. If you are not familiar with this package you can get some more info from `their website <http://nose.readthedocs.org/>`_.
 
-To run the tests, simply::
+To run the tests, from the project directory, simply::
 
-    pip install nose
-    pip install -r dev-requirements.txt
-
-and then::
-
-    cd flask-admin
+    pip install -r requirements-dev.txt
     nosetests
 
 You should see output similar to::

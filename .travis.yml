@@ -19,7 +19,7 @@ before_script:
 
 install:
   - pip install "wtforms<$WTFORMS_VERSION.99"
-  - pip install -r dev-requirements.txt
+  - pip install -r requirements-dev.txt
 
 
 script: nosetests flask_admin/tests
