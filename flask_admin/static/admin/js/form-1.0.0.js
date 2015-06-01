@@ -168,6 +168,32 @@
           return true;
         }
 
+        // set up Leaflet.draw editor
+        var drawOptions = {
+          draw: {
+            // circles are not geometries in geojson
+            circle: false
+          },
+          edit: {
+            featureGroup: editableLayers
+          }
+        }
+
+        if ($.inArray(geometryType, ["POINT", "MULTIPOINT"]) > -1) {
+          drawOptions.draw.polyline = false;
+          drawOptions.draw.polygon = false;
+          drawOptions.draw.rectangle = false;
+        } else if ($.inArray(geometryType, ["LINESTRING", "MULTILINESTRING"]) > -1) {
+          drawOptions.draw.marker = false;
+          drawOptions.draw.polygon = false;
+          drawOptions.draw.rectangle = false;
+        } else if ($.inArray(geometryType, ["POLYGON", "MULTIPOLYGON"]) > -1) {
+          drawOptions.draw.marker = false;
+          drawOptions.draw.polyline = false;
+        }
+        var drawControl = new L.Control.Draw(drawOptions);
+        map.addControl(drawControl);
+
         if (window.google) {
           var geocoder = new google.maps.Geocoder();
 
@@ -197,31 +223,6 @@
           }));
         }
 
-        // set up Leaflet.draw editor
-        var drawOptions = {
-          draw: {
-            // circles are not geometries in geojson
-            circle: false
-          },
-          edit: {
-            featureGroup: editableLayers
-          }
-        }
-
-        if ($.inArray(geometryType, ["POINT", "MULTIPOINT"]) > -1) {
-          drawOptions.draw.polyline = false;
-          drawOptions.draw.polygon = false;
-          drawOptions.draw.rectangle = false;
-        } else if ($.inArray(geometryType, ["LINESTRING", "MULTILINESTRING"]) > -1) {
-          drawOptions.draw.marker = false;
-          drawOptions.draw.polygon = false;
-          drawOptions.draw.rectangle = false;
-        } else if ($.inArray(geometryType, ["POLYGON", "MULTIPOLYGON"]) > -1) {
-          drawOptions.draw.marker = false;
-          drawOptions.draw.polyline = false;
-        }
-        var drawControl = new L.Control.Draw(drawOptions);
-        map.addControl(drawControl);
 
         // save when the editableLayers are edited
         var saveToTextArea = function() {
