@@ -194,6 +194,36 @@
         var drawControl = new L.Control.Draw(drawOptions);
         map.addControl(drawControl);
 
+        if (window.google) {
+          var geocoder = new google.maps.Geocoder();
+
+          function googleGeocoding(text, callResponse) {
+            geocoder.geocode({address: text}, callResponse);
+          }
+
+          function filterJSONCall(rawjson) {
+            var json = {}, key, loc, disp = [];
+            for (var i in rawjson) {
+              key = rawjson[i].formatted_address;
+              loc = L.latLng(rawjson[i].geometry.location.lat(),
+                             rawjson[i].geometry.location.lng());
+              json[key] = loc;
+            }
+            return json;
+          }
+
+          map.addControl(new L.Control.Search({
+            callData: googleGeocoding,
+            filterJSON: filterJSONCall,
+            markerLocation: true,
+            autoType: false,
+            autoCollapse: true,
+            minLength: 2,
+            zoom: 10
+          }));
+        }
+
+
         // save when the editableLayers are edited
         var saveToTextArea = function() {
           var geo = editableLayers.toGeoJSON();
