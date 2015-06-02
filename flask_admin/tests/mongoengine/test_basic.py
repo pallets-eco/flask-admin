@@ -229,10 +229,10 @@ def test_column_filters():
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
         [
-            (0, 'equals'),
-            (1, 'not equal'),
-            (2, 'contains'),
-            (3, 'not contains'),
+            (0, 'contains'),
+            (1, 'not contains'),
+            (2, 'equals'),
+            (3, 'not equal'),
             (4, 'empty'),
             (5, 'in list'),
             (6, 'not in list'),
@@ -790,6 +790,30 @@ def test_nested_list_subdocument():
     ok_('name' in dir(inline_form))
     ok_('value' not in dir(inline_form))
 
+
+def test_list_subdocument_validation():
+    app, db, admin = setup()
+
+    class Comment(db.EmbeddedDocument):
+        name = db.StringField(max_length=20, required=True)
+        value = db.StringField(max_length=20)
+
+    class Model1(db.Document):
+        test1 = db.StringField(max_length=20)
+        subdoc = db.ListField(db.EmbeddedDocumentField(Comment))
+
+    view = CustomModelView(Model1)
+    admin.add_view(view)
+    client = app.test_client()
+
+    rv = client.post('/admin/model1/new/',
+                     data={'test1': 'test1large', 'subdoc-0-name': 'comment', 'subdoc-0-value': 'test'})
+    eq_(rv.status_code, 302)
+
+    rv = client.post('/admin/model1/new/',
+                     data={'test1': 'test1large', 'subdoc-0-name': '', 'subdoc-0-value': 'test'})
+    eq_(rv.status_code, 200)
+    ok_('This field is required' in rv.data)
 
 def test_ajax_fk():
     app, db, admin = setup()

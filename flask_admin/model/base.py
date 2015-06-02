@@ -1243,7 +1243,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Create model from the form.
 
-            Returns `True` if operation succeeded.
+            Returns the model instance if operation succeeded.
 
             Must be implemented in the child class.
 
@@ -1550,12 +1550,20 @@ class BaseModelView(BaseView, ActionsMixin):
             self._validate_form_instance(ruleset=self._form_create_rules, form=form)
 
         if self.validate_form(form):
-            if self.create_model(form):
+            # in versions 1.1.0 and before, this returns a boolean
+            # in later versions, this is the model itself
+            model = self.create_model(form)
+            if model:
                 flash(gettext('Record was successfully created.'))
                 if '_add_another' in request.form:
                     return redirect(request.url)
                 else:
-                    return redirect(return_url)
+                    # if we have a valid model, try to go to the edit view
+                    if model is not True:
+                        url = self.get_url('.edit_view', id=self.get_pk_value(model), url=return_url)
+                    else:
+                        url = return_url
+                    return redirect(url)
 
         form_opts = FormOpts(widget_args=self.form_widget_args,
                              form_rules=self._form_create_rules)

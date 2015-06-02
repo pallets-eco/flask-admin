@@ -97,7 +97,7 @@
     <p class="help-block">{{ field.description }}</p>
     {% endif %}
     {% if direct_error %}
-      <ul{% if direct_error %} class="input-errors"{% endif %}>
+      <ul class="input-errors">
       {% for e in field.errors if e is string %}
         <li>{{ e }}</li>
       {% endfor %}
@@ -177,6 +177,9 @@
   {% if config.MAPBOX_MAP_ID %}
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css') }}" rel="stylesheet">
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css') }}" rel="stylesheet">
+  {% if config.MAPBOX_SEARCH %}
+  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.search.css') }}" rel="stylesheet">
+  {% endif %}
   {% endif %}
   {% if editable_columns %}
   <link href="{{ admin_static.url(filename='vendor/x-editable/css/bootstrap2-editable-1.5.1.css') }}" rel="stylesheet">
@@ -193,6 +196,10 @@
   </script>
   <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js') }}"></script>
   <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js') }}"></script>
+  {% if config.MAPBOX_SEARCH %}
+  <script src="https://maps.googleapis.com/maps/api/js?v=3&sensor=false"></script>
+  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.search.js') }}"></script>
+  {% endif %}
   {% endif %}
   <script src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
   {% if editable_columns %}

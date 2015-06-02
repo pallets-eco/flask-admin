@@ -894,7 +894,7 @@ class ModelView(BaseModelView):
         else:
             self.after_model_change(form, model, True)
 
-        return True
+        return model
 
     def update_model(self, form, model):
         """

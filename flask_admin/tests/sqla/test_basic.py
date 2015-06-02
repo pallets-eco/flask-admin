@@ -1,4 +1,4 @@
-from nose.tools import eq_, ok_, raises
+from nose.tools import eq_, ok_, raises, assert_true
 
 from wtforms import fields
 
@@ -421,10 +421,10 @@ def test_column_filters():
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
         [
-            (0, u'equals'),
-            (1, u'not equal'),
-            (2, u'contains'),
-            (3, u'not contains'),
+            (0, u'contains'),
+            (1, u'not contains'),
+            (2, u'equals'),
+            (3, u'not equal'),
             (4, u'empty'),
             (5, u'in list'),
             (6, u'not in list'),
@@ -436,10 +436,10 @@ def test_column_filters():
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Test1']],
         [
-            (0, u'equals'),
-            (1, u'not equal'),
-            (2, u'contains'),
-            (3, u'not contains'),
+            (0, u'contains'),
+            (1, u'not contains'),
+            (2, u'equals'),
+            (3, u'not equal'),
             (4, u'empty'),
             (5, u'in list'),
             (6, u'not in list'),
@@ -447,10 +447,10 @@ def test_column_filters():
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Test2']],
         [
-            (7, u'equals'),
-            (8, u'not equal'),
-            (9, u'contains'),
-            (10, u'not contains'),
+            (7, u'contains'),
+            (8, u'not contains'),
+            (9, u'equals'),
+            (10, u'not equal'),
             (11, u'empty'),
             (12, u'in list'),
             (13, u'not in list'),
@@ -458,10 +458,10 @@ def test_column_filters():
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Test3']],
         [
-            (14, u'equals'),
-            (15, u'not equal'),
-            (16, u'contains'),
-            (17, u'not contains'),
+            (14, u'contains'),
+            (15, u'not contains'),
+            (16, u'equals'),
+            (17, u'not equal'),
             (18, u'empty'),
             (19, u'in list'),
             (20, u'not in list'),
@@ -469,10 +469,10 @@ def test_column_filters():
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Test4']],
         [
-            (21, u'equals'),
-            (22, u'not equal'),
-            (23, u'contains'),
-            (24, u'not contains'),
+            (21, u'contains'),
+            (22, u'not contains'),
+            (23, u'equals'),
+            (24, u'not equal'),
             (25, u'empty'),
             (26, u'in list'),
             (27, u'not in list'),
@@ -538,10 +538,10 @@ def test_column_filters():
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
         [
-            (0, 'equals'),
-            (1, 'not equal'),
-            (2, 'contains'),
-            (3, 'not contains'),
+            (0, 'contains'),
+            (1, 'not contains'),
+            (2, 'equals'),
+            (3, 'not equal'),
             (4, 'empty'),
             (5, 'in list'),
             (6, 'not in list'),
@@ -1669,10 +1669,14 @@ def test_safe_redirect():
                      data=dict(test1='test1large', test2='test2'))
 
     eq_(rv.status_code, 302)
-    eq_(rv.location, 'http://localhost/admin/model2view/')
+    assert_true(rv.location.startswith('http://localhost/admin/model1/edit/'))
+    assert_true('url=http%3A%2F%2Flocalhost%2Fadmin%2Fmodel2view%2F' in rv.location)
+    assert_true('id=1' in rv.location)
 
     rv = client.post('/admin/model1/new/?url=http://google.com/evil/',
                      data=dict(test1='test1large', test2='test2'))
 
     eq_(rv.status_code, 302)
-    eq_(rv.location, 'http://localhost/admin/model1/')
+    assert_true(rv.location.startswith('http://localhost/admin/model1/edit/'))
+    assert_true('url=%2Fadmin%2Fmodel1%2F' in rv.location)
+    assert_true('id=2' in rv.location)
