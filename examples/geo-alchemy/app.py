@@ -16,14 +16,44 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://flask_admin_geo:f
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
-app.config['MAPBOX_MAP_ID'] = "..."
-app.config['MAPBOX_ACCESS_TOKEN'] = "..."
+app.config['MAPBOX_MAP_ID'] = '...'
+app.config['MAPBOX_ACCESS_TOKEN'] = '...'
 
 
-class Location(db.Model):
+class Point(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
     point = db.Column(Geometry("POINT"))
+
+
+class MultiPoint(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    point = db.Column(Geometry("MULTIPOINT"))
+
+
+class Polygon(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    point = db.Column(Geometry("POLYGON"))
+
+
+class MultiPolygon(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    point = db.Column(Geometry("MULTIPOLYGON"))
+
+
+class LineString(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    point = db.Column(Geometry("LINESTRING"))
+
+
+class MultiLineString(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    point = db.Column(Geometry("MULTILINESTRING"))
 
 
 # Flask views
@@ -35,7 +65,12 @@ def index():
 admin = admin.Admin(app, name='Example: GeoAlchemy')
 
 # Add views
-admin.add_view(ModelView(Location, db.session))
+admin.add_view(ModelView(Point, db.session, category='Points'))
+admin.add_view(ModelView(MultiPoint, db.session, category='Points'))
+admin.add_view(ModelView(Polygon, db.session, category='Polygons'))
+admin.add_view(ModelView(MultiPolygon, db.session, category='Polygons'))
+admin.add_view(ModelView(LineString, db.session, category='Lines'))
+admin.add_view(ModelView(MultiLineString, db.session, category='Lines'))
 
 if __name__ == '__main__':
 
