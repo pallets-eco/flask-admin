@@ -76,7 +76,7 @@ def test_baseview_defaults():
     view = MockView()
     eq_(view.name, None)
     eq_(view.category, None)
-    eq_(view.endpoint, None)
+    eq_(view.endpoint, 'mockview')
     eq_(view.url, None)
     eq_(view.static_folder, None)
     eq_(view.admin, None)
@@ -132,11 +132,11 @@ def test_admin_customizations():
     client = app.test_client()
     rv = client.get('/foobar/')
     eq_(rv.status_code, 200)
-    
+
     # test custom static_url_path
     with app.test_request_context('/'):
         rv = client.get(url_for('admin.static', filename='bootstrap/bootstrap2/css/bootstrap.css'))
-    eq_(rv.status_code, 200)    
+    eq_(rv.status_code, 200)
 
 
 def test_baseview_registration():
@@ -364,7 +364,7 @@ def test_root_mount():
     client = app.test_client()
     rv = client.get('/mockview/')
     eq_(rv.data, b'Success!')
-    
+
     # test static files when url='/'
     with app.test_request_context('/'):
         rv = client.get(url_for('admin.static', filename='bootstrap/bootstrap2/css/bootstrap.css'))
@@ -388,3 +388,12 @@ def test_menu_links():
 def check_class_name():
     view = MockView()
     eq_(view.name, 'Mock View')
+
+
+def check_endpoint():
+    class CustomView(MockView):
+        def _get_endpoint(self, endpoint):
+            return 'admin.' + super(CustomView, self)._get_endpoint(endpoint)
+
+    view = CustomView()
+    eq_(view.endpoint, 'admin.customview')

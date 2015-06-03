@@ -561,27 +561,29 @@ class BaseModelView(BaseView, ActionsMixin):
             :param menu_icon_value:
                 Icon glyph name or URL, depending on `menu_icon_type` setting
         """
+        self.model = model
 
         # If name not provided, it is model name
         if name is None:
             name = '%s' % self._prettify_class_name(model.__name__)
-
-        # If endpoint not provided, it is model name
-        if endpoint is None:
-            endpoint = model.__name__.lower()
 
         super(BaseModelView, self).__init__(name, category, endpoint, url, static_folder,
                                             menu_class_name=menu_class_name,
                                             menu_icon_type=menu_icon_type,
                                             menu_icon_value=menu_icon_value)
 
-        self.model = model
-
         # Actions
         self.init_actions()
 
         # Scaffolding
         self._refresh_cache()
+
+    # Endpoint
+    def _get_endpoint(self, endpoint):
+        if endpoint:
+            return super(BaseModelView, self)._get_endpoint(endpoint)
+
+        return self.__class__.__name__.lower()
 
     # Caching
     def _refresh_forms_cache(self):
@@ -972,7 +974,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Instantiate model delete form and return it.
 
             Override to implement custom behavior.
-            
+
             The delete form originally used a GET request, so delete_form
             accepts both GET and POST request for backwards compatibility.
         """
