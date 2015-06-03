@@ -1,7 +1,7 @@
-``flask.ext.admin.model``
+``flask_admin.model``
 =========================
 
-.. automodule:: flask.ext.admin.model
+.. automodule:: flask_admin.model
 
     .. autoclass:: BaseModelView
         :members:

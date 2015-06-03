@@ -1,6 +1,6 @@
 from flask import Flask
-from flask.ext.admin import Admin
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_admin import Admin
+from flask_sqlalchemy import SQLAlchemy
 
 
 def setup():

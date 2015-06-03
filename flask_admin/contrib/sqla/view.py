@@ -1,4 +1,5 @@
 import logging
+import warnings
 
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import joinedload
@@ -8,16 +9,16 @@ from sqlalchemy.exc import IntegrityError
 
 from flask import flash
 
-from flask.ext.admin._compat import string_types
-from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
-from flask.ext.admin.model import BaseModelView
-from flask.ext.admin.model.form import wrap_fields_in_fieldlist
-from flask.ext.admin.model.fields import ListEditableFieldList
+from flask_admin._compat import string_types, text_type
+from flask_admin.babel import gettext, ngettext, lazy_gettext
+from flask_admin.model import BaseModelView
+from flask_admin.model.form import wrap_fields_in_fieldlist
+from flask_admin.model.fields import ListEditableFieldList
 
-from flask.ext.admin.actions import action
-from flask.ext.admin._backwards import ObsoleteAttr
+from flask_admin.actions import action
+from flask_admin._backwards import ObsoleteAttr
 
-from flask.ext.admin.contrib.sqla import form, filters, tools
+from flask_admin.contrib.sqla import form, filters as sqla_filters, tools
 from .typefmt import DEFAULT_FORMATTERS
 from .tools import get_query_for_ids
 from .ajax import create_ajax_loader
@@ -113,7 +114,7 @@ class ModelView(BaseModelView):
     """
         Collection of the column filters.
 
-        Can contain either field names or instances of :class:`flask.ext.admin.contrib.sqla.filters.BaseFilter` classes.
+        Can contain either field names or instances of :class:`flask_admin.contrib.sqla.filters.BaseFilter` classes.
 
         For example::
 
@@ -154,7 +155,7 @@ class ModelView(BaseModelView):
                 inline_model_form_converter = MyInlineModelConverter
     """
 
-    filter_converter = filters.FilterConverter()
+    filter_converter = sqla_filters.FilterConverter()
     """
         Field to filter converter.
 
@@ -265,9 +266,10 @@ class ModelView(BaseModelView):
             :param menu_icon_type:
                 Optional icon. Possible icon types:
 
-                 - `flask.ext.admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
+                 - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
+                 - `flask_admin.consts.ICON_TYPE_FONT_AWESOME` - Font Awesome icon
+                 - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+                 - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
             :param menu_icon_value:
                 Icon glyph name or URL, depending on `menu_icon_type` setting
         """
@@ -390,8 +392,8 @@ class ModelView(BaseModelView):
                     filtered = tools.filter_foreign_columns(self.model.__table__, p.columns)
 
                     if len(filtered) > 1:
-                        # TODO: Skip column and issue a warning
-                        raise TypeError('Can not convert multiple-column properties (%s.%s)' % (self.model, p.key))
+                        warnings.warn('Can not convert multiple-column properties (%s.%s)' % (self.model, p.key))
+                        continue
 
                     column = filtered[0]
                 else:
@@ -576,21 +578,12 @@ class ModelView(BaseModelView):
 
             return flt
 
-    def is_valid_filter(self, filter):
-        """
-            Verify that the provided filter object is derived from the
-            SQLAlchemy-compatible filter class.
-
-            :param filter:
-                Filter object to verify.
-        """
-        return isinstance(filter, filters.BaseSQLAFilter)
-
     def handle_filter(self, filter):
-        column = filter.column
+        if isinstance(filter, sqla_filters.BaseSQLAFilter):
+            column = filter.column
 
-        if self._need_join(column.table):
-            self._filter_joins[column.table.name] = [column.table]
+            if self._need_join(column.table):
+                self._filter_joins[column.table.name] = [column.table]
 
         return filter
 
@@ -810,15 +803,16 @@ class ModelView(BaseModelView):
                 flt = self._filters[idx]
 
                 # Figure out joins
-                tbl = flt.column.table.name
+                if isinstance(flt, sqla_filters.BaseSQLAFilter):
+                    tbl = flt.column.table.name
 
-                join_tables = self._filter_joins.get(tbl, [])
+                    join_tables = self._filter_joins.get(tbl, [])
 
-                for table in join_tables:
-                    if table.name not in joins:
-                        query = query.join(table)
-                        count_query = count_query.join(table)
-                        joins.add(table.name)
+                    for table in join_tables:
+                        if table.name not in joins:
+                            query = query.join(table)
+                            count_query = count_query.join(table)
+                            joins.add(table.name)
 
                 # turn into python format with .clean() and apply filter
                 query = flt.apply(query, flt.clean(value))
@@ -870,7 +864,7 @@ class ModelView(BaseModelView):
     # Error handler
     def handle_view_exception(self, exc):
         if isinstance(exc, IntegrityError):
-            flash(gettext('Integrity error. %(message)s', message=exc.message), 'error')
+            flash(gettext('Integrity error. %(message)s', message=text_type(exc)), 'error')
             return True
 
         return super(ModelView, self).handle_view_exception(exc)
@@ -900,7 +894,7 @@ class ModelView(BaseModelView):
         else:
             self.after_model_change(form, model, True)
 
-        return True
+        return model
 
     def update_model(self, form, model):
         """
@@ -940,7 +934,6 @@ class ModelView(BaseModelView):
             self.session.flush()
             self.session.delete(model)
             self.session.commit()
-            return True
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 flash(gettext('Failed to delete record. %(error)s', error=str(ex)), 'error')
@@ -949,6 +942,10 @@ class ModelView(BaseModelView):
             self.session.rollback()
 
             return False
+        else:
+            self.after_model_delete(model)
+        
+        return True
 
     # Default model actions
     def is_action_allowed(self, name):

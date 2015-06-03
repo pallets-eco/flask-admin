@@ -3,12 +3,12 @@ import os.path as op
 from functools import wraps
 
 from flask import Blueprint, current_app, render_template, abort, g, url_for
-from flask.ext.admin import babel
-from flask.ext.admin._compat import with_metaclass
-from flask.ext.admin import helpers as h
+from flask_admin import babel
+from flask_admin._compat import with_metaclass
+from flask_admin import helpers as h
 
 # For compatibility reasons import MenuLink
-from flask.ext.admin.menu import MenuCategory, MenuView, MenuLink
+from flask_admin.menu import MenuCategory, MenuView, MenuLink
 
 
 def expose(url='/', methods=('GET',)):
@@ -111,7 +111,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
         Derive from this class to implement your administrative interface piece. For example::
 
-            from flask.ext.admin import BaseView, expose
+            from flask_admin import BaseView, expose
             class MyView(BaseView):
                 @expose('/')
                 def index(self):
@@ -179,9 +179,10 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             :param menu_icon_type:
                 Optional icon. Possible icon types:
 
-                 - `flask.ext.admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
+                 - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
+                 - `flask_admin.consts.ICON_TYPE_FONT_AWESOME` - Font Awesome icon
+                 - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+                 - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
             :param menu_icon_value:
                 Icon glyph name or URL, depending on `menu_icon_type` setting
         """

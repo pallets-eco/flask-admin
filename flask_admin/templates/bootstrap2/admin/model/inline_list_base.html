@@ -12,7 +12,7 @@
                     <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
                     <label for="del-{{ subfield.id }}" style="display: inline">{{ _gettext('Delete?') }}</label>
                     {% else %}
-                    <a href="javascript:void(0)" class="inline-remove-field"><i class="icon-remove"></i></a>
+                    <a href="javascript:void(0)" class="inline-remove-field"><i class="fa fa-times icon-remove"></i></a>
                     {% endif %}
                 </div>
             </legend>
@@ -21,7 +21,7 @@
         </div>
         {% endfor %}
     </div>
-    
+
     {# template for new inline form fields #}
     <div class="inline-field-template hide">
         {% filter forceescape %}
@@ -29,14 +29,14 @@
             <legend>
                 New {{ field.label.text }}
                 <div class="pull-right">
-                    <a href="javascript:void(0)" class="inline-remove-field"><i class="icon-remove"></i></a>
+                    <a href="javascript:void(0)" class="inline-remove-field"><i class="fa fa-times icon-remove"></i></a>
                 </div>
             </legend>
             {{ render(template) }}
         </div>
         {% endfilter %}
     </div>
-    
+
     <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn" onclick="faForm.addInlineField(this, '{{ field.id }}');">{{ _gettext('Add') }} {{ field.label.text }}</a>
 </div>
 {% endmacro %}

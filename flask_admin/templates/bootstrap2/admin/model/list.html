@@ -61,15 +61,15 @@
                     {% endblock %}
                     {% set column = 0 %}
                     {% for c, name in list_columns %}
-                    <th class="column-header">
+                    <th class="column-header col-{{c}}">
                         {% if admin_view.is_sortable(c) %}
                             {% if sort_column == column %}
                                 <a href="{{ sort_url(column, True) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">
                                     {{ name }}
                                     {% if sort_desc %}
-                                        <i class="icon-chevron-up"></i>
+                                        <i class="fa fa-chevron-up icon-chevron-up"></i>
                                     {% else %}
-                                        <i class="icon-chevron-down"></i>
+                                        <i class="fa fa-chevron-down icon-chevron-down"></i>
                                     {% endif %}
                                 </a>
                             {% else %}
@@ -79,7 +79,7 @@
                             {{ name }}
                         {% endif %}
                         {% if admin_view.column_descriptions.get(c) %}
-                            <a class="icon-question-sign"
+                            <a class="fa fa-question-circle icon-question-sign"
                                title="{{ admin_view.column_descriptions[c] }}"
                                href="javascript:void(0)" data-role="tooltip"
                             ></a>
@@ -103,7 +103,7 @@
                     {% block list_row_actions scoped %}
                         {%- if admin_view.can_edit -%}
                         <a class="icon" href="{{ get_url('.edit_view', id=get_pk_value(row), url=return_url) }}" title="{{ _gettext('Edit record') }}">
-                            <i class="icon-pencil"></i>
+                            <i class="fa fa-pencil icon-pencil"></i>
                         </a>
                         {%- endif -%}
                         {%- if admin_view.can_delete -%}
@@ -112,24 +112,26 @@
                             {{ delete_form.url(value=return_url) }}
                             {{ delete_form.csrf_token }}
                             <button onclick="return confirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="{{ _gettext('Delete record') }}">
-                                <i class="icon-trash"></i>
+                                <i class="fa fa-trash icon-trash"></i>
                             </button>
                         </form>
                         {%- endif -%}
                     {% endblock %}
                 </td>
                 {% endblock %}
-                
+
                 {% for c, name in list_columns %}
+                    <td class="col-{{c}}">
                     {% if admin_view.is_editable(c) %}
                         {% if form.csrf_token %}
-                        <td>{{ form[c](pk=get_pk_value(row), value=get_value(row, c), csrf=form.csrf_token._value()) }}</td>
+                        {{ form[c](pk=get_pk_value(row), value=get_value(row, c), csrf=form.csrf_token._value()) }}
                         {% else %}
-                        <td>{{ form[c](pk=get_pk_value(row), value=get_value(row, c)) }}</td>
+                        {{ form[c](pk=get_pk_value(row), value=get_value(row, c)) }}
                         {% endif %}
                     {% else %}
-                    <td>{{ get_value(row, c) }}</td>
+                    {{ get_value(row, c) }}
                     {% endif %}
+                    </td>
                 {% endfor %}
             {% endblock %}
         </tr>
@@ -171,7 +173,7 @@
                     '#filter_form', '.field-filters',
                     {{ filter_groups|tojson|safe }},
                     {{ active_filters|tojson|safe }}
-                );                
+                );
             {% endif %}
         })(jQuery);
     </script>

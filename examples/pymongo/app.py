@@ -2,13 +2,13 @@ import pymongo
 from bson.objectid import ObjectId
 
 from flask import Flask
-from flask.ext import admin
+import flask_admin as admin
 
 from wtforms import form, fields
 
-from flask.ext.admin.form import Select2Widget
-from flask.ext.admin.contrib.pymongo import ModelView, filters
-from flask.ext.admin.model.fields import InlineFormField, InlineFieldList
+from flask_admin.form import Select2Widget
+from flask_admin.contrib.pymongo import ModelView, filters
+from flask_admin.model.fields import InlineFormField, InlineFieldList
 
 # Create application
 app = Flask(__name__)

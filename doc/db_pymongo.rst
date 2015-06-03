@@ -11,7 +11,7 @@ with PyMongo:
 
  1. Provide list of columns by setting `column_list` property
  2. Provide form to use by setting `form` property
- 3. When instantiating :class:`flask.ext.admin.contrib.pymongo.ModelView` class, you have to provide PyMongo collection object
+ 3. When instantiating :class:`flask_admin.contrib.pymongo.ModelView` class, you have to provide PyMongo collection object
 
 This is minimal PyMongo view::
 
@@ -33,4 +33,4 @@ On top of that you can add sortable columns, filters, text search, etc.
 
 For more documentation, check :doc:`api/mod_contrib_pymongo` documentation.
 
-PyMongo integration example is `here <https://github.com/mrjoes/flask-admin/tree/master/examples/pymongo>`_.
+PyMongo integration example is `here <https://github.com/flask-admin/flask-admin/tree/master/examples/pymongo>`_.

@@ -2,7 +2,7 @@ from nose.tools import ok_, eq_, raises
 
 from flask import Flask, request, abort, url_for
 from flask.views import MethodView
-from flask.ext.admin import base
+from flask_admin import base
 
 
 class MockView(base.BaseView):

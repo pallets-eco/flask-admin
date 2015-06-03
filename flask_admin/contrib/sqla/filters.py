@@ -2,9 +2,9 @@ import warnings
 import time
 import datetime
 
-from flask.ext.admin.babel import lazy_gettext
-from flask.ext.admin.model import filters
-from flask.ext.admin.contrib.sqla import tools
+from flask_admin.babel import lazy_gettext
+from flask_admin.model import filters
+from flask_admin.contrib.sqla import tools
 from sqlalchemy.sql import not_, or_
 
 class BaseSQLAFilter(filters.BaseFilter):
@@ -285,7 +285,7 @@ class TimeNotBetweenFilter(TimeBetweenFilter):
 
 # Base SQLA filter field converter
 class FilterConverter(filters.BaseFilterConverter):
-    strings = (FilterEqual, FilterNotEqual, FilterLike, FilterNotLike,
+    strings = (FilterLike, FilterNotLike, FilterEqual, FilterNotEqual,
                FilterEmpty, FilterInList, FilterNotInList)
     int_filters = (IntEqualFilter, IntNotEqualFilter, IntGreaterFilter,
                    IntSmallerFilter, FilterEmpty, IntInListFilter,

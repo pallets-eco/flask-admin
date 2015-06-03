@@ -3,9 +3,12 @@ wtforms
 Flask-SQLAlchemy>=0.15
 peewee
 wtf-peewee
+pymongo==2.8
 flask-mongoengine
 pillow
 flask-babelex
 shapely
 geoalchemy2
 psycopg2
+nose
+sphinx

@@ -3,6 +3,7 @@ python:
   - "2.6"
   - "2.7"
   - "3.3"
+  - "3.4"
 
 env:
   - WTFORMS_VERSION=1
@@ -18,7 +19,7 @@ before_script:
 
 install:
   - pip install "wtforms<$WTFORMS_VERSION.99"
-  - pip install -r dev-requirements.txt
+  - pip install -r requirements-dev.txt
 
 
 script: nosetests flask_admin/tests

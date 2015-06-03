@@ -8,7 +8,7 @@ try:
 except ImportError:
     from wtforms.utils import unset_value
 
-from flask.ext.admin._compat import iteritems
+from flask_admin._compat import iteritems
 from .widgets import (InlineFieldListWidget, InlineFormWidget,
                       AjaxSelect2Widget, XEditableWidget)
 

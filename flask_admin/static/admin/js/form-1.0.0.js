@@ -155,7 +155,8 @@
         }
 
         // set up tiles
-        L.tileLayer('http://{s}.tiles.mapbox.com/v3/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png', {
+        var mapboxVersion = window.MAPBOX_ACCESS_TOKEN ? 4 : 3;
+        L.tileLayer('http://{s}.tiles.mapbox.com/v'+mapboxVersion+'/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png?access_token='+window.MAPBOX_ACCESS_TOKEN, {
           attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
           maxZoom: 18
         }).addTo(map);
@@ -192,6 +193,36 @@
         }
         var drawControl = new L.Control.Draw(drawOptions);
         map.addControl(drawControl);
+
+        if (window.google) {
+          var geocoder = new google.maps.Geocoder();
+
+          function googleGeocoding(text, callResponse) {
+            geocoder.geocode({address: text}, callResponse);
+          }
+
+          function filterJSONCall(rawjson) {
+            var json = {}, key, loc, disp = [];
+            for (var i in rawjson) {
+              key = rawjson[i].formatted_address;
+              loc = L.latLng(rawjson[i].geometry.location.lat(),
+                             rawjson[i].geometry.location.lng());
+              json[key] = loc;
+            }
+            return json;
+          }
+
+          map.addControl(new L.Control.Search({
+            callData: googleGeocoding,
+            filterJSON: filterJSONCall,
+            markerLocation: true,
+            autoType: false,
+            autoCollapse: true,
+            minLength: 2,
+            zoom: 10
+          }));
+        }
+
 
         // save when the editableLayers are edited
         var saveToTextArea = function() {
@@ -420,9 +451,9 @@
                        // display new boolean value as an icon
                        if(response) {
                            if(value == '1') {
-                               $(this).html('<span class="glyphicon glyphicon-ok-circle icon-ok-circle"></span>');
+                               $(this).html('<span class="fa fa-check-circle glyphicon glyphicon-ok-circle icon-ok-circle"></span>');
                            } else {
-                               $(this).html('<span class="glyphicon glyphicon-minus-sign icon-minus-sign"></span>'); 
+                               $(this).html('<span class="fa fa-minus-circle glyphicon glyphicon-minus-sign icon-minus-sign"></span>');
                            }
                        }
                     }
@@ -460,10 +491,10 @@
 
             if (idx > maxId) {
                 maxId = idx;
-            }               
+            }
         });
 
-        var prefix = id + '-' + maxId;        
+        var prefix = id + '-' + maxId;
 
         // Get template
         var $template = $($el.find('> .inline-field-template').text());

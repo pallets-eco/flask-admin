@@ -1,5 +1,5 @@
 from flask import Flask
-from flask.ext.admin import Admin, BaseView, expose
+from flask_admin import Admin, BaseView, expose
 
 
 class MyView(BaseView):

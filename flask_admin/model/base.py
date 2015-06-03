@@ -5,19 +5,20 @@ from flask import (request, redirect, flash, abort, json, Response,
                    get_flashed_messages)
 from jinja2 import contextfunction
 from wtforms.fields import HiddenField
+from wtforms.fields.core import UnboundField
 from wtforms.validators import ValidationError, Required
 
-from flask.ext.admin.babel import gettext
+from flask_admin.babel import gettext
 
-from flask.ext.admin.base import BaseView, expose
-from flask.ext.admin.form import BaseForm, FormOpts, rules
-from flask.ext.admin.model import filters, typefmt
-from flask.ext.admin.actions import ActionsMixin
-from flask.ext.admin.helpers import (get_form_data, validate_form_on_submit,
+from flask_admin.base import BaseView, expose
+from flask_admin.form import BaseForm, FormOpts, rules
+from flask_admin.model import filters, typefmt
+from flask_admin.actions import ActionsMixin
+from flask_admin.helpers import (get_form_data, validate_form_on_submit,
                                      get_redirect_target, flash_errors)
-from flask.ext.admin.tools import rec_getattr
-from flask.ext.admin._backwards import ObsoleteAttr
-from flask.ext.admin._compat import iteritems, OrderedDict, as_unicode
+from flask_admin.tools import rec_getattr
+from flask_admin._backwards import ObsoleteAttr
+from flask_admin._compat import iteritems, OrderedDict, as_unicode
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
 from .fields import ListEditableFieldList
@@ -133,7 +134,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         or using Jinja2 `macro` in template::
 
-            from flask.ext.admin.model.template import macro
+            from flask_admin.model.template import macro
 
             class MyModelView(BaseModelView):
                 column_formatters = dict(price=macro('render_price'))
@@ -170,7 +171,7 @@ class BaseModelView(BaseView, ActionsMixin):
         If you want to display `NULL` instead of an empty string, you can do
         something like this::
 
-            from flask.ext.admin.model import typefmt
+            from flask_admin.model import typefmt
 
             MY_DEFAULT_FORMATTERS = dict(typefmt.BASE_FORMATTERS)
             MY_DEFAULT_FORMATTERS.update({
@@ -296,7 +297,7 @@ class BaseModelView(BaseView, ActionsMixin):
     """
         Collection of the column filters.
 
-        Can contain either field names or instances of :class:`~flask.ext.admin.model.filters.BaseFilter` classes.
+        Can contain either field names or instances of :class:`~flask_admin.model.filters.BaseFilter` classes.
 
         Example::
 
@@ -486,7 +487,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         Here's simple example which illustrates how to use::
 
-            from flask.ext.admin.form import rules
+            from flask_admin.form import rules
 
             class MyModelView(ModelView):
                 form_rules = [
@@ -555,9 +556,10 @@ class BaseModelView(BaseView, ActionsMixin):
             :param menu_icon_type:
                 Optional icon. Possible icon types:
 
-                 - `flask.ext.admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
+                 - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
+                 - `flask_admin.consts.ICON_TYPE_FONT_AWESOME` - Font Awesome icon
+                 - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+                 - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
             :param menu_icon_value:
                 Icon glyph name or URL, depending on `menu_icon_type` setting
         """
@@ -686,6 +688,10 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # Form rendering rules
         self._refresh_form_rules_cache()
+
+        # Process form rules
+        self._validate_form_class(self._form_edit_rules, self._edit_form_class)
+        self._validate_form_class(self._form_create_rules, self._create_form_class)
 
     # Primary key
     def get_pk_value(self, model):
@@ -894,8 +900,8 @@ class BaseModelView(BaseView, ActionsMixin):
 
             Allows overriding the editable list view field/widget. For example::
 
-                from flask.ext.admin.model.fields import ListEditableFieldList
-                from flask.ext.admin.model.widgets import XEditableWidget
+                from flask_admin.model.fields import ListEditableFieldList
+                from flask_admin.model.widgets import XEditableWidget
 
                 class CustomWidget(XEditableWidget):
                     def get_kwargs(self, subfield, kwargs):
@@ -1002,6 +1008,54 @@ class BaseModelView(BaseView, ActionsMixin):
                 Form to validate
         """
         return validate_form_on_submit(form)
+
+
+    def _get_ruleset_missing_fields(self, ruleset, form):
+        missing_fields = []
+
+        if ruleset:
+            visible_fields = ruleset.visible_fields
+            for field in form:
+                if field.name not in visible_fields:
+                    missing_fields.append(field.name)
+
+        return missing_fields
+        
+    def _show_missing_fields_warning(self, text):
+        warnings.warn(text)
+
+    def _validate_form_class(self, ruleset, form_class, remove_missing=True):
+        form_fields = []
+        for name, obj in iteritems(form_class.__dict__):
+            if isinstance(obj, UnboundField):
+                form_fields.append(name)
+
+        missing_fields = []
+        if ruleset:
+            visible_fields = ruleset.visible_fields
+            for field_name in form_fields:
+                if field_name not in visible_fields:
+                    missing_fields.append(field_name)
+
+        if missing_fields:
+            self._show_missing_fields_warning('Fields missing from ruleset: %s' % (','.join(missing_fields)))
+        if remove_missing:
+            self._remove_fields_from_form_class(missing_fields, form_class)
+
+    def _validate_form_instance(self, ruleset, form, remove_missing=True):
+        missing_fields = self._get_ruleset_missing_fields(ruleset=ruleset, form=form)
+        if missing_fields:
+            self._show_missing_fields_warning('Fields missing from ruleset: %s' % (','.join(missing_fields)))
+        if remove_missing:
+            self._remove_fields_from_form_instance(missing_fields, form)
+
+    def _remove_fields_from_form_instance(self, field_names, form):
+        for field_name in field_names:
+            form.__delitem__(field_name)
+
+    def _remove_fields_from_form_class(self, field_names, form_class):
+        for field_name in field_names:
+            delattr(form_class, field_name)
 
     # Helpers
     def is_sortable(self, name):
@@ -1148,6 +1202,21 @@ class BaseModelView(BaseView, ActionsMixin):
             By default do nothing.
         """
         pass
+        
+    def after_model_delete(self, model):
+        """
+            Perform some actions after a model was deleted and
+            committed to the database.
+
+            Called from delete_model after successful database commit
+            (if it has any meaning for a store backend).
+
+            By default does nothing.
+
+            :param model:
+                Model that was deleted
+        """
+        pass        
 
     def on_form_prefill (self, form, id):
         """
@@ -1176,7 +1245,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Create model from the form.
 
-            Returns `True` if operation succeeded.
+            Returns the model instance if operation succeeded.
 
             Must be implemented in the child class.
 
@@ -1479,14 +1548,24 @@ class BaseModelView(BaseView, ActionsMixin):
             return redirect(return_url)
 
         form = self.create_form()
+        if not hasattr(form, '_validated_ruleset') or not form._validated_ruleset:
+            self._validate_form_instance(ruleset=self._form_create_rules, form=form)
 
         if self.validate_form(form):
-            if self.create_model(form):
+            # in versions 1.1.0 and before, this returns a boolean
+            # in later versions, this is the model itself
+            model = self.create_model(form)
+            if model:
+                flash(gettext('Record was successfully created.'))
                 if '_add_another' in request.form:
-                    flash(gettext('Record was successfully created.'))
                     return redirect(request.url)
                 else:
-                    return redirect(return_url)
+                    # if we have a valid model, try to go to the edit view
+                    if model is not True:
+                        url = self.get_url('.edit_view', id=self.get_pk_value(model), url=return_url)
+                    else:
+                        url = return_url
+                    return redirect(url)
 
         form_opts = FormOpts(widget_args=self.form_widget_args,
                              form_rules=self._form_create_rules)
@@ -1516,11 +1595,13 @@ class BaseModelView(BaseView, ActionsMixin):
             return redirect(return_url)
 
         form = self.edit_form(obj=model)
+        if not hasattr(form, '_validated_ruleset') or not form._validated_ruleset:
+            self._validate_form_instance(ruleset=self._form_create_rules, form=form)
 
         if self.validate_form(form):
             if self.update_model(form, model):
+                flash(gettext('Record was successfully saved.'))
                 if '_continue_editing' in request.form:
-                    flash(gettext('Record was successfully saved.'))
                     return redirect(request.url)
                 else:
                     return redirect(return_url)

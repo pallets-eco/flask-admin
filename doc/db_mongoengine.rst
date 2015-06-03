@@ -21,4 +21,4 @@ Known issues:
 
 For more documentation, check :doc:`api/mod_contrib_mongoengine` documentation.
 
-MongoEngine integration example is `here <https://github.com/mrjoes/flask-admin/tree/master/examples/mongoengine>`_.
+MongoEngine integration example is `here <https://github.com/flask-admin/flask-admin/tree/master/examples/mongoengine>`_.

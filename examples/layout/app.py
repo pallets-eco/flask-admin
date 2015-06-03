@@ -1,10 +1,10 @@
 import os
 import os.path as op
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
-from flask.ext import admin
-from flask.ext.admin.contrib.sqla import ModelView
+import flask_admin as admin
+from flask_admin.contrib.sqla import ModelView
 
 
 # Create application

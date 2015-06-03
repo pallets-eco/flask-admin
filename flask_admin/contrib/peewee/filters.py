@@ -1,9 +1,9 @@
 import time
 import datetime
 
-from flask.ext.admin.babel import lazy_gettext
+from flask_admin.babel import lazy_gettext
 
-from flask.ext.admin.model import filters
+from flask_admin.model import filters
 from .tools import parse_like_term
 
 
@@ -284,7 +284,7 @@ class TimeNotBetweenFilter(TimeBetweenFilter):
 
 # Base peewee filter field converter
 class FilterConverter(filters.BaseFilterConverter):
-    strings = (FilterEqual, FilterNotEqual, FilterLike, FilterNotLike,
+    strings = (FilterLike, FilterNotLike, FilterEqual, FilterNotEqual,
                FilterEmpty, FilterInList, FilterNotInList)
     int_filters = (IntEqualFilter, IntNotEqualFilter, IntGreaterFilter,
                    IntSmallerFilter, FilterEmpty, IntInListFilter,

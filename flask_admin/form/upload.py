@@ -12,10 +12,10 @@ try:
 except ImportError:
     from wtforms.utils import unset_value
 
-from flask.ext.admin.babel import gettext
-from flask.ext.admin.helpers import get_url
+from flask_admin.babel import gettext
+from flask_admin.helpers import get_url
 
-from flask.ext.admin._compat import string_types, urljoin
+from flask_admin._compat import string_types, urljoin
 
 
 try:
@@ -54,7 +54,8 @@ class FileUploadInput(object):
         return HTMLString(template % {
             'text': html_params(type='text',
                                 readonly='readonly',
-                                value=field.data),
+                                value=field.data,
+                                name=field.name),
             'file': html_params(type='file',
                                 **kwargs),
             'marker': '_%s-delete' % field.name
@@ -314,6 +315,9 @@ class ImageUploadField(FileUploadField):
             :param max_size:
                 Tuple of (width, height, force) or None. If provided, Flask-Admin will
                 resize image to the desired size.
+                
+                Width and height is in pixels. If `force` is set to `True`, will try to fit image into dimensions and
+                keep aspect ratio, otherwise will just resize to target size.
             :param thumbgen:
                 Thumbnail filename generation function. All thumbnails will be saved as JPEG files,
                 so there's no need to keep original file extension.
@@ -391,7 +395,7 @@ class ImageUploadField(FileUploadField):
         path = self._get_path(filename)
 
         if not op.exists(op.dirname(path)):
-            os.makedirs(os.path.dirname(path), self.permission)
+            os.makedirs(os.path.dirname(path), self.permission | 0o111)
 
         # Figure out format
         filename, format = self._get_save_format(filename, self.image)

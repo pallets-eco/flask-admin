@@ -1,0 +1,535 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: flask-admin\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-05-02 18:11-0500\n"
+"PO-Revision-Date: 2015-05-03 17:47-0400\n"
+"Last-Translator: mrjoes <serge.koval@gmail.com>\n"
+"Language-Team: Turkish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.3\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: flask-admin\n"
+"X-Crowdin-Language: tr\n"
+"X-Crowdin-File: admin.pot\n"
+"Language: tr_TR\n"
+
+#: ../flask_admin/base.py:427
+msgid "Home"
+msgstr "Ana sayfa"
+
+#: ../flask_admin/contrib/fileadmin.py:222
+msgid "File to upload"
+msgstr "Yüklemek için dosya"
+
+#: ../flask_admin/contrib/fileadmin.py:230
+msgid "File required."
+msgstr "Gerekli dosya."
+
+#: ../flask_admin/contrib/fileadmin.py:235
+msgid "Invalid file type."
+msgstr "Geçersiz dosya türü."
+
+#: ../flask_admin/contrib/fileadmin.py:246
+msgid "Content"
+msgstr "İçerik"
+
+#: ../flask_admin/contrib/fileadmin.py:260
+msgid "Invalid name"
+msgstr "Geçersiz ad"
+
+#: ../flask_admin/contrib/fileadmin.py:268
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:35
+msgid "Name"
+msgstr "Adı"
+
+#: ../flask_admin/contrib/fileadmin.py:546
+#, python-format
+msgid "File \"%(name)s\" already exists."
+msgstr "\"%(name)s\" dosyası zaten var."
+
+#: ../flask_admin/contrib/fileadmin.py:570
+#: ../flask_admin/contrib/fileadmin.py:637
+#: ../flask_admin/contrib/fileadmin.py:690
+#: ../flask_admin/contrib/fileadmin.py:731
+#: ../flask_admin/contrib/fileadmin.py:777
+#: ../flask_admin/contrib/fileadmin.py:826
+msgid "Permission denied."
+msgstr "İzin verilmedi."
+
+#: ../flask_admin/contrib/fileadmin.py:633
+msgid "File uploading is disabled."
+msgstr "Bir dosyayı karşıya yüklemeyi devre dışı bırakılır."
+
+#: ../flask_admin/contrib/fileadmin.py:646
+#, python-format
+msgid "Failed to save file: %(error)s"
+msgstr "Dosya kaydetme başarısız oldu: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin.py:686
+msgid "Directory creation is disabled."
+msgstr "Dizin oluşturma devre dışı bırakıldı."
+
+#: ../flask_admin/contrib/fileadmin.py:701
+#, python-format
+msgid "Failed to create directory: %(error)s"
+msgstr "Dizin oluşturma başarısız oldu: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin.py:727
+msgid "Deletion is disabled."
+msgstr "Silme işlemi devre dışı bırakıldı."
+
+#: ../flask_admin/contrib/fileadmin.py:736
+msgid "Directory deletion is disabled."
+msgstr "Dizin silme işlemi devre dışı bırakıldı."
+
+#: ../flask_admin/contrib/fileadmin.py:742
+#, python-format
+msgid "Directory \"%(path)s\" was successfully deleted."
+msgstr "Dizin \"%(path)s\" başarıyla silindi."
+
+#: ../flask_admin/contrib/fileadmin.py:744
+#, python-format
+msgid "Failed to delete directory: %(error)s"
+msgstr "Dizini silme başarısız oldu: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin.py:749
+#: ../flask_admin/contrib/fileadmin.py:894
+#, python-format
+msgid "File \"%(name)s\" was successfully deleted."
+msgstr "\"%(name)s\" dosyası başarıyla silindi."
+
+#: ../flask_admin/contrib/fileadmin.py:751
+#: ../flask_admin/contrib/fileadmin.py:896
+#, python-format
+msgid "Failed to delete file: %(name)s"
+msgstr "Dosya silinemedi: %(name)s"
+
+#: ../flask_admin/contrib/fileadmin.py:773
+msgid "Renaming is disabled."
+msgstr "Yeniden adlandırma devre dışı bırakılır."
+
+#: ../flask_admin/contrib/fileadmin.py:781
+msgid "Path does not exist."
+msgstr "Yol yok."
+
+#: ../flask_admin/contrib/fileadmin.py:792
+#, python-format
+msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
+msgstr "Başarılı bir şekilde yeniden adlandırılan \"%(src)s\" \"%(dst)s\" için"
+
+#: ../flask_admin/contrib/fileadmin.py:795
+#, python-format
+msgid "Failed to rename: %(error)s"
+msgstr "Yeniden adlandırılamadı: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin.py:842
+#, python-format
+msgid "Error saving changes to %(name)s."
+msgstr "%(name)s için değişiklikler kaydedilirken bir hata oluştu."
+
+#: ../flask_admin/contrib/fileadmin.py:846
+#, python-format
+msgid "Changes to %(name)s saved successfully."
+msgstr "Değişiklikler başarıyla kaydedildi %(name)s."
+
+#: ../flask_admin/contrib/fileadmin.py:855
+#, python-format
+msgid "Error reading %(name)s."
+msgstr "Hata okuma %(name)s."
+
+#: ../flask_admin/contrib/fileadmin.py:858
+#: ../flask_admin/contrib/fileadmin.py:867
+#, python-format
+msgid "Unexpected error while reading from %(name)s"
+msgstr "%(name)s üzerinden okuma sırasında beklenmeyen hata"
+
+#: ../flask_admin/contrib/fileadmin.py:864
+#, python-format
+msgid "Cannot edit %(name)s."
+msgstr "%(name)s düzenleyemezsiniz."
+
+#: ../flask_admin/contrib/fileadmin.py:881
+#: ../flask_admin/contrib/mongoengine/view.py:626
+#: ../flask_admin/contrib/peewee/view.py:429
+#: ../flask_admin/contrib/pymongo/view.py:349
+#: ../flask_admin/contrib/sqla/view.py:956
+msgid "Delete"
+msgstr "Sil"
+
+#: ../flask_admin/contrib/fileadmin.py:882
+msgid "Are you sure you want to delete these files?"
+msgstr "Bu dosyaları silmek istediğinizden emin misiniz?"
+
+#: ../flask_admin/contrib/fileadmin.py:885
+msgid "File deletion is disabled."
+msgstr "Dosya silmeyi devre dışı bırakılır."
+
+#: ../flask_admin/contrib/fileadmin.py:898
+msgid "Edit"
+msgstr "Düzenle"
+
+#: ../flask_admin/contrib/rediscli.py:125
+msgid "Cli: Invalid command."
+msgstr "CLI: Geçersiz komut."
+
+#: ../flask_admin/contrib/geoa/fields.py:29
+msgid "Invalid JSON"
+msgstr "Geçersiz JSON"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:38
+#: ../flask_admin/contrib/peewee/filters.py:38
+#: ../flask_admin/contrib/pymongo/filters.py:38
+#: ../flask_admin/contrib/sqla/filters.py:38
+msgid "equals"
+msgstr "eşittir"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:47
+#: ../flask_admin/contrib/peewee/filters.py:46
+#: ../flask_admin/contrib/pymongo/filters.py:47
+#: ../flask_admin/contrib/sqla/filters.py:46
+msgid "not equal"
+msgstr "eşit değil"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:57
+#: ../flask_admin/contrib/peewee/filters.py:55
+#: ../flask_admin/contrib/pymongo/filters.py:57
+#: ../flask_admin/contrib/sqla/filters.py:55
+msgid "contains"
+msgstr "içerir"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:67
+#: ../flask_admin/contrib/peewee/filters.py:64
+#: ../flask_admin/contrib/pymongo/filters.py:67
+#: ../flask_admin/contrib/sqla/filters.py:64
+msgid "not contains"
+msgstr "değil içerir"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:76
+#: ../flask_admin/contrib/peewee/filters.py:72
+#: ../flask_admin/contrib/pymongo/filters.py:80
+#: ../flask_admin/contrib/sqla/filters.py:72
+msgid "greater than"
+msgstr "daha büyük"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:85
+#: ../flask_admin/contrib/peewee/filters.py:80
+#: ../flask_admin/contrib/pymongo/filters.py:93
+#: ../flask_admin/contrib/sqla/filters.py:80
+msgid "smaller than"
+msgstr "daha küçük"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:97
+#: ../flask_admin/contrib/peewee/filters.py:91
+#: ../flask_admin/contrib/sqla/filters.py:91
+msgid "empty"
+msgstr "boş"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:112
+#: ../flask_admin/contrib/peewee/filters.py:105
+#: ../flask_admin/contrib/sqla/filters.py:105
+msgid "in list"
+msgstr "listede"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:121
+#: ../flask_admin/contrib/peewee/filters.py:114
+#: ../flask_admin/contrib/sqla/filters.py:114
+msgid "not in list"
+msgstr "liste değildir"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:221
+#: ../flask_admin/contrib/peewee/filters.py:208
+#: ../flask_admin/contrib/peewee/filters.py:245
+#: ../flask_admin/contrib/peewee/filters.py:282
+#: ../flask_admin/contrib/sqla/filters.py:209
+#: ../flask_admin/contrib/sqla/filters.py:246
+#: ../flask_admin/contrib/sqla/filters.py:283
+msgid "not between"
+msgstr "arasında değil"
+
+#: ../flask_admin/contrib/mongoengine/view.py:520
+#, python-format
+msgid "Failed to get model. %(error)s"
+msgstr "Model alma başarısız oldu. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:539
+#: ../flask_admin/contrib/peewee/view.py:380
+#: ../flask_admin/contrib/pymongo/view.py:284
+#: ../flask_admin/contrib/sqla/view.py:888
+#, python-format
+msgid "Failed to create record. %(error)s"
+msgstr "Kaydı oluşturulamadı. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:565
+#: ../flask_admin/contrib/peewee/view.py:399
+#: ../flask_admin/contrib/pymongo/view.py:309
+#: ../flask_admin/contrib/sqla/view.py:914 ../flask_admin/model/base.py:1671
+#: ../flask_admin/model/base.py:1680
+#, python-format
+msgid "Failed to update record. %(error)s"
+msgstr "Kaydı oluşturulamadı. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:589
+#: ../flask_admin/contrib/peewee/view.py:415
+#: ../flask_admin/contrib/pymongo/view.py:335
+#: ../flask_admin/contrib/sqla/view.py:940
+#, python-format
+msgid "Failed to delete record. %(error)s"
+msgstr "Kaydı silinemedi. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:627
+#: ../flask_admin/contrib/peewee/view.py:430
+#: ../flask_admin/contrib/pymongo/view.py:350
+#: ../flask_admin/contrib/sqla/view.py:957
+msgid "Are you sure you want to delete selected records?"
+msgstr "Seçili kayıtları silmek istediğinizden emin misiniz?"
+
+#: ../flask_admin/contrib/mongoengine/view.py:636
+#: ../flask_admin/contrib/peewee/view.py:446
+#: ../flask_admin/contrib/pymongo/view.py:360
+#: ../flask_admin/contrib/sqla/view.py:973 ../flask_admin/model/base.py:1619
+#, python-format
+msgid "Record was successfully deleted."
+msgid_plural "%(count)s records were successfully deleted."
+msgstr[0] "Kaydı başarıyla silindi."
+msgstr[1] "%(count)s kayıtlarını başarıyla silindi."
+
+#: ../flask_admin/contrib/mongoengine/view.py:642
+#: ../flask_admin/contrib/peewee/view.py:452
+#: ../flask_admin/contrib/pymongo/view.py:365
+#: ../flask_admin/contrib/sqla/view.py:981
+#, python-format
+msgid "Failed to delete records. %(error)s"
+msgstr "Kaydı silinemedi. %(error)s"
+
+#: ../flask_admin/contrib/sqla/fields.py:123
+#: ../flask_admin/contrib/sqla/fields.py:173
+#: ../flask_admin/contrib/sqla/fields.py:178 ../flask_admin/model/fields.py:225
+#: ../flask_admin/model/fields.py:274
+msgid "Not a valid choice"
+msgstr "Geçerli bir seçim"
+
+#: ../flask_admin/contrib/sqla/validators.py:42
+msgid "Already exists."
+msgstr "Zaten var."
+
+#: ../flask_admin/contrib/sqla/validators.py:60
+#, python-format
+msgid "At least %d item is required"
+msgid_plural "At least %d items are required"
+msgstr[0] "En azından %d öğesi gerekli"
+msgstr[1] "En azından %d öğeler gerekli"
+
+#: ../flask_admin/contrib/sqla/view.py:867
+#, python-format
+msgid "Integrity error. %(message)s"
+msgstr "Bütünlüğü hatası. %(message)s"
+
+#: ../flask_admin/form/fields.py:92
+msgid "Invalid time format"
+msgstr "Geçersiz saat biçimi"
+
+#: ../flask_admin/form/fields.py:138
+msgid "Invalid Choice: could not coerce"
+msgstr "Geçersiz seçenek: dönüştürülemedi"
+
+#: ../flask_admin/form/upload.py:189
+msgid "Invalid file extension"
+msgstr "Geçersiz dosya uzantısı"
+
+#: ../flask_admin/model/base.py:1281
+msgid "There are no items in the table."
+msgstr "Tabloda hiçbir öğe vardır."
+
+#: ../flask_admin/model/base.py:1305
+#, python-format
+msgid "Invalid Filter Value: %(value)s"
+msgstr "Geçersiz filtre değeri: %(value)s"
+
+#: ../flask_admin/model/base.py:1539
+msgid "Record was successfully created."
+msgstr "Kaydı başarıyla oluşturuldu."
+
+#: ../flask_admin/model/base.py:1578 ../flask_admin/model/base.py:1676
+msgid "Record was successfully saved."
+msgstr "Kaydı başarıyla kaydedildi."
+
+#: ../flask_admin/model/filters.py:99
+msgid "Yes"
+msgstr "Evet"
+
+#: ../flask_admin/model/filters.py:100
+msgid "No"
+msgstr "Hayır"
+
+#: ../flask_admin/model/filters.py:162 ../flask_admin/model/filters.py:202
+#: ../flask_admin/model/filters.py:247
+msgid "between"
+msgstr "arasında"
+
+#: ../flask_admin/templates/bootstrap2/admin/actions.html:4
+#: ../flask_admin/templates/bootstrap3/admin/actions.html:4
+msgid "With selected"
+msgstr "İle işaretli"
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:156
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:150
+msgid "Save"
+msgstr "Kaydet"
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:161
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:155
+msgid "Cancel"
+msgstr "İptal"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/edit.html:5
+#: ../flask_admin/templates/bootstrap3/admin/file/edit.html:5
+#, python-format
+msgid "You are editing %(path)s"
+msgstr "%(path)s düzenleme"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
+msgid "Root"
+msgstr "Kök"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:36
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:36
+msgid "Size"
+msgstr "Boyutu"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:63
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:63
+#, python-format
+msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
+msgstr "\\'%(name)s\\' silmek istedi─ƒinizden emin misiniz özyinelemeli olarak?"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:72
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:72
+#, python-format
+msgid "Are you sure you want to delete \\'%(name)s\\'?"
+msgstr "\\'%(name)s\\' silmek istedi─ƒinizden emin misiniz?"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:107
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:107
+msgid "Upload File"
+msgstr "Dosya Yükle"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:112
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:112
+msgid "Create Directory"
+msgstr "Dizin oluşturma"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:129
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:129
+msgid "Please select at least one file."
+msgstr "Lütfen en az bir dosya seçin."
+
+#: ../flask_admin/templates/bootstrap2/admin/file/rename.html:5
+#: ../flask_admin/templates/bootstrap3/admin/file/rename.html:5
+#, python-format
+msgid "Please provide new name for %(name)s"
+msgstr "Lütfen %(name)s için yeni bir ad girin"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:5
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
+msgid "Save and Add"
+msgstr "Kaydetmek ve ekleme"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:16
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:16
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:16
+msgid "List"
+msgstr "Liste"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:19
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:20
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:20
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:20
+msgid "Create"
+msgstr "Oluşturmak"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:5
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
+msgid "Save and Continue"
+msgstr "Kaydet ve devam et"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:14
+msgid "Delete?"
+msgstr "Sil?"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:40
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:43
+msgid "Add"
+msgstr "Ekle"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:3
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:3
+msgid "Add Filter"
+msgstr "Filtre Ekle"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:17
+msgid "Apply"
+msgstr "Uygula"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:19
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:19
+msgid "Reset Filters"
+msgstr "Filtreleri Sıfırla"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:38
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:45
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:38
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:43
+msgid "Search"
+msgstr "Arama"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:20
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:20
+msgid "Create new record"
+msgstr "Yeni Kayıt Oluştur"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:56
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:56
+msgid "Select all records"
+msgstr "Tüm kayıtları seçme"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:76
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:67
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:76
+#, python-format
+msgid "Sort by %(name)s"
+msgstr "%(name)s göre sırala"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:98
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:98
+msgid "Select record"
+msgstr "Çek'i seçin"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:105
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:105
+msgid "Edit record"
+msgstr "Kaydı düzenleme"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:114
+msgid "Are you sure you want to delete this record?"
+msgstr "Bu kaydı silmek istediğinizden emin misiniz?"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
+msgid "Delete record"
+msgstr "Kaydı sil"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:161
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:160
+msgid "Please select at least one record."
+msgstr "Lütfen en az bir kayıt seçin."
+

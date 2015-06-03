@@ -3,7 +3,7 @@ from nose.tools import eq_, ok_
 from . import setup
 from .test_basic import CustomModelView
 
-from flask.ext.sqlalchemy import Model
+from flask_sqlalchemy import Model
 from sqlalchemy.ext.declarative import declarative_base
 
 

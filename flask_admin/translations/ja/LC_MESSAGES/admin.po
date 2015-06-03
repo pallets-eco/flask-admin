@@ -1,0 +1,533 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: flask-admin\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-05-02 18:11-0500\n"
+"PO-Revision-Date: 2015-05-03 17:47-0400\n"
+"Last-Translator: mrjoes <serge.koval@gmail.com>\n"
+"Language-Team: Japanese\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.3\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: flask-admin\n"
+"X-Crowdin-Language: ja\n"
+"X-Crowdin-File: admin.pot\n"
+"Language: ja_JP\n"
+
+#: ../flask_admin/base.py:427
+msgid "Home"
+msgstr "ホーム"
+
+#: ../flask_admin/contrib/fileadmin.py:222
+msgid "File to upload"
+msgstr "ファイルをアップロードするには"
+
+#: ../flask_admin/contrib/fileadmin.py:230
+msgid "File required."
+msgstr "必要なファイル。"
+
+#: ../flask_admin/contrib/fileadmin.py:235
+msgid "Invalid file type."
+msgstr "無効なファイルの種類。"
+
+#: ../flask_admin/contrib/fileadmin.py:246
+msgid "Content"
+msgstr "内容を追加"
+
+#: ../flask_admin/contrib/fileadmin.py:260
+msgid "Invalid name"
+msgstr "名が無効です。"
+
+#: ../flask_admin/contrib/fileadmin.py:268
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:35
+msgid "Name"
+msgstr "名前"
+
+#: ../flask_admin/contrib/fileadmin.py:546
+#, python-format
+msgid "File \"%(name)s\" already exists."
+msgstr "ファイル「%(name)s」は既に存在します。"
+
+#: ../flask_admin/contrib/fileadmin.py:570
+#: ../flask_admin/contrib/fileadmin.py:637
+#: ../flask_admin/contrib/fileadmin.py:690
+#: ../flask_admin/contrib/fileadmin.py:731
+#: ../flask_admin/contrib/fileadmin.py:777
+#: ../flask_admin/contrib/fileadmin.py:826
+msgid "Permission denied."
+msgstr "アクセスが拒否されました。"
+
+#: ../flask_admin/contrib/fileadmin.py:633
+msgid "File uploading is disabled."
+msgstr "ファイルのアップロードは無効になります。"
+
+#: ../flask_admin/contrib/fileadmin.py:646
+#, python-format
+msgid "Failed to save file: %(error)s"
+msgstr "ファイルの保存に失敗しました: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin.py:686
+msgid "Directory creation is disabled."
+msgstr "ディレクトリの作成は無効です。"
+
+#: ../flask_admin/contrib/fileadmin.py:701
+#, python-format
+msgid "Failed to create directory: %(error)s"
+msgstr "ディレクトリの作成に失敗しました: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin.py:727
+msgid "Deletion is disabled."
+msgstr "削除が無効になります。"
+
+#: ../flask_admin/contrib/fileadmin.py:736
+msgid "Directory deletion is disabled."
+msgstr "ディレクトリの削除は無効です。"
+
+#: ../flask_admin/contrib/fileadmin.py:742
+#, python-format
+msgid "Directory \"%(path)s\" was successfully deleted."
+msgstr "ディレクトリ「%(path)s」が正常に削除されました。"
+
+#: ../flask_admin/contrib/fileadmin.py:744
+#, python-format
+msgid "Failed to delete directory: %(error)s"
+msgstr "ディレクトリの削除に失敗しました: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin.py:749
+#: ../flask_admin/contrib/fileadmin.py:894
+#, python-format
+msgid "File \"%(name)s\" was successfully deleted."
+msgstr "ファイル「%(name)s」が正常に削除されました。"
+
+#: ../flask_admin/contrib/fileadmin.py:751
+#: ../flask_admin/contrib/fileadmin.py:896
+#, python-format
+msgid "Failed to delete file: %(name)s"
+msgstr "ファイルの削除に失敗しました: %(name)s"
+
+#: ../flask_admin/contrib/fileadmin.py:773
+msgid "Renaming is disabled."
+msgstr "名前の変更は無効です。"
+
+#: ../flask_admin/contrib/fileadmin.py:781
+msgid "Path does not exist."
+msgstr "パスは存在しません。"
+
+#: ../flask_admin/contrib/fileadmin.py:792
+#, python-format
+msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
+msgstr "正常に名前を変更した「%(src)s」「%(dst)s」に"
+
+#: ../flask_admin/contrib/fileadmin.py:795
+#, python-format
+msgid "Failed to rename: %(error)s"
+msgstr "名前の変更に失敗しました: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin.py:842
+#, python-format
+msgid "Error saving changes to %(name)s."
+msgstr "保存中のエラーを %(name)s に変更します。"
+
+#: ../flask_admin/contrib/fileadmin.py:846
+#, python-format
+msgid "Changes to %(name)s saved successfully."
+msgstr "正常に保存された %(name)s に変更します。"
+
+#: ../flask_admin/contrib/fileadmin.py:855
+#, python-format
+msgid "Error reading %(name)s."
+msgstr "エラー読んで %(name)s。"
+
+#: ../flask_admin/contrib/fileadmin.py:858
+#: ../flask_admin/contrib/fileadmin.py:867
+#, python-format
+msgid "Unexpected error while reading from %(name)s"
+msgstr "%(name)s からの読み取り中に予期しないエラー"
+
+#: ../flask_admin/contrib/fileadmin.py:864
+#, python-format
+msgid "Cannot edit %(name)s."
+msgstr "%(name)s を編集できません。"
+
+#: ../flask_admin/contrib/fileadmin.py:881
+#: ../flask_admin/contrib/mongoengine/view.py:626
+#: ../flask_admin/contrib/peewee/view.py:429
+#: ../flask_admin/contrib/pymongo/view.py:349
+#: ../flask_admin/contrib/sqla/view.py:956
+msgid "Delete"
+msgstr "削除"
+
+#: ../flask_admin/contrib/fileadmin.py:882
+msgid "Are you sure you want to delete these files?"
+msgstr "これらのファイルを削除してもよろしいですか。"
+
+#: ../flask_admin/contrib/fileadmin.py:885
+msgid "File deletion is disabled."
+msgstr "ファイルの削除は無効です。"
+
+#: ../flask_admin/contrib/fileadmin.py:898
+msgid "Edit"
+msgstr "編集"
+
+#: ../flask_admin/contrib/rediscli.py:125
+msgid "Cli: Invalid command."
+msgstr "Cli： コマンドが無効です。"
+
+#: ../flask_admin/contrib/geoa/fields.py:29
+msgid "Invalid JSON"
+msgstr "無効な JSON"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:38
+#: ../flask_admin/contrib/peewee/filters.py:38
+#: ../flask_admin/contrib/pymongo/filters.py:38
+#: ../flask_admin/contrib/sqla/filters.py:38
+msgid "equals"
+msgstr "等しい"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:47
+#: ../flask_admin/contrib/peewee/filters.py:46
+#: ../flask_admin/contrib/pymongo/filters.py:47
+#: ../flask_admin/contrib/sqla/filters.py:46
+msgid "not equal"
+msgstr "等しくないです。"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:57
+#: ../flask_admin/contrib/peewee/filters.py:55
+#: ../flask_admin/contrib/pymongo/filters.py:57
+#: ../flask_admin/contrib/sqla/filters.py:55
+msgid "contains"
+msgstr "含まれています"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:67
+#: ../flask_admin/contrib/peewee/filters.py:64
+#: ../flask_admin/contrib/pymongo/filters.py:67
+#: ../flask_admin/contrib/sqla/filters.py:64
+msgid "not contains"
+msgstr "含まれていません。"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:76
+#: ../flask_admin/contrib/peewee/filters.py:72
+#: ../flask_admin/contrib/pymongo/filters.py:80
+#: ../flask_admin/contrib/sqla/filters.py:72
+msgid "greater than"
+msgstr "大きい"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:85
+#: ../flask_admin/contrib/peewee/filters.py:80
+#: ../flask_admin/contrib/pymongo/filters.py:93
+#: ../flask_admin/contrib/sqla/filters.py:80
+msgid "smaller than"
+msgstr "小さい"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:97
+#: ../flask_admin/contrib/peewee/filters.py:91
+#: ../flask_admin/contrib/sqla/filters.py:91
+msgid "empty"
+msgstr "空"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:112
+#: ../flask_admin/contrib/peewee/filters.py:105
+#: ../flask_admin/contrib/sqla/filters.py:105
+msgid "in list"
+msgstr "リストで"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:121
+#: ../flask_admin/contrib/peewee/filters.py:114
+#: ../flask_admin/contrib/sqla/filters.py:114
+msgid "not in list"
+msgstr "一覧にはないです。"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:221
+#: ../flask_admin/contrib/peewee/filters.py:208
+#: ../flask_admin/contrib/peewee/filters.py:245
+#: ../flask_admin/contrib/peewee/filters.py:282
+#: ../flask_admin/contrib/sqla/filters.py:209
+#: ../flask_admin/contrib/sqla/filters.py:246
+#: ../flask_admin/contrib/sqla/filters.py:283
+msgid "not between"
+msgstr "間ではなく"
+
+#: ../flask_admin/contrib/mongoengine/view.py:520
+#, python-format
+msgid "Failed to get model. %(error)s"
+msgstr "モデルを取得できませんでした。%(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:539
+#: ../flask_admin/contrib/peewee/view.py:380
+#: ../flask_admin/contrib/pymongo/view.py:284
+#: ../flask_admin/contrib/sqla/view.py:888
+#, python-format
+msgid "Failed to create record. %(error)s"
+msgstr "レコードの作成に失敗しました。%(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:565
+#: ../flask_admin/contrib/peewee/view.py:399
+#: ../flask_admin/contrib/pymongo/view.py:309
+#: ../flask_admin/contrib/sqla/view.py:914 ../flask_admin/model/base.py:1671
+#: ../flask_admin/model/base.py:1680
+#, python-format
+msgid "Failed to update record. %(error)s"
+msgstr "レコードの作成に失敗しました。%(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:589
+#: ../flask_admin/contrib/peewee/view.py:415
+#: ../flask_admin/contrib/pymongo/view.py:335
+#: ../flask_admin/contrib/sqla/view.py:940
+#, python-format
+msgid "Failed to delete record. %(error)s"
+msgstr "レコードを削除に失敗しました。%(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:627
+#: ../flask_admin/contrib/peewee/view.py:430
+#: ../flask_admin/contrib/pymongo/view.py:350
+#: ../flask_admin/contrib/sqla/view.py:957
+msgid "Are you sure you want to delete selected records?"
+msgstr "選択したレコードを削除してもよろしいですか。"
+
+#: ../flask_admin/contrib/mongoengine/view.py:636
+#: ../flask_admin/contrib/peewee/view.py:446
+#: ../flask_admin/contrib/pymongo/view.py:360
+#: ../flask_admin/contrib/sqla/view.py:973 ../flask_admin/model/base.py:1619
+#, python-format
+msgid "Record was successfully deleted."
+msgid_plural "%(count)s records were successfully deleted."
+msgstr[0] "%(count)s レコードが正常に削除されました。"
+
+#: ../flask_admin/contrib/mongoengine/view.py:642
+#: ../flask_admin/contrib/peewee/view.py:452
+#: ../flask_admin/contrib/pymongo/view.py:365
+#: ../flask_admin/contrib/sqla/view.py:981
+#, python-format
+msgid "Failed to delete records. %(error)s"
+msgstr "レコードを削除に失敗しました。%(error)s"
+
+#: ../flask_admin/contrib/sqla/fields.py:123
+#: ../flask_admin/contrib/sqla/fields.py:173
+#: ../flask_admin/contrib/sqla/fields.py:178 ../flask_admin/model/fields.py:225
+#: ../flask_admin/model/fields.py:274
+msgid "Not a valid choice"
+msgstr "有効な選択肢ではないです。"
+
+#: ../flask_admin/contrib/sqla/validators.py:42
+msgid "Already exists."
+msgstr "既に存在します。"
+
+#: ../flask_admin/contrib/sqla/validators.py:60
+#, python-format
+msgid "At least %d item is required"
+msgid_plural "At least %d items are required"
+msgstr[0] "少なくとも %d の項目が必要です"
+
+#: ../flask_admin/contrib/sqla/view.py:867
+#, python-format
+msgid "Integrity error. %(message)s"
+msgstr "整合性エラーが発生します。%(message)s"
+
+#: ../flask_admin/form/fields.py:92
+msgid "Invalid time format"
+msgstr "無効な時刻の形式"
+
+#: ../flask_admin/form/fields.py:138
+msgid "Invalid Choice: could not coerce"
+msgstr "無効な選択です: を強要しませんでした。"
+
+#: ../flask_admin/form/upload.py:189
+msgid "Invalid file extension"
+msgstr "無効なファイル拡張子"
+
+#: ../flask_admin/model/base.py:1281
+msgid "There are no items in the table."
+msgstr "表ではアイテムがありません。"
+
+#: ../flask_admin/model/base.py:1305
+#, python-format
+msgid "Invalid Filter Value: %(value)s"
+msgstr "無効なフィルター値: %(value)s"
+
+#: ../flask_admin/model/base.py:1539
+msgid "Record was successfully created."
+msgstr "レコードが正常に作成されました。"
+
+#: ../flask_admin/model/base.py:1578 ../flask_admin/model/base.py:1676
+msgid "Record was successfully saved."
+msgstr "レコードが正常に保存されました。"
+
+#: ../flask_admin/model/filters.py:99
+msgid "Yes"
+msgstr "はい"
+
+#: ../flask_admin/model/filters.py:100
+msgid "No"
+msgstr "いいえ"
+
+#: ../flask_admin/model/filters.py:162 ../flask_admin/model/filters.py:202
+#: ../flask_admin/model/filters.py:247
+msgid "between"
+msgstr "間"
+
+#: ../flask_admin/templates/bootstrap2/admin/actions.html:4
+#: ../flask_admin/templates/bootstrap3/admin/actions.html:4
+msgid "With selected"
+msgstr "選択し"
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:156
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:150
+msgid "Save"
+msgstr "保存"
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:161
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:155
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/edit.html:5
+#: ../flask_admin/templates/bootstrap3/admin/file/edit.html:5
+#, python-format
+msgid "You are editing %(path)s"
+msgstr "%(path)s を編集します。"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
+msgid "Root"
+msgstr "ルート"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:36
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:36
+msgid "Size"
+msgstr "サイズ"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:63
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:63
+#, python-format
+msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
+msgstr "\\'%(name)s\\' を削除するよろしいです ' を再帰的にですか？"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:72
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:72
+#, python-format
+msgid "Are you sure you want to delete \\'%(name)s\\'?"
+msgstr "\\'%(name)s\\' を削除するよろしいです ' ですか？"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:107
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:107
+msgid "Upload File"
+msgstr "ファイルをアップロードします。"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:112
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:112
+msgid "Create Directory"
+msgstr "ディレクトリを作成します。"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:129
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:129
+msgid "Please select at least one file."
+msgstr "少なくとも 1 つのファイルを選択してください。"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/rename.html:5
+#: ../flask_admin/templates/bootstrap3/admin/file/rename.html:5
+#, python-format
+msgid "Please provide new name for %(name)s"
+msgstr "%(name)s の新しい名前を入力してください。"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:5
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
+msgid "Save and Add"
+msgstr "保存し、追加"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:16
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:16
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:16
+msgid "List"
+msgstr "リスト"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:19
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:20
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:20
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:20
+msgid "Create"
+msgstr "作成します。"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:5
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
+msgid "Save and Continue"
+msgstr "保存して続行"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:14
+msgid "Delete?"
+msgstr "削除"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:40
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:43
+msgid "Add"
+msgstr "追加"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:3
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:3
+msgid "Add Filter"
+msgstr "フィルターを追加します。"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:17
+msgid "Apply"
+msgstr "適用"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:19
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:19
+msgid "Reset Filters"
+msgstr "フィルターをリセットします。"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:38
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:45
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:38
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:43
+msgid "Search"
+msgstr "検索"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:20
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:20
+msgid "Create new record"
+msgstr "新しいレコードを作成します。"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:56
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:56
+msgid "Select all records"
+msgstr "すべてのレコードを選択します。"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:76
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:67
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:76
+#, python-format
+msgid "Sort by %(name)s"
+msgstr "%(name)s による並べ替え"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:98
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:98
+msgid "Select record"
+msgstr "レコードの選択"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:105
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:105
+msgid "Edit record"
+msgstr "レコードを編集します。"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:114
+msgid "Are you sure you want to delete this record?"
+msgstr "このレコードを削除してもよろしいですか。"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
+msgid "Delete record"
+msgstr "レコードを削除します。"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:161
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:160
+msgid "Please select at least one record."
+msgstr "少なくとも 1 つのレコードを選択してください。"
+
