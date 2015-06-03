@@ -585,7 +585,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if endpoint:
             return super(BaseModelView, self)._get_endpoint(endpoint)
 
-        return self.__class__.__name__.lower()
+        return self.model.__name__.lower()
 
     # Caching
     def _refresh_forms_cache(self):
@@ -1020,7 +1020,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     missing_fields.append(field.name)
 
         return missing_fields
-        
+
     def _show_missing_fields_warning(self, text):
         warnings.warn(text)
 
@@ -1202,7 +1202,7 @@ class BaseModelView(BaseView, ActionsMixin):
             By default do nothing.
         """
         pass
-        
+
     def after_model_delete(self, model):
         """
             Perform some actions after a model was deleted and
@@ -1216,7 +1216,7 @@ class BaseModelView(BaseView, ActionsMixin):
             :param model:
                 Model that was deleted
         """
-        pass        
+        pass
 
     def on_form_prefill (self, form, id):
         """
