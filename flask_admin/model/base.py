@@ -15,7 +15,7 @@ from flask_admin.form import BaseForm, FormOpts, rules
 from flask_admin.model import filters, typefmt
 from flask_admin.actions import ActionsMixin
 from flask_admin.helpers import (get_form_data, validate_form_on_submit,
-                                     get_redirect_target, flash_errors)
+                                 get_redirect_target, flash_errors)
 from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
 from flask_admin._compat import iteritems, OrderedDict, as_unicode
@@ -619,7 +619,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 self._filter_groups[flt.name].append({
                     'index': i,
                     'arg': self.get_filter_arg(i, flt),
-                    'operation': as_unicode(flt.operation()),
+                    'operation': flt.operation(),
                     'options': flt.get_options(self) or None,
                     'type': flt.data_type
                 })
@@ -853,6 +853,27 @@ class BaseModelView(BaseView, ActionsMixin):
             return name
         else:
             return str(index)
+
+    def _get_filter_groups(self):
+        """
+            Returns non-lazy version of filter strings
+        """
+        if self._filter_groups:
+            results = OrderedDict()
+
+            for key, value in iteritems(self._filter_groups):
+                items = []
+
+                for item in value:
+                    copy = dict(item)
+                    copy['operation'] = as_unicode(copy['operation'])
+                    items.append(copy)
+
+                results[key] = items
+
+            return results
+
+        return None
 
     # Form helpers
     def scaffold_form(self):
@@ -1523,7 +1544,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             # Filters
             filters=self._filters,
-            filter_groups=self._filter_groups,
+            filter_groups=self._get_filter_groups(),
             active_filters=view_args.filters,
 
             # Actions
