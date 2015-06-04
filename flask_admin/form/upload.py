@@ -57,7 +57,7 @@ class FileUploadInput(object):
         if field.data and isinstance(field.data, FileStorage):
             value = field.data.filename
         else:
-            value = field.data
+            value = field.data or ''
 
         return HTMLString(template % {
             'text': html_params(type='text',
