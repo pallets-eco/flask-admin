@@ -51,12 +51,21 @@ class FileUploadInput(object):
 
         template = self.data_template if field.data else self.empty_template
 
+        if field.errors:
+            template = self.empty_template
+
+        if field.data and isinstance(field.data, FileStorage):
+            value = field.data.filename
+        else:
+            value = field.data
+
         return HTMLString(template % {
             'text': html_params(type='text',
                                 readonly='readonly',
-                                value=field.data,
+                                value=value,
                                 name=field.name),
             'file': html_params(type='file',
+                                value=value,
                                 **kwargs),
             'marker': '_%s-delete' % field.name
         })
@@ -194,6 +203,9 @@ class FileUploadField(fields.StringField):
     def pre_validate(self, form):
         if self._is_uploaded_file(self.data) and not self.is_file_allowed(self.data.filename):
             raise ValidationError(gettext('Invalid file extension'))
+        # Handle overwriting existing content
+        if not self._is_uploaded_file(self.data):
+            return
         if self._allow_overwrite == False and os.path.exists(self._get_path(self.data.filename)):
             raise ValidationError(gettext('File "%s" already exists.' % self.data.filename))
 
