@@ -20,9 +20,7 @@ db = SQLAlchemy(app)
 
 # Define wtforms widget and field
 class CKTextAreaWidget(widgets.TextArea):
-    def __call__(self, field, **kwargs):
-        kwargs.setdefault('class_', 'ckeditor')
-        return super(CKTextAreaWidget, self).__call__(field, **kwargs)
+    class_ = 'ckeditor'
 
 
 class CKTextAreaField(fields.TextAreaField):
@@ -55,7 +53,7 @@ def index():
 
 if __name__ == '__main__':
     # Create admin
-    admin = admin.Admin(app, name="Example: WYSIWYG")
+    admin = admin.Admin(app, name="Example: WYSIWYG", template_mode='bootstrap3')
 
     # Add views
     admin.add_view(PageAdmin(Page, db.session))

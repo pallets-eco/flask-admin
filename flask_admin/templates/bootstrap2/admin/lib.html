@@ -91,6 +91,11 @@
     </div>
     <div class="controls">
     <div>
+      {%- set css_class = [] -%}
+      {%- if field.widget and field.widget.class_ -%}
+        {%- set _ = css_class.append(field.widget.class_) -%}
+      {%- endif -%}
+      {%- set _ = kwargs.setdefault('class', ', '.join(css_class)) if css_class -%}
       {{ field(**kwargs)|safe }}
     </div>
     {% if field.description %}
