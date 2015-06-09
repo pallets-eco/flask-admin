@@ -13,7 +13,7 @@
     {% block model_menu_bar %}
     <ul class="nav nav-tabs actions-nav">
         <li class="active">
-            <a href="javascript:void(0)">{{ _gettext('List') }} ({{ count }})</a>
+            <a href="javascript:void(0)">{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a>
         </li>
         {% if admin_view.can_create %}
         <li>
@@ -146,7 +146,13 @@
         </tr>
         {% endfor %}
     </table>
+    {% block list_pager %}
+    {% if num_pages is not none %}
     {{ lib.pager(page, num_pages, pager_url) }}
+    {% else %}
+    {{ lib.simple_pager(page, data|length == page_size, pager_url) }}
+    {% endif %}
+    {% endblock %}
     {% endblock %}
 
     {{ actionlib.form(actions, get_url('.action_view')) }}

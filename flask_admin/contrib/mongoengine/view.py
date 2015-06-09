@@ -484,7 +484,7 @@ class ModelView(BaseModelView):
             query = self._search(query, search)
 
         # Get count
-        count = query.count()
+        count = query.count() if not self.simple_list_pager else None
 
         # Sorting
         if sort_column:
@@ -592,7 +592,7 @@ class ModelView(BaseModelView):
             return False
         else:
             self.after_model_delete(model)
-            
+
         return True
 
 

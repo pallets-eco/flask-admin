@@ -12,6 +12,7 @@ from . import setup
 
 from datetime import datetime, time, date
 
+
 class CustomModelView(ModelView):
     def __init__(self, model, session,
                  name=None, category=None, endpoint=None, url=None,
@@ -1680,3 +1681,21 @@ def test_safe_redirect():
     assert_true(rv.location.startswith('http://localhost/admin/model1/edit/'))
     assert_true('url=%2Fadmin%2Fmodel1%2F' in rv.location)
     assert_true('id=2' in rv.location)
+
+
+def test_simple_list_pager():
+    app, db, admin = setup()
+    Model1, _ = create_models(db)
+    db.create_all()
+
+    class TestModelView(CustomModelView):
+        simple_list_pager = True
+
+        def get_count_query(self):
+            assert False
+
+    view = TestModelView(Model1, db.session)
+    admin.add_view(view)
+
+    count, data = view.get_list(0, None, None, None, None)
+    assert_true(count is None)

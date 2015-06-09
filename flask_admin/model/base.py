@@ -321,6 +321,12 @@ class BaseModelView(BaseView, ActionsMixin):
         Controls if the primary key should be displayed in the list view.
     """
 
+    simple_list_pager = False
+    """
+        Enable or disable simple list pager.
+        If enabled, model interface would not run count query and will only show prev/next pager buttons.
+    """
+
     form = None
     """
         Form class. Override if you want to use custom form for your model.
@@ -1486,9 +1492,12 @@ class BaseModelView(BaseView, ActionsMixin):
                                     view_args.search, view_args.filters)
 
         # Calculate number of pages
-        num_pages = count // self.page_size
-        if count % self.page_size != 0:
-            num_pages += 1
+        if count is not None:
+            num_pages = count // self.page_size
+            if count % self.page_size != 0:
+                num_pages += 1
+        else:
+            num_pages = None
 
         # Various URL generation helpers
         def pager_url(p):
@@ -1531,6 +1540,7 @@ class BaseModelView(BaseView, ActionsMixin):
             pager_url=pager_url,
             num_pages=num_pages,
             page=view_args.page,
+            page_size=self.page_size,
 
             # Sorting
             sort_column=view_args.sort,

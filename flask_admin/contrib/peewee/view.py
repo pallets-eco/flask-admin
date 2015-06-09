@@ -339,7 +339,7 @@ class ModelView(BaseModelView):
                 query = f.apply(query, f.clean(value))
 
         # Get count
-        count = query.count()
+        count = query.count() if not self.simple_list_pager else None
 
         # Apply sorting
         if sort_column is not None:
@@ -417,7 +417,7 @@ class ModelView(BaseModelView):
             return False
         else:
             self.after_model_delete(model)
-            
+
         return True
 
     # Default model actions

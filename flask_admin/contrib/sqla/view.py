@@ -4,7 +4,7 @@ import warnings
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import desc
-from sqlalchemy import Column, Boolean, func, or_
+from sqlalchemy import Boolean, func, or_
 from sqlalchemy.exc import IntegrityError
 
 from flask import flash
@@ -765,7 +765,7 @@ class ModelView(BaseModelView):
         joins = set()
 
         query = self.get_query()
-        count_query = self.get_count_query()
+        count_query = self.get_count_query() if not self.simple_list_pager else None
 
         # Ignore eager-loaded relations (prevent unnecessary joins)
         # TODO: Separate join detection for query and count query?
@@ -781,7 +781,9 @@ class ModelView(BaseModelView):
                 for table in self._search_joins:
                     if table.name not in joins:
                         query = query.outerjoin(table)
-                        count_query = count_query.outerjoin(table)
+
+                        if count_query is not None:
+                            count_query = count_query.outerjoin(table)
 
                         joins.add(table.name)
 
@@ -795,7 +797,9 @@ class ModelView(BaseModelView):
                 stmt = tools.parse_like_term(term)
                 filter_stmt = [c.ilike(stmt) for c in self._search_fields]
                 query = query.filter(or_(*filter_stmt))
-                count_query = count_query.filter(or_(*filter_stmt))
+
+                if count_query is not None:
+                    count_query = count_query.filter(or_(*filter_stmt))
 
         # Apply filters
         if filters and self._filters:
@@ -811,15 +815,20 @@ class ModelView(BaseModelView):
                     for table in join_tables:
                         if table.name not in joins:
                             query = query.join(table)
-                            count_query = count_query.join(table)
+
+                            if count_query is not None:
+                                count_query = count_query.join(table)
+
                             joins.add(table.name)
 
                 # turn into python format with .clean() and apply filter
                 query = flt.apply(query, flt.clean(value))
-                count_query = flt.apply(count_query, flt.clean(value))
 
-        # Calculate number of rows
-        count = count_query.scalar()
+                if count_query is not None:
+                    count_query = flt.apply(count_query, flt.clean(value))
+
+        # Calculate number of rows if necessary
+        count = count_query.scalar() if count_query else None
 
         # Auto join
         for j in self._auto_joins:
@@ -944,7 +953,7 @@ class ModelView(BaseModelView):
             return False
         else:
             self.after_model_delete(model)
-        
+
         return True
 
     # Default model actions
