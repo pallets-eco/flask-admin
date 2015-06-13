@@ -101,7 +101,8 @@ class FileView(sqla.ModelView):
     form_args = {
         'path': {
             'label': 'File',
-            'base_path': file_path
+            'base_path': file_path,
+            'allow_overwrite': False
         }
     }
 
