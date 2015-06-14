@@ -74,6 +74,29 @@
 {% endif %}
 {%- endmacro %}
 
+{% macro simple_pager(page, have_next, generator) -%}
+<ul class="pagination">
+  {% if page > 0 %}
+  <li>
+      <a href="{{ generator(page - 1) }}">&lt;</a>
+  </li>
+  {% else %}
+  <li class="disabled">
+      <a href="{{ generator(0) }}">&lt;</a>
+  </li>
+  {% endif %}
+  {% if have_next %}
+  <li>
+      <a href="{{ generator(page + 1) }}">&gt;</a>
+  </li>
+  {% else %}
+  <li class="disabled">
+      <a href="{{ generator(page) }}">&gt;</a>
+  </li>
+  {% endif %}
+</ul>
+{%- endmacro %}
+
 {# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field, kwargs={}, caller=None) %}
   {% set direct_error = h.is_field_error(field.errors) %}

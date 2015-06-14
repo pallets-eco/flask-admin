@@ -13,7 +13,7 @@
     {% block model_menu_bar %}
     <ul class="nav nav-tabs actions-nav">
         <li class="active">
-            <a href="javascript:void(0)">{{ _gettext('List') }} ({{ count }})</a>
+            <a href="javascript:void(0)">{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a>
         </li>
         {% if admin_view.can_create %}
         <li>
@@ -110,7 +110,11 @@
                         <form class="icon" method="POST" action="{{ get_url('.delete_view') }}">
                             {{ delete_form.id(value=get_pk_value(row)) }}
                             {{ delete_form.url(value=return_url) }}
+                            {% if delete_form.csrf_token %}
                             {{ delete_form.csrf_token }}
+                            {% elif csrf_token %}
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            {% endif %}
                             <button onclick="return confirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="Delete record">
                                 <span class="fa fa-trash glyphicon glyphicon-trash"></span>
                             </button>
@@ -146,7 +150,13 @@
         </tr>
         {% endfor %}
     </table>
+    {% block list_pager %}
+    {% if num_pages is not none %}
     {{ lib.pager(page, num_pages, pager_url) }}
+    {% else %}
+    {{ lib.simple_pager(page, data|length == page_size, pager_url) }}
+    {% endif %}
+    {% endblock %}
     {% endblock %}
 
     {{ actionlib.form(actions, get_url('.action_view')) }}

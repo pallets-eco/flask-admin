@@ -188,7 +188,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         """
         self.name = name
         self.category = category
-        self.endpoint = endpoint
+        self.endpoint = self._get_endpoint(endpoint)
         self.url = url
         self.static_folder = static_folder
         self.static_url_path = static_url_path
@@ -206,16 +206,22 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         if self._default_view is None:
             raise Exception(u'Attempted to instantiate admin view %s without default view' % self.__class__.__name__)
 
+    def _get_endpoint(self, endpoint):
+        """
+            Generate Flask endpoint name. By default converts class name to lower case if endpoint is
+            not explicitly provided.
+        """
+        if endpoint:
+            return endpoint
+
+        return self.__class__.__name__.lower()
+
     def create_blueprint(self, admin):
         """
             Create Flask blueprint.
         """
         # Store admin instance
         self.admin = admin
-
-        # If endpoint name is not provided, get it from the class name
-        if self.endpoint is None:
-            self.endpoint = self.__class__.__name__.lower()
 
         # If the static_url_path is not provided, use the admin's
         if not self.static_url_path:
@@ -234,15 +240,13 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             if not self.url.startswith('/'):
                 self.url = '%s/%s' % (self.admin.url, self.url)
 
-
         # If we're working from the root of the site, set prefix to None
         if self.url == '/':
             self.url = None
             # prevent admin static files from conflicting with flask static files
             if not self.static_url_path:
-                self.static_folder='static'
-                self.static_url_path='/static/admin'
-
+                self.static_folder = 'static'
+                self.static_url_path = '/static/admin'
 
         # If name is not povided, use capitalized endpoint name
         if self.name is None:

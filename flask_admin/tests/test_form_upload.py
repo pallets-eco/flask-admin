@@ -40,6 +40,9 @@ def test_upload_field():
     class TestForm(form.BaseForm):
         upload = form.FileUploadField('Upload', base_path=path)
 
+    class TestNoOverWriteForm(form.BaseForm):
+        upload = form.FileUploadField('Upload', base_path=path, allow_overwrite=False)
+
     class Dummy(object):
         pass
 
@@ -74,6 +77,7 @@ def test_upload_field():
 
     # Check delete
     with app.test_request_context(method='POST', data={'_upload-delete': 'checked'}):
+
         my_form = TestForm(helpers.get_form_data())
 
         ok_(my_form.validate())
@@ -82,6 +86,24 @@ def test_upload_field():
         eq_(dummy.upload, None)
 
         ok_(not op.exists(op.join(path, 'test2.txt')))
+
+    # Check overwrite
+    _remove_testfiles()
+    my_form_ow = TestNoOverWriteForm()
+    with app.test_request_context(method='POST', data={'upload': (BytesIO(b'Hullo'), 'test1.txt')}):
+        my_form_ow = TestNoOverWriteForm(helpers.get_form_data())
+
+        ok_(my_form_ow.validate())
+        my_form_ow.populate_obj(dummy)
+        eq_(dummy.upload, 'test1.txt')
+        ok_(op.exists(op.join(path, 'test1.txt')))
+
+    with app.test_request_context(method='POST', data={'upload': (BytesIO(b'Hullo'), 'test1.txt')}):
+        my_form_ow = TestNoOverWriteForm(helpers.get_form_data())
+
+        ok_(not my_form_ow.validate())
+
+    _remove_testfiles()
 
 
 def test_image_upload_field():

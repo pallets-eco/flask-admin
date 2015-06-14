@@ -15,7 +15,7 @@ from flask_admin.form import BaseForm, FormOpts, rules
 from flask_admin.model import filters, typefmt
 from flask_admin.actions import ActionsMixin
 from flask_admin.helpers import (get_form_data, validate_form_on_submit,
-                                     get_redirect_target, flash_errors)
+                                 get_redirect_target, flash_errors)
 from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
 from flask_admin._compat import iteritems, OrderedDict, as_unicode
@@ -321,6 +321,12 @@ class BaseModelView(BaseView, ActionsMixin):
         Controls if the primary key should be displayed in the list view.
     """
 
+    simple_list_pager = False
+    """
+        Enable or disable simple list pager.
+        If enabled, model interface would not run count query and will only show prev/next pager buttons.
+    """
+
     form = None
     """
         Form class. Override if you want to use custom form for your model.
@@ -563,27 +569,29 @@ class BaseModelView(BaseView, ActionsMixin):
             :param menu_icon_value:
                 Icon glyph name or URL, depending on `menu_icon_type` setting
         """
+        self.model = model
 
         # If name not provided, it is model name
         if name is None:
             name = '%s' % self._prettify_class_name(model.__name__)
-
-        # If endpoint not provided, it is model name
-        if endpoint is None:
-            endpoint = model.__name__.lower()
 
         super(BaseModelView, self).__init__(name, category, endpoint, url, static_folder,
                                             menu_class_name=menu_class_name,
                                             menu_icon_type=menu_icon_type,
                                             menu_icon_value=menu_icon_value)
 
-        self.model = model
-
         # Actions
         self.init_actions()
 
         # Scaffolding
         self._refresh_cache()
+
+    # Endpoint
+    def _get_endpoint(self, endpoint):
+        if endpoint:
+            return super(BaseModelView, self)._get_endpoint(endpoint)
+
+        return self.model.__name__.lower()
 
     # Caching
     def _refresh_forms_cache(self):
@@ -617,7 +625,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 self._filter_groups[flt.name].append({
                     'index': i,
                     'arg': self.get_filter_arg(i, flt),
-                    'operation': as_unicode(flt.operation()),
+                    'operation': flt.operation(),
                     'options': flt.get_options(self) or None,
                     'type': flt.data_type
                 })
@@ -852,6 +860,27 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             return str(index)
 
+    def _get_filter_groups(self):
+        """
+            Returns non-lazy version of filter strings
+        """
+        if self._filter_groups:
+            results = OrderedDict()
+
+            for key, value in iteritems(self._filter_groups):
+                items = []
+
+                for item in value:
+                    copy = dict(item)
+                    copy['operation'] = as_unicode(copy['operation'])
+                    items.append(copy)
+
+                results[key] = items
+
+            return results
+
+        return None
+
     # Form helpers
     def scaffold_form(self):
         """
@@ -1018,7 +1047,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     missing_fields.append(field.name)
 
         return missing_fields
-        
+
     def _show_missing_fields_warning(self, text):
         warnings.warn(text)
 
@@ -1200,7 +1229,7 @@ class BaseModelView(BaseView, ActionsMixin):
             By default do nothing.
         """
         pass
-        
+
     def after_model_delete(self, model):
         """
             Perform some actions after a model was deleted and
@@ -1214,7 +1243,7 @@ class BaseModelView(BaseView, ActionsMixin):
             :param model:
                 Model that was deleted
         """
-        pass        
+        pass
 
     def on_form_prefill (self, form, id):
         """
@@ -1463,9 +1492,12 @@ class BaseModelView(BaseView, ActionsMixin):
                                     view_args.search, view_args.filters)
 
         # Calculate number of pages
-        num_pages = count // self.page_size
-        if count % self.page_size != 0:
-            num_pages += 1
+        if count is not None:
+            num_pages = count // self.page_size
+            if count % self.page_size != 0:
+                num_pages += 1
+        else:
+            num_pages = None
 
         # Various URL generation helpers
         def pager_url(p):
@@ -1508,6 +1540,7 @@ class BaseModelView(BaseView, ActionsMixin):
             pager_url=pager_url,
             num_pages=num_pages,
             page=view_args.page,
+            page_size=self.page_size,
 
             # Sorting
             sort_column=view_args.sort,
@@ -1521,7 +1554,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             # Filters
             filters=self._filters,
-            filter_groups=self._filter_groups,
+            filter_groups=self._get_filter_groups(),
             active_filters=view_args.filters,
 
             # Actions

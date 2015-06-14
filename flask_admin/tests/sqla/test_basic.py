@@ -12,6 +12,7 @@ from . import setup
 
 from datetime import datetime, time, date
 
+
 class CustomModelView(ModelView):
     def __init__(self, model, session,
                  name=None, category=None, endpoint=None, url=None,
@@ -259,10 +260,11 @@ def test_column_searchable_list():
 
     eq_(view._search_supported, True)
     eq_(len(view._search_fields), 2)
-    ok_(isinstance(view._search_fields[0], db.Column))
-    ok_(isinstance(view._search_fields[1], db.Column))
-    eq_(view._search_fields[0].name, 'string_field')
-    eq_(view._search_fields[1].name, 'int_field')
+
+    ok_(isinstance(view._search_fields[0][0], db.Column))
+    ok_(isinstance(view._search_fields[1][0], db.Column))
+    eq_(view._search_fields[0][0].name, 'string_field')
+    eq_(view._search_fields[1][0].name, 'int_field')
 
     db.session.add(Model2('model1-test', 5000))
     db.session.add(Model2('model2-test', 9000))
@@ -417,6 +419,8 @@ def test_column_filters():
     )
     admin.add_view(view)
 
+    client = app.test_client()
+
     eq_(len(view._filters), 7)
 
     eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
@@ -515,21 +519,23 @@ def test_column_filters():
 
     fill_db(db, Model1, Model2)
 
-    client = app.test_client()
-
+    # Test equals
     rv = client.get('/admin/model1/?flt0_0=test1_val_1')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     # the filter value is always in "data"
     # need to check a different column than test1 for the expected row
+
     ok_('test2_val_1' in data)
     ok_('test1_val_2' not in data)
 
+    # Test NOT IN filter
     rv = client.get('/admin/model1/?flt0_6=test1_val_1')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
-    ok_('test2_val_1' not in data)
+
     ok_('test1_val_2' in data)
+    ok_('test2_val_1' not in data)
 
     # Test string filter
     view = CustomModelView(Model1, db.session,
@@ -1103,8 +1109,10 @@ def test_column_filters():
 
     rv = client.get('/admin/_relation_test/?flt1_0=test1_val_1')
     data = rv.data.decode('utf-8')
+
     ok_('test1_val_1' in data)
     ok_('test1_val_2' not in data)
+
 
 def test_url_args():
     app, db, admin = setup()
@@ -1680,3 +1688,123 @@ def test_safe_redirect():
     assert_true(rv.location.startswith('http://localhost/admin/model1/edit/'))
     assert_true('url=%2Fadmin%2Fmodel1%2F' in rv.location)
     assert_true('id=2' in rv.location)
+
+
+def test_simple_list_pager():
+    app, db, admin = setup()
+    Model1, _ = create_models(db)
+    db.create_all()
+
+    class TestModelView(CustomModelView):
+        simple_list_pager = True
+
+        def get_count_query(self):
+            assert False
+
+    view = TestModelView(Model1, db.session)
+    admin.add_view(view)
+
+    count, data = view.get_list(0, None, None, None, None)
+    assert_true(count is None)
+
+
+def test_advanced_joins():
+    app, db, admin = setup()
+
+    class Model1(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        val1 = db.Column(db.String(20))
+        test = db.Column(db.String(20))
+
+    class Model2(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        val2 = db.Column(db.String(20))
+
+        model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
+        model1 = db.relationship(Model1, backref='model2')
+
+    class Model3(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        val2 = db.Column(db.String(20))
+
+        model2_id = db.Column(db.Integer, db.ForeignKey(Model2.id))
+        model2 = db.relationship(Model2, backref='model3')
+
+    view1 = CustomModelView(Model1, db.session)
+    admin.add_view(view1)
+
+    view2 = CustomModelView(Model2, db.session)
+    admin.add_view(view2)
+
+    view3 = CustomModelView(Model3, db.session)
+    admin.add_view(view3)
+
+    # Test joins
+    attr, path = view2._get_field_with_path('model1.val1')
+    eq_(attr, Model1.val1)
+    eq_(path, [Model2.model1])
+
+    attr, path = view1._get_field_with_path('model2.val2')
+    eq_(attr, Model2.val2)
+    eq_(id(path[0]), id(Model1.model2))
+
+    attr, path = view3._get_field_with_path('model2.model1.val1')
+    eq_(attr, Model1.val1)
+    eq_(path, [Model3.model2, Model2.model1])
+
+    # Test how joins are applied
+    query = view3.get_query()
+
+    joins = {}
+    q1, joins, alias = view3._apply_path_joins(query, joins, path)
+    ok_((True, Model3.model2) in joins)
+    ok_((True, Model2.model1) in joins)
+    ok_(alias is not None)
+
+    # Check if another join would use same path
+    attr, path = view2._get_field_with_path('model1.test')
+    q2, joins, alias = view2._apply_path_joins(query, joins, path)
+
+    eq_(len(joins), 2)
+    for p in q2._join_entities:
+        ok_(p in q1._join_entities)
+
+    ok_(alias is not None)
+
+    # Check if normal properties are supported by _get_field_with_path
+    attr, path = view2._get_field_with_path(Model1.test)
+    eq_(attr, Model1.test)
+    eq_(path, [Model1.__table__])
+
+    q3, joins, alias = view2._apply_path_joins(view2.get_query(), joins, path)
+    eq_(len(joins), 3)
+    ok_(alias is None)
+
+
+def test_multipath_joins():
+    app, db, admin = setup()
+
+    class Model1(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        val1 = db.Column(db.String(20))
+        test = db.Column(db.String(20))
+
+    class Model2(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        val2 = db.Column(db.String(20))
+
+        first_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
+        first = db.relationship(Model1, backref='first', foreign_keys=[first_id])
+
+        second_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
+        second = db.relationship(Model1, backref='second', foreign_keys=[second_id])
+
+    db.create_all()
+
+    view = CustomModelView(Model2, db.session, filters=['first.test'])
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model2/')
+    eq_(rv.status_code, 200)

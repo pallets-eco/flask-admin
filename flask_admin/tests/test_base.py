@@ -76,7 +76,7 @@ def test_baseview_defaults():
     view = MockView()
     eq_(view.name, None)
     eq_(view.category, None)
-    eq_(view.endpoint, None)
+    eq_(view.endpoint, 'mockview')
     eq_(view.url, None)
     eq_(view.static_folder, None)
     eq_(view.admin, None)
@@ -388,3 +388,12 @@ def test_menu_links():
 def check_class_name():
     view = MockView()
     eq_(view.name, 'Mock View')
+
+
+def check_endpoint():
+    class CustomView(MockView):
+        def _get_endpoint(self, endpoint):
+            return 'admin.' + super(CustomView, self)._get_endpoint(endpoint)
+
+    view = CustomView()
+    eq_(view.endpoint, 'admin.customview')

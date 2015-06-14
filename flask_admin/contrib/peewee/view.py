@@ -339,7 +339,7 @@ class ModelView(BaseModelView):
                 query = f.apply(query, f.clean(value))
 
         # Get count
-        count = query.count()
+        count = query.count() if not self.simple_list_pager else None
 
         # Apply sorting
         if sort_column is not None:
@@ -417,7 +417,7 @@ class ModelView(BaseModelView):
             return False
         else:
             self.after_model_delete(model)
-            
+
         return True
 
     # Default model actions
@@ -443,6 +443,7 @@ class ModelView(BaseModelView):
                 query = self.model.select().filter(model_pk << ids)
 
                 for m in query:
+                    self.on_model_delete(m)
                     m.delete_instance(recursive=True)
                     count += 1
 
