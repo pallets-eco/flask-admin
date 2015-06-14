@@ -329,7 +329,7 @@ Browse through them in the GitHub repo, and then run them locally to get yoursel
 
 - `Custom layout <https://github.com/flask-admin/Flask-Admin/tree/master/examples/layout>`_
     Override some of the built-in templates to get complete control over the look and feel of your Admin interface. Either
-    while using the default Bootstrap 2, or the newer `Bootstrap 3 <https://github.com/flask-admin/Flask-Admin/tree/master/examples/layout-bootstrap3>`_.
+    while using the default Bootstrap 2, or the newer `Bootstrap 3 <https://github.com/flask-admin/Flask-Admin/tree/master/examples/layout_bootstrap3>`_.
 
 - `SQLAlchemy model example <https://github.com/flask-admin/Flask-Admin/tree/master/examples/sqla>`_
     Model-based views provide heaps of builtin goodness, making it really easy to get a set of the default CRUD views in place.
