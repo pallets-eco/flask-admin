@@ -144,7 +144,7 @@ class TreeView(sqla.ModelView):
 
 
 # Create admin
-admin = admin.Admin(app, name='Example: SQLAlchemy')
+admin = admin.Admin(app, name='Example: SQLAlchemy', template_mode='bootstrap3')
 
 # Add views
 admin.add_view(UserAdmin(User, db.session))
