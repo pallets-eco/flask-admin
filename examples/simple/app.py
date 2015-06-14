@@ -30,7 +30,7 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 # Create admin interface
-admin = admin.Admin(name="Example: Simple Views")
+admin = admin.Admin(name="Example: Simple Views", template_mode='bootstrap3')
 admin.add_view(MyAdminView(name="view1", category='Test'))
 admin.add_view(AnotherAdminView(name="view2", category='Test'))
 admin.init_app(app)
