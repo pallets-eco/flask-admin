@@ -8,16 +8,8 @@ from flask_admin.contrib.geoa import ModelView
 
 # Create application
 app = Flask(__name__)
-
-# Create dummy secrey key so we can use sessions
-app.config['SECRET_KEY'] = '123456790'
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://flask_admin_geo:flask_admin_geo@localhost/flask_admin_geo'
-app.config['SQLALCHEMY_ECHO'] = True
+app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
-
-app.config['MAPBOX_MAP_ID'] = '...'
-app.config['MAPBOX_ACCESS_TOKEN'] = '...'
 
 
 class Point(db.Model):
