@@ -62,7 +62,7 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 # Create admin
-admin = admin.Admin(app, name='Example: GeoAlchemy')
+admin = admin.Admin(app, name='Example: GeoAlchemy', template_mode='bootstrap3')
 
 # Add views
 admin.add_view(ModelView(Point, db.session, category='Points'))
