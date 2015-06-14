@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_security import Security, SQLAlchemyUserDatastore, \
     UserMixin, RoleMixin, login_required, current_user
 from flask_security.utils import encrypt_password
-import flask_admin as admin
+import flask_admin
 from flask_admin.contrib import sqla
 from flask_admin import helpers as admin_helpers
 
@@ -28,6 +28,9 @@ class Role(db.Model, RoleMixin):
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
 
+    def __str__(self):
+        return self.name
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -39,6 +42,9 @@ class User(db.Model, UserMixin):
     confirmed_at = db.Column(db.DateTime())
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
+
+    def __str__(self):
+        return self.email
 
 
 # Setup Flask-Security
@@ -76,7 +82,12 @@ def index():
     return render_template('index.html')
 
 # Create admin
-admin = admin.Admin(app, 'Example: Auth', base_template='my_master.html')
+admin = flask_admin.Admin(
+    app,
+    'Example: Auth',
+    base_template='my_master.html',
+    template_mode='bootstrap3',
+)
 
 # Add model views
 admin.add_view(MyModelView(Role, db.session))
