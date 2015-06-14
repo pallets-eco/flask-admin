@@ -540,12 +540,6 @@ class Admin(object):
             self._menu_links.append(link)
 
     def _add_menu_item(self, menu_item, target_category):
-        """
-            Add a view to the menu tree
-
-            :param view:
-                View to add
-        """
         if target_category:
             category = self._menu_categories.get(target_category)
 
@@ -560,6 +554,12 @@ class Admin(object):
             self._menu.append(menu_item)
 
     def _add_view_to_menu(self, view):
+        """
+            Add a view to the menu tree
+
+            :param view:
+                View to add
+        """
         self._add_menu_item(MenuView(view.name, view), view.category)
 
     def get_category_menu_item(self, name):
