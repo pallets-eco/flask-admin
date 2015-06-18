@@ -118,7 +118,6 @@ def fill_db(db, Model1, Model2):
 def test_model():
     app, db, admin = setup()
     Model1, Model2 = create_models(db)
-    db.create_all()
 
     view = CustomModelView(Model1, db.session)
     admin.add_view(view)
@@ -406,6 +405,43 @@ def test_column_editable_list():
     rv = client.get('/admin/model2/')
     data = rv.data.decode('utf-8')
     ok_('test1_val_3' in data)
+
+
+def test_editable_list_special_pks():
+    ''' Tests editable list view + a primary key with special characters
+    '''
+    app, db, admin = setup()
+
+    class Model1(db.Model):
+        def __init__(self, id=None, val1=None):
+            self.id = id
+            self.val1 = val1
+
+        id = db.Column(db.String(20), primary_key=True)
+        val1 = db.Column(db.String(20))
+
+    db.create_all()
+
+    view = CustomModelView(Model1, db.session, column_editable_list=['val1'])
+    admin.add_view(view)
+
+    db.session.add(Model1('1-1', 'test1'))
+    db.session.add(Model1('1-5', 'test2'))
+    db.session.commit()
+
+    client = app.test_client()
+
+    # Form - Test basic in-line edit functionality
+    rv = client.post('/admin/model1/ajax/update/', data={
+        'val1-1-1': 'change-success-1',
+    })
+    data = rv.data.decode('utf-8')
+    ok_('Record was successfully saved.' == data)
+
+    # ensure the value has changed
+    rv = client.get('/admin/model1/')
+    data = rv.data.decode('utf-8')
+    ok_('change-success-1' in data)
 
 
 def test_column_filters():
@@ -1301,7 +1337,6 @@ def test_relations():
 def test_on_model_change_delete():
     app, db, admin = setup()
     Model1, _ = create_models(db)
-    db.create_all()
 
     class ModelView(CustomModelView):
         def on_model_change(self, form, model, is_created):
@@ -1666,7 +1701,6 @@ def test_ajax_fk_multi():
 def test_safe_redirect():
     app, db, admin = setup()
     Model1, _ = create_models(db)
-    db.create_all()
 
     view = CustomModelView(Model1, db.session)
     admin.add_view(view)
@@ -1693,7 +1727,6 @@ def test_safe_redirect():
 def test_simple_list_pager():
     app, db, admin = setup()
     Model1, _ = create_models(db)
-    db.create_all()
 
     class TestModelView(CustomModelView):
         simple_list_pager = True

@@ -141,11 +141,11 @@ class ListEditableFieldList(FieldList):
 
     def _extract_indices(self, prefix, formdata):
         offset = len(prefix) + 1
-        for k in formdata:
-            if k.startswith(prefix):
-                k = k[offset:].split('-', 1)[0]
-                # removed "if k.isdigit():"
-                yield k
+        for name in formdata:
+            # selects only relevant field (not CSRF, other fields, etc)
+            if name.startswith(prefix):
+                # exclude offset (prefix-), remaining text is the index
+                yield name[offset:]
 
     def _add_entry(self, formdata=None, data=unset_value, index=None):
         assert not self.max_entries or len(self.entries) < self.max_entries, \
