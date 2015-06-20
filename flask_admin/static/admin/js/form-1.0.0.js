@@ -371,6 +371,13 @@
                 function(start, end) {
                     $('.filter-val').trigger("change");
                 });
+                $el.on('show.daterangepicker', function (event, data) {
+                  if ($el.val() == "") {
+                    var now = moment().seconds(0); // set seconds to 0
+                    // change datetime to current time if field is blank
+                    $el.data('daterangepicker').setCustomDates(now, now);
+                  }
+                });
                 return true;
             case 'datetimerangepicker':
                 $el.daterangepicker({
