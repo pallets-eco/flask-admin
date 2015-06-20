@@ -1,18 +1,21 @@
 Flask-Admin
 ===========
 
-Flask-Admin is a batteries-included, simple-to-use `Flask <http://flask.pocoo.org/>`_ extension that lets you
-add admin interfaces to Flask applications. It is inspired by the *django-admin* package, but implemented in such
-a way that the developer has total control of the look, feel and functionality of the resulting application.
+**Why Flask?** As a micro-framework, `Flask <http://flask.pocoo.org/>`_ lets you build web services with very little overhead.
+It offers lots of flexibility for you, the designer, to implement your project in a way that makes sense.
+
+But the freedom comes at a price: Flask doesn't have all
+the builtin magic that you might expect if you are used to other web frameworks.
+In stead, it relies on a rich ecosystem of plugins that lets you cherry-pick just the functionality that's of interest to you.
+
+**Why Flask-Admin?** In a world of microservices and API's, Flask-Admin solves
+a really boring problem: It lets you quickly build an admin suite on top
+of your data so that you, or someone else can start managing your web service without
+having to constantly scratch around in the database.
 
 Browse through the documentation below to learn more about what you can do with Flask-Admin. Or head over to
 `our GitHub repository <http://github.com/flask-admin/flask-admin>`_ to find out how you can contribute to the project.
 
-
-This page gives a quick introduction to the Flask-Admin library. It is assumed that the reader has some prior
-knowledge of the `Flask <http://flask.pocoo.org/>`_ framework.
-
-If you're a Django user, you might also find the :doc:`django_migration` guide helpful.
 
 Introduction
 ------------
