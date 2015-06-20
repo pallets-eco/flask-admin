@@ -98,6 +98,12 @@ Browse through them in the GitHub repo, and then run them locally to get yoursel
    interface, so you can reach your Redis instance straight from a browser.
 
 
+Support
+----------
+Python 2.6 - 2.7
+Python 3.3 - 3.4
+
+
 Indices and tables
 ------------------
 
