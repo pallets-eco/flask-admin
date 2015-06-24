@@ -14,13 +14,13 @@ of your data so that you, or someone else can start managing your web service wi
 having to constantly scratch around in the database.
 
 Browse through the documentation below to learn more about what you can do with Flask-Admin. Or head over to
-`our GitHub repository <http://github.com/flask-admin/flask-admin>`_ to find out how you can contribute to the project.
+our `GitHub repository <http://github.com/flask-admin/flask-admin>`_ to find out how you can contribute to the project.
 
 Examples
 --------
 
 Flask-Admin comes with several examples that will help you get a grip on what's possible.
-Browse through them in the GitHub repo, and have a look at http://examples.flask-admin.org/ to see them in action.
+Have a look at http://examples.flask-admin.org/ to see them in action, or browse through the example code in the `GitHub repository <http://github.com/flask-admin/flask-admin>`_.
 
 
 User Guide
