@@ -1,5 +1,15 @@
-Getting started
+Getting Started
 ===========
+
+Flask-Admin lets you build complicated interfaces by grouping individual views
+together in classes. So each view that you see from the frontend, represents a
+method on a class that has explicitly been added to the interface.
+
+These view classes are especially helpful when they are tied to particular
+database models,
+because they let you group together all of the usual
+**Create, Read, Update, Delete** (CRUD) view logic into a single, self-contained
+class for each of your models.
 
 Initialization
 --------------
