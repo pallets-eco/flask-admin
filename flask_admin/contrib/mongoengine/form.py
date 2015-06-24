@@ -114,6 +114,7 @@ class CustomModelConverter(orm.ModelConverter):
                 return AjaxSelectMultipleField(loader, **kwargs)
 
             kwargs['widget'] = form.Select2Widget(multiple=True)
+            kwargs.setdefault('validators', [validators.Optional()])
 
             # TODO: Support AJAX multi-select
             doc_type = field.field.document_type
