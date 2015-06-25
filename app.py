@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 import flask_admin as admin
 from flask_admin.contrib.sqla import ModelView
+from flask_debugtoolbar import DebugToolbarExtension
 
 
 # Create application
@@ -12,12 +13,13 @@ app = Flask(__name__)
 
 # Create dummy secrey key so we can use sessions
 app.config['SECRET_KEY'] = '123456790'
-
+app.config["DEBUG"] = True
 # Create in-memory database
 app.config['DATABASE_FILE'] = 'sample_db.sqlite'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.config['DATABASE_FILE']
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
+debugtoolbar = DebugToolbarExtension(app)
 
 
 # Models
@@ -58,7 +60,7 @@ def index():
 
 
 # Create admin with custom base template
-admin = admin.Admin(app, 'Example: Layout', template_mode="zurb5")
+admin = admin.Admin(app, 'Example: Zurb5', template_mode='zurb5')
 
 # Add views
 admin.add_view(UserAdmin(User, db.session))
