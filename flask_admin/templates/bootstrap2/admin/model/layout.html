@@ -1,14 +1,13 @@
 {% macro filter_options(btn_class='dropdown-toggle') %}
-    <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
-        {{ _gettext('Add Filter') }}<b class="caret"></b>
-    </a>
-    <ul class="dropdown-menu field-filters">
-        {% for k in filter_groups %}
+    <a href="#" data-dropdown="hover1" data-options="is_hover:true; hover_timeout:5000">{{ _gettext('Add Filter') }}</a>
+      <ul id="hover1" class="f-dropdown" data-dropdown-content>
+      {% for k in filter_groups %}
         <li>
             <a href="javascript:void(0)" class="filter" onclick="return false;">{{ k }}</a>
         </li>
         {% endfor %}
-    </ul>
+      </ul>
+    
 {% endmacro %}
 
 {% macro filter_form() %}

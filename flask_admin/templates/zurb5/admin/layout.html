@@ -12,7 +12,11 @@
     <img src="item.icon_value" alt="menu image">
   {% endif %}
 {% endif %}
+
+
 {%- endmacro %}
+
+
 {% macro menu() %}
   {%- for item in admin_view.admin.menu() %}
     {%- if item.is_category() -%}
@@ -51,13 +55,13 @@
         </li>
       {%- endif -%}
     {% endif -%}
+    <li class="divider"></li>
   {% endfor %}
 {% endmacro %}
 
 {% macro menu_links() %}
   {% for item in admin_view.admin.menu_links() %}
     {% if item.is_accessible() and item.is_visible() %}
-      <li class="divider"></li>
       <li>
         <a href="{{ item.get_url() }}">{{ item.name }}</a>
       </li>

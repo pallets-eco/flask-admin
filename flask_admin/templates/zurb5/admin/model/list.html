@@ -11,26 +11,23 @@
 
 {% block body %}
     {% block model_menu_bar %}
-    <ul class="nav nav-tabs actions-nav">
-        <li class="active">
-            <a href="javascript:void(0)">{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a>
-        </li>
-        {% if admin_view.can_create %}
-        <li>
-            <a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create new record') }}">{{ _gettext('Create') }}</a>
-        </li>
-        {% endif %}
+    <dl class="sub-nav">
+      <dt>Action:</dt>
+      <dd class="active"><a href="javascript:void(0)">{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a></dd>
+      {% if admin_view.can_create %}
+        <dd><a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create new record') }}">{{_gettext('Create') }}</a></dd>
+      {% endif %}
 
-        {% if filters %}
-        <li class="dropdown">
-            {{ model_layout.filter_options() }}
-        </li>
-        {% endif %}
-
+      {% if filters %}
+        
+      <dd>
+        {{ model_layout.filter_options() }}
+      </dd>          
+      {% endif %}    
         {% if actions %}
-        <li class="dropdown">
+        <dd>
             {{ actionlib.dropdown(actions) }}
-        </li>
+        </dd>
         {% endif %}
 
         {% if search_supported %}
@@ -38,7 +35,8 @@
             {{ model_layout.search_form() }}
         </li>
         {% endif %}
-    </ul>
+    </dl>
+
     {% endblock %}
 
     {% if filters %}

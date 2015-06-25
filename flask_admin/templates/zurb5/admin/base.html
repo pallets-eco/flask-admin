@@ -28,7 +28,7 @@
   </head>
   <body>
     {% block page_body %}
-        <nav class="top-bar" data-topbar role="navigation">
+        <nav class="top-bar" data-topbar role="navigation" style="margin-bottom:20px;">
           <ul class="title-area">
             <li class="name">
             {% block brand %}
@@ -64,7 +64,9 @@
         <div class="row">
             {% block body %}{% endblock %}
         </div>
-        {{admin_view.admin.menu_links()}}
+            
+        
+            
     {% endblock page_body %}
     {% block tail_js %}
         <script src="{{ admin_static.url(filename='zurb/foundation5/js/vendor/jquery.js') }}" type="text/javascript"></script>

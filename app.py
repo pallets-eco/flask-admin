@@ -63,8 +63,10 @@ def index():
 admin = admin.Admin(app, 'Example: Zurb5', template_mode='zurb5')
 
 # Add views
-admin.add_view(UserAdmin(User, db.session))
-admin.add_view(CustomView(Page, db.session))
+# admin.add_view(UserAdmin(User, db.session))
+# admin.add_view(CustomView(Page, db.session))
+admin.add_view(ModelView(Page, db.session))
+admin.add_view(ModelView(User, db.session))
 
 
 def build_sample_db():
@@ -148,4 +150,4 @@ if __name__ == '__main__':
         build_sample_db()
 
     # Start app
-    app.run(debug=True)
+    app.run(debug=True, port=8000)
