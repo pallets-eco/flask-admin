@@ -1,0 +1,23 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% macro extra() %}
+  <input name="_continue_editing" type="submit" class="btn btn-default" value="{{ _gettext('Save and Continue') }}" />
+{% endmacro %}
+
+{% block head %}
+    {{ super() }}
+    {{ lib.form_css() }}
+{% endblock %}
+
+{% block body %}
+    {% call lib.form_tag(form) %}
+        {{ lib.render_form_fields(form, form_opts=form_opts) }}
+        {{ lib.render_form_buttons(return_url, extra()) }}
+    {% endcall %}
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  {{ lib.form_js() }}
+{% endblock %}
