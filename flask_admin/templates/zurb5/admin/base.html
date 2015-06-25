@@ -27,9 +27,43 @@
   </head>
   <body>
     {% block page_body %}
+        <nav class="top-bar" data-topbar role="navigation">
+          <ul class="title-area">
+            <li class="name">
+            {% block brand %}
+                <h1><a href="#">{{ admin_view.admin.name }}</a></h1>
+            {% endblock %}
+            </li>
+             <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+            <li class="toggle-topbar menu-icon"><a href="#"><span>{% block mobile_menu_name %}
+                Menu
+            {% endblock %}</span></a></li>
+          </ul>
 
+          <section class="top-bar-section">
+            <!-- Left Nav Section -->
+            <ul class="left">
+                {{ layout.menu_links() }}
+            </ul>
+            <!-- Right Nav Section -->
+            <ul class="right">
+                {% block access_control %}          
+                {% endblock %}
+            </ul>
+          </section>
+        </nav>
+        <div class="row">
+            {% block messages %}
+                {{ layout.messages() }}
+            {% endblock %}
+        </div>
+
+        {% set render_ctx = h.resolve_ctx() %}
+        <div class="row">
+            {% block body %}{% endblock %}
+        </div>
     
-
+    {% endblock page_body %}
     {% block tail_js %}
     <script src="{{ admin_static.url(filename='zurb5/js/vendor/jquery.js') }}" type="text/javascript"></script>
     <script src="{{ admin_static.url(filename='zurb5/foundation.min.js') }}" type="text/javascript"></script>
