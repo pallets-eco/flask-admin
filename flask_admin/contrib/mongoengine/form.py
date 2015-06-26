@@ -71,7 +71,7 @@ class CustomModelConverter(orm.ModelConverter):
             kwargs.update(field_args)
 
         if field.required:
-            kwargs['validators'].append(validators.Required())
+            kwargs['validators'].append(validators.InputRequired())
         elif not isinstance(field, ListField):
             kwargs['validators'].append(validators.Optional())
 
