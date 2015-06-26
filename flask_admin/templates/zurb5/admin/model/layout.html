@@ -1,8 +1,8 @@
 {% macro filter_options(btn_class='dropdown-toggle') %}
-    <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
-        {{ _gettext('Add Filter') }}<b class="caret"></b>
+    <a class="{{ btn_class }}" href="javascript:void(0)" data-dropdown="hover2" data-toggle="dropdown" data-options="is_hover:true; hover_timeout:5000">
+        {{ _gettext('Add Filter') }}  <i class="fi-arrow-down"></i>
     </a>
-    <ul class="dropdown-menu field-filters">
+    <ul id="hover2"  data-dropdown-content class="f-dropdown field-filters dropdown-menu">
         {% for k in filter_groups %}
         <li>
             <a href="javascript:void(0)" class="filter" onclick="return false;">{{ k }}</a>
@@ -13,10 +13,10 @@
 
 {% macro filter_form() %}
     <form id="filter_form" method="GET" action="{{ return_url }}">
-        <div class="pull-right">
-            <button type="submit" class="btn btn-primary" style="display: none">{{ _gettext('Apply') }}</button>
+        <div class="right">
+            <button type="submit" class="button btn btn-primary" style="display: none">{{ _gettext('Apply') }}</button>
             {% if active_filters %}
-            <a href="{{ clear_search_url }}" class="btn btn-default">{{ _gettext('Reset Filters') }}</a>
+            <a href="{{ clear_search_url }}" class="button btn btn-default">{{ _gettext('Reset Filters') }}</a>
             {% endif %}
         </div>
 
@@ -25,8 +25,8 @@
     <div class="clearfix"></div>
 {% endmacro %}
 
-{% macro search_form(input_class="col-md-2") %}
-<form method="GET" action="{{ return_url }}" class="navbar-form navbar-left" role="search">
+{% macro search_form(input_class="small-12 medium-2 columns") %}
+<form class="small-12 medium-2 columns" method="GET" action="{{ return_url }}" role="search">
     {% if sort_column is not none %}
     <input type="hidden" name="sort" value="{{ sort_column }}">
     {% endif %}
@@ -34,14 +34,14 @@
     <input type="hidden" name="desc" value="{{ sort_desc }}">
     {% endif %}
     {% if search %}
-    <div class="input-group">
+    
         <input type="text" name="search" value="{{ search }}" class="{{ input_class }} form-control" placeholder="{{ _gettext('Search') }}">
         <a href="{{ clear_search_url }}" class="input-group-addon clear"><span class="fa fa-times glyphicon glyphicon-remove"></span></a>
-    </div>
+   
     {% else %}
-    <div class="form-group">
-        <input type="text" name="search" value="" class="{{ input_class }} form-control" placeholder="{{ _gettext('Search') }}">
-    </div>
+    
+        <input  type="text" name="search" value="" class="{{ input_class }} form-control" placeholder="{{ _gettext('Search') }}">
+   
     {% endif %}
 </form>
 {% endmacro %}

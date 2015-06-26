@@ -101,30 +101,32 @@
 {% macro render_field(form, field, kwargs={}, caller=None) %}
   {% set direct_error = h.is_field_error(field.errors) %}
   <div class="form-group{{ ' has-error' if direct_error else '' }}">
-    <label for="{{ field.id }}" class="col-md-2 control-label">{{ field.label.text }}
-        {% if h.is_required_form_field(field) %}
-          <strong style="color: red">&#42;</strong>
-        {%- else -%}
-          &nbsp;
-        {%- endif %}
-    </label>
-    <div class="{{ kwargs.get('column_class', 'col-md-10') }}">
-      {% set _dummy = kwargs.setdefault('class', 'form-control') %}
-      {{ field(**kwargs)|safe }}
-      {% if field.description %}
-      <p class="help-block">{{ field.description }}</p>
-      {% endif %}
-      {% if direct_error %}
-        <ul class="help-block input-errors">
-        {% for e in field.errors if e is string %}
-          <li>{{ e }}</li>
-        {% endfor %}
-        </ul>
+    <div class="row">
+      <label for="{{ field.id }}" class="small-12 medium-2 columns control-label">{{ field.label.text }}
+          {% if h.is_required_form_field(field) %}
+            <strong style="color: red">&#42;</strong>
+          {%- else -%}
+            &nbsp;
+          {%- endif %}
+      </label>    
+      <div class="{{ kwargs.get('column_class', 'small-12 medium-10 columns') }}">
+        {% set _dummy = kwargs.setdefault('class', 'form-control') %}
+        {{ field(**kwargs)|safe }}
+        {% if field.description %}
+        <p class="help-block">{{ field.description }}</p>
+        {% endif %}
+        {% if direct_error %}
+          <ul class="help-block input-errors">
+          {% for e in field.errors if e is string %}
+            <li>{{ e }}</li>
+          {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+      {% if caller %}
+        {{ caller(form, field, direct_error, kwargs) }}
       {% endif %}
     </div>
-    {% if caller %}
-      {{ caller(form, field, direct_error, kwargs) }}
-    {% endif %}
   </div>
 {% endmacro %}
 
@@ -170,12 +172,12 @@
     <hr>
     <div class="form-group">
       <div class="col-md-offset-2 col-md-10 submit-row">
-        <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
+        <input type="submit" class="button small" value="{{ _gettext('Save') }}" />
         {% if extra %}
         {{ extra }}
         {% endif %}
         {% if cancel_url %}
-        <a href="{{ cancel_url }}" class="btn btn-danger" role="button">{{ _gettext('Cancel') }}</a>
+        <a href="{{ cancel_url }}" class="button small alert" role="button">{{ _gettext('Cancel') }}</a>
         {% endif %}
       </div>
     </div>

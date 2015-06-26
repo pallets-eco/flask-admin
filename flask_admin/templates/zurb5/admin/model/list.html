@@ -15,12 +15,12 @@
       <dt>Action:</dt>
       <dd class="active"><a href="javascript:void(0)">{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a></dd>
       {% if admin_view.can_create %}
-        <dd><a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create new record') }}">{{_gettext('Create') }}</a></dd>
+        <dd><a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create new record') }}">{{_gettext('Create') }}</a> </dd>
       {% endif %}
 
       {% if filters %}
         
-      <dd>
+      <dd class="dropdown">
         {{ model_layout.filter_options() }}
       </dd>          
       {% endif %}    
@@ -31,9 +31,9 @@
         {% endif %}
 
         {% if search_supported %}
-        <li>
+        <dd></dd>
             {{ model_layout.search_form() }}
-        </li>
+        </dd>
         {% endif %}
     </dl>
 
@@ -45,7 +45,7 @@
     {% endif %}
 
     {% block model_list_table %}
-    <table class="table table-striped table-bordered table-hover model-list">
+    <table role="grid">
         <thead>
             <tr>
                 {% block list_header scoped %}
@@ -65,9 +65,9 @@
                                 <a href="{{ sort_url(column, True) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">
                                     {{ name }}
                                     {% if sort_desc %}
-                                        <span class="fa fa-chevron-up glyphicon glyphicon-chevron-up"></span>
+                                         <i class="fi-arrow-up"></i>
                                     {% else %}
-                                        <span class="fa fa-chevron-down glyphicon glyphicon-chevron-down"></span>
+                                         <i class="fi-arrow-down"></i>
                                     {% endif %}
                                 </a>
                             {% else %}
@@ -101,7 +101,7 @@
                     {% block list_row_actions scoped %}
                         {%- if admin_view.can_edit -%}
                         <a class="icon" href="{{ get_url('.edit_view', id=get_pk_value(row), url=return_url) }}" title="{{ _gettext('Edit record') }}">
-                            <span class="fa fa-pencil glyphicon glyphicon-pencil"></span>
+                            <i class="fi-pencil"></i>
                         </a>
                         {%- endif -%}
                         {%- if admin_view.can_delete -%}
@@ -113,9 +113,9 @@
                             {% elif csrf_token %}
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             {% endif %}
-                            <button onclick="return confirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="Delete record">
-                                <span class="fa fa-trash glyphicon glyphicon-trash"></span>
-                            </button>
+                            <a onclick="return confirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="Delete record">
+                                 <i class="fi-trash"></i>
+                            </a>
                         </form>
                         {%- endif -%}
                     {% endblock %}

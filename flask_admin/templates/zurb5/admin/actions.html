@@ -1,7 +1,7 @@
 {% import 'admin/static.html' as admin_static with context %}
 
-{% macro dropdown(actions, btn_class='btn dropdown-toggle') -%}
-    <a href="#" data-dropdown="hover1" data-options="is_hover:true; hover_timeout:5000">{{ _gettext('With selected') }}</a>
+{% macro dropdown(actions) -%}
+    <a href="#" data-dropdown="hover1" data-options="is_hover:true; hover_timeout:5000">{{ _gettext('With selected') }} <i class="fi-arrow-down"></i></a>
 
     <ul id="hover1" class="f-dropdown" data-dropdown-content>
 
