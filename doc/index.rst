@@ -24,7 +24,7 @@ Have a look at http://examples.flask-admin.org/ to see them in action, or browse
 
 
 User Guide
---------
+-----------
 
 .. toctree::
    :maxdepth: 2
