@@ -21,12 +21,12 @@ The first step, is to initialise an empty admin interface on your Flask app::
 
     app = Flask(__name__)
 
-    admin = Admin(app, name='My App')
+    admin = Admin(app, name='My App', template_mode='bootstrap3')
     # Add administrative views here
 
     app.run()
 
-Here, the *name* parameter is optional. If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
+Here, both the *name* and *template_mode* parameters are optional. If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
 you should see an empty "Home" page with a navigation bar on top, and the *name* that you specified.
 
 .. note::
@@ -34,7 +34,7 @@ you should see an empty "Home" page with a navigation bar on top, and the *name*
     As an alternative to passing a Flask application object to the Admin constructor, you can also call the
     :meth:`~flask_admin.base.Admin.init_app` function, after the Admin instance has been initialized::
 
-        admin = Admin(name='My App')
+        admin = Admin(name='My App', template_mode='bootstrap3')
         # Add views here
         admin.init_app(app)
 
@@ -62,6 +62,15 @@ Straight out of the box, this gives you a set of fully featured *CRUD* views for
 There are many options available for customizing the display and functionality of these builtin view.
 For more details on that, see :ref:`customising-builtin-views`.
 
-Overriding the index page
+Customising the index page
 -------------------------
+The first thing you'll notice when you visit `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_
+is that it's just an empty page with a navigation menu. To add some content to this page, save the following text to a file in `my_app/templates/admin/index.html`::
 
+    {% extends 'admin/master.html' %}
+
+    {% block body %}
+    <p>Hello world</p>
+    {% endblock %}
+
+This will override the builtin index template, but still give you the builtin navigation menu.

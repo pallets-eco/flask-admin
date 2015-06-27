@@ -18,6 +18,13 @@ List view options
 Form view options
 -------------------
 
+Overriding the default templates
+---------------------------------
+
+To do this, find your flask-admin installation (this could be somewhere like `/env/lib/python2.7/site-packages/flask_admin/`
+and copy the template in `templates/bootstrap3/admin/index.html` to your own project directory at `my_app/templates/admin/index.html`.
+
+
 
 To customize these model views, you have two options: Either you can override the public properties of the *ModelView*
 class, or you can override its methods.
