@@ -69,6 +69,23 @@
         $el.select2(opts);
       }
 
+      // this function fixes the lack of support for multipolygon in Leaflet.draw
+      function splitMultiPolygonIntoPolygonFeatures(geojson) {
+        var splitFeatures = [];
+        geojson.coordinates.forEach(function (polygon) {
+          splitFeatures.push({
+            type: "Feature",
+            geometry: {
+              type: "Polygon",
+              coordinates: polygon
+            }
+          });
+        });
+        return {
+          type: "FeatureCollection",
+          features: splitFeatures
+        };
+      }
       /**
        * Process Leaflet (map) widget
        */
@@ -107,7 +124,7 @@
 
         var editableLayers;
         if ($el.val()) {
-          editableLayers = new L.geoJson(JSON.parse($el.val()));
+          editableLayers = new L.geoJson(splitMultiPolygonIntoPolygonFeatures(JSON.parse($el.val())));
           center = center || editableLayers.getBounds().getCenter();
         } else {
           editableLayers = new L.geoJson();
@@ -233,7 +250,11 @@
           }
           if (multiple) {
             var coords = $.map(geo.features, function(feature) {
-              return [feature.geometry.coordinates];
+              if (feature.geometry.type === 'MultiPolygon') {
+                return feature.geometry.coordinates;
+              } else if (feature.geometry.type === 'Polygon') {
+                return [feature.geometry.coordinates];
+              }
             })
             geo = {
               "type": geometryType,
