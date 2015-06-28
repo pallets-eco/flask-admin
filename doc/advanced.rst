@@ -1,7 +1,7 @@
 Advanced
 ===========
 
-Initialisation:
+Initialisation
 ---------------
 As an alternative to passing a Flask application object to the Admin constructor, you can also call the
 :meth:`~flask_admin.base.Admin.init_app` function, after the Admin instance has been initialized::
@@ -11,7 +11,7 @@ As an alternative to passing a Flask application object to the Admin constructor
         admin.init_app(app)
 
 Enabling localization
------------
+----------------------
 Flask-Admin makes it possible for you to serve your application in more than one language. To do this, it makes use of
 the `Flask-BabelEx <http://github.com/flask-admin/flask-babelex/>`_ package for handling translations. This package is a
 fork of the popular `Flask-Babel <http://github.com/mitshuhiko/flask-babel/>`_ package, with the following features:
@@ -53,13 +53,15 @@ the application should be accessible at:
 `http://localhost:5000/admin/userview/?lang=fr <http://localhost:5000/admin/userview/?lang=fr>`_.
 
 Handling Foreign Key relations inline
------------
+--------------------------------------------
 
 Many-to-many relations
-------------
+----------------------------------
+
+.. _file-admin:
 
 Managing Files & Folders
-----------
+--------------------------------
 
 Flask-Admin comes with another handy battery - file admin. It gives you the ability to manage files on your server
 (upload, delete, rename, etc).
@@ -87,7 +89,7 @@ You can disable uploads, disable file or directory deletion, restrict file uploa
 Check :mod:`flask_admin.contrib.fileadmin` documentation on how to do it.
 
 Managing geographical models
-----------------
+--------------------------------------
 
 GeoAlchemy backend
 
@@ -107,7 +109,7 @@ Notable features:
  - Works with a `Geometry`_ SQL field that is integrated with `Shapely`_ objects
 
 Getting Started
-^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
 GeoAlchemy is based on SQLAlchemy, so you'll need to complete the "getting started"
 directions for SQLAlchemy backend first. For GeoAlchemy, you'll also need a
@@ -128,7 +130,7 @@ To use the v4 of their API (the default is v3):::
   providers, make a pull request!
 
 Creating simple model
-^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 GeoAlchemy comes with a `Geometry`_ field that is carefully divorced from the
 `Shapely`_ library. Flask-Admin will use this field so that there are no
@@ -170,7 +172,7 @@ If you have any ideas or suggestions, make a pull request!
 
 
 Customising builtin forms via form rendering rules
---------------------
+--------------------------------------------------------
 
 Before version 1.0.7, all model backends were rendering the *create* and *edit* forms
 using a special Jinja2 macro, which was looping over the fields of a WTForms form object and displaying
@@ -228,7 +230,7 @@ Form Rendering Rule                                     Description
 ======================================================= ========================================================
 
 Enabling CSRF Validation
-^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Adding CSRF validation will require overriding the :class:`flask_admin.form.BaseForm` by using :attr:`flask_admin.model.BaseModelView.form_base_class`.
 
 WTForms >=2::
@@ -297,7 +299,7 @@ For additional documentation, check :mod:`flask_admin.form.rules` module source 
 look at the `forms example <https://github.com/flask-admin/flask-admin/tree/master/examples/forms>`_ on GitHub.
 
 Using different database backends
----------------------
+----------------------------------------
 
 The purpose of Flask-Admin is to help you manage your data. For this, it needs some database backend in order to be
 able to access that data in the first place. At present, there are five different backends for you to choose
@@ -334,7 +336,7 @@ are dedicated to helping you through this process. See :doc:`model_guidelines`.
 
 
 Implementing your own authentication
----------------------------------
+----------------------------------------------------
 Flask-Admin does not make any assumptions about the authentication system you might be using. So, by default, the admin
 interface is completely open.
 
@@ -423,7 +425,7 @@ This guide will help you to get acquainted with the Flask-Admin library. It is a
 knowledge of `Flask <http://flask.pocoo.org/>`_ .
 
 Design Philosophy
-**************
+****************************
 
 In general, Django and *django-admin* strives to make life easier by implementing sensible defaults. So a developer
 will be able to get an application up in no time, but it will have to conform to most of the defaults. Of course it
@@ -447,7 +449,7 @@ Due to Flask-Admin supporting more than one ORM (SQLAlchemy, MongoEngine, Peewee
 free to mix different model types into one application by instantiating appropriate CRUD classes.
 
 Getting started
-**************
+****************************
 
 At the basis of Flask-Admin is the idea that you can add components to your admin interface by declaring a separate
 class for each component, and then adding a method to that class for every view that should be associated to the
@@ -558,7 +560,7 @@ and then point your class to this new template::
 For list of available template blocks, check :doc:`templates`.
 
 Tips and hints
-*************
+***************************
 
  1. Programming with Flask-Admin is not very different from normal application development - write some views and expose
     them to the user, using templates to create a consistent user experience.

@@ -68,6 +68,18 @@ For a faster editing experience, make some of the columns editable in the list v
 Common Form view options
 **************************
 
+You can restrict the values of a text-field by specifying a list of choices::
+
+    form_choices = {
+        'title': [
+            ('MR', 'Mr'),
+            ('MRS', 'Mrs'),
+            ('MS', 'Ms'),
+            ('DR', 'Dr'),
+            ('PROF', 'Prof.')
+        ]
+    }
+
 To remove some fields from the forms::
 
     form_excluded_columns = ('last_name', 'email')
@@ -199,4 +211,12 @@ functionality by including the necessary CKEditor javascript on the `create` and
 File & Image fields
 *******************
 
+For handling File & Image fields, have a look a the example at
+https://github.com/flask-admin/Flask-Admin/tree/master/examples/forms.
+
+You'll need to specify an upload directory, and then use either `FileUploadField` or
+`ImageUploadField` to override the field in question.
+
+If you just want to manage static files, without tying them to a database model, then
+rather use the :ref:`File-Admin<file-admin>` plugin.
 
