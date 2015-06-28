@@ -1,6 +1,15 @@
 Advanced
 ===========
 
+Initialisation:
+---------------
+As an alternative to passing a Flask application object to the Admin constructor, you can also call the
+:meth:`~flask_admin.base.Admin.init_app` function, after the Admin instance has been initialized::
+
+        admin = Admin(name='My App', template_mode='bootstrap3')
+        # Add views here
+        admin.init_app(app)
+
 Enabling localization
 -----------
 Flask-Admin makes it possible for you to serve your application in more than one language. To do this, it makes use of

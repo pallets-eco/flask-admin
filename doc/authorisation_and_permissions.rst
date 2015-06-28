@@ -11,10 +11,10 @@ with your database models, and it doesn't require you to write any new view logi
 template code. So it's great for when you're deploying something that's still
 under development, before you want the whole world to see it.
 
-Have a look at `Flask-BasicAuth <http://flask-basicauth.readthedocs.org/>`_ to see how
+Have a look at `Flask-BasicAuth <http://flask-basicauth.readthedocs.org/>`_ to see just how
 easy it is to put your whole application behind HTTP Basic Auth.
 
-Unfortunately, there's no easy way of applying HTTP Basic Auth just to your admin
+Unfortunately, there is no easy way of applying HTTP Basic Auth just to your admin
 interface.
 
 Rolling your own
@@ -22,7 +22,7 @@ Rolling your own
 For a finer-grained solution, Flask-Admin lets you define access control rules
 on each of your admin view classes by simply overriding the `is_accessible` method.
 How you implement the logic is up to you, but if you were to use a low-level library like
-`Flask-Login <https://flask-login.readthedocs.org/>`_, then restricting access to a set of views
+`Flask-Login <https://flask-login.readthedocs.org/>`_, then restricting access
 could be as simple as::
 
     class MyModelView(sqla.ModelView):
@@ -34,8 +34,7 @@ However, you would still need to implement all of the relevant login /
 registration views yourself.
 
 If you like this approach, then have a look at the example at
-https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth-flask-login
-to get started.
+https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth-flask-login.
 
 Using Flask-Security
 --------------------------------

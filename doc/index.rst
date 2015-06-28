@@ -20,7 +20,7 @@ Examples
 --------
 
 Flask-Admin comes with several examples that will help you get a grip on what's possible.
-Have a look at http://examples.flask-admin.org/ to see them in action, or browse through the example code in the `GitHub repository <http://github.com/flask-admin/flask-admin>`_.
+Have a look at http://examples.flask-admin.org/ to see them in action, or browse through the `examples` directory in the GitHub repository.
 
 
 User Guide

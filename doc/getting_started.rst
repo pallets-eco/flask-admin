@@ -2,7 +2,7 @@ Getting Started
 ===========
 
 Flask-Admin lets you build complicated interfaces by grouping individual views
-together in classes. So each view that you see from the frontend, represents a
+together in classes: Each view that you see on the frontend, represents a
 method on a class that has explicitly been added to the interface.
 
 These view classes are especially helpful when they are tied to particular
@@ -29,19 +29,10 @@ The first step, is to initialise an empty admin interface on your Flask app::
 Here, both the *name* and *template_mode* parameters are optional. If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
 you should see an empty "Home" page with a navigation bar on top, and the *name* that you specified.
 
-.. note::
-
-    As an alternative to passing a Flask application object to the Admin constructor, you can also call the
-    :meth:`~flask_admin.base.Admin.init_app` function, after the Admin instance has been initialized::
-
-        admin = Admin(name='My App', template_mode='bootstrap3')
-        # Add views here
-        admin.init_app(app)
-
 Adding Model Views
 -----------
 
-Model views allow you to add dedicated admin pages for each of the models in your database. Do this by creating
+Model views allow you to add a dedicated set of admin pages for any model in your database. Do this by creating
 instances of the *ModelView* class, which you can import from one of Flask-Admin's built-in ORM backends. An example
 is the SQLAlchemy backend, which you can use as follows::
 
@@ -54,10 +45,9 @@ is the SQLAlchemy backend, which you can use as follows::
 
 Straight out of the box, this gives you a set of fully featured *CRUD* views for your model:
 
-    * A list view, with support for searching, sorting and filtering
-    * a view for adding new records
-    * a view for editing existing records
-    * the ability to delete records.
+    * A `list` view, with support for searching, sorting and filtering and deleting records.
+    * A `create` view for adding new records.
+    * An `edit` view for updating existing records.
 
 There are many options available for customizing the display and functionality of these builtin view.
 For more details on that, see :ref:`customising-builtin-views`.
@@ -73,4 +63,4 @@ is that it's just an empty page with a navigation menu. To add some content to t
     <p>Hello world</p>
     {% endblock %}
 
-This will override the builtin index template, but still give you the builtin navigation menu.
+This will override the builtin index template, but still give you the builtin navigation menu. So, now you can add any content to the index page that makes sense for your app.
