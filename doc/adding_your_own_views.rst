@@ -79,5 +79,24 @@ will look like
         :target: ../_images/quickstart_3.png
 
 
-Overriding specific model views
-------------------
+Overriding the builtin views
+------------------------------------
+
+If you want most of the builtin ModelView functionality, but you want to have your own view
+in place of the default `create`, `edit`, or `list` view.
+
+Then you can override the view in question as follows::
+
+    from flask_admin.contrib.sqla import ModelView
+
+    # Flask and Flask-SQLAlchemy initialization here
+
+    class UserView(ModelView):
+    @expose('/new/', methods=('GET', 'POST'))
+        def create_view(self):
+        """
+            Custom create view.
+        """
+
+        return self.render('create_user.html')
+
