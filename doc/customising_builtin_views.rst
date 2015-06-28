@@ -74,9 +74,12 @@ To remove some fields from the forms::
 
 To specify arguments for rendering the WTForms fields::
 
-    form_args = dict(
-        name=dict(label='First Name', validators=[required()])
-    )
+    form_args = {
+        'name': {
+            'label': 'First Name',
+            'validators': [required()]
+        }
+    }
 
 Or, to go one level deeper, you can specify arguments for the widgets used to
 render those fields. For example::
@@ -97,16 +100,6 @@ related models loaded via ajax, using::
             'page_size': 10
         }
     }
-
-
-
-Image fields
----------------
-
-
-HTML fields
----------------
-
 
 Overriding the default templates
 ---------------------------------
@@ -161,3 +154,49 @@ class and implementing database-related methods.
 
 Please refer to :mod:`flask_admin.contrib.sqla` documentation on how to customize the behavior of model-based
 administrative views.
+
+Replacing specific form fields
+------------------------------------------
+
+Individual form fields can be replaced completely by specifying the `form_overrides` attribute.
+You can use this to add a rich text editor, or to handle
+file / image uploads that need to be tied to a field in one of your models.
+
+Rich-text fields
+**********************
+To handle complicated text content, use `CKEditor <http://ckeditor.com/>`_ by subclassing some of the builtin WTForms classes as follows::
+
+    from wtforms import TextAreaField
+    from wtforms.widgets import TextArea
+
+    class CKTextAreaWidget(TextArea):
+        def __call__(self, field, **kwargs):
+            if kwargs.get('class'):
+                kwargs['class'] += ' ckeditor'
+            else:
+                kwargs.setdefault('class', 'ckeditor')
+            return super(CKTextAreaWidget, self).__call__(field, **kwargs)
+
+    class CKTextAreaField(TextAreaField):
+        widget = CKTextAreaWidget()
+
+    class MessageAdmin(ModelView):
+        form_overrides = dict(body=wtf.FileField)
+        create_template = 'ckeditor.html'
+        edit_template = 'ckeditor.html'
+
+For this to work, you would also need to create a template that extends the default
+functionality by including the necessary CKEditor javascript on the `create` and
+`edit` pages. Save this in `templates/ckeditor.html::
+
+    {% extends 'admin/model/edit.html' %}
+
+    {% block tail %}
+        {{ super() }}
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.0.1/ckeditor.js"></script>
+    {% endblock %}
+
+File & Image fields
+*******************
+
+
