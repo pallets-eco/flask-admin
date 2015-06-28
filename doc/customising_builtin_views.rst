@@ -3,6 +3,103 @@
 Customising Builtin Views
 =================================
 
+The builtin `ModelView` class is great for getting started quickly. But you'll want
+to adapt it's functionality
+to suit your particular models. To do this, there's a whole host of configuration
+attributes that you can set either globally, or just for specific models.
+
+To specify some global configuration parameters, you can subclass `ModelView`, and then use that
+subclass when adding your models to the interface::
+
+    from flask_admin.contrib.sqla import ModelView
+
+    # Flask and Flask-SQLAlchemy initialization here
+
+    class BaseModelView(ModelView):
+        can_delete = False  # disable model deletion
+        page_size = 50  # the number of entries to display on the list view
+
+    admin.add_view(BaseModelView(User, db.session))
+    admin.add_view(BaseModelView(Post, db.session))
+
+Or, in much the same way, you can specify options for a single model at a time::
+
+    class UserView(ModelView):
+            can_delete = False  # disable model deletion
+
+    class PostView(ModelView):
+            page_size = 50  # the number of entries to display on the list view
+
+    admin.add_view(UserView(User, db.session))
+    admin.add_view(PostView(Post, db.session))
+
+
+View configuration attributes
+-----------------------------
+
+For a complete list of all the options that are available, have a look at the
+API documentation for :meth:`~flask_admin.model.BaseModelView`. Here we are
+just highlighting some of the most useful ones.
+
+To disable some of the basic CRUD operations, set any of these boolean parameters::
+
+    can_create = True
+    can_edit = True
+    can_delete = True
+
+
+Common List view options
+**************************
+
+Removing some columns from the list view is easy, just use something like::
+
+    column_exclude_list = ['password', ]
+
+To make some of your columns searchable, or to use them for filtering, specify
+a list of column names, e.g.::
+
+    column_searchable_list = ['name', 'email']
+    column_filters = ['country', ]
+
+For a faster editing experience, make some of the columns editable in the list view::
+
+    column_editable_list = ['name', 'last_name']
+
+Common Form view options
+**************************
+
+To remove some fields from the forms::
+
+    form_excluded_columns = ('last_name', 'email')
+
+To specify arguments for rendering the WTForms fields::
+
+    form_args = dict(
+        name=dict(label='First Name', validators=[required()])
+    )
+
+Or, to go one level deeper, you can specify arguments for the widgets used to
+render those fields. For example::
+
+    form_widget_args = {
+        'description': {
+            'rows': 10,
+            'style': 'color: black'
+        }
+    }
+
+To speed up page loading when you have forms with foreign keys, have those
+related models loaded via ajax, using::
+
+    form_ajax_refs = {
+        'user': {
+            'fields': ('first_name', 'last_name', 'email')
+            'page_size': 10
+        }
+    }
+
+
+
 Image fields
 ---------------
 
@@ -10,13 +107,6 @@ Image fields
 HTML fields
 ---------------
 
-
-List view options
--------------------
-
-
-Form view options
--------------------
 
 Overriding the default templates
 ---------------------------------
