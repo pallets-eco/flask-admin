@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-05-02 18:11-0500\n"
-"PO-Revision-Date: 2015-05-03 17:47-0400\n"
+"PO-Revision-Date: 2015-06-28 19:28-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../flask_admin/base.py:427
 msgid "Home"
-msgstr "Casa"
+msgstr "Pagina Principale"
 
 #: ../flask_admin/contrib/fileadmin.py:222
 msgid "File to upload"
@@ -63,7 +63,7 @@ msgstr "Permesso negato."
 
 #: ../flask_admin/contrib/fileadmin.py:633
 msgid "File uploading is disabled."
-msgstr "Il caricamento di files é stato disabilitato."
+msgstr "Il caricamento dei file é stato disabilitato."
 
 #: ../flask_admin/contrib/fileadmin.py:646
 #, python-format
@@ -90,7 +90,7 @@ msgstr "L'eliminazione di cartelle é disabilitata."
 #: ../flask_admin/contrib/fileadmin.py:742
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
-msgstr "Directory \"%(path)s\", è stato eliminato."
+msgstr "È stata eliminata la directory \"%(path)s\"."
 
 #: ../flask_admin/contrib/fileadmin.py:744
 #, python-format
@@ -111,7 +111,7 @@ msgstr "Impossibile eliminare il file: %(name)s"
 
 #: ../flask_admin/contrib/fileadmin.py:773
 msgid "Renaming is disabled."
-msgstr "L'operazione di rinomina é disabilitata."
+msgstr "La rinominazione é disabilitata."
 
 #: ../flask_admin/contrib/fileadmin.py:781
 msgid "Path does not exist."
@@ -120,7 +120,7 @@ msgstr "Il percorso non esiste."
 #: ../flask_admin/contrib/fileadmin.py:792
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
-msgstr "Rinominato \"%(src)s\" in \"%(dst)s\" con successo"
+msgstr "\"%(src)s\" rinominato in \"%(dst)s\"  con successo"
 
 #: ../flask_admin/contrib/fileadmin.py:795
 #, python-format
@@ -130,28 +130,28 @@ msgstr "Impossibile rinominare: %(error)s"
 #: ../flask_admin/contrib/fileadmin.py:842
 #, python-format
 msgid "Error saving changes to %(name)s."
-msgstr "Errore salvando le modifiche di %(name)s."
+msgstr "Errore nel salvataggio delle modifiche di %(name)s."
 
 #: ../flask_admin/contrib/fileadmin.py:846
 #, python-format
 msgid "Changes to %(name)s saved successfully."
-msgstr "Modifiche a %(name)s salvato con successo."
+msgstr "Le modifiche a %(name)s sono state salvate con successo."
 
 #: ../flask_admin/contrib/fileadmin.py:855
 #, python-format
 msgid "Error reading %(name)s."
-msgstr "Errore lettura %(name)s."
+msgstr "Errore di lettura di %(name)s."
 
 #: ../flask_admin/contrib/fileadmin.py:858
 #: ../flask_admin/contrib/fileadmin.py:867
 #, python-format
 msgid "Unexpected error while reading from %(name)s"
-msgstr "Errore imprevisto durante la lettura da %(name)s"
+msgstr "Errore imprevisto durante la lettura di %(name)s"
 
 #: ../flask_admin/contrib/fileadmin.py:864
 #, python-format
 msgid "Cannot edit %(name)s."
-msgstr "Non è possibile modificare il %(name)s."
+msgstr "Non è possibile modificare %(name)s."
 
 #: ../flask_admin/contrib/fileadmin.py:881
 #: ../flask_admin/contrib/mongoengine/view.py:626
@@ -163,7 +163,7 @@ msgstr "Elimina"
 
 #: ../flask_admin/contrib/fileadmin.py:882
 msgid "Are you sure you want to delete these files?"
-msgstr "Sei sicuro di voler eliminare questi files?"
+msgstr "Sei sicuro di voler eliminare questi file?"
 
 #: ../flask_admin/contrib/fileadmin.py:885
 msgid "File deletion is disabled."
@@ -286,7 +286,7 @@ msgstr "Impossibile eliminare il record: %(error)s"
 #: ../flask_admin/contrib/pymongo/view.py:350
 #: ../flask_admin/contrib/sqla/view.py:957
 msgid "Are you sure you want to delete selected records?"
-msgstr "Sei sicuro di voler eliminare i records selezionati?"
+msgstr "Sei sicuro di voler eliminare i record selezionati?"
 
 #: ../flask_admin/contrib/mongoengine/view.py:636
 #: ../flask_admin/contrib/peewee/view.py:446
@@ -356,7 +356,7 @@ msgstr "Il record é stato creato con successo."
 
 #: ../flask_admin/model/base.py:1578 ../flask_admin/model/base.py:1676
 msgid "Record was successfully saved."
-msgstr "Record è stato registrato correttamente."
+msgstr "Record stato salvato con successo."
 
 #: ../flask_admin/model/filters.py:99
 msgid "Yes"
@@ -379,7 +379,7 @@ msgstr "Con la selezione"
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:156
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:150
 msgid "Save"
-msgstr "Salvare"
+msgstr "Salva"
 
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:161
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:155
@@ -395,7 +395,7 @@ msgstr "Modifica %(path)s"
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
 msgid "Root"
-msgstr "Radice"
+msgstr "Categoria principale"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:36
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:36
@@ -499,7 +499,7 @@ msgstr "Creare nuovi record"
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:56
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:56
 msgid "Select all records"
-msgstr "Selezionare tutti i record"
+msgstr "Seleziona tutti i record"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:76
@@ -507,12 +507,12 @@ msgstr "Selezionare tutti i record"
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:76
 #, python-format
 msgid "Sort by %(name)s"
-msgstr "Sorta di %(name)s"
+msgstr "Ordina per %(name)s"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:98
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:98
 msgid "Select record"
-msgstr "Selezionare record"
+msgstr "Seleziona record"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:105
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:105
@@ -526,7 +526,7 @@ msgstr "Sei sicuro di voler eliminare questo record?"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
 msgid "Delete record"
-msgstr "Eliminare record"
+msgstr "Elimina record"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:161
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:160
