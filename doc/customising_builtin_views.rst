@@ -152,12 +152,16 @@ therefore should use a *SelectField*::
     from wtforms.fields import SelectField
 
     class MyView(ModelView):
-        form_overrides = dict(status=SelectField)
-        form_args = dict(
+        form_overrides = {
+            'status': SelectField
+        }
+
+        form_args = {
             # Pass the choices to the `SelectField`
-            status=dict(
+            'status': {
                 choices=[(0, 'waiting'), (1, 'in_progress'), (2, 'finished')]
-            ))
+            }
+        }
 
 
 It is relatively easy to add support for different database backends (Mongo, etc) by inheriting from
@@ -193,7 +197,9 @@ To handle complicated text content, use `CKEditor <http://ckeditor.com/>`_ by su
         widget = CKTextAreaWidget()
 
     class MessageAdmin(ModelView):
-        form_overrides = dict(body=wtf.FileField)
+        form_overrides = {
+            'body': CKTextAreaField
+        }
         create_template = 'ckeditor.html'
         edit_template = 'ckeditor.html'
 

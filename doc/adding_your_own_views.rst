@@ -37,8 +37,8 @@ Overriding the builtin views
 ------------------------------------
 
 If you want most of the builtin ModelView functionality, but you want to have your own view
-in place of the default `create`, `edit`, or `list` view. Then you can simply override
-override the view in question::
+in place of the default `create`, `edit`, or `list` view. Then you can simply
+override the view in question, and all the links to it will still function as you would expect::
 
     from flask_admin.contrib.sqla import ModelView
 
