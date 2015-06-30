@@ -69,8 +69,9 @@ table.filters tr td {
 }
 
 /* Forms */
+/* adds spacing between navbar and edit/create form (non-modal only) */
 /* required because form-horizontal removes top padding */
-.admin-form {
+div.container > .admin-form {
     margin-top: 35px;
 }
 
@@ -79,4 +80,12 @@ table.filters tr td {
 /* prevents awkward gap after help-block - This is default for bootstrap2 */
 .admin-form  .help-block {
     margin-bottom: 0px;
+}
+
+/* Modals */
+/* hack to prevent cut-off left side of select2 inside of modal */
+/* may be able to remove this after Bootstrap v3.3.5 */
+body.modal-open {
+    overflow-y: scroll;
+    padding-right: 0 !important;
 }

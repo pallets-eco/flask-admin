@@ -99,6 +99,10 @@ class BaseModelView(BaseView, ActionsMixin):
     create_template = 'admin/model/create.html'
     """Default create template"""
 
+    # Modals
+    edit_modal = False
+    """Setting this to true will display the edit_view as a modal dialog."""
+
     # Customizations
     column_list = ObsoleteAttr('column_list', 'list_columns', None)
     """

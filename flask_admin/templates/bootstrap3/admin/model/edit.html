@@ -1,4 +1,6 @@
-{% extends 'admin/master.html' %}
+{%- if not admin_view.edit_modal -%}
+    {% extends 'admin/master.html' %}
+{%- endif -%}
 {% import 'admin/lib.html' as lib with context %}
 
 {% macro extra() %}
@@ -6,18 +8,47 @@
 {% endmacro %}
 
 {% block head %}
+  {%- if not admin_view.edit_modal -%}
     {{ super() }}
     {{ lib.form_css() }}
+  {%- endif -%}
 {% endblock %}
 
 {% block body %}
-    {% call lib.form_tag(form) %}
-        {{ lib.render_form_fields(form, form_opts=form_opts) }}
-        {{ lib.render_form_buttons(return_url, extra()) }}
-    {% endcall %}
+    {%- if admin_view.edit_modal -%}
+      {# content added to modal-content #}
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        {% block modal_header %}<h3>Edit Record #{{ request.args.get('id') }}</h3>{% endblock %}
+      </div>
+      <div class="modal-body">
+        {# remove save and continue button for modal (it won't function properly) #}
+        {{ lib.render_form(form, return_url, extra=None, form_opts=form_opts,
+                           action=url_for('.edit_view', id=request.args.get('id'), url=return_url),
+                           is_modal=admin_view.edit_modal) }}
+      </div>
+    {%- else -%}
+      {{ lib.render_form(form, return_url, extra(), form_opts,
+                         action=url_for('.edit_view', id=request.args.get('id'), url=return_url),
+                         is_modal=admin_view.edit_modal) }}
+    {%- endif -%}
 {% endblock %}
 
 {% block tail %}
-  {{ super() }}
-  {{ lib.form_js() }}
+    {%- if admin_view.edit_modal -%}
+      <script>
+      // fixes "remote modal shows same content every time", avoiding the flicker
+      $('body').on('hidden.bs.modal', '.modal', function () {
+        $(this).removeData('bs.modal').find(".modal-content").empty();
+      });
+
+      $(function() {
+        // Apply flask-admin global styles after the modal is loaded
+        window.faForm.applyGlobalStyles(document);
+      });
+      </script>
+    {%- else -%}
+      {{ super() }}
+      {{ lib.form_js() }}
+    {%- endif -%}
 {% endblock %}
