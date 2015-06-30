@@ -22,6 +22,7 @@ Examples
 Flask-Admin comes with several examples that will help you get a grip on what's possible.
 Have a look at http://examples.flask-admin.org/ to see them in action, or browse through the `examples` directory in the GitHub repository.
 
+****
 
 Getting Started
 =================
@@ -85,11 +86,12 @@ is that it's just an empty page with a navigation menu. To add some content to t
     {% extends 'admin/master.html' %}
 
     {% block body %}
-    <p>Hello world</p>
+      <p>Hello world</p>
     {% endblock %}
 
 This will override the builtin index template, but still give you the builtin navigation menu. So, now you can add any content to the index page that makes sense for your app.
 
+****
 
 Authorisation & Permissions
 =================================
@@ -162,6 +164,7 @@ https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth.
 The example only uses the builtin `register` and `login` views, but you could follow the same
 approach for including the other views, like `forgot_password`, `send_confirmation`, etc.
 
+****
 
 .. _customising-builtin-views:
 
@@ -281,60 +284,23 @@ related models loaded via ajax, using::
 Overriding the default templates
 ---------------------------------
 
-To do this, find your flask-admin installation (this could be somewhere like `/env/lib/python2.7/site-packages/flask_admin/`
-and copy the template in `templates/bootstrap3/admin/index.html` to your own project directory at `my_app/templates/admin/index.html`.
+You can override any of the builtin Flask-Admin templates by simply copying them
+into `templates/admin/` in your project directory. This gives you absolute
+control over the look & feel of the admin interface, but with one drawback: it
+can make life difficult for you when you eventually want to upgrade the version
+of Flask-Admin that you are using.
 
+If you want to keep your custom templates in some other location, then you need
+to remember to reference them from the ModelView classes where you intend to
+use them, e.g.::
 
+    class BaseModelView(ModelView):
+        list_template = 'base_list.html'
+        create_template = 'base_create.html'
+        edit_template = 'base_edit.html'
 
-To customize these model views, you have two options: Either you can override the public properties of the *ModelView*
-class, or you can override its methods.
-
-For example, if you want to disable model creation and only show certain columns in the list view, you can do
-something like::
-
-    from flask_admin.contrib.sqla import ModelView
-
-    # Flask and Flask-SQLAlchemy initialization here
-
-    class MyView(ModelView):
-        # Disable model creation
-        can_create = False
-
-        # Override displayed fields
-        column_list = ('login', 'email')
-
-        def __init__(self, session, **kwargs):
-            # You can pass name and other parameters if you want to
-            super(MyView, self).__init__(User, session, **kwargs)
-
-    admin = Admin(app)
-    admin.add_view(MyView(db.session))
-
-Overriding form elements can be a bit trickier, but it is still possible. Here's an example of
-how to set up a form that includes a column named *status* that allows only predefined values and
-therefore should use a *SelectField*::
-
-    from wtforms.fields import SelectField
-
-    class MyView(ModelView):
-        form_overrides = {
-            'status': SelectField
-        }
-
-        form_args = {
-            # Pass the choices to the `SelectField`
-            'status': {
-                choices=[(0, 'waiting'), (1, 'in_progress'), (2, 'finished')]
-            }
-        }
-
-
-It is relatively easy to add support for different database backends (Mongo, etc) by inheriting from
-:class:`~flask_admin.model.BaseModelView`.
-class and implementing database-related methods.
-
-Please refer to :mod:`flask_admin.contrib.sqla` documentation on how to customize the behavior of model-based
-administrative views.
+Have a look at the `layout` example at https://github.com/flask-admin/flask-admin/tree/master/examples/layout
+if you want to see how to take full stylistic control.
 
 Replacing specific form fields
 ------------------------------------------
@@ -375,8 +341,8 @@ functionality by including the necessary CKEditor javascript on the `create` and
     {% extends 'admin/model/edit.html' %}
 
     {% block tail %}
-        {{ super() }}
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.0.1/ckeditor.js"></script>
+      {{ super() }}
+      <script src="http://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.0.1/ckeditor.js"></script>
     {% endblock %}
 
 File & Image fields
@@ -390,6 +356,8 @@ You'll need to specify an upload directory, and then use either `FileUploadField
 
 If you just want to manage static files, without tying them to a database model, then
 rather use the :ref:`File-Admin<file-admin>` plugin.
+
+****
 
 Adding your own views
 ======================
@@ -420,7 +388,7 @@ The `analytics_index.html` template for the example above, could look something 
 
     {% extends 'admin/master.html' %}
     {% block body %}
-        <p>Here I'm going to display some data.</p>
+      <p>Here I'm going to display some data.</p>
     {% endblock %}
 
 By extending the *admin/master.html* template, you can maintain a consistent user experience,
@@ -447,8 +415,7 @@ override the view in question, and all the links to it will still function as yo
         return self.render('create_user.html')
 
 
-
-
+****
 
 .. toctree::
    :maxdepth: 2
@@ -456,11 +423,14 @@ override the view in question, and all the links to it will still function as yo
    advanced
    api/index
 
+****
+
 Support
 ----------
 
 Python 2.6 - 2.7 and 3.3 - 3.4.
 
+****
 
 Indices and tables
 ------------------
