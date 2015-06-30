@@ -108,7 +108,7 @@ easy it is to put your whole application behind HTTP Basic Auth.
 Unfortunately, there is no easy way of applying HTTP Basic Auth just to your admin
 interface.
 
-Rolling your own
+Rolling Your Own
 --------------------------------
 For a finer-grained solution, Flask-Admin lets you define access control rules
 on each of your admin view classes by simply overriding the `is_accessible` method.
