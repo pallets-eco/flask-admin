@@ -1,4 +1,4 @@
 Flask
 Flask-Admin
 Flask-SQLAlchemy
-Flask-Login
+Flask-Security==1.7.4

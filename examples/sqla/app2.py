@@ -1,8 +1,8 @@
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
-from flask.ext import admin
-from flask.ext.admin.contrib import sqla
+import flask_admin as admin
+from flask_admin.contrib import sqla
 
 
 # Create application
@@ -50,7 +50,7 @@ class TyreAdmin(sqla.ModelView):
     form_columns = ['car', 'tyre_id', 'desc']
 
 # Create admin
-admin = admin.Admin(app, name='Example: SQLAlchemy2')
+admin = admin.Admin(app, name='Example: SQLAlchemy2', template_mode='bootstrap3')
 admin.add_view(CarAdmin(Car, db.session))
 admin.add_view(TyreAdmin(Tyre, db.session))
 

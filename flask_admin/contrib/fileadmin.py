@@ -12,11 +12,11 @@ from flask import flash, redirect, abort, request, send_file
 
 from wtforms import fields, validators
 
-from flask.ext.admin import form, helpers
-from flask.ext.admin._compat import urljoin, as_unicode
-from flask.ext.admin.base import BaseView, expose
-from flask.ext.admin.actions import action, ActionsMixin
-from flask.ext.admin.babel import gettext, lazy_gettext
+from flask_admin import form, helpers
+from flask_admin._compat import urljoin, as_unicode
+from flask_admin.base import BaseView, expose
+from flask_admin.actions import action, ActionsMixin
+from flask_admin.babel import gettext, lazy_gettext
 
 
 class FileAdmin(BaseView, ActionsMixin):
@@ -34,8 +34,8 @@ class FileAdmin(BaseView, ActionsMixin):
 
             import os.path as op
 
-            from flask.ext.admin import Admin
-            from flask.ext.admin.contrib.fileadmin import FileAdmin
+            from flask_admin import Admin
+            from flask_admin.contrib.fileadmin import FileAdmin
 
             admin = Admin()
 
@@ -138,7 +138,7 @@ class FileAdmin(BaseView, ActionsMixin):
 
     def __init__(self, base_path, base_url=None,
                  name=None, category=None, endpoint=None, url=None,
-                 verify_path=True):
+                 verify_path=True, menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
         """
             Constructor.
 
@@ -179,7 +179,9 @@ class FileAdmin(BaseView, ActionsMixin):
         if not op.exists(base_path):
             raise IOError('FileAdmin path "%s" does not exist or is not accessible' % base_path)
 
-        super(FileAdmin, self).__init__(name, category, endpoint, url)
+        super(FileAdmin, self).__init__(name, category, endpoint, url,
+                                        menu_class_name=menu_class_name, menu_icon_type=menu_icon_type,
+                                        menu_icon_value=menu_icon_value)
 
     def is_accessible_path(self, path):
         """

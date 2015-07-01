@@ -1,5 +1,5 @@
-from flask.ext.admin.model.form import converts
-from flask.ext.admin.contrib.sqla.form import AdminModelConverter as SQLAAdminConverter
+from flask_admin.model.form import converts
+from flask_admin.contrib.sqla.form import AdminModelConverter as SQLAAdminConverter
 from .fields import GeoJSONField
 
 

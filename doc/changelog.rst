@@ -1,6 +1,18 @@
 Changelog
 =========
 
+1.2.0
+-----
+
+* Codebase was migrated to Flask-Admin GitHub organization
+* Automatically inject Flask-WTF CSRF token to internal Flask-Admin forms
+* MapBox v4 support for GeoAlchemy
+* Updated translations with help of CrowdIn
+* Show warning if field was ignored in form rendering rules
+* Simple AppEngine backend
+* Optional support for Font Awesome in templates and menus
+* Bug fixes
+
 1.1.0
 -----
 
@@ -43,21 +55,3 @@ Highlights:
 * Support for newer wtforms versions
 * `form_rules` property that affects both create and edit forms
 * Lots of bugfixes
-
-1.0.7
------
-
-Full change log and feature walkthrough can be found `here <http://mrjoes.github.io/2013/10/21/flask-admin-107.html>`_.
-
-Highlights:
-
-* Python 3 support
-* AJAX-based foreign-key data loading for all backends
-* New, optional, rule-based form rendering engine
-* MongoEngine fixes and features: GridFS support, nested subdocument configuration and much more
-* Greatly improved and more configurable inline models
-* New WTForms fields and widgets
-* `form_extra_columns` allows adding custom columns to the form declaratively
-* Redis cli
-* SQLAlchemy backend can handle inherited models with multiple PKs
-* Lots of bug fixes

@@ -2,14 +2,14 @@ import os
 import os.path as op
 
 from flask import Flask, url_for
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 from sqlalchemy.event import listens_for
 from jinja2 import Markup
 
-from flask.ext.admin import Admin, form
-from flask.ext.admin.form import rules
-from flask.ext.admin.contrib import sqla
+from flask_admin import Admin, form
+from flask_admin.form import rules
+from flask_admin.contrib import sqla
 
 
 # Create application
@@ -101,7 +101,8 @@ class FileView(sqla.ModelView):
     form_args = {
         'path': {
             'label': 'File',
-            'base_path': file_path
+            'base_path': file_path,
+            'allow_overwrite': False
         }
     }
 
@@ -156,7 +157,7 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 # Create admin
-admin = Admin(app, 'Example: Forms')
+admin = Admin(app, 'Example: Forms', template_mode='bootstrap3')
 
 # Add views
 admin.add_view(FileView(File, db.session))

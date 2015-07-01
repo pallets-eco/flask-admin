@@ -1,13 +1,13 @@
 import os
 import os.path as op
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 from wtforms import validators
 
-from flask.ext import admin
-from flask.ext.admin.contrib import sqla
-from flask.ext.admin.contrib.sqla import filters
+import flask_admin as admin
+from flask_admin.contrib import sqla
+from flask_admin.contrib.sqla import filters
 
 
 # Create application
@@ -107,7 +107,7 @@ class PostAdmin(sqla.ModelView):
 
     # List of columns that can be sorted. For 'user' column, use User.username as
     # a column.
-    column_sortable_list = ('title', ('user', User.username), 'date')
+    column_sortable_list = ('title', ('user', 'user.username'), 'date')
 
     # Rename 'title' columns to 'Post Title' in list view
     column_labels = dict(title='Post Title')
@@ -144,7 +144,7 @@ class TreeView(sqla.ModelView):
 
 
 # Create admin
-admin = admin.Admin(app, name='Example: SQLAlchemy')
+admin = admin.Admin(app, name='Example: SQLAlchemy', template_mode='bootstrap3')
 
 # Add views
 admin.add_view(UserAdmin(User, db.session))

@@ -5,16 +5,16 @@ from werkzeug import secure_filename
 from sqlalchemy import event
 
 from flask import Flask, request, render_template
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 from wtforms import fields
 
-from flask.ext import admin
-from flask.ext.admin.form import RenderTemplateWidget
-from flask.ext.admin.model.form import InlineFormAdmin
-from flask.ext.admin.contrib.sqla import ModelView
-from flask.ext.admin.contrib.sqla.form import InlineModelConverter
-from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
+import flask_admin as admin
+from flask_admin.form import RenderTemplateWidget
+from flask_admin.model.form import InlineFormAdmin
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.contrib.sqla.form import InlineModelConverter
+from flask_admin.contrib.sqla.fields import InlineModelFormList
 
 # Create application
 app = Flask(__name__)
@@ -62,9 +62,12 @@ class CustomInlineFieldListWidget(RenderTemplateWidget):
         super(CustomInlineFieldListWidget, self).__init__('field_list.html')
 
 
-# This InlineModelFormList will use our custom widget
+# This InlineModelFormList will use our custom widget and hide row controls
 class CustomInlineModelFormList(InlineModelFormList):
     widget = CustomInlineFieldListWidget()
+
+    def display_row_controls(self, field):
+        return False
 
 
 # Create custom InlineModelConverter and tell it to use our InlineModelFormList

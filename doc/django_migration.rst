@@ -43,9 +43,9 @@ Let's write a bit of code to create a simple CRUD interface for the `Post` SQLAl
 Flask-SQLAlchemy extension, but you don't have to use it (you could also use the SQLAlchemy declarative extension)::
 
     from flask import Flask
-    from flask.ext.admin import Admin
-    from flask.ext.admin.contrib.sqla import ModelView
-    from flask.ext.sqlalchemy import SQLAlchemy
+    from flask_admin import Admin
+    from flask_admin.contrib.sqla import ModelView
+    from flask_sqlalchemy import SQLAlchemy
 
     app = Flask(__name__)
     db = SQLAlchemy(app)
@@ -91,17 +91,17 @@ SQLAlchemy backend. You can also see which *django-admin* properties they corres
 Django                                      Flask-Admin
 =========================================== ==============================================
 actions										:doc:`api/mod_actions`
-exclude										:attr:`~flask.ext.admin.model.BaseModelView.form_excluded_columns`
-fields										:attr:`~flask.ext.admin.model.BaseModelView.form_columns`
-form 										:attr:`~flask.ext.admin.model.BaseModelView.form`
-formfield_overrides 						:attr:`~flask.ext.admin.model.BaseModelView.form_args`
-inlines										:attr:`~flask.ext.admin.contrib.sqlalchemy.ModelView.inline_models`
-list_display 								:attr:`~flask.ext.admin.model.BaseModelView.column_list`
-list_filter									:attr:`~flask.ext.admin.contrib.sqlalchemy.ModelView.column_filters`
-list_per_page 								:attr:`~flask.ext.admin.model.BaseModelView.page_size`
-search_fields								:attr:`~flask.ext.admin.model.BaseModelView.column_searchable_list`
-add_form_template							:attr:`~flask.ext.admin.model.BaseModelView.create_template`
-change_form_template						:attr:`~flask.ext.admin.model.BaseModelView.change_form_template`
+exclude										:attr:`~flask_admin.model.BaseModelView.form_excluded_columns`
+fields										:attr:`~flask_admin.model.BaseModelView.form_columns`
+form 										:attr:`~flask_admin.model.BaseModelView.form`
+formfield_overrides 						:attr:`~flask_admin.model.BaseModelView.form_args`
+inlines										:attr:`~flask_admin.contrib.sqlalchemy.ModelView.inline_models`
+list_display 								:attr:`~flask_admin.model.BaseModelView.column_list`
+list_filter									:attr:`~flask_admin.contrib.sqlalchemy.ModelView.column_filters`
+list_per_page 								:attr:`~flask_admin.model.BaseModelView.page_size`
+search_fields								:attr:`~flask_admin.model.BaseModelView.column_searchable_list`
+add_form_template							:attr:`~flask_admin.model.BaseModelView.create_template`
+change_form_template						:attr:`~flask_admin.model.BaseModelView.change_form_template`
 =========================================== ==============================================
 
 You might want to check :doc:`api/mod_model` for basic model configuration options (reused by all model
@@ -152,10 +152,9 @@ Tips and hints
     it instead of default implementation.
 
  3. Using Jinja2, you can easily extend the existing templates. You can even change the look and feel of the admin
-    interface completely, if you want to. Check `this example <https://github.com/mrjoes/flask-admin/tree/master/examples/layout>`_.
+    interface completely, if you want to. Check `this example <https://github.com/flask-admin/flask-admin/tree/master/examples/layout>`_.
 
  4. You are not limited to a simple CRUD interface for every model. Want to add some kind of realtime monitoring via websockets? No problem.
 
  5. There's a so called "index view". By default it is empty, but you can put any information you need there. It is displayed
     under the *Home* menu option.
-

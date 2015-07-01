@@ -1,6 +1,6 @@
 from flask import Flask, redirect, request
 
-from flask.ext import admin
+import flask_admin as admin
 from flask.views import MethodView
 
 

@@ -5,10 +5,10 @@ from peewee import (CharField, DateTimeField, DateField, TimeField,
 
 from wtfpeewee.orm import ModelConverter, model_form
 
-from flask.ext.admin import form
-from flask.ext.admin._compat import iteritems, itervalues
-from flask.ext.admin.model.form import InlineFormAdmin, InlineModelConverterBase
-from flask.ext.admin.model.fields import InlineModelFormField, InlineFieldList, AjaxSelectField
+from flask_admin import form
+from flask_admin._compat import iteritems, itervalues
+from flask_admin.model.form import InlineFormAdmin, InlineModelConverterBase
+from flask_admin.model.fields import InlineModelFormField, InlineFieldList, AjaxSelectField
 
 from .tools import get_primary_key
 from .ajax import create_ajax_loader
@@ -43,8 +43,8 @@ class InlineModelFormList(InlineFieldList):
     # self.model.select().where(attr == data).execute()     # `data` is not an ID, and only happened to be so because we patched it in in .contribute() below
     #
     # For reference:
-    # .process() introduced in https://github.com/mrjoes/flask-admin/commit/2845e4b28cb40b25e2bf544b327f6202dc7e5709
-    # Fixed, brokenly I think, in https://github.com/mrjoes/flask-admin/commit/4383eef3ce7eb01878f086928f8773adb9de79f8#diff-f87e7cd76fb9bc48c8681b24f238fb13R30
+    # .process() introduced in https://github.com/flask-admin/flask-admin/commit/2845e4b28cb40b25e2bf544b327f6202dc7e5709
+    # Fixed, brokenly I think, in https://github.com/flask-admin/flask-admin/commit/4383eef3ce7eb01878f086928f8773adb9de79f8#diff-f87e7cd76fb9bc48c8681b24f238fb13R30
 
     def populate_obj(self, obj, name):
         pass

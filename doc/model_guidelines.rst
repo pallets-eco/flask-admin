@@ -14,7 +14,7 @@ and implementing the set of scaffolding methods listed below.
 Extending BaseModelView
 -------------------------
 
-    Start off by defining a new class, which derives from from :class:`~flask.ext.admin.model.BaseModelView`::
+    Start off by defining a new class, which derives from from :class:`~flask_admin.model.BaseModelView`::
 
         class MyDbModel(BaseModelView):
             pass
@@ -24,11 +24,11 @@ Extending BaseModelView
 
     Now, implement the following scaffolding methods for the new class:
 
-    1. :meth:`~flask.ext.admin.model.BaseModelView.get_pk_value`
+    1. :meth:`~flask_admin.model.BaseModelView.get_pk_value`
 
         This method returns a primary key value from
         the model instance. In the SQLAlchemy backend, it gets the primary key from the model
-        using :meth:`~flask.ext.admin.contrib.sqla.ModelView.scaffold_pk`, caches it
+        using :meth:`~flask_admin.contrib.sqla.ModelView.scaffold_pk`, caches it
         and then returns the value from the model whenever requested.
 
         For example::
@@ -37,7 +37,7 @@ Extending BaseModelView
                 def get_pk_value(self, model):
                     return self.model.id
 
-    2. :meth:`~flask.ext.admin.model.BaseModelView.scaffold_list_columns`
+    2. :meth:`~flask_admin.model.BaseModelView.scaffold_list_columns`
 
         Returns a list of columns to be displayed in a list view. For example::
 
@@ -52,7 +52,7 @@ Extending BaseModelView
 
                     return columns
 
-    3. :meth:`~flask.ext.admin.model.BaseModelView.scaffold_sortable_columns`
+    3. :meth:`~flask_admin.model.BaseModelView.scaffold_sortable_columns`
 
         Returns a dictionary of sortable columns. The keys in the dictionary should correspond to the model's
         field names. The values should be those variables that will be used for sorting.
@@ -64,7 +64,7 @@ Extending BaseModelView
         If your backend does not support sorting, return
         `None` or an empty dictionary.
 
-    4. :meth:`~flask.ext.admin.model.BaseModelView.init_search`
+    4. :meth:`~flask_admin.model.BaseModelView.init_search`
 
         Initialize search functionality. If your backend supports
         full-text search, do initializations and return `True`.
@@ -76,7 +76,7 @@ Extending BaseModelView
         it will add a join, etc) and caches this information for
         future use.
 
-    5. :meth:`~flask.ext.admin.model.BaseModelView.scaffold_form`
+    5. :meth:`~flask_admin.model.BaseModelView.scaffold_form`
 
         Generate `WTForms` form class from the model.
 
@@ -90,7 +90,7 @@ Extending BaseModelView
                     # Do something
                     return MyForm
 
-    6. :meth:`~flask.ext.admin.model.BaseModelView.get_list`
+    6. :meth:`~flask_admin.model.BaseModelView.get_list`
 
         This method should return list of model instances with paging,
         sorting, etc applied.
@@ -120,27 +120,27 @@ Extending BaseModelView
 
             6. Return count, list as a tuple
 
-    7. :meth:`~flask.ext.admin.model.BaseModelView.get_one`
+    7. :meth:`~flask_admin.model.BaseModelView.get_one`
 
         Return a model instance by its primary key.
 
-    8. :meth:`~flask.ext.admin.model.BaseModelView.create_model`
+    8. :meth:`~flask_admin.model.BaseModelView.create_model`
 
         Create a new instance of the model from the `Form` object.
 
-    9. :meth:`~flask.ext.admin.model.BaseModelView.update_model`
+    9. :meth:`~flask_admin.model.BaseModelView.update_model`
 
         Update the model instance with data from the form.
 
-    10. :meth:`~flask.ext.admin.model.BaseModelView.delete_model`
+    10. :meth:`~flask_admin.model.BaseModelView.delete_model`
 
         Delete the specified model instance from the data store.
 
-    11. :meth:`~flask.ext.admin.model.BaseModelView.is_valid_filter`
+    11. :meth:`~flask_admin.model.BaseModelView.is_valid_filter`
 
         Verify whether the given object is a valid filter.
 
-    12. :meth:`~flask.ext.admin.model.BaseModelView.scaffold_filters`
+    12. :meth:`~flask_admin.model.BaseModelView.scaffold_filters`
 
         Return a list of filter objects for one model field.
 
@@ -166,17 +166,17 @@ Implementing filters
     filters from SQLAlchemy models in a non-SQLAlchemy backend.
     This also means that different backends might have different set of available filters.
 
-    The filter is a class derived from :class:`~flask.ext.admin.model.filters.BaseFilter` which implements at least two methods:
+    The filter is a class derived from :class:`~flask_admin.model.filters.BaseFilter` which implements at least two methods:
 
-        1. :meth:`~flask.ext.admin.model.filters.BaseFilter.apply`
-        2. :meth:`~flask.ext.admin.model.filters.BaseFilter.operation`
+        1. :meth:`~flask_admin.model.filters.BaseFilter.apply`
+        2. :meth:`~flask_admin.model.filters.BaseFilter.operation`
 
     `apply` method accepts two parameters: `query` object and a value from the client. Here you can add
     filtering logic for the filter type.
 
     Lets take SQLAlchemy model backend as an example:
 
-    All SQLAlchemy filters derive from :class:`~flask.ext.admin.contrib.sqla.filters.BaseSQLAFilter` class.
+    All SQLAlchemy filters derive from :class:`~flask_admin.contrib.sqla.filters.BaseSQLAFilter` class.
 
     Each filter implements one simple filter SQL operation (like, not like, greater, etc) and accepts a column as
     input parameter.

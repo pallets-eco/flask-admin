@@ -2,7 +2,7 @@ Localization
 ============
 
 Flask-Admin makes it possible for you to serve your application in more than one language. To do this, it makes use of
-the `Flask-BabelEx <http://github.com/mrjoes/flask-babelex/>`_ package for handling translations. This package is a
+the `Flask-BabelEx <http://github.com/flask-admin/flask-babelex/>`_ package for handling translations. This package is a
 fork of the popular `Flask-Babel <http://github.com/mitshuhiko/flask-babel/>`_ package, with the following features:
 
 1. It is API-compatible with Flask-Babel
@@ -21,7 +21,7 @@ How to enable localization
 2. Initialize Flask-BabelEx by creating instance of `Babel` class::
 
 	from flask import app
-	from flask.ext.babelex import Babel
+	from flask_babelex import Babel
 
 	app = Flask(__name__)
 	babel = Babel(app)

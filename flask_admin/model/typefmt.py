@@ -1,5 +1,5 @@
 from jinja2 import Markup
-from flask.ext.admin._compat import text_type
+from flask_admin._compat import text_type
 
 
 def null_formatter(view, value):
@@ -30,7 +30,8 @@ def bool_formatter(view, value):
             Value to check
     """
     glyph = 'ok-circle' if value else 'minus-sign'
-    return Markup('<span class="glyphicon glyphicon-%s icon-%s"></span>' % (glyph, glyph))
+    fa = 'check-circle' if value else 'minus-circle'
+    return Markup('<span class="fa fa-%s glyphicon glyphicon-%s icon-%s"></span>' % (fa, glyph, glyph))
 
 
 def list_formatter(view, values):

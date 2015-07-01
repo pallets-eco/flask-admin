@@ -2,16 +2,16 @@ import logging
 
 from flask import flash
 
-from flask.ext.admin._compat import string_types
-from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
-from flask.ext.admin.model import BaseModelView
-from flask.ext.admin.model.form import wrap_fields_in_fieldlist
-from flask.ext.admin.model.fields import ListEditableFieldList
+from flask_admin._compat import string_types
+from flask_admin.babel import gettext, ngettext, lazy_gettext
+from flask_admin.model import BaseModelView
+from flask_admin.model.form import wrap_fields_in_fieldlist
+from flask_admin.model.fields import ListEditableFieldList
 
 from peewee import PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
 
-from flask.ext.admin.actions import action
-from flask.ext.admin.contrib.peewee import filters
+from flask_admin.actions import action
+from flask_admin.contrib.peewee import filters
 
 from .form import get_form, CustomModelConverter, InlineModelConverter, save_inline
 from .tools import get_primary_key, parse_like_term
@@ -27,7 +27,7 @@ class ModelView(BaseModelView):
         Collection of the column filters.
 
         Can contain either field names or instances of
-        :class:`flask.ext.admin.contrib.peewee.filters.BaseFilter` classes.
+        :class:`flask_admin.contrib.peewee.filters.BaseFilter` classes.
 
         For example::
 
@@ -339,7 +339,7 @@ class ModelView(BaseModelView):
                 query = f.apply(query, f.clean(value))
 
         # Get count
-        count = query.count()
+        count = query.count() if not self.simple_list_pager else None
 
         # Apply sorting
         if sort_column is not None:
@@ -384,7 +384,7 @@ class ModelView(BaseModelView):
         else:
             self.after_model_change(form, model, True)
 
-        return True
+        return model
 
     def update_model(self, form, model):
         try:
@@ -409,13 +409,16 @@ class ModelView(BaseModelView):
         try:
             self.on_model_delete(model)
             model.delete_instance(recursive=True)
-            return True
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 flash(gettext('Failed to delete record. %(error)s', error=str(ex)), 'error')
                 log.exception('Failed to delete record.')
 
             return False
+        else:
+            self.after_model_delete(model)
+
+        return True
 
     # Default model actions
     def is_action_allowed(self, name):
@@ -440,6 +443,7 @@ class ModelView(BaseModelView):
                 query = self.model.select().filter(model_pk << ids)
 
                 for m in query:
+                    self.on_model_delete(m)
                     m.delete_instance(recursive=True)
                     count += 1
 

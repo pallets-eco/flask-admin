@@ -3,9 +3,9 @@ from nose.tools import eq_, ok_, raises
 
 from wtforms import fields
 
-from flask.ext.admin.contrib.sqla import ModelView
-from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
-from flask.ext.admin.contrib.sqla.validators import ItemsRequired
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.contrib.sqla.fields import InlineModelFormList
+from flask_admin.contrib.sqla.validators import ItemsRequired
 
 from . import setup
 

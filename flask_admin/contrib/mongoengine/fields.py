@@ -10,7 +10,7 @@ except ImportError:
     from wtforms.utils import unset_value
 
 from . import widgets
-from flask.ext.admin.model.fields import InlineFormField
+from flask_admin.model.fields import InlineFormField
 
 
 def is_empty(file_object):

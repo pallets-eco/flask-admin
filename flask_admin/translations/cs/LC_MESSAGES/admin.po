@@ -1,186 +1,297 @@
-# Translations template for Flask-Admin.
-# Copyright (C) 2013 Dominik Janků
-# This file is distributed under the same license as the Flask-Admin
-# project.
-# Dominik Janků <djanku@email.cz>, 2013.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: Flask-Admin\n"
-"Report-Msgid-Bugs-To: djanku@email.cz\n"
-"POT-Creation-Date: 2012-11-09 03:54+0200\n"
-"PO-Revision-Date: 2013-05-20 06:48+0200\n"
-"Last-Translator: Dominik Janků <djanku@email.cz>\n"
-"Language-Team: čeština <>\n"
-"Language: cs\n"
+"Project-Id-Version: flask-admin\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-05-02 18:11-0500\n"
+"PO-Revision-Date: 2015-06-28 19:28-0400\n"
+"Last-Translator: mrjoes <serge.koval@gmail.com>\n"
+"Language-Team: Czech\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 0.9.6\n"
+"Generated-By: Babel 1.3\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Gtranslator 2.91.6\n"
-"Language-Team: čeština <>\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: flask-admin\n"
+"X-Crowdin-Language: cs\n"
+"X-Crowdin-File: admin.pot\n"
+"Language: cs_CZ\n"
 
-#: ../flask_admin/base.py:283
+#: ../flask_admin/base.py:427
 msgid "Home"
 msgstr "Domů"
 
-#: ../flask_admin/form.py:83
-msgid "Invalid time format"
-msgstr "Nesprávný formát času"
-
-#: ../flask_admin/contrib/fileadmin.py:33
-msgid "Invalid directory name"
-msgstr "Nesprávný název adresáře"
-
-#: ../flask_admin/contrib/fileadmin.py:41
+#: ../flask_admin/contrib/fileadmin.py:222
 msgid "File to upload"
 msgstr "Soubor k nahrání"
 
-#: ../flask_admin/contrib/fileadmin.py:50
+#: ../flask_admin/contrib/fileadmin.py:230
 msgid "File required."
 msgstr "Soubor vyžadován."
 
-#: ../flask_admin/contrib/fileadmin.py:55
+#: ../flask_admin/contrib/fileadmin.py:235
 msgid "Invalid file type."
 msgstr "Nesprávný formát souboru."
 
-#: ../flask_admin/contrib/fileadmin.py:365
-msgid "File uploading is disabled."
-msgstr "Nahrávání souborů není povoleno."
+#: ../flask_admin/contrib/fileadmin.py:246
+msgid "Content"
+msgstr "Obsah"
 
-#: ../flask_admin/contrib/fileadmin.py:374
+#: ../flask_admin/contrib/fileadmin.py:260
+msgid "Invalid name"
+msgstr "Neplatný název"
+
+#: ../flask_admin/contrib/fileadmin.py:268
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:35
+msgid "Name"
+msgstr "Jméno"
+
+#: ../flask_admin/contrib/fileadmin.py:546
 #, python-format
 msgid "File \"%(name)s\" already exists."
 msgstr "Soubor s názvem \"%(name)s\" již existuje."
 
-#: ../flask_admin/contrib/fileadmin.py:381
+#: ../flask_admin/contrib/fileadmin.py:570
+#: ../flask_admin/contrib/fileadmin.py:637
+#: ../flask_admin/contrib/fileadmin.py:690
+#: ../flask_admin/contrib/fileadmin.py:731
+#: ../flask_admin/contrib/fileadmin.py:777
+#: ../flask_admin/contrib/fileadmin.py:826
+msgid "Permission denied."
+msgstr "Přístup zamezen."
+
+#: ../flask_admin/contrib/fileadmin.py:633
+msgid "File uploading is disabled."
+msgstr "Nahrávání souborů není povoleno."
+
+#: ../flask_admin/contrib/fileadmin.py:646
 #, python-format
 msgid "Failed to save file: %(error)s"
 msgstr "Chyba při ukládání souboru: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:400
+#: ../flask_admin/contrib/fileadmin.py:686
 msgid "Directory creation is disabled."
 msgstr "Vytváření adresářů není povoleno."
 
-#: ../flask_admin/contrib/fileadmin.py:410
+#: ../flask_admin/contrib/fileadmin.py:701
 #, python-format
 msgid "Failed to create directory: %(error)s"
 msgstr "Chyba při vytváření adresáře: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:432
+#: ../flask_admin/contrib/fileadmin.py:727
 msgid "Deletion is disabled."
 msgstr "Mazání není povoleno."
 
-#: ../flask_admin/contrib/fileadmin.py:437
+#: ../flask_admin/contrib/fileadmin.py:736
 msgid "Directory deletion is disabled."
 msgstr "Mazání adresářů není povoleno."
 
-#: ../flask_admin/contrib/fileadmin.py:442
+#: ../flask_admin/contrib/fileadmin.py:742
 #, python-format
-msgid "Directory \"%s\" was successfully deleted."
-msgstr "Adresář \"%s\" byl úspěšně smazán."
+msgid "Directory \"%(path)s\" was successfully deleted."
+msgstr "Adresář \"%(path)s\" byla úspěšně odstraněna."
 
-#: ../flask_admin/contrib/fileadmin.py:444
+#: ../flask_admin/contrib/fileadmin.py:744
 #, python-format
 msgid "Failed to delete directory: %(error)s"
 msgstr "Chyba při mazání adresáře: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:448
-#: ../flask_admin/contrib/fileadmin.py:511
+#: ../flask_admin/contrib/fileadmin.py:749
+#: ../flask_admin/contrib/fileadmin.py:894
 #, python-format
 msgid "File \"%(name)s\" was successfully deleted."
 msgstr "Soubor \"%(name)s\" byl úspěšně smazán."
 
-#: ../flask_admin/contrib/fileadmin.py:450
-#: ../flask_admin/contrib/fileadmin.py:513
+#: ../flask_admin/contrib/fileadmin.py:751
+#: ../flask_admin/contrib/fileadmin.py:896
 #, python-format
 msgid "Failed to delete file: %(name)s"
 msgstr "Chyba při mazání souboru: %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:469
+#: ../flask_admin/contrib/fileadmin.py:773
 msgid "Renaming is disabled."
 msgstr "Přejmenovávání není povoleno."
 
-#: ../flask_admin/contrib/fileadmin.py:473
+#: ../flask_admin/contrib/fileadmin.py:781
 msgid "Path does not exist."
 msgstr "Cesta neexistuje."
 
-#: ../flask_admin/contrib/fileadmin.py:484
+#: ../flask_admin/contrib/fileadmin.py:792
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
 msgstr "Úspěšné přejmenování \"%(src)s\" na \"%(dst)s\""
 
-#: ../flask_admin/contrib/fileadmin.py:487
+#: ../flask_admin/contrib/fileadmin.py:795
 #, python-format
 msgid "Failed to rename: %(error)s"
 msgstr "Chyba při přejmenování: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:503
-#: ../flask_admin/contrib/peewee/view.py:355
-#: ../flask_admin/contrib/sqla/view.py:680
+#: ../flask_admin/contrib/fileadmin.py:842
+#, python-format
+msgid "Error saving changes to %(name)s."
+msgstr "Chyba při ukládání změn do %(name)s."
+
+#: ../flask_admin/contrib/fileadmin.py:846
+#, python-format
+msgid "Changes to %(name)s saved successfully."
+msgstr "Změny v %(name)s byl úspěšně uložen."
+
+#: ../flask_admin/contrib/fileadmin.py:855
+#, python-format
+msgid "Error reading %(name)s."
+msgstr "Chyba při čtení %(name)s."
+
+#: ../flask_admin/contrib/fileadmin.py:858
+#: ../flask_admin/contrib/fileadmin.py:867
+#, python-format
+msgid "Unexpected error while reading from %(name)s"
+msgstr "Neočekávaná chyba při čtení z %(name)s"
+
+#: ../flask_admin/contrib/fileadmin.py:864
+#, python-format
+msgid "Cannot edit %(name)s."
+msgstr "Nelze upravovat %(name)s."
+
+#: ../flask_admin/contrib/fileadmin.py:881
+#: ../flask_admin/contrib/mongoengine/view.py:626
+#: ../flask_admin/contrib/peewee/view.py:429
+#: ../flask_admin/contrib/pymongo/view.py:349
+#: ../flask_admin/contrib/sqla/view.py:956
 msgid "Delete"
 msgstr "Smazat"
 
-#: ../flask_admin/contrib/fileadmin.py:504
+#: ../flask_admin/contrib/fileadmin.py:882
 msgid "Are you sure you want to delete these files?"
 msgstr "Skutečně chcete vymazat následující soubory?"
 
-#: ../flask_admin/contrib/peewee/filters.py:35
-#: ../flask_admin/contrib/sqla/filters.py:35
+#: ../flask_admin/contrib/fileadmin.py:885
+msgid "File deletion is disabled."
+msgstr "Odstranění souborů je zakázáno."
+
+#: ../flask_admin/contrib/fileadmin.py:898
+msgid "Edit"
+msgstr "Úpravy"
+
+#: ../flask_admin/contrib/rediscli.py:125
+msgid "Cli: Invalid command."
+msgstr "CLI: Neplatný příkaz."
+
+#: ../flask_admin/contrib/geoa/fields.py:29
+msgid "Invalid JSON"
+msgstr "Neplatný JSON"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:38
+#: ../flask_admin/contrib/peewee/filters.py:38
+#: ../flask_admin/contrib/pymongo/filters.py:38
+#: ../flask_admin/contrib/sqla/filters.py:38
 msgid "equals"
 msgstr "rovno"
 
-#: ../flask_admin/contrib/peewee/filters.py:43
-#: ../flask_admin/contrib/sqla/filters.py:43
+#: ../flask_admin/contrib/mongoengine/filters.py:47
+#: ../flask_admin/contrib/peewee/filters.py:46
+#: ../flask_admin/contrib/pymongo/filters.py:47
+#: ../flask_admin/contrib/sqla/filters.py:46
 msgid "not equal"
 msgstr "není rovno"
 
-#: ../flask_admin/contrib/peewee/filters.py:52
-#: ../flask_admin/contrib/sqla/filters.py:52
+#: ../flask_admin/contrib/mongoengine/filters.py:57
+#: ../flask_admin/contrib/peewee/filters.py:55
+#: ../flask_admin/contrib/pymongo/filters.py:57
+#: ../flask_admin/contrib/sqla/filters.py:55
 msgid "contains"
 msgstr "obsahuje"
 
-#: ../flask_admin/contrib/peewee/filters.py:61
-#: ../flask_admin/contrib/sqla/filters.py:61
+#: ../flask_admin/contrib/mongoengine/filters.py:67
+#: ../flask_admin/contrib/peewee/filters.py:64
+#: ../flask_admin/contrib/pymongo/filters.py:67
+#: ../flask_admin/contrib/sqla/filters.py:64
 msgid "not contains"
 msgstr "neobsahuje"
 
-#: ../flask_admin/contrib/peewee/filters.py:69
-#: ../flask_admin/contrib/sqla/filters.py:69
+#: ../flask_admin/contrib/mongoengine/filters.py:76
+#: ../flask_admin/contrib/peewee/filters.py:72
+#: ../flask_admin/contrib/pymongo/filters.py:80
+#: ../flask_admin/contrib/sqla/filters.py:72
 msgid "greater than"
 msgstr "větší než"
 
-#: ../flask_admin/contrib/peewee/filters.py:77
-#: ../flask_admin/contrib/sqla/filters.py:77
+#: ../flask_admin/contrib/mongoengine/filters.py:85
+#: ../flask_admin/contrib/peewee/filters.py:80
+#: ../flask_admin/contrib/pymongo/filters.py:93
+#: ../flask_admin/contrib/sqla/filters.py:80
 msgid "smaller than"
 msgstr "menší než"
 
-#: ../flask_admin/contrib/peewee/view.py:317
-#: ../flask_admin/contrib/sqla/view.py:627
+#: ../flask_admin/contrib/mongoengine/filters.py:97
+#: ../flask_admin/contrib/peewee/filters.py:91
+#: ../flask_admin/contrib/sqla/filters.py:91
+msgid "empty"
+msgstr "prázdné"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:112
+#: ../flask_admin/contrib/peewee/filters.py:105
+#: ../flask_admin/contrib/sqla/filters.py:105
+msgid "in list"
+msgstr "v seznamu"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:121
+#: ../flask_admin/contrib/peewee/filters.py:114
+#: ../flask_admin/contrib/sqla/filters.py:114
+msgid "not in list"
+msgstr "není v seznamu"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:221
+#: ../flask_admin/contrib/peewee/filters.py:208
+#: ../flask_admin/contrib/peewee/filters.py:245
+#: ../flask_admin/contrib/peewee/filters.py:282
+#: ../flask_admin/contrib/sqla/filters.py:209
+#: ../flask_admin/contrib/sqla/filters.py:246
+#: ../flask_admin/contrib/sqla/filters.py:283
+msgid "not between"
+msgstr "není mezi"
+
+#: ../flask_admin/contrib/mongoengine/view.py:520
+#, python-format
+msgid "Failed to get model. %(error)s"
+msgstr "Nepodařilo se získat modelu. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:539
+#: ../flask_admin/contrib/peewee/view.py:380
+#: ../flask_admin/contrib/pymongo/view.py:284
+#: ../flask_admin/contrib/sqla/view.py:888
 #, python-format
 msgid "Failed to create record. %(error)s"
 msgstr "Chyba při vytváření modelu. %(error)s"
 
-#: ../flask_admin/contrib/peewee/view.py:332
-#: ../flask_admin/contrib/sqla/view.py:647
+#: ../flask_admin/contrib/mongoengine/view.py:565
+#: ../flask_admin/contrib/peewee/view.py:399
+#: ../flask_admin/contrib/pymongo/view.py:309
+#: ../flask_admin/contrib/sqla/view.py:914 ../flask_admin/model/base.py:1671
+#: ../flask_admin/model/base.py:1680
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr "Chyba při aktualizaci modelu. %(error)s"
 
-#: ../flask_admin/contrib/peewee/view.py:342
-#: ../flask_admin/contrib/sqla/view.py:666
+#: ../flask_admin/contrib/mongoengine/view.py:589
+#: ../flask_admin/contrib/peewee/view.py:415
+#: ../flask_admin/contrib/pymongo/view.py:335
+#: ../flask_admin/contrib/sqla/view.py:940
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr "Chyba při mazání modelu. %(error)s"
 
-#: ../flask_admin/contrib/peewee/view.py:356
-#: ../flask_admin/contrib/sqla/view.py:681
+#: ../flask_admin/contrib/mongoengine/view.py:627
+#: ../flask_admin/contrib/peewee/view.py:430
+#: ../flask_admin/contrib/pymongo/view.py:350
+#: ../flask_admin/contrib/sqla/view.py:957
 msgid "Are you sure you want to delete selected records?"
 msgstr "Skutečně chcete vymazat vybrané modely?"
 
-#: ../flask_admin/contrib/peewee/view.py:372
-#: ../flask_admin/contrib/sqla/view.py:699
+#: ../flask_admin/contrib/mongoengine/view.py:636
+#: ../flask_admin/contrib/peewee/view.py:446
+#: ../flask_admin/contrib/pymongo/view.py:360
+#: ../flask_admin/contrib/sqla/view.py:973 ../flask_admin/model/base.py:1619
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
@@ -188,123 +299,239 @@ msgstr[0] "%(count)s model byl úspěšně smazán."
 msgstr[1] "%(count)s modely byly úspěšně smazány."
 msgstr[2] "%(count)s modelů bylo úspěšně smazáno."
 
-#: ../flask_admin/contrib/peewee/view.py:377
-#: ../flask_admin/contrib/sqla/view.py:704
+#: ../flask_admin/contrib/mongoengine/view.py:642
+#: ../flask_admin/contrib/peewee/view.py:452
+#: ../flask_admin/contrib/pymongo/view.py:365
+#: ../flask_admin/contrib/sqla/view.py:981
 #, python-format
 msgid "Failed to delete records. %(error)s"
 msgstr "Chyba při mazání modelu. %(error)s"
 
-#: ../flask_admin/contrib/sqla/fields.py:125
-#: ../flask_admin/contrib/sqla/fields.py:175
-#: ../flask_admin/contrib/sqla/fields.py:180
+#: ../flask_admin/contrib/sqla/fields.py:123
+#: ../flask_admin/contrib/sqla/fields.py:173
+#: ../flask_admin/contrib/sqla/fields.py:178 ../flask_admin/model/fields.py:225
+#: ../flask_admin/model/fields.py:274
 msgid "Not a valid choice"
 msgstr "Tato volba není přípustná"
 
-#: ../flask_admin/contrib/sqla/validators.py:33
+#: ../flask_admin/contrib/sqla/validators.py:42
 msgid "Already exists."
 msgstr "Již existuje."
 
-#: ../flask_admin/model/base.py:869
+#: ../flask_admin/contrib/sqla/validators.py:60
+#, python-format
+msgid "At least %d item is required"
+msgid_plural "At least %d items are required"
+msgstr[0] "Alespoň %d položka je požadováno"
+msgstr[1] "Alespoň %d položky jsou povinné"
+msgstr[2] "Alespoň %d položky jsou povinné"
+
+#: ../flask_admin/contrib/sqla/view.py:867
+#, python-format
+msgid "Integrity error. %(message)s"
+msgstr "Chyba integrity. %(message)s"
+
+#: ../flask_admin/form/fields.py:92
+msgid "Invalid time format"
+msgstr "Nesprávný formát času"
+
+#: ../flask_admin/form/fields.py:138
+msgid "Invalid Choice: could not coerce"
+msgstr "Neplatná volba: nebylo převedeno"
+
+#: ../flask_admin/form/upload.py:189
+msgid "Invalid file extension"
+msgstr "Neplatná přípona souboru"
+
+#: ../flask_admin/model/base.py:1281
+msgid "There are no items in the table."
+msgstr "V tabulce nejsou žádné položky."
+
+#: ../flask_admin/model/base.py:1305
+#, python-format
+msgid "Invalid Filter Value: %(value)s"
+msgstr "Neplatná hodnota filtru: %(value)s"
+
+#: ../flask_admin/model/base.py:1539
 msgid "Record was successfully created."
 msgstr "Model byl úspěšně vytvořen."
 
-#: ../flask_admin/model/filters.py:82
+#: ../flask_admin/model/base.py:1578 ../flask_admin/model/base.py:1676
+msgid "Record was successfully saved."
+msgstr "Záznam byl úspěšně uložen."
+
+#: ../flask_admin/model/filters.py:99
 msgid "Yes"
 msgstr "Ano"
 
-#: ../flask_admin/model/filters.py:83
+#: ../flask_admin/model/filters.py:100
 msgid "No"
 msgstr "Ne"
 
-#: ../flask_admin/templates/admin/actions.html:3
+#: ../flask_admin/model/filters.py:162 ../flask_admin/model/filters.py:202
+#: ../flask_admin/model/filters.py:247
+msgid "between"
+msgstr "mezi"
+
+#: ../flask_admin/templates/bootstrap2/admin/actions.html:4
+#: ../flask_admin/templates/bootstrap3/admin/actions.html:4
 msgid "With selected"
 msgstr "S vybranými"
 
-#: ../flask_admin/templates/admin/lib.html:117
-msgid "Submit"
-msgstr "Odeslat"
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:156
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:150
+msgid "Save"
+msgstr "Uložit"
 
-#: ../flask_admin/templates/admin/lib.html:122
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:161
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:155
 msgid "Cancel"
 msgstr "Zrušit"
 
-#: ../flask_admin/templates/admin/file/list.html:8
+#: ../flask_admin/templates/bootstrap2/admin/file/edit.html:5
+#: ../flask_admin/templates/bootstrap3/admin/file/edit.html:5
+#, python-format
+msgid "You are editing %(path)s"
+msgstr "Jsou úpravy %(path)s"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
 msgid "Root"
 msgstr "Kořen"
 
-#: ../flask_admin/templates/admin/file/list.html:55
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:36
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:36
+msgid "Size"
+msgstr "Velikost"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:63
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:63
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
 msgstr "Opravdu chcete vymazat \\'%(name)s\\' rekurzivně?"
 
-#: ../flask_admin/templates/admin/file/list.html:63
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:72
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:72
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\'?"
 msgstr "Opravdu chcete vymazat \\'%(name)s\\'?"
 
-#: ../flask_admin/templates/admin/file/list.html:90
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:107
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:107
 msgid "Upload File"
 msgstr "Nahrát soubor"
 
-#: ../flask_admin/templates/admin/file/list.html:95
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:112
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:112
 msgid "Create Directory"
 msgstr "Vytvořit adresář"
 
-#: ../flask_admin/templates/admin/file/list.html:109
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:129
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:129
 msgid "Please select at least one file."
 msgstr "Vyberte prosím alespoň jeden soubor."
 
-#: ../flask_admin/templates/admin/file/rename.html:5
+#: ../flask_admin/templates/bootstrap2/admin/file/rename.html:5
+#: ../flask_admin/templates/bootstrap3/admin/file/rename.html:5
 #, python-format
 msgid "Please provide new name for %(name)s"
 msgstr "Prosím napište nový název pro %(name)s"
 
-#: ../flask_admin/templates/admin/model/create.html:12
-#: ../flask_admin/templates/admin/model/list.html:13
-msgid "List"
-msgstr "Seznam"
-
-#: ../flask_admin/templates/admin/model/create.html:15
-#: ../flask_admin/templates/admin/model/list.html:17
-msgid "Create"
-msgstr "Vytvořit"
-
-#: ../flask_admin/templates/admin/model/create.html:20
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:5
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
 msgid "Save and Add"
 msgstr "Uložit a přidat"
 
-#: ../flask_admin/templates/admin/model/inline_form_list.html:24
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:16
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:16
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:16
+msgid "List"
+msgstr "Seznam"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:19
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:20
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:20
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:20
+msgid "Create"
+msgstr "Vytvořit"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:5
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
+msgid "Save and Continue"
+msgstr "Enregistrer et continuer"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:14
 msgid "Delete?"
 msgstr "Smazat?"
 
-#: ../flask_admin/templates/admin/model/inline_form_list.html:32
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:40
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:43
 msgid "Add"
 msgstr "Přidat"
 
-#: ../flask_admin/templates/admin/model/list.html:24
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:3
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:3
 msgid "Add Filter"
 msgstr "Přidat filtr"
 
-#: ../flask_admin/templates/admin/model/list.html:51
-msgid "Search"
-msgstr "Hledat"
-
-#: ../flask_admin/templates/admin/model/list.html:64
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:17
 msgid "Apply"
 msgstr "Potvrdit"
 
-#: ../flask_admin/templates/admin/model/list.html:66
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:19
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:19
 msgid "Reset Filters"
 msgstr "Zrušit filtry"
 
-#: ../flask_admin/templates/admin/model/list.html:74
-msgid "Remove Filter"
-msgstr "Odebrat filtr"
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:38
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:45
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:38
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:43
+msgid "Search"
+msgstr "Hledat"
 
-#: ../flask_admin/templates/admin/model/list.html:149
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:20
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:20
+msgid "Create new record"
+msgstr "Vytvořit nový záznam"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:56
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:56
+msgid "Select all records"
+msgstr "Vybrat všechny záznamy"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:76
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:67
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:76
+#, python-format
+msgid "Sort by %(name)s"
+msgstr "Seřadit podle %(name)s"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:98
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:98
+msgid "Select record"
+msgstr "Výběr záznamu"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:105
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:105
+msgid "Edit record"
+msgstr "Upravit záznam"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:114
 msgid "Are you sure you want to delete this record?"
 msgstr "Opravdu chcete vymazat tento záznam?"
 
-#: ../flask_admin/templates/admin/model/list.html:173
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
+msgid "Delete record"
+msgstr "Odstranit záznam"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:161
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:160
 msgid "Please select at least one record."
 msgstr "Vyberte prosím alespoň jeden model."
+

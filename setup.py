@@ -33,7 +33,7 @@ def grep(attrname):
 setup(
     name='Flask-Admin',
     version=grep('__version__'),
-    url='https://github.com/mrjoes/flask-admin/',
+    url='https://github.com/flask-admin/flask-admin/',
     license='BSD',
     author=grep('__author__'),
     author_email=grep('__email__'),
@@ -68,7 +68,11 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Topic :: Software Development :: Libraries :: Python Modules'
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
     ],
     test_suite='nose.collector'
 )

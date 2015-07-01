@@ -1,11 +1,8 @@
-import warnings
-import time
-import datetime
-
-from flask.ext.admin.babel import lazy_gettext
-from flask.ext.admin.model import filters
-from flask.ext.admin.contrib.sqla import tools
+from flask_admin.babel import lazy_gettext
+from flask_admin.model import filters
+from flask_admin.contrib.sqla import tools
 from sqlalchemy.sql import not_, or_
+
 
 class BaseSQLAFilter(filters.BaseFilter):
     """
@@ -28,64 +25,70 @@ class BaseSQLAFilter(filters.BaseFilter):
 
         self.column = column
 
+    def get_column(self, alias):
+        return self.column if alias is None else getattr(alias, self.column.key)
+
+    def apply(self, query, value, alias=None):
+        return super(self, BaseSQLAFilter).apply(query, value)
+
 
 # Common filters
 class FilterEqual(BaseSQLAFilter):
-    def apply(self, query, value):
-        return query.filter(self.column == value)
+    def apply(self, query, value, alias=None):
+        return query.filter(self.get_column(alias) == value)
 
     def operation(self):
         return lazy_gettext('equals')
 
 
 class FilterNotEqual(BaseSQLAFilter):
-    def apply(self, query, value):
-        return query.filter(self.column != value)
+    def apply(self, query, value, alias=None):
+        return query.filter(self.get_column(alias) != value)
 
     def operation(self):
         return lazy_gettext('not equal')
 
 
 class FilterLike(BaseSQLAFilter):
-    def apply(self, query, value):
+    def apply(self, query, value, alias=None):
         stmt = tools.parse_like_term(value)
-        return query.filter(self.column.ilike(stmt))
+        return query.filter(self.get_column(alias).ilike(stmt))
 
     def operation(self):
         return lazy_gettext('contains')
 
 
 class FilterNotLike(BaseSQLAFilter):
-    def apply(self, query, value):
+    def apply(self, query, value, alias=None):
         stmt = tools.parse_like_term(value)
-        return query.filter(~self.column.ilike(stmt))
+        return query.filter(~self.get_column(alias).ilike(stmt))
 
     def operation(self):
         return lazy_gettext('not contains')
 
 
 class FilterGreater(BaseSQLAFilter):
-    def apply(self, query, value):
-        return query.filter(self.column > value)
+    def apply(self, query, value, alias=None):
+        return query.filter(self.get_column(alias) > value)
 
     def operation(self):
         return lazy_gettext('greater than')
 
 
 class FilterSmaller(BaseSQLAFilter):
-    def apply(self, query, value):
-        return query.filter(self.column < value)
+    def apply(self, query, value, alias=None):
+        return query.filter(self.get_column(alias) < value)
 
     def operation(self):
         return lazy_gettext('smaller than')
 
 
 class FilterEmpty(BaseSQLAFilter, filters.BaseBooleanFilter):
-    def apply(self, query, value):
+    def apply(self, query, value, alias=None):
         if value == '1':
-            return query.filter(self.column == None)
+            return query.filter(self.get_column(alias) == None)
         else:
-            return query.filter(self.column != None)
+            return query.filter(self.get_column(alias) != None)
 
     def operation(self):
         return lazy_gettext('empty')
@@ -98,17 +101,18 @@ class FilterInList(BaseSQLAFilter):
     def clean(self, value):
         return [v.strip() for v in value.split(',') if v.strip()]
 
-    def apply(self, query, value):
-        return query.filter(self.column.in_(value))
+    def apply(self, query, value, alias=None):
+        return query.filter(self.get_column(alias).in_(value))
 
     def operation(self):
         return lazy_gettext('in list')
 
 
 class FilterNotInList(FilterInList):
-    def apply(self, query, value):
+    def apply(self, query, value, alias=None):
         # NOT IN can exclude NULL values, so "or_ == None" needed to be added
-        return query.filter(or_(~self.column.in_(value), self.column == None))
+        column = self.get_column(alias)
+        return query.filter(or_(~column.in_(value), column == None))
 
     def operation(self):
         return lazy_gettext('not in list')
@@ -194,16 +198,16 @@ class DateBetweenFilter(BaseSQLAFilter, filters.BaseDateBetweenFilter):
                                                 options,
                                                 data_type='daterangepicker')
 
-    def apply(self, query, value):
+    def apply(self, query, value, alias=None):
         start, end = value
-        return query.filter(self.column.between(start, end))
+        return query.filter(self.get_column(alias).between(start, end))
 
 
 class DateNotBetweenFilter(DateBetweenFilter):
-    def apply(self, query, value):
+    def apply(self, query, value, alias=None):
         start, end = value
         # ~between() isn't possible until sqlalchemy 1.0.0
-        return query.filter(not_(self.column.between(start, end)))
+        return query.filter(not_(self.get_column(alias).between(start, end)))
 
     def operation(self):
         return lazy_gettext('not between')
@@ -232,15 +236,15 @@ class DateTimeBetweenFilter(BaseSQLAFilter, filters.BaseDateTimeBetweenFilter):
                                                     options,
                                                     data_type='datetimerangepicker')
 
-    def apply(self, query, value):
+    def apply(self, query, value, alias=None):
         start, end = value
-        return query.filter(self.column.between(start, end))
+        return query.filter(self.get_column(alias).between(start, end))
 
 
 class DateTimeNotBetweenFilter(DateTimeBetweenFilter):
-    def apply(self, query, value):
+    def apply(self, query, value, alias=None):
         start, end = value
-        return query.filter(not_(self.column.between(start, end)))
+        return query.filter(not_(self.get_column(alias).between(start, end)))
 
     def operation(self):
         return lazy_gettext('not between')
@@ -269,15 +273,15 @@ class TimeBetweenFilter(BaseSQLAFilter, filters.BaseTimeBetweenFilter):
                                                 options,
                                                 data_type='timerangepicker')
 
-    def apply(self, query, value):
+    def apply(self, query, value, alias=None):
         start, end = value
-        return query.filter(self.column.between(start, end))
+        return query.filter(self.get_column(alias).between(start, end))
 
 
 class TimeNotBetweenFilter(TimeBetweenFilter):
-    def apply(self, query, value):
+    def apply(self, query, value, alias=None):
         start, end = value
-        return query.filter(not_(self.column.between(start, end)))
+        return query.filter(not_(self.get_column(alias).between(start, end)))
 
     def operation(self):
         return lazy_gettext('not between')
@@ -285,7 +289,7 @@ class TimeNotBetweenFilter(TimeBetweenFilter):
 
 # Base SQLA filter field converter
 class FilterConverter(filters.BaseFilterConverter):
-    strings = (FilterEqual, FilterNotEqual, FilterLike, FilterNotLike,
+    strings = (FilterLike, FilterNotLike, FilterEqual, FilterNotEqual,
                FilterEmpty, FilterInList, FilterNotInList)
     int_filters = (IntEqualFilter, IntNotEqualFilter, IntGreaterFilter,
                    IntSmallerFilter, FilterEmpty, IntInListFilter,

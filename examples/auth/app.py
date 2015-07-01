@@ -1,167 +1,107 @@
 import os
-from flask import Flask, url_for, redirect, render_template, request
-from flask.ext.sqlalchemy import SQLAlchemy
-from wtforms import form, fields, validators
-from flask.ext import admin, login
-from flask.ext.admin.contrib import sqla
-from flask.ext.admin import helpers, expose
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Flask, url_for, redirect, render_template, request, abort
+from flask_sqlalchemy import SQLAlchemy
+from flask_security import Security, SQLAlchemyUserDatastore, \
+    UserMixin, RoleMixin, login_required, current_user
+from flask_security.utils import encrypt_password
+import flask_admin
+from flask_admin.contrib import sqla
+from flask_admin import helpers as admin_helpers
 
 
 # Create Flask application
 app = Flask(__name__)
-
-# Create dummy secrey key so we can use sessions
-app.config['SECRET_KEY'] = '123456790'
-
-# Create in-memory database
-app.config['DATABASE_FILE'] = 'sample_db.sqlite'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.config['DATABASE_FILE']
-app.config['SQLALCHEMY_ECHO'] = True
+app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 
 
-# Create user model.
-class User(db.Model):
+# Define models
+roles_users = db.Table(
+    'roles_users',
+    db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+    db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
+)
+
+
+class Role(db.Model, RoleMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+    def __str__(self):
+        return self.name
+
+
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(100))
-    last_name = db.Column(db.String(100))
-    login = db.Column(db.String(80), unique=True)
-    email = db.Column(db.String(120))
-    password = db.Column(db.String(64))
+    first_name = db.Column(db.String(255))
+    last_name = db.Column(db.String(255))
+    email = db.Column(db.String(255), unique=True)
+    password = db.Column(db.String(255))
+    active = db.Column(db.Boolean())
+    confirmed_at = db.Column(db.DateTime())
+    roles = db.relationship('Role', secondary=roles_users,
+                            backref=db.backref('users', lazy='dynamic'))
 
-    # Flask-Login integration
-    def is_authenticated(self):
-        return True
-
-    def is_active(self):
-        return True
-
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        return self.id
-
-    # Required for administrative interface
-    def __unicode__(self):
-        return self.username
+    def __str__(self):
+        return self.email
 
 
-# Define login and registration forms (for flask-login)
-class LoginForm(form.Form):
-    login = fields.TextField(validators=[validators.required()])
-    password = fields.PasswordField(validators=[validators.required()])
-
-    def validate_login(self, field):
-        user = self.get_user()
-
-        if user is None:
-            raise validators.ValidationError('Invalid user')
-
-        # we're comparing the plaintext pw with the the hash from the db
-        if not check_password_hash(user.password, self.password.data):
-        # to compare plain text passwords use
-        # if user.password != self.password.data:
-            raise validators.ValidationError('Invalid password')
-
-    def get_user(self):
-        return db.session.query(User).filter_by(login=self.login.data).first()
-
-
-class RegistrationForm(form.Form):
-    login = fields.TextField(validators=[validators.required()])
-    email = fields.TextField()
-    password = fields.PasswordField(validators=[validators.required()])
-
-    def validate_login(self, field):
-        if db.session.query(User).filter_by(login=self.login.data).count() > 0:
-            raise validators.ValidationError('Duplicate username')
-
-
-# Initialize flask-login
-def init_login():
-    login_manager = login.LoginManager()
-    login_manager.init_app(app)
-
-    # Create user loader function
-    @login_manager.user_loader
-    def load_user(user_id):
-        return db.session.query(User).get(user_id)
+# Setup Flask-Security
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security(app, user_datastore)
 
 
 # Create customized model view class
 class MyModelView(sqla.ModelView):
 
     def is_accessible(self):
-        return login.current_user.is_authenticated()
+        if not current_user.is_active() or not current_user.is_authenticated():
+            return False
 
+        if current_user.has_role('superuser'):
+            return True
 
-# Create customized index view class that handles login & registration
-class MyAdminIndexView(admin.AdminIndexView):
+        return False
 
-    @expose('/')
-    def index(self):
-        if not login.current_user.is_authenticated():
-            return redirect(url_for('.login_view'))
-        return super(MyAdminIndexView, self).index()
-
-    @expose('/login/', methods=('GET', 'POST'))
-    def login_view(self):
-        # handle user login
-        form = LoginForm(request.form)
-        if helpers.validate_form_on_submit(form):
-            user = form.get_user()
-            login.login_user(user)
-
-        if login.current_user.is_authenticated():
-            return redirect(url_for('.index'))
-        link = '<p>Don\'t have an account? <a href="' + url_for('.register_view') + '">Click here to register.</a></p>'
-        self._template_args['form'] = form
-        self._template_args['link'] = link
-        return super(MyAdminIndexView, self).index()
-
-    @expose('/register/', methods=('GET', 'POST'))
-    def register_view(self):
-        form = RegistrationForm(request.form)
-        if helpers.validate_form_on_submit(form):
-            user = User()
-
-            form.populate_obj(user)
-            # we hash the users password to avoid saving it as plaintext in the db,
-            # remove to use plain text:
-            user.password = generate_password_hash(form.password.data)
-
-            db.session.add(user)
-            db.session.commit()
-
-            login.login_user(user)
-            return redirect(url_for('.index'))
-        link = '<p>Already have an account? <a href="' + url_for('.login_view') + '">Click here to log in.</a></p>'
-        self._template_args['form'] = form
-        self._template_args['link'] = link
-        return super(MyAdminIndexView, self).index()
-
-    @expose('/logout/')
-    def logout_view(self):
-        login.logout_user()
-        return redirect(url_for('.index'))
-
+    def _handle_view(self, name, **kwargs):
+        """
+        Override builtin _handle_view in order to redirect users when a view is not accessible.
+        """
+        if not self.is_accessible():
+            if current_user.is_authenticated():
+                # permission denied
+                abort(403)
+            else:
+                # login
+                return redirect(url_for('security.login', next=request.url))
 
 # Flask views
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
-# Initialize flask-login
-init_login()
-
 # Create admin
-admin = admin.Admin(app, 'Example: Auth', index_view=MyAdminIndexView(), base_template='my_master.html')
+admin = flask_admin.Admin(
+    app,
+    'Example: Auth',
+    base_template='my_master.html',
+    template_mode='bootstrap3',
+)
 
-# Add view
+# Add model views
+admin.add_view(MyModelView(Role, db.session))
 admin.add_view(MyModelView(User, db.session))
+
+# define a context processor for merging flask-admin's template context into the
+# flask-security views.
+@security.context_processor
+def security_context_processor():
+    return dict(
+        admin_base_template=admin.base_template,
+        admin_view=admin.index_view,
+        h=admin_helpers,
+    )
 
 
 def build_sample_db():
@@ -174,32 +114,43 @@ def build_sample_db():
 
     db.drop_all()
     db.create_all()
-    # passwords are hashed, to use plaintext passwords instead:
-    # test_user = User(login="test", password="test")
-    test_user = User(login="test", password=generate_password_hash("test"))
-    db.session.add(test_user)
 
-    first_names = [
-        'Harry', 'Amelia', 'Oliver', 'Jack', 'Isabella', 'Charlie','Sophie', 'Mia',
-        'Jacob', 'Thomas', 'Emily', 'Lily', 'Ava', 'Isla', 'Alfie', 'Olivia', 'Jessica',
-        'Riley', 'William', 'James', 'Geoffrey', 'Lisa', 'Benjamin', 'Stacey', 'Lucy'
-    ]
-    last_names = [
-        'Brown', 'Smith', 'Patel', 'Jones', 'Williams', 'Johnson', 'Taylor', 'Thomas',
-        'Roberts', 'Khan', 'Lewis', 'Jackson', 'Clarke', 'James', 'Phillips', 'Wilson',
-        'Ali', 'Mason', 'Mitchell', 'Rose', 'Davis', 'Davies', 'Rodriguez', 'Cox', 'Alexander'
-    ]
+    with app.app_context():
+        user_role = Role(name='user')
+        super_user_role = Role(name='superuser')
+        db.session.add(user_role)
+        db.session.add(super_user_role)
+        db.session.commit()
 
-    for i in range(len(first_names)):
-        user = User()
-        user.first_name = first_names[i]
-        user.last_name = last_names[i]
-        user.login = user.first_name.lower()
-        user.email = user.login + "@example.com"
-        user.password = generate_password_hash(''.join(random.choice(string.ascii_lowercase + string.digits) for i in range(10)))
-        db.session.add(user)
+        test_user = user_datastore.create_user(
+            first_name='Admin',
+            email='admin',
+            password=encrypt_password('admin'),
+            roles=[user_role, super_user_role]
+        )
 
-    db.session.commit()
+        first_names = [
+            'Harry', 'Amelia', 'Oliver', 'Jack', 'Isabella', 'Charlie', 'Sophie', 'Mia',
+            'Jacob', 'Thomas', 'Emily', 'Lily', 'Ava', 'Isla', 'Alfie', 'Olivia', 'Jessica',
+            'Riley', 'William', 'James', 'Geoffrey', 'Lisa', 'Benjamin', 'Stacey', 'Lucy'
+        ]
+        last_names = [
+            'Brown', 'Smith', 'Patel', 'Jones', 'Williams', 'Johnson', 'Taylor', 'Thomas',
+            'Roberts', 'Khan', 'Lewis', 'Jackson', 'Clarke', 'James', 'Phillips', 'Wilson',
+            'Ali', 'Mason', 'Mitchell', 'Rose', 'Davis', 'Davies', 'Rodriguez', 'Cox', 'Alexander'
+        ]
+
+        for i in range(len(first_names)):
+            tmp_email = first_names[i].lower() + "." + last_names[i].lower() + "@example.com"
+            tmp_pass = ''.join(random.choice(string.ascii_lowercase + string.digits) for i in range(10))
+            user_datastore.create_user(
+                first_name=first_names[i],
+                last_name=last_names[i],
+                email=tmp_email,
+                password=encrypt_password(tmp_pass),
+                roles=[user_role, ]
+            )
+        db.session.commit()
     return
 
 if __name__ == '__main__':

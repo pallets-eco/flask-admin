@@ -3,12 +3,12 @@ import os.path as op
 from functools import wraps
 
 from flask import Blueprint, current_app, render_template, abort, g, url_for
-from flask.ext.admin import babel
-from flask.ext.admin._compat import with_metaclass
-from flask.ext.admin import helpers as h
+from flask_admin import babel
+from flask_admin._compat import with_metaclass, as_unicode
+from flask_admin import helpers as h
 
 # For compatibility reasons import MenuLink
-from flask.ext.admin.menu import MenuCategory, MenuView, MenuLink
+from flask_admin.menu import MenuCategory, MenuView, MenuLink
 
 
 def expose(url='/', methods=('GET',)):
@@ -111,7 +111,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
         Derive from this class to implement your administrative interface piece. For example::
 
-            from flask.ext.admin import BaseView, expose
+            from flask_admin import BaseView, expose
             class MyView(BaseView):
                 @expose('/')
                 def index(self):
@@ -179,15 +179,16 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             :param menu_icon_type:
                 Optional icon. Possible icon types:
 
-                 - `flask.ext.admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
-                 - `flask.ext.admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
+                 - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
+                 - `flask_admin.consts.ICON_TYPE_FONT_AWESOME` - Font Awesome icon
+                 - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+                 - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
             :param menu_icon_value:
                 Icon glyph name or URL, depending on `menu_icon_type` setting
         """
         self.name = name
         self.category = category
-        self.endpoint = endpoint
+        self.endpoint = self._get_endpoint(endpoint)
         self.url = url
         self.static_folder = static_folder
         self.static_url_path = static_url_path
@@ -205,16 +206,22 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         if self._default_view is None:
             raise Exception(u'Attempted to instantiate admin view %s without default view' % self.__class__.__name__)
 
+    def _get_endpoint(self, endpoint):
+        """
+            Generate Flask endpoint name. By default converts class name to lower case if endpoint is
+            not explicitly provided.
+        """
+        if endpoint:
+            return endpoint
+
+        return self.__class__.__name__.lower()
+
     def create_blueprint(self, admin):
         """
             Create Flask blueprint.
         """
         # Store admin instance
         self.admin = admin
-
-        # If endpoint name is not provided, get it from the class name
-        if self.endpoint is None:
-            self.endpoint = self.__class__.__name__.lower()
 
         # If the static_url_path is not provided, use the admin's
         if not self.static_url_path:
@@ -233,16 +240,14 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             if not self.url.startswith('/'):
                 self.url = '%s/%s' % (self.admin.url, self.url)
 
-        
         # If we're working from the root of the site, set prefix to None
         if self.url == '/':
             self.url = None
             # prevent admin static files from conflicting with flask static files
             if not self.static_url_path:
-                self.static_folder='static'
-                self.static_url_path='/static/admin'
-            
-            
+                self.static_folder = 'static'
+                self.static_url_path = '/static/admin'
+
         # If name is not povided, use capitalized endpoint name
         if self.name is None:
             self.name = self._prettify_class_name(self.__class__.__name__)
@@ -396,8 +401,8 @@ class AdminIndexView(BaseView):
                     return self.render('admin/myhome.html', arg1=arg1)
 
             admin = Admin(index_view=MyHomeView())
-            
-            
+
+
         Also, you can change the root url from /admin to / with the following::
 
             admin = Admin(
@@ -535,18 +540,14 @@ class Admin(object):
             self._menu_links.append(link)
 
     def _add_menu_item(self, menu_item, target_category):
-        """
-            Add a view to the menu tree
-
-            :param view:
-                View to add
-        """
         if target_category:
-            category = self._menu_categories.get(target_category)
+            cat_text = as_unicode(target_category)
+
+            category = self._menu_categories.get(cat_text)
 
             if category is None:
                 category = MenuCategory(target_category)
-                self._menu_categories[target_category] = category
+                self._menu_categories[cat_text] = category
 
                 self._menu.append(category)
 
@@ -555,6 +556,12 @@ class Admin(object):
             self._menu.append(menu_item)
 
     def _add_view_to_menu(self, view):
+        """
+            Add a view to the menu tree
+
+            :param view:
+                View to add
+        """
         self._add_menu_item(MenuView(view.name, view), view.category)
 
     def get_category_menu_item(self, name):

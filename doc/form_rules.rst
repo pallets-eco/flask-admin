@@ -27,12 +27,12 @@ property one of your admin views::
 In this example, only three fields will be rendered and `email` field will be above other two fields.
 
 Whenever Flask-Admin sees a string value in `form_create_rules`, it automatically assumes that it is a
-form field reference and creates a :class:`flask.ext.admin.form.rules.Field` class instance for that field.
+form field reference and creates a :class:`flask_admin.form.rules.Field` class instance for that field.
 
 Lets say we want to display some text between the `email` and `first_name` fields. This can be accomplished by
-using the :class:`flask.ext.admin.form.rules.Text` class::
+using the :class:`flask_admin.form.rules.Text` class::
 
-    from flask.ext.admin.form import rules
+    from flask_admin.form import rules
 
     class RuleView(sqla.ModelView):
         form_create_rules = ('email', rules.Text('Foobar'), 'first_name', 'last_name')
@@ -40,25 +40,25 @@ using the :class:`flask.ext.admin.form.rules.Text` class::
 Built-in rules
 --------------
 
-Flask-Admin comes with few built-in rules that can be found in the :mod:`flask.ext.admin.form.rules` module:
+Flask-Admin comes with few built-in rules that can be found in the :mod:`flask_admin.form.rules` module:
 
 ======================================================= ========================================================
 Form Rendering Rule                                     Description
 ======================================================= ========================================================
-:class:`flask.ext.admin.form.rules.BaseRule`            All rules derive from this class
-:class:`flask.ext.admin.form.rules.NestedRule`          Allows rule nesting, useful for HTML containers
-:class:`flask.ext.admin.form.rules.Text`                Simple text rendering rule
-:class:`flask.ext.admin.form.rules.HTML`                Same as `Text` rule, but does not escape the text
-:class:`flask.ext.admin.form.rules.Macro`               Calls macro from current Jinja2 context
-:class:`flask.ext.admin.form.rules.Container`           Wraps child rules into container rendered by macro
-:class:`flask.ext.admin.form.rules.Field`               Renders single form field
-:class:`flask.ext.admin.form.rules.Header`              Renders form header
-:class:`flask.ext.admin.form.rules.FieldSet`            Renders form header and child rules
+:class:`flask_admin.form.rules.BaseRule`                All rules derive from this class
+:class:`flask_admin.form.rules.NestedRule`              Allows rule nesting, useful for HTML containers
+:class:`flask_admin.form.rules.Text`                    Simple text rendering rule
+:class:`flask_admin.form.rules.HTML`                    Same as `Text` rule, but does not escape the text
+:class:`flask_admin.form.rules.Macro`                   Calls macro from current Jinja2 context
+:class:`flask_admin.form.rules.Container`               Wraps child rules into container rendered by macro
+:class:`flask_admin.form.rules.Field`                   Renders single form field
+:class:`flask_admin.form.rules.Header`                  Renders form header
+:class:`flask_admin.form.rules.FieldSet`                Renders form header and child rules
 ======================================================= ========================================================
 
-Enabling CSRF Validation 
----------------
-Adding CSRF validation will require overriding the :class:`flask.ext.admin.form.BaseForm` by using :attr:`flask.ext.admin.model.BaseModelView.form_base_class`.
+Enabling CSRF Validation
+------------------------
+Adding CSRF validation will require overriding the :class:`flask_admin.form.BaseForm` by using :attr:`flask_admin.model.BaseModelView.form_base_class`.
 
 WTForms >=2::
 
@@ -66,8 +66,8 @@ WTForms >=2::
     from wtforms.meta import DefaultMeta
     from flask import session
     from datetime import timedelta
-    from flask.ext.admin import form
-    from flask.ext.admin.contrib import sqla
+    from flask_admin import form
+    from flask_admin.contrib import sqla
 
     class SecureForm(form.BaseForm):
         class Meta(DefaultMeta):
@@ -75,11 +75,11 @@ WTForms >=2::
             csrf_class = SessionCSRF
             csrf_secret = b'EPj00jpfj8Gx1SjnyLxwBBSQfnQ9DJYe0Ym'
             csrf_time_limit = timedelta(minutes=20)
-            
+
             @property
             def csrf_context(self):
                 return session
-    
+
     class ModelAdmin(sqla.ModelView):
         form_base_class = SecureForm
 
@@ -122,5 +122,5 @@ For WTForms 1, you can use use Flask-WTF's Form class::
 Further reading
 ---------------
 
-For additional documentation, check :mod:`flask.ext.admin.form.rules` module source code (it is quite short) and
-look at the `forms example <https://github.com/mrjoes/flask-admin/tree/master/examples/forms>`_ on GitHub.
+For additional documentation, check :mod:`flask_admin.form.rules` module source code (it is quite short) and
+look at the `forms example <https://github.com/flask-admin/flask-admin/tree/master/examples/forms>`_ on GitHub.
