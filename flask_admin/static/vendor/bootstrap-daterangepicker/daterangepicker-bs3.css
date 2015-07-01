@@ -1,9 +1,8 @@
 /*!
  * Stylesheet for the Date Range Picker, for use with Bootstrap 3.x
  *
- * Copyright 2013 Dan Grossman ( http://www.dangrossman.info )
- * Licensed under the Apache License v2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Copyright 2013-2015 Dan Grossman ( http://www.dangrossman.info )
+ * Licensed under the MIT license. See http://www.opensource.org/licenses/mit-license.php
  *
  * Built for http://www.improvely.com
  */
@@ -169,7 +168,7 @@
 .daterangepicker.openscenter:before {
   position: absolute;
   top: -7px;
-  left: 0;  
+  left: 0;
   right: 0;
   width: 0;
   margin-left: auto;
@@ -185,8 +184,8 @@
 .daterangepicker.openscenter:after {
   position: absolute;
   top: -6px;
-  left: 0;  
-  right: 0;  
+  left: 0;
+  right: 0;
   width: 0;
   margin-left: auto;
   margin-right: auto;
@@ -220,6 +219,22 @@
   content: '';
 }
 
+.daterangepicker.dropup{
+  margin-top: -5px;
+}
+.daterangepicker.dropup:before{
+  top: initial;
+  bottom:-7px;
+  border-bottom: initial;
+  border-top: 7px solid #ccc;
+}
+.daterangepicker.dropup:after{
+  top: initial;
+  bottom:-6px;
+  border-bottom: initial;
+  border-top: 6px solid #fff;
+}
+
 .daterangepicker table {
   width: 100%;
   margin: 0;
@@ -244,7 +259,7 @@
   color: #999;
 }
 
-.daterangepicker td.available:hover, .daterangepicker th.available:hover {
+.daterangepicker td.available:hover, .daterangepicker td.available.today, .daterangepicker th.available:hover {
   background: #eee;
 }
 
@@ -273,7 +288,7 @@
   border-radius: 4px;
 }
 
-.daterangepicker td.active, .daterangepicker td.active:hover {
+.daterangepicker td.today.active, .daterangepicker td.active, .daterangepicker td.active:hover {
   background-color: #357ebd;
   border-color: #3071a9;
   color: #fff;
@@ -301,7 +316,7 @@
   width: 40%;
 }
 
-.daterangepicker select.hourselect, .daterangepicker select.minuteselect, .daterangepicker select.ampmselect {
+.daterangepicker select.hourselect, .daterangepicker select.minuteselect, .daterangepicker select.secondselect, .daterangepicker select.ampmselect {
   width: 50px;
   margin-bottom: 0;
 }
@@ -311,7 +326,7 @@
 }
 
 .daterangepicker_end_input {
-  float: left; 
+  float: left;
   padding-left: 11px
 }
 
