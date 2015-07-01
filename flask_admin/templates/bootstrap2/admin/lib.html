@@ -101,6 +101,24 @@
 </div>
 {%- endmacro %}
 
+{# ---------------------- Modal Window -------------------------- #}
+{% macro add_modal_window(modal_window_id='fa_modal_window') %}
+  <div id="{{ modal_window_id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3>Loading...</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro add_modal_button(url='', title='', content='', modal_window_id='fa_modal_window') %}
+  <a class="icon" href="#" data-toggle="modal" title="{{ title }}" data-target="#{{ modal_window_id }}" data-remote="{{ url }}">
+    {{ content|safe }}
+  </a>
+{% endmacro %}
+
 {# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field, kwargs={}, caller=None) %}
   {% set direct_error = h.is_field_error(field.errors) %}
@@ -167,15 +185,15 @@
     {% endif %}
 {% endmacro %}
 
-{% macro form_tag(form=None) %}
-    <form action="" method="POST" class="admin-form form-horizontal" enctype="multipart/form-data">
+{% macro form_tag(form=None, action=None) %}
+    <form action="{{ action or '' }}" method="POST" class="admin-form form-horizontal" enctype="multipart/form-data">
       <fieldset>
         {{ caller() }}
       </fieldset>
     </form>
 {% endmacro %}
 
-{% macro render_form_buttons(cancel_url, extra=None) %}
+{% macro render_form_buttons(cancel_url, extra=None, is_modal=False) %}
     <div class="control-group">
       <div class="controls">
         <input type="submit" class="btn btn-primary btn-large" value="{{ _gettext('Save') }}" />
@@ -183,16 +201,16 @@
         {{ extra }}
         {% endif %}
         {% if cancel_url %}
-        <a href="{{ cancel_url }}" class="btn btn-large btn-danger">{{ _gettext('Cancel') }}</a>
+          <a href="{{ cancel_url }}" class="btn btn-large btn-danger" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
         {% endif %}
       </div>
     </div>
 {% endmacro %}
 
-{% macro render_form(form, cancel_url, extra=None, form_opts=None) -%}
-    {% call form_tag() %}
+{% macro render_form(form, cancel_url, extra=None, form_opts=None, action=None, is_modal=False) -%}
+    {% call form_tag(action=action) %}
         {{ render_form_fields(form, form_opts=form_opts) }}
-        {{ render_form_buttons(cancel_url, extra) }}
+        {{ render_form_buttons(cancel_url, extra, is_modal) }}
     {% endcall %}
 {% endmacro %}
 
