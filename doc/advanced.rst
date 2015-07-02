@@ -10,6 +10,8 @@ As an alternative to passing a Flask application object to the Admin constructor
         # Add views here
         admin.init_app(app)
 
+****
+
 Localization with Flask-Babelex
 ------------------------------------------
 Enabling localization is relatively simple.
@@ -47,11 +49,15 @@ Enabling localization is relatively simple.
 If the builtin translations are not enough, look at the `Flask-BabelEx documentation <https://pythonhosted.org/Flask-BabelEx/>`_
 to see how you can add your own.
 
+****
+
 Handling Foreign Key relations inline
 --------------------------------------------
 
 Many-to-many relations
 ----------------------------------
+
+****
 
 .. _file-admin:
 
@@ -82,6 +88,8 @@ Sample screenshot:
 
 You can disable uploads, disable file or directory deletion, restrict file uploads to certain types and so on.
 Check :mod:`flask_admin.contrib.fileadmin` documentation on how to do it.
+
+****
 
 Managing geographical models
 --------------------------------------
@@ -165,6 +173,7 @@ If you have any ideas or suggestions, make a pull request!
 .. _GeoJSON: http://geojson.org/
 .. _Geometry: http://geoalchemy-2.readthedocs.org/en/latest/types.html#geoalchemy2.types.Geometry
 
+****
 
 Customising builtin forms via form rendering rules
 --------------------------------------------------------
@@ -223,6 +232,8 @@ Form Rendering Rule                                     Description
 :class:`flask_admin.form.rules.Header`                  Renders form header
 :class:`flask_admin.form.rules.FieldSet`                Renders form header and child rules
 ======================================================= ========================================================
+
+****
 
 Enabling CSRF Validation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -287,11 +298,7 @@ For WTForms 1, you can use use Flask-WTF's Form class::
 
     app.run(debug=True)
 
-Further reading
-^^^^^^^^^^^^^^^
-
-For additional documentation, check :mod:`flask_admin.form.rules` module source code (it is quite short) and
-look at the `forms example <https://github.com/flask-admin/flask-admin/tree/master/examples/forms>`_ on GitHub.
+****
 
 Using different database backends
 ----------------------------------------
@@ -328,33 +335,7 @@ are dedicated to helping you through this process. See :doc:`model_guidelines`.
 .. _MongoEngine: http://mongoengine.org/
 .. _MongoDB: http://www.mongodb.org/
 
-
-
-Implementing your own authentication
-----------------------------------------------------
-Flask-Admin does not make any assumptions about the authentication system you might be using. So, by default, the admin
-interface is completely open.
-
-To control access to the admin interface, you can specify an *is_accessible* method when extending the *BaseView* class.
-So, for example, if you are using Flask-Login for authentication, the following will ensure that only logged-in users
-have access to the view in question::
-
-    class MyView(BaseView):
-        def is_accessible(self):
-            return login.current_user.is_authenticated()
-
-To redirect the user to another page if authentication fails, you will need to specify an *_handle_view* method::
-
-    class MyView(BaseView):
-        def is_accessible(self):
-            return login.current_user.is_authenticated()
-
-        def _handle_view(self, name, **kwargs):
-            if not self.is_accessible():
-                return redirect(url_for('login', next=request.url))
-
-You can also implement policy-based security, conditionally allowing or disallowing access to parts of the
-administrative interface. If a user does not have access to a particular view, the menu item won't be visible.
+****
 
 Migrating from Django
 -------------------------

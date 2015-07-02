@@ -121,6 +121,10 @@ could be as simple as::
         def is_accessible(self):
             return login.current_user.is_authenticated()
 
+        def _handle_view(self, name, **kwargs):
+            if not self.is_accessible():
+                return redirect(url_for('login', next=request.url))
+
 Components that are not accessible to a particular user, will also not be displayed
 in the menu for that user. But, you would still need to implement all of the relevant login,
 registration and account management views yourself.
@@ -693,7 +697,9 @@ Further Reading
    :maxdepth: 2
 
    advanced
+   adding_a_new_model_backend
    api/index
+   changelog
 
 ****
 
