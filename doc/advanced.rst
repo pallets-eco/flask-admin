@@ -10,47 +10,42 @@ As an alternative to passing a Flask application object to the Admin constructor
         # Add views here
         admin.init_app(app)
 
-Enabling localization
-----------------------
-Flask-Admin makes it possible for you to serve your application in more than one language. To do this, it makes use of
-the `Flask-BabelEx <http://github.com/flask-admin/flask-babelex/>`_ package for handling translations. This package is a
-fork of the popular `Flask-Babel <http://github.com/mitshuhiko/flask-babel/>`_ package, with the following features:
+Localization with Flask-Babelex
+------------------------------------------
+Enabling localization is relatively simple.
 
-1. It is API-compatible with Flask-Babel
-2. It allows distribution of translations with Flask extensions
-3. It aims to be more configurable than Flask-Babel
+#. Install `Flask-BabelEx <http://github.com/mrjoes/flask-babelex/>`_ to do the heavy
+   lifting. It's a fork of the
+   `Flask-Babel <http://github.com/mitshuhiko/flask-babel/>`_ package::
 
-Currently *Flask-BabelEx* is the only supported way of enabling localization support in Flask-Admin.
+        pip install flask-babelex
 
-How to enable localization
-^^^^^^^^^^^^^^^^^^
+#. Initialize Flask-BabelEx by creating instance of `Babel` class::
 
-1. Install Flask-BabelEx::
+        from flask import app
+        from flask_babelex import Babel
 
-    pip install flask-babelex
+        app = Flask(__name__)
+        babel = Babel(app)
 
-2. Initialize Flask-BabelEx by creating instance of `Babel` class::
+#. Create a locale selector function::
 
-	from flask import app
-	from flask_babelex import Babel
+        @babel.localeselector
+        def get_locale():
+            if request.args.get('lang'):
+                session['lang'] = request.args.get('lang')
+            return session.get('lang', 'en')
 
-	app = Flask(__name__)
-	babel = Babel(app)
+   So, you could try out a French version of the application at: `http://localhost:5000/admin/?lang=fr <http://localhost:5000/admin/?lang=fr>`_.
 
-3. Create a locale selector function::
+#. Add your own logic to the locale selector function:
 
-	@babel.localeselector
-	def get_locale():
-		# Put your logic here. Application can store locale in
-		# user profile, cookie, session, etc.
-		return 'en'
+   The application could store locale in
+   a user profile, cookie, session, etc. And it could interrogate the `Accept-Language`
+   header for making the selection automatically.
 
-4. Initialize Flask-Admin as usual.
-
-You can check the `babel` example to see localization in action. When running this example, you can change the
-locale simply by adding a query parameter, like *?en=<locale name>* to the URL. For example, a French version of
-the application should be accessible at:
-`http://localhost:5000/admin/userview/?lang=fr <http://localhost:5000/admin/userview/?lang=fr>`_.
+If the builtin translations are not enough, look at the `Flask-BabelEx documentation <https://pythonhosted.org/Flask-BabelEx/>`_
+to see how you can add your own.
 
 Handling Foreign Key relations inline
 --------------------------------------------
@@ -525,18 +520,6 @@ You might want to check :doc:`api/mod_model` for basic model configuration optio
 backends) and specific backend documentation, for example :doc:`api/mod_contrib_sqla`. There's much more
 than what is displayed in this table.
 
-Authentication
-**************
-
-To restrict access to your admin interface, you can implement your own class for creating admin components, and
-override the `is_accessible` method::
-
-    class MyModelView(ModelView):
-        def is_accessible(self):
-            return login.current_user.is_authenticated()
-
-Components that are not accessible to a particular user, will also not be displayed in the menu for that user.
-
 Templates
 ***********
 
@@ -559,21 +542,5 @@ and then point your class to this new template::
 
 For list of available template blocks, check :doc:`templates`.
 
-Tips and hints
-***************************
-
- 1. Programming with Flask-Admin is not very different from normal application development - write some views and expose
-    them to the user, using templates to create a consistent user experience.
-
- 2. If you are missing some functionality which can be used more than once, you can create your own "base" class and use
-    it instead of default implementation.
-
- 3. Using Jinja2, you can easily extend the existing templates. You can even change the look and feel of the admin
-    interface completely, if you want to. Check `this example <https://github.com/flask-admin/flask-admin/tree/master/examples/layout>`_.
-
- 4. You are not limited to a simple CRUD interface for every model. Want to add some kind of realtime monitoring via websockets? No problem.
-
- 5. There's a so called "index view". By default it is empty, but you can put any information you need there. It is displayed
-    under the *Home* menu option.
 
 

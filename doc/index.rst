@@ -121,7 +121,8 @@ could be as simple as::
         def is_accessible(self):
             return login.current_user.is_authenticated()
 
-However, you would still need to implement all of the relevant login,
+Components that are not accessible to a particular user, will also not be displayed
+in the menu for that user. But, you would still need to implement all of the relevant login,
 registration and account management views yourself.
 
 For a basic example of this, have a look at https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth-flask-login.
@@ -401,7 +402,6 @@ even while having tight control over your page's content.
 
 Overriding the Builtin Views
 ------------------------------------
-
 There may be some scenarios where you want most of the builtin ModelView
 functionality, but you want to replace one of the default `create`, `edit`, or `list` views.
 For this you could override only the view in question, and all the links to it will still function as you would expect::
@@ -425,6 +425,8 @@ For this you could override only the view in question, and all the links to it w
 .. toctree::
    :maxdepth: 2
 
+   tips
+   templates
    advanced
    api/index
 
