@@ -231,6 +231,11 @@ For a faster editing experience, make some of the columns editable in the list v
 Configuring the Create & Edit Views
 ************************************
 
+To have the edit form display inside a modal window on the list page, in stead of
+on the dedicated *edit* page, you can use::
+
+    edit_modal = True
+
 You can restrict the possible values for a text-field by specifying a list of choices::
 
     form_choices = {
