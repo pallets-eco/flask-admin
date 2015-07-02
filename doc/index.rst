@@ -201,7 +201,7 @@ Or, in much the same way, you can specify options for a single model at a time::
 -----------------------------------
 
 For a complete list of the attributes that are defined, have a look at the
-API documentation for :meth:`~flask_admin.model.BaseModelView`. But, here follows
+API documentation for :meth:`~flask_admin.model.BaseModelView`. Here follows
 some of the most commonly used ones:
 
 To disable some of the basic CRUD operations, set any of these boolean parameters::
@@ -284,13 +284,13 @@ related models loaded via ajax, using::
 Changing the Look & Feel
 ---------------------------------
 
-To take full control over the look & feel of the admin interface, you can override
+To take full control over the style and layout of the admin interface, you can override
 all of the builtin templates. Just keep in mind that the templates will change slightly
-from one Flask-Admin version to the next, so once you start overriding them, you
-need to take care when upgrade your package version.
+from one version of Flask-Admin to the next, so once you start overriding them, you
+need to take care when upgrading your package version.
 
 To override any of the builtin templates, simply copy them from
-the Flask-Admin source into `templates/admin/` in your project directory.
+the Flask-Admin source into your project's `templates/admin/` directory.
 As long as the filenames stay the same, the templates in your project directory should
 automatically take precedence over the builtin ones.
 
@@ -356,7 +356,7 @@ Flask-Admin comes with a builtin `FileUploadField` and `ImageUploadField`. To ma
 of them, you'll need to specify an upload directory, and add them to the forms in question.
 Image handling also requires you to have `Pillow <https://pypi.python.org/pypi/Pillow/2.8.2>`_ installed.
 
-Have a look a the example at
+Have a look at the example at
 https://github.com/flask-admin/Flask-Admin/tree/master/examples/forms.
 
 If you just want to manage static files in a directory, without tying them to a database model, then
