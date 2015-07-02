@@ -26,7 +26,7 @@
         <a href="{{ generator(0) }}">&laquo;</a>
     </li>
     {% else %}
-    <li class="disabled">
+    <li class="unavailable">
         <a href="javascript:void(0)">&laquo;</a>
     </li>
     {% endif %}
@@ -35,14 +35,14 @@
         <a href="{{ generator(page-1) }}">&lt;</a>
     </li>
     {% else %}
-    <li class="disabled">
+    <li class="unavailable">
         <a href="javascript:void(0)">&lt;</a>
     </li>
     {% endif %}
 
     {% for p in range(min, max) %}
     {% if page == p %}
-    <li class="active">
+    <li class="current">
         <a href="javascript:void(0)">{{ p + 1 }}</a>
     </li>
     {% else %}
@@ -57,7 +57,7 @@
         <a href="{{ generator(page + 1) }}">&gt;</a>
     </li>
     {% else %}
-    <li class="disabled">
+    <li class="unavailable">
         <a href="javascript:void(0)">&gt;</a>
     </li>
     {% endif %}
@@ -66,7 +66,7 @@
         <a href="{{ generator(pages - 1) }}">&raquo;</a>
     </li>
     {% else %}
-    <li class="disabled">
+    <li class="unavailable">
         <a href="javascript:void(0)">&raquo;</a>
     </li>
     {% endif %}
@@ -81,7 +81,7 @@
       <a href="{{ generator(page - 1) }}">&lt;</a>
   </li>
   {% else %}
-  <li class="disabled">
+  <li class="unavailable">
       <a href="{{ generator(0) }}">&lt;</a>
   </li>
   {% endif %}
@@ -90,7 +90,7 @@
       <a href="{{ generator(page + 1) }}">&gt;</a>
   </li>
   {% else %}
-  <li class="disabled">
+  <li class="unavailable">
       <a href="{{ generator(page) }}">&gt;</a>
   </li>
   {% endif %}
@@ -171,7 +171,7 @@
 {% macro render_form_buttons(cancel_url, extra=None) %}
     <hr>
     <div class="form-group">
-      <div class="col-md-offset-2 col-md-10 submit-row">
+      <div class="medium-offset-2 medium-10 columns submit-row">
         <input type="submit" class="button small" value="{{ _gettext('Save') }}" />
         {% if extra %}
         {{ extra }}

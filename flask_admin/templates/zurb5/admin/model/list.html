@@ -55,7 +55,7 @@
                     </th>
                     {% endif %}
                     {% block list_row_actions_header %}
-                    <th class="col-md-1">&nbsp;</th>
+                    <th class="medium-1 columns">&nbsp;</th>
                     {% endblock %}
                     {% set column = 0 %}
                     {% for c, name in list_columns %}
@@ -77,10 +77,10 @@
                             {{ name }}
                         {% endif %}
                         {% if admin_view.column_descriptions.get(c) %}
-                            <a class="fa fa-question-circle glyphicon glyphicon-question-sign"
+                            <a class=""
                                title="{{ admin_view.column_descriptions[c] }}"
                                href="javascript:void(0)" data-role="tooltip"
-                            ></a>
+                            ><i class="fi-info"></i></a>
                         {% endif %}
                     </th>
                     {% set column = column + 1 %}
