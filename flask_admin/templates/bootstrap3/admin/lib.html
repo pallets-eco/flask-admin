@@ -126,7 +126,11 @@
         {%- endif %}
     </label>
     <div class="{{ kwargs.get('column_class', 'col-md-10') }}">
-      {% set _dummy = kwargs.setdefault('class', 'form-control') %}
+      {%- set css_class = ['form-control'] -%}
+      {%- if field.widget.class_ -%}
+          {%- set _ = css_class.append(field.widget.class_) -%}
+      {%- endif -%}
+      {%- set _ = kwargs.setdefault('class', ', '.join(css_class)) -%}
       {{ field(**kwargs)|safe }}
       {% if field.description %}
       <p class="help-block">{{ field.description }}</p>
