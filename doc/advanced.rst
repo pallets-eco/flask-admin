@@ -1,8 +1,110 @@
 Advanced Functionality
 =================================
 
+.. _extending-builtin-templates:
+
+Extending the Builtin Templates
+---------------------------------
+
+****
+
+By default, Flask-Admin uses three pre-defined templates for displaying your models in the admin-interface:
+
+* `admin/model/list.html`
+* `admin/model/create.html`
+* `admin/model/edit.html`
+
+All three of these extend the `admin/master.html` template, and you can override them by defining your own templates,
+with the same path relative to your `templates` folder.
+
+You could also choose to extend these templates, rather than overriding them. In this case you will need to
+point your classes at your own templates, rather than letting them use the defaults. For example, your own template
+for the *edit* views could be defined in `templates/my_edit_template.html` to look something like::
+
+    {% extends 'admin/model/edit.html' %}
+
+    {% block tail %}
+        {{ super() }}
+        ...
+    {% endblock %}
+
+And your classes could be made to use this template by setting the appropriate class property::
+
+    class MyModelView(ModelView):
+        edit_template = 'my_edit_template.html'
+
+The three available properties are simply called `list_template`, `create_template` and `edit_template`.
+
+
+
+Replacing Individual Form Fields
+------------------------------------------
+
+****
+
+The `form_overrides` attribute allows you to replace individual fields within a form.
+A common use-case for this would be to add a rich text editor, or to handle
+file / image uploads that need to be tied to a field in your model.
+
+Rich-Text Fields
+**********************
+To handle complicated text content, use a *WYSIWIG* text editor, like
+`CKEditor <http://ckeditor.com/>`_ by subclassing some of the builtin WTForms
+classes as follows::
+
+    from wtforms import TextAreaField
+    from wtforms.widgets import TextArea
+
+    class CKTextAreaWidget(TextArea):
+        def __call__(self, field, **kwargs):
+            if kwargs.get('class'):
+                kwargs['class'] += ' ckeditor'
+            else:
+                kwargs.setdefault('class', 'ckeditor')
+            return super(CKTextAreaWidget, self).__call__(field, **kwargs)
+
+    class CKTextAreaField(TextAreaField):
+        widget = CKTextAreaWidget()
+
+    class MessageAdmin(ModelView):
+        form_overrides = {
+            'body': CKTextAreaField
+        }
+        create_template = 'ckeditor.html'
+        edit_template = 'ckeditor.html'
+
+For this to work, you would also need to create a template that extends the default
+functionality by including the necessary CKEditor javascript on the `create` and
+`edit` pages. Save this in `templates/ckeditor.html`::
+
+    {% extends 'admin/model/edit.html' %}
+
+    {% block tail %}
+      {{ super() }}
+      <script src="http://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.0.1/ckeditor.js"></script>
+    {% endblock %}
+
+File & Image Fields
+*******************
+
+Flask-Admin comes with a builtin `FileUploadField` and `ImageUploadField`. To make use
+of them, you'll need to specify an upload directory, and add them to the forms in question.
+Image handling also requires you to have `Pillow <https://pypi.python.org/pypi/Pillow/2.8.2>`_ installed.
+
+Have a look at the example at
+https://github.com/flask-admin/Flask-Admin/tree/master/examples/forms.
+
+If you are using the MongoEngine backend, Flask-Admin supports GridFS-backed image- and file uploads, done through WTForms fields. Documentation can be found
+at :mod:`flask_admin.contrib.mongoengine.fields`.
+
+If you just want to manage static files in a directory, without tying them to a database model, then
+rather use the handy :ref:`File-Admin<file-admin>` plugin.
+
 Initialisation
 ---------------
+
+****
+
 As an alternative to passing a Flask application object to the Admin constructor, you can also call the
 :meth:`~flask_admin.base.Admin.init_app` function, after the Admin instance has been initialized::
 
@@ -10,10 +112,11 @@ As an alternative to passing a Flask application object to the Admin constructor
         # Add views here
         admin.init_app(app)
 
-****
-
 Localization with Flask-Babelex
 ------------------------------------------
+
+****
+
 Enabling localization is relatively simple.
 
 #. Install `Flask-BabelEx <http://github.com/mrjoes/flask-babelex/>`_ to do the heavy
@@ -49,10 +152,11 @@ Enabling localization is relatively simple.
 If the builtin translations are not enough, look at the `Flask-BabelEx documentation <https://pythonhosted.org/Flask-BabelEx/>`_
 to see how you can add your own.
 
-****
-
 Handling Foreign Key relations inline
 --------------------------------------------
+
+****
+
 
 Many-to-many relations
 ----------------------------------
@@ -63,6 +167,8 @@ Many-to-many relations
 
 Managing Files & Folders
 --------------------------------
+
+****
 
 Flask-Admin comes with another handy battery - file admin. It gives you the ability to manage files on your server
 (upload, delete, rename, etc).
@@ -89,10 +195,10 @@ Sample screenshot:
 You can disable uploads, disable file or directory deletion, restrict file uploads to certain types and so on.
 Check :mod:`flask_admin.contrib.fileadmin` documentation on how to do it.
 
-****
-
 Managing geographical models
 --------------------------------------
+
+****
 
 GeoAlchemy backend
 
@@ -173,10 +279,10 @@ If you have any ideas or suggestions, make a pull request!
 .. _GeoJSON: http://geojson.org/
 .. _Geometry: http://geoalchemy-2.readthedocs.org/en/latest/types.html#geoalchemy2.types.Geometry
 
-****
-
 Customising builtin forms via form rendering rules
 --------------------------------------------------------
+
+****
 
 Before version 1.0.7, all model backends were rendering the *create* and *edit* forms
 using a special Jinja2 macro, which was looping over the fields of a WTForms form object and displaying
@@ -233,10 +339,11 @@ Form Rendering Rule                                     Description
 :class:`flask_admin.form.rules.FieldSet`                Renders form header and child rules
 ======================================================= ========================================================
 
+Enabling CSRF Validation
+-----------------------------
+
 ****
 
-Enabling CSRF Validation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Adding CSRF validation will require overriding the :class:`flask_admin.form.BaseForm` by using :attr:`flask_admin.model.BaseModelView.form_base_class`.
 
 WTForms >=2::
@@ -298,10 +405,13 @@ For WTForms 1, you can use use Flask-WTF's Form class::
 
     app.run(debug=True)
 
-****
 
-Using different database backends
+.. _database-backends:
+
+Using Different Database Backends
 ----------------------------------------
+
+****
 
 The purpose of Flask-Admin is to help you manage your data. For this, it needs some database backend in order to be
 able to access that data in the first place. At present, there are five different backends for you to choose
@@ -335,10 +445,10 @@ are dedicated to helping you through this process. See :doc:`model_guidelines`.
 .. _MongoEngine: http://mongoengine.org/
 .. _MongoDB: http://www.mongodb.org/
 
-****
-
 Migrating from Django
 -------------------------
+
+****
 
 If you are used to `Django <https://www.djangoproject.com/>`_ and the *django-admin* package, you will find
 Flask-Admin to work slightly different from what you would expect.
@@ -469,5 +579,28 @@ and then point your class to this new template::
 
 For list of available template blocks, check :doc:`templates`.
 
+Adding a Redis console
+--------------------------
 
+****
+
+
+Overriding the Form Scaffolding
+---------------------------------
+
+****
+
+If you don't want to the use the built-in Flask-Admin form scaffolding logic, you are free to roll your own
+by simply overriding :meth:`~flask_admin.model.base.scaffold_form`. For example, if you use
+`WTForms-Alchemy <https://github.com/kvesteri/wtforms-alchemy>`_, you could put your form generation code
+into a `scaffold_form` method in your `ModelView` class.
+
+For SQLAlchemy, if the `synonym_property` does not return a SQLAlchemy field, then Flask-Admin won't be able to figure out what to
+do with it, so it won't generate a form field. In this case, you would need to manually contribute your own field::
+
+    class MyView(ModelView):
+        def scaffold_form(self):
+            form_class = super(UserView, self).scaffold_form()
+            form_class.extra = TextField('Extra')
+            return form_class
 
