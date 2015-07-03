@@ -103,6 +103,9 @@ class BaseModelView(BaseView, ActionsMixin):
     edit_modal = False
     """Setting this to true will display the edit_view as a modal dialog."""
 
+    create_modal = False
+    """Setting this to true will display the create_view as a modal dialog."""
+
     # Customizations
     column_list = ObsoleteAttr('column_list', 'list_columns', None)
     """

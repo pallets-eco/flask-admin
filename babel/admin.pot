@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Flask-Admin VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-06-28 18:28-0500\n"
+"POT-Creation-Date: 2015-07-03 18:39-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -268,8 +268,8 @@ msgstr ""
 #: ../flask_admin/contrib/mongoengine/view.py:565
 #: ../flask_admin/contrib/peewee/view.py:399
 #: ../flask_admin/contrib/pymongo/view.py:309
-#: ../flask_admin/contrib/sqla/view.py:1011 ../flask_admin/model/base.py:1727
-#: ../flask_admin/model/base.py:1736
+#: ../flask_admin/contrib/sqla/view.py:1011 ../flask_admin/model/base.py:1734
+#: ../flask_admin/model/base.py:1743
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr ""
@@ -292,7 +292,7 @@ msgstr ""
 #: ../flask_admin/contrib/mongoengine/view.py:640
 #: ../flask_admin/contrib/peewee/view.py:450
 #: ../flask_admin/contrib/pymongo/view.py:363
-#: ../flask_admin/contrib/sqla/view.py:1073 ../flask_admin/model/base.py:1675
+#: ../flask_admin/contrib/sqla/view.py:1073 ../flask_admin/model/base.py:1682
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
@@ -347,20 +347,20 @@ msgstr ""
 msgid "File \"%s\" already exists."
 msgstr ""
 
-#: ../flask_admin/model/base.py:1325
+#: ../flask_admin/model/base.py:1332
 msgid "There are no items in the table."
 msgstr ""
 
-#: ../flask_admin/model/base.py:1349
+#: ../flask_admin/model/base.py:1356
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
 msgstr ""
 
-#: ../flask_admin/model/base.py:1590
+#: ../flask_admin/model/base.py:1597
 msgid "Record was successfully created."
 msgstr ""
 
-#: ../flask_admin/model/base.py:1634 ../flask_admin/model/base.py:1732
+#: ../flask_admin/model/base.py:1641 ../flask_admin/model/base.py:1739
 msgid "Record was successfully saved."
 msgstr ""
 
@@ -382,13 +382,13 @@ msgstr ""
 msgid "With selected"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/lib.html:181
-#: ../flask_admin/templates/bootstrap3/admin/lib.html:173
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:199
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:190
 msgid "Save"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/lib.html:186
-#: ../flask_admin/templates/bootstrap3/admin/lib.html:178
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:204
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:195
 msgid "Cancel"
 msgstr ""
 
@@ -441,28 +441,40 @@ msgstr ""
 msgid "Please provide new name for %(name)s"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:5
-#: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:7
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:7
 msgid "Save and Add"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:16
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:26
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:16
-#: ../flask_admin/templates/bootstrap3/admin/model/create.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:33
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:16
 msgid "List"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:19
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:20
-#: ../flask_admin/templates/bootstrap3/admin/model/create.html:20
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:20
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:29
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:22
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:24
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:36
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
 msgid "Create"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:5
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:44
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:21
+msgid "Create New Record"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:7
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:7
 msgid "Save and Continue"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:34
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:22
+msgid "Edit Record"
 msgstr ""
 
 #: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
@@ -497,45 +509,49 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:20
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:20
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:22
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:24
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
 msgid "Create new record"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:56
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:56
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:61
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:61
 msgid "Select all records"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:76
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:67
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:76
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:72
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:81
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:72
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:81
 #, python-format
 msgid "Sort by %(name)s"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:98
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:98
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:103
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:103
 msgid "Select record"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:105
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:105
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:111
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:113
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:111
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:113
 msgid "Edit record"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:118
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:118
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:127
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:127
 msgid "Are you sure you want to delete this record?"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:118
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:127
 msgid "Delete record"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:171
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:170
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:184
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:183
 msgid "Please select at least one record."
 msgstr ""
 
