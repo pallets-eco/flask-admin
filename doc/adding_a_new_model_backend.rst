@@ -1,4 +1,4 @@
-Adding a new model backend
+Adding a Model Backend
 ==========================
 
 Flask-Admin makes a few assumptions about the database models that it works with. If you want to implement your own

@@ -287,6 +287,8 @@ related models loaded via ajax, using::
         }
     }
 
+TODO: Handling Foreign Key relations inline
+
 Adding Your Own Views
 ======================
 
