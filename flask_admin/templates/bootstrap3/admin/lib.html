@@ -206,15 +206,15 @@
 {% endmacro %}
 
 {% macro form_css() %}
-  <link href="{{ admin_static.url(filename='vendor/select2/select2.css') }}" rel="stylesheet">
-  <link href="{{ admin_static.url(filename='vendor/select2/select2-bootstrap3.css') }}" rel="stylesheet">
-  <link href="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker-bs3.css') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/select2/select2.css', v='3.5.2') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/select2/select2-bootstrap3.css', v='1.4.6') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker-bs3.css', v='1.3.22') }}" rel="stylesheet">
   {% if config.MAPBOX_MAP_ID %}
-  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css') }}" rel="stylesheet">
-  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css', v='0.7.3') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css', v='0.2.3') }}" rel="stylesheet">
   {% endif %}
   {% if editable_columns %}
-  <link href="{{ admin_static.url(filename='vendor/x-editable/css/bootstrap3-editable-1.5.1.css') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/x-editable/css/bootstrap3-editable.css', v='1.5.1') }}" rel="stylesheet">
   {% endif %}
 {% endmacro %}
 
@@ -226,12 +226,12 @@
   window.MAPBOX_ACCESS_TOKEN = "{{ config.MAPBOX_ACCESS_TOKEN }}";
   {% endif %}
   </script>
-  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js') }}"></script>
-  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js') }}"></script>
+  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js', v='0.7.3') }}"></script>
+  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js', v='0.2.3') }}"></script>
   {% endif %}
-  <script src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+  <script src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js', v='1.3.22') }}"></script>
   {% if editable_columns %}
-  <script src="{{ admin_static.url(filename='vendor/x-editable/js/bootstrap3-editable-1.5.1.min.js') }}"></script>
+  <script src="{{ admin_static.url(filename='vendor/x-editable/js/bootstrap3-editable.min.js', v='1.5.1') }}"></script>
   {% endif %}
-  <script src="{{ admin_static.url(filename='admin/js/form-1.0.0.js') }}"></script>
+  <script src="{{ admin_static.url(filename='admin/js/form.js', v='1.0.0') }}"></script>
 {% endmacro %}
