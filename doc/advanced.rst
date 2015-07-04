@@ -35,7 +35,49 @@ And your classes could be made to use this template by setting the appropriate c
 
 The three available properties are simply called `list_template`, `create_template` and `edit_template`.
 
+If you want to use your own base template, then pass the name of the template to
+the admin constructor during initialization::
 
+    admin = Admin(app, base_template='my_master.html')
+
+Available Template Blocks
+****************************
+
+Flask-Admin defines one *base* template at `admin/master.html` that all the other admin templates are derived
+from. This template is a proxy which points to `admin/base.html`, which defines
+the following blocks:
+
+============== ========================================================================
+Block Name     Description
+============== ========================================================================
+head_meta      Page metadata in the header
+title          Page title
+head_css       Various CSS includes in the header
+head           Empty block in HTML head, in case you want to put something  there
+page_body      Page layout
+brand          Logo in the menu bar
+main_menu      Main menu
+menu_links     Links menu
+access_control Section to the right of the menu (can be used to add login/logout buttons)
+messages       Alerts and various messages
+body           Content (that's where your view will be displayed)
+tail           Empty area below content
+============== ========================================================================
+
+In addition to all of the blocks that are inherited from `admin/master.html`, the `admin/model/list.html` template
+also contains the following blocks:
+
+======================= ============================================
+Block Name              Description
+======================= ============================================
+model_menu_bar          Menu bar
+model_list_table  		Table container
+list_header       		Table header row
+list_row_actions_header Actions header
+list_row                Single row
+list_row_actions        Row action cell with edit/remove/etc buttons
+empty_list_message      Message that will be displayed if there are no models found
+======================= ============================================
 
 Replacing Individual Form Fields
 ------------------------------------------
@@ -695,6 +737,6 @@ Usage Tips
 Initialisation: As an alternative to passing a Flask application object to the Admin constructor, you can also call the
 :meth:`~flask_admin.base.Admin.init_app` function, after the Admin instance has been initialized::
 
-        admin = Admin(name='My App', template_mode='bootstrap3')
+        admin = Admin(name='microblog', template_mode='bootstrap3')
         # Add views here
         admin.init_app(app)
