@@ -64,6 +64,9 @@
         if ($el.attr('data-allow-blank'))
           opts['allowClear'] = true;
 
+        if ($el.attr('data-no-autoclose'))
+          opts['closeOnSelect'] = false;
+
         opts['multiple'] = multiple;
 
         $el.select2(opts);
@@ -299,6 +302,9 @@
                     });
                 }
 
+                if ($el.attr('data-no-autoclose'))
+                    opts['closeOnSelect'] = false;
+
                 $el.select2(opts);
                 return true;
             case 'select2-tags':
@@ -325,6 +331,9 @@
                         return 'Enter comma separated values';
                     }
                 };
+
+                if ($el.attr('data-no-autoclose'))
+                    opts['closeOnSelect'] = false;
 
                 $el.select2(opts);
 
