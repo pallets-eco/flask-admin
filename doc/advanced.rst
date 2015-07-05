@@ -75,7 +75,7 @@ Localization with Flask-Babelex
 ****
 
 Flask-Admin comes with translations built-in for several languages.
-Enabling localization is simple::
+Enabling localization is simple:
 
 #. Install `Flask-BabelEx <http://github.com/mrjoes/flask-babelex/>`_ to do the heavy
    lifting. It's a fork of the
