@@ -45,7 +45,8 @@ The first step, is to initialise an empty admin interface on your Flask app::
 
     app.run()
 
-Here, both the *name* and *template_mode* parameters are optional.
+Here, both the *name* and *template_mode* parameters are optional. Alternatively,
+you could use the :meth:`~flask_admin.base.Admin.init_app` method.
 
 If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
 you should see an empty page with a navigation bar on top.
@@ -380,6 +381,9 @@ Working with the builtin templates
 
 Flask-Admin uses the `Jinja2 <http://jinja.pocoo.org/docs/>`_ templating engine.
 
+Overriding the Builtin Templates
+---------------------------------
+
 To take full control over the style and layout of the admin interface, you can override
 all of the builtin templates. Just keep in mind that the templates will change slightly
 from one version of Flask-Admin to the next, so once you start overriding them, you
@@ -390,11 +394,82 @@ the Flask-Admin source into your project's `templates/admin/` directory.
 As long as the filenames stay the same, the templates in your project directory should
 automatically take precedence over the builtin ones.
 
+Extending the Builtin Templates
+---------------------------------
+
+Rather than overriding the builtin templates completely, you could extend them. This
+could make it simpler for you to upgrade to new Flask Admin versions in future.
+
+Internally, the Flask-Admin templates are derived from the `admin/master.html` template.
+The three most interesting templates for you to extend are probably:
+
+* `admin/model/list.html`
+* `admin/model/create.html`
+* `admin/model/edit.html`
+
+To extend the default *edit* template with your own functionality, create a template in
+`templates/microblog_edit.html` to look something like::
+
+    {% extends 'admin/model/edit.html' %}
+
+    {% block body %}
+        <h1>MicroBlog Edit View</h1>
+        {{ super() }}
+    {% endblock %}
+
+Now, to make your view classes use this template, set the appropriate class property::
+
+    class MicroBlogModelView(ModelView):
+        edit_template = 'microblog_edit.html'
+        # create_template = 'microblog_create.html'
+        # list_template = 'microblog_list.html'
+
+If you want to use your own base template, then pass the name of the template to
+the admin constructor during initialization::
+
+    admin = Admin(app, base_template='microblog_master.html')
+
+Available Template Blocks
+****************************
+
+Flask-Admin defines one *base* template at `admin/master.html` that all the other admin templates are derived
+from. This template is a proxy which points to `admin/base.html`, which defines
+the following blocks:
+
+============== ========================================================================
+Block Name     Description
+============== ========================================================================
+head_meta      Page metadata in the header
+title          Page title
+head_css       Various CSS includes in the header
+head           Empty block in HTML head, in case you want to put something  there
+page_body      Page layout
+brand          Logo in the menu bar
+main_menu      Main menu
+menu_links     Links menu
+access_control Section to the right of the menu (can be used to add login/logout buttons)
+messages       Alerts and various messages
+body           Content (that's where your view will be displayed)
+tail           Empty area below content
+============== ========================================================================
+
+In addition to all of the blocks that are inherited from `admin/master.html`, the `admin/model/list.html` template
+also contains the following blocks:
+
+======================= ============================================
+Block Name              Description
+======================= ============================================
+model_menu_bar          Menu bar
+model_list_table  		Table container
+list_header       		Table header row
+list_row_actions_header Actions header
+list_row                Single row
+list_row_actions        Row action cell with edit/remove/etc buttons
+empty_list_message      Message that will be displayed if there are no models found
+======================= ============================================
+
 Have a look at the `layout` example at https://github.com/flask-admin/flask-admin/tree/master/examples/layout
 to see how you can take full stylistic control over the admin interface.
-
-See :ref:`extending-builtin-templates` for an alternative approach, that could make
-life easier for you when upgrading to future versions of Flask-Admin.
 
 Environment variables
 ---------------------
@@ -412,12 +487,10 @@ _ngettext            Babel ngettext
 h                    Helpers from :mod:`~flask_admin.helpers` module
 ==================== ================================
 
-****
-
 Generating URLs
 ------------------
 
-To get the URL for a specific view, use *url_for* with a dot prefix::
+To generate the URL for a specific view, use *url_for* with a dot prefix::
 
     from flask import url_for
 
@@ -435,13 +508,14 @@ A specific record can also be referenced with::
 
 When referencing ModelView instances, use the lowercase name of the model as the
 prefix when calling *url_for*. Other views can be referenced by specifying a
-unique endpoint for each, and using that as the prefix. So, to referece::
+unique endpoint for each, and using that as the prefix. So, you could use::
+
+    url_for('analytics.index')
+
+If your view endpoint was defined like::
 
     admin.add_view(CustomView(name='Analytics', endpoint='analytics'))
 
-Use::
-
-    url_for('analytics.index')
 
 Further Reading
 ==================
