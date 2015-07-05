@@ -1,3 +1,5 @@
+.. _adding-model-backend:
+
 Adding a Model Backend
 ==========================
 

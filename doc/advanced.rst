@@ -10,12 +10,12 @@ Replacing Individual Form Fields
 ****
 
 The `form_overrides` attribute allows you to replace individual fields within a form.
-A common use-case for this would be to add a rich text editor, or to handle
+A common use-case for this would be to add a *What-You-See-Is-What-You-Get* (WYSIWIG) editor, or to handle
 file / image uploads that need to be tied to a field in your model.
 
-Rich-Text Fields
+WYSIWIG Text Fields
 **********************
-To handle complicated text content, use a *WYSIWIG* text editor, like
+To handle complicated text content, you can use
 `CKEditor <http://ckeditor.com/>`_ by subclassing some of the builtin WTForms
 classes as follows::
 
@@ -48,15 +48,17 @@ functionality by including the necessary CKEditor javascript on the `create` and
 
     {% block tail %}
       {{ super() }}
-      <script src="http://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.0.1/ckeditor.js"></script>
+      <script src="//cdn.ckeditor.com/4.5.1/standard/ckeditor.js"></script>
     {% endblock %}
 
 File & Image Fields
 *******************
 
-Flask-Admin comes with a builtin `FileUploadField` and `ImageUploadField`. To make use
+Flask-Admin comes with a builtin :meth:`~flask_admin.form.upload.FileUploadField`
+and :meth:`~flask_admin.form.upload.ImageUploadField`. To make use
 of them, you'll need to specify an upload directory, and add them to the forms in question.
-Image handling also requires you to have `Pillow <https://pypi.python.org/pypi/Pillow/2.8.2>`_ installed.
+Image handling also requires you to have `Pillow <https://pypi.python.org/pypi/Pillow/2.8.2>`_
+installed if you need to do any processing on the image files.
 
 Have a look at the example at
 https://github.com/flask-admin/Flask-Admin/tree/master/examples/forms.
@@ -72,7 +74,8 @@ Localization with Flask-Babelex
 
 ****
 
-Enabling localization is relatively simple.
+Flask-Admin comes with translations built-in for several languages.
+Enabling localization is simple::
 
 #. Install `Flask-BabelEx <http://github.com/mrjoes/flask-babelex/>`_ to do the heavy
    lifting. It's a fork of the
@@ -122,7 +125,7 @@ can use it by adding a FileAdmin view to your app::
 
     # Flask setup here
 
-    admin = Admin(app)
+    admin = Admin(app, name='microblog', template_mode='bootstrap3')
 
     path = op.join(op.dirname(__file__), 'static')
     admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
@@ -136,19 +139,20 @@ Managing geographical models with the GeoAlchemy backend
 ****
 
 If you want to store spatial information in a GIS database, Flask-Admin has
-you covered. The `GeoAlchemy`_ backend extends the SQLAlchemy backend (just as
+you covered. The `GeoAlchemy <http://geoalchemy-2.readthedocs.org/>`_ backend
+extends the SQLAlchemy backend (just as
 GeoAlchemy extends SQLAlchemy) to give you a pretty and functional map-based
 editor for your admin pages.
 
 Some notable features include:
 
- - Maps are displayed using the amazing `Leaflet`_ Javascript library,
-   with map data from `Mapbox`_.
+ - Maps are displayed using the amazing `Leaflet <http://leafletjs.com/>`_ Javascript library,
+   with map data from `Mapbox <https://www.mapbox.com/>`_.
  - Geographic information, including points, lines and polygons, can be edited
-   interactively using `Leaflet.Draw`_.
- - Graceful fallback: `GeoJSON`_ data can be edited in a ``<textarea>``, if the
+   interactively using `Leaflet.Draw <https://github.com/Leaflet/Leaflet.draw>`_.
+ - Graceful fallback: `GeoJSON <http://geojson.org/>`_ data can be edited in a ``<textarea>``, if the
    user has turned off Javascript.
- - Works with a `Geometry`_ SQL field that is integrated with `Shapely`_ objects.
+ - Works with a `Geometry <http://geoalchemy-2.readthedocs.org/en/latest/types.html#geoalchemy2.types.Geometry>`_ SQL field that is integrated with `Shapely <http://toblerity.org/shapely/>`_ objects.
 
 To get started, define some fields on your model using GeoAlchemy's *Geometry*
 field. An then, add model views to your interface using the ModelView class
@@ -174,8 +178,8 @@ to get started.
 Loading Tiles From Mapbox
 **************************************
 
-To have map data display correctly, you'll have to sign up for a Mapbox account and
-include some credentials in your application's config::
+To have map data display correctly, you'll have to sign up for an account at https://www.mapbox.com/
+and include some credentials in your application's config::
 
     app = Flask(__name__)
     app.config['MAPBOX_MAP_ID'] = "example.abc123"
@@ -192,17 +196,6 @@ Limitations
 There's currently no way to sort, filter, or search on geometric fields
 in the admin. It's not clear that there's a good way to do so.
 If you have any ideas or suggestions, make a pull request!
-
-Further Reading
-*******************
-
-* GeoAlchemy: http://geoalchemy-2.readthedocs.org/
-* Leaflet: http://leafletjs.com/
-* Leaflet.Draw: https://github.com/Leaflet/Leaflet.draw
-* Shapely: http://toblerity.org/shapely/
-* Mapbox: https://www.mapbox.com/
-* GeoJSON: http://geojson.org/
-* Geometry: http://geoalchemy-2.readthedocs.org/en/latest/types.html#geoalchemy2.types.Geometry
 
 Customising builtin forms via form rendering rules
 --------------------------------------------------------
@@ -268,12 +261,9 @@ Using Different Database Backends
 
 ****
 
-There are five different backends for you to choose
+Other than SQLAlchemy... There are five different backends for you to choose
 from, depending on which database you would like to use for your application. If, however, you need
-to implement your own database backend, have a look at: `adding_a_new_model_backend`_.
-
-SQLAlchemy backend
-********************
+to implement your own database backend, have a look at :ref:`adding-model-backend`.
 
 If you don't know where to start, but you're familiar with relational databases, then you should probably look at using
 `SQLAlchemy`_. It is a full-featured toolkit, with support for SQLite, PostgreSQL, MySQL,
@@ -281,98 +271,15 @@ Oracle and MS-SQL amongst others. It really comes into its own once you have lot
 relations between your data models. If you want to track spatial data like latitude/longitude
 points, you should look into `GeoAlchemy`_, as well.
 
+SQLAlchemy
+********************
+
 Notable features:
 
  - SQLAlchemy 0.6+ support
  - Paging, sorting, filters
  - Proper model relationship handling
  - Inline editing of related models
-
-**Getting Started**
-
-In order to use SQLAlchemy model scaffolding, you need to have:
-
- 1. SQLAlchemy ORM `model <http://docs.sqlalchemy.org/en/rel_0_8/orm/tutorial.html#declare-a-mapping>`_
- 2. Initialized database `session <http://docs.sqlalchemy.org/en/rel_0_8/orm/tutorial.html#creating-a-session>`_
-
-If you use Flask-SQLAlchemy, this is how you initialize Flask-Admin
-and get session from the `SQLAlchemy` object::
-
-    from flask import Flask
-    from flask_sqlalchemy import SQLAlchemy
-    from flask_admin import Admin
-    from flask_admin.contrib.sqla import ModelView
-
-    app = Flask(__name__)
-    # .. read settings
-    db = SQLAlchemy(app)
-
-    # .. model declarations here
-
-    if __name__ == '__main__':
-        admin = Admin(app)
-        # .. add ModelViews
-        # admin.add_view(ModelView(SomeModel, db.session))
-
-**Creating simple model**
-
-Using previous template, lets create simple model::
-
-    # .. flask initialization
-    db = SQLAlchemy(app)
-
-    class User(db.Model):
-        id = db.Column(db.Integer, primary_key=True)
-        name = db.Column(db.String(64), unique=True)
-        email = db.Column(db.String(128))
-
-    if __name__ == '__main__':
-        admin = Admin(app)
-        admin.add_view(ModelView(User, db.session))
-
-        db.create_all()
-        app.run('0.0.0.0', 8000)
-
-If you will run this example and open `http://localhost:8000/ <http://localhost:8000/>`_,
-you will see that Flask-Admin generated administrative page for the
-model:
-
-You can add new models, edit existing, etc.
-
-**Customizing administrative interface**
-
-List view can be customized in different ways.
-
-First of all, you can use various class-level properties to configure
-what should be displayed and how. For example, :attr:`~flask_admin.contrib.sqla.ModelView.column_list` can be used to show some of
-the column or include extra columns from related models.
-
-For example::
-
-    class UserView(ModelView):
-        # Show only name and email columns in list view
-        column_list = ('name', 'email')
-
-        # Enable search functionality - it will search for terms in
-        # name and email fields
-        column_searchable_list = ('name', 'email')
-
-        # Add filters for name and email columns
-        column_filters = ('name', 'email')
-
-Alternatively, you can override some of the :class:`~flask_admin.contrib.sqla.ModelView` methods and implement your custom logic.
-
-For example, if you need to contribute additional field to the generated form,
-you can do something like this::
-
-    class UserView(ModelView):
-        def scaffold_form(self):
-            form_class = super(UserView, self).scaffold_form()
-            form_class.extra = TextField('Extra')
-            return form_class
-
-Check :doc:`api/mod_contrib_sqla` documentation for list of
-configuration properties and methods.
 
 **Multiple Primary Keys**
 
@@ -412,20 +319,17 @@ a model that violates a unique-constraint leads to an Sqlalchemy-Integrity-Error
 a proper error message and you can change the data in the form. When the application has been started with ``debug=True``
 the ``werkzeug`` debugger will catch the exception and will display the stacktrace.
 
-A standalone script with the Examples from above can be found in the examples directory.
-
-**Example**
-
-Flask-Admin comes with relatively advanced example, which you can
-see `here <https://github.com/flask-admin/flask-admin/tree/master/examples/sqla>`_.
-
-MongoEngine backend
+MongoEngine
 *********************
 
-MongoEngine integration example is `here <https://github.com/flask-admin/flask-admin/tree/master/examples/mongoengine>`_.
-If you're looking for something simpler, or your data models are reasonably self-contained, then
-`MongoEngine`_ could be a better option. It is a python wrapper around the popular
-*NoSQL* database called `MongoDB`_.
+If you're looking for something simpler than SQLAlchemy, and your data models
+are reasonably self-contained, then `MongoDB <https://www.mongodb.org/>`_, a popular *NoSQL* database,
+could be a better option.
+
+`MongoEngine <http://mongoengine.org/>`_ is a python wrapper for MongoDB.
+For an example of using MongoEngine with Flask-Admin, see
+https://github.com/flask-admin/flask-admin/tree/master/examples/mongoengine.
+
 
 Features:
 
@@ -434,20 +338,18 @@ Features:
  - Supports complex document structure (lists, subdocuments and so on)
  - GridFS support for file and image uploads
 
-In order to use MongoEngine integration, you need to install the `flask-mongoengine` package,
-as Flask-Admin uses form scaffolding from it.
-
-You don't have to use Flask-MongoEngine in your project - Flask-Admin will work with "raw"
-MongoEngine models without any problems.
+In order to use MongoEngine integration, install the
+`Flask-MongoEngine <https://flask-mongoengine.readthedocs.org>`_ package.
+Flask-Admin uses form scaffolding from it.
 
 Known issues:
 
  - Search functionality can't split query into multiple terms due to
    MongoEngine query language limitations
 
-For more documentation, check :doc:`api/mod_contrib_mongoengine` documentation.
+For more, check the :class:`~flask_admin.contrib.mongoengine` API documentation.
 
-Peewee backend
+Peewee
 *****************
 
 Features:
@@ -456,28 +358,22 @@ Features:
  - Paging, sorting, filters, etc;
  - Inline editing of related models;
 
-In order to use peewee integration, you need to install two additional Python packages: `peewee` and `wtf-peewee`.
+In order to use peewee integration, you need to install two additional Python
+packages: `peewee <https://peewee.readthedocs.org/>`_ and `wtf-peewee <https://github.com/coleifer/wtf-peewee/>`_.
 
 Known issues:
 
  - Many-to-Many model relations are not supported: there's no built-in way to express M2M relation in Peewee
 
-For more documentation, check :doc:`api/mod_contrib_peewee` documentation.
+For more, check the :class:`~flask_admin.contrib.peewee` API documentation. Or look at
+the Peewee example at https://github.com/flask-admin/flask-admin/tree/master/examples/peewee.
 
-Peewee example is `here <https://github.com/flask-admin/flask-admin/tree/master/examples/peewee>`_.
-
-PyMongo backend
+PyMongo
 *****************
 
-Pretty simple PyMongo backend.
+The bare minimum you have to provide for Flask-Admin to work with PyMongo:
 
-Flask-Admin does not make assumptions about document structure, so you
-will have to configure ModelView to do what you need it to do.
-
-This is bare minimum you have to provide for Flask-Admin view to work
-with PyMongo:
-
- 1. Provide list of columns by setting `column_list` property
+ 1. A list of columns by setting `column_list` property
  2. Provide form to use by setting `form` property
  3. When instantiating :class:`flask_admin.contrib.pymongo.ModelView` class, you have to provide PyMongo collection object
 
@@ -499,10 +395,8 @@ This is minimal PyMongo view::
 
 On top of that you can add sortable columns, filters, text search, etc.
 
-For more documentation, check :doc:`api/mod_contrib_pymongo` documentation.
-
-PyMongo integration example is `here <https://github.com/flask-admin/flask-admin/tree/master/examples/pymongo>`_.
-
+For more, check the :class:`~flask_admin.contrib.pymongoe` API documentation. Or look at
+the Peewee example at https://github.com/flask-admin/flask-admin/tree/master/examples/pymongo.
 
 Migrating from Django
 -------------------------
@@ -547,17 +441,18 @@ exclude										:attr:`~flask_admin.model.BaseModelView.form_excluded_columns`
 fields										:attr:`~flask_admin.model.BaseModelView.form_columns`
 form 										:attr:`~flask_admin.model.BaseModelView.form`
 formfield_overrides 						:attr:`~flask_admin.model.BaseModelView.form_args`
-inlines										:attr:`~flask_admin.contrib.sqlalchemy.ModelView.inline_models`
+inlines										:attr:`~flask_admin.contrib.sqla.ModelView.inline_models`
 list_display 								:attr:`~flask_admin.model.BaseModelView.column_list`
-list_filter									:attr:`~flask_admin.contrib.sqlalchemy.ModelView.column_filters`
+list_filter									:attr:`~flask_admin.contrib.sqla.ModelView.column_filters`
 list_per_page 								:attr:`~flask_admin.model.BaseModelView.page_size`
 search_fields								:attr:`~flask_admin.model.BaseModelView.column_searchable_list`
 add_form_template							:attr:`~flask_admin.model.BaseModelView.create_template`
 change_form_template						:attr:`~flask_admin.model.BaseModelView.change_form_template`
 =========================================== ==============================================
 
-You might want to check :doc:`api/mod_model` for basic model configuration options (reused by all model
-backends) and specific backend documentation, for example :doc:`api/mod_contrib_sqla`. There's much more
+You might want to check :class:`~flask_admin.model.BaseModelView` for basic model configuration options (reused by all model
+backends) and specific backend documentation, for example
+:class:`~flask_admin.contrib.sqla.ModelView`. There's much more
 than what is displayed in this table.
 
 Adding a Redis console
@@ -565,6 +460,18 @@ Adding a Redis console
 
 ****
 
+Another plugin that's available, is the Redis Console. If you have a Redis
+instance running on the same machine as your app, you can::
+
+    from redis import Redis
+    from flask_admin.contrib import rediscli
+
+    # Flask setup here
+
+    admin = Admin(app, name='microblog', template_mode='bootstrap3')
+
+    path = op.join(op.dirname(__file__), 'static')
+    admin.add_view(rediscli.RedisCli(Redis()))
 
 Overriding the Form Scaffolding
 ---------------------------------
