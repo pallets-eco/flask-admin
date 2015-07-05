@@ -1,4 +1,4 @@
-{%- if not admin_view.edit_modal -%}
+{%- if not request.args.get('modal') -%}
     {% extends 'admin/master.html' %}
 {%- endif -%}
 {% import 'admin/lib.html' as lib with context %}
@@ -8,34 +8,34 @@
 {% endmacro %}
 
 {% block head %}
-  {%- if not admin_view.edit_modal -%}
+  {%- if not request.args.get('modal') -%}
     {{ super() }}
     {{ lib.form_css() }}
   {%- endif -%}
 {% endblock %}
 
 {% block body %}
-    {%- if admin_view.edit_modal -%}
+    {%- if request.args.get('modal') -%}
       {# content added to modal-content #}
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        {% block modal_header %}<h3>Edit Record #{{ request.args.get('id') }}</h3>{% endblock %}
+        {% block modal_header %}<h3>{{ _gettext('Edit Record') + ' #' + request.args.get('id') }}</h3>{% endblock %}
       </div>
       <div class="modal-body">
         {# remove save and continue button for modal (it won't function properly) #}
         {{ lib.render_form(form, return_url, extra=None, form_opts=form_opts,
                            action=url_for('.edit_view', id=request.args.get('id'), url=return_url),
-                           is_modal=admin_view.edit_modal) }}
+                           is_modal=request.args.get('modal')) }}
       </div>
     {%- else -%}
       {{ lib.render_form(form, return_url, extra(), form_opts,
                          action=url_for('.edit_view', id=request.args.get('id'), url=return_url),
-                         is_modal=admin_view.edit_modal) }}
+                         is_modal=request.args.get('modal')) }}
     {%- endif -%}
 {% endblock %}
 
 {% block tail %}
-    {%- if admin_view.edit_modal -%}
+    {%- if request.args.get('modal') -%}
       <script>
       // fixes "remote modal shows same content every time", avoiding the flicker
       $('body').on('hidden.bs.modal', '.modal', function () {
