@@ -1,5 +1,7 @@
-Flask-Admin
-##############
+:tocdepth: 2
+
+Introduction to Flask-Admin
+##########################################
 
 **Why Flask?** As a micro-framework, `Flask <http://flask.pocoo.org/>`_ lets you build web services with very little overhead.
 It offers freedom for you, the designer, to implement your project in a way that suits your
