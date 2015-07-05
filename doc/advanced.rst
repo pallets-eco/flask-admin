@@ -3,7 +3,87 @@
 Advanced Functionality
 =================================
 
-.. _extending-builtin-templates:
+Localization With Flask-Babelex
+------------------------------------------
+
+****
+
+Flask-Admin comes with translations built-in for several languages.
+Enabling localization is simple:
+
+#. Install `Flask-BabelEx <http://github.com/mrjoes/flask-babelex/>`_ to do the heavy
+   lifting. It's a fork of the
+   `Flask-Babel <http://github.com/mitshuhiko/flask-babel/>`_ package::
+
+        pip install flask-babelex
+
+#. Initialize Flask-BabelEx by creating instance of `Babel` class::
+
+        from flask import app
+        from flask_babelex import Babel
+
+        app = Flask(__name__)
+        babel = Babel(app)
+
+#. Create a locale selector function::
+
+        @babel.localeselector
+        def get_locale():
+            if request.args.get('lang'):
+                session['lang'] = request.args.get('lang')
+            return session.get('lang', 'en')
+
+   Now, you could try out a French version of the application at: `http://localhost:5000/admin/?lang=fr <http://localhost:5000/admin/?lang=fr>`_.
+
+Go ahead and add your own logic to the locale selector function. The application could store locale in
+a user profile, cookie, session, etc. And it could interrogate the `Accept-Language`
+header for making the selection automatically.
+
+If the builtin translations are not enough, look at the `Flask-BabelEx documentation <https://pythonhosted.org/Flask-BabelEx/>`_
+to see how you can add your own.
+
+.. _file-admin:
+
+Managing Files & Folders
+--------------------------------
+
+****
+
+To manage static files, that are not tied to your db model, Flask-Admin comes with
+the FileAdmin plugin. It gives you the ability to upload, delete, rename, etc. You
+can use it by adding a FileAdmin view to your app::
+
+    from flask_admin.contrib.fileadmin import FileAdmin
+
+    import os.path as op
+
+    # Flask setup here
+
+    admin = Admin(app, name='microblog', template_mode='bootstrap3')
+
+    path = op.join(op.dirname(__file__), 'static')
+    admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
+
+You can disable uploads, disable file deletion, restrict file uploads to certain types, etc.
+Check :mod:`flask_admin.contrib.fileadmin` in the API documentation for more details.
+
+Adding a Redis Console
+--------------------------
+
+****
+
+Another plugin that's available, is the Redis Console. If you have a Redis
+instance running on the same machine as your app, you can::
+
+    from redis import Redis
+    from flask_admin.contrib import rediscli
+
+    # Flask setup here
+
+    admin = Admin(app, name='microblog', template_mode='bootstrap3')
+
+    path = op.join(op.dirname(__file__), 'static')
+    admin.add_view(rediscli.RedisCli(Redis()))
 
 
 Replacing Individual Form Fields
@@ -71,79 +151,15 @@ at :mod:`flask_admin.contrib.mongoengine.fields`.
 If you just want to manage static files in a directory, without tying them to a database model, then
 rather use the handy :ref:`File-Admin<file-admin>` plugin.
 
-Localization with Flask-Babelex
-------------------------------------------
-
-****
-
-Flask-Admin comes with translations built-in for several languages.
-Enabling localization is simple:
-
-#. Install `Flask-BabelEx <http://github.com/mrjoes/flask-babelex/>`_ to do the heavy
-   lifting. It's a fork of the
-   `Flask-Babel <http://github.com/mitshuhiko/flask-babel/>`_ package::
-
-        pip install flask-babelex
-
-#. Initialize Flask-BabelEx by creating instance of `Babel` class::
-
-        from flask import app
-        from flask_babelex import Babel
-
-        app = Flask(__name__)
-        babel = Babel(app)
-
-#. Create a locale selector function::
-
-        @babel.localeselector
-        def get_locale():
-            if request.args.get('lang'):
-                session['lang'] = request.args.get('lang')
-            return session.get('lang', 'en')
-
-   Now, you could try out a French version of the application at: `http://localhost:5000/admin/?lang=fr <http://localhost:5000/admin/?lang=fr>`_.
-
-Go ahead and add your own logic to the locale selector function. The application could store locale in
-a user profile, cookie, session, etc. And it could interrogate the `Accept-Language`
-header for making the selection automatically.
-
-If the builtin translations are not enough, look at the `Flask-BabelEx documentation <https://pythonhosted.org/Flask-BabelEx/>`_
-to see how you can add your own.
-
-.. _file-admin:
-
-Managing Files & Folders
---------------------------------
-
-****
-
-To manage static files, that are not tied to your db model, Flask-Admin comes with
-the FileAdmin plugin. It gives you the ability to upload, delete, rename, etc. You
-can use it by adding a FileAdmin view to your app::
-
-    from flask_admin.contrib.fileadmin import FileAdmin
-
-    import os.path as op
-
-    # Flask setup here
-
-    admin = Admin(app, name='microblog', template_mode='bootstrap3')
-
-    path = op.join(op.dirname(__file__), 'static')
-    admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
-
-You can disable uploads, disable file deletion, restrict file uploads to certain types, etc.
-Check :mod:`flask_admin.contrib.fileadmin` in the API documentation for more details.
-
-Managing geographical models with the GeoAlchemy backend
-----------------------------------------------------------------
+Managing Geographical Models
+-------------------------------------------
 
 ****
 
 If you want to store spatial information in a GIS database, Flask-Admin has
-you covered. The `GeoAlchemy <http://geoalchemy-2.readthedocs.org/>`_ backend
+you covered. The GeoAlchemy backend
 extends the SQLAlchemy backend (just as
-GeoAlchemy extends SQLAlchemy) to give you a pretty and functional map-based
+`GeoAlchemy <http://geoalchemy-2.readthedocs.org/>`_  extends SQLAlchemy) to give you a pretty and functional map-based
 editor for your admin pages.
 
 Some notable features include:
@@ -199,7 +215,7 @@ There's currently no way to sort, filter, or search on geometric fields
 in the admin. It's not clear that there's a good way to do so.
 If you have any ideas or suggestions, make a pull request!
 
-Customising builtin forms via form rendering rules
+Customising Builtin Forms via Rendering Rules
 --------------------------------------------------------
 
 ****
@@ -400,7 +416,7 @@ On top of that you can add sortable columns, filters, text search, etc.
 For more, check the :class:`~flask_admin.contrib.pymongoe` API documentation. Or look at
 the Peewee example at https://github.com/flask-admin/flask-admin/tree/master/examples/pymongo.
 
-Migrating from Django
+Migrating From Django
 -------------------------
 
 ****
@@ -456,24 +472,6 @@ You might want to check :class:`~flask_admin.model.BaseModelView` for basic mode
 backends) and specific backend documentation, for example
 :class:`~flask_admin.contrib.sqla.ModelView`. There's much more
 than what is displayed in this table.
-
-Adding a Redis console
---------------------------
-
-****
-
-Another plugin that's available, is the Redis Console. If you have a Redis
-instance running on the same machine as your app, you can::
-
-    from redis import Redis
-    from flask_admin.contrib import rediscli
-
-    # Flask setup here
-
-    admin = Admin(app, name='microblog', template_mode='bootstrap3')
-
-    path = op.join(op.dirname(__file__), 'static')
-    admin.add_view(rediscli.RedisCli(Redis()))
 
 Overriding the Form Scaffolding
 ---------------------------------
