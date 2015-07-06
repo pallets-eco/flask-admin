@@ -661,7 +661,8 @@ class FileAdmin(BaseView, ActionsMixin):
                 flash(gettext('Failed to save file: %(error)s', error=ex), 'error')
 
         return self.render(self.upload_template, form=form,
-                           header_text=gettext('Upload File'))
+                           header_text=gettext('Upload File'),
+                           modal=request.args.get('modal'))
 
     @expose('/download/<path:path>')
     def download(self, path=None):
@@ -721,7 +722,8 @@ class FileAdmin(BaseView, ActionsMixin):
             helpers.flash_errors(form, message='Failed to create directory: %(error)s')
 
         return self.render(self.mkdir_template, form=form, dir_url=dir_url,
-                           header_text=gettext('Create Directory'))
+                           header_text=gettext('Create Directory'),
+                           modal=request.args.get('modal'))
 
     @expose('/delete/', methods=('POST',))
     def delete(self):
@@ -819,7 +821,8 @@ class FileAdmin(BaseView, ActionsMixin):
                            form=form,
                            path=op.dirname(path),
                            name=op.basename(path),
-                           dir_url=return_url)
+                           dir_url=return_url,
+                           modal=request.args.get('modal'))
 
     @expose('/edit/', methods=('GET', 'POST'))
     def edit(self):
@@ -887,7 +890,8 @@ class FileAdmin(BaseView, ActionsMixin):
                     form.content.data = content
 
         return self.render(self.edit_template, dir_url=dir_url, path=path,
-                           form=form, error=error)
+                           form=form, error=error,
+                           modal=request.args.get('modal'))
 
     @expose('/action/', methods=('POST',))
     def action_view(self):

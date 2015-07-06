@@ -1,4 +1,4 @@
-{%- if not request.args.get('modal') -%}
+{%- if not modal -%}
   {% extends 'admin/master.html' %}
 {%- endif -%}
 {% import 'admin/lib.html' as lib with context %}
@@ -13,7 +13,7 @@
 
 {% block body %}
     {% call check_error(error) %}
-      {%- if request.args.get('modal') -%}
+      {%- if modal -%}
         {# content added to modal-content #}
         {{ lib.render_form(form, dir_url, action=request.url, is_modal=True) }}
       {%- else -%}
@@ -26,7 +26,7 @@
 {% endblock %}
 
 {% block tail %}
-    {%- if request.args.get('modal') -%}
+    {%- if modal -%}
     <script>
     // fill the header of modal dynamically
     $('.modal-header h3').html('{{ self.header_text() }}');

@@ -1611,7 +1611,8 @@ class BaseModelView(BaseView, ActionsMixin):
         return self.render(self.create_template,
                            form=form,
                            form_opts=form_opts,
-                           return_url=return_url)
+                           return_url=return_url,
+                           modal=request.args.get('modal'))
 
     @expose('/edit/', methods=('GET', 'POST'))
     def edit_view(self):
@@ -1654,7 +1655,8 @@ class BaseModelView(BaseView, ActionsMixin):
                            model=model,
                            form=form,
                            form_opts=form_opts,
-                           return_url=return_url)
+                           return_url=return_url,
+                           modal=request.args.get('modal'))
 
     @expose('/delete/', methods=('POST',))
     def delete_view(self):

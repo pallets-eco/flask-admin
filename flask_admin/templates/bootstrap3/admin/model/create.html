@@ -1,4 +1,4 @@
-{%- if not request.args.get('modal') -%}
+{%- if not modal -%}
     {% extends 'admin/master.html' %}
 {%- endif -%}
 {% import 'admin/lib.html' as lib with context %}
@@ -8,14 +8,14 @@
 {% endmacro %}
 
 {% block head %}
-  {%- if not request.args.get('modal') -%}
+  {%- if not modal -%}
     {{ super() }}
     {{ lib.form_css() }}
   {%- endif -%}
 {% endblock %}
 
 {% block body %}
-  {%- if request.args.get('modal') -%}
+  {%- if modal -%}
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       {% block header_text %}<h3>{{ _gettext('Create New Record') }}</h3>{% endblock %}
@@ -42,7 +42,7 @@
 {% endblock %}
 
 {% block tail %}
-  {%- if request.args.get('modal') -%}
+  {%- if modal -%}
     <script>
     // fixes "remote modal shows same content every time", avoiding the flicker
     $('body').on('hidden.bs.modal', '.modal', function () {
