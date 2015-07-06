@@ -136,6 +136,19 @@ class FileAdmin(BaseView, ActionsMixin):
 
     """
 
+    # Modals
+    rename_modal = False
+    """Setting this to true will display the rename view as a modal dialog."""
+
+    upload_modal = False
+    """Setting this to true will display the upload view as a modal dialog."""
+
+    mkdir_modal = False
+    """Setting this to true will display the mkdir view as a modal dialog."""
+
+    edit_modal = False
+    """Setting this to true will display the edit view as a modal dialog."""
+
     def __init__(self, base_path, base_url=None,
                  name=None, category=None, endpoint=None, url=None,
                  verify_path=True, menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
@@ -422,7 +435,7 @@ class FileAdmin(BaseView, ActionsMixin):
                 Additional arguments
         """
         if not path:
-            return self.get_url(endpoint)
+            return self.get_url(endpoint, **kwargs)
         else:
             if self._on_windows:
                 path = path.replace('\\', '/')
@@ -431,7 +444,7 @@ class FileAdmin(BaseView, ActionsMixin):
 
             return self.get_url(endpoint, **kwargs)
 
-    def _get_file_url(self, path):
+    def _get_file_url(self, path, **kwargs):
         """
             Return static file url
 
@@ -443,7 +456,7 @@ class FileAdmin(BaseView, ActionsMixin):
         else:
             route = '.download'
 
-        return self.get_url(route, path=path)
+        return self.get_url(route, path=path, **kwargs)
 
     def _normalize_path(self, path):
         """
@@ -641,11 +654,14 @@ class FileAdmin(BaseView, ActionsMixin):
         if self.validate_form(form):
             try:
                 self._save_form_files(directory, path, form)
+                flash(gettext('Successfully saved file: %(name)s',
+                              name=form.upload.data.filename))
                 return redirect(self._get_dir_url('.index', path))
             except Exception as ex:
                 flash(gettext('Failed to save file: %(error)s', error=ex), 'error')
 
-        return self.render(self.upload_template, form=form)
+        return self.render(self.upload_template, form=form,
+                           header_text=gettext('Upload File'))
 
     @expose('/download/<path:path>')
     def download(self, path=None):
@@ -696,15 +712,16 @@ class FileAdmin(BaseView, ActionsMixin):
             try:
                 os.mkdir(op.join(directory, form.name.data))
                 self.on_mkdir(directory, form.name.data)
+                flash(gettext('Successfully created directory: %(directory)s',
+                              directory=form.name.data))
                 return redirect(dir_url)
             except Exception as ex:
                 flash(gettext('Failed to create directory: %(error)s', error=ex), 'error')
         else:
             helpers.flash_errors(form, message='Failed to create directory: %(error)s')
 
-        return self.render(self.mkdir_template,
-                           form=form,
-                           dir_url=dir_url)
+        return self.render(self.mkdir_template, form=form, dir_url=dir_url,
+                           header_text=gettext('Create Directory'))
 
     @expose('/delete/', methods=('POST',))
     def delete(self):
@@ -789,8 +806,8 @@ class FileAdmin(BaseView, ActionsMixin):
                 os.rename(full_path, op.join(dir_base, filename))
                 self.on_rename(full_path, dir_base, filename)
                 flash(gettext('Successfully renamed "%(src)s" to "%(dst)s"',
-                      src=op.basename(path),
-                      dst=filename))
+                              src=op.basename(path),
+                              dst=filename))
             except Exception as ex:
                 flash(gettext('Failed to rename: %(error)s', error=ex), 'error')
 

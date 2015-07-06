@@ -1,7 +1,30 @@
-{% extends 'admin/master.html' %}
+{%- if not request.args.get('modal') -%}
+  {% extends 'admin/master.html' %}
+{%- endif -%}
 {% import 'admin/lib.html' as lib with context %}
 
 {% block body %}
-    <h3>{{ _gettext('Please provide new name for %(name)s', name=name) }}</h3>
+  {%- if request.args.get('modal') -%}
+    {# content added to modal-content #}
+    {{ lib.render_form(form, dir_url, action=request.url, is_modal=True) }}
+  {%- else -%}
+    {% block header_text -%}
+      {{ _gettext('Rename %(name)s', name=name) }}
+    {%- endblock %}
     {{ lib.render_form(form, dir_url) }}
+  {%- endif -%}
+{% endblock %}
+
+{% block tail %}
+  {%- if request.args.get('modal') -%}
+  <script>
+  // fill the header of modal dynamically
+  $('.modal-header h3').html('{{ self.header_text() }}');
+
+  // fixes "remote modal shows same content every time"
+  $('.modal').on('hidden', function() {
+      $(this).removeData('modal');
+  });
+  </script>
+  {%- endif -%}
 {% endblock %}

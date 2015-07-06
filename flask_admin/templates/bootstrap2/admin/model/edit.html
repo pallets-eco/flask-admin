@@ -18,12 +18,23 @@
     {%- if request.args.get('modal') -%}
       {# remove save and continue button for modal (it won't function properly) #}
       {{ lib.render_form(form, return_url, extra=None, form_opts=form_opts,
-                         action=url_for('.edit_view', id=request.args.get('id'), url=return_url),
-                         is_modal=request.args.get('modal')) }}
+                         action=request.url, is_modal=True) }}
     {%- else -%}
-      {{ lib.render_form(form, return_url, extra(), form_opts,
-                         action=url_for('.edit_view', id=request.args.get('id'), url=return_url),
-                         is_modal=request.args.get('modal')) }}
+      {% block navlinks %}
+        <ul class="nav nav-tabs">
+          <li>
+              <a href="{{ return_url }}">{{ _gettext('List') }}</a>
+          </li>
+          <li>
+              <a href="{{ get_url('.create_view', url=return_url) }}">{{ _gettext('Create') }}</a>
+          </li>
+          <li class="active">
+              <a href="javascript:void(0)">{{ _gettext('Edit') }}</a>
+          </li>
+      </ul>
+      {% endblock %}
+
+      {{ lib.render_form(form, return_url, extra(), form_opts) }}
     {%- endif -%}
 {% endblock %}
 
@@ -31,7 +42,9 @@
     {%- if request.args.get('modal') -%}
       <script>
       // fill the header of modal dynamically
-      $('.modal-header h3').html('{% block modal_header %}<h3>{{ _gettext('Edit Record') + ' #' + request.args.get('id') }}</h3>{% endblock %}');
+      $('.modal-header h3').html('{% block header_text -%}
+        {{ _gettext('Edit Record') + ' #' + request.args.get('id') }}
+      {%- endblock %}');
 
       // fixes "remote modal shows same content every time"
       $('.modal').on('hidden', function() {
