@@ -1,4 +1,4 @@
-{%- if not request.args.get('modal') -%}
+{%- if not modal -%}
     {% extends 'admin/master.html' %}
 {%- endif -%}
 {% import 'admin/lib.html' as lib with context %}
@@ -8,17 +8,16 @@
 {% endmacro %}
 
 {% block head %}
-  {%- if not request.args.get('modal') -%}
+  {%- if not modal -%}
     {{ super() }}
     {{ lib.form_css() }}
   {%- endif -%}
 {% endblock %}
 
 {% block body %}
-  {%- if request.args.get('modal') -%}
+  {%- if modal -%}
     {{ lib.render_form(form, return_url, extra=None, form_opts=form_opts,
-                       action=url_for('.create_view', url=return_url),
-                       is_modal=request.args.get('modal')) }}
+                       action=request.url, is_modal=True) }}
   {%- else -%}
     {% block navlinks %}
       <ul class="nav nav-tabs">
@@ -31,17 +30,15 @@
 	  </ul>
     {% endblock %}
 
-    {{ lib.render_form(form, return_url, extra(), form_opts=form_opts,
-                       action=url_for('.create_view', url=return_url),
-                       is_modal=request.args.get('modal')) }}
+    {{ lib.render_form(form, return_url, extra(), form_opts=form_opts) }}
   {%- endif -%}
 {% endblock %}
 
 {% block tail %}
-  {%- if request.args.get('modal') -%}
+  {%- if modal -%}
     <script>
     // fill the header of modal dynamically
-    $('.modal-header h3').html('{% block modal_header %}<h3>{{ _gettext('Create New Record') }}</h3>{% endblock %}');
+    $('.modal-header h3').html('{% block header_text %}<h3>{{ _gettext('Create New Record') }}</h3>{% endblock %}');
 
     // fixes "remote modal shows same content every time"
     $('.modal').on('hidden', function() {

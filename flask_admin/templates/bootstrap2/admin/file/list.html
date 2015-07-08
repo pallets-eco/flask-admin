@@ -50,9 +50,15 @@
             <td>
                 {% block list_row_actions scoped %}
                 {% if admin_view.can_rename and path and name != '..' %}
-                <a class="icon" href="{{ get_url('.rename', path=path) }}">
-                        <i class="fa fa-pencil icon-pencil"></i>
-                </a>
+                  {%- if admin_view.rename_modal -%}
+                    {{ lib.add_modal_button(url=get_url('.rename', path=path, modal=True),
+                                            title=_gettext('Rename File'),
+                                            content='<i class="fa fa-pencil icon-pencil"></i>') }}
+                  {% else %}
+                    <a class="icon" href="{{ get_url('.rename', path=path) }}" title="{{ _gettext('Rename File') }}">
+                      <i class="fa fa-pencil icon-pencil"></i>
+                    </a>
+                  {%- endif -%}
                 {% endif %}
                 {%- if admin_view.can_delete and path -%}
                     {% if is_dir %}
@@ -86,9 +92,14 @@
             {% else %}
             <td>
                 {% if admin_view.can_download %}
-                <a href="{{ get_file_url(path)|safe }}">{{ name }}</a>
+                  {%- if admin_view.edit_modal and admin_view.is_file_editable(path) -%}
+                    {{ lib.add_modal_button(url=get_file_url(path, modal=True)|safe,
+                                            btn_class='', content=name) }}
+                  {% else %}
+                    <a href="{{ get_file_url(path)|safe }}">{{ name }}</a>
+                  {%- endif -%}
                 {% else %}
-                {{ name }}
+                  {{ name }}
                 {% endif %}
             </td>
             <td>
@@ -104,12 +115,24 @@
     <div class="btn-toolbar">
         {% if admin_view.can_upload %}
         <div class="btn-group">
-            <a class="btn btn-large" href="{{ get_dir_url('.upload', path=dir_path) }}">{{ _gettext('Upload File') }}</a>
+            {%- if admin_view.upload_modal -%}
+              {{ lib.add_modal_button(url=get_dir_url('.upload', path=dir_path, modal=True),
+                                      btn_class="btn btn-large",
+                                      content=_gettext('Upload File')) }}
+            {% else %}
+              <a class="btn btn-large" href="{{ get_dir_url('.upload', path=dir_path) }}">{{ _gettext('Upload File') }}</a>
+            {%- endif -%}
         </div>
         {% endif %}
         {% if admin_view.can_mkdir %}
         <div class="btn-group">
-            <a class="btn btn-large" href="{{ get_dir_url('.mkdir', path=dir_path) }}">{{ _gettext('Create Directory') }}</a>
+            {%- if admin_view.mkdir_modal -%}
+              {{ lib.add_modal_button(url=get_dir_url('.mkdir', path=dir_path, modal=True),
+                                      btn_class="btn btn-large",
+                                      content=_gettext('Create Directory')) }}
+            {% else %}
+              <a class="btn btn-large" href="{{ get_dir_url('.mkdir', path=dir_path) }}">{{ _gettext('Create Directory') }}</a>
+            {%- endif -%}
         </div>
         {% endif %}
         {% if actions %}
@@ -119,14 +142,20 @@
         {% endif %}
     </div>
     {% endblock %}
+
     {% block actions %}
     {{ actionslib.form(actions, get_url('.action_view')) }}
     {% endblock %}
+
+    {%- if admin_view.rename_modal or admin_view.mkdir_modal
+           or admin_view.upload_modal or admin_view.edit_modal -%}
+        {{ lib.add_modal_window() }}
+    {%- endif -%}
 {% endblock %}
 
 {% block tail %}
     {{ super() }}
     {{ actionslib.script(_gettext('Please select at least one file.'),
-                      actions,
-                      actions_confirmation) }}
+                         actions,
+                         actions_confirmation) }}
 {% endblock %}

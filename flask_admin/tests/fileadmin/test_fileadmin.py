@@ -3,6 +3,8 @@ import os.path as op
 from nose.tools import eq_, ok_
 
 from flask_admin.contrib import fileadmin
+from flask_admin import Admin
+from flask import Flask
 
 from . import setup
 
@@ -131,3 +133,58 @@ def test_file_admin():
     eq_(rv.status_code, 200)
     ok_('path=dummy_renamed_dir' not in rv.data.decode('utf-8'))
     ok_('path=dummy.txt' in rv.data.decode('utf-8'))
+
+def test_modal_edit():
+    # bootstrap 2 - test edit_modal
+    app_bs2 = Flask(__name__)
+    admin_bs2 = Admin(app_bs2, template_mode="bootstrap2")
+
+    class EditModalOn(fileadmin.FileAdmin):
+        edit_modal = True
+        editable_extensions = ('txt',)
+
+    class EditModalOff(fileadmin.FileAdmin):
+        edit_modal = False
+        editable_extensions = ('txt',)
+
+    path = op.join(op.dirname(__file__), 'files')
+    edit_modal_on = EditModalOn(path, '/files/', endpoint='edit_modal_on')
+    edit_modal_off = EditModalOff(path, '/files/', endpoint='edit_modal_off')
+
+    admin_bs2.add_view(edit_modal_on)
+    admin_bs2.add_view(edit_modal_off)
+
+    client_bs2 = app_bs2.test_client()
+
+    # bootstrap 2 - ensure modal window is added when edit_modal is enabled
+    rv = client_bs2.get('/admin/edit_modal_on/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('fa_modal_window' in data)
+
+    # bootstrap 2 - test edit modal disabled
+    rv = client_bs2.get('/admin/edit_modal_off/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('fa_modal_window' not in data)
+
+    # bootstrap 3
+    app_bs3 = Flask(__name__)
+    admin_bs3 = Admin(app_bs3, template_mode="bootstrap3")
+
+    admin_bs3.add_view(edit_modal_on)
+    admin_bs3.add_view(edit_modal_off)
+
+    client_bs3 = app_bs3.test_client()
+
+    # bootstrap 3 - ensure modal window is added when edit_modal is enabled
+    rv = client_bs3.get('/admin/edit_modal_on/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('fa_modal_window' in data)
+
+    # bootstrap 3 - test modal disabled
+    rv = client_bs3.get('/admin/edit_modal_off/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('fa_modal_window' not in data)

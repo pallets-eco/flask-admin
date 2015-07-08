@@ -108,8 +108,8 @@
   </div>
 {% endmacro %}
 
-{% macro add_modal_button(url='', title='', content='', modal_window_id='fa_modal_window') %}
-  <a class="icon" data-target="#{{ modal_window_id }}" title="{{ title }}" href="{{ url }}" data-toggle="modal">
+{% macro add_modal_button(url='', title='', content='', modal_window_id='fa_modal_window', btn_class='icon') %}
+  <a class="{{ btn_class }}" data-target="#{{ modal_window_id }}" title="{{ title }}" href="{{ url }}" data-toggle="modal">
     {{ content|safe }}
   </a>
 {% endmacro %}

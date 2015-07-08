@@ -168,7 +168,9 @@
     {% endblock %}
     {% endblock %}
 
+    {% block actions %}
     {{ actionlib.form(actions, get_url('.action_view')) }}
+    {% endblock %}
 
     {%- if admin_view.edit_modal or admin_view.create_modal -%}
         {{ lib.add_modal_window() }}
