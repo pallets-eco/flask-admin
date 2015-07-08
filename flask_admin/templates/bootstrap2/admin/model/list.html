@@ -11,14 +11,18 @@
 
 {% block body %}
     {% block model_menu_bar %}
-    
     <ul class="nav nav-tabs actions-nav">
         <li class="active">
             <a href="javascript:void(0)">{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a>
         </li>
+
         {% if admin_view.can_create %}
         <li>
+          {%- if admin_view.create_modal -%}
+            {{ lib.add_modal_button(url=get_url('.create_view', url=return_url, modal=True), title=_gettext('Create new record'), content=_gettext('Create')) }}
+          {% else %}
             <a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create new record') }}">{{ _gettext('Create') }}</a>
+          {%- endif -%}
         </li>
         {% endif %}
 
@@ -103,9 +107,13 @@
                 <td>
                     {% block list_row_actions scoped %}
                         {%- if admin_view.can_edit -%}
-                        <a class="icon" href="{{ get_url('.edit_view', id=get_pk_value(row), url=return_url) }}" title="{{ _gettext('Edit record') }}">
-                            <i class="fa fa-pencil icon-pencil"></i>
-                        </a>
+                            {%- if admin_view.edit_modal -%}
+                                {{ lib.add_modal_button(url=get_url('.edit_view', id=get_pk_value(row), url=return_url, modal=True), title=_gettext('Edit record'), content='<i class="fa fa-pencil icon-pencil"></i>') }}
+                            {% else %}
+                                <a class="icon" href="{{ get_url('.edit_view', id=get_pk_value(row), url=return_url) }}" title="{{ _gettext('Edit record') }}">
+                                    <i class="fa fa-pencil icon-pencil"></i>
+                                </a>
+                            {%- endif -%}
                         {%- endif -%}
                         {%- if admin_view.can_delete -%}
                         <form class="icon" method="POST" action="{{ get_url('.delete_view') }}">
@@ -162,12 +170,16 @@
     {% endblock %}
 
     {{ actionlib.form(actions, get_url('.action_view')) }}
+
+    {%- if admin_view.edit_modal or admin_view.create_modal -%}
+        {{ lib.add_modal_window() }}
+    {%- endif -%}
 {% endblock %}
 
 {% block tail %}
     {{ super() }}
     {{ lib.form_js() }}
-    <script src="{{ admin_static.url(filename='admin/js/filters-1.0.0.js') }}"></script>
+    <script src="{{ admin_static.url(filename='admin/js/filters.js', v='1.0.0') }}"></script>
 
     {{ actionlib.script(_gettext('Please select at least one record.'),
                         actions,

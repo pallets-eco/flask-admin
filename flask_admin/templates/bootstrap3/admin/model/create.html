@@ -1,4 +1,6 @@
-{% extends 'admin/master.html' %}
+{%- if not modal -%}
+    {% extends 'admin/master.html' %}
+{%- endif -%}
 {% import 'admin/lib.html' as lib with context %}
 
 {% macro extra() %}
@@ -6,29 +8,54 @@
 {% endmacro %}
 
 {% block head %}
+  {%- if not modal -%}
     {{ super() }}
     {{ lib.form_css() }}
+  {%- endif -%}
 {% endblock %}
 
 {% block body %}
-  {% block navlinks %}
-  <ul class="nav nav-tabs">
-      <li>
-          <a href="{{ return_url }}">{{ _gettext('List') }}</a>
-      </li>
-      <li class="active">
-          <a href="javascript:void(0)">{{ _gettext('Create') }}</a>
-      </li>
-	</ul>
-  {% endblock %}
+  {%- if modal -%}
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      {% block header_text %}<h3>{{ _gettext('Create New Record') }}</h3>{% endblock %}
+    </div>
+    <div class="modal-body">
+      {# remove save and continue button for modal (it won't function properly) #}
+      {{ lib.render_form(form, return_url, extra(), form_opts=form_opts,
+                         action=request.url, is_modal=True) }}
+    </div>
+  {%- else -%}
+    {% block navlinks %}
+      <ul class="nav nav-tabs">
+        <li>
+            <a href="{{ return_url }}">{{ _gettext('List') }}</a>
+        </li>
+        <li class="active">
+            <a href="javascript:void(0)">{{ _gettext('Create') }}</a>
+        </li>
+      </ul>
+    {% endblock %}
 
-  {% call lib.form_tag(form) %}
-      {{ lib.render_form_fields(form, form_opts=form_opts) }}
-      {{ lib.render_form_buttons(return_url, extra()) }}
-  {% endcall %}
+    {{ lib.render_form(form, return_url, extra(), form_opts=form_opts) }}
+  {%- endif -%}
 {% endblock %}
 
 {% block tail %}
-  {{ super() }}
-  {{ lib.form_js() }}
+  {%- if modal -%}
+    <script>
+    // fixes "remote modal shows same content every time", avoiding the flicker
+    $('body').on('hidden.bs.modal', '.modal', function () {
+      $(this).removeData('bs.modal').find(".modal-content").empty();
+    });
+
+    $(function() {
+      // Apply flask-admin global styles after the modal is loaded
+      window.faForm.applyGlobalStyles(document);
+    });
+    </script>
+  {%- else -%}
+    {{ super() }}
+    {{ lib.form_js() }}
+  {%- endif -%}
 {% endblock %}

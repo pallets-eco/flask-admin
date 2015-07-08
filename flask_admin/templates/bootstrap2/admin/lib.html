@@ -101,6 +101,24 @@
 </div>
 {%- endmacro %}
 
+{# ---------------------- Modal Window -------------------------- #}
+{% macro add_modal_window(modal_window_id='fa_modal_window') %}
+  <div id="{{ modal_window_id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3>Loading...</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro add_modal_button(url='', title='', content='', modal_window_id='fa_modal_window', btn_class='icon') %}
+  <a class="{{ btn_class }}" href="#" data-toggle="modal" title="{{ title }}" data-target="#{{ modal_window_id }}" data-remote="{{ url }}">
+    {{ content|safe }}
+  </a>
+{% endmacro %}
+
 {# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field, kwargs={}, caller=None) %}
   {% set direct_error = h.is_field_error(field.errors) %}
@@ -167,15 +185,15 @@
     {% endif %}
 {% endmacro %}
 
-{% macro form_tag(form=None) %}
-    <form action="" method="POST" class="admin-form form-horizontal" enctype="multipart/form-data">
+{% macro form_tag(form=None, action=None) %}
+    <form action="{{ action or '' }}" method="POST" class="admin-form form-horizontal" enctype="multipart/form-data">
       <fieldset>
         {{ caller() }}
       </fieldset>
     </form>
 {% endmacro %}
 
-{% macro render_form_buttons(cancel_url, extra=None) %}
+{% macro render_form_buttons(cancel_url, extra=None, is_modal=False) %}
     <div class="control-group">
       <div class="controls">
         <input type="submit" class="btn btn-primary btn-large" value="{{ _gettext('Save') }}" />
@@ -183,31 +201,31 @@
         {{ extra }}
         {% endif %}
         {% if cancel_url %}
-        <a href="{{ cancel_url }}" class="btn btn-large btn-danger">{{ _gettext('Cancel') }}</a>
+          <a href="{{ cancel_url }}" class="btn btn-large btn-danger" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
         {% endif %}
       </div>
     </div>
 {% endmacro %}
 
-{% macro render_form(form, cancel_url, extra=None, form_opts=None) -%}
-    {% call form_tag() %}
+{% macro render_form(form, cancel_url, extra=None, form_opts=None, action=None, is_modal=False) -%}
+    {% call form_tag(action=action) %}
         {{ render_form_fields(form, form_opts=form_opts) }}
-        {{ render_form_buttons(cancel_url, extra) }}
+        {{ render_form_buttons(cancel_url, extra, is_modal) }}
     {% endcall %}
 {% endmacro %}
 
 {% macro form_css() %}
-  <link href="{{ admin_static.url(filename='vendor/select2/select2.css') }}" rel="stylesheet">
-  <link href="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker-bs2.css') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/select2/select2.css', v='3.5.2') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker-bs2.css', v='1.3.22') }}" rel="stylesheet">
   {% if config.MAPBOX_MAP_ID %}
-  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css') }}" rel="stylesheet">
-  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css', v='0.7.3') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css', v='0.2.3') }}" rel="stylesheet">
   {% if config.MAPBOX_SEARCH %}
-  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.search.css') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.search.css', v='1.5.7') }}" rel="stylesheet">
   {% endif %}
   {% endif %}
   {% if editable_columns %}
-  <link href="{{ admin_static.url(filename='vendor/x-editable/css/bootstrap2-editable-1.5.1.css') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/x-editable/css/bootstrap2-editable.css', v='1.5.1') }}" rel="stylesheet">
   {% endif %}
 {% endmacro %}
 
@@ -219,16 +237,16 @@
   window.MAPBOX_ACCESS_TOKEN = "{{ config.MAPBOX_ACCESS_TOKEN }}";
   {% endif %}
   </script>
-  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js') }}"></script>
-  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js') }}"></script>
+  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js', v='0.7.3') }}"></script>
+  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js', v='0.2.3') }}"></script>
   {% if config.MAPBOX_SEARCH %}
   <script src="https://maps.googleapis.com/maps/api/js?v=3&sensor=false"></script>
-  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.search.js') }}"></script>
+  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.search.js', v='1.5.7') }}"></script>
   {% endif %}
   {% endif %}
-  <script src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+  <script src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js', v='1.3.22') }}"></script>
   {% if editable_columns %}
-  <script src="{{ admin_static.url(filename='vendor/x-editable/js/bootstrap2-editable-1.5.1.min.js') }}"></script>
+  <script src="{{ admin_static.url(filename='vendor/x-editable/js/bootstrap2-editable.min.js', v='1.5.1') }}"></script>
   {% endif %}
-  <script src="{{ admin_static.url(filename='admin/js/form-1.0.0.js') }}"></script>
+  <script src="{{ admin_static.url(filename='admin/js/form.js', v='1.0.0') }}"></script>
 {% endmacro %}
