@@ -58,7 +58,7 @@ def index():
 
 
 # Create admin with custom base template
-admin = admin.Admin(app, 'Example: Layout', template_mode="zurb5")
+admin = admin.Admin(app, 'Example: Layout', base_template='layout.html')
 
 # Add views
 admin.add_view(UserAdmin(User, db.session))

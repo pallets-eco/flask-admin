@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 import flask_admin as admin
 from flask_admin.contrib.sqla import ModelView
-from flask_debugtoolbar import DebugToolbarExtension
+
 
 # Create application
 app = Flask(__name__)
@@ -18,7 +18,7 @@ app.config['DATABASE_FILE'] = 'sample_db.sqlite'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.config['DATABASE_FILE']
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
-debug = DebugToolbarExtension(app)
+
 
 
 # Models
@@ -59,7 +59,7 @@ def index():
 
 
 # Create admin with custom base template
-admin = admin.Admin(app, 'Example: Zurb Foundation', #template_mode='zurb5'
+admin = admin.Admin(app, 'Example: Zurb Foundation', template_mode='zurb5'
     )
 
 # Add views
