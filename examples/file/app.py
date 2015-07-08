@@ -29,7 +29,7 @@ if __name__ == '__main__':
         pass
 
     # Create admin interface
-    admin = admin.Admin(app, 'Example: Files')
+    admin = admin.Admin(app, 'Example: Files', template_mode='zurb5')
     admin.add_view(fileadmin.FileAdmin(path, '/files/', name='Files'))
 
     # Start app

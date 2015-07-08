@@ -1,0 +1,24 @@
+input {
+	margin: 0 !important; 
+}
+
+table{
+	width: 100%;
+}
+
+form .row{
+	margin: 0 0 10px 0 !important;
+}
+
+textarea{
+	min-height: 150px;
+}
+
+td form{
+	width: 1.5rem; /* this might be temporary until I check it doesn't break anything */
+	float: left;
+}
+
+td i{
+	font-size: 1.2rem;
+}

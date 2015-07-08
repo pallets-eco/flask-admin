@@ -4,7 +4,7 @@
 
 {% block body %}
     {% block breadcrums %}
-    <ul class="breadcrumb">
+    <ul class="breadcrumbs">
         <li>
             <a href="{{ get_dir_url('.index', path=None) }}">{{ _gettext('Root') }}</a>
         </li>
@@ -22,7 +22,7 @@
     {% endblock %}
 
     {% block file_list_table %}
-    <table class="table table-striped table-bordered model-list">
+    <table class="table ">
         <thead>
             <tr>
                 {% block list_header scoped %}
@@ -51,7 +51,7 @@
                 {% block list_row_actions scoped %}
                 {% if admin_view.can_rename and path and name != '..' %}
                 <a class="icon" href="{{ get_url('.rename', path=path) }}">
-                        <i class="fa fa-pencil glyphicon glyphicon-pencil"></i>
+                        <i class="fi-pencil"></i>
                 </a>
                 {% endif %}
                 {%- if admin_view.can_delete and path -%}
@@ -60,18 +60,18 @@
                         <form class="icon" method="POST" action="{{ get_url('.delete') }}">
                             {{ delete_form.path(value=path) }}
                             {{ delete_form.csrf_token }}
-                            <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
-                                <i class="fa fa-times glyphicon glyphicon-remove"></i>
-                            </button>
+                            <a onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
+                                <i class="fi-trash"></i>
+                            </a>
                         </form>
                         {% endif %}
                     {% else %}
                     <form class="icon" method="POST" action="{{ get_url('.delete') }}">
                         {{ delete_form.path(value=path) }}
                         {{ delete_form.csrf_token }}
-                        <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
-                            <i class="fa fa-trash glyphicon glyphicon-trash"></i>
-                        </button>
+                        <a onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
+                            <i class="fi-trash"></i>
+                        </a>
                     </form>
                     {% endif %}
                 {%- endif -%}
@@ -101,23 +101,24 @@
     </table>
     {% endblock %}
     {% block toolbar %}
-    <div class="btn-toolbar">
+    <dl class="sub-nav">
         {% if admin_view.can_upload %}
-        <div class="btn-group">
+        <dt>Actions:</dt>
+        <dd class="">
             <a class="btn btn-default btn-large" href="{{ get_dir_url('.upload', path=dir_path) }}">{{ _gettext('Upload File') }}</a>
-        </div>
+        </dd>
         {% endif %}
         {% if admin_view.can_mkdir %}
-        <div class="btn-group">
+        <dd class="">
             <a class="btn btn-default btn-large" href="{{ get_dir_url('.mkdir', path=dir_path) }}">{{ _gettext('Create Directory') }}</a>
-        </div>
+        </dd>
         {% endif %}
         {% if actions %}
-        <div class="btn-group">
-            {{ actionslib.dropdown(actions, 'dropdown-toggle btn btn-default btn-large') }}
-        </div>
+        <dd class="">
+            {{ actionslib.dropdown(actions) }}
+        </dd>
         {% endif %}
-    </div>
+    </dl>
     {% endblock %}
     {% block actions %}
     {{ actionslib.form(actions, get_url('.action_view')) }}

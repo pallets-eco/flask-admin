@@ -16,6 +16,9 @@
     {% block head_css %}
         <link rel="stylesheet" href="{{ admin_static.url(filename='zurb/foundation5/css/foundation.css')}}">
         <link rel="stylesheet" href="{{ admin_static.url(filename='zurb/foundation5/icons/foundation-icons.css') }}">
+        <!-- Style corrections to Foundation basic styles to work with flask admin -->
+        <link rel="stylesheet" href="{{ admin_static.url(filename='zurb/foundation5/css/app.css')}}">
+
     {% endblock %}  
     {% block head_scripts %}
         <script src="{{admin_static.url(filename='zurb/foundation5/js/vendor/modernizr.js')}}"></script>
@@ -29,33 +32,35 @@
   </head>
   <body>
     {% block page_body %}
-        <nav class="top-bar" data-topbar role="navigation" style="margin-bottom:20px;">
-          <ul class="title-area">
-            <li class="name">
-            {% block brand %}
-                <h1><a>{{ admin_view.admin.name }}</a></h1>
-            {% endblock %}
-            </li>
-             <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
-            <li class="toggle-topbar menu-icon"><a href="#"><span>{% block mobile_menu_name %}
-                Menu
-            {% endblock %}</span></a></li>
-          </ul>
-
-          <section class="top-bar-section">
-            <!-- Left Nav Section -->
-            <ul class="left">
-                {{ layout.menu_links() }}
-                {{layout.menu()}}
-            </ul>
-            <!-- Right Nav Section -->
-            <ul class="right">
-                {% block access_control %}          
+        <div class="contain-to-grid sticky">
+            <nav class="top-bar" data-topbar role="navigation"  >
+              <ul class="title-area">
+                <li class="name">
+                {% block brand %}
+                    <h1><a>{{ admin_view.admin.name }}</a></h1>
                 {% endblock %}
-            </ul>
-          </section>
-        </nav>
-        <div class="row">
+                </li>
+                 <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+                <li class="toggle-topbar menu-icon"><a href="#"><span>{% block mobile_menu_name %}
+                    Menu
+                {% endblock %}</span></a></li>
+              </ul>
+
+              <section class="top-bar-section">
+                <!-- Left Nav Section -->
+                <ul class="left">
+                    {{ layout.menu_links() }}
+                    {{layout.menu()}}
+                </ul>
+                <!-- Right Nav Section -->
+                <ul class="right">
+                    {% block access_control %}          
+                    {% endblock %}
+                </ul>
+              </section>
+            </nav>
+        </div>
+        <div class="row messages" style="margin-top: 40px;">
             {% block messages %}
                 {{ layout.messages() }}
             {% endblock %}

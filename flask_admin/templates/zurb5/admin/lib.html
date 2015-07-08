@@ -100,9 +100,9 @@
 {# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field, kwargs={}, caller=None) %}
   {% set direct_error = h.is_field_error(field.errors) %}
-  <div class="form-group{{ ' has-error' if direct_error else '' }}">
-    <div class="row">
-      <label for="{{ field.id }}" class="small-12 medium-2 columns control-label">{{ field.label.text }}
+  <div class="row{{ ' has-error' if direct_error else '' }}" >
+    
+      <label style="height: 100%;"for="{{ field.id }}" class="small-12 medium-2 columns control-label">{{ field.label.text }}
           {% if h.is_required_form_field(field) %}
             <strong style="color: red">&#42;</strong>
           {%- else -%}
@@ -126,7 +126,7 @@
       {% if caller %}
         {{ caller(form, field, direct_error, kwargs) }}
       {% endif %}
-    </div>
+   
   </div>
 {% endmacro %}
 

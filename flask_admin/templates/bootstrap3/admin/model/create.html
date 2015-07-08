@@ -2,7 +2,7 @@
 {% import 'admin/lib.html' as lib with context %}
 
 {% macro extra() %}
-  <input name="_add_another" type="submit" class="button medium" value="{{ _gettext('Save and Add') }}" />
+  <input name="_add_another" type="submit" class="btn btn-large" value="{{ _gettext('Save and Add') }}" />
 {% endmacro %}
 
 {% block head %}
@@ -12,15 +12,14 @@
 
 {% block body %}
   {% block navlinks %}
-  <dl class="sub-nav">
-    <dt>Action: </dt>
-      <dd>
+  <ul class="nav nav-tabs">
+      <li>
           <a href="{{ return_url }}">{{ _gettext('List') }}</a>
-      </dd>
-      <dd class="active">
+      </li>
+      <li class="active">
           <a href="javascript:void(0)">{{ _gettext('Create') }}</a>
-      </dd>
-	</dl>
+      </li>
+	</ul>
   {% endblock %}
 
   {% call lib.form_tag(form) %}
