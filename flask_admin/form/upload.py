@@ -203,10 +203,12 @@ class FileUploadField(fields.StringField):
     def pre_validate(self, form):
         if self._is_uploaded_file(self.data) and not self.is_file_allowed(self.data.filename):
             raise ValidationError(gettext('Invalid file extension'))
+
         # Handle overwriting existing content
         if not self._is_uploaded_file(self.data):
             return
-        if self._allow_overwrite == False and os.path.exists(self._get_path(self.data.filename)):
+
+        if not self._allow_overwrite and os.path.exists(self._get_path(self.data.filename)):
             raise ValidationError(gettext('File "%s" already exists.' % self.data.filename))
 
     def process(self, formdata, data=unset_value):
@@ -221,10 +223,10 @@ class FileUploadField(fields.StringField):
         if self._should_delete:
             self.data = None
         elif valuelist:
-            data = valuelist[0]
-
-            if self._is_uploaded_file(data):
-                self.data = data
+            for data in valuelist:
+                if self._is_uploaded_file(data):
+                    self.data = data
+                    break
 
     def populate_obj(self, obj, name):
         field = getattr(obj, name, None)
@@ -338,7 +340,7 @@ class ImageUploadField(FileUploadField):
             :param max_size:
                 Tuple of (width, height, force) or None. If provided, Flask-Admin will
                 resize image to the desired size.
-                
+
                 Width and height is in pixels. If `force` is set to `True`, will try to fit image into dimensions and
                 keep aspect ratio, otherwise will just resize to target size.
             :param thumbgen:
