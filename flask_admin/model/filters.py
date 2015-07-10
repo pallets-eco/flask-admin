@@ -109,7 +109,7 @@ class BaseIntFilter(BaseFilter):
         Base Int filter. Adds validation and changes value to python int.
     """
     def clean(self, value):
-        return int(float(value))
+        return int(float(value) if '.' in value else value)
 
 
 class BaseFloatFilter(BaseFilter):
@@ -125,7 +125,8 @@ class BaseIntListFilter(BaseFilter):
         Base Integer list filter. Adds validation for int "In List" filter.
     """
     def clean(self, value):
-        return [int(float(v.strip())) for v in value.split(',') if v.strip()]
+        return [int(float(v.strip()) if '.' in v else v.strip())
+                for v in value.split(',') if v.strip()]
 
 
 class BaseFloatListFilter(BaseFilter):
