@@ -1,57 +1,63 @@
-# Translations template for Flask-Admin.
+# Punjabi translations for Flask-Admin.
 # Copyright (C) 2015 ORGANIZATION
 # This file is distributed under the same license as the Flask-Admin
 # project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+# Jasdeep Singh <jasdeep.jogewala@gmail.com>, 2015.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Flask-Admin VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"Project-Id-Version: flask-admin\n"
+"Report-Msgid-Bugs-To: jasdeep.jogewala@gmail.com\n"
 "POT-Creation-Date: 2015-07-08 12:14+0530\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2015-07-10 12:52+0530\n"
+"Last-Translator: Jasdeep Singh <jasdeep.jogewala@gmail.com>\n"
+"Language-Team: Punjabi\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.8.2\n"
+"X-Crowdin-Project: flask-admin\n"
+"X-Crowdin-Language: pa-IN\n"
+"X-Crowdin-File: admin.pot\n"
+"Language: pa_IN\n"
 
 #: ../flask_admin/base.py:431
 msgid "Home"
-msgstr ""
+msgstr "ਹੋਮ"
 
 #: ../flask_admin/contrib/fileadmin.py:222
 msgid "File to upload"
-msgstr ""
+msgstr "ਅਪਲੋਡ ਕਰਨ ਲਈ ਫਾਈਲ"
 
 #: ../flask_admin/contrib/fileadmin.py:230
 msgid "File required."
-msgstr ""
+msgstr "ਫ਼ਾਈਲ ਜ਼ਰੂਰੀ ਹੈ |"
 
 #: ../flask_admin/contrib/fileadmin.py:235
 msgid "Invalid file type."
-msgstr ""
+msgstr "ਗਲਤ ਕਿਸਮ ਦੀ ਫਾਈਲ"
 
 #: ../flask_admin/contrib/fileadmin.py:246
 msgid "Content"
-msgstr ""
+msgstr "ਸਮਗਰੀ"
 
 #: ../flask_admin/contrib/fileadmin.py:260
 msgid "Invalid name"
-msgstr ""
+msgstr "ਗਲਤ ਨਾਮ"
 
 #: ../flask_admin/contrib/fileadmin.py:268
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:35
 msgid "Name"
-msgstr ""
+msgstr "ਨਾਮ"
 
 #: ../flask_admin/contrib/fileadmin.py:546
 #, python-format
 msgid "File \"%(name)s\" already exists."
-msgstr ""
+msgstr "ਫ਼ਾਈਲ \"%(name)s\" ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ |"
 
 #: ../flask_admin/contrib/fileadmin.py:570
 #: ../flask_admin/contrib/fileadmin.py:637
@@ -60,99 +66,99 @@ msgstr ""
 #: ../flask_admin/contrib/fileadmin.py:777
 #: ../flask_admin/contrib/fileadmin.py:826
 msgid "Permission denied."
-msgstr ""
+msgstr "ਮਨਜ਼ੂਰੀ ਨਹੀਂ ਹੈ |"
 
 #: ../flask_admin/contrib/fileadmin.py:633
 msgid "File uploading is disabled."
-msgstr ""
+msgstr "ਫ਼ਾਈਲ ਅਪਲੋਡ ਕਰਨ ਤੇ ਰੋਕ ਹੈ |"
 
 #: ../flask_admin/contrib/fileadmin.py:646
 #, python-format
 msgid "Failed to save file: %(error)s"
-msgstr ""
+msgstr "ਫ਼ਾਈਲ ਸਾਂਭੀ ਨਹੀਂ ਜਾ ਸਕੀ : %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:686
 msgid "Directory creation is disabled."
-msgstr ""
+msgstr "ਡਾਇਰੈਕਟਰੀ ਬਣਾਉਣ ਤੇ ਰੋਕ ਹੈ |"
 
 #: ../flask_admin/contrib/fileadmin.py:701
 #, python-format
 msgid "Failed to create directory: %(error)s"
-msgstr ""
+msgstr "ਡਾਇਰੈਕਟਰੀ ਨਹੀਂ ਬਣਾਈ ਜਾ ਸਕੀ :  %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:727
 msgid "Deletion is disabled."
-msgstr ""
+msgstr "ਮਿਟਾਉਣ ਦੀ ਮਨਾਹੀ ਹੈ  |"
 
 #: ../flask_admin/contrib/fileadmin.py:736
 msgid "Directory deletion is disabled."
-msgstr ""
+msgstr "ਡਾਇਰੈਕਟਰੀ ਮਿਟਾਉਣ ਦੀ ਮਨਾਹੀ ਹੈ |"
 
 #: ../flask_admin/contrib/fileadmin.py:742
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
-msgstr ""
+msgstr "ਡਾਇਰੈਕਟਰੀ \"%(path)s\" ਕਾਮਯਾਬੀ ਨਾਲ ਮਿਟਾ ਦਿੱਤੀ ਗਈ |"
 
 #: ../flask_admin/contrib/fileadmin.py:744
 #, python-format
 msgid "Failed to delete directory: %(error)s"
-msgstr ""
+msgstr "ਡਾਇਰੈਕਟਰੀ ਮਿਟਾਉਣ ਵਿੱਚ ਨਾਕਾਮਯਾਬੀ:  %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:749
 #: ../flask_admin/contrib/fileadmin.py:894
 #, python-format
 msgid "File \"%(name)s\" was successfully deleted."
-msgstr ""
+msgstr "ਫ਼ਾਈਲ  \"%(name)s\" ਕਾਮਯਾਬੀ ਨਾਲ ਮਿਟਾ ਦਿੱਤੀ ਗਈ |"
 
 #: ../flask_admin/contrib/fileadmin.py:751
 #: ../flask_admin/contrib/fileadmin.py:896
 #, python-format
 msgid "Failed to delete file: %(name)s"
-msgstr ""
+msgstr "ਫ਼ਾਈਲ ਮਿਟਾਉਣ ਵਿੱਚ ਨਾਕਾਮਯਾਬੀ: %(name)s "
 
 #: ../flask_admin/contrib/fileadmin.py:773
 msgid "Renaming is disabled."
-msgstr ""
+msgstr "ਨਾਮ ਬਦਲਣ ਦੀ ਮਨਾਹੀ ਹੈ |"
 
 #: ../flask_admin/contrib/fileadmin.py:781
 msgid "Path does not exist."
-msgstr ""
+msgstr "ਪਾਥ ਮੌਜੂਦ ਨਹੀਂ ਹੈ |"
 
 #: ../flask_admin/contrib/fileadmin.py:792
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
-msgstr ""
+msgstr "ਨਾਮ  \"%(src)s\" ਤੋਂ  \"%(dst)s\" ਬਦਲਣ ਵਿੱਚ ਕਾਮਯਾਬੀ |"
 
 #: ../flask_admin/contrib/fileadmin.py:795
 #, python-format
 msgid "Failed to rename: %(error)s"
-msgstr ""
+msgstr "ਨਾਮ ਬਦਲਣ ਵਿੱਚ ਨਾਕਾਮਯਾਬੀ : %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:842
 #, python-format
 msgid "Error saving changes to %(name)s."
-msgstr ""
+msgstr "%(name)s ਵਿੱਚ ਬਦਲਾਅ ਸਾਂਭਣ ਵਿੱਚ ਗਲਤੀ |"
 
 #: ../flask_admin/contrib/fileadmin.py:846
 #, python-format
 msgid "Changes to %(name)s saved successfully."
-msgstr ""
+msgstr "%(name)s ਵਿੱਚ ਬਦਲਾਅ ਸਾਂਭਣ ਵਿੱਚ ਕਾਮਯਾਬੀ |"
 
 #: ../flask_admin/contrib/fileadmin.py:855
 #, python-format
 msgid "Error reading %(name)s."
-msgstr ""
+msgstr " %(name)s ਪੜਨ ਵਿੱਚ ਗਲਤੀ |"
 
 #: ../flask_admin/contrib/fileadmin.py:858
 #: ../flask_admin/contrib/fileadmin.py:867
 #, python-format
 msgid "Unexpected error while reading from %(name)s"
-msgstr ""
+msgstr "%(name)s ਤੋਂ ਪੜਨ ਵਿੱਚ ਅਚਨਚੇਤ ਗਲਤੀ |"
 
 #: ../flask_admin/contrib/fileadmin.py:864
 #, python-format
 msgid "Cannot edit %(name)s."
-msgstr ""
+msgstr "%(name)s ਨਹੀਂ ਬਦਲਿਆ ਜਾ ਸਕਦਾ |"
 
 #: ../flask_admin/contrib/fileadmin.py:881
 #: ../flask_admin/contrib/mongoengine/view.py:630
@@ -160,87 +166,87 @@ msgstr ""
 #: ../flask_admin/contrib/pymongo/view.py:352
 #: ../flask_admin/contrib/sqla/view.py:1056
 msgid "Delete"
-msgstr ""
+msgstr "ਮਿਟਾਓ"
 
 #: ../flask_admin/contrib/fileadmin.py:882
 msgid "Are you sure you want to delete these files?"
-msgstr ""
+msgstr "ਕੀ ਤੁਹਾਨੂੰ ਯਕੀਨ ਹੈ ਇੱਕ ਤੁਸੀਂ ਇਹ ਫ਼ਾਈਲਾਂ ਮਿਟਾਉਣੀਆਂ ਚਾਹੁੰਦੇ ਹੋ?"
 
 #: ../flask_admin/contrib/fileadmin.py:885
 msgid "File deletion is disabled."
-msgstr ""
+msgstr "ਫ਼ਾਈਲ ਮਿਟਾਉਣ ਦੀ ਮਨਾਹੀ ਹੈ |"
 
 #: ../flask_admin/contrib/fileadmin.py:898
 msgid "Edit"
-msgstr ""
+msgstr "ਬਦਲੋ"
 
 #: ../flask_admin/contrib/rediscli.py:125
 msgid "Cli: Invalid command."
-msgstr ""
+msgstr "Cli: ਨਾ ਵਾਜਿਬ ਕਮਾਂਡ"
 
 #: ../flask_admin/contrib/geoa/fields.py:29
 msgid "Invalid JSON"
-msgstr ""
+msgstr "ਨਾ ਵਾਜਿਬ JSON"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:38
 #: ../flask_admin/contrib/peewee/filters.py:38
 #: ../flask_admin/contrib/pymongo/filters.py:38
 #: ../flask_admin/contrib/sqla/filters.py:41
 msgid "equals"
-msgstr ""
+msgstr "ਬਰਾਬਰ"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:47
 #: ../flask_admin/contrib/peewee/filters.py:46
 #: ../flask_admin/contrib/pymongo/filters.py:47
 #: ../flask_admin/contrib/sqla/filters.py:49
 msgid "not equal"
-msgstr ""
+msgstr "ਨਾ ਬਰਾਬਰ"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:57
 #: ../flask_admin/contrib/peewee/filters.py:55
 #: ../flask_admin/contrib/pymongo/filters.py:57
 #: ../flask_admin/contrib/sqla/filters.py:58
 msgid "contains"
-msgstr ""
+msgstr "ਸ਼ਾਮਲ"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:67
 #: ../flask_admin/contrib/peewee/filters.py:64
 #: ../flask_admin/contrib/pymongo/filters.py:67
 #: ../flask_admin/contrib/sqla/filters.py:67
 msgid "not contains"
-msgstr ""
+msgstr "ਸ਼ਾਮਲ ਨਹੀਂ"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:76
 #: ../flask_admin/contrib/peewee/filters.py:72
 #: ../flask_admin/contrib/pymongo/filters.py:80
 #: ../flask_admin/contrib/sqla/filters.py:75
 msgid "greater than"
-msgstr ""
+msgstr "ਤੋਂ ਵੱਧ ਹੈ"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:85
 #: ../flask_admin/contrib/peewee/filters.py:80
 #: ../flask_admin/contrib/pymongo/filters.py:93
 #: ../flask_admin/contrib/sqla/filters.py:83
 msgid "smaller than"
-msgstr ""
+msgstr "ਤੋਂ ਘੱਟ ਹੈ"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:97
 #: ../flask_admin/contrib/peewee/filters.py:91
 #: ../flask_admin/contrib/sqla/filters.py:94
 msgid "empty"
-msgstr ""
+msgstr "ਖਾਲੀ"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:112
 #: ../flask_admin/contrib/peewee/filters.py:105
 #: ../flask_admin/contrib/sqla/filters.py:108
 msgid "in list"
-msgstr ""
+msgstr "ਸੂਚੀ ਵਿੱਚ ਹੈ"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:121
 #: ../flask_admin/contrib/peewee/filters.py:114
 #: ../flask_admin/contrib/sqla/filters.py:118
 msgid "not in list"
-msgstr ""
+msgstr "ਸੂਚੀ ਵਿੱਚ ਨਹੀਂ ਹੈ "
 
 #: ../flask_admin/contrib/mongoengine/filters.py:221
 #: ../flask_admin/contrib/peewee/filters.py:208
@@ -250,12 +256,12 @@ msgstr ""
 #: ../flask_admin/contrib/sqla/filters.py:250
 #: ../flask_admin/contrib/sqla/filters.py:287
 msgid "not between"
-msgstr ""
+msgstr "ਵਿਚਾਲੇ ਨਹੀਂ ਹੈ "
 
 #: ../flask_admin/contrib/mongoengine/view.py:520
 #, python-format
 msgid "Failed to get model. %(error)s"
-msgstr ""
+msgstr "ਮੌਡਲ ਕੱਢਣ ਵਿੱਚ ਨਾਕਾਮਯਾਬੀ |  %(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:539
 #: ../flask_admin/contrib/peewee/view.py:380
@@ -263,7 +269,7 @@ msgstr ""
 #: ../flask_admin/contrib/sqla/view.py:985
 #, python-format
 msgid "Failed to create record. %(error)s"
-msgstr ""
+msgstr "ਰਿਕਾਰਡ ਬਨਾਉਣ ਵਿੱਚ ਨਾਕਾਮਯਾਬੀ |  %(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:565
 #: ../flask_admin/contrib/peewee/view.py:399
@@ -272,7 +278,7 @@ msgstr ""
 #: ../flask_admin/model/base.py:1743
 #, python-format
 msgid "Failed to update record. %(error)s"
-msgstr ""
+msgstr "ਰਿਕਾਰਡ ਬਦਲਣ ਵਿੱਚ ਨਾਕਾਮਯਾਬੀ |  %(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:588
 #: ../flask_admin/contrib/peewee/view.py:414
@@ -280,14 +286,14 @@ msgstr ""
 #: ../flask_admin/contrib/sqla/view.py:1036
 #, python-format
 msgid "Failed to delete record. %(error)s"
-msgstr ""
+msgstr "ਰਿਕਾਰਡ ਮਿਟਾਉਣ ਵਿੱਚ ਨਾਕਾਮਯਾਬੀ |  %(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:631
 #: ../flask_admin/contrib/peewee/view.py:433
 #: ../flask_admin/contrib/pymongo/view.py:353
 #: ../flask_admin/contrib/sqla/view.py:1057
 msgid "Are you sure you want to delete selected records?"
-msgstr ""
+msgstr "ਕੀ ਤੁਹਾਨੂੰ ਯਕੀਨ ਹੈ  ਕਿ ਤੁਸੀਂ ਚੁਣੇ ਹੋਏ ਰਿਕਾਰਡ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
 #: ../flask_admin/contrib/mongoengine/view.py:640
 #: ../flask_admin/contrib/peewee/view.py:450
@@ -296,8 +302,8 @@ msgstr ""
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "ਰਿਕਾਰਡ ਕਾਮਯਾਬੀ ਨਾਲ ਮਿਟਾਇਆ ਗਿਆ |"
+msgstr[1] "%(count)s ਰਿਕਾਰਡ ਕਾਮਯਾਬੀ ਨਾਲ ਮਿਟਾਏ ਗਏ |"
 
 #: ../flask_admin/contrib/mongoengine/view.py:646
 #: ../flask_admin/contrib/peewee/view.py:456
@@ -305,153 +311,153 @@ msgstr[1] ""
 #: ../flask_admin/contrib/sqla/view.py:1081
 #, python-format
 msgid "Failed to delete records. %(error)s"
-msgstr ""
+msgstr "ਰਿਕਾਰਡ ਮਿਟਾਉਣ ਵਿੱਚ ਨਾਕਾਮਯਾਬੀ |  %(error)s"
 
 #: ../flask_admin/contrib/sqla/fields.py:123
 #: ../flask_admin/contrib/sqla/fields.py:173
-#: ../flask_admin/contrib/sqla/fields.py:178 ../flask_admin/model/fields.py:225
-#: ../flask_admin/model/fields.py:274
+#: ../flask_admin/contrib/sqla/fields.py:178
+#: ../flask_admin/model/fields.py:225 ../flask_admin/model/fields.py:274
 msgid "Not a valid choice"
-msgstr ""
+msgstr "ਸਹੀ ਚੋਣ ਨਹੀਂ ਹੈ "
 
 #: ../flask_admin/contrib/sqla/validators.py:42
 msgid "Already exists."
-msgstr ""
+msgstr "ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ |"
 
 #: ../flask_admin/contrib/sqla/validators.py:60
 #, python-format
 msgid "At least %d item is required"
 msgid_plural "At least %d items are required"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "ਘੱਟੋ ਘੱਟ %d ਸ਼ੈ ਜਰੂਰੀ ਹੈ "
+msgstr[1] "ਘੱਟੋ ਘੱਟ %d ਸ਼ੈਆਂ ਜਰੂਰੀ ਹਾਂ "
 
 #: ../flask_admin/contrib/sqla/view.py:964
 #, python-format
 msgid "Integrity error. %(message)s"
-msgstr ""
+msgstr "ਪੂਰਨਤਾ ਗਲਤੀ| %(message)s"
 
 #: ../flask_admin/form/fields.py:92
 msgid "Invalid time format"
-msgstr ""
+msgstr "ਨਾ ਵਾਜਿਬ ਟਾਈਮ ਫ਼ੌਰਮੈਟ"
 
 #: ../flask_admin/form/fields.py:138
 msgid "Invalid Choice: could not coerce"
-msgstr ""
+msgstr "ਨਾ ਵਾਜਿਬ ਚੋਣ : ਮਜ਼ਬੂਰ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ "
 
 #: ../flask_admin/form/upload.py:205
 msgid "Invalid file extension"
-msgstr ""
+msgstr "ਨਾ ਵਾਜਿਬ ਫ਼ਾਈਲ ਐਕਸਟੇਨਸ਼ਨ"
 
 #: ../flask_admin/form/upload.py:210 ../flask_admin/form/upload.py:277
 #, python-format
 msgid "File \"%s\" already exists."
-msgstr ""
+msgstr "ਫ਼ਾਈਲ \"%s\" ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ |"
 
 #: ../flask_admin/model/base.py:1332
 msgid "There are no items in the table."
-msgstr ""
+msgstr "ਟੇਬਲ ਵਿੱਚ ਕੋਈ ਸ਼ੈ ਨਹੀਂ ਹੈ |"
 
 #: ../flask_admin/model/base.py:1356
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
-msgstr ""
+msgstr "ਨਾ ਵਾਜਿਬ ਫਿਲਟਰ ਸੰਖਿਆ:  %(value)s"
 
 #: ../flask_admin/model/base.py:1597
 msgid "Record was successfully created."
-msgstr ""
+msgstr "ਰਿਕੌਰਡ ਕਾਮਯਾਬੀ ਨਾਲ ਬਣਾਇਆ ਗਿਆ |"
 
 #: ../flask_admin/model/base.py:1641 ../flask_admin/model/base.py:1739
 msgid "Record was successfully saved."
-msgstr ""
+msgstr "ਰਿਕੌਰਡ ਕਾਮਯਾਬੀ ਨਾਲ ਸਾਂਭਿਆ ਗਿਆ |"
 
 #: ../flask_admin/model/filters.py:99
 msgid "Yes"
-msgstr ""
+msgstr "ਹਾਂ"
 
 #: ../flask_admin/model/filters.py:100
 msgid "No"
-msgstr ""
+msgstr "ਨਹੀਂ"
 
 #: ../flask_admin/model/filters.py:162 ../flask_admin/model/filters.py:202
 #: ../flask_admin/model/filters.py:247
 msgid "between"
-msgstr ""
+msgstr "ਵਿਚਕਾਰ"
 
 #: ../flask_admin/templates/bootstrap2/admin/actions.html:4
 #: ../flask_admin/templates/bootstrap3/admin/actions.html:4
 msgid "With selected"
-msgstr ""
+msgstr "ਚੁਣੇ ਹੋਏ ਨੂੰ"
 
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:199
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:190
 msgid "Save"
-msgstr ""
+msgstr "ਸਾਂਭੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:204
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:195
 msgid "Cancel"
-msgstr ""
+msgstr "ਰੱਦ ਕਰੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/edit.html:5
 #: ../flask_admin/templates/bootstrap3/admin/file/edit.html:5
 #, python-format
 msgid "You are editing %(path)s"
-msgstr ""
+msgstr "ਤੁਸੀਂ %(path)s ਬਦਲ ਰਹੇ ਹੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
 msgid "Root"
-msgstr ""
+msgstr "ਜੜ"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:36
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:36
 msgid "Size"
-msgstr ""
+msgstr "ਆਕਾਰ"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:63
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:63
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
-msgstr ""
+msgstr "ਕੀ ਤੁਹਾਨੂੰ ਯਕੀਨ ਹੈ ਕਿ ਤੁਸੀਂ \\'%(name)s\\' ਅਤੇ ਇਸਦੇ ਵਿਚਲੀਆਂ ਸ਼ੈਆਂ ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:72
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:72
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\'?"
-msgstr ""
+msgstr "ਕੀ ਤੁਹਾਨੂੰ ਯਕੀਨ ਹੈ ਕਿ ਤੁਸੀਂ  \\'%(name)s\\' ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:107
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:107
 msgid "Upload File"
-msgstr ""
+msgstr "ਫ਼ਾਈਲ ਅਪਲੋਡ ਕਰੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:112
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:112
 msgid "Create Directory"
-msgstr ""
+msgstr "ਡਾਇਰੈਕਟਰੀ ਬਣਾਓ"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:129
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:129
 msgid "Please select at least one file."
-msgstr ""
+msgstr "ਕਿਰਪਾ ਕਰਕੇ ਘੱਟੋ ਘੱਟ ਇੱਕ ਫ਼ਾਈਲ ਚੁਣੋ |"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/rename.html:5
 #: ../flask_admin/templates/bootstrap3/admin/file/rename.html:5
 #, python-format
 msgid "Please provide new name for %(name)s"
-msgstr ""
+msgstr "ਕਿਰਪਾ ਕਰਕੇ  %(name)s ਲਈ ਨਵਾਂ ਨਾਮ ਦਿਓ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:7
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:7
 msgid "Save and Add"
-msgstr ""
+msgstr "ਸਾਂਭੋ ਅਤੇ ਜੋੜੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:26
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:16
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:33
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:16
 msgid "List"
-msgstr ""
+msgstr "ਲਿਸਟ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:29
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:22
@@ -460,66 +466,66 @@ msgstr ""
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
 msgid "Create"
-msgstr ""
+msgstr "ਬਣਾਓ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:44
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:21
 msgid "Create New Record"
-msgstr ""
+msgstr "ਨਵਾਂ ਰਿਕੌਰਡ ਬਣਾਓ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:7
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:7
 msgid "Save and Continue"
-msgstr ""
+msgstr "ਸਾਂਭੋ ਅਤੇ ਅੱਗੇ ਵਧੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:34
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:22
 msgid "Edit Record"
-msgstr ""
+msgstr "ਰਿਕੌਰਡ ਬਦਲੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
 #: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:14
 msgid "Delete?"
-msgstr ""
+msgstr "ਮਿਟਾਓ?"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:40
 #: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:43
 msgid "Add"
-msgstr ""
+msgstr "ਜੋੜੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:3
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:3
 msgid "Add Filter"
-msgstr ""
+msgstr "ਫਿਲਟਰ ਜੋੜੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:17
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:17
 msgid "Apply"
-msgstr ""
+msgstr "ਲਾਗੂ ਕਰੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:19
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:19
 msgid "Reset Filters"
-msgstr ""
+msgstr "ਫਿਲਟਰ ਬਦਲੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:38
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:45
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:38
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:43
 msgid "Search"
-msgstr ""
+msgstr "ਲੱਭੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:22
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:24
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
 msgid "Create new record"
-msgstr ""
+msgstr "ਨਵਾਂ ਰਿਕੌਰਡ ਬਣਾਓ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:61
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:61
 msgid "Select all records"
-msgstr ""
+msgstr "ਸਾਰੇ  ਰਿਕੌਰਡ ਚੁਣੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:72
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:81
@@ -527,31 +533,30 @@ msgstr ""
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:81
 #, python-format
 msgid "Sort by %(name)s"
-msgstr ""
+msgstr "%(name)s ਮੁਤਾਬਿਕ ਸ਼੍ਰੇਣੀਬੱਧ ਕਰੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:103
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:103
 msgid "Select record"
-msgstr ""
+msgstr "ਰਿਕੌਰਡ ਚੁਣੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:111
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:113
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:111
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:113
 msgid "Edit record"
-msgstr ""
+msgstr "ਰਿਕੌਰਡ  ਬਦਲੋ"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:127
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:127
 msgid "Are you sure you want to delete this record?"
-msgstr ""
+msgstr "ਕੀ ਤੁਹਾਨੂੰ ਯਕੀਨ ਹੈ ਕਿ ਤੁਸੀਂ ਰਿਕੌਰਡ  ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:127
 msgid "Delete record"
-msgstr ""
+msgstr "ਰਿਕੌਰਡ "
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:184
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:183
 msgid "Please select at least one record."
-msgstr ""
-
+msgstr "ਕਿਰਪਾ ਕਰਕੇ ਘੱਟੋ ਘੱਟ ਇੱਕ ਰਿਕੌਰਡ ਜਰੂਰ ਚੁਣੋ |"
