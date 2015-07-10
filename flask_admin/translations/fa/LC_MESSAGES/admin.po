@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-07-05 16:16-0500\n"
-"PO-Revision-Date: 2015-07-05 18:06-0400\n"
+"POT-Creation-Date: 2015-07-10 04:35-0500\n"
+"PO-Revision-Date: 2015-07-10 06:13-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -21,139 +21,165 @@ msgstr ""
 msgid "Home"
 msgstr "خانه"
 
-#: ../flask_admin/contrib/fileadmin.py:222
+#: ../flask_admin/contrib/fileadmin.py:235
 msgid "File to upload"
 msgstr "فایلی که باید آپلود شود"
 
-#: ../flask_admin/contrib/fileadmin.py:230
+#: ../flask_admin/contrib/fileadmin.py:243
 msgid "File required."
 msgstr "فایل لازم است"
 
-#: ../flask_admin/contrib/fileadmin.py:235
+#: ../flask_admin/contrib/fileadmin.py:248
 msgid "Invalid file type."
 msgstr "نوع فایل غیرمجاز است"
 
-#: ../flask_admin/contrib/fileadmin.py:246
+#: ../flask_admin/contrib/fileadmin.py:259
 msgid "Content"
 msgstr "محتوا"
 
-#: ../flask_admin/contrib/fileadmin.py:260
+#: ../flask_admin/contrib/fileadmin.py:273
 msgid "Invalid name"
 msgstr "نام اشتباه"
 
-#: ../flask_admin/contrib/fileadmin.py:268
+#: ../flask_admin/contrib/fileadmin.py:281
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:35
 msgid "Name"
 msgstr "نام"
 
-#: ../flask_admin/contrib/fileadmin.py:546
+#: ../flask_admin/contrib/fileadmin.py:559
 #, python-format
 msgid "File \"%(name)s\" already exists."
 msgstr "فایل \"%(name)s\" قبلا وجود داشته است"
 
-#: ../flask_admin/contrib/fileadmin.py:570
-#: ../flask_admin/contrib/fileadmin.py:637
-#: ../flask_admin/contrib/fileadmin.py:690
-#: ../flask_admin/contrib/fileadmin.py:731
-#: ../flask_admin/contrib/fileadmin.py:777
-#: ../flask_admin/contrib/fileadmin.py:826
+#: ../flask_admin/contrib/fileadmin.py:583
+#: ../flask_admin/contrib/fileadmin.py:650
+#: ../flask_admin/contrib/fileadmin.py:707
+#: ../flask_admin/contrib/fileadmin.py:750
+#: ../flask_admin/contrib/fileadmin.py:796
+#: ../flask_admin/contrib/fileadmin.py:846
 msgid "Permission denied."
 msgstr "خطای دسترسی"
 
-#: ../flask_admin/contrib/fileadmin.py:633
+#: ../flask_admin/contrib/fileadmin.py:646
 msgid "File uploading is disabled."
 msgstr "آپلود فایل غیر فعال است"
 
-#: ../flask_admin/contrib/fileadmin.py:646
+#: ../flask_admin/contrib/fileadmin.py:657
+#, python-format
+msgid "Successfully saved file: %(name)s"
+msgstr "فایل با موفقیت ذخیره شده: %(name)s"
+
+#: ../flask_admin/contrib/fileadmin.py:661
 #, python-format
 msgid "Failed to save file: %(error)s"
 msgstr "ذخیره ی فایل  بامشکل روبرو شد %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:686
+#: ../flask_admin/contrib/fileadmin.py:664
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:121
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:123
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:121
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:123
+msgid "Upload File"
+msgstr "آپلود فایل"
+
+#: ../flask_admin/contrib/fileadmin.py:703
 msgid "Directory creation is disabled."
 msgstr "ساخت پوشه غیر فعال است"
 
-#: ../flask_admin/contrib/fileadmin.py:701
+#: ../flask_admin/contrib/fileadmin.py:716
+#, python-format
+msgid "Successfully created directory: %(directory)s"
+msgstr "پوشه با موفقیت ایجاد شده: %(directory)s"
+
+#: ../flask_admin/contrib/fileadmin.py:720
 #, python-format
 msgid "Failed to create directory: %(error)s"
 msgstr "ساخت پوشه ی  با مشکل روبرو شد %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:727
+#: ../flask_admin/contrib/fileadmin.py:725
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:132
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:134
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:132
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:134
+msgid "Create Directory"
+msgstr "ایجاد پوشه"
+
+#: ../flask_admin/contrib/fileadmin.py:746
 msgid "Deletion is disabled."
 msgstr "حذف غیر فعال است"
 
-#: ../flask_admin/contrib/fileadmin.py:736
+#: ../flask_admin/contrib/fileadmin.py:755
 msgid "Directory deletion is disabled."
 msgstr "حذف پوشه غیر فعال است"
 
-#: ../flask_admin/contrib/fileadmin.py:742
+#: ../flask_admin/contrib/fileadmin.py:761
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
 msgstr "پوشه %(path)s با موفقیت حذف شد"
 
-#: ../flask_admin/contrib/fileadmin.py:744
+#: ../flask_admin/contrib/fileadmin.py:763
 #, python-format
 msgid "Failed to delete directory: %(error)s"
 msgstr "حذف پوشه ی  با مشکل روبرو شد %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:749
-#: ../flask_admin/contrib/fileadmin.py:894
+#: ../flask_admin/contrib/fileadmin.py:768
+#: ../flask_admin/contrib/fileadmin.py:915
 #, python-format
 msgid "File \"%(name)s\" was successfully deleted."
 msgstr "فایل \"%(name)s\" با موفقیت حذف شد"
 
-#: ../flask_admin/contrib/fileadmin.py:751
-#: ../flask_admin/contrib/fileadmin.py:896
+#: ../flask_admin/contrib/fileadmin.py:770
+#: ../flask_admin/contrib/fileadmin.py:917
 #, python-format
 msgid "Failed to delete file: %(name)s"
 msgstr "حذف فایل%(name)s  با مشکل روبرو شد"
 
-#: ../flask_admin/contrib/fileadmin.py:773
+#: ../flask_admin/contrib/fileadmin.py:792
 msgid "Renaming is disabled."
 msgstr "تغییر نام غیر فعال است"
 
-#: ../flask_admin/contrib/fileadmin.py:781
+#: ../flask_admin/contrib/fileadmin.py:800
 msgid "Path does not exist."
 msgstr "مسیر وجود ندارد"
 
-#: ../flask_admin/contrib/fileadmin.py:792
+#: ../flask_admin/contrib/fileadmin.py:811
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
 msgstr "با موفقیت از\"%(src)s\"  به \"%(dst)s\" تغییر نام داده شد"
 
-#: ../flask_admin/contrib/fileadmin.py:795
+#: ../flask_admin/contrib/fileadmin.py:814
 #, python-format
 msgid "Failed to rename: %(error)s"
 msgstr "تغییر نام  با مشکل روبرو شد %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:842
+#: ../flask_admin/contrib/fileadmin.py:862
 #, python-format
 msgid "Error saving changes to %(name)s."
 msgstr "مشکل در ذخیره ی تغییرات %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:846
+#: ../flask_admin/contrib/fileadmin.py:866
 #, python-format
 msgid "Changes to %(name)s saved successfully."
 msgstr "تغییرات%(name)s  با موفقیت صورت گرفت"
 
-#: ../flask_admin/contrib/fileadmin.py:855
+#: ../flask_admin/contrib/fileadmin.py:875
 #, python-format
 msgid "Error reading %(name)s."
 msgstr "مشکل در خواندن %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:858
-#: ../flask_admin/contrib/fileadmin.py:867
+#: ../flask_admin/contrib/fileadmin.py:878
+#: ../flask_admin/contrib/fileadmin.py:887
 #, python-format
 msgid "Unexpected error while reading from %(name)s"
 msgstr "خطای غیر منتظره در حال خواندن %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:864
+#: ../flask_admin/contrib/fileadmin.py:884
 #, python-format
 msgid "Cannot edit %(name)s."
 msgstr "عدم توانایی در ویرایش %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:881
+#: ../flask_admin/contrib/fileadmin.py:902
 #: ../flask_admin/contrib/mongoengine/view.py:630
 #: ../flask_admin/contrib/peewee/view.py:432
 #: ../flask_admin/contrib/pymongo/view.py:352
@@ -161,15 +187,17 @@ msgstr "عدم توانایی در ویرایش %(name)s"
 msgid "Delete"
 msgstr "حذف"
 
-#: ../flask_admin/contrib/fileadmin.py:882
+#: ../flask_admin/contrib/fileadmin.py:903
 msgid "Are you sure you want to delete these files?"
 msgstr "آیا از حذف این فایل ها اطمینان دارید؟"
 
-#: ../flask_admin/contrib/fileadmin.py:885
+#: ../flask_admin/contrib/fileadmin.py:906
 msgid "File deletion is disabled."
 msgstr "امکان حذف فایل وجود ندارد"
 
-#: ../flask_admin/contrib/fileadmin.py:898
+#: ../flask_admin/contrib/fileadmin.py:919
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:32
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:41
 msgid "Edit"
 msgstr "ویرایش"
 
@@ -267,8 +295,8 @@ msgstr "ساخت مدل با مشکل روبرو شد %(error)s"
 #: ../flask_admin/contrib/mongoengine/view.py:565
 #: ../flask_admin/contrib/peewee/view.py:399
 #: ../flask_admin/contrib/pymongo/view.py:309
-#: ../flask_admin/contrib/sqla/view.py:1011 ../flask_admin/model/base.py:1734
-#: ../flask_admin/model/base.py:1743
+#: ../flask_admin/contrib/sqla/view.py:1011 ../flask_admin/model/base.py:1736
+#: ../flask_admin/model/base.py:1745
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr "بروزرسانی مدل با مشکل روبرو شد%(error)s"
@@ -291,7 +319,7 @@ msgstr "آیا از حذف مدل ها اطمینان دارید"
 #: ../flask_admin/contrib/mongoengine/view.py:640
 #: ../flask_admin/contrib/peewee/view.py:450
 #: ../flask_admin/contrib/pymongo/view.py:363
-#: ../flask_admin/contrib/sqla/view.py:1073 ../flask_admin/model/base.py:1682
+#: ../flask_admin/contrib/sqla/view.py:1073 ../flask_admin/model/base.py:1684
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
@@ -327,11 +355,11 @@ msgstr[0] "حداقل یک مورد لازم است"
 msgid "Integrity error. %(message)s"
 msgstr "خطای یکپارچگی داده. %(message)s"
 
-#: ../flask_admin/form/fields.py:92
+#: ../flask_admin/form/fields.py:94
 msgid "Invalid time format"
 msgstr "قالب زمان اشتباه است"
 
-#: ../flask_admin/form/fields.py:138
+#: ../flask_admin/form/fields.py:140
 msgid "Invalid Choice: could not coerce"
 msgstr "انتخاب اشتباه"
 
@@ -339,7 +367,7 @@ msgstr "انتخاب اشتباه"
 msgid "Invalid file extension"
 msgstr "پسوند فایل غیرمجاز است"
 
-#: ../flask_admin/form/upload.py:210 ../flask_admin/form/upload.py:277
+#: ../flask_admin/form/upload.py:212 ../flask_admin/form/upload.py:279
 #, python-format
 msgid "File \"%s\" already exists."
 msgstr "فایل \"%s\" قبلا وجود داشته است"
@@ -357,7 +385,7 @@ msgstr "مقدار فیلتر معتبر نیست: %(value)s"
 msgid "Record was successfully created."
 msgstr "مدل با موفقیت ساخته شد"
 
-#: ../flask_admin/model/base.py:1641 ../flask_admin/model/base.py:1739
+#: ../flask_admin/model/base.py:1642 ../flask_admin/model/base.py:1741
 msgid "Record was successfully saved."
 msgstr "مدل با موفقیت ذخیره شد"
 
@@ -389,11 +417,16 @@ msgstr "ذخیره"
 msgid "Cancel"
 msgstr "لغو"
 
-#: ../flask_admin/templates/bootstrap2/admin/file/edit.html:5
-#: ../flask_admin/templates/bootstrap3/admin/file/edit.html:5
+#: ../flask_admin/templates/bootstrap2/admin/file/edit.html:8
+#: ../flask_admin/templates/bootstrap3/admin/file/edit.html:8
+msgid "This file cannot be edited for now."
+msgstr "این فایل را می توان در حال حاضر ویرایش نمی باشد."
+
+#: ../flask_admin/templates/bootstrap2/admin/file/edit.html:21
+#: ../flask_admin/templates/bootstrap3/admin/file/edit.html:20
 #, python-format
-msgid "You are editing %(path)s"
-msgstr "شما در حال ویرایش %(path)s هستید"
+msgid "Editing %(path)s"
+msgstr "ویرایش %(path)s"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
@@ -405,61 +438,62 @@ msgstr "ریشه"
 msgid "Size"
 msgstr "اندازه"
 
-#: ../flask_admin/templates/bootstrap2/admin/file/list.html:63
-#: ../flask_admin/templates/bootstrap3/admin/file/list.html:63
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:55
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:58
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:55
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:58
+msgid "Rename File"
+msgstr "تغییر نام پرونده"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:69
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:69
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
 msgstr "آیا از حذف محتویات \\'%(name)s\\' اطمینان دارید؟"
 
-#: ../flask_admin/templates/bootstrap2/admin/file/list.html:72
-#: ../flask_admin/templates/bootstrap3/admin/file/list.html:72
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:78
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:78
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\'?"
 msgstr "آیا از حذف  \\'%(name)s\\'اطمینان دارید؟"
 
-#: ../flask_admin/templates/bootstrap2/admin/file/list.html:107
-#: ../flask_admin/templates/bootstrap3/admin/file/list.html:107
-msgid "Upload File"
-msgstr "آپلود فایل"
-
-#: ../flask_admin/templates/bootstrap2/admin/file/list.html:112
-#: ../flask_admin/templates/bootstrap3/admin/file/list.html:112
-msgid "Create Directory"
-msgstr "ایجاد پوشه"
-
-#: ../flask_admin/templates/bootstrap2/admin/file/list.html:129
-#: ../flask_admin/templates/bootstrap3/admin/file/list.html:129
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:158
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:158
 msgid "Please select at least one file."
 msgstr "حداقل یک فایل انتخاب کنید"
 
-#: ../flask_admin/templates/bootstrap2/admin/file/rename.html:5
-#: ../flask_admin/templates/bootstrap3/admin/file/rename.html:5
+#: ../flask_admin/templates/bootstrap2/admin/file/rename.html:12
+#: ../flask_admin/templates/bootstrap3/admin/file/rename.html:12
 #, python-format
-msgid "Please provide new name for %(name)s"
-msgstr "لطفا یک نام جدید%(name)s  برای وارد کنید"
+msgid "Rename %(name)s"
+msgstr "تغییر نام %(name)s"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:7
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:7
 msgid "Save and Add"
 msgstr "ذخیره و اضافه"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:26
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:25
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:26
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:16
-#: ../flask_admin/templates/bootstrap3/admin/model/create.html:33
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:32
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:35
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:16
 msgid "List"
 msgstr "لیست"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:29
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:28
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:29
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:22
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:24
-#: ../flask_admin/templates/bootstrap3/admin/model/create.html:36
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:35
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:38
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
 msgid "Create"
 msgstr "ایجاد"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:44
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:41
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:21
 msgid "Create New Record"
 msgstr "ایجاد رکورد جدید"
@@ -469,8 +503,8 @@ msgstr "ایجاد رکورد جدید"
 msgid "Save and Continue"
 msgstr "ذخیره و ادامه"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:34
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:22
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:46
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:23
 msgid "Edit Record"
 msgstr "ویرایش رکورد"
 
@@ -548,7 +582,7 @@ msgid "Delete record"
 msgstr "حذف رکورد"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:184
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:183
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:185
 msgid "Please select at least one record."
 msgstr "حداقل یک پوشه انتخاب کنید"
 

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-07-05 16:16-0500\n"
-"PO-Revision-Date: 2015-07-05 18:06-0400\n"
+"POT-Creation-Date: 2015-07-10 04:35-0500\n"
+"PO-Revision-Date: 2015-07-10 06:13-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Ukrainian\n"
 "MIME-Version: 1.0\n"
@@ -21,139 +21,165 @@ msgstr ""
 msgid "Home"
 msgstr "Головна"
 
-#: ../flask_admin/contrib/fileadmin.py:222
+#: ../flask_admin/contrib/fileadmin.py:235
 msgid "File to upload"
 msgstr "Файл для завантаження"
 
-#: ../flask_admin/contrib/fileadmin.py:230
+#: ../flask_admin/contrib/fileadmin.py:243
 msgid "File required."
 msgstr "Файл, необхідний."
 
-#: ../flask_admin/contrib/fileadmin.py:235
+#: ../flask_admin/contrib/fileadmin.py:248
 msgid "Invalid file type."
 msgstr "Тип файлу неприпустимий."
 
-#: ../flask_admin/contrib/fileadmin.py:246
+#: ../flask_admin/contrib/fileadmin.py:259
 msgid "Content"
 msgstr "Зміст"
 
-#: ../flask_admin/contrib/fileadmin.py:260
+#: ../flask_admin/contrib/fileadmin.py:273
 msgid "Invalid name"
 msgstr "Неприпустиме ім'я"
 
-#: ../flask_admin/contrib/fileadmin.py:268
+#: ../flask_admin/contrib/fileadmin.py:281
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:35
 msgid "Name"
 msgstr "Ім’я"
 
-#: ../flask_admin/contrib/fileadmin.py:546
+#: ../flask_admin/contrib/fileadmin.py:559
 #, python-format
 msgid "File \"%(name)s\" already exists."
 msgstr "Файл \"%(name)s\" вже існує."
 
-#: ../flask_admin/contrib/fileadmin.py:570
-#: ../flask_admin/contrib/fileadmin.py:637
-#: ../flask_admin/contrib/fileadmin.py:690
-#: ../flask_admin/contrib/fileadmin.py:731
-#: ../flask_admin/contrib/fileadmin.py:777
-#: ../flask_admin/contrib/fileadmin.py:826
+#: ../flask_admin/contrib/fileadmin.py:583
+#: ../flask_admin/contrib/fileadmin.py:650
+#: ../flask_admin/contrib/fileadmin.py:707
+#: ../flask_admin/contrib/fileadmin.py:750
+#: ../flask_admin/contrib/fileadmin.py:796
+#: ../flask_admin/contrib/fileadmin.py:846
 msgid "Permission denied."
 msgstr "Немає дозволу."
 
-#: ../flask_admin/contrib/fileadmin.py:633
+#: ../flask_admin/contrib/fileadmin.py:646
 msgid "File uploading is disabled."
 msgstr "Завантаження файлу буде вимкнуто."
 
-#: ../flask_admin/contrib/fileadmin.py:646
+#: ../flask_admin/contrib/fileadmin.py:657
+#, python-format
+msgid "Successfully saved file: %(name)s"
+msgstr "Успішно збереженого файлу: %(name)s"
+
+#: ../flask_admin/contrib/fileadmin.py:661
 #, python-format
 msgid "Failed to save file: %(error)s"
 msgstr "Не вдалося зберегти файл: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:686
+#: ../flask_admin/contrib/fileadmin.py:664
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:121
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:123
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:121
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:123
+msgid "Upload File"
+msgstr "Завантажте файл"
+
+#: ../flask_admin/contrib/fileadmin.py:703
 msgid "Directory creation is disabled."
 msgstr "Створення каталогів вимикається."
 
-#: ../flask_admin/contrib/fileadmin.py:701
+#: ../flask_admin/contrib/fileadmin.py:716
+#, python-format
+msgid "Successfully created directory: %(directory)s"
+msgstr "Успішно витягтий: %(directory)s"
+
+#: ../flask_admin/contrib/fileadmin.py:720
 #, python-format
 msgid "Failed to create directory: %(error)s"
 msgstr "Не вдалося створити каталог: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:727
+#: ../flask_admin/contrib/fileadmin.py:725
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:132
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:134
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:132
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:134
+msgid "Create Directory"
+msgstr "Створіть каталог"
+
+#: ../flask_admin/contrib/fileadmin.py:746
 msgid "Deletion is disabled."
 msgstr "Видалення вимкнуто."
 
-#: ../flask_admin/contrib/fileadmin.py:736
+#: ../flask_admin/contrib/fileadmin.py:755
 msgid "Directory deletion is disabled."
 msgstr "Видалення каталогів вимикається."
 
-#: ../flask_admin/contrib/fileadmin.py:742
+#: ../flask_admin/contrib/fileadmin.py:761
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
 msgstr "Довідник \"%(path)s\" було успішно вилучено."
 
-#: ../flask_admin/contrib/fileadmin.py:744
+#: ../flask_admin/contrib/fileadmin.py:763
 #, python-format
 msgid "Failed to delete directory: %(error)s"
 msgstr "Не вдалося видалити каталогу: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:749
-#: ../flask_admin/contrib/fileadmin.py:894
+#: ../flask_admin/contrib/fileadmin.py:768
+#: ../flask_admin/contrib/fileadmin.py:915
 #, python-format
 msgid "File \"%(name)s\" was successfully deleted."
 msgstr "Файл «%(name)s» успішно видалено."
 
-#: ../flask_admin/contrib/fileadmin.py:751
-#: ../flask_admin/contrib/fileadmin.py:896
+#: ../flask_admin/contrib/fileadmin.py:770
+#: ../flask_admin/contrib/fileadmin.py:917
 #, python-format
 msgid "Failed to delete file: %(name)s"
 msgstr "Не вдалося видалити файл: %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:773
+#: ../flask_admin/contrib/fileadmin.py:792
 msgid "Renaming is disabled."
 msgstr "Перейменування вимкнуто."
 
-#: ../flask_admin/contrib/fileadmin.py:781
+#: ../flask_admin/contrib/fileadmin.py:800
 msgid "Path does not exist."
 msgstr "Шлях не існує."
 
-#: ../flask_admin/contrib/fileadmin.py:792
+#: ../flask_admin/contrib/fileadmin.py:811
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
 msgstr "Успішно перейменовано \"%(src)s\" до \"%(dst)s\""
 
-#: ../flask_admin/contrib/fileadmin.py:795
+#: ../flask_admin/contrib/fileadmin.py:814
 #, python-format
 msgid "Failed to rename: %(error)s"
 msgstr "Не вдалося перейменувати: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:842
+#: ../flask_admin/contrib/fileadmin.py:862
 #, python-format
 msgid "Error saving changes to %(name)s."
 msgstr "Помилка під час збереження змін до %(name)s."
 
-#: ../flask_admin/contrib/fileadmin.py:846
+#: ../flask_admin/contrib/fileadmin.py:866
 #, python-format
 msgid "Changes to %(name)s saved successfully."
 msgstr "Зміни, внесені до %(name)s успішно збережено."
 
-#: ../flask_admin/contrib/fileadmin.py:855
+#: ../flask_admin/contrib/fileadmin.py:875
 #, python-format
 msgid "Error reading %(name)s."
 msgstr "%(name)s помилка читання."
 
-#: ../flask_admin/contrib/fileadmin.py:858
-#: ../flask_admin/contrib/fileadmin.py:867
+#: ../flask_admin/contrib/fileadmin.py:878
+#: ../flask_admin/contrib/fileadmin.py:887
 #, python-format
 msgid "Unexpected error while reading from %(name)s"
 msgstr "Неочікувана помилка під час читання %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:864
+#: ../flask_admin/contrib/fileadmin.py:884
 #, python-format
 msgid "Cannot edit %(name)s."
 msgstr "Не можна редагувати %(name)s."
 
-#: ../flask_admin/contrib/fileadmin.py:881
+#: ../flask_admin/contrib/fileadmin.py:902
 #: ../flask_admin/contrib/mongoengine/view.py:630
 #: ../flask_admin/contrib/peewee/view.py:432
 #: ../flask_admin/contrib/pymongo/view.py:352
@@ -161,15 +187,17 @@ msgstr "Не можна редагувати %(name)s."
 msgid "Delete"
 msgstr "Видалити"
 
-#: ../flask_admin/contrib/fileadmin.py:882
+#: ../flask_admin/contrib/fileadmin.py:903
 msgid "Are you sure you want to delete these files?"
 msgstr "Ви дійсно бажаєте видалити ці файли?"
 
-#: ../flask_admin/contrib/fileadmin.py:885
+#: ../flask_admin/contrib/fileadmin.py:906
 msgid "File deletion is disabled."
 msgstr "Видалення файлів вимкнуто."
 
-#: ../flask_admin/contrib/fileadmin.py:898
+#: ../flask_admin/contrib/fileadmin.py:919
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:32
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:41
 msgid "Edit"
 msgstr "Редагувати"
 
@@ -267,8 +295,8 @@ msgstr "Не вдалося створити запис. %(error)s"
 #: ../flask_admin/contrib/mongoengine/view.py:565
 #: ../flask_admin/contrib/peewee/view.py:399
 #: ../flask_admin/contrib/pymongo/view.py:309
-#: ../flask_admin/contrib/sqla/view.py:1011 ../flask_admin/model/base.py:1734
-#: ../flask_admin/model/base.py:1743
+#: ../flask_admin/contrib/sqla/view.py:1011 ../flask_admin/model/base.py:1736
+#: ../flask_admin/model/base.py:1745
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr "Не вдалося створити запис. %(error)s"
@@ -291,7 +319,7 @@ msgstr "Ви дійсно бажаєте видалити вибрані зап�
 #: ../flask_admin/contrib/mongoengine/view.py:640
 #: ../flask_admin/contrib/peewee/view.py:450
 #: ../flask_admin/contrib/pymongo/view.py:363
-#: ../flask_admin/contrib/sqla/view.py:1073 ../flask_admin/model/base.py:1682
+#: ../flask_admin/contrib/sqla/view.py:1073 ../flask_admin/model/base.py:1684
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
@@ -331,11 +359,11 @@ msgstr[2] "Принаймні %d елементи обов'язкові для �
 msgid "Integrity error. %(message)s"
 msgstr "Цілісність помилка. %(message)s"
 
-#: ../flask_admin/form/fields.py:92
+#: ../flask_admin/form/fields.py:94
 msgid "Invalid time format"
 msgstr "Неприпустимий час формат"
 
-#: ../flask_admin/form/fields.py:138
+#: ../flask_admin/form/fields.py:140
 msgid "Invalid Choice: could not coerce"
 msgstr "Неправильний вибір: не вдалося звести"
 
@@ -343,7 +371,7 @@ msgstr "Неправильний вибір: не вдалося звести"
 msgid "Invalid file extension"
 msgstr "Неприпустиме розширення"
 
-#: ../flask_admin/form/upload.py:210 ../flask_admin/form/upload.py:277
+#: ../flask_admin/form/upload.py:212 ../flask_admin/form/upload.py:279
 #, python-format
 msgid "File \"%s\" already exists."
 msgstr "Файл \"%s\" вже існує."
@@ -361,7 +389,7 @@ msgstr "Неприпустиме значення фільтру: %(value)s"
 msgid "Record was successfully created."
 msgstr "Запис створено."
 
-#: ../flask_admin/model/base.py:1641 ../flask_admin/model/base.py:1739
+#: ../flask_admin/model/base.py:1642 ../flask_admin/model/base.py:1741
 msgid "Record was successfully saved."
 msgstr "Запис успішно збережено."
 
@@ -393,11 +421,16 @@ msgstr "Зберегти"
 msgid "Cancel"
 msgstr "\"Скасувати\""
 
-#: ../flask_admin/templates/bootstrap2/admin/file/edit.html:5
-#: ../flask_admin/templates/bootstrap3/admin/file/edit.html:5
+#: ../flask_admin/templates/bootstrap2/admin/file/edit.html:8
+#: ../flask_admin/templates/bootstrap3/admin/file/edit.html:8
+msgid "This file cannot be edited for now."
+msgstr "Цей файл не можна редагувати на даний момент."
+
+#: ../flask_admin/templates/bootstrap2/admin/file/edit.html:21
+#: ../flask_admin/templates/bootstrap3/admin/file/edit.html:20
 #, python-format
-msgid "You are editing %(path)s"
-msgstr "Ви редагуєте %(path)s"
+msgid "Editing %(path)s"
+msgstr "Редагування %(path)s"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
@@ -409,61 +442,62 @@ msgstr "Корінь"
 msgid "Size"
 msgstr "Розмір"
 
-#: ../flask_admin/templates/bootstrap2/admin/file/list.html:63
-#: ../flask_admin/templates/bootstrap3/admin/file/list.html:63
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:55
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:58
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:55
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:58
+msgid "Rename File"
+msgstr "Перейменування файлу"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:69
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:69
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
 msgstr "Ви впевнені, що бажаєте видалити \\'%(name)s\\' рекурсивно?"
 
-#: ../flask_admin/templates/bootstrap2/admin/file/list.html:72
-#: ../flask_admin/templates/bootstrap3/admin/file/list.html:72
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:78
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:78
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\'?"
 msgstr "Ви впевнені, що бажаєте видалити \\'%(name)s\\'?"
 
-#: ../flask_admin/templates/bootstrap2/admin/file/list.html:107
-#: ../flask_admin/templates/bootstrap3/admin/file/list.html:107
-msgid "Upload File"
-msgstr "Завантажте файл"
-
-#: ../flask_admin/templates/bootstrap2/admin/file/list.html:112
-#: ../flask_admin/templates/bootstrap3/admin/file/list.html:112
-msgid "Create Directory"
-msgstr "Створіть каталог"
-
-#: ../flask_admin/templates/bootstrap2/admin/file/list.html:129
-#: ../flask_admin/templates/bootstrap3/admin/file/list.html:129
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:158
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:158
 msgid "Please select at least one file."
 msgstr "Будь ласка, виберіть принаймні один файл."
 
-#: ../flask_admin/templates/bootstrap2/admin/file/rename.html:5
-#: ../flask_admin/templates/bootstrap3/admin/file/rename.html:5
+#: ../flask_admin/templates/bootstrap2/admin/file/rename.html:12
+#: ../flask_admin/templates/bootstrap3/admin/file/rename.html:12
 #, python-format
-msgid "Please provide new name for %(name)s"
-msgstr "Будь ласка, вкажіть нове ім'я для %(name)s"
+msgid "Rename %(name)s"
+msgstr "Перейменувати %(name)s"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:7
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:7
 msgid "Save and Add"
 msgstr "Зберегти і додати"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:26
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:25
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:26
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:16
-#: ../flask_admin/templates/bootstrap3/admin/model/create.html:33
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:32
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:35
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:16
 msgid "List"
 msgstr "Список"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:29
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:28
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:29
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:22
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:24
-#: ../flask_admin/templates/bootstrap3/admin/model/create.html:36
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:35
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:38
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
 msgid "Create"
 msgstr "Створити"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:44
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:41
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:21
 msgid "Create New Record"
 msgstr "Створіть новий запис"
@@ -473,8 +507,8 @@ msgstr "Створіть новий запис"
 msgid "Save and Continue"
 msgstr "Зберегти та продовжити"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:34
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:22
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:46
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:23
 msgid "Edit Record"
 msgstr "Редагування запису"
 
@@ -552,7 +586,7 @@ msgid "Delete record"
 msgstr "Видалення запису"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:184
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:183
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:185
 msgid "Please select at least one record."
 msgstr "Будь ласка, оберіть хоча б один запис."
 

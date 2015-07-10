@@ -23,6 +23,8 @@ mv pt-BR/LC_MESSAGES/* pt_BR/LC_MESSAGES/
 rm -r pt-BR/
 mv sv-SE/LC_MESSAGES/* sv/LC_MESSAGES/
 rm -r sv-SE/
+mv pa-IN/LC_MESSAGES/* pa/LC_MESSAGES/
+rm -r pa-IN/
 
 cd ../../babel
 sh babel.sh
