@@ -41,13 +41,12 @@ class Page(db.Model):
 
 
 # Customized admin interface
-class CustomView(ModelView):
-    list_template = 'list.html'
-    create_template = 'create.html'
-    edit_template = 'edit.html'
+class PageView(ModelView):
+    column_list = ('post', 'title', 'body', "guest_id")
+    
 
 
-class UserAdmin(CustomView):
+class UserView(ModelView):
     column_searchable_list = ('name',)
     column_filters = ('name', 'email')
 
@@ -63,8 +62,8 @@ admin = admin.Admin(app, 'Example: Zurb Foundation', template_mode='zurb5'
     )
 
 # Add views
-admin.add_view(UserAdmin(User, db.session))
-admin.add_view(CustomView(Page, db.session))
+admin.add_view(UserView(User, db.session))
+admin.add_view(PageView(Page, db.session))
 
 
 def build_sample_db():
