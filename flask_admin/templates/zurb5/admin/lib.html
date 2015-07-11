@@ -97,6 +97,25 @@
 </ul>
 {%- endmacro %}
 
+{# ---------------------- Modal Window ------------------- #}
+
+{% macro add_modal_window(modal_id) %}
+  <div class="reveal-modal" id="{{modal_id}}" aria-labelledby="{{modal_id}}" aria-hidden="true" data-reveal role="dialog">
+
+  
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+  </div>
+{% endmacro %}
+
+{% macro add_modal_button(url='', title='', content='', modal_window_id='revealModal', btn_class='') %}
+  <a class="{{ btn_class }}" data-reveal-id="{{ modal_window_id }}" title="{{ title }}" href="{{url}}" >
+    {{ content|safe }}
+    
+  </a>
+
+  
+{% endmacro %}
+
 {# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field, kwargs={}, caller=None) %}
   {% set direct_error = h.is_field_error(field.errors) %}

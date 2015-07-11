@@ -27,6 +27,7 @@ class User(db.Model):
     name = db.Column(db.Unicode(64))
     email = db.Column(db.Unicode(64))
 
+
     def __unicode__(self):
         return self.name
 
@@ -43,12 +44,18 @@ class Page(db.Model):
 # Customized admin interface
 class PageView(ModelView):
     column_list = ('post', 'title', 'body', "guest_id")
+
     
 
 
 class UserView(ModelView):
     column_searchable_list = ('name',)
     column_filters = ('name', 'email')
+    column_editable_list = ('name', 'email')
+    edit_modal = True
+    create_modal = True
+
+    
 
 
 # Flask views

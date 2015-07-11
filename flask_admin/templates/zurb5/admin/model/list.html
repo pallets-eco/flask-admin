@@ -12,18 +12,24 @@
 {% block body %}
     {% block model_menu_bar %}
     <dl class="sub-nav">
-      <dt>Action:</dt>
-      <dd class="active"><a href="javascript:void(0)">{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a></dd>
-      {% if admin_view.can_create %}
-        <dd><a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create new record') }}">{{_gettext('Create') }}</a> </dd>
-      {% endif %}
+        <dt>Action:</dt>
+        <dd class="active"><a href="javascript:void(0)">{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a></dd>
 
-      {% if filters %}
-        
-      <dd class="dropdown">
+        {% if admin_view.can_create %}
+            {%- if admin_view.create_modal -%}
+                {{ lib.add_modal_button(url=get_url('.create_view', url=return_url, modal=True), title=_gettext('Create new record'), modal_window_id='revealModalCreate', content=_gettext('Create'))  }}
+            {% else %}
+            <dd><a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create new record') }}">{{_gettext('Create') }}</a> </dd>
+            {% endif %}
+        {% endif %}
+
+        {% if filters %}
+
+        <dd class="dropdown">
         {{ model_layout.filter_options() }}
-      </dd>          
-      {% endif %}    
+        </dd>          
+        {% endif %}    
+
         {% if actions %}
         <dd>
             {{ actionlib.dropdown(actions) }}
@@ -148,16 +154,27 @@
         </tr>
         {% endfor %}
     </table>
-    {% block list_pager %}
-    {% if num_pages is not none %}
-    {{ lib.pager(page, num_pages, pager_url) }}
-    {% else %}
-    {{ lib.simple_pager(page, data|length == page_size, pager_url) }}
-    {% endif %}
+
+        {% block list_pager %}
+            {% if num_pages is not none %}
+            {{ lib.pager(page, num_pages, pager_url) }}
+            {% else %}
+            {{ lib.simple_pager(page, data|length == page_size, pager_url) }}
+            {% endif %}
+        {% endblock %}
     {% endblock %}
+    
+    {% block actions %}
+        {{ actionlib.form(actions, get_url('.action_view')) }}
     {% endblock %}
 
-    {{ actionlib.form(actions, get_url('.action_view')) }}
+    
+    {%- if admin_view.edit_modal -%}
+        {{ lib.add_modal_window("revealModalEdit") }}
+    {%- endif -%}
+    {%- if admin_view.create_modal -%}
+        {{ lib.add_modal_window("revealModalCreate") }}
+    {%- endif -%}
 {% endblock %}
 
 {% block tail %}
