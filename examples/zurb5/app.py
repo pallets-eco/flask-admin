@@ -43,7 +43,7 @@ class Page(db.Model):
 
 # Customized admin interface
 class PageView(ModelView):
-    column_list = ('post', 'title', 'body', "guest_id")
+    column_list = ('title', 'content')
 
     
 
@@ -65,7 +65,7 @@ def index():
 
 
 # Create admin with custom base template
-admin = admin.Admin(app, 'Example: Zurb Foundation', template_mode='zurb5'
+admin = admin.Admin(app, 'Example: Zurb Foundation', template_mode='bootstrap3'
     )
 
 # Add views
