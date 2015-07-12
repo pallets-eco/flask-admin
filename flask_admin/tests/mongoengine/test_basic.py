@@ -63,6 +63,7 @@ def fill_db(Model1, Model2):
     Model2('string_field_val_2', None, None).save()
     Model2('string_field_val_3', 5000, 25.9).save()
     Model2('string_field_val_4', 9000, 75.5).save()
+    Model2('string_field_val_5', 6169453081680413441).save()
 
     Model1('datetime_obj1', datetime_field=datetime(2014,4,3,1,9,0)).save()
     Model1('datetime_obj2', datetime_field=datetime(2013,3,2,0,8,0)).save()
@@ -325,6 +326,13 @@ def test_column_filters():
     ok_('string_field_val_3' in data)
     ok_('string_field_val_4' not in data)
 
+    # integer - equals (huge number)
+    rv = client.get('/admin/model2/?flt0_0=6169453081680413441')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_5' in data)
+    ok_('string_field_val_4' not in data)
+
     # integer - equals - test validation
     rv = client.get('/admin/model2/?flt0_0=badval')
     eq_(rv.status_code, 200)
@@ -378,6 +386,13 @@ def test_column_filters():
     ok_('string_field_val_2' not in data)
     ok_('string_field_val_3' in data)
     ok_('string_field_val_4' in data)
+
+    # integer - in list (huge number)
+    rv = client.get('/admin/model2/?flt0_5=6169453081680413441')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_1' not in data)
+    ok_('string_field_val_5' in data)
 
     # integer - in list - test validation
     rv = client.get('/admin/model2/?flt0_5=5000%2Cbadval')

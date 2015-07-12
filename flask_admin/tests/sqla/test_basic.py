@@ -92,6 +92,7 @@ def fill_db(db, Model1, Model2):
     model2_obj2 = Model2('test2_val_2', model1=model1_obj2, float_field=None)
     model2_obj3 = Model2('test2_val_3', int_field=5000, float_field=25.9)
     model2_obj4 = Model2('test2_val_4', int_field=9000, float_field=75.5)
+    model2_obj5 = Model2('test2_val_5', int_field=6169453081680413441)
 
     date_obj1 = Model1('date_obj1', date_field=date(2014,11,17))
     date_obj2 = Model1('date_obj2', date_field=date(2013,10,16))
@@ -107,7 +108,7 @@ def fill_db(db, Model1, Model2):
 
     db.session.add_all([
         model1_obj1, model1_obj2, model1_obj3, model1_obj4,
-        model2_obj1, model2_obj2, model2_obj3, model2_obj4,
+        model2_obj1, model2_obj2, model2_obj3, model2_obj4, model2_obj5,
         date_obj1, timeonly_obj1, datetime_obj1,
         date_obj2, timeonly_obj2, datetime_obj2,
         enum_obj1, enum_obj2, empty_obj
@@ -674,6 +675,13 @@ def test_column_filters():
     ok_('test2_val_3' in data)
     ok_('test2_val_4' not in data)
 
+    # integer - equals (huge number)
+    rv = client.get('/admin/model2/?flt0_0=6169453081680413441')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_5' in data)
+    ok_('test2_val_4' not in data)
+
     # integer - equals - test validation
     rv = client.get('/admin/model2/?flt0_0=badval')
     eq_(rv.status_code, 200)
@@ -727,6 +735,13 @@ def test_column_filters():
     ok_('test2_val_2' not in data)
     ok_('test2_val_3' in data)
     ok_('test2_val_4' in data)
+
+    # integer - in list (huge number)
+    rv = client.get('/admin/model2/?flt0_5=6169453081680413441')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' not in data)
+    ok_('test2_val_5' in data)
 
     # integer - in list - test validation
     rv = client.get('/admin/model2/?flt0_5=5000%2Cbadval')
