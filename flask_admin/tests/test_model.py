@@ -452,6 +452,86 @@ def test_custom_form():
     ok_(not hasattr(view._create_form_class, 'col1'))
 
 
+def test_modal_edit():
+    # bootstrap 2 - test edit_modal
+    app_bs2 = Flask(__name__)
+    admin_bs2 = Admin(app_bs2, template_mode="bootstrap2")
+
+    edit_modal_on = MockModelView(Model, edit_modal=True,
+                                  endpoint="edit_modal_on")
+    edit_modal_off = MockModelView(Model, edit_modal=False,
+                                   endpoint="edit_modal_off")
+    create_modal_on = MockModelView(Model, create_modal=True,
+                                    endpoint="create_modal_on")
+    create_modal_off = MockModelView(Model, create_modal=False,
+                                     endpoint="create_modal_off")
+    admin_bs2.add_view(edit_modal_on)
+    admin_bs2.add_view(edit_modal_off)
+    admin_bs2.add_view(create_modal_on)
+    admin_bs2.add_view(create_modal_off)
+
+    client_bs2 = app_bs2.test_client()
+
+    # bootstrap 2 - ensure modal window is added when edit_modal is enabled
+    rv = client_bs2.get('/admin/edit_modal_on/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('fa_modal_window' in data)
+
+    # bootstrap 2 - test edit modal disabled
+    rv = client_bs2.get('/admin/edit_modal_off/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('fa_modal_window' not in data)
+
+    # bootstrap 2 - ensure modal window is added when create_modal is enabled
+    rv = client_bs2.get('/admin/create_modal_on/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('fa_modal_window' in data)
+
+    # bootstrap 2 - test create modal disabled
+    rv = client_bs2.get('/admin/create_modal_off/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('fa_modal_window' not in data)
+
+    # bootstrap 3
+    app_bs3 = Flask(__name__)
+    admin_bs3 = Admin(app_bs3, template_mode="bootstrap3")
+
+    admin_bs3.add_view(edit_modal_on)
+    admin_bs3.add_view(edit_modal_off)
+    admin_bs3.add_view(create_modal_on)
+    admin_bs3.add_view(create_modal_off)
+
+    client_bs3 = app_bs3.test_client()
+
+    # bootstrap 3 - ensure modal window is added when edit_modal is enabled
+    rv = client_bs3.get('/admin/edit_modal_on/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('fa_modal_window' in data)
+
+    # bootstrap 3 - test modal disabled
+    rv = client_bs3.get('/admin/edit_modal_off/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('fa_modal_window' not in data)
+
+    # bootstrap 3 - ensure modal window is added when edit_modal is enabled
+    rv = client_bs3.get('/admin/create_modal_on/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('fa_modal_window' in data)
+
+    # bootstrap 3 - test modal disabled
+    rv = client_bs3.get('/admin/create_modal_off/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('fa_modal_window' not in data)
+
+
 def check_class_name():
     class DummyView(MockModelView):
         pass

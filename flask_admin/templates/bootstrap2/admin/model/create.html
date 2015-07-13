@@ -16,11 +16,12 @@
 
 {% block body %}
   {%- if modal -%}
+
     {{ lib.render_form(form, return_url, extra=None, form_opts=form_opts,
                        action=request.url, is_modal=True) }}
   {%- else -%}
     {% block navlinks %}
-      <ul class="nav nav-tabs">
+      <ul class="nav nav-tabs ">
         <li>
             <a href="{{ return_url }}">{{ _gettext('List') }}</a>
         </li>

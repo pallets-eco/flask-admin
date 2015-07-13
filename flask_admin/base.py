@@ -4,7 +4,7 @@ from functools import wraps
 
 from flask import Blueprint, current_app, render_template, abort, g, url_for
 from flask_admin import babel
-from flask_admin._compat import with_metaclass
+from flask_admin._compat import with_metaclass, as_unicode
 from flask_admin import helpers as h
 
 # For compatibility reasons import MenuLink
@@ -541,11 +541,13 @@ class Admin(object):
 
     def _add_menu_item(self, menu_item, target_category):
         if target_category:
-            category = self._menu_categories.get(target_category)
+            cat_text = as_unicode(target_category)
+
+            category = self._menu_categories.get(cat_text)
 
             if category is None:
                 category = MenuCategory(target_category)
-                self._menu_categories[target_category] = category
+                self._menu_categories[cat_text] = category
 
                 self._menu.append(category)
 

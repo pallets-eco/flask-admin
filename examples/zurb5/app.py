@@ -51,9 +51,9 @@ class PageView(ModelView):
 class UserView(ModelView):
     column_searchable_list = ('name',)
     column_filters = ('name', 'email')
-    column_editable_list = ('name', 'email')
-    # edit_modal = True
-    # create_modal = True
+    # column_editable_list = ('name', 'email')
+    edit_modal = True
+    create_modal = True
 
     
 
@@ -65,7 +65,7 @@ def index():
 
 
 # Create admin with custom base template
-admin = admin.Admin(app, 'Example: Zurb Foundation', template_mode='bootstrap3'
+admin = admin.Admin(app, 'Example: Zurb Foundation', template_mode='zurb5'
     )
 
 # Add views
@@ -154,4 +154,4 @@ if __name__ == '__main__':
         build_sample_db()
 
     # Start app
-    app.run(debug=True)
+    app.run(debug=True, port=8000)

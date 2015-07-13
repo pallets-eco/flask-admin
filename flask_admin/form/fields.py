@@ -13,6 +13,7 @@ An understanding of WTForms's Custom Widgets is helpful for understanding this c
 
 __all__ = ['DateTimeField', 'TimeField', 'Select2Field', 'Select2TagsField']
 
+
 class DateTimeField(fields.DateTimeField):
     """
        Allows modifying the datetime format of a DateTimeField using form_args.
@@ -34,6 +35,7 @@ class DateTimeField(fields.DateTimeField):
         super(DateTimeField, self).__init__(label, validators, **kwargs)
 
         self.format = format or '%Y-%m-%d %H:%M:%S'
+
 
 class TimeField(fields.Field):
     """

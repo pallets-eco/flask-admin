@@ -44,12 +44,11 @@ class CustomView(ModelView):
     list_template = 'list.html'
     create_template = 'create.html'
     edit_template = 'edit.html'
-    
+
 
 class UserAdmin(CustomView):
     column_searchable_list = ('name',)
     column_filters = ('name', 'email')
-    
 
 
 # Flask views

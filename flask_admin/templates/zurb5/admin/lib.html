@@ -218,7 +218,7 @@
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css') }}" rel="stylesheet">
   {% endif %}
   {% if editable_columns %}
-  <link href="{{ admin_static.url(filename='vendor/x-editable/css/jquery-editable-1.5.0.css') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/x-editable/css/jqueryui-editable.css') }}" rel="stylesheet">
   {% endif %}
 {% endmacro %}
 
@@ -235,7 +235,7 @@
   {% endif %}
   <script src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
   {% if editable_columns %}
-  <script src="{{ admin_static.url(filename='vendor/x-editable/js/jquery-editable-1.5.0.min.js') }}"></script>
+  <script src="{{ admin_static.url(filename='vendor/x-editable/js/jqueryui-editable.min.js') }}"></script>
   {% endif %}
   <script src="{{ admin_static.url(filename='admin/js/form-1.0.0.js') }}"></script>
 {% endmacro %}
