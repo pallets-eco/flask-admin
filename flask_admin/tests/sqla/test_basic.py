@@ -408,6 +408,58 @@ def test_column_editable_list():
     ok_('test1_val_3' in data)
 
 
+def test_details_view():
+    app, db, admin = setup()
+
+    Model1, Model2 = create_models(db)
+
+    view_no_details = CustomModelView(Model1, db.session)
+    admin.add_view(view_no_details)
+
+    # fields are scaffolded
+    view_w_details = CustomModelView(Model2, db.session, can_view_details=True)
+    admin.add_view(view_w_details)
+
+    # show only specific fields in details w/ column_details_list
+    string_field_view = CustomModelView(Model2, db.session,
+                                        can_view_details=True,
+                                        column_details_list=["string_field"],
+                                        endpoint="sf_view")
+    admin.add_view(string_field_view)
+
+    fill_db(db, Model1, Model2)
+
+    client = app.test_client()
+
+    # ensure link to details is hidden when can_view_details is disabled
+    rv = client.get('/admin/model1/')
+    data = rv.data.decode('utf-8')
+    ok_('/admin/model1/details/' not in data)
+
+    # ensure link to details view appears
+    rv = client.get('/admin/model2/')
+    data = rv.data.decode('utf-8')
+    ok_('/admin/model2/details/' in data)
+
+    # test redirection when details are disabled
+    rv = client.get('/admin/model1/details/?url=%2Fadmin%2Fmodel1%2F&id=1')
+    eq_(rv.status_code, 302)
+
+    # test if correct data appears in details view when enabled
+    rv = client.get('/admin/model2/details/?url=%2Fadmin%2Fmodel2%2F&id=1')
+    data = rv.data.decode('utf-8')
+    ok_('String Field' in data)
+    ok_('test2_val_1' in data)
+    ok_('test1_val_1' in data)
+
+    # test column_details_list
+    rv = client.get('/admin/sf_view/details/?url=%2Fadmin%2Fsf_view%2F&id=1')
+    data = rv.data.decode('utf-8')
+    ok_('String Field' in data)
+    ok_('test2_val_1' in data)
+    ok_('test1_val_1' not in data)
+
+
 def test_editable_list_special_pks():
     ''' Tests editable list view + a primary key with special characters
     '''

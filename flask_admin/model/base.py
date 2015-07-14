@@ -157,7 +157,7 @@ class BaseModelView(BaseView, ActionsMixin):
         If set to `None`, will get them from the model.
     """
 
-    details_exclude_list = None
+    column_details_exclude_list = None
     """
         Collection of fields excluded from the details view.
     """
@@ -804,8 +804,9 @@ class BaseModelView(BaseView, ActionsMixin):
             columns = self.scaffold_list_columns()
 
             # Filter excluded columns
-            if self.details_exclude_list:
-                columns = [c for c in columns if c not in self.details_exclude_list]
+            if self.column_details_exclude_list:
+                columns = [c for c in columns
+                           if c not in self.column_details_exclude_list]
 
         return [(c, self.get_column_name(c)) for c in columns]
 
