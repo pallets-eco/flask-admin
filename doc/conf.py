@@ -43,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'flask-admin'
-copyright = u'2012-2013, Serge S. Koval'
+copyright = u'2012-2015, Serge S. Koval'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -137,9 +137,8 @@ html_last_updated_fmt = '%b %d, %Y'
 
 # Custom sidebar templates, maps document names to template names.
 html_sidebars = {
-    'index': ['sidebarintro.html', 'sourcelink.html', 'searchbox.html'],
-    '**': ['localtoc.html', 'relations.html',
-           'sourcelink.html', 'searchbox.html']
+    'index': ['sidebarintro.html', 'searchbox.html'],
+    '**': ['toc.html', 'relations.html', 'searchbox.html']
 }
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
