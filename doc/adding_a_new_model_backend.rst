@@ -1,7 +1,7 @@
 .. _adding-model-backend:
 
-Adding a Model Backend
-==========================
+Adding A Model Backend
+======================
 
 Flask-Admin makes a few assumptions about the database models that it works with. If you want to implement your own
 database backend, and still have Flask-Admin's model views work as expected, then you should take note of the following:
@@ -14,7 +14,7 @@ If that is the case, then you can implement your own database backend by extendi
 and implementing the set of scaffolding methods listed below.
 
 Extending BaseModelView
--------------------------
+-----------------------
 
     Start off by defining a new class, which derives from from :class:`~flask_admin.model.BaseModelView`::
 

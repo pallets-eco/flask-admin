@@ -1,10 +1,10 @@
 :tocdepth: 2
 
 Advanced Functionality
-=================================
+======================
 
 Localization With Flask-Babelex
-------------------------------------------
+-------------------------------
 
 ****
 
@@ -45,7 +45,7 @@ to see how you can add your own.
 .. _file-admin:
 
 Managing Files & Folders
---------------------------------
+------------------------
 
 ****
 
@@ -67,8 +67,8 @@ can use it by adding a FileAdmin view to your app::
 You can disable uploads, disable file deletion, restrict file uploads to certain types, etc.
 Check :mod:`flask_admin.contrib.fileadmin` in the API documentation for more details.
 
-Adding a Redis Console
---------------------------
+Adding A Redis Console
+----------------------
 
 ****
 
@@ -87,7 +87,7 @@ instance running on the same machine as your app, you can::
 
 
 Replacing Individual Form Fields
-------------------------------------------
+--------------------------------
 
 ****
 
@@ -96,7 +96,7 @@ A common use-case for this would be to add a *What-You-See-Is-What-You-Get* (WYS
 file / image uploads that need to be tied to a field in your model.
 
 WYSIWIG Text Fields
-**********************
+*******************
 To handle complicated text content, you can use
 `CKEditor <http://ckeditor.com/>`_ by subclassing some of the builtin WTForms
 classes as follows::
@@ -152,7 +152,7 @@ If you just want to manage static files in a directory, without tying them to a 
 rather use the handy :ref:`File-Admin<file-admin>` plugin.
 
 Managing Geographical Models
--------------------------------------------
+----------------------------
 
 ****
 
@@ -194,7 +194,7 @@ Have a look at https://github.com/flask-admin/flask-admin/tree/master/examples/g
 to get started.
 
 Loading Tiles From Mapbox
-**************************************
+*************************
 
 To have map data display correctly, you'll have to sign up for an account at https://www.mapbox.com/
 and include some credentials in your application's config::
@@ -209,14 +209,14 @@ at the moment, Flask-Admin only supports Mapbox. If you want to use other
 providers, make a pull request!
 
 Limitations
-*******************
+***********
 
 There's currently no way to sort, filter, or search on geometric fields
 in the admin. It's not clear that there's a good way to do so.
 If you have any ideas or suggestions, make a pull request!
 
-Customising Builtin Forms via Rendering Rules
---------------------------------------------------------
+Customising Builtin Forms Via Rendering Rules
+---------------------------------------------
 
 ****
 
@@ -253,8 +253,8 @@ using the :class:`flask_admin.form.rules.Text` class::
     class RuleView(sqla.ModelView):
         form_create_rules = ('email', rules.Text('Foobar'), 'first_name', 'last_name')
 
-Built-in rules
-*******************
+Built-in Rules
+**************
 
 Flask-Admin comes with few built-in rules that can be found in the :mod:`flask_admin.form.rules` module:
 
@@ -275,7 +275,7 @@ Form Rendering Rule                                     Description
 .. _database-backends:
 
 Using Different Database Backends
-----------------------------------------
+---------------------------------
 
 ****
 
@@ -290,7 +290,7 @@ relations between your data models. If you want to track spatial data like latit
 points, you should look into `GeoAlchemy`_, as well.
 
 SQLAlchemy
-********************
+**********
 
 Notable features:
 
@@ -338,7 +338,7 @@ a proper error message and you can change the data in the form. When the applica
 the ``werkzeug`` debugger will catch the exception and will display the stacktrace.
 
 MongoEngine
-*********************
+***********
 
 If you're looking for something simpler than SQLAlchemy, and your data models
 are reasonably self-contained, then `MongoDB <https://www.mongodb.org/>`_, a popular *NoSQL* database,
@@ -368,7 +368,7 @@ Known issues:
 For more, check the :class:`~flask_admin.contrib.mongoengine` API documentation.
 
 Peewee
-*****************
+******
 
 Features:
 
@@ -387,7 +387,7 @@ For more, check the :class:`~flask_admin.contrib.peewee` API documentation. Or l
 the Peewee example at https://github.com/flask-admin/flask-admin/tree/master/examples/peewee.
 
 PyMongo
-*****************
+*******
 
 The bare minimum you have to provide for Flask-Admin to work with PyMongo:
 
@@ -417,7 +417,7 @@ For more, check the :class:`~flask_admin.contrib.pymongoe` API documentation. Or
 the Peewee example at https://github.com/flask-admin/flask-admin/tree/master/examples/pymongo.
 
 Migrating From Django
--------------------------
+---------------------
 
 ****
 
@@ -425,7 +425,7 @@ If you are used to `Django <https://www.djangoproject.com/>`_ and the *django-ad
 Flask-Admin to work slightly different from what you would expect.
 
 Design Philosophy
-****************************
+*****************
 
 In general, Django and *django-admin* strives to make life easier by implementing sensible defaults. So a developer
 will be able to get an application up in no time, but it will have to conform to most of the defaults. Of course it
@@ -473,8 +473,8 @@ backends) and specific backend documentation, for example
 :class:`~flask_admin.contrib.sqla.ModelView`. There's much more
 than what is displayed in this table.
 
-Overriding the Form Scaffolding
----------------------------------
+Overriding The Form Scaffolding
+-------------------------------
 
 ****
 

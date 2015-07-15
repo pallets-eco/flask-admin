@@ -1,7 +1,7 @@
 :tocdepth: 2
 
 Flask-Admin
-##########################################
+###########
 
 **Why Flask?** As a micro-framework, `Flask <http://flask.pocoo.org/>`_ lets you build web services with very little overhead.
 It offers freedom for you, the designer, to implement your project in a way that suits your
@@ -37,13 +37,13 @@ directory in the `GitHub repository <https://github.com/flask-admin/flask-admin>
    changelog
 
 Support
-----------
+-------
 
 ****
 
 Python 2.6 - 2.7 and 3.3 - 3.4.
 
-Indices and tables
+Indices And Tables
 ------------------
 
 ****
