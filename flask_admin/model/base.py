@@ -166,6 +166,7 @@ class BaseModelView(BaseView, ActionsMixin):
         Dictionary of value type formatters to be used in the list view.
 
         By default, two types are formatted:
+
         1. ``None`` will be displayed as an empty string
         2. ``bool`` will be displayed as a checkmark if it is ``True``
 
@@ -176,13 +177,18 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_type_formatters = dict()
 
         If you want to display `NULL` instead of an empty string, you can do
-        something like this::
+        something like this. Also comes with bonus `date` formatter::
 
+            from datetime import date
             from flask_admin.model import typefmt
+
+            def date_format(view, value):
+                return value.strftime('%d.%m.%Y')
 
             MY_DEFAULT_FORMATTERS = dict(typefmt.BASE_FORMATTERS)
             MY_DEFAULT_FORMATTERS.update({
-                    type(None): typefmt.null_formatter
+                    type(None): typefmt.null_formatter,
+                    date: date_format
                 })
 
             class MyModelView(BaseModelView):
