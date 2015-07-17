@@ -89,6 +89,12 @@ class BaseModelView(BaseView, ActionsMixin):
     can_delete = True
     """Is model deletion allowed"""
 
+    can_view_details = False
+    """
+        Setting this to true will enable the details view. This is recommended
+        when there are too many columns to display in the list_view.
+    """
+
     # Templates
     list_template = 'admin/model/list.html'
     """Default list view template"""
@@ -99,12 +105,28 @@ class BaseModelView(BaseView, ActionsMixin):
     create_template = 'admin/model/create.html'
     """Default create template"""
 
+    details_template = 'admin/model/details.html'
+    """Default details view template"""
+
+    # Modal Templates
+    edit_modal_template = 'admin/model/modals/edit.html'
+    """Default edit modal template"""
+
+    create_modal_template = 'admin/model/modals/create.html'
+    """Default create modal template"""
+
+    details_modal_template = 'admin/model/modals/details.html'
+    """Default details modal view template"""
+
     # Modals
     edit_modal = False
     """Setting this to true will display the edit_view as a modal dialog."""
 
     create_modal = False
     """Setting this to true will display the create_view as a modal dialog."""
+
+    details_modal = False
+    """Setting this to true will display the details_view as a modal dialog."""
 
     # Customizations
     column_list = ObsoleteAttr('column_list', 'list_columns', None)
@@ -127,6 +149,17 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 column_exclude_list = ('last_name', 'email')
+    """
+
+    column_details_list = None
+    """
+        Collection of the field names included in the details view.
+        If set to `None`, will get them from the model.
+    """
+
+    column_details_exclude_list = None
+    """
+        Collection of fields excluded from the details view.
     """
 
     column_formatters = ObsoleteAttr('column_formatters', 'list_formatters', dict())
@@ -676,6 +709,10 @@ class BaseModelView(BaseView, ActionsMixin):
         self._list_columns = self.get_list_columns()
         self._sortable_columns = self.get_sortable_columns()
 
+        # Details view
+        if self.can_view_details:
+            self._details_columns = self.get_details_columns()
+
         # Labels
         if self.column_labels is None:
             self.column_labels = {}
@@ -758,6 +795,24 @@ class BaseModelView(BaseView, ActionsMixin):
             # Filter excluded columns
             if self.column_exclude_list:
                 columns = [c for c in columns if c not in self.column_exclude_list]
+
+        return [(c, self.get_column_name(c)) for c in columns]
+
+    def get_details_columns(self):
+        """
+            Returns a list of the model field names in the details view. If
+            `column_details_list` was set, returns it. Otherwise calls
+            `scaffold_list_columns` to generate the list from the model.
+        """
+        columns = self.column_details_list
+
+        if columns is None:
+            columns = self.scaffold_list_columns()
+
+            # Filter excluded columns
+            if self.column_details_exclude_list:
+                columns = [c for c in columns
+                           if c not in self.column_details_exclude_list]
 
         return [(c, self.get_column_name(c)) for c in columns]
 
@@ -1614,11 +1669,15 @@ class BaseModelView(BaseView, ActionsMixin):
         form_opts = FormOpts(widget_args=self.form_widget_args,
                              form_rules=self._form_create_rules)
 
-        return self.render(self.create_template,
+        if request.args.get('modal'):
+            template = self.create_modal_template
+        else:
+            template = self.create_template
+
+        return self.render(template,
                            form=form,
                            form_opts=form_opts,
-                           return_url=return_url,
-                           modal=request.args.get('modal'))
+                           return_url=return_url)
 
     @expose('/edit/', methods=('GET', 'POST'))
     def edit_view(self):
@@ -1637,6 +1696,7 @@ class BaseModelView(BaseView, ActionsMixin):
         model = self.get_one(id)
 
         if model is None:
+            flash(gettext('Record does not exist.'))
             return redirect(return_url)
 
         form = self.edit_form(obj=model)
@@ -1657,12 +1717,48 @@ class BaseModelView(BaseView, ActionsMixin):
         form_opts = FormOpts(widget_args=self.form_widget_args,
                              form_rules=self._form_edit_rules)
 
-        return self.render(self.edit_template,
+        if request.args.get('modal'):
+            template = self.edit_modal_template
+        else:
+            template = self.edit_template
+
+        return self.render(template,
                            model=model,
                            form=form,
                            form_opts=form_opts,
-                           return_url=return_url,
-                           modal=request.args.get('modal'))
+                           return_url=return_url)
+
+    @expose('/details/')
+    def details_view(self):
+        """
+            Details model view
+        """
+        return_url = get_redirect_target() or self.get_url('.index_view')
+
+        if not self.can_view_details:
+            return redirect(return_url)
+
+        id = get_mdict_item_or_list(request.args, 'id')
+        if id is None:
+            return redirect(return_url)
+
+        model = self.get_one(id)
+
+        if model is None:
+            flash(gettext('Record does not exist.'))
+            return redirect(return_url)
+
+        if request.args.get('modal'):
+            template = self.details_modal_template
+        else:
+            template = self.details_template
+
+        return self.render(template,
+                           model=model,
+                           details_columns=self._details_columns,
+                           get_value=self.get_list_value,
+                           get_pk_value=self.get_pk_value,
+                           return_url=return_url)
 
     @expose('/delete/', methods=('POST',))
     def delete_view(self):
@@ -1683,6 +1779,7 @@ class BaseModelView(BaseView, ActionsMixin):
             model = self.get_one(id)
 
             if model is None:
+                flash(gettext('Record does not exist.'))
                 return redirect(return_url)
 
             # message is flashed from within delete_model if it fails

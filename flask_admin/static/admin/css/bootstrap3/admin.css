@@ -11,10 +11,13 @@
     line-height: normal;
 }
 
+.model-list a.icon:first-child {
+    margin-left: 10px;
+}
+
 /* List View - prevent link icons from differing from trash icon */
 .model-list a.icon {
     text-decoration: none;
-    margin-left: 10px;
     color: inherit;
 }
 
@@ -88,4 +91,10 @@ div.container > .admin-form {
 body.modal-open {
     overflow-y: scroll;
     padding-right: 0 !important;
+}
+
+/* Details View - add space between navbar and results */
+.fa_filter_container {
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
