@@ -21,11 +21,13 @@
       {%- if children %}
         {% set class_name = item.get_class_name() %}
         {%- if item.is_active(admin_view) %}
-        <li class="active dropdown{% if class_name %} {{class_name}}{% endif %}">
+        <li class="active dropdown">
         {% else -%}
-        <li class="dropdown{% if class_name %} {{class_name}}{% endif %}">
+        <li class="dropdown">
         {%- endif %}
-          <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">{{ menu_icon(item) }}{{ item.name }}<b class="caret"></b></a>
+          <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
+            {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}{{ item.name }}<b class="caret"></b>
+          </a>
           <ul class="dropdown-menu">
           {%- for child in children -%}
             {% set class_name = child.get_class_name() %}
