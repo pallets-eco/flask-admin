@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-07-10 04:35-0500\n"
-"PO-Revision-Date: 2015-07-10 06:13-0400\n"
+"POT-Creation-Date: 2015-07-17 16:54-0500\n"
+"PO-Revision-Date: 2015-07-17 18:17-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -196,8 +196,8 @@ msgid "File deletion is disabled."
 msgstr "Verwijderen van bestanden is uitgeschakeld."
 
 #: ../flask_admin/contrib/fileadmin.py:919
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:32
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:41
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:23
 msgid "Edit"
 msgstr "Bewerken"
 
@@ -295,8 +295,8 @@ msgstr "Is mislukt om record te maken. %(error)s"
 #: ../flask_admin/contrib/mongoengine/view.py:565
 #: ../flask_admin/contrib/peewee/view.py:399
 #: ../flask_admin/contrib/pymongo/view.py:309
-#: ../flask_admin/contrib/sqla/view.py:1011 ../flask_admin/model/base.py:1736
-#: ../flask_admin/model/base.py:1745
+#: ../flask_admin/contrib/sqla/view.py:1011 ../flask_admin/model/base.py:1839
+#: ../flask_admin/model/base.py:1848
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr "Is mislukt om record te maken. %(error)s"
@@ -319,7 +319,7 @@ msgstr "Weet u zeker dat u wilt verwijderen van geselecteerde records?"
 #: ../flask_admin/contrib/mongoengine/view.py:640
 #: ../flask_admin/contrib/peewee/view.py:450
 #: ../flask_admin/contrib/pymongo/view.py:363
-#: ../flask_admin/contrib/sqla/view.py:1073 ../flask_admin/model/base.py:1684
+#: ../flask_admin/contrib/sqla/view.py:1073 ../flask_admin/model/base.py:1787
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
@@ -374,20 +374,25 @@ msgstr "Ongeldige bestanden met de extensie"
 msgid "File \"%s\" already exists."
 msgstr "Er bestaat al een bestand \"%s\"."
 
-#: ../flask_admin/model/base.py:1332
+#: ../flask_admin/model/base.py:1393
 msgid "There are no items in the table."
 msgstr "Er zijn geen objecten in de tabel."
 
-#: ../flask_admin/model/base.py:1356
+#: ../flask_admin/model/base.py:1417
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
 msgstr "Ongeldige filterwaarde: %(value)s"
 
-#: ../flask_admin/model/base.py:1597
+#: ../flask_admin/model/base.py:1658
 msgid "Record was successfully created."
 msgstr "Record is met succes gemaakt."
 
-#: ../flask_admin/model/base.py:1642 ../flask_admin/model/base.py:1741
+#: ../flask_admin/model/base.py:1699 ../flask_admin/model/base.py:1748
+#: ../flask_admin/model/base.py:1782
+msgid "Record does not exist."
+msgstr "Record bestaat niet."
+
+#: ../flask_admin/model/base.py:1708 ../flask_admin/model/base.py:1844
 msgid "Record was successfully saved."
 msgstr "Record is met succes opgeslagen."
 
@@ -399,8 +404,8 @@ msgstr "Ja"
 msgid "No"
 msgstr "No"
 
-#: ../flask_admin/model/filters.py:162 ../flask_admin/model/filters.py:202
-#: ../flask_admin/model/filters.py:247
+#: ../flask_admin/model/filters.py:168 ../flask_admin/model/filters.py:208
+#: ../flask_admin/model/filters.py:253
 msgid "between"
 msgstr "tussen"
 
@@ -470,45 +475,57 @@ msgstr "Selecteer ten minste één bestand."
 msgid "Rename %(name)s"
 msgstr "%(name)s hernoemen"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:7
-#: ../flask_admin/templates/bootstrap3/admin/model/create.html:7
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:5
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
 msgid "Save and Add"
 msgstr "Opslaan en toevoegen"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:25
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:26
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:17
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:8
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:17
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:16
-#: ../flask_admin/templates/bootstrap3/admin/model/create.html:32
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:35
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:8
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:17
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:16
 msgid "List"
 msgstr "Lijst"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:28
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:29
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:20
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:11
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:20
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:22
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:24
-#: ../flask_admin/templates/bootstrap3/admin/model/create.html:35
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:38
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:20
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:11
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:20
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
 msgid "Create"
 msgstr "Maken"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:41
-#: ../flask_admin/templates/bootstrap3/admin/model/create.html:21
-msgid "Create New Record"
-msgstr "Nieuwe Record Maken"
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:14
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:111
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:113
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:14
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:111
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:113
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
+msgid "View Record"
+msgstr "Weergave Record"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:7
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:7
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:22
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:8
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:21
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:15
+msgid "Filter"
+msgstr "Filter"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:5
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
 msgid "Save and Continue"
 msgstr "Opslaan en doorgaan"
-
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:46
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:23
-msgid "Edit Record"
-msgstr "Een Record Bewerken"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
 #: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:14
@@ -567,24 +584,34 @@ msgstr "Sorteren op %(name)s"
 msgid "Select record"
 msgstr "Record selecteren"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:111
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:113
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:111
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:113
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:120
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:122
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:120
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:122
 msgid "Edit record"
 msgstr "Een record bewerken"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:127
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:127
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:136
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:136
 msgid "Are you sure you want to delete this record?"
 msgstr "Weet u zeker dat u wilt verwijderen van deze record?"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:127
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:136
 msgid "Delete record"
 msgstr "Record verwijderen"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:184
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:185
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:193
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:194
 msgid "Please select at least one record."
 msgstr "Selecteer ten minste één record."
+
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/create.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/create.html:7
+msgid "Create New Record"
+msgstr "Nieuwe Record Maken"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:8
+msgid "Edit Record"
+msgstr "Een Record Bewerken"
 
