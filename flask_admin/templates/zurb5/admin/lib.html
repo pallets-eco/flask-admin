@@ -101,9 +101,12 @@
 
 {% macro add_modal_window(modal_id) %}
   <div class="reveal-modal" id="{{modal_id}}" aria-labelledby="{{modal_id}}" aria-hidden="true" data-reveal role="dialog">
-
+    <div class="modal-header">
+      <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+      <h3>Loading...</h3>
+    </div>
   
-    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+    
   </div>
 {% endmacro %}
 
@@ -111,9 +114,7 @@
   <a class="{{ btn_class }}" data-reveal-id="{{ modal_window_id }}" title="{{ title }}" href="{{url}}" >
     {{ content|safe }}
     
-  </a>
-
-  
+  </a>  
 {% endmacro %}
 
 {# ---------------------- Forms -------------------------- #}
@@ -132,7 +133,7 @@
         {% set _dummy = kwargs.setdefault('class', 'form-control') %}
         {{ field(**kwargs)|safe }}
         {% if field.description %}
-        <p class="help-block">{{ field.description }}</p>
+        <p class="help-block">{{ field.description | safe }}</p>
         {% endif %}
         {% if direct_error %}
           <ul class="help-block input-errors">
