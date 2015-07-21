@@ -21,6 +21,11 @@
     width: 14px;
 }
 
+/* List View - prevent word wrap on buttons column, to keep it on one line */
+.list-buttons-column {
+    white-space: nowrap;
+}
+
 /* List View - fix gap between actions and table */
 .model-list  {
     position: relative;

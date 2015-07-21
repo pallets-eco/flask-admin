@@ -63,6 +63,7 @@ def fill_db(Model1, Model2):
     Model2('string_field_val_2', None, None).save()
     Model2('string_field_val_3', 5000, 25.9).save()
     Model2('string_field_val_4', 9000, 75.5).save()
+    Model2('string_field_val_5', 6169453081680413441).save()
 
     Model1('datetime_obj1', datetime_field=datetime(2014,4,3,1,9,0)).save()
     Model1('datetime_obj2', datetime_field=datetime(2013,3,2,0,8,0)).save()
@@ -213,6 +214,63 @@ def test_column_editable_list():
     ok_('test1_val_1' in data)
 
 
+def test_details_view():
+    app, db, admin = setup()
+
+    Model1, Model2 = create_models(db)
+
+    view_no_details = CustomModelView(Model1)
+    admin.add_view(view_no_details)
+
+    # fields are scaffolded
+    view_w_details = CustomModelView(Model2, can_view_details=True)
+    admin.add_view(view_w_details)
+
+    # show only specific fields in details w/ column_details_list
+    string_field_view = CustomModelView(Model2, can_view_details=True,
+                                        column_details_list=["string_field"],
+                                        endpoint="sf_view")
+    admin.add_view(string_field_view)
+
+    fill_db(Model1, Model2)
+
+    client = app.test_client()
+
+    m1_id = Model1.objects.first().id
+    m2_id = Model2.objects.first().id
+
+    # ensure link to details is hidden when can_view_details is disabled
+    rv = client.get('/admin/model1/')
+    data = rv.data.decode('utf-8')
+    ok_('/admin/model1/details/' not in data)
+
+    # ensure link to details view appears
+    rv = client.get('/admin/model2/')
+    data = rv.data.decode('utf-8')
+    ok_('/admin/model2/details/' in data)
+
+    # test redirection when details are disabled
+    url = '/admin/model1/details/?url=%2Fadmin%2Fmodel1%2F&id=' + str(m1_id)
+    rv = client.get(url)
+    eq_(rv.status_code, 302)
+
+    # test if correct data appears in details view when enabled
+    url = '/admin/model2/details/?url=%2Fadmin%2Fmodel2%2F&id=' + str(m2_id)
+    rv = client.get(url)
+    data = rv.data.decode('utf-8')
+    ok_('String Field' in data)
+    ok_('string_field_val_1' in data)
+    ok_('Int Field' in data)
+
+    # test column_details_list
+    url = '/admin/sf_view/details/?url=%2Fadmin%2Fsf_view%2F&id=' + str(m2_id)
+    rv = client.get(url)
+    data = rv.data.decode('utf-8')
+    ok_('String Field' in data)
+    ok_('string_field_val_1' in data)
+    ok_('Int Field' not in data)
+
+
 def test_column_filters():
     app, db, admin = setup()
 
@@ -325,6 +383,13 @@ def test_column_filters():
     ok_('string_field_val_3' in data)
     ok_('string_field_val_4' not in data)
 
+    # integer - equals (huge number)
+    rv = client.get('/admin/model2/?flt0_0=6169453081680413441')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_5' in data)
+    ok_('string_field_val_4' not in data)
+
     # integer - equals - test validation
     rv = client.get('/admin/model2/?flt0_0=badval')
     eq_(rv.status_code, 200)
@@ -378,6 +443,13 @@ def test_column_filters():
     ok_('string_field_val_2' not in data)
     ok_('string_field_val_3' in data)
     ok_('string_field_val_4' in data)
+
+    # integer - in list (huge number)
+    rv = client.get('/admin/model2/?flt0_5=6169453081680413441')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('string_field_val_1' not in data)
+    ok_('string_field_val_5' in data)
 
     # integer - in list - test validation
     rv = client.get('/admin/model2/?flt0_5=5000%2Cbadval')

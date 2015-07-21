@@ -454,7 +454,8 @@ class Admin(object):
                  endpoint=None,
                  static_url_path=None,
                  base_template=None,
-                 template_mode=None):
+                 template_mode=None,
+                 category_icon_classes=None):
         """
             Constructor.
 
@@ -482,6 +483,9 @@ class Admin(object):
             :param template_mode:
                 Base template path. Defaults to `bootstrap2`. If you want to use
                 Bootstrap 3 integration, change it to `bootstrap3`.
+            :param category_icon_classes:
+                A dict of category names as keys and html classes as values to be added to menu category icons.
+                Example: {'Favorites': 'glyphicon glyphicon-star'}
         """
         self.app = app
 
@@ -503,6 +507,7 @@ class Admin(object):
         self.subdomain = subdomain
         self.base_template = base_template or 'admin/base.html'
         self.template_mode = template_mode or 'bootstrap2'
+        self.category_icon_classes = category_icon_classes or dict()
 
         # Add predefined index view
         self.add_view(self.index_view)
@@ -545,8 +550,10 @@ class Admin(object):
 
             category = self._menu_categories.get(cat_text)
 
+            # create a new menu category if one does not exist already
             if category is None:
                 category = MenuCategory(target_category)
+                category.class_name = self.category_icon_classes.get(cat_text)
                 self._menu_categories[cat_text] = category
 
                 self._menu.append(category)

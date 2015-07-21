@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-05-02 18:11-0500\n"
-"PO-Revision-Date: 2015-05-03 17:47-0400\n"
+"POT-Creation-Date: 2015-07-17 16:54-0500\n"
+"PO-Revision-Date: 2015-07-17 18:17-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Korean\n"
 "MIME-Version: 1.0\n"
@@ -17,159 +17,187 @@ msgstr ""
 "X-Crowdin-File: admin.pot\n"
 "Language: ko_KR\n"
 
-#: ../flask_admin/base.py:427
+#: ../flask_admin/base.py:431
 msgid "Home"
 msgstr "홈"
 
-#: ../flask_admin/contrib/fileadmin.py:222
+#: ../flask_admin/contrib/fileadmin.py:235
 msgid "File to upload"
 msgstr "파일을 업로드"
 
-#: ../flask_admin/contrib/fileadmin.py:230
+#: ../flask_admin/contrib/fileadmin.py:243
 msgid "File required."
 msgstr "파일 필수입니다."
 
-#: ../flask_admin/contrib/fileadmin.py:235
+#: ../flask_admin/contrib/fileadmin.py:248
 msgid "Invalid file type."
 msgstr "잘못 된 파일 형식입니다."
 
-#: ../flask_admin/contrib/fileadmin.py:246
+#: ../flask_admin/contrib/fileadmin.py:259
 msgid "Content"
 msgstr "콘텐츠"
 
-#: ../flask_admin/contrib/fileadmin.py:260
+#: ../flask_admin/contrib/fileadmin.py:273
 msgid "Invalid name"
 msgstr "잘못 된 이름"
 
-#: ../flask_admin/contrib/fileadmin.py:268
+#: ../flask_admin/contrib/fileadmin.py:281
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:35
 msgid "Name"
 msgstr "이름"
 
-#: ../flask_admin/contrib/fileadmin.py:546
+#: ../flask_admin/contrib/fileadmin.py:559
 #, python-format
 msgid "File \"%(name)s\" already exists."
 msgstr "파일 \"%(name)s\"는 이미 존재합니다."
 
-#: ../flask_admin/contrib/fileadmin.py:570
-#: ../flask_admin/contrib/fileadmin.py:637
-#: ../flask_admin/contrib/fileadmin.py:690
-#: ../flask_admin/contrib/fileadmin.py:731
-#: ../flask_admin/contrib/fileadmin.py:777
-#: ../flask_admin/contrib/fileadmin.py:826
+#: ../flask_admin/contrib/fileadmin.py:583
+#: ../flask_admin/contrib/fileadmin.py:650
+#: ../flask_admin/contrib/fileadmin.py:707
+#: ../flask_admin/contrib/fileadmin.py:750
+#: ../flask_admin/contrib/fileadmin.py:796
+#: ../flask_admin/contrib/fileadmin.py:846
 msgid "Permission denied."
 msgstr "사용 권한이 거부 되었습니다."
 
-#: ../flask_admin/contrib/fileadmin.py:633
+#: ../flask_admin/contrib/fileadmin.py:646
 msgid "File uploading is disabled."
 msgstr "파일을 업로드 하는 사용할 수 없습니다."
 
-#: ../flask_admin/contrib/fileadmin.py:646
+#: ../flask_admin/contrib/fileadmin.py:657
+#, python-format
+msgid "Successfully saved file: %(name)s"
+msgstr "성공적으로 저장 된 파일: %(name)s"
+
+#: ../flask_admin/contrib/fileadmin.py:661
 #, python-format
 msgid "Failed to save file: %(error)s"
 msgstr "파일을 저장 하지 못했습니다: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:686
+#: ../flask_admin/contrib/fileadmin.py:664
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:121
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:123
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:121
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:123
+msgid "Upload File"
+msgstr "파일 업로드"
+
+#: ../flask_admin/contrib/fileadmin.py:703
 msgid "Directory creation is disabled."
 msgstr "디렉터리 생성 되지 않습니다."
 
-#: ../flask_admin/contrib/fileadmin.py:701
+#: ../flask_admin/contrib/fileadmin.py:716
+#, python-format
+msgid "Successfully created directory: %(directory)s"
+msgstr "성공적으로 만든된 디렉터리: %(directory)s"
+
+#: ../flask_admin/contrib/fileadmin.py:720
 #, python-format
 msgid "Failed to create directory: %(error)s"
 msgstr "디렉터리를 만들지 못했습니다: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:727
+#: ../flask_admin/contrib/fileadmin.py:725
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:132
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:134
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:132
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:134
+msgid "Create Directory"
+msgstr "디렉터리 만들기"
+
+#: ../flask_admin/contrib/fileadmin.py:746
 msgid "Deletion is disabled."
 msgstr "삭제 비활성화 됩니다."
 
-#: ../flask_admin/contrib/fileadmin.py:736
+#: ../flask_admin/contrib/fileadmin.py:755
 msgid "Directory deletion is disabled."
 msgstr "디렉토리 삭제 비활성화 됩니다."
 
-#: ../flask_admin/contrib/fileadmin.py:742
+#: ../flask_admin/contrib/fileadmin.py:761
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
 msgstr "디렉터리 \"%(path)s\" 성공적으로 삭제 되었습니다."
 
-#: ../flask_admin/contrib/fileadmin.py:744
+#: ../flask_admin/contrib/fileadmin.py:763
 #, python-format
 msgid "Failed to delete directory: %(error)s"
 msgstr "디렉터리를 삭제 하지 못했습니다: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:749
-#: ../flask_admin/contrib/fileadmin.py:894
+#: ../flask_admin/contrib/fileadmin.py:768
+#: ../flask_admin/contrib/fileadmin.py:915
 #, python-format
 msgid "File \"%(name)s\" was successfully deleted."
 msgstr "파일 \"%(name)s\" 성공적으로 삭제 되었습니다."
 
-#: ../flask_admin/contrib/fileadmin.py:751
-#: ../flask_admin/contrib/fileadmin.py:896
+#: ../flask_admin/contrib/fileadmin.py:770
+#: ../flask_admin/contrib/fileadmin.py:917
 #, python-format
 msgid "Failed to delete file: %(name)s"
 msgstr "파일을 삭제 하지 못했습니다: %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:773
+#: ../flask_admin/contrib/fileadmin.py:792
 msgid "Renaming is disabled."
 msgstr "이름 바꾸기 하는 사용할 수 없습니다."
 
-#: ../flask_admin/contrib/fileadmin.py:781
+#: ../flask_admin/contrib/fileadmin.py:800
 msgid "Path does not exist."
 msgstr "경로가 존재 하지 않습니다."
 
-#: ../flask_admin/contrib/fileadmin.py:792
+#: ../flask_admin/contrib/fileadmin.py:811
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
 msgstr "성공적으로 이름이 바꾼된 \"%(src)s\" \"%(dst)s\"를"
 
-#: ../flask_admin/contrib/fileadmin.py:795
+#: ../flask_admin/contrib/fileadmin.py:814
 #, python-format
 msgid "Failed to rename: %(error)s"
 msgstr "이름을 변경 하지 못했습니다: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:842
+#: ../flask_admin/contrib/fileadmin.py:862
 #, python-format
 msgid "Error saving changes to %(name)s."
 msgstr "%(name)s의 변경 내용을 저장 하는 중 오류가 발생 했습니다."
 
-#: ../flask_admin/contrib/fileadmin.py:846
+#: ../flask_admin/contrib/fileadmin.py:866
 #, python-format
 msgid "Changes to %(name)s saved successfully."
 msgstr "변경 내용이 성공적으로 저장 하는 %(name)s입니다."
 
-#: ../flask_admin/contrib/fileadmin.py:855
+#: ../flask_admin/contrib/fileadmin.py:875
 #, python-format
 msgid "Error reading %(name)s."
 msgstr "오류 읽기 %(name)s입니다."
 
-#: ../flask_admin/contrib/fileadmin.py:858
-#: ../flask_admin/contrib/fileadmin.py:867
+#: ../flask_admin/contrib/fileadmin.py:878
+#: ../flask_admin/contrib/fileadmin.py:887
 #, python-format
 msgid "Unexpected error while reading from %(name)s"
 msgstr "%(name)s에서 읽는 동안 예기치 않은 오류가"
 
-#: ../flask_admin/contrib/fileadmin.py:864
+#: ../flask_admin/contrib/fileadmin.py:884
 #, python-format
 msgid "Cannot edit %(name)s."
 msgstr "%(name)s을 편집할 수 없습니다."
 
-#: ../flask_admin/contrib/fileadmin.py:881
-#: ../flask_admin/contrib/mongoengine/view.py:626
-#: ../flask_admin/contrib/peewee/view.py:429
-#: ../flask_admin/contrib/pymongo/view.py:349
-#: ../flask_admin/contrib/sqla/view.py:956
+#: ../flask_admin/contrib/fileadmin.py:902
+#: ../flask_admin/contrib/mongoengine/view.py:630
+#: ../flask_admin/contrib/peewee/view.py:432
+#: ../flask_admin/contrib/pymongo/view.py:352
+#: ../flask_admin/contrib/sqla/view.py:1056
 msgid "Delete"
 msgstr "삭제"
 
-#: ../flask_admin/contrib/fileadmin.py:882
+#: ../flask_admin/contrib/fileadmin.py:903
 msgid "Are you sure you want to delete these files?"
 msgstr "당신은이 파일을 삭제 하 시겠습니까?"
 
-#: ../flask_admin/contrib/fileadmin.py:885
+#: ../flask_admin/contrib/fileadmin.py:906
 msgid "File deletion is disabled."
 msgstr "파일 삭제 사용할 수 없습니다."
 
-#: ../flask_admin/contrib/fileadmin.py:898
+#: ../flask_admin/contrib/fileadmin.py:919
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:23
 msgid "Edit"
 msgstr "편집"
 
@@ -184,60 +212,60 @@ msgstr "잘못 된 JSON"
 #: ../flask_admin/contrib/mongoengine/filters.py:38
 #: ../flask_admin/contrib/peewee/filters.py:38
 #: ../flask_admin/contrib/pymongo/filters.py:38
-#: ../flask_admin/contrib/sqla/filters.py:38
+#: ../flask_admin/contrib/sqla/filters.py:41
 msgid "equals"
 msgstr "같음"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:47
 #: ../flask_admin/contrib/peewee/filters.py:46
 #: ../flask_admin/contrib/pymongo/filters.py:47
-#: ../flask_admin/contrib/sqla/filters.py:46
+#: ../flask_admin/contrib/sqla/filters.py:49
 msgid "not equal"
 msgstr "같지 않음"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:57
 #: ../flask_admin/contrib/peewee/filters.py:55
 #: ../flask_admin/contrib/pymongo/filters.py:57
-#: ../flask_admin/contrib/sqla/filters.py:55
+#: ../flask_admin/contrib/sqla/filters.py:58
 msgid "contains"
 msgstr "포함"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:67
 #: ../flask_admin/contrib/peewee/filters.py:64
 #: ../flask_admin/contrib/pymongo/filters.py:67
-#: ../flask_admin/contrib/sqla/filters.py:64
+#: ../flask_admin/contrib/sqla/filters.py:67
 msgid "not contains"
 msgstr "아닙니다 포함"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:76
 #: ../flask_admin/contrib/peewee/filters.py:72
 #: ../flask_admin/contrib/pymongo/filters.py:80
-#: ../flask_admin/contrib/sqla/filters.py:72
+#: ../flask_admin/contrib/sqla/filters.py:75
 msgid "greater than"
 msgstr "보다 큰"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:85
 #: ../flask_admin/contrib/peewee/filters.py:80
 #: ../flask_admin/contrib/pymongo/filters.py:93
-#: ../flask_admin/contrib/sqla/filters.py:80
+#: ../flask_admin/contrib/sqla/filters.py:83
 msgid "smaller than"
 msgstr "보다 작은"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:97
 #: ../flask_admin/contrib/peewee/filters.py:91
-#: ../flask_admin/contrib/sqla/filters.py:91
+#: ../flask_admin/contrib/sqla/filters.py:94
 msgid "empty"
 msgstr "빈"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:112
 #: ../flask_admin/contrib/peewee/filters.py:105
-#: ../flask_admin/contrib/sqla/filters.py:105
+#: ../flask_admin/contrib/sqla/filters.py:108
 msgid "in list"
 msgstr "목록에서"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:121
 #: ../flask_admin/contrib/peewee/filters.py:114
-#: ../flask_admin/contrib/sqla/filters.py:114
+#: ../flask_admin/contrib/sqla/filters.py:118
 msgid "not in list"
 msgstr "목록에 없는"
 
@@ -245,9 +273,9 @@ msgstr "목록에 없는"
 #: ../flask_admin/contrib/peewee/filters.py:208
 #: ../flask_admin/contrib/peewee/filters.py:245
 #: ../flask_admin/contrib/peewee/filters.py:282
-#: ../flask_admin/contrib/sqla/filters.py:209
-#: ../flask_admin/contrib/sqla/filters.py:246
-#: ../flask_admin/contrib/sqla/filters.py:283
+#: ../flask_admin/contrib/sqla/filters.py:213
+#: ../flask_admin/contrib/sqla/filters.py:250
+#: ../flask_admin/contrib/sqla/filters.py:287
 msgid "not between"
 msgstr "사이"
 
@@ -259,7 +287,7 @@ msgstr "모델을 가져오는 데 실패. %(error)s"
 #: ../flask_admin/contrib/mongoengine/view.py:539
 #: ../flask_admin/contrib/peewee/view.py:380
 #: ../flask_admin/contrib/pymongo/view.py:284
-#: ../flask_admin/contrib/sqla/view.py:888
+#: ../flask_admin/contrib/sqla/view.py:985
 #, python-format
 msgid "Failed to create record. %(error)s"
 msgstr "레코드를 만들지 못했습니다. %(error)s"
@@ -267,40 +295,40 @@ msgstr "레코드를 만들지 못했습니다. %(error)s"
 #: ../flask_admin/contrib/mongoengine/view.py:565
 #: ../flask_admin/contrib/peewee/view.py:399
 #: ../flask_admin/contrib/pymongo/view.py:309
-#: ../flask_admin/contrib/sqla/view.py:914 ../flask_admin/model/base.py:1671
-#: ../flask_admin/model/base.py:1680
+#: ../flask_admin/contrib/sqla/view.py:1011 ../flask_admin/model/base.py:1839
+#: ../flask_admin/model/base.py:1848
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr "레코드를 만들지 못했습니다. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:589
-#: ../flask_admin/contrib/peewee/view.py:415
-#: ../flask_admin/contrib/pymongo/view.py:335
-#: ../flask_admin/contrib/sqla/view.py:940
+#: ../flask_admin/contrib/mongoengine/view.py:588
+#: ../flask_admin/contrib/peewee/view.py:414
+#: ../flask_admin/contrib/pymongo/view.py:334
+#: ../flask_admin/contrib/sqla/view.py:1036
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr "레코드를 삭제 하지 못했습니다. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:627
-#: ../flask_admin/contrib/peewee/view.py:430
-#: ../flask_admin/contrib/pymongo/view.py:350
-#: ../flask_admin/contrib/sqla/view.py:957
+#: ../flask_admin/contrib/mongoengine/view.py:631
+#: ../flask_admin/contrib/peewee/view.py:433
+#: ../flask_admin/contrib/pymongo/view.py:353
+#: ../flask_admin/contrib/sqla/view.py:1057
 msgid "Are you sure you want to delete selected records?"
 msgstr "당신은 선택한 레코드를 삭제 하 시겠습니까?"
 
-#: ../flask_admin/contrib/mongoengine/view.py:636
-#: ../flask_admin/contrib/peewee/view.py:446
-#: ../flask_admin/contrib/pymongo/view.py:360
-#: ../flask_admin/contrib/sqla/view.py:973 ../flask_admin/model/base.py:1619
+#: ../flask_admin/contrib/mongoengine/view.py:640
+#: ../flask_admin/contrib/peewee/view.py:450
+#: ../flask_admin/contrib/pymongo/view.py:363
+#: ../flask_admin/contrib/sqla/view.py:1073 ../flask_admin/model/base.py:1787
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
 msgstr[0] "%(count)s 레코드 성공적으로 삭제 되었습니다."
 
-#: ../flask_admin/contrib/mongoengine/view.py:642
-#: ../flask_admin/contrib/peewee/view.py:452
-#: ../flask_admin/contrib/pymongo/view.py:365
-#: ../flask_admin/contrib/sqla/view.py:981
+#: ../flask_admin/contrib/mongoengine/view.py:646
+#: ../flask_admin/contrib/peewee/view.py:456
+#: ../flask_admin/contrib/pymongo/view.py:368
+#: ../flask_admin/contrib/sqla/view.py:1081
 #, python-format
 msgid "Failed to delete records. %(error)s"
 msgstr "레코드를 삭제 하지 못했습니다. %(error)s"
@@ -322,37 +350,47 @@ msgid "At least %d item is required"
 msgid_plural "At least %d items are required"
 msgstr[0] "적어도 %d 항목은 필요"
 
-#: ../flask_admin/contrib/sqla/view.py:867
+#: ../flask_admin/contrib/sqla/view.py:964
 #, python-format
 msgid "Integrity error. %(message)s"
 msgstr "무결성 오류입니다. %(message)s"
 
-#: ../flask_admin/form/fields.py:92
+#: ../flask_admin/form/fields.py:94
 msgid "Invalid time format"
 msgstr "잘못 된 시간 형식"
 
-#: ../flask_admin/form/fields.py:138
+#: ../flask_admin/form/fields.py:140
 msgid "Invalid Choice: could not coerce"
 msgstr "잘못 된 선택: 강요 하지 수 없습니다."
 
-#: ../flask_admin/form/upload.py:189
+#: ../flask_admin/form/upload.py:205
 msgid "Invalid file extension"
 msgstr "잘못 된 파일 확장명"
 
-#: ../flask_admin/model/base.py:1281
+#: ../flask_admin/form/upload.py:212 ../flask_admin/form/upload.py:279
+#, python-format
+msgid "File \"%s\" already exists."
+msgstr "파일 \"%s\"는 이미 존재합니다."
+
+#: ../flask_admin/model/base.py:1393
 msgid "There are no items in the table."
 msgstr "테이블에는 항목이 없습니다."
 
-#: ../flask_admin/model/base.py:1305
+#: ../flask_admin/model/base.py:1417
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
 msgstr "잘못 된 필터 값: %(value)s"
 
-#: ../flask_admin/model/base.py:1539
+#: ../flask_admin/model/base.py:1658
 msgid "Record was successfully created."
 msgstr "레코드는 성공적으로 만들어졌습니다."
 
-#: ../flask_admin/model/base.py:1578 ../flask_admin/model/base.py:1676
+#: ../flask_admin/model/base.py:1699 ../flask_admin/model/base.py:1748
+#: ../flask_admin/model/base.py:1782
+msgid "Record does not exist."
+msgstr "레코드가 존재 하지 않습니다."
+
+#: ../flask_admin/model/base.py:1708 ../flask_admin/model/base.py:1844
 msgid "Record was successfully saved."
 msgstr "레코드가는 성공적으로 저장 되었습니다."
 
@@ -364,8 +402,8 @@ msgstr "레코드가는 성공적으로 저장 되었습니다."
 msgid "No"
 msgstr "없음"
 
-#: ../flask_admin/model/filters.py:162 ../flask_admin/model/filters.py:202
-#: ../flask_admin/model/filters.py:247
+#: ../flask_admin/model/filters.py:168 ../flask_admin/model/filters.py:208
+#: ../flask_admin/model/filters.py:253
 msgid "between"
 msgstr "사이"
 
@@ -374,21 +412,26 @@ msgstr "사이"
 msgid "With selected"
 msgstr "로 선정"
 
-#: ../flask_admin/templates/bootstrap2/admin/lib.html:156
-#: ../flask_admin/templates/bootstrap3/admin/lib.html:150
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:199
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:190
 msgid "Save"
 msgstr "저장"
 
-#: ../flask_admin/templates/bootstrap2/admin/lib.html:161
-#: ../flask_admin/templates/bootstrap3/admin/lib.html:155
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:204
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:195
 msgid "Cancel"
 msgstr "취소"
 
-#: ../flask_admin/templates/bootstrap2/admin/file/edit.html:5
-#: ../flask_admin/templates/bootstrap3/admin/file/edit.html:5
+#: ../flask_admin/templates/bootstrap2/admin/file/edit.html:8
+#: ../flask_admin/templates/bootstrap3/admin/file/edit.html:8
+msgid "This file cannot be edited for now."
+msgstr "이 파일을 지금 편집할 수 없습니다."
+
+#: ../flask_admin/templates/bootstrap2/admin/file/edit.html:21
+#: ../flask_admin/templates/bootstrap3/admin/file/edit.html:20
 #, python-format
-msgid "You are editing %(path)s"
-msgstr "%(path)s를 편집 하는"
+msgid "Editing %(path)s"
+msgstr "편집 %(path)s"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
@@ -400,57 +443,82 @@ msgstr "루트"
 msgid "Size"
 msgstr "크기"
 
-#: ../flask_admin/templates/bootstrap2/admin/file/list.html:63
-#: ../flask_admin/templates/bootstrap3/admin/file/list.html:63
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:55
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:58
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:55
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:58
+msgid "Rename File"
+msgstr "파일 이름 바꾸기"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:69
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:69
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
 msgstr "당신은 \\'%(name)s\\' 를 삭제 하 시겠습니까 ' 재귀적으로?"
 
-#: ../flask_admin/templates/bootstrap2/admin/file/list.html:72
-#: ../flask_admin/templates/bootstrap3/admin/file/list.html:72
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:78
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:78
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\'?"
 msgstr "당신은 \\'%(name)s\\' 를 삭제 하 시겠습니까 '?"
 
-#: ../flask_admin/templates/bootstrap2/admin/file/list.html:107
-#: ../flask_admin/templates/bootstrap3/admin/file/list.html:107
-msgid "Upload File"
-msgstr "파일 업로드"
-
-#: ../flask_admin/templates/bootstrap2/admin/file/list.html:112
-#: ../flask_admin/templates/bootstrap3/admin/file/list.html:112
-msgid "Create Directory"
-msgstr "디렉터리 만들기"
-
-#: ../flask_admin/templates/bootstrap2/admin/file/list.html:129
-#: ../flask_admin/templates/bootstrap3/admin/file/list.html:129
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:158
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:158
 msgid "Please select at least one file."
 msgstr "하나 이상의 파일을 선택 하십시오."
 
-#: ../flask_admin/templates/bootstrap2/admin/file/rename.html:5
-#: ../flask_admin/templates/bootstrap3/admin/file/rename.html:5
+#: ../flask_admin/templates/bootstrap2/admin/file/rename.html:12
+#: ../flask_admin/templates/bootstrap3/admin/file/rename.html:12
 #, python-format
-msgid "Please provide new name for %(name)s"
-msgstr "%(name)s에 대 한 새 이름을 제공 하십시오"
+msgid "Rename %(name)s"
+msgstr "이름 바꾸기 %(name)s"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
 msgid "Save and Add"
 msgstr "저장 하 고 추가"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:16
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:17
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:8
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:17
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:16
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:8
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:17
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:16
 msgid "List"
 msgstr "목록"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:19
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:20
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:20
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:11
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:20
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:22
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:24
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:20
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:20
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:11
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:20
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
 msgid "Create"
 msgstr "만들기"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:14
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:111
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:113
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:14
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:111
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:113
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
+msgid "View Record"
+msgstr "보기 기록"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:22
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:8
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:21
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:15
+msgid "Filter"
+msgstr "필터"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
@@ -489,45 +557,59 @@ msgstr "재설정 필터"
 msgid "Search"
 msgstr "검색"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:20
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:20
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:22
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:24
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
 msgid "Create new record"
 msgstr "새 레코드 만들기"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:56
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:56
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:61
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:61
 msgid "Select all records"
 msgstr "모든 레코드 선택"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:76
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:67
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:76
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:72
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:81
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:72
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:81
 #, python-format
 msgid "Sort by %(name)s"
 msgstr "%(name)s 정렬"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:98
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:98
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:103
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:103
 msgid "Select record"
 msgstr "레코드 선택"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:105
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:105
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:120
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:122
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:120
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:122
 msgid "Edit record"
 msgstr "레코드 편집"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:114
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:136
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:136
 msgid "Are you sure you want to delete this record?"
 msgstr "당신은이 레코드를 삭제 하 시겠습니까?"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:136
 msgid "Delete record"
 msgstr "레코드 삭제"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:161
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:160
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:193
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:194
 msgid "Please select at least one record."
 msgstr "하나 이상의 레코드를 선택 하십시오."
+
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/create.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/create.html:7
+msgid "Create New Record"
+msgstr "새 레코드 만들기"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:8
+msgid "Edit Record"
+msgstr "레코드 편집"
 

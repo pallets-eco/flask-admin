@@ -288,7 +288,7 @@ class AdminModelConverter(ModelConverterBase):
         self._string_common(field_args=field_args, **extra)
         return fields.TextAreaField(**field_args)
 
-    @converts('Boolean')
+    @converts('Boolean', 'sqlalchemy.dialects.mssql.base.BIT')
     def conv_Boolean(self, field_args, **extra):
         return fields.BooleanField(**field_args)
 

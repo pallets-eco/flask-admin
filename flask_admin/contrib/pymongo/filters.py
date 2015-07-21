@@ -95,10 +95,12 @@ class FilterSmaller(BasePyMongoFilter):
 
 # Customized type filters
 class BooleanEqualFilter(FilterEqual, filters.BaseBooleanFilter):
-    def clean(self, value):
-        return value == '1'
+    def apply(self, query, value):
+        query.append({self.column: value == '1'})
+        return query
 
 
 class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
-    def clean(self, value):
-        return value == '1'
+    def apply(self, query, value):
+        query.append({self.column: value != '1'})
+        return query

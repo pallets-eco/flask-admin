@@ -129,7 +129,7 @@
       {% set _dummy = kwargs.setdefault('class', 'form-control') %}
       {{ field(**kwargs)|safe }}
       {% if field.description %}
-      <p class="help-block">{{ field.description }}</p>
+      <p class="help-block">{{ field.description|safe }}</p>
       {% endif %}
       {% if direct_error %}
         <ul class="help-block input-errors">
