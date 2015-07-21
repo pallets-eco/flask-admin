@@ -20,11 +20,13 @@ app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
 
+
 # Models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
     email = db.Column(db.Unicode(64))
+
 
     def __unicode__(self):
         return self.name
@@ -40,18 +42,20 @@ class Page(db.Model):
 
 
 # Customized admin interface
-class CustomView(ModelView):
-    list_template = 'list.html'
-    create_template = 'create.html'
-    edit_template = 'edit.html'
+class PageView(ModelView):
+    column_list = ('title', 'content')
+
+    
 
 
-class UserAdmin(CustomView):
+class UserView(ModelView):
     column_searchable_list = ('name',)
     column_filters = ('name', 'email')
-    column_editable_list = ('name', 'email')
+    # column_editable_list = ('name', 'email')
     edit_modal = True
     create_modal = True
+
+    
 
 
 # Flask views
@@ -61,11 +65,12 @@ def index():
 
 
 # Create admin with custom base template
-admin = admin.Admin(app, 'Example: Layout', base_template='layout.html')
+admin = admin.Admin(app, 'Example: Zurb Foundation', template_mode='zurb5'
+    )
 
 # Add views
-admin.add_view(UserAdmin(User, db.session))
-admin.add_view(CustomView(Page, db.session))
+admin.add_view(UserView(User, db.session))
+admin.add_view(PageView(Page, db.session))
 
 
 def build_sample_db():
@@ -149,4 +154,4 @@ if __name__ == '__main__':
         build_sample_db()
 
     # Start app
-    app.run(debug=True)
+    app.run(debug=True, port=8000)
