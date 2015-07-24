@@ -147,7 +147,7 @@ class ModelView(BaseModelView):
         Inline model conversion class. If you need some kind of post-processing for inline
         forms, you can customize behavior by doing something like this::
 
-            class MyInlineModelConverter(AdminModelConverter):
+            class MyInlineModelConverter(InlineModelConverter):
                 def post_process(self, form_class, info):
                     form_class.value = wtf.StringField('value')
                     return form_class
