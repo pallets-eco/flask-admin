@@ -10,7 +10,4 @@
 		:members: __init__
 
 	.. autoclass:: FileUploadInput
-		:members: __init__
-
 	.. autoclass:: ImageUploadInput
-		:members: __init__
