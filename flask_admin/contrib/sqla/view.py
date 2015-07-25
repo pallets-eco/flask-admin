@@ -96,19 +96,19 @@ class ModelView(BaseModelView):
 
         The following search rules apply:
 
-        - If you enter *ZZZ* in the UI search field, it will generate *ILIKE '%ZZZ%'*
+        - If you enter ``ZZZ`` in the UI search field, it will generate ``ILIKE '%ZZZ%'``
           statement against searchable columns.
 
         - If you enter multiple words, each word will be searched separately, but
           only rows that contain all words will be displayed. For example, searching
-          for 'abc def' will find all rows that contain 'abc' and 'def' in one or
+          for ``abc def`` will find all rows that contain ``abc`` and ``def`` in one or
           more columns.
 
-        - If you prefix your search term with ^, it will find all rows
-          that start with ^. So, if you entered *^ZZZ*, *ILIKE 'ZZZ%'* will be used.
+        - If you prefix your search term with ``^``, it will find all rows
+          that start with ``^``. So, if you entered ``^ZZZ`` then ``ILIKE 'ZZZ%'`` will be used.
 
-        - If you prefix your search term with =, it will perform an exact match.
-          For example, if you entered *=ZZZ*, the statement *ILIKE 'ZZZ'* will be used.
+        - If you prefix your search term with ``=``, it will perform an exact match.
+          For example, if you entered ``=ZZZ``, the statement ``ILIKE 'ZZZ'`` will be used.
     """
 
     column_filters = None
@@ -170,9 +170,9 @@ class ModelView(BaseModelView):
         giving SQLAlchemy a chance to manually cleanup any dependencies (many-to-many
         relationships, etc).
 
-        If set to `True`, will run a `DELETE` statement which is somewhat faster,
-        but may leave corrupted data if you forget to configure `DELETE
-        CASCADE` for your model.
+        If set to `True`, will run a ``DELETE`` statement which is somewhat faster,
+        but may leave corrupted data if you forget to configure ``DELETE
+        CASCADE`` for your model.
     """
 
     inline_models = None
@@ -201,12 +201,12 @@ class ModelView(BaseModelView):
 
         You can customize the generated field name by:
 
-        1. Using the `form_name` property as a key to the options dictionary:
+        1. Using the `form_name` property as a key to the options dictionary::
 
             class MyModelView(ModelView):
                 inline_models = ((Post, dict(form_label='Hello')))
 
-        2. Using forward relation name and `column_labels` property:
+        2. Using forward relation name and `column_labels` property::
 
             class Model1(Base):
                 pass
@@ -231,7 +231,7 @@ class ModelView(BaseModelView):
             class MyModelView(BaseModelView):
                 form_choices = {'my_form_field': [
                     ('db_value', 'display_value'),
-                ]
+                ]}
     """
 
     form_optional_types = (Boolean,)
@@ -732,10 +732,10 @@ class ModelView(BaseModelView):
         """
             Return a the count query for the model type
 
-            A query(self.model).count() approach produces an excessive
-            subquery, so query(func.count('*')) should be used instead.
+            A ``query(self.model).count()`` approach produces an excessive
+            subquery, so ``query(func.count('*'))`` should be used instead.
 
-            See #45a2723 commit message for details.
+            See commit ``#45a2723`` for details.
         """
         return self.session.query(func.count('*')).select_from(self.model)
 
