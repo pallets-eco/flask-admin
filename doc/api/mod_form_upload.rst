@@ -1,5 +1,5 @@
 ``flask_admin.form.upload``
-===============================
+===========================
 
 .. automodule:: flask_admin.form.upload
 

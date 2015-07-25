@@ -1,5 +1,5 @@
 ``flask_admin.contrib.peewee``
-==================================
+==============================
 
 Peewee model backend implementation.
 

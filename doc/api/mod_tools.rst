@@ -1,5 +1,5 @@
 ``flask_admin.tools``
-=========================
+=====================
 
 .. automodule:: flask_admin.tools
 

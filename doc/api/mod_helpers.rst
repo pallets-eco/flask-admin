@@ -1,5 +1,5 @@
 ``flask_admin.helpers``
-===========================
+=======================
 
 .. automodule:: flask_admin.helpers
 

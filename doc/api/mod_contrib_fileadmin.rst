@@ -1,5 +1,5 @@
 ``flask_admin.contrib.fileadmin``
-=====================================
+=================================
 
 .. automodule:: flask_admin.contrib.fileadmin
 

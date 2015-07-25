@@ -1,5 +1,5 @@
 ``flask_admin.base``
-========================
+====================
 
 .. automodule:: flask_admin.base
 

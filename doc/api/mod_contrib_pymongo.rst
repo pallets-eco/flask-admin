@@ -1,5 +1,5 @@
 ``flask_admin.contrib.pymongo``
-===================================
+===============================
 
 PyMongo model backend implementation.
 

@@ -1,5 +1,5 @@
 ``flask_admin.model``
-=========================
+=====================
 
 .. automodule:: flask_admin.model
 
