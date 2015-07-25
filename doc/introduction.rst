@@ -280,7 +280,7 @@ When your forms contain foreign keys, have those **related models loaded via aja
 
     form_ajax_refs = {
         'user': {
-            'fields': ['first_name', 'last_name', 'email']
+            'fields': ['first_name', 'last_name', 'email'],
             'page_size': 10
         }
     }
@@ -342,7 +342,7 @@ For this you could override only the view in question, and all the links to it w
     # Flask and Flask-SQLAlchemy initialization here
 
     class UserView(ModelView):
-    @expose('/new/', methods=('GET', 'POST'))
+        @expose('/new/', methods=('GET', 'POST'))
         def create_view(self):
         """
             Custom create view.
@@ -474,7 +474,7 @@ To generate the URL for a specific view, use *url_for* with a dot prefix::
 
     class MyView(BaseView):
         @expose('/')
-        def index(self)
+        def index(self):
             # Get URL for the test view method
             user_list_url = url_for('user.index_view')
             return self.render('index.html', user_list_url=user_list_url)

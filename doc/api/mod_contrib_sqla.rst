@@ -1,5 +1,5 @@
 ``flask_admin.contrib.sqla``
-================================
+============================
 
 SQLAlchemy model backend implementation.
 

@@ -513,7 +513,7 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(BaseModelView):
                 form_ajax_refs = {
                     'user': {
-                        'fields': ('first_name', 'last_name', 'email')
+                        'fields': ('first_name', 'last_name', 'email'),
                         'page_size': 10
                     }
                 }

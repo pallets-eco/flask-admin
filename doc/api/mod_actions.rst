@@ -1,5 +1,5 @@
 ``flask_admin.actions``
-===========================
+=======================
 
 .. automodule:: flask_admin.actions
 
