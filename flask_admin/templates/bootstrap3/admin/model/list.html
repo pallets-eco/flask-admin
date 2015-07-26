@@ -141,7 +141,7 @@
                         {{ form[c](pk=get_pk_value(row), value=get_value(row, c)) }}
                         {% endif %}
                     {% else %}
-                    {{ get_value(row, c) }}
+                    {{ get_value(row, c) | safe}}
                     {% endif %}
                     </td>
                 {% endfor %}
