@@ -4,7 +4,7 @@ import inspect
 
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import joinedload, aliased
-from sqlalchemy.sql.expression import desc
+from sqlalchemy.sql.expression import desc, ColumnElement
 from sqlalchemy import Boolean, Table, func, or_
 from sqlalchemy.exc import IntegrityError
 
@@ -550,8 +550,11 @@ class ModelView(BaseModelView):
         if attr is None:
             raise Exception('Failed to find field for filter: %s' % name)
 
-        # Figure out filters for related column
-        if hasattr(attr, 'property') and hasattr(attr.property, 'direction'):
+        # Figure out filters for related column, unless it's a hybrid_property
+        if isinstance(attr, ColumnElement):
+            warnings.warn(('Unable to scaffold the filter for %s, scaffolding '
+                           'for hybrid_property is not supported yet.') % name)
+        elif hasattr(attr, 'property') and hasattr(attr.property, 'direction'):
             filters = []
 
             for p in self._get_model_iterator(attr.property.mapper.class_):
@@ -620,7 +623,9 @@ class ModelView(BaseModelView):
         if isinstance(filter, sqla_filters.BaseSQLAFilter):
             column = filter.column
 
-            if self._need_join(column.table):
+            # hybrid_property joins are not supported yet
+            if (isinstance(column, InstrumentedAttribute) and
+                    self._need_join(column.table)):
                 self._filter_joins[column] = [column.table]
 
         return filter
