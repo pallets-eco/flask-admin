@@ -8,6 +8,8 @@ from flask_admin._compat import iteritems
 from flask_admin.contrib.sqla import ModelView, filters
 from flask_babelex import Babel
 
+from sqlalchemy.ext.hybrid import hybrid_property
+
 from . import setup
 
 from datetime import datetime, time, date
@@ -1215,6 +1217,53 @@ def test_column_filters():
 
     ok_('test1_val_1' in data)
     ok_('test1_val_2' not in data)
+
+
+def test_hybrid_property():
+    app, db, admin = setup()
+
+    class Model1(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        name = db.Column(db.String)
+        width = db.Column(db.Integer)
+        height = db.Column(db.Integer)
+
+        @hybrid_property
+        def number_of_pixels(self):
+            return self.width * self.height
+
+    db.create_all()
+
+    db.session.add(Model1(id=1, name="test_row_1", width=25, height=25))
+    db.session.add(Model1(id=2, name="test_row_2", width=10, height=10))
+    db.session.commit()
+
+    client = app.test_client()
+
+    view = CustomModelView(
+        Model1, db.session,
+        column_default_sort='number_of_pixels',
+        column_filters = [filters.IntGreaterFilter(Model1.number_of_pixels,
+                                                   'Number of Pixels')]
+    )
+    admin.add_view(view)
+
+    # filters - hybrid_property integer - greater
+    rv = client.get('/admin/model1/?flt0_0=600')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test_row_1' in data)
+    ok_('test_row_2' not in data)
+
+    # sorting
+    rv = client.get('/admin/model1/?sort=0')
+    eq_(rv.status_code, 200)
+
+    _, data = view.get_list(0, None, None, None, None)
+
+    eq_(len(data), 2)
+    eq_(data[0].name, 'test_row_2')
+    eq_(data[1].name, 'test_row_1')
 
 
 def test_url_args():
