@@ -61,15 +61,22 @@ def create_models(db):
 
     class Model2(db.Model):
         def __init__(self, string_field=None, int_field=None, bool_field=None,
-                     model1=None, float_field=None):
+                     model1=None, float_field=None, string_field_default=None,
+                     string_field_empty_default=None):
             self.string_field = string_field
             self.int_field = int_field
             self.bool_field = bool_field
             self.model1 = model1
             self.float_field = float_field
+            self.string_field_default = string_field_default
+            self.string_field_empty_default = string_field_empty_default
 
         id = db.Column(db.Integer, primary_key=True)
         string_field = db.Column(db.String)
+        string_field_default = db.Column(db.Text, nullable=False,
+                                         default='')
+        string_field_empty_default = db.Column(db.Text, nullable=False,
+                                               default='')
         int_field = db.Column(db.Integer)
         bool_field = db.Column(db.Boolean)
         enum_field = db.Column(db.Enum('model2_v1', 'model2_v2'), nullable=True)
@@ -1957,3 +1964,18 @@ def test_multipath_joins():
 
     rv = client.get('/admin/model2/')
     eq_(rv.status_code, 200)
+
+
+def test_model_default():
+    app, db, admin = setup()
+    _, Model2 = create_models(db)
+
+    class ModelView(CustomModelView):
+        pass
+
+    view = ModelView(Model2, db.session)
+    admin.add_view(view)
+
+    client = app.test_client()
+    rv = client.post('/admin/model2/new/', data=dict())
+    assert_true(b'This field is required' not in rv.data)
