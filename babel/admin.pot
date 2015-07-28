@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Flask-Admin VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-07-17 17:17-0500\n"
+"POT-Creation-Date: 2015-07-28 00:55-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -184,7 +184,7 @@ msgstr ""
 #: ../flask_admin/contrib/mongoengine/view.py:630
 #: ../flask_admin/contrib/peewee/view.py:432
 #: ../flask_admin/contrib/pymongo/view.py:352
-#: ../flask_admin/contrib/sqla/view.py:1056
+#: ../flask_admin/contrib/sqla/view.py:1061
 msgid "Delete"
 msgstr ""
 
@@ -197,7 +197,9 @@ msgid "File deletion is disabled."
 msgstr ""
 
 #: ../flask_admin/contrib/fileadmin.py:919
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:15
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:15
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:23
 msgid "Edit"
 msgstr ""
@@ -288,7 +290,7 @@ msgstr ""
 #: ../flask_admin/contrib/mongoengine/view.py:539
 #: ../flask_admin/contrib/peewee/view.py:380
 #: ../flask_admin/contrib/pymongo/view.py:284
-#: ../flask_admin/contrib/sqla/view.py:985
+#: ../flask_admin/contrib/sqla/view.py:990
 #, python-format
 msgid "Failed to create record. %(error)s"
 msgstr ""
@@ -296,7 +298,7 @@ msgstr ""
 #: ../flask_admin/contrib/mongoengine/view.py:565
 #: ../flask_admin/contrib/peewee/view.py:399
 #: ../flask_admin/contrib/pymongo/view.py:309
-#: ../flask_admin/contrib/sqla/view.py:1011 ../flask_admin/model/base.py:1839
+#: ../flask_admin/contrib/sqla/view.py:1016 ../flask_admin/model/base.py:1839
 #: ../flask_admin/model/base.py:1848
 #, python-format
 msgid "Failed to update record. %(error)s"
@@ -305,7 +307,7 @@ msgstr ""
 #: ../flask_admin/contrib/mongoengine/view.py:588
 #: ../flask_admin/contrib/peewee/view.py:414
 #: ../flask_admin/contrib/pymongo/view.py:334
-#: ../flask_admin/contrib/sqla/view.py:1036
+#: ../flask_admin/contrib/sqla/view.py:1041
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr ""
@@ -313,14 +315,14 @@ msgstr ""
 #: ../flask_admin/contrib/mongoengine/view.py:631
 #: ../flask_admin/contrib/peewee/view.py:433
 #: ../flask_admin/contrib/pymongo/view.py:353
-#: ../flask_admin/contrib/sqla/view.py:1057
+#: ../flask_admin/contrib/sqla/view.py:1062
 msgid "Are you sure you want to delete selected records?"
 msgstr ""
 
 #: ../flask_admin/contrib/mongoengine/view.py:640
 #: ../flask_admin/contrib/peewee/view.py:450
 #: ../flask_admin/contrib/pymongo/view.py:363
-#: ../flask_admin/contrib/sqla/view.py:1073 ../flask_admin/model/base.py:1787
+#: ../flask_admin/contrib/sqla/view.py:1078 ../flask_admin/model/base.py:1787
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
@@ -330,7 +332,7 @@ msgstr[1] ""
 #: ../flask_admin/contrib/mongoengine/view.py:646
 #: ../flask_admin/contrib/peewee/view.py:456
 #: ../flask_admin/contrib/pymongo/view.py:368
-#: ../flask_admin/contrib/sqla/view.py:1081
+#: ../flask_admin/contrib/sqla/view.py:1086
 #, python-format
 msgid "Failed to delete records. %(error)s"
 msgstr ""
@@ -353,7 +355,7 @@ msgid_plural "At least %d items are required"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../flask_admin/contrib/sqla/view.py:964
+#: ../flask_admin/contrib/sqla/view.py:969
 #, python-format
 msgid "Integrity error. %(message)s"
 msgstr ""
@@ -505,20 +507,20 @@ msgstr ""
 msgid "Create"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/details.html:14
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:19
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:111
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:113
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
-#: ../flask_admin/templates/bootstrap3/admin/model/details.html:14
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:19
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:111
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:113
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
 msgid "View Record"
 msgstr ""
 
-#: ../flask_admin/templates/bootstrap2/admin/model/details.html:22
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:27
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:8
-#: ../flask_admin/templates/bootstrap3/admin/model/details.html:21
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:26
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:15
 msgid "Filter"
 msgstr ""

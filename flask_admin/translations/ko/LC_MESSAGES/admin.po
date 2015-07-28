@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-07-17 16:54-0500\n"
-"PO-Revision-Date: 2015-07-17 18:17-0400\n"
+"PO-Revision-Date: 2015-07-28 01:55-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Korean\n"
 "MIME-Version: 1.0\n"
@@ -23,15 +23,15 @@ msgstr "홈"
 
 #: ../flask_admin/contrib/fileadmin.py:235
 msgid "File to upload"
-msgstr "파일을 업로드"
+msgstr "파일 업로드"
 
 #: ../flask_admin/contrib/fileadmin.py:243
 msgid "File required."
-msgstr "파일 필수입니다."
+msgstr "필수사항."
 
 #: ../flask_admin/contrib/fileadmin.py:248
 msgid "Invalid file type."
-msgstr "잘못 된 파일 형식입니다."
+msgstr "지원되지않는 파일 형식입니다."
 
 #: ../flask_admin/contrib/fileadmin.py:259
 msgid "Content"
@@ -50,7 +50,7 @@ msgstr "이름"
 #: ../flask_admin/contrib/fileadmin.py:559
 #, python-format
 msgid "File \"%(name)s\" already exists."
-msgstr "파일 \"%(name)s\"는 이미 존재합니다."
+msgstr "파일 \"%(name)s\"은 이미 존재합니다."
 
 #: ../flask_admin/contrib/fileadmin.py:583
 #: ../flask_admin/contrib/fileadmin.py:650
@@ -63,7 +63,7 @@ msgstr "사용 권한이 거부 되었습니다."
 
 #: ../flask_admin/contrib/fileadmin.py:646
 msgid "File uploading is disabled."
-msgstr "파일을 업로드 하는 사용할 수 없습니다."
+msgstr "파일 업로드를 사용할 수 없습니다."
 
 #: ../flask_admin/contrib/fileadmin.py:657
 #, python-format
@@ -95,7 +95,7 @@ msgstr "성공적으로 만든된 디렉터리: %(directory)s"
 #: ../flask_admin/contrib/fileadmin.py:720
 #, python-format
 msgid "Failed to create directory: %(error)s"
-msgstr "디렉터리를 만들지 못했습니다: %(error)s"
+msgstr "디렉터리 생성실패: %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:725
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:132
@@ -103,37 +103,37 @@ msgstr "디렉터리를 만들지 못했습니다: %(error)s"
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:132
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:134
 msgid "Create Directory"
-msgstr "디렉터리 만들기"
+msgstr "디렉터리 생성"
 
 #: ../flask_admin/contrib/fileadmin.py:746
 msgid "Deletion is disabled."
-msgstr "삭제 비활성화 됩니다."
+msgstr "삭제 비활성화"
 
 #: ../flask_admin/contrib/fileadmin.py:755
 msgid "Directory deletion is disabled."
-msgstr "디렉토리 삭제 비활성화 됩니다."
+msgstr "디렉토리 삭제 비활성화."
 
 #: ../flask_admin/contrib/fileadmin.py:761
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
-msgstr "디렉터리 \"%(path)s\" 성공적으로 삭제 되었습니다."
+msgstr "디렉터리 삭제 성공 \"%(path)s\" "
 
 #: ../flask_admin/contrib/fileadmin.py:763
 #, python-format
 msgid "Failed to delete directory: %(error)s"
-msgstr "디렉터리를 삭제 하지 못했습니다: %(error)s"
+msgstr "디렉터리를 삭제 실패: %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:768
 #: ../flask_admin/contrib/fileadmin.py:915
 #, python-format
 msgid "File \"%(name)s\" was successfully deleted."
-msgstr "파일 \"%(name)s\" 성공적으로 삭제 되었습니다."
+msgstr "파일 삭제 성공 \"%(name)s\" "
 
 #: ../flask_admin/contrib/fileadmin.py:770
 #: ../flask_admin/contrib/fileadmin.py:917
 #, python-format
 msgid "Failed to delete file: %(name)s"
-msgstr "파일을 삭제 하지 못했습니다: %(name)s"
+msgstr "파일삭제 실패: %(name)s"
 
 #: ../flask_admin/contrib/fileadmin.py:792
 msgid "Renaming is disabled."
@@ -146,33 +146,33 @@ msgstr "경로가 존재 하지 않습니다."
 #: ../flask_admin/contrib/fileadmin.py:811
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
-msgstr "성공적으로 이름이 바꾼된 \"%(src)s\" \"%(dst)s\"를"
+msgstr "이름변경 성공  \"%(dst)s\" <- 원본:\"%(src)s\""
 
 #: ../flask_admin/contrib/fileadmin.py:814
 #, python-format
 msgid "Failed to rename: %(error)s"
-msgstr "이름을 변경 하지 못했습니다: %(error)s"
+msgstr "이름변경실패: %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:862
 #, python-format
 msgid "Error saving changes to %(name)s."
-msgstr "%(name)s의 변경 내용을 저장 하는 중 오류가 발생 했습니다."
+msgstr "%(name)s으로 이름변경 중 오류가 발생 했습니다."
 
 #: ../flask_admin/contrib/fileadmin.py:866
 #, python-format
 msgid "Changes to %(name)s saved successfully."
-msgstr "변경 내용이 성공적으로 저장 하는 %(name)s입니다."
+msgstr "변경된 내용 저장성공  %(name)s."
 
 #: ../flask_admin/contrib/fileadmin.py:875
 #, python-format
 msgid "Error reading %(name)s."
-msgstr "오류 읽기 %(name)s입니다."
+msgstr "읽기실패 %(name)s."
 
 #: ../flask_admin/contrib/fileadmin.py:878
 #: ../flask_admin/contrib/fileadmin.py:887
 #, python-format
 msgid "Unexpected error while reading from %(name)s"
-msgstr "%(name)s에서 읽는 동안 예기치 않은 오류가"
+msgstr "%(name)s 을 읽는 동안 예기치 않은 오류발생."
 
 #: ../flask_admin/contrib/fileadmin.py:884
 #, python-format
@@ -189,7 +189,7 @@ msgstr "삭제"
 
 #: ../flask_admin/contrib/fileadmin.py:903
 msgid "Are you sure you want to delete these files?"
-msgstr "당신은이 파일을 삭제 하 시겠습니까?"
+msgstr "파일을 삭제 하 시겠습니까?"
 
 #: ../flask_admin/contrib/fileadmin.py:906
 msgid "File deletion is disabled."
@@ -235,7 +235,7 @@ msgstr "포함"
 #: ../flask_admin/contrib/pymongo/filters.py:67
 #: ../flask_admin/contrib/sqla/filters.py:67
 msgid "not contains"
-msgstr "아닙니다 포함"
+msgstr "포함되지않은"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:76
 #: ../flask_admin/contrib/peewee/filters.py:72
@@ -277,7 +277,7 @@ msgstr "목록에 없는"
 #: ../flask_admin/contrib/sqla/filters.py:250
 #: ../flask_admin/contrib/sqla/filters.py:287
 msgid "not between"
-msgstr "사이"
+msgstr "사이에 존재하지않는"
 
 #: ../flask_admin/contrib/mongoengine/view.py:520
 #, python-format

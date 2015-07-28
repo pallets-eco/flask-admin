@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-07-17 16:54-0500\n"
-"PO-Revision-Date: 2015-07-17 18:17-0400\n"
+"PO-Revision-Date: 2015-07-28 01:55-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -50,7 +50,7 @@ msgstr "نام"
 #: ../flask_admin/contrib/fileadmin.py:559
 #, python-format
 msgid "File \"%(name)s\" already exists."
-msgstr "فایل \"%(name)s\" قبلا وجود داشته است"
+msgstr "پرونده \"%(name)s\" وجود دارد."
 
 #: ../flask_admin/contrib/fileadmin.py:583
 #: ../flask_admin/contrib/fileadmin.py:650

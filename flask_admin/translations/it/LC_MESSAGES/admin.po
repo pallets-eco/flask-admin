@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-07-17 16:54-0500\n"
-"PO-Revision-Date: 2015-07-17 18:17-0400\n"
+"PO-Revision-Date: 2015-07-28 01:55-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -90,7 +90,7 @@ msgstr "La creazione di cartelle é disabilitata."
 #: ../flask_admin/contrib/fileadmin.py:716
 #, python-format
 msgid "Successfully created directory: %(directory)s"
-msgstr "Directory con successo creata: %(directory)s"
+msgstr "Cartella creata con successo: %(directory)s"
 
 #: ../flask_admin/contrib/fileadmin.py:720
 #, python-format
@@ -332,7 +332,7 @@ msgstr[1] "%(count)s records eliminati con successo."
 #: ../flask_admin/contrib/sqla/view.py:1081
 #, python-format
 msgid "Failed to delete records. %(error)s"
-msgstr "Impossibile eliminare i records: %(error)s"
+msgstr "Impossibile eliminare le righe: %(error)s"
 
 #: ../flask_admin/contrib/sqla/fields.py:123
 #: ../flask_admin/contrib/sqla/fields.py:173
@@ -343,13 +343,13 @@ msgstr "Scelta non valida"
 
 #: ../flask_admin/contrib/sqla/validators.py:42
 msgid "Already exists."
-msgstr "Giá esistente."
+msgstr "Esiste già."
 
 #: ../flask_admin/contrib/sqla/validators.py:60
 #, python-format
 msgid "At least %d item is required"
 msgid_plural "At least %d items are required"
-msgstr[0] "Almeno %d elemento è richiesto"
+msgstr[0] "È richiesto almeno l'elemento %d"
 msgstr[1] "Almeno gli elementi %d sono obbligatori"
 
 #: ../flask_admin/contrib/sqla/view.py:964
@@ -359,15 +359,15 @@ msgstr "Errore di integrità. %(message)s"
 
 #: ../flask_admin/form/fields.py:94
 msgid "Invalid time format"
-msgstr "Formato temporale non valido"
+msgstr "Formato orario non valido"
 
 #: ../flask_admin/form/fields.py:140
 msgid "Invalid Choice: could not coerce"
-msgstr "Scelta invalida: impossibile forzare"
+msgstr "Scelta non valida: impossibile forzare"
 
 #: ../flask_admin/form/upload.py:205
 msgid "Invalid file extension"
-msgstr "Estensione di file non valida"
+msgstr "Estensione del file non valida"
 
 #: ../flask_admin/form/upload.py:212 ../flask_admin/form/upload.py:279
 #, python-format
@@ -376,21 +376,21 @@ msgstr "Il file \"%s\" esiste giá."
 
 #: ../flask_admin/model/base.py:1393
 msgid "There are no items in the table."
-msgstr "Ci sono elementi nella tabella."
+msgstr "Non ci sono elementi nella tabella."
 
 #: ../flask_admin/model/base.py:1417
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
-msgstr "Valore non valido filtro: %(value)s"
+msgstr "Valore del filtro non valido: %(value)s"
 
 #: ../flask_admin/model/base.py:1658
 msgid "Record was successfully created."
-msgstr "Il record é stato creato con successo."
+msgstr "Riga aggiunta con successo."
 
 #: ../flask_admin/model/base.py:1699 ../flask_admin/model/base.py:1748
 #: ../flask_admin/model/base.py:1782
 msgid "Record does not exist."
-msgstr "Record non esiste."
+msgstr "La riga non esiste."
 
 #: ../flask_admin/model/base.py:1708 ../flask_admin/model/base.py:1844
 msgid "Record was successfully saved."
@@ -427,7 +427,7 @@ msgstr "Annulla"
 #: ../flask_admin/templates/bootstrap2/admin/file/edit.html:8
 #: ../flask_admin/templates/bootstrap3/admin/file/edit.html:8
 msgid "This file cannot be edited for now."
-msgstr "Questo file non può essere modificato per ora."
+msgstr "Al momento questo file non può essere modificato."
 
 #: ../flask_admin/templates/bootstrap2/admin/file/edit.html:21
 #: ../flask_admin/templates/bootstrap3/admin/file/edit.html:20
@@ -450,7 +450,7 @@ msgstr "Dimensione"
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:55
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:58
 msgid "Rename File"
-msgstr "Rinominare Il File"
+msgstr "Rinomina File"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:69
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:69
@@ -473,7 +473,7 @@ msgstr "Selezionare almeno un file."
 #: ../flask_admin/templates/bootstrap3/admin/file/rename.html:12
 #, python-format
 msgid "Rename %(name)s"
-msgstr "Rinominare %(name)s"
+msgstr "Rinomina %(name)s"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
@@ -513,14 +513,14 @@ msgstr "Crea"
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:113
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
 msgid "View Record"
-msgstr "Visualizza Record"
+msgstr "Visualizza riga"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:22
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:8
 #: ../flask_admin/templates/bootstrap3/admin/model/details.html:21
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:15
 msgid "Filter"
-msgstr "Filter"
+msgstr "Filtra"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
@@ -564,7 +564,7 @@ msgstr "Cerca"
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
 msgid "Create new record"
-msgstr "Creare nuovi record"
+msgstr "Aggiungi nuova riga"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:61
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:61
@@ -582,14 +582,14 @@ msgstr "Ordina per %(name)s"
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:103
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:103
 msgid "Select record"
-msgstr "Seleziona record"
+msgstr "Seleziona riga"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:120
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:122
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:120
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:122
 msgid "Edit record"
-msgstr "Modifica record"
+msgstr "Modifica riga"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:136
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:136
@@ -608,10 +608,10 @@ msgstr "Selezionare almeno un record."
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/create.html:17
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/create.html:7
 msgid "Create New Record"
-msgstr "Creare Nuovi Record"
+msgstr "Aggiungi nuova riga"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:17
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:8
 msgid "Edit Record"
-msgstr "Modifica Record"
+msgstr "Modifica riga"
 

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-07-17 16:54-0500\n"
-"PO-Revision-Date: 2015-07-17 18:17-0400\n"
+"PO-Revision-Date: 2015-07-28 01:55-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Estonian\n"
 "MIME-Version: 1.0\n"
@@ -68,7 +68,7 @@ msgstr "Faili üleslaadimine on keelatud."
 #: ../flask_admin/contrib/fileadmin.py:657
 #, python-format
 msgid "Successfully saved file: %(name)s"
-msgstr "Edukalt salvestatud fail: %(name)s"
+msgstr "Fail %(name)s edukalt salvestatud"
 
 #: ../flask_admin/contrib/fileadmin.py:661
 #, python-format
@@ -90,7 +90,7 @@ msgstr "Kataloogide loomine on keelatud."
 #: ../flask_admin/contrib/fileadmin.py:716
 #, python-format
 msgid "Successfully created directory: %(directory)s"
-msgstr "Edukalt loodud kataloog: %(directory)s"
+msgstr "Kataloog %(directory)s edukalt loodud"
 
 #: ../flask_admin/contrib/fileadmin.py:720
 #, python-format
@@ -427,7 +427,7 @@ msgstr "Loobu"
 #: ../flask_admin/templates/bootstrap2/admin/file/edit.html:8
 #: ../flask_admin/templates/bootstrap3/admin/file/edit.html:8
 msgid "This file cannot be edited for now."
-msgstr "Seda faili ei saa redigeerida praegu."
+msgstr "Seda faili ei saa hetkel redigeerida."
 
 #: ../flask_admin/templates/bootstrap2/admin/file/edit.html:21
 #: ../flask_admin/templates/bootstrap3/admin/file/edit.html:20
@@ -450,7 +450,7 @@ msgstr "Suurus"
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:55
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:58
 msgid "Rename File"
-msgstr "Nimetage fail ümber"
+msgstr "Faili ümbernimetamine"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:69
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:69
@@ -473,7 +473,7 @@ msgstr "Palun valige vähemalt üks fail."
 #: ../flask_admin/templates/bootstrap3/admin/file/rename.html:12
 #, python-format
 msgid "Rename %(name)s"
-msgstr "Nimeta %(name)s"
+msgstr "Faili %(name)s ümbernimetamine"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
@@ -513,7 +513,7 @@ msgstr "Loo"
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:113
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
 msgid "View Record"
-msgstr "Vaade arvestust"
+msgstr "Kirje vaade"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:22
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:8
