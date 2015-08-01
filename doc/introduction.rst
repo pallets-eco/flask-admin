@@ -242,9 +242,10 @@ For a faster editing experience, enable **inline editing** in the list view::
 
     column_editable_list = ['name', 'last_name']
 
-Or, have the edit form display inside a **modal window** on the list page, in stead of
-on the dedicated *edit* page::
+Or, have the add & edit forms display inside a **modal window** on the list page, in stead of
+on the dedicated *create* & *edit* pages::
 
+    create_modal = True
     edit_modal = True
 
 You can restrict the possible values for a text-field by specifying a list of **select choices**::
