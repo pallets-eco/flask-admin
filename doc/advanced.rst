@@ -494,9 +494,14 @@ do with it, so it won't generate a form field. In this case, you would need to m
 
 Customizing Batch Actions
 -------------------------
-If you want to have other batch actions in list view besides the delete action, you have to define a new function and wrap it
-in `@action` decorator. The `action` decorator has three parameters: `name`, `text`, `confirmation`. The wrapped
-function must receive only one parameter - `ids`::
+
+****
+
+If you want to add other batch actions to the list view, besides the default delete action,
+then you can define a function that implements the desired logic and wrap it with the `@action` decorator.
+
+The `action` decorator takes three parameters: `name`, `text` and `confirmation`.
+While the wrapped function should accept only one parameter - `ids`::
 
     from flask_admin.actions import action
 
