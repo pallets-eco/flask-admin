@@ -49,6 +49,7 @@ Straight out of the box, this gives you a set of fully featured *CRUD* views for
     * A `list` view, with support for searching, sorting and filtering and deleting records.
     * A `create` view for adding new records.
     * An `edit` view for updating existing records.
+    * An optional, read-only `detail` view.
 
 There are many options available for customizing the display and functionality of these builtin views.
 For more details on that, see :ref:`customising-builtin-views`. For more details on the other
@@ -221,6 +222,11 @@ To **disable some of the CRUD operations**, set any of these boolean parameters:
     can_edit = False
     can_delete = False
 
+If your model has too much data to display in the list view, you can **add a read-only
+detail view** by setting::
+
+    can_view_details = True
+
 **Removing columns** from the list view is easy, just pass a list of column names for
 the *column_excludes_list* parameter::
 
@@ -236,9 +242,10 @@ For a faster editing experience, enable **inline editing** in the list view::
 
     column_editable_list = ['name', 'last_name']
 
-Or, have the edit form display inside a **modal window** on the list page, in stead of
-on the dedicated *edit* page::
+Or, have the add & edit forms display inside a **modal window** on the list page, in stead of
+on the dedicated *create* & *edit* pages::
 
+    create_modal = True
     edit_modal = True
 
 You can restrict the possible values for a text-field by specifying a list of **select choices**::
