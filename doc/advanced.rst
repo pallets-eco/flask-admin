@@ -492,3 +492,37 @@ do with it, so it won't generate a form field. In this case, you would need to m
             form_class.extra = TextField('Extra')
             return form_class
 
+Customizing Batch Actions
+-------------------------
+
+****
+
+If you want to add other batch actions to the list view, besides the default delete action,
+then you can define a function that implements the desired logic and wrap it with the `@action` decorator.
+
+The `action` decorator takes three parameters: `name`, `text` and `confirmation`.
+While the wrapped function should accept only one parameter - `ids`::
+
+    from flask_admin.actions import action
+
+    class UserView(ModelView):
+        @action('approve', 'Approve', 'Are you sure you want to approve selected users?')
+        def action_approve(self, ids):
+            try:
+                query = User.query.filter(User.id.in_(ids))
+
+                count = 0
+                for user in query.all():
+                    if user.approve():
+                        count += 1
+
+                flash(ngettext('User was successfully approved.',
+                               '%(count)s users were successfully approved.',
+                               count,
+                               count=count))
+            except Exception as ex:
+                if not self.handle_view_exception(ex):
+                    raise
+
+                flash(gettext('Failed to approve users. %(error)s', error=str(ex)), 'error')
+
