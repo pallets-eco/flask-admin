@@ -454,7 +454,7 @@ class ModelView(BaseModelView):
         return query.filter(criteria)
 
     def get_list(self, page, sort_column, sort_desc, search, filters,
-                 execute=True):
+                 execute=True, page_size=None):
         """
             Get list of objects from MongoEngine
 
@@ -470,6 +470,10 @@ class ModelView(BaseModelView):
                 List of applied filters
             :param execute:
                 Run query immediately or not
+            :param page_size:
+                Number of results. Defaults to ModelView's page_size. Can be
+                overriden to change the page_size limit. Removing the page_size
+                limit requires setting page_size to 0 or False.
         """
         query = self.get_query()
 
@@ -496,10 +500,14 @@ class ModelView(BaseModelView):
                 query = query.order_by('%s%s' % ('-' if order[1] else '', order[0]))
 
         # Pagination
-        if page is not None:
-            query = query.skip(page * self.page_size)
+        if page_size is None:
+            page_size = self.page_size
 
-        query = query.limit(self.page_size)
+        if page_size:
+            query = query.limit(page_size)
+
+        if page and page_size:
+            query = query.skip(page * page_size)
 
         if execute:
             query = query.all()
