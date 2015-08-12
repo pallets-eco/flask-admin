@@ -1,3 +1,5 @@
+import json
+
 from nose.tools import eq_, ok_
 from nose.plugins.skip import SkipTest
 
@@ -203,8 +205,9 @@ def test_column_editable_list():
     rv = client.post('/admin/model1/ajax/update/', data={
         'test1-1': 'change-success-1',
     })
-    data = rv.data.decode('utf-8')
-    ok_('Record was successfully saved.' == data)
+    eq_(rv.status_code, 200)
+    data = json.loads(rv.data.decode('utf-8'))
+    ok_('data-role="x-editable"' in data['cells']['test1'])
 
     # ensure the value has changed
     rv = client.get('/admin/model1/')
@@ -240,8 +243,8 @@ def test_column_editable_list():
     rv = client.post('/admin/model2/ajax/update/', data={
         'model1-1': '3',
     })
-    data = rv.data.decode('utf-8')
-    ok_('Record was successfully saved.' == data)
+    eq_(rv.status_code, 200)
+    data = json.loads(rv.data.decode('utf-8'))
 
     # confirm the value has changed
     rv = client.get('/admin/model2/')
