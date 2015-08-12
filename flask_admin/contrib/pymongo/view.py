@@ -243,7 +243,7 @@ class ModelView(BaseModelView):
         if page_size is None:
             page_size = self.page_size
 
-        skip = None
+        skip = 0
 
         if page and page_size:
             skip = page * page_size
