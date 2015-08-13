@@ -297,15 +297,12 @@ class ModelView(BaseModelView):
             # Verify type
             field_class = type(f)
 
-            if (field_class == mongoengine.ListField and
-                isinstance(f.field, mongoengine.EmbeddedDocumentField)):
+            if (field_class == mongoengine.ListField and isinstance(f.field, mongoengine.EmbeddedDocumentField) or
+                    (field_class == mongoengine.EmbeddedDocumentField) or
+                    (n == self.scaffold_pk() and not self.column_display_pk)):
                 continue
 
-            if field_class == mongoengine.EmbeddedDocumentField:
-                continue
-
-            if self.column_display_pk or field_class != mongoengine.ObjectIdField:
-                columns.append(n)
+            columns.append(n)
 
         return columns
 
