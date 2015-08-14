@@ -24,6 +24,11 @@
     <li class="active">
         <a href="javascript:void(0)">{{ _gettext('Edit') }}</a>
     </li>
+    {%- if admin_view.can_view_details -%}
+    <li>
+        <a href="{{ get_url('.details_view', id=model.id, url=return_url) }}">{{ _gettext('View Record') }}</a>
+    </li>
+    {%- endif -%}
   </ul>
   {% endblock %}
 
