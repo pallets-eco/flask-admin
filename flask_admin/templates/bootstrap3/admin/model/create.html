@@ -2,7 +2,8 @@
 {% import 'admin/lib.html' as lib with context %}
 
 {% macro extra() %}
-  <input name="_add_another" type="submit" class="btn btn-default" value="{{ _gettext('Save and Add') }}" />
+  <input name="_add_another" type="submit" class="btn btn-default" value="{{ _gettext('Save and Add Another') }}" />
+  <input name="_continue_editing" type="submit" class="btn btn-default" value="{{ _gettext('Save and Continue Editing') }}" />
 {% endmacro %}
 
 {% block head %}
@@ -22,7 +23,7 @@
   </ul>
   {% endblock %}
 
-  {{ lib.render_form(form, return_url, extra(), form_opts=form_opts) }}
+  {{ lib.render_form(form, cancel_url=None, extra=extra(), form_opts=form_opts) }}
 {% endblock %}
 
 {% block tail %}
