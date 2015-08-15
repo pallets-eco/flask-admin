@@ -1658,13 +1658,16 @@ class BaseModelView(BaseView, ActionsMixin):
                 flash(gettext('Record was successfully created.'))
                 if '_add_another' in request.form:
                     return redirect(request.url)
-                else:
+                elif '_continue_editing' in request.form:
                     # if we have a valid model, try to go to the edit view
                     if model is not True:
                         url = self.get_url('.edit_view', id=self.get_pk_value(model), url=return_url)
                     else:
                         url = return_url
                     return redirect(url)
+                else:
+                    # save button
+                    return redirect(return_url)
 
         form_opts = FormOpts(widget_args=self.form_widget_args,
                              form_rules=self._form_create_rules)
@@ -1706,9 +1709,12 @@ class BaseModelView(BaseView, ActionsMixin):
         if self.validate_form(form):
             if self.update_model(form, model):
                 flash(gettext('Record was successfully saved.'))
-                if '_continue_editing' in request.form:
+                if '_add_another' in request.form:
+                    return redirect(self.get_url('.create_view', url=return_url))
+                elif '_continue_editing' in request.form:
                     return redirect(request.url)
                 else:
+                    # save button
                     return redirect(return_url)
 
         if request.method == 'GET':
