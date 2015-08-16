@@ -11,7 +11,7 @@ class Translator:
 
     def __call__(self, string):
         if self.translate:
-            return 'Translated: "{}"'.format(string)
+            return 'Translated: "{0}"'.format(string)
         else:
             return string
 
