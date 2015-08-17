@@ -65,7 +65,7 @@ class ViewArgs(object):
         return ViewArgs(**kwargs)
 
 
-class FilterGroup:
+class FilterGroup(object):
     def __init__(self, label):
         self.label = label
         self.filters = []
