@@ -194,14 +194,15 @@
 {% endmacro %}
 
 {% macro render_form_buttons(cancel_url, extra=None, is_modal=False) %}
+    <hr>
     <div class="control-group">
       <div class="controls">
-        <input type="submit" class="btn btn-primary btn-large" value="{{ _gettext('Save') }}" />
+        <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
         {% if extra %}
         {{ extra }}
         {% endif %}
         {% if cancel_url %}
-          <a href="{{ cancel_url }}" class="btn btn-large btn-danger" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
+          <a href="{{ cancel_url }}" class="btn btn-danger" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
         {% endif %}
       </div>
     </div>

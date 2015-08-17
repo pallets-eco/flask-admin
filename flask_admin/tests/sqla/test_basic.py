@@ -1824,7 +1824,8 @@ def test_safe_redirect():
     client = app.test_client()
 
     rv = client.post('/admin/model1/new/?url=http://localhost/admin/model2view/',
-                     data=dict(test1='test1large', test2='test2'))
+                     data=dict(test1='test1large', test2='test2',
+                               _continue_editing='Save and Continue Editing'))
 
     eq_(rv.status_code, 302)
     assert_true(rv.location.startswith('http://localhost/admin/model1/edit/'))
@@ -1832,7 +1833,8 @@ def test_safe_redirect():
     assert_true('id=1' in rv.location)
 
     rv = client.post('/admin/model1/new/?url=http://google.com/evil/',
-                     data=dict(test1='test1large', test2='test2'))
+                     data=dict(test1='test1large', test2='test2',
+                               _continue_editing='Save and Continue Editing'))
 
     eq_(rv.status_code, 302)
     assert_true(rv.location.startswith('http://localhost/admin/model1/edit/'))
