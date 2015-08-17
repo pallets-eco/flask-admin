@@ -186,7 +186,7 @@
 {% macro render_form_buttons(cancel_url, extra=None, is_modal=False) %}
     <hr>
     <div class="form-group">
-      <div class="col-md-offset-2 col-md-10 submit-row text-right">
+      <div class="col-md-offset-2 col-md-10 submit-row">
         <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
         {% if extra %}
         {{ extra }}
