@@ -1104,6 +1104,25 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return validate_form_on_submit(form)
 
+    def get_save_return_url(self, model, is_created=False):
+        """
+            Return url where user is redirected after successful form save.
+
+            :param model:
+                Saved object
+            :param is_created:
+                Whether new object was created or existing one was updated
+
+            For example, redirect use to object details view after form save::
+
+                class MyModelView(ModelView):
+                    can_view_details = True
+
+                    def get_save_return_url(self, model, is_created):
+                        return self.get_url('.details_view', id=model.id)
+
+        """
+        return get_redirect_target() or self.get_url('.index_view')
 
     def _get_ruleset_missing_fields(self, ruleset, form):
         missing_fields = []
@@ -1667,7 +1686,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     return redirect(url)
                 else:
                     # save button
-                    return redirect(return_url)
+                    return redirect(self.get_save_return_url(model, is_created=True))
 
         form_opts = FormOpts(widget_args=self.form_widget_args,
                              form_rules=self._form_create_rules)
@@ -1715,7 +1734,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     return redirect(request.url)
                 else:
                     # save button
-                    return redirect(return_url)
+                    return redirect(self.get_save_return_url(model, is_created=False))
 
         if request.method == 'GET':
             self.on_form_prefill(form, id)
