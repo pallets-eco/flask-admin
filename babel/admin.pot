@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Flask-Admin VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-08-14 19:32-0500\n"
+"POT-Creation-Date: 2015-08-17 20:19-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -298,8 +298,8 @@ msgstr ""
 #: ../flask_admin/contrib/mongoengine/view.py:565
 #: ../flask_admin/contrib/peewee/view.py:399
 #: ../flask_admin/contrib/pymongo/view.py:309
-#: ../flask_admin/contrib/sqla/view.py:1016 ../flask_admin/model/base.py:1845
-#: ../flask_admin/model/base.py:1854
+#: ../flask_admin/contrib/sqla/view.py:1016 ../flask_admin/model/base.py:1864
+#: ../flask_admin/model/base.py:1873
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr ""
@@ -322,7 +322,7 @@ msgstr ""
 #: ../flask_admin/contrib/mongoengine/view.py:640
 #: ../flask_admin/contrib/peewee/view.py:450
 #: ../flask_admin/contrib/pymongo/view.py:363
-#: ../flask_admin/contrib/sqla/view.py:1078 ../flask_admin/model/base.py:1793
+#: ../flask_admin/contrib/sqla/view.py:1078 ../flask_admin/model/base.py:1812
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
@@ -377,25 +377,25 @@ msgstr ""
 msgid "File \"%s\" already exists."
 msgstr ""
 
-#: ../flask_admin/model/base.py:1393
+#: ../flask_admin/model/base.py:1412
 msgid "There are no items in the table."
 msgstr ""
 
-#: ../flask_admin/model/base.py:1417
+#: ../flask_admin/model/base.py:1436
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
 msgstr ""
 
-#: ../flask_admin/model/base.py:1658
+#: ../flask_admin/model/base.py:1677
 msgid "Record was successfully created."
 msgstr ""
 
-#: ../flask_admin/model/base.py:1702 ../flask_admin/model/base.py:1754
-#: ../flask_admin/model/base.py:1788
+#: ../flask_admin/model/base.py:1721 ../flask_admin/model/base.py:1773
+#: ../flask_admin/model/base.py:1807
 msgid "Record does not exist."
 msgstr ""
 
-#: ../flask_admin/model/base.py:1711 ../flask_admin/model/base.py:1850
+#: ../flask_admin/model/base.py:1730 ../flask_admin/model/base.py:1869
 msgid "Record was successfully saved."
 msgstr ""
 
