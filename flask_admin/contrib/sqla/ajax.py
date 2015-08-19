@@ -17,6 +17,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         self.session = session
         self.model = model
         self.fields = options.get('fields')
+        self.order_by = options.get('order_by')
 
         if not self.fields:
             raise ValueError('AJAX loading requires `fields` to be specified for %s.%s' % (model, self.name))
@@ -60,6 +61,9 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         filters = (field.ilike(u'%%%s%%' % term) for field in self._cached_fields)
         query = query.filter(or_(*filters))
+
+        if self.order_by:
+            query = query.order_by(self.order_by)
 
         return query.offset(offset).limit(limit).all()
 
