@@ -147,4 +147,8 @@ class XEditableWidget(object):
         else:
             raise Exception('Unsupported field type: %s' % (type(subfield),))
 
+        # for Select2, QuerySelectField, and ModelSelectField
+        if getattr(subfield, 'allow_blank', False):
+            kwargs['data-source']['__None'] = ""
+
         return kwargs
