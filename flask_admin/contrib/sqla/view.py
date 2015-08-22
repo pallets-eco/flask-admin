@@ -884,6 +884,18 @@ class ModelView(BaseModelView):
 
         return query, count_query, joins, count_joins
 
+    def _apply_pagination(self, query, page, page_size):
+        if page_size is None:
+            page_size = self.page_size
+
+        if page_size:
+            query = query.limit(page_size)
+
+        if page and page_size:
+            query = query.offset(page * page_size)
+
+        return query
+
     def get_list(self, page, sort_column, sort_desc, search, filters,
                  execute=True, page_size=None):
         """
@@ -948,14 +960,7 @@ class ModelView(BaseModelView):
         query, joins = self._apply_sorting(query, joins, sort_column, sort_desc)
 
         # Pagination
-        if page_size is None:
-            page_size = self.page_size
-
-        if page_size:
-            query = query.limit(page_size)
-
-        if page and page_size:
-            query = query.offset(page * page_size)
+        query = self._apply_pagination(query, page, page_size)
 
         # Execute if needed
         if execute:
