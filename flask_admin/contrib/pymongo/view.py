@@ -184,7 +184,7 @@ class ModelView(BaseModelView):
         return query
 
     def get_list(self, page, sort_column, sort_desc, search, filters,
-                 execute=True):
+                 execute=True, page_size=None):
         """
             Get list of objects from MongoEngine
 
@@ -200,6 +200,10 @@ class ModelView(BaseModelView):
                 List of applied fiters
             :param execute:
                 Run query immediately or not
+            :param page_size:
+                Number of results. Defaults to ModelView's page_size. Can be
+                overriden to change the page_size limit. Removing the page_size
+                limit requires setting page_size to 0 or False.
         """
         query = {}
 
@@ -236,12 +240,15 @@ class ModelView(BaseModelView):
                 sort_by = [(order[0], pymongo.DESCENDING if order[1] else pymongo.ASCENDING)]
 
         # Pagination
-        skip = None
+        if page_size is None:
+            page_size = self.page_size
 
-        if page is not None:
-            skip = page * self.page_size
+        skip = 0
 
-        results = self.coll.find(query, sort=sort_by, skip=skip, limit=self.page_size)
+        if page and page_size:
+            skip = page * page_size
+
+        results = self.coll.find(query, sort=sort_by, skip=skip, limit=page_size)
 
         if execute:
             results = list(results)

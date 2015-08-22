@@ -884,9 +884,10 @@ class ModelView(BaseModelView):
 
         return query, count_query, joins, count_joins
 
-    def get_list(self, page, sort_column, sort_desc, search, filters, execute=True):
+    def get_list(self, page, sort_column, sort_desc, search, filters,
+                 execute=True, page_size=None):
         """
-            Return models from the database.
+            Return records from the database.
 
             :param page:
                 Page number
@@ -900,6 +901,10 @@ class ModelView(BaseModelView):
                 Execute query immediately? Default is `True`
             :param filters:
                 List of filter tuples
+            :param page_size:
+                Number of results. Defaults to ModelView's page_size. Can be
+                overriden to change the page_size limit. Removing the page_size
+                limit requires setting page_size to 0 or False.
         """
 
         # Will contain join paths with optional aliased object
@@ -943,10 +948,14 @@ class ModelView(BaseModelView):
         query, joins = self._apply_sorting(query, joins, sort_column, sort_desc)
 
         # Pagination
-        if page is not None:
-            query = query.offset(page * self.page_size)
+        if page_size is None:
+            page_size = self.page_size
 
-        query = query.limit(self.page_size)
+        if page_size:
+            query = query.limit(page_size)
+
+        if page and page_size:
+            query = query.offset(page * page_size)
 
         # Execute if needed
         if execute:
