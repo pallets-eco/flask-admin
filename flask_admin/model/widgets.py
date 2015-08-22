@@ -1,4 +1,5 @@
 from flask import json
+from jinja2 import escape
 from wtforms.widgets import HTMLString, html_params
 
 from flask_admin._compat import as_unicode
@@ -92,7 +93,8 @@ class XEditableWidget(object):
         kwargs = self.get_kwargs(subfield, kwargs)
 
         return HTMLString(
-            '<a %s>%s</a>' % (html_params(**kwargs), kwargs['data-value'])
+            '<a %s>%s</a>' % (html_params(**kwargs),
+                              escape(kwargs['data-value']))
         )
 
     def get_kwargs(self, subfield, kwargs):
