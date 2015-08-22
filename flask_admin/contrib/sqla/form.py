@@ -270,8 +270,16 @@ class AdminModelConverter(ModelConverterBase):
     @converts('String', 'Unicode')
     def conv_String(self, column, field_args, **extra):
         if hasattr(column.type, 'enums'):
-            field_args['validators'].append(validators.AnyOf(column.type.enums))
+            accepted_values = list(column.type.enums)
+
             field_args['choices'] = [(f, f) for f in column.type.enums]
+
+            if column.nullable:
+                field_args['allow_blank'] = column.nullable
+                accepted_values.append(None)
+
+            field_args['validators'].append(validators.AnyOf(accepted_values))
+
             return form.Select2Field(**field_args)
 
         if column.nullable:
