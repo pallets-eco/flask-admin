@@ -389,7 +389,10 @@ class ModelView(BaseModelView):
         return count, query
 
     def get_one(self, id):
-        return self.model.get(**{self._primary_key: id})
+        try:
+            return self.model.get(**{self._primary_key: id})
+        except self.model.DoesNotExist:
+            return None
 
     def create_model(self, form):
         try:

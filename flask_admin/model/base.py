@@ -2,8 +2,8 @@ import warnings
 import re
 
 from flask import (request, redirect, flash, abort, json, Response,
-                   get_flashed_messages)
-from jinja2 import contextfunction
+                   get_flashed_messages, jsonify)
+from jinja2 import contextfunction, Template
 from wtforms.fields import HiddenField
 from wtforms.fields.core import UnboundField
 from wtforms.validators import ValidationError, Required
@@ -1842,10 +1842,12 @@ class BaseModelView(BaseView, ActionsMixin):
     def ajax_update(self):
         """
             Edits a single column of a record in list view.
+            Returns the record's row as a JSON object
         """
         if not self.column_editable_list:
             abort(404)
 
+        record_id = None
         record = None
         form = self.list_form()
 
@@ -1854,7 +1856,10 @@ class BaseModelView(BaseView, ActionsMixin):
         for field in form:
             # only the submitted field has a positive last_index
             if getattr(field, 'last_index', 0):
-                record = self.get_one(str(field.last_index))
+                record_id = field.last_index
+                record = self.get_one(record_id)
+                if record is None:
+                    abort(500)
             elif field.name == 'csrf_token':
                 pass
             else:
@@ -1865,8 +1870,37 @@ class BaseModelView(BaseView, ActionsMixin):
 
         if self.validate_form(form):
             if self.update_model(form, record):
-                # Success
-                return gettext('Record was successfully saved.')
+                # Reload the record in case of post-save signals
+                record = self.get_one(record_id)
+
+                # Send back to the client the content of the cells
+                t = Template(self.edit_template)
+                ctx = t.new_context()
+
+                get_value = lambda row, c: self.get_list_value(ctx, row, c)
+                get_pk_value = lambda row: self.get_pk_value(row)
+
+                cells = {}
+
+                # replicate the list template logic
+                for c, name in self._list_columns:
+                    if '.' in c:
+                        continue
+
+                    cell = None
+                    if self.is_editable(c):
+                        kwargs = dict(pk=get_pk_value(record), value=get_value(record, c))
+                        if getattr(form, 'csrf_token', None):
+                            kwargs['csrf'] = form.csrf_token._value()
+                        if getattr(form, c, None):
+                            cell = form[c](**kwargs)
+                    else:
+                        cell = get_value(record, c)
+
+                    if cell is not None:
+                        cells[c] = cell
+
+                return jsonify({'cells': cells})
             else:
                 # Error: No records changed, or problem saving to database.
                 msgs = ", ".join([msg for msg in get_flashed_messages()])

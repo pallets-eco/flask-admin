@@ -1,6 +1,8 @@
 from flask import Flask
+from datetime import datetime
 
 import peewee
+from playhouse.signals import pre_save, Model
 
 import flask_admin as admin
 from flask_admin.contrib.peewee import ModelView
@@ -12,7 +14,7 @@ app.config['SECRET_KEY'] = '123456790'
 db = peewee.SqliteDatabase('test.sqlite', check_same_thread=False)
 
 
-class BaseModel(peewee.Model):
+class BaseModel(Model):
     class Meta:
         database = db
 
@@ -20,9 +22,15 @@ class BaseModel(peewee.Model):
 class User(BaseModel):
     username = peewee.CharField(max_length=80)
     email = peewee.CharField(max_length=120)
+    date_modified = peewee.DateTimeField(default=datetime.now())
 
     def __unicode__(self):
         return self.username
+
+
+@pre_save(sender=BaseModel)
+def pre_save_handler(model_class, instance, created):
+    instance.date_modified = datetime.now()
 
 
 class UserInfo(BaseModel):
@@ -48,6 +56,7 @@ class Post(BaseModel):
 
 class UserAdmin(ModelView):
     inline_models = (UserInfo,)
+    column_editable_list = ('email')
 
 
 class PostAdmin(ModelView):

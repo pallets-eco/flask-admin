@@ -272,16 +272,33 @@
                 return true;
         }
 
-        // make x-editable's POST act like a normal FieldList field
-        // for x-editable, x-editable-combodate, and x-editable-boolean cases
-        var overrideXeditableParams = function(params) {
+        var _this = this;
+        var xeditableOptions = {
+          // make x-editable's POST act like a normal FieldList field
+          // for x-editable, x-editable-combodate, and x-editable-boolean cases
+          params: function(params) {
             var newParams = {};
             newParams[params.name + '-' + params.pk] = params.value;
             if ($(this).data('csrf')) {
                 newParams['csrf_token'] = $(this).data('csrf');
             }
             return newParams;
-        }
+          },
+
+          success: function (data) {
+            var $this = $(this);
+            var cells = data.cells;
+            var tr = $this.parents('tr');
+            for (name in cells) {
+              if (cells.hasOwnProperty(name)) {
+                var td = tr.find('.col-' + name);
+                var html = cells[name];
+                td.html(html);
+              }
+            }
+            _this.applyGlobalStyles(tr);
+          }
+        };
 
         switch (name) {
             case 'select2':
@@ -440,20 +457,18 @@
                 processLeafletWidget($el, name);
                 return true;
             case 'x-editable':
-                $el.editable({params: overrideXeditableParams});
+                $el.editable(xeditableOptions);
                 return true;
             case 'x-editable-combodate':
-                $el.editable({
-                    params: overrideXeditableParams,
+                $el.editable($.extend(xeditableOptions, {
                     combodate: {
                         // prevent minutes from showing in 5 minute increments
                         minuteStep: 1
                     }
-                });
+                }));
                 return true;
             case 'x-editable-boolean':
-                $el.editable({
-                    params: overrideXeditableParams,
+                $el.editable($.extend(xeditableOptions, {
                     display: function(value, sourceData, response) {
                        // display new boolean value as an icon
                        if(response) {
@@ -464,7 +479,7 @@
                            }
                        }
                     }
-                });
+                }));
         }
       };
 
