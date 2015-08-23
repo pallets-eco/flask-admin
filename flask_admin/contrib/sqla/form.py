@@ -209,6 +209,7 @@ class AdminModelConverter(ModelConverterBase):
                     not column.nullable
                     and not isinstance(column.type, optional_types)
                     and not column.default
+                    and not column.server_default
                 ):
                     kwargs['validators'].append(validators.InputRequired())
 
