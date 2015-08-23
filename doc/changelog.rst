@@ -1,6 +1,19 @@
 Changelog
 =========
 
+1.3.0
+-----
+
+* New feature: Edit models in the list view in a popup
+* New feature: Read-only model details view
+* Fixed XSS in column_editable_list values
+* Improved navigation consistency in model create and edit views
+* Ability to choose page size in model list view
+* Updated client-side dependencies (jQuery, Select2, etc)
+* Updated documentation and examples
+* Updated translations
+* Bug fixes
+
 1.2.0
 -----
 
@@ -38,20 +51,3 @@ Highlights:
 * Added the ``geoa`` contrib module, for working with `geoalchemy2 <http://geoalchemy-2.readthedocs.org/>`_
 * Portugese translation
 * Lots of bug fixes
-
-
-1.0.8
------
-
-Highlights:
-
-* Cleaned up documentation, many thanks to Petrus Janse van Rensburg.
-* More flexible menu system, ability to add links to menus
-* Human-readable filter URLs
-* Callable filter `options`
-* `EmailField` filter
-* Simple accessibility fixes
-* `InlineFormField` now accepts `widget_args` and `form_rules` arguments
-* Support for newer wtforms versions
-* `form_rules` property that affects both create and edit forms
-* Lots of bugfixes
