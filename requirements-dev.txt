@@ -8,7 +8,7 @@ flask-mongoengine
 pillow
 Babel<=1.3
 flask-babelex
-shapely
+shapely==1.5.9
 geoalchemy2
 psycopg2
 nose
