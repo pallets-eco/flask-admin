@@ -22,6 +22,7 @@
     {% endblock %}
 
     {% block file_list_table %}
+    <div id="no-more-tables">
     <table class="table table-striped table-bordered model-list">
         <thead>
             <tr>
@@ -84,13 +85,13 @@
                 {% endblock %}
             </td>
             {% if is_dir %}
-            <td colspan="2">
+            <td colspan="2" data-title="{{ _gettext('Name') }}">
                 <a href="{{ get_dir_url('.index', path)|safe }}">
                     <i class="fa fa-folder-o icon-folder-close"></i> <span>{{ name }}</span>
                 </a>
             </td>
             {% else %}
-            <td>
+            <td data-title="{{ _gettext('Name') }}">
                 {% if admin_view.can_download %}
                   {%- if admin_view.edit_modal and admin_view.is_file_editable(path) -%}
                     {{ lib.add_modal_button(url=get_file_url(path, modal=True)|safe,
@@ -102,7 +103,7 @@
                   {{ name }}
                 {% endif %}
             </td>
-            <td>
+            <td data-title="{{ _gettext('Size') }}">
                 {{ size|filesizeformat }}
             </td>
             {% endif %}
@@ -110,6 +111,7 @@
         </tr>
         {% endfor %}
     </table>
+    </div>
     {% endblock %}
     {% block toolbar %}
     <div class="btn-toolbar">
