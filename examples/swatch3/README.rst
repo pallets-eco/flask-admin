@@ -1,4 +1,4 @@
-This example shows how you can define your own custom forms by using form rendering rules. It also demonstrates general file handling as well as the handling of image files specifically.
+This example shows how you can change bootswatch themes
 
 
 To run this example:
