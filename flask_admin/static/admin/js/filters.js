@@ -141,7 +141,7 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
         var filter = subfilters[filterSelection];
         var $inputContainer = $('<td/>').appendTo($el);
          
-        var $newFilterField = createFilterInput($inputContainer, filterValue, filter);
+        var $newFilterField = createFilterInput($inputContainer, filterValue, filter).focus();
         var $styledFilterField = styleFilterInput(filter, $newFilterField);
         
         return $styledFilterField;
