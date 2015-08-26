@@ -17,6 +17,7 @@
         {% if csrf_token %}
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         {% endif %}
+        <input type="hidden" name="url" value="{{ return_url }}">
         <input type="hidden" id="action" name="action" />
     </form>
     {% endif %}
