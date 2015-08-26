@@ -113,7 +113,13 @@ class XEditableWidget(object):
             kwargs['data-role'] = 'x-editable-boolean'
         elif subfield.type == 'Select2Field':
             kwargs['data-type'] = 'select'
-            kwargs['data-source'] = dict(subfield.choices)
+            choices = [{'value': x, 'text': y} for x, y in subfield.choices]
+            kwargs['data-source'] = choices
+
+            # prepend a blank field to choices if allow_blank = True
+            if getattr(subfield, 'allow_blank', False):
+                kwargs['data-source'].insert(0, {'value': '__None',
+                                                 'text': ''})
         elif subfield.type == 'DateField':
             kwargs['data-type'] = 'combodate'
             kwargs['data-format'] = 'YYYY-MM-DD'
@@ -135,20 +141,21 @@ class XEditableWidget(object):
             kwargs['data-type'] = 'number'
             kwargs['data-step'] = 'any'
         elif subfield.type in ['QuerySelectField', 'ModelSelectField']:
+            # QuerySelectField and ModelSelectField are for relations
             kwargs['data-type'] = 'select'
 
-            choices = {}
+            choices = []
             for choice in subfield:
                 try:
-                    choices[str(choice._value())] = str(choice.label.text)
+                    choices.append({'value': str(choice._value()),
+                                    'text': str(choice.label.text)})
                 except TypeError:
-                    choices[str(choice._value())] = ""
+                    # unable to display text value
+                    choices.append({'value': str(choice._value()), 'text': ''})
+
+            #  includes blank field if allow_blank
             kwargs['data-source'] = choices
         else:
             raise Exception('Unsupported field type: %s' % (type(subfield),))
-
-        # for Select2, QuerySelectField, and ModelSelectField
-        if getattr(subfield, 'allow_blank', False):
-            kwargs['data-source']['__None'] = ""
 
         return kwargs
