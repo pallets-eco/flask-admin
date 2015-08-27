@@ -2,7 +2,7 @@ from flask import json
 from jinja2 import escape
 from wtforms.widgets import HTMLString, html_params
 
-from flask_admin._compat import as_unicode
+from flask_admin._compat import as_unicode, text_type
 from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
 from flask_admin.form import RenderTemplateWidget
@@ -114,12 +114,13 @@ class XEditableWidget(object):
         elif subfield.type == 'Select2Field':
             kwargs['data-type'] = 'select'
             choices = [{'value': x, 'text': y} for x, y in subfield.choices]
-            kwargs['data-source'] = choices
 
             # prepend a blank field to choices if allow_blank = True
             if getattr(subfield, 'allow_blank', False):
-                kwargs['data-source'].insert(0, {'value': '__None',
-                                                 'text': ''})
+                choices.insert(0, {'value': '__None', 'text': ''})
+
+            # json.dumps fixes issue with unicode strings not loading correctly
+            kwargs['data-source'] = json.dumps(choices)
         elif subfield.type == 'DateField':
             kwargs['data-type'] = 'combodate'
             kwargs['data-format'] = 'YYYY-MM-DD'
@@ -147,14 +148,15 @@ class XEditableWidget(object):
             choices = []
             for choice in subfield:
                 try:
-                    choices.append({'value': str(choice._value()),
-                                    'text': str(choice.label.text)})
+                    choices.append({'value': text_type(choice._value()),
+                                    'text': text_type(choice.label.text)})
                 except TypeError:
                     # unable to display text value
-                    choices.append({'value': str(choice._value()), 'text': ''})
+                    choices.append({'value': text_type(choice._value()),
+                                    'text': ''})
 
-            #  includes blank field if allow_blank
-            kwargs['data-source'] = choices
+            # blank field is already included if allow_blank
+            kwargs['data-source'] = json.dumps(choices)
         else:
             raise Exception('Unsupported field type: %s' % (type(subfield),))
 
