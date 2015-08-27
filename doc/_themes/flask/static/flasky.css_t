@@ -447,7 +447,13 @@ a:hover tt {
 
 }
 
-
+@media screen and (max-width: 768px) {
+    {% if theme_index_logo %}
+    div.indexwrapper h1 {
+        background-size: 100%;
+    }
+    {% endif %}
+}
 
 @media screen and (max-width: 875px) {
 
