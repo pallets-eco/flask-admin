@@ -178,10 +178,10 @@ htmlhelp_basename = 'flask-admin'
 
 latex_elements = {
 # The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+# 'papersize': 'letterpaper',
 
 # The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+# 'pointsize': '10pt',
 
 # Additional stuff for the LaTeX preamble.
 #'preamble': '',
@@ -190,7 +190,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'flask-admin', u'Flask-Admin documentation',
+  ('index', 'flask-admin.tex', u'Flask-Admin documentation',
    u'Serge S. Koval', 'manual'),
 ]
 
