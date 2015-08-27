@@ -26,6 +26,12 @@
         </li>
         {% endif %}
 
+        {% if admin_view.can_export %}
+        <li>
+            <a href="{{ get_url('.export_csv', **request.args) }}" title="{{ _gettext('Export') }}">{{ _gettext('Export') }}</a>
+        </li>
+        {% endif %}
+
         {% if filters %}
         <li class="dropdown">
             {{ model_layout.filter_options() }}
