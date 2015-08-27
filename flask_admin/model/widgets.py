@@ -2,7 +2,7 @@ from flask import json
 from jinja2 import escape
 from wtforms.widgets import HTMLString, html_params
 
-from flask_admin._compat import as_unicode
+from flask_admin._compat import as_unicode, text_type
 from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
 from flask_admin.form import RenderTemplateWidget
@@ -113,7 +113,14 @@ class XEditableWidget(object):
             kwargs['data-role'] = 'x-editable-boolean'
         elif subfield.type == 'Select2Field':
             kwargs['data-type'] = 'select'
-            kwargs['data-source'] = dict(subfield.choices)
+            choices = [{'value': x, 'text': y} for x, y in subfield.choices]
+
+            # prepend a blank field to choices if allow_blank = True
+            if getattr(subfield, 'allow_blank', False):
+                choices.insert(0, {'value': '__None', 'text': ''})
+
+            # json.dumps fixes issue with unicode strings not loading correctly
+            kwargs['data-source'] = json.dumps(choices)
         elif subfield.type == 'DateField':
             kwargs['data-type'] = 'combodate'
             kwargs['data-format'] = 'YYYY-MM-DD'
@@ -135,20 +142,22 @@ class XEditableWidget(object):
             kwargs['data-type'] = 'number'
             kwargs['data-step'] = 'any'
         elif subfield.type in ['QuerySelectField', 'ModelSelectField']:
+            # QuerySelectField and ModelSelectField are for relations
             kwargs['data-type'] = 'select'
 
-            choices = {}
+            choices = []
             for choice in subfield:
                 try:
-                    choices[str(choice._value())] = str(choice.label.text)
+                    choices.append({'value': text_type(choice._value()),
+                                    'text': text_type(choice.label.text)})
                 except TypeError:
-                    choices[str(choice._value())] = ""
-            kwargs['data-source'] = choices
+                    # unable to display text value
+                    choices.append({'value': text_type(choice._value()),
+                                    'text': ''})
+
+            # blank field is already included if allow_blank
+            kwargs['data-source'] = json.dumps(choices)
         else:
             raise Exception('Unsupported field type: %s' % (type(subfield),))
-
-        # for Select2, QuerySelectField, and ModelSelectField
-        if getattr(subfield, 'allow_blank', False):
-            kwargs['data-source']['__None'] = ""
 
         return kwargs
