@@ -216,6 +216,24 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
         return self.__class__.__name__.lower()
 
+    def _get_view_url(self, admin, url):
+        """
+            Generate URL for the view. Override to change default behavior.
+        """
+        if url is None:
+            if admin.url != '/':
+                url = '%s/%s' % (admin.url, self.endpoint)
+            else:
+                if self == admin.index_view:
+                    url = '/'
+                else:
+                    url = '/%s' % self.endpoint
+        else:
+            if not url.startswith('/'):
+                url = '%s/%s' % (admin.url, url)
+
+        return url
+
     def create_blueprint(self, admin):
         """
             Create Flask blueprint.
@@ -227,18 +245,8 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         if not self.static_url_path:
             self.static_url_path = admin.static_url_path
 
-        # If url is not provided, generate it from endpoint name
-        if self.url is None:
-            if self.admin.url != '/':
-                self.url = '%s/%s' % (self.admin.url, self.endpoint)
-            else:
-                if self == admin.index_view:
-                    self.url = '/'
-                else:
-                    self.url = '/%s' % self.endpoint
-        else:
-            if not self.url.startswith('/'):
-                self.url = '%s/%s' % (self.admin.url, self.url)
+        # Generate URL
+        self.url = self._get_view_url(admin, self.url)
 
         # If we're working from the root of the site, set prefix to None
         if self.url == '/':
