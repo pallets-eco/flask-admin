@@ -125,10 +125,9 @@ could be as simple as::
         def is_accessible(self):
             return login.current_user.is_authenticated()
 
-        def _handle_view(self, name, **kwargs):
+        def inaccessible_callback(self, name, **kwargs):
             # redirect to login page if user doesn't have access
-            if not self.is_accessible():
-                return redirect(url_for('login', next=request.url))
+            return redirect(url_for('login', next=request.url))
 
 In the navigation menu, components that are not accessible to a particular user will not be displayed
 for that user. For an example of using Flask-Login with Flask-Admin, have a look
