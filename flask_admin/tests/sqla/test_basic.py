@@ -93,7 +93,7 @@ def create_models(db):
 
 def fill_db(db, Model1, Model2):
     model1_obj1 = Model1('test1_val_1', 'test2_val_1', bool_field=True)
-    model1_obj2 = Model1('test1_val_2', 'test2_val_2')
+    model1_obj2 = Model1('test1_val_2', 'test2_val_2', bool_field=False)
     model1_obj3 = Model1('test1_val_3', 'test2_val_3')
     model1_obj4 = Model1('test1_val_4', 'test2_val_4')
 
@@ -818,6 +818,49 @@ def test_column_filters():
     ok_('test2_val_2' in data)
     ok_('test2_val_3' not in data)
     ok_('test2_val_4' not in data)
+
+    # Test boolean filter
+    view = CustomModelView(Model1, db.session, column_filters=['bool_field'],
+                           endpoint="_bools")
+    admin.add_view(view)
+
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Bool Field']],
+        [
+            (0, 'equals'),
+            (1, 'not equal'),
+        ])
+
+    # boolean - equals - Yes
+    rv = client.get('/admin/_bools/?flt0_0=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' in data)
+    ok_('test2_val_2' not in data)
+    ok_('test2_val_3' not in data)
+
+    # boolean - equals - No
+    rv = client.get('/admin/_bools/?flt0_0=0')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' not in data)
+    ok_('test2_val_2' in data)
+    ok_('test2_val_3' in data)
+
+    # boolean - not equals - Yes
+    rv = client.get('/admin/_bools/?flt0_1=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' not in data)
+    ok_('test2_val_2' in data)
+    ok_('test2_val_3' in data)
+
+    # boolean - not equals - No
+    rv = client.get('/admin/_bools/?flt0_1=0')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test2_val_1' in data)
+    ok_('test2_val_2' not in data)
+    ok_('test2_val_3' not in data)
 
     # Test float filter
     view = CustomModelView(Model2, db.session, column_filters=['float_field'],

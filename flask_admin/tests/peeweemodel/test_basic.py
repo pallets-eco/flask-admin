@@ -94,8 +94,8 @@ def fill_db(Model1, Model2):
     Model1('test1_val_4', 'test2_val_4').save()
     Model1(None, 'empty_obj').save()
 
-    Model2('char_field_val_1', None, None).save()
-    Model2('char_field_val_2', None, None).save()
+    Model2('char_field_val_1', None, None, bool_field=True).save()
+    Model2('char_field_val_2', None, None, bool_field=False).save()
     Model2('char_field_val_3', 5000, 25.9).save()
     Model2('char_field_val_4', 9000, 75.5).save()
     Model2('char_field_val_5', 6169453081680413441).save()
@@ -495,6 +495,49 @@ def test_column_filters():
     ok_('char_field_val_2' in data)
     ok_('char_field_val_3' not in data)
     ok_('char_field_val_4' not in data)
+
+    # Test boolean filter
+    view = CustomModelView(Model2, column_filters=['bool_field'],
+                           endpoint="_bools")
+    admin.add_view(view)
+
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Bool Field']],
+        [
+            (0, 'equals'),
+            (1, 'not equal'),
+        ])
+
+    # boolean - equals - Yes
+    rv = client.get('/admin/_bools/?flt0_0=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('char_field_val_1' in data)
+    ok_('char_field_val_2' not in data)
+    ok_('char_field_val_3' not in data)
+
+    # boolean - equals - No
+    rv = client.get('/admin/_bools/?flt0_0=0')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('char_field_val_1' not in data)
+    ok_('char_field_val_2' in data)
+    ok_('char_field_val_3' in data)
+
+    # boolean - not equals - Yes
+    rv = client.get('/admin/_bools/?flt0_1=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('char_field_val_1' not in data)
+    ok_('char_field_val_2' in data)
+    ok_('char_field_val_3' in data)
+
+    # boolean - not equals - No
+    rv = client.get('/admin/_bools/?flt0_1=0')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('char_field_val_1' in data)
+    ok_('char_field_val_2' not in data)
+    ok_('char_field_val_3' not in data)
 
     # Test float filter
     view = CustomModelView(Model2, column_filters=['float_field'],
