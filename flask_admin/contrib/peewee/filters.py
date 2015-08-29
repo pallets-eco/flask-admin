@@ -116,11 +116,13 @@ class FilterNotInList(FilterInList):
 
 # Customized type filters
 class BooleanEqualFilter(FilterEqual, filters.BaseBooleanFilter):
-    pass
+    def clean(self, value):
+        return int(value)
 
 
 class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
-    pass
+    def clean(self, value):
+        return int(value)
 
 
 class IntEqualFilter(FilterEqual, filters.BaseIntFilter):
