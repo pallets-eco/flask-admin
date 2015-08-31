@@ -1,11 +1,9 @@
 from flask_admin.contrib.sqla.typefmt import DEFAULT_FORMATTERS as BASE_FORMATTERS
-import json
 from jinja2 import Markup
 from wtforms.widgets import html_params
 from geoalchemy2.shape import to_shape
 from geoalchemy2.elements import WKBElement
 from sqlalchemy import func
-from flask import current_app
 
 
 def geom_formatter(view, value):
@@ -18,9 +16,8 @@ def geom_formatter(view, value):
         "data-zoom": 15,
     })
     if value.srid is -1:
-        geojson = current_app.extensions['sqlalchemy'].db.session.scalar(func.ST_AsGeoJson(value))
-    else:
-        geojson = current_app.extensions['sqlalchemy'].db.session.scalar(func.ST_AsGeoJson(value.ST_Transform( 4326)))
+        value.srid = 4326
+    geojson = view.model.query.with_entities(func.ST_AsGeoJSON(value)).scalar()
     return Markup('<textarea %s>%s</textarea>' % (params, geojson))
 
 
