@@ -295,7 +295,7 @@ class AdminModelConverter(ModelConverterBase):
         self._string_common(column=column, field_args=field_args, **extra)
         return fields.StringField(**field_args)
 
-    @converts('Text', 'UnicodeText',
+    @converts('Text', 'UnicodeText', 'JSONType',
               'sqlalchemy.types.LargeBinary', 'sqlalchemy.types.Binary')
     def conv_Text(self, field_args, **extra):
         self._string_common(field_args=field_args, **extra)
