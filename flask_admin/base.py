@@ -540,6 +540,22 @@ class Admin(object):
 
         self._add_view_to_menu(view)
 
+    def add_views(self, *args):
+        """
+            Add one or more views to the collection.
+
+            Examples::
+
+            admin.add_views(view1)
+            admin.add_views(view1, view2, view3, view4)
+            admin.add_views(*my_list)
+
+            :param args:
+                Argument list including the views to add.
+        """
+        for view in args:
+            self.add_view(view)
+
     def add_link(self, link):
         """
             Add link to menu links collection.
@@ -551,6 +567,22 @@ class Admin(object):
             self._add_menu_item(link, link.category)
         else:
             self._menu_links.append(link)
+
+    def add_links(self, *args):
+        """
+            Add one or more links to the menu links collection.
+
+            Examples::
+
+            admin.add_links(link1)
+            admin.add_links(link1, link2, link3, link4)
+            admin.add_links(*my_list)
+
+            :param args:
+                Argument list including the links to add.
+        """
+        for link in args:
+            self.add_link(link)
 
     def _add_menu_item(self, menu_item, target_category):
         if target_category:
