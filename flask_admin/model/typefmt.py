@@ -49,3 +49,8 @@ BASE_FORMATTERS = {
     bool: bool_formatter,
     list: list_formatter,
 }
+
+EXPORT_FORMATTERS = {
+    type(None): empty_formatter,
+    list: list_formatter,
+}

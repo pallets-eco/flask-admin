@@ -1,8 +1,12 @@
 import warnings
 import re
+import csv
+import time
+
+from werkzeug import secure_filename
 
 from flask import (request, redirect, flash, abort, json, Response,
-                   get_flashed_messages)
+                   get_flashed_messages, stream_with_context)
 from jinja2 import contextfunction
 from wtforms.fields import HiddenField
 from wtforms.fields.core import UnboundField
@@ -18,11 +22,10 @@ from flask_admin.helpers import (get_form_data, validate_form_on_submit,
                                  get_redirect_target, flash_errors)
 from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
-from flask_admin._compat import iteritems, OrderedDict, as_unicode
+from flask_admin._compat import iteritems, OrderedDict, as_unicode, csv_encode
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
 from .fields import ListEditableFieldList
-
 
 # Used to generate filter query string name
 filter_char_re = re.compile('[^a-z0-9 ]')
@@ -94,6 +97,9 @@ class BaseModelView(BaseView, ActionsMixin):
         Setting this to true will enable the details view. This is recommended
         when there are too many columns to display in the list_view.
     """
+
+    can_export = False
+    """Is model list export allowed"""
 
     # Templates
     list_template = 'admin/model/list.html'
@@ -194,14 +200,25 @@ class BaseModelView(BaseView, ActionsMixin):
                 pass
     """
 
+    column_formatters_export = None
+    """
+        Dictionary of list view column formatters to be used for export.
+
+        Defaults to column_formatters when set to None.
+
+        Functions the same way as column_formatters except
+        that macros are not supported.
+    """
+
     column_type_formatters = ObsoleteAttr('column_type_formatters', 'list_type_formatters', None)
     """
         Dictionary of value type formatters to be used in the list view.
 
-        By default, two types are formatted:
+        By default, three types are formatted:
 
         1. ``None`` will be displayed as an empty string
         2. ``bool`` will be displayed as a checkmark if it is ``True``
+        3. ``list`` will be joined using ', '
 
         If you don't like the default behavior and don't want any type formatters
         applied, just override this property with an empty dictionary::
@@ -235,6 +252,18 @@ class BaseModelView(BaseView, ActionsMixin):
                 # `view` is current administrative view
                 # `value` value to format
                 pass
+    """
+
+    column_type_formatters_export = None
+    """
+        Dictionary of value type formatters to be used in the export.
+
+        By default, two types are formatted:
+
+        1. ``None`` will be displayed as an empty string
+        2. ``list`` will be joined using ', '
+
+        Functions the same way as column_type_formatters.
     """
 
     column_labels = ObsoleteAttr('column_labels', 'rename_columns', None)
@@ -579,6 +608,12 @@ class BaseModelView(BaseView, ActionsMixin):
                 action_disallowed_list = ['delete']
     """
 
+    # Export settings
+    export_max_rows = None
+    """
+        Maximum number of rows allowed for export.
+    """
+
     # Various settings
     page_size = 20
     """
@@ -732,9 +767,16 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             self.column_choices = self._column_choices_map = dict()
 
+        # Column formatters
+        if self.column_formatters_export is None:
+            self.column_formatters_export = self.column_formatters
+
         # Type formatters
         if self.column_type_formatters is None:
             self.column_type_formatters = dict(typefmt.BASE_FORMATTERS)
+
+        if self.column_type_formatters_export is None:
+            self.column_type_formatters_export = dict(typefmt.EXPORT_FORMATTERS)
 
         if self.column_descriptions is None:
             self.column_descriptions = dict()
@@ -1214,7 +1256,8 @@ class BaseModelView(BaseView, ActionsMixin):
         return None
 
     # Database-related API
-    def get_list(self, page, sort_field, sort_desc, search, filters):
+    def get_list(self, page, sort_field, sort_desc, search, filters,
+                 page_size=None):
         """
             Return a paginated and sorted list of models from the data source.
 
@@ -1231,6 +1274,10 @@ class BaseModelView(BaseView, ActionsMixin):
             :param filters:
                 List of filter tuples. First value in a tuple is a search
                 index, second value is a search value.
+            :param page_size:
+                Number of results. Defaults to ModelView's page_size. Can be
+                overriden to change the page_size limit. Removing the page_size
+                limit requires setting page_size to 0 or False.
         """
         raise NotImplementedError('Please implement get_list method')
 
@@ -1493,6 +1540,42 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return rec_getattr(model, name)
 
+    def _get_list_value(self, context, model, name, column_formatters,
+                        column_type_formatters):
+        """
+            Returns the value to be displayed.
+
+            :param context:
+                :py:class:`jinja2.runtime.Context` if available
+            :param model:
+                Model instance
+            :param name:
+                Field name
+            :param column_formatters:
+                column_formatters to be used.
+            :param column_type_formatters:
+                column_type_formatters to be used.
+        """
+        column_fmt = column_formatters.get(name)
+        if column_fmt is not None:
+            value = column_fmt(self, context, model, name)
+        else:
+            value = self._get_field_value(model, name)
+
+        choices_map = self._column_choices_map.get(name, {})
+        if choices_map:
+            return choices_map.get(value) or value
+
+        type_fmt = None
+        for typeobj, formatter in column_type_formatters.items():
+            if isinstance(value, typeobj):
+                type_fmt = formatter
+                break
+        if type_fmt is not None:
+            value = type_fmt(self, value)
+
+        return value
+
     @contextfunction
     def get_list_value(self, context, model, name):
         """
@@ -1505,25 +1588,31 @@ class BaseModelView(BaseView, ActionsMixin):
             :param name:
                 Field name
         """
-        column_fmt = self.column_formatters.get(name)
-        if column_fmt is not None:
-            value = column_fmt(self, context, model, name)
-        else:
-            value = self._get_field_value(model, name)
+        return self._get_list_value(
+            context,
+            model,
+            name,
+            self.column_formatters,
+            self.column_type_formatters,
+        )
 
-        choices_map = self._column_choices_map.get(name, {})
-        if choices_map:
-            return choices_map.get(value) or value
+    def get_export_value(self, model, name):
+        """
+            Returns the value to be displayed in export.
+            Allows export to use different (non HTML) formatters.
 
-        type_fmt = None
-        for typeobj, formatter in self.column_type_formatters.items():
-            if isinstance(value, typeobj):
-                type_fmt = formatter
-                break
-        if type_fmt is not None:
-            value = type_fmt(self, value)
-
-        return value
+            :param model:
+                Model instance
+            :param name:
+                Field name
+        """
+        return self._get_list_value(
+            None,
+            model,
+            name,
+            self.column_formatters_export,
+            self.column_type_formatters_export,
+        )
 
     # AJAX references
     def _process_ajax_references(self):
@@ -1822,6 +1911,76 @@ class BaseModelView(BaseView, ActionsMixin):
             Mass-model action view.
         """
         return self.handle_action()
+
+    @expose('/export/csv/')
+    def export_csv(self):
+        """
+            Export a CSV of records.
+        """
+        return_url = get_redirect_target() or self.get_url('.index_view')
+
+        if not self.can_export:
+            flash(gettext('Permission denied.'))
+            return redirect(return_url)
+
+        # Macros in column_formatters are not supported.
+        # Macros will have a function name 'inner'
+        # This causes non-macro functions named 'inner' not work.
+        for col, func in iteritems(self.column_formatters):
+            if func.__name__ == 'inner':
+                raise NotImplementedError(
+                    'Macros not implemented. Override with '
+                    'column_formatters_export. Column: %s' % (col,)
+                )
+
+        # Grab parameters from URL
+        view_args = self._get_list_extra_args()
+
+        # Map column index to column name
+        sort_column = self._get_column_by_idx(view_args.sort)
+        if sort_column is not None:
+            sort_column = sort_column[0]
+
+        # Get count and data
+        count, data = self.get_list(0, sort_column, view_args.sort_desc,
+                                    view_args.search, view_args.filters,
+                                    page_size=self.export_max_rows)
+
+        # https://docs.djangoproject.com/en/1.8/howto/outputting-csv/
+        class Echo(object):
+            """
+            An object that implements just the write method of the file-like
+            interface.
+            """
+            def write(self, value):
+                """
+                Write the value by returning it, instead of storing
+                in a buffer.
+                """
+                return value
+
+        writer = csv.writer(Echo())
+
+        def generate():
+            # Append the column titles at the beginning
+            titles = [csv_encode(c[1]) for c in self._list_columns]
+            yield writer.writerow(titles)
+
+            for row in data:
+                vals = [csv_encode(self.get_export_value(row, c[0]))
+                        for c in self._list_columns]
+                yield writer.writerow(vals)
+
+        filename = '%s_%s.csv' % (self.name,
+                                  time.strftime("%Y-%m-%d_%H-%M-%S"))
+
+        disposition = 'attachment;filename=%s' % (secure_filename(filename),)
+
+        return Response(
+            stream_with_context(generate()),
+            headers={'Content-Disposition': disposition},
+            mimetype='text/csv'
+        )
 
     @expose('/ajax/lookup/')
     def ajax_lookup(self):

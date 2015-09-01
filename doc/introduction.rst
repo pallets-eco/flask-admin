@@ -298,6 +298,12 @@ To **manage related models inline**::
 These inline forms can be customised. Have a look at the API documentation for
 :meth:`~flask_admin.contrib.sqla.ModelView.inline_models`.
 
+To **enable csv export** of the model view::
+
+    can_export = True
+
+This will add a button to the model view that exports records, truncating at :attr:`~flask_admin.model.BaseModelView.max_export_rows`.
+
 Adding Your Own Views
 =====================
 

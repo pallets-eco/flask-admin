@@ -31,6 +31,10 @@ if not PY2:
 
         return str(s)
 
+    def csv_encode(s):
+        ''' Returns unicode string expected by Python 3's csv module '''
+        return as_unicode(s)
+
     # Various tools
     from functools import reduce
     from urllib.parse import urljoin, urlparse
@@ -49,6 +53,10 @@ else:
             return s.decode('utf-8')
 
         return unicode(s)
+
+    def csv_encode(s):
+        ''' Returns byte string expected by Python 2's csv module '''
+        return as_unicode(s).encode('utf-8')
 
     # Helpers
     reduce = __builtins__['reduce'] if isinstance(__builtins__, dict) else __builtins__.reduce
