@@ -36,13 +36,14 @@ class ModelFormField(InlineFormField):
 
     def populate_obj(self, obj, name):
         candidate = getattr(obj, name, None)
-        if candidate is None:
+        is_created = candidate is None
+        if is_created:
             candidate = self.model()
             setattr(obj, name, candidate)
 
         self.form.populate_obj(candidate)
 
-        self.view.on_model_change(self.form, candidate)
+        self.view._on_model_change(self.form, candidate, is_created)
 
 
 class MongoFileField(fields.FileField):
