@@ -22,7 +22,7 @@ from flask_admin.helpers import (get_form_data, validate_form_on_submit,
                                  get_redirect_target, flash_errors)
 from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
-from flask_admin._compat import iteritems, OrderedDict, as_unicode
+from flask_admin._compat import iteritems, OrderedDict, as_unicode, csv_encode
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
 from .fields import ListEditableFieldList
@@ -1962,25 +1962,19 @@ class BaseModelView(BaseView, ActionsMixin):
         writer = csv.writer(Echo())
 
         def generate():
-            # Needed as python 2 csvwriter does not support unicode
-            def fix_unicode(t):
-                return as_unicode(t).encode('utf-8')
-
             # Append the column titles at the beginning
-            titles = [fix_unicode(c[1]) for c in self._list_columns]
+            titles = [csv_encode(c[1]) for c in self._list_columns]
             yield writer.writerow(titles)
 
             for row in data:
-                vals = [fix_unicode(self.get_export_value(row, c[0]))
+                vals = [csv_encode(self.get_export_value(row, c[0]))
                         for c in self._list_columns]
                 yield writer.writerow(vals)
 
-        filename = '{}_{}.csv'.format(
-            self.name,
-            time.strftime("%Y-%m-%d_%H-%M-%S")
-        )
+        filename = '%s_%s.csv' % (self.name,
+                                  time.strftime("%Y-%m-%d_%H-%M-%S"))
 
-        disposition = 'attachment;filename={}'.format(secure_filename(filename))
+        disposition = 'attachment;filename=%s' % (secure_filename(filename),)
 
         return Response(
             stream_with_context(generate()),
