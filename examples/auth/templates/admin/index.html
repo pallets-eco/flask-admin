@@ -1,39 +1,30 @@
 {% extends 'admin/master.html' %}
 {% block body %}
 {{ super() }}
-<div class="row-fluid">
-
-    <div>
-        {% if current_user.is_authenticated() %}
-        <h1>Flask-Admin example</h1>
-        <p class="lead">
-            Authentication
-        </p>
-        <p>
-            This example shows how you can use Flask-Login for authentication. It is only intended as a basic demonstration, so please don't freak out when you see passwords being stored as plain text.
-        </p>
-        {% else %}
-        <form method="POST" action="">
-            {{ form.hidden_tag() if form.hidden_tag }}
-            {% for f in form if f.type != 'CSRFTokenField' %}
-            <div>
-            {{ f.label }}
-            {{ f }}
-            {% if f.errors %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <h1>Flask-Admin example</h1>
+            <p class="lead">
+                Authentication
+            </p>
+            <p>
+                This example shows how you can use <a href="https://pythonhosted.org/Flask-Security/index.html" target="_blank">Flask-Security</a> for authentication.
+            </p>
+            {% if not current_user.is_authenticated() %}
+            <p>You can register as a regular user, or log in as a superuser with the following credentials:
             <ul>
-                {% for e in f.errors %}
-                <li>{{ e }}</li>
-                {% endfor %}
+                <li>email: <b>admin</b></li>
+                <li>password: <b>admin</b></li>
             </ul>
+            <p>
+                <a class="btn btn-primary" href="{{ url_for('security.login') }}">login</a> <a class="btn btn-default" href="{{ url_for('security.register') }}">register</a>
+            </p>
             {% endif %}
-            </div>
-            {% endfor %}
-            <button class="btn" type="submit">Submit</button>
-        </form>
-        {{ link | safe }}
-        {% endif %}
+            <p>
+                <a class="btn btn-primary" href="/"><i class="glyphicon glyphicon-chevron-left"></i> Back</a>
+            </p>
+        </div>
     </div>
-
-    <a class="btn btn-primary" href="/"><i class="icon-arrow-left icon-white"></i> Back</a>
 </div>
 {% endblock body %}

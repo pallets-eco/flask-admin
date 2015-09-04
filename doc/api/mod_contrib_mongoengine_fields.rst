@@ -1,7 +1,7 @@
-``flask.ext.admin.contrib.mongoengine.fields``
-==============================================
+``flask_admin.contrib.mongoengine.fields``
+==========================================
 
-.. automodule:: flask.ext.admin.contrib.mongoengine.fields
+.. automodule:: flask_admin.contrib.mongoengine.fields
 
 	.. autoclass:: ModelFormField
 		:members:
@@ -11,4 +11,3 @@
 
 	.. autoclass:: MongoImageField
 		:members:
-

@@ -1,6 +1,10 @@
 from sqlalchemy.orm.exc import NoResultFound
 
 from wtforms import ValidationError
+try:
+    from wtforms.validators import InputRequired
+except ImportError:
+    from wtforms.validators import Required as InputRequired
 
 
 class Unique(object):
@@ -39,3 +43,26 @@ class Unique(object):
                 raise ValidationError(self.message)
         except NoResultFound:
             pass
+
+
+class ItemsRequired(InputRequired):
+    """
+    A version of the ``InputRequired`` validator that works with relations,
+    to require a minimum number of related items.
+    """
+    def __init__(self, min=1, message=None):
+        super(ItemsRequired, self).__init__(message=message)
+        self.min = min
+
+    def __call__(self, form, field):
+        if len(field.data) < self.min:
+            if self.message is None:
+                message = field.ngettext(
+                    u"At least %d item is required",
+                    u"At least %d items are required",
+                    self.min
+                ) % (self.min,)
+            else:
+                message = self.message
+
+            raise ValidationError(message)

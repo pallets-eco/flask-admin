@@ -32,12 +32,12 @@
                 </th>
                 {% endif %}
                 <th class="span1">&nbsp;</th>
-                <th>Name</th>
-                <th>Size</th>
+                <th>{{ _gettext('Name') }}</th>
+                <th>{{ _gettext('Size') }}</th>
                 {% endblock %}
             </tr>
         </thead>
-        {% for name, path, is_dir, size in items %}
+        {% for name, path, is_dir, size, date in items %}
         <tr>
             {% block list_row scoped %}
             {% if actions %}
@@ -50,25 +50,33 @@
             <td>
                 {% block list_row_actions scoped %}
                 {% if admin_view.can_rename and path and name != '..' %}
-                <a class="icon" href="{{ url_for('.rename', path=path) }}">
-                        <i class="icon-pencil"></i>
-                </a>
+                  {%- if admin_view.rename_modal -%}
+                    {{ lib.add_modal_button(url=get_url('.rename', path=path, modal=True),
+                                            title=_gettext('Rename File'),
+                                            content='<i class="fa fa-pencil icon-pencil"></i>') }}
+                  {% else %}
+                    <a class="icon" href="{{ get_url('.rename', path=path) }}" title="{{ _gettext('Rename File') }}">
+                      <i class="fa fa-pencil icon-pencil"></i>
+                    </a>
+                  {%- endif -%}
                 {% endif %}
                 {%- if admin_view.can_delete and path -%}
                     {% if is_dir %}
                         {% if name != '..' and admin_view.can_delete_dirs %}
-                        <form class="icon" method="POST" action="{{ url_for('.delete') }}">
-                            <input type="hidden" name="path" value="{{ path }}"></input>
+                        <form class="icon" method="POST" action="{{ get_url('.delete') }}">
+                            {{ delete_form.path(value=path) }}
+                            {{ delete_form.csrf_token }}
                             <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
-                                <i class="icon-remove"></i>
+                                <i class="fa fa-times icon-remove"></i>
                             </button>
                         </form>
                         {% endif %}
                     {% else %}
-                    <form class="icon" method="POST" action="{{ url_for('.delete') }}">
-                        <input type="hidden" name="path" value="{{ path }}"></input>
+                    <form class="icon" method="POST" action="{{ get_url('.delete') }}">
+                        {{ delete_form.path(value=path) }}
+                        {{ delete_form.csrf_token }}
                         <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
-                            <i class="icon-remove"></i>
+                            <i class="fa fa-times icon-remove"></i>
                         </button>
                     </form>
                     {% endif %}
@@ -78,15 +86,20 @@
             {% if is_dir %}
             <td colspan="2">
                 <a href="{{ get_dir_url('.index', path)|safe }}">
-                    <i class="icon-folder-close"></i> <span>{{ name }}</span>
+                    <i class="fa fa-folder-o icon-folder-close"></i> <span>{{ name }}</span>
                 </a>
             </td>
             {% else %}
             <td>
                 {% if admin_view.can_download %}
-                <a href="{{ get_file_url(path)|safe }}">{{ name }}</a>
+                  {%- if admin_view.edit_modal and admin_view.is_file_editable(path) -%}
+                    {{ lib.add_modal_button(url=get_file_url(path, modal=True)|safe,
+                                            btn_class='', content=name) }}
+                  {% else %}
+                    <a href="{{ get_file_url(path)|safe }}">{{ name }}</a>
+                  {%- endif -%}
                 {% else %}
-                {{ name }}
+                  {{ name }}
                 {% endif %}
             </td>
             <td>
@@ -102,12 +115,24 @@
     <div class="btn-toolbar">
         {% if admin_view.can_upload %}
         <div class="btn-group">
-            <a class="btn btn-large" href="{{ get_dir_url('.upload', path=dir_path) }}">{{ _gettext('Upload File') }}</a>
+            {%- if admin_view.upload_modal -%}
+              {{ lib.add_modal_button(url=get_dir_url('.upload', path=dir_path, modal=True),
+                                      btn_class="btn btn-large",
+                                      content=_gettext('Upload File')) }}
+            {% else %}
+              <a class="btn btn-large" href="{{ get_dir_url('.upload', path=dir_path) }}">{{ _gettext('Upload File') }}</a>
+            {%- endif -%}
         </div>
         {% endif %}
         {% if admin_view.can_mkdir %}
         <div class="btn-group">
-            <a class="btn btn-large" href="{{ get_dir_url('.mkdir', path=dir_path) }}">{{ _gettext('Create Directory') }}</a>
+            {%- if admin_view.mkdir_modal -%}
+              {{ lib.add_modal_button(url=get_dir_url('.mkdir', path=dir_path, modal=True),
+                                      btn_class="btn btn-large",
+                                      content=_gettext('Create Directory')) }}
+            {% else %}
+              <a class="btn btn-large" href="{{ get_dir_url('.mkdir', path=dir_path) }}">{{ _gettext('Create Directory') }}</a>
+            {%- endif -%}
         </div>
         {% endif %}
         {% if actions %}
@@ -117,14 +142,20 @@
         {% endif %}
     </div>
     {% endblock %}
+
     {% block actions %}
-    {{ actionslib.form(actions, url_for('.action_view')) }}
+    {{ actionslib.form(actions, get_url('.action_view')) }}
     {% endblock %}
+
+    {%- if admin_view.rename_modal or admin_view.mkdir_modal
+           or admin_view.upload_modal or admin_view.edit_modal -%}
+        {{ lib.add_modal_window() }}
+    {%- endif -%}
 {% endblock %}
 
 {% block tail %}
     {{ super() }}
     {{ actionslib.script(_gettext('Please select at least one file.'),
-                      actions,
-                      actions_confirmation) }}
+                         actions,
+                         actions_confirmation) }}
 {% endblock %}

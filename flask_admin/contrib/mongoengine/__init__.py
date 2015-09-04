@@ -1,5 +1,5 @@
 try:
-    import flask.ext.mongoengine
+    import flask_mongoengine
 except ImportError:
     raise Exception('Please install flask-mongoengine in order to use mongoengine backend')
 

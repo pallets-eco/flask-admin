@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.ext.admin._backwards
+    flask_admin._backwards
     ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Backward compatibility helpers.

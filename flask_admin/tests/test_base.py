@@ -1,8 +1,8 @@
 from nose.tools import ok_, eq_, raises
 
-from flask import Flask, request, abort
+from flask import Flask, request, abort, url_for
 from flask.views import MethodView
-from flask.ext.admin import base
+from flask_admin import base
 
 
 class MockView(base.BaseView):
@@ -76,7 +76,7 @@ def test_baseview_defaults():
     view = MockView()
     eq_(view.name, None)
     eq_(view.category, None)
-    eq_(view.endpoint, None)
+    eq_(view.endpoint, 'mockview')
     eq_(view.url, None)
     eq_(view.static_folder, None)
     eq_(view.admin, None)
@@ -140,6 +140,11 @@ def test_admin_customizations():
     rv = client.get('/foobar/')
     eq_(rv.status_code, 200)
 
+    # test custom static_url_path
+    with app.test_request_context('/'):
+        rv = client.get(url_for('admin.static', filename='bootstrap/bootstrap2/css/bootstrap.css'))
+    eq_(rv.status_code, 200)
+
 
 def test_baseview_registration():
     app = Flask(__name__)
@@ -197,6 +202,15 @@ def test_baseview_urls():
     admin.add_view(view)
 
     eq_(len(view._urls), 2)
+
+
+def test_add_views():
+    app = Flask(__name__)
+    admin = base.Admin(app)
+
+    admin.add_views(MockView(endpoint='test1'), MockView(endpoint='test2'))
+
+    eq_(len(admin.menu()), 3)
 
 
 @raises(Exception)
@@ -369,6 +383,11 @@ def test_root_mount():
     rv = client.get('/mockview/')
     eq_(rv.data, b'Success!')
 
+    # test static files when url='/'
+    with app.test_request_context('/'):
+        rv = client.get(url_for('admin.static', filename='bootstrap/bootstrap2/css/bootstrap.css'))
+    eq_(rv.status_code, 200)
+
 
 def test_menu_links():
     app = Flask(__name__)
@@ -384,6 +403,29 @@ def test_menu_links():
     ok_('TestMenuLink2' in data)
 
 
+def test_add_links():
+    app = Flask(__name__)
+    admin = base.Admin(app)
+    admin.add_links(base.MenuLink('TestMenuLink1', endpoint='.index'),
+                    base.MenuLink('TestMenuLink2', url='http://python.org/'))
+
+    client = app.test_client()
+    rv = client.get('/admin/')
+
+    data = rv.data.decode('utf-8')
+    ok_('TestMenuLink1' in data)
+    ok_('TestMenuLink2' in data)
+
+
 def check_class_name():
     view = MockView()
     eq_(view.name, 'Mock View')
+
+
+def check_endpoint():
+    class CustomView(MockView):
+        def _get_endpoint(self, endpoint):
+            return 'admin.' + super(CustomView, self)._get_endpoint(endpoint)
+
+    view = CustomView()
+    eq_(view.endpoint, 'admin.customview')

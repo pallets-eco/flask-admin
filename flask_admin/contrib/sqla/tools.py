@@ -3,8 +3,8 @@ from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
 from ast import literal_eval
 
-from flask.ext.admin._compat import filter_list
-from flask.ext.admin.tools import iterencode, iterdecode
+from flask_admin._compat import filter_list
+from flask_admin.tools import iterencode, iterdecode, escape
 
 
 def parse_like_term(term):
@@ -36,16 +36,8 @@ def get_primary_key(model):
         :param model:
             Model class
     """
-    props = model._sa_class_manager.mapper.iterate_properties
-
-    pks = []
-    for p in props:
-        if hasattr(p, 'columns'):
-            for c in filter_foreign_columns(model.__table__, p.columns):
-                if c.primary_key:
-                    pks.append(p.key)
-                    break
-
+    mapper = model._sa_class_manager.mapper
+    pks = [mapper.get_property_by_column(c).key for c in mapper.primary_key]
     if len(pks) == 1:
         return pks[0]
     elif len(pks) > 1:

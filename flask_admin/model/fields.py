@@ -3,8 +3,14 @@ import itertools
 from wtforms.validators import ValidationError
 from wtforms.fields import FieldList, FormField, SelectFieldBase
 
-from flask.ext.admin._compat import iteritems
-from .widgets import InlineFieldListWidget, InlineFormWidget, AjaxSelect2Widget
+try:
+    from wtforms.fields import _unset_value as unset_value
+except ImportError:
+    from wtforms.utils import unset_value
+
+from flask_admin._compat import iteritems
+from .widgets import (InlineFieldListWidget, InlineFormWidget,
+                      AjaxSelect2Widget, XEditableWidget)
 
 
 class InlineFieldList(FieldList):
@@ -13,18 +19,21 @@ class InlineFieldList(FieldList):
     def __init__(self, *args, **kwargs):
         super(InlineFieldList, self).__init__(*args, **kwargs)
 
-        # Create template
-        self.template = self.unbound_field.bind(form=None, name='')
-
-        # Small hack to remove separator from FormField
-        if isinstance(self.template, FormField):
-            self.template.separator = ''
-
-        self.template.process(None)
-
     def __call__(self, **kwargs):
+        # Create template
+        meta = getattr(self, 'meta', None)
+        if meta:
+            template = self.unbound_field.bind(form=None, name='', _meta=meta)
+        else:
+            template = self.unbound_field.bind(form=None, name='')
+        # Small hack to remove separator from FormField
+        if isinstance(template, FormField):
+            template.separator = ''
+
+        template.process(None)
+
         return self.widget(self,
-                           template=self.template,
+                           template=template,
                            check=self.display_row_controls,
                            **kwargs)
 
@@ -115,6 +124,58 @@ class InlineModelFormField(FormField):
         for name, field in iteritems(self.form._fields):
             if name != self._pk:
                 field.populate_obj(obj, name)
+
+
+class ListEditableFieldList(FieldList):
+    """
+        Modified FieldList to allow for alphanumeric primary keys.
+
+        Used in the editable list view.
+    """
+    widget = XEditableWidget()
+
+    def __init__(self, *args, **kwargs):
+        super(ListEditableFieldList, self).__init__(*args, **kwargs)
+        # min_entries = 1 is required for the widget to determine the type
+        self.min_entries = 1
+
+    def _extract_indices(self, prefix, formdata):
+        offset = len(prefix) + 1
+        for name in formdata:
+            # selects only relevant field (not CSRF, other fields, etc)
+            if name.startswith(prefix):
+                # exclude offset (prefix-), remaining text is the index
+                yield name[offset:]
+
+    def _add_entry(self, formdata=None, data=unset_value, index=None):
+        assert not self.max_entries or len(self.entries) < self.max_entries, \
+            'You cannot have more than max_entries entries in this FieldList'
+        if index is None:
+            index = self.last_index + 1
+        self.last_index = index
+
+        # '%s-%s' instead of '%s-%d' to allow alphanumeric
+        name = '%s-%s' % (self.short_name, index)
+        id = '%s-%s' % (self.id, index)
+
+        # support both wtforms 1 and 2
+        meta = getattr(self, 'meta', None)
+        if meta:
+            field = self.unbound_field.bind(
+                form=None, name=name, prefix=self._prefix, id=id, _meta=meta
+            )
+        else:
+            field = self.unbound_field.bind(
+                form=None, name=name, prefix=self._prefix, id=id
+            )
+
+        field.process(formdata, data)
+        self.entries.append(field)
+        return field
+
+    def populate_obj(self, obj, name):
+        # return data from first item, instead of a list of items
+        setattr(obj, name, self.data.pop())
 
 
 class AjaxSelectField(SelectFieldBase):

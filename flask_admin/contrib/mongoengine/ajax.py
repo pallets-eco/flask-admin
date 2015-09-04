@@ -1,7 +1,7 @@
 import mongoengine
 
-from flask.ext.admin._compat import string_types, as_unicode, iteritems
-from flask.ext.admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
+from flask_admin._compat import string_types, as_unicode, iteritems
+from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
 
 
 class QueryAjaxModelLoader(AjaxModelLoader):
@@ -133,7 +133,7 @@ def process_ajax_references(references, view):
             field = getattr(model, name, None)
 
             if not field:
-                raise ValueError('Invalid subdocument field %s.%s')
+                raise ValueError('Invalid subdocument field %s.%s' % (model, name))
 
             handle_field(field, doc, make_name(base, name))
 

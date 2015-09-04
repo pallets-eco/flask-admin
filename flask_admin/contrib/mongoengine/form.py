@@ -1,14 +1,14 @@
-from mongoengine import ReferenceField
-from mongoengine.base import BaseDocument, DocumentMetaclass
+from mongoengine import ReferenceField, ListField
+from mongoengine.base import BaseDocument, DocumentMetaclass, get_document
 
 from wtforms import fields, validators
-from flask.ext.mongoengine.wtf import orm, fields as mongo_fields
+from flask_mongoengine.wtf import orm, fields as mongo_fields
 
-from flask.ext.admin import form
-from flask.ext.admin.model.form import FieldPlaceholder
-from flask.ext.admin.model.fields import InlineFieldList, AjaxSelectField, AjaxSelectMultipleField
-from flask.ext.admin.model.widgets import InlineFormWidget
-from flask.ext.admin._compat import iteritems
+from flask_admin import form
+from flask_admin.model.form import FieldPlaceholder
+from flask_admin.model.fields import InlineFieldList, AjaxSelectField, AjaxSelectMultipleField
+from flask_admin.model.widgets import InlineFormWidget
+from flask_admin._compat import iteritems
 
 from .fields import ModelFormField, MongoFileField, MongoImageField
 from .subdoc import EmbeddedForm
@@ -71,8 +71,8 @@ class CustomModelConverter(orm.ModelConverter):
             kwargs.update(field_args)
 
         if field.required:
-            kwargs['validators'].append(validators.Required())
-        else:
+            kwargs['validators'].append(validators.InputRequired())
+        elif not isinstance(field, ListField):
             kwargs['validators'].append(validators.Optional())
 
         ftype = type(field).__name__
@@ -114,6 +114,7 @@ class CustomModelConverter(orm.ModelConverter):
                 return AjaxSelectMultipleField(loader, **kwargs)
 
             kwargs['widget'] = form.Select2Widget(multiple=True)
+            kwargs.setdefault('validators', []).append(validators.Optional())
 
             # TODO: Support AJAX multi-select
             doc_type = field.field.document_type
@@ -184,7 +185,7 @@ def get_form(model, converter,
     """
     Create a wtforms Form for a given mongoengine Document schema::
 
-        from flask.ext.mongoengine.wtf import model_form
+        from flask_mongoengine.wtf import model_form
         from myproject.myapp.schemas import Article
         ArticleForm = model_form(Article)
 
@@ -205,6 +206,10 @@ def get_form(model, converter,
         A converter to generate the fields based on the model properties. If
         not set, ``ModelConverter`` is used.
     """
+
+    if isinstance(model, str):
+        model = get_document(model)
+
     if not isinstance(model, (BaseDocument, DocumentMetaclass)):
         raise TypeError('Model must be a mongoengine Document schema')
 

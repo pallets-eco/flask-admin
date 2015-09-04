@@ -1,309 +1,628 @@
-# Spanish translations for Flask-Admin.
-# Copyright (C) 2012 ORGANIZATION
-# This file is distributed under the same license as the Flask-Admin
-# project.
-# Pablo Orduña <pablo.orduna@deusto.es>, 2013.
-# Irene Lequerica <ilequerica@ieec.uned.es>, 2013.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: Flask-Admin\n"
-"Report-Msgid-Bugs-To: pablo.orduna@deusto.es\n"
-"POT-Creation-Date: 2012-11-09 03:54+0200\n"
-"PO-Revision-Date: 2013-10-03 11:52+0200\n"
-"Last-Translator: Irene Lequerica <ilequerica@ieec.uned.es>\n"
-"Language-Team: \n"
-"Language: es_ES\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Project-Id-Version: flask-admin\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-08-17 20:17-0500\n"
+"PO-Revision-Date: 2015-08-17 21:19-0400\n"
+"Last-Translator: mrjoes <serge.koval@gmail.com>\n"
+"Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 1.3\n"
+"Generated-By: Babel 2.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: flask-admin\n"
+"X-Crowdin-Language: es-ES\n"
+"X-Crowdin-File: admin.pot\n"
+"Language: es_ES\n"
 
-#: ../flask_admin/base.py:283
+#: ../flask_admin/base.py:431
 msgid "Home"
 msgstr "Inicio"
 
-#: ../flask_admin/form.py:83
-msgid "Invalid time format"
-msgstr "El formato de hora no es válido"
-
-#: ../flask_admin/contrib/fileadmin.py:33
-msgid "Invalid directory name"
-msgstr "El nombre de la carpeta no válido"
-
-#: ../flask_admin/contrib/fileadmin.py:41
+#: ../flask_admin/contrib/fileadmin.py:235
 msgid "File to upload"
 msgstr "Archivo a subir"
 
-#: ../flask_admin/contrib/fileadmin.py:50
+#: ../flask_admin/contrib/fileadmin.py:243
 msgid "File required."
 msgstr "Se necesita un archivo"
 
-#: ../flask_admin/contrib/fileadmin.py:55
+#: ../flask_admin/contrib/fileadmin.py:248
 msgid "Invalid file type."
-msgstr "El tipo de archivo no es válido"
+msgstr "El tipo de archivo no es válido."
 
-#: ../flask_admin/contrib/fileadmin.py:365
-msgid "File uploading is disabled."
-msgstr "La subida de archivos está deshabilitada"
+#: ../flask_admin/contrib/fileadmin.py:259
+msgid "Content"
+msgstr "Contenido"
 
-#: ../flask_admin/contrib/fileadmin.py:374
+#: ../flask_admin/contrib/fileadmin.py:273
+msgid "Invalid name"
+msgstr "Nombre inválido"
+
+#: ../flask_admin/contrib/fileadmin.py:281
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:35
+msgid "Name"
+msgstr "Nombre"
+
+#: ../flask_admin/contrib/fileadmin.py:559
 #, python-format
 msgid "File \"%(name)s\" already exists."
-msgstr "El archivo \"%(name)s\" ya existe"
+msgstr "El archivo \"%(name)s\" ya existe."
 
-#: ../flask_admin/contrib/fileadmin.py:381
+#: ../flask_admin/contrib/fileadmin.py:583
+#: ../flask_admin/contrib/fileadmin.py:650
+#: ../flask_admin/contrib/fileadmin.py:707
+#: ../flask_admin/contrib/fileadmin.py:750
+#: ../flask_admin/contrib/fileadmin.py:796
+#: ../flask_admin/contrib/fileadmin.py:846
+msgid "Permission denied."
+msgstr "Permiso dengado."
+
+#: ../flask_admin/contrib/fileadmin.py:646
+msgid "File uploading is disabled."
+msgstr "La subida de archivos está deshabilitada."
+
+#: ../flask_admin/contrib/fileadmin.py:657
+#, python-format
+msgid "Successfully saved file: %(name)s"
+msgstr "Archivo guardado con éxito: %(name)s"
+
+#: ../flask_admin/contrib/fileadmin.py:661
 #, python-format
 msgid "Failed to save file: %(error)s"
 msgstr "Error al guardar el archivo: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:400
-msgid "Directory creation is disabled."
-msgstr "Creación de carpetas deshabilitada"
+#: ../flask_admin/contrib/fileadmin.py:664
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:121
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:123
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:121
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:123
+msgid "Upload File"
+msgstr "Subir archivo"
 
-#: ../flask_admin/contrib/fileadmin.py:410
+#: ../flask_admin/contrib/fileadmin.py:703
+msgid "Directory creation is disabled."
+msgstr "Creación de carpetas deshabilitada."
+
+#: ../flask_admin/contrib/fileadmin.py:716
+#, python-format
+msgid "Successfully created directory: %(directory)s"
+msgstr "Directorio creado correctamente: %(directory)s"
+
+#: ../flask_admin/contrib/fileadmin.py:720
 #, python-format
 msgid "Failed to create directory: %(error)s"
 msgstr "No se ha podido crear la carpeta: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:432
+#: ../flask_admin/contrib/fileadmin.py:725
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:132
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:134
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:132
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:134
+msgid "Create Directory"
+msgstr "Crear carpeta"
+
+#: ../flask_admin/contrib/fileadmin.py:746
 msgid "Deletion is disabled."
-msgstr "El borrado está deshabilitado"
+msgstr "El borrado está deshabilitado."
 
-#: ../flask_admin/contrib/fileadmin.py:437
+#: ../flask_admin/contrib/fileadmin.py:755
 msgid "Directory deletion is disabled."
-msgstr "El borrado de carpetas está deshabilitado"
+msgstr "El borrado de carpetas está deshabilitado."
 
-#: ../flask_admin/contrib/fileadmin.py:442
+#: ../flask_admin/contrib/fileadmin.py:761
 #, python-format
-msgid "Directory \"%s\" was successfully deleted."
-msgstr "La carpeta \"%s\" se ha borrado con éxito"
+msgid "Directory \"%(path)s\" was successfully deleted."
+msgstr "Con éxito se suprimió el directorio \"%(path)s\"."
 
-#: ../flask_admin/contrib/fileadmin.py:444
+#: ../flask_admin/contrib/fileadmin.py:763
 #, python-format
 msgid "Failed to delete directory: %(error)s"
 msgstr "No se ha podido borrar la carpeta: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:448
-#: ../flask_admin/contrib/fileadmin.py:511
+#: ../flask_admin/contrib/fileadmin.py:768
+#: ../flask_admin/contrib/fileadmin.py:915
 #, python-format
 msgid "File \"%(name)s\" was successfully deleted."
-msgstr "El archivo \"%(name)s\" se ha borrado con éxito"
+msgstr "El archivo \"%(name)s\" se ha borrado con éxito."
 
-#: ../flask_admin/contrib/fileadmin.py:450
-#: ../flask_admin/contrib/fileadmin.py:513
+#: ../flask_admin/contrib/fileadmin.py:770
+#: ../flask_admin/contrib/fileadmin.py:917
 #, python-format
 msgid "Failed to delete file: %(name)s"
 msgstr "No se ha podido borrar el archivo: %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:469
+#: ../flask_admin/contrib/fileadmin.py:792
 msgid "Renaming is disabled."
-msgstr "Renombrar está deshabilitado"
+msgstr "Renombrar está deshabilitado."
 
-#: ../flask_admin/contrib/fileadmin.py:473
+#: ../flask_admin/contrib/fileadmin.py:800
 msgid "Path does not exist."
-msgstr "La ruta no existe"
+msgstr "La ruta no existe."
 
-#: ../flask_admin/contrib/fileadmin.py:484
+#: ../flask_admin/contrib/fileadmin.py:811
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
 msgstr "\"%(src)s\" ha sido renombrado a \"%(dst)s\" correctamente"
 
-#: ../flask_admin/contrib/fileadmin.py:487
+#: ../flask_admin/contrib/fileadmin.py:814
 #, python-format
 msgid "Failed to rename: %(error)s"
 msgstr "No se ha podido renombrar: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:503
-#: ../flask_admin/contrib/peewee/view.py:355
-#: ../flask_admin/contrib/sqlamodel/view.py:680
+#: ../flask_admin/contrib/fileadmin.py:862
+#, python-format
+msgid "Error saving changes to %(name)s."
+msgstr "Error al guardar los cambios en %(name)s."
+
+#: ../flask_admin/contrib/fileadmin.py:866
+#, python-format
+msgid "Changes to %(name)s saved successfully."
+msgstr "Cambios %(name)s guardado correctamente."
+
+#: ../flask_admin/contrib/fileadmin.py:875
+#, python-format
+msgid "Error reading %(name)s."
+msgstr "Error %(name)s de lectura."
+
+#: ../flask_admin/contrib/fileadmin.py:878
+#: ../flask_admin/contrib/fileadmin.py:887
+#, python-format
+msgid "Unexpected error while reading from %(name)s"
+msgstr "Error inesperado durante la lectura de %(name)s"
+
+#: ../flask_admin/contrib/fileadmin.py:884
+#, python-format
+msgid "Cannot edit %(name)s."
+msgstr "No se puede editar %(name)s."
+
+#: ../flask_admin/contrib/fileadmin.py:902
+#: ../flask_admin/contrib/mongoengine/view.py:630
+#: ../flask_admin/contrib/peewee/view.py:432
+#: ../flask_admin/contrib/pymongo/view.py:352
+#: ../flask_admin/contrib/sqla/view.py:1061
 msgid "Delete"
 msgstr "Borrar"
 
-#: ../flask_admin/contrib/fileadmin.py:504
+#: ../flask_admin/contrib/fileadmin.py:903
 msgid "Are you sure you want to delete these files?"
 msgstr "¿Está seguro de que desea borrar estos archivos?"
 
-#: ../flask_admin/contrib/peewee/filters.py:35
-#: ../flask_admin/contrib/sqlamodel/filters.py:35
+#: ../flask_admin/contrib/fileadmin.py:906
+msgid "File deletion is disabled."
+msgstr "Eliminación de archivos está deshabilitado."
+
+#: ../flask_admin/contrib/fileadmin.py:919
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:17
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:26
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:26
+msgid "Edit"
+msgstr "Editar"
+
+#: ../flask_admin/contrib/rediscli.py:125
+msgid "Cli: Invalid command."
+msgstr "CLI: Comando no válido."
+
+#: ../flask_admin/contrib/geoa/fields.py:29
+msgid "Invalid JSON"
+msgstr "JSON no válido"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:38
+#: ../flask_admin/contrib/peewee/filters.py:38
+#: ../flask_admin/contrib/pymongo/filters.py:38
+#: ../flask_admin/contrib/sqla/filters.py:41
 msgid "equals"
 msgstr "igual a"
 
-#: ../flask_admin/contrib/peewee/filters.py:43
-#: ../flask_admin/contrib/sqlamodel/filters.py:43
+#: ../flask_admin/contrib/mongoengine/filters.py:47
+#: ../flask_admin/contrib/peewee/filters.py:46
+#: ../flask_admin/contrib/pymongo/filters.py:47
+#: ../flask_admin/contrib/sqla/filters.py:49
 msgid "not equal"
 msgstr "no es igual a"
 
-#: ../flask_admin/contrib/peewee/filters.py:52
-#: ../flask_admin/contrib/sqlamodel/filters.py:52
+#: ../flask_admin/contrib/mongoengine/filters.py:57
+#: ../flask_admin/contrib/peewee/filters.py:55
+#: ../flask_admin/contrib/pymongo/filters.py:57
+#: ../flask_admin/contrib/sqla/filters.py:58
 msgid "contains"
 msgstr "contiene"
 
-#: ../flask_admin/contrib/peewee/filters.py:61
-#: ../flask_admin/contrib/sqlamodel/filters.py:61
+#: ../flask_admin/contrib/mongoengine/filters.py:67
+#: ../flask_admin/contrib/peewee/filters.py:64
+#: ../flask_admin/contrib/pymongo/filters.py:67
+#: ../flask_admin/contrib/sqla/filters.py:67
 msgid "not contains"
 msgstr "no contiene"
 
-#: ../flask_admin/contrib/peewee/filters.py:69
-#: ../flask_admin/contrib/sqlamodel/filters.py:69
+#: ../flask_admin/contrib/mongoengine/filters.py:76
+#: ../flask_admin/contrib/peewee/filters.py:72
+#: ../flask_admin/contrib/pymongo/filters.py:80
+#: ../flask_admin/contrib/sqla/filters.py:75
 msgid "greater than"
 msgstr "mayor que"
 
-#: ../flask_admin/contrib/peewee/filters.py:77
-#: ../flask_admin/contrib/sqlamodel/filters.py:77
+#: ../flask_admin/contrib/mongoengine/filters.py:85
+#: ../flask_admin/contrib/peewee/filters.py:80
+#: ../flask_admin/contrib/pymongo/filters.py:93
+#: ../flask_admin/contrib/sqla/filters.py:83
 msgid "smaller than"
 msgstr "menor que"
 
-#: ../flask_admin/contrib/peewee/view.py:317
-#: ../flask_admin/contrib/sqlamodel/view.py:627
-#, python-format
-msgid "Failed to create model. %(error)s"
-msgstr "Error al crear el registro: %(error)s"
+#: ../flask_admin/contrib/mongoengine/filters.py:97
+#: ../flask_admin/contrib/peewee/filters.py:91
+#: ../flask_admin/contrib/sqla/filters.py:94
+msgid "empty"
+msgstr "vacío"
 
-#: ../flask_admin/contrib/peewee/view.py:332
-#: ../flask_admin/contrib/sqlamodel/view.py:647
-#, python-format
-msgid "Failed to update model. %(error)s"
-msgstr "Error al actualizar el registro: %(error)s"
+#: ../flask_admin/contrib/mongoengine/filters.py:112
+#: ../flask_admin/contrib/peewee/filters.py:105
+#: ../flask_admin/contrib/sqla/filters.py:108
+msgid "in list"
+msgstr "en la lista"
 
-#: ../flask_admin/contrib/peewee/view.py:342
-#: ../flask_admin/contrib/sqlamodel/view.py:666
-#, python-format
-msgid "Failed to delete model. %(error)s"
-msgstr "Error al borrar el registro: %(error)s"
+#: ../flask_admin/contrib/mongoengine/filters.py:121
+#: ../flask_admin/contrib/peewee/filters.py:114
+#: ../flask_admin/contrib/sqla/filters.py:118
+msgid "not in list"
+msgstr "no en la lista"
 
-#: ../flask_admin/contrib/peewee/view.py:356
-#: ../flask_admin/contrib/sqlamodel/view.py:681
-msgid "Are you sure you want to delete selected models?"
+#: ../flask_admin/contrib/mongoengine/filters.py:221
+#: ../flask_admin/contrib/peewee/filters.py:208
+#: ../flask_admin/contrib/peewee/filters.py:245
+#: ../flask_admin/contrib/peewee/filters.py:282
+#: ../flask_admin/contrib/sqla/filters.py:213
+#: ../flask_admin/contrib/sqla/filters.py:250
+#: ../flask_admin/contrib/sqla/filters.py:287
+msgid "not between"
+msgstr "No entre"
+
+#: ../flask_admin/contrib/mongoengine/view.py:520
+#, python-format
+msgid "Failed to get model. %(error)s"
+msgstr "Error al obtener el modelo. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:539
+#: ../flask_admin/contrib/peewee/view.py:380
+#: ../flask_admin/contrib/pymongo/view.py:284
+#: ../flask_admin/contrib/sqla/view.py:990
+#, python-format
+msgid "Failed to create record. %(error)s"
+msgstr "Error al crear el registro. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:565
+#: ../flask_admin/contrib/peewee/view.py:399
+#: ../flask_admin/contrib/pymongo/view.py:309
+#: ../flask_admin/contrib/sqla/view.py:1016 ../flask_admin/model/base.py:1864
+#: ../flask_admin/model/base.py:1873
+#, python-format
+msgid "Failed to update record. %(error)s"
+msgstr "Error al actualizar el registro. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:588
+#: ../flask_admin/contrib/peewee/view.py:414
+#: ../flask_admin/contrib/pymongo/view.py:334
+#: ../flask_admin/contrib/sqla/view.py:1041
+#, python-format
+msgid "Failed to delete record. %(error)s"
+msgstr "Error al borrar el registro. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:631
+#: ../flask_admin/contrib/peewee/view.py:433
+#: ../flask_admin/contrib/pymongo/view.py:353
+#: ../flask_admin/contrib/sqla/view.py:1062
+msgid "Are you sure you want to delete selected records?"
 msgstr "¿Está seguro de que desea borrar los elementos seleccionados?"
 
-#: ../flask_admin/contrib/peewee/view.py:372
-#: ../flask_admin/contrib/sqlamodel/view.py:699
+#: ../flask_admin/contrib/mongoengine/view.py:640
+#: ../flask_admin/contrib/peewee/view.py:450
+#: ../flask_admin/contrib/pymongo/view.py:363
+#: ../flask_admin/contrib/sqla/view.py:1078 ../flask_admin/model/base.py:1812
 #, python-format
-msgid "Model was successfully deleted."
-msgid_plural "%(count)s models were successfully deleted."
-msgstr[0] "El elemento se ha borrado correctamente"
-msgstr[1] "Los elementos se han borrado correctamente"
+msgid "Record was successfully deleted."
+msgid_plural "%(count)s records were successfully deleted."
+msgstr[0] "El elemento se ha borrado correctamente."
+msgstr[1] "%(count)s elementos se han borrado correctamente."
 
-#: ../flask_admin/contrib/peewee/view.py:377
-#: ../flask_admin/contrib/sqlamodel/view.py:704
+#: ../flask_admin/contrib/mongoengine/view.py:646
+#: ../flask_admin/contrib/peewee/view.py:456
+#: ../flask_admin/contrib/pymongo/view.py:368
+#: ../flask_admin/contrib/sqla/view.py:1086
 #, python-format
-msgid "Failed to delete models. %(error)s"
-msgstr "No se han podido borrar los elementos seleccionados: %(error)s"
+msgid "Failed to delete records. %(error)s"
+msgstr "No se han podido borrar los elementos seleccionados. %(error)s"
 
-#: ../flask_admin/contrib/sqlamodel/fields.py:125
-#: ../flask_admin/contrib/sqlamodel/fields.py:175
-#: ../flask_admin/contrib/sqlamodel/fields.py:180
+#: ../flask_admin/contrib/sqla/fields.py:123
+#: ../flask_admin/contrib/sqla/fields.py:173
+#: ../flask_admin/contrib/sqla/fields.py:178 ../flask_admin/model/fields.py:225
+#: ../flask_admin/model/fields.py:274
 msgid "Not a valid choice"
 msgstr "No es una opción válida"
 
-#: ../flask_admin/contrib/sqlamodel/validators.py:33
+#: ../flask_admin/contrib/sqla/validators.py:42
 msgid "Already exists."
-msgstr "Ya existe"
+msgstr "Ya existe."
 
-#: ../flask_admin/model/base.py:869
-msgid "Model was successfully created."
-msgstr "El elemento se ha creado correctamente"
+#: ../flask_admin/contrib/sqla/validators.py:60
+#, python-format
+msgid "At least %d item is required"
+msgid_plural "At least %d items are required"
+msgstr[0] "Por lo menos %d artículo es necesario"
+msgstr[1] "Por lo menos %d artículo es necesario"
 
-#: ../flask_admin/model/filters.py:82
+#: ../flask_admin/contrib/sqla/view.py:969
+#, python-format
+msgid "Integrity error. %(message)s"
+msgstr "Error de integridad. %(message)s"
+
+#: ../flask_admin/form/fields.py:94
+msgid "Invalid time format"
+msgstr "El formato de hora no es válido"
+
+#: ../flask_admin/form/fields.py:140
+msgid "Invalid Choice: could not coerce"
+msgstr "Elección inválida: no se puede ajustar"
+
+#: ../flask_admin/form/upload.py:205
+msgid "Invalid file extension"
+msgstr "Extensión del archivo no válido"
+
+#: ../flask_admin/form/upload.py:212 ../flask_admin/form/upload.py:279
+#, python-format
+msgid "File \"%s\" already exists."
+msgstr "El archivo \"%s\" ya existe."
+
+#: ../flask_admin/model/base.py:1412
+msgid "There are no items in the table."
+msgstr "No hay objetos en la tabla."
+
+#: ../flask_admin/model/base.py:1436
+#, python-format
+msgid "Invalid Filter Value: %(value)s"
+msgstr "Valor de filtro no válido: %(value)s"
+
+#: ../flask_admin/model/base.py:1677
+msgid "Record was successfully created."
+msgstr "El elemento se ha creado correctamente."
+
+#: ../flask_admin/model/base.py:1721 ../flask_admin/model/base.py:1773
+#: ../flask_admin/model/base.py:1807
+msgid "Record does not exist."
+msgstr "No existe ningún registro."
+
+#: ../flask_admin/model/base.py:1730 ../flask_admin/model/base.py:1869
+msgid "Record was successfully saved."
+msgstr "Registro fue guardado con éxito."
+
+#: ../flask_admin/model/filters.py:99
 msgid "Yes"
 msgstr "Si"
 
-#: ../flask_admin/model/filters.py:83
+#: ../flask_admin/model/filters.py:100
 msgid "No"
 msgstr "No"
 
-#: ../flask_admin/templates/admin/actions.html:3
+#: ../flask_admin/model/filters.py:168 ../flask_admin/model/filters.py:208
+#: ../flask_admin/model/filters.py:253
+msgid "between"
+msgstr "entre"
+
+#: ../flask_admin/templates/bootstrap2/admin/actions.html:4
+#: ../flask_admin/templates/bootstrap3/admin/actions.html:4
 msgid "With selected"
 msgstr "Con seleccionados"
 
-#: ../flask_admin/templates/admin/lib.html:117
-msgid "Submit"
-msgstr "Enviar"
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:200
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:190
+msgid "Save"
+msgstr "Salvar"
 
-#: ../flask_admin/templates/admin/lib.html:122
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:205
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:195
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: ../flask_admin/templates/admin/file/list.html:8
+#: ../flask_admin/templates/bootstrap2/admin/file/edit.html:8
+#: ../flask_admin/templates/bootstrap3/admin/file/edit.html:8
+msgid "This file cannot be edited for now."
+msgstr "Este archivo no puede ser editado por ahora."
+
+#: ../flask_admin/templates/bootstrap2/admin/file/edit.html:21
+#: ../flask_admin/templates/bootstrap3/admin/file/edit.html:20
+#, python-format
+msgid "Editing %(path)s"
+msgstr "Edición %(path)s"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
 msgid "Root"
 msgstr "Raíz"
 
-#: ../flask_admin/templates/admin/file/list.html:55
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:36
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:36
+msgid "Size"
+msgstr "Tamaño"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:55
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:58
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:55
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:58
+msgid "Rename File"
+msgstr "Renombrar El Archivo"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:69
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:69
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
 msgstr "¿Está seguro de que desea borrar \\'%(name)s\\' de forma recursiva?"
 
-#: ../flask_admin/templates/admin/file/list.html:63
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:78
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:78
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\'?"
 msgstr "¿Está seguro de que desea borrar \\'%(name)s\\'?"
 
-#: ../flask_admin/templates/admin/file/list.html:90
-msgid "Upload File"
-msgstr "Subir archivo"
-
-#: ../flask_admin/templates/admin/file/list.html:95
-msgid "Create Directory"
-msgstr "Crear carpeta"
-
-#: ../flask_admin/templates/admin/file/list.html:109
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:158
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:158
 msgid "Please select at least one file."
-msgstr "Por favor, seleccione al menos un archivo"
+msgstr "Por favor, seleccione al menos un archivo."
 
-#: ../flask_admin/templates/admin/file/rename.html:5
+#: ../flask_admin/templates/bootstrap2/admin/file/rename.html:12
+#: ../flask_admin/templates/bootstrap3/admin/file/rename.html:12
 #, python-format
-msgid "Please provide new name for %(name)s"
-msgstr "Proporcione un nombre nuevo para %(name)s"
+msgid "Rename %(name)s"
+msgstr "Cambiar el nombre de %(name)s"
 
-#: ../flask_admin/templates/admin/model/create.html:12
-#: ../flask_admin/templates/admin/model/list.html:13
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:5
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:5
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
+msgid "Save and Add Another"
+msgstr "Save and Add Another"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:6
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:6
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:6
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:6
+msgid "Save and Continue Editing"
+msgstr "Save and Continue Editing"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:18
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:8
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:18
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:16
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:18
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:8
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:18
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:16
 msgid "List"
 msgstr "Listado"
 
-#: ../flask_admin/templates/admin/model/create.html:15
-#: ../flask_admin/templates/admin/model/list.html:17
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:21
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:12
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:22
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:22
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:24
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:21
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:12
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
 msgid "Create"
 msgstr "Crear"
 
-#: ../flask_admin/templates/admin/model/create.html:20
-msgid "Save and Add"
-msgstr "Guardar y nuevo"
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:21
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:111
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:113
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:21
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:111
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:113
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
+msgid "View Record"
+msgstr "Ver expediente"
 
-#: ../flask_admin/templates/admin/model/inline_form_list.html:24
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:29
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:8
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:28
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:15
+msgid "Filter"
+msgstr "Filtrer"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:30
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:30
+msgid "Details"
+msgstr "Details"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:14
 msgid "Delete?"
 msgstr "¿Borrar?"
 
-#: ../flask_admin/templates/admin/model/inline_form_list.html:32
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:40
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:43
 msgid "Add"
 msgstr "Nuevo"
 
-#: ../flask_admin/templates/admin/model/list.html:24
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:3
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:3
 msgid "Add Filter"
 msgstr "Añadir filtro"
 
-#: ../flask_admin/templates/admin/model/list.html:51
-msgid "Search"
-msgstr "Buscar"
-
-#: ../flask_admin/templates/admin/model/list.html:64
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:17
 msgid "Apply"
 msgstr "Aplicar"
 
-#: ../flask_admin/templates/admin/model/list.html:66
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:19
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:19
 msgid "Reset Filters"
 msgstr "Restaurar filtros"
 
-#: ../flask_admin/templates/admin/model/list.html:74
-msgid "Remove Filter"
-msgstr "Borrar filtro"
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:38
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:45
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:38
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:43
+msgid "Search"
+msgstr "Buscar"
 
-#: ../flask_admin/templates/admin/model/list.html:149
-msgid "You sure you want to delete this item?"
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:22
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:24
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
+msgid "Create new record"
+msgstr "Crear nuevo registro"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:61
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:61
+msgid "Select all records"
+msgstr "Seleccionar todos los registros"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:72
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:81
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:72
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:81
+#, python-format
+msgid "Sort by %(name)s"
+msgstr "Ordenar por %(name)s"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:103
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:103
+msgid "Select record"
+msgstr "Seleccione registro"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:120
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:122
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:120
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:122
+msgid "Edit record"
+msgstr "Editar registro"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:136
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:136
+msgid "Are you sure you want to delete this record?"
 msgstr "¿Está seguro de que quiere borrar este elemento?"
 
-#: ../flask_admin/templates/admin/model/list.html:173
-msgid "Please select at least one model."
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:136
+msgid "Delete record"
+msgstr "Borrar registro"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:193
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:194
+msgid "Please select at least one record."
 msgstr "Por favor, seleccione al menos un elemento."
+
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/create.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/create.html:7
+msgid "Create New Record"
+msgstr "Crear Nuevo Registro"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:8
+msgid "Edit Record"
+msgstr "Editar Registro"
 

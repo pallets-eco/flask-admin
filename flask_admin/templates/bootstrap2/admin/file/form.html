@@ -1,6 +1,27 @@
-{% extends 'admin/master.html' %}
+{%- if not modal -%}
+    {% extends 'admin/master.html' %}
+{%- endif -%}
 {% import 'admin/lib.html' as lib with context %}
 
 {% block body %}
-    {{ lib.render_form(form, dir_url) }}
+    {%- if modal -%}
+      {{ lib.render_form(form, dir_url, action=request.url, is_modal=True) }}
+    {%- else -%}
+      <h3>{{ header_text }}</h3>
+      {{ lib.render_form(form, dir_url) }}
+    {%- endif -%}
+{% endblock %}
+
+{% block tail %}
+    {%- if modal -%}
+    <script>
+    // fill the header of modal dynamically
+    $('.modal-header h3').html('{{ header_text }}');
+
+    // fixes "remote modal shows same content every time"
+    $('.modal').on('hidden', function() {
+        $(this).removeData('modal');
+    });
+    </script>
+    {%- endif -%}
 {% endblock %}

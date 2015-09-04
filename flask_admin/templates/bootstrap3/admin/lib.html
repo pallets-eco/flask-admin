@@ -1,3 +1,5 @@
+{% import 'admin/static.html' as admin_static with context %}
+
 {# ---------------------- Pager -------------------------- #}
 {% macro pager(page, pages, generator) -%}
 {% if pages > 1 %}
@@ -72,10 +74,50 @@
 {% endif %}
 {%- endmacro %}
 
+{% macro simple_pager(page, have_next, generator) -%}
+<ul class="pagination">
+  {% if page > 0 %}
+  <li>
+      <a href="{{ generator(page - 1) }}">&lt;</a>
+  </li>
+  {% else %}
+  <li class="disabled">
+      <a href="{{ generator(0) }}">&lt;</a>
+  </li>
+  {% endif %}
+  {% if have_next %}
+  <li>
+      <a href="{{ generator(page + 1) }}">&gt;</a>
+  </li>
+  {% else %}
+  <li class="disabled">
+      <a href="{{ generator(page) }}">&gt;</a>
+  </li>
+  {% endif %}
+</ul>
+{%- endmacro %}
+
+{# ---------------------- Modal Window ------------------- #}
+{% macro add_modal_window(modal_window_id='fa_modal_window', modal_label_id='fa_modal_label') %}
+  <div class="modal fade" id="{{ modal_window_id }}" tabindex="-1" role="dialog" aria-labelledby="{{ modal_label_id }}">
+    <div class="modal-dialog" role="document">
+      {# bootstrap version > 3.1.0 required for this to work #}
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro add_modal_button(url='', title='', content='', modal_window_id='fa_modal_window', btn_class='icon') %}
+  <a class="{{ btn_class }}" data-target="#{{ modal_window_id }}" title="{{ title }}" href="{{ url }}" data-toggle="modal">
+    {{ content|safe }}
+  </a>
+{% endmacro %}
+
 {# ---------------------- Forms -------------------------- #}
-{% macro render_field(form, field, kwargs={}) %}
+{% macro render_field(form, field, kwargs={}, caller=None) %}
   {% set direct_error = h.is_field_error(field.errors) %}
-  <div class="form-group{{ ' error' if direct_error else '' }}">
+  <div class="form-group{{ ' has-error' if direct_error else '' }}">
     <label for="{{ field.id }}" class="col-md-2 control-label">{{ field.label.text }}
         {% if h.is_required_form_field(field) %}
           <strong style="color: red">&#42;</strong>
@@ -83,19 +125,22 @@
           &nbsp;
         {%- endif %}
     </label>
-    <div class="col-md-4">
+    <div class="{{ kwargs.get('column_class', 'col-md-10') }}">
       {% set _dummy = kwargs.setdefault('class', 'form-control') %}
       {{ field(**kwargs)|safe }}
+      {% if field.description %}
+      <p class="help-block">{{ field.description|safe }}</p>
+      {% endif %}
+      {% if direct_error %}
+        <ul class="help-block input-errors">
+        {% for e in field.errors if e is string %}
+          <li>{{ e }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
     </div>
-    {% if field.description %}
-    <span class="help-block">{{ field.description }}</span>
-    {% endif %}
-    {% if direct_error %}
-      <ul{% if direct_error %} class="input-errors"{% endif %}>
-      {% for e in field.errors if e is string %}
-        <li>{{ e }}</li>
-      {% endfor %}
-      </ul>
+    {% if caller %}
+      {{ caller(form, field, direct_error, kwargs) }}
     {% endif %}
   </div>
 {% endmacro %}
@@ -133,28 +178,60 @@
 {% endmacro %}
 
 {% macro form_tag(form=None, action=None) %}
-    <form action="{{ action or '' }}" method="POST" role="form" class="form-horizontal" enctype="multipart/form-data">
+    <form action="{{ action or '' }}" method="POST" role="form" class="admin-form form-horizontal" enctype="multipart/form-data">
       {{ caller() }}
     </form>
 {% endmacro %}
 
-{% macro render_form_buttons(cancel_url, extra=None) %}
+{% macro render_form_buttons(cancel_url, extra=None, is_modal=False) %}
+    <hr>
     <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10 submit-row">
-	<input type="submit" class="btn btn-primary" value="{{ _gettext('Submit') }}" />
-	{% if extra %}
-	{{ extra }}
-	{% endif %}
-	{% if cancel_url %}
-	<a href="{{ cancel_url }}" class="btn btn-cancel" role="button">{{ _gettext('Cancel') }}</a>
-	{% endif %}
+      <div class="col-md-offset-2 col-md-10 submit-row">
+        <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
+        {% if extra %}
+        {{ extra }}
+        {% endif %}
+        {% if cancel_url %}
+          <a href="{{ cancel_url }}" class="btn btn-danger" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
+        {% endif %}
       </div>
     </div>
 {% endmacro %}
 
-{% macro render_form(form, cancel_url, extra=None, form_opts=None, action=None) -%}
+{% macro render_form(form, cancel_url, extra=None, form_opts=None, action=None, is_modal=False) -%}
     {% call form_tag(action=action) %}
         {{ render_form_fields(form, form_opts=form_opts) }}
-        {{ render_form_buttons(cancel_url, extra) }}
+        {{ render_form_buttons(cancel_url, extra, is_modal) }}
     {% endcall %}
+{% endmacro %}
+
+{% macro form_css() %}
+  <link href="{{ admin_static.url(filename='vendor/select2/select2.css', v='3.5.2') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/select2/select2-bootstrap3.css', v='1.4.6') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker-bs3.css', v='1.3.22') }}" rel="stylesheet">
+  {% if config.MAPBOX_MAP_ID %}
+  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css', v='0.7.3') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css', v='0.2.3') }}" rel="stylesheet">
+  {% endif %}
+  {% if editable_columns %}
+  <link href="{{ admin_static.url(filename='vendor/x-editable/css/bootstrap3-editable.css', v='1.5.1') }}" rel="stylesheet">
+  {% endif %}
+{% endmacro %}
+
+{% macro form_js() %}
+  {% if config.MAPBOX_MAP_ID %}
+  <script>
+  window.MAPBOX_MAP_ID = "{{ config.MAPBOX_MAP_ID }}";
+  {% if config.MAPBOX_ACCESS_TOKEN %}
+  window.MAPBOX_ACCESS_TOKEN = "{{ config.MAPBOX_ACCESS_TOKEN }}";
+  {% endif %}
+  </script>
+  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js', v='0.7.3') }}"></script>
+  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js', v='0.2.3') }}"></script>
+  {% endif %}
+  <script src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js', v='1.3.22') }}"></script>
+  {% if editable_columns %}
+  <script src="{{ admin_static.url(filename='vendor/x-editable/js/bootstrap3-editable.min.js', v='1.5.1') }}"></script>
+  {% endif %}
+  <script src="{{ admin_static.url(filename='admin/js/form.js', v='1.0.0') }}"></script>
 {% endmacro %}

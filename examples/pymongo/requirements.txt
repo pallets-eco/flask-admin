@@ -1,0 +1,4 @@
+Flask
+Flask-Admin
+pymongo==2.4.1
+bson

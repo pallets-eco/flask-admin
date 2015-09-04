@@ -1,7 +1,7 @@
 from jinja2 import Markup
 
-from flask.ext.admin._compat import string_types
-from flask.ext.admin import helpers
+from flask_admin._compat import string_types
+from flask_admin import helpers
 
 
 class BaseRule(object):
@@ -25,6 +25,13 @@ class BaseRule(object):
         self.rule_set = rule_set
         return self
 
+    @property
+    def visible_fields(self):
+        """
+            A list of visible fields for the given rule.
+        """
+        return []
+
     def __call__(self, form, form_opts=None, field_args={}):
         """
             Render rule.
@@ -36,7 +43,7 @@ class BaseRule(object):
             :param field_args:
                 Optional arguments that should be passed to template or the field
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
 
 class NestedRule(BaseRule):
@@ -67,6 +74,17 @@ class NestedRule(BaseRule):
         """
         self.rules = rule_set.configure_rules(self.rules, self)
         return super(NestedRule, self).configure(rule_set, parent)
+
+    @property
+    def visible_fields(self):
+        """
+            Return visible fields for all child rules.
+        """
+        visible_fields = []
+        for rule in self.rules:
+            for field in rule.visible_fields:
+                visible_fields.append(field)
+        return visible_fields
 
     def __iter__(self):
         """
@@ -120,7 +138,7 @@ class Text(BaseRule):
 
 class HTML(Text):
     """
-        Shortcut for `Text` rule with `escape` set to `False.
+        Shortcut for `Text` rule with `escape` set to `False`.
     """
     def __init__(self, html):
         super(HTML, self).__init__(html, escape=False)
@@ -220,6 +238,10 @@ class Container(Macro):
         self.child_rule.configure(rule_set, self)
         return super(Container, self).configure(rule_set, parent)
 
+    @property
+    def visible_fields(self):
+        return self.child_rule.visible_fields
+
     def __call__(self, form, form_opts=None, field_args={}):
         """
             Render container.
@@ -257,6 +279,10 @@ class Field(Macro):
         """
         super(Field, self).__init__(render_field)
         self.field_name = field_name
+
+    @property
+    def visible_fields(self):
+        return [self.field_name]
 
     def __call__(self, form, form_opts=None, field_args={}):
         """
@@ -344,6 +370,14 @@ class RuleSet(object):
         """
         self.view = view
         self.rules = self.configure_rules(rules)
+
+    @property
+    def visible_fields(self):
+        visible_fields = []
+        for rule in self.rules:
+            for field in rule.visible_fields:
+                visible_fields.append(field)
+        return visible_fields
 
     def convert_string(self, value):
         """

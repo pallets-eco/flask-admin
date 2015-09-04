@@ -2,14 +2,14 @@ from nose.tools import eq_, ok_
 
 from wtforms import form, fields
 
-from flask.ext.admin.contrib.pymongo import ModelView
+from flask_admin.contrib.pymongo import ModelView
 
 from . import setup
 
 
 class TestForm(form.Form):
-    test1 = fields.TextField('Test1')
-    test2 = fields.TextField('Test2')
+    test1 = fields.StringField('Test1')
+    test2 = fields.StringField('Test2')
 
 
 class TestView(ModelView):

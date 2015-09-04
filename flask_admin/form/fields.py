@@ -2,8 +2,8 @@ import time
 import datetime
 
 from wtforms import fields, widgets
-from flask.ext.admin.babel import gettext
-from flask.ext.admin._compat import text_type, as_unicode
+from flask_admin.babel import gettext
+from flask_admin._compat import text_type, as_unicode
 
 from . import widgets as admin_widgets
 
@@ -12,6 +12,7 @@ An understanding of WTForms's Custom Widgets is helpful for understanding this c
 """
 
 __all__ = ['DateTimeField', 'TimeField', 'Select2Field', 'Select2TagsField']
+
 
 class DateTimeField(fields.DateTimeField):
     """
@@ -32,9 +33,10 @@ class DateTimeField(fields.DateTimeField):
                 Any additional parameters
         """
         super(DateTimeField, self).__init__(label, validators, **kwargs)
-        
+
         self.format = format or '%Y-%m-%d %H:%M:%S'
-                                           
+
+
 class TimeField(fields.Field):
     """
         A text field which stores a `datetime.time` object.
@@ -69,31 +71,36 @@ class TimeField(fields.Field):
     def _value(self):
         if self.raw_data:
             return u' '.join(self.raw_data)
+        elif self.data is not None:
+            return self.data.strftime(self.default_format)
         else:
-            return self.data and self.data.strftime(self.default_format) or u''
+            return u''
 
     def process_formdata(self, valuelist):
         if valuelist:
             date_str = u' '.join(valuelist)
 
-            for format in self.formats:
-                try:
-                    timetuple = time.strptime(date_str, format)
-                    self.data = datetime.time(timetuple.tm_hour,
-                                              timetuple.tm_min,
-                                              timetuple.tm_sec)
-                    return
-                except ValueError:
-                    pass
+            if date_str.strip():
+                for format in self.formats:
+                    try:
+                        timetuple = time.strptime(date_str, format)
+                        self.data = datetime.time(timetuple.tm_hour,
+                                                  timetuple.tm_min,
+                                                  timetuple.tm_sec)
+                        return
+                    except ValueError:
+                        pass
 
-            raise ValueError(gettext('Invalid time format'))
+                raise ValueError(gettext('Invalid time format'))
+            else:
+                self.data = None
 
 
 class Select2Field(fields.SelectField):
     """
         `Select2 <https://github.com/ivaynberg/select2>`_ styled select widget.
 
-        You must include select2.js, form.js and select2 stylesheet for it to
+        You must include select2.js, form-x.x.x.js and select2 stylesheet for it to
         work.
     """
     widget = admin_widgets.Select2Widget()
@@ -139,9 +146,9 @@ class Select2Field(fields.SelectField):
         super(Select2Field, self).pre_validate(form)
 
 
-class Select2TagsField(fields.TextField):
+class Select2TagsField(fields.StringField):
     """`Select2 <http://ivaynberg.github.com/select2/#tags>`_ styled text field.
-    You must include select2.js, form.js and select2 stylesheet for it to work.
+    You must include select2.js, form-x.x.x.js and select2 stylesheet for it to work.
     """
     widget = admin_widgets.Select2TagsWidget()
 

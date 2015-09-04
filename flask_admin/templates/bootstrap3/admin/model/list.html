@@ -6,19 +6,29 @@
 
 {% block head %}
     {{ super() }}
-    <link href="{{ admin_static.url(filename='select2/select2.css') }}" rel="stylesheet">
-    <link href="{{ admin_static.url(filename='datetimepicker/bootstrap-datetimepicker.css') }}" rel="stylesheet">
+    {{ lib.form_css() }}
 {% endblock %}
 
 {% block body %}
     {% block model_menu_bar %}
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs actions-nav">
         <li class="active">
-            <a href="javascript:void(0)">{{ _gettext('List') }} ({{ count }})</a>
+            <a href="javascript:void(0)">{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a>
         </li>
+
         {% if admin_view.can_create %}
         <li>
-            <a href="{{ url_for('.create_view', url=return_url) }}" title="{{ _gettext('Create new record') }}">{{ _gettext('Create') }}</a>
+          {%- if admin_view.create_modal -%}
+            {{ lib.add_modal_button(url=get_url('.create_view', url=return_url, modal=True), title=_gettext('Create new record'), content=_gettext('Create')) }}
+          {% else %}
+            <a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create new record') }}">{{ _gettext('Create') }}</a>
+          {%- endif -%}
+        </li>
+        {% endif %}
+
+        {% if admin_view.can_export %}
+        <li>
+            <a href="{{ get_url('.export_csv', **request.args) }}" title="{{ _gettext('Export') }}">{{ _gettext('Export') }}</a>
         </li>
         {% endif %}
 
@@ -62,15 +72,15 @@
                     {% endblock %}
                     {% set column = 0 %}
                     {% for c, name in list_columns %}
-                    <th class="column-header">
+                    <th class="column-header col-{{c}}">
                         {% if admin_view.is_sortable(c) %}
                             {% if sort_column == column %}
                                 <a href="{{ sort_url(column, True) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">
                                     {{ name }}
                                     {% if sort_desc %}
-                                        <span class="glyphicon glyphicon-chevron-up"></span>
+                                        <span class="fa fa-chevron-up glyphicon glyphicon-chevron-up"></span>
                                     {% else %}
-                                        <span class="glyphicon glyphicon-chevron-down"></span>
+                                        <span class="fa fa-chevron-down glyphicon glyphicon-chevron-down"></span>
                                     {% endif %}
                                 </a>
                             {% else %}
@@ -80,7 +90,7 @@
                             {{ name }}
                         {% endif %}
                         {% if admin_view.column_descriptions.get(c) %}
-                            <a class="glyphicon glyphicon-question-sign"
+                            <a class="fa fa-question-circle glyphicon glyphicon-question-sign"
                                title="{{ admin_view.column_descriptions[c] }}"
                                href="javascript:void(0)" data-role="tooltip"
                             ></a>
@@ -100,20 +110,37 @@
                 </td>
                 {% endif %}
                 {% block list_row_actions_column scoped %}
-                <td>
+                <td class="list-buttons-column">
                     {% block list_row_actions scoped %}
+                        {%- if admin_view.can_view_details -%}
+                            {%- if admin_view.details_modal -%}
+                                {{ lib.add_modal_button(url=get_url('.details_view', id=get_pk_value(row), url=return_url, modal=True), title=_gettext('View Record'), content='<span class="fa fa-eye glyphicon glyphicon-eye-open"></span>') }}
+                            {% else %}
+                                <a class="icon" href="{{ get_url('.details_view', id=get_pk_value(row), url=return_url) }}" title="{{ _gettext('View Record') }}">
+                                    <span class="fa fa-eye glyphicon glyphicon-eye-open"></span>
+                                </a>
+                            {%- endif -%}
+                        {%- endif -%}
                         {%- if admin_view.can_edit -%}
-                        <a class="icon" href="{{ url_for('.edit_view', id=get_pk_value(row), url=return_url) }}" title="Edit record">
-                            <span class="glyphicon glyphicon-pencil"></span>
-                        </a>
+                            {%- if admin_view.edit_modal -%}
+                                {{ lib.add_modal_button(url=get_url('.edit_view', id=get_pk_value(row), url=return_url, modal=True), title=_gettext('Edit record'), content='<span class="fa fa-pencil glyphicon glyphicon-pencil"></span>') }}
+                            {% else %}
+                                <a class="icon" href="{{ get_url('.edit_view', id=get_pk_value(row), url=return_url) }}" title="{{ _gettext('Edit record') }}">
+                                    <span class="fa fa-pencil glyphicon glyphicon-pencil"></span>
+                                </a>
+                            {%- endif -%}
                         {%- endif -%}
                         {%- if admin_view.can_delete -%}
-                        <form class="icon" method="POST" action="{{ url_for('.delete_view', id=get_pk_value(row), url=return_url) }}">
-                            {% if csrf_token %}
+                        <form class="icon" method="POST" action="{{ get_url('.delete_view') }}">
+                            {{ delete_form.id(value=get_pk_value(row)) }}
+                            {{ delete_form.url(value=return_url) }}
+                            {% if delete_form.csrf_token %}
+                            {{ delete_form.csrf_token }}
+                            {% elif csrf_token %}
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             {% endif %}
-                                <button onclick="return confirm('{{ _gettext('You sure you want to delete this item?') }}');" title="Delete record">
-                                <span class="glyphicon glyphicon-trash"></span>
+                            <button onclick="return confirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="Delete record">
+                                <span class="fa fa-trash glyphicon glyphicon-trash"></span>
                             </button>
                         </form>
                         {%- endif -%}
@@ -121,7 +148,17 @@
                 </td>
                 {% endblock %}
                 {% for c, name in list_columns %}
-                <td>{{ get_value(row, c) }}</td>
+                    <td class="col-{{c}}">
+                    {% if admin_view.is_editable(c) %}
+                        {% if form.csrf_token %}
+                        {{ form[c](pk=get_pk_value(row), value=get_value(row, c), csrf=form.csrf_token._value()) }}
+                        {% else %}
+                        {{ form[c](pk=get_pk_value(row), value=get_value(row, c)) }}
+                        {% endif %}
+                    {% else %}
+                    {{ get_value(row, c) }}
+                    {% endif %}
+                    </td>
                 {% endfor %}
             {% endblock %}
         </tr>
@@ -137,21 +174,32 @@
         </tr>
         {% endfor %}
     </table>
+    {% block list_pager %}
+    {% if num_pages is not none %}
     {{ lib.pager(page, num_pages, pager_url) }}
+    {% else %}
+    {{ lib.simple_pager(page, data|length == page_size, pager_url) }}
+    {% endif %}
+    {% endblock %}
     {% endblock %}
 
-    {{ actionlib.form(actions, url_for('.action_view')) }}
+    {% block actions %}
+    {{ actionlib.form(actions, get_url('.action_view')) }}
+    {% endblock %}
+
+    {%- if admin_view.edit_modal or admin_view.create_modal or admin_view.details_modal -%}
+        {{ lib.add_modal_window() }}
+    {%- endif -%}
 {% endblock %}
 
 {% block tail %}
     {{ super() }}
-    <script src="{{ admin_static.url(filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
-    <script src="{{ admin_static.url(filename='admin/js/form.js') }}"></script>
-    <script src="{{ admin_static.url(filename='admin/js/filters.js') }}"></script>
+    <script src="{{ admin_static.url(filename='admin/js/filters.js', v='1.0.0') }}"></script>
+    {{ lib.form_js() }}
 
-    {{ actionlib.script(_gettext('Please select at least one model.'),
-                      actions,
-                      actions_confirmation) }}
+    {{ actionlib.script(_gettext('Please select at least one record.'),
+                        actions,
+                        actions_confirmation) }}
 
     <script language="javascript">
         (function($) {
@@ -162,7 +210,8 @@
             {% if filter_groups %}
                 var filter = new AdminFilters(
                     '#filter_form', '.field-filters',
-                    {{ filter_groups|tojson|safe }}
+                    {{ filter_groups|tojson|safe }},
+                    {{ active_filters|tojson|safe }}
                 );
             {% endif %}
         })(jQuery);

@@ -1,6 +1,6 @@
 from nose.tools import eq_, ok_
 
-from flask.ext.admin import tools
+from flask_admin import tools
 
 
 def test_encode_decode():
