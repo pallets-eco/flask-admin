@@ -522,8 +522,8 @@ class Admin(object):
         self.template_mode      = template_mode or 'bootstrap2'
         self.category_icon_classes = category_icon_classes or dict()
 
-        # Add predefined index view
-        self.add_view(self.index_view)
+        # # Add predefined index view
+        # self.add_view(self.index_view)
 
         # Register with application
         if app is not None:
