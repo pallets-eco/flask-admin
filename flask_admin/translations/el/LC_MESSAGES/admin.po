@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-08-17 20:17-0500\n"
-"PO-Revision-Date: 2015-08-17 21:19-0400\n"
+"POT-Creation-Date: 2015-08-23 20:22-0500\n"
+"PO-Revision-Date: 2015-09-04 20:43-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Greek\n"
 "MIME-Version: 1.0\n"
@@ -19,19 +19,19 @@ msgstr ""
 
 #: ../flask_admin/base.py:431
 msgid "Home"
-msgstr "Σπίτι"
+msgstr "Αρχή"
 
 #: ../flask_admin/contrib/fileadmin.py:235
 msgid "File to upload"
-msgstr "Αρχείο για να φορτώσετε"
+msgstr "Αρχείο για ανέβασμα"
 
 #: ../flask_admin/contrib/fileadmin.py:243
 msgid "File required."
-msgstr "Αρχείο που απαιτείται."
+msgstr "Απαιτείται αρχείο."
 
 #: ../flask_admin/contrib/fileadmin.py:248
 msgid "Invalid file type."
-msgstr "Μη έγκυρο αρχείο δακτυλογραφώ."
+msgstr "Μη έγκυρος τύπος αρχείου."
 
 #: ../flask_admin/contrib/fileadmin.py:259
 msgid "Content"
@@ -50,7 +50,7 @@ msgstr "Όνομα"
 #: ../flask_admin/contrib/fileadmin.py:559
 #, python-format
 msgid "File \"%(name)s\" already exists."
-msgstr "Υπάρχει ήδη το αρχείο \"%(name)s\"."
+msgstr "Το αρχείο \"%(name)s\" υπάρχει ήδη."
 
 #: ../flask_admin/contrib/fileadmin.py:583
 #: ../flask_admin/contrib/fileadmin.py:650
@@ -59,21 +59,21 @@ msgstr "Υπάρχει ήδη το αρχείο \"%(name)s\"."
 #: ../flask_admin/contrib/fileadmin.py:796
 #: ../flask_admin/contrib/fileadmin.py:846
 msgid "Permission denied."
-msgstr "Άρνηση άδειας."
+msgstr "Απαγορευεται η προσβαση."
 
 #: ../flask_admin/contrib/fileadmin.py:646
 msgid "File uploading is disabled."
-msgstr "Ανέβασμα αρχείων είναι απενεργοποιημένη."
+msgstr "Το ανέβασμα αρχείων είναι απενεργοποιημένο."
 
 #: ../flask_admin/contrib/fileadmin.py:657
 #, python-format
 msgid "Successfully saved file: %(name)s"
-msgstr "Με επιτυχία το αποθηκευμένο αρχείο: %(name)s"
+msgstr "Το αρχείο: %(name)s αποθηκεύτηκε με επιτυχία"
 
 #: ../flask_admin/contrib/fileadmin.py:661
 #, python-format
 msgid "Failed to save file: %(error)s"
-msgstr "Απέτυχε η αποθήκευση αρχείο: %(error)s"
+msgstr "Η αποθήκευση του αρχείου απέτυχε: %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:664
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:121
@@ -81,21 +81,21 @@ msgstr "Απέτυχε η αποθήκευση αρχείο: %(error)s"
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:121
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:123
 msgid "Upload File"
-msgstr "ΑΝΕΒΑΣΤΕ φωτό κάρτας"
+msgstr "Ανεβάστε αρχείο"
 
 #: ../flask_admin/contrib/fileadmin.py:703
 msgid "Directory creation is disabled."
-msgstr "Δημιουργία καταλόγου είναι απενεργοποιημένη."
+msgstr "Η δημιουργία καταλόγου είναι απενεργοποιημένη."
 
 #: ../flask_admin/contrib/fileadmin.py:716
 #, python-format
 msgid "Successfully created directory: %(directory)s"
-msgstr "Με επιτυχία δημιούργησε κατάλογο: %(directory)s"
+msgstr "Ο κατάλογος δημιουργήθηκε με επιτυχία: %(directory)s"
 
 #: ../flask_admin/contrib/fileadmin.py:720
 #, python-format
 msgid "Failed to create directory: %(error)s"
-msgstr "Απέτυχε η δημιουργία καταλόγου: %(error)s"
+msgstr "Η δημιουργία καταλόγου απέτυχε: %(error)s"
 
 #: ../flask_admin/contrib/fileadmin.py:725
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:132
@@ -107,16 +107,16 @@ msgstr "Δημιουργήστε κατάλογο"
 
 #: ../flask_admin/contrib/fileadmin.py:746
 msgid "Deletion is disabled."
-msgstr "Διαγραφή είναι απενεργοποιημένη."
+msgstr "Η διαγραφή είναι απενεργοποιημένη."
 
 #: ../flask_admin/contrib/fileadmin.py:755
 msgid "Directory deletion is disabled."
-msgstr "Διαγραφή καταλόγου είναι απενεργοποιημένη."
+msgstr "Η διαγραφή καταλόγου είναι απενεργοποιημένη."
 
 #: ../flask_admin/contrib/fileadmin.py:761
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
-msgstr "Κατάλογο \"%(path)s\" διαγράφηκε με επιτυχία."
+msgstr "Ο κατάλογος \"%(path)s\" διαγράφηκε με επιτυχία."
 
 #: ../flask_admin/contrib/fileadmin.py:763
 #, python-format
@@ -127,7 +127,7 @@ msgstr "Απέτυχε η διαγραφή καταλόγου: %(error)s"
 #: ../flask_admin/contrib/fileadmin.py:915
 #, python-format
 msgid "File \"%(name)s\" was successfully deleted."
-msgstr "Αρχείο \"%(name)s\" διαγράφηκε με επιτυχία."
+msgstr "Το αρχείο \"%(name)s\" διαγράφηκε με επιτυχία."
 
 #: ../flask_admin/contrib/fileadmin.py:770
 #: ../flask_admin/contrib/fileadmin.py:917
@@ -137,16 +137,16 @@ msgstr "Απέτυχε η διαγραφή του αρχείου: %(name)s"
 
 #: ../flask_admin/contrib/fileadmin.py:792
 msgid "Renaming is disabled."
-msgstr "Μετονομασία είναι απενεργοποιημένο."
+msgstr "Η μετονομασία είναι απενεργοποιημένη."
 
 #: ../flask_admin/contrib/fileadmin.py:800
 msgid "Path does not exist."
-msgstr "Διαδρομή δεν υπάρχει."
+msgstr "Η διαδρομή δεν υπάρχει."
 
 #: ../flask_admin/contrib/fileadmin.py:811
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
-msgstr "Με επιτυχία και μετονομάστηκε σε \"%(src)s\" για να \"%(dst)s\""
+msgstr "Μετονομάστηκε επιτυχώς από \"%(src)s\" σε \"%(dst)s\""
 
 #: ../flask_admin/contrib/fileadmin.py:814
 #, python-format
@@ -161,7 +161,7 @@ msgstr "Σφάλμα κατά την αποθήκευση αλλαγών σε %(
 #: ../flask_admin/contrib/fileadmin.py:866
 #, python-format
 msgid "Changes to %(name)s saved successfully."
-msgstr "Αλλαγές σε %(name)s που έχουν αποθηκευτεί με επιτυχία."
+msgstr "Οι αλλαγές στο %(name)s αποθηκεύτηκαν με επιτυχία."
 
 #: ../flask_admin/contrib/fileadmin.py:875
 #, python-format
@@ -177,13 +177,13 @@ msgstr "Μη αναμενόμενο σφάλμα κατά την ανάγνωσ�
 #: ../flask_admin/contrib/fileadmin.py:884
 #, python-format
 msgid "Cannot edit %(name)s."
-msgstr "Δεν μπορώ να επεξεργαστείτε %(name)s."
+msgstr "Αδυναμία επεξεργασίας %(name)s."
 
 #: ../flask_admin/contrib/fileadmin.py:902
-#: ../flask_admin/contrib/mongoengine/view.py:630
-#: ../flask_admin/contrib/peewee/view.py:432
-#: ../flask_admin/contrib/pymongo/view.py:352
-#: ../flask_admin/contrib/sqla/view.py:1061
+#: ../flask_admin/contrib/mongoengine/view.py:638
+#: ../flask_admin/contrib/peewee/view.py:457
+#: ../flask_admin/contrib/pymongo/view.py:359
+#: ../flask_admin/contrib/sqla/view.py:1075
 msgid "Delete"
 msgstr "Διαγραφή"
 
@@ -193,7 +193,7 @@ msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε 
 
 #: ../flask_admin/contrib/fileadmin.py:906
 msgid "File deletion is disabled."
-msgstr "Διαγραφή αρχείων είναι απενεργοποιημένη."
+msgstr "Η διαγραφή αρχείων είναι απενεργοποιημένη."
 
 #: ../flask_admin/contrib/fileadmin.py:919
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:17
@@ -209,7 +209,7 @@ msgstr "CLI: Άκυρη εντολή."
 
 #: ../flask_admin/contrib/geoa/fields.py:29
 msgid "Invalid JSON"
-msgstr "Μη έγκυρη JSON"
+msgstr "Μη έγκυρο JSON"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:38
 #: ../flask_admin/contrib/peewee/filters.py:38
@@ -244,7 +244,7 @@ msgstr "δεν περιέχει"
 #: ../flask_admin/contrib/pymongo/filters.py:80
 #: ../flask_admin/contrib/sqla/filters.py:75
 msgid "greater than"
-msgstr "μεγαλύτερη από"
+msgstr "μεγαλύτερο από"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:85
 #: ../flask_admin/contrib/peewee/filters.py:80
@@ -257,7 +257,7 @@ msgstr "μικρότερο από"
 #: ../flask_admin/contrib/peewee/filters.py:91
 #: ../flask_admin/contrib/sqla/filters.py:94
 msgid "empty"
-msgstr "άδειο"
+msgstr "κενό"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:112
 #: ../flask_admin/contrib/peewee/filters.py:105
@@ -269,7 +269,7 @@ msgstr "στη λίστα"
 #: ../flask_admin/contrib/peewee/filters.py:114
 #: ../flask_admin/contrib/sqla/filters.py:118
 msgid "not in list"
-msgstr "δεν βρίσκεται στη λίστα"
+msgstr "εκτός λίστας"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:221
 #: ../flask_admin/contrib/peewee/filters.py:208
@@ -281,57 +281,57 @@ msgstr "δεν βρίσκεται στη λίστα"
 msgid "not between"
 msgstr "δεν μεταξύ"
 
-#: ../flask_admin/contrib/mongoengine/view.py:520
+#: ../flask_admin/contrib/mongoengine/view.py:528
 #, python-format
 msgid "Failed to get model. %(error)s"
 msgstr "Απέτυχε η λήψη του μοντέλου. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:539
-#: ../flask_admin/contrib/peewee/view.py:380
-#: ../flask_admin/contrib/pymongo/view.py:284
-#: ../flask_admin/contrib/sqla/view.py:990
+#: ../flask_admin/contrib/mongoengine/view.py:547
+#: ../flask_admin/contrib/peewee/view.py:405
+#: ../flask_admin/contrib/pymongo/view.py:291
+#: ../flask_admin/contrib/sqla/view.py:1004
 #, python-format
 msgid "Failed to create record. %(error)s"
 msgstr "Απέτυχε η δημιουργία ρεκόρ. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:565
-#: ../flask_admin/contrib/peewee/view.py:399
-#: ../flask_admin/contrib/pymongo/view.py:309
-#: ../flask_admin/contrib/sqla/view.py:1016 ../flask_admin/model/base.py:1864
+#: ../flask_admin/contrib/mongoengine/view.py:573
+#: ../flask_admin/contrib/peewee/view.py:424
+#: ../flask_admin/contrib/pymongo/view.py:316
+#: ../flask_admin/contrib/sqla/view.py:1030 ../flask_admin/model/base.py:1864
 #: ../flask_admin/model/base.py:1873
 #, python-format
 msgid "Failed to update record. %(error)s"
-msgstr "Απέτυχε η δημιουργία ρεκόρ. %(error)s"
+msgstr "Απέτυχε η δημιουργία εγγραφής. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:588
-#: ../flask_admin/contrib/peewee/view.py:414
-#: ../flask_admin/contrib/pymongo/view.py:334
-#: ../flask_admin/contrib/sqla/view.py:1041
+#: ../flask_admin/contrib/mongoengine/view.py:596
+#: ../flask_admin/contrib/peewee/view.py:439
+#: ../flask_admin/contrib/pymongo/view.py:341
+#: ../flask_admin/contrib/sqla/view.py:1055
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr "Απέτυχε η διαγραφή της εγγραφής. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:631
-#: ../flask_admin/contrib/peewee/view.py:433
-#: ../flask_admin/contrib/pymongo/view.py:353
-#: ../flask_admin/contrib/sqla/view.py:1062
+#: ../flask_admin/contrib/mongoengine/view.py:639
+#: ../flask_admin/contrib/peewee/view.py:458
+#: ../flask_admin/contrib/pymongo/view.py:360
+#: ../flask_admin/contrib/sqla/view.py:1076
 msgid "Are you sure you want to delete selected records?"
 msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε τις επιλεγμένες εγγραφές;"
 
-#: ../flask_admin/contrib/mongoengine/view.py:640
-#: ../flask_admin/contrib/peewee/view.py:450
-#: ../flask_admin/contrib/pymongo/view.py:363
-#: ../flask_admin/contrib/sqla/view.py:1078 ../flask_admin/model/base.py:1812
+#: ../flask_admin/contrib/mongoengine/view.py:648
+#: ../flask_admin/contrib/peewee/view.py:475
+#: ../flask_admin/contrib/pymongo/view.py:370
+#: ../flask_admin/contrib/sqla/view.py:1092 ../flask_admin/model/base.py:1812
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
-msgstr[0] "Εγγραφή διαγράφηκε με επιτυχία."
+msgstr[0] "Η εγγραφή διαγράφηκε με επιτυχία."
 msgstr[1] "%(count)s εγγραφές διαγράφηκαν με επιτυχία."
 
-#: ../flask_admin/contrib/mongoengine/view.py:646
-#: ../flask_admin/contrib/peewee/view.py:456
-#: ../flask_admin/contrib/pymongo/view.py:368
-#: ../flask_admin/contrib/sqla/view.py:1086
+#: ../flask_admin/contrib/mongoengine/view.py:654
+#: ../flask_admin/contrib/peewee/view.py:481
+#: ../flask_admin/contrib/pymongo/view.py:375
+#: ../flask_admin/contrib/sqla/view.py:1100
 #, python-format
 msgid "Failed to delete records. %(error)s"
 msgstr "Απέτυχε η διαγραφή της εγγραφής. %(error)s"
@@ -341,7 +341,7 @@ msgstr "Απέτυχε η διαγραφή της εγγραφής. %(error)s"
 #: ../flask_admin/contrib/sqla/fields.py:178 ../flask_admin/model/fields.py:225
 #: ../flask_admin/model/fields.py:274
 msgid "Not a valid choice"
-msgstr "Δεν είναι μια έγκυρη επιλογή"
+msgstr "Άκυρη επιλογή"
 
 #: ../flask_admin/contrib/sqla/validators.py:42
 msgid "Already exists."
@@ -351,17 +351,17 @@ msgstr "Υπάρχει ήδη."
 #, python-format
 msgid "At least %d item is required"
 msgid_plural "At least %d items are required"
-msgstr[0] "Τουλάχιστον στοιχείο %d απαιτείται"
+msgstr[0] "Τουλάχιστον %d στοιχεία απαιτούνται"
 msgstr[1] "Τουλάχιστον %d στοιχεία απαιτούνται"
 
-#: ../flask_admin/contrib/sqla/view.py:969
+#: ../flask_admin/contrib/sqla/view.py:983
 #, python-format
 msgid "Integrity error. %(message)s"
 msgstr "Σφάλμα ακεραιότητας. %(message)s"
 
 #: ../flask_admin/form/fields.py:94
 msgid "Invalid time format"
-msgstr "Μορφή ώρας δεν είναι έγκυρη"
+msgstr "Άκυρη μορφή ώρας"
 
 #: ../flask_admin/form/fields.py:140
 msgid "Invalid Choice: could not coerce"
@@ -369,34 +369,34 @@ msgstr "Μη έγκυρη επιλογή: δεν θα μπορούσε να εξ
 
 #: ../flask_admin/form/upload.py:205
 msgid "Invalid file extension"
-msgstr "Μη έγκυρο αρχείο επέκταση"
+msgstr "Μη έγκυρη επέκταση αρχείου"
 
 #: ../flask_admin/form/upload.py:212 ../flask_admin/form/upload.py:279
 #, python-format
 msgid "File \"%s\" already exists."
-msgstr "Υπάρχει ήδη το αρχείο \"%s\"."
+msgstr "Το αρχείο \"%s\" υπάρχει ήδη."
 
 #: ../flask_admin/model/base.py:1412
 msgid "There are no items in the table."
-msgstr "Υπάρχουν στοιχεία στον πίνακα."
+msgstr "Δεν υπάρχουν στοιχεία στον πίνακα."
 
 #: ../flask_admin/model/base.py:1436
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
-msgstr "Τιμή φίλτρου δεν είναι έγκυρη: %(value)s"
+msgstr "Άκυρη τιμή φίλτρου: %(value)s"
 
 #: ../flask_admin/model/base.py:1677
 msgid "Record was successfully created."
-msgstr "Εγγραφή δημιουργήθηκε με επιτυχία."
+msgstr "Η εγγραφή δημιουργήθηκε με επιτυχία."
 
 #: ../flask_admin/model/base.py:1721 ../flask_admin/model/base.py:1773
 #: ../flask_admin/model/base.py:1807
 msgid "Record does not exist."
-msgstr "Εγγραφή δεν υπάρχει."
+msgstr "Η εγγραφή δεν υπάρχει."
 
 #: ../flask_admin/model/base.py:1730 ../flask_admin/model/base.py:1869
 msgid "Record was successfully saved."
-msgstr "Καρτέλα αποθηκεύτηκε με επιτυχία."
+msgstr "Η καρτέλα αποθηκεύτηκε με επιτυχία."
 
 #: ../flask_admin/model/filters.py:99
 msgid "Yes"
@@ -424,12 +424,12 @@ msgstr "Αποθήκευση"
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:205
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:195
 msgid "Cancel"
-msgstr "\"Άκυρο\""
+msgstr "Άκυρο"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/edit.html:8
 #: ../flask_admin/templates/bootstrap3/admin/file/edit.html:8
 msgid "This file cannot be edited for now."
-msgstr "Δεν είναι δυνατή η επεξεργασία αυτού του αρχείου για τώρα."
+msgstr "Προς το παρόν δεν είναι δυνατή η επεξεργασία αυτού του αρχείου."
 
 #: ../flask_admin/templates/bootstrap2/admin/file/edit.html:21
 #: ../flask_admin/templates/bootstrap3/admin/file/edit.html:20
@@ -452,19 +452,19 @@ msgstr "Μέγεθος"
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:55
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:58
 msgid "Rename File"
-msgstr "Μετονομάστε το αρχείο"
+msgstr "Μετονοσία αρχείου"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:69
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:69
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
-msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε \\'%(name)s\\' «αναδρομικά;"
+msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε \\'%(name)s\\' αναδρομικά;"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:78
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:78
 #, python-format
 msgid "Are you sure you want to delete \\'%(name)s\\'?"
-msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε \\'%(name)s\\'»;"
+msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε \\'%(name)s\\';"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:158
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:158
@@ -475,21 +475,21 @@ msgstr "Παρακαλώ επιλέξτε τουλάχιστον ένα αρχε
 #: ../flask_admin/templates/bootstrap3/admin/file/rename.html:12
 #, python-format
 msgid "Rename %(name)s"
-msgstr "Μετονομάστε %(name)s"
+msgstr "Μετονομάσια %(name)s"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:5
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
 msgid "Save and Add Another"
-msgstr "Save and Add Another"
+msgstr "Αποθήκευση και Προσθήκη Άλλου"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:6
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:6
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:6
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:6
 msgid "Save and Continue Editing"
-msgstr "Save and Continue Editing"
+msgstr "Αποθήκευση και Συνέχεια Επεξεργασίας"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:18
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:8
@@ -516,15 +516,11 @@ msgid "Create"
 msgstr "Δημιουργία"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:21
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:111
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:113
-#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:30
 #: ../flask_admin/templates/bootstrap3/admin/model/details.html:21
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:111
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:113
-#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
-msgid "View Record"
-msgstr "Προβολή καρτέλας"
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:30
+msgid "Details"
+msgstr "Λεπτομέρειες"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:29
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:8
@@ -532,11 +528,6 @@ msgstr "Προβολή καρτέλας"
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:15
 msgid "Filter"
 msgstr "Φίλτρο"
-
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:30
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:30
-msgid "Details"
-msgstr "Details"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
 #: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:14
@@ -546,7 +537,7 @@ msgstr "Διαγραφή?"
 #: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:40
 #: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:43
 msgid "Add"
-msgstr "Προσθέστε"
+msgstr "Προσθήκη"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:3
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:3
@@ -556,7 +547,7 @@ msgstr "Προσθήκη φίλτρου"
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:17
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:17
 msgid "Apply"
-msgstr "Ισχύουν"
+msgstr "Εφαρμογή"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:19
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:19
@@ -575,12 +566,12 @@ msgstr "Αναζήτηση"
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
 msgid "Create new record"
-msgstr "Δημιουργήσετε νέα εγγραφή"
+msgstr "Δημιουργία νέας εγγραφής"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:61
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:61
 msgid "Select all records"
-msgstr "Επιλέξτε όλες τις εγγραφές"
+msgstr "Επιλογή όλων των εγγραφών"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:72
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:81
@@ -595,12 +586,21 @@ msgstr "Ταξινόμηση κατά %(name)s"
 msgid "Select record"
 msgstr "Επιλέξτε εγγραφή"
 
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:111
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:113
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:111
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:113
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
+msgid "View Record"
+msgstr "Προβολή καρτέλας"
+
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:120
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:122
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:120
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:122
 msgid "Edit record"
-msgstr "Επεξεργαστείτε την εγγραφή"
+msgstr "Επεξεργασία εγγραφής"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:136
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:136
@@ -619,10 +619,10 @@ msgstr "Παρακαλώ επιλέξτε τουλάχιστον μία εγγρ
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/create.html:17
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/create.html:7
 msgid "Create New Record"
-msgstr "Δημιουργήσετε νέα εγγραφή"
+msgstr "Δημιουργία νέας εγγραφής"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:17
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:8
 msgid "Edit Record"
-msgstr "Επεξεργαστείτε την εγγραφή"
+msgstr "Επεξεργασία εγγραφής"
 

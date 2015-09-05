@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-08-17 20:17-0500\n"
-"PO-Revision-Date: 2015-08-17 21:19-0400\n"
+"POT-Creation-Date: 2015-08-23 20:22-0500\n"
+"PO-Revision-Date: 2015-09-04 20:43-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Turkish\n"
 "MIME-Version: 1.0\n"
@@ -180,10 +180,10 @@ msgid "Cannot edit %(name)s."
 msgstr "%(name)s düzenleyemezsiniz."
 
 #: ../flask_admin/contrib/fileadmin.py:902
-#: ../flask_admin/contrib/mongoengine/view.py:630
-#: ../flask_admin/contrib/peewee/view.py:432
-#: ../flask_admin/contrib/pymongo/view.py:352
-#: ../flask_admin/contrib/sqla/view.py:1061
+#: ../flask_admin/contrib/mongoengine/view.py:638
+#: ../flask_admin/contrib/peewee/view.py:457
+#: ../flask_admin/contrib/pymongo/view.py:359
+#: ../flask_admin/contrib/sqla/view.py:1075
 msgid "Delete"
 msgstr "Sil"
 
@@ -281,57 +281,57 @@ msgstr "liste değildir"
 msgid "not between"
 msgstr "arasında değil"
 
-#: ../flask_admin/contrib/mongoengine/view.py:520
+#: ../flask_admin/contrib/mongoengine/view.py:528
 #, python-format
 msgid "Failed to get model. %(error)s"
 msgstr "Model alma başarısız oldu. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:539
-#: ../flask_admin/contrib/peewee/view.py:380
-#: ../flask_admin/contrib/pymongo/view.py:284
-#: ../flask_admin/contrib/sqla/view.py:990
+#: ../flask_admin/contrib/mongoengine/view.py:547
+#: ../flask_admin/contrib/peewee/view.py:405
+#: ../flask_admin/contrib/pymongo/view.py:291
+#: ../flask_admin/contrib/sqla/view.py:1004
 #, python-format
 msgid "Failed to create record. %(error)s"
 msgstr "Kaydı oluşturulamadı. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:565
-#: ../flask_admin/contrib/peewee/view.py:399
-#: ../flask_admin/contrib/pymongo/view.py:309
-#: ../flask_admin/contrib/sqla/view.py:1016 ../flask_admin/model/base.py:1864
+#: ../flask_admin/contrib/mongoengine/view.py:573
+#: ../flask_admin/contrib/peewee/view.py:424
+#: ../flask_admin/contrib/pymongo/view.py:316
+#: ../flask_admin/contrib/sqla/view.py:1030 ../flask_admin/model/base.py:1864
 #: ../flask_admin/model/base.py:1873
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr "Kaydı oluşturulamadı. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:588
-#: ../flask_admin/contrib/peewee/view.py:414
-#: ../flask_admin/contrib/pymongo/view.py:334
-#: ../flask_admin/contrib/sqla/view.py:1041
+#: ../flask_admin/contrib/mongoengine/view.py:596
+#: ../flask_admin/contrib/peewee/view.py:439
+#: ../flask_admin/contrib/pymongo/view.py:341
+#: ../flask_admin/contrib/sqla/view.py:1055
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr "Kaydı silinemedi. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:631
-#: ../flask_admin/contrib/peewee/view.py:433
-#: ../flask_admin/contrib/pymongo/view.py:353
-#: ../flask_admin/contrib/sqla/view.py:1062
+#: ../flask_admin/contrib/mongoengine/view.py:639
+#: ../flask_admin/contrib/peewee/view.py:458
+#: ../flask_admin/contrib/pymongo/view.py:360
+#: ../flask_admin/contrib/sqla/view.py:1076
 msgid "Are you sure you want to delete selected records?"
 msgstr "Seçili kayıtları silmek istediğinizden emin misiniz?"
 
-#: ../flask_admin/contrib/mongoengine/view.py:640
-#: ../flask_admin/contrib/peewee/view.py:450
-#: ../flask_admin/contrib/pymongo/view.py:363
-#: ../flask_admin/contrib/sqla/view.py:1078 ../flask_admin/model/base.py:1812
+#: ../flask_admin/contrib/mongoengine/view.py:648
+#: ../flask_admin/contrib/peewee/view.py:475
+#: ../flask_admin/contrib/pymongo/view.py:370
+#: ../flask_admin/contrib/sqla/view.py:1092 ../flask_admin/model/base.py:1812
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
 msgstr[0] "Kaydı başarıyla silindi."
 msgstr[1] "%(count)s kayıtlarını başarıyla silindi."
 
-#: ../flask_admin/contrib/mongoengine/view.py:646
-#: ../flask_admin/contrib/peewee/view.py:456
-#: ../flask_admin/contrib/pymongo/view.py:368
-#: ../flask_admin/contrib/sqla/view.py:1086
+#: ../flask_admin/contrib/mongoengine/view.py:654
+#: ../flask_admin/contrib/peewee/view.py:481
+#: ../flask_admin/contrib/pymongo/view.py:375
+#: ../flask_admin/contrib/sqla/view.py:1100
 #, python-format
 msgid "Failed to delete records. %(error)s"
 msgstr "Kaydı silinemedi. %(error)s"
@@ -354,7 +354,7 @@ msgid_plural "At least %d items are required"
 msgstr[0] "En azından %d öğesi gerekli"
 msgstr[1] "En azından %d öğeler gerekli"
 
-#: ../flask_admin/contrib/sqla/view.py:969
+#: ../flask_admin/contrib/sqla/view.py:983
 #, python-format
 msgid "Integrity error. %(message)s"
 msgstr "Bütünlüğü hatası. %(message)s"
@@ -516,15 +516,11 @@ msgid "Create"
 msgstr "Oluşturmak"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:21
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:111
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:113
-#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:30
 #: ../flask_admin/templates/bootstrap3/admin/model/details.html:21
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:111
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:113
-#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
-msgid "View Record"
-msgstr "Görünüm kaydı"
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:30
+msgid "Details"
+msgstr "Details"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:29
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:8
@@ -532,11 +528,6 @@ msgstr "Görünüm kaydı"
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:15
 msgid "Filter"
 msgstr "Filtre"
-
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:30
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:30
-msgid "Details"
-msgstr "Details"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
 #: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:14
@@ -594,6 +585,15 @@ msgstr "%(name)s göre sırala"
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:103
 msgid "Select record"
 msgstr "Çek'i seçin"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:111
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:113
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:111
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:113
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
+msgid "View Record"
+msgstr "Görünüm kaydı"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:120
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:122
