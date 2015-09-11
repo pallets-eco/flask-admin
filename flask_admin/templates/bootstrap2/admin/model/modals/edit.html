@@ -1,6 +1,9 @@
 {% import 'admin/static.html' as admin_static with context%}
 {% import 'admin/lib.html' as lib with context %}
 
+{# store the jinja2 context for form_rules rendering logic #}
+{% set render_ctx = h.resolve_ctx() %}
+
 {% block body %}
   {# "save and continue" button is removed from modal (it won't function properly) #}
   {{ lib.render_form(form, return_url, extra=None, form_opts=form_opts,
