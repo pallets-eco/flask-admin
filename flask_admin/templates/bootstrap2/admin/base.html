@@ -53,6 +53,7 @@
       {{ layout.messages() }}
       {% endblock %}
 
+      {# store the jinja2 context for form_rules rendering logic #}
       {% set render_ctx = h.resolve_ctx() %}
 
       {% block body %}{% endblock %}
