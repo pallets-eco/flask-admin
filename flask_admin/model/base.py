@@ -1780,7 +1780,7 @@ class BaseModelView(BaseView, ActionsMixin):
         form_opts = FormOpts(widget_args=self.form_widget_args,
                              form_rules=self._form_create_rules)
 
-        if request.args.get('modal'):
+        if self.create_modal and request.args.get('modal'):
             template = self.create_modal_template
         else:
             template = self.create_template
@@ -1831,7 +1831,7 @@ class BaseModelView(BaseView, ActionsMixin):
         form_opts = FormOpts(widget_args=self.form_widget_args,
                              form_rules=self._form_edit_rules)
 
-        if request.args.get('modal'):
+        if self.edit_modal and request.args.get('modal'):
             template = self.edit_modal_template
         else:
             template = self.edit_template
@@ -1862,7 +1862,7 @@ class BaseModelView(BaseView, ActionsMixin):
             flash(gettext('Record does not exist.'))
             return redirect(return_url)
 
-        if request.args.get('modal'):
+        if self.details_modal and request.args.get('modal'):
             template = self.details_modal_template
         else:
             template = self.details_template
