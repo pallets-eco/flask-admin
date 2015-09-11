@@ -103,19 +103,39 @@ class FileAdmin(BaseView, ActionsMixin):
         File upload template
     """
 
+    upload_modal_template = 'admin/file/modals/form.html'
+    """
+        File upload template for modal dialog
+    """
+
     mkdir_template = 'admin/file/form.html'
     """
         Directory creation (mkdir) template
     """
 
-    rename_template = 'admin/file/rename.html'
+    mkdir_modal_template = 'admin/file/modals/form.html'
+    """
+        Directory creation (mkdir) template for modal dialog
+    """
+
+    rename_template = 'admin/file/form.html'
     """
         Rename template
     """
 
-    edit_template = 'admin/file/edit.html'
+    rename_modal_template = 'admin/file/modals/form.html'
+    """
+        Rename template for modal dialog
+    """
+
+    edit_template = 'admin/file/form.html'
     """
         Edit template
+    """
+
+    edit_modal_template = 'admin/file/modals/form.html'
+    """
+        Edit template for modal dialog
     """
 
     form_base_class = form.BaseForm
@@ -660,7 +680,12 @@ class FileAdmin(BaseView, ActionsMixin):
             except Exception as ex:
                 flash(gettext('Failed to save file: %(error)s', error=ex), 'error')
 
-        return self.render(self.upload_template, form=form,
+        if self.upload_modal and request.args.get('modal'):
+            template = self.upload_modal_template
+        else:
+            template = self.upload_template
+
+        return self.render(template, form=form,
                            header_text=gettext('Upload File'),
                            modal=request.args.get('modal'))
 
@@ -721,9 +746,13 @@ class FileAdmin(BaseView, ActionsMixin):
         else:
             helpers.flash_errors(form, message='Failed to create directory: %(error)s')
 
-        return self.render(self.mkdir_template, form=form, dir_url=dir_url,
-                           header_text=gettext('Create Directory'),
-                           modal=request.args.get('modal'))
+        if self.mkdir_modal and request.args.get('modal'):
+            template = self.mkdir_modal_template
+        else:
+            template = self.mkdir_template
+
+        return self.render(template, form=form, dir_url=dir_url,
+                           header_text=gettext('Create Directory'))
 
     @expose('/delete/', methods=('POST',))
     def delete(self):
@@ -817,12 +846,15 @@ class FileAdmin(BaseView, ActionsMixin):
         else:
             helpers.flash_errors(form, message='Failed to rename: %(error)s')
 
-        return self.render(self.rename_template,
-                           form=form,
-                           path=op.dirname(path),
-                           name=op.basename(path),
-                           dir_url=return_url,
-                           modal=request.args.get('modal'))
+        if self.rename_modal and request.args.get('modal'):
+            template = self.rename_modal_template
+        else:
+            template = self.rename_template
+
+        return self.render(template, form=form, path=op.dirname(path),
+                           name=op.basename(path), dir_url=return_url,
+                           header_text=gettext('Rename %(name)s',
+                                               name=op.basename(path)))
 
     @expose('/edit/', methods=('GET', 'POST'))
     def edit(self):
@@ -889,9 +921,17 @@ class FileAdmin(BaseView, ActionsMixin):
                 else:
                     form.content.data = content
 
-        return self.render(self.edit_template, dir_url=dir_url, path=path,
+            if error:
+                return redirect(next_url)
+
+        if self.edit_modal and request.args.get('modal'):
+            template = self.edit_modal_template
+        else:
+            template = self.edit_template
+
+        return self.render(template, dir_url=dir_url, path=path,
                            form=form, error=error,
-                           modal=request.args.get('modal'))
+                           header_text=gettext('Editing %(path)s', path=path))
 
     @expose('/action/', methods=('POST',))
     def action_view(self):

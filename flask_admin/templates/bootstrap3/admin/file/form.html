@@ -1,32 +1,7 @@
-{%- if not modal -%}
-    {% extends 'admin/master.html' %}
-{%- endif -%}
+{% extends 'admin/master.html' %}
 {% import 'admin/lib.html' as lib with context %}
 
 {% block body %}
-    {%- if modal -%}
-      {# content added to modal-content #}
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h3>{{ header_text }}</h3>
-      </div>
-      <div class="modal-body">
-        {{ lib.render_form(form, dir_url, action=request.url, is_modal=True) }}
-      </div>
-    {%- else -%}
-      <h3>{{ header_text }}</h3>
-      {{ lib.render_form(form, dir_url) }}
-    {%- endif -%}
-
-{% endblock %}
-
-{% block tail %}
-    {%- if modal -%}
-    <script>
-    // fixes "remote modal shows same content every time", avoiding the flicker
-    $('body').on('hidden.bs.modal', '.modal', function() {
-        $(this).removeData('bs.modal').find(".modal-content").empty();
-    });
-    </script>
-    {%- endif -%}
+  {% block header %}<h3>{{ header_text }}</h3>{% endblock %}
+  {{ lib.render_form(form, dir_url) }}
 {% endblock %}
