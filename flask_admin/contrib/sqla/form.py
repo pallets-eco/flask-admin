@@ -612,7 +612,8 @@ class InlineModelConverter(InlineModelConverterBase):
                                   only=info.form_columns,
                                   exclude=exclude,
                                   field_args=info.form_args,
-                                  hidden_pk=True)
+                                  hidden_pk=True,
+                                  extra_fields=info.form_extra_fields)
 
         # Post-process form
         child_form = info.postprocess_form(child_form)
