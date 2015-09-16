@@ -602,7 +602,7 @@ def test_export_csv():
                          endpoint='exportexclusion')
     admin.add_view(view)
 
-    rv = client.get('/admin/exportexclusion/import/csv/')
+    rv = client.get('/admin/exportexclusion/export/csv/')
     data = rv.data.decode('utf-8')
     eq_(rv.mimetype, 'text/csv')
     eq_(rv.status_code, 200)
