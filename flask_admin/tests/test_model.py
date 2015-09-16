@@ -586,7 +586,7 @@ def test_export_csv():
                          endpoint='exportinclusion')
     admin.add_view(view)
 
-    rv = client.get('/admin/model/export/csv/')
+    rv = client.get('/admin/model/exportinclusion/csv/')
     data = rv.data.decode('utf-8')
     eq_(rv.mimetype, 'text/csv')
     eq_(rv.status_code, 200)
@@ -602,7 +602,7 @@ def test_export_csv():
                          endpoint='exportexclusion')
     admin.add_view(view)
 
-    rv = client.get('/admin/model/export/csv/')
+    rv = client.get('/admin/model/exportexclusion/csv/')
     data = rv.data.decode('utf-8')
     eq_(rv.mimetype, 'text/csv')
     eq_(rv.status_code, 200)
