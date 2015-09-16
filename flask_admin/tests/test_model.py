@@ -579,6 +579,38 @@ def test_export_csv():
         "col1_2,col2_2\r\n"
         "col1_3,col2_3\r\n" == data)
 
+    # test explicit use of column_export_list
+    view = MockModelView(Model, view_data, can_export=True,
+                         column_list=['col1', 'col2'],
+                         column_export_list=['id','col1','col2'],
+                         endpoint='exportinclusion')
+    admin.add_view(view)
+
+    rv = client.get('/admin/exportinclusion/export/csv/')
+    data = rv.data.decode('utf-8')
+    eq_(rv.mimetype, 'text/csv')
+    eq_(rv.status_code, 200)
+    ok_("Id,Col1,Col2\r\n"
+        "1,col1_1,col2_1\r\n"
+        "2,col1_2,col2_2\r\n"
+        "3,col1_3,col2_3\r\n" == data)
+
+    # test explicit use of column_export_exclude_list
+    view = MockModelView(Model, view_data, can_export=True,
+                         column_list=['col1', 'col2'],
+                         column_export_exclude_list=['col2'],
+                         endpoint='exportexclusion')
+    admin.add_view(view)
+
+    rv = client.get('/admin/exportexclusion/export/csv/')
+    data = rv.data.decode('utf-8')
+    eq_(rv.mimetype, 'text/csv')
+    eq_(rv.status_code, 200)
+    ok_("Col1\r\n"
+        "col1_1\r\n"
+        "col1_2\r\n"
+        "col1_3\r\n" == data)
+
     # test utf8 characters in csv export
     view_data[4] = Model(1, u'\u2013ut8_1\u2013', u'\u2013utf8_2\u2013')
     view = MockModelView(Model, view_data, can_export=True,
