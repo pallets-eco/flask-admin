@@ -582,7 +582,8 @@ def test_export_csv():
     # test explicit use of column_export_list
     view = MockModelView(Model, view_data, can_export=True,
                          column_list=['col1', 'col2'],
-                         column_export_list=['id','col1','col2'])
+                         column_export_list=['id','col1','col2'],
+                         endpoint='exportinclusion')
     admin.add_view(view)
 
     rv = client.get('/admin/model/export/csv/')
@@ -597,7 +598,8 @@ def test_export_csv():
     # test explicit use of column_export_exclude_list
     view = MockModelView(Model, view_data, can_export=True,
                          column_list=['col1', 'col2'],
-                         column_export_exclude_list=['col2'])
+                         column_export_exclude_list=['col2'],
+                         endpoint='exportexclusion')
     admin.add_view(view)
 
     rv = client.get('/admin/model/export/csv/')
