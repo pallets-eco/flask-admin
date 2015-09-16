@@ -168,6 +168,17 @@ class BaseModelView(BaseView, ActionsMixin):
         Collection of fields excluded from the details view.
     """
 
+    column_export_list = None
+    """
+        Collection of the field names included in the export.
+        If set to `None`, will get them from the model.
+    """
+
+    column_export_exclude_list = None
+    """
+        Collection of fields excluded from the export.
+    """
+
     column_formatters = ObsoleteAttr('column_formatters', 'list_formatters', dict())
     """
         Dictionary of list view column formatters.
@@ -748,6 +759,10 @@ class BaseModelView(BaseView, ActionsMixin):
         if self.can_view_details:
             self._details_columns = self.get_details_columns()
 
+        # Export view
+        if self.can_export:
+            self._export_columns = self.get_export_columns()
+
         # Labels
         if self.column_labels is None:
             self.column_labels = {}
@@ -855,6 +870,28 @@ class BaseModelView(BaseView, ActionsMixin):
             if self.column_details_exclude_list:
                 columns = [c for c in columns
                            if c not in self.column_details_exclude_list]
+
+        return [(c, self.get_column_name(c)) for c in columns]
+
+    def get_export_columns(self):
+        """
+            Returns a list of the model field names in the export view. If
+            `column_export_list` was set, returns it. Otherwise, if
+            `column_list` was set, returns it. Otherwise calls
+            `scaffold_list_columns` to generate the list from the model.
+        """
+        columns = self.column_export_list
+
+        if columns is None:
+            columns = self.column_list
+
+            if columns is None:
+                columns = self.scaffold_list_columns()
+
+            # Filter excluded columns
+            if self.column_export_exclude_list:
+                columns = [c for c in columns
+                           if c not in self.column_export_exclude_list]
 
         return [(c, self.get_column_name(c)) for c in columns]
 
@@ -1963,12 +2000,12 @@ class BaseModelView(BaseView, ActionsMixin):
 
         def generate():
             # Append the column titles at the beginning
-            titles = [csv_encode(c[1]) for c in self._list_columns]
+            titles = [csv_encode(c[1]) for c in self._export_columns]
             yield writer.writerow(titles)
 
             for row in data:
                 vals = [csv_encode(self.get_export_value(row, c[0]))
-                        for c in self._list_columns]
+                        for c in self._export_columns]
                 yield writer.writerow(vals)
 
         filename = '%s_%s.csv' % (self.name,
