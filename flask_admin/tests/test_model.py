@@ -2,7 +2,7 @@ import wtforms
 
 from nose.tools import eq_, ok_
 
-from flask import Flask, session
+from flask import Flask
 
 from werkzeug.wsgi import DispatcherMiddleware
 from werkzeug.test import Client
@@ -349,28 +349,11 @@ def test_form():
 
 @wtforms2_and_up
 def test_csrf():
-    from datetime import timedelta
-
-    from wtforms.csrf.session import SessionCSRF
-    from wtforms.meta import DefaultMeta
-
-    # BaseForm w/ CSRF
-    class SecureForm(form.BaseForm):
-        class Meta(DefaultMeta):
-            csrf = True
-            csrf_class = SessionCSRF
-            csrf_secret = b'EPj00jpfj8Gx1SjnyLxwBBSQfnQ9DJYe0Ym'
-            csrf_time_limit = timedelta(minutes=20)
-
-            @property
-            def csrf_context(self):
-                return session
-
     class SecureModelView(MockModelView):
-        form_base_class = SecureForm
+        form_base_class = form.SecureForm
 
         def scaffold_form(self):
-            return SecureForm
+            return form.SecureForm
 
     def get_csrf_token(data):
         data = data.split('name="csrf_token" type="hidden" value="')[1]
