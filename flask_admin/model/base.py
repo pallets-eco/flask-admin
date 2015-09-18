@@ -620,9 +620,11 @@ class BaseModelView(BaseView, ActionsMixin):
     """
 
     # Export settings
-    export_max_rows = None
+    export_max_rows = 0
     """
         Maximum number of rows allowed for export.
+
+        Unlimited by default. Uses `page_size` if set to `None`.
     """
 
     # Various settings
