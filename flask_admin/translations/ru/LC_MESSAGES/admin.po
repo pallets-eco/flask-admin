@@ -431,7 +431,7 @@ msgstr "С выбранным"
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:200
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:190
 msgid "Save"
-msgstr "Сохран"
+msgstr "Сохранить"
 
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:205
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:195
@@ -477,14 +477,14 @@ msgstr "Выберите по крайней мере один файл."
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
 msgid "Save and Add Another"
-msgstr "Save and Add Another"
+msgstr "Сохранить и добавить новый объект"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:6
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:6
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:6
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:6
 msgid "Save and Continue Editing"
-msgstr "Save and Continue Editing"
+msgstr "Сохранить и продолжить редактирование"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:18
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:8
