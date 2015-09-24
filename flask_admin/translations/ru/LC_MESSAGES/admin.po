@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-09-18 01:59-0500\n"
-"PO-Revision-Date: 2015-09-18 02:59-0400\n"
+"PO-Revision-Date: 2015-09-24 03:42-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -35,7 +35,7 @@ msgstr "Недопустимый тип файла."
 
 #: ../flask_admin/contrib/fileadmin.py:279
 msgid "Content"
-msgstr "Контент сайта"
+msgstr "Содержимое сайта"
 
 #: ../flask_admin/contrib/fileadmin.py:293
 msgid "Invalid name"
@@ -63,12 +63,12 @@ msgstr "Доступ запрещён."
 
 #: ../flask_admin/contrib/fileadmin.py:666
 msgid "File uploading is disabled."
-msgstr "Заливка файлов запрещена."
+msgstr "Загрузка файлов запрещена."
 
 #: ../flask_admin/contrib/fileadmin.py:677
 #, python-format
 msgid "Successfully saved file: %(name)s"
-msgstr "Успешно сохраненный файл: %(name)s"
+msgstr "Файл успешно сохранён: %(name)s"
 
 #: ../flask_admin/contrib/fileadmin.py:681
 #, python-format
@@ -81,7 +81,7 @@ msgstr "Ошибка сохранения файла: %(error)s"
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:121
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:123
 msgid "Upload File"
-msgstr "Залить файл"
+msgstr "Загрузить файл"
 
 #: ../flask_admin/contrib/fileadmin.py:728
 msgid "Directory creation is disabled."
@@ -90,7 +90,7 @@ msgstr "Создание новых директорий запрещено."
 #: ../flask_admin/contrib/fileadmin.py:741
 #, python-format
 msgid "Successfully created directory: %(directory)s"
-msgstr "Успешно созданный каталог: %(directory)s"
+msgstr "Каталог успешно создан: %(directory)s"
 
 #: ../flask_admin/contrib/fileadmin.py:745
 #, python-format
@@ -477,14 +477,14 @@ msgstr "Выберите по крайней мере один файл."
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
 msgid "Save and Add Another"
-msgstr "Save and Add Another"
+msgstr "Сохранить и добавить новый объект"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:6
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:6
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:6
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:6
 msgid "Save and Continue Editing"
-msgstr "Save and Continue Editing"
+msgstr "Сохранить и продолжить редактирование"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:18
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:8
@@ -515,7 +515,7 @@ msgstr "Создать"
 #: ../flask_admin/templates/bootstrap3/admin/model/details.html:21
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:30
 msgid "Details"
-msgstr "Details"
+msgstr "Подробнее"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:29
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:8
@@ -566,7 +566,7 @@ msgstr "Создайте новую запись"
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:31
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:31
 msgid "Export"
-msgstr "Export"
+msgstr "Экспортировать"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:67
