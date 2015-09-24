@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-09-18 01:59-0500\n"
-"PO-Revision-Date: 2015-09-18 02:59-0400\n"
+"PO-Revision-Date: 2015-09-24 19:53-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
@@ -475,7 +475,7 @@ msgstr "Por favor, selecione pelo menos um arquivo."
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
 msgid "Save and Add Another"
-msgstr "Salvar e adicionar outro"
+msgstr "Gravar e adicionar outro"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:6
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:6
@@ -564,7 +564,7 @@ msgstr "Criar novo registro"
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:31
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:31
 msgid "Export"
-msgstr "Export"
+msgstr "Exportar"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:67

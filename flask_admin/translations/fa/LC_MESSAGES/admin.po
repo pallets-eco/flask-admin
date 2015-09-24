@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-09-18 01:59-0500\n"
-"PO-Revision-Date: 2015-09-18 02:59-0400\n"
+"PO-Revision-Date: 2015-09-24 19:53-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -107,16 +107,16 @@ msgstr "ایجاد پوشه"
 
 #: ../flask_admin/contrib/fileadmin.py:775
 msgid "Deletion is disabled."
-msgstr "حذف غیر فعال است"
+msgstr "حذف غیر فعال شده است."
 
 #: ../flask_admin/contrib/fileadmin.py:784
 msgid "Directory deletion is disabled."
-msgstr "حذف پوشه غیر فعال است"
+msgstr "حذف دایرکتوری غیر فعال شده است."
 
 #: ../flask_admin/contrib/fileadmin.py:790
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
-msgstr "پوشه %(path)s با موفقیت حذف شد"
+msgstr "پوشه %(path)s با موفقیت حذف شد."
 
 #: ../flask_admin/contrib/fileadmin.py:792
 #, python-format
@@ -473,14 +473,14 @@ msgstr "حداقل یک فایل انتخاب کنید"
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
 msgid "Save and Add Another"
-msgstr "Save and Add Another"
+msgstr "ذخیره و اضافه یک ردیف جدید"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:6
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:6
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:6
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:6
 msgid "Save and Continue Editing"
-msgstr "Save and Continue Editing"
+msgstr "ذخیره و ادامه ویرایش"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:18
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:8
@@ -511,7 +511,7 @@ msgstr "ایجاد"
 #: ../flask_admin/templates/bootstrap3/admin/model/details.html:21
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:30
 msgid "Details"
-msgstr "Details"
+msgstr "جزییات"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:29
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:8
@@ -562,7 +562,7 @@ msgstr "ایجاد رکورد جدید"
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:31
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:31
 msgid "Export"
-msgstr "Export"
+msgstr "خروجی گرفتن"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:67
