@@ -13,7 +13,6 @@ from flask_admin import Admin, form
 from flask_admin._compat import iteritems, itervalues
 from flask_admin.model import base, filters
 from flask_admin.model.template import macro
-from itertools import islice
 
 
 def wtforms2_and_up(func):
@@ -97,9 +96,7 @@ class MockModelView(base.BaseModelView):
     def get_list(self, page, sort_field, sort_desc, search, filters,
                  page_size=None):
         self.search_arguments.append((page, sort_field, sort_desc, search, filters))
-        count = len(self.all_models)
-        data = islice(itervalues(self.all_models), 0, page_size)
-        return count, data
+        return len(self.all_models), itervalues(self.all_models)
 
     def get_one(self, id):
         return self.all_models.get(int(id))
@@ -604,25 +601,6 @@ def test_export_csv():
     data = rv.data.decode('utf-8')
     eq_(rv.status_code, 200)
     ok_(u'\u2013ut8_1\u2013,\u2013utf8_2\u2013\r\n' in data)
-
-    # test row limit
-    view_data = {
-        1: Model(1, "col1_1", "col2_1"),
-        2: Model(2, "col1_2", "col2_2"),
-        3: Model(3, "col1_3", "col2_3"),
-    }
-
-    view = MockModelView(Model, view_data, can_export=True,
-                         column_list=['col1', 'col2'], export_max_rows=2,
-                         endpoint='row_limit_2')
-    admin.add_view(view)
-
-    rv = client.get('/admin/row_limit_2/export/csv/')
-    data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 200)
-    ok_("Col1,Col2\r\n"
-        "col1_1,col2_1\r\n"
-        "col1_2,col2_2\r\n" == data)
 
     # test None type, integer type, column_labels, and column_formatters
     view_data = {

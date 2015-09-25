@@ -2024,3 +2024,37 @@ def test_model_default():
     client = app.test_client()
     rv = client.post('/admin/model2/new/', data=dict())
     assert_true(b'This field is required' not in rv.data)
+
+
+def test_export_csv():
+    app, db, admin = setup()
+    Model1, Model2 = create_models(db)
+
+    for x in range(5):
+        fill_db(db, Model1, Model2)
+
+    view = CustomModelView(Model1, db.session, can_export=True,
+                           column_list=['test1', 'test2'], export_max_rows=2,
+                           endpoint='row_limit_2')
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    # test export_max_rows
+    rv = client.get('/admin/row_limit_2/export/csv/')
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 200)
+    ok_("Test1,Test2\r\n"
+        "test1_val_1,test2_val_1\r\n"
+        "test1_val_2,test2_val_2\r\n" == data)
+
+    view = CustomModelView(Model1, db.session, can_export=True,
+                           column_list=['test1', 'test2'],
+                           endpoint='no_row_limit')
+    admin.add_view(view)
+
+    # test row limit without export_max_rows
+    rv = client.get('/admin/no_row_limit/export/csv/')
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 200)
+    ok_(len(data.splitlines()) > 21)
