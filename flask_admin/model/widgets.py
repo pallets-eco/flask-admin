@@ -141,11 +141,9 @@ class XEditableWidget(object):
         elif subfield.type in ['FloatField', 'DecimalField']:
             kwargs['data-type'] = 'number'
             kwargs['data-step'] = 'any'
-        elif subfield.type in ['QuerySelectField', 'ModelSelectField', 'QuerySelectMultipleField']:
-            # QuerySelectField, ModelSelectField and QuerySelectMultipleField are for relations
+        elif subfield.type in ['QuerySelectField', 'ModelSelectField']:
+            # QuerySelectField and ModelSelectField are for relations
             kwargs['data-type'] = 'select'
-            if subfield.type == 'QuerySelectMultipleField':
-                kwargs['data-type'] = 'checklist'
 
             choices = []
             for choice in subfield:
