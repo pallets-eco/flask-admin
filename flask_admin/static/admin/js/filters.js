@@ -154,9 +154,9 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
         var $filterField = addFilter(name, filterGroups[name], false, null);
 
         // allow immediate typing in text filter box
-        //if ($filterField.attr('type') === 'text') {
-        //    $filterField.focus();
-        //}
+        if ($filterField.attr('type') === 'text') {
+            $filterField.focus();
+        }
         
         $('button', $root).show();        
     });
