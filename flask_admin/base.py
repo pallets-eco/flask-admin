@@ -546,9 +546,9 @@ class Admin(object):
 
             Examples::
 
-            admin.add_views(view1)
-            admin.add_views(view1, view2, view3, view4)
-            admin.add_views(*my_list)
+                admin.add_views(view1)
+                admin.add_views(view1, view2, view3, view4)
+                admin.add_views(*my_list)
 
             :param args:
                 Argument list including the views to add.
@@ -574,9 +574,9 @@ class Admin(object):
 
             Examples::
 
-            admin.add_links(link1)
-            admin.add_links(link1, link2, link3, link4)
-            admin.add_links(*my_list)
+                admin.add_links(link1)
+                admin.add_links(link1, link2, link3, link4)
+                admin.add_links(*my_list)
 
             :param args:
                 Argument list including the links to add.
