@@ -49,7 +49,7 @@ setup(
     ],
     tests_require=[
         'nose>=1.0',
-        'pillow',
+        'pillow==2.9.0',
         'mongoengine',
         'pymongo',
         'wtf-peewee',

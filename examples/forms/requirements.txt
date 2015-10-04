@@ -1,4 +1,4 @@
 Flask
 Flask-Admin
 Flask-SQLAlchemy
-pillow
+pillow==2.9.0
