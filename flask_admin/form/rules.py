@@ -173,7 +173,11 @@ class Macro(BaseRule):
         """
         parts = name.split('.')
 
-        field = context.resolve(parts[0])
+        try:
+            field = context.resolve(parts[0])
+        except AttributeError:
+            raise Exception('Your template is missing '
+                            '"{% set render_ctx = h.resolve_ctx() %}"')
 
         if not field:
             return None
