@@ -278,7 +278,7 @@ To **enable csv export** of the model view::
 
     can_export = True
 
-This will add a button to the model view that exports records, truncating at :attr:`~flask_admin.model.BaseModelView.max_export_rows`.
+This will add a button to the model view that exports records, truncating at :attr:`~flask_admin.model.BaseModelView.export_max_rows`.
 
 Adding Your Own Views
 =====================
