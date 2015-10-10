@@ -1,5 +1,6 @@
 from wtforms import form, __version__ as wtforms_version
 from wtforms.fields.core import UnboundField
+from flask_admin.babel import Translations
 
 from .fields import *
 from .widgets import *
@@ -7,10 +8,15 @@ from .upload import *
 
 
 class BaseForm(form.Form):
+    _translations = Translations()
+
     def __init__(self, formdata=None, obj=None, prefix=u'', **kwargs):
         self._obj = obj
 
         super(BaseForm, self).__init__(formdata=formdata, obj=obj, prefix=prefix, **kwargs)
+
+    def _get_translations(self):
+        return self._translations
 
 
 class FormOpts(object):
