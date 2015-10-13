@@ -1345,7 +1345,7 @@ class BaseModelView(BaseView, ActionsMixin):
     # Model event handlers
     def on_model_change(self, form, model, is_created):
         """
-            Perform some actions after a model is created or updated.
+            Perform some actions before a model is created or updated.
 
             Called from create_model and update_model in the same transaction
             (if it has any meaning for a store backend).
