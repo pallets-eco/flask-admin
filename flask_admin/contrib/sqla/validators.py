@@ -58,10 +58,10 @@ class ItemsRequired(InputRequired):
         if len(field.data) < self.min:
             if self.message is None:
                 message = field.ngettext(
-                    u"At least %d item is required",
-                    u"At least %d items are required",
+                    u"At least %(num)d item is required",
+                    u"At least %(num)d items are required",
                     self.min
-                ) % (self.min,)
+                )
             else:
                 message = self.message
 

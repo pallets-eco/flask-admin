@@ -6,11 +6,19 @@ except ImportError:
         return string % variables
 
     def ngettext(singular, plural, num, **variables):
+        variables.setdefault('num', num)
         return (singular if num == 1 else plural) % variables
 
     def lazy_gettext(string, **variables):
         return gettext(string, **variables)
 
+    class Translations(object):
+        ''' dummy Translations class for WTForms, no translation support '''
+        def gettext(self, string):
+            return gettext(string)
+
+        def ngettext(self, singular, plural, n):
+            return ngettext(singular, plural, n)
 else:
     from flask_admin import translations
 
@@ -33,6 +41,22 @@ else:
     gettext = domain.gettext
     ngettext = domain.ngettext
     lazy_gettext = domain.lazy_gettext
+
+    try:
+        from wtforms.i18n import messages_path
+    except ImportError:
+        from wtforms.ext.i18n.utils import messages_path
+
+    wtforms_domain = Domain(messages_path(), domain='wtforms')
+
+    class Translations(object):
+        ''' Fixes WTForms translation support and uses wtforms translations '''
+        def gettext(self, string):
+            return wtforms_domain.gettext(string)
+
+        def ngettext(self, singular, plural, n):
+            return wtforms_domain.ngettext(singular, plural, n)
+
 
 # lazy imports
 from .helpers import get_current_view
