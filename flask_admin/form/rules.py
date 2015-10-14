@@ -400,12 +400,13 @@ class RuleSet(object):
         result = []
 
         for r in rules:
-            if isinstance(r, BaseRule):
-                result.append(r.configure(self, parent))
-            elif isinstance(r, string_types):
+            if isinstance(r, string_types):
                 result.append(self.convert_string(r).configure(self, parent))
             else:
-                raise ValueError('Dont know how to convert %s' % repr(r))
+                try:
+                    result.append(r.configure(self, parent))
+                except AttributeError:
+                    raise TypeError('Could not convert "%s" to rule' % repr(r))
 
         return result
 
