@@ -1,4 +1,4 @@
 Flask
 Flask-Admin
 Flask-MongoEngine
-Flask-Login
+Flask-Login==0.2.11
