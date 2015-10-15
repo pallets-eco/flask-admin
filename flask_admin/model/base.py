@@ -10,7 +10,7 @@ from flask import (request, redirect, flash, abort, json, Response,
 from jinja2 import contextfunction
 from wtforms.fields import HiddenField
 from wtforms.fields.core import UnboundField
-from wtforms.validators import ValidationError, Required
+from wtforms.validators import ValidationError, InputRequired
 
 from flask_admin.babel import gettext
 
@@ -451,10 +451,10 @@ class BaseModelView(BaseView, ActionsMixin):
 
         Example::
 
-            from wtforms.validators import required
+            from wtforms.validators import Required
             class MyModelView(BaseModelView):
                 form_args = dict(
-                    name=dict(label='First Name', validators=[required()])
+                    name=dict(label='First Name', validators=[DataRequired()])
                 )
     """
 
@@ -1046,7 +1046,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             :param validators:
                 `form_args` dict with only validators
-                {'name': {'validators': [required()]}}
+                {'name': {'validators': [DataRequired()]}}
             :param custom_fieldlist:
                 A WTForm FieldList class. By default, `ListEditableFieldList`.
 
@@ -1130,7 +1130,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Override to implement customized behavior.
         """
         class DeleteForm(self.form_base_class):
-            id = HiddenField(validators=[Required()])
+            id = HiddenField(validators=[InputRequired()])
             url = HiddenField()
 
         return DeleteForm
@@ -1926,7 +1926,7 @@ class BaseModelView(BaseView, ActionsMixin):
         form = self.delete_form()
 
         if self.validate_form(form):
-             # id is Required()
+             # id is InputRequired()
             id = form.id.data
 
             model = self.get_one(id)
