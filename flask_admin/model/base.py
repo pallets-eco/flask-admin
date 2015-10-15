@@ -451,7 +451,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         Example::
 
-            from wtforms.validators import Required
+            from wtforms.validators import DataRequired
             class MyModelView(BaseModelView):
                 form_args = dict(
                     name=dict(label='First Name', validators=[DataRequired()])
