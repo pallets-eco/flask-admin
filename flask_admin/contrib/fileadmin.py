@@ -551,6 +551,26 @@ class FileAdmin(BaseView, ActionsMixin):
         """
         pass
 
+    def before_directory_delete(self, full_path, dir_name):
+        """
+            Perform some actions before a directory has successfully been deleted.
+
+            Called from delete method
+
+            By default do nothing.
+        """
+        pass
+
+    def before_file_delete(self, full_path, filename):
+        """
+            Perform some actions before a file has successfully been deleted.
+
+            Called from delete method
+
+            By default do nothing.
+        """
+        pass
+
     def on_directory_delete(self, full_path, dir_name):
         """
             Perform some actions after a directory has successfully been deleted.
@@ -785,6 +805,7 @@ class FileAdmin(BaseView, ActionsMixin):
                     return redirect(return_url)
 
                 try:
+                    self.before_directory_delete(full_path, path)
                     shutil.rmtree(full_path)
                     self.on_directory_delete(full_path, path)
                     flash(gettext('Directory "%(path)s" was successfully deleted.', path=path))
@@ -792,6 +813,7 @@ class FileAdmin(BaseView, ActionsMixin):
                     flash(gettext('Failed to delete directory: %(error)s', error=ex), 'error')
             else:
                 try:
+                    self.before_file_delete(full_path, path)
                     os.remove(full_path)
                     self.on_file_delete(full_path, path)
                     flash(gettext('File "%(name)s" was successfully deleted.', name=path))
