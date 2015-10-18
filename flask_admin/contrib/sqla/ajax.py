@@ -1,4 +1,4 @@
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 
 from flask_admin._compat import as_unicode, string_types
 from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
@@ -11,6 +11,8 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
             :param fields:
                 Fields to run query against
+            :param filters:
+                Additional filters to apply to the loader
         """
         super(QueryAjaxModelLoader, self).__init__(name, options)
 
@@ -18,6 +20,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         self.model = model
         self.fields = options.get('fields')
         self.order_by = options.get('order_by')
+        self.filters = options.get('filters')
 
         if not self.fields:
             raise ValueError('AJAX loading requires `fields` to be specified for %s.%s' % (model, self.name))
@@ -61,6 +64,10 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         filters = (field.ilike(u'%%%s%%' % term) for field in self._cached_fields)
         query = query.filter(or_(*filters))
+
+        if self.filters:
+            filters = ["%s.%s" % (self.model.__name__.lower(), value) for value in self.filters]
+            query = query.filter(and_(*filters))
 
         if self.order_by:
             query = query.order_by(self.order_by)
