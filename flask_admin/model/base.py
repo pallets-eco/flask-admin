@@ -646,7 +646,7 @@ class BaseModelView(BaseView, ActionsMixin):
             :param category:
                 View category
             :param endpoint:
-                Base endpoint. If not provided, will use the model name
+                Base endpoint. If not provided, will use the model name.
             :param url:
                 Base URL. If not provided, will use endpoint as a URL.
             :param menu_class_name:
