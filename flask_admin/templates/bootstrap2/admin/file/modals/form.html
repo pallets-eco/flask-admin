@@ -3,7 +3,9 @@
 
 {% block body %}
   {# content added to modal-content #}
-  {{ lib.render_form(form, dir_url, action=request.url, is_modal=True) }}
+  {% block fa_form %}
+    {{ lib.render_form(form, dir_url, action=request.url, is_modal=True) }}
+  {% endblock %}
 {% endblock %}
 
 {% block tail %}
