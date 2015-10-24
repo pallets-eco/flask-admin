@@ -597,8 +597,8 @@ class FileAdmin(BaseView, ActionsMixin):
 
         if op.exists(filename):
             secure_name = op.join(path, secure_filename(form.upload.data.filename))
-            flash(gettext('File "%(name)s" already exists.', name=secure_name),
-                  'error')
+            raise Exception(gettext('File "%(name)s" already exists.',
+                                    name=secure_name))
         else:
             self.save_file(filename, form.upload.data)
             self.on_file_upload(directory, path, filename)
