@@ -33,7 +33,9 @@
   </ul>
   {% endblock %}
 
-  {{ lib.render_form(form, return_url, extra(), form_opts) }}
+  {% block edit_form %}
+    {{ lib.render_form(form, return_url, extra(), form_opts) }}
+  {% endblock %}
 {% endblock %}
 
 {% block tail %}
