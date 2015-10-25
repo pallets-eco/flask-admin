@@ -5,7 +5,7 @@ from sqlalchemy import Boolean, Column
 
 from flask_admin import form
 from flask_admin.model.form import (converts, ModelConverterBase,
-                                        InlineModelConverterBase, FieldPlaceholder)
+                                    InlineModelConverterBase, FieldPlaceholder)
 from flask_admin.model.fields import AjaxSelectField, AjaxSelectMultipleField
 from flask_admin.model.helpers import prettify_name
 from flask_admin._backwards import get_property
@@ -15,12 +15,6 @@ from .validators import Unique
 from .fields import QuerySelectField, QuerySelectMultipleField, InlineModelFormList
 from .tools import has_multiple_pks, filter_foreign_columns
 from .ajax import create_ajax_loader
-
-try:
-    # Field has better input parsing capabilities.
-    from wtforms.ext.dateutil.fields import DateTimeField
-except ImportError:
-    from wtforms.fields import DateTimeField
 
 
 class AdminModelConverter(ModelConverterBase):
