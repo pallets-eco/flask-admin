@@ -13,9 +13,11 @@
   </div>
   <div class="modal-body">
     {# "save and continue" button is removed from modal (it won't function properly) #}
-    {{ lib.render_form(form, return_url, extra=None, form_opts=form_opts,
-                       action=url_for('.edit_view', id=request.args.get('id'), url=return_url),
-                       is_modal=True) }}
+    {% block edit_form %}
+      {{ lib.render_form(form, return_url, extra=None, form_opts=form_opts,
+                         action=url_for('.edit_view', id=request.args.get('id'), url=return_url),
+                         is_modal=True) }}
+    {% endblock %}
   </div>
 {% endblock %}
 

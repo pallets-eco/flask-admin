@@ -3,5 +3,7 @@
 
 {% block body %}
   {% block header %}<h3>{{ header_text }}</h3>{% endblock %}
-  {{ lib.render_form(form, dir_url) }}
+  {% block fa_form %}
+    {{ lib.render_form(form, dir_url) }}
+  {% endblock %}
 {% endblock %}

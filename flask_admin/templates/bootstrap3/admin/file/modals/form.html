@@ -8,7 +8,9 @@
     {% block header %}<h3>{{ header_text }}</h3>{% endblock %}
   </div>
   <div class="modal-body">
-    {{ lib.render_form(form, dir_url, action=request.url, is_modal=True) }}
+    {% block fa_form %}
+      {{ lib.render_form(form, dir_url, action=request.url, is_modal=True) }}
+    {% endblock %}
   </div>
 {% endblock %}
 
