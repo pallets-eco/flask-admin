@@ -1,5 +1,7 @@
 import warnings
 
+from copy import deepcopy
+
 from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
 
@@ -147,7 +149,8 @@ class AdminModelConverter(ModelConverterBase):
         }
 
         if field_args:
-            kwargs.update(field_args)
+            # prevent modification of self.form_args
+            kwargs.update(deepcopy(field_args))
 
         # Check if it is relation or property
         if hasattr(prop, 'direction'):
