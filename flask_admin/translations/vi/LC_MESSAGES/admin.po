@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-09-18 01:59-0500\n"
-"PO-Revision-Date: 2015-09-18 02:59-0400\n"
+"POT-Creation-Date: 2015-10-29 22:29-0500\n"
+"PO-Revision-Date: 2015-11-03 21:49-0500\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Vietnamese\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.0\n"
+"Generated-By: Babel 2.1.1\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: flask-admin\n"
@@ -47,35 +47,35 @@ msgstr "Tên không hợp lệ"
 msgid "Name"
 msgstr "Tên"
 
-#: ../flask_admin/contrib/fileadmin.py:579
+#: ../flask_admin/contrib/fileadmin.py:600
 #, python-format
 msgid "File \"%(name)s\" already exists."
 msgstr "Tập tin \"%(name)s\" đã tồn tại."
 
-#: ../flask_admin/contrib/fileadmin.py:603
-#: ../flask_admin/contrib/fileadmin.py:670
-#: ../flask_admin/contrib/fileadmin.py:732
-#: ../flask_admin/contrib/fileadmin.py:779
-#: ../flask_admin/contrib/fileadmin.py:825
-#: ../flask_admin/contrib/fileadmin.py:878 ../flask_admin/model/base.py:1962
+#: ../flask_admin/contrib/fileadmin.py:624
+#: ../flask_admin/contrib/fileadmin.py:691
+#: ../flask_admin/contrib/fileadmin.py:753
+#: ../flask_admin/contrib/fileadmin.py:800
+#: ../flask_admin/contrib/fileadmin.py:848
+#: ../flask_admin/contrib/fileadmin.py:901 ../flask_admin/model/base.py:1976
 msgid "Permission denied."
 msgstr "Từ chối cho phép."
 
-#: ../flask_admin/contrib/fileadmin.py:666
+#: ../flask_admin/contrib/fileadmin.py:687
 msgid "File uploading is disabled."
 msgstr "Tập tin tải lên bị vô hiệu hóa."
 
-#: ../flask_admin/contrib/fileadmin.py:677
+#: ../flask_admin/contrib/fileadmin.py:698
 #, python-format
 msgid "Successfully saved file: %(name)s"
 msgstr "Tệp đã lưu thành công: %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:681
+#: ../flask_admin/contrib/fileadmin.py:702
 #, python-format
 msgid "Failed to save file: %(error)s"
 msgstr "Không thể lưu tập tin: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:689
+#: ../flask_admin/contrib/fileadmin.py:710
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:121
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:123
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:121
@@ -83,21 +83,21 @@ msgstr "Không thể lưu tập tin: %(error)s"
 msgid "Upload File"
 msgstr "Tải lên tập tin"
 
-#: ../flask_admin/contrib/fileadmin.py:728
+#: ../flask_admin/contrib/fileadmin.py:749
 msgid "Directory creation is disabled."
 msgstr "Tạo ra thư mục bị vô hiệu hóa."
 
-#: ../flask_admin/contrib/fileadmin.py:741
+#: ../flask_admin/contrib/fileadmin.py:762
 #, python-format
 msgid "Successfully created directory: %(directory)s"
 msgstr "Thành công tạo ra thư mục: %(directory)s"
 
-#: ../flask_admin/contrib/fileadmin.py:745
+#: ../flask_admin/contrib/fileadmin.py:766
 #, python-format
 msgid "Failed to create directory: %(error)s"
 msgstr "Không thể tạo thư mục: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:755
+#: ../flask_admin/contrib/fileadmin.py:776
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:132
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:134
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:132
@@ -105,91 +105,91 @@ msgstr "Không thể tạo thư mục: %(error)s"
 msgid "Create Directory"
 msgstr "Tạo thư mục"
 
-#: ../flask_admin/contrib/fileadmin.py:775
+#: ../flask_admin/contrib/fileadmin.py:796
 msgid "Deletion is disabled."
 msgstr "Xóa bị vô hiệu hóa."
 
-#: ../flask_admin/contrib/fileadmin.py:784
+#: ../flask_admin/contrib/fileadmin.py:805
 msgid "Directory deletion is disabled."
 msgstr "Xóa thư mục bị vô hiệu hóa."
 
-#: ../flask_admin/contrib/fileadmin.py:790
+#: ../flask_admin/contrib/fileadmin.py:812
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
 msgstr "Thư mục \"%(path)s\" đã được xóa thành công."
 
-#: ../flask_admin/contrib/fileadmin.py:792
+#: ../flask_admin/contrib/fileadmin.py:814
 #, python-format
 msgid "Failed to delete directory: %(error)s"
 msgstr "Không thể xoá thư mục: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:797
-#: ../flask_admin/contrib/fileadmin.py:955
+#: ../flask_admin/contrib/fileadmin.py:820
+#: ../flask_admin/contrib/fileadmin.py:978
 #, python-format
 msgid "File \"%(name)s\" was successfully deleted."
 msgstr "Tập tin \"%(name)s\" đã được xóa thành công."
 
-#: ../flask_admin/contrib/fileadmin.py:799
-#: ../flask_admin/contrib/fileadmin.py:957
+#: ../flask_admin/contrib/fileadmin.py:822
+#: ../flask_admin/contrib/fileadmin.py:980
 #, python-format
 msgid "Failed to delete file: %(name)s"
 msgstr "Không xóa tập tin: %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:821
+#: ../flask_admin/contrib/fileadmin.py:844
 msgid "Renaming is disabled."
 msgstr "Đổi tên bị vô hiệu hóa."
 
-#: ../flask_admin/contrib/fileadmin.py:829
+#: ../flask_admin/contrib/fileadmin.py:852
 msgid "Path does not exist."
 msgstr "Đường dẫn không tồn tại."
 
-#: ../flask_admin/contrib/fileadmin.py:840
+#: ../flask_admin/contrib/fileadmin.py:863
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
 msgstr "Thành công được đổi tên thành \"%(src)s\" để \"%(dst)s\""
 
-#: ../flask_admin/contrib/fileadmin.py:843
+#: ../flask_admin/contrib/fileadmin.py:866
 #, python-format
 msgid "Failed to rename: %(error)s"
 msgstr "Không thể đổi tên: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:857
+#: ../flask_admin/contrib/fileadmin.py:880
 #, python-format
 msgid "Rename %(name)s"
 msgstr "Đổi tên %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:894
+#: ../flask_admin/contrib/fileadmin.py:917
 #, python-format
 msgid "Error saving changes to %(name)s."
 msgstr "Lỗi khi lưu thay đổi để %(name)s."
 
-#: ../flask_admin/contrib/fileadmin.py:898
+#: ../flask_admin/contrib/fileadmin.py:921
 #, python-format
 msgid "Changes to %(name)s saved successfully."
 msgstr "Thay đổi để %(name)s lưu thành công."
 
-#: ../flask_admin/contrib/fileadmin.py:907
+#: ../flask_admin/contrib/fileadmin.py:930
 #, python-format
 msgid "Error reading %(name)s."
 msgstr "Lỗi đọc %(name)s."
 
-#: ../flask_admin/contrib/fileadmin.py:910
-#: ../flask_admin/contrib/fileadmin.py:919
+#: ../flask_admin/contrib/fileadmin.py:933
+#: ../flask_admin/contrib/fileadmin.py:942
 #, python-format
 msgid "Unexpected error while reading from %(name)s"
 msgstr "Lỗi bất ngờ trong khi đọc từ %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:916
+#: ../flask_admin/contrib/fileadmin.py:939
 #, python-format
 msgid "Cannot edit %(name)s."
 msgstr "Không thể chỉnh sửa %(name)s."
 
-#: ../flask_admin/contrib/fileadmin.py:934
+#: ../flask_admin/contrib/fileadmin.py:957
 #, python-format
 msgid "Editing %(path)s"
 msgstr "Chỉnh sửa %(path)s"
 
-#: ../flask_admin/contrib/fileadmin.py:942
+#: ../flask_admin/contrib/fileadmin.py:965
 #: ../flask_admin/contrib/mongoengine/view.py:638
 #: ../flask_admin/contrib/peewee/view.py:457
 #: ../flask_admin/contrib/pymongo/view.py:359
@@ -197,15 +197,15 @@ msgstr "Chỉnh sửa %(path)s"
 msgid "Delete"
 msgstr "Xóa"
 
-#: ../flask_admin/contrib/fileadmin.py:943
+#: ../flask_admin/contrib/fileadmin.py:966
 msgid "Are you sure you want to delete these files?"
 msgstr "Bạn có chắc bạn muốn xóa các tệp này không?"
 
-#: ../flask_admin/contrib/fileadmin.py:946
+#: ../flask_admin/contrib/fileadmin.py:969
 msgid "File deletion is disabled."
 msgstr "Xóa tập tin bị vô hiệu hóa."
 
-#: ../flask_admin/contrib/fileadmin.py:959
+#: ../flask_admin/contrib/fileadmin.py:982
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:17
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:26
 #: ../flask_admin/templates/bootstrap3/admin/model/details.html:17
@@ -307,8 +307,8 @@ msgstr "Hỏng khi tạo hồ sơ. %(error)s"
 #: ../flask_admin/contrib/mongoengine/view.py:573
 #: ../flask_admin/contrib/peewee/view.py:424
 #: ../flask_admin/contrib/pymongo/view.py:316
-#: ../flask_admin/contrib/sqla/view.py:1030 ../flask_admin/model/base.py:2062
-#: ../flask_admin/model/base.py:2071
+#: ../flask_admin/contrib/sqla/view.py:1030 ../flask_admin/model/base.py:2076
+#: ../flask_admin/model/base.py:2085
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr "Hỏng khi tạo hồ sơ. %(error)s"
@@ -331,7 +331,7 @@ msgstr "Bạn có chắc bạn muốn xóa hồ sơ đã chọn không?"
 #: ../flask_admin/contrib/mongoengine/view.py:648
 #: ../flask_admin/contrib/peewee/view.py:475
 #: ../flask_admin/contrib/pymongo/view.py:370
-#: ../flask_admin/contrib/sqla/view.py:1092 ../flask_admin/model/base.py:1940
+#: ../flask_admin/contrib/sqla/view.py:1092 ../flask_admin/model/base.py:1954
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
@@ -358,9 +358,9 @@ msgstr "Đã tồn tại."
 
 #: ../flask_admin/contrib/sqla/validators.py:60
 #, python-format
-msgid "At least %d item is required"
-msgid_plural "At least %d items are required"
-msgstr[0] "Ít %d mục được yêu cầu"
+msgid "At least %(num)d item is required"
+msgid_plural "At least %(num)d items are required"
+msgstr[0] "At least %(num)d items are required"
 
 #: ../flask_admin/contrib/sqla/view.py:983
 #, python-format
@@ -384,25 +384,25 @@ msgstr "Phần mở rộng tệp không hợp lệ"
 msgid "File \"%s\" already exists."
 msgstr "Tập tin \"%s\" đã tồn tại."
 
-#: ../flask_admin/model/base.py:1498
+#: ../flask_admin/model/base.py:1512
 msgid "There are no items in the table."
 msgstr "Không có mục nào trong bảng."
 
-#: ../flask_admin/model/base.py:1522
+#: ../flask_admin/model/base.py:1536
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
 msgstr "Giá trị không hợp lệ bộ lọc: %(value)s"
 
-#: ../flask_admin/model/base.py:1805
+#: ../flask_admin/model/base.py:1819
 msgid "Record was successfully created."
 msgstr "Kỷ lục được tạo thành công."
 
-#: ../flask_admin/model/base.py:1849 ../flask_admin/model/base.py:1901
-#: ../flask_admin/model/base.py:1935
+#: ../flask_admin/model/base.py:1863 ../flask_admin/model/base.py:1915
+#: ../flask_admin/model/base.py:1949
 msgid "Record does not exist."
 msgstr "Hồ sơ không tồn tại."
 
-#: ../flask_admin/model/base.py:1858 ../flask_admin/model/base.py:2067
+#: ../flask_admin/model/base.py:1872 ../flask_admin/model/base.py:2081
 msgid "Record was successfully saved."
 msgstr "Hồ sơ đã được lưu thành công."
 
@@ -612,12 +612,12 @@ msgstr "Xóa hồ sơ"
 msgid "Please select at least one record."
 msgstr "Vui lòng chọn ít nhất một kỷ lục."
 
-#: ../flask_admin/templates/bootstrap2/admin/model/modals/create.html:20
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/create.html:22
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/create.html:10
 msgid "Create New Record"
 msgstr "Tạo Hồ Sơ Mới"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:20
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:22
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:11
 msgid "Edit Record"
 msgstr "Chỉnh sửa bản ghi"
