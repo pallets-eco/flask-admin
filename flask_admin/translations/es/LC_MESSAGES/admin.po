@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-09-18 01:59-0500\n"
-"PO-Revision-Date: 2015-09-18 02:59-0400\n"
+"PO-Revision-Date: 2015-11-03 01:59-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -59,7 +59,7 @@ msgstr "El archivo \"%(name)s\" ya existe."
 #: ../flask_admin/contrib/fileadmin.py:825
 #: ../flask_admin/contrib/fileadmin.py:878 ../flask_admin/model/base.py:1962
 msgid "Permission denied."
-msgstr "Permiso dengado."
+msgstr "Permiso denegado."
 
 #: ../flask_admin/contrib/fileadmin.py:666
 msgid "File uploading is disabled."
@@ -520,7 +520,7 @@ msgstr "Details"
 #: ../flask_admin/templates/bootstrap3/admin/model/details.html:28
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:15
 msgid "Filter"
-msgstr "Filtrer"
+msgstr "Filtrar"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
 #: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:14
@@ -564,7 +564,7 @@ msgstr "Crear nuevo registro"
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:31
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:31
 msgid "Export"
-msgstr "Export"
+msgstr "Exportar"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:67
