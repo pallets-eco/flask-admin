@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-10-29 22:29-0500\n"
-"PO-Revision-Date: 2015-11-03 21:49-0500\n"
+"PO-Revision-Date: 2015-11-07 02:15-0500\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "MIME-Version: 1.0\n"
@@ -362,9 +362,9 @@ msgstr "Već postoji."
 #, python-format
 msgid "At least %(num)d item is required"
 msgid_plural "At least %(num)d items are required"
-msgstr[0] "At least %(num)d item is required"
-msgstr[1] "At least %(num)d items are required"
-msgstr[2] "At least %(num)d items are required"
+msgstr[0] "Bar %(num)d zapisa je potrebno"
+msgstr[1] ""
+msgstr[2] ""
 
 #: ../flask_admin/contrib/sqla/view.py:983
 #, python-format
@@ -477,14 +477,14 @@ msgstr "Molim te izabere najmanje jedan dokument."
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
 msgid "Save and Add Another"
-msgstr "Save and Add Another"
+msgstr "Spremite i dodajte novi"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:6
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:6
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:6
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:6
 msgid "Save and Continue Editing"
-msgstr "Save and Continue Editing"
+msgstr "Spremite i nastavite s uređivanjem"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:18
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:8
@@ -515,7 +515,7 @@ msgstr "Stvori"
 #: ../flask_admin/templates/bootstrap3/admin/model/details.html:21
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:30
 msgid "Details"
-msgstr "Details"
+msgstr "Detalji"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:29
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:8
@@ -566,7 +566,7 @@ msgstr "Stvori novi rekord"
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:31
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:31
 msgid "Export"
-msgstr "Export"
+msgstr "Izvezite"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:67
@@ -600,29 +600,29 @@ msgstr "Prikaz zapisa"
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:126
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:128
 msgid "Edit record"
-msgstr "Edit rekord"
+msgstr "Uredi zapis"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:142
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:142
 msgid "Are you sure you want to delete this record?"
-msgstr "Da li si siguran da želiš da obrišem ovu ploču?"
+msgstr "Da li ste sigurani da želite obrisati ovaj zapis?"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:142
 msgid "Delete record"
-msgstr "Čim je rekord"
+msgstr "Obrišite zapis"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:199
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:200
 msgid "Please select at least one record."
-msgstr "Molim te izabere najmanje jedan rekord."
+msgstr "Molimo odaberite najmanje jedan zapis."
 
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/create.html:22
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/create.html:10
 msgid "Create New Record"
-msgstr "Stvori Novi Rekord"
+msgstr "Stvori Novi Zapis"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:22
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:11
 msgid "Edit Record"
-msgstr "Edit Rekord"
+msgstr "Uredite Zapis"
 
