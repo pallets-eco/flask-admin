@@ -38,6 +38,11 @@
     margin: 1px 0 0 0;
 }
 
+/* List View - prevent word wrap on buttons column, to keep it on one line */
+.list-buttons-column {
+    white-space: nowrap;
+}
+
 /* Filters */
 table.filters {
     border-collapse: collapse;
