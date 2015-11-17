@@ -3,6 +3,8 @@ from sqlalchemy import or_
 from flask_admin._compat import as_unicode, string_types
 from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
 
+from .tools import get_primary_key, has_multiple_pks
+
 
 class QueryAjaxModelLoader(AjaxModelLoader):
     def __init__(self, name, session, model, **options):
@@ -24,11 +26,10 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         self._cached_fields = self._process_fields()
 
-        primary_keys = model._sa_class_manager.mapper.primary_key
-        if len(primary_keys) > 1:
+        if has_multiple_pks(model):
             raise NotImplementedError('Flask-Admin does not support multi-pk AJAX model loading.')
 
-        self.pk = primary_keys[0].name
+        self.pk = get_primary_key(model)
 
     def _process_fields(self):
         remote_fields = []
