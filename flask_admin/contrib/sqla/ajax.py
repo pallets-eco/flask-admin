@@ -22,9 +22,11 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         if not self.fields:
             raise ValueError('AJAX loading requires `fields` to be specified for %s.%s' % (model, self.name))
 
+        self._mapper = model._sa_class_manager.mapper
+
         self._cached_fields = self._process_fields()
 
-        primary_keys = model._sa_class_manager.mapper.primary_key
+        primary_keys = self._mapper.primary_key
         if len(primary_keys) > 1:
             raise NotImplementedError('Flask-Admin does not support multi-pk AJAX model loading.')
 
@@ -47,11 +49,14 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
+    def primary_key_from_instance(self, instance):
+        return self._mapper.primary_key_from_instance(instance)[0]
+
     def format(self, model):
         if not model:
             return None
 
-        return (getattr(model, self.pk), as_unicode(model))
+        return (self.primary_key_from_instance(model), as_unicode(model))
 
     def get_one(self, pk):
         return self.session.query(self.model).get(pk)
