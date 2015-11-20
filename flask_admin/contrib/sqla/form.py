@@ -334,13 +334,15 @@ class AdminModelConverter(ModelConverterBase):
         field_args['validators'].append(validators.NumberRange(min=1901, max=2155))
         return fields.StringField(**field_args)
 
-    @converts('databases.postgres.PGInet', 'dialects.postgresql.base.INET')
+    @converts('sqlalchemy.dialects.postgresql.base.INET',
+              'databases.postgres.PGInet', 'dialects.postgresql.base.INET')
     def conv_PGInet(self, field_args, **extra):
         field_args.setdefault('label', u'IP Address')
         field_args['validators'].append(validators.IPAddress())
         return fields.StringField(**field_args)
 
-    @converts('dialects.postgresql.base.MACADDR')
+    @converts('sqlalchemy.dialects.postgresql.base.MACADDR',
+              'dialects.postgresql.base.MACADDR')
     def conv_PGMacaddr(self, field_args, **extra):
         field_args.setdefault('label', u'MAC Address')
         field_args['validators'].append(validators.MacAddress())
