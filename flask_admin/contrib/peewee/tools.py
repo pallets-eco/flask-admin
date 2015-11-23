@@ -2,7 +2,8 @@ from peewee import PrimaryKeyField
 
 
 def get_primary_key(model):
-    for n, f in model._meta.get_sorted_fields():
+    for n, f in zip(model._meta.sorted_field_names,
+                    model._meta.sorted_fields):
         if type(f) == PrimaryKeyField or f.primary_key:
             return n
 
