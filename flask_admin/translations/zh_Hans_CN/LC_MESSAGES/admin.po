@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2015-10-29 22:29-0500\n"
-"PO-Revision-Date: 2015-11-03 21:49-0500\n"
+"PO-Revision-Date: 2015-11-30 04:19-0500\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Chinese Simplified\n"
 "MIME-Version: 1.0\n"
@@ -360,7 +360,7 @@ msgstr "已经存在。"
 #, python-format
 msgid "At least %(num)d item is required"
 msgid_plural "At least %(num)d items are required"
-msgstr[0] "At least %(num)d items are required"
+msgstr[0] "至少需要 %(num)d 个选项"
 
 #: ../flask_admin/contrib/sqla/view.py:983
 #, python-format
