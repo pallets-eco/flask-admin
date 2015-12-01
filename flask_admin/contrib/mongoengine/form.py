@@ -63,7 +63,7 @@ class CustomModelConverter(orm.ModelConverter):
 
         kwargs = {
             'label': getattr(field, 'verbose_name', field.name),
-            'description': field.help_text or '',
+            'description': getattr(field, 'help_text', ''),
             'validators': [],
             'filters': [],
             'default': field.default
