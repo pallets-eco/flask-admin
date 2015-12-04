@@ -2,7 +2,7 @@ import logging
 
 from flask import flash
 
-from flask_admin._compat import string_types
+from flask_admin._compat import string_types, iteritems
 from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import wrap_fields_in_fieldlist
@@ -149,7 +149,7 @@ class ModelView(BaseModelView):
         if model is None:
             model = self.model
 
-        return model._meta.get_sorted_fields()
+        return iteritems(model._meta.fields)
 
     def scaffold_pk(self):
         return get_primary_key(self.model)
