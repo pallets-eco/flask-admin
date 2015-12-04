@@ -729,7 +729,6 @@ def test_extra_field_order():
 
     view = CustomModelView(
         Model1,
-        form_columns=('extra_field', 'test1'),
         form_extra_fields={
             'extra_field': fields.StringField('Extra Field')
         }
@@ -743,9 +742,10 @@ def test_extra_field_order():
 
     # Check presence and order
     data = rv.data.decode('utf-8')
+    ok_('Extra Field' in data)
     pos1 = data.find('Extra Field')
     pos2 = data.find('Test1')
-    ok_(pos2 > pos1)
+    ok_(pos2 < pos1)
 
 
 def test_custom_form_base():
