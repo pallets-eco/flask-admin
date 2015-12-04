@@ -6,7 +6,7 @@ from flask_admin._compat import PY2, as_unicode
 if not PY2:
     raise SkipTest('MongoEngine is not Python 3 compatible')
 
-from wtforms import fields
+from wtforms import fields, validators
 
 from flask_admin import form
 from flask_admin.contrib.mongoengine import ModelView
@@ -1038,6 +1038,25 @@ def test_form_flat_choices():
 
     form = view.create_form()
     eq_(form.name.choices, [('a', 'a'), ('b', 'b'), ('c', 'c')])
+
+
+def test_form_args():
+    app, db, admin = setup()
+
+    class Model(db.Document):
+        test = db.StringField(required=True)
+
+    shared_form_args = {'test': {'validators': [validators.Regexp('test')]}}
+
+    view = CustomModelView(Model, form_args=shared_form_args)
+    admin.add_view(view)
+
+    # ensure shared field_args don't create duplicate validators
+    create_form = view.create_form()
+    eq_(len(create_form.test.validators), 2)
+
+    edit_form = view.edit_form()
+    eq_(len(edit_form.test.validators), 2)
 
 
 def test_form_args_embeddeddoc():

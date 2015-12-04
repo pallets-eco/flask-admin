@@ -1,6 +1,6 @@
 from nose.tools import eq_, ok_, raises, assert_true
 
-from wtforms import fields
+from wtforms import fields, validators
 
 from flask_admin import form
 from flask_admin._compat import as_unicode
@@ -1441,7 +1441,27 @@ def test_form_columns():
 
     ok_(type(form3.model).__name__ == 'QuerySelectField')
 
-    # TODO: form_args
+
+def test_form_args():
+    app, db, admin = setup()
+
+    class Model(db.Model):
+        id = db.Column(db.String, primary_key=True)
+        test = db.Column(db.String, nullable=False)
+
+    db.create_all()
+
+    shared_form_args = {'test': {'validators': [validators.Regexp('test')]}}
+
+    view = CustomModelView(Model, db.session, form_args=shared_form_args)
+    admin.add_view(view)
+
+    create_form = view.create_form()
+    eq_(len(create_form.test.validators), 2)
+
+    # ensure shared field_args don't create duplicate validators
+    edit_form = view.edit_form()
+    eq_(len(edit_form.test.validators), 2)
 
 
 def test_form_override():
