@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 from mongoengine import ReferenceField, ListField
 from mongoengine.base import BaseDocument, DocumentMetaclass, get_document
 
@@ -70,8 +68,11 @@ class CustomModelConverter(orm.ModelConverter):
         }
 
         if field_args:
-            # prevent modification of self.form_args
-            kwargs.update(deepcopy(field_args))
+            kwargs.update(field_args)
+
+        if kwargs['validators']:
+            # Create a copy of the list since we will be modifying it.
+            kwargs['validators'] = list(kwargs['validators'])
 
         if field.required:
             kwargs['validators'].append(validators.InputRequired())

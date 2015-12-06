@@ -8,7 +8,7 @@ if not PY2:
 
 import peewee
 
-from wtforms import fields
+from wtforms import fields, validators
 
 from flask_admin import form
 from flask_admin._compat import iteritems
@@ -908,6 +908,31 @@ def test_custom_form_base():
 
     create_form = view.create_form()
     ok_(isinstance(create_form, TestForm))
+
+
+def test_form_args():
+    app, db, admin = setup()
+
+    class BaseModel(peewee.Model):
+        class Meta:
+            database = db
+
+    class Model(BaseModel):
+        test = peewee.CharField(null=False)
+
+    Model.create_table()
+
+    shared_form_args = {'test': {'validators': [validators.Regexp('test')]}}
+
+    view = CustomModelView(Model, form_args=shared_form_args)
+    admin.add_view(view)
+
+    # ensure shared field_args don't create duplicate validators
+    create_form = view.create_form()
+    eq_(len(create_form.test.validators), 2)
+
+    edit_form = view.edit_form()
+    eq_(len(edit_form.test.validators), 2)
 
 
 def test_ajax_fk():
