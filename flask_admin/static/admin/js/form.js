@@ -484,7 +484,10 @@
         var $parentForm = $el.parent().closest('.inline-field');
 
         if ($parentForm.hasClass('fresh')) {
-          id = $parentForm.attr('id') + '-' + elID;
+          id = $parentForm.attr('id');
+          if (elID) {
+            id += '-' + elID;
+          }
         }
 
         var $fieldList = $el.find('> .inline-field-list');
