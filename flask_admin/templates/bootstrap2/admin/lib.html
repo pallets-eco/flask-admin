@@ -176,7 +176,7 @@
     {% else %}
         {% for f in form if f.widget.input_type != 'hidden' %}
           {% if form_opts %}
-            {% set kwargs = form_opts.widget_args.get(f.name, {}) %}
+            {% set kwargs = form_opts.widget_args.get(f.short_name, {}) %}
           {% else %}
             {% set kwargs = {} %}
           {% endif %}
