@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-10-29 22:29-0500\n"
-"PO-Revision-Date: 2015-11-03 21:49-0500\n"
+"POT-Creation-Date: 2015-12-11 17:54-0600\n"
+"PO-Revision-Date: 2015-12-11 18:54-0500\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Chinese Traditional\n"
 "MIME-Version: 1.0\n"
@@ -57,7 +57,7 @@ msgstr "檔案 \"%(name)s\" 已經存在。"
 #: ../flask_admin/contrib/fileadmin.py:753
 #: ../flask_admin/contrib/fileadmin.py:800
 #: ../flask_admin/contrib/fileadmin.py:848
-#: ../flask_admin/contrib/fileadmin.py:901 ../flask_admin/model/base.py:1976
+#: ../flask_admin/contrib/fileadmin.py:901 ../flask_admin/model/base.py:1979
 msgid "Permission denied."
 msgstr "許可權被拒絕。"
 
@@ -193,7 +193,7 @@ msgstr "編輯 %(path)s"
 #: ../flask_admin/contrib/mongoengine/view.py:638
 #: ../flask_admin/contrib/peewee/view.py:457
 #: ../flask_admin/contrib/pymongo/view.py:359
-#: ../flask_admin/contrib/sqla/view.py:1075
+#: ../flask_admin/contrib/sqla/view.py:1077
 msgid "Delete"
 msgstr "刪除"
 
@@ -299,7 +299,7 @@ msgstr "未能獲取模型。%(error)s"
 #: ../flask_admin/contrib/mongoengine/view.py:547
 #: ../flask_admin/contrib/peewee/view.py:405
 #: ../flask_admin/contrib/pymongo/view.py:291
-#: ../flask_admin/contrib/sqla/view.py:1004
+#: ../flask_admin/contrib/sqla/view.py:1006
 #, python-format
 msgid "Failed to create record. %(error)s"
 msgstr "建立模型的時候發生異常：%(error)s"
@@ -307,8 +307,8 @@ msgstr "建立模型的時候發生異常：%(error)s"
 #: ../flask_admin/contrib/mongoengine/view.py:573
 #: ../flask_admin/contrib/peewee/view.py:424
 #: ../flask_admin/contrib/pymongo/view.py:316
-#: ../flask_admin/contrib/sqla/view.py:1030 ../flask_admin/model/base.py:2076
-#: ../flask_admin/model/base.py:2085
+#: ../flask_admin/contrib/sqla/view.py:1032 ../flask_admin/model/base.py:2079
+#: ../flask_admin/model/base.py:2088
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr "更新模型的時候發生異常：%(error)s"
@@ -316,7 +316,7 @@ msgstr "更新模型的時候發生異常：%(error)s"
 #: ../flask_admin/contrib/mongoengine/view.py:596
 #: ../flask_admin/contrib/peewee/view.py:439
 #: ../flask_admin/contrib/pymongo/view.py:341
-#: ../flask_admin/contrib/sqla/view.py:1055
+#: ../flask_admin/contrib/sqla/view.py:1057
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr "刪除模型的時候發生異常：%(error)s"
@@ -324,14 +324,14 @@ msgstr "刪除模型的時候發生異常：%(error)s"
 #: ../flask_admin/contrib/mongoengine/view.py:639
 #: ../flask_admin/contrib/peewee/view.py:458
 #: ../flask_admin/contrib/pymongo/view.py:360
-#: ../flask_admin/contrib/sqla/view.py:1076
+#: ../flask_admin/contrib/sqla/view.py:1078
 msgid "Are you sure you want to delete selected records?"
 msgstr "您確定要刪除這些模型嗎？"
 
 #: ../flask_admin/contrib/mongoengine/view.py:648
 #: ../flask_admin/contrib/peewee/view.py:475
 #: ../flask_admin/contrib/pymongo/view.py:370
-#: ../flask_admin/contrib/sqla/view.py:1092 ../flask_admin/model/base.py:1954
+#: ../flask_admin/contrib/sqla/view.py:1094 ../flask_admin/model/base.py:1957
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
@@ -340,7 +340,7 @@ msgstr[0] "刪除作業成功完成。"
 #: ../flask_admin/contrib/mongoengine/view.py:654
 #: ../flask_admin/contrib/peewee/view.py:481
 #: ../flask_admin/contrib/pymongo/view.py:375
-#: ../flask_admin/contrib/sqla/view.py:1100
+#: ../flask_admin/contrib/sqla/view.py:1102
 #, python-format
 msgid "Failed to delete records. %(error)s"
 msgstr "刪除模型的時候發生異常：%(error)s"
@@ -360,9 +360,9 @@ msgstr "資料已經存在。"
 #, python-format
 msgid "At least %(num)d item is required"
 msgid_plural "At least %(num)d items are required"
-msgstr[0] "At least %(num)d items are required"
+msgstr[0] ""
 
-#: ../flask_admin/contrib/sqla/view.py:983
+#: ../flask_admin/contrib/sqla/view.py:985
 #, python-format
 msgid "Integrity error. %(message)s"
 msgstr "完整性錯誤。%(message)s"
@@ -384,38 +384,38 @@ msgstr "不正確檔副檔名"
 msgid "File \"%s\" already exists."
 msgstr "檔案 \"%s\" 已經存在。"
 
-#: ../flask_admin/model/base.py:1512
+#: ../flask_admin/model/base.py:1515
 msgid "There are no items in the table."
 msgstr "在表中沒有專案。"
 
-#: ../flask_admin/model/base.py:1536
+#: ../flask_admin/model/base.py:1539
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
 msgstr "不正確篩選器值： %(value)s"
 
-#: ../flask_admin/model/base.py:1819
+#: ../flask_admin/model/base.py:1822
 msgid "Record was successfully created."
 msgstr "模型建立成功。"
 
-#: ../flask_admin/model/base.py:1863 ../flask_admin/model/base.py:1915
-#: ../flask_admin/model/base.py:1949
+#: ../flask_admin/model/base.py:1866 ../flask_admin/model/base.py:1918
+#: ../flask_admin/model/base.py:1952
 msgid "Record does not exist."
 msgstr "記錄不存在。"
 
-#: ../flask_admin/model/base.py:1872 ../flask_admin/model/base.py:2081
+#: ../flask_admin/model/base.py:1875 ../flask_admin/model/base.py:2084
 msgid "Record was successfully saved."
 msgstr "記錄已成功保存。"
 
-#: ../flask_admin/model/filters.py:99
+#: ../flask_admin/model/filters.py:98
 msgid "Yes"
 msgstr "是"
 
-#: ../flask_admin/model/filters.py:100
+#: ../flask_admin/model/filters.py:99
 msgid "No"
 msgstr "否"
 
-#: ../flask_admin/model/filters.py:168 ../flask_admin/model/filters.py:208
-#: ../flask_admin/model/filters.py:253
+#: ../flask_admin/model/filters.py:167 ../flask_admin/model/filters.py:207
+#: ../flask_admin/model/filters.py:252
 msgid "between"
 msgstr "之間"
 
@@ -473,14 +473,14 @@ msgstr "請至少選擇一個檔案。"
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
 msgid "Save and Add Another"
-msgstr "Save and Add Another"
+msgstr ""
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:6
 #: ../flask_admin/templates/bootstrap2/admin/model/edit.html:6
 #: ../flask_admin/templates/bootstrap3/admin/model/create.html:6
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:6
 msgid "Save and Continue Editing"
-msgstr "Save and Continue Editing"
+msgstr ""
 
 #: ../flask_admin/templates/bootstrap2/admin/model/create.html:18
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:8
@@ -511,7 +511,7 @@ msgstr "建立"
 #: ../flask_admin/templates/bootstrap3/admin/model/details.html:21
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:30
 msgid "Details"
-msgstr "Details"
+msgstr ""
 
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:29
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:8
@@ -562,7 +562,7 @@ msgstr "創建新記錄"
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:31
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:31
 msgid "Export"
-msgstr "Export"
+msgstr ""
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:67
