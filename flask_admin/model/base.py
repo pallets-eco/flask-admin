@@ -23,7 +23,7 @@ from flask_admin.helpers import (get_form_data, validate_form_on_submit,
 from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
 from flask_admin._compat import (iteritems, itervalues, OrderedDict,
-                                 as_unicode, csv_encode)
+                                 as_unicode, csv_encode, text_type)
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
 from .fields import ListEditableFieldList
@@ -78,6 +78,10 @@ class FilterGroup(object):
         for item in self.filters:
             copy = dict(item)
             copy['operation'] = as_unicode(copy['operation'])
+            options = copy['options']
+            if options:
+                copy['options'] = [(k, text_type(v)) for k, v in options]
+
             filters.append(copy)
         return as_unicode(self.label), filters
 
@@ -735,7 +739,6 @@ class BaseModelView(BaseView, ActionsMixin):
                 key = as_unicode(flt.name)
                 if key not in self._filter_groups:
                     self._filter_groups[key] = FilterGroup(flt.name)
-
                 self._filter_groups[key].append({
                     'index': i,
                     'arg': self.get_filter_arg(i, flt),

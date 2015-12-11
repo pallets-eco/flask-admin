@@ -326,14 +326,14 @@ def test_column_filters():
 def test_filter_list_callable():
     app, admin = setup()
 
-    flt = SimpleFilter('test', options=lambda: (('1', 'Test 1'), ('2', 'Test 2')))
+    flt = SimpleFilter('test', options=lambda: [('1', 'Test 1'), ('2', 'Test 2')])
 
     view = MockModelView(Model, column_filters=[flt])
     admin.add_view(view)
 
     opts = flt.get_options(view)
     eq_(len(opts), 2)
-    eq_(opts, [('1', u'Test 1'), ('2', u'Test 2')])
+    eq_(opts, [('1', 'Test 1'), ('2', 'Test 2')])
 
 
 def test_form():

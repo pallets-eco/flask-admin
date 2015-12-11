@@ -1,7 +1,6 @@
 import time
 import datetime
 
-from flask_admin._compat import text_type
 from flask_admin.babel import lazy_gettext
 
 
@@ -39,7 +38,7 @@ class BaseFilter(object):
             if callable(options):
                 options = options()
 
-            return [(v, text_type(n)) for v, n in options]
+            return options
 
         return None
 
