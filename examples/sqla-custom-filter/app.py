@@ -62,10 +62,9 @@ class UserAdmin(sqla.ModelView):
     # each filter in the list is a filter operation (equals, not equals, etc)
     # filters with the same name will appear as operations under the same filter
     column_filters = [
-        FilterEqual(User.last_name, 'Last Name'),
-        FilterLastNameBrown(
-            User.last_name, 'Last Name', options=(('1', 'Yes'), ('0', 'No'))
-        )
+        FilterEqual(column=User.last_name, name='Last Name'),
+        FilterLastNameBrown(column=User.last_name, name='Last Name',
+                            options=(('1', 'Yes'), ('0', 'No')))
     ]
 
 
