@@ -87,13 +87,13 @@ def init_login():
 # Create customized model view class
 class MyModelView(ModelView):
     def is_accessible(self):
-        return login.current_user.is_authenticated()
+        return login.current_user.is_authenticated
 
 
 # Create customized index view class
 class MyAdminIndexView(admin.AdminIndexView):
     def is_accessible(self):
-        return login.current_user.is_authenticated()
+        return login.current_user.is_authenticated
 
 
 # Flask views
