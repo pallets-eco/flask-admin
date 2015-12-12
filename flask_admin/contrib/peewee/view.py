@@ -27,7 +27,9 @@ class ModelView(BaseModelView):
         Collection of the column filters.
 
         Can contain either field names or instances of
-        :class:`flask_admin.contrib.peewee.filters.BaseFilter` classes.
+        :class:`flask_admin.contrib.peewee.filters.BasePeeweeFilter` classes.
+
+        Filters will be grouped by name when displayed in the drop-down.
 
         For example::
 
@@ -36,8 +38,32 @@ class ModelView(BaseModelView):
 
         or::
 
+            from flask_admin.contrib.peewee.filters import BooleanEqualFilter
+
             class MyModelView(BaseModelView):
-                column_filters = (BooleanEqualFilter(User.name, 'Name'))
+                column_filters = (BooleanEqualFilter(column=User.name, name='Name'),)
+
+        or::
+
+            from flask_admin.contrib.peewee.filters import BasePeeweeFilter
+
+            class FilterLastNameBrown(BasePeeweeFilter):
+                def apply(self, query, value):
+                    if value == '1':
+                        return query.filter(self.column == "Brown")
+                    else:
+                        return query.filter(self.column != "Brown")
+
+                def operation(self):
+                    return 'is Brown'
+
+            class MyModelView(BaseModelView):
+                column_filters = [
+                    FilterLastNameBrown(
+                        column=User.last_name, name='Last Name',
+                        options=(('1', 'Yes'), ('0', 'No'))
+                    )
+                ]
     """
 
     model_form_converter = CustomModelConverter

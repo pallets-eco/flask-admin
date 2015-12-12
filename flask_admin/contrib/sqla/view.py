@@ -117,7 +117,10 @@ class ModelView(BaseModelView):
     """
         Collection of the column filters.
 
-        Can contain either field names or instances of :class:`flask_admin.contrib.sqla.filters.BaseFilter` classes.
+        Can contain either field names or instances of
+        :class:`flask_admin.contrib.sqla.filters.BaseSQLAFilter` classes.
+
+        Filters will be grouped by name when displayed in the drop-down.
 
         For example::
 
@@ -126,8 +129,31 @@ class ModelView(BaseModelView):
 
         or::
 
+            from flask_admin.contrib.sqla.filters import BooleanEqualFilter
+
             class MyModelView(BaseModelView):
-                column_filters = (BooleanEqualFilter(User.name, 'Name'))
+                column_filters = (BooleanEqualFilter(column=User.name, name='Name'),)
+
+        or::
+
+            from flask_admin.contrib.sqla.filters import BaseSQLAFilter
+
+            class FilterLastNameBrown(BaseSQLAFilter):
+                def apply(self, query, value, alias=None):
+                    if value == '1':
+                        return query.filter(self.column == "Brown")
+                    else:
+                        return query.filter(self.column != "Brown")
+
+                def operation(self):
+                    return 'is Brown'
+
+            class MyModelView(BaseModelView):
+                column_filters = [
+                    FilterLastNameBrown(
+                        User.last_name, 'Last Name', options=(('1', 'Yes'), ('0', 'No'))
+                    )
+                ]
     """
 
     model_form_converter = form.AdminModelConverter
