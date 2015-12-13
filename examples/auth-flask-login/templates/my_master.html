@@ -1,7 +1,7 @@
 {% extends 'admin/base.html' %}
 
 {% block access_control %}
-{% if current_user.is_authenticated() %}
+{% if current_user.is_authenticated %}
 <div class="btn-group pull-right">
     <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
         <i class="icon-user"></i> {{ current_user.login }} <span class="caret"></span>

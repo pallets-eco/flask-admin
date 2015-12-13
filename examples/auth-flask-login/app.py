@@ -95,7 +95,7 @@ def init_login():
 class MyModelView(sqla.ModelView):
 
     def is_accessible(self):
-        return login.current_user.is_authenticated()
+        return login.current_user.is_authenticated
 
 
 # Create customized index view class that handles login & registration
@@ -103,7 +103,7 @@ class MyAdminIndexView(admin.AdminIndexView):
 
     @expose('/')
     def index(self):
-        if not login.current_user.is_authenticated():
+        if not login.current_user.is_authenticated:
             return redirect(url_for('.login_view'))
         return super(MyAdminIndexView, self).index()
 
@@ -115,7 +115,7 @@ class MyAdminIndexView(admin.AdminIndexView):
             user = form.get_user()
             login.login_user(user)
 
-        if login.current_user.is_authenticated():
+        if login.current_user.is_authenticated:
             return redirect(url_for('.index'))
         link = '<p>Don\'t have an account? <a href="' + url_for('.register_view') + '">Click here to register.</a></p>'
         self._template_args['form'] = form

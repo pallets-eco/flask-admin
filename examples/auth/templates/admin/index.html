@@ -11,7 +11,7 @@
             <p>
                 This example shows how you can use <a href="https://pythonhosted.org/Flask-Security/index.html" target="_blank">Flask-Security</a> for authentication.
             </p>
-            {% if not current_user.is_authenticated() %}
+            {% if not current_user.is_authenticated %}
             <p>You can register as a regular user, or log in as a superuser with the following credentials:
             <ul>
                 <li>email: <b>admin</b></li>

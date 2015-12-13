@@ -19,12 +19,12 @@ class User(UserMixin):
 # Create menu links classes with reloaded accessible
 class AuthenticatedMenuLink(MenuLink):
     def is_accessible(self):
-        return current_user.is_authenticated()
+        return current_user.is_authenticated
 
 
 class NotAuthenticatedMenuLink(MenuLink):
     def is_accessible(self):
-        return not current_user.is_authenticated()
+        return not current_user.is_authenticated
 
 
 # Create custom admin view for authenticated users
@@ -34,7 +34,7 @@ class MyAdminView(BaseView):
         return self.render('authenticated-admin.html')
 
     def is_accessible(self):
-        return current_user.is_authenticated()
+        return current_user.is_authenticated
 
 
 # Create flask app
