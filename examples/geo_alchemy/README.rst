@@ -14,7 +14,7 @@ To run this example:
 
 3. Install requirements::
 
-    pip install -r 'examples/geo-alchemy/requirements.txt'
+    pip install -r 'examples/geo_alchemy/requirements.txt'
 
 4. Setup the database::
 
