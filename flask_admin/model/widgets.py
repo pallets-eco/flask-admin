@@ -109,7 +109,10 @@ class XEditableWidget(object):
         elif subfield.type == 'BooleanField':
             kwargs['data-type'] = 'select'
             # data-source = dropdown options
-            kwargs['data-source'] = {'': 'False', '1': 'True'}
+            kwargs['data-source'] = json.dumps([
+                {'value': '', 'text': gettext('No')},
+                {'value': '1', 'text': gettext('Yes')}
+            ])
             kwargs['data-role'] = 'x-editable-boolean'
         elif subfield.type == 'Select2Field':
             kwargs['data-type'] = 'select'
