@@ -27,7 +27,7 @@
         {% filter forceescape %}
         <div class="inline-field well well-small">
             <legend>
-                New {{ field.label.text }}
+                {{ _gettext('New') }} {{ field.label.text }}
                 <div class="pull-right">
                     <a href="javascript:void(0)" class="inline-remove-field"><i class="fa fa-times icon-remove"></i></a>
                 </div>
