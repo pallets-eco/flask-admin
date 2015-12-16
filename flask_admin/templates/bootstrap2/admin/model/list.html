@@ -19,9 +19,9 @@
         {% if admin_view.can_create %}
         <li>
           {%- if admin_view.create_modal -%}
-            {{ lib.add_modal_button(url=get_url('.create_view', url=return_url, modal=True), title=_gettext('Create new record'), content=_gettext('Create')) }}
+            {{ lib.add_modal_button(url=get_url('.create_view', url=return_url, modal=True), title=_gettext('Create New Record'), content=_gettext('Create')) }}
           {% else %}
-            <a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create new record') }}">{{ _gettext('Create') }}</a>
+            <a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create New Record') }}">{{ _gettext('Create') }}</a>
           {%- endif -%}
         </li>
         {% endif %}
@@ -123,9 +123,9 @@
                         {%- endif -%}
                         {%- if admin_view.can_edit -%}
                             {%- if admin_view.edit_modal -%}
-                                {{ lib.add_modal_button(url=get_url('.edit_view', id=get_pk_value(row), url=return_url, modal=True), title=_gettext('Edit record'), content='<i class="fa fa-pencil icon-pencil"></i>') }}
+                                {{ lib.add_modal_button(url=get_url('.edit_view', id=get_pk_value(row), url=return_url, modal=True), title=_gettext('Edit Record'), content='<i class="fa fa-pencil icon-pencil"></i>') }}
                             {% else %}
-                                <a class="icon" href="{{ get_url('.edit_view', id=get_pk_value(row), url=return_url) }}" title="{{ _gettext('Edit record') }}">
+                                <a class="icon" href="{{ get_url('.edit_view', id=get_pk_value(row), url=return_url) }}" title="{{ _gettext('Edit Record') }}">
                                     <i class="fa fa-pencil icon-pencil"></i>
                                 </a>
                             {%- endif -%}

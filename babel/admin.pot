@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Flask-Admin VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-12-11 17:54-0600\n"
+"POT-Creation-Date: 2015-12-15 07:44-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -528,6 +528,11 @@ msgstr ""
 msgid "Delete?"
 msgstr ""
 
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:30
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:33
+msgid "New"
+msgstr ""
+
 #: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:40
 #: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:43
 msgid "Add"
@@ -557,9 +562,11 @@ msgstr ""
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:22
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:24
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/create.html:22
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
-msgid "Create new record"
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/create.html:10
+msgid "Create New Record"
 msgstr ""
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:31
@@ -596,9 +603,11 @@ msgstr ""
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:126
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:128
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:22
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:126
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:128
-msgid "Edit record"
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:11
+msgid "Edit Record"
 msgstr ""
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:142
@@ -613,15 +622,5 @@ msgstr ""
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:199
 #: ../flask_admin/templates/bootstrap3/admin/model/list.html:200
 msgid "Please select at least one record."
-msgstr ""
-
-#: ../flask_admin/templates/bootstrap2/admin/model/modals/create.html:22
-#: ../flask_admin/templates/bootstrap3/admin/model/modals/create.html:10
-msgid "Create New Record"
-msgstr ""
-
-#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:22
-#: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:11
-msgid "Edit Record"
 msgstr ""
 
