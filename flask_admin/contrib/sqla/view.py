@@ -897,7 +897,7 @@ class ModelView(BaseModelView):
             except TypeError:
                 spec = inspect.getargspec(flt.apply)
 
-                if len(spec.args) == 2:
+                if len(spec.args) == 3:
                     warnings.warn('Please update your custom filter %s to include additional `alias` parameter.' % repr(flt))
                 else:
                     raise
