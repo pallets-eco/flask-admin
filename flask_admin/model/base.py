@@ -1927,7 +1927,6 @@ class BaseModelView(BaseView, ActionsMixin):
                            model=model,
                            details_columns=self._details_columns,
                            get_value=self.get_list_value,
-                           get_pk_value=self.get_pk_value,
                            return_url=return_url)
 
     @expose('/delete/', methods=('POST',))
