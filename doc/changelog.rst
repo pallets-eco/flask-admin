@@ -1,6 +1,17 @@
 Changelog
 =========
 
+1.4.0
+-----
+
+* Major documentation refactoring
+* Added overridable URL generation logic. Allows using custom URLs with parameters for administrative views.
+* Added support for the latest MongoEngine
+* Added SecureForm for easier CSRF validation
+* CSV export for model views
+* Lots of translation-related fixes and updated translations
+* Bug fixes
+
 1.3.0
 -----
 
@@ -35,19 +46,3 @@ Mostly bug fix release. Highlights:
 * FileAdmin refactoring and fixes
 * FileUploadField and ImageUploadField will work with Required() validator
 * Bug fixes
-
-
-1.0.9
------
-
-Highlights:
-
-* Bootstrap 3 support
-* WTForms 2.x support
-* Updated DateTime picker
-* SQLAlchemy backend: support for complex sortables, ability to search for related models, model inheritance support
-* Customizable URL generation logic for all views
-* New generic filter types: in list, empty, date range
-* Added the ``geoa`` contrib module, for working with `geoalchemy2 <http://geoalchemy-2.readthedocs.org/>`_
-* Portugese translation
-* Lots of bug fixes
