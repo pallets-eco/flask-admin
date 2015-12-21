@@ -32,6 +32,8 @@
         </li>
         {% endif %}
 
+        {% block model_menu_bar_before_filters %}{% endblock %}
+
         {% if filters %}
         <li class="dropdown">
             {{ model_layout.filter_options() }}
