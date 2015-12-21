@@ -5,7 +5,8 @@ Changelog
 -----
 
 * Major documentation refactoring
-* Added overridable URL generation logic. Allows using custom URLs with parameters for administrative views.
+* Added overridable URL generation logic. Allows using custom URLs with parameters for administrative views
+* Added column_display_actions to ModelView control visibility of the action column without overriding the template
 * Added support for the latest MongoEngine
 * Added SecureForm for easier CSRF validation
 * CSV export for model views
