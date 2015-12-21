@@ -20,7 +20,6 @@ from flask_admin.babel import gettext, lazy_gettext
 
 
 class LocalFileStorage(object):
-
     def __init__(self, base_path):
         self.base_path = as_unicode(base_path)
 
