@@ -112,11 +112,12 @@ class PostAdmin(sqla.ModelView):
     # Rename 'title' columns to 'Post Title' in list view
     column_labels = dict(title='Post Title')
 
-    column_searchable_list = ('title', User.username)
+    column_searchable_list = ('title', User.username, 'tags.name')
 
     column_filters = ('user',
                       'title',
                       'date',
+                      'tags',
                       filters.FilterLike(Post.title, 'Fixed Title', options=(('test1', 'Test 1'), ('test2', 'Test 2'))))
 
     # Pass arguments to WTForms. In this case, change label for text field to
