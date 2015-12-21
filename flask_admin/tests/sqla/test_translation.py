@@ -6,6 +6,7 @@ from speaklater import make_lazy_string
 from . import setup
 from .test_basic import CustomModelView, create_models
 
+
 class Translator:
     translate = False
 
@@ -14,6 +15,7 @@ class Translator:
             return 'Translated: "{0}"'.format(string)
         else:
             return string
+
 
 def test_column_label_translation():
     app, db, admin = setup()
@@ -27,8 +29,14 @@ def test_column_label_translation():
                            column_list=['test1', 'test3'],
                            column_labels=dict(test1=label),
                            column_filters=('test1',))
+    admin.add_view(view)
 
     translated.translate = True
     non_lazy_groups = view._get_filter_groups()
     json.dumps(non_lazy_groups)  # Filter dict is JSON serializable.
     ok_(translated('Column1') in non_lazy_groups)  # Label was translated.
+
+    client = app.test_client()
+    # Render index with active filter.
+    rv = client.get('/admin/model1/?flt1_0=test')
+    eq_(rv.status_code, 200)
