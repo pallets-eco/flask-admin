@@ -432,6 +432,20 @@ class BaseModelView(BaseView, ActionsMixin):
         Controls if the primary key should be displayed in the list view.
     """
 
+    column_display_actions = True
+    """
+        Controls the display of the row actions (edit, delete, details, etc.)
+        column in the list view.
+
+        Useful for preventing a blank column from displaying if your view does
+        not use any build-in or custom row actions.
+
+        This column is not hidden automatically due to backwards compatibility.
+
+        Note: This only affects display and does not control whether the row
+        actions endpoints are accessible.
+    """
+
     simple_list_pager = False
     """
         Enable or disable simple list pager.
