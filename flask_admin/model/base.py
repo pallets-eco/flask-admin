@@ -1534,7 +1534,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     value = request.args[n]
 
                     if flt.validate(value):
-                        filters.append((pos, (idx, flt.name, value)))
+                        filters.append((pos, (idx, as_unicode(flt.name), value)))
                     else:
                         flash(gettext('Invalid Filter Value: %(value)s', value=value))
 
