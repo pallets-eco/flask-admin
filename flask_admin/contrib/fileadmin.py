@@ -21,6 +21,12 @@ from flask_admin.babel import gettext, lazy_gettext
 
 class LocalFileStorage(object):
     def __init__(self, base_path):
+        """
+            Constructor.
+
+            :param base_path:
+                Base file storage location
+        """
         self.base_path = as_unicode(base_path)
 
         self.separator = os.sep
@@ -114,29 +120,7 @@ class LocalFileStorage(object):
         file_data.save(path)
 
 
-class FileAdmin(BaseView, ActionsMixin):
-    """
-        Simple file-management interface.
-
-        :param path:
-            Path to the directory which will be managed
-        :param base_url:
-            Optional base URL for the directory. Will be used to generate
-            static links to the files. If not defined, a route will be created
-            to serve uploaded files.
-
-        Sample usage::
-
-            import os.path as op
-
-            from flask_admin import Admin
-            from flask_admin.contrib.fileadmin import FileAdmin
-
-            admin = Admin()
-
-            path = op.join(op.dirname(__file__), 'static')
-            admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
-    """
+class BaseFileAdmin(BaseView, ActionsMixin):
 
     can_upload = True
     """
@@ -264,15 +248,12 @@ class FileAdmin(BaseView, ActionsMixin):
     edit_modal = False
     """Setting this to true will display the edit view as a modal dialog."""
 
-    def __init__(self, base_path, base_url=None,
-                 name=None, category=None, endpoint=None, url=None,
-                 verify_path=True, menu_class_name=None, menu_icon_type=None, menu_icon_value=None,
-                 storage=LocalFileStorage, storage_args=None):
+    def __init__(self, base_url=None, name=None, category=None, endpoint=None,
+                 url=None, verify_path=True, menu_class_name=None,
+                 menu_icon_type=None, menu_icon_value=None, storage=None):
         """
             Constructor.
 
-            :param base_path:
-                Base file storage location
             :param base_url:
                 Base URL for the files
             :param name:
@@ -286,13 +267,11 @@ class FileAdmin(BaseView, ActionsMixin):
             :param verify_path:
                 Verify if path exists. If set to `True` and path does not exist
                 will raise an exception.
+            :param storage:
+                The storage backend that the `BaseFileAdmin` will use to operate on the files.
         """
-        if storage_args is None:
-            storage_args = {}
-        storage_args.setdefault('base_path', base_path)
-
         self.base_url = base_url
-        self.storage = storage(**storage_args)
+        self.storage = storage
 
         self.init_actions()
 
@@ -308,9 +287,10 @@ class FileAdmin(BaseView, ActionsMixin):
             not isinstance(self.editable_extensions, set)):
             self.editable_extensions = set(self.editable_extensions)
 
-        super(FileAdmin, self).__init__(name, category, endpoint, url,
-                                        menu_class_name=menu_class_name, menu_icon_type=menu_icon_type,
-                                        menu_icon_value=menu_icon_value)
+        super(BaseFileAdmin, self).__init__(name, category, endpoint, url,
+                                            menu_class_name=menu_class_name,
+                                            menu_icon_type=menu_icon_type,
+                                            menu_icon_value=menu_icon_value)
 
     def is_accessible_path(self, path):
         """
@@ -1090,3 +1070,32 @@ class FileAdmin(BaseView, ActionsMixin):
     @action('edit', lazy_gettext('Edit'))
     def action_edit(self, items):
         return redirect(self.get_url('.edit', path=items))
+
+
+class FileAdmin(BaseFileAdmin):
+    """
+        Simple file-management interface.
+
+        :param base_path:
+            Path to the directory which will be managed
+        :param base_url:
+            Optional base URL for the directory. Will be used to generate
+            static links to the files. If not defined, a route will be created
+            to serve uploaded files.
+
+        Sample usage::
+
+            import os.path as op
+
+            from flask_admin import Admin
+            from flask_admin.contrib.fileadmin import FileAdmin
+
+            admin = Admin()
+
+            path = op.join(op.dirname(__file__), 'static')
+            admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
+    """
+
+    def __init__(self, base_path, *args, **kwargs):
+        storage = LocalFileStorage(base_path)
+        super(FileAdmin, self).__init__(*args, storage=storage, **kwargs)
