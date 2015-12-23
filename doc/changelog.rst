@@ -5,6 +5,7 @@ Changelog
 -----
 
 * Major documentation refactoring
+* FileAdmin went through minor refactoring and now supports remote file systems. Comes with the new, optional, AWS S3 file management interface (Thanks Arthur!)
 * Added overridable URL generation logic. Allows using custom URLs with parameters for administrative views
 * Added column_display_actions to ModelView control visibility of the action column without overriding the template
 * Added support for the latest MongoEngine
