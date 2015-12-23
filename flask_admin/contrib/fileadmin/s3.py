@@ -17,8 +17,8 @@ class S3Storage(object):
 
         Usage::
 
-            from flask_admin.contrib.fileadmin import BaseFileAdmin,
-            from flask.admin.contrib.fileadmin.s3 import S3Storage
+            from flask_admin.contrib.fileadmin import BaseFileAdmin
+            from flask_admin.contrib.fileadmin.s3 import S3Storage
 
             class MyS3Admin(BaseFileAdmin):
                 # Configure your class however you like
