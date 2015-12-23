@@ -561,13 +561,17 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             If the path does not exist, this will also raise a 404 exception.
         """
         base_path = self.get_base_path()
-
         if path is None:
             directory = base_path
             path = ''
         else:
             path = op.normpath(path)
-            directory = op.normpath(self._separator.join([base_path, path]))
+            if base_path:
+                directory = self._separator.join([base_path, path])
+            else:
+                directory = path
+
+            directory = op.normpath(directory)
 
             if not self.is_in_folder(base_path, directory):
                 abort(404)
