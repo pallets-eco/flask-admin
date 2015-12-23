@@ -79,8 +79,26 @@ can use it by adding a FileAdmin view to your app::
     path = op.join(op.dirname(__file__), 'static')
     admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
 
+
+FileAdmin also has out-of-the-box support for managing files located on a Amazon Simple Storage Service
+bucket. To add it to your app::
+
+    from flask_admin import Admin
+    from flask_admin.contrib.fileadmin.s3 import S3FileAdmin
+
+    admin = Admin()
+
+    admin.add_view(S3FileAdmin('files_bucket', 'us-east-1', 'key_id', 'secret_key')
+
 You can disable uploads, disable file deletion, restrict file uploads to certain types, etc.
 Check :mod:`flask_admin.contrib.fileadmin` in the API documentation for more details.
+
+Adding new file backends
+************************
+
+You can also implement your own storage backend by creating a class that implements the same
+methods defined in the `LocalFileStorage` class. Check :mod:`flask_admin.contrib.fileadmin` in the
+API documentation for details on the methods.
 
 Adding A Redis Console
 ----------------------
