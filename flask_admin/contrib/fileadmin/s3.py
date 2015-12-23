@@ -1,11 +1,11 @@
+import time
+
 try:
     from boto import s3
     from boto.s3.prefix import Prefix
     from boto.s3.key import Key
 except ImportError:
     s3 = None
-
-import dateutil.parser
 
 from flask import redirect
 from flask_admin.babel import gettext
@@ -69,6 +69,10 @@ class S3Storage(object):
         def _remove_trailing_slash(name):
             return name[:-1]
 
+        def _iso_to_epoch(timestamp):
+            dt = time.strptime(timestamp.split(".")[0], "%Y-%m-%dT%H:%M:%S")
+            return int(time.mktime(dt))
+
         files = []
         directories = []
         if path and not path.endswith(self.separator):
@@ -81,8 +85,7 @@ class S3Storage(object):
                 key_name = _remove_trailing_slash(key.name)
                 directories.append((name, key_name, True, 0, 0))
             else:
-                last_modified = int(dateutil.parser.parse(key.last_modified)
-                                    .strftime('%s'))
+                last_modified = _iso_to_epoch(key.last_modified)
                 name = _strip_path(key.name, path)
                 files.append((name, key.name, False, key.size, last_modified))
         return directories + files
