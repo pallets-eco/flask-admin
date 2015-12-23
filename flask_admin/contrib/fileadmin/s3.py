@@ -10,6 +10,8 @@ except ImportError:
 from flask import redirect
 from flask_admin.babel import gettext
 
+from . import BaseFileAdmin
+
 
 class S3Storage(object):
     """
@@ -162,3 +164,36 @@ class S3Storage(object):
     def _is_directory_empty(self, path):
         keys = self._get_path_keys(path + self.separator)
         return len(keys) == 1
+
+
+class S3FileAdmin(BaseFileAdmin):
+    """
+        Simple Amazon Simple Storage Service file-management interface.
+
+            :param bucket_name:
+                Name of the bucket that the files are on.
+
+            :param region:
+                Region that the bucket is located
+
+            :param aws_access_key_id:
+                AWS Access Key ID
+
+            :param aws_secret_access_key:
+                AWS Secret Access Key
+
+        Sample usage::
+
+            from flask_admin import Admin
+            from flask_admin.contrib.fileadmin.s3 import S3FileAdmin
+
+            admin = Admin()
+
+            admin.add_view(S3FileAdmin('files_bucket', 'us-east-1', 'key_id', 'secret_key')
+    """
+
+    def __init__(self, bucket_name, region, aws_access_key_id,
+                 aws_secret_access_key, *args, **kwargs):
+        storage = S3Storage(bucket_name, region, aws_access_key_id,
+                            aws_secret_access_key)
+        super(S3FileAdmin, self).__init__(*args, storage=storage, **kwargs)
