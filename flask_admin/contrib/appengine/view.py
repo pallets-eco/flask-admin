@@ -101,7 +101,8 @@ class DbModelView(BaseModelView):
         return sorted([k for (k, v) in self.model.__dict__.iteritems() if isinstance(v, db.Property)])
 
     def scaffold_sortable_columns(self):
-        return [k for (k, v) in self.model.__dict__.iteritems() if isinstance(v, db.Property) and v.indexed]
+        # We use getattr() because ReferenceProperty does not specify a 'indexed' field
+        return [k for (k, v) in self.model.__dict__.iteritems() if isinstance(v, db.Property) and getattr(v, 'indexed', None)]
 
     def init_search(self):
         return None
