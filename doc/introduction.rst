@@ -302,7 +302,7 @@ example, to add a page that displays some analytics data from a 3rd-party API::
         def index(self):
             return self.render('analytics_index.html')
 
-    admin.add_view(CustomView(name='Analytics', endpoint='analytics'))
+    admin.add_view(AnalyticsView(name='Analytics', endpoint='analytics'))
 
 This will add a link to the navbar for your view. Notice that
 it is served at '/', the root URL. This is a restriction on standalone views: at
