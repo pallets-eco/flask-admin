@@ -4,15 +4,19 @@
 import operator
 
 from wtforms import widgets
-from wtforms.fields import SelectFieldBase
+from wtforms.fields import SelectFieldBase, TextField
 from wtforms.validators import ValidationError
 
-from .tools import get_primary_key
-from flask_admin._compat import text_type, string_types
-from flask_admin.form import FormOpts
-from flask_admin.model.fields import InlineFieldList, InlineModelFormField
-from flask_admin.model.widgets import InlineFormWidget
+try:
+    from wtforms.fields import _unset_value as unset_value
+except ImportError:
+    from wtforms.utils import unset_value
 
+from .tools import get_primary_key
+from flask_admin._compat import text_type, string_types, iteritems
+from flask_admin.form import FormOpts, BaseForm
+from flask_admin.model.fields import InlineFieldList, InlineModelFormField
+from flask_admin.babel import lazy_gettext
 
 try:
     from sqlalchemy.orm.util import identity_key
@@ -176,6 +180,46 @@ class QuerySelectMultipleField(QuerySelectField):
             for v in self.data:
                 if v not in obj_list:
                     raise ValidationError(self.gettext(u'Not a valid choice'))
+
+
+class HstoreForm(BaseForm):
+    """ Form used in InlineFormField/InlineHstoreList for HSTORE columns """
+    key = TextField(lazy_gettext('Key'))
+    value = TextField(lazy_gettext('Value'))
+
+
+class KeyValue(object):
+    """ Used by InlineHstoreList to simulate a key and a value field instead of
+        the single HSTORE column. """
+    def __init__(self, key=None, value=None):
+        self.key = key
+        self.value = value
+
+
+class InlineHstoreList(InlineFieldList):
+    """ Version of InlineFieldList for use with Postgres HSTORE columns """
+
+    def process(self, formdata, data=unset_value):
+        """ SQLAlchemy returns a dict for HSTORE columns, but WTForms cannot
+            process a dict. This overrides `process` to convert the dict
+            returned by SQLAlchemy to a list of classes before processing. """
+        if isinstance(data, dict):
+            data = [KeyValue(k, v) for k, v in iteritems(data)]
+        super(InlineHstoreList, self).process(formdata, data)
+
+    def populate_obj(self, obj, name):
+        """ Combines each FormField key/value into a dictionary for storage """
+        _fake = type(str('_fake'), (object, ), {})
+
+        output = {}
+        for form_field in self.entries:
+            if not self.should_delete(form_field):
+                fake_obj = _fake()
+                fake_obj.data = KeyValue()
+                form_field.populate_obj(fake_obj, 'data')
+                output[fake_obj.data.key] = fake_obj.data.value
+
+        setattr(obj, name, output)
 
 
 class InlineModelFormList(InlineFieldList):

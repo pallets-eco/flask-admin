@@ -12,7 +12,9 @@ from flask_admin._backwards import get_property
 from flask_admin._compat import iteritems
 
 from .validators import Unique
-from .fields import QuerySelectField, QuerySelectMultipleField, InlineModelFormList
+from .fields import (QuerySelectField, QuerySelectMultipleField,
+                     InlineModelFormList, InlineHstoreList, HstoreForm)
+from flask_admin.model.fields import InlineFormField
 from .tools import has_multiple_pks, filter_foreign_columns
 from .ajax import create_ajax_loader
 
@@ -349,6 +351,11 @@ class AdminModelConverter(ModelConverterBase):
     @converts('sqlalchemy.dialects.postgresql.base.ARRAY')
     def conv_ARRAY(self, field_args, **extra):
         return form.Select2TagsField(save_as_list=True, **field_args)
+
+    @converts('HSTORE')
+    def conv_HSTORE(self, field_args, **extra):
+        inner_form = field_args.pop('form', HstoreForm)
+        return InlineHstoreList(InlineFormField(inner_form), **field_args)
 
 
 def _resolve_prop(prop):

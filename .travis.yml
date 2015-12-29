@@ -16,7 +16,8 @@ services:
 
 before_script:
   - psql -U postgres -c 'CREATE DATABASE flask_admin_test;'
-  - psql -U postgres -c "CREATE EXTENSION postgis;" flask_admin_test
+  - psql -U postgres -c 'CREATE EXTENSION postgis;' flask_admin_test
+  - psql -U postgres -c 'CREATE EXTENSION hstore;' flask_admin_test
 
 install:
   - pip install "wtforms<$WTFORMS_VERSION.99"
