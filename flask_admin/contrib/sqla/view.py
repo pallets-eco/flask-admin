@@ -749,8 +749,6 @@ class ModelView(BaseModelView):
         """
             Return a query for the model type.
 
-            If you override this method, don't forget to override `get_count_query` as well.
-
             This method can be used to set a "persistent filter" on an index_view.
 
             Example::
@@ -770,7 +768,7 @@ class ModelView(BaseModelView):
 
             See commit ``#45a2723`` for details.
         """
-        return self.session.query(func.count('*')).select_from(self.model)
+        return self.session.query(func.count('*')).select_from(self.get_query().subquery())
 
     def _order_by(self, query, joins, sort_joins, sort_field, sort_desc):
         """
