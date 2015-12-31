@@ -14,7 +14,7 @@ except ImportError:
 
 from .tools import get_primary_key
 from flask_admin._compat import text_type, string_types, iteritems
-from flask_admin.form import FormOpts, BaseForm
+from flask_admin.form import FormOpts, BaseForm, Select2Widget
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 from flask_admin.babel import lazy_gettext
 
@@ -55,7 +55,7 @@ class QuerySelectField(SelectFieldBase):
     being `None`. The label for this blank choice can be set by specifying the
     `blank_text` parameter.
     """
-    widget = widgets.Select()
+    widget = Select2Widget()
 
     def __init__(self, label=None, validators=None, query_factory=None,
                  get_pk=None, get_label=None, allow_blank=False,
@@ -136,7 +136,7 @@ class QuerySelectMultipleField(QuerySelectField):
     If any of the items in the data list or submitted form data cannot be
     found in the query, this will result in a validation error.
     """
-    widget = widgets.Select(multiple=True)
+    widget = Select2Widget(multiple=True)
 
     def __init__(self, label=None, validators=None, default=None, **kwargs):
         if default is None:

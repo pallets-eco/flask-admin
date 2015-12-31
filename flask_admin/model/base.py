@@ -26,7 +26,6 @@ from flask_admin._compat import (iteritems, itervalues, OrderedDict,
                                  as_unicode, csv_encode, text_type)
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
-from .fields import ListEditableFieldList
 
 # Used to generate filter query string name
 filter_char_re = re.compile('[^a-z0-9 ]')
@@ -1069,17 +1068,16 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         raise NotImplementedError('Please implement scaffold_form method')
 
-    def scaffold_list_form(self, custom_fieldlist=ListEditableFieldList,
-                           validators=None):
+    def scaffold_list_form(self, widget=None, validators=None):
         """
             Create form for the `index_view` using only the columns from
             `self.column_editable_list`.
 
+            :param widget:
+                WTForms widget class. Defaults to `XEditableWidget`.
             :param validators:
                 `form_args` dict with only validators
                 {'name': {'validators': [DataRequired()]}}
-            :param custom_fieldlist:
-                A WTForm FieldList class. By default, `ListEditableFieldList`.
 
             Must be implemented in the child class.
         """
@@ -1107,7 +1105,6 @@ class BaseModelView(BaseView, ActionsMixin):
 
             Allows overriding the editable list view field/widget. For example::
 
-                from flask_admin.model.fields import ListEditableFieldList
                 from flask_admin.model.widgets import XEditableWidget
 
                 class CustomWidget(XEditableWidget):
@@ -1119,12 +1116,9 @@ class BaseModelView(BaseView, ActionsMixin):
 
                         return kwargs
 
-                class CustomFieldList(ListEditableFieldList):
-                    widget = CustomWidget()
-
                 class MyModelView(BaseModelView):
                     def get_list_form(self):
-                        return self.scaffold_list_form(CustomFieldList)
+                        return self.scaffold_list_form(widget=CustomWidget)
         """
         if self.form_args:
             # get only validators, other form_args can break FieldList wrapper
@@ -1716,7 +1710,7 @@ class BaseModelView(BaseView, ActionsMixin):
             List view
         """
         if self.column_editable_list:
-            form = self.list_form()
+            form = self.list_form
         else:
             form = None
 
@@ -2074,24 +2068,23 @@ class BaseModelView(BaseView, ActionsMixin):
         if not self.column_editable_list:
             abort(404)
 
-        record = None
         form = self.list_form()
 
         # prevent validation issues due to submitting a single field
-        # delete all fields except the field being submitted
+        # delete all fields except the submitted fields and csrf token
         for field in form:
-            # only the submitted field has a positive last_index
-            if getattr(field, 'last_index', 0):
-                record = self.get_one(str(field.last_index))
-            elif field.name == 'csrf_token':
+            if (field.name in request.form) or (field.name == 'csrf_token'):
                 pass
             else:
                 form.__delitem__(field.name)
 
-        if record is None:
-            return gettext('Failed to update record. %(error)s', error=''), 500
-
         if self.validate_form(form):
+            pk = form.list_form_pk.data
+            record = self.get_one(pk)
+
+            if record is None:
+                return gettext('Record does not exist.'), 500
+
             if self.update_model(form, record):
                 # Success
                 return gettext('Record was successfully saved.')
@@ -2105,6 +2098,8 @@ class BaseModelView(BaseView, ActionsMixin):
                 for error in field.errors:
                     # return validation error to x-editable
                     if isinstance(error, list):
-                        return ", ".join(error), 500
+                        return gettext('Failed to update record. %(error)s',
+                                       error=", ".join(error)), 500
                     else:
-                        return error, 500
+                        return gettext('Failed to update record. %(error)s',
+                                       error=error), 500

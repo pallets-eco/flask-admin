@@ -272,11 +272,12 @@
                 return true;
         }
 
-        // make x-editable's POST act like a normal FieldList field
+        // make x-editable's POST compatible with WTForms
         // for x-editable, x-editable-combodate, and x-editable-boolean cases
         var overrideXeditableParams = function(params) {
             var newParams = {};
-            newParams[params.name + '-' + params.pk] = params.value;
+            newParams['list_form_pk'] = params.pk;
+            newParams[params.name] = params.value;
             if ($(this).data('csrf')) {
                 newParams['csrf_token'] = $(this).data('csrf');
             }
@@ -448,6 +449,30 @@
                     combodate: {
                         // prevent minutes from showing in 5 minute increments
                         minuteStep: 1
+                    }
+                });
+                return true;
+            case 'x-editable-select2-multiple':
+                $el.editable({
+                    params: overrideXeditableParams,
+                    ajaxOptions: {
+                        // prevents keys with the same value from getting converted into arrays
+                        traditional: true
+                    },
+                    select2: {
+                        multiple: true
+                    },
+                    display: function(value) {
+                        // override to display text instead of ids on list view
+                        var html = [];
+                        var data = $.fn.editableutils.itemsByValue(value, $el.data('source'), 'id');
+
+                        if(data.length) {
+                            $.each(data, function(i, v) { html.push($.fn.editableutils.escape(v.text)); });
+                            $(this).html(html.join(', '));
+                        } else {
+                            $(this).empty();
+                        }
                     }
                 });
                 return true;

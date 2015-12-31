@@ -148,8 +148,7 @@ def test_column_editable_list():
     Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1,
-                           column_editable_list=[
-                               'test1', 'datetime_field'])
+                           column_editable_list=['test1', 'datetime_field'])
     admin.add_view(view)
 
     fill_db(Model1, Model2)
@@ -164,7 +163,8 @@ def test_column_editable_list():
     # Form - Test basic in-line edit functionality
     obj1 = Model1.objects.get(test1 = 'test1_val_3')
     rv = client.post('/admin/model1/ajax/update/', data={
-        'test1-' + str(obj1.id): 'change-success-1',
+        'list_form_pk': str(obj1.id),
+        'test1': 'change-success-1',
     })
     data = rv.data.decode('utf-8')
     ok_('Record was successfully saved.' == data)
@@ -177,33 +177,35 @@ def test_column_editable_list():
     # Test validation error
     obj2 = Model1.objects.get(test1 = 'datetime_obj1')
     rv = client.post('/admin/model1/ajax/update/', data={
-        'datetime_field-' + str(obj2.id): 'problematic-input',
+        'list_form_pk': str(obj2.id),
+        'datetime_field': 'problematic-input',
     })
     eq_(rv.status_code, 500)
 
     # Test invalid primary key
     rv = client.post('/admin/model1/ajax/update/', data={
-        'test1-1000': 'problematic-input',
+        'list_form_pk': '1000',
+        'test1': 'problematic-input',
     })
     data = rv.data.decode('utf-8')
     eq_(rv.status_code, 500)
 
     # Test editing column not in column_editable_list
     rv = client.post('/admin/model1/ajax/update/', data={
-        'test2-1': 'problematic-input',
+        'list_form_pk': '1',
+        'test2': 'problematic-input',
     })
     data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 500)
+    ok_('problematic-input' not in data)
 
     # Test in-line editing for relations
-    view = CustomModelView(Model2,
-                           column_editable_list=[
-                               'model1'])
+    view = CustomModelView(Model2, column_editable_list=['model1'])
     admin.add_view(view)
 
     obj3 = Model2.objects.get(string_field = 'string_field_val_1')
     rv = client.post('/admin/model2/ajax/update/', data={
-        'model1-' + str(obj3.id): str(obj1.id),
+        'list_form_pk': str(obj3.id),
+        'model1': str(obj1.id),
     })
     data = rv.data.decode('utf-8')
     ok_('Record was successfully saved.' == data)

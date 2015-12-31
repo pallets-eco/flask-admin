@@ -185,9 +185,10 @@ def test_column_editable_list():
 
     Model1, Model2 = create_models(db)
 
-    view = CustomModelView(Model1,
-                           column_editable_list=[
-                               'test1', 'enum_field'])
+    # wtf-peewee doesn't automatically add length validators for max_length
+    form_args = {'test1': {'validators': [validators.Length(max=20)]}}
+    view = CustomModelView(Model1, column_editable_list=['test1'],
+                           form_args=form_args)
     admin.add_view(view)
 
     fill_db(Model1, Model2)
@@ -201,7 +202,8 @@ def test_column_editable_list():
 
     # Form - Test basic in-line edit functionality
     rv = client.post('/admin/model1/ajax/update/', data={
-        'test1-1': 'change-success-1',
+        'list_form_pk': '1',
+        'test1': 'change-success-1',
     })
     data = rv.data.decode('utf-8')
     ok_('Record was successfully saved.' == data)
@@ -213,32 +215,35 @@ def test_column_editable_list():
 
     # Test validation error
     rv = client.post('/admin/model1/ajax/update/', data={
-        'enum_field-1': 'problematic-input',
+        'list_form_pk': '1',
+        'test1': 'longerthantwentycharacterslongerthantwentycharacterslongerthantwentycharacterslongerthantwentycharacters',
     })
+    data = rv.data.decode('utf-8')
     eq_(rv.status_code, 500)
 
     # Test invalid primary key
     rv = client.post('/admin/model1/ajax/update/', data={
-        'test1-1000': 'problematic-input',
+        'list_form_pk': '1000',
+        'test1': 'problematic-input',
     })
     data = rv.data.decode('utf-8')
     eq_(rv.status_code, 500)
 
     # Test editing column not in column_editable_list
     rv = client.post('/admin/model1/ajax/update/', data={
-        'test2-1': 'problematic-input',
+        'list_form_pk': '1',
+        'test2': 'problematic-input',
     })
     data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 500)
+    ok_('problematic-input' not in data)
 
     # Test in-line editing for relations
-    view = CustomModelView(Model2,
-                           column_editable_list=[
-                               'model1'])
+    view = CustomModelView(Model2, column_editable_list=['model1'])
     admin.add_view(view)
 
     rv = client.post('/admin/model2/ajax/update/', data={
-        'model1-1': '3',
+        'list_form_pk': '1',
+        'model1': '3',
     })
     data = rv.data.decode('utf-8')
     ok_('Record was successfully saved.' == data)

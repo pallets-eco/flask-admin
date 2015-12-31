@@ -5,8 +5,7 @@ from flask import request, flash, abort, Response
 from flask_admin import expose
 from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.model import BaseModelView
-from flask_admin.model.form import wrap_fields_in_fieldlist
-from flask_admin.model.fields import ListEditableFieldList
+from flask_admin.model.form import create_editable_list_form
 from flask_admin._compat import iteritems, string_types
 
 import mongoengine
@@ -426,17 +425,16 @@ class ModelView(BaseModelView):
 
         return form_class
 
-    def scaffold_list_form(self, custom_fieldlist=ListEditableFieldList,
-                           validators=None):
+    def scaffold_list_form(self, widget=None, validators=None):
         """
             Create form for the `index_view` using only the columns from
             `self.column_editable_list`.
 
+            :param widget:
+                WTForms widget class. Defaults to `XEditableWidget`.
             :param validators:
                 `form_args` dict with only validators
                 {'name': {'validators': [required()]}}
-            :param custom_fieldlist:
-                A WTForm FieldList class. By default, `ListEditableFieldList`.
         """
         form_class = get_form(self.model,
                               self.model_form_converter(self),
@@ -444,9 +442,8 @@ class ModelView(BaseModelView):
                               only=self.column_editable_list,
                               field_args=validators)
 
-        return wrap_fields_in_fieldlist(self.form_base_class,
-                                        form_class,
-                                        custom_fieldlist)
+        return create_editable_list_form(self.form_base_class, form_class,
+                                         widget)
 
     # AJAX foreignkey support
     def _create_ajax_loader(self, name, opts):

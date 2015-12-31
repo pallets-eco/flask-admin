@@ -80,12 +80,6 @@ class AdminModelConverter(ModelConverterBase):
         if 'query_factory' not in kwargs:
             kwargs['query_factory'] = lambda: self.session.query(remote_model)
 
-        if 'widget' not in kwargs:
-            if multiple:
-                kwargs['widget'] = form.Select2Widget(multiple=True)
-            else:
-                kwargs['widget'] = form.Select2Widget()
-
         if multiple:
             return QuerySelectMultipleField(**kwargs)
         else:
