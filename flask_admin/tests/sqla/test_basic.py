@@ -354,8 +354,7 @@ def test_column_editable_list():
     Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1, db.session,
-                           column_editable_list=[
-                               'test1', 'enum_field'])
+                           column_editable_list=['test1', 'enum_field'])
     admin.add_view(view)
 
     fill_db(db, Model1, Model2)
@@ -369,7 +368,8 @@ def test_column_editable_list():
 
     # Form - Test basic in-line edit functionality
     rv = client.post('/admin/model1/ajax/update/', data={
-        'test1-1': 'change-success-1',
+        'list_form_pk': '1',
+        'test1': 'change-success-1',
     })
     data = rv.data.decode('utf-8')
     ok_('Record was successfully saved.' == data)
@@ -381,32 +381,34 @@ def test_column_editable_list():
 
     # Test validation error
     rv = client.post('/admin/model1/ajax/update/', data={
-        'enum_field-1': 'problematic-input',
+        'list_form_pk': '1',
+        'enum_field': 'problematic-input',
     })
     eq_(rv.status_code, 500)
 
     # Test invalid primary key
     rv = client.post('/admin/model1/ajax/update/', data={
-        'test1-1000': 'problematic-input',
+        'list_form_pk': '1000',
+        'test1': 'problematic-input',
     })
     data = rv.data.decode('utf-8')
     eq_(rv.status_code, 500)
 
     # Test editing column not in column_editable_list
     rv = client.post('/admin/model1/ajax/update/', data={
-        'test2-1': 'problematic-input',
+        'list_form_pk': '1',
+        'test2': 'problematic-input',
     })
     data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 500)
+    ok_('problematic-input' not in data)
 
     # Test in-line editing for relations
-    view = CustomModelView(Model2, db.session,
-                           column_editable_list=[
-                               'model1'])
+    view = CustomModelView(Model2, db.session, column_editable_list=['model1'])
     admin.add_view(view)
 
     rv = client.post('/admin/model2/ajax/update/', data={
-        'model1-1': '3',
+        'list_form_pk': '1',
+        'model1': '3',
     })
     data = rv.data.decode('utf-8')
     ok_('Record was successfully saved.' == data)
@@ -495,7 +497,8 @@ def test_editable_list_special_pks():
 
     # Form - Test basic in-line edit functionality
     rv = client.post('/admin/model1/ajax/update/', data={
-        'val1-1-1': 'change-success-1',
+        'list_form_pk': '1-1',
+        'val1': 'change-success-1',
     })
     data = rv.data.decode('utf-8')
     ok_('Record was successfully saved.' == data)
@@ -1511,8 +1514,8 @@ def test_form_onetoone():
     eq_(model1.model2, model2)
     eq_(model2.model1, model1)
 
-    eq_(view1._create_form_class.model2.kwargs['widget'].multiple, False)
-    eq_(view2._create_form_class.model1.kwargs['widget'].multiple, False)
+    eq_(view1._create_form_class.model2.field_class.widget.multiple, False)
+    eq_(view2._create_form_class.model1.field_class.widget.multiple, False)
 
 
 def test_relations():
