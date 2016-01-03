@@ -157,10 +157,11 @@
                 {% for c, name in list_columns %}
                     <td class="col-{{c}}">
                     {% if admin_view.is_editable(c) %}
+                        {% set form = list_forms[get_pk_value(row)] %}
                         {% if form.csrf_token %}
-                        {{ form(obj=row)[c](pk=get_pk_value(row), display_value=get_value(row, c), csrf=form.csrf_token._value()) }}
+                        {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c), csrf=form.csrf_token._value()) }}
                         {% else %}
-                        {{ form(obj=row)[c](pk=get_pk_value(row), display_value=get_value(row, c)) }}
+                        {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c)) }}
                         {% endif %}
                     {% else %}
                     {{ get_value(row, c) }}

@@ -33,7 +33,7 @@ def create_editable_list_form(form_base_class, form_class, widget=None):
             WTForms widget class. Defaults to `XEditableWidget`.
     """
     if widget is None:
-        widget = XEditableWidget
+        widget = XEditableWidget()
 
     class ListForm(form_base_class):
         list_form_pk = HiddenField(validators=[InputRequired()])
@@ -41,7 +41,7 @@ def create_editable_list_form(form_base_class, form_class, widget=None):
     # iterate FormMeta to get unbound fields, replace widget, copy to ListForm
     for name, obj in iteritems(form_class.__dict__):
         if isinstance(obj, UnboundField):
-            obj.kwargs['widget'] = XEditableWidget()
+            obj.kwargs['widget'] = widget
             setattr(ListForm, name, obj)
 
             if name == "list_form_pk":
