@@ -1,10 +1,6 @@
 {% extends 'admin/master.html' %}
 {% import 'admin/lib.html' as lib with context %}
-
-{% macro extra() %}
-  <input name="_add_another" type="submit" class="btn" value="{{ _gettext('Save and Add Another') }}" />
-  <input name="_continue_editing" type="submit" class="btn" value="{{ _gettext('Save and Continue Editing') }}" />
-{% endmacro %}
+{% from 'admin/lib.html' import extra with context %} {# backward compatible #}
 
 {% block head %}
   {{ super() }}
