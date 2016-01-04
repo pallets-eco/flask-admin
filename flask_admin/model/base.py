@@ -1709,11 +1709,6 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             List view
         """
-        if self.column_editable_list:
-            form = self.list_form
-        else:
-            form = None
-
         if self.can_delete:
             delete_form = self.delete_form()
         else:
@@ -1730,6 +1725,11 @@ class BaseModelView(BaseView, ActionsMixin):
         # Get count and data
         count, data = self.get_list(view_args.page, sort_column, view_args.sort_desc,
                                     view_args.search, view_args.filters)
+
+        list_forms = {}
+        if self.column_editable_list:
+            for row in data:
+                list_forms[self.get_pk_value(row)] = self.list_form(obj=row)
 
         # Calculate number of pages
         if count is not None:
@@ -1767,7 +1767,7 @@ class BaseModelView(BaseView, ActionsMixin):
         return self.render(
             self.list_template,
             data=data,
-            form=form,
+            list_forms=list_forms,
             delete_form=delete_form,
 
             # List
