@@ -235,3 +235,12 @@
   {% endif %}
   <script src="{{ admin_static.url(filename='admin/js/form.js', v='1.0.1') }}"></script>
 {% endmacro %}
+
+{% macro extra() %}
+  {% if admin_view.can_create %}
+  <input name="_add_another" type="submit" class="btn btn-default" value="{{ _gettext('Save and Add Another') }}" />
+  {% endif %}
+  {% if admin_view.can_edit %}
+  <input name="_continue_editing" type="submit" class="btn btn-default" value="{{ _gettext('Save and Continue Editing') }}" />
+  {% endif %}
+{% endmacro %}
