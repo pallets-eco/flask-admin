@@ -263,7 +263,7 @@ class AdminModelConverter(ModelConverterBase):
 
     @classmethod
     def _string_common(cls, column, field_args, **extra):
-        if column.type.length:
+        if isinstance(column.type.length, int) and column.type.length:
             field_args['validators'].append(validators.Length(max=column.type.length))
 
     @converts('String')  # includes VARCHAR, CHAR, and Unicode
