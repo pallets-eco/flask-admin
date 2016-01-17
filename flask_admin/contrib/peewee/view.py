@@ -251,10 +251,16 @@ class ModelView(BaseModelView):
     def is_valid_filter(self, filter):
         return isinstance(filter, filters.BasePeeweeFilter)
 
-    def scaffold_form(self):
+    def scaffold_form(self, form_columns=None):
+        """
+            Create form from the model.
+
+            :param form_columns:
+                Included columns
+        """
         form_class = get_form(self.model, self.model_form_converter(self),
                               base_class=self.form_base_class,
-                              only=self.form_columns,
+                              only=form_columns,
                               exclude=self.form_excluded_columns,
                               field_args=self.form_args,
                               extra_fields=self.form_extra_fields)

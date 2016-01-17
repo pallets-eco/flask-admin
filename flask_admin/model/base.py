@@ -507,6 +507,16 @@ class BaseModelView(BaseView, ActionsMixin):
                 form_columns = ('name', 'email')
     """
 
+    create_form_columns = None
+    """
+        Same as `form_columns`, but only for the create form. (Added in 1.4.0)
+    """
+
+    edit_form_columns = None
+    """
+        Same as `form_columns`, but only for the edit form. (Added in 1.4.0)
+    """
+
     form_excluded_columns = ObsoleteAttr('form_excluded_columns',
                                          'excluded_form_columns',
                                          None)
@@ -1061,7 +1071,7 @@ class BaseModelView(BaseView, ActionsMixin):
         return None
 
     # Form helpers
-    def scaffold_form(self):
+    def scaffold_form(self, form_columns=None):
         """
             Create `form.BaseForm` inherited class from the model. Must be
             implemented in the child class.
@@ -1083,7 +1093,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         raise NotImplementedError('Please implement scaffold_list_form method')
 
-    def get_form(self):
+    def get_form(self, form_columns=None):
         """
             Get form class.
 
@@ -1091,11 +1101,17 @@ class BaseModelView(BaseView, ActionsMixin):
             ``self.scaffold_form`` otherwise.
 
             Override to implement customized behavior.
+
+            :param form_columns:
+                Included columns. Defaults to self.form_columns when set to None.
         """
         if self.form is not None:
             return self.form
 
-        return self.scaffold_form()
+        if form_columns is None:
+            form_columns = self.form_columns
+
+        return self.scaffold_form(form_columns=form_columns)
 
     def get_list_form(self):
         """
@@ -1138,7 +1154,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             Override to implement customized behavior.
         """
-        return self.get_form()
+        return self.get_form(form_columns=self.create_form_columns)
 
     def get_edit_form(self):
         """
@@ -1146,7 +1162,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             Override to implement customized behavior.
         """
-        return self.get_form()
+        return self.get_form(form_columns=self.edit_form_columns)
 
     def get_delete_form(self):
         """
