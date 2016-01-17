@@ -89,7 +89,7 @@ class MockModelView(base.BaseModelView):
     def scaffold_sortable_columns(self):
         return ['col1', 'col2', 'col3']
 
-    def scaffold_form(self):
+    def scaffold_form(self, form_columns=None):
         return Form
 
     # Data

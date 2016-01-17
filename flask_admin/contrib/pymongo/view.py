@@ -163,7 +163,7 @@ class ModelView(BaseModelView):
         """
         return isinstance(filter, BasePyMongoFilter)
 
-    def scaffold_form(self):
+    def scaffold_form(self, form_columns=None):
         raise NotImplementedError()
 
     def _get_field_value(self, model, name):

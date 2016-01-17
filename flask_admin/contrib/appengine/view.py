@@ -31,7 +31,7 @@ class NdbModelView(BaseModelView):
         #TODO: implement
         pass
 
-    def scaffold_form(self):
+    def scaffold_form(self, form_columns=None):
         return wt_ndb.model_form(self.model())
 
     def get_list(self, page, sort_field, sort_desc, search, filters):
@@ -114,7 +114,7 @@ class DbModelView(BaseModelView):
         #TODO: implement
         pass
 
-    def scaffold_form(self):
+    def scaffold_form(self, form_columns=None):
         return wt_db.model_form(self.model())
 
     def get_list(self, page, sort_field, sort_desc, search, filters):
