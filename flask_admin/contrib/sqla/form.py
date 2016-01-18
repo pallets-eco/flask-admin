@@ -601,6 +601,7 @@ class InlineModelConverter(InlineModelConverterBase):
         if child_form is None:
             child_form = get_form(info.model,
                                   converter,
+                                  base_class=info.form_base_class or form.BaseForm,
                                   only=info.form_columns,
                                   exclude=exclude,
                                   field_args=info.form_args,
