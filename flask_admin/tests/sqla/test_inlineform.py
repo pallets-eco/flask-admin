@@ -3,6 +3,7 @@ from nose.tools import eq_, ok_, raises
 
 from wtforms import fields
 
+from flask_admin import form
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.fields import InlineModelFormList
 from flask_admin.contrib.sqla.validators import ItemsRequired
@@ -219,3 +220,59 @@ def test_inline_form_self():
     child = Tree(parent=parent)
     form = view.edit_form(child)
     eq_(form.parent.data, parent)
+
+
+def test_inline_form_base_class():
+    app, db, admin = setup()
+    client = app.test_client()
+
+    # Set up models and database
+    class User(db.Model):
+        __tablename__ = 'users'
+        id = db.Column(db.Integer, primary_key=True)
+        name = db.Column(db.String, unique=True)
+
+        def __init__(self, name=None):
+            self.name = name
+
+    class UserEmail(db.Model):
+        __tablename__ = 'user_info'
+        id = db.Column(db.Integer, primary_key=True)
+        email = db.Column(db.String, nullable=False, unique=True)
+        verified_at = db.Column(db.DateTime)
+        user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+        user = db.relationship(User, backref=db.backref('emails', cascade="all, delete-orphan", single_parent=True))
+
+    db.create_all()
+
+    # Customize error message
+    class StubTranslation(object):
+        def gettext(self, *args):
+            return 'success!'
+
+        def ngettext(self, *args):
+            return 'success!'
+
+    class StubBaseForm(form.BaseForm):
+        def _get_translations(self):
+            return StubTranslation()
+
+    # Set up Admin
+    class UserModelView(ModelView):
+        inline_models = ((UserEmail,{"form_base_class": StubBaseForm}),)
+        form_args = {
+            "emails": {"validators": [ItemsRequired()]}
+        }
+
+    view = UserModelView(User, db.session)
+    admin.add_view(view)
+
+    # Create
+    data = {
+        'name': 'emptyEmail',
+        'emails-0-email': '',
+    }
+    rv = client.post('/admin/user/new/', data=data)
+    eq_(rv.status_code, 200)
+    eq_(User.query.count(), 0)
+    ok_(b'success!' in rv.data, rv.data)
