@@ -1,13 +1,13 @@
-import time
 import datetime
-
 from flask_admin.babel import lazy_gettext
+import time
 
 
 class BaseFilter(object):
     """
         Base filter class.
     """
+
     def __init__(self, name, options=None, data_type=None):
         """
             Constructor.
@@ -93,6 +93,7 @@ class BaseBooleanFilter(BaseFilter):
     """
         Base boolean filter, uses fixed list of options.
     """
+
     def __init__(self, name, options=None, data_type=None):
         super(BaseBooleanFilter, self).__init__(name,
                                                 (('1', lazy_gettext(u'Yes')),
@@ -110,6 +111,7 @@ class BaseIntFilter(BaseFilter):
         Avoid using int(float(value)) to also allow using decimals, because it
         causes precision issues with large numbers.
     """
+
     def clean(self, value):
         return int(value)
 
@@ -118,6 +120,7 @@ class BaseFloatFilter(BaseFilter):
     """
         Base Float filter. Adds validation and changes value to python float.
     """
+
     def clean(self, value):
         return float(value)
 
@@ -129,6 +132,7 @@ class BaseIntListFilter(BaseFilter):
         Avoid using int(float(value)) to also allow using decimals, because it
         causes precision issues with large numbers.
     """
+
     def clean(self, value):
         return [int(v.strip()) for v in value.split(',') if v.strip()]
 
@@ -137,6 +141,7 @@ class BaseFloatListFilter(BaseFilter):
     """
         Base Float list filter. Adds validation for float "In List" filter.
     """
+
     def clean(self, value):
         return [float(v.strip()) for v in value.split(',') if v.strip()]
 
@@ -145,6 +150,7 @@ class BaseDateFilter(BaseFilter):
     """
         Base Date filter. Uses client-side date picker control.
     """
+
     def __init__(self, name, options=None, data_type=None):
         super(BaseDateFilter, self).__init__(name,
                                              options,
@@ -159,6 +165,7 @@ class BaseDateBetweenFilter(BaseFilter):
         Base Date Between filter. Consolidates logic for validation and clean.
         Apply method is different for each back-end.
     """
+
     def clean(self, value):
         return [datetime.datetime.strptime(range, '%Y-%m-%d')
                 for range in value.split(' to ')]
@@ -184,6 +191,7 @@ class BaseDateTimeFilter(BaseFilter):
     """
         Base DateTime filter. Uses client-side date time picker control.
     """
+
     def __init__(self, name, options=None, data_type=None):
         super(BaseDateTimeFilter, self).__init__(name,
                                                  options,
@@ -199,6 +207,7 @@ class BaseDateTimeBetweenFilter(BaseFilter):
         Base DateTime Between filter. Consolidates logic for validation and clean.
         Apply method is different for each back-end.
     """
+
     def clean(self, value):
         return [datetime.datetime.strptime(range, '%Y-%m-%d %H:%M:%S')
                 for range in value.split(' to ')]
@@ -222,6 +231,7 @@ class BaseTimeFilter(BaseFilter):
     """
         Base Time filter. Uses client-side time picker control.
     """
+
     def __init__(self, name, options=None, data_type=None):
         super(BaseTimeFilter, self).__init__(name,
                                              options,
@@ -240,13 +250,14 @@ class BaseTimeBetweenFilter(BaseFilter):
         Base Time Between filter. Consolidates logic for validation and clean.
         Apply method is different for each back-end.
     """
+
     def clean(self, value):
         timetuples = [time.strptime(range, '%H:%M:%S')
                       for range in value.split(' to ')]
         return [datetime.time(timetuple.tm_hour,
                               timetuple.tm_min,
                               timetuple.tm_sec)
-                              for timetuple in timetuples]
+                for timetuple in timetuples]
 
     def operation(self):
         return lazy_gettext('between')
@@ -283,6 +294,7 @@ class BaseFilterConverter(object):
         Derive from this class to implement custom field to filter conversion
         logic.
     """
+
     def __init__(self):
         self.converters = dict()
 
