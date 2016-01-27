@@ -1678,6 +1678,14 @@ class BaseModelView(BaseView, ActionsMixin):
             self.column_type_formatters_export,
         )
 
+    def get_export_name(self):
+        """
+        :return: The exported csv file name.
+        """
+        filename = '%s_%s.csv' % (self.name,
+                                  time.strftime("%Y-%m-%d_%H-%M-%S"))
+        return filename
+
     # AJAX references
     def _process_ajax_references(self):
         """
@@ -2034,8 +2042,7 @@ class BaseModelView(BaseView, ActionsMixin):
                         for c in self._export_columns]
                 yield writer.writerow(vals)
 
-        filename = '%s_%s.csv' % (self.name,
-                                  time.strftime("%Y-%m-%d_%H-%M-%S"))
+        filename = self.get_export_name()
 
         disposition = 'attachment;filename=%s' % (secure_filename(filename),)
 
