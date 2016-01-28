@@ -151,6 +151,8 @@
           // look up user's location by IP address
           $.getJSON("http://ip-api.com/json/?callback=?", function(data) {
             map.setView([data["lat"], data["lon"]], 12);
+          }).fail(function() {
+              map.setView([0, 0], 1)
           });
         }
 
