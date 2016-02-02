@@ -11,3 +11,11 @@ def parse_like_term(term):
         stmt = '%%%s%%' % term
 
     return stmt
+
+
+def get_meta_fields(model):
+    try:
+        fields = model._meta.sorted_fields
+    except AttributeError:
+        fields = model._meta.get_fields()
+    return fields
