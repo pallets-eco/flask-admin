@@ -10,7 +10,7 @@ from flask_admin._compat import iteritems, itervalues
 from flask_admin.model.form import InlineFormAdmin, InlineModelConverterBase
 from flask_admin.model.fields import InlineModelFormField, InlineFieldList, AjaxSelectField
 
-from .tools import get_primary_key
+from .tools import get_primary_key, get_meta_fields
 from .ajax import create_ajax_loader
 
 
@@ -210,7 +210,7 @@ class InlineModelConverter(InlineModelConverterBase):
 
         info = self.get_info(inline_model)
 
-        for field in info.model._meta.get_fields():
+        for field in get_meta_fields(info.model):
             field_type = type(field)
 
             if field_type == ForeignKeyField:
