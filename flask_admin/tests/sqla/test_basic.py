@@ -271,21 +271,6 @@ def test_complex_list_columns():
     data = rv.data.decode('utf-8')
     ok_('model1_val1' in data)
 
-    # TODO: Allow providing a list of related models
-    """
-    # test column_list with a list of models on a relation
-    view2 = CustomModelView(M2, db.session, endpoint='model2_2',
-                            column_list=[M1.test1])
-    admin.add_view(view2)
-
-    client = app.test_client()
-
-    rv = client.get('/admin/model2_2/')
-    eq_(rv.status_code, 200)
-    data = rv.data.decode('utf-8')
-    ok_('model1_val1' in data)
-    """
-
 
 def test_exclude_columns():
     app, db, admin = setup()
@@ -1712,31 +1697,23 @@ def test_complex_sort():
     rv = client.get('/admin/model2/?sort=1')
     eq_(rv.status_code, 200)
 
-    # test sorting on relation object - M2.string_field
-    view2 = CustomModelView(M1, db.session,
-                            column_list=['model2.string_field'],
-                            column_sortable_list=[M2.string_field])
-    admin.add_view(view2)
 
-    client = app.test_client()
+@raises(Exception)
+def test_complex_sort_exception():
+    app, db, admin = setup()
+    M1, M2 = create_models(db)
 
-    rv = client.get('/admin/model1/?sort=1')
-    eq_(rv.status_code, 200)
-    data = rv.data.decode('utf-8')
-    ok_('Sort by' in data)
+    # test column_sortable_list on a related table's column object
+    view = CustomModelView(M2, db.session, endpoint="model2_3",
+                           column_sortable_list=[M1.test1])
+    admin.add_view(view)
 
-    # test sorting on relations with model in column_list
-    view3 = CustomModelView(M1, db.session, endpoint="model1_2",
-                            column_list=[M2.string_field],
-                            column_sortable_list=[M2.string_field])
-    admin.add_view(view3)
+    sort_column = view._get_column_by_idx(0)[0]
+    _, data = view.get_list(0, sort_column, False, None, None)
 
-    client = app.test_client()
-
-    rv = client.get('/admin/model1_2/?sort=1')
-    eq_(rv.status_code, 200)
-    data = rv.data.decode('utf-8')
-    ok_('Sort by' in data)
+    eq_(len(data), 2)
+    eq_(data[0].model1.test1, 'a')
+    eq_(data[1].model1.test1, 'b')
 
 
 def test_default_complex_sort():
@@ -1757,6 +1734,17 @@ def test_default_complex_sort():
     admin.add_view(view)
 
     _, data = view.get_list(0, None, None, None, None)
+
+    eq_(len(data), 2)
+    eq_(data[0].model1.test1, 'a')
+    eq_(data[1].model1.test1, 'b')
+
+    # test column_default_sort on a related table's column object
+    view2 = CustomModelView(M2, db.session, endpoint="model2_2",
+                            column_default_sort=(M1.test1, False))
+    admin.add_view(view2)
+
+    _, data = view2.get_list(0, None, None, None, None)
 
     eq_(len(data), 2)
     eq_(data[0].model1.test1, 'a')

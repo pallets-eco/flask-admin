@@ -475,10 +475,15 @@ class ModelView(BaseModelView):
                     column, path = tools.get_field_with_path(self.model, c)
                     column_name = c
 
-                if path:
+                if path and hasattr(path[0], 'property'):
                     # column is in another table, use full path as column_name
                     column_name = text_type(c)
                     self._sortable_joins[column_name] = path
+                elif path:
+                    raise Exception("For sorting columns in a related table, "
+                                    "column_sortable_list requires a string "
+                                    "like '<relation name>.<column name>'. "
+                                    "Failed on: {0}".format(c))
                 else:
                     # column is in same table, use only model attribute name
                     column_name = column.key
