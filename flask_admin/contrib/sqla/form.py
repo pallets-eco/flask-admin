@@ -9,13 +9,14 @@ from flask_admin.model.form import (converts, ModelConverterBase,
 from flask_admin.model.fields import AjaxSelectField, AjaxSelectMultipleField
 from flask_admin.model.helpers import prettify_name
 from flask_admin._backwards import get_property
-from flask_admin._compat import iteritems
+from flask_admin._compat import iteritems, text_type
 
 from .validators import Unique
 from .fields import (QuerySelectField, QuerySelectMultipleField,
                      InlineModelFormList, InlineHstoreList, HstoreForm)
 from flask_admin.model.fields import InlineFormField
-from .tools import has_multiple_pks, filter_foreign_columns
+from .tools import (has_multiple_pks, filter_foreign_columns,
+                    get_field_with_path)
 from .ajax import create_ajax_loader
 
 
@@ -406,28 +407,26 @@ def get_form(model, converter,
     properties = ((p.key, p) for p in mapper.iterate_properties)
 
     if only:
-        props = dict(properties)
-
         def find(name):
             # If field is in extra_fields, it has higher priority
             if extra_fields and name in extra_fields:
-                return FieldPlaceholder(extra_fields[name])
+                return name, FieldPlaceholder(extra_fields[name])
 
-            # Try to look it up in properties list first
-            p = props.get(name)
+            column, path = get_field_with_path(model, name)
 
-            if p is not None:
-                return p
+            if path and not hasattr(column.prop, 'direction'):
+                raise Exception("form column is located in another table and "
+                                "requires inline_models: {0}".format(name))
 
-            # If it is hybrid property or alias, look it up in a model itself
-            p = getattr(model, name, None)
-            if p is not None and hasattr(p, 'property'):
-                return p.property
+            name = column.key
+
+            if column is not None and hasattr(column, 'property'):
+                return name, column.property
 
             raise ValueError('Invalid model property name %s.%s' % (model, name))
 
         # Filter properties while maintaining property order in 'only' list
-        properties = ((x, find(x)) for x in only)
+        properties = (find(x) for x in only)
     elif exclude:
         properties = (x for x in properties if x[0] not in exclude)
 

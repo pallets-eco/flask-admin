@@ -1,9 +1,9 @@
 from sqlalchemy import tuple_, or_, and_
 from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
-from ast import literal_eval
+from sqlalchemy.orm.attributes import InstrumentedAttribute
 
-from flask_admin._compat import filter_list
+from flask_admin._compat import filter_list, string_types
 from flask_admin.tools import iterencode, iterdecode, escape
 
 
@@ -108,3 +108,65 @@ def get_query_for_ids(modelquery, model, ids):
         query = modelquery.filter(model_pk.in_(ids))
 
     return query
+
+
+def get_columns_for_field(field):
+    if (not field or
+        not hasattr(field, 'property') or
+        not hasattr(field.property, 'columns') or
+        not field.property.columns):
+            raise Exception('Invalid field %s: does not contains any columns.' % field)
+
+    return field.property.columns
+
+
+def need_join(model, table):
+    """
+        Check if join to a table is necessary.
+    """
+    return table not in model._sa_class_manager.mapper.tables
+
+
+def get_field_with_path(model, name):
+    """
+        Resolve property by name and figure out its join path.
+
+        Join path might contain both properties and tables.
+    """
+    path = []
+
+    # For strings, resolve path
+    if isinstance(name, string_types):
+        # create a copy to keep original model as `model`
+        current_model = model
+
+        for attribute in name.split('.'):
+            value = getattr(current_model, attribute)
+
+            if (hasattr(value, 'property') and
+                    hasattr(value.property, 'direction')):
+                current_model = value.property.mapper.class_
+
+                table = current_model.__table__
+
+                if need_join(model, table):
+                    path.append(value)
+
+            attr = value
+    else:
+        attr = name
+
+        # Determine joins if table.column (relation object) is provided
+        if isinstance(attr, InstrumentedAttribute):
+            columns = get_columns_for_field(attr)
+
+            if len(columns) > 1:
+                raise Exception('Can only handle one column for %s' % name)
+
+            column = columns[0]
+
+            # TODO: Use SQLAlchemy "path-finder" to find exact join path to the target property
+            if need_join(model, column.table):
+                path.append(column.table)
+
+    return attr, path
