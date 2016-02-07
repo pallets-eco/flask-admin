@@ -21,7 +21,6 @@ from flask_admin._backwards import ObsoleteAttr
 
 from flask_admin.contrib.sqla import form, filters as sqla_filters, tools
 from .typefmt import DEFAULT_FORMATTERS
-from .tools import get_query_for_ids
 from .ajax import create_ajax_loader
 
 # Set up logger
@@ -338,64 +337,6 @@ class ModelView(BaseModelView):
 
         return model._sa_class_manager.mapper.iterate_properties
 
-    def _get_columns_for_field(self, field):
-        if (not field or
-            not hasattr(field, 'property') or
-            not hasattr(field.property, 'columns') or
-            not field.property.columns):
-                raise Exception('Invalid field %s: does not contains any columns.' % field)
-
-        return field.property.columns
-
-    def _get_field_with_path(self, name):
-        """
-            Resolve property by name and figure out its join path.
-
-            Join path might contain both properties and tables.
-        """
-        path = []
-
-        model = self.model
-
-        # For strings, resolve path
-        if isinstance(name, string_types):
-            for attribute in name.split('.'):
-                value = getattr(model, attribute)
-
-                if (hasattr(value, 'property') and
-                        hasattr(value.property, 'direction')):
-                    model = value.property.mapper.class_
-
-                    table = model.__table__
-
-                    if self._need_join(table):
-                        path.append(value)
-
-                attr = value
-        else:
-            attr = name
-
-            # Determine joins if table.column (relation object) is provided
-            if isinstance(attr, InstrumentedAttribute):
-                columns = self._get_columns_for_field(attr)
-
-                if len(columns) > 1:
-                    raise Exception('Can only handle one column for %s' % name)
-
-                column = columns[0]
-
-                # TODO: Use SQLAlchemy "path-finder" to find exact join path to the target property
-                if self._need_join(column.table):
-                    path.append(column.table)
-
-        return attr, path
-
-    def _need_join(self, table):
-        """
-            Check if join to a table is necessary.
-        """
-        return table not in self.model._sa_class_manager.mapper.tables
-
     def _apply_path_joins(self, query, joins, path, inner_join=True):
         """
             Apply join path to the query.
@@ -528,13 +469,13 @@ class ModelView(BaseModelView):
 
             for c in self.column_sortable_list:
                 if isinstance(c, tuple):
-                    column, path = self._get_field_with_path(c[1])
+                    column, path = tools.get_field_with_path(self.model, c[1])
                     column_name = c[0]
                 elif isinstance(c, InstrumentedAttribute):
-                    column, path = self._get_field_with_path(c)
+                    column, path = tools.get_field_with_path(self.model, c)
                     column_name = str(c)
                 else:
-                    column, path = self._get_field_with_path(c)
+                    column, path = tools.get_field_with_path(self.model, c)
                     column_name = c
 
                 result[column_name] = column
@@ -556,12 +497,12 @@ class ModelView(BaseModelView):
             self._search_fields = []
 
             for p in self.column_searchable_list:
-                attr, joins = self._get_field_with_path(p)
+                attr, joins = tools.get_field_with_path(self.model, p)
 
                 if not attr:
                     raise Exception('Failed to find field for search field: %s' % p)
 
-                for column in self._get_columns_for_field(attr):
+                for column in tools.get_columns_for_field(attr):
                     self._search_fields.append((column, joins))
 
         return bool(self.column_searchable_list)
@@ -571,7 +512,7 @@ class ModelView(BaseModelView):
             Return list of enabled filters
         """
 
-        attr, joins = self._get_field_with_path(name)
+        attr, joins = tools.get_field_with_path(self.model, name)
 
         if attr is None:
             raise Exception('Failed to find field for filter: %s' % name)
@@ -604,21 +545,22 @@ class ModelView(BaseModelView):
 
                         if joins:
                             self._filter_joins[column] = joins
-                        elif self._need_join(table):
+                        elif tools.need_join(self.model, table):
                             self._filter_joins[column] = [table]
 
                         filters.extend(flt)
 
             return filters
         else:
-            columns = self._get_columns_for_field(attr)
+            columns = tools.get_columns_for_field(attr)
 
             if len(columns) > 1:
                 raise Exception('Can not filter more than on one column for %s' % name)
 
             column = columns[0]
 
-            if self._need_join(column.table) and name not in self.column_labels:
+            if (tools.need_join(self.model, column.table) and
+                    name not in self.column_labels):
                 visible_name = '%s / %s' % (
                     self.get_column_name(column.table.name),
                     self.get_column_name(column.name)
@@ -640,7 +582,7 @@ class ModelView(BaseModelView):
 
             if joins:
                 self._filter_joins[column] = joins
-            elif self._need_join(column.table):
+            elif tools.need_join(self.model, column.table):
                 self._filter_joins[column] = [column.table]
 
             return flt
@@ -651,7 +593,7 @@ class ModelView(BaseModelView):
 
             # hybrid_property joins are not supported yet
             if (isinstance(column, InstrumentedAttribute) and
-                    self._need_join(column.table)):
+                    tools.need_join(self.model, column.table)):
                 self._filter_joins[column] = [column.table]
 
         return filter
@@ -802,7 +744,7 @@ class ModelView(BaseModelView):
         if order is not None:
             field, direction = order
 
-            attr, joins = self._get_field_with_path(field)
+            attr, joins = tools.get_field_with_path(self.model, field)
 
             return attr, joins, direction
 
@@ -1100,7 +1042,7 @@ class ModelView(BaseModelView):
             lazy_gettext('Are you sure you want to delete selected records?'))
     def action_delete(self, ids):
         try:
-            query = get_query_for_ids(self.get_query(), self.model, ids)
+            query = tools.get_query_for_ids(self.get_query(), self.model, ids)
 
             if self.fast_mass_delete:
                 count = query.delete(synchronize_session=False)

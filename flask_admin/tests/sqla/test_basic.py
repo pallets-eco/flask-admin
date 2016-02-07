@@ -5,7 +5,7 @@ from wtforms import fields, validators
 from flask_admin import form
 from flask_admin._compat import as_unicode
 from flask_admin._compat import iteritems
-from flask_admin.contrib.sqla import ModelView, filters
+from flask_admin.contrib.sqla import ModelView, filters, tools
 from flask_babelex import Babel
 
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -1444,6 +1444,22 @@ def test_form_columns():
 
     ok_(type(form3.model).__name__ == 'QuerySelectField')
 
+    # test form_columns with model objects
+    view4 = CustomModelView(Model, db.session, endpoint='view1',
+                            form_columns=[Model.int_field])
+    form4 = view4.create_form()
+    ok_('int_field' in form4._fields)
+
+
+@raises(Exception)
+def test_complex_form_columns():
+    app, db, admin = setup()
+    M1, M2 = create_models(db)
+
+    # test using a form column in another table
+    view = CustomModelView(M2, db.session, form_columns=['model1.test1'])
+    form = view.create_form()
+
 
 def test_form_args():
     app, db, admin = setup()
@@ -1964,15 +1980,15 @@ def test_advanced_joins():
     admin.add_view(view3)
 
     # Test joins
-    attr, path = view2._get_field_with_path('model1.val1')
+    attr, path = tools.get_field_with_path(Model2, 'model1.val1')
     eq_(attr, Model1.val1)
     eq_(path, [Model2.model1])
 
-    attr, path = view1._get_field_with_path('model2.val2')
+    attr, path = tools.get_field_with_path(Model1, 'model2.val2')
     eq_(attr, Model2.val2)
     eq_(id(path[0]), id(Model1.model2))
 
-    attr, path = view3._get_field_with_path('model2.model1.val1')
+    attr, path = tools.get_field_with_path(Model3, 'model2.model1.val1')
     eq_(attr, Model1.val1)
     eq_(path, [Model3.model2, Model2.model1])
 
@@ -1986,7 +2002,7 @@ def test_advanced_joins():
     ok_(alias is not None)
 
     # Check if another join would use same path
-    attr, path = view2._get_field_with_path('model1.test')
+    attr, path = tools.get_field_with_path(Model2, 'model1.test')
     q2, joins, alias = view2._apply_path_joins(query, joins, path)
 
     eq_(len(joins), 2)
@@ -1995,8 +2011,8 @@ def test_advanced_joins():
 
     ok_(alias is not None)
 
-    # Check if normal properties are supported by _get_field_with_path
-    attr, path = view2._get_field_with_path(Model1.test)
+    # Check if normal properties are supported by tools.get_field_with_path
+    attr, path = tools.get_field_with_path(Model2, Model1.test)
     eq_(attr, Model1.test)
     eq_(path, [Model1.__table__])
 
