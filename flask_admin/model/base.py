@@ -2015,11 +2015,16 @@ class BaseModelView(BaseView, ActionsMixin):
         # Macros in column_formatters are not supported.
         # Macros will have a function name 'inner'
         # This causes non-macro functions named 'inner' not work.
-        for col, func in iteritems(self.column_formatters):
+        for col, func in iteritems(self.column_formatters_export):
+            # skip checking columns not being exported
+            if col not in [col for col, _ in self._export_columns]:
+                continue
+
             if func.__name__ == 'inner':
                 raise NotImplementedError(
-                    'Macros not implemented. Override with '
-                    'column_formatters_export. Column: %s' % (col,)
+                    'Macros are not implemented in export. Exclude column in'
+                    ' column_formatters_export, column_export_list, or '
+                    ' column_export_exclude_list. Column: %s' % (col,)
                 )
 
         # Grab parameters from URL

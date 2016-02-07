@@ -656,3 +656,73 @@ def test_export_csv():
     rv = client.get('/admin/macro_exception/export/csv/')
     data = rv.data.decode('utf-8')
     eq_(rv.status_code, 500)
+
+    # We should be able to specify column_formatters_export
+    # and not get an exception if a column_formatter is using a macro
+    def export_formatter(v, c, m, p):
+        return m.col1 if m else ''
+
+    view = MockModelView(
+        Model, view_data, can_export=True, column_list=['col1', 'col2'],
+        column_formatters=dict(col1=macro('render_macro')),
+        column_formatters_export=dict(col1=export_formatter),
+        endpoint="macro_exception_formatter_override"
+    )
+    admin.add_view(view)
+
+    rv = client.get('/admin/macro_exception_formatter_override/export/csv/')
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 200)
+    ok_("Col1,Col2\r\n"
+        "col1_1,1\r\n"
+        "col1_2,2\r\n"
+        ",3\r\n" == data)
+
+    # We should not get an exception if a column_formatter is
+    # using a macro but it is on the column_export_exclude_list
+    view = MockModelView(
+        Model, view_data, can_export=True, column_list=['col1', 'col2'],
+        column_formatters=dict(col1=macro('render_macro')),
+        column_export_exclude_list=['col1'],
+        endpoint="macro_exception_exclude_override"
+    )
+    admin.add_view(view)
+
+    rv = client.get('/admin/macro_exception_exclude_override/export/csv/')
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 200)
+    ok_("Col2\r\n"
+        "1\r\n"
+        "2\r\n"
+        "3\r\n" == data)
+
+    # When we use column_export_list to hide the macro field
+    # we should not get an exception
+    view = MockModelView(
+        Model, view_data, can_export=True, column_list=['col1', 'col2'],
+        column_formatters=dict(col1=macro('render_macro')),
+        column_export_list=['col2'],
+        endpoint="macro_exception_list_override"
+    )
+    admin.add_view(view)
+
+    rv = client.get('/admin/macro_exception_list_override/export/csv/')
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 200)
+    ok_("Col2\r\n"
+        "1\r\n"
+        "2\r\n"
+        "3\r\n" == data)
+
+    # If they define a macro on the column_formatters_export list
+    # then raise an exception
+    view = MockModelView(
+        Model, view_data, can_export=True, column_list=['col1', 'col2'],
+        column_formatters=dict(col1=macro('render_macro')),
+        endpoint="macro_exception_macro_override"
+    )
+    admin.add_view(view)
+
+    rv = client.get('/admin/macro_exception_macro_override/export/csv/')
+    data = rv.data.decode('utf-8')
+    eq_(rv.status_code, 500)
