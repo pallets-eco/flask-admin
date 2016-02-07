@@ -169,6 +169,15 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 column_list = ('name', 'last_name', 'email')
+
+        (Added in 1.4.0) SQLAlchemy model attributes can be used instead of strings::
+
+            class MyModelView(BaseModelView):
+                column_list = ('name', User.last_name)
+
+        When using SQLAlchemy models, you can reference related columns like this::
+            class MyModelView(BaseModelView):
+                column_list = ('<relationship>.<related column name>',)
     """
 
     column_exclude_list = ObsoleteAttr('column_exclude_list',
@@ -506,6 +515,15 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 form_columns = ('name', 'email')
+
+        (Added in 1.4.0) SQLAlchemy model attributes can be used instead of
+        strings::
+
+            class MyModelView(BaseModelView):
+                form_columns = ('name', User.last_name)
+
+        SQLA Note: Model attributes must be on the same model as your ModelView
+        or you will need to use `inline_models`.
     """
 
     form_excluded_columns = ObsoleteAttr('form_excluded_columns',
@@ -884,9 +902,9 @@ class BaseModelView(BaseView, ActionsMixin):
 
     def get_list_columns(self):
         """
-            Returns a list of the model field names. If `column_list` was
-            set, returns it. Otherwise calls `scaffold_list_columns`
-            to generate the list from the model.
+            Returns a list of tuples with the model field name and formatted
+            field name. If `column_list` was set, returns it. Otherwise calls
+            `scaffold_list_columns` to generate the list from the model.
         """
         columns = self.column_list
 
