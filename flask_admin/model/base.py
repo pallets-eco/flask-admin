@@ -2021,34 +2021,16 @@ class BaseModelView(BaseView, ActionsMixin):
         # Macros in column_formatters are not supported.
         # Macros will have a function name 'inner'
         # This causes non-macro functions named 'inner' not work.
-
-        # Skip this check when the field with the macro is excluded...
-        skip_checks = []
-
-        if self.column_export_exclude_list:
-            skip_checks.extend(self.column_export_exclude_list)
-
-        # or there is a macro-less column_formatters_export available.
         for col, func in iteritems(self.column_formatters_export):
-            # we can skip checking columns not being exported
-            # when the export list is explicitly defined
-            if self.column_export_list and \
-                    col not in self.column_export_list:
-                skip_checks.append(col)
-                continue
-
-            if func.__name__ != 'inner':
-                skip_checks.append(col)
-
-        # main macro check loop, skipping the above "safe" skip list
-        for col, func in iteritems(self.column_formatters):
-            if col in skip_checks:
+            # skip checking columns not being exported
+            if col not in [col for col, _ in self._export_columns]:
                 continue
 
             if func.__name__ == 'inner':
                 raise NotImplementedError(
-                    'Macros not implemented. Override with '
-                    'column_formatters_export. Column: %s' % (col,)
+                    'Macros are not implemented in export. Exclude column in'
+                    ' column_formatters_export, column_export_list, or '
+                    ' column_export_exclude_list. Column: %s' % (col,)
                 )
 
         # Grab parameters from URL
