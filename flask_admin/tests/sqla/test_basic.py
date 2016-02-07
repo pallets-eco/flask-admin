@@ -218,6 +218,7 @@ def test_list_columns():
 
     Model1, Model2 = create_models(db)
 
+    # test column_list with a list of strings
     view = CustomModelView(Model1, db.session,
                            column_list=['test1', 'test3'],
                            column_labels=dict(test1='Column1'))
@@ -232,6 +233,58 @@ def test_list_columns():
     data = rv.data.decode('utf-8')
     ok_('Column1' in data)
     ok_('Test2' not in data)
+
+    # test column_list with a list of SQLAlchemy columns
+    view2 = CustomModelView(Model1, db.session, endpoint='model1_2',
+                            column_list=[Model1.test1, Model1.test3],
+                            column_labels=dict(test1='Column1'))
+    admin.add_view(view2)
+
+    eq_(len(view2._list_columns), 2)
+    eq_(view2._list_columns, [('test1', 'Column1'), ('test3', 'Test3')])
+
+    rv = client.get('/admin/model1_2/')
+    data = rv.data.decode('utf-8')
+    ok_('Column1' in data)
+    ok_('Test2' not in data)
+
+
+def test_complex_list_columns():
+    app, db, admin = setup()
+    M1, M2 = create_models(db)
+
+    m1 = M1('model1_val1')
+    db.session.add(m1)
+    db.session.add(M2('model2_val1', model1=m1))
+
+    db.session.commit()
+
+    # test column_list with a list of strings on a relation
+    view = CustomModelView(M2, db.session,
+                           column_list=['model1.test1'])
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model2/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('model1_val1' in data)
+
+    # TODO: Allow providing a list of related models
+    """
+    # test column_list with a list of models on a relation
+    view2 = CustomModelView(M2, db.session, endpoint='model2_2',
+                            column_list=[M1.test1])
+    admin.add_view(view2)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model2_2/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('model1_val1' in data)
+    """
 
 
 def test_exclude_columns():
@@ -1608,6 +1661,31 @@ def test_default_sort():
     eq_(data[1].test1, 'b')
     eq_(data[2].test1, 'c')
 
+    # test default sort on renamed columns - with column_list scaffolding
+    view2 = CustomModelView(M1, db.session, column_default_sort='test1',
+                            column_labels={'test1': 'blah'}, endpoint='m1_2')
+    admin.add_view(view2)
+
+    _, data = view2.get_list(0, None, None, None, None)
+
+    eq_(len(data), 3)
+    eq_(data[0].test1, 'a')
+    eq_(data[1].test1, 'b')
+    eq_(data[2].test1, 'c')
+
+    # test default sort on renamed columns - without column_list scaffolding
+    view3 = CustomModelView(M1, db.session, column_default_sort='test1',
+                            column_labels={'test1': 'blah'}, endpoint='m1_3',
+                            column_list=['test1'])
+    admin.add_view(view3)
+
+    _, data = view3.get_list(0, None, None, None, None)
+
+    eq_(len(data), 3)
+    eq_(data[0].test1, 'a')
+    eq_(data[1].test1, 'b')
+    eq_(data[2].test1, 'c')
+
 
 def test_complex_sort():
     app, db, admin = setup()
@@ -1625,8 +1703,8 @@ def test_complex_sort():
 
     # test sorting on relation string - 'model1.test1'
     view = CustomModelView(M2, db.session,
-                           column_list = ['string_field', 'model1.test1'],
-                           column_sortable_list = ['model1.test1'])
+                           column_list=['string_field', 'model1.test1'],
+                           column_sortable_list=['model1.test1'])
     admin.add_view(view)
 
     client = app.test_client()
@@ -1636,13 +1714,26 @@ def test_complex_sort():
 
     # test sorting on relation object - M2.string_field
     view2 = CustomModelView(M1, db.session,
-                           column_list = ['model2.string_field'],
-                           column_sortable_list = [M2.string_field])
+                            column_list=['model2.string_field'],
+                            column_sortable_list=[M2.string_field])
     admin.add_view(view2)
 
     client = app.test_client()
 
     rv = client.get('/admin/model1/?sort=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('Sort by' in data)
+
+    # test sorting on relations with model in column_list
+    view3 = CustomModelView(M1, db.session, endpoint="model1_2",
+                            column_list=[M2.string_field],
+                            column_sortable_list=[M2.string_field])
+    admin.add_view(view3)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model1_2/?sort=1')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('Sort by' in data)

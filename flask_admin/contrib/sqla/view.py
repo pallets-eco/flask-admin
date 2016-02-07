@@ -471,19 +471,56 @@ class ModelView(BaseModelView):
                 if isinstance(c, tuple):
                     column, path = tools.get_field_with_path(self.model, c[1])
                     column_name = c[0]
-                elif isinstance(c, InstrumentedAttribute):
-                    column, path = tools.get_field_with_path(self.model, c)
-                    column_name = str(c)
                 else:
                     column, path = tools.get_field_with_path(self.model, c)
                     column_name = c
 
+                if path:
+                    # column is in another table, use full path as column_name
+                    column_name = text_type(c)
+                    self._sortable_joins[column_name] = path
+                else:
+                    # column is in same table, use only model attribute name
+                    column_name = column.key
+
+                # column_name must match column_name used in `get_list_columns`
                 result[column_name] = column
+            return result
+
+    def get_list_columns(self):
+        """
+            Returns a list of tuples with the model field name and formatted
+            field name. If `column_list` was set, returns it. Otherwise calls
+            `scaffold_list_columns` to generate the list from the model.
+        """
+        if self.column_list is None:
+            columns = self.scaffold_list_columns()
+
+            # Filter excluded columns
+            if self.column_exclude_list:
+                columns = [c for c in columns
+                           if c not in self.column_exclude_list]
+
+            return [(c, self.get_column_name(c)) for c in columns]
+        else:
+            columns = []
+
+            for c in self.column_list:
+                column, path = tools.get_field_with_path(self.model, c)
 
                 if path:
-                    self._sortable_joins[column_name] = path
+                    # column is in another table, use full path
+                    column_name = text_type(c)
+                else:
+                    # column is in same table, use only model attribute name
+                    column_name = column.key
 
-            return result
+                visible_name = self.get_column_name(column_name)
+
+                # column_name must match column_name in `get_sortable_columns`
+                columns.append((column_name, visible_name))
+
+            return columns
 
     def init_search(self):
         """
