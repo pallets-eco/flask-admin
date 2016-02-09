@@ -878,7 +878,7 @@ class BaseModelView(BaseView, ActionsMixin):
             column_name = getattr(self.model._fields.get(field), 'verbose_name')
             if column_name is None:
                 column_name = self._prettify_name(field)
-            return column_name.decode('utf-8') if isinstance(column_name, str) else column_name
+            return as_unicode(column_name)
         else:
             return self._prettify_name(field)
 
