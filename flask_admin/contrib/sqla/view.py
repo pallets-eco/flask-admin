@@ -1,6 +1,7 @@
 import logging
 import warnings
 import inspect
+import collections
 
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import joinedload, aliased
@@ -853,27 +854,37 @@ class ModelView(BaseModelView):
         for idx, flt_name, value in filters:
             flt = self._filters[idx]
 
-            alias = None
-            count_alias = None
+            aliases = None
+            count_aliases = None
 
             # Figure out joins
             if isinstance(flt, sqla_filters.BaseSQLAFilter):
-                path = self._filter_joins.get(flt.column, [])
+                aliases = []
+                count_aliases = []
+                is_multiple_columns = isinstance(flt.column, collections.Sequence) and not isinstance(flt.column, str)
+                columns = flt.column if is_multiple_columns else [flt.column]
+                for column in columns:
+                    path = self._filter_joins.get(column, [])
 
-                query, joins, alias = self._apply_path_joins(query, joins, path, inner_join=False)
+                    query, joins, alias = self._apply_path_joins(query, joins, path, inner_join=False)
+                    aliases.append(alias)
 
-                if count_query is not None:
-                    count_query, count_joins, count_alias = self._apply_path_joins(
-                        count_query,
-                        count_joins,
-                        path,
-                        inner_join=False)
+                    if count_query is not None:
+                        count_query, count_joins, count_alias = self._apply_path_joins(
+                            count_query,
+                            count_joins,
+                            path,
+                            inner_join=False)
+                        count_aliases.append(count_alias)
+                if not is_multiple_columns:
+                    aliases = aliases[0] if len(aliases) > 0 else None
+                    count_aliases = count_aliases[0] if len(count_aliases) > 0 else None
 
             # Clean value .clean() and apply the filter
             clean_value = flt.clean(value)
 
             try:
-                query = flt.apply(query, clean_value, alias)
+                query = flt.apply(query, clean_value, aliases)
             except TypeError:
                 spec = inspect.getargspec(flt.apply)
 
@@ -886,7 +897,7 @@ class ModelView(BaseModelView):
 
             if count_query is not None:
                 try:
-                    count_query = flt.apply(count_query, clean_value, count_alias)
+                    count_query = flt.apply(count_query, clean_value, count_aliases)
                 except TypeError:
                     count_query = flt.apply(count_query, clean_value)
 
