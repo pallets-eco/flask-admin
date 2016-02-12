@@ -1,3 +1,5 @@
+import collections
+from flask_admin._compat import text_type
 from flask_admin.babel import lazy_gettext
 from flask_admin.model import filters
 from flask_admin.contrib.sqla import tools
@@ -116,6 +118,38 @@ class FilterNotInList(FilterInList):
 
     def operation(self):
         return lazy_gettext('not in list')
+
+
+# Composite filters
+class FilterAndEqual(FilterEqual):
+    def __init__(self, child_filters, name, delimiter=',', options=None, data_type=None):
+        column = [filter_.column for filter_ in child_filters]
+        super().__init__(column, name, options, data_type)
+        self.filters = child_filters
+        self.delimiter = delimiter
+
+    def convert_aliases(self, aliases):
+        is_aliases_sequence = isinstance(aliases, collections.Sequence) and not isinstance(aliases, text_type)
+        aliases = [aliases] * len(self.filters) if not is_aliases_sequence else aliases
+        return aliases
+
+    def apply(self, query, values, aliases=None):
+        aliases = self.convert_aliases(aliases)
+        for filter_, value, alias in zip(self.filters, values, aliases):
+            query = filter_.apply(query, value, alias)
+        return query
+
+    def clean(self, value):
+        result = value.split(self.delimiter)
+        if len(result) != len(self.filters):
+            names = [filter_.name for filter_ in self.filters]
+            value_format = self.delimiter.join(names)
+            raise ValueError('Value format should be: {value_format}.'.format(value_format=value_format))
+        return result
+
+    def get_column(self, aliases):
+        aliases = self.convert_aliases(aliases)
+        return [filter_.get_column(alias) for filter_, alias in zip(self.filters, aliases)]
 
 
 # Customized type filters

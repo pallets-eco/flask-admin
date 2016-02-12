@@ -861,7 +861,7 @@ class ModelView(BaseModelView):
             if isinstance(flt, sqla_filters.BaseSQLAFilter):
                 aliases = []
                 count_aliases = []
-                is_multiple_columns = isinstance(flt.column, collections.Sequence) and not isinstance(flt.column, str)
+                is_multiple_columns = isinstance(flt.column, collections.Sequence) and not isinstance(flt.column, text_type)
                 columns = flt.column if is_multiple_columns else [flt.column]
                 for column in columns:
                     path = self._filter_joins.get(column, [])
