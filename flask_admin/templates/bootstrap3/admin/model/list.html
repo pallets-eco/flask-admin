@@ -51,6 +51,7 @@
             {{ model_layout.search_form() }}
         </li>
         {% endif %}
+        {% block model_menu_bar_after_filters %}{% endblock %}
     </ul>
     {% endblock %}
 
