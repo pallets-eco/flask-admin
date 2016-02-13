@@ -124,7 +124,7 @@ class FilterNotInList(FilterInList):
 class FilterAndEqual(FilterEqual):
     def __init__(self, child_filters, name, delimiter=',', options=None, data_type=None):
         column = [filter_.column for filter_ in child_filters]
-        super().__init__(column, name, options, data_type)
+        super(FilterAndEqual, self).__init__(column, name, options, data_type)
         self.filters = child_filters
         self.delimiter = delimiter
 
