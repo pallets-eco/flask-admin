@@ -115,7 +115,6 @@ instance running on the same machine as your app, you can::
 
     admin = Admin(app, name='microblog', template_mode='bootstrap3')
 
-    path = op.join(op.dirname(__file__), 'static')
     admin.add_view(rediscli.RedisCli(Redis()))
 
 
