@@ -1,6 +1,7 @@
 import warnings
 import re
 import csv
+import mimetypes
 import time
 
 from werkzeug import secure_filename
@@ -8,6 +9,10 @@ from werkzeug import secure_filename
 from flask import (request, redirect, flash, abort, json, Response,
                    get_flashed_messages, stream_with_context)
 from jinja2 import contextfunction
+try:
+    import tablib
+except ImportError:
+    tablib = None
 from wtforms.fields import HiddenField
 from wtforms.fields.core import UnboundField
 from wtforms.validators import ValidationError, InputRequired
@@ -681,6 +686,15 @@ class BaseModelView(BaseView, ActionsMixin):
         Maximum number of rows allowed for export.
 
         Unlimited by default. Uses `page_size` if set to `None`.
+    """
+
+    export_type = 'csv'
+    """
+        Export type, `csv` as default and can be changed to any tablib
+        supported type.
+
+        Check tablib for https://github.com/kennethreitz/tablib/bloab/master/README.rst
+        for supported types.
     """
 
     # Various settings
@@ -1696,12 +1710,13 @@ class BaseModelView(BaseView, ActionsMixin):
             self.column_type_formatters_export,
         )
 
-    def get_export_name(self):
+    def get_export_name(self, export_type='csv'):
         """
         :return: The exported csv file name.
         """
-        filename = '%s_%s.csv' % (self.name,
-                                  time.strftime("%Y-%m-%d_%H-%M-%S"))
+        filename = '%s_%s.%s' % (self.name,
+                                 time.strftime("%Y-%m-%d_%H-%M-%S"),
+                                 export_type)
         return filename
 
     # AJAX references
@@ -2001,17 +2016,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return self.handle_action()
 
-    @expose('/export/csv/')
-    def export_csv(self):
-        """
-            Export a CSV of records.
-        """
-        return_url = get_redirect_target() or self.get_url('.index_view')
-
-        if not self.can_export:
-            flash(gettext('Permission denied.'))
-            return redirect(return_url)
-
+    def _export_data(self):
         # Macros in column_formatters are not supported.
         # Macros will have a function name 'inner'
         # This causes non-macro functions named 'inner' not work.
@@ -2040,6 +2045,28 @@ class BaseModelView(BaseView, ActionsMixin):
                                     view_args.search, view_args.filters,
                                     page_size=self.export_max_rows)
 
+        return count, data
+
+    @expose('/export/<export_type>/')
+    def export(self, export_type):
+        if export_type == 'csv':
+            return self.export_csv()
+        else:
+            return self._export_tablib(export_type)
+
+    @expose('/export/csv/')
+    def export_csv(self):
+        """
+            Export a CSV of records.
+        """
+        return_url = get_redirect_target() or self.get_url('.index_view')
+
+        if not self.can_export:
+            flash(gettext('Permission denied.'))
+            return redirect(return_url)
+
+        count, data = self._export_data()
+
         # https://docs.djangoproject.com/en/1.8/howto/outputting-csv/
         class Echo(object):
             """
@@ -2065,7 +2092,7 @@ class BaseModelView(BaseView, ActionsMixin):
                         for c in self._export_columns]
                 yield writer.writerow(vals)
 
-        filename = self.get_export_name()
+        filename = self.get_export_name(export_type='csv')
 
         disposition = 'attachment;filename=%s' % (secure_filename(filename),)
 
@@ -2073,6 +2100,51 @@ class BaseModelView(BaseView, ActionsMixin):
             stream_with_context(generate()),
             headers={'Content-Disposition': disposition},
             mimetype='text/csv'
+        )
+
+    def _export_tablib(self, export_type):
+        return_url = get_redirect_target() or self.get_url('.index_view')
+
+        if tablib is None:
+            flash(gettext('Tablib dependency not installed.'))
+            return redirect(return_url)
+
+        if not self.can_export:
+            flash(gettext('Permission denied.'))
+            return redirect(return_url)
+
+        filename = self.get_export_name(export_type)
+
+        disposition = 'attachment;filename=%s' % (secure_filename(filename),)
+
+        mimetype, encoding = mimetypes.guess_type(filename)
+        if not mimetype:
+            mimetype = 'application/octet-stream'
+        if encoding:
+            mimetype = '%s; charset=%s' % (mimetype, encoding)
+
+        ds = tablib.Dataset(headers=[c[1] for c in self._export_columns])
+
+        count, data = self._export_data()
+
+        for row in data:
+            vals = [self.get_export_value(row, c[0]) for c in self._export_columns]
+            ds.append(vals)
+
+        try:
+            try:
+                response_data = ds.export(format=export_type)
+            except AttributeError:
+                response_data = getattr(ds, export_type)
+        except (AttributeError, tablib.UnsupportedFormat):
+            flash(gettext('Export type "%(type)s not supported.',
+                          type=export_type))
+            return redirect(return_url)
+
+        return Response(
+            response_data,
+            headers={'Content-Disposition': disposition},
+            mimetype=mimetype,
         )
 
     @expose('/ajax/lookup/')
