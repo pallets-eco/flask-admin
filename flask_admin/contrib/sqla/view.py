@@ -473,11 +473,9 @@ class ModelView(BaseModelView):
                     column_name = c[0]
                 else:
                     column, path = tools.get_field_with_path(self.model, c)
-                    column_name = c
+                    column_name = text_type(c)
 
                 if path and hasattr(path[0], 'property'):
-                    # column is in another table, use full path as column_name
-                    column_name = text_type(c)
                     self._sortable_joins[column_name] = path
                 elif path:
                     raise Exception("For sorting columns in a related table, "
@@ -490,6 +488,7 @@ class ModelView(BaseModelView):
 
                 # column_name must match column_name used in `get_list_columns`
                 result[column_name] = column
+
             return result
 
     def get_list_columns(self):
