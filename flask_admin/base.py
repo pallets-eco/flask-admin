@@ -557,6 +557,25 @@ class Admin(object):
         for view in args:
             self.add_view(view)
 
+    def add_sub_category(self, name, parent_name):
+
+        """
+            Add a category of a given name underneath
+            the category with parent_name.
+
+            :param name:
+                The name of the new menu category.
+            :param parent_name:
+                The name of a parent_name category
+        """
+
+        category = self.get_category_menu_item(name)
+        parent = self.get_category_menu_item(parent_name)
+        if category is None and parent is not None:
+            category = SubMenuCategory(name)
+            self._menu_categories[name] = category
+            parent.add_child(category)
+
     def add_link(self, link):
         """
             Add link to menu links collection.
