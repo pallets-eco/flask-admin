@@ -150,7 +150,7 @@ class ModelView(BaseModelView):
         Subdocument configuration options.
 
         This field accepts dictionary, where key is field name and value is either dictionary or instance of the
-        `flask_admin.contrib.EmbeddedForm`.
+        `flask_admin.contrib.mongoengine.EmbeddedForm`.
 
         Consider following example::
 
