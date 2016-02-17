@@ -122,7 +122,7 @@ class FilterNotInList(FilterInList):
 
 # Composite filters
 class FilterAndEqual(FilterEqual):
-    def __init__(self, child_filters, name, delimiter=',', options=None, data_type=None):
+    def __init__(self, child_filters, name, delimiter=',', options=None, data_type='select2-tags'):
         column = [filter_.column for filter_ in child_filters]
         super(FilterAndEqual, self).__init__(column, name, options, data_type)
         self.filters = child_filters
@@ -142,10 +142,13 @@ class FilterAndEqual(FilterEqual):
     def clean(self, value):
         result = value.split(self.delimiter)
         if len(result) != len(self.filters):
-            names = [filter_.name for filter_ in self.filters]
-            value_format = self.delimiter.join(names)
-            raise ValueError('Value format should be: {value_format}.'.format(value_format=value_format))
+            raise ValueError(self.usage(value))
         return result
+
+    def usage(self, value=''):
+        names = [filter_.name for filter_ in self.filters]
+        value_format = self.delimiter.join(names)
+        return lazy_gettext('Value format is: %(value_format)s.', value_format=value_format)
 
     def get_column(self, aliases):
         aliases = self.convert_aliases(aliases)

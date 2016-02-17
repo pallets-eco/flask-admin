@@ -84,6 +84,13 @@ class BaseFilter(object):
         """
         raise NotImplementedError()
 
+    def usage(self, value=''):
+        """
+        :param value: The received value (optional).
+        :return: A text describing the value format.
+        """
+        return lazy_gettext('Invalid Filter Value: %(value)s', value=value)
+
     def __unicode__(self):
         return self.name
 
