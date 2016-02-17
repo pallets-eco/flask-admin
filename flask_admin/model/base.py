@@ -688,10 +688,10 @@ class BaseModelView(BaseView, ActionsMixin):
         Unlimited by default. Uses `page_size` if set to `None`.
     """
 
-    export_type = 'csv'
+    export_types = ['csv']
     """
-        Export type, `csv` as default and can be changed to any tablib
-        supported type.
+        A list of available export filetypes. `csv` only is default, but any
+        filetypes supported by tablib can be used.
 
         Check tablib for https://github.com/kennethreitz/tablib/bloab/master/README.rst
         for supported types.
@@ -2049,22 +2049,21 @@ class BaseModelView(BaseView, ActionsMixin):
 
     @expose('/export/<export_type>/')
     def export(self, export_type):
-        if export_type == 'csv':
-            return self.export_csv()
-        else:
-            return self._export_tablib(export_type)
-
-    @expose('/export/csv/')
-    def export_csv(self):
-        """
-            Export a CSV of records.
-        """
         return_url = get_redirect_target() or self.get_url('.index_view')
 
-        if not self.can_export:
+        if not self.can_export or (export_type not in self.export_types):
             flash(gettext('Permission denied.'))
             return redirect(return_url)
 
+        if export_type == 'csv':
+            return self._export_csv(return_url)
+        else:
+            return self._export_tablib(export_type, return_url)
+
+    def _export_csv(self, return_url):
+        """
+            Export a CSV of records as a stream.
+        """
         count, data = self._export_data()
 
         # https://docs.djangoproject.com/en/1.8/howto/outputting-csv/
@@ -2102,15 +2101,12 @@ class BaseModelView(BaseView, ActionsMixin):
             mimetype='text/csv'
         )
 
-    def _export_tablib(self, export_type):
-        return_url = get_redirect_target() or self.get_url('.index_view')
-
+    def _export_tablib(self, export_type, return_url):
+        """
+            Exports a variety of formats using the tablib library.
+        """
         if tablib is None:
             flash(gettext('Tablib dependency not installed.'))
-            return redirect(return_url)
-
-        if not self.can_export:
-            flash(gettext('Permission denied.'))
             return redirect(return_url)
 
         filename = self.get_export_name(export_type)
