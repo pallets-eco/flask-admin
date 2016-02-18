@@ -11,6 +11,27 @@
     </ul>
 {% endmacro %}
 
+{% macro export_options(btn_class='dropdown-toggle') %}
+    {% if admin_view.export_types|length > 1 %}
+    <li class="dropdown">
+        <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
+            {{ _gettext('Export') }}<b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu field-filters">
+            {% for export_type in admin_view.export_types %}
+            <li>
+                <a href="{{ get_url('.export', export_type=export_type, **request.args) }}" title="{{ _gettext('Export') }}">{{ _gettext('Export') + ' ' + export_type|upper }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% else %}
+    <li>
+        <a href="{{ get_url('.export', export_type=admin_view.export_types[0], **request.args) }}" title="{{ _gettext('Export') }}">{{ _gettext('Export') }}</a>
+    </li>
+    {% endif %}
+{% endmacro %}
+
 {% macro filter_form() %}
     <form id="filter_form" method="GET" action="{{ return_url }}">
         <div class="pull-right">
