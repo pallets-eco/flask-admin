@@ -439,7 +439,7 @@ class AdminIndexView(BaseView):
         super(AdminIndexView, self).__init__(name or babel.lazy_gettext('Home'),
                                              category,
                                              endpoint or 'admin',
-                                             url or '/admin',
+                                             '/admin' if url is None else url,
                                              'static',
                                              menu_class_name=menu_class_name,
                                              menu_icon_type=menu_icon_type,
