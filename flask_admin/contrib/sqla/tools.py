@@ -1,7 +1,9 @@
 from sqlalchemy import tuple_, or_, and_
+from sqlalchemy.sql import ColumnElement
 from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.sql.selectable import Select, Join
 
 from flask_admin._compat import filter_list, string_types
 from flask_admin.tools import iterencode, iterdecode, escape
@@ -111,7 +113,10 @@ def get_query_for_ids(modelquery, model, ids):
 
 
 def get_columns_for_field(field):
-    if (not field or
+    if isinstance(field, (InstrumentedAttribute, ColumnElement, Select, Join)):
+        return [field]
+
+    if (field is not None or
         not hasattr(field, 'property') or
         not hasattr(field.property, 'columns') or
         not field.property.columns):
