@@ -36,7 +36,7 @@
             {% else %}
             <li{% if class_name %} class="{{class_name}}"{% endif %}>
             {%- endif %}
-              <a href="{{ child.get_url() }}">{{ menu_icon(child) }}{{ child.name }}</a>
+              <a href="{{ child.get_url() }}"{% if child.target %} target="{{ child.target }}"{% endif %}>{{ menu_icon(child) }}{{ child.name }}</a>
             </li>
           {%- endfor %}
           </ul>
@@ -50,7 +50,7 @@
         {%- else %}
         <li{% if class_name %} class="{{class_name}}"{% endif %}>
         {%- endif %}
-          <a href="{{ item.get_url() }}">{{ menu_icon(item) }}{{ item.name }}</a>
+          <a href="{{ item.get_url() }}"{% if child.target %} target="{{ child.target }}"{% endif %}>{{ menu_icon(item) }}{{ item.name }}</a>
         </li>
       {%- endif -%}
     {% endif -%}
