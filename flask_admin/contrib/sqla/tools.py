@@ -1,7 +1,9 @@
 from sqlalchemy import tuple_, or_, and_
+from sqlalchemy.sql import ColumnElement
 from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.sql.selectable import Select, Join
 
 from flask_admin._compat import filter_list, string_types
 from flask_admin.tools import iterencode, iterdecode, escape
@@ -111,13 +113,17 @@ def get_query_for_ids(modelquery, model, ids):
 
 
 def get_columns_for_field(field):
-    if (not field or
-        not hasattr(field, 'property') or
-        not hasattr(field.property, 'columns') or
-        not field.property.columns):
-            raise Exception('Invalid field %s: does not contains any columns.' % field)
+    if isinstance(field, (ColumnElement, Select, Join)):
+        # For hybrid properties
+        return [field]
 
-    return field.property.columns
+    if hasattr(field, 'property'):
+        if hasattr(field.property, 'columns') and field.property.columns:
+            return field.property.columns
+        # For relationships
+        return [field]
+
+    raise Exception('Invalid field %s: does not contains any columns.' % field)
 
 
 def need_join(model, table):

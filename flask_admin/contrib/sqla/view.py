@@ -1,6 +1,7 @@
 import logging
 import warnings
 import inspect
+import collections
 
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import joinedload, aliased
@@ -469,25 +470,26 @@ class ModelView(BaseModelView):
 
             for c in self.column_sortable_list:
                 if isinstance(c, tuple):
-                    column, path = tools.get_field_with_path(self.model, c[1])
+                    attr, path = tools.get_field_with_path(self.model, c[1])
                     column_name = c[0]
                 else:
-                    column, path = tools.get_field_with_path(self.model, c)
+                    attr, path = tools.get_field_with_path(self.model, c)
                     column_name = text_type(c)
+                current_columns = tools.get_columns_for_field(attr)
+                for current_column in current_columns:
+                    if path and hasattr(path[0], 'property'):
+                        self._sortable_joins[column_name] = path
+                    elif path:
+                        raise Exception("For sorting columns in a related table, "
+                                        "column_sortable_list requires a string "
+                                        "like '<relation name>.<column name>'. "
+                                        "Failed on: {0}".format(c))
+                    else:
+                        # column is in same table, use only model attribute name
+                        column_name = current_column.key if hasattr(current_column, 'key') and current_column.key is not None else text_type(c)
 
-                if path and hasattr(path[0], 'property'):
-                    self._sortable_joins[column_name] = path
-                elif path:
-                    raise Exception("For sorting columns in a related table, "
-                                    "column_sortable_list requires a string "
-                                    "like '<relation name>.<column name>'. "
-                                    "Failed on: {0}".format(c))
-                else:
-                    # column is in same table, use only model attribute name
-                    column_name = column.key
-
-                # column_name must match column_name used in `get_list_columns`
-                result[column_name] = column
+                    # column_name must match column_name used in `get_list_columns`
+                    result[column_name] = current_column
 
             return result
 
@@ -510,19 +512,20 @@ class ModelView(BaseModelView):
             columns = []
 
             for c in self.column_list:
-                column, path = tools.get_field_with_path(self.model, c)
+                attr, path = tools.get_field_with_path(self.model, c)
+                current_field_columns = tools.get_columns_for_field(attr)
+                for current_column in current_field_columns:
+                    if path:
+                        # column is in another table, use full path
+                        column_name = text_type(c)
+                    else:
+                        # column is in same table, use only model attribute name
+                        column_name = current_column.key if hasattr(current_column, 'key') and current_column.key is not None else text_type(c)
 
-                if path:
-                    # column is in another table, use full path
-                    column_name = text_type(c)
-                else:
-                    # column is in same table, use only model attribute name
-                    column_name = column.key
+                    visible_name = self.get_column_name(column_name)
 
-                visible_name = self.get_column_name(column_name)
-
-                # column_name must match column_name in `get_sortable_columns`
-                columns.append((column_name, visible_name))
+                    # column_name must match column_name in `get_sortable_columns`
+                    columns.append((column_name, visible_name))
 
             return columns
 
@@ -558,11 +561,8 @@ class ModelView(BaseModelView):
         if attr is None:
             raise Exception('Failed to find field for filter: %s' % name)
 
-        # Figure out filters for related column, unless it's a hybrid_property
-        if isinstance(attr, ColumnElement):
-            warnings.warn(('Unable to scaffold the filter for %s, scaffolding '
-                           'for hybrid_property is not supported yet.') % name)
-        elif hasattr(attr, 'property') and hasattr(attr.property, 'direction'):
+        # Figure out filters for related column
+        if hasattr(attr, 'property') and hasattr(attr.property, 'direction'):
             filters = []
 
             for p in self._get_model_iterator(attr.property.mapper.class_):
@@ -599,9 +599,12 @@ class ModelView(BaseModelView):
                 raise Exception('Can not filter more than on one column for %s' % name)
 
             column = columns[0]
+            # Join currently not supported for hybrid properties
+            is_hybrid_property = isinstance(attr, ColumnElement)
 
-            if (tools.need_join(self.model, column.table) and
-                    name not in self.column_labels):
+            if (not is_hybrid_property and
+                tools.need_join(self.model, column.table) and
+                name not in self.column_labels):
                 visible_name = '%s / %s' % (
                     self.get_column_name(column.table.name),
                     self.get_column_name(column.name)
@@ -623,7 +626,8 @@ class ModelView(BaseModelView):
 
             if joins:
                 self._filter_joins[column] = joins
-            elif tools.need_join(self.model, column.table):
+            elif (not is_hybrid_property and
+                tools.need_join(self.model, column.table)):
                 self._filter_joins[column] = [column.table]
 
             return flt
@@ -852,27 +856,37 @@ class ModelView(BaseModelView):
         for idx, flt_name, value in filters:
             flt = self._filters[idx]
 
-            alias = None
-            count_alias = None
+            aliases = None
+            count_aliases = None
 
             # Figure out joins
             if isinstance(flt, sqla_filters.BaseSQLAFilter):
-                path = self._filter_joins.get(flt.column, [])
+                aliases = []
+                count_aliases = []
+                is_multiple_columns = isinstance(flt.column, collections.Sequence) and not isinstance(flt.column, text_type)
+                columns = flt.column if is_multiple_columns else [flt.column]
+                for column in columns:
+                    path = self._filter_joins.get(column, [])
 
-                query, joins, alias = self._apply_path_joins(query, joins, path, inner_join=False)
+                    query, joins, alias = self._apply_path_joins(query, joins, path, inner_join=False)
+                    aliases.append(alias)
 
-                if count_query is not None:
-                    count_query, count_joins, count_alias = self._apply_path_joins(
-                        count_query,
-                        count_joins,
-                        path,
-                        inner_join=False)
+                    if count_query is not None:
+                        count_query, count_joins, count_alias = self._apply_path_joins(
+                            count_query,
+                            count_joins,
+                            path,
+                            inner_join=False)
+                        count_aliases.append(count_alias)
+                if not is_multiple_columns:
+                    aliases = aliases[0] if len(aliases) > 0 else None
+                    count_aliases = count_aliases[0] if len(count_aliases) > 0 else None
 
             # Clean value .clean() and apply the filter
             clean_value = flt.clean(value)
 
             try:
-                query = flt.apply(query, clean_value, alias)
+                query = flt.apply(query, clean_value, aliases)
             except TypeError:
                 spec = inspect.getargspec(flt.apply)
 
@@ -885,7 +899,7 @@ class ModelView(BaseModelView):
 
             if count_query is not None:
                 try:
-                    count_query = flt.apply(count_query, clean_value, count_alias)
+                    count_query = flt.apply(count_query, clean_value, count_aliases)
                 except TypeError:
                     count_query = flt.apply(count_query, clean_value)
 

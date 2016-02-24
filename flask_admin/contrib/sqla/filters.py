@@ -1,3 +1,5 @@
+import collections
+from flask_admin._compat import text_type
 from flask_admin.babel import lazy_gettext
 from flask_admin.model import filters
 from flask_admin.contrib.sqla import tools
@@ -116,6 +118,53 @@ class FilterNotInList(FilterInList):
 
     def operation(self):
         return lazy_gettext('not in list')
+
+
+# Composite filters
+class FilterAndEqual(FilterEqual):
+    def __init__(self, child_filters, name, delimiter=',', options=None, data_type='select2-tags'):
+        column = [filter_.column for filter_ in child_filters]
+        super(FilterAndEqual, self).__init__(column, name, options, data_type)
+        self.filters = child_filters
+        self.delimiter = delimiter
+
+    def convert_aliases(self, aliases):
+        is_aliases_sequence = isinstance(aliases, collections.Sequence) and not isinstance(aliases, text_type)
+        aliases = [aliases] * len(self.filters) if not is_aliases_sequence else aliases
+        return aliases
+
+    def apply(self, query, values, aliases=None):
+        aliases = self.convert_aliases(aliases)
+        for filter_, value, alias in zip(self.filters, values, aliases):
+            query = filter_.apply(query, value, alias)
+        return query
+
+    def split_value(self, value):
+        results = value.split(self.delimiter)
+        if len(results) != len(self.filters):
+            raise ValueError(self.usage(value))
+        return results
+
+    def clean(self, value):
+        child_values = self.split_value(value)
+        cleaned_results = [filter_.clean(child_value) for filter_, child_value in zip(self.filters, child_values)]
+        return cleaned_results
+
+    def validate(self, value):
+        child_values = self.split_value(value)
+        valid = True
+        for filter_, child_value in zip(self.filters, child_values):
+            valid &= filter_.validate(child_value)
+        return valid
+
+    def usage(self, value=''):
+        names = [filter_.name for filter_ in self.filters]
+        value_format = self.delimiter.join(names)
+        return lazy_gettext('Value format is: %(value_format)s.', value_format=value_format)
+
+    def get_column(self, aliases):
+        aliases = self.convert_aliases(aliases)
+        return [filter_.get_column(alias) for filter_, alias in zip(self.filters, aliases)]
 
 
 # Customized type filters

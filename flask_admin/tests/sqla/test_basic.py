@@ -1309,6 +1309,18 @@ def test_column_filters():
     ok_('test1_val_1' in data)
     ok_('test1_val_2' not in data)
 
+    # Test filter with multiple columns
+    child_filter1 = filters.FilterEqual(Model1.test2, "Child1")
+    child_filter2 = filters.FilterEqual(Model1.bool_field, "Child2")
+    composite_filter = filters.FilterAndEqual([child_filter1, child_filter2], 'TestAnd')
+    view = CustomModelView(Model1, db.session, column_filters=[composite_filter], endpoint='_composite_test')
+    admin.add_view(view)
+    rv = client.get('/admin/_composite_test/?flt1_0=test2_val_1,1')
+    data = rv.data.decode('utf-8')
+    ok_('test1_val_1' in data)
+    for i in range(2, 5):
+        ok_('test1_val_{i}'.format(i=i) not in data)
+
 
 def test_hybrid_property():
     app, db, admin = setup()
