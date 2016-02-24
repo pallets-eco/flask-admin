@@ -159,7 +159,7 @@ def test_baseview_registration():
     # Verify generated blueprint properties
     eq_(bp.name, view.endpoint)
     eq_(bp.url_prefix, view.url)
-    eq_(bp.template_folder, os.path.join('templates','bootstrap2'))
+    eq_(bp.template_folder, os.path.join('templates', 'bootstrap2'))
     eq_(bp.static_folder, view.static_folder)
 
     # Verify customizations
