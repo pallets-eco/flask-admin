@@ -5,11 +5,12 @@ class BaseMenu(object):
     """
         Base menu item
     """
-    def __init__(self, name, class_name=None, icon_type=None, icon_value=None):
+    def __init__(self, name, class_name=None, icon_type=None, icon_value=None, target=None):
         self.name = name
         self.class_name = class_name
         self.icon_type = icon_type
         self.icon_value = icon_value
+        self.target = target
 
         self.parent = None
         self._children = []
@@ -124,8 +125,9 @@ class MenuLink(BaseMenu):
     """
         Link item
     """
-    def __init__(self, name, url=None, endpoint=None, category=None, class_name=None, icon_type=None, icon_value=None):
-        super(MenuLink, self).__init__(name, class_name, icon_type, icon_value)
+    def __init__(self, name, url=None, endpoint=None, category=None, class_name=None,
+                 icon_type=None, icon_value=None, target=None):
+        super(MenuLink, self).__init__(name, class_name, icon_type, icon_value, target)
 
         self.category = category
 
