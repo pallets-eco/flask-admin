@@ -139,12 +139,23 @@ class FilterAndEqual(FilterEqual):
             query = filter_.apply(query, value, alias)
         return query
 
-    def clean(self, value):
+    def split_value(self, value):
         results = value.split(self.delimiter)
         if len(results) != len(self.filters):
             raise ValueError(self.usage(value))
-        cleaned_results = [filter_.clean(result) for filter_, result in zip(self.filters, results)]
+        return results
+
+    def clean(self, value):
+        child_values = self.split_value(value)
+        cleaned_results = [filter_.clean(child_value) for filter_, child_value in zip(self.filters, child_values)]
         return cleaned_results
+
+    def validate(self, value):
+        child_values = self.split_value(value)
+        valid = True
+        for filter_, child_value in zip(self.filters, child_values):
+            valid &= filter_.validate(child_value)
+        return valid
 
     def usage(self, value=''):
         names = [filter_.name for filter_ in self.filters]
