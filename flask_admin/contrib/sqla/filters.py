@@ -140,10 +140,11 @@ class FilterAndEqual(FilterEqual):
         return query
 
     def clean(self, value):
-        result = value.split(self.delimiter)
-        if len(result) != len(self.filters):
+        results = value.split(self.delimiter)
+        if len(results) != len(self.filters):
             raise ValueError(self.usage(value))
-        return result
+        cleaned_results = [filter_.clean(result) for filter_, result in zip(self.filters, results)]
+        return cleaned_results
 
     def usage(self, value=''):
         names = [filter_.name for filter_ in self.filters]
