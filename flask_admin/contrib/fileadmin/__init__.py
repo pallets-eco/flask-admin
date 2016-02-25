@@ -697,8 +697,8 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             breadcrumbs.append((n, self._separator.join(accumulator)))
         return breadcrumbs
 
-    @expose('/')
-    @expose('/b/<path:path>')
+    @expose('/old_index')
+    @expose('/old_b/<path:path>')
     def index(self, path=None):
         warnings.warn('deprecated: use index_view instead.', DeprecationWarning)
         return redirect(self.get_url('.index_view', path=path))
