@@ -601,7 +601,7 @@ class ModelView(BaseModelView):
 
                 column = columns[0]
 
-            # Join not needed for hybrid attributes
+            # Join not needed for hybrid properties
             if (not is_hybrid_property and tools.need_join(self.model, column.table) and
                     name not in self.column_labels):
                 visible_name = '%s / %s' % (
