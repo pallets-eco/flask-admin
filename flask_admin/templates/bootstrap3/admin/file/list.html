@@ -6,16 +6,16 @@
     {% block breadcrums %}
     <ul class="breadcrumb">
         <li>
-            <a href="{{ get_dir_url('.index', path=None) }}">{{ _gettext('Root') }}</a>
+            <a href="{{ get_dir_url('.index_view', path=None) }}">{{ _gettext('Root') }}</a>
         </li>
         {% for name, path in breadcrumbs[:-1] %}
         <li>
-            <a href="{{ get_dir_url('.index', path=path) }}">{{ name }}</a>
+            <a href="{{ get_dir_url('.index_view', path=path) }}">{{ name }}</a>
         </li>
         {% endfor %}
         {% if breadcrumbs %}
         <li>
-            <a href="{{ get_dir_url('.index', path=breadcrumbs[-1][1]) }}">{{ breadcrumbs[-1][0] }}</a>
+            <a href="{{ get_dir_url('.index_view', path=breadcrumbs[-1][1]) }}">{{ breadcrumbs[-1][0] }}</a>
         </li>
         {% endif %}
     </ul>
@@ -85,7 +85,7 @@
             </td>
             {% if is_dir %}
             <td colspan="2">
-                <a href="{{ get_dir_url('.index', path)|safe }}">
+                <a href="{{ get_dir_url('.index_view', path)|safe }}">
                     <i class="fa fa-folder-o glyphicon glyphicon-folder-close"></i> <span>{{ name }}</span>
                 </a>
             </td>
