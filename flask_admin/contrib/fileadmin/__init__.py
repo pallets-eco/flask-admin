@@ -1,3 +1,4 @@
+import warnings
 from datetime import datetime
 import os
 import os.path as op
@@ -695,6 +696,12 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             accumulator.append(n)
             breadcrumbs.append((n, self._separator.join(accumulator)))
         return breadcrumbs
+
+    @expose('/')
+    @expose('/b/<path:path>')
+    def index(self, path=None):
+        warnings.warn('deprecated: use index_view instead.', DeprecationWarning)
+        return redirect(self.get_url('.index_view', path=path))
 
     @expose('/')
     @expose('/b/<path:path>')
