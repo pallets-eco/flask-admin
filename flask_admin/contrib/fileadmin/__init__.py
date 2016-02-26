@@ -1,3 +1,4 @@
+import warnings
 from datetime import datetime
 import os
 import os.path as op
@@ -696,9 +697,15 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             breadcrumbs.append((n, self._separator.join(accumulator)))
         return breadcrumbs
 
+    @expose('/old_index')
+    @expose('/old_b/<path:path>')
+    def index(self, path=None):
+        warnings.warn('deprecated: use index_view instead.', DeprecationWarning)
+        return redirect(self.get_url('.index_view', path=path))
+
     @expose('/')
     @expose('/b/<path:path>')
-    def index(self, path=None):
+    def index_view(self, path=None):
         """
             Index view method
 
@@ -714,7 +721,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         base_path, directory, path = self._normalize_path(path)
         if not self.is_accessible_path(path):
             flash(gettext('Permission denied.'), 'error')
-            return redirect(self._get_dir_url('.index'))
+            return redirect(self._get_dir_url('.index_view'))
 
         # Get directory listing
         items = []
@@ -771,11 +778,11 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         if not self.can_upload:
             flash(gettext('File uploading is disabled.'), 'error')
-            return redirect(self._get_dir_url('.index', path))
+            return redirect(self._get_dir_url('.index_view', path))
 
         if not self.is_accessible_path(path):
             flash(gettext('Permission denied.'), 'error')
-            return redirect(self._get_dir_url('.index'))
+            return redirect(self._get_dir_url('.index_view'))
 
         form = self.upload_form()
         if self.validate_form(form):
@@ -783,7 +790,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                 self._save_form_files(directory, path, form)
                 flash(gettext('Successfully saved file: %(name)s',
                               name=form.upload.data.filename))
-                return redirect(self._get_dir_url('.index', path))
+                return redirect(self._get_dir_url('.index_view', path))
             except Exception as ex:
                 flash(gettext('Failed to save file: %(error)s', error=ex), 'error')
 
@@ -812,7 +819,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         # backward compatibility with base_url
         base_url = self.get_base_url()
         if base_url:
-            base_url = urljoin(self.get_url('.index'), base_url)
+            base_url = urljoin(self.get_url('.index_view'), base_url)
             return redirect(urljoin(base_url, path))
 
         return self.storage.send_file(directory)
@@ -829,7 +836,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         # Get path and verify if it is valid
         base_path, directory, path = self._normalize_path(path)
 
-        dir_url = self._get_dir_url('.index', path)
+        dir_url = self._get_dir_url('.index_view', path)
 
         if not self.can_mkdir:
             flash(gettext('Directory creation is disabled.'), 'error')
@@ -837,7 +844,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         if not self.is_accessible_path(path):
             flash(gettext('Permission denied.'), 'error')
-            return redirect(self._get_dir_url('.index'))
+            return redirect(self._get_dir_url('.index_view'))
 
         form = self.name_form()
 
@@ -876,9 +883,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         path = form.path.data
         if path:
-            return_url = self._get_dir_url('.index', op.dirname(path))
+            return_url = self._get_dir_url('.index_view', op.dirname(path))
         else:
-            return_url = self.get_url('.index')
+            return_url = self.get_url('.index_view')
 
         if self.validate_form(form):
             # Get path and verify if it is valid
@@ -890,7 +897,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
             if not self.is_accessible_path(path):
                 flash(gettext('Permission denied.'), 'error')
-                return redirect(self._get_dir_url('.index'))
+                return redirect(self._get_dir_url('.index_view'))
 
             if self.storage.is_dir(full_path):
                 if not self.can_delete_dirs:
@@ -927,9 +934,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         if path:
             base_path, full_path, path = self._normalize_path(path)
 
-            return_url = self._get_dir_url('.index', op.dirname(path))
+            return_url = self._get_dir_url('.index_view', op.dirname(path))
         else:
-            return redirect(self.get_url('.index'))
+            return redirect(self.get_url('.index_view'))
 
         if not self.can_rename:
             flash(gettext('Renaming is disabled.'), 'error')
@@ -937,7 +944,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         if not self.is_accessible_path(path):
             flash(gettext('Permission denied.'), 'error')
-            return redirect(self._get_dir_url('.index'))
+            return redirect(self._get_dir_url('.index_view'))
 
         if not self.storage.path_exists(full_path):
             flash(gettext('Path does not exist.'), 'error')
@@ -978,7 +985,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         path = request.args.getlist('path')
         if not path:
-            return redirect(self.get_url('.index'))
+            return redirect(self.get_url('.index_view'))
 
         if len(path) > 1:
             next_url = self.get_url('.edit', path=path[1:])
@@ -989,9 +996,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         if not self.is_accessible_path(path) or not self.is_file_editable(path):
             flash(gettext('Permission denied.'), 'error')
-            return redirect(self._get_dir_url('.index'))
+            return redirect(self._get_dir_url('.index_view'))
 
-        dir_url = self._get_dir_url('.index', op.dirname(path))
+        dir_url = self._get_dir_url('.index_view', op.dirname(path))
         next_url = next_url or dir_url
 
         form = self.edit_form()
