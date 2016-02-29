@@ -14,8 +14,9 @@
 {% endif %}
 {%- endmacro %}
 
-{% macro menu() %}
-  {%- for item in admin_view.admin.menu() %}
+{% macro menu(menu_root=None) %}
+  {% if menu_root is none %}{% set menu_root = admin_view.admin.menu() %}{% endif %}
+  {%- for item in menu_root %}
     {%- if item.is_category() -%}
       {% set children = item.get_children() %}
       {%- if children %}
@@ -57,8 +58,9 @@
   {% endfor %}
 {% endmacro %}
 
-{% macro menu_links() %}
-  {% for item in admin_view.admin.menu_links() %}
+{% macro menu_links(links=None) %}
+  {% if links is none %}{% set links = admin_view.admin.menu_links() %}{% endif %}
+  {% for item in links %}
     {% if item.is_accessible() and item.is_visible() %}
       <li>
         <a href="{{ item.get_url() }}">{{ menu_icon(item) }}{{ item.name }}</a>
