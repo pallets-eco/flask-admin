@@ -356,7 +356,7 @@ class ImageUploadField(FileUploadField):
                         return secure_filename('%s-thumb.jpg' % name)
 
                     class MyForm(BaseForm):
-                        upload = ImageUploadField('File', thumbgen=prefix_name)
+                        upload = ImageUploadField('File', thumbgen=thumb_name)
 
             :param thumbnail_size:
                 Tuple or (width, height, force) values. If not provided, thumbnail won't be created.
