@@ -144,16 +144,26 @@ class QuerySelectMultipleField(QuerySelectField):
         super(QuerySelectMultipleField, self).__init__(label, validators, default=default, **kwargs)
         self._invalid_formdata = False
 
+    def _get_object_list(self):
+        if self._object_list is None:
+            query = self.query or self.query_factory()
+            get_pk = self.get_pk
+            object_list = []
+            for obj in query:
+                pk = text_type(get_pk(obj))
+                if pk in self._formdata:
+                    object_list.append((pk, obj))
+            self._object_list = object_list
+        return self._object_list
+
     def _get_data(self):
         formdata = self._formdata
         if formdata is not None:
             data = []
-            for pk, obj in self._get_object_list():
-                if not formdata:
-                    break
-                elif pk in formdata:
-                    formdata.remove(pk)
-                    data.append(obj)
+            object_list = self._get_object_list()
+            pks = [x[0] for x in object_list]
+            for pk in formdata:
+                data.append(object_list[pks.index(pk)][1])
             if formdata:
                 self._invalid_formdata = True
             self._set_data(data)
