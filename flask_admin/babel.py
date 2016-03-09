@@ -15,10 +15,10 @@ except ImportError:
     class Translations(object):
         ''' dummy Translations class for WTForms, no translation support '''
         def gettext(self, string):
-            return gettext(string)
+            return string
 
         def ngettext(self, singular, plural, n):
-            return ngettext(singular, plural, n)
+            return singular if num == 1 else plural
 else:
     from flask_admin import translations
 
