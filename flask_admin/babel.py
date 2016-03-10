@@ -18,7 +18,7 @@ except ImportError:
             return string
 
         def ngettext(self, singular, plural, n):
-            return singular if num == 1 else plural
+            return singular if n == 1 else plural
 else:
     from flask_admin import translations
 
