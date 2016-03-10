@@ -5,6 +5,7 @@ python:
   - "2.7"
   - "3.3"
   - "3.4"
+  - "3.5"
 
 env:
   - WTFORMS_VERSION=1
@@ -23,5 +24,7 @@ install:
   - pip install "wtforms<$WTFORMS_VERSION.99"
   - pip install -r requirements-dev.txt
 
+script: nosetests flask_admin/tests --with-coverage --cover-erase --cover-inclusive
 
-script: nosetests flask_admin/tests
+after_success:
+    - coveralls
