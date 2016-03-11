@@ -5,7 +5,6 @@ class BaseMenu(object):
     """
         Base menu item
     """
-
     def __init__(self, name, class_name=None, icon_type=None, icon_value=None, target=None):
         self.name = name
         self.class_name = class_name
@@ -57,7 +56,6 @@ class MenuCategory(BaseMenu):
     """
         Menu category item.
     """
-
     def get_url(self):
         return None
 
@@ -83,14 +81,14 @@ class MenuView(BaseMenu):
     """
         Admin view menu item
     """
-
-    def __init__(self, name, view=None):
+    def __init__(self, name, view=None, cache=True):
         super(MenuView, self).__init__(name,
                                        class_name=view.menu_class_name,
                                        icon_type=view.menu_icon_type,
                                        icon_value=view.menu_icon_value)
 
         self._view = view
+        self._cache = cache
         self._cached_url = None
 
         view.menu = self
@@ -102,8 +100,12 @@ class MenuView(BaseMenu):
         if self._cached_url:
             return self._cached_url
 
-        self._cached_url = self._view.get_url('%s.%s' % (self._view.endpoint, self._view._default_view))
-        return self._cached_url
+        url = self._view.get_url('%s.%s' % (self._view.endpoint, self._view._default_view))
+
+        if self._cache:
+            self._cached_url = url
+
+        return url
 
     def is_active(self, view):
         if view == self._view:
@@ -128,7 +130,6 @@ class MenuLink(BaseMenu):
     """
         Link item
     """
-
     def __init__(self, name, url=None, endpoint=None, category=None, class_name=None,
                  icon_type=None, icon_value=None, target=None):
         super(MenuLink, self).__init__(name, class_name, icon_type, icon_value, target)
