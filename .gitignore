@@ -26,3 +26,7 @@ examples/appengine/lib
 env
 *.egg
 .eggs
+
+.project
+.pydevproject
+.settings/
