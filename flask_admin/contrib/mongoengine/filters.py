@@ -1,9 +1,9 @@
-from flask_admin.babel import lazy_gettext
-from flask_admin.model import filters
+from mongoengine.queryset import Q
 
 from bson.objectid import ObjectId
-from bson.errors import InvalidId
-from mongoengine.queryset import Q
+
+from flask_admin.babel import lazy_gettext
+from flask_admin.model import filters
 
 from .tools import parse_like_term
 
@@ -249,7 +249,7 @@ class ReferenceObjectIdFilter(BaseMongoEngineFilter):
         try:
             self.clean(value)
             return True
-        except InvalidId:
+        except ValueError:
             return False
 
     def clean(self, value):

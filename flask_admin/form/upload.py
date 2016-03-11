@@ -1,21 +1,20 @@
 import os
-import os.path as op
 
 from werkzeug import secure_filename
 from werkzeug.datastructures import FileStorage
-
 from wtforms import ValidationError, fields
 from wtforms.widgets import HTMLString, html_params
+
+from flask_admin._compat import string_types, urljoin
+from flask_admin.babel import gettext
+from flask_admin.helpers import get_url
+import os.path as op
+
 
 try:
     from wtforms.fields.core import _unset_value as unset_value
 except ImportError:
     from wtforms.utils import unset_value
-
-from flask_admin.babel import gettext
-from flask_admin.helpers import get_url
-
-from flask_admin._compat import string_types, urljoin
 
 
 try:
@@ -356,7 +355,7 @@ class ImageUploadField(FileUploadField):
                         return secure_filename('%s-thumb.jpg' % name)
 
                     class MyForm(BaseForm):
-                        upload = ImageUploadField('File', thumbgen=thumb_name)
+                        upload = ImageUploadField('File', thumbgen=prefix_name)
 
             :param thumbnail_size:
                 Tuple or (width, height, force) values. If not provided, thumbnail won't be created.
