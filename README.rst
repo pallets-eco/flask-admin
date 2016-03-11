@@ -5,10 +5,10 @@ The project was recently moved into its own organization. Please update your
 references to *git@github.com:flask-admin/flask-admin.git*.
 
 .. image:: https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.png
-	:target: https://crowdin.com/project/flask-admin
+    :target: https://crowdin.com/project/flask-admin
 
 .. image:: https://travis-ci.org/flask-admin/flask-admin.png?branch=master
-	:target: https://travis-ci.org/flask-admin/flask-admin
+    :target: https://travis-ci.org/flask-admin/flask-admin
 
 Introduction
 ------------
@@ -26,6 +26,8 @@ Out-of-the-box, Flask-Admin plays nicely with various ORM's, including
 - `pymongo <http://api.mongodb.org/python/current/>`_ and
 
 - `Peewee <https://github.com/coleifer/peewee>`_.
+
+- `Django <https://www.djangoproject.com/>`_.
 
 It also boasts a simple file management interface and a `redis client <http://redis.io/>`_ console.
 
