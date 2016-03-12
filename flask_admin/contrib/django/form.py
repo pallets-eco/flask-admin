@@ -1,14 +1,9 @@
-from flask_admin.model.form import ModelConverterBase
-
 from wtforms import fields as f, validators
 
-try:
-    from collections import OrderedDict
-except ImportError:
-    # Use bson's SON implementation instead
-    from bson import SON as OrderedDict
-
 from flask_admin import form
+from flask_admin._compat import iteritems
+from flask_admin.model.form import FieldPlaceholder
+from flask_admin.model.form import ModelConverterBase
 
 
 def converts(*args):
@@ -19,19 +14,24 @@ def converts(*args):
 
 
 class CustomModelConverter(ModelConverterBase):
+
     def __init__(self, view):
         super(CustomModelConverter, self).__init__()
 
         self.view = view
 
     def convert(self, model, field, field_args):
+        from django.db.models.fields import NOT_PROVIDED
         kwargs = {
             'label': getattr(field, 'verbose_name', field.name).decode('utf-8'),
             'description': field.help_text or '',
             'validators': [],
             'filters': [],
-            'default': field.default,
+#             'default': field.default,
         }
+        if field.default != NOT_PROVIDED:
+            kwargs['default'] = field.default
+
         if field_args:
             kwargs.update(field_args)
 
@@ -64,8 +64,7 @@ class CustomModelConverter(ModelConverterBase):
         if field.max_length or field.min_length:
             kwargs['validators'].append(
                 validators.Length(max=field.max_length or - 1,
-                                  min= - 1))
-
+                                  min=- 1))
 
     @converts('CharField')
     def conv_String(self, model, field, kwargs):
@@ -80,13 +79,13 @@ class CustomModelConverter(ModelConverterBase):
     def conv_URL(self, model, field, kwargs):
         kwargs['validators'].append(validators.URL())
         self._string_common(model, field, kwargs)
-        return NoneStringField(**kwargs)
+        return f.StringField(**kwargs)
 
     @converts('EmailField')
     def conv_Email(self, model, field, kwargs):
         kwargs['validators'].append(validators.Email())
         self._string_common(model, field, kwargs)
-        return NoneStringField(**kwargs)
+        return f.StringField(**kwargs)
 
     @converts('IntegerField')
     def conv_Int(self, model, field, kwargs):
@@ -112,20 +111,6 @@ class CustomModelConverter(ModelConverterBase):
         kwargs['widget'] = form.DateTimePickerWidget()
         return f.DateTimeField(**kwargs)
 
-    @converts('DateField')
-    def conv_DateTime(self, model, field, kwargs):
-        kwargs['widget'] = form.DatePickerWidget()
-        return f.DateField(**kwargs)
-
-    @converts('BinaryField')
-    def conv_Binary(self, model, field, kwargs):
-        #TODO: may be set file field that will save file`s data to MongoDB
-        if field.max_bytes:
-            kwargs['validators'].append(validators.Length(max=field.max_bytes))
-        return BinaryField(**kwargs)
-
-
-
 
 def get_form(model, converter,
              base_class=form.BaseForm,
@@ -133,12 +118,6 @@ def get_form(model, converter,
              exclude=None,
              field_args=None,
              extra_fields=None):
-
-
-
-    if isinstance(model, str):
-        model = get_document(model)
-
 
     field_args = field_args or {}
 

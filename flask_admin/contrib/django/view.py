@@ -1,13 +1,12 @@
 # coding:utf-8
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.db.models.fields import TextField, CharField
+
+from filters import FilterConverter, parse_like_term, DjangoDbModelsFilter
+from flask_admin._compat import string_types
 from flask_admin.model import BaseModelView
 from form import get_form, CustomModelConverter
-from filters import FilterConverter, parse_like_term, DjangoDbModelsFilter
-
-from django.core.paginator import Paginator
-from django.db.models import Sum, Q
-from django.db.models.fields import AutoField, TextField, CharField
-from flask_admin._compat import iteritems, string_types
-
 
 
 class ModelView(BaseModelView):
@@ -24,7 +23,6 @@ class ModelView(BaseModelView):
                                         menu_class_name=menu_class_name,
                                         menu_icon_type=menu_icon_type,
                                         menu_icon_value=menu_icon_value)
-
 
     def get_pk_value(self, model):
         return model.id
@@ -83,8 +81,6 @@ class ModelView(BaseModelView):
         # Pagination
         if page_size is None:
             page_size = self.page_size
-
-
 
             # index start by 1
         page += 1
@@ -169,7 +165,6 @@ class ModelView(BaseModelView):
 
         return form_class
 
-
     def is_valid_filter(self, filter):
         """
             Validate if the provided filter is a valid django filter
@@ -223,7 +218,7 @@ class ModelView(BaseModelView):
                             m = v
                             field_type = type(m)
                             if field_type in (CharField, TextField):
-                                    self._search_fields.append(m)
+                                self._search_fields.append(m)
                             else:
                                 raise Exception('Can only search on text columns. ' +
                                                 'Failed to setup search for "%s"' % m)
@@ -247,7 +242,6 @@ class ModelView(BaseModelView):
 
         return query.filter(criteria)
 
-
     def create_model(self, form):
         """
             Create model helper
@@ -261,11 +255,7 @@ class ModelView(BaseModelView):
             self._on_model_change(form, model, True)
             model.save()
         except Exception as ex:
-            if not self.handle_view_exception(ex):
-                flash(gettext('Failed to create record. %(error)s',
-                              error=format_error(ex)),
-                      'error')
-                log.exception('Failed to create record.')
+            print('Failed to create record. %s' % ex)
 
             return False
         else:
@@ -287,11 +277,7 @@ class ModelView(BaseModelView):
             self._on_model_change(form, model, False)
             model.save()
         except Exception as ex:
-            if not self.handle_view_exception(ex):
-                flash(gettext('Failed to update record. %(error)s',
-                              error=format_error(ex)),
-                      'error')
-                log.exception('Failed to update record.')
+            print('Failed to update record.%s' % ex)
 
             return False
         else:
@@ -310,11 +296,7 @@ class ModelView(BaseModelView):
             self.on_model_delete(model)
             model.delete()
         except Exception as ex:
-            if not self.handle_view_exception(ex):
-                flash(gettext('Failed to delete record. %(error)s',
-                              error=format_error(ex)),
-                      'error')
-                log.exception('Failed to delete record.')
+            print 'Failed to delete record.', ex
 
             return False
         else:
@@ -322,14 +304,14 @@ class ModelView(BaseModelView):
 
         return True
 
-    def scaffold_sortable_columns(self):
-        columns = dict()
-
-        for n, f in self._get_model_fields():
-            if self.column_display_pk or type(f) != AutoField:
-                columns[n] = f
-
-        return columns
+#     def scaffold_sortable_columns(self):
+#         columns = dict()
+#
+#         for n, f in self._get_model_fields():
+#             if self.column_display_pk or type(f) != AutoField:
+#                 columns[n] = f
+#
+#         return columns
 
     def _get_model_fields(self, model=None):
         if model is None:
