@@ -1,16 +1,41 @@
 from flask_admin.babel import lazy_gettext
 from flask_admin.model import filters
 
-from bson.objectid import ObjectId
-from bson.errors import InvalidId
-from mongoengine.queryset import Q
-
-from .tools import parse_like_term
+from django.db.models import Q
 
 
-class BaseMongoEngineFilter(filters.BaseFilter):
+def parse_like_term(term):
     """
-        Base MongoEngine filter.
+        Parse search term into (operation, term) tuple. Recognizes operators
+        in the beginning of the search term.
+        * = case insensitive (can precede other operators)
+        ^ = starts with
+        = = exact
+
+        :param term:
+            Search term
+    """
+    case_insensitive = term.startswith('*')
+    if case_insensitive:
+        term = term[1:]
+    # apply operators
+    if term.startswith('^'):
+        oper = 'startswith'
+        term = term[1:]
+    elif term.startswith('='):
+        oper = 'exact'
+        term = term[1:]
+    else:
+        oper = 'contains'
+    # add case insensitive flag
+    if case_insensitive:
+        oper = 'i' + oper
+    return oper, term
+
+
+class DjangoDbModelsFilter(filters.BaseFilter):
+    """
+        Base Django filter.
     """
 
     def __init__(self, column, name, options=None, data_type=None):
@@ -26,13 +51,13 @@ class BaseMongoEngineFilter(filters.BaseFilter):
             :param data_type:
                 Client data type
         """
-        super(BaseMongoEngineFilter, self).__init__(name, options, data_type)
+        super(DjangoDbModelsFilter, self).__init__(name, options, data_type)
 
         self.column = column
 
 
 # Common filters
-class FilterEqual(BaseMongoEngineFilter):
+class FilterEqual(DjangoDbModelsFilter):
 
     def apply(self, query, value):
         flt = {'%s' % self.column.name: value}
@@ -42,7 +67,7 @@ class FilterEqual(BaseMongoEngineFilter):
         return lazy_gettext('equals')
 
 
-class FilterNotEqual(BaseMongoEngineFilter):
+class FilterNotEqual(DjangoDbModelsFilter):
 
     def apply(self, query, value):
         flt = {'%s__ne' % self.column.name: value}
@@ -52,7 +77,7 @@ class FilterNotEqual(BaseMongoEngineFilter):
         return lazy_gettext('not equal')
 
 
-class FilterLike(BaseMongoEngineFilter):
+class FilterLike(DjangoDbModelsFilter):
 
     def apply(self, query, value):
         term, data = parse_like_term(value)
@@ -63,7 +88,7 @@ class FilterLike(BaseMongoEngineFilter):
         return lazy_gettext('contains')
 
 
-class FilterNotLike(BaseMongoEngineFilter):
+class FilterNotLike(DjangoDbModelsFilter):
 
     def apply(self, query, value):
         term, data = parse_like_term(value)
@@ -74,7 +99,7 @@ class FilterNotLike(BaseMongoEngineFilter):
         return lazy_gettext('not contains')
 
 
-class FilterGreater(BaseMongoEngineFilter):
+class FilterGreater(DjangoDbModelsFilter):
 
     def apply(self, query, value):
         flt = {'%s__gt' % self.column.name: value}
@@ -84,7 +109,7 @@ class FilterGreater(BaseMongoEngineFilter):
         return lazy_gettext('greater than')
 
 
-class FilterSmaller(BaseMongoEngineFilter):
+class FilterSmaller(DjangoDbModelsFilter):
 
     def apply(self, query, value):
         flt = {'%s__lt' % self.column.name: value}
@@ -94,7 +119,7 @@ class FilterSmaller(BaseMongoEngineFilter):
         return lazy_gettext('smaller than')
 
 
-class FilterEmpty(BaseMongoEngineFilter, filters.BaseBooleanFilter):
+class FilterEmpty(DjangoDbModelsFilter, filters.BaseBooleanFilter):
 
     def apply(self, query, value):
         if value == '1':
@@ -105,33 +130,6 @@ class FilterEmpty(BaseMongoEngineFilter, filters.BaseBooleanFilter):
 
     def operation(self):
         return lazy_gettext('empty')
-
-
-class FilterInList(BaseMongoEngineFilter):
-
-    def __init__(self, column, name, options=None, data_type=None):
-        super(FilterInList, self).__init__(column, name, options, data_type='select2-tags')
-
-    def clean(self, value):
-        return [v.strip() for v in value.split(',') if v.strip()]
-
-    def apply(self, query, value):
-        flt = {'%s__in' % self.column.name: value}
-        return query.filter(**flt)
-
-    def operation(self):
-        return lazy_gettext('in list')
-
-
-class FilterNotInList(FilterInList):
-
-    def apply(self, query, value):
-        flt = {'%s__nin' % self.column.name: value}
-        return query.filter(**flt)
-
-    def operation(self):
-        return lazy_gettext('not in list')
-
 
 # Customized type filters
 class BooleanEqualFilter(FilterEqual, filters.BaseBooleanFilter):
@@ -163,15 +161,6 @@ class IntGreaterFilter(FilterGreater, filters.BaseIntFilter):
 class IntSmallerFilter(FilterSmaller, filters.BaseIntFilter):
     pass
 
-
-class IntInListFilter(filters.BaseIntListFilter, FilterInList):
-    pass
-
-
-class IntNotInListFilter(filters.BaseIntListFilter, FilterNotInList):
-    pass
-
-
 class FloatEqualFilter(FilterEqual, filters.BaseFloatFilter):
     pass
 
@@ -185,14 +174,6 @@ class FloatGreaterFilter(FilterGreater, filters.BaseFloatFilter):
 
 
 class FloatSmallerFilter(FilterSmaller, filters.BaseFloatFilter):
-    pass
-
-
-class FloatInListFilter(filters.BaseFloatListFilter, FilterInList):
-    pass
-
-
-class FloatNotInListFilter(filters.BaseFloatListFilter, FilterNotInList):
     pass
 
 
@@ -212,7 +193,7 @@ class DateTimeSmallerFilter(FilterSmaller, filters.BaseDateTimeFilter):
     pass
 
 
-class DateTimeBetweenFilter(BaseMongoEngineFilter, filters.BaseDateTimeBetweenFilter):
+class DateTimeBetweenFilter(DjangoDbModelsFilter, filters.BaseDateTimeBetweenFilter):
 
     def __init__(self, column, name, options=None, data_type=None):
         super(DateTimeBetweenFilter, self).__init__(column,
@@ -237,50 +218,19 @@ class DateTimeNotBetweenFilter(DateTimeBetweenFilter):
         return lazy_gettext('not between')
 
 
-class ReferenceObjectIdFilter(BaseMongoEngineFilter):
-
-    def validate(self, value):
-        """
-            Validate value.
-            If value is valid, returns `True` and `False` otherwise.
-            :param value:
-                Value to validate
-        """
-        try:
-            self.clean(value)
-            return True
-        except InvalidId:
-            return False
-
-    def clean(self, value):
-        return ObjectId(value.strip())
-
-    def apply(self, query, value):
-        flt = {'%s' % self.column.name: value}
-        return query.filter(**flt)
-
-    def operation(self):
-        return lazy_gettext('ObjectId equals')
-
 # Base MongoEngine filter field converter
-
-
 class FilterConverter(filters.BaseFilterConverter):
     strings = (FilterLike, FilterNotLike, FilterEqual, FilterNotEqual,
-               FilterEmpty, FilterInList, FilterNotInList)
+               FilterEmpty)
     int_filters = (IntEqualFilter, IntNotEqualFilter, IntGreaterFilter,
-                   IntSmallerFilter, FilterEmpty, IntInListFilter,
-                   IntNotInListFilter)
+                   IntSmallerFilter, FilterEmpty)
     float_filters = (FloatEqualFilter, FloatNotEqualFilter, FloatGreaterFilter,
-                     FloatSmallerFilter, FilterEmpty, FloatInListFilter,
-                     FloatNotInListFilter)
+                     FloatSmallerFilter, FilterEmpty)
     bool_filters = (BooleanEqualFilter, BooleanNotEqualFilter)
     datetime_filters = (DateTimeEqualFilter, DateTimeNotEqualFilter,
                         DateTimeGreaterFilter, DateTimeSmallerFilter,
                         DateTimeBetweenFilter, DateTimeNotBetweenFilter,
                         FilterEmpty)
-
-    reference_filters = (ReferenceObjectIdFilter,)
 
     def convert(self, type_name, column, name):
         filter_name = type_name.lower()
@@ -290,7 +240,7 @@ class FilterConverter(filters.BaseFilterConverter):
 
         return None
 
-    @filters.convert('StringField', 'EmailField', 'URLField')
+    @filters.convert('CharField', 'EmailField', 'URLField')
     def conv_string(self, column, name):
         return [f(column, name) for f in self.strings]
 
@@ -298,7 +248,7 @@ class FilterConverter(filters.BaseFilterConverter):
     def conv_bool(self, column, name):
         return [f(column, name) for f in self.bool_filters]
 
-    @filters.convert('IntField', 'LongField')
+    @filters.convert('IntegerField', 'LongField')
     def conv_int(self, column, name):
         return [f(column, name) for f in self.int_filters]
 
@@ -306,10 +256,6 @@ class FilterConverter(filters.BaseFilterConverter):
     def conv_float(self, column, name):
         return [f(column, name) for f in self.float_filters]
 
-    @filters.convert('DateTimeField', 'ComplexDateTimeField')
+    @filters.convert('DateTimeField', 'DateField')
     def conv_datetime(self, column, name):
         return [f(column, name) for f in self.datetime_filters]
-
-    @filters.convert('ReferenceField')
-    def conv_reference(self, column, name):
-        return [f(column, name) for f in self.reference_filters]
