@@ -38,7 +38,6 @@
             {% else %}
               {% set class_name = child.get_class_name() %}
               {%- if child.is_active(admin_view) %}
-              {{ child.is_active(admin_view) }}
               <li class="active{% if class_name %} {{class_name}}{% endif %}">
               {% else %}
               <li{% if class_name %} class="{{class_name}}"{% endif %}>
