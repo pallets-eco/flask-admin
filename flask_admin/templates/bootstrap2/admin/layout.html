@@ -20,7 +20,7 @@
     {%- if item.is_category() -%}
       {% set children = item.get_children() %}
       {%- if children %}
-        {% set class_name = item.get_class_name() %}
+        {% set class_name = item.get_class_name() or '' %}
         {%- if item.is_active(admin_view) %}
         <li class="active dropdown{% if class_name %} {{class_name}}{% endif %}">
         {% else -%}
