@@ -287,9 +287,9 @@ class InlineModelFormList(InlineFieldList):
                     continue
             else:
                 model = self.model()
-                values.append(model)
 
             field.populate_obj(model, None)
+            values.append(model)
 
             self.inline_view.on_model_change(field, model)
 
