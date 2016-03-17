@@ -2170,7 +2170,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # prevent validation issues due to submitting a single field
         # delete all fields except the submitted fields and csrf token
-        for field in form:
+        for field in list(form):
             if (field.name in request.form) or (field.name == 'csrf_token'):
                 pass
             else:
