@@ -149,7 +149,7 @@
           }
         } else {
           // look up user's location by IP address
-          $.getJSON("http://ip-api.com/json/?callback=?", function(data) {
+          $.getJSON("//ip-api.com/json/?callback=?", function(data) {
             map.setView([data["lat"], data["lon"]], 12);
           }).fail(function() {
               map.setView([0, 0], 1)
@@ -158,8 +158,8 @@
 
         // set up tiles
         var mapboxVersion = window.MAPBOX_ACCESS_TOKEN ? 4 : 3;
-        L.tileLayer('http://{s}.tiles.mapbox.com/v'+mapboxVersion+'/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png?access_token='+window.MAPBOX_ACCESS_TOKEN, {
-          attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        L.tileLayer('//{s}.tiles.mapbox.com/v'+mapboxVersion+'/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png?access_token='+window.MAPBOX_ACCESS_TOKEN, {
+          attribution: 'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="//mapbox.com">Mapbox</a>',
           maxZoom: 18
         }).addTo(map);
 
