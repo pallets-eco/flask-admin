@@ -1,5 +1,9 @@
 from jinja2 import Markup
 from flask_admin._compat import text_type
+try:
+    from enum import Enum
+except ImportError:
+    Enum = None
 
 
 def null_formatter(view, value):
@@ -44,6 +48,16 @@ def list_formatter(view, values):
     return u', '.join(text_type(v) for v in values)
 
 
+def enum_formatter(view, value):
+    """
+        Return the name of the enumerated member.
+
+        :param value:
+            Value to check
+    """
+    return value.name
+
+
 BASE_FORMATTERS = {
     type(None): empty_formatter,
     bool: bool_formatter,
@@ -54,3 +68,7 @@ EXPORT_FORMATTERS = {
     type(None): empty_formatter,
     list: list_formatter,
 }
+
+if Enum is not None:
+    BASE_FORMATTERS[Enum] = enum_formatter
+    EXPORT_FORMATTERS[Enum] = enum_formatter
