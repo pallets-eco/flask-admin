@@ -1,4 +1,5 @@
 import os.path as op
+import warnings
 
 from functools import wraps
 
@@ -439,7 +440,7 @@ class AdminIndexView(BaseView):
         super(AdminIndexView, self).__init__(name or babel.lazy_gettext('Home'),
                                              category,
                                              endpoint or 'admin',
-                                             url or '/admin',
+                                             '/admin' if url is None else url,
                                              'static',
                                              menu_class_name=menu_class_name,
                                              menu_icon_type=menu_icon_type,
@@ -508,6 +509,9 @@ class Admin(object):
             name = 'Admin'
         self.name = name
 
+        self.index_view = index_view or AdminIndexView(endpoint=endpoint, url=url)
+        self.endpoint = endpoint or self.index_view.endpoint
+        self.url = url or self.index_view.url
         self.static_url_path = static_url_path
         self.subdomain = subdomain
         self.base_template = base_template or 'admin/base.html'
@@ -520,26 +524,6 @@ class Admin(object):
         # Register with application
         if app is not None:
             self._init_extension()
-
-    def _set_admin_index_view(self, index_view=None,
-                             endpoint=None, url=None):
- 	    """
- 	    	Add the admin index view.
- 	    	
-           :param index_view:
-                Home page view to use. Defaults to `AdminIndexView`.
-            :param url:
-                Base URL
-            :param endpoint:
-                Base endpoint name for index view. If you use multiple instances of the `Admin` class with
-                a single Flask application, you have to set a unique endpoint name for each instance.
- 	    """                            
-        self.index_view = index_view or AdminIndexView(endpoint=endpoint, url=url)
-        self.endpoint = endpoint or self.index_view.endpoint
-        self.url = url or self.index_view.url
-
-        # Add predefined index view
-        self.add_view(self.index_view)
 
     def add_view(self, view):
         """
@@ -556,6 +540,26 @@ class Admin(object):
             self.app.register_blueprint(view.create_blueprint(self))
 
         self._add_view_to_menu(view)
+
+	def _set_admin_index_view(self, index_view=None,
+                              endpoint=None, url=None):
+ 	    """
+ 	    	Add the admin index view.
+ 	    	
+           :param index_view:
+                Home page view to use. Defaults to `AdminIndexView`.
+            :param url:
+                Base URL
+           :param endpoint:
+                Base endpoint name for index view. If you use multiple instances of the `Admin` class with
+                a single Flask application, you have to set a unique endpoint name for each instance.
+ 	    """                            
+        self.index_view = index_view or AdminIndexView(endpoint=endpoint, url=url)
+        self.endpoint = endpoint or self.index_view.endpoint
+        self.url = url or self.index_view.url
+
+        # Add predefined index view
+        self.add_view(self.index_view)
 
     def add_views(self, *args):
         """
@@ -581,7 +585,7 @@ class Admin(object):
                 Link to add.
         """
         if link.category:
-            self._add_menu_item(link, link.category)
+            self.add_menu_item(link, link.category)
         else:
             self._menu_links.append(link)
 
@@ -601,7 +605,15 @@ class Admin(object):
         for link in args:
             self.add_link(link)
 
-    def _add_menu_item(self, menu_item, target_category):
+    def add_menu_item(self, menu_item, target_category=None):
+        """
+            Add menu item to menu tree hierarchy.
+
+            :param menu_item:
+                MenuItem class instance
+            :param target_category:
+                Target category name
+        """
         if target_category:
             cat_text = as_unicode(target_category)
 
@@ -619,6 +631,10 @@ class Admin(object):
         else:
             self._menu.append(menu_item)
 
+    def _add_menu_item(self, menu_item, target_category):
+        warnings.warn('Admin._add_menu_item is obsolete - use Admin.add_menu_item instead.')
+        return self.add_menu_item(menu_item, target_category)
+
     def _add_view_to_menu(self, view):
         """
             Add a view to the menu tree
@@ -626,7 +642,7 @@ class Admin(object):
             :param view:
                 View to add
         """
-        self._add_menu_item(MenuView(view.name, view), view.category)
+        self.add_menu_item(MenuView(view.name, view), view.category)
 
     def get_category_menu_item(self, name):
         return self._menu_categories.get(name)
@@ -643,15 +659,12 @@ class Admin(object):
 
         self._init_extension()
 
-        self._views = []
-
         # Register views
         for view in self._views:
             app.register_blueprint(view.create_blueprint(self))
-
+            
         # Register Index view
         self._set_admin_index_view(index_view=index_view, endpoint=endpoint, url=url)
-
 
     def _init_extension(self):
         if not hasattr(self.app, 'extensions'):
