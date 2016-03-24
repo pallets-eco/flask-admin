@@ -114,6 +114,25 @@ def test_custom_index_view():
     eq_(admin._views[0], view)
 
 
+def test_custom_index_view_in_init_app():
+    view = base.AdminIndexView(name='a', category='b', endpoint='c',
+                               url='/d', template='e')
+    app = Flask(__name__)
+    admin = base.Admin()
+    admin.init_app(app, index_view=view)
+
+    eq_(admin.endpoint, 'c')
+    eq_(admin.url, '/d')
+    ok_(admin.index_view is view)
+    eq_(view.name, 'a')
+    eq_(view.category, 'b')
+    eq_(view._template, 'e')
+
+    # Check if view was added
+    eq_(len(admin._views), 1)
+    eq_(admin._views[0], view)
+
+
 def test_base_registration():
     app = Flask(__name__)
     admin = base.Admin(app)
