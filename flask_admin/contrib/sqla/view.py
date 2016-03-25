@@ -484,7 +484,7 @@ class ModelView(BaseModelView):
                                     "Failed on: {0}".format(c))
                 else:
                     # column is in same table, use only model attribute name
-                    if getattr(column, 'key') is not None:
+                    if getattr(column, 'key', None) is not None:
                         column_name = column.key
                     else:
                         column_name = text_type(c)
@@ -520,7 +520,7 @@ class ModelView(BaseModelView):
                     column_name = text_type(c)
                 else:
                     # column is in same table, use only model attribute name
-                    if getattr(column, 'key') is not None:
+                    if getattr(column, 'key', None) is not None:
                         column_name = column.key
                     else:
                         column_name = text_type(c)
