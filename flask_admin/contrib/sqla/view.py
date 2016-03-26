@@ -484,7 +484,10 @@ class ModelView(BaseModelView):
                                     "Failed on: {0}".format(c))
                 else:
                     # column is in same table, use only model attribute name
-                    column_name = column.key if hasattr(column, 'key') and column.key else text_type(c)
+                    if getattr(column, 'key', None) is not None:
+                        column_name = column.key
+                    else:
+                        column_name = text_type(c)
 
                 # column_name must match column_name used in `get_list_columns`
                 result[column_name] = column
@@ -517,7 +520,10 @@ class ModelView(BaseModelView):
                     column_name = text_type(c)
                 else:
                     # column is in same table, use only model attribute name
-                    column_name = column.key if hasattr(column, 'key') and column.key else text_type(c)
+                    if getattr(column, 'key', None) is not None:
+                        column_name = column.key
+                    else:
+                        column_name = text_type(c)
 
                 visible_name = self.get_column_name(column_name)
 
