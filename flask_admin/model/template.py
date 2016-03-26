@@ -1,16 +1,27 @@
 def macro(name):
-    '''
-        Jinja2 macro list column formatter.
+    """
+        Resolve macro in a Jinja2 context
 
+        :param context:
+            Jinja2 context
         :param name:
-            Macro name in the current template
-    '''
+            Macro name. May be full path (with dots)
+    """
     def inner(view, context, model, column):
-        m = context.resolve(name)
+        parts = name.split('.')
+        field = context.resolve(parts[0])
 
-        if not m:
-            return m
+        if not field:
+            return None
 
-        return m(model=model, column=column)
+        for p in parts[1:]:
+            field = getattr(field, p, None)
+
+            if not field:
+                return field
+
+        return field(model=model, column=column)
 
     return inner
+
+
