@@ -14,6 +14,9 @@ env:
 services:
   - postgresql
   - mongodb
+  
+addons:
+  postgresql: "9.4"
 
 before_script:
   - psql -U postgres -c 'CREATE DATABASE flask_admin_test;'
