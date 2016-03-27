@@ -1,6 +1,6 @@
 from jinja2 import contextfunction
 
-from flask_admin._compat import string_types
+from flask_admin._compat import string_types, reduce
 from flask_admin.babel import gettext
 
 
