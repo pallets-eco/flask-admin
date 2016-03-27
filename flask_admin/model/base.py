@@ -501,7 +501,7 @@ class BaseModelView(BaseView, ActionsMixin):
     """
         Base form class. Will be used by form scaffolding function when creating model form.
 
-        Useful if you want to have custom contructor or override some fields.
+        Useful if you want to have custom constructor or override some fields.
 
         Example::
 
