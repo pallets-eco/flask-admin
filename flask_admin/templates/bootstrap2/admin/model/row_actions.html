@@ -7,7 +7,7 @@
 {% endmacro %}
 
 {% macro view_row(action, row_id, row) %}
-  {{ link(action, get_url('.details_view', id=row_id, url=return_url), 'fa fa-eye glyphicon glyphicon-eye-open') }}
+  {{ link(action, get_url('.details_view', id=row_id, url=return_url), 'fa fa-eye glyphicon icon-eye-open') }}
 {% endmacro %}
 
 {% macro view_row_popup(action, row_id, row) %}
@@ -15,7 +15,7 @@
 {% endmacro %}
 
 {% macro edit_row(action, row_id, row) %}
-  {{ link(action, get_url('.edit_view', id=row_id, url=return_url), 'fa fa-pencil glyphicon glyphicon-pencil') }}
+  {{ link(action, get_url('.edit_view', id=row_id, url=return_url), 'fa fa-pencil glyphicon icon-pencil') }}
 {% endmacro %}
 
 {% macro edit_row_popup(action, row_id, row) %}

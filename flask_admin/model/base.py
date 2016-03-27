@@ -459,12 +459,11 @@ class BaseModelView(BaseView, ActionsMixin):
         actions endpoints are accessible.
     """
 
-    column_list_row_actions = None
+    column_extra_row_actions = None
     """
         List of row actions (instances of :class:`~flask_admin.model.template.BaseListRowAction`).
 
-        Behaviour of this field is affected by `columns_override_default_row_actions` field
-        value. By default, Flask-Admin will generate standard per-row actions (edit, delete, etc)
+        Flask-Admin will generate standard per-row actions (edit, delete, etc)
         and will append custom actions from this list right after them.
 
         For example::
@@ -476,12 +475,6 @@ class BaseModelView(BaseView, ActionsMixin):
                     EndpointLinkRowAction('.some_view', 'fa fa-cross'),
                     EndpointLinkRowAction('.another_view', 'fa fa-eye-open'),
                 ]
-    """
-
-    column_override_default_row_actions = False
-    """
-        If set to `True`, will disable default row actions (view, edit, etc) and will only use
-        items from `column_list_row_actions`.
     """
 
     simple_list_pager = False
@@ -954,26 +947,24 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Return list of row action objects, each is instance of :class:`~flask_admin.model.template.BaseListRowAction`
         """
-        # TODO: Maybe pre-calculate
         actions = []
 
-        if not self.column_override_default_row_actions:
-            if self.can_view_details:
-                if self.details_modal:
-                    actions.append(template.ViewPopupRowAction())
-                else:
-                    actions.append(template.ViewRowAction())
+        if self.can_view_details:
+            if self.details_modal:
+                actions.append(template.ViewPopupRowAction())
+            else:
+                actions.append(template.ViewRowAction())
 
-            if self.can_edit:
-                if self.edit_modal:
-                    actions.append(template.EditPopupRowAction())
-                else:
-                    actions.append(template.EditRowAction())
+        if self.can_edit:
+            if self.edit_modal:
+                actions.append(template.EditPopupRowAction())
+            else:
+                actions.append(template.EditRowAction())
 
-            if self.can_delete:
-                actions.append(template.DeleteRowAction())
+        if self.can_delete:
+            actions.append(template.DeleteRowAction())
 
-        return actions + (self.column_list_row_actions or [])
+        return actions + (self.column_extra_row_actions or [])
 
     def get_details_columns(self):
         """
