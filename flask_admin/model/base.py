@@ -463,9 +463,9 @@ class BaseModelView(BaseView, ActionsMixin):
     """
         List of row actions (instances of :class:`~flask_admin.model.template.BaseListRowAction`).
 
-        If empty or not set, Flask-Admin will generate default actions (view, edit, etc).
         Behaviour of this field is affected by `columns_override_default_row_actions` field
-        value.
+        value. By default, Flask-Admin will generate standard per-row actions (edit, delete, etc)
+        and will append custom actions from this list right after them.
 
         For example::
 
