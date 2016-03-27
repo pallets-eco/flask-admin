@@ -471,7 +471,7 @@ class BaseModelView(BaseView, ActionsMixin):
             from flask_admin.model.template import EndpointLinkRowAction
 
             class MyModelView(BaseModelView):
-                column_list_row_actions = [
+                column_extra_row_actions = [
                     EndpointLinkRowAction('.some_view', 'fa fa-cross'),
                     EndpointLinkRowAction('.another_view', 'fa fa-eye-open'),
                 ]
