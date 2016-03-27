@@ -468,12 +468,12 @@ class BaseModelView(BaseView, ActionsMixin):
 
         For example::
 
-            from flask_admin.model.template import EndpointLinkRowAction
+            from flask_admin.model.template import EndpointLinkRowAction, LinkRowAction
 
             class MyModelView(BaseModelView):
                 column_extra_row_actions = [
-                    EndpointLinkRowAction('.some_view', 'fa fa-cross'),
-                    EndpointLinkRowAction('.another_view', 'fa fa-eye-open'),
+                    LinkRowAction('glyphicon glyphicon-off', 'http://direct.link/?id={row_id}'),
+                    EndpointLinkRowAction('glyphicon glyphicon-test', 'my_view.index_view')
                 ]
     """
 
