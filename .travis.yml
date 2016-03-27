@@ -11,6 +11,9 @@ env:
   - WTFORMS_VERSION=1
   - WTFORMS_VERSION=2
 
+addons:
+  postgresql: "9.4"
+
 services:
   - postgresql
   - mongodb
