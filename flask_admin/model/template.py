@@ -1,6 +1,7 @@
 from jinja2 import contextfunction
 
 from flask_admin._compat import string_types
+from flask_admin.babel import gettext
 
 
 class BaseListRowAction(object):
@@ -76,42 +77,36 @@ class TemplateLinkRowAction(BaseListRowAction):
 class ViewRowAction(TemplateLinkRowAction):
     def __init__(self):
         super(ViewRowAction, self).__init__(
-            # TODO: Localize
             'row_actions.view_row',
-            'View row')
+            gettext('View row'))
 
 
 class ViewPopupRowAction(TemplateLinkRowAction):
     def __init__(self):
         super(ViewPopupRowAction, self).__init__(
-            # TODO: Localize
             'row_actions.view_row_popup',
-            'View row')
+            gettext('View row'))
 
 
 class EditRowAction(TemplateLinkRowAction):
     def __init__(self):
         super(EditRowAction, self).__init__(
-            # TODO: Localize
             'row_actions.edit_row',
-            'Edit row')
+            gettext('Edit row'))
 
 
 class EditPopupRowAction(TemplateLinkRowAction):
     def __init__(self):
         super(EditPopupRowAction, self).__init__(
-            # TODO: Localize
             'row_actions.edit_row_popup',
-            'Edit row')
+            gettext('Edit row'))
 
 
 class DeleteRowAction(TemplateLinkRowAction):
     def __init__(self):
-        # TODO: Pass form
         super(DeleteRowAction, self).__init__(
-            # TODO: Localize
             'row_actions.delete_row',
-            'Edit row')
+            gettext('Edit row'))
 
 
 # Macro helper
