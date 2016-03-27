@@ -774,8 +774,8 @@ def test_list_row_actions():
     # Test custom views
     view = MockModelView(Model, endpoint='test3',
                          column_list_row_actions=[
-                             LinkRowAction('glyphicon glyphicon-off', 'http://localhost/?id={row_id}'),
-                             EndpointLinkRowAction('glyphicon glyphicon-test', '.test1')
+                             template.LinkRowAction('glyphicon glyphicon-off', 'http://localhost/?id={row_id}'),
+                             template.EndpointLinkRowAction('glyphicon glyphicon-test', 'test1.index_view')
                          ])
     admin.add_view(view)
 
