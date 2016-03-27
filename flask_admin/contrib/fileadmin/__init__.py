@@ -221,7 +221,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         Base form class. Will be used to create the upload, rename, edit, and delete form.
 
         Allows enabling CSRF validation and useful if you want to have custom
-        contructor or override some fields.
+        constructor or override some fields.
 
         Example::
 
