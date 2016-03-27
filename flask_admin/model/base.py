@@ -21,7 +21,7 @@ from flask_admin.babel import gettext
 
 from flask_admin.base import BaseView, expose
 from flask_admin.form import BaseForm, FormOpts, rules
-from flask_admin.model import filters, typefmt
+from flask_admin.model import filters, typefmt, template
 from flask_admin.actions import ActionsMixin
 from flask_admin.helpers import (get_form_data, validate_form_on_submit,
                                  get_redirect_target, flash_errors)
@@ -457,6 +457,31 @@ class BaseModelView(BaseView, ActionsMixin):
 
         Note: This only affects display and does not control whether the row
         actions endpoints are accessible.
+    """
+
+    column_list_row_actions = None
+    """
+        List of row actions (instances of :class:`~flask_admin.model.template.BaseListRowAction`).
+
+        If empty or not set, Flask-Admin will generate default actions (view, edit, etc).
+        Behaviour of this field is affected by `columns_override_default_row_actions` field
+        value.
+
+        For example::
+
+            from flask_admin.model.template import EndpointLinkRowAction
+
+            class MyModelView(BaseModelView):
+                column_list_row_actions = [
+                    EndpointLinkRowAction('.some_view', 'fa fa-cross'),
+                    EndpointLinkRowAction('.another_view', 'fa fa-eye-open'),
+                ]
+    """
+
+    column_override_default_row_actions = False
+    """
+        If set to `True`, will disable default row actions (view, edit, etc) and will only use
+        items from `column_list_row_actions`.
     """
 
     simple_list_pager = False
@@ -924,6 +949,31 @@ class BaseModelView(BaseView, ActionsMixin):
                 columns = [c for c in columns if c not in self.column_exclude_list]
 
         return [(c, self.get_column_name(c)) for c in columns]
+
+    def get_list_row_actions(self):
+        """
+            Return list of row action objects, each is instance of :class:`~flask_admin.model.template.BaseListRowAction`
+        """
+        # TODO: Maybe pre-calculate
+        actions = []
+
+        if not self.column_override_default_row_actions:
+            if self.can_view_details:
+                if self.details_modal:
+                    actions.append(template.ViewPopupRowAction())
+                else:
+                    actions.append(template.ViewRowAction())
+
+            if self.can_edit:
+                if self.edit_modal:
+                    actions.append(template.EditPopupRowAction())
+                else:
+                    actions.append(template.EditRowAction())
+
+            if self.can_delete:
+                actions.append(template.DeleteRowAction())
+
+        return actions + (self.column_list_row_actions or [])
 
     def get_details_columns(self):
         """
@@ -1815,6 +1865,7 @@ class BaseModelView(BaseView, ActionsMixin):
             list_columns=self._list_columns,
             sortable_columns=self._sortable_columns,
             editable_columns=self.column_editable_list,
+            list_row_actions=self.get_list_row_actions(),
 
             # Pagination
             count=count,
