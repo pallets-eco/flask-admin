@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Flask-Admin VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-03-27 19:40-0500\n"
+"POT-Creation-Date: 2016-03-27 19:47-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -445,12 +445,16 @@ msgid "between"
 msgstr ""
 
 #: ../flask_admin/model/template.py:81 ../flask_admin/model/template.py:88
-msgid "View row"
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
+msgid "View Record"
 msgstr ""
 
 #: ../flask_admin/model/template.py:95 ../flask_admin/model/template.py:102
 #: ../flask_admin/model/template.py:109
-msgid "Edit row"
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:11
+msgid "Edit Record"
 msgstr ""
 
 #: ../flask_admin/templates/bootstrap2/admin/actions.html:4
@@ -631,15 +635,5 @@ msgstr ""
 #: ../flask_admin/templates/bootstrap2/admin/model/row_actions.html:34
 #: ../flask_admin/templates/bootstrap3/admin/model/row_actions.html:34
 msgid "Are you sure you want to delete this record?"
-msgstr ""
-
-#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
-#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
-msgid "View Record"
-msgstr ""
-
-#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:22
-#: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:11
-msgid "Edit Record"
 msgstr ""
 

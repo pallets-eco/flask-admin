@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-03-27 19:39-0500\n"
-"PO-Revision-Date: 2016-03-27 20:40-0400\n"
+"POT-Creation-Date: 2016-03-27 19:47-0500\n"
+"PO-Revision-Date: 2016-03-27 20:47-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Norwegian\n"
 "MIME-Version: 1.0\n"
@@ -444,13 +444,17 @@ msgid "between"
 msgstr "mellom"
 
 #: ../flask_admin/model/template.py:81 ../flask_admin/model/template.py:88
-msgid "View row"
-msgstr ""
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
+msgid "View Record"
+msgstr "Vis posten"
 
 #: ../flask_admin/model/template.py:95 ../flask_admin/model/template.py:102
 #: ../flask_admin/model/template.py:109
-msgid "Edit row"
-msgstr ""
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:11
+msgid "Edit Record"
+msgstr "Rediger Post"
 
 #: ../flask_admin/templates/bootstrap2/admin/actions.html:4
 #: ../flask_admin/templates/bootstrap3/admin/actions.html:4
@@ -631,14 +635,4 @@ msgstr "Velg minst én post."
 #: ../flask_admin/templates/bootstrap3/admin/model/row_actions.html:34
 msgid "Are you sure you want to delete this record?"
 msgstr "Er du sikker på at du vil slette denne posten?"
-
-#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
-#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
-msgid "View Record"
-msgstr "Vis posten"
-
-#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:22
-#: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:11
-msgid "Edit Record"
-msgstr "Rediger Post"
 
