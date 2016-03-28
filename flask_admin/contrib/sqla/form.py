@@ -350,6 +350,10 @@ class AdminModelConverter(ModelConverterBase):
         inner_form = field_args.pop('form', HstoreForm)
         return InlineHstoreList(InlineFormField(inner_form), **field_args)
 
+    @converts('JSON')
+    def convert_JSON(self, field_args, **extra):
+        return form.JSONField(**field_args)
+
 
 def _resolve_prop(prop):
     """
