@@ -78,35 +78,35 @@ class ViewRowAction(TemplateLinkRowAction):
     def __init__(self):
         super(ViewRowAction, self).__init__(
             'row_actions.view_row',
-            gettext('View row'))
+            gettext('View Record'))
 
 
 class ViewPopupRowAction(TemplateLinkRowAction):
     def __init__(self):
         super(ViewPopupRowAction, self).__init__(
             'row_actions.view_row_popup',
-            gettext('View row'))
+            gettext('View Record'))
 
 
 class EditRowAction(TemplateLinkRowAction):
     def __init__(self):
         super(EditRowAction, self).__init__(
             'row_actions.edit_row',
-            gettext('Edit row'))
+            gettext('Edit Record'))
 
 
 class EditPopupRowAction(TemplateLinkRowAction):
     def __init__(self):
         super(EditPopupRowAction, self).__init__(
             'row_actions.edit_row_popup',
-            gettext('Edit row'))
+            gettext('Edit Record'))
 
 
 class DeleteRowAction(TemplateLinkRowAction):
     def __init__(self):
         super(DeleteRowAction, self).__init__(
             'row_actions.delete_row',
-            gettext('Edit row'))
+            gettext('Edit Record'))
 
 
 # Macro helper
