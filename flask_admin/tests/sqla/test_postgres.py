@@ -3,7 +3,7 @@ from nose.tools import eq_, ok_
 from . import setup_postgres
 from .test_basic import CustomModelView
 
-from sqlalchemy.dialects.postgresql import HSTORE
+from sqlalchemy.dialects.postgresql import HSTORE, JSON
 
 
 def test_hstore():
@@ -40,3 +40,38 @@ def test_hstore():
     data = rv.data.decode('utf-8')
     ok_('test_val1' in data)
     ok_('test_val2' in data)
+
+
+def test_json():
+    app, db, admin = setup_postgres()
+
+    class JSONModel(db.Model):
+        id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+        json_test = db.Column(JSON)
+
+    db.create_all()
+
+    view = CustomModelView(JSONModel, db.session)
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/jsonmodel/')
+    eq_(rv.status_code, 200)
+
+    rv = client.post('/admin/jsonmodel/new/', data={
+        'json_test': '{"test_key1": "test_value1"}',
+    })
+    eq_(rv.status_code, 302)
+
+    rv = client.get('/admin/jsonmodel/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('json_test' in data)
+    ok_('{&#34;test_key1&#34;: &#34;test_value1&#34;}' in data)
+
+    rv = client.get('/admin/jsonmodel/edit/?id=1')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('json_test' in data)
+    ok_('>{"test_key1": "test_value1"}<' in data)

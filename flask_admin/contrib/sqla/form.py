@@ -147,118 +147,116 @@ class AdminModelConverter(ModelConverterBase):
         # Check if it is relation or property
         if hasattr(prop, 'direction'):
             return self._convert_relation(prop, kwargs)
-        else:
-            # Ignore pk/fk
-            if hasattr(prop, 'columns'):
-                # Check if more than one column mapped to the property
-                if len(prop.columns) > 1:
-                    columns = filter_foreign_columns(model.__table__, prop.columns)
+        elif hasattr(prop, 'columns'):  # Ignore pk/fk
+            # Check if more than one column mapped to the property
+            if len(prop.columns) > 1:
+                columns = filter_foreign_columns(model.__table__, prop.columns)
 
-                    if len(columns) > 1:
-                        warnings.warn('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
+                if len(columns) > 1:
+                    warnings.warn('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
+                    return None
+
+                column = columns[0]
+            else:
+                # Grab column
+                column = prop.columns[0]
+
+            form_columns = getattr(self.view, 'form_columns', None) or ()
+
+            # Do not display foreign keys - use relations, except when explicitly instructed
+            if column.foreign_keys and prop.key not in form_columns:
+                return None
+
+            # Only display "real" columns
+            if not isinstance(column, Column):
+                return None
+
+            unique = False
+
+            if column.primary_key:
+                if hidden_pk:
+                    # If requested to add hidden field, show it
+                    return fields.HiddenField()
+                else:
+                    # By default, don't show primary keys either
+                    # If PK is not explicitly allowed, ignore it
+                    if prop.key not in form_columns:
                         return None
 
-                    column = columns[0]
-                else:
-                    # Grab column
-                    column = prop.columns[0]
+                    # Current Unique Validator does not work with multicolumns-pks
+                    if not has_multiple_pks(model):
+                        kwargs['validators'].append(Unique(self.session,
+                                                           model,
+                                                           column))
+                        unique = True
 
-                form_columns = getattr(self.view, 'form_columns', None) or ()
+            # If field is unique, validate it
+            if column.unique and not unique:
+                kwargs['validators'].append(Unique(self.session,
+                                                   model,
+                                                   column))
 
-                # Do not display foreign keys - use relations, except when explicitly instructed
-                if column.foreign_keys and prop.key not in form_columns:
-                    return None
+            optional_types = getattr(self.view, 'form_optional_types', (Boolean,))
 
-                # Only display "real" columns
-                if not isinstance(column, Column):
-                    return None
+            if (
+                not column.nullable
+                and not isinstance(column.type, optional_types)
+                and not column.default
+                and not column.server_default
+            ):
+                kwargs['validators'].append(validators.InputRequired())
 
-                unique = False
+            # Apply label and description if it isn't inline form field
+            if self.view.model == mapper.class_:
+                kwargs['label'] = self._get_label(prop.key, kwargs)
+                kwargs['description'] = self._get_description(prop.key, kwargs)
 
-                if column.primary_key:
-                    if hidden_pk:
-                        # If requested to add hidden field, show it
-                        return fields.HiddenField()
-                    else:
-                        # By default, don't show primary keys either
-                        # If PK is not explicitly allowed, ignore it
-                        if prop.key not in form_columns:
-                            return None
+            # Figure out default value
+            default = getattr(column, 'default', None)
+            value = None
 
-                        # Current Unique Validator does not work with multicolumns-pks
-                        if not has_multiple_pks(model):
-                            kwargs['validators'].append(Unique(self.session,
-                                                               model,
-                                                               column))
-                            unique = True
-
-                # If field is unique, validate it
-                if column.unique and not unique:
-                    kwargs['validators'].append(Unique(self.session,
-                                                       model,
-                                                       column))
-
-                optional_types = getattr(self.view, 'form_optional_types', (Boolean,))
-
-                if (
-                    not column.nullable
-                    and not isinstance(column.type, optional_types)
-                    and not column.default
-                    and not column.server_default
-                ):
-                    kwargs['validators'].append(validators.InputRequired())
-
-                # Apply label and description if it isn't inline form field
-                if self.view.model == mapper.class_:
-                    kwargs['label'] = self._get_label(prop.key, kwargs)
-                    kwargs['description'] = self._get_description(prop.key, kwargs)
-
-                # Figure out default value
-                default = getattr(column, 'default', None)
-                value = None
-
-                if default is not None:
-                    value = getattr(default, 'arg', None)
-
-                    if value is not None:
-                        if getattr(default, 'is_callable', False):
-                            value = lambda: default.arg(None)
-                        else:
-                            if not getattr(default, 'is_scalar', True):
-                                value = None
+            if default is not None:
+                value = getattr(default, 'arg', None)
 
                 if value is not None:
-                    kwargs['default'] = value
+                    if getattr(default, 'is_callable', False):
+                        value = lambda: default.arg(None)
+                    else:
+                        if not getattr(default, 'is_scalar', True):
+                            value = None
 
-                # Check nullable
-                if column.nullable:
-                    kwargs['validators'].append(validators.Optional())
+            if value is not None:
+                kwargs['default'] = value
 
-                # Override field type if necessary
-                override = self._get_field_override(prop.key)
-                if override:
-                    return override(**kwargs)
+            # Check nullable
+            if column.nullable:
+                kwargs['validators'].append(validators.Optional())
 
-                # Check choices
-                form_choices = getattr(self.view, 'form_choices', None)
+            # Override field type if necessary
+            override = self._get_field_override(prop.key)
+            if override:
+                return override(**kwargs)
 
-                if mapper.class_ == self.view.model and form_choices:
-                    choices = form_choices.get(column.key)
-                    if choices:
-                        return form.Select2Field(
-                            choices=choices,
-                            allow_blank=column.nullable,
-                            **kwargs
-                        )
+            # Check choices
+            form_choices = getattr(self.view, 'form_choices', None)
 
-                # Run converter
-                converter = self.get_converter(column)
+            if mapper.class_ == self.view.model and form_choices:
+                choices = form_choices.get(column.key)
+                if choices:
+                    return form.Select2Field(
+                        choices=choices,
+                        allow_blank=column.nullable,
+                        **kwargs
+                    )
 
-                if converter is None:
-                    return None
+            # Run converter
+            converter = self.get_converter(column)
 
-                return converter(model=model, mapper=mapper, prop=prop,
-                                 column=column, field_args=kwargs)
+            if converter is None:
+                return None
+
+            return converter(model=model, mapper=mapper, prop=prop,
+                             column=column, field_args=kwargs)
 
         return None
 
@@ -351,6 +349,10 @@ class AdminModelConverter(ModelConverterBase):
     def conv_HSTORE(self, field_args, **extra):
         inner_form = field_args.pop('form', HstoreForm)
         return InlineHstoreList(InlineFormField(inner_form), **field_args)
+
+    @converts('JSON')
+    def convert_JSON(self, field_args, **extra):
+        return form.JSONField(**field_args)
 
 
 def _resolve_prop(prop):

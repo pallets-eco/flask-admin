@@ -21,7 +21,7 @@ from flask_admin.babel import gettext
 
 from flask_admin.base import BaseView, expose
 from flask_admin.form import BaseForm, FormOpts, rules
-from flask_admin.model import filters, typefmt
+from flask_admin.model import filters, typefmt, template
 from flask_admin.actions import ActionsMixin
 from flask_admin.helpers import (get_form_data, validate_form_on_submit,
                                  get_redirect_target, flash_errors)
@@ -459,6 +459,24 @@ class BaseModelView(BaseView, ActionsMixin):
         actions endpoints are accessible.
     """
 
+    column_extra_row_actions = None
+    """
+        List of row actions (instances of :class:`~flask_admin.model.template.BaseListRowAction`).
+
+        Flask-Admin will generate standard per-row actions (edit, delete, etc)
+        and will append custom actions from this list right after them.
+
+        For example::
+
+            from flask_admin.model.template import EndpointLinkRowAction, LinkRowAction
+
+            class MyModelView(BaseModelView):
+                column_extra_row_actions = [
+                    LinkRowAction('glyphicon glyphicon-off', 'http://direct.link/?id={row_id}'),
+                    EndpointLinkRowAction('glyphicon glyphicon-test', 'my_view.index_view')
+                ]
+    """
+
     simple_list_pager = False
     """
         Enable or disable simple list pager.
@@ -483,7 +501,7 @@ class BaseModelView(BaseView, ActionsMixin):
     """
         Base form class. Will be used by form scaffolding function when creating model form.
 
-        Useful if you want to have custom contructor or override some fields.
+        Useful if you want to have custom constructor or override some fields.
 
         Example::
 
@@ -693,7 +711,7 @@ class BaseModelView(BaseView, ActionsMixin):
         A list of available export filetypes. `csv` only is default, but any
         filetypes supported by tablib can be used.
 
-        Check tablib for https://github.com/kennethreitz/tablib/bloab/master/README.rst
+        Check tablib for https://github.com/kennethreitz/tablib/blob/master/README.rst
         for supported types.
     """
 
@@ -924,6 +942,29 @@ class BaseModelView(BaseView, ActionsMixin):
                 columns = [c for c in columns if c not in self.column_exclude_list]
 
         return [(c, self.get_column_name(c)) for c in columns]
+
+    def get_list_row_actions(self):
+        """
+            Return list of row action objects, each is instance of :class:`~flask_admin.model.template.BaseListRowAction`
+        """
+        actions = []
+
+        if self.can_view_details:
+            if self.details_modal:
+                actions.append(template.ViewPopupRowAction())
+            else:
+                actions.append(template.ViewRowAction())
+
+        if self.can_edit:
+            if self.edit_modal:
+                actions.append(template.EditPopupRowAction())
+            else:
+                actions.append(template.EditRowAction())
+
+        if self.can_delete:
+            actions.append(template.DeleteRowAction())
+
+        return actions + (self.column_extra_row_actions or [])
 
     def get_details_columns(self):
         """
@@ -1815,6 +1856,7 @@ class BaseModelView(BaseView, ActionsMixin):
             list_columns=self._list_columns,
             sortable_columns=self._sortable_columns,
             editable_columns=self.column_editable_list,
+            list_row_actions=self.get_list_row_actions(),
 
             # Pagination
             count=count,

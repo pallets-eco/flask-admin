@@ -1,10 +1,11 @@
-import datetime
-
 from flask_admin.babel import lazy_gettext
 from flask_admin.model import filters
 
 from .tools import parse_like_term
 from mongoengine.queryset import Q
+from bson.errors import InvalidId
+from bson.objectid import ObjectId
+
 
 class BaseMongoEngineFilter(filters.BaseFilter):
     """
@@ -221,6 +222,31 @@ class DateTimeNotBetweenFilter(DateTimeBetweenFilter):
         return lazy_gettext('not between')
 
 
+class ReferenceObjectIdFilter(BaseMongoEngineFilter):
+    def validate(self, value):
+        """
+            Validate value.
+            If value is valid, returns `True` and `False` otherwise.
+            :param value:
+                Value to validate
+        """
+        try:
+            self.clean(value)
+            return True
+        except InvalidId:
+            return False
+
+    def clean(self, value):
+        return ObjectId(value.strip())
+
+    def apply(self, query, value):
+        flt = {'%s' % self.column.name: value}
+        return query.filter(**flt)
+
+    def operation(self):
+        return lazy_gettext('ObjectId equals')
+
+
 # Base MongoEngine filter field converter
 class FilterConverter(filters.BaseFilterConverter):
     strings = (FilterLike, FilterNotLike, FilterEqual, FilterNotEqual,
@@ -236,6 +262,7 @@ class FilterConverter(filters.BaseFilterConverter):
                         DateTimeGreaterFilter, DateTimeSmallerFilter,
                         DateTimeBetweenFilter, DateTimeNotBetweenFilter,
                         FilterEmpty)
+    reference_filters = (ReferenceObjectIdFilter,)
 
     def convert(self, type_name, column, name):
         filter_name = type_name.lower()
@@ -264,3 +291,7 @@ class FilterConverter(filters.BaseFilterConverter):
     @filters.convert('DateTimeField', 'ComplexDateTimeField')
     def conv_datetime(self, column, name):
         return [f(column, name) for f in self.datetime_filters]
+
+    @filters.convert('ReferenceField')
+    def conv_reference(self, column, name):
+        return [f(column, name) for f in self.reference_filters]
