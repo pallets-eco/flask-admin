@@ -582,6 +582,9 @@ class BaseModelView(BaseView, ActionsMixin):
                     'description': {
                         'rows': 10,
                         'style': 'color: black'
+                    },
+                    'other_field': {
+                        'disabled': True
                     }
                 }
 
