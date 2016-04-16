@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2016-03-27 19:47-0500\n"
-"PO-Revision-Date: 2016-03-27 20:47-0400\n"
+"PO-Revision-Date: 2016-04-16 16:02-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -23,7 +23,7 @@ msgstr "Start"
 
 #: ../flask_admin/contrib/rediscli.py:125
 msgid "Cli: Invalid command."
-msgstr "CLI: Ungültiger Befehl."
+msgstr "Kommandozeile: Ungültiger Befehl."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:330
 msgid "File to upload"
@@ -43,7 +43,7 @@ msgstr "Inhalt"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:368
 msgid "Invalid name"
-msgstr "Ungültiger name"
+msgstr "Ungültiger Name"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:376
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
@@ -73,7 +73,7 @@ msgstr "Datei-Upload ist deaktiviert."
 #: ../flask_admin/contrib/fileadmin/__init__.py:791
 #, python-format
 msgid "Successfully saved file: %(name)s"
-msgstr "Erfolgreich gespeicherten Datei: %(name)s"
+msgstr "Datei erfolgreich gespeichert: %(name)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:795
 #, python-format
@@ -95,7 +95,7 @@ msgstr "Erzeugen von Verzeichnissen ist deaktiviert."
 #: ../flask_admin/contrib/fileadmin/__init__.py:855
 #, python-format
 msgid "Successfully created directory: %(directory)s"
-msgstr "Erfolgreich erstellte Verzeichnis: %(directory)s"
+msgstr "Verzeichnis erfolgreich erstellt: %(directory)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:859
 #, python-format
@@ -171,12 +171,12 @@ msgstr "Fehler beim Speichern von Änderungen an %(name)s."
 #: ../flask_admin/contrib/fileadmin/__init__.py:1018
 #, python-format
 msgid "Changes to %(name)s saved successfully."
-msgstr "Änderungen an %(name)s wurde erfolgreich gespeichert."
+msgstr "Änderungen an %(name)s erfolgreich gespeichert."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1027
 #, python-format
 msgid "Error reading %(name)s."
-msgstr "Fehler lesen %(name)s."
+msgstr "Fehler beim Einlesen von %(name)s."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1030
 #: ../flask_admin/contrib/fileadmin/__init__.py:1039
@@ -204,7 +204,7 @@ msgstr "Löschen"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1063
 msgid "Are you sure you want to delete these files?"
-msgstr "Sind Sie sicher, dass Sie diese Dateien löschen wollen?"
+msgstr "Sind Sie sicher, dass Sie diese Dateien löschen möchten?"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1066
 msgid "File deletion is disabled."
@@ -220,7 +220,7 @@ msgstr "Bearbeiten"
 
 #: ../flask_admin/contrib/fileadmin/s3.py:152
 msgid "Cannot operate on non empty directories"
-msgstr ""
+msgstr "Operieren in nicht-leeren Verzeichnissen nicht möglich"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:38
 #: ../flask_admin/contrib/peewee/filters.py:38
@@ -356,11 +356,11 @@ msgstr "Keine gültige Auswahl"
 
 #: ../flask_admin/contrib/sqla/fields.py:187
 msgid "Key"
-msgstr ""
+msgstr "Eigenschaft"
 
 #: ../flask_admin/contrib/sqla/fields.py:188
 msgid "Value"
-msgstr ""
+msgstr "Wert"
 
 #: ../flask_admin/contrib/sqla/validators.py:42
 msgid "Already exists."
@@ -423,12 +423,12 @@ msgstr "Datensatz wurde erfolgreich gespeichert."
 
 #: ../flask_admin/model/base.py:2151
 msgid "Tablib dependency not installed."
-msgstr ""
+msgstr "Abhängigkeit \"Tablib\" nicht installiert."
 
 #: ../flask_admin/model/base.py:2178
 #, python-format
 msgid "Export type \"%(type)s not supported."
-msgstr ""
+msgstr "Export-Typ \"%(type)s nicht unterstützt."
 
 #: ../flask_admin/model/filters.py:98 ../flask_admin/model/widgets.py:111
 msgid "Yes"
