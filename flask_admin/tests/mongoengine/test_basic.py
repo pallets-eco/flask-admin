@@ -908,6 +908,63 @@ def test_nested_list_subdocument():
     ok_('value' not in dir(inline_form))
 
 
+def test_nested_sortedlist_subdocument():
+    app, db, admin = setup()
+
+    class Comment(db.EmbeddedDocument):
+        name = db.StringField(max_length=20, required=True)
+        value = db.StringField(max_length=20)
+
+    class Model1(db.Document):
+        test1 = db.StringField(max_length=20)
+        subdoc = db.SortedListField(db.EmbeddedDocumentField(Comment))
+
+    # Check only
+    view1 = CustomModelView(
+        Model1,
+        form_subdocuments = {
+            'subdoc': {
+                'form_subdocuments': {
+                    None: {
+                        'form_columns': ('name',)
+                    }
+                }
+
+            }
+        }
+    )
+
+    form = view1.create_form()
+    inline_form = form.subdoc.unbound_field.args[2]
+
+    ok_('name' in dir(inline_form))
+    ok_('value' not in dir(inline_form))
+
+
+def test_sortedlist_subdocument_validation():
+    app, db, admin = setup()
+
+    class Comment(db.EmbeddedDocument):
+        name = db.StringField(max_length=20, required=True)
+        value = db.StringField(max_length=20)
+
+    class Model1(db.Document):
+        test1 = db.StringField(max_length=20)
+        subdoc = db.SortedListField(db.EmbeddedDocumentField(Comment))
+
+    view = CustomModelView(Model1)
+    admin.add_view(view)
+    client = app.test_client()
+
+    rv = client.post('/admin/model1/new/',
+                     data={'test1': 'test1large', 'subdoc-0-name': 'comment', 'subdoc-0-value': 'test'})
+    eq_(rv.status_code, 302)
+
+    rv = client.post('/admin/model1/new/',
+                     data={'test1': 'test1large', 'subdoc-0-name': '', 'subdoc-0-value': 'test'})
+    eq_(rv.status_code, 200)
+    ok_('This field is required' in rv.data)
+
 def test_list_subdocument_validation():
     app, db, admin = setup()
 
