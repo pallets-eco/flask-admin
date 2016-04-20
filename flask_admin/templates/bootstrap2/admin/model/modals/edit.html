@@ -1,0 +1,30 @@
+{% import 'admin/static.html' as admin_static with context%}
+{% import 'admin/lib.html' as lib with context %}
+
+{# store the jinja2 context for form_rules rendering logic #}
+{% set render_ctx = h.resolve_ctx() %}
+
+{% block body %}
+  {# "save and continue" button is removed from modal (it won't function properly) #}
+  {% block edit_form %}
+    {{ lib.render_form(form, return_url, extra=None, form_opts=form_opts,
+                       action=url_for('.edit_view', id=request.args.get('id'), url=return_url),
+                       is_modal=True) }}
+  {% endblock %}
+{% endblock %}
+
+{% block tail %}
+  <script src="{{ admin_static.url(filename='admin/js/bs2_modal.js', v='1.0.0') }}"></script>
+
+  <script>
+  // fill the header of modal dynamically
+  $('.modal-header h3').html('{% block header_text -%}
+    {{ _gettext('Edit Record') + ' #' + request.args.get('id') }}
+  {%- endblock %}');
+
+  $(function() {
+    // Apply flask-admin form styles after the modal is loaded
+    window.faForm.applyGlobalStyles(document);
+  });
+  </script>
+{% endblock %}

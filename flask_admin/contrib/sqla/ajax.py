@@ -1,7 +1,9 @@
 from sqlalchemy import or_
 
-from flask.ext.admin._compat import as_unicode, string_types
-from flask.ext.admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
+from flask_admin._compat import as_unicode, string_types
+from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
+
+from .tools import get_primary_key, has_multiple_pks
 
 
 class QueryAjaxModelLoader(AjaxModelLoader):
@@ -17,17 +19,17 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         self.session = session
         self.model = model
         self.fields = options.get('fields')
+        self.order_by = options.get('order_by')
 
         if not self.fields:
             raise ValueError('AJAX loading requires `fields` to be specified for %s.%s' % (model, self.name))
 
         self._cached_fields = self._process_fields()
 
-        primary_keys = model._sa_class_manager.mapper.primary_key
-        if len(primary_keys) > 1:
-            raise NotImplemented('Flask-Admin does not support multi-pk AJAX model loading.')
+        if has_multiple_pks(model):
+            raise NotImplementedError('Flask-Admin does not support multi-pk AJAX model loading.')
 
-        self.pk = primary_keys[0].name
+        self.pk = get_primary_key(model)
 
     def _process_fields(self):
         remote_fields = []
@@ -58,8 +60,11 @@ class QueryAjaxModelLoader(AjaxModelLoader):
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
         query = self.session.query(self.model)
 
-        filters = (field.like(u'%%%s%%' % term) for field in self._cached_fields)
+        filters = (field.ilike(u'%%%s%%' % term) for field in self._cached_fields)
         query = query.filter(or_(*filters))
+
+        if self.order_by:
+            query = query.order_by(self.order_by)
 
         return query.offset(offset).limit(limit).all()
 

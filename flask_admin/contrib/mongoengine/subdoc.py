@@ -1,5 +1,5 @@
-from flask.ext.admin._compat import iteritems
-from flask.ext.admin.model.form import InlineBaseFormAdmin
+from flask_admin._compat import iteritems
+from flask_admin.model.form import InlineBaseFormAdmin
 
 
 class EmbeddedForm(InlineBaseFormAdmin):
@@ -18,6 +18,6 @@ def convert_subdocuments(values):
         elif isinstance(p, EmbeddedForm):
             result[name] = p
         else:
-            raise ValueError('Invalid subdocument type: expecting dict or instance of flask.ext.admin.contrib.mongoengine.EmbeddedForm, got %s' % type(p))
+            raise ValueError('Invalid subdocument type: expecting dict or instance of flask_admin.contrib.mongoengine.EmbeddedForm, got %s' % type(p))
 
     return result

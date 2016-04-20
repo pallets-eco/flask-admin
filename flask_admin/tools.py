@@ -101,6 +101,12 @@ def get_dict_attr(obj, attr, default=None):
     return default
 
 
+def escape(value):
+    return (as_unicode(value)
+            .replace(CHAR_ESCAPE, CHAR_ESCAPE + CHAR_ESCAPE)
+            .replace(CHAR_SEPARATOR, CHAR_ESCAPE + CHAR_SEPARATOR))
+
+
 def iterencode(iter):
     """
         Encode enumerable as compact string representation.

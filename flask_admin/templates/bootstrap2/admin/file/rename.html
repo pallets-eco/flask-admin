@@ -1,7 +1,0 @@
-{% extends 'admin/master.html' %}
-{% import 'admin/lib.html' as lib with context %}
-
-{% block body %}
-    <h3>{{ _gettext('Please provide new name for %(name)s', name=name) }}</h3>
-    {{ lib.render_form(form, dir_url) }}
-{% endblock %}

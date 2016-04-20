@@ -1,10 +1,10 @@
 from wtforms.widgets import HTMLString, html_params
 
 from jinja2 import escape
-from flask import url_for
 
 from mongoengine.fields import GridFSProxy, ImageGridFsProxy
 
+from flask_admin.helpers import get_url
 from . import helpers
 
 
@@ -53,7 +53,7 @@ class MongoImageInput(object):
         if field.data and isinstance(field.data, ImageGridFsProxy):
             args = helpers.make_thumb_args(field.data)
             placeholder = self.template % {
-                'thumb': url_for('.api_file_view', **args),
+                'thumb': get_url('.api_file_view', **args),
                 'marker': '_%s-delete' % field.name
             }
 

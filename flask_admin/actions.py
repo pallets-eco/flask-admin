@@ -1,8 +1,9 @@
-from flask import request, url_for, redirect
+from flask import request, redirect
 
 
-from flask.ext.admin import tools
-from flask.ext.admin._compat import text_type
+from flask_admin import tools
+from flask_admin._compat import text_type
+from flask_admin.helpers import get_redirect_target
 
 
 def action(name, text, confirmation=None):
@@ -100,7 +101,8 @@ class ActionsMixin(object):
 
             :param return_view:
                 Name of the view to return to after the request.
-                If not provided, will return user to the index view.
+                If not provided, will return user to the return url in the form
+                or the list view.
         """
         action = request.form.get('action')
         ids = request.form.getlist('rowid')
@@ -113,9 +115,9 @@ class ActionsMixin(object):
             if response is not None:
                 return response
 
-        if not return_view:
-            url = url_for('.' + self._default_view)
+        if return_view:
+            url = self.get_url('.' + return_view)
         else:
-            url = url_for('.' + return_view)
+            url = get_redirect_target() or self.get_url('.index_view')
 
         return redirect(url)

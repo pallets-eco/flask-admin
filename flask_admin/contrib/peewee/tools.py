@@ -1,10 +1,5 @@
-from peewee import PrimaryKeyField
-
-
 def get_primary_key(model):
-    for n, f in model._meta.get_sorted_fields():
-        if type(f) == PrimaryKeyField or f.primary_key:
-            return n
+    return model._meta.primary_key.name
 
 
 def parse_like_term(term):
@@ -16,3 +11,11 @@ def parse_like_term(term):
         stmt = '%%%s%%' % term
 
     return stmt
+
+
+def get_meta_fields(model):
+    try:
+        fields = model._meta.sorted_fields
+    except AttributeError:
+        fields = model._meta.get_fields()
+    return fields
