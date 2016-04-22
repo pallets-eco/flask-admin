@@ -826,12 +826,10 @@ class BaseModelView(BaseView, ActionsMixin):
         self._sortable_columns = self.get_sortable_columns()
 
         # Details view
-        if self.can_view_details:
-            self._details_columns = self.get_details_columns()
+        self._details_columns = self.get_details_columns()
 
         # Export view
-        if self.can_export:
-            self._export_columns = self.get_export_columns()
+        self._export_columns = self.get_export_columns()
 
         # Labels
         if self.column_labels is None:
