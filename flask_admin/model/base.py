@@ -929,23 +929,6 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             return self._prettify_name(field)
 
-    def get_list_columns(self):
-        """
-            Returns a list of tuples with the model field name and formatted
-            field name. If `column_list` was set, returns it. Otherwise calls
-            `scaffold_list_columns` to generate the list from the model.
-        """
-        columns = self.column_list
-
-        if columns is None:
-            columns = self.scaffold_list_columns()
-
-            # Filter excluded columns
-            if self.column_exclude_list:
-                columns = [c for c in columns if c not in self.column_exclude_list]
-
-        return [(c, self.get_column_name(c)) for c in columns]
-
     def get_list_row_actions(self):
         """
             Return list of row action objects, each is instance of :class:`~flask_admin.model.template.BaseListRowAction`
@@ -969,45 +952,63 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return actions + (self.column_extra_row_actions or [])
 
+    def get_column_names(self, only_columns, excluded_columns):
+        """
+            Returns a list of tuples with the model field name and formatted
+            field name.
+
+            :param only_columns:
+                List of columns to include in the results. If not set,
+                `scaffold_list_columns` will generate the list from the model.
+            :param excluded_columns:
+                List of columns to exclude from the results if `only_columns`
+                is not set.
+        """
+        if excluded_columns:
+            only_columns = [c for c in only_columns if c not in excluded_columns]
+
+        return [(c, self.get_column_name(c)) for c in only_columns]
+
+    def get_list_columns(self):
+        """
+            Uses `get_column_names` to get a list of tuples with the model
+            field name and formatted name for the columns in `column_list`
+            and not in `column_exclude_list`. If `column_list` is not set,
+            the columns from `scaffold_list_columns` will be used.
+        """
+        return self.get_column_names(
+            only_columns=self.column_list or self.scaffold_list_columns(),
+            excluded_columns=self.column_exclude_list,
+        )
+
     def get_details_columns(self):
         """
-            Returns a list of the model field names in the details view. If
-            `column_details_list` was set, returns it. Otherwise calls
-            `scaffold_list_columns` to generate the list from the model.
+            Uses `get_column_names` to get a list of tuples with the model
+            field name and formatted name for the columns in `column_details_list`
+            and not in `column_details_exclude_list`. If `column_details_list`
+            is not set, the columns from `scaffold_list_columns` will be used.
         """
-        columns = self.column_details_list
-
-        if columns is None:
-            columns = self.scaffold_list_columns()
-
-            # Filter excluded columns
-            if self.column_details_exclude_list:
-                columns = [c for c in columns
-                           if c not in self.column_details_exclude_list]
-
-        return [(c, self.get_column_name(c)) for c in columns]
+        only_columns = self.column_details_list or self.scaffold_list_columns()
+        return self.get_column_names(
+            only_columns=only_columns,
+            excluded_columns=self.column_details_exclude_list,
+        )
 
     def get_export_columns(self):
         """
-            Returns a list of the model field names in the export view. If
-            `column_export_list` was set, returns it. Otherwise, if
-            `column_list` was set, returns it. Otherwise calls
-            `scaffold_list_columns` to generate the list from the model.
+            Uses `get_column_names` to get a list of tuples with the model
+            field name and formatted name for the columns in `column_export_list`
+            and not in `column_export_exclude_list`. If `column_export_list` is
+            not set, it will attempt to use the columns from `column_list`
+            or finally the columns from `scaffold_list_columns` will be used.
         """
-        columns = self.column_export_list
+        only_columns = (self.column_export_list or self.column_list or
+                        self.scaffold_list_columns())
 
-        if columns is None:
-            columns = self.column_list
-
-            if columns is None:
-                columns = self.scaffold_list_columns()
-
-            # Filter excluded columns
-            if self.column_export_exclude_list:
-                columns = [c for c in columns
-                           if c not in self.column_export_exclude_list]
-
-        return [(c, self.get_column_name(c)) for c in columns]
+        return self.get_column_names(
+            only_columns=only_columns,
+            excluded_columns=self.column_export_exclude_list,
+        )
 
     def scaffold_sortable_columns(self):
         """
