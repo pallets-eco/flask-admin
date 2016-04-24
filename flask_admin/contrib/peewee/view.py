@@ -311,7 +311,9 @@ class ModelView(BaseModelView):
 
     def _order_by(self, query, joins, sort_field, sort_desc):
         if isinstance(sort_field, string_types):
-            field = getattr(self.model, sort_field)
+            field = self.model
+            for f in sort_field.split('.'):
+                field = getattr(field.rel_model if isinstance(field, ForeignKeyField) else field, f)
             query = query.order_by(field.desc() if sort_desc else field.asc())
         elif isinstance(sort_field, Field):
             if sort_field.model_class != self.model:

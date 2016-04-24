@@ -65,13 +65,14 @@ def create_models(db):
 
     class Model2(BaseModel):
         def __init__(self, char_field=None, int_field=None, float_field=None,
-                     bool_field=0):
+                     bool_field=0, model1=None):
             super(Model2, self).__init__()
 
             self.char_field = char_field
             self.int_field = int_field
             self.float_field = float_field
             self.bool_field = bool_field
+            self.model1 = model1
 
         char_field = peewee.CharField(max_length=20)
         int_field = peewee.IntegerField(null=True)
@@ -867,6 +868,39 @@ def test_default_sort():
     eq_(data[0].test1, 'a')
     eq_(data[1].test1, 'b')
     eq_(data[2].test1, 'c')
+
+
+def test_complex_sort():
+    app, db, admin = setup()
+    M1, M2 = create_models(db)
+
+    a = M1('a', 1)
+    b = M1('b', 2)
+    c = M1('c', 3)
+
+    a.save()
+    b.save()
+    c.save()
+
+    M2('c', model1=c).save()
+    M2('b', model1=b).save()
+    M2('a', model1=a).save()
+
+    eq_(M1.select().count(), 3)
+
+    class CustomModelView2(CustomModelView):
+        def get_query(self):
+            query = super(CustomModelView2, self).get_query()
+            return query.select(M2, M1).join(M1)
+
+    view = CustomModelView2(M2, column_default_sort='model1.test1')
+    admin.add_view(view)
+
+    _, data = view.get_list(0, None, None, None, None)
+
+    eq_(data[0].char_field, 'a')
+    eq_(data[1].char_field, 'b')
+    eq_(data[2].char_field, 'c')
 
 
 def test_extra_fields():
