@@ -2027,6 +2027,28 @@ def test_simple_list_pager():
     assert_true(count is None)
 
 
+def test_unlimited_page_size():
+    app, db, admin = setup()
+    M1, _ = create_models(db)
+
+    db.session.add_all([M1('1'), M1('2'), M1('3'), M1('4'), M1('5'), M1('6'),
+                        M1('7'), M1('8'), M1('9'), M1('10'), M1('11'),
+                        M1('12'), M1('13'), M1('14'), M1('15'), M1('16'),
+                        M1('17'), M1('18'), M1('19'), M1('20'), M1('21')])
+
+    view = CustomModelView(M1, db.session)
+
+    # test 0 as page_size
+    _, data = view.get_list(0, None, None, None, None, execute=True,
+                            page_size=0)
+    eq_(len(data), 21)
+
+    # test False as page_size
+    _, data = view.get_list(0, None, None, None, None, execute=True,
+                            page_size=False)
+    eq_(len(data), 21)
+
+
 def test_advanced_joins():
     app, db, admin = setup()
 

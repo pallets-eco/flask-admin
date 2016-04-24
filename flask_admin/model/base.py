@@ -1817,7 +1817,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 list_forms[self.get_pk_value(row)] = self.list_form(obj=row)
 
         # Calculate number of pages
-        if count is not None:
+        if count is not None and self.page_size:
             num_pages = count // self.page_size
             if count % self.page_size != 0:
                 num_pages += 1
