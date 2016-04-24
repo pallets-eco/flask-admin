@@ -1,36 +1,38 @@
-import warnings
-import re
 import csv
 import mimetypes
+import re
 import time
-
-from werkzeug import secure_filename
+import warnings
 
 from flask import (request, redirect, flash, abort, json, Response,
                    get_flashed_messages, stream_with_context)
 from jinja2 import contextfunction
-try:
-    import tablib
-except ImportError:
-    tablib = None
+from werkzeug import secure_filename
 from wtforms.fields import HiddenField
 from wtforms.fields.core import UnboundField
 from wtforms.validators import ValidationError, InputRequired
 
-from flask_admin.babel import gettext
-
-from flask_admin.base import BaseView, expose
-from flask_admin.form import BaseForm, FormOpts, rules
-from flask_admin.model import filters, typefmt, template
-from flask_admin.actions import ActionsMixin
-from flask_admin.helpers import (get_form_data, validate_form_on_submit,
-                                 get_redirect_target, flash_errors)
-from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
 from flask_admin._compat import (iteritems, itervalues, OrderedDict,
                                  as_unicode, csv_encode, text_type)
-from .helpers import prettify_name, get_mdict_item_or_list
+from flask_admin.actions import ActionsMixin
+from flask_admin.babel import gettext
+from flask_admin.base import BaseView, expose
+from flask_admin.form import BaseForm, FormOpts, rules
+from flask_admin.helpers import (get_form_data, validate_form_on_submit,
+                                 get_redirect_target, flash_errors)
+from flask_admin.model import filters, typefmt, template
+from flask_admin.tools import rec_getattr
+
 from .ajax import AjaxModelLoader
+from .helpers import prettify_name, get_mdict_item_or_list
+
+
+try:
+    import tablib
+except ImportError:
+    tablib = None
+
 
 # Used to generate filter query string name
 filter_char_re = re.compile('[^a-z0-9 ]')
@@ -41,6 +43,7 @@ class ViewArgs(object):
     """
         List view arguments.
     """
+
     def __init__(self, page=None, sort=None, sort_desc=None, search=None, filters=None, extra_args=None):
         self.page = page
         self.sort = sort
@@ -70,6 +73,7 @@ class ViewArgs(object):
 
 
 class FilterGroup(object):
+
     def __init__(self, label):
         self.label = label
         self.filters = []
@@ -926,6 +930,11 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         if self.column_labels and field in self.column_labels:
             return self.column_labels[field]
+        elif hasattr(self.model, '_fields') and hasattr(self.model._fields.get(field), 'verbose_name'):
+            column_name = getattr(self.model._fields.get(field), 'verbose_name')
+            if column_name is None:
+                column_name = self._prettify_name(field)
+            return column_name.decode('utf-8') if isinstance(column_name, str) else column_name
         else:
             return self._prettify_name(field)
 
@@ -1519,7 +1528,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         pass
 
-    def on_form_prefill (self, form, id):
+    def on_form_prefill(self, form, id):
         """
             Perform additional actions to pre-fill the edit form.
 
@@ -2117,6 +2126,7 @@ class BaseModelView(BaseView, ActionsMixin):
             An object that implements just the write method of the file-like
             interface.
             """
+
             def write(self, value):
                 """
                 Write the value by returning it, instead of storing
