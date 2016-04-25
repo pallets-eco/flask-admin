@@ -1820,8 +1820,10 @@ class BaseModelView(BaseView, ActionsMixin):
         # Calculate number of pages
         if count is not None and self.page_size:
             num_pages = int(ceil(count / float(self.page_size)))
+        elif not self.page_size:
+            num_pages = 0  # hide pager for unlimited page_size
         else:
-            num_pages = None
+            num_pages = None  # use simple pager
 
         # Various URL generation helpers
         def pager_url(p):
