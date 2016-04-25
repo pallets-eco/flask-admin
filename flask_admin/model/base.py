@@ -3,6 +3,7 @@ import re
 import csv
 import mimetypes
 import time
+from math import ceil
 
 from werkzeug import secure_filename
 
@@ -1818,9 +1819,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # Calculate number of pages
         if count is not None and self.page_size:
-            num_pages = count // self.page_size
-            if count % self.page_size != 0:
-                num_pages += 1
+            num_pages = int(ceil(count / float(self.page_size)))
         else:
             num_pages = None
 
