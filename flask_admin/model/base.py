@@ -3,6 +3,7 @@ import re
 import csv
 import mimetypes
 import time
+from math import ceil
 
 from werkzeug import secure_filename
 
@@ -1817,12 +1818,12 @@ class BaseModelView(BaseView, ActionsMixin):
                 list_forms[self.get_pk_value(row)] = self.list_form(obj=row)
 
         # Calculate number of pages
-        if count is not None:
-            num_pages = count // self.page_size
-            if count % self.page_size != 0:
-                num_pages += 1
+        if count is not None and self.page_size:
+            num_pages = int(ceil(count / float(self.page_size)))
+        elif not self.page_size:
+            num_pages = 0  # hide pager for unlimited page_size
         else:
-            num_pages = None
+            num_pages = None  # use simple pager
 
         # Various URL generation helpers
         def pager_url(p):
