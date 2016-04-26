@@ -726,3 +726,70 @@ def test_export_csv():
     rv = client.get('/admin/macro_exception_macro_override/export/csv/')
     data = rv.data.decode('utf-8')
     eq_(rv.status_code, 500)
+
+
+def test_list_row_actions():
+    app, admin = setup()
+    client = app.test_client()
+
+    from flask_admin.model import template
+
+    # Test default actions
+    view = MockModelView(Model, endpoint='test')
+    admin.add_view(view)
+
+    actions = view.get_list_row_actions()
+    ok_(isinstance(actions[0], template.EditRowAction))
+    ok_(isinstance(actions[1], template.DeleteRowAction))
+
+    rv = client.get('/admin/test/')
+    eq_(rv.status_code, 200)
+
+    # Test default actions
+    view = MockModelView(Model, endpoint='test1', can_edit=False, can_delete=False, can_view_details=True)
+    admin.add_view(view)
+
+    actions = view.get_list_row_actions()
+    eq_(len(actions), 1)
+    ok_(isinstance(actions[0], template.ViewRowAction))
+
+    rv = client.get('/admin/test1/')
+    eq_(rv.status_code, 200)
+
+    # Test popups
+    view = MockModelView(Model, endpoint='test2',
+                         can_view_details=True,
+                         details_modal=True,
+                         edit_modal=True)
+    admin.add_view(view)
+
+    actions = view.get_list_row_actions()
+    ok_(isinstance(actions[0], template.ViewPopupRowAction))
+    ok_(isinstance(actions[1], template.EditPopupRowAction))
+    ok_(isinstance(actions[2], template.DeleteRowAction))
+
+    rv = client.get('/admin/test2/')
+    eq_(rv.status_code, 200)
+
+    # Test custom views
+    view = MockModelView(Model, endpoint='test3',
+                         column_extra_row_actions=[
+                             template.LinkRowAction('glyphicon glyphicon-off', 'http://localhost/?id={row_id}'),
+                             template.EndpointLinkRowAction('glyphicon glyphicon-test', 'test1.index_view')
+                         ])
+    admin.add_view(view)
+
+    actions = view.get_list_row_actions()
+    ok_(isinstance(actions[0], template.EditRowAction))
+    ok_(isinstance(actions[1], template.DeleteRowAction))
+    ok_(isinstance(actions[2], template.LinkRowAction))
+    ok_(isinstance(actions[3], template.EndpointLinkRowAction))
+
+    rv = client.get('/admin/test3/')
+    eq_(rv.status_code, 200)
+
+    data = rv.data.decode('utf-8')
+
+    ok_('glyphicon-off' in data)
+    ok_('http://localhost/?id=' in data)
+    ok_('glyphicon-test' in data)

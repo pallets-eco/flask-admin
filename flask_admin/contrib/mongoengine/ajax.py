@@ -76,7 +76,7 @@ def create_ajax_loader(model, name, field_name, opts):
 
     ftype = type(prop).__name__
 
-    if ftype == 'ListField':
+    if ftype == 'ListField' or ftype == 'SortedListField':
         prop = prop.field
         ftype = type(prop).__name__
 
@@ -97,7 +97,7 @@ def process_ajax_references(references, view):
     def handle_field(field, subdoc, base):
         ftype = type(field).__name__
 
-        if ftype == 'ListField':
+        if ftype == 'ListField' or ftype == 'SortedListField':
             child_doc = getattr(subdoc, '_form_subdocuments', {}).get(None)
 
             if child_doc:

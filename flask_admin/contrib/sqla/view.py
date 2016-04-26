@@ -494,43 +494,42 @@ class ModelView(BaseModelView):
 
             return result
 
-    def get_list_columns(self):
+    def get_column_names(self, only_columns, excluded_columns):
         """
             Returns a list of tuples with the model field name and formatted
-            field name. If `column_list` was set, returns it. Otherwise calls
-            `scaffold_list_columns` to generate the list from the model.
+            field name.
+
+            Overridden to handle special columns like InstrumentedAttribute.
+
+            :param only_columns:
+                List of columns to include in the results. If not set,
+                `scaffold_list_columns` will generate the list from the model.
+            :param excluded_columns:
+                List of columns to exclude from the results.
         """
-        if self.column_list is None:
-            columns = self.scaffold_list_columns()
+        if excluded_columns:
+            only_columns = [c for c in only_columns if c not in excluded_columns]
 
-            # Filter excluded columns
-            if self.column_exclude_list:
-                columns = [c for c in columns
-                           if c not in self.column_exclude_list]
+        formatted_columns = []
+        for c in only_columns:
+            column, path = tools.get_field_with_path(self.model, c)
 
-            return [(c, self.get_column_name(c)) for c in columns]
-        else:
-            columns = []
-
-            for c in self.column_list:
-                column, path = tools.get_field_with_path(self.model, c)
-
-                if path:
-                    # column is in another table, use full path
-                    column_name = text_type(c)
+            if path:
+                # column is a relation (InstrumentedAttribute), use full path
+                column_name = text_type(c)
+            else:
+                # column is in same table, use only model attribute name
+                if getattr(column, 'key', None) is not None:
+                    column_name = column.key
                 else:
-                    # column is in same table, use only model attribute name
-                    if getattr(column, 'key', None) is not None:
-                        column_name = column.key
-                    else:
-                        column_name = text_type(c)
+                    column_name = text_type(c)
 
-                visible_name = self.get_column_name(column_name)
+            visible_name = self.get_column_name(column_name)
 
-                # column_name must match column_name in `get_sortable_columns`
-                columns.append((column_name, visible_name))
+            # column_name must match column_name in `get_sortable_columns`
+            formatted_columns.append((column_name, visible_name))
 
-            return columns
+        return formatted_columns
 
     def init_search(self):
         """
@@ -564,11 +563,8 @@ class ModelView(BaseModelView):
         if attr is None:
             raise Exception('Failed to find field for filter: %s' % name)
 
-        # Figure out filters for related column, unless it's a hybrid_property
-        if isinstance(attr, ColumnElement):
-            warnings.warn(('Unable to scaffold the filter for %s, scaffolding '
-                           'for hybrid_property is not supported yet.') % name)
-        elif hasattr(attr, 'property') and hasattr(attr.property, 'direction'):
+        # Figure out filters for related column
+        if hasattr(attr, 'property') and hasattr(attr.property, 'direction'):
             filters = []
 
             for p in self._get_model_iterator(attr.property.mapper.class_):
@@ -599,14 +595,19 @@ class ModelView(BaseModelView):
 
             return filters
         else:
-            columns = tools.get_columns_for_field(attr)
+            is_hybrid_property = isinstance(attr, ColumnElement)
+            if is_hybrid_property:
+                column = attr
+            else:
+                columns = tools.get_columns_for_field(attr)
 
-            if len(columns) > 1:
-                raise Exception('Can not filter more than on one column for %s' % name)
+                if len(columns) > 1:
+                    raise Exception('Can not filter more than on one column for %s' % name)
 
-            column = columns[0]
+                column = columns[0]
 
-            if (tools.need_join(self.model, column.table) and
+            # Join not needed for hybrid properties
+            if (not is_hybrid_property and tools.need_join(self.model, column.table) and
                     name not in self.column_labels):
                 visible_name = '%s / %s' % (
                     self.get_column_name(column.table.name),
@@ -629,7 +630,7 @@ class ModelView(BaseModelView):
 
             if joins:
                 self._filter_joins[column] = joins
-            elif tools.need_join(self.model, column.table):
+            elif not is_hybrid_property and tools.need_join(self.model, column.table):
                 self._filter_joins[column] = [column.table]
 
             return flt

@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-12-11 17:54-0600\n"
-"PO-Revision-Date: 2015-12-11 18:54-0500\n"
+"POT-Creation-Date: 2016-03-27 19:47-0500\n"
+"PO-Revision-Date: 2016-03-27 20:47-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.1.1\n"
+"Generated-By: Babel 2.2.0\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: flask-admin\n"
@@ -17,65 +17,70 @@ msgstr ""
 "X-Crowdin-File: admin.pot\n"
 "Language: sr_SP\n"
 
-#: ../flask_admin/base.py:439
+#: ../flask_admin/base.py:440
 msgid "Home"
 msgstr "Dom"
 
-#: ../flask_admin/contrib/fileadmin.py:255
+#: ../flask_admin/contrib/rediscli.py:125
+msgid "Cli: Invalid command."
+msgstr "Cli: Nevažećih komandu."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:330
 msgid "File to upload"
 msgstr "Arhivski snimak, da možemo ubaciti"
 
-#: ../flask_admin/contrib/fileadmin.py:263
+#: ../flask_admin/contrib/fileadmin/__init__.py:338
 msgid "File required."
 msgstr "Arhivski snimak traži."
 
-#: ../flask_admin/contrib/fileadmin.py:268
+#: ../flask_admin/contrib/fileadmin/__init__.py:343
 msgid "Invalid file type."
 msgstr "Nevažećih fajl tip."
 
-#: ../flask_admin/contrib/fileadmin.py:279
+#: ../flask_admin/contrib/fileadmin/__init__.py:354
 msgid "Content"
 msgstr "Sadržaj"
 
-#: ../flask_admin/contrib/fileadmin.py:293
+#: ../flask_admin/contrib/fileadmin/__init__.py:368
 msgid "Invalid name"
 msgstr "Nevažećih ime"
 
-#: ../flask_admin/contrib/fileadmin.py:301
+#: ../flask_admin/contrib/fileadmin/__init__.py:376
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:35
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:35
 msgid "Name"
 msgstr "Ime"
 
-#: ../flask_admin/contrib/fileadmin.py:600
+#: ../flask_admin/contrib/fileadmin/__init__.py:678
 #, python-format
 msgid "File \"%(name)s\" already exists."
 msgstr "Dokument \"%(name)s\" već postoji."
 
-#: ../flask_admin/contrib/fileadmin.py:624
-#: ../flask_admin/contrib/fileadmin.py:691
-#: ../flask_admin/contrib/fileadmin.py:753
-#: ../flask_admin/contrib/fileadmin.py:800
-#: ../flask_admin/contrib/fileadmin.py:848
-#: ../flask_admin/contrib/fileadmin.py:901 ../flask_admin/model/base.py:1979
+#: ../flask_admin/contrib/fileadmin/__init__.py:723
+#: ../flask_admin/contrib/fileadmin/__init__.py:784
+#: ../flask_admin/contrib/fileadmin/__init__.py:846
+#: ../flask_admin/contrib/fileadmin/__init__.py:899
+#: ../flask_admin/contrib/fileadmin/__init__.py:946
+#: ../flask_admin/contrib/fileadmin/__init__.py:998
+#: ../flask_admin/model/base.py:2097
 msgid "Permission denied."
 msgstr "Zahtjev se odbija."
 
-#: ../flask_admin/contrib/fileadmin.py:687
+#: ../flask_admin/contrib/fileadmin/__init__.py:780
 msgid "File uploading is disabled."
 msgstr "Arhivski snimak dobijamo invalid."
 
-#: ../flask_admin/contrib/fileadmin.py:698
+#: ../flask_admin/contrib/fileadmin/__init__.py:791
 #, python-format
 msgid "Successfully saved file: %(name)s"
 msgstr "Uspešno sačuvana datoteka: %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:702
+#: ../flask_admin/contrib/fileadmin/__init__.py:795
 #, python-format
 msgid "Failed to save file: %(error)s"
 msgstr "Nije uspeo da spasi dosije: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:710
+#: ../flask_admin/contrib/fileadmin/__init__.py:803
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:121
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:123
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:121
@@ -83,21 +88,21 @@ msgstr "Nije uspeo da spasi dosije: %(error)s"
 msgid "Upload File"
 msgstr "Postavljanja fajl"
 
-#: ../flask_admin/contrib/fileadmin.py:749
+#: ../flask_admin/contrib/fileadmin/__init__.py:842
 msgid "Directory creation is disabled."
 msgstr "Režija kreacija sa invaliditetom."
 
-#: ../flask_admin/contrib/fileadmin.py:762
+#: ../flask_admin/contrib/fileadmin/__init__.py:855
 #, python-format
 msgid "Successfully created directory: %(directory)s"
 msgstr "Uspešno kreirano kataloga: %(directory)s"
 
-#: ../flask_admin/contrib/fileadmin.py:766
+#: ../flask_admin/contrib/fileadmin/__init__.py:859
 #, python-format
 msgid "Failed to create directory: %(error)s"
 msgstr "Nije uspela da stvori železničku upravu: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:776
+#: ../flask_admin/contrib/fileadmin/__init__.py:869
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:132
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:134
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:132
@@ -105,121 +110,117 @@ msgstr "Nije uspela da stvori železničku upravu: %(error)s"
 msgid "Create Directory"
 msgstr "Stvori železničku upravu"
 
-#: ../flask_admin/contrib/fileadmin.py:796
+#: ../flask_admin/contrib/fileadmin/__init__.py:895
 msgid "Deletion is disabled."
 msgstr "Brisanje sa invaliditetom."
 
-#: ../flask_admin/contrib/fileadmin.py:805
+#: ../flask_admin/contrib/fileadmin/__init__.py:904
 msgid "Directory deletion is disabled."
 msgstr "Režija brisanje sa invaliditetom."
 
-#: ../flask_admin/contrib/fileadmin.py:812
+#: ../flask_admin/contrib/fileadmin/__init__.py:910
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
 msgstr "Režija \"%(path)s\" uspešno izbriše."
 
-#: ../flask_admin/contrib/fileadmin.py:814
+#: ../flask_admin/contrib/fileadmin/__init__.py:912
 #, python-format
 msgid "Failed to delete directory: %(error)s"
 msgstr "Nije uspeo da obrišem režija: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:820
-#: ../flask_admin/contrib/fileadmin.py:978
+#: ../flask_admin/contrib/fileadmin/__init__.py:918
+#: ../flask_admin/contrib/fileadmin/__init__.py:1075
 #, python-format
 msgid "File \"%(name)s\" was successfully deleted."
 msgstr "Dokument \"%(name)s\" uspešno izbriše."
 
-#: ../flask_admin/contrib/fileadmin.py:822
-#: ../flask_admin/contrib/fileadmin.py:980
+#: ../flask_admin/contrib/fileadmin/__init__.py:920
+#: ../flask_admin/contrib/fileadmin/__init__.py:1077
 #, python-format
 msgid "Failed to delete file: %(name)s"
 msgstr "Nije uspeo da obrišem dosije: %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:844
+#: ../flask_admin/contrib/fileadmin/__init__.py:942
 msgid "Renaming is disabled."
 msgstr "Preimenovanje invalid."
 
-#: ../flask_admin/contrib/fileadmin.py:852
+#: ../flask_admin/contrib/fileadmin/__init__.py:950
 msgid "Path does not exist."
 msgstr "Ne postoji put."
 
-#: ../flask_admin/contrib/fileadmin.py:863
+#: ../flask_admin/contrib/fileadmin/__init__.py:960
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
 msgstr "Uspešno preimenovane \"%(src)s\" da \"%(dst)s\""
 
-#: ../flask_admin/contrib/fileadmin.py:866
+#: ../flask_admin/contrib/fileadmin/__init__.py:963
 #, python-format
 msgid "Failed to rename: %(error)s"
 msgstr "Nije uspeo da nazovu: %(error)s"
 
-#: ../flask_admin/contrib/fileadmin.py:880
+#: ../flask_admin/contrib/fileadmin/__init__.py:977
 #, python-format
 msgid "Rename %(name)s"
 msgstr "Preimenuj %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:917
+#: ../flask_admin/contrib/fileadmin/__init__.py:1014
 #, python-format
 msgid "Error saving changes to %(name)s."
 msgstr "Greške spašavanje promene u %(name)s."
 
-#: ../flask_admin/contrib/fileadmin.py:921
+#: ../flask_admin/contrib/fileadmin/__init__.py:1018
 #, python-format
 msgid "Changes to %(name)s saved successfully."
 msgstr "Izmene %(name)s spasio uspešno."
 
-#: ../flask_admin/contrib/fileadmin.py:930
+#: ../flask_admin/contrib/fileadmin/__init__.py:1027
 #, python-format
 msgid "Error reading %(name)s."
 msgstr "Greške čitanje %(name)s."
 
-#: ../flask_admin/contrib/fileadmin.py:933
-#: ../flask_admin/contrib/fileadmin.py:942
+#: ../flask_admin/contrib/fileadmin/__init__.py:1030
+#: ../flask_admin/contrib/fileadmin/__init__.py:1039
 #, python-format
 msgid "Unexpected error while reading from %(name)s"
 msgstr "Neočekivano greške dok čitajući iz %(name)s"
 
-#: ../flask_admin/contrib/fileadmin.py:939
+#: ../flask_admin/contrib/fileadmin/__init__.py:1036
 #, python-format
 msgid "Cannot edit %(name)s."
 msgstr "Ne mogu edit %(name)s."
 
-#: ../flask_admin/contrib/fileadmin.py:957
+#: ../flask_admin/contrib/fileadmin/__init__.py:1054
 #, python-format
 msgid "Editing %(path)s"
 msgstr "Uređivanje %(path)s"
 
-#: ../flask_admin/contrib/fileadmin.py:965
-#: ../flask_admin/contrib/mongoengine/view.py:638
-#: ../flask_admin/contrib/peewee/view.py:457
-#: ../flask_admin/contrib/pymongo/view.py:359
-#: ../flask_admin/contrib/sqla/view.py:1077
+#: ../flask_admin/contrib/fileadmin/__init__.py:1062
+#: ../flask_admin/contrib/mongoengine/view.py:661
+#: ../flask_admin/contrib/peewee/view.py:480
+#: ../flask_admin/contrib/pymongo/view.py:384
+#: ../flask_admin/contrib/sqla/view.py:1088
 msgid "Delete"
 msgstr "Čim je"
 
-#: ../flask_admin/contrib/fileadmin.py:966
+#: ../flask_admin/contrib/fileadmin/__init__.py:1063
 msgid "Are you sure you want to delete these files?"
 msgstr "Da li si siguran da želiš da čim je ovi fajlovi?"
 
-#: ../flask_admin/contrib/fileadmin.py:969
+#: ../flask_admin/contrib/fileadmin/__init__.py:1066
 msgid "File deletion is disabled."
 msgstr "Arhivski snimak brisanje sa invaliditetom."
 
-#: ../flask_admin/contrib/fileadmin.py:982
+#: ../flask_admin/contrib/fileadmin/__init__.py:1079
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:17
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:26
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:22
 #: ../flask_admin/templates/bootstrap3/admin/model/details.html:17
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:26
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:22
 msgid "Edit"
 msgstr "Snimanje"
 
-#: ../flask_admin/contrib/rediscli.py:125
-msgid "Cli: Invalid command."
-msgstr "Cli: Nevažećih komandu."
-
-#: ../flask_admin/contrib/geoa/fields.py:29
-msgid "Invalid JSON"
-msgstr "JSON važeći"
+#: ../flask_admin/contrib/fileadmin/s3.py:152
+msgid "Cannot operate on non empty directories"
+msgstr ""
 
 #: ../flask_admin/contrib/mongoengine/filters.py:38
 #: ../flask_admin/contrib/peewee/filters.py:38
@@ -291,47 +292,47 @@ msgstr "nije na listi"
 msgid "not between"
 msgstr "Ne između"
 
-#: ../flask_admin/contrib/mongoengine/view.py:528
+#: ../flask_admin/contrib/mongoengine/view.py:551
 #, python-format
 msgid "Failed to get model. %(error)s"
 msgstr "Nije uspeo da dobije model. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:547
-#: ../flask_admin/contrib/peewee/view.py:405
-#: ../flask_admin/contrib/pymongo/view.py:291
-#: ../flask_admin/contrib/sqla/view.py:1006
+#: ../flask_admin/contrib/mongoengine/view.py:570
+#: ../flask_admin/contrib/peewee/view.py:428
+#: ../flask_admin/contrib/pymongo/view.py:316
+#: ../flask_admin/contrib/sqla/view.py:1017
 #, python-format
 msgid "Failed to create record. %(error)s"
 msgstr "Nije uspeo da se stvori rekord. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:573
-#: ../flask_admin/contrib/peewee/view.py:424
-#: ../flask_admin/contrib/pymongo/view.py:316
-#: ../flask_admin/contrib/sqla/view.py:1032 ../flask_admin/model/base.py:2079
-#: ../flask_admin/model/base.py:2088
+#: ../flask_admin/contrib/mongoengine/view.py:596
+#: ../flask_admin/contrib/peewee/view.py:447
+#: ../flask_admin/contrib/pymongo/view.py:341
+#: ../flask_admin/contrib/sqla/view.py:1043 ../flask_admin/model/base.py:2234
+#: ../flask_admin/model/base.py:2242 ../flask_admin/model/base.py:2244
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr "Nije uspeo da se stvori rekord. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:596
-#: ../flask_admin/contrib/peewee/view.py:439
-#: ../flask_admin/contrib/pymongo/view.py:341
-#: ../flask_admin/contrib/sqla/view.py:1057
+#: ../flask_admin/contrib/mongoengine/view.py:619
+#: ../flask_admin/contrib/peewee/view.py:462
+#: ../flask_admin/contrib/pymongo/view.py:366
+#: ../flask_admin/contrib/sqla/view.py:1068
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr "Nije uspeo da obrišem rekord. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:639
-#: ../flask_admin/contrib/peewee/view.py:458
-#: ../flask_admin/contrib/pymongo/view.py:360
-#: ../flask_admin/contrib/sqla/view.py:1078
+#: ../flask_admin/contrib/mongoengine/view.py:662
+#: ../flask_admin/contrib/peewee/view.py:481
+#: ../flask_admin/contrib/pymongo/view.py:385
+#: ../flask_admin/contrib/sqla/view.py:1089
 msgid "Are you sure you want to delete selected records?"
 msgstr "Da li si siguran da želiš da obrišem odabrani ploče?"
 
-#: ../flask_admin/contrib/mongoengine/view.py:648
-#: ../flask_admin/contrib/peewee/view.py:475
-#: ../flask_admin/contrib/pymongo/view.py:370
-#: ../flask_admin/contrib/sqla/view.py:1094 ../flask_admin/model/base.py:1957
+#: ../flask_admin/contrib/mongoengine/view.py:671
+#: ../flask_admin/contrib/peewee/view.py:498
+#: ../flask_admin/contrib/pymongo/view.py:395
+#: ../flask_admin/contrib/sqla/view.py:1105 ../flask_admin/model/base.py:2047
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
@@ -339,20 +340,28 @@ msgstr[0] "Rekord uspešno izbriše."
 msgstr[1] "%(count)s ploče su uspešno izbriše."
 msgstr[2] "%(count)s ploče su uspešno izbriše."
 
-#: ../flask_admin/contrib/mongoengine/view.py:654
-#: ../flask_admin/contrib/peewee/view.py:481
-#: ../flask_admin/contrib/pymongo/view.py:375
-#: ../flask_admin/contrib/sqla/view.py:1102
+#: ../flask_admin/contrib/mongoengine/view.py:677
+#: ../flask_admin/contrib/peewee/view.py:504
+#: ../flask_admin/contrib/pymongo/view.py:400
+#: ../flask_admin/contrib/sqla/view.py:1113
 #, python-format
 msgid "Failed to delete records. %(error)s"
 msgstr "Nije uspeo da obrišem rekord. %(error)s"
 
-#: ../flask_admin/contrib/sqla/fields.py:123
-#: ../flask_admin/contrib/sqla/fields.py:173
-#: ../flask_admin/contrib/sqla/fields.py:178 ../flask_admin/model/fields.py:225
-#: ../flask_admin/model/fields.py:274
+#: ../flask_admin/contrib/sqla/fields.py:127
+#: ../flask_admin/contrib/sqla/fields.py:177
+#: ../flask_admin/contrib/sqla/fields.py:182 ../flask_admin/model/fields.py:173
+#: ../flask_admin/model/fields.py:222
 msgid "Not a valid choice"
 msgstr "Nije važeći izbor"
+
+#: ../flask_admin/contrib/sqla/fields.py:187
+msgid "Key"
+msgstr ""
+
+#: ../flask_admin/contrib/sqla/fields.py:188
+msgid "Value"
+msgstr ""
 
 #: ../flask_admin/contrib/sqla/validators.py:42
 msgid "Already exists."
@@ -366,18 +375,22 @@ msgstr[0] "Bar %(num)d zapisa je potrebno"
 msgstr[1] ""
 msgstr[2] ""
 
-#: ../flask_admin/contrib/sqla/view.py:985
+#: ../flask_admin/contrib/sqla/view.py:996
 #, python-format
 msgid "Integrity error. %(message)s"
 msgstr "Integritet grešku. %(message)s"
 
-#: ../flask_admin/form/fields.py:94
+#: ../flask_admin/form/fields.py:96
 msgid "Invalid time format"
 msgstr "Nevažećih vreme formatu"
 
-#: ../flask_admin/form/fields.py:140
+#: ../flask_admin/form/fields.py:142
 msgid "Invalid Choice: could not coerce"
 msgstr "Nevažećih izbor: ne mogu muza"
+
+#: ../flask_admin/form/fields.py:205
+msgid "Invalid JSON"
+msgstr "JSON važeći"
 
 #: ../flask_admin/form/upload.py:205
 msgid "Invalid file extension"
@@ -388,33 +401,42 @@ msgstr "Produženje nevažećih fajl"
 msgid "File \"%s\" already exists."
 msgstr "Dokument \"%s\" već postoji."
 
-#: ../flask_admin/model/base.py:1515
+#: ../flask_admin/model/base.py:1596
 msgid "There are no items in the table."
 msgstr "Postoje nema predmeti na sto."
 
-#: ../flask_admin/model/base.py:1539
+#: ../flask_admin/model/base.py:1620
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
 msgstr "Nevažećih Filter vrednost: %(value)s"
 
-#: ../flask_admin/model/base.py:1822
+#: ../flask_admin/model/base.py:1913
 msgid "Record was successfully created."
 msgstr "Rekord je uspešno uspostavljena."
 
-#: ../flask_admin/model/base.py:1866 ../flask_admin/model/base.py:1918
-#: ../flask_admin/model/base.py:1952
+#: ../flask_admin/model/base.py:1957 ../flask_admin/model/base.py:2009
+#: ../flask_admin/model/base.py:2042 ../flask_admin/model/base.py:2226
 msgid "Record does not exist."
 msgstr "Zapis ne postoji."
 
-#: ../flask_admin/model/base.py:1875 ../flask_admin/model/base.py:2084
+#: ../flask_admin/model/base.py:1966 ../flask_admin/model/base.py:2230
 msgid "Record was successfully saved."
 msgstr "Rekord uspešno spasao."
 
-#: ../flask_admin/model/filters.py:98
+#: ../flask_admin/model/base.py:2151
+msgid "Tablib dependency not installed."
+msgstr ""
+
+#: ../flask_admin/model/base.py:2178
+#, python-format
+msgid "Export type \"%(type)s not supported."
+msgstr ""
+
+#: ../flask_admin/model/filters.py:98 ../flask_admin/model/widgets.py:111
 msgid "Yes"
 msgstr "Da"
 
-#: ../flask_admin/model/filters.py:99
+#: ../flask_admin/model/filters.py:99 ../flask_admin/model/widgets.py:110
 msgid "No"
 msgstr "ne"
 
@@ -422,6 +444,19 @@ msgstr "ne"
 #: ../flask_admin/model/filters.py:252
 msgid "between"
 msgstr "između"
+
+#: ../flask_admin/model/template.py:81 ../flask_admin/model/template.py:88
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
+msgid "View Record"
+msgstr "Prikaz zapisa"
+
+#: ../flask_admin/model/template.py:95 ../flask_admin/model/template.py:102
+#: ../flask_admin/model/template.py:109
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:11
+msgid "Edit Record"
+msgstr "Uredite Zapis"
 
 #: ../flask_admin/templates/bootstrap2/admin/actions.html:4
 #: ../flask_admin/templates/bootstrap3/admin/actions.html:4
@@ -437,6 +472,16 @@ msgstr "Spasi"
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:195
 msgid "Cancel"
 msgstr "Otkaži"
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:257
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:241
+msgid "Save and Add Another"
+msgstr "Spremite i dodajte novi"
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:260
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:244
+msgid "Save and Continue Editing"
+msgstr "Spremite i nastavite s uređivanjem"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
@@ -472,48 +517,34 @@ msgstr "Jesi li siguran da hoćeš da obrišem \\'%(name)s\\'?"
 msgid "Please select at least one file."
 msgstr "Molim te izabere najmanje jedan dokument."
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:5
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:5
-#: ../flask_admin/templates/bootstrap3/admin/model/create.html:5
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:5
-msgid "Save and Add Another"
-msgstr "Spremite i dodajte novi"
-
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:6
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:6
-#: ../flask_admin/templates/bootstrap3/admin/model/create.html:6
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:6
-msgid "Save and Continue Editing"
-msgstr "Spremite i nastavite s uređivanjem"
-
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:18
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:14
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:8
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:18
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:16
-#: ../flask_admin/templates/bootstrap3/admin/model/create.html:18
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:14
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:14
 #: ../flask_admin/templates/bootstrap3/admin/model/details.html:8
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:18
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:16
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:14
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:17
 msgid "List"
 msgstr "Listu"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/create.html:21
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:17
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:12
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:22
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:22
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:24
-#: ../flask_admin/templates/bootstrap3/admin/model/create.html:21
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:18
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:25
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:17
 #: ../flask_admin/templates/bootstrap3/admin/model/details.html:12
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:22
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:18
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:25
 msgid "Create"
 msgstr "Stvori"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/details.html:21
-#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:30
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:26
 #: ../flask_admin/templates/bootstrap3/admin/model/details.html:21
-#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:30
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:26
 msgid "Details"
 msgstr "Detalji"
 
@@ -529,6 +560,11 @@ msgstr "Филтер"
 msgid "Delete?"
 msgstr "Čim je?"
 
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:30
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:33
+msgid "New"
+msgstr ""
+
 #: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:40
 #: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:43
 msgid "Add"
@@ -539,90 +575,66 @@ msgstr "Dodaj"
 msgid "Add Filter"
 msgstr "Dodajte Filter"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:17
-#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:17
-msgid "Apply"
-msgstr "Primeni"
-
-#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:19
-#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:19
-msgid "Reset Filters"
-msgstr "Reset filteri"
-
-#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:38
-#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:45
-#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:38
-#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:43
-msgid "Search"
-msgstr "Potraga"
-
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:22
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:24
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:22
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:24
-msgid "Create new record"
-msgstr "Stvori novi rekord"
-
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:31
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:31
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:18
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:23
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:30
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:18
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:30
 msgid "Export"
 msgstr "Izvezite"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:67
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:67
-msgid "Select all records"
-msgstr "Izaberu sve podatke"
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:38
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:38
+msgid "Apply"
+msgstr "Primeni"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:78
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:87
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:78
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:87
-#, python-format
-msgid "Sort by %(name)s"
-msgstr "Vrsta koju %(name)s"
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:40
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:40
+msgid "Reset Filters"
+msgstr "Reset filteri"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:109
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:109
-msgid "Select record"
-msgstr "Izaberu rekord"
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:59
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:66
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:59
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:64
+msgid "Search"
+msgstr "Potraga"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:117
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:119
-#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:117
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:119
-#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
-msgid "View Record"
-msgstr "Prikaz zapisa"
-
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:126
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:128
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:126
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:128
-msgid "Edit record"
-msgstr "Uredi zapis"
-
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:142
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:142
-msgid "Are you sure you want to delete this record?"
-msgstr "Da li ste sigurani da želite obrisati ovaj zapis?"
-
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:142
-msgid "Delete record"
-msgstr "Obrišite zapis"
-
-#: ../flask_admin/templates/bootstrap2/admin/model/list.html:199
-#: ../flask_admin/templates/bootstrap3/admin/model/list.html:200
-msgid "Please select at least one record."
-msgstr "Molimo odaberite najmanje jedan zapis."
-
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:25
 #: ../flask_admin/templates/bootstrap2/admin/model/modals/create.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:25
 #: ../flask_admin/templates/bootstrap3/admin/model/modals/create.html:10
 msgid "Create New Record"
 msgstr "Stvori Novi Zapis"
 
-#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:22
-#: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:11
-msgid "Edit Record"
-msgstr "Uredite Zapis"
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:70
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:69
+msgid "Select all records"
+msgstr "Izaberu sve podatke"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:83
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:92
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:82
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:91
+#, python-format
+msgid "Sort by %(name)s"
+msgstr "Vrsta koju %(name)s"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:114
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:113
+msgid "Select record"
+msgstr "Izaberu rekord"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:178
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:179
+msgid "Please select at least one record."
+msgstr "Molimo odaberite najmanje jedan zapis."
+
+#: ../flask_admin/templates/bootstrap2/admin/model/row_actions.html:34
+#: ../flask_admin/templates/bootstrap3/admin/model/row_actions.html:34
+msgid "Are you sure you want to delete this record?"
+msgstr "Da li ste sigurani da želite obrisati ovaj zapis?"
 

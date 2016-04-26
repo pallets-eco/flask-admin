@@ -3,6 +3,7 @@ import re
 import csv
 import mimetypes
 import time
+from math import ceil
 
 from werkzeug import secure_filename
 
@@ -21,7 +22,7 @@ from flask_admin.babel import gettext
 
 from flask_admin.base import BaseView, expose
 from flask_admin.form import BaseForm, FormOpts, rules
-from flask_admin.model import filters, typefmt
+from flask_admin.model import filters, typefmt, template
 from flask_admin.actions import ActionsMixin
 from flask_admin.helpers import (get_form_data, validate_form_on_submit,
                                  get_redirect_target, flash_errors)
@@ -459,6 +460,24 @@ class BaseModelView(BaseView, ActionsMixin):
         actions endpoints are accessible.
     """
 
+    column_extra_row_actions = None
+    """
+        List of row actions (instances of :class:`~flask_admin.model.template.BaseListRowAction`).
+
+        Flask-Admin will generate standard per-row actions (edit, delete, etc)
+        and will append custom actions from this list right after them.
+
+        For example::
+
+            from flask_admin.model.template import EndpointLinkRowAction, LinkRowAction
+
+            class MyModelView(BaseModelView):
+                column_extra_row_actions = [
+                    LinkRowAction('glyphicon glyphicon-off', 'http://direct.link/?id={row_id}'),
+                    EndpointLinkRowAction('glyphicon glyphicon-test', 'my_view.index_view')
+                ]
+    """
+
     simple_list_pager = False
     """
         Enable or disable simple list pager.
@@ -483,7 +502,7 @@ class BaseModelView(BaseView, ActionsMixin):
     """
         Base form class. Will be used by form scaffolding function when creating model form.
 
-        Useful if you want to have custom contructor or override some fields.
+        Useful if you want to have custom constructor or override some fields.
 
         Example::
 
@@ -564,6 +583,9 @@ class BaseModelView(BaseView, ActionsMixin):
                     'description': {
                         'rows': 10,
                         'style': 'color: black'
+                    },
+                    'other_field': {
+                        'disabled': True
                     }
                 }
 
@@ -826,12 +848,10 @@ class BaseModelView(BaseView, ActionsMixin):
         self._sortable_columns = self.get_sortable_columns()
 
         # Details view
-        if self.can_view_details:
-            self._details_columns = self.get_details_columns()
+        self._details_columns = self.get_details_columns()
 
         # Export view
-        if self.can_export:
-            self._export_columns = self.get_export_columns()
+        self._export_columns = self.get_export_columns()
 
         # Labels
         if self.column_labels is None:
@@ -908,62 +928,89 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             return self._prettify_name(field)
 
-    def get_list_columns(self):
+    def get_list_row_actions(self):
+        """
+            Return list of row action objects, each is instance of :class:`~flask_admin.model.template.BaseListRowAction`
+        """
+        actions = []
+
+        if self.can_view_details:
+            if self.details_modal:
+                actions.append(template.ViewPopupRowAction())
+            else:
+                actions.append(template.ViewRowAction())
+
+        if self.can_edit:
+            if self.edit_modal:
+                actions.append(template.EditPopupRowAction())
+            else:
+                actions.append(template.EditRowAction())
+
+        if self.can_delete:
+            actions.append(template.DeleteRowAction())
+
+        return actions + (self.column_extra_row_actions or [])
+
+    def get_column_names(self, only_columns, excluded_columns):
         """
             Returns a list of tuples with the model field name and formatted
-            field name. If `column_list` was set, returns it. Otherwise calls
-            `scaffold_list_columns` to generate the list from the model.
+            field name.
+
+            :param only_columns:
+                List of columns to include in the results. If not set,
+                `scaffold_list_columns` will generate the list from the model.
+            :param excluded_columns:
+                List of columns to exclude from the results if `only_columns`
+                is not set.
         """
-        columns = self.column_list
+        if excluded_columns:
+            only_columns = [c for c in only_columns if c not in excluded_columns]
 
-        if columns is None:
-            columns = self.scaffold_list_columns()
+        return [(c, self.get_column_name(c)) for c in only_columns]
 
-            # Filter excluded columns
-            if self.column_exclude_list:
-                columns = [c for c in columns if c not in self.column_exclude_list]
-
-        return [(c, self.get_column_name(c)) for c in columns]
+    def get_list_columns(self):
+        """
+            Uses `get_column_names` to get a list of tuples with the model
+            field name and formatted name for the columns in `column_list`
+            and not in `column_exclude_list`. If `column_list` is not set,
+            the columns from `scaffold_list_columns` will be used.
+        """
+        return self.get_column_names(
+            only_columns=self.column_list or self.scaffold_list_columns(),
+            excluded_columns=self.column_exclude_list,
+        )
 
     def get_details_columns(self):
         """
-            Returns a list of the model field names in the details view. If
-            `column_details_list` was set, returns it. Otherwise calls
-            `scaffold_list_columns` to generate the list from the model.
+            Uses `get_column_names` to get a list of tuples with the model
+            field name and formatted name for the columns in `column_details_list`
+            and not in `column_details_exclude_list`. If `column_details_list`
+            is not set, it will attempt to use the columns from `column_list`
+            or finally the columns from `scaffold_list_columns` will be used.
         """
-        columns = self.column_details_list
+        only_columns = (self.column_details_list or self.column_list or
+                        self.scaffold_list_columns())
 
-        if columns is None:
-            columns = self.scaffold_list_columns()
-
-            # Filter excluded columns
-            if self.column_details_exclude_list:
-                columns = [c for c in columns
-                           if c not in self.column_details_exclude_list]
-
-        return [(c, self.get_column_name(c)) for c in columns]
+        return self.get_column_names(
+            only_columns=only_columns,
+            excluded_columns=self.column_details_exclude_list,
+        )
 
     def get_export_columns(self):
         """
-            Returns a list of the model field names in the export view. If
-            `column_export_list` was set, returns it. Otherwise, if
-            `column_list` was set, returns it. Otherwise calls
-            `scaffold_list_columns` to generate the list from the model.
+            Uses `get_column_names` to get a list of tuples with the model
+            field name and formatted name for the columns in `column_export_list`
+            and not in `column_export_exclude_list`. If `column_export_list` is
+            not set, it will attempt to use the columns from `column_list`
+            or finally the columns from `scaffold_list_columns` will be used.
         """
-        columns = self.column_export_list
+        only_columns = (self.column_export_list or self.column_list or
+                        self.scaffold_list_columns())
 
-        if columns is None:
-            columns = self.column_list
-
-            if columns is None:
-                columns = self.scaffold_list_columns()
-
-            # Filter excluded columns
-            if self.column_export_exclude_list:
-                columns = [c for c in columns
-                           if c not in self.column_export_exclude_list]
-
-        return [(c, self.get_column_name(c)) for c in columns]
+        return self.get_column_names(
+            only_columns=only_columns,
+            excluded_columns=self.column_export_exclude_list,
+        )
 
     def scaffold_sortable_columns(self):
         """
@@ -1773,12 +1820,12 @@ class BaseModelView(BaseView, ActionsMixin):
                 list_forms[self.get_pk_value(row)] = self.list_form(obj=row)
 
         # Calculate number of pages
-        if count is not None:
-            num_pages = count // self.page_size
-            if count % self.page_size != 0:
-                num_pages += 1
+        if count is not None and self.page_size:
+            num_pages = int(ceil(count / float(self.page_size)))
+        elif not self.page_size:
+            num_pages = 0  # hide pager for unlimited page_size
         else:
-            num_pages = None
+            num_pages = None  # use simple pager
 
         # Various URL generation helpers
         def pager_url(p):
@@ -1815,6 +1862,7 @@ class BaseModelView(BaseView, ActionsMixin):
             list_columns=self._list_columns,
             sortable_columns=self._sortable_columns,
             editable_columns=self.column_editable_list,
+            list_row_actions=self.get_list_row_actions(),
 
             # Pagination
             count=count,
