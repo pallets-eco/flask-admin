@@ -52,7 +52,7 @@ Straight out of the box, this gives you a set of fully featured *CRUD* views for
     * An optional, read-only `details` view.
 
 There are many options available for customizing the display and functionality of these built-in views.
-For more details on that, see :ref:`customising-builtin-views`. For more details on the other
+For more details on that, see :ref:`customizing-builtin-views`. For more details on the other
 ORM backends that are available, see :ref:`database-backends`.
 
 Adding Content to the Index Page
@@ -149,7 +149,7 @@ https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth.
 The example only uses the built-in `register` and `login` views, but you could follow the same
 approach for including the other views, like `forgot_password`, `send_confirmation`, etc.
 
-.. _customising-builtin-views:
+.. _customizing-builtin-views:
 
 Customizing Built-in Views
 =========================
