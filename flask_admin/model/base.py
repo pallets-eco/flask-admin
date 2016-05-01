@@ -1438,7 +1438,7 @@ class BaseModelView(BaseView, ActionsMixin):
     # Exception handler
     def handle_view_exception(self, exc):
         if isinstance(exc, ValidationError):
-            flash(as_unicode(exc))
+            flash(as_unicode(exc), 'error')
             return True
 
         if self._debug:
@@ -1623,7 +1623,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     if flt.validate(value):
                         filters.append((pos, (idx, as_unicode(flt.name), value)))
                     else:
-                        flash(gettext('Invalid Filter Value: %(value)s', value=value))
+                        flash(gettext('Invalid Filter Value: %(value)s', value=value), 'error')
 
             # Sort filters
             return [v[1] for v in sorted(filters, key=lambda n: n[0])]
@@ -1916,7 +1916,7 @@ class BaseModelView(BaseView, ActionsMixin):
             # in later versions, this is the model itself
             model = self.create_model(form)
             if model:
-                flash(gettext('Record was successfully created.'))
+                flash(gettext('Record was successfully created.'), 'success')
                 if '_add_another' in request.form:
                     return redirect(request.url)
                 elif '_continue_editing' in request.form:
@@ -1960,7 +1960,7 @@ class BaseModelView(BaseView, ActionsMixin):
         model = self.get_one(id)
 
         if model is None:
-            flash(gettext('Record does not exist.'))
+            flash(gettext('Record does not exist.'), 'error')
             return redirect(return_url)
 
         form = self.edit_form(obj=model)
@@ -1969,7 +1969,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         if self.validate_form(form):
             if self.update_model(form, model):
-                flash(gettext('Record was successfully saved.'))
+                flash(gettext('Record was successfully saved.'), 'success')
                 if '_add_another' in request.form:
                     return redirect(self.get_url('.create_view', url=return_url))
                 elif '_continue_editing' in request.form:
@@ -2012,7 +2012,7 @@ class BaseModelView(BaseView, ActionsMixin):
         model = self.get_one(id)
 
         if model is None:
-            flash(gettext('Record does not exist.'))
+            flash(gettext('Record does not exist.'), 'error')
             return redirect(return_url)
 
         if self.details_modal and request.args.get('modal'):
@@ -2045,12 +2045,12 @@ class BaseModelView(BaseView, ActionsMixin):
             model = self.get_one(id)
 
             if model is None:
-                flash(gettext('Record does not exist.'))
+                flash(gettext('Record does not exist.'), 'error')
                 return redirect(return_url)
 
             # message is flashed from within delete_model if it fails
             if self.delete_model(model):
-                flash(gettext('Record was successfully deleted.'))
+                flash(gettext('Record was successfully deleted.'), 'success')
                 return redirect(return_url)
         else:
             flash_errors(form, message='Failed to delete record. %(error)s')
@@ -2100,7 +2100,7 @@ class BaseModelView(BaseView, ActionsMixin):
         return_url = get_redirect_target() or self.get_url('.index_view')
 
         if not self.can_export or (export_type not in self.export_types):
-            flash(gettext('Permission denied.'))
+            flash(gettext('Permission denied.'), 'error')
             return redirect(return_url)
 
         if export_type == 'csv':
@@ -2154,7 +2154,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Exports a variety of formats using the tablib library.
         """
         if tablib is None:
-            flash(gettext('Tablib dependency not installed.'))
+            flash(gettext('Tablib dependency not installed.'), 'error')
             return redirect(return_url)
 
         filename = self.get_export_name(export_type)
@@ -2182,7 +2182,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 response_data = getattr(ds, export_type)
         except (AttributeError, tablib.UnsupportedFormat):
             flash(gettext('Export type "%(type)s not supported.',
-                          type=export_type))
+                          type=export_type), 'error')
             return redirect(return_url)
 
         return Response(
