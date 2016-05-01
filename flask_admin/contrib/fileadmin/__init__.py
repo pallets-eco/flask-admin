@@ -789,7 +789,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             try:
                 self._save_form_files(directory, path, form)
                 flash(gettext('Successfully saved file: %(name)s',
-                              name=form.upload.data.filename))
+                              name=form.upload.data.filename), 'success')
                 return redirect(self._get_dir_url('.index_view', path))
             except Exception as ex:
                 flash(gettext('Failed to save file: %(error)s', error=ex), 'error')
@@ -853,7 +853,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                 self.storage.make_dir(directory, form.name.data)
                 self.on_mkdir(directory, form.name.data)
                 flash(gettext('Successfully created directory: %(directory)s',
-                              directory=form.name.data))
+                              directory=form.name.data), 'success')
                 return redirect(dir_url)
             except Exception as ex:
                 flash(gettext('Failed to create directory: %(error)s', error=ex), 'error')
@@ -907,7 +907,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     self.before_directory_delete(full_path, path)
                     self.storage.delete_tree(full_path)
                     self.on_directory_delete(full_path, path)
-                    flash(gettext('Directory "%(path)s" was successfully deleted.', path=path))
+                    flash(gettext('Directory "%(path)s" was successfully deleted.', path=path), 'success')
                 except Exception as ex:
                     flash(gettext('Failed to delete directory: %(error)s', error=ex), 'error')
             else:
@@ -915,7 +915,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     self.before_file_delete(full_path, path)
                     self.delete_file(full_path)
                     self.on_file_delete(full_path, path)
-                    flash(gettext('File "%(name)s" was successfully deleted.', name=path))
+                    flash(gettext('File "%(name)s" was successfully deleted.', name=path), 'success')
                 except Exception as ex:
                     flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
         else:
@@ -958,7 +958,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                 self.on_rename(full_path, dir_base, filename)
                 flash(gettext('Successfully renamed "%(src)s" to "%(dst)s"',
                               src=op.basename(path),
-                              dst=filename))
+                              dst=filename), 'success')
             except Exception as ex:
                 flash(gettext('Failed to rename: %(error)s', error=ex), 'error')
 
@@ -1015,7 +1015,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     error = True
                 else:
                     self.on_edit_file(full_path, path)
-                    flash(gettext("Changes to %(name)s saved successfully.", name=path))
+                    flash(gettext("Changes to %(name)s saved successfully.", name=path), 'success')
                     return redirect(next_url)
         else:
             helpers.flash_errors(form, message='Failed to edit file. %(error)s')
@@ -1072,7 +1072,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             if self.is_accessible_path(path):
                 try:
                     self.delete_file(full_path)
-                    flash(gettext('File "%(name)s" was successfully deleted.', name=path))
+                    flash(gettext('File "%(name)s" was successfully deleted.', name=path), 'success')
                 except Exception as ex:
                     flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
 
