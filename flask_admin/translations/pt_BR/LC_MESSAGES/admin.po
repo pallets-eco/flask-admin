@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2016-03-27 19:47-0500\n"
-"PO-Revision-Date: 2016-03-27 20:47-0400\n"
+"PO-Revision-Date: 2016-05-01 20:48-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
@@ -220,7 +220,7 @@ msgstr "Editar"
 
 #: ../flask_admin/contrib/fileadmin/s3.py:152
 msgid "Cannot operate on non empty directories"
-msgstr ""
+msgstr "Não é possível operar em diretórios não-vazios"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:38
 #: ../flask_admin/contrib/peewee/filters.py:38
@@ -356,11 +356,11 @@ msgstr "Não é uma escolha válida"
 
 #: ../flask_admin/contrib/sqla/fields.py:187
 msgid "Key"
-msgstr ""
+msgstr "Chave"
 
 #: ../flask_admin/contrib/sqla/fields.py:188
 msgid "Value"
-msgstr ""
+msgstr "Valor"
 
 #: ../flask_admin/contrib/sqla/validators.py:42
 msgid "Already exists."
@@ -423,12 +423,12 @@ msgstr "Registro salvo com sucesso."
 
 #: ../flask_admin/model/base.py:2151
 msgid "Tablib dependency not installed."
-msgstr ""
+msgstr "Depedência Tablib não instalada."
 
 #: ../flask_admin/model/base.py:2178
 #, python-format
 msgid "Export type \"%(type)s not supported."
-msgstr ""
+msgstr "Tipo de exportação \"%(type)s não é suportado."
 
 #: ../flask_admin/model/filters.py:98 ../flask_admin/model/widgets.py:111
 msgid "Yes"

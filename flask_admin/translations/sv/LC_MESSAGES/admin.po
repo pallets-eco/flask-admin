@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2016-03-27 19:47-0500\n"
-"PO-Revision-Date: 2016-03-27 20:47-0400\n"
+"PO-Revision-Date: 2016-05-01 20:48-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -216,7 +216,7 @@ msgstr "Arkivera strykningen är inaktiverad."
 #: ../flask_admin/templates/bootstrap3/admin/model/details.html:17
 #: ../flask_admin/templates/bootstrap3/admin/model/edit.html:22
 msgid "Edit"
-msgstr "Redigera"
+msgstr "Ändra"
 
 #: ../flask_admin/contrib/fileadmin/s3.py:152
 msgid "Cannot operate on non empty directories"
@@ -227,14 +227,14 @@ msgstr ""
 #: ../flask_admin/contrib/pymongo/filters.py:38
 #: ../flask_admin/contrib/sqla/filters.py:41
 msgid "equals"
-msgstr "är lika med"
+msgstr "motsvarar"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:47
 #: ../flask_admin/contrib/peewee/filters.py:46
 #: ../flask_admin/contrib/pymongo/filters.py:47
 #: ../flask_admin/contrib/sqla/filters.py:49
 msgid "not equal"
-msgstr "inte lika"
+msgstr "inte jämnlikt"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:57
 #: ../flask_admin/contrib/peewee/filters.py:55
@@ -248,7 +248,7 @@ msgstr "innehåller"
 #: ../flask_admin/contrib/pymongo/filters.py:67
 #: ../flask_admin/contrib/sqla/filters.py:67
 msgid "not contains"
-msgstr "inte innehåller"
+msgstr "innehåller inte"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:76
 #: ../flask_admin/contrib/peewee/filters.py:72
@@ -268,7 +268,7 @@ msgstr "mindre än"
 #: ../flask_admin/contrib/peewee/filters.py:91
 #: ../flask_admin/contrib/sqla/filters.py:94
 msgid "empty"
-msgstr "Tom"
+msgstr "tom"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:112
 #: ../flask_admin/contrib/peewee/filters.py:105
@@ -356,11 +356,11 @@ msgstr "Inte ett giltigt val"
 
 #: ../flask_admin/contrib/sqla/fields.py:187
 msgid "Key"
-msgstr ""
+msgstr "Nyckel"
 
 #: ../flask_admin/contrib/sqla/fields.py:188
 msgid "Value"
-msgstr ""
+msgstr "Värde"
 
 #: ../flask_admin/contrib/sqla/validators.py:42
 msgid "Already exists."
@@ -561,7 +561,7 @@ msgstr "Ta bort?"
 #: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:30
 #: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:33
 msgid "New"
-msgstr ""
+msgstr "Ny"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:40
 #: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:43
