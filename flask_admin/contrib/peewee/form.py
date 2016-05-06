@@ -61,7 +61,8 @@ class InlineModelFormList(InlineFieldList):
         for field in self.entries:
             field_id = field.get_pk()
 
-            if field_id in pk_map:
+            is_created = field_id not in pk_map
+            if not is_created:
                 model = pk_map[field_id]
 
                 if self.should_delete(field):
@@ -75,7 +76,7 @@ class InlineModelFormList(InlineFieldList):
             # Force relation
             setattr(model, self.prop, model_id)
 
-            self.inline_view.on_model_change(field, model)
+            self.inline_view._on_model_change(field, model, is_created)
 
             model.save()
 
