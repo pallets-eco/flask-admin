@@ -218,6 +218,8 @@ class ModelView(BaseModelView):
 
         3. Django-like ``InlineFormAdmin`` class instance::
 
+            from flask_admin.model.form import InlineFormAdmin
+
             class MyInlineModelForm(InlineFormAdmin):
                 form_columns = ('title', 'date')
 
