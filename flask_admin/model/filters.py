@@ -67,12 +67,14 @@ class BaseFilter(object):
         """
         return value
 
-    def apply(self, query):
+    def apply(self, query, value):
         """
             Apply search criteria to the query and return new query.
 
             :param query:
                 Query
+            :param value:
+                Search criteria
         """
         raise NotImplementedError()
 
