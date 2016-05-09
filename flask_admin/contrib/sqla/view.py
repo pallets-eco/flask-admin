@@ -608,13 +608,26 @@ class ModelView(BaseModelView):
 
                 column = columns[0]
 
+            # If filter related to relation column (represented by
+            # relation_name.target_column) we collect here relation name
+            joined_column_name = None
+            if '.' in name:
+                joined_column_name = name.split('.')[0]
+
             # Join not needed for hybrid properties
             if (not is_hybrid_property and tools.need_join(self.model, column.table) and
                     name not in self.column_labels):
-                visible_name = '%s / %s' % (
-                    self.get_column_name(column.table.name),
-                    self.get_column_name(column.name)
-                )
+                if joined_column_name:
+                    visible_name = '%s / %s / %s' % (
+                        joined_column_name,
+                        self.get_column_name(column.table.name),
+                        self.get_column_name(column.name)
+                    )
+                else:
+                    visible_name = '%s / %s' % (
+                        self.get_column_name(column.table.name),
+                        self.get_column_name(column.name)
+                    )
             else:
                 if not isinstance(name, string_types):
                     visible_name = self.get_column_name(name.property.key)
@@ -630,10 +643,19 @@ class ModelView(BaseModelView):
                 options=self.column_choices.get(name),
             )
 
+            key_name = column
+            # In case of filter related to relation column filter key
+            # must be named with relation name (to prevent following same
+            # target column to replace previous)
+            if joined_column_name:
+                key_name = "{}.{}".format(joined_column_name, column)
+                for f in flt:
+                    f.key_name = key_name
+
             if joins:
-                self._filter_joins[column] = joins
+                self._filter_joins[key_name] = joins
             elif not is_hybrid_property and tools.need_join(self.model, column.table):
-                self._filter_joins[column] = [column.table]
+                self._filter_joins[key_name] = [column.table]
 
             return flt
 
@@ -866,7 +888,9 @@ class ModelView(BaseModelView):
 
             # Figure out joins
             if isinstance(flt, sqla_filters.BaseSQLAFilter):
-                path = self._filter_joins.get(flt.column, [])
+                # If no key_name is specified, use filter column as filter key
+                filter_key = flt.key_name or flt.column
+                path = self._filter_joins.get(filter_key, [])
 
                 query, joins, alias = self._apply_path_joins(query, joins, path, inner_join=False)
 
