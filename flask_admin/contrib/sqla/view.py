@@ -648,7 +648,7 @@ class ModelView(BaseModelView):
             # must be named with relation name (to prevent following same
             # target column to replace previous)
             if joined_column_name:
-                key_name = "{}.{}".format(joined_column_name, column)
+                key_name = "{0}.{1}".format(joined_column_name, column)
                 for f in flt:
                     f.key_name = key_name
 
