@@ -247,6 +247,28 @@ class BaseFileAdmin(BaseView, ActionsMixin):
     edit_modal = False
     """Setting this to true will display the edit view as a modal dialog."""
 
+    # List view
+    possible_columns = 'name', 'rel_path', 'is_dir', 'size', 'date'
+    """A list of possible columns to display."""
+
+    column_list = 'name', 'size', 'date'
+    """A list of columns to display."""
+
+    column_sortable_list = column_list
+    """A list of sortable columns."""
+
+    default_sort_column = None
+    """The default sort column."""
+
+    default_desc = 0
+    """The default desc value."""
+
+    column_labels = {column: column.capitalize() for column in column_list}
+    """A dict from column names to their labels."""
+
+    date_format = '%Y-%m-%d %H:%M:%S'
+    """Date column display format."""
+
     def __init__(self, base_url=None, name=None, category=None, endpoint=None,
                  url=None, verify_path=True, menu_class_name=None,
                  menu_icon_type=None, menu_icon_value=None, storage=None):
@@ -670,6 +692,38 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         pass
 
+    def is_column_visible(self, column):
+        """
+        Determines if the given column is visible.
+        :param column: The column to query.
+        :return: Whether the column is visible.
+        """
+        return column in self.column_list
+
+    def is_column_sortable(self, column):
+        """
+        Determines if the given column is sortable.
+        :param column: The column to query.
+        :return: Whether the column is sortable.
+        """
+        return column in self.column_sortable_list
+
+    def column_label(self, column):
+        """
+        Determines if the given column is visible.
+        :param column: The column to query.
+        :return: Whether the column is visible.
+        """
+        return self.column_labels[column]
+
+    def timestamp_format(self, timestamp):
+        """
+        Formats the timestamp to a date format.
+        :param timestamp: The timestamp to format.
+        :return: A formatted date.
+        """
+        return datetime.fromtimestamp(timestamp).strftime(self.date_format)
+
     def _save_form_files(self, directory, path, form):
         filename = self._separator.join([directory, secure_filename(form.upload.data.filename)])
 
@@ -739,20 +793,33 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             if self.is_accessible_path(rel_path):
                 items.append(item)
 
-        # Sort by name
-        items.sort(key=itemgetter(0))
+        sort_column = request.args.get('sort', None, type=str)
+        sort_desc = request.args.get('desc', 0, type=int)
 
-        # Sort by type
-        items.sort(key=itemgetter(2), reverse=True)
-
-        # Sort by modified date
-        items.sort(key=lambda values: (values[0], values[1], values[2], values[3], datetime.fromtimestamp(values[4])), reverse=True)
+        if sort_column is None:
+            # Sort by name
+            items.sort(key=itemgetter(0))
+            # Sort by type
+            items.sort(key=itemgetter(2), reverse=True)
+            # Sort by modified date
+            items.sort(key=lambda values: (values[0], values[1], values[2], values[3], datetime.fromtimestamp(values[4])), reverse=True)
+        else:
+            column_index = self.possible_columns.index(sort_column)
+            items.sort(key=itemgetter(column_index), reverse=sort_desc)
 
         # Generate breadcrumbs
         breadcrumbs = self._get_breadcrumbs(path)
 
         # Actions
         actions, actions_confirmation = self.get_actions_list()
+
+        def sort_url(column, invert=False):
+            desc = None
+
+            if invert and not sort_desc:
+                desc = 1
+
+            return self.get_url('.index_view', sort=column, desc=desc)
 
         return self.render(self.list_template,
                            dir_path=path,
@@ -762,7 +829,11 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                            items=items,
                            actions=actions,
                            actions_confirmation=actions_confirmation,
-                           delete_form=delete_form)
+                           delete_form=delete_form,
+                           sort_column=sort_column,
+                           sort_desc=sort_desc,
+                           sort_url=sort_url,
+                           timestamp_format=self.timestamp_format)
 
     @expose('/upload/', methods=('GET', 'POST'))
     @expose('/upload/<path:path>', methods=('GET', 'POST'))
