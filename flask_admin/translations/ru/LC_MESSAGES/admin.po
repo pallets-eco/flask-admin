@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2016-03-27 19:47-0500\n"
-"PO-Revision-Date: 2016-03-27 20:47-0400\n"
+"PO-Revision-Date: 2016-05-28 16:11-0400\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -27,7 +27,7 @@ msgstr "CLI: Недопустимая команда."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:330
 msgid "File to upload"
-msgstr "Файл"
+msgstr "Файл для загрузки"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:338
 msgid "File required."
@@ -357,11 +357,11 @@ msgstr "Неверный вариант"
 
 #: ../flask_admin/contrib/sqla/fields.py:187
 msgid "Key"
-msgstr ""
+msgstr "Ключ"
 
 #: ../flask_admin/contrib/sqla/fields.py:188
 msgid "Value"
-msgstr ""
+msgstr "Значение"
 
 #: ../flask_admin/contrib/sqla/validators.py:42
 msgid "Already exists."
@@ -425,7 +425,7 @@ msgstr "Запись была сохранена."
 
 #: ../flask_admin/model/base.py:2151
 msgid "Tablib dependency not installed."
-msgstr ""
+msgstr "Tablib не установлена."
 
 #: ../flask_admin/model/base.py:2178
 #, python-format
