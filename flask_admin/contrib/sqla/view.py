@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import cast
 from sqlalchemy import Unicode
 
-from flask import flash
+from flask import current_app, flash
 
 from flask_admin._compat import string_types, text_type
 from flask_admin.babel import gettext, ngettext, lazy_gettext
@@ -996,7 +996,10 @@ class ModelView(BaseModelView):
     # Error handler
     def handle_view_exception(self, exc):
         if isinstance(exc, IntegrityError):
-            flash(gettext('Integrity error. %(message)s', message=text_type(exc)), 'error')
+            if current_app.config.get('ADMIN_RAISE_ON_VIEW_EXCEPTION'):
+                raise
+            else:
+                flash(gettext('Integrity error. %(message)s', message=text_type(exc)), 'error')
             return True
 
         return super(ModelView, self).handle_view_exception(exc)
