@@ -17,7 +17,7 @@ def geom_formatter(view, value):
     })
     if value.srid is -1:
         value.srid = 4326
-    geojson = view.model.query.with_entities(func.ST_AsGeoJSON(value)).scalar()
+    geojson = view.session.query(view.model).with_entities(func.ST_AsGeoJSON(value)).scalar()
     return Markup('<textarea %s>%s</textarea>' % (params, geojson))
 
 
