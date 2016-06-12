@@ -782,9 +782,15 @@ class ModelView(BaseModelView):
             column = sort_field if alias is None else getattr(alias, sort_field.key)
 
             if sort_desc:
-                query = query.order_by(desc(column))
+                if isinstance(column, tuple):
+                    query = query.order_by(*map(desc, column))
+                else:
+                    query = query.order_by(desc(column))
             else:
-                query = query.order_by(column)
+                if isinstance(column, tuple):
+                    query = query.order_by(*column)
+                else:
+                    query = query.order_by(column)
 
         return query, joins
 
