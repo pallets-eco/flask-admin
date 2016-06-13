@@ -1,6 +1,16 @@
 Changelog
 =========
 
+1.4.1
+-----
+
+* Official Python 3.5 support
+* Customizable row actions
+* Tablib support (exporting to XLS, XLSX, CSV, etc)
+* Updated external dependencies (jQuery, x-editable, etc)
+* Added settings that allows exceptions to be raised on view errors
+* Bug fixes
+
 1.4.0
 -----
 
@@ -25,26 +35,4 @@ Changelog
 * Updated client-side dependencies (jQuery, Select2, etc)
 * Updated documentation and examples
 * Updated translations
-* Bug fixes
-
-1.2.0
------
-
-* Codebase was migrated to Flask-Admin GitHub organization
-* Automatically inject Flask-WTF CSRF token to internal Flask-Admin forms
-* MapBox v4 support for GeoAlchemy
-* Updated translations with help of CrowdIn
-* Show warning if field was ignored in form rendering rules
-* Simple AppEngine backend
-* Optional support for Font Awesome in templates and menus
-* Bug fixes
-
-1.1.0
------
-
-Mostly bug fix release. Highlights:
-
-* Inline model editing on the list page
-* FileAdmin refactoring and fixes
-* FileUploadField and ImageUploadField will work with Required() validator
 * Bug fixes
