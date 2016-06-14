@@ -514,17 +514,23 @@ class ModelView(BaseModelView):
 
         formatted_columns = []
         for c in only_columns:
-            column, path = tools.get_field_with_path(self.model, c)
+            try:
+                column, path = tools.get_field_with_path(self.model, c)
 
-            if path:
-                # column is a relation (InstrumentedAttribute), use full path
-                column_name = text_type(c)
-            else:
-                # column is in same table, use only model attribute name
-                if getattr(column, 'key', None) is not None:
-                    column_name = column.key
-                else:
+                if path:
+                    # column is a relation (InstrumentedAttribute), use full path
                     column_name = text_type(c)
+                else:
+                    # column is in same table, use only model attribute name
+                    if getattr(column, 'key', None) is not None:
+                        column_name = column.key
+                    else:
+                        column_name = text_type(c)
+            except AttributeError:
+                # TODO: See ticket #1299 - allow virtual columns. Probably figure out
+                # better way to handle it. For now just assume if column was not found - it
+                # is virtual and there's column formatter for it.
+                column_name = text_type(c)
 
             visible_name = self.get_column_name(column_name)
 
