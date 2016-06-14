@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.4.2
+-----
+
+* Small bug fix release. Fixes regression that prevented usage of "virtual" columns with a custom formatter.
+
 1.4.1
 -----
 
