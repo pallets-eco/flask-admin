@@ -263,7 +263,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
     default_desc = 0
     """The default desc value."""
 
-    column_labels = {column: column.capitalize() for column in column_list}
+    column_labels = dict((column, column.capitalize()) for column in column_list)
     """A dict from column names to their labels."""
 
     date_format = '%Y-%m-%d %H:%M:%S'
