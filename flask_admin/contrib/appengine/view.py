@@ -7,6 +7,10 @@ from wtforms_appengine import ndb as wt_ndb
 from google.appengine.ext import db
 from google.appengine.ext import ndb
 
+from flask_wtf import Form
+from flask_admin.model.form import create_editable_list_form
+
+
 class NdbModelView(BaseModelView):
     """
     AppEngine NDB model scaffolding.
@@ -32,7 +36,13 @@ class NdbModelView(BaseModelView):
         pass
 
     def scaffold_form(self):
-        return wt_ndb.model_form(self.model())
+        form_class = wt_ndb.model_form(self.model())
+        return form_class
+
+    def scaffold_list_form(self, widget=None, validators=None):
+        form_class = wt_ndb.model_form(self.model())
+        result = create_editable_list_form(Form, form_class, widget)
+        return result
 
     def get_list(self, page, sort_field, sort_desc, search, filters):
         #TODO: implement filters (don't think search can work here)
