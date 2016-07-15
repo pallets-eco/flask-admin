@@ -111,7 +111,7 @@ class XEditableWidget(object):
                 {'value': '1', 'text': gettext('Yes')}
             ])
             kwargs['data-role'] = 'x-editable-boolean'
-        elif field.type == 'Select2Field':
+        elif field.type in ['Select2Field', 'SelectField']:
             kwargs['data-type'] = 'select'
             choices = [{'value': x, 'text': y} for x, y in field.choices]
 
