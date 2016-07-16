@@ -35,12 +35,14 @@ class NdbModelView(BaseModelView):
         #TODO: implement
         pass
 
+    form_args = None
+
     def scaffold_form(self):
-        form_class = wt_ndb.model_form(self.model())
+        form_class = wt_ndb.model_form(self.model(), base_class=Form, field_args=self.form_args)
         return form_class
 
     def scaffold_list_form(self, widget=None, validators=None):
-        form_class = wt_ndb.model_form(self.model())
+        form_class = wt_ndb.model_form(self.model(), base_class=Form, field_args=self.form_args)
         result = create_editable_list_form(Form, form_class, widget)
         return result
 
