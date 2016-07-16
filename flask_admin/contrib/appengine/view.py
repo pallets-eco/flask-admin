@@ -57,7 +57,8 @@ class NdbModelView(BaseModelView):
         result = create_editable_list_form(Form, form_class, widget)
         return result
 
-    def get_list(self, page, sort_field, sort_desc, search, filters):
+    def get_list(self, page, sort_field, sort_desc, search, filters,
+                 page_size=0):
         #TODO: implement filters (don't think search can work here)
 
         q = self.model.query()
@@ -68,7 +69,11 @@ class NdbModelView(BaseModelView):
                 order_field = -order_field
             q = q.order(order_field)
 
+        if not page_size:
+            page_size = self.page_size
+
         results = q.fetch(self.page_size, offset=page*self.page_size)
+
         return q.count(), results
 
     def get_one(self, urlsafe_key):
