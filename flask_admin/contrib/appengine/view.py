@@ -37,13 +37,28 @@ class NdbModelView(BaseModelView):
 
     form_args = None
 
+    model_form_converter = wt_ndb.ModelConverter
+    """
+        Model form conversion class. Use this to implement custom field conversion logic.
+
+        For example::
+
+            class MyModelConverter(AdminModelConverter):
+                pass
+
+
+            class MyAdminView(ModelView):
+                model_form_converter = MyModelConverter
+    """
+
     def scaffold_form(self):
         form_class = wt_ndb.model_form(
             self.model(),
             base_class=Form,
             only=self.form_columns,
             exclude=self.form_excluded_columns,
-            field_args=self.form_args
+            field_args=self.form_args,
+            converter=self.model_form_converter(),
         )
         return form_class
 
@@ -52,7 +67,8 @@ class NdbModelView(BaseModelView):
             self.model(),
             base_class=Form,
             only=self.column_editable_list,
-            field_args=self.form_args
+            field_args=self.form_args,
+            converter=self.model_form_converter(),
         )
         result = create_editable_list_form(Form, form_class, widget)
         return result
