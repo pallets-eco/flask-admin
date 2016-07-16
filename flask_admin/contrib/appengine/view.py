@@ -38,11 +38,22 @@ class NdbModelView(BaseModelView):
     form_args = None
 
     def scaffold_form(self):
-        form_class = wt_ndb.model_form(self.model(), base_class=Form, field_args=self.form_args)
+        form_class = wt_ndb.model_form(
+            self.model(),
+            base_class=Form,
+            only=self.form_columns,
+            exclude=self.form_excluded_columns,
+            field_args=self.form_args
+        )
         return form_class
 
     def scaffold_list_form(self, widget=None, validators=None):
-        form_class = wt_ndb.model_form(self.model(), base_class=Form, field_args=self.form_args)
+        form_class = wt_ndb.model_form(
+            self.model(),
+            base_class=Form,
+            only=self.column_editable_list,
+            field_args=self.form_args
+        )
         result = create_editable_list_form(Form, form_class, widget)
         return result
 
