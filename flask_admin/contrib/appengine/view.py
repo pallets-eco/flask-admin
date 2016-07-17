@@ -9,7 +9,7 @@ from google.appengine.ext import ndb
 
 from flask_wtf import Form
 from flask_admin.model.form import create_editable_list_form
-
+from .form import AdminModelConverter
 
 class NdbModelView(BaseModelView):
     """
@@ -37,7 +37,7 @@ class NdbModelView(BaseModelView):
 
     form_args = None
 
-    model_form_converter = wt_ndb.ModelConverter
+    model_form_converter = AdminModelConverter
     """
         Model form conversion class. Use this to implement custom field conversion logic.
 
