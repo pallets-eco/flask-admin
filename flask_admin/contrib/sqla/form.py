@@ -557,7 +557,8 @@ class InlineModelConverter(InlineModelConverterBase):
         info = self.get_info(inline_model)
 
         # Find property from target model to current model
-        target_mapper = info.model._sa_class_manager.mapper
+        # Use the base mapper to support inheritance
+        target_mapper = info.model._sa_class_manager.mapper.base_mapper
 
         reverse_prop = None
 
