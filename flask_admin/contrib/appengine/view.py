@@ -100,37 +100,46 @@ class NdbModelView(BaseModelView):
             model = self.model()
             form.populate_obj(model)
             model.put()
-            return model
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 #flash(gettext('Failed to create record. %(error)s',
                 #    error=ex), 'error')
                 logging.exception('Failed to create record.')
             return False
+        else:
+            self.after_model_change(form, model, True)
+
+        return model
 
     def update_model(self, form, model):
         try:
             form.populate_obj(model)
             model.put()
-            return True
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 #flash(gettext('Failed to update record. %(error)s',
                 #    error=ex), 'error')
                 logging.exception('Failed to update record.')
             return False
+        else:
+            self.after_model_change(form, model, False)
+
+        return True
 
     def delete_model(self,  model):
         try:
             model.key.delete()
-            return True
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 #flash(gettext('Failed to delete record. %(error)s',
                 #    error=ex),
                 #    'error')
                 logging.exception('Failed to delete record.')
-        return False
+            return False
+        else:
+            self.after_model_delete(model)
+        
+        return True
 
 
 class DbModelView(BaseModelView):
