@@ -1117,7 +1117,15 @@ class BaseModelView(BaseView, ActionsMixin):
                 Filter instance
         """
         if self.named_filter_urls:
-            name = ('%s %s' % (flt.name, as_unicode(flt.operation()))).lower()
+            operation = flt.operation()
+
+            try:
+                # get lazy string original value
+                operation = operation._args[0]
+            except AttributeError:
+                pass
+
+            name = ('%s %s' % (flt.name, as_unicode(operation))).lower()
             name = filter_char_re.sub('', name)
             name = filter_compact_re.sub('_', name)
             return name
