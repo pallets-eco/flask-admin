@@ -2111,11 +2111,16 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             return self._export_tablib(export_type, return_url)
 
-    def _export_csv(self, return_url):
+    def _export_csv(self, return_url, ids=None):
         """
-            Export a CSV of records as a stream.
+            Export a CSV of records as a stream
+            export selected ids data
         """
         count, data = self._export_data()
+
+        if ids:
+            filter_data = filter(lambda fi_data:fi_data['_id'] in ids, data)
+            data = filter_data
 
         # https://docs.djangoproject.com/en/1.8/howto/outputting-csv/
         class Echo(object):
