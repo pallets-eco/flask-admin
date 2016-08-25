@@ -934,6 +934,7 @@ def test_form_args():
 
     # ensure shared field_args don't create duplicate validators
     create_form = view.create_form()
+
     eq_(len(create_form.test.validators), 2)
 
     edit_form = view.edit_form()
