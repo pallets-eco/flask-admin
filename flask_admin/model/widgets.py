@@ -98,7 +98,7 @@ class XEditableWidget(object):
         """
             Return extra kwargs based on the field type.
         """
-        if field.type == 'StringField':
+        if field.type in ['StringField', 'TextField']:
             kwargs['data-type'] = 'text'
         elif field.type == 'TextAreaField':
             kwargs['data-type'] = 'textarea'
@@ -111,7 +111,7 @@ class XEditableWidget(object):
                 {'value': '1', 'text': gettext('Yes')}
             ])
             kwargs['data-role'] = 'x-editable-boolean'
-        elif field.type == 'Select2Field':
+        elif field.type in ['Select2Field', 'SelectField']:
             kwargs['data-type'] = 'select'
             choices = [{'value': x, 'text': y} for x, y in field.choices]
 
@@ -142,7 +142,7 @@ class XEditableWidget(object):
             kwargs['data-type'] = 'number'
             kwargs['data-step'] = 'any'
         elif field.type in ['QuerySelectField', 'ModelSelectField',
-                            'QuerySelectMultipleField']:
+                            'QuerySelectMultipleField', 'KeyPropertyField']:
             # QuerySelectField and ModelSelectField are for relations
             kwargs['data-type'] = 'select'
 

@@ -21,7 +21,7 @@ db = SQLAlchemy(app)
 ''' Define a wtforms widget and field.
 
     WTForms documentation on custom widgets:
-    http://wtforms.readthedocs.org/en/latest/widgets.html#custom-widgets
+    https://wtforms.readthedocs.io/en/latest/widgets.html#custom-widgets
 '''
 class CKTextAreaWidget(widgets.TextArea):
     def __call__(self, field, **kwargs):
