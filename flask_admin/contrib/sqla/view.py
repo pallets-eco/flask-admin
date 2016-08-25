@@ -2,7 +2,6 @@ import logging
 import warnings
 import inspect
 
-from sqlalchemy.ext.hybrid import HYBRID_PROPERTY
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import joinedload, aliased
 from sqlalchemy.sql.expression import desc
@@ -604,7 +603,7 @@ class ModelView(BaseModelView):
 
             return filters
         else:
-            is_hybrid_property = hasattr(attr, 'descriptor') and attr.descriptor.extension_type == HYBRID_PROPERTY
+            is_hybrid_property = tools.is_hybrid_property(self.model, name)
             if is_hybrid_property:
                 column = attr
             else:

@@ -2,6 +2,7 @@ from sqlalchemy import tuple_, or_, and_
 from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy_utils import get_hybrid_properties
 
 from flask_admin._compat import filter_list, string_types
 from flask_admin.tools import iterencode, iterdecode, escape
@@ -170,3 +171,7 @@ def get_field_with_path(model, name):
                 path.append(column.table)
 
     return attr, path
+
+
+def is_hybrid_property(model, attr_name):
+    return attr_name in get_hybrid_properties(model)
