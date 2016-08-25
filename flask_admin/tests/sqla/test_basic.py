@@ -1834,6 +1834,28 @@ def test_modelview_localization():
     for locale in locales:
         test_locale(locale)
 
+
+def test_modelview_named_filter_localization():
+    app, db, admin = setup()
+
+    app.config['BABEL_DEFAULT_LOCALE'] = 'de'
+    Babel(app)
+
+    Model1, _ = create_models(db)
+
+    view = CustomModelView(
+        Model1, db.session,
+        named_filter_urls=True,
+        column_filters=['test1'],
+    )
+
+    filters = view.get_filters()
+    flt = filters[2]
+    with app.test_request_context():
+        flt_name = view.get_filter_arg(2, flt)
+    eq_('test1_equals', flt_name)
+
+
 def test_custom_form_base():
     app, db, admin = setup()
 
