@@ -1,7 +1,6 @@
 Flask>=0.7
 wtforms
 Flask-SQLAlchemy>=0.15
-sqlalchemy-utils
 peewee
 wtf-peewee
 pymongo==2.8

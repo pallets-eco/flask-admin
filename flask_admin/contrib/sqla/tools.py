@@ -1,8 +1,8 @@
-from sqlalchemy import tuple_, or_, and_
+from sqlalchemy import tuple_, or_, and_, inspect
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
-from sqlalchemy_utils import get_hybrid_properties
 
 from flask_admin._compat import filter_list, string_types
 from flask_admin.tools import iterencode, iterdecode, escape
@@ -171,6 +171,15 @@ def get_field_with_path(model, name):
                 path.append(column.table)
 
     return attr, path
+
+
+# copied from sqlalchemy-utils
+def get_hybrid_properties(model):
+    return dict(
+        (key, prop)
+        for key, prop in inspect(model).all_orm_descriptors.items()
+        if isinstance(prop, hybrid_property)
+    )
 
 
 def is_hybrid_property(model, attr_name):
