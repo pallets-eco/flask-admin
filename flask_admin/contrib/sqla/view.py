@@ -4,7 +4,7 @@ import inspect
 
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import joinedload, aliased
-from sqlalchemy.sql.expression import desc, ColumnElement
+from sqlalchemy.sql.expression import desc
 from sqlalchemy import Boolean, Table, func, or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import cast
@@ -603,7 +603,7 @@ class ModelView(BaseModelView):
 
             return filters
         else:
-            is_hybrid_property = isinstance(attr, ColumnElement)
+            is_hybrid_property = tools.is_hybrid_property(self.model, name)
             if is_hybrid_property:
                 column = attr
             else:
