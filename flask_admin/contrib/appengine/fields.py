@@ -1,9 +1,9 @@
-from wtforms.fields import TextField
+from wtforms.fields import StringField
 from google.appengine.ext import ndb
 
 import decimal
 
-class GeoPtPropertyField(TextField):
+class GeoPtPropertyField(StringField):
     def process_formdata(self, valuelist):
         if valuelist:
             try:
