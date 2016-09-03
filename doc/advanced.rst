@@ -428,8 +428,8 @@ The bare minimum you have to provide for Flask-Admin to work with PyMongo:
 This is minimal PyMongo view::
 
   class UserForm(Form):
-      name = TextField('Name')
-      email = TextField('Email')
+      name = StringField('Name')
+      email = StringField('Email')
 
   class UserView(ModelView):
       column_list = ('name', 'email')
@@ -519,7 +519,7 @@ do with it, so it won't generate a form field. In this case, you would need to m
     class MyView(ModelView):
         def scaffold_form(self):
             form_class = super(UserView, self).scaffold_form()
-            form_class.extra = TextField('Extra')
+            form_class.extra = StringField('Extra')
             return form_class
 
 Customizing Batch Actions

@@ -98,7 +98,7 @@ class XEditableWidget(object):
         """
             Return extra kwargs based on the field type.
         """
-        if field.type in ['StringField', 'TextField']:
+        if field.type == 'StringField':
             kwargs['data-type'] = 'text'
         elif field.type == 'TextAreaField':
             kwargs['data-type'] = 'textarea'
