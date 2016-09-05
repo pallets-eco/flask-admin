@@ -168,3 +168,30 @@ def test_mapbox_fix_point_coordinates():
     # Reversed order again, so that it's parsed correctly by leaflet
     eq_(p['coordinates'][0], 10.0)
     eq_(p['coordinates'][1], 125.8)
+
+
+def test_none():
+    app, db, admin = setup()
+    GeoModel = create_models(db)
+    db.create_all()
+    GeoModel.query.delete()
+    db.session.commit()
+
+    view = ModelView(GeoModel, db.session)
+    admin.add_view(view)
+
+    # Make some test clients
+    client = app.test_client()
+
+    rv = client.post('/admin/geomodel/new/', data={
+        "name": "test1",
+    })
+    eq_(rv.status_code, 302)
+
+    model = db.session.query(GeoModel).first()
+
+    url = '/admin/geomodel/edit/?id=%s' % model.id
+    rv = client.get(url)
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_(r' name="point"></textarea>' in data)

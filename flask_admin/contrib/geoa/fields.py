@@ -58,6 +58,8 @@ class GeoJSONField(JSONField):
                         )
                     )
                 )
+        else:
+            return ''
 
     def process_formdata(self, valuelist):
         super(GeoJSONField, self).process_formdata(valuelist)
