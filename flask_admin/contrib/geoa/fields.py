@@ -45,20 +45,21 @@ class GeoJSONField(JSONField):
             return self.raw_data[0]
         if type(self.data) is geoalchemy2.elements.WKBElement:
             if self.srid is -1:
-                self.data = self.session.scalar(
+                return self.session.scalar(
                     func.ST_AsGeoJson(
                         self._flip_coordinates(self.data)
                     )
                 )
             else:
-                self.data = self.session.scalar(
+                return self.session.scalar(
                     func.ST_AsGeoJson(
                         self._flip_coordinates(
                             func.ST_Transform(self.data, self.web_srid)
                         )
                     )
                 )
-        return super(GeoJSONField, self)._value()
+        else:
+            return ''
 
     def process_formdata(self, valuelist):
         super(GeoJSONField, self).process_formdata(valuelist)
