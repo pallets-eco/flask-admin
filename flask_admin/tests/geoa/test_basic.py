@@ -6,7 +6,7 @@ from flask_admin.contrib.geoa import ModelView
 from flask_admin.contrib.geoa.fields import GeoJSONField
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
-from nose.tools import eq_
+from nose.tools import eq_, ok_
 
 from . import setup
 
@@ -96,6 +96,8 @@ def test_model():
     url = '/admin/geomodel/edit/?id=%s' % model.id
     rv = client.get(url)
     eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_(r' name="multi">{"type":"MultiPoint","coordinates":[[100,0],[101,1]]}</textarea>' in data)
 
     # rv = client.post(url, data={
     #     "name": "edited",
