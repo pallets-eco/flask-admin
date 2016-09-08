@@ -71,8 +71,10 @@ class Keyword(db.Model):
 
 
 class UserAdmin(sqla.ModelView):
-    # Support for association proxies to association proxies (e.g.: keywords_values) is currently limited
-    # to column_list only.
+    """ Flask-admin can not automatically find a association_proxy yet. You will
+        need to manually define the column in list_view/filters/sorting/etc.
+        Moreover, support for association proxies to association proxies
+        (e.g.: keywords_values) is currently limited to column_list only."""
 
     column_list = ('id', 'name', 'keywords', 'keywords_values')
     column_sortable_list = ('id', 'name')
