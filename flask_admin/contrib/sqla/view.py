@@ -14,6 +14,7 @@ from flask import current_app, flash
 
 from flask_admin._compat import string_types, text_type
 from flask_admin.babel import gettext, ngettext, lazy_gettext
+from flask_admin.contrib.sqla.tools import is_relationship
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
 from flask_admin.actions import action
@@ -572,7 +573,7 @@ class ModelView(BaseModelView):
             raise Exception('Failed to find field for filter: %s' % name)
 
         # Figure out filters for related column
-        if hasattr(attr, 'property') and hasattr(attr.property, 'direction'):
+        if is_relationship(attr):
             filters = []
 
             for p in self._get_model_iterator(attr.property.mapper.class_):
@@ -791,12 +792,12 @@ class ModelView(BaseModelView):
                 if isinstance(column, tuple):
                     query = query.order_by(*map(desc, column))
                 else:
-                    query = query.order_by(desc(column))
+	                query = query.order_by(desc(column))
             else:
                 if isinstance(column, tuple):
                     query = query.order_by(*column)
                 else:
-                    query = query.order_by(column)
+	                query = query.order_by(column)
 
         return query, joins
 

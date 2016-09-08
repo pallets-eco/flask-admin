@@ -3,7 +3,7 @@ from sqlalchemy import or_
 from flask_admin._compat import as_unicode, string_types
 from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
 
-from .tools import get_primary_key, has_multiple_pks
+from .tools import get_primary_key, has_multiple_pks, is_relationship, is_association_proxy
 
 
 class QueryAjaxModelLoader(AjaxModelLoader):
@@ -75,8 +75,11 @@ def create_ajax_loader(model, session, name, field_name, options):
     if attr is None:
         raise ValueError('Model %s does not have field %s.' % (model, field_name))
 
-    if not hasattr(attr, 'property') or not hasattr(attr.property, 'direction'):
+    if not is_relationship(attr) and not is_association_proxy(attr):
         raise ValueError('%s.%s is not a relation.' % (model, field_name))
+
+    if is_association_proxy(attr):
+        attr = attr.remote_attr
 
     remote_model = attr.prop.mapper.class_
     return QueryAjaxModelLoader(name, session, remote_model, **options)
