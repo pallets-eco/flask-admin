@@ -271,6 +271,16 @@ class ModelView(BaseModelView):
                 form_optional_types = (Boolean, Unicode)
     """
 
+    ignore_hidden = True
+    """
+       Ignore field that starts with "_"
+
+       Example::
+
+           class MyModelView(BaseModelView):
+               ignore_hidden = False
+    """
+
     def __init__(self, model, session,
                  name=None, category=None, endpoint=None, url=None, static_folder=None,
                  menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
@@ -664,6 +674,7 @@ class ModelView(BaseModelView):
                                    only=self.form_columns,
                                    exclude=self.form_excluded_columns,
                                    field_args=self.form_args,
+                                   ignore_hidden=self.ignore_hidden,
                                    extra_fields=self.form_extra_fields)
 
         if self.inline_models:
