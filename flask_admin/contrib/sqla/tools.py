@@ -1,5 +1,6 @@
 from sqlalchemy import tuple_, or_, and_, inspect
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
 from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
@@ -128,7 +129,7 @@ def need_join(model, table):
     return table not in model._sa_class_manager.mapper.tables
 
 
-def get_field_with_path(model, name):
+def get_field_with_path(model, name, return_remote_proxy_attr=True):
     """
         Resolve property by name and figure out its join path.
 
@@ -141,24 +142,30 @@ def get_field_with_path(model, name):
         # create a copy to keep original model as `model`
         current_model = model
 
+        value = None
         for attribute in name.split('.'):
             value = getattr(current_model, attribute)
 
-            if (hasattr(value, 'property') and
-                    hasattr(value.property, 'direction')):
-                current_model = value.property.mapper.class_
+            if is_association_proxy(value):
+                relation_values = value.attr
+                if return_remote_proxy_attr:
+                    value = value.remote_attr
+            else:
+                relation_values = [value]
 
-                table = current_model.__table__
+            for relation_value in relation_values:
+                if is_relationship(relation_value):
+                    current_model = relation_value.property.mapper.class_
+                    table = current_model.__table__
+                    if need_join(model, table):
+                        path.append(relation_value)
 
-                if need_join(model, table):
-                    path.append(value)
-
-            attr = value
+        attr = value
     else:
         attr = name
 
         # Determine joins if table.column (relation object) is provided
-        if isinstance(attr, InstrumentedAttribute):
+        if isinstance(attr, InstrumentedAttribute) or is_association_proxy(attr):
             columns = get_columns_for_field(attr)
 
             if len(columns) > 1:
@@ -184,3 +191,17 @@ def get_hybrid_properties(model):
 
 def is_hybrid_property(model, attr_name):
     return attr_name in get_hybrid_properties(model)
+
+
+def is_relationship(attr):
+    return hasattr(attr, 'property') and hasattr(attr.property, 'direction')
+
+
+def is_association_proxy(attr):
+    return hasattr(attr, 'extension_type') and attr.extension_type == ASSOCIATION_PROXY
+
+
+def get_association_proxy_column_name(attr):
+    # TODO find a better way to get the name
+    name, = [key for key, value in inspect(attr.owning_class).all_orm_descriptors.items() if value is attr]
+    return name
