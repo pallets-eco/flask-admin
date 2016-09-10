@@ -710,9 +710,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
     def column_label(self, column):
         """
-        Determines if the given column is visible.
+        Gets the column's label.
         :param column: The column to query.
-        :return: Whether the column is visible.
+        :return: The column's label.
         """
         return self.column_labels[column]
 
