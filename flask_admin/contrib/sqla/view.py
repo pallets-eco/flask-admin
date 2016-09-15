@@ -617,6 +617,7 @@ class ModelView(BaseModelView):
             is_hybrid_property = tools.is_hybrid_property(self.model, name)
             if is_hybrid_property:
                 column = attr
+                column.key = name.split('.')[-1]
             else:
                 columns = tools.get_columns_for_field(attr)
 
@@ -636,7 +637,8 @@ class ModelView(BaseModelView):
                 if not isinstance(name, string_types):
                     visible_name = self.get_column_name(name.property.key)
                 else:
-                    visible_name = self.get_column_name(name)
+                    names = name.split('.')
+                    visible_name = ' / '.join([self.get_column_name(names_item) for names_item in names])
 
             type_name = type(column.type).__name__
 
