@@ -2,6 +2,7 @@ import logging
 import warnings
 import inspect
 
+from speaklater import is_lazy_string, make_lazy_string
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import joinedload, aliased
 from sqlalchemy.sql.expression import desc
@@ -637,8 +638,14 @@ class ModelView(BaseModelView):
                 if not isinstance(name, string_types):
                     visible_name = self.get_column_name(name.property.key)
                 else:
-                    names = name.split('.')
-                    visible_name = ' / '.join([self.get_column_name(names_item) for names_item in names])
+                    names = [self.get_column_name(name_item) for name_item in name.split('.')]
+
+                    def concat_func():
+                        return ' / '.join([str(names_item) for names_item in names])
+                    if any(map(is_lazy_string, names)):
+                        visible_name = make_lazy_string(concat_func)
+                    else:
+                        visible_name = concat_func()
 
             type_name = type(column.type).__name__
 
