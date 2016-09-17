@@ -533,33 +533,22 @@ class InlineModelConverter(InlineModelConverterBase):
 
         return result
 
-    def contribute(self, model, form_class, inline_model):
+    def _calculate_mapping_key_pair(self, model, info):
         """
-            Generate form fields for inline forms and contribute them to
-            the `form_class`
+            Calculate mapping property key pair between `model` and inline model,
+                including the forward one for `model` and the reverse one for inline model. 
+                Override the method to map your own inline models.
 
-            :param converter:
-                ModelConverterBase instance
-            :param session:
-                SQLAlchemy session
             :param model:
                 Model class
-            :param form_class:
-                Form to add properties to
-            :param inline_model:
-                Inline model. Can be one of:
-
-                 - ``tuple``, first value is related model instance,
-                 second is dictionary with options
-                 - ``InlineFormAdmin`` instance
-                 - Model class
-
+            :param info:
+                The InlineFormAdmin instance
             :return:
-                Form class
+                A tuple of forward property key and reverse property key
         """
 
+
         mapper = model._sa_class_manager.mapper
-        info = self.get_info(inline_model)
 
         # Find property from target model to current model
         # Use the base mapper to support inheritance
@@ -591,8 +580,39 @@ class InlineModelConverter(InlineModelConverterBase):
         else:
             raise Exception('Cannot find forward relation for model %s' % info.model)
 
+        return forward_prop.key, reverse_prop.key
+
+    def contribute(self, model, form_class, inline_model):
+        """
+            Generate form fields for inline forms and contribute them to
+            the `form_class`
+
+            :param converter:
+                ModelConverterBase instance
+            :param session:
+                SQLAlchemy session
+            :param model:
+                Model class
+            :param form_class:
+                Form to add properties to
+            :param inline_model:
+                Inline model. Can be one of:
+
+                 - ``tuple``, first value is related model instance,
+                 second is dictionary with options
+                 - ``InlineFormAdmin`` instance
+                 - Model class
+
+            :return:
+                Form class
+        """
+
+        info = self.get_info(inline_model)
+
+        forward_prop_key, reverse_prop_key = self._calculate_mapping_key_pair(model, info)
+
         # Remove reverse property from the list
-        ignore = [reverse_prop.key]
+        ignore = [reverse_prop_key]
 
         if info.form_excluded_columns:
             exclude = ignore + list(info.form_excluded_columns)
@@ -620,21 +640,21 @@ class InlineModelConverter(InlineModelConverterBase):
 
         kwargs = dict()
 
-        label = self.get_label(info, forward_prop.key)
+        label = self.get_label(info, forward_prop_key)
         if label:
             kwargs['label'] = label
 
         if self.view.form_args:
-            field_args = self.view.form_args.get(forward_prop.key, {})
+            field_args = self.view.form_args.get(forward_prop_key, {})
             kwargs.update(**field_args)
 
         # Contribute field
         setattr(form_class,
-                forward_prop.key,
+                forward_prop_key,
                 self.inline_field_list_type(child_form,
                                             self.session,
                                             info.model,
-                                            reverse_prop.key,
+                                            reverse_prop_key,
                                             info,
                                             **kwargs))
 
