@@ -1,4 +1,5 @@
 from sqlalchemy import tuple_, or_, and_, inspect
+from sqlalchemy.ext.declarative.clsregistry import _class_resolver
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
 from sqlalchemy.sql.operators import eq
@@ -190,12 +191,20 @@ def get_hybrid_properties(model):
 
 
 def is_hybrid_property(model, attr_name):
-    names = attr_name.split('.')
-    last_model = model
-    for i in range(len(names)-1):
-        last_model = getattr(last_model, names[i]).property.argument
-    last_name = names[-1]
-    return last_name in get_hybrid_properties(last_model)
+    if isinstance(attr_name, string_types):
+        names = attr_name.split('.')
+        last_model = model
+        for i in range(len(names)-1):
+            attr = getattr(last_model, names[i])
+            if is_association_proxy(attr):
+                attr = attr.remote_attr
+            last_model = attr.property.argument
+            if isinstance(last_model, _class_resolver):
+                last_model = model._decl_class_registry[last_model.arg]
+        last_name = names[-1]
+        return last_name in get_hybrid_properties(last_model)
+    else:
+        return attr_name.name in get_hybrid_properties(model)
 
 
 def is_relationship(attr):
