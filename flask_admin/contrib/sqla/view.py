@@ -638,14 +638,14 @@ class ModelView(BaseModelView):
                 if not isinstance(name, string_types):
                     visible_name = self.get_column_name(name.property.key)
                 else:
-                    names = [self.get_column_name(name_item) for name_item in name.split('.')]
+                    column_name = self.get_column_name(name)
 
-                    def concat_func():
-                        return ' / '.join([str(names_item) for names_item in names])
-                    if any(map(is_lazy_string, names)):
-                        visible_name = make_lazy_string(concat_func)
+                    def prettify():
+                        return column_name.replace('.', ' / ')
+                    if is_lazy_string(column_name):
+                        visible_name = make_lazy_string(prettify)
                     else:
-                        visible_name = concat_func()
+                        visible_name = prettify()
 
             type_name = type(column.type).__name__
 
