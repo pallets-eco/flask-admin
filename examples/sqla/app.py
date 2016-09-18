@@ -2,6 +2,7 @@ import os
 import os.path as op
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from future.utils import python_2_unicode_compatible
 
 from wtforms import validators
 
@@ -20,10 +21,12 @@ app.config['SECRET_KEY'] = '123456790'
 app.config['DATABASE_FILE'] = 'sample_db.sqlite'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.config['DATABASE_FILE']
 app.config['SQLALCHEMY_ECHO'] = True
-db = SQLAlchemy(app)
+session_options = dict(autoflush=False)
+db = SQLAlchemy(app, session_options=session_options)
 
 
 # Create models
+@python_2_unicode_compatible
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100))
@@ -31,8 +34,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
 
-    # Required for administrative interface. For python 3 please use __str__ instead.
-    def __unicode__(self):
+    def __str__(self):
         return self.username
 
 
@@ -43,6 +45,7 @@ post_tags_table = db.Table('post_tags', db.Model.metadata,
                            )
 
 
+@python_2_unicode_compatible
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
@@ -54,18 +57,20 @@ class Post(db.Model):
 
     tags = db.relationship('Tag', secondary=post_tags_table)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
+@python_2_unicode_compatible
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
+@python_2_unicode_compatible
 class UserInfo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
@@ -75,17 +80,18 @@ class UserInfo(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
     user = db.relationship(User, backref='info')
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.key, self.value)
 
 
+@python_2_unicode_compatible
 class Tree(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     parent_id = db.Column(db.Integer, db.ForeignKey('tree.id'))
     parent = db.relationship('Tree', remote_side=[id], backref='children')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
