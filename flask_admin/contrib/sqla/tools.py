@@ -190,7 +190,12 @@ def get_hybrid_properties(model):
 
 
 def is_hybrid_property(model, attr_name):
-    return attr_name in get_hybrid_properties(model)
+    names = attr_name.split('.')
+    last_model = model
+    for i in range(len(names)-1):
+        last_model = getattr(last_model, names[i]).property.argument
+    last_name = names[-1]
+    return last_name in get_hybrid_properties(last_model)
 
 
 def is_relationship(attr):
@@ -199,9 +204,3 @@ def is_relationship(attr):
 
 def is_association_proxy(attr):
     return hasattr(attr, 'extension_type') and attr.extension_type == ASSOCIATION_PROXY
-
-
-def get_association_proxy_column_name(attr):
-    # TODO find a better way to get the name
-    name, = [key for key, value in inspect(attr.owning_class).all_orm_descriptors.items() if value is attr]
-    return name
