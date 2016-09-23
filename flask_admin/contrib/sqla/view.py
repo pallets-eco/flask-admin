@@ -618,7 +618,8 @@ class ModelView(BaseModelView):
             is_hybrid_property = tools.is_hybrid_property(self.model, name)
             if is_hybrid_property:
                 column = attr
-                column.key = name.split('.')[-1]
+                if isinstance(name, string_types):
+                    column.key = name.split('.')[-1]
             else:
                 columns = tools.get_columns_for_field(attr)
 
