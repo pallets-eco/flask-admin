@@ -54,7 +54,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         stmt = None
         for field in self._cached_fields:
-            q = field ** (u'%%%s%%' % term)
+            q = field ** ('%%%s%%' % term)
 
             if stmt is None:
                 stmt = q

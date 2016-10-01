@@ -47,7 +47,7 @@ class QuerySelectField(SelectFieldBase):
     a string, this is the name of an attribute on the model object to use as
     the label text. If a one-argument callable, this callable will be passed
     model instance and expected to return the label text. Otherwise, the model
-    object's `__str__` or `__unicode__` will be used.
+    object's `__str__` or `__str__` will be used.
 
     If `allow_blank` is set to `True`, then a blank choice will be added to the
     top of the list. Selecting this choice will result in the `data` property
@@ -58,13 +58,13 @@ class QuerySelectField(SelectFieldBase):
 
     def __init__(self, label=None, validators=None, query_factory=None,
                  get_pk=None, get_label=None, allow_blank=False,
-                 blank_text=u'', **kwargs):
+                 blank_text='', **kwargs):
         super(QuerySelectField, self).__init__(label, validators, **kwargs)
         self.query_factory = query_factory
 
         if get_pk is None:
             if not has_identity_key:
-                raise Exception(u'The sqlalchemy identity_key function could not be imported.')
+                raise Exception('The sqlalchemy identity_key function could not be imported.')
             self.get_pk = get_pk_from_identity
         else:
             self.get_pk = get_pk
@@ -104,14 +104,14 @@ class QuerySelectField(SelectFieldBase):
 
     def iter_choices(self):
         if self.allow_blank:
-            yield (u'__None', self.blank_text, self.data is None)
+            yield ('__None', self.blank_text, self.data is None)
 
         for pk, obj in self._get_object_list():
             yield (pk, self.get_label(obj), obj == self.data)
 
     def process_formdata(self, valuelist):
         if valuelist:
-            if self.allow_blank and valuelist[0] == u'__None':
+            if self.allow_blank and valuelist[0] == '__None':
                 self.data = None
             else:
                 self._data = None
@@ -123,7 +123,7 @@ class QuerySelectField(SelectFieldBase):
                 if self.data == obj:
                     break
             else:
-                raise ValidationError(self.gettext(u'Not a valid choice'))
+                raise ValidationError(self.gettext('Not a valid choice'))
 
 
 class QuerySelectMultipleField(QuerySelectField):
@@ -173,12 +173,12 @@ class QuerySelectMultipleField(QuerySelectField):
 
     def pre_validate(self, form):
         if self._invalid_formdata:
-            raise ValidationError(self.gettext(u'Not a valid choice'))
+            raise ValidationError(self.gettext('Not a valid choice'))
         elif self.data:
             obj_list = list(x[1] for x in self._get_object_list())
             for v in self.data:
                 if v not in obj_list:
-                    raise ValidationError(self.gettext(u'Not a valid choice'))
+                    raise ValidationError(self.gettext('Not a valid choice'))
 
 
 class HstoreForm(BaseForm):
@@ -297,4 +297,4 @@ class InlineModelFormList(InlineFieldList):
 def get_pk_from_identity(obj):
     # TODO: Remove me
     cls, key = identity_key(instance=obj)
-    return u':'.join(text_type(x) for x in key)
+    return ':'.join(text_type(x) for x in key)

@@ -9,6 +9,7 @@ from jinja2 import Markup
 from flask_admin.base import BaseView, expose
 from flask_admin.babel import gettext
 from flask_admin._compat import VER
+import collections
 
 # Set up logger
 log = logging.getLogger("flask-admin.redis")
@@ -93,11 +94,11 @@ class RedisCli(BaseView):
         for name in dir(self.redis):
             if not name.startswith('_'):
                 attr = getattr(self.redis, name)
-                if callable(attr) and name not in self.excluded_commands:
+                if isinstance(attr, collections.Callable) and name not in self.excluded_commands:
                     doc = (getattr(attr, '__doc__', '') or '').strip()
                     self.commands[name] = (attr, doc)
 
-        for new, old in self.remapped_commands.items():
+        for new, old in list(self.remapped_commands.items()):
             self.commands[new] = self.commands[old]
 
     def _contribute_commands(self):

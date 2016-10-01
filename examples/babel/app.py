@@ -38,7 +38,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True)
 
     # Required for administrative interface
-    def __unicode__(self):
+    def __str__(self):
         return self.username
 
 
@@ -51,7 +51,7 @@ class Post(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
     user = db.relationship(User, backref='posts')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 

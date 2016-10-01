@@ -10,7 +10,7 @@ from .upload import *
 class BaseForm(form.Form):
     _translations = Translations()
 
-    def __init__(self, formdata=None, obj=None, prefix=u'', **kwargs):
+    def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
         self._obj = obj
 
         super(BaseForm, self).__init__(formdata=formdata, obj=obj, prefix=prefix, **kwargs)

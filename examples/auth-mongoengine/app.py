@@ -40,7 +40,7 @@ class User(db.Document):
         return str(self.id)
 
     # Required for administrative interface
-    def __unicode__(self):
+    def __str__(self):
         return self.login
 
 

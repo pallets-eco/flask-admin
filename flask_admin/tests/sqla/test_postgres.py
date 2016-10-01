@@ -1,4 +1,6 @@
-from nose.tools import eq_, ok_
+
+import pytest
+psycopg2 = pytest.importorskip('psycopg2')
 
 from . import setup_postgres
 from .test_basic import CustomModelView
@@ -21,25 +23,25 @@ def test_hstore():
     client = app.test_client()
 
     rv = client.get('/admin/model/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     rv = client.post('/admin/model/new/', data={
         'hstore_test-0-key': 'test_val1',
         'hstore_test-0-value': 'test_val2'
     })
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     rv = client.get('/admin/model/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test_val1' in data)
-    ok_('test_val2' in data)
+    assert 'test_val1' in data
+    assert 'test_val2' in data
 
     rv = client.get('/admin/model/edit/?id=1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test_val1' in data)
-    ok_('test_val2' in data)
+    assert 'test_val1' in data
+    assert 'test_val2' in data
 
 
 def test_json():
@@ -57,21 +59,21 @@ def test_json():
     client = app.test_client()
 
     rv = client.get('/admin/jsonmodel/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     rv = client.post('/admin/jsonmodel/new/', data={
         'json_test': '{"test_key1": "test_value1"}',
     })
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     rv = client.get('/admin/jsonmodel/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('json_test' in data)
-    ok_('{&#34;test_key1&#34;: &#34;test_value1&#34;}' in data)
+    assert 'json_test' in data
+    assert '{&#34;test_key1&#34;: &#34;test_value1&#34;}' in data
 
     rv = client.get('/admin/jsonmodel/edit/?id=1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('json_test' in data)
-    ok_('>{"test_key1": "test_value1"}<' in data)
+    assert 'json_test' in data
+    assert '>{"test_key1": "test_value1"}<' in data

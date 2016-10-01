@@ -20,10 +20,10 @@ class NdbModelView(BaseModelView):
         return model.key.urlsafe()
 
     def scaffold_list_columns(self):
-        return sorted([k for (k, v) in self.model.__dict__.iteritems() if isinstance(v, ndb.Property)])
+        return sorted([k for (k, v) in self.model.__dict__.items() if isinstance(v, ndb.Property)])
 
     def scaffold_sortable_columns(self):
-        return [k for (k, v) in self.model.__dict__.iteritems() if isinstance(v, ndb.Property) and v._indexed]
+        return [k for (k, v) in self.model.__dict__.items() if isinstance(v, ndb.Property) and v._indexed]
 
     def init_search(self):
         return None
@@ -151,11 +151,11 @@ class DbModelView(BaseModelView):
         return str(model.key())
 
     def scaffold_list_columns(self):
-        return sorted([k for (k, v) in self.model.__dict__.iteritems() if isinstance(v, db.Property)])
+        return sorted([k for (k, v) in self.model.__dict__.items() if isinstance(v, db.Property)])
 
     def scaffold_sortable_columns(self):
         # We use getattr() because ReferenceProperty does not specify a 'indexed' field
-        return [k for (k, v) in self.model.__dict__.iteritems() if isinstance(v, db.Property) and getattr(v, 'indexed', None)]
+        return [k for (k, v) in self.model.__dict__.items() if isinstance(v, db.Property) and getattr(v, 'indexed', None)]
 
     def init_search(self):
         return None

@@ -867,7 +867,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if self.column_choices:
             self._column_choices_map = dict([
                 (column, dict(choices))
-                for column, choices in self.column_choices.items()
+                for column, choices in list(self.column_choices.items())
             ])
         else:
             self.column_choices = self._column_choices_map = dict()
@@ -1721,7 +1721,7 @@ class BaseModelView(BaseView, ActionsMixin):
             return choices_map.get(value) or value
 
         type_fmt = None
-        for typeobj, formatter in column_type_formatters.items():
+        for typeobj, formatter in list(column_type_formatters.items()):
             if isinstance(value, typeobj):
                 type_fmt = formatter
                 break

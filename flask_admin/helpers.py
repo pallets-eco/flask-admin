@@ -98,7 +98,7 @@ def is_field_error(errors):
 def flash_errors(form, message):
     from flask_admin.babel import gettext
     for field_name, errors in iteritems(form.errors):
-        errors = form[field_name].label.text + u": " + u", ".join(errors)
+        errors = form[field_name].label.text + ": " + ", ".join(errors)
         flash(gettext(message, error=str(errors)), 'error')
 
 @contextfunction

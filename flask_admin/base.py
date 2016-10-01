@@ -205,7 +205,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
         # Default view
         if self._default_view is None:
-            raise Exception(u'Attempted to instantiate admin view %s without default view' % self.__class__.__name__)
+            raise Exception('Attempted to instantiate admin view %s without default view' % self.__class__.__name__)
 
     def _get_endpoint(self, endpoint):
         """
@@ -650,12 +650,12 @@ class Admin(object):
 
         for p in admins:
             if p.endpoint == self.endpoint:
-                raise Exception(u'Cannot have two Admin() instances with same'
-                                u' endpoint name.')
+                raise Exception('Cannot have two Admin() instances with same'
+                                ' endpoint name.')
 
             if p.url == self.url and p.subdomain == self.subdomain:
-                raise Exception(u'Cannot assign two Admin() instances with same'
-                                u' URL and subdomain to the same application.')
+                raise Exception('Cannot assign two Admin() instances with same'
+                                ' URL and subdomain to the same application.')
 
         admins.append(self)
         self.app.extensions['admin'] = admins

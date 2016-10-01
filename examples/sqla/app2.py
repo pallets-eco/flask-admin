@@ -12,7 +12,7 @@ app = Flask(__name__)
 # Create dummy secrey key so we can use sessions
 app.config['SECRET_KEY'] = '123456790'
 
-# Create in-memory database
+# Create  database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sample_db_2.sqlite'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
@@ -28,7 +28,7 @@ class Car(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     desc = db.Column(db.String(50))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.desc
 
 

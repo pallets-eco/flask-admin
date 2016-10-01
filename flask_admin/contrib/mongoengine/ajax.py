@@ -53,7 +53,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         criteria = None
 
         for field in self._cached_fields:
-            flt = {u'%s__icontains' % field.name: term}
+            flt = {'%s__icontains' % field.name: term}
 
             if not criteria:
                 criteria = mongoengine.Q(**flt)

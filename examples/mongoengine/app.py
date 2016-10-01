@@ -25,7 +25,7 @@ class User(db.Document):
     tags = db.ListField(db.ReferenceField('Tag'))
     password = db.StringField(max_length=40)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -37,14 +37,14 @@ class Todo(db.Document):
     user = db.ReferenceField(User, required=False)
 
     # Required for administrative interface
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
 class Tag(db.Document):
     name = db.StringField(max_length=10)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 

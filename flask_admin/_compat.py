@@ -20,9 +20,9 @@ if not PY2:
     string_types = (str,)
     integer_types = (int, )
 
-    iterkeys = lambda d: iter(d.keys())
-    itervalues = lambda d: iter(d.values())
-    iteritems = lambda d: iter(d.items())
+    iterkeys = lambda d: iter(list(d.keys()))
+    itervalues = lambda d: iter(list(d.values()))
+    iteritems = lambda d: iter(list(d.items()))
     filter_list = lambda f, l: list(filter(f, l))
 
     def as_unicode(s):
@@ -39,20 +39,20 @@ if not PY2:
     from functools import reduce
     from urllib.parse import urljoin, urlparse
 else:
-    text_type = unicode
-    string_types = (str, unicode)
-    integer_types = (int, long)
+    text_type = str
+    string_types = (str, str)
+    integer_types = (int, int)
 
-    iterkeys = lambda d: d.iterkeys()
-    itervalues = lambda d: d.itervalues()
-    iteritems = lambda d: d.iteritems()
+    iterkeys = lambda d: iter(d.keys())
+    itervalues = lambda d: iter(d.values())
+    iteritems = lambda d: iter(d.items())
     filter_list = filter
 
     def as_unicode(s):
         if isinstance(s, str):
             return s.decode('utf-8')
 
-        return unicode(s)
+        return str(s)
 
     def csv_encode(s):
         ''' Returns byte string expected by Python 2's csv module '''
@@ -60,7 +60,7 @@ else:
 
     # Helpers
     reduce = __builtins__['reduce'] if isinstance(__builtins__, dict) else __builtins__.reduce
-    from urlparse import urljoin, urlparse
+    from urllib.parse import urljoin, urlparse
 
 
 def with_metaclass(meta, *bases):
@@ -100,4 +100,4 @@ except ImportError:
         def iteritems(self):
             return ((k, self[k]) for k in self.ordered_keys)
         def items(self):
-            return list(self.iteritems())
+            return list(self.items())

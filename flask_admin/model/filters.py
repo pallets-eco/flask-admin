@@ -2,6 +2,7 @@ import time
 import datetime
 
 from flask_admin.babel import lazy_gettext
+import collections
 
 
 class BaseFilter(object):
@@ -35,7 +36,7 @@ class BaseFilter(object):
         options = self.options
 
         if options:
-            if callable(options):
+            if isinstance(options, collections.Callable):
                 options = options()
 
             return options
@@ -86,7 +87,7 @@ class BaseFilter(object):
         """
         raise NotImplementedError()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -97,8 +98,8 @@ class BaseBooleanFilter(BaseFilter):
     """
     def __init__(self, name, options=None, data_type=None):
         super(BaseBooleanFilter, self).__init__(name,
-                                                (('1', lazy_gettext(u'Yes')),
-                                                 ('0', lazy_gettext(u'No'))),
+                                                (('1', lazy_gettext('Yes')),
+                                                 ('0', lazy_gettext('No'))),
                                                 data_type)
 
     def validate(self, value):
@@ -273,7 +274,7 @@ def convert(*args):
         See :mod:`flask_admin.contrib.sqla.filters` for usage example.
     """
     def _inner(func):
-        func._converter_for = list(map(lambda x: x.lower(), args))
+        func._converter_for = list([x.lower() for x in args])
         return func
     return _inner
 

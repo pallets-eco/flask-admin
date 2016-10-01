@@ -27,7 +27,7 @@ class Person(db.Model):
     name = db.Column(db.String(50))
     pets = db.relationship('Pet', backref='person')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -37,7 +37,7 @@ class Pet(db.Model):
     person_id = db.Column(db.Integer, db.ForeignKey('person.id'))
     available = db.Column(db.Boolean)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -62,7 +62,7 @@ class PersonAdmin(sqla.ModelView):
         # only show available pets in the form
         return Pet.query.filter_by(available=True).all()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 

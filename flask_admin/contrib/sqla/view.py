@@ -47,7 +47,7 @@ class ModelView(BaseModelView):
         and perform automatic joined loading for related models to improve
         query performance.
 
-        Please note that detection is not recursive: if `__unicode__` method
+        Please note that detection is not recursive: if `__str__` method
         of related model uses another model to generate string representation, it
         will still make separate database call.
     """
@@ -811,7 +811,7 @@ class ModelView(BaseModelView):
 
             if sort_desc:
                 if isinstance(column, tuple):
-                    query = query.order_by(*map(desc, column))
+                    query = query.order_by(*list(map(desc, column)))
                 else:
 	                query = query.order_by(desc(column))
             else:

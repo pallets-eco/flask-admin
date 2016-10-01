@@ -327,19 +327,19 @@ class AdminModelConverter(ModelConverterBase):
 
     @converts('sqlalchemy.dialects.postgresql.base.INET')
     def conv_PGInet(self, field_args, **extra):
-        field_args.setdefault('label', u'IP Address')
+        field_args.setdefault('label', 'IP Address')
         field_args['validators'].append(validators.IPAddress())
         return fields.StringField(**field_args)
 
     @converts('sqlalchemy.dialects.postgresql.base.MACADDR')
     def conv_PGMacaddr(self, field_args, **extra):
-        field_args.setdefault('label', u'MAC Address')
+        field_args.setdefault('label', 'MAC Address')
         field_args['validators'].append(validators.MacAddress())
         return fields.StringField(**field_args)
 
     @converts('sqlalchemy.dialects.postgresql.base.UUID')
     def conv_PGUuid(self, field_args, **extra):
-        field_args.setdefault('label', u'UUID')
+        field_args.setdefault('label', 'UUID')
         field_args['validators'].append(validators.UUID())
         return fields.StringField(**field_args)
 

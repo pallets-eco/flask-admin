@@ -9,7 +9,9 @@ from flask_admin._compat import text_type, as_unicode
 from . import widgets as admin_widgets
 
 """
-An understanding of WTForms's Custom Widgets is helpful for understanding this code: http://wtforms.simplecodes.com/docs/0.6.2/widgets.html#custom-widgets
+An understanding of WTForms's Custom Widgets is helpful for understanding this
+code: http://wtforms.simplecodes.com/docs/0.6.2/widgets.html#custom-widgets
+
 """
 
 __all__ = ['DateTimeField', 'TimeField', 'Select2Field', 'Select2TagsField',
@@ -72,15 +74,15 @@ class TimeField(fields.Field):
 
     def _value(self):
         if self.raw_data:
-            return u' '.join(self.raw_data)
+            return ' '.join(self.raw_data)
         elif self.data is not None:
             return self.data.strftime(self.default_format)
         else:
-            return u''
+            return ''
 
     def process_formdata(self, valuelist):
         if valuelist:
-            date_str = u' '.join(valuelist)
+            date_str = ' '.join(valuelist)
 
             if date_str.strip():
                 for format in self.formats:
@@ -117,7 +119,7 @@ class Select2Field(fields.SelectField):
 
     def iter_choices(self):
         if self.allow_blank:
-            yield (u'__None', self.blank_text, self.data is None)
+            yield ('__None', self.blank_text, self.data is None)
 
         for value, label in self.choices:
             yield (value, label, self.coerce(value) == self.data)
@@ -139,7 +141,7 @@ class Select2Field(fields.SelectField):
                 try:
                     self.data = self.coerce(valuelist[0])
                 except ValueError:
-                    raise ValueError(self.gettext(u'Invalid Choice: could not coerce'))
+                    raise ValueError(self.gettext('Invalid Choice: could not coerce'))
 
     def pre_validate(self, form):
         if self.allow_blank and self.data is None:
@@ -173,11 +175,11 @@ class Select2TagsField(fields.StringField):
 
     def _value(self):
         if isinstance(self.data, (list, tuple)):
-            return u','.join(as_unicode(v) for v in self.data)
+            return ','.join(as_unicode(v) for v in self.data)
         elif self.data:
             return as_unicode(self.data)
         else:
-            return u''
+            return ''
 
 
 class JSONField(fields.TextAreaField):
