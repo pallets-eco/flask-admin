@@ -41,7 +41,6 @@ Examples
 Several usage examples are included in the */examples* folder. Please feel free to add your own examples, or improve
 on some of the existing ones, and then submit them via GitHub as a *pull-request*.
 
-You can see some of these examples in action at `http://examples.flask-admin.org <http://examples.flask-admin.org/>`_.
 To run the examples on your local environment, one at a time, do something like::
 
     cd flask-admin
