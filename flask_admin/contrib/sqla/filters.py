@@ -29,7 +29,7 @@ class BaseSQLAFilter(filters.BaseFilter):
         return self.column if alias is None else getattr(alias, self.column.key)
 
     def apply(self, query, value, alias=None):
-        return super(self, BaseSQLAFilter).apply(query, value)
+        return super(BaseSQLAFilter, self).apply(query, value)
 
 
 # Common filters
