@@ -1846,10 +1846,8 @@ class BaseModelView(BaseView, ActionsMixin):
 
             return self._get_list_url(view_args.clone(page=p))
 
-        def sort_url(column, invert=False):
-            desc = None
-
-            if invert and not view_args.sort_desc:
+        def sort_url(column, invert=False, desc=None):
+            if not desc and invert and not view_args.sort_desc:
                 desc = 1
 
             return self._get_list_url(view_args.clone(sort=column, sort_desc=desc))
