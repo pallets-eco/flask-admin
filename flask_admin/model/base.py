@@ -1989,7 +1989,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     # save button
                     return redirect(self.get_save_return_url(model, is_created=False))
 
-        if request.method == 'GET':
+        if request.method == 'GET' or form.errors:
             self.on_form_prefill(form, id)
 
         form_opts = FormOpts(widget_args=self.form_widget_args,
