@@ -19,11 +19,11 @@ class Select2Widget(widgets.Select):
         work.
     """
     def __call__(self, field, **kwargs):
-        kwargs.setdefault('data-role', u'select2')
+        kwargs.setdefault('data-role', 'select2')
 
         allow_blank = getattr(field, 'allow_blank', False)
         if allow_blank and not self.multiple:
-            kwargs['data-allow-blank'] = u'1'
+            kwargs['data-allow-blank'] = '1'
 
         return super(Select2Widget, self).__call__(field, **kwargs)
 
@@ -33,8 +33,8 @@ class Select2TagsWidget(widgets.TextInput):
     You must include select2.js, form-x.x.x.js and select2 stylesheet for it to work.
     """
     def __call__(self, field, **kwargs):
-        kwargs.setdefault('data-role', u'select2')
-        kwargs.setdefault('data-tags', u'1')
+        kwargs.setdefault('data-role', 'select2')
+        kwargs.setdefault('data-tags', '1')
         return super(Select2TagsWidget, self).__call__(field, **kwargs)
 
 
@@ -46,8 +46,8 @@ class DatePickerWidget(widgets.TextInput):
         You must include bootstrap-datepicker.js and form-x.x.x.js for styling to work.
     """
     def __call__(self, field, **kwargs):
-        kwargs.setdefault('data-role', u'datepicker')
-        kwargs.setdefault('data-date-format', u'YYYY-MM-DD')
+        kwargs.setdefault('data-role', 'datepicker')
+        kwargs.setdefault('data-date-format', 'YYYY-MM-DD')
 
         self.date_format = kwargs['data-date-format']
         return super(DatePickerWidget, self).__call__(field, **kwargs)
@@ -60,8 +60,8 @@ class DateTimePickerWidget(widgets.TextInput):
         You must include bootstrap-datepicker.js and form-x.x.x.js for styling to work.
     """
     def __call__(self, field, **kwargs):
-        kwargs.setdefault('data-role', u'datetimepicker')
-        kwargs.setdefault('data-date-format', u'YYYY-MM-DD HH:mm:ss')
+        kwargs.setdefault('data-role', 'datetimepicker')
+        kwargs.setdefault('data-date-format', 'YYYY-MM-DD HH:mm:ss')
         return super(DateTimePickerWidget, self).__call__(field, **kwargs)
 
 
@@ -72,8 +72,8 @@ class TimePickerWidget(widgets.TextInput):
         You must include bootstrap-datepicker.js and form-x.x.x.js for styling to work.
     """
     def __call__(self, field, **kwargs):
-        kwargs.setdefault('data-role', u'timepicker')
-        kwargs.setdefault('data-date-format', u'HH:mm:ss')
+        kwargs.setdefault('data-role', 'timepicker')
+        kwargs.setdefault('data-date-format', 'HH:mm:ss')
         return super(TimePickerWidget, self).__call__(field, **kwargs)
 
 

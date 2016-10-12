@@ -185,7 +185,7 @@ def get_field_with_path(model, name, return_remote_proxy_attr=True):
 def get_hybrid_properties(model):
     return dict(
         (key, prop)
-        for key, prop in inspect(model).all_orm_descriptors.items()
+        for key, prop in list(inspect(model).all_orm_descriptors.items())
         if isinstance(prop, hybrid_property)
     )
 

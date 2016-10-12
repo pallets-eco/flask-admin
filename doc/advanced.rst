@@ -342,7 +342,7 @@ Let's Model a car with its tyres::
         id = db.Column(db.Integer, primary_key=True, autoincrement=True)
         desc = db.Column(db.String(50))
 
-        def __unicode__(self):
+        def __str__(self):
             return self.desc
 
     class Tyre(db.Model):

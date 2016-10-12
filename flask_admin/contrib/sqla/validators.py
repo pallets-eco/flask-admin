@@ -39,7 +39,7 @@ class Unique(object):
 
             if not hasattr(form, '_obj') or not form._obj == obj:
                 if self.message is None:
-                    self.message = field.gettext(u'Already exists.')
+                    self.message = field.gettext('Already exists.')
                 raise ValidationError(self.message)
         except NoResultFound:
             pass
@@ -58,8 +58,8 @@ class ItemsRequired(InputRequired):
         if len(field.data) < self.min:
             if self.message is None:
                 message = field.ngettext(
-                    u"At least %(num)d item is required",
-                    u"At least %(num)d items are required",
+                    "At least %(num)d item is required",
+                    "At least %(num)d items are required",
                     self.min
                 )
             else:

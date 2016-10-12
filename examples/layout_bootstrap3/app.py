@@ -26,7 +26,7 @@ class User(db.Model):
     name = db.Column(db.Unicode(64))
     email = db.Column(db.Unicode(64))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -35,7 +35,7 @@ class Page(db.Model):
     title = db.Column(db.Unicode(64))
     content = db.Column(db.UnicodeText)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 

@@ -1,6 +1,5 @@
 import json
 
-from nose.tools import eq_, ok_, raises, assert_true
 from speaklater import make_lazy_string
 
 from . import setup
@@ -34,9 +33,9 @@ def test_column_label_translation():
     translated.translate = True
     non_lazy_groups = view._get_filter_groups()
     json.dumps(non_lazy_groups)  # Filter dict is JSON serializable.
-    ok_(translated('Column1') in non_lazy_groups)  # Label was translated.
+    assert translated('Column1') in non_lazy_groups
 
     client = app.test_client()
     # Render index with active filter.
     rv = client.get('/admin/model1/?flt1_0=test')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200

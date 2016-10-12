@@ -47,7 +47,7 @@ def list_formatter(view, values):
         :param values:
             Value to check
     """
-    return u', '.join(text_type(v) for v in values)
+    return ', '.join(text_type(v) for v in values)
 
 
 def enum_formatter(view, value):

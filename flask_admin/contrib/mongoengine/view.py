@@ -665,7 +665,7 @@ class ModelView(BaseModelView):
             count = 0
 
             all_ids = [self.object_id_converter(pk) for pk in ids]
-            for obj in self.get_query().in_bulk(all_ids).values():
+            for obj in list(self.get_query().in_bulk(all_ids).values()):
                 count += self.delete_model(obj)
 
             flash(ngettext('Record was successfully deleted.',

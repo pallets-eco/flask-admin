@@ -21,7 +21,7 @@ class User(BaseModel):
     username = peewee.CharField(max_length=80)
     email = peewee.CharField(max_length=120)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.username
 
 
@@ -31,7 +31,7 @@ class UserInfo(BaseModel):
 
     user = peewee.ForeignKeyField(User)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.key, self.value)
 
 
@@ -42,7 +42,7 @@ class Post(BaseModel):
 
     user = peewee.ForeignKeyField(User)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 

@@ -6,6 +6,7 @@ from werkzeug.datastructures import FileStorage
 
 from wtforms import ValidationError, fields
 from wtforms.widgets import HTMLString, html_params
+import collections
 
 try:
     from wtforms.fields.core import _unset_value as unset_value
@@ -193,7 +194,7 @@ class FileUploadField(fields.StringField):
 
         return ('.' in filename and
                 filename.rsplit('.', 1)[1].lower() in
-                map(lambda x: x.lower(), self.allowed_extensions))
+                [x.lower() for x in self.allowed_extensions])
 
     def _is_uploaded_file(self, data):
         return (data
@@ -260,7 +261,7 @@ class FileUploadField(fields.StringField):
         if not self.base_path:
             raise ValueError('FileUploadField field requires base_path to be set.')
 
-        if callable(self.base_path):
+        if isinstance(self.base_path, collections.Callable):
             return op.join(self.base_path(), filename)
         return op.join(self.base_path, filename)
 

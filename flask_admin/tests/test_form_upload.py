@@ -1,9 +1,9 @@
 import os
 import os.path as op
+import pytest
+PIL = pytest.importorskip('PIL')
 
 from io import BytesIO
-
-from nose.tools import eq_, ok_
 
 from flask import Flask, url_for
 from flask_admin import form, helpers
@@ -47,7 +47,7 @@ def test_upload_field():
         pass
 
     my_form = TestForm()
-    eq_(my_form.upload.base_path, path)
+    assert my_form.upload.base_path == path
 
     _remove_testfiles()
 
@@ -57,35 +57,35 @@ def test_upload_field():
     with app.test_request_context(method='POST', data={'upload': (BytesIO(b'Hello World 1'), 'test1.txt')}):
         my_form = TestForm(helpers.get_form_data())
 
-        ok_(my_form.validate())
+        assert my_form.validate()
 
         my_form.populate_obj(dummy)
 
-        eq_(dummy.upload, 'test1.txt')
-        ok_(op.exists(op.join(path, 'test1.txt')))
+        assert dummy.upload == 'test1.txt'
+        assert op.exists(op.join(path, 'test1.txt'))
 
     # Check replace
     with app.test_request_context(method='POST', data={'upload': (BytesIO(b'Hello World 2'), 'test2.txt')}):
         my_form = TestForm(helpers.get_form_data())
 
-        ok_(my_form.validate())
+        assert my_form.validate()
         my_form.populate_obj(dummy)
 
-        eq_(dummy.upload, 'test2.txt')
-        ok_(not op.exists(op.join(path, 'test1.txt')))
-        ok_(op.exists(op.join(path, 'test2.txt')))
+        assert dummy.upload == 'test2.txt'
+        assert not op.exists(op.join(path, 'test1.txt'))
+        assert op.exists(op.join(path, 'test2.txt'))
 
     # Check delete
     with app.test_request_context(method='POST', data={'_upload-delete': 'checked'}):
 
         my_form = TestForm(helpers.get_form_data())
 
-        ok_(my_form.validate())
+        assert my_form.validate()
 
         my_form.populate_obj(dummy)
-        eq_(dummy.upload, None)
+        assert dummy.upload == None
 
-        ok_(not op.exists(op.join(path, 'test2.txt')))
+        assert not op.exists(op.join(path, 'test2.txt'))
 
     # Check overwrite
     _remove_testfiles()
@@ -93,15 +93,15 @@ def test_upload_field():
     with app.test_request_context(method='POST', data={'upload': (BytesIO(b'Hullo'), 'test1.txt')}):
         my_form_ow = TestNoOverWriteForm(helpers.get_form_data())
 
-        ok_(my_form_ow.validate())
+        assert my_form_ow.validate()
         my_form_ow.populate_obj(dummy)
-        eq_(dummy.upload, 'test1.txt')
-        ok_(op.exists(op.join(path, 'test1.txt')))
+        assert dummy.upload == 'test1.txt'
+        assert op.exists(op.join(path, 'test1.txt'))
 
     with app.test_request_context(method='POST', data={'upload': (BytesIO(b'Hullo'), 'test1.txt')}):
         my_form_ow = TestNoOverWriteForm(helpers.get_form_data())
 
-        ok_(not my_form_ow.validate())
+        assert not my_form_ow.validate()
 
     _remove_testfiles()
 
@@ -139,8 +139,8 @@ def test_image_upload_field():
         pass
 
     my_form = TestForm()
-    eq_(my_form.upload.base_path, path)
-    eq_(my_form.upload.endpoint, 'static')
+    assert my_form.upload.base_path == path
+    assert my_form.upload.endpoint == 'static'
 
     _remove_testimages()
 
@@ -153,54 +153,54 @@ def test_image_upload_field():
         with app.test_request_context(method='POST', data={'upload': (fp, 'test1.png')}):
             my_form = TestForm(helpers.get_form_data())
 
-            ok_(my_form.validate())
+            assert my_form.validate()
 
             my_form.populate_obj(dummy)
 
-            eq_(dummy.upload, 'test1.png')
-            ok_(op.exists(op.join(path, 'test1.png')))
-            ok_(op.exists(op.join(path, 'test1_thumb.png')))
+            assert dummy.upload == 'test1.png'
+            assert op.exists(op.join(path, 'test1.png'))
+            assert op.exists(op.join(path, 'test1_thumb.png'))
 
     # Check replace
     with open(filename, 'rb') as fp:
         with app.test_request_context(method='POST', data={'upload': (fp, 'test2.png')}):
             my_form = TestForm(helpers.get_form_data())
 
-            ok_(my_form.validate())
+            assert my_form.validate()
 
             my_form.populate_obj(dummy)
 
-            eq_(dummy.upload, 'test2.png')
-            ok_(op.exists(op.join(path, 'test2.png')))
-            ok_(op.exists(op.join(path, 'test2_thumb.png')))
+            assert dummy.upload == 'test2.png'
+            assert op.exists(op.join(path, 'test2.png'))
+            assert op.exists(op.join(path, 'test2_thumb.png'))
 
-            ok_(not op.exists(op.join(path, 'test1.png')))
-            ok_(not op.exists(op.join(path, 'test1_thumb.jpg')))
+            assert not op.exists(op.join(path, 'test1.png'))
+            assert not op.exists(op.join(path, 'test1_thumb.jpg'))
 
     # Check delete
     with app.test_request_context(method='POST', data={'_upload-delete': 'checked'}):
         my_form = TestForm(helpers.get_form_data())
 
-        ok_(my_form.validate())
+        assert my_form.validate()
 
         my_form.populate_obj(dummy)
-        eq_(dummy.upload, None)
+        assert dummy.upload == None
 
-        ok_(not op.exists(op.join(path, 'test2.png')))
-        ok_(not op.exists(op.join(path, 'test2_thumb.png')))
+        assert not op.exists(op.join(path, 'test2.png'))
+        assert not op.exists(op.join(path, 'test2_thumb.png'))
 
     # Check upload no-resize
     with open(filename, 'rb') as fp:
         with app.test_request_context(method='POST', data={'upload': (fp, 'test1.png')}):
             my_form = TestNoResizeForm(helpers.get_form_data())
 
-            ok_(my_form.validate())
+            assert my_form.validate()
 
             my_form.populate_obj(dummy)
 
-            eq_(dummy.upload, 'test1.png')
-            ok_(op.exists(op.join(path, 'test1.png')))
-            ok_(not op.exists(op.join(path, 'test1_thumb.png')))
+            assert dummy.upload == 'test1.png'
+            assert op.exists(op.join(path, 'test1.png'))
+            assert not op.exists(op.join(path, 'test1_thumb.png'))
 
     # Check upload, auto-resize
     filename = op.join(op.dirname(__file__), 'data', 'copyleft.png')
@@ -209,12 +209,12 @@ def test_image_upload_field():
         with app.test_request_context(method='POST', data={'upload': (fp, 'test1.png')}):
             my_form = TestAutoResizeForm(helpers.get_form_data())
 
-            ok_(my_form.validate())
+            assert my_form.validate()
 
             my_form.populate_obj(dummy)
 
-            eq_(dummy.upload, 'test1.png')
-            ok_(op.exists(op.join(path, 'test1.png')))
+            assert dummy.upload == 'test1.png'
+            assert op.exists(op.join(path, 'test1.png'))
 
     filename = op.join(op.dirname(__file__), 'data', 'copyleft.tiff')
 
@@ -222,12 +222,12 @@ def test_image_upload_field():
         with app.test_request_context(method='POST', data={'upload': (fp, 'test1.tiff')}):
             my_form = TestAutoResizeForm(helpers.get_form_data())
 
-            ok_(my_form.validate())
+            assert my_form.validate()
 
             my_form.populate_obj(dummy)
 
-            eq_(dummy.upload, 'test1.jpg')
-            ok_(op.exists(op.join(path, 'test1.jpg')))
+            assert dummy.upload == 'test1.jpg'
+            assert op.exists(op.join(path, 'test1.jpg'))
 
 
     # check allowed extensions
@@ -237,16 +237,16 @@ def test_image_upload_field():
         with open(filepath, 'rb') as fp:
             with app.test_request_context(method='POST', data={'upload': (fp, filename)}):
                 my_form = TestNoResizeForm(helpers.get_form_data())
-                ok_(my_form.validate())
+                assert my_form.validate()
                 my_form.populate_obj(dummy)
-                eq_(dummy.upload, my_form.upload.data.filename)
+                assert dummy.upload == my_form.upload.data.filename
 
     # check case-sensitivity for extensions
     filename = op.join(op.dirname(__file__), 'data', 'copyleft.jpg')
     with open(filename, 'rb') as fp:
         with app.test_request_context(method='POST', data={'upload': (fp, 'copyleft.JPG')}):
             my_form = TestNoResizeForm(helpers.get_form_data())
-            ok_(my_form.validate())
+            assert my_form.validate()
 
 
 def test_relative_path():
@@ -264,8 +264,8 @@ def test_relative_path():
         pass
 
     my_form = TestForm()
-    eq_(my_form.upload.base_path, path)
-    eq_(my_form.upload.relative_path, 'inner/')
+    assert my_form.upload.base_path == path
+    assert my_form.upload.relative_path == 'inner/'
 
     _remove_testfiles()
 
@@ -275,11 +275,11 @@ def test_relative_path():
     with app.test_request_context(method='POST', data={'upload': (BytesIO(b'Hello World 1'), 'test1.txt')}):
         my_form = TestForm(helpers.get_form_data())
 
-        ok_(my_form.validate())
+        assert my_form.validate()
 
         my_form.populate_obj(dummy)
 
-        eq_(dummy.upload, 'inner/test1.txt')
-        ok_(op.exists(op.join(path, 'inner/test1.txt')))
+        assert dummy.upload == 'inner/test1.txt'
+        assert op.exists(op.join(path, 'inner/test1.txt'))
 
-        eq_(url_for('static', filename=dummy.upload), '/static/inner/test1.txt')
+        assert url_for('static', filename=dummy.upload) == '/static/inner/test1.txt'

@@ -1,4 +1,3 @@
-from nose.tools import eq_, ok_
 
 from . import setup
 from .test_basic import CustomModelView
@@ -24,25 +23,25 @@ def test_multiple_pk():
     client = app.test_client()
 
     rv = client.get('/admin/model/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     rv = client.post('/admin/model/new/',
                      data=dict(id=1, id2='two', test='test3'))
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     rv = client.get('/admin/model/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test3' in data)
+    assert 'test3' in data
 
     rv = client.get('/admin/model/edit/?id=1,two')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test3' in data)
+    assert 'test3' in data
 
     # Correct order is mandatory -> fail here
     rv = client.get('/admin/model/edit/?id=two,1')
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
 
 def test_joined_inheritance():
@@ -71,17 +70,17 @@ def test_joined_inheritance():
     client = app.test_client()
 
     rv = client.get('/admin/child/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     rv = client.post('/admin/child/new/',
                      data=dict(id=1, test='foo', name='bar'))
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     rv = client.get('/admin/child/edit/?id=1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('foo' in data)
-    ok_('bar' in data)
+    assert 'foo' in data
+    assert 'bar' in data
 
 
 def test_single_table_inheritance():
@@ -111,17 +110,17 @@ def test_single_table_inheritance():
     client = app.test_client()
 
     rv = client.get('/admin/child/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     rv = client.post('/admin/child/new/',
                      data=dict(id=1, test='foo', name='bar'))
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     rv = client.get('/admin/child/edit/?id=1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('foo' in data)
-    ok_('bar' in data)
+    assert 'foo' in data
+    assert 'bar' in data
 
 
 def test_concrete_table_inheritance():
@@ -146,17 +145,17 @@ def test_concrete_table_inheritance():
     client = app.test_client()
 
     rv = client.get('/admin/child/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     rv = client.post('/admin/child/new/',
                      data=dict(id=1, test='foo', name='bar'))
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     rv = client.get('/admin/child/edit/?id=1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('foo' in data)
-    ok_('bar' in data)
+    assert 'foo' in data
+    assert 'bar' in data
 
 
 def test_concrete_multipk_inheritance():
@@ -182,14 +181,14 @@ def test_concrete_multipk_inheritance():
     client = app.test_client()
 
     rv = client.get('/admin/child/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     rv = client.post('/admin/child/new/',
                      data=dict(id=1, id2=2, test='foo', name='bar'))
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     rv = client.get('/admin/child/edit/?id=1,2')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('foo' in data)
-    ok_('bar' in data)
+    assert 'foo' in data
+    assert 'bar' in data

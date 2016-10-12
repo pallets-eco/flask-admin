@@ -60,7 +60,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
         query = self.session.query(self.model)
 
-        filters = (field.ilike(u'%%%s%%' % term) for field in self._cached_fields)
+        filters = (field.ilike('%%%s%%' % term) for field in self._cached_fields)
         query = query.filter(or_(*filters))
 
         if self.order_by:

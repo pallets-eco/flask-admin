@@ -41,7 +41,7 @@ class Page(db.Model):
     name = db.Column(db.Unicode(64))
     text = db.Column(db.UnicodeText)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 

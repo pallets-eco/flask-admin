@@ -38,7 +38,7 @@ class File(db.Model):
     name = db.Column(db.Unicode(64))
     path = db.Column(db.Unicode(128))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -47,7 +47,7 @@ class Image(db.Model):
     name = db.Column(db.Unicode(64))
     path = db.Column(db.Unicode(128))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 

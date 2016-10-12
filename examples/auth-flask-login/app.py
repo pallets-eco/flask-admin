@@ -45,7 +45,7 @@ class User(db.Model):
         return self.id
 
     # Required for administrative interface
-    def __unicode__(self):
+    def __str__(self):
         return self.username
 
 

@@ -32,7 +32,7 @@ class AjaxSelect2Widget(object):
 
         allow_blank = getattr(field, 'allow_blank', False)
         if allow_blank and not self.multiple:
-            kwargs['data-allow-blank'] = u'1'
+            kwargs['data-allow-blank'] = '1'
 
         kwargs.setdefault('id', field.id)
         kwargs.setdefault('type', 'hidden')
@@ -50,7 +50,7 @@ class AjaxSelect2Widget(object):
 
             kwargs['value'] = separator.join(ids)
             kwargs['data-json'] = json.dumps(result)
-            kwargs['data-multiple'] = u'1'
+            kwargs['data-multiple'] = '1'
         else:
             data = field.loader.format(field.data)
 

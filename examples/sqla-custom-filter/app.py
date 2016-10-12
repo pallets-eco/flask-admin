@@ -41,7 +41,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True)
 
     # Required for admin interface. For python 3 please use __str__ instead.
-    def __unicode__(self):
+    def __str__(self):
         return self.username
 
 

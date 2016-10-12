@@ -3,9 +3,10 @@ import traceback
 
 # Python 3 compatibility
 from ._compat import reduce, as_unicode
+from functools import reduce
 
-CHAR_ESCAPE = u'.'
-CHAR_SEPARATOR = u','
+CHAR_ESCAPE = '.'
+CHAR_SEPARATOR = ','
 
 
 def import_module(name, required=True):
@@ -128,7 +129,7 @@ def iterdecode(value):
         return tuple()
 
     result = []
-    accumulator = u''
+    accumulator = ''
 
     escaped = False
 
@@ -139,7 +140,7 @@ def iterdecode(value):
                 continue
             elif c == CHAR_SEPARATOR:
                 result.append(accumulator)
-                accumulator = u''
+                accumulator = ''
                 continue
         else:
             escaped = False
