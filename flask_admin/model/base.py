@@ -925,6 +925,8 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         if self.column_labels and field in self.column_labels:
             return self.column_labels[field]
+        elif hasattr(self.model, '_fields') and hasattr(self.model._fields.get(field), 'verbose_name'):
+            return getattr(self.model._fields.get(field), 'verbose_name')
         else:
             return self._prettify_name(field)
 
