@@ -84,7 +84,7 @@ def create_models(db):
 
         # Relation
         model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
-        model1 = db.relationship(Model1, backref='model2')
+        model1 = db.relationship(lambda: Model1, backref='model2')
 
     db.create_all()
 
