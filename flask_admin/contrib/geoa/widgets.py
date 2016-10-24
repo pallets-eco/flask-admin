@@ -22,7 +22,7 @@ class LeafletWidget(TextArea):
         editable.
     """
     def __init__(
-            self, width=300, height=300, center=None,
+            self, width='auto', height=350, center=None,
             zoom=None, min_zoom=None, max_zoom=None, max_bounds=None):
         self.width = width
         self.height = height
