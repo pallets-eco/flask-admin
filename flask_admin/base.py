@@ -12,7 +12,7 @@ from flask_admin import helpers as h
 from flask_admin.menu import MenuCategory, MenuView, MenuLink
 
 
-def expose(url='/', methods=('GET',)):
+def expose(url='/', name=None, methods=('GET',)):
     """
         Use this decorator to expose views in your view classes.
 
@@ -20,16 +20,18 @@ def expose(url='/', methods=('GET',)):
             Relative URL for the view
         :param methods:
             Allowed HTTP methods. By default only GET is allowed.
+        :param name:
+            Unique endpoint name for current method or function
     """
     def wrap(f):
         if not hasattr(f, '_urls'):
             f._urls = []
-        f._urls.append((url, methods))
+        f._urls.append((url, name, methods))
         return f
     return wrap
 
 
-def expose_plugview(url='/'):
+def expose_plugview(url='/', name=None):
     """
         Decorator to expose Flask's pluggable view classes
         (``flask.views.View`` or ``flask.views.MethodView``).
@@ -40,7 +42,7 @@ def expose_plugview(url='/'):
         .. versionadded:: 1.0.4
     """
     def wrap(v):
-        handler = expose(url, v.methods)
+        handler = expose(url, name, v.methods)
 
         if hasattr(v, 'as_view'):
             return handler(v.as_view(v.__name__))
@@ -92,8 +94,11 @@ class AdminViewMeta(type):
 
             if hasattr(attr, '_urls'):
                 # Collect methods
-                for url, methods in attr._urls:
-                    cls._urls.append((url, p, methods))
+                for url, name, methods in attr._urls:
+                    if not name:
+                        name = p
+
+                    cls._urls.append((url, name, methods))
 
                     if url == '/':
                         cls._default_view = p
