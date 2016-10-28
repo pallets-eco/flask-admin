@@ -94,11 +94,11 @@ class AdminViewMeta(type):
 
             if hasattr(attr, '_urls'):
                 # Collect methods
-                for url, name, methods in attr._urls:
+                for url, name, func, methods in attr._urls:
                     if not name:
                         name = p
 
-                    cls._urls.append((url, name, methods))
+                    cls._urls.append((url, name, func, methods))
 
                     if url == '/':
                         cls._default_view = p
