@@ -26,7 +26,7 @@ def expose(url='/', name=None, methods=('GET',)):
     def wrap(f):
         if not hasattr(f, '_urls'):
             f._urls = []
-        f._urls.append((url, name, methods))
+        f._urls.append((url, name, f.__name__, methods))
         return f
     return wrap
 
@@ -274,10 +274,10 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
                                    static_folder=self.static_folder,
                                    static_url_path=self.static_url_path)
 
-        for url, name, methods in self._urls:
+        for url, name, func, methods in self._urls:
             self.blueprint.add_url_rule(url,
                                         name,
-                                        getattr(self, name),
+                                        getattr(self, func),
                                         methods=methods)
 
         return self.blueprint
