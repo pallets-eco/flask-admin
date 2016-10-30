@@ -58,7 +58,7 @@ class AjaxSelect2Widget(object):
                 kwargs['value'] = data[0]
                 kwargs['data-json'] = json.dumps(data)
 
-        placeholder = gettext(field.loader.options.get('placeholder', 'Please select model'))
+        placeholder = field.loader.options.get('placeholder', gettext('Please select model'))
         kwargs.setdefault('data-placeholder', placeholder)
 
         return HTMLString('<input %s>' % html_params(name=field.name, **kwargs))
