@@ -2,7 +2,6 @@ import os
 import os.path as op
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from future.utils import python_2_unicode_compatible
 
 from wtforms import validators
 
@@ -26,7 +25,6 @@ db = SQLAlchemy(app, session_options=session_options)
 
 
 # Create models
-@python_2_unicode_compatible
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100))
@@ -45,7 +43,6 @@ post_tags_table = db.Table('post_tags', db.Model.metadata,
                            )
 
 
-@python_2_unicode_compatible
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
@@ -61,7 +58,6 @@ class Post(db.Model):
         return self.title
 
 
-@python_2_unicode_compatible
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
@@ -70,7 +66,6 @@ class Tag(db.Model):
         return self.name
 
 
-@python_2_unicode_compatible
 class UserInfo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
@@ -84,7 +79,6 @@ class UserInfo(db.Model):
         return '%s - %s' % (self.key, self.value)
 
 
-@python_2_unicode_compatible
 class Tree(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
