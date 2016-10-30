@@ -32,7 +32,7 @@
       <div class="navbar">
         <div class="navbar-inner">
           {% block brand %}
-          <span class="brand">{{ admin_view.admin.name }}</span>
+          <a class="brand" href="{{ admin_view.admin.url }}">{{ admin_view.admin.name }}</a>
           {% endblock %}
           {% block main_menu %}
           <ul class="nav">
