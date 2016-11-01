@@ -55,7 +55,9 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         return (getattr(model, self.pk), as_unicode(model))
 
     def get_one(self, pk):
-        return self.session.query(self.model).get(pk)
+        # prevent autoflush from occuring during populate_obj
+        with self.session.no_autoflush:
+            return self.session.query(self.model).get(pk)
 
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
         query = self.session.query(self.model)

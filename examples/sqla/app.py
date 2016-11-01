@@ -20,8 +20,7 @@ app.config['SECRET_KEY'] = '123456790'
 app.config['DATABASE_FILE'] = 'sample_db.sqlite'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.config['DATABASE_FILE']
 app.config['SQLALCHEMY_ECHO'] = True
-session_options = dict(autoflush=False)
-db = SQLAlchemy(app, session_options=session_options)
+db = SQLAlchemy(app)
 
 
 # Create models
