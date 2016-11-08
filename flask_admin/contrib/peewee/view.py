@@ -259,6 +259,11 @@ class ModelView(BaseModelView):
                               only=self.form_columns,
                               exclude=self.form_excluded_columns,
                               field_args=self.form_args,
+                              # Allow child to specify pk, so inline_models
+                              # can be ModelViews. But don't auto-generate
+                              # pk field if form_columns is empty -- allow
+                              # default behaviour in that case.
+                              allow_pk=bool(self.form_columns),
                               extra_fields=self.form_extra_fields)
 
         if self.inline_models:
