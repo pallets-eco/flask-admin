@@ -3,8 +3,14 @@ import itertools
 from wtforms.validators import ValidationError
 from wtforms.fields import FieldList, FormField, SelectFieldBase
 
-from flask.ext.admin._compat import iteritems
-from .widgets import InlineFieldListWidget, InlineFormWidget, AjaxSelect2Widget
+try:
+    from wtforms.fields import _unset_value as unset_value
+except ImportError:
+    from wtforms.utils import unset_value
+
+from flask_admin._compat import iteritems
+from .widgets import (InlineFieldListWidget, InlineFormWidget,
+                      AjaxSelect2Widget)
 
 
 class InlineFieldList(FieldList):
@@ -13,25 +19,28 @@ class InlineFieldList(FieldList):
     def __init__(self, *args, **kwargs):
         super(InlineFieldList, self).__init__(*args, **kwargs)
 
-        # Create template
-        self.template = self.unbound_field.bind(form=None, name='')
-
-        # Small hack to remove separator from FormField
-        if isinstance(self.template, FormField):
-            self.template.separator = ''
-
-        self.template.process(None)
-
     def __call__(self, **kwargs):
+        # Create template
+        meta = getattr(self, 'meta', None)
+        if meta:
+            template = self.unbound_field.bind(form=None, name='', _meta=meta)
+        else:
+            template = self.unbound_field.bind(form=None, name='')
+        # Small hack to remove separator from FormField
+        if isinstance(template, FormField):
+            template.separator = ''
+
+        template.process(None)
+
         return self.widget(self,
-                           template=self.template,
+                           template=template,
                            check=self.display_row_controls,
                            **kwargs)
 
     def display_row_controls(self, field):
         return True
 
-    def process(self, formdata, data=None):
+    def process(self, formdata, data=unset_value):
         res = super(InlineFieldList, self).process(formdata, data)
 
         # Postprocess - contribute flag

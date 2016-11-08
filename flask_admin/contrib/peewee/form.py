@@ -1,16 +1,16 @@
 from wtforms import fields
 
-from peewee import (DateTimeField, DateField, TimeField,
+from peewee import (CharField, DateTimeField, DateField, TimeField,
                     PrimaryKeyField, ForeignKeyField, BaseModel)
 
 from wtfpeewee.orm import ModelConverter, model_form
 
-from flask.ext.admin import form
-from flask.ext.admin._compat import iteritems, itervalues
-from flask.ext.admin.model.form import InlineFormAdmin, InlineModelConverterBase
-from flask.ext.admin.model.fields import InlineModelFormField, InlineFieldList, AjaxSelectField
+from flask_admin import form
+from flask_admin._compat import iteritems, itervalues
+from flask_admin.model.form import InlineFormAdmin, InlineModelConverterBase
+from flask_admin.model.fields import InlineModelFormField, InlineFieldList, AjaxSelectField
 
-from .tools import get_primary_key
+from .tools import get_primary_key, get_meta_fields
 from .ajax import create_ajax_loader
 
 
@@ -43,8 +43,8 @@ class InlineModelFormList(InlineFieldList):
     # self.model.select().where(attr == data).execute()     # `data` is not an ID, and only happened to be so because we patched it in in .contribute() below
     #
     # For reference:
-    # .process() introduced in https://github.com/mrjoes/flask-admin/commit/2845e4b28cb40b25e2bf544b327f6202dc7e5709
-    # Fixed, brokenly I think, in https://github.com/mrjoes/flask-admin/commit/4383eef3ce7eb01878f086928f8773adb9de79f8#diff-f87e7cd76fb9bc48c8681b24f238fb13R30
+    # .process() introduced in https://github.com/flask-admin/flask-admin/commit/2845e4b28cb40b25e2bf544b327f6202dc7e5709
+    # Fixed, brokenly I think, in https://github.com/flask-admin/flask-admin/commit/4383eef3ce7eb01878f086928f8773adb9de79f8#diff-f87e7cd76fb9bc48c8681b24f238fb13R30
 
     def populate_obj(self, obj, name):
         pass
@@ -61,7 +61,8 @@ class InlineModelFormList(InlineFieldList):
         for field in self.entries:
             field_id = field.get_pk()
 
-            if field_id in pk_map:
+            is_created = field_id not in pk_map
+            if not is_created:
                 model = pk_map[field_id]
 
                 if self.should_delete(field):
@@ -75,7 +76,7 @@ class InlineModelFormList(InlineFieldList):
             # Force relation
             setattr(model, self.prop, model_id)
 
-            self.inline_view.on_model_change(field, model)
+            self.inline_view._on_model_change(field, model, is_created)
 
             model.save()
 
@@ -84,6 +85,9 @@ class CustomModelConverter(ModelConverter):
     def __init__(self, view, additional=None):
         super(CustomModelConverter, self).__init__(additional)
         self.view = view
+
+        # @todo: This really should be done within wtfpeewee
+        self.defaults[CharField] = fields.StringField
 
         self.converters[PrimaryKeyField] = self.handle_pk
         self.converters[DateTimeField] = self.handle_datetime
@@ -207,7 +211,7 @@ class InlineModelConverter(InlineModelConverterBase):
 
         info = self.get_info(inline_model)
 
-        for field in info.model._meta.get_fields():
+        for field in get_meta_fields(info.model):
             field_type = type(field)
 
             if field_type == ForeignKeyField:

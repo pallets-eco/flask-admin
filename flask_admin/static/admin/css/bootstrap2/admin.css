@@ -1,0 +1,91 @@
+/* List View - fix trash icon inside table column */
+.model-list form.icon {
+    display: inline;
+}
+
+.model-list form.icon button {
+    border: none;
+    background: transparent;
+    text-decoration: none;
+    padding: 0;
+    line-height: normal;
+}
+
+/* List View - link icons - prevent underline */
+.model-list a.icon {
+    text-decoration: none;
+}
+
+/* List View - fix checkbox column width */
+.list-checkbox-column {
+    width: 14px;
+}
+
+/* List View - prevent word wrap on buttons column, to keep it on one line */
+.list-buttons-column {
+    white-space: nowrap;
+}
+
+/* List View - fix gap between actions and table */
+.model-list  {
+    position: relative;
+    margin-top: -1px;
+    z-index: 999;
+}
+
+.actions-nav  {
+margin-bottom: 0;
+margin-left: 4px;
+margin-right: 4px;
+}
+
+#filter_form  {
+    margin-bottom: 0;
+}
+
+/* List View Search Form - fix gap between form and table */
+.actions-nav form.search-form {
+    margin: -1px 0 0 0;
+}
+
+/* Filters */
+table.filters {
+    border-collapse: collapse;
+    border-spacing: 4px;
+}
+
+/* prevents gap between table and actions while there are no filters set */
+table.filters:not(:empty) {
+    margin: 12px 0px 20px 0px;
+}
+
+/* spacing between filter X button, operation, and value field */
+/* uses tables instead of form classes for bootstrap2-3 compatibility */
+table.filters tr td {
+    padding-right: 5px;
+    padding-bottom: 3px;
+}
+
+/* match filter operation drop-down height with bootstrap input */
+.filters .filter-op > a {
+    height: 28px;
+    line-height: 28px;
+}
+
+/* Image thumbnails */
+.image-thumbnail img {
+    max-width: 100px;
+    max-height: 100px;
+}
+
+/* Forms */
+.admin-form .control-label {
+    width: 100px;
+    text-align: left;
+    margin-left: 4px;
+}
+
+/* add spacing between labels and form fields */
+.admin-form .controls {
+    margin-left: 110px;
+}

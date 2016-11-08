@@ -1,7 +1,7 @@
-``flask.ext.admin.base``
-========================
+``flask_admin.base``
+====================
 
-.. automodule:: flask.ext.admin.base
+.. automodule:: flask_admin.base
 
     Base View
     ---------

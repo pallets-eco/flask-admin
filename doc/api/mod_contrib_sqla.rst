@@ -1,9 +1,9 @@
-``flask.ext.admin.contrib.sqla``
-================================
+``flask_admin.contrib.sqla``
+============================
 
 SQLAlchemy model backend implementation.
 
-.. automodule:: flask.ext.admin.contrib.sqla
+.. automodule:: flask_admin.contrib.sqla
 
     .. autoclass:: ModelView
         :members:
@@ -15,7 +15,7 @@ SQLAlchemy model backend implementation.
                           inline_models, form_choices,
                           form_optional_types
 
-        Class inherits configuration options from :class:`~flask.ext.admin.model.BaseModelView` and they're not displayed here.
+        Class inherits configuration options from :class:`~flask_admin.model.BaseModelView` and they're not displayed here.
 
         .. autoattribute:: column_auto_select_related
         .. autoattribute:: column_select_related_list

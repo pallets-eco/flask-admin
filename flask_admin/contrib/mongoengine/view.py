@@ -2,17 +2,18 @@ import logging
 
 from flask import request, flash, abort, Response
 
-from flask.ext.admin import expose
-from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
-from flask.ext.admin.model import BaseModelView
-from flask.ext.admin._compat import iteritems, string_types
+from flask_admin import expose
+from flask_admin.babel import gettext, ngettext, lazy_gettext
+from flask_admin.model import BaseModelView
+from flask_admin.model.form import create_editable_list_form
+from flask_admin._compat import iteritems, string_types
 
 import mongoengine
 import gridfs
 from mongoengine.connection import get_db
 from bson.objectid import ObjectId
 
-from flask.ext.admin.actions import action
+from flask_admin.actions import action
 from .filters import FilterConverter, BaseMongoEngineFilter
 from .form import get_form, CustomModelConverter
 from .typefmt import DEFAULT_FORMATTERS
@@ -20,7 +21,6 @@ from .tools import parse_like_term
 from .helpers import format_error
 from .ajax import process_ajax_references, create_ajax_loader
 from .subdoc import convert_subdocuments
-
 
 # Set up logger
 log = logging.getLogger("flask-admin.mongo")
@@ -52,8 +52,10 @@ class ModelView(BaseModelView):
         Collection of the column filters.
 
         Can contain either field names or instances of
-        :class:`flask.ext.admin.contrib.mongoengine.filters.BaseFilter`
+        :class:`flask_admin.contrib.mongoengine.filters.BaseMongoEngineFilter`
         classes.
+
+        Filters will be grouped by name when displayed in the drop-down.
 
         For example::
 
@@ -62,8 +64,32 @@ class ModelView(BaseModelView):
 
         or::
 
+            from flask_admin.contrib.mongoengine.filters import BooleanEqualFilter
+
             class MyModelView(BaseModelView):
-                column_filters = (BooleanEqualFilter(User.name, 'Name'))
+                column_filters = (BooleanEqualFilter(column=User.name, name='Name'),)
+
+        or::
+
+            from flask_admin.contrib.mongoengine.filters import BaseMongoEngineFilter
+
+            class FilterLastNameBrown(BaseMongoEngineFilter):
+                def apply(self, query, value):
+                    if value == '1':
+                        return query.filter(self.column == "Brown")
+                    else:
+                        return query.filter(self.column != "Brown")
+
+                def operation(self):
+                    return 'is Brown'
+
+            class MyModelView(BaseModelView):
+                column_filters = [
+                    FilterLastNameBrown(
+                        column=User.last_name, name='Last Name',
+                        options=(('1', 'Yes'), ('0', 'No'))
+                    )
+                ]
     """
 
     model_form_converter = CustomModelConverter
@@ -72,7 +98,7 @@ class ModelView(BaseModelView):
         field conversion logic.
 
         Custom class should be derived from the
-        `flask.ext.admin.contrib.mongoengine.form.CustomModelConverter`.
+        `flask_admin.contrib.mongoengine.form.CustomModelConverter`.
 
         For example::
 
@@ -124,7 +150,7 @@ class ModelView(BaseModelView):
         Subdocument configuration options.
 
         This field accepts dictionary, where key is field name and value is either dictionary or instance of the
-        `flask.ext.admin.contrib.EmbeddedForm`.
+        `flask_admin.contrib.mongoengine.EmbeddedForm`.
 
         Consider following example::
 
@@ -199,7 +225,8 @@ class ModelView(BaseModelView):
     """
 
     def __init__(self, model, name=None,
-                 category=None, endpoint=None, url=None):
+                 category=None, endpoint=None, url=None, static_folder=None,
+                 menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
         """
             Constructor
 
@@ -213,10 +240,25 @@ class ModelView(BaseModelView):
                 Endpoint
             :param url:
                 Custom URL
+            :param menu_class_name:
+                Optional class name for the menu item.
+            :param menu_icon_type:
+                Optional icon. Possible icon types:
+
+                 - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
+                 - `flask_admin.consts.ICON_TYPE_FONT_AWESOME` - Font Awesome icon
+                 - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+                 - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
+
+            :param menu_icon_value:
+                Icon glyph name or URL, depending on `menu_icon_type` setting
         """
         self._search_fields = []
 
-        super(ModelView, self).__init__(model, name, category, endpoint, url)
+        super(ModelView, self).__init__(model, name, category, endpoint, url, static_folder,
+                                        menu_class_name=menu_class_name,
+                                        menu_icon_type=menu_icon_type,
+                                        menu_icon_value=menu_icon_value)
 
         self._primary_key = self.scaffold_pk()
 
@@ -383,6 +425,26 @@ class ModelView(BaseModelView):
 
         return form_class
 
+    def scaffold_list_form(self, widget=None, validators=None):
+        """
+            Create form for the `index_view` using only the columns from
+            `self.column_editable_list`.
+
+            :param widget:
+                WTForms widget class. Defaults to `XEditableWidget`.
+            :param validators:
+                `form_args` dict with only validators
+                {'name': {'validators': [required()]}}
+        """
+        form_class = get_form(self.model,
+                              self.model_form_converter(self),
+                              base_class=self.form_base_class,
+                              only=self.column_editable_list,
+                              field_args=validators)
+
+        return create_editable_list_form(self.form_base_class, form_class,
+                                         widget)
+
     # AJAX foreignkey support
     def _create_ajax_loader(self, name, opts):
         return create_ajax_loader(self.model, name, name, opts)
@@ -394,8 +456,28 @@ class ModelView(BaseModelView):
         """
         return self.model.objects
 
+    def _search(self, query, search_term):
+        # TODO: Unfortunately, MongoEngine contains bug which
+        # prevents running complex Q queries and, as a result,
+        # Flask-Admin does not support per-word searching like
+        # in other backends
+        op, term = parse_like_term(search_term)
+
+        criteria = None
+
+        for field in self._search_fields:
+            flt = {'%s__%s' % (field.name, op): term}
+            q = mongoengine.Q(**flt)
+
+            if criteria is None:
+                criteria = q
+            else:
+                criteria |= q
+
+        return query.filter(criteria)
+
     def get_list(self, page, sort_column, sort_desc, search, filters,
-                 execute=True):
+                 execute=True, page_size=None):
         """
             Get list of objects from MongoEngine
 
@@ -411,38 +493,25 @@ class ModelView(BaseModelView):
                 List of applied filters
             :param execute:
                 Run query immediately or not
+            :param page_size:
+                Number of results. Defaults to ModelView's page_size. Can be
+                overriden to change the page_size limit. Removing the page_size
+                limit requires setting page_size to 0 or False.
         """
         query = self.get_query()
 
         # Filters
         if self._filters:
-            for flt, value in filters:
+            for flt, flt_name, value in filters:
                 f = self._filters[flt]
-                query = f.apply(query, value)
+                query = f.apply(query, f.clean(value))
 
         # Search
         if self._search_supported and search:
-            # TODO: Unfortunately, MongoEngine contains bug which
-            # prevents running complex Q queries and, as a result,
-            # Flask-Admin does not support per-word searching like
-            # in other backends
-            op, term = parse_like_term(search)
-
-            criteria = None
-
-            for field in self._search_fields:
-                flt = {'%s__%s' % (field.name, op): term}
-                q = mongoengine.Q(**flt)
-
-                if criteria is None:
-                    criteria = q
-                else:
-                    criteria |= q
-
-            query = query.filter(criteria)
+            query = self._search(query, search)
 
         # Get count
-        count = query.count()
+        count = query.count() if not self.simple_list_pager else None
 
         # Sorting
         if sort_column:
@@ -454,10 +523,14 @@ class ModelView(BaseModelView):
                 query = query.order_by('%s%s' % ('-' if order[1] else '', order[0]))
 
         # Pagination
-        if page is not None:
-            query = query.skip(page * self.page_size)
+        if page_size is None:
+            page_size = self.page_size
 
-        query = query.limit(self.page_size)
+        if page_size:
+            query = query.limit(page_size)
+
+        if page and page_size:
+            query = query.skip(page * page_size)
 
         if execute:
             query = query.all()
@@ -492,18 +565,17 @@ class ModelView(BaseModelView):
             self._on_model_change(form, model, True)
             model.save()
         except Exception as ex:
-            if self._debug:
-                raise
+            if not self.handle_view_exception(ex):
+                flash(gettext('Failed to create record. %(error)s',
+                              error=format_error(ex)),
+                      'error')
+                log.exception('Failed to create record.')
 
-            flash(gettext('Failed to create model. %(error)s',
-                          error=format_error(ex)),
-                  'error')
-            log.exception('Failed to create model')
             return False
         else:
             self.after_model_change(form, model, True)
 
-        return True
+        return model
 
     def update_model(self, form, model):
         """
@@ -519,13 +591,12 @@ class ModelView(BaseModelView):
             self._on_model_change(form, model, False)
             model.save()
         except Exception as ex:
-            if self._debug:
-                raise
+            if not self.handle_view_exception(ex):
+                flash(gettext('Failed to update record. %(error)s',
+                              error=format_error(ex)),
+                      'error')
+                log.exception('Failed to update record.')
 
-            flash(gettext('Failed to update model. %(error)s',
-                          error=format_error(ex)),
-                  'error')
-            log.exception('Failed to update model')
             return False
         else:
             self.after_model_change(form, model, False)
@@ -542,16 +613,19 @@ class ModelView(BaseModelView):
         try:
             self.on_model_delete(model)
             model.delete()
-            return True
         except Exception as ex:
-            if self._debug:
-                raise
+            if not self.handle_view_exception(ex):
+                flash(gettext('Failed to delete record. %(error)s',
+                              error=format_error(ex)),
+                      'error')
+                log.exception('Failed to delete record.')
 
-            flash(gettext('Failed to delete model. %(error)s',
-                          error=format_error(ex)),
-                  'error')
-            log.exception('Failed to delete model')
             return False
+        else:
+            self.after_model_delete(model)
+
+        return True
+
 
     # FileField access API
     @expose('/api/file/')
@@ -585,7 +659,7 @@ class ModelView(BaseModelView):
 
     @action('delete',
             lazy_gettext('Delete'),
-            lazy_gettext('Are you sure you want to delete selected models?'))
+            lazy_gettext('Are you sure you want to delete selected records?'))
     def action_delete(self, ids):
         try:
             count = 0
@@ -594,13 +668,11 @@ class ModelView(BaseModelView):
             for obj in self.get_query().in_bulk(all_ids).values():
                 count += self.delete_model(obj)
 
-            flash(ngettext('Model was successfully deleted.',
-                           '%(count)s models were successfully deleted.',
+            flash(ngettext('Record was successfully deleted.',
+                           '%(count)s records were successfully deleted.',
                            count,
-                           count=count))
+                           count=count), 'success')
         except Exception as ex:
-            if self._debug:
-                raise
-
-            flash(gettext('Failed to delete models. %(error)s', error=str(ex)),
-                  'error')
+            if not self.handle_view_exception(ex):
+                flash(gettext('Failed to delete records. %(error)s', error=str(ex)),
+                      'error')

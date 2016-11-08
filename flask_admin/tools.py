@@ -2,7 +2,10 @@ import sys
 import traceback
 
 # Python 3 compatibility
-from ._compat import reduce
+from ._compat import reduce, as_unicode
+
+CHAR_ESCAPE = u'.'
+CHAR_SEPARATOR = u','
 
 
 def import_module(name, required=True):
@@ -96,3 +99,53 @@ def get_dict_attr(obj, attr, default=None):
             return obj.__dict__[attr]
 
     return default
+
+
+def escape(value):
+    return (as_unicode(value)
+            .replace(CHAR_ESCAPE, CHAR_ESCAPE + CHAR_ESCAPE)
+            .replace(CHAR_SEPARATOR, CHAR_ESCAPE + CHAR_SEPARATOR))
+
+
+def iterencode(iter):
+    """
+        Encode enumerable as compact string representation.
+
+        :param iter:
+            Enumerable
+    """
+    return ','.join(as_unicode(v)
+                    .replace(CHAR_ESCAPE, CHAR_ESCAPE + CHAR_ESCAPE)
+                    .replace(CHAR_SEPARATOR, CHAR_ESCAPE + CHAR_SEPARATOR)
+                    for v in iter)
+
+def iterdecode(value):
+    """
+        Decode enumerable from string presentation as a tuple
+    """
+
+    if not value:
+        return tuple()
+
+    result = []
+    accumulator = u''
+
+    escaped = False
+
+    for c in value:
+        if not escaped:
+            if c == CHAR_ESCAPE:
+                escaped = True
+                continue
+            elif c == CHAR_SEPARATOR:
+                result.append(accumulator)
+                accumulator = u''
+                continue
+        else:
+            escaped = False
+
+        accumulator += c
+
+    result.append(accumulator)
+
+    return tuple(result)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    flask.ext.admin._compat
+    flask_admin._compat
     ~~~~~~~~~~~~~~~~~~~~~~~
 
     Some py2/py3 compatibility support based on a stripped down
@@ -23,12 +23,17 @@ if not PY2:
     iterkeys = lambda d: iter(d.keys())
     itervalues = lambda d: iter(d.values())
     iteritems = lambda d: iter(d.items())
+    filter_list = lambda f, l: list(filter(f, l))
 
     def as_unicode(s):
         if isinstance(s, bytes):
             return s.decode('utf-8')
 
         return str(s)
+
+    def csv_encode(s):
+        ''' Returns unicode string expected by Python 3's csv module '''
+        return as_unicode(s)
 
     # Various tools
     from functools import reduce
@@ -41,12 +46,17 @@ else:
     iterkeys = lambda d: d.iterkeys()
     itervalues = lambda d: d.itervalues()
     iteritems = lambda d: d.iteritems()
+    filter_list = filter
 
     def as_unicode(s):
         if isinstance(s, str):
             return s.decode('utf-8')
 
         return unicode(s)
+
+    def csv_encode(s):
+        ''' Returns byte string expected by Python 2's csv module '''
+        return as_unicode(s).encode('utf-8')
 
     # Helpers
     reduce = __builtins__['reduce'] if isinstance(__builtins__, dict) else __builtins__.reduce

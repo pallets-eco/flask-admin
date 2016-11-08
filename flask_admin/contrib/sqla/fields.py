@@ -3,16 +3,19 @@
 """
 import operator
 
-from wtforms import widgets
-from wtforms.fields import SelectFieldBase
+from wtforms.fields import SelectFieldBase, StringField
 from wtforms.validators import ValidationError
 
-from .tools import get_primary_key
-from flask.ext.admin._compat import text_type, string_types
-from flask.ext.admin.form import FormOpts
-from flask.ext.admin.model.fields import InlineFieldList, InlineModelFormField
-from flask.ext.admin.model.widgets import InlineFormWidget
+try:
+    from wtforms.fields import _unset_value as unset_value
+except ImportError:
+    from wtforms.utils import unset_value
 
+from .tools import get_primary_key
+from flask_admin._compat import text_type, string_types, iteritems
+from flask_admin.form import FormOpts, BaseForm, Select2Widget
+from flask_admin.model.fields import InlineFieldList, InlineModelFormField
+from flask_admin.babel import lazy_gettext
 
 try:
     from sqlalchemy.orm.util import identity_key
@@ -51,7 +54,7 @@ class QuerySelectField(SelectFieldBase):
     being `None`. The label for this blank choice can be set by specifying the
     `blank_text` parameter.
     """
-    widget = widgets.Select()
+    widget = Select2Widget()
 
     def __init__(self, label=None, validators=None, query_factory=None,
                  get_pk=None, get_label=None, allow_blank=False,
@@ -132,7 +135,7 @@ class QuerySelectMultipleField(QuerySelectField):
     If any of the items in the data list or submitted form data cannot be
     found in the query, this will result in a validation error.
     """
-    widget = widgets.Select(multiple=True)
+    widget = Select2Widget(multiple=True)
 
     def __init__(self, label=None, validators=None, default=None, **kwargs):
         if default is None:
@@ -176,6 +179,46 @@ class QuerySelectMultipleField(QuerySelectField):
             for v in self.data:
                 if v not in obj_list:
                     raise ValidationError(self.gettext(u'Not a valid choice'))
+
+
+class HstoreForm(BaseForm):
+    """ Form used in InlineFormField/InlineHstoreList for HSTORE columns """
+    key = StringField(lazy_gettext('Key'))
+    value = StringField(lazy_gettext('Value'))
+
+
+class KeyValue(object):
+    """ Used by InlineHstoreList to simulate a key and a value field instead of
+        the single HSTORE column. """
+    def __init__(self, key=None, value=None):
+        self.key = key
+        self.value = value
+
+
+class InlineHstoreList(InlineFieldList):
+    """ Version of InlineFieldList for use with Postgres HSTORE columns """
+
+    def process(self, formdata, data=unset_value):
+        """ SQLAlchemy returns a dict for HSTORE columns, but WTForms cannot
+            process a dict. This overrides `process` to convert the dict
+            returned by SQLAlchemy to a list of classes before processing. """
+        if isinstance(data, dict):
+            data = [KeyValue(k, v) for k, v in iteritems(data)]
+        super(InlineHstoreList, self).process(formdata, data)
+
+    def populate_obj(self, obj, name):
+        """ Combines each FormField key/value into a dictionary for storage """
+        _fake = type(str('_fake'), (object, ), {})
+
+        output = {}
+        for form_field in self.entries:
+            if not self.should_delete(form_field):
+                fake_obj = _fake()
+                fake_obj.data = KeyValue()
+                form_field.populate_obj(fake_obj, 'data')
+                output[fake_obj.data.key] = fake_obj.data.value
+
+        setattr(obj, name, output)
 
 
 class InlineModelFormList(InlineFieldList):
@@ -235,7 +278,8 @@ class InlineModelFormList(InlineFieldList):
         for field in self.entries:
             field_id = field.get_pk()
 
-            if field_id in pk_map:
+            is_created = field_id not in pk_map
+            if not is_created:
                 model = pk_map[field_id]
 
                 if self.should_delete(field):
@@ -247,7 +291,7 @@ class InlineModelFormList(InlineFieldList):
 
             field.populate_obj(model, None)
 
-            self.inline_view.on_model_change(field, model)
+            self.inline_view._on_model_change(field, model, is_created)
 
 
 def get_pk_from_identity(obj):

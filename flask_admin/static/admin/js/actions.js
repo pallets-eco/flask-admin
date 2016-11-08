@@ -30,7 +30,21 @@ var AdminModelActions = function(actionErrorMessage, actionConfirmations) {
 
     $(function() {
         $('.action-rowtoggle').change(function() {
-            $('input.action-checkbox').attr('checked', this.checked);
+            $('input.action-checkbox').prop('checked', this.checked);
+        });
+    });
+
+    $(function() {
+        var inputs = $('input.action-checkbox');
+        inputs.change(function() {
+            var allInputsChecked = true;
+            for (var i = 0; i < inputs.length; i++) {
+                if (!inputs[i].checked) {
+                    allInputsChecked = false;
+                    break;
+                }
+            }
+            $('.action-rowtoggle').attr('checked', allInputsChecked);
         });
     });
 };

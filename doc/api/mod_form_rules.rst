@@ -1,7 +1,7 @@
-``flask.ext.admin.form.rules``
-==============================
+``flask_admin.form.rules``
+==========================
 
-.. automodule:: flask.ext.admin.form.rules
+.. automodule:: flask_admin.form.rules
 
 	.. autoclass:: BaseRule
 		:members: __init__
@@ -35,4 +35,3 @@
 
 	.. autoclass:: FieldSet
 		:members: __init__
-

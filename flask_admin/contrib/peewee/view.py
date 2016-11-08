@@ -2,14 +2,15 @@ import logging
 
 from flask import flash
 
-from flask.ext.admin._compat import string_types
-from flask.ext.admin.babel import gettext, ngettext, lazy_gettext
-from flask.ext.admin.model import BaseModelView
+from flask_admin._compat import string_types, iteritems
+from flask_admin.babel import gettext, ngettext, lazy_gettext
+from flask_admin.model import BaseModelView
+from flask_admin.model.form import create_editable_list_form
 
 from peewee import PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
 
-from flask.ext.admin.actions import action
-from flask.ext.admin.contrib.peewee import filters
+from flask_admin.actions import action
+from flask_admin.contrib.peewee import filters
 
 from .form import get_form, CustomModelConverter, InlineModelConverter, save_inline
 from .tools import get_primary_key, parse_like_term
@@ -25,7 +26,9 @@ class ModelView(BaseModelView):
         Collection of the column filters.
 
         Can contain either field names or instances of
-        :class:`flask.ext.admin.contrib.peewee.filters.BaseFilter` classes.
+        :class:`flask_admin.contrib.peewee.filters.BasePeeweeFilter` classes.
+
+        Filters will be grouped by name when displayed in the drop-down.
 
         For example::
 
@@ -34,8 +37,32 @@ class ModelView(BaseModelView):
 
         or::
 
+            from flask_admin.contrib.peewee.filters import BooleanEqualFilter
+
             class MyModelView(BaseModelView):
-                column_filters = (BooleanEqualFilter(User.name, 'Name'))
+                column_filters = (BooleanEqualFilter(column=User.name, name='Name'),)
+
+        or::
+
+            from flask_admin.contrib.peewee.filters import BasePeeweeFilter
+
+            class FilterLastNameBrown(BasePeeweeFilter):
+                def apply(self, query, value):
+                    if value == '1':
+                        return query.filter(self.column == "Brown")
+                    else:
+                        return query.filter(self.column != "Brown")
+
+                def operation(self):
+                    return 'is Brown'
+
+            class MyModelView(BaseModelView):
+                column_filters = [
+                    FilterLastNameBrown(
+                        column=User.last_name, name='Last Name',
+                        options=(('1', 'Yes'), ('0', 'No'))
+                    )
+                ]
     """
 
     model_form_converter = CustomModelConverter
@@ -103,6 +130,8 @@ class ModelView(BaseModelView):
 
         3. Django-like ``InlineFormAdmin`` class instance::
 
+            from flask_admin.model.form import InlineFormAdmin
+
             class MyInlineModelForm(InlineFormAdmin):
                 form_columns = ('title', 'date')
 
@@ -132,10 +161,14 @@ class ModelView(BaseModelView):
     """
 
     def __init__(self, model, name=None,
-                 category=None, endpoint=None, url=None):
+                 category=None, endpoint=None, url=None, static_folder=None,
+                 menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
         self._search_fields = []
 
-        super(ModelView, self).__init__(model, name, category, endpoint, url)
+        super(ModelView, self).__init__(model, name, category, endpoint, url, static_folder,
+                                        menu_class_name=menu_class_name,
+                                        menu_icon_type=menu_icon_type,
+                                        menu_icon_value=menu_icon_value)
 
         self._primary_key = self.scaffold_pk()
 
@@ -143,7 +176,7 @@ class ModelView(BaseModelView):
         if model is None:
             model = self.model
 
-        return model._meta.get_sorted_fields()
+        return iteritems(model._meta.fields)
 
     def scaffold_pk(self):
         return get_primary_key(self.model)
@@ -233,6 +266,25 @@ class ModelView(BaseModelView):
 
         return form_class
 
+    def scaffold_list_form(self, widget=None, validators=None):
+        """
+            Create form for the `index_view` using only the columns from
+            `self.column_editable_list`.
+
+            :param widget:
+                WTForms widget class. Defaults to `XEditableWidget`.
+            :param validators:
+                `form_args` dict with only validators
+                {'name': {'validators': [required()]}}
+        """
+        form_class = get_form(self.model, self.model_form_converter(self),
+                              base_class=self.form_base_class,
+                              only=self.column_editable_list,
+                              field_args=validators)
+
+        return create_editable_list_form(self.form_base_class, form_class,
+                                         widget)
+
     def scaffold_inline_form_models(self, form_class):
         converter = self.model_form_converter(self)
         inline_converter = self.inline_model_form_converter(self)
@@ -275,7 +327,28 @@ class ModelView(BaseModelView):
         return self.model.select()
 
     def get_list(self, page, sort_column, sort_desc, search, filters,
-                 execute=True):
+                 execute=True, page_size=None):
+        """
+            Return records from the database.
+
+            :param page:
+                Page number
+            :param sort_column:
+                Sort column name
+            :param sort_desc:
+                Descending or ascending sort
+            :param search:
+                Search query
+            :param filters:
+                List of filter tuples
+            :param execute:
+                Execute query immediately? Default is `True`
+            :param page_size:
+                Number of results. Defaults to ModelView's page_size. Can be
+                overriden to change the page_size limit. Removing the page_size
+                limit requires setting page_size to 0 or False.
+        """
+
         query = self.get_query()
 
         joins = set()
@@ -305,14 +378,14 @@ class ModelView(BaseModelView):
 
         # Filters
         if self._filters:
-            for flt, value in filters:
+            for flt, flt_name, value in filters:
                 f = self._filters[flt]
 
                 query = self._handle_join(query, f.column, joins)
-                query = f.apply(query, value)
+                query = f.apply(query, f.clean(value))
 
         # Get count
-        count = query.count()
+        count = query.count() if not self.simple_list_pager else None
 
         # Apply sorting
         if sort_column is not None:
@@ -326,10 +399,14 @@ class ModelView(BaseModelView):
                 query, joins = self._order_by(query, joins, order[0], order[1])
 
         # Pagination
-        if page is not None:
-            query = query.offset(page * self.page_size)
+        if page_size is None:
+            page_size = self.page_size
 
-        query = query.limit(self.page_size)
+        if page_size:
+            query = query.limit(page_size)
+
+        if page and page_size:
+            query = query.offset(page * page_size)
 
         if execute:
             query = list(query.execute())
@@ -349,16 +426,15 @@ class ModelView(BaseModelView):
             # For peewee have to save inline forms after model was saved
             save_inline(form, model)
         except Exception as ex:
-            if self._debug:
-                raise
+            if not self.handle_view_exception(ex):
+                flash(gettext('Failed to create record. %(error)s', error=str(ex)), 'error')
+                log.exception('Failed to create record.')
 
-            flash(gettext('Failed to create model. %(error)s', error=str(ex)), 'error')
-            log.exception('Failed to create model')
             return False
         else:
             self.after_model_change(form, model, True)
 
-        return True
+        return model
 
     def update_model(self, form, model):
         try:
@@ -369,11 +445,10 @@ class ModelView(BaseModelView):
             # For peewee have to save inline forms after model was saved
             save_inline(form, model)
         except Exception as ex:
-            if self._debug:
-                raise
+            if not self.handle_view_exception(ex):
+                flash(gettext('Failed to update record. %(error)s', error=str(ex)), 'error')
+                log.exception('Failed to update record.')
 
-            flash(gettext('Failed to update model. %(error)s', error=str(ex)), 'error')
-            log.exception('Failed to update model')
             return False
         else:
             self.after_model_change(form, model, False)
@@ -384,14 +459,16 @@ class ModelView(BaseModelView):
         try:
             self.on_model_delete(model)
             model.delete_instance(recursive=True)
-            return True
         except Exception as ex:
-            if self._debug:
-                raise
+            if not self.handle_view_exception(ex):
+                flash(gettext('Failed to delete record. %(error)s', error=str(ex)), 'error')
+                log.exception('Failed to delete record.')
 
-            flash(gettext('Failed to delete model. %(error)s', error=str(ex)), 'error')
-            log.exception('Failed to delete model')
             return False
+        else:
+            self.after_model_delete(model)
+
+        return True
 
     # Default model actions
     def is_action_allowed(self, name):
@@ -403,7 +480,7 @@ class ModelView(BaseModelView):
 
     @action('delete',
             lazy_gettext('Delete'),
-            lazy_gettext('Are you sure you want to delete selected models?'))
+            lazy_gettext('Are you sure you want to delete selected records?'))
     def action_delete(self, ids):
         try:
             model_pk = getattr(self.model, self._primary_key)
@@ -416,15 +493,14 @@ class ModelView(BaseModelView):
                 query = self.model.select().filter(model_pk << ids)
 
                 for m in query:
+                    self.on_model_delete(m)
                     m.delete_instance(recursive=True)
                     count += 1
 
-            flash(ngettext('Model was successfully deleted.',
-                           '%(count)s models were successfully deleted.',
+            flash(ngettext('Record was successfully deleted.',
+                           '%(count)s records were successfully deleted.',
                            count,
-                           count=count))
+                           count=count), 'success')
         except Exception as ex:
-            if self._debug:
-                raise
-
-            flash(gettext('Failed to delete models. %(error)s', error=str(ex)), 'error')
+            if not self.handle_view_exception(ex):
+                flash(gettext('Failed to delete records. %(error)s', error=str(ex)), 'error')

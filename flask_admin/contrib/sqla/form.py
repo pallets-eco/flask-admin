@@ -1,25 +1,23 @@
+import warnings
+
 from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
 
-from flask.ext.admin import form
-from flask.ext.admin.form import Select2Field
-from flask.ext.admin.model.form import (converts, ModelConverterBase,
-                                        InlineModelConverterBase, FieldPlaceholder)
-from flask.ext.admin.model.fields import AjaxSelectField, AjaxSelectMultipleField
-from flask.ext.admin.model.helpers import prettify_name
-from flask.ext.admin._backwards import get_property
-from flask.ext.admin._compat import iteritems
+from flask_admin import form
+from flask_admin.model.form import (converts, ModelConverterBase,
+                                    InlineModelConverterBase, FieldPlaceholder)
+from flask_admin.model.fields import AjaxSelectField, AjaxSelectMultipleField
+from flask_admin.model.helpers import prettify_name
+from flask_admin._backwards import get_property
+from flask_admin._compat import iteritems
 
 from .validators import Unique
-from .fields import QuerySelectField, QuerySelectMultipleField, InlineModelFormList
-from .tools import is_inherited_primary_key, get_column_for_current_model, has_multiple_pks
+from .fields import (QuerySelectField, QuerySelectMultipleField,
+                     InlineModelFormList, InlineHstoreList, HstoreForm)
+from flask_admin.model.fields import InlineFormField
+from .tools import (has_multiple_pks, filter_foreign_columns,
+                    get_field_with_path, is_association_proxy, is_relationship)
 from .ajax import create_ajax_loader
-
-try:
-    # Field has better input parsing capabilities.
-    from wtforms.ext.dateutil.fields import DateTimeField
-except ImportError:
-    from wtforms.fields import DateTimeField
 
 
 class AdminModelConverter(ModelConverterBase):
@@ -83,21 +81,15 @@ class AdminModelConverter(ModelConverterBase):
         if 'query_factory' not in kwargs:
             kwargs['query_factory'] = lambda: self.session.query(remote_model)
 
-        if 'widget' not in kwargs:
-            if multiple:
-                kwargs['widget'] = form.Select2Widget(multiple=True)
-            else:
-                kwargs['widget'] = form.Select2Widget()
-
         if multiple:
             return QuerySelectMultipleField(**kwargs)
         else:
             return QuerySelectField(**kwargs)
 
-    def _convert_relation(self, prop, kwargs):
+    def _convert_relation(self, name, prop, property_is_association_proxy, kwargs):
         # Check if relation is specified
         form_columns = getattr(self.view, 'form_columns', None)
-        if form_columns and prop.key not in form_columns:
+        if form_columns and name not in form_columns:
             return None
 
         remote_model = prop.mapper.class_
@@ -108,13 +100,16 @@ class AdminModelConverter(ModelConverterBase):
         if not column.foreign_keys:
             column = prop.local_remote_pairs[0][1]
 
-        kwargs['label'] = self._get_label(prop.key, kwargs)
-        kwargs['description'] = self._get_description(prop.key, kwargs)
+        kwargs['label'] = self._get_label(name, kwargs)
+        kwargs['description'] = self._get_description(name, kwargs)
 
-        if column.nullable or prop.direction.name != 'MANYTOONE':
-            kwargs['validators'].append(validators.Optional())
-        else:
-            kwargs['validators'].append(validators.InputRequired())
+        # determine optional/required, or respect existing
+        requirement_options = (validators.Optional, validators.InputRequired)
+        if not any(isinstance(v, requirement_options) for v in kwargs['validators']):
+            if property_is_association_proxy or column.nullable or prop.direction.name != 'MANYTOONE':
+                kwargs['validators'].append(validators.Optional())
+            else:
+                kwargs['validators'].append(validators.InputRequired())
 
         # Contribute model-related parameters
         if 'allow_blank' not in kwargs:
@@ -125,14 +120,11 @@ class AdminModelConverter(ModelConverterBase):
         if override:
             return override(**kwargs)
 
-        if prop.direction.name == 'MANYTOONE' or not prop.uselist:
-            return self._model_select_field(prop, False, remote_model, **kwargs)
-        elif prop.direction.name == 'ONETOMANY':
-            return self._model_select_field(prop, True, remote_model, **kwargs)
-        elif prop.direction.name == 'MANYTOMANY':
-            return self._model_select_field(prop, True, remote_model, **kwargs)
+        multiple = (property_is_association_proxy or
+                    (prop.direction.name in ('ONETOMANY', 'MANYTOMANY') and prop.uselist))
+        return self._model_select_field(prop, multiple, remote_model, **kwargs)
 
-    def convert(self, model, mapper, prop, field_args, hidden_pk):
+    def convert(self, model, mapper, name, prop, field_args, hidden_pk):
         # Properly handle forced fields
         if isinstance(prop, FieldPlaceholder):
             return form.recreate_field(prop.field)
@@ -145,138 +137,165 @@ class AdminModelConverter(ModelConverterBase):
         if field_args:
             kwargs.update(field_args)
 
+        if kwargs['validators']:
+            # Create a copy of the list since we will be modifying it.
+            kwargs['validators'] = list(kwargs['validators'])
+
         # Check if it is relation or property
-        if hasattr(prop, 'direction'):
-            return self._convert_relation(prop, kwargs)
-        else:
-            # Ignore pk/fk
-            if hasattr(prop, 'columns'):
-                # Check if more than one column mapped to the property
-                if len(prop.columns) != 1:
-                    if is_inherited_primary_key(prop):
-                        column = get_column_for_current_model(prop)
-                    else:
-                        raise TypeError('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
+        if hasattr(prop, 'direction') or is_association_proxy(prop):
+            property_is_association_proxy = is_association_proxy(prop)
+            if property_is_association_proxy:
+                if not hasattr(prop.remote_attr, 'prop'):
+                    raise Exception('Association proxy referencing another association proxy is not supported.')
+                prop = prop.remote_attr.prop
+            return self._convert_relation(name, prop, property_is_association_proxy, kwargs)
+        elif hasattr(prop, 'columns'):  # Ignore pk/fk
+            # Check if more than one column mapped to the property
+            if len(prop.columns) > 1:
+                columns = filter_foreign_columns(model.__table__, prop.columns)
+
+                if len(columns) > 1:
+                    warnings.warn('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
+                    return None
+
+                column = columns[0]
+            else:
+                # Grab column
+                column = prop.columns[0]
+
+            form_columns = getattr(self.view, 'form_columns', None) or ()
+
+            # Do not display foreign keys - use relations, except when explicitly instructed
+            if column.foreign_keys and prop.key not in form_columns:
+                return None
+
+            # Only display "real" columns
+            if not isinstance(column, Column):
+                return None
+
+            unique = False
+
+            if column.primary_key:
+                if hidden_pk:
+                    # If requested to add hidden field, show it
+                    return fields.HiddenField()
                 else:
-                    # Grab column
-                    column = prop.columns[0]
+                    # By default, don't show primary keys either
+                    # If PK is not explicitly allowed, ignore it
+                    if prop.key not in form_columns:
+                        return None
 
-                form_columns = getattr(self.view, 'form_columns', None) or ()
+                    # Current Unique Validator does not work with multicolumns-pks
+                    if not has_multiple_pks(model):
+                        kwargs['validators'].append(Unique(self.session,
+                                                           model,
+                                                           column))
+                        unique = True
 
-                # Do not display foreign keys - use relations, except when explicitly instructed
-                if column.foreign_keys and prop.key not in form_columns:
-                    return None
+            # If field is unique, validate it
+            if column.unique and not unique:
+                kwargs['validators'].append(Unique(self.session,
+                                                   model,
+                                                   column))
 
-                # Only display "real" columns
-                if not isinstance(column, Column):
-                    return None
+            optional_types = getattr(self.view, 'form_optional_types', (Boolean,))
 
-                unique = False
+            if (
+                not column.nullable
+                and not isinstance(column.type, optional_types)
+                and not column.default
+                and not column.server_default
+            ):
+                kwargs['validators'].append(validators.InputRequired())
 
-                if column.primary_key:
-                    if hidden_pk:
-                        # If requested to add hidden field, show it
-                        return fields.HiddenField()
-                    else:
-                        # By default, don't show primary keys either
-                        # If PK is not explicitly allowed, ignore it
-                        if prop.key not in form_columns:
-                            return None
+            # Apply label and description if it isn't inline form field
+            if self.view.model == mapper.class_:
+                kwargs['label'] = self._get_label(prop.key, kwargs)
+                kwargs['description'] = self._get_description(prop.key, kwargs)
 
-                        # Current Unique Validator does not work with multicolumns-pks
-                        if not has_multiple_pks(model):
-                            kwargs['validators'].append(Unique(self.session,
-                                                               model,
-                                                               column))
-                            unique = True
+            # Figure out default value
+            default = getattr(column, 'default', None)
+            value = None
 
-                # If field is unique, validate it
-                if column.unique and not unique:
-                    kwargs['validators'].append(Unique(self.session,
-                                                       model,
-                                                       column))
-
-                optional_types = getattr(self.view, 'form_optional_types', (Boolean,))
-
-                if not column.nullable and not isinstance(column.type, optional_types):
-                    kwargs['validators'].append(validators.InputRequired())
-
-                # Apply label and description if it isn't inline form field
-                if self.view.model == mapper.class_:
-                    kwargs['label'] = self._get_label(prop.key, kwargs)
-                    kwargs['description'] = self._get_description(prop.key, kwargs)
-
-                # Figure out default value
-                default = getattr(column, 'default', None)
-                value = None
-
-                if default is not None:
-                    value = getattr(default, 'arg', None)
-
-                    if value is not None:
-                        if getattr(default, 'is_callable', False):
-                            value = lambda: default.arg(None)
-                        else:
-                            if not getattr(default, 'is_scalar', True):
-                                value = None
+            if default is not None:
+                value = getattr(default, 'arg', None)
 
                 if value is not None:
-                    kwargs['default'] = value
+                    if getattr(default, 'is_callable', False):
+                        value = lambda: default.arg(None)
+                    else:
+                        if not getattr(default, 'is_scalar', True):
+                            value = None
 
-                # Check nullable
-                if column.nullable:
-                    kwargs['validators'].append(validators.Optional())
+            if value is not None:
+                kwargs['default'] = value
 
-                # Override field type if necessary
-                override = self._get_field_override(prop.key)
-                if override:
-                    return override(**kwargs)
+            # Check nullable
+            if column.nullable:
+                kwargs['validators'].append(validators.Optional())
 
-                # Check choices
-                form_choices = getattr(self.view, 'form_choices', None)
+            # Override field type if necessary
+            override = self._get_field_override(prop.key)
+            if override:
+                return override(**kwargs)
 
-                if mapper.class_ == self.view.model and form_choices:
-                    choices = form_choices.get(column.key)
-                    if choices:
-                        return Select2Field(
-                            choices=choices,
-                            allow_blank=column.nullable,
-                            **kwargs
-                        )
+            # Check choices
+            form_choices = getattr(self.view, 'form_choices', None)
 
-                # Run converter
-                converter = self.get_converter(column)
+            if mapper.class_ == self.view.model and form_choices:
+                choices = form_choices.get(column.key)
+                if choices:
+                    return form.Select2Field(
+                        choices=choices,
+                        allow_blank=column.nullable,
+                        **kwargs
+                    )
 
-                if converter is None:
-                    return None
+            # Run converter
+            converter = self.get_converter(column)
 
-                return converter(model=model, mapper=mapper, prop=prop,
-                                 column=column, field_args=kwargs)
+            if converter is None:
+                return None
+
+            return converter(model=model, mapper=mapper, prop=prop,
+                             column=column, field_args=kwargs)
 
         return None
 
     @classmethod
     def _string_common(cls, column, field_args, **extra):
-        if column.type.length:
+        if isinstance(column.type.length, int) and column.type.length:
             field_args['validators'].append(validators.Length(max=column.type.length))
 
-    @converts('String', 'Unicode')
+    @converts('String')  # includes VARCHAR, CHAR, and Unicode
     def conv_String(self, column, field_args, **extra):
         if hasattr(column.type, 'enums'):
-            field_args['validators'].append(validators.AnyOf(column.type.enums))
+            accepted_values = list(column.type.enums)
+
             field_args['choices'] = [(f, f) for f in column.type.enums]
+
+            if column.nullable:
+                field_args['allow_blank'] = column.nullable
+                accepted_values.append(None)
+
+            field_args['validators'].append(validators.AnyOf(accepted_values))
+
             return form.Select2Field(**field_args)
 
-        self._string_common(column=column, field_args=field_args, **extra)
-        return fields.TextField(**field_args)
+        if column.nullable:
+            filters = field_args.get('filters', [])
+            filters.append(lambda x: x or None)
+            field_args['filters'] = filters
 
-    @converts('Text', 'UnicodeText',
-              'sqlalchemy.types.LargeBinary', 'sqlalchemy.types.Binary')
+        self._string_common(column=column, field_args=field_args, **extra)
+        return fields.StringField(**field_args)
+
+    @converts('Text', 'LargeBinary', 'Binary')  # includes UnicodeText
     def conv_Text(self, field_args, **extra):
         self._string_common(field_args=field_args, **extra)
         return fields.TextAreaField(**field_args)
 
-    @converts('Boolean')
+    @converts('Boolean', 'sqlalchemy.dialects.mssql.base.BIT')
     def conv_Boolean(self, field_args, **extra):
         return fields.BooleanField(**field_args)
 
@@ -285,55 +304,58 @@ class AdminModelConverter(ModelConverterBase):
         field_args['widget'] = form.DatePickerWidget()
         return fields.DateField(**field_args)
 
-    @converts('DateTime')
+    @converts('DateTime')  # includes TIMESTAMP
     def convert_datetime(self, field_args, **extra):
-        field_args['widget'] = form.DateTimePickerWidget()
-        return DateTimeField(**field_args)
+        return form.DateTimeField(**field_args)
 
     @converts('Time')
     def convert_time(self, field_args, **extra):
         return form.TimeField(**field_args)
 
-    @converts('Integer', 'SmallInteger')
+    @converts('Integer')  # includes BigInteger and SmallInteger
     def handle_integer_types(self, column, field_args, **extra):
         unsigned = getattr(column.type, 'unsigned', False)
         if unsigned:
             field_args['validators'].append(validators.NumberRange(min=0))
         return fields.IntegerField(**field_args)
 
-    @converts('Numeric', 'Float')
+    @converts('Numeric')  # includes DECIMAL, Float/FLOAT, REAL, and DOUBLE
     def handle_decimal_types(self, column, field_args, **extra):
-        places = getattr(column.type, 'scale', 2)
-        if places is not None:
-            field_args['places'] = places
+        # override default decimal places limit, use database defaults instead
+        field_args.setdefault('places', None)
         return fields.DecimalField(**field_args)
 
-    @converts('databases.mysql.MSYear')
-    def conv_MSYear(self, field_args, **extra):
-        field_args['validators'].append(validators.NumberRange(min=1901, max=2155))
-        return fields.TextField(**field_args)
-
-    @converts('databases.postgres.PGInet', 'dialects.postgresql.base.INET')
+    @converts('sqlalchemy.dialects.postgresql.base.INET')
     def conv_PGInet(self, field_args, **extra):
         field_args.setdefault('label', u'IP Address')
         field_args['validators'].append(validators.IPAddress())
-        return fields.TextField(**field_args)
+        return fields.StringField(**field_args)
 
-    @converts('dialects.postgresql.base.MACADDR')
+    @converts('sqlalchemy.dialects.postgresql.base.MACADDR')
     def conv_PGMacaddr(self, field_args, **extra):
         field_args.setdefault('label', u'MAC Address')
         field_args['validators'].append(validators.MacAddress())
-        return fields.TextField(**field_args)
+        return fields.StringField(**field_args)
 
-    @converts('dialects.postgresql.base.UUID')
+    @converts('sqlalchemy.dialects.postgresql.base.UUID')
     def conv_PGUuid(self, field_args, **extra):
         field_args.setdefault('label', u'UUID')
         field_args['validators'].append(validators.UUID())
-        return fields.TextField(**field_args)
+        return fields.StringField(**field_args)
 
-    @converts('sqlalchemy.dialects.postgresql.base.ARRAY')
+    @converts('sqlalchemy.dialects.postgresql.base.ARRAY',
+              'sqlalchemy.sql.sqltypes.ARRAY')
     def conv_ARRAY(self, field_args, **extra):
         return form.Select2TagsField(save_as_list=True, **field_args)
+
+    @converts('HSTORE')
+    def conv_HSTORE(self, field_args, **extra):
+        inner_form = field_args.pop('form', HstoreForm)
+        return InlineHstoreList(InlineFormField(inner_form), **field_args)
+
+    @converts('JSON')
+    def convert_JSON(self, field_args, **extra):
+        return form.JSONField(**field_args)
 
 
 def _resolve_prop(prop):
@@ -390,28 +412,29 @@ def get_form(model, converter,
     properties = ((p.key, p) for p in mapper.iterate_properties)
 
     if only:
-        props = dict(properties)
-
         def find(name):
             # If field is in extra_fields, it has higher priority
             if extra_fields and name in extra_fields:
-                return FieldPlaceholder(extra_fields[name])
+                return name, FieldPlaceholder(extra_fields[name])
 
-            # Try to look it up in properties list first
-            p = props.get(name)
+            column, path = get_field_with_path(model, name, return_remote_proxy_attr=False)
 
-            if p is not None:
-                return p
+            if path and not (is_relationship(column) or is_association_proxy(column)):
+                raise Exception("form column is located in another table and "
+                                "requires inline_models: {0}".format(name))
 
-            # If it is hybrid property or alias, look it up in a model itself
-            p = getattr(model, name, None)
-            if p is not None and hasattr(p, 'property'):
-                return p.property
+            if is_association_proxy(column):
+                return name, column
+
+            relation_name = column.key
+
+            if column is not None and hasattr(column, 'property'):
+                return relation_name, column.property
 
             raise ValueError('Invalid model property name %s.%s' % (model, name))
 
         # Filter properties while maintaining property order in 'only' list
-        properties = ((x, find(x)) for x in only)
+        properties = (find(x) for x in only)
     elif exclude:
         properties = (x for x in properties if x[0] not in exclude)
 
@@ -423,7 +446,7 @@ def get_form(model, converter,
 
         prop = _resolve_prop(p)
 
-        field = converter.convert(model, mapper, prop, field_args.get(name), hidden_pk)
+        field = converter.convert(model, mapper, name, prop, field_args.get(name), hidden_pk)
         if field is not None:
             field_dict[name] = field
 
@@ -511,6 +534,55 @@ class InlineModelConverter(InlineModelConverterBase):
 
         return result
 
+    def _calculate_mapping_key_pair(self, model, info):
+        """
+            Calculate mapping property key pair between `model` and inline model,
+                including the forward one for `model` and the reverse one for inline model. 
+                Override the method to map your own inline models.
+
+            :param model:
+                Model class
+            :param info:
+                The InlineFormAdmin instance
+            :return:
+                A tuple of forward property key and reverse property key
+        """
+
+
+        mapper = model._sa_class_manager.mapper
+
+        # Find property from target model to current model
+        # Use the base mapper to support inheritance
+        target_mapper = info.model._sa_class_manager.mapper.base_mapper
+
+        reverse_prop = None
+
+        for prop in target_mapper.iterate_properties:
+            if hasattr(prop, 'direction') and prop.direction.name in ('MANYTOONE', 'MANYTOMANY'):
+                if issubclass(model, prop.mapper.class_):
+                    reverse_prop = prop
+                    break
+        else:
+            raise Exception('Cannot find reverse relation for model %s' % info.model)
+
+        # Find forward property
+        forward_prop = None
+
+        if prop.direction.name == 'MANYTOONE':
+            candidate = 'ONETOMANY'
+        else:
+            candidate = 'MANYTOMANY'
+
+        for prop in mapper.iterate_properties:
+            if hasattr(prop, 'direction') and prop.direction.name == candidate:
+                if prop.mapper.class_ == target_mapper.class_:
+                    forward_prop = prop
+                    break
+        else:
+            raise Exception('Cannot find forward relation for model %s' % info.model)
+
+        return forward_prop.key, reverse_prop.key
+
     def contribute(self, model, form_class, inline_model):
         """
             Generate form fields for inline forms and contribute them to
@@ -536,35 +608,12 @@ class InlineModelConverter(InlineModelConverterBase):
                 Form class
         """
 
-        mapper = model._sa_class_manager.mapper
         info = self.get_info(inline_model)
 
-        # Find property from target model to current model
-        target_mapper = info.model._sa_class_manager.mapper
-
-        reverse_prop = None
-
-        for prop in target_mapper.iterate_properties:
-            if hasattr(prop, 'direction'):
-                if issubclass(model, prop.mapper.class_):
-                    reverse_prop = prop
-                    break
-        else:
-            raise Exception('Cannot find reverse relation for model %s' % info.model)
-
-        # Find forward property
-        forward_prop = None
-
-        for prop in mapper.iterate_properties:
-            if hasattr(prop, 'direction'):
-                if prop.mapper.class_ == target_mapper.class_:
-                    forward_prop = prop
-                    break
-        else:
-            raise Exception('Cannot find forward relation for model %s' % info.model)
+        forward_prop_key, reverse_prop_key = self._calculate_mapping_key_pair(model, info)
 
         # Remove reverse property from the list
-        ignore = [reverse_prop.key]
+        ignore = [reverse_prop_key]
 
         if info.form_excluded_columns:
             exclude = ignore + list(info.form_excluded_columns)
@@ -580,27 +629,33 @@ class InlineModelConverter(InlineModelConverterBase):
         if child_form is None:
             child_form = get_form(info.model,
                                   converter,
+                                  base_class=info.form_base_class or form.BaseForm,
                                   only=info.form_columns,
                                   exclude=exclude,
                                   field_args=info.form_args,
-                                  hidden_pk=True)
+                                  hidden_pk=True,
+                                  extra_fields=info.form_extra_fields)
 
         # Post-process form
         child_form = info.postprocess_form(child_form)
 
         kwargs = dict()
 
-        label = self.get_label(info, forward_prop.key)
+        label = self.get_label(info, forward_prop_key)
         if label:
             kwargs['label'] = label
 
+        if self.view.form_args:
+            field_args = self.view.form_args.get(forward_prop_key, {})
+            kwargs.update(**field_args)
+
         # Contribute field
         setattr(form_class,
-                forward_prop.key,
+                forward_prop_key,
                 self.inline_field_list_type(child_form,
                                             self.session,
                                             info.model,
-                                            reverse_prop.key,
+                                            reverse_prop_key,
                                             info,
                                             **kwargs))
 

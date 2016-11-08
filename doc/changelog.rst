@@ -1,52 +1,43 @@
 Changelog
 =========
 
-1.0.7
+1.4.2
 -----
 
-Full change log and feature walkthrough can be found `here <http://mrjoes.github.io/2013/10/21/flask-admin-107.html>`_.
+* Small bug fix release. Fixes regression that prevented usage of "virtual" columns with a custom formatter.
 
-Highlights:
-
-* Python 3 support
-* AJAX-based foreign-key data loading for all backends
-* New, optional, rule-based form rendering engine
-* MongoEngine fixes and features: GridFS support, nested subdocument configuration and much more
-* Greatly improved and more configurable inline models
-* New WTForms fields and widgets
-* `form_extra_columns` allows adding custom columns to the form declaratively
-* Redis cli
-* SQLAlchemy backend can handle inherited models with multiple PKs
-* Lots of bug fixes
-
-1.0.6
+1.4.1
 -----
 
-* Model views now support default sorting order
-* Model type/column formatters now accept additional `view` parameter
-* `is_visible` for administrative views
-* Model views have `after_model_change` method that can be overridden
-* In model views, `get_query` was split into `get_count_query` and `get_query`
-* Bootstrap 2.3.1
-* Bulk deletes go through `delete_model`
-* Flask-Admin no longer uses floating navigation bar
-* Translations: French, Persian (Farsi), Chinese (Simplified/Traditional), Czech
+* Official Python 3.5 support
+* Customizable row actions
+* Tablib support (exporting to XLS, XLSX, CSV, etc)
+* Updated external dependencies (jQuery, x-editable, etc)
+* Added settings that allows exceptions to be raised on view errors
 * Bug fixes
 
-1.0.5
+1.4.0
 -----
 
-* SQLAlchemy 0.8 support
-* Choices and PostgreSQL Enum field type support
-* Flask-BabelEx will be used to localize administrative interface
-* Simple text file editor
-* File admin has additional hooks: rename, edit, upload, etc
-* Simple text file editor
-* External links in menu
-* Column descriptions
-* Possibility to override master template
-* Reworked templates. New 'layout' sample with completely different administrative UI
-* Ability to customize wtforms widget rendering through `form_widget_args` property
-* German translation (WIP)
-* Updated documentation
-* Lots of bug fixes
+* Updated and reworked documentation
+* FileAdmin went through minor refactoring and now supports remote file systems. Comes with the new, optional, AWS S3 file management interface
+* Configurable CSV export for model views
+* Added overridable URL generation logic. Allows using custom URLs with parameters for administrative views
+* Added column_display_actions to ModelView control visibility of the action column without overriding the template
+* Added support for the latest MongoEngine
+* New SecureForm base class for easier CSRF validation
+* Lots of translation-related fixes and updated translations
+* Bug fixes
+
+1.3.0
+-----
+
+* New feature: Edit models in the list view in a popup
+* New feature: Read-only model details view
+* Fixed XSS in column_editable_list values
+* Improved navigation consistency in model create and edit views
+* Ability to choose page size in model list view
+* Updated client-side dependencies (jQuery, Select2, etc)
+* Updated documentation and examples
+* Updated translations
+* Bug fixes

@@ -1,7 +1,7 @@
 import re
 
-from flask.ext.admin.babel import gettext
-from flask.ext.admin.model import filters
+from flask_admin.babel import lazy_gettext
+from flask_admin.model import filters
 
 from .tools import parse_like_term
 
@@ -35,7 +35,7 @@ class FilterEqual(BasePyMongoFilter):
         return query
 
     def operation(self):
-        return gettext('equals')
+        return lazy_gettext('equals')
 
 
 class FilterNotEqual(BasePyMongoFilter):
@@ -44,7 +44,7 @@ class FilterNotEqual(BasePyMongoFilter):
         return query
 
     def operation(self):
-        return gettext('not equal')
+        return lazy_gettext('not equal')
 
 
 class FilterLike(BasePyMongoFilter):
@@ -54,7 +54,7 @@ class FilterLike(BasePyMongoFilter):
         return query
 
     def operation(self):
-        return gettext('contains')
+        return lazy_gettext('contains')
 
 
 class FilterNotLike(BasePyMongoFilter):
@@ -64,31 +64,43 @@ class FilterNotLike(BasePyMongoFilter):
         return query
 
     def operation(self):
-        return gettext('not contains')
+        return lazy_gettext('not contains')
 
 
 class FilterGreater(BasePyMongoFilter):
     def apply(self, query, value):
+        try:
+            value = float(value)
+        except ValueError:
+            value = 0
         query.append({self.column: {'$gt': value}})
         return query
 
     def operation(self):
-        return gettext('greater than')
+        return lazy_gettext('greater than')
 
 
 class FilterSmaller(BasePyMongoFilter):
     def apply(self, query, value):
+        try:
+            value = float(value)
+        except ValueError:
+            value = 0
         query.append({self.column: {'$lt': value}})
         return query
 
     def operation(self):
-        return gettext('smaller than')
+        return lazy_gettext('smaller than')
 
 
 # Customized type filters
 class BooleanEqualFilter(FilterEqual, filters.BaseBooleanFilter):
-    pass
+    def apply(self, query, value):
+        query.append({self.column: value == '1'})
+        return query
 
 
 class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
-    pass
+    def apply(self, query, value):
+        query.append({self.column: value != '1'})
+        return query

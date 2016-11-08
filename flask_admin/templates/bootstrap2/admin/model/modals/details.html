@@ -1,0 +1,40 @@
+{% import 'admin/static.html' as admin_static with context%}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block body %}
+  {% block details_search %}
+    <div class="row-fluid">
+      <div class="input-prepend fa_filter_container">
+        <span class="add-on">{{ _gettext('Filter') }}</span>
+        <input id="fa_filter" id="prependedInput" type="text">
+      </div>
+    </div>
+  {% endblock %}
+
+  {% block details_table %}
+    <table class="table table-hover table-bordered searchable">
+    {% for c, name in details_columns %}
+      <tr>
+        <td>
+          <b>{{ name }}</b>
+        </td>
+        <td>
+        {{ get_value(model, c) }}
+        </td>
+      </tr>
+    {% endfor %}
+    </table>
+  {% endblock %}
+{% endblock %}
+
+{% block tail %}
+  <script src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
+  <script src="{{ admin_static.url(filename='admin/js/bs2_modal.js', v='1.0.0') }}"></script>
+
+  <script>
+  // fill the header of modal dynamically
+  $('.modal-header h3').html('{% block header_text -%}
+    {{ _gettext('View Record') + ' #' + request.args.get('id') }}
+  {%- endblock %}');
+  </script>
+{% endblock %}

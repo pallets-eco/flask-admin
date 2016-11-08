@@ -1,7 +1,16 @@
-from sqlalchemy import tuple_, or_, and_
+import types
+
+from sqlalchemy import tuple_, or_, and_, inspect
+from sqlalchemy.ext.declarative.clsregistry import _class_resolver
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
 from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
-from ast import literal_eval
+from sqlalchemy.orm.attributes import InstrumentedAttribute
+
+from flask_admin._compat import filter_list, string_types
+from flask_admin.tools import iterencode, iterdecode, escape
+
 
 def parse_like_term(term):
     if term.startswith('^'):
@@ -14,6 +23,16 @@ def parse_like_term(term):
     return stmt
 
 
+def filter_foreign_columns(base_table, columns):
+    """
+        Return list of columns that belong to passed table.
+
+        :param base_table: Table to check against
+        :param columns: List of columns to filter
+    """
+    return filter_list(lambda c: c.table == base_table, columns)
+
+
 def get_primary_key(model):
     """
         Return primary key name from a model. If the primary key consists of multiple columns,
@@ -22,23 +41,8 @@ def get_primary_key(model):
         :param model:
             Model class
     """
-    props = model._sa_class_manager.mapper.iterate_properties
-
-    pks = []
-    for p in props:
-        if hasattr(p, 'expression'):    # expression = primary column or expression for this ColumnProperty
-            if p.expression.primary_key:
-                if is_inherited_primary_key(p):
-                    pks.append(get_column_for_current_model(p).key)
-                else:
-                    pks.append(p.key)
-        else:
-            if hasattr(p, 'columns'):
-                for c in p.columns:
-                    if c.primary_key:
-                        pks.append(p.key)
-                        break
-
+    mapper = model._sa_class_manager.mapper
+    pks = [mapper.get_property_by_column(c).key for c in mapper.primary_key]
     if len(pks) == 1:
         return pks[0]
     elif len(pks) > 1:
@@ -46,54 +50,16 @@ def get_primary_key(model):
     else:
         return None
 
-def is_inherited_primary_key(prop):
-    """
-        Return True, if the ColumnProperty is an inherited primary key
-
-        Check if all columns are primary keys and _one_ does not have a foreign key -> looks like joined
-        table inheritance: http://docs.sqlalchemy.org/en/latest/orm/inheritance.html with "standard
-        practice" of same column name.
-
-        :param prop: The ColumnProperty to check
-        :return: Boolean
-        :raises: Exceptions as they occur - no ExceptionHandling here
-    """
-    if not hasattr(prop, 'expression'):
-        return False
-
-    if prop.expression.primary_key:
-        return len(prop._orig_columns) == len(prop.columns)-1
-
-    return False
-
-def get_column_for_current_model(prop):
-    """
-        Return the Column() of the ColumnProperty "prop", that refers to the current model
-
-        When using inheritance, a ColumnProperty may contain multiple columns. This function
-        returns the Column(), the belongs to the Model of the ColumnProperty - the "current"
-        model
-
-        :param prop: The ColumnProperty
-        :return: The column for the current model
-        :raises: TypeError if not exactely one Column() for the current model could be found.
-                    All other Exceptions not handled here but raised
-    """
-    candidates = [column for column in prop.columns if column.expression == prop.expression]
-    if len(candidates) != 1:
-        raise TypeError('Not exactly one column for the current model found. ' +
-                        'Found %d columns for property %s' % (len(candidates), prop))
-    else:
-        return candidates[0]
-
 
 def has_multiple_pks(model):
-    """Return True, if the model has more than one primary key
+    """
+        Return True, if the model has more than one primary key
     """
     if not hasattr(model, '_sa_class_manager'):
         raise TypeError('model must be a sqlalchemy mapped model')
-    pks = model._sa_class_manager.mapper.primary_key
-    return len(pks) > 1
+
+    return len(model._sa_class_manager.mapper.primary_key) > 1
+
 
 def tuple_operator_in(model_pk, ids):
     """The tuple_ Operator only works on certain engines like MySQL or Postgresql. It does not work with sqlite.
@@ -123,36 +89,131 @@ def tuple_operator_in(model_pk, ids):
 
 def get_query_for_ids(modelquery, model, ids):
     """
-        Return a query object, that contains all entities of the given model for
-        the primary keys provided in the ids-parameter.
+        Return a query object filtered by primary key values passed in `ids` argument.
 
-        The ``pks`` parameter is a tuple, that contains the different primary key values,
-        that should be returned. If the primary key of the model consists of multiple columns
-        every entry of the ``pks`` parameter must be a tuple containing the columns-values in the
-        correct order, that make up the primary key of the model
-
-        If the model has multiple primary keys, the
-        `tuple_ <http://docs.sqlalchemy.org/en/latest/core/expression_api.html#sqlalchemy.sql.expression.tuple_>`_
-        operator will be used. As this operator does not work on certain databases,
-        notably on sqlite, a workaround function :func:`tuple_operator_in` is provided
-        that implements the same logic using OR and AND operations.
-
-        When having multiple primary keys, the pks are provided as a list of tuple-look-alike-strings,
-        ``[u'(1, 2)', u'(1, 1)']``. These needs to be evaluated into real tuples, where
-        `Stackoverflow Question 3945856 <http://stackoverflow.com/questions/3945856/converting-string-to-tuple-and-adding-to-tuple>`_
-        pointed to `Literal Eval <http://docs.python.org/2/library/ast.html#ast.literal_eval>`_, which is now used.
+        Unfortunately, it is not possible to use `in_` filter if model has more than one
+        primary key.
     """
     if has_multiple_pks(model):
-        model_pk = [getattr(model, pk_name).expression for pk_name in get_primary_key(model)]
-        ids = [literal_eval(id) for id in ids]
+        # Decode keys to tuples
+        decoded_ids = [iterdecode(v) for v in ids]
+
+        # Get model primary key property references
+        model_pk = [getattr(model, name) for name in get_primary_key(model)]
+
         try:
-            query = modelquery.filter(tuple_(*model_pk).in_(ids))
+            query = modelquery.filter(tuple_(*model_pk).in_(decoded_ids))
             # Only the execution of the query will tell us, if the tuple_
             # operator really works
             query.all()
         except DBAPIError:
-            query = modelquery.filter(tuple_operator_in(model_pk, ids))
+            query = modelquery.filter(tuple_operator_in(model_pk, decoded_ids))
     else:
         model_pk = getattr(model, get_primary_key(model))
         query = modelquery.filter(model_pk.in_(ids))
+
     return query
+
+
+def get_columns_for_field(field):
+    if (not field or
+        not hasattr(field, 'property') or
+        not hasattr(field.property, 'columns') or
+        not field.property.columns):
+            raise Exception('Invalid field %s: does not contains any columns.' % field)
+
+    return field.property.columns
+
+
+def need_join(model, table):
+    """
+        Check if join to a table is necessary.
+    """
+    return table not in model._sa_class_manager.mapper.tables
+
+
+def get_field_with_path(model, name, return_remote_proxy_attr=True):
+    """
+        Resolve property by name and figure out its join path.
+
+        Join path might contain both properties and tables.
+    """
+    path = []
+
+    # For strings, resolve path
+    if isinstance(name, string_types):
+        # create a copy to keep original model as `model`
+        current_model = model
+
+        value = None
+        for attribute in name.split('.'):
+            value = getattr(current_model, attribute)
+
+            if is_association_proxy(value):
+                relation_values = value.attr
+                if return_remote_proxy_attr:
+                    value = value.remote_attr
+            else:
+                relation_values = [value]
+
+            for relation_value in relation_values:
+                if is_relationship(relation_value):
+                    current_model = relation_value.property.mapper.class_
+                    table = current_model.__table__
+                    if need_join(model, table):
+                        path.append(relation_value)
+
+        attr = value
+    else:
+        attr = name
+
+        # Determine joins if table.column (relation object) is provided
+        if isinstance(attr, InstrumentedAttribute) or is_association_proxy(attr):
+            columns = get_columns_for_field(attr)
+
+            if len(columns) > 1:
+                raise Exception('Can only handle one column for %s' % name)
+
+            column = columns[0]
+
+            # TODO: Use SQLAlchemy "path-finder" to find exact join path to the target property
+            if need_join(model, column.table):
+                path.append(column.table)
+
+    return attr, path
+
+
+# copied from sqlalchemy-utils
+def get_hybrid_properties(model):
+    return dict(
+        (key, prop)
+        for key, prop in inspect(model).all_orm_descriptors.items()
+        if isinstance(prop, hybrid_property)
+    )
+
+
+def is_hybrid_property(model, attr_name):
+    if isinstance(attr_name, string_types):
+        names = attr_name.split('.')
+        last_model = model
+        for i in range(len(names)-1):
+            attr = getattr(last_model, names[i])
+            if is_association_proxy(attr):
+                attr = attr.remote_attr
+            last_model = attr.property.argument
+            if isinstance(last_model, _class_resolver):
+                last_model = model._decl_class_registry[last_model.arg]
+            elif isinstance(last_model, types.FunctionType):
+                last_model = last_model()
+        last_name = names[-1]
+        return last_name in get_hybrid_properties(last_model)
+    else:
+        return attr_name.name in get_hybrid_properties(model)
+
+
+def is_relationship(attr):
+    return hasattr(attr, 'property') and hasattr(attr.property, 'direction')
+
+
+def is_association_proxy(attr):
+    return hasattr(attr, 'extension_type') and attr.extension_type == ASSOCIATION_PROXY

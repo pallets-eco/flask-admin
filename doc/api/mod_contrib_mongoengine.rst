@@ -1,9 +1,9 @@
-``flask.ext.admin.contrib.mongoengine``
-=======================================
+``flask_admin.contrib.mongoengine``
+===================================
 
 MongoEngine model backend implementation.
 
-.. automodule:: flask.ext.admin.contrib.mongoengine
+.. automodule:: flask_admin.contrib.mongoengine
 
     .. autoclass:: ModelView
         :members:
@@ -12,7 +12,7 @@ MongoEngine model backend implementation.
                           filter_converter, model_form_converter
                           allowed_search_types, form_subdocuments
 
-		Class inherits configuration options from :class:`~flask.ext.admin.model.BaseModelView` and they're not displayed here.
+		Class inherits configuration options from :class:`~flask_admin.model.BaseModelView` and they're not displayed here.
 
         .. autoattribute:: column_filters
         .. autoattribute:: column_type_formatters

@@ -22,6 +22,8 @@ def desc():
 
 # grep flask_admin/__init__.py since python 3.x cannot import it before using 2to3
 file_text = read(fpath('flask_admin/__init__.py'))
+
+
 def grep(attrname):
     pattern = r"{0}\W*=\W*'([^']+)'".format(attrname)
     strval, = re.findall(pattern, file_text)
@@ -31,7 +33,7 @@ def grep(attrname):
 setup(
     name='Flask-Admin',
     version=grep('__version__'),
-    url='https://github.com/mrjoes/flask-admin/',
+    url='https://github.com/flask-admin/flask-admin/',
     license='BSD',
     author=grep('__author__'),
     author_email=grep('__email__'),
@@ -46,7 +48,18 @@ setup(
         'wtforms'
     ],
     tests_require=[
-        'nose>=1.0'
+        'nose>=1.0',
+        'pillow==2.9.0',
+        'mongoengine',
+        'pymongo',
+        'wtf-peewee',
+        'sqlalchemy',
+        'flask-mongoengine',
+        'flask-sqlalchemy',
+        'flask-babelex',
+        'shapely',
+        'geoalchemy2',
+        'psycopg2',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -55,7 +68,12 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Topic :: Software Development :: Libraries :: Python Modules'
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
     ],
     test_suite='nose.collector'
 )

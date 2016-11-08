@@ -1,0 +1,32 @@
+{% import 'admin/layout.html' as layout with context -%}
+{% extends 'admin/base.html' %}
+
+{% block head_tail %}
+  {{ super() }}
+  <link href="{{ url_for('static', filename='layout.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block page_body %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-2" role="navigation">
+      <ul class="nav nav-pills nav-stacked">
+	    {{ layout.menu() }}
+	    {{ layout.menu_links() }}
+      </ul>
+    </div>
+    <div class="col-md-10">
+      <div id="content" class="row">
+    	{% block brand %}
+    	<h2 id="brand">{{ admin_view.name|capitalize }}</h2>
+    	{% endblock %}
+    	{{ layout.messages() }}
+
+	{% set render_ctx = h.resolve_ctx() %}
+
+        {% block body %}{% endblock %}
+      </div>
+     </div>
+  </div>
+</div>
+{% endblock %}

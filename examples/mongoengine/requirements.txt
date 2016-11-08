@@ -1,0 +1,4 @@
+Flask
+Flask-Admin
+Flask-MongoEngine
+Flask-Login>=0.3.0

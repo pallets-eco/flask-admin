@@ -1,5 +1,6 @@
 from mongoengine import ValidationError
-from flask.ext.admin._compat import itervalues, as_unicode
+from wtforms.validators import ValidationError as wtfValidationError
+from flask_admin._compat import itervalues, as_unicode
 
 
 def make_gridfs_args(value):
@@ -31,6 +32,9 @@ def make_thumb_args(value):
 
 def format_error(error):
     if isinstance(error, ValidationError):
+        return as_unicode(error)
+
+    if isinstance(error, wtfValidationError):
         return '. '.join(itervalues(error.to_dict()))
 
     return as_unicode(error)

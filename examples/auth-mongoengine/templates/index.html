@@ -1,7 +1,7 @@
 <html>
     <body>
         <div>
-            {% if user and user.is_authenticated() %}
+            {% if user and user.is_authenticated %}
                 Hello {{ user.login }}! <a href="{{ url_for('logout_view') }}">Logout</a>
             {% else %}
                 Welcome anonymous user!

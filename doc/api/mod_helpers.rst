@@ -1,7 +1,7 @@
-``flask.ext.admin.helpers``
-===========================
+``flask_admin.helpers``
+=======================
 
-.. automodule:: flask.ext.admin.helpers
+.. automodule:: flask_admin.helpers
 
     .. autofunction:: get_current_view
 
@@ -17,4 +17,3 @@
 
     .. autofunction:: resolve_ctx
     .. autofunction:: get_render_ctx
-

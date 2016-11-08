@@ -18,6 +18,11 @@ venv
 __pycache__
 examples/sqla-inline/static
 examples/file/files
+examples/forms/files
+examples/appengine/lib
 .DS_Store
 .idea/
 *.sqlite
+env
+*.egg
+.eggs

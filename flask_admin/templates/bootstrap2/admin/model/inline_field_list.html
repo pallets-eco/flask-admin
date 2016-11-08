@@ -1,0 +1,15 @@
+{% import 'admin/model/inline_list_base.html' as base with context %}
+
+{% macro render_field(field) %}
+    {{ field }}
+
+    {% if h.is_field_error(field.errors) %}
+    <ul class="input-errors">
+      {% for e in field.errors if e is string %}
+        <li>{{ e }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+{% endmacro %}
+
+{{ base.render_inline_fields(field, template, render_field, check) }}
