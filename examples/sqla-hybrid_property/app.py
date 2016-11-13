@@ -37,7 +37,7 @@ class Screen(db.Model):
 class ScreenAdmin(sqla.ModelView):
     """ Flask-admin can not automatically find a hybrid_property yet. You will
         need to manually define the column in list_view/filters/sorting/etc."""
-    list_columns = ['id', 'width', 'height', 'number_of_pixels']
+    column_list = ['id', 'width', 'height', 'number_of_pixels']
     column_sortable_list = ['id', 'width', 'height', 'number_of_pixels']
 
     # Flask-admin can automatically detect the relevant filters for hybrid properties.
