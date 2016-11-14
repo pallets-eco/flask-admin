@@ -48,7 +48,7 @@ Extending BaseModelView
                     columns = []
 
                     for p in dir(self.model):
-                        attr = getattr(self.model)
+                        attr = getattr(self.model, p)
                         if isinstance(attr, MyDbColumn):
                             columns.append(p)
 
