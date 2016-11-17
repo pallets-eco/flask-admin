@@ -80,6 +80,11 @@ class InlineModelFormList(InlineFieldList):
 
             model.save()
 
+            # Recurse, to save multi-level nested inlines
+            for f in itervalues(field.form._fields):
+                if f.type == 'InlineModelFormList':
+                    f.save_related(model)
+
 
 class CustomModelConverter(ModelConverter):
     def __init__(self, view, additional=None):
