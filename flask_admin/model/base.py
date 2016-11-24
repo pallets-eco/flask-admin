@@ -985,12 +985,9 @@ class BaseModelView(BaseView, ActionsMixin):
             Uses `get_column_names` to get a list of tuples with the model
             field name and formatted name for the columns in `column_details_list`
             and not in `column_details_exclude_list`. If `column_details_list`
-            is not set, it will attempt to use the columns from `column_list`
-            or finally the columns from `scaffold_list_columns` will be used.
+            is not set, the columns from `scaffold_list_columns` will be used.
         """
-        only_columns = (self.column_details_list or self.column_list or
-                        self.scaffold_list_columns())
-
+        only_columns = self.column_details_list or self.scaffold_list_columns()
         return self.get_column_names(
             only_columns=only_columns,
             excluded_columns=self.column_details_exclude_list,
