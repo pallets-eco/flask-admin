@@ -148,22 +148,11 @@ classes as follows::
         widget = CKTextAreaWidget()
 
     class MessageAdmin(ModelView):
+        extra_js = ['//cdn.ckeditor.com/4.6.0/standard/ckeditor.js']
+
         form_overrides = {
             'body': CKTextAreaField
         }
-        create_template = 'ckeditor.html'
-        edit_template = 'ckeditor.html'
-
-For this to work, you would also need to create a template that extends the default
-functionality by including the necessary CKEditor javascript on the `create` and
-`edit` pages. Save this in `templates/ckeditor.html`::
-
-    {% extends 'admin/model/edit.html' %}
-
-    {% block tail %}
-      {{ super() }}
-      <script src="//cdn.ckeditor.com/4.5.1/standard/ckeditor.js"></script>
-    {% endblock %}
 
 File & Image Fields
 *******************
