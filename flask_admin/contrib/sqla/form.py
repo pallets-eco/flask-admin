@@ -111,9 +111,8 @@ class AdminModelConverter(ModelConverterBase):
             else:
                 kwargs['validators'].append(validators.InputRequired())
 
-        # Contribute model-related parameters
-        if 'allow_blank' not in kwargs:
-            kwargs['allow_blank'] = column.nullable
+        # Never prepopulate relation widgets:
+        kwargs['allow_blank'] = True
 
         # Override field type if necessary
         override = self._get_field_override(prop.key)
