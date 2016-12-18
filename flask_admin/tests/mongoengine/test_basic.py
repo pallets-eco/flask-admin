@@ -5,6 +5,10 @@ from nose.plugins.skip import SkipTest
 from flask_admin._compat import PY2, as_unicode
 if not PY2:
     raise SkipTest('MongoEngine is not Python 3 compatible')
+# Skip test on Python 2.6 since it is still supported by flask-admin:
+import sys
+if sys.version_info[0] == 2 and sys.version_info[1] == 6:
+    raise SkipTest('MongoEngine is not Python 2.6 compatible as of its 0.11 version.')
 
 from wtforms import fields, validators
 
