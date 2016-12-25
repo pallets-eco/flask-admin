@@ -234,6 +234,10 @@
   {% if config.MAPBOX_ACCESS_TOKEN %}
   window.MAPBOX_ACCESS_TOKEN = "{{ config.MAPBOX_ACCESS_TOKEN }}";
   {% endif %}
+  {% if config.DEFAULT_CENTER_LAT and config.DEFAULT_CENTER_LONG %}
+  window.DEFAULT_CENTER_LAT = "{{ config.DEFAULT_CENTER_LAT }}";
+  window.DEFAULT_CENTER_LONG = "{{ config.DEFAULT_CENTER_LONG }}";
+  {% endif %}
   </script>
   <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js', v='1.0.2') }}"></script>
   <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js', v='0.4.6') }}"></script>
