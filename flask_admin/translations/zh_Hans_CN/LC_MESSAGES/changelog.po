@@ -1,0 +1,144 @@
+# Changelog
+# http://flask-admin.readthedocs.io/en/latest/changelog/
+#
+# Copyright (C) 2012-2015, Serge S. Koval
+# This file is distributed under the same license as the flask-admin
+# package.
+# 1dot75cm <sensor.wen@gmail.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: flask-admin 1.4.2\n"
+"Report-Msgid-Bugs-To: https://github.com/sixu05202004/Flask-extensions-docs\n"
+"POT-Creation-Date: 2016-11-25 03:00+0800\n"
+"PO-Revision-Date: 2016-11-25 03:00+0800\n"
+"Last-Translator: 1dot75cm <sensor.wen@gmail.com>\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#: ../../changelog.rst:2
+msgid "Changelog"
+msgstr "变更日志"
+
+#: ../../changelog.rst:5
+msgid "1.4.2"
+msgstr "1.4.2"
+
+#: ../../changelog.rst:7
+msgid ""
+"Small bug fix release. Fixes regression that prevented usage of "
+"\"virtual\" columns with a custom formatter."
+msgstr ""
+"修复小错误。修复阻止使用自定义格式的 \"虚拟\" 列的用法。"
+
+#: ../../changelog.rst:10
+msgid "1.4.1"
+msgstr "1.4.1"
+
+#: ../../changelog.rst:12
+msgid "Official Python 3.5 support"
+msgstr "官方 Python 3.5 支持"
+
+#: ../../changelog.rst:13
+msgid "Customizable row actions"
+msgstr "可自定义的行操作"
+
+#: ../../changelog.rst:14
+msgid "Tablib support (exporting to XLS, XLSX, CSV, etc)"
+msgstr "Tablib 支持 (导出到 XLS, XLSX, CSV 等)"
+
+#: ../../changelog.rst:15
+msgid "Updated external dependencies (jQuery, x-editable, etc)"
+msgstr "更新外部依赖 (jQuery, x-editable 等)"
+
+#: ../../changelog.rst:16
+msgid "Added settings that allows exceptions to be raised on view errors"
+msgstr "添加了允许在视图错误时引发异常的设置"
+
+#: ../../changelog.rst:17 ../../changelog.rst:30 ../../changelog.rst:43
+msgid "Bug fixes"
+msgstr "Bug 修复"
+
+#: ../../changelog.rst:20
+msgid "1.4.0"
+msgstr "1.4.0"
+
+#: ../../changelog.rst:22
+msgid "Updated and reworked documentation"
+msgstr "更新和重做文档"
+
+#: ../../changelog.rst:23
+msgid ""
+"FileAdmin went through minor refactoring and now supports remote file "
+"systems. Comes with the new, optional, AWS S3 file management interface"
+msgstr ""
+"重构 FileAdmin，现在支持远程文件系统。提供新的，可选的 AWS S3 文件管理界面"
+
+#: ../../changelog.rst:24
+msgid "Configurable CSV export for model views"
+msgstr "可配置 CSV 导出模型视图"
+
+#: ../../changelog.rst:25
+msgid ""
+"Added overridable URL generation logic. Allows using custom URLs with "
+"parameters for administrative views"
+msgstr ""
+"添加了可覆盖的网址生成逻辑。允许使用包含管理视图参数的自定义网址"
+
+#: ../../changelog.rst:26
+msgid ""
+"Added column_display_actions to ModelView control visibility of the "
+"action column without overriding the template"
+msgstr ""
+"将 column_display_actions 添加到 ModelView 控制操作列的可见性，而不覆盖模板"
+
+#: ../../changelog.rst:27
+msgid "Added support for the latest MongoEngine"
+msgstr "增加了对最新 MongoEngine 的支持"
+
+#: ../../changelog.rst:28
+msgid "New SecureForm base class for easier CSRF validation"
+msgstr "新的 SecureForm 基类，更容易进行 CSRF 验证"
+
+#: ../../changelog.rst:29
+msgid "Lots of translation-related fixes and updated translations"
+msgstr "许多与翻译相关的修复，并更新翻译"
+
+#: ../../changelog.rst:33
+msgid "1.3.0"
+msgstr "1.3.0"
+
+#: ../../changelog.rst:35
+msgid "New feature: Edit models in the list view in a popup"
+msgstr "新功能：在弹出式窗口中的列表视图中编辑模型"
+
+#: ../../changelog.rst:36
+msgid "New feature: Read-only model details view"
+msgstr "新功能：只读模型详细信息视图"
+
+#: ../../changelog.rst:37
+msgid "Fixed XSS in column_editable_list values"
+msgstr "修正了 column_editable_list 值中的 XSS"
+
+#: ../../changelog.rst:38
+msgid "Improved navigation consistency in model create and edit views"
+msgstr "改进模型创建和编辑视图中的导航一致性"
+
+#: ../../changelog.rst:39
+msgid "Ability to choose page size in model list view"
+msgstr "能够在模型列表视图中选择页面大小"
+
+#: ../../changelog.rst:40
+msgid "Updated client-side dependencies (jQuery, Select2, etc)"
+msgstr "更新客户端依赖关系 (jQuery, Select2 等)"
+
+#: ../../changelog.rst:41
+msgid "Updated documentation and examples"
+msgstr "更新文档和示例"
+
+#: ../../changelog.rst:42
+msgid "Updated translations"
+msgstr "更新翻译"

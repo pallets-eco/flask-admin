@@ -14,5 +14,6 @@ geoalchemy2
 psycopg2
 nose
 sphinx
+sphinx-intl
 coveralls
 pylint
