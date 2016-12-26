@@ -103,3 +103,8 @@ body.modal-open {
     margin-top: 20px;
     margin-bottom: 10px;
 }
+
+.table-responsive
+{
+    overflow-x: auto;
+}

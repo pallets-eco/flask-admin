@@ -42,8 +42,9 @@ class ViewArgs(object):
     """
         List view arguments.
     """
-    def __init__(self, page=None, sort=None, sort_desc=None, search=None, filters=None, extra_args=None):
+    def __init__(self, page=None, page_size=None, sort=None, sort_desc=None, search=None, filters=None, extra_args=None):
         self.page = page
+        self.page_size = page_size
         self.sort = sort
         self.sort_desc = bool(sort_desc)
         self.search = search
@@ -61,6 +62,7 @@ class ViewArgs(object):
             flt = None
 
         kwargs.setdefault('page', self.page)
+        kwargs.setdefault('page_size', self.page_size)
         kwargs.setdefault('sort', self.sort)
         kwargs.setdefault('sort_desc', self.sort_desc)
         kwargs.setdefault('search', self.search)
@@ -719,10 +721,15 @@ class BaseModelView(BaseView, ActionsMixin):
         for supported types.
     """
 
-    # Various settings
+    # Pagination settings
     page_size = 20
     """
         Default page size for pagination.
+    """
+
+    can_set_page_size = False
+    """
+        Allows to select page size via dropdown list
     """
 
     def __init__(self, model,
@@ -1646,6 +1653,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Return arguments from query string.
         """
         return ViewArgs(page=request.args.get('page', 0, type=int),
+                        page_size=request.args.get('page_size', 0, type=int),
                         sort=request.args.get('sort', None, type=int),
                         sort_desc=request.args.get('desc', None, type=int),
                         search=request.args.get('search', None),
@@ -1667,6 +1675,9 @@ class BaseModelView(BaseView, ActionsMixin):
 
         kwargs = dict(page=page, sort=view_args.sort, desc=desc, search=view_args.search)
         kwargs.update(view_args.extra_args)
+
+        if view_args.page_size:
+            kwargs['page_size'] = view_args.page_size
 
         if view_args.filters:
             for i, pair in enumerate(view_args.filters):
@@ -1821,9 +1832,12 @@ class BaseModelView(BaseView, ActionsMixin):
         if sort_column is not None:
             sort_column = sort_column[0]
 
+        # Get page size
+        page_size = view_args.page_size or self.page_size
+
         # Get count and data
         count, data = self.get_list(view_args.page, sort_column, view_args.sort_desc,
-                                    view_args.search, view_args.filters)
+                                    view_args.search, view_args.filters, page_size=page_size)
 
         list_forms = {}
         if self.column_editable_list:
@@ -1831,9 +1845,9 @@ class BaseModelView(BaseView, ActionsMixin):
                 list_forms[self.get_pk_value(row)] = self.list_form(obj=row)
 
         # Calculate number of pages
-        if count is not None and self.page_size:
-            num_pages = int(ceil(count / float(self.page_size)))
-        elif not self.page_size:
+        if count is not None and page_size:
+            num_pages = int(ceil(count / float(page_size)))
+        elif not page_size:
             num_pages = 0  # hide pager for unlimited page_size
         else:
             num_pages = None  # use simple pager
@@ -1851,6 +1865,12 @@ class BaseModelView(BaseView, ActionsMixin):
                 desc = 1
 
             return self._get_list_url(view_args.clone(sort=column, sort_desc=desc))
+
+        def page_size_url(s):
+            if not s:
+                s = self.page_size
+
+            return self._get_list_url(view_args.clone(page_size=s))
 
         # Actions
         actions, actions_confirmation = self.get_actions_list()
@@ -1877,8 +1897,10 @@ class BaseModelView(BaseView, ActionsMixin):
             count=count,
             pager_url=pager_url,
             num_pages=num_pages,
+            can_set_page_size=self.can_set_page_size,
+            page_size_url=page_size_url,
             page=view_args.page,
-            page_size=self.page_size,
+            page_size=page_size,
 
             # Sorting
             sort_column=view_args.sort,
