@@ -39,6 +39,12 @@
         </li>
         {% endif %}
 
+        {% if can_set_page_size %}
+        <li class="dropdown">
+            {{ model_layout.page_size_form(page_size_url) }}
+        </li>
+        {% endif %}
+
         {% if actions %}
         <li class="dropdown">
             {{ actionlib.dropdown(actions) }}
