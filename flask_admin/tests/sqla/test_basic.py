@@ -640,7 +640,7 @@ def test_column_filters():
     view = CustomModelView(Model2, db.session,
                            column_filters=['model1.bool_field'])
 
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Bool Field']],
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'model1 / Model1 / Bool Field']],
         [
             (0, 'equals'),
             (1, 'not equal'),

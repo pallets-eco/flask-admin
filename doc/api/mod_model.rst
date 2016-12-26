@@ -17,7 +17,7 @@
                           form_widget_args, form_extra_fields,
                           form_ajax_refs, form_create_rules,
                           form_edit_rules,
-                          page_size
+                          page_size, can_set_page_size
 
         .. autoattribute:: can_create
         .. autoattribute:: can_edit
@@ -58,3 +58,4 @@
         .. autoattribute:: action_disallowed_list
 
         .. autoattribute:: page_size
+        .. autoattribute:: can_set_page_size

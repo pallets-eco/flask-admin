@@ -39,6 +39,12 @@
         </li>
         {% endif %}
 
+        {% if can_set_page_size %}
+        <li class="dropdown">
+            {{ model_layout.page_size_form(page_size_url) }}
+        </li>
+        {% endif %}
+
         {% if actions %}
         <li class="dropdown">
             {{ actionlib.dropdown(actions) }}
@@ -60,6 +66,7 @@
     {% endif %}
 
     {% block model_list_table %}
+    <div class="table-responsive">
     <table class="table table-striped table-bordered table-hover model-list">
         <thead>
             <tr>
@@ -153,6 +160,7 @@
         </tr>
         {% endfor %}
     </table>
+    </div>
     {% block list_pager %}
     {% if num_pages is not none %}
     {{ lib.pager(page, num_pages, pager_url) }}

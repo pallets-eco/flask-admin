@@ -105,15 +105,15 @@ class AdminModelConverter(ModelConverterBase):
 
         # determine optional/required, or respect existing
         requirement_options = (validators.Optional, validators.InputRequired)
-        if not any(isinstance(v, requirement_options) for v in kwargs['validators']):
-            if property_is_association_proxy or column.nullable or prop.direction.name != 'MANYTOONE':
+        requirement_validator_specified = any(isinstance(v, requirement_options) for v in kwargs['validators'])
+        if property_is_association_proxy or column.nullable or prop.direction.name != 'MANYTOONE':
+            kwargs['allow_blank'] = True
+            if not requirement_validator_specified:
                 kwargs['validators'].append(validators.Optional())
-            else:
+        else:
+            kwargs['allow_blank'] = False
+            if not requirement_validator_specified:
                 kwargs['validators'].append(validators.InputRequired())
-
-        # Contribute model-related parameters
-        if 'allow_blank' not in kwargs:
-            kwargs['allow_blank'] = column.nullable
 
         # Override field type if necessary
         override = self._get_field_override(prop.key)

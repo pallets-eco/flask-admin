@@ -1,0 +1,355 @@
+# Adding A Model Backend
+# http://flask-admin.readthedocs.io/en/latest/adding_a_new_model_backend/
+#
+# Copyright (C) 2012-2015, Serge S. Koval
+# This file is distributed under the same license as the flask-admin
+# package.
+# 1dot75cm <sensor.wen@gmail.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: flask-admin 1.4.2\n"
+"Report-Msgid-Bugs-To: https://github.com/sixu05202004/Flask-extensions-docs\n"
+"POT-Creation-Date: 2016-11-25 03:00+0800\n"
+"PO-Revision-Date: 2016-11-27 03:00+0800\n"
+"Last-Translator: 1dot75cm <sensor.wen@gmail.com>\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#: ../../adding_a_new_model_backend.rst:4
+msgid "Adding A Model Backend"
+msgstr "添加一个模型后端"
+
+#: ../../adding_a_new_model_backend.rst:6
+msgid ""
+"Flask-Admin makes a few assumptions about the database models that it "
+"works with. If you want to implement your own database backend, and still"
+" have Flask-Admin's model views work as expected, then you should take "
+"note of the following:"
+msgstr ""
+"Flask-Admin 对它使用的数据库模型做了一些假设。如果你想实现你自己的数据库后端，"
+"并且保证 Flask-Admin 的模型视图按预期工作，那么应该注意以下几点:"
+
+#: ../../adding_a_new_model_backend.rst:9
+msgid ""
+"Each model must have one field which acts as a `primary key` to uniquely "
+"identify instances of that model. However, there are no restriction on "
+"the data type or the field name of the `primary key` field."
+msgstr ""
+"每个模型必须有一个字段作为主键，以唯一标识该模型的实例。对主键字段的数据类型或字段名没有限制。"
+
+#: ../../adding_a_new_model_backend.rst:11
+msgid "Models must make their data accessible as python properties."
+msgstr "模型的数据必须为可访问的 python 属性。"
+
+#: ../../adding_a_new_model_backend.rst:13
+msgid ""
+"If that is the case, then you can implement your own database backend by "
+"extending the `BaseModelView` class, and implementing the set of "
+"scaffolding methods listed below."
+msgstr ""
+"如果是这样，您可以通过扩展 `BaseModelView` 类并实现以下列出的一组方法"
+"来实现您自己的数据库后端。"
+
+#: ../../adding_a_new_model_backend.rst:17
+msgid "Extending BaseModelView"
+msgstr "扩展 BaseModelView"
+
+#: ../../adding_a_new_model_backend.rst:19
+msgid ""
+"Start off by defining a new class, which derives from from "
+":class:`~flask_admin.model.BaseModelView`::"
+msgstr ""
+"定义一个新类，继承自 :class:`~flask_admin.model.BaseModelView`::"
+
+#: ../../adding_a_new_model_backend.rst:24
+msgid ""
+"This class inherits BaseModelView's `__init__` method, which accepts a "
+"model class as first argument. The model class is stored as the attribute"
+" ``self.model`` so that other methods may access it."
+msgstr ""
+"这个类继承了 BaseModelView 的 `__init__` 方法，它接受一个模型类作为第一个参数。"
+"模型类被存储为属性 ``self.model``，以便其他方法可以访问它。"
+
+#: ../../adding_a_new_model_backend.rst:27
+msgid "Now, implement the following scaffolding methods for the new class:"
+msgstr "现在，为新类实现以下脚手架方法:"
+
+#: ../../adding_a_new_model_backend.rst:29
+msgid ":meth:`~flask_admin.model.BaseModelView.get_pk_value`"
+msgstr ":meth:`~flask_admin.model.BaseModelView.get_pk_value`"
+
+#: ../../adding_a_new_model_backend.rst:31
+msgid ""
+"This method returns a primary key value from the model instance. In the "
+"SQLAlchemy backend, it gets the primary key from the model using "
+":meth:`~flask_admin.contrib.sqla.ModelView.scaffold_pk`, caches it and "
+"then returns the value from the model whenever requested."
+msgstr ""
+"此方法从模型实例返回主键值。在 SQLAlchemy 后端，它使用 "
+":meth:`~flask_admin.contrib.sqla.ModelView.scaffold_pk` 从模型中获取主键，"
+"将其缓存，然后在请求时从模型返回值。"
+
+#: ../../adding_a_new_model_backend.rst:36
+#: ../../adding_a_new_model_backend.rst:85
+#: ../../adding_a_new_model_backend.rst:155
+#: ../../adding_a_new_model_backend.rst:191
+msgid "For example::"
+msgstr "例如::"
+
+#: ../../adding_a_new_model_backend.rst:42
+msgid ":meth:`~flask_admin.model.BaseModelView.scaffold_list_columns`"
+msgstr ":meth:`~flask_admin.model.BaseModelView.scaffold_list_columns`"
+
+#: ../../adding_a_new_model_backend.rst:44
+msgid "Returns a list of columns to be displayed in a list view. For example::"
+msgstr "返回 list 视图需要显示的字段列表。例如::"
+
+#: ../../adding_a_new_model_backend.rst:57
+msgid ":meth:`~flask_admin.model.BaseModelView.scaffold_sortable_columns`"
+msgstr ":meth:`~flask_admin.model.BaseModelView.scaffold_sortable_columns`"
+
+#: ../../adding_a_new_model_backend.rst:59
+msgid ""
+"Returns a dictionary of sortable columns. The keys in the dictionary "
+"should correspond to the model's field names. The values should be those "
+"variables that will be used for sorting."
+msgstr ""
+"返回可排序字典。字典的键对应模型的字段名称。这些值将用于排序。"
+
+#: ../../adding_a_new_model_backend.rst:62
+msgid ""
+"For example, in the SQLAlchemy backend it is possible to sort by a "
+"foreign key field. So, if there is a field named `user`, which is a "
+"foreign key for the `Users` table, and the `Users` table also has a name "
+"field, then the key will be `user` and value will be `Users.name`."
+msgstr ""
+"例如，在 SQLAlchemy 后端，可以按外键字段排序。因此，如果有一个名为 `user` 的字段，"
+"它是 `Users` 表的外键，并且 `Users` 表也有一个 name 字段，那么键将是 `user`，"
+"值将是 `Users.name`。"
+
+#: ../../adding_a_new_model_backend.rst:66
+msgid ""
+"If your backend does not support sorting, return `None` or an empty "
+"dictionary."
+msgstr ""
+"如果您的后端不支持排序，则返回 `None` 或空字典。"
+
+#: ../../adding_a_new_model_backend.rst:69
+msgid ":meth:`~flask_admin.model.BaseModelView.init_search`"
+msgstr ":meth:`~flask_admin.model.BaseModelView.init_search`"
+
+#: ../../adding_a_new_model_backend.rst:71
+msgid ""
+"Initialize search functionality. If your backend supports full-text "
+"search, do initializations and return `True`. If your backend does not "
+"support full-text search, return `False`."
+msgstr ""
+"初始化搜索功能。如果您的后端支持全文搜索，请进行初始化并返回 `True`。"
+"如果您的后端不支持全文搜索，请返回 `False`。"
+
+#: ../../adding_a_new_model_backend.rst:76
+msgid ""
+"For example, SQLAlchemy backend reads value of the "
+"`self.searchable_columns` and verifies if all fields are of text type, if"
+" they're local to the current model (if not, it will add a join, etc) and"
+" caches this information for future use."
+msgstr ""
+"例如，SQLAlchemy 后端读取 `self.searchable_columns` 的值，并验证所有字段是否为"
+"文本类型，是否为当前模块的本地字段 (如果不是，则添加 join 等)，并缓存此信息以供将来使用。"
+
+#: ../../adding_a_new_model_backend.rst:81
+msgid ":meth:`~flask_admin.model.BaseModelView.scaffold_form`"
+msgstr ":meth:`~flask_admin.model.BaseModelView.scaffold_form`"
+
+#: ../../adding_a_new_model_backend.rst:83
+msgid "Generate `WTForms` form class from the model."
+msgstr "从模型生成 `WTForms` 表单类。"
+
+#: ../../adding_a_new_model_backend.rst:95
+msgid ":meth:`~flask_admin.model.BaseModelView.get_list`"
+msgstr ":meth:`~flask_admin.model.BaseModelView.get_list`"
+
+#: ../../adding_a_new_model_backend.rst:97
+msgid ""
+"This method should return list of model instances with paging, sorting, "
+"etc applied."
+msgstr ""
+"此方法应返回用于分页，排序等操作的模型实例的列表。"
+
+#: ../../adding_a_new_model_backend.rst:100
+msgid "For SQLAlchemy backend it looks like:"
+msgstr "对于 SQLAlchemy 后端的示例如下:"
+
+#: ../../adding_a_new_model_backend.rst:102
+msgid ""
+"If search was enabled and provided search value is not empty, generate "
+"LIKE statements for each field from `self.searchable_columns`"
+msgstr ""
+"如果启用搜索并且提供的搜索值不为空，请从 `self.searchable_columns` 中"
+"为每个字段生成 LIKE 语句。"
+
+#: ../../adding_a_new_model_backend.rst:105
+msgid "If filter values were passed, call `apply` method with values::"
+msgstr "如果已向过滤器传值，请调用具有该值的 `apply` 方法::"
+
+#: ../../adding_a_new_model_backend.rst:111
+msgid "Execute query to get total number of rows in the database (count)"
+msgstr "执行查询以获取数据库中的总行数 (count)"
+
+#: ../../adding_a_new_model_backend.rst:114
+msgid ""
+"If `sort_column` was passed, will do something like (with some extra FK "
+"logic which is omitted in this example)::"
+msgstr ""
+"如果 `sort_column` 被传递，将做类似的事情 (在这个例子中省略一些额外的 FK 逻辑)::"
+
+#: ../../adding_a_new_model_backend.rst:121
+msgid "Apply paging"
+msgstr "应用分页"
+
+#: ../../adding_a_new_model_backend.rst:123
+msgid "Return count, list as a tuple"
+msgstr "返回 count, list 作为一个元组"
+
+#: ../../adding_a_new_model_backend.rst:125
+msgid ":meth:`~flask_admin.model.BaseModelView.get_one`"
+msgstr ":meth:`~flask_admin.model.BaseModelView.get_one`"
+
+#: ../../adding_a_new_model_backend.rst:127
+msgid "Return a model instance by its primary key."
+msgstr "通过其主键返回模型实例。"
+
+#: ../../adding_a_new_model_backend.rst:129
+msgid ":meth:`~flask_admin.model.BaseModelView.create_model`"
+msgstr ":meth:`~flask_admin.model.BaseModelView.create_model`"
+
+#: ../../adding_a_new_model_backend.rst:131
+msgid "Create a new instance of the model from the `Form` object."
+msgstr "从 `Form` 对象创建新的模型实例。"
+
+#: ../../adding_a_new_model_backend.rst:133
+msgid ":meth:`~flask_admin.model.BaseModelView.update_model`"
+msgstr ":meth:`~flask_admin.model.BaseModelView.update_model`"
+
+#: ../../adding_a_new_model_backend.rst:135
+msgid "Update the model instance with data from the form."
+msgstr "用表单数据更新模型实例。"
+
+#: ../../adding_a_new_model_backend.rst:137
+msgid ":meth:`~flask_admin.model.BaseModelView.delete_model`"
+msgstr ":meth:`~flask_admin.model.BaseModelView.delete_model`"
+
+#: ../../adding_a_new_model_backend.rst:139
+msgid "Delete the specified model instance from the data store."
+msgstr "从数据存储中删除指定的模型实例。"
+
+#: ../../adding_a_new_model_backend.rst:141
+msgid ":meth:`~flask_admin.model.BaseModelView.is_valid_filter`"
+msgstr ":meth:`~flask_admin.model.BaseModelView.is_valid_filter`"
+
+#: ../../adding_a_new_model_backend.rst:143
+msgid "Verify whether the given object is a valid filter."
+msgstr "验证给定对象是否是有效的过滤器。"
+
+#: ../../adding_a_new_model_backend.rst:145
+msgid ":meth:`~flask_admin.model.BaseModelView.scaffold_filters`"
+msgstr ":meth:`~flask_admin.model.BaseModelView.scaffold_filters`"
+
+#: ../../adding_a_new_model_backend.rst:147
+msgid "Return a list of filter objects for one model field."
+msgstr "返回一个模型字段的过滤器对象列表。"
+
+#: ../../adding_a_new_model_backend.rst:149
+msgid ""
+"This method will be called once for each entry in the "
+"`self.column_filters` setting."
+msgstr ""
+"对于 `self.column_filters` 设置中的每个条目，都将调用一次该方法。"
+
+#: ../../adding_a_new_model_backend.rst:152
+msgid ""
+"If your backend does not know how to generate filters for the provided "
+"field, it should return `None`."
+msgstr ""
+"如果您的后端不知道如何为提供的字段生成过滤器，则它应该返回 `None`。"
+
+#: ../../adding_a_new_model_backend.rst:165
+msgid "Implementing filters"
+msgstr "实现过滤器"
+
+#: ../../adding_a_new_model_backend.rst:167
+msgid ""
+"Each model backend should have its own set of filter implementations. It "
+"is not possible to use the filters from SQLAlchemy models in a non-"
+"SQLAlchemy backend. This also means that different backends might have "
+"different set of available filters."
+msgstr ""
+"每个模型后端应该有自己的一组过滤器实现。不能在非 SQLAlchemy 后端中使用 SQLAlchemy "
+"模型的过滤器。这意味着不同的后端可能具有不同的可用过滤器集。"
+
+#: ../../adding_a_new_model_backend.rst:171
+msgid ""
+"The filter is a class derived from "
+":class:`~flask_admin.model.filters.BaseFilter` which implements at least "
+"two methods:"
+msgstr ""
+"过滤器继承 :class:`~flask_admin.model.filters.BaseFilter` 类，"
+"至少需要实现以下两个方法:"
+
+#: ../../adding_a_new_model_backend.rst:173
+msgid ":meth:`~flask_admin.model.filters.BaseFilter.apply`"
+msgstr ":meth:`~flask_admin.model.filters.BaseFilter.apply`"
+
+#: ../../adding_a_new_model_backend.rst:174
+msgid ":meth:`~flask_admin.model.filters.BaseFilter.operation`"
+msgstr ":meth:`~flask_admin.model.filters.BaseFilter.operation`"
+
+#: ../../adding_a_new_model_backend.rst:176
+msgid ""
+"`apply` method accepts two parameters: `query` object and a value from "
+"the client. Here you can add filtering logic for the filter type."
+msgstr ""
+"`apply` 方法允许两个参数：`query` 对象和来自客户端的值。"
+"在这里，您可以为该过滤器类型添加过滤逻辑。"
+
+#: ../../adding_a_new_model_backend.rst:179
+msgid "Lets take SQLAlchemy model backend as an example:"
+msgstr "让我们以 SQLAlchemy 模型后端为例:"
+
+#: ../../adding_a_new_model_backend.rst:181
+msgid ""
+"All SQLAlchemy filters derive from "
+":class:`~flask_admin.contrib.sqla.filters.BaseSQLAFilter` class."
+msgstr ""
+"所有 SQLAlchemy 过滤器都继承自 "
+":class:`~flask_admin.contrib.sqla.filters.BaseSQLAFilter` 类。"
+
+#: ../../adding_a_new_model_backend.rst:183
+msgid ""
+"Each filter implements one simple filter SQL operation (like, not like, "
+"greater, etc) and accepts a column as input parameter."
+msgstr ""
+"每个过滤器实现一个简单的 SQL 过滤器操作 (like, not like, greater 等)，"
+"并接受列作为输入参数。"
+
+#: ../../adding_a_new_model_backend.rst:186
+msgid ""
+"Whenever model view wants to apply a filter to a query object, it will "
+"call `apply` method in a filter class with a query and value. Filter will"
+" then apply real filter operation."
+msgstr ""
+"每当模型视图想要对 query 对象应用过滤器时，它将调用已传入 query 和值的过滤器类的 `apply` "
+"方法。然后过滤器将进行实际的 SQL 过滤器操作。"
+
+#: ../../adding_a_new_model_backend.rst:217
+msgid ""
+"Feel free ask questions if you have problems adding a new model backend. "
+"Also, if you get stuck, try taking a look at the SQLAlchemy model backend"
+" and use it as a reference."
+msgstr ""
+"如果您在添加新模型后端时遇到问题，请随时提出问题。此外，如果您遇到困难，"
+"建议将 SQLAlchemy 模型后端的实现作为参考。"
