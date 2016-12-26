@@ -1,19 +1,12 @@
+from datetime import datetime
+
 from nose.tools import eq_, ok_
-from nose.plugins.skip import SkipTest
-
-# Skip test on PY3
-from flask_admin._compat import PY2, as_unicode
-if not PY2:
-    raise SkipTest('MongoEngine is not Python 3 compatible')
-
 from wtforms import fields, validators
 
 from flask_admin import form
+from flask_admin._compat import as_unicode
 from flask_admin.contrib.mongoengine import ModelView
-
 from . import setup
-
-from datetime import datetime
 
 class CustomModelView(ModelView):
     def __init__(self, model,
