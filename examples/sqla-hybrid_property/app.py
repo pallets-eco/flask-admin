@@ -4,7 +4,6 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 import flask_admin as admin
 from flask_admin.contrib import sqla
-from flask_admin.contrib.sqla.filters import IntGreaterFilter
 
 # Create application
 app = Flask(__name__)
@@ -36,14 +35,13 @@ class Screen(db.Model):
 
 
 class ScreenAdmin(sqla.ModelView):
-    ''' Flask-admin can not automatically find a hybrid_property yet. You will
-        need to manually define the column in list_view/filters/sorting/etc.'''
-    list_columns = ['id', 'width', 'height', 'number_of_pixels']
+    """ Flask-admin can not automatically find a hybrid_property yet. You will
+        need to manually define the column in list_view/filters/sorting/etc."""
+    column_list = ['id', 'width', 'height', 'number_of_pixels']
     column_sortable_list = ['id', 'width', 'height', 'number_of_pixels']
 
-    # make sure the type of your filter matches your hybrid_property
-    column_filters = [IntGreaterFilter(Screen.number_of_pixels,
-                                       'Number of Pixels')]
+    # Flask-admin can automatically detect the relevant filters for hybrid properties.
+    column_filters = ('number_of_pixels', )
 
 
 # Create admin

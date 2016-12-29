@@ -7,6 +7,10 @@ from wtforms_appengine import ndb as wt_ndb
 from google.appengine.ext import db
 from google.appengine.ext import ndb
 
+from flask_wtf import Form
+from flask_admin.model.form import create_editable_list_form
+from .form import AdminModelConverter
+
 class NdbModelView(BaseModelView):
     """
     AppEngine NDB model scaffolding.
@@ -31,10 +35,46 @@ class NdbModelView(BaseModelView):
         #TODO: implement
         pass
 
-    def scaffold_form(self):
-        return wt_ndb.model_form(self.model())
+    form_args = None
 
-    def get_list(self, page, sort_field, sort_desc, search, filters):
+    model_form_converter = AdminModelConverter
+    """
+        Model form conversion class. Use this to implement custom field conversion logic.
+
+        For example::
+
+            class MyModelConverter(AdminModelConverter):
+                pass
+
+
+            class MyAdminView(ModelView):
+                model_form_converter = MyModelConverter
+    """
+
+    def scaffold_form(self):
+        form_class = wt_ndb.model_form(
+            self.model(),
+            base_class=Form,
+            only=self.form_columns,
+            exclude=self.form_excluded_columns,
+            field_args=self.form_args,
+            converter=self.model_form_converter(),
+        )
+        return form_class
+
+    def scaffold_list_form(self, widget=None, validators=None):
+        form_class = wt_ndb.model_form(
+            self.model(),
+            base_class=Form,
+            only=self.column_editable_list,
+            field_args=self.form_args,
+            converter=self.model_form_converter(),
+        )
+        result = create_editable_list_form(Form, form_class, widget)
+        return result
+
+    def get_list(self, page, sort_field, sort_desc, search, filters,
+                 page_size=None):
         #TODO: implement filters (don't think search can work here)
 
         q = self.model.query()
@@ -45,7 +85,11 @@ class NdbModelView(BaseModelView):
                 order_field = -order_field
             q = q.order(order_field)
 
-        results = q.fetch(self.page_size, offset=page*self.page_size)
+        if not page_size:
+            page_size = self.page_size
+
+        results = q.fetch(page_size, offset=page*page_size)
+
         return q.count(), results
 
     def get_one(self, urlsafe_key):
@@ -56,37 +100,46 @@ class NdbModelView(BaseModelView):
             model = self.model()
             form.populate_obj(model)
             model.put()
-            return model
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 #flash(gettext('Failed to create record. %(error)s',
                 #    error=ex), 'error')
                 logging.exception('Failed to create record.')
             return False
+        else:
+            self.after_model_change(form, model, True)
+
+        return model
 
     def update_model(self, form, model):
         try:
             form.populate_obj(model)
             model.put()
-            return True
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 #flash(gettext('Failed to update record. %(error)s',
                 #    error=ex), 'error')
                 logging.exception('Failed to update record.')
             return False
+        else:
+            self.after_model_change(form, model, False)
+
+        return True
 
     def delete_model(self,  model):
         try:
             model.key.delete()
-            return True
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 #flash(gettext('Failed to delete record. %(error)s',
                 #    error=ex),
                 #    'error')
                 logging.exception('Failed to delete record.')
-        return False
+            return False
+        else:
+            self.after_model_delete(model)
+        
+        return True
 
 
 class DbModelView(BaseModelView):

@@ -195,34 +195,35 @@
         }
         var drawControl = new L.Control.Draw(drawOptions);
         map.addControl(drawControl);
+        if (window.MAPBOX_SEARCH) {
+          var circle = L.circleMarker([0, 0]);
+          var $autocompleteEl = $('<input style="position: absolute; z-index: 9999; display: block; margin: -42px 0 0 10px; width: 50%">');
+          var $form = $($el.get(0).form);
 
-        if (window.google) {
-          var geocoder = new google.maps.Geocoder();
-
-          function googleGeocoding(text, callResponse) {
-            geocoder.geocode({address: text}, callResponse);
-          }
-
-          function filterJSONCall(rawjson) {
-            var json = {}, key, loc, disp = [];
-            for (var i in rawjson) {
-              key = rawjson[i].formatted_address;
-              loc = L.latLng(rawjson[i].geometry.location.lat(),
-                             rawjson[i].geometry.location.lng());
-              json[key] = loc;
+          $autocompleteEl.insertAfter($map);
+          $form.on('submit', function (evt) {
+            if ($autocompleteEl.is(':focus')) {
+              evt.preventDefault();
+              return false;
             }
-            return json;
-          }
-
-          map.addControl(new L.Control.Search({
-            callData: googleGeocoding,
-            filterJSON: filterJSONCall,
-            markerLocation: true,
-            autoType: false,
-            autoCollapse: true,
-            minLength: 2,
-            zoom: 10
-          }));
+          });
+          var autocomplete = new google.maps.places.Autocomplete($autocompleteEl.get(0));
+          autocomplete.addListener('place_changed', function() {
+            var place = autocomplete.getPlace();
+            var loc = place.geometry.location;
+            var viewport = place.geometry.viewport;
+            circle.setLatLng(L.latLng(loc.lat(), loc.lng()));
+            circle.addTo(map);
+            if (viewport) {
+              map.fitBounds([
+                viewport.getNorthEast().toJSON(),
+                viewport.getSouthWest().toJSON(),
+              ]);
+            }
+            else {
+              map.fitBounds(circle.getBounds());
+            }
+          });
         }
 
 

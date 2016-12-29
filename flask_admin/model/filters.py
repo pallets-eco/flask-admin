@@ -8,7 +8,7 @@ class BaseFilter(object):
     """
         Base filter class.
     """
-    def __init__(self, name, options=None, data_type=None):
+    def __init__(self, name, options=None, data_type=None, key_name=None):
         """
             Constructor.
 
@@ -18,10 +18,13 @@ class BaseFilter(object):
                 List of fixed options. If provided, will use drop down instead of textbox.
             :param data_type:
                 Client-side widget type to use.
+            :param key_name:
+                Optional name who represent this filter.
         """
         self.name = name
         self.options = options
         self.data_type = data_type
+        self.key_name = key_name
 
     def get_options(self, view):
         """
@@ -67,12 +70,14 @@ class BaseFilter(object):
         """
         return value
 
-    def apply(self, query):
+    def apply(self, query, value):
         """
             Apply search criteria to the query and return new query.
 
             :param query:
                 Query
+            :param value:
+                Search criteria
         """
         raise NotImplementedError()
 

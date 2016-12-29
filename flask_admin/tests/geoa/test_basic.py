@@ -6,7 +6,7 @@ from flask_admin.contrib.geoa import ModelView
 from flask_admin.contrib.geoa.fields import GeoJSONField
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
-from nose.tools import eq_
+from nose.tools import eq_, ok_
 
 from . import setup
 
@@ -96,6 +96,8 @@ def test_model():
     url = '/admin/geomodel/edit/?id=%s' % model.id
     rv = client.get(url)
     eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_(r' name="multi">{"type":"MultiPoint","coordinates":[[100,0],[101,1]]}</textarea>' in data)
 
     # rv = client.post(url, data={
     #     "name": "edited",
@@ -123,9 +125,8 @@ def test_model():
     eq_(db.session.query(GeoModel).count(), 0)
 
 
-def test_mapbox_fix_point_coordinates():
+def test_none():
     app, db, admin = setup()
-    app.config['MAPBOX_FIX_COORDINATES_ORDER'] = True
     GeoModel = create_models(db)
     db.create_all()
     GeoModel.query.delete()
@@ -139,30 +140,13 @@ def test_mapbox_fix_point_coordinates():
 
     rv = client.post('/admin/geomodel/new/', data={
         "name": "test1",
-        "point": '{"type": "Point", "coordinates": [125.8, 10.0]}',
-        "line": '{"type": "LineString", "coordinates": [[50.2345, 94.2], [50.21, 94.87]]}',
-        "polygon": '{"type": "Polygon", "coordinates": [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]}',
-        "multi": '{"type": "MultiPoint", "coordinates": [[100.0, 0.0], [101.0, 1.0]]}',
     })
+    eq_(rv.status_code, 302)
 
     model = db.session.query(GeoModel).first()
-    # Notice how the coordinates are reversed here, i.e. longitude first which
-    # is the way it's stored in PostGIS columns.
-    eq_(list(to_shape(model.point).coords), [(10.0, 125.8)])
-    eq_(list(to_shape(model.line).coords), [(94.2, 50.2345), (94.87, 50.21)])
-    eq_(list(to_shape(model.polygon).exterior.coords),
-        [(0.0, 100.0), (0.0, 101.0), (1.0, 101.0), (1.0, 100.0), (0.0, 100.0)])
-    eq_(list(to_shape(model.multi).geoms[0].coords), [(0.0, 100.0)])
-    eq_(list(to_shape(model.multi).geoms[1].coords), [(1.0, 101.0)])
 
-    rv = client.get('/admin/geomodel/')
+    url = '/admin/geomodel/edit/?id=%s' % model.id
+    rv = client.get(url)
     eq_(rv.status_code, 200)
-
-    html = rv.data.decode('utf-8')
-    pattern = r'(.|\n)+({.*"type": ?"Point".*})</textarea>(.|\n)+'
-    group = re.match(pattern, html).group(2)
-    p = json.loads(group)
-
-    # Reversed order again, so that it's parsed correctly by leaflet
-    eq_(p['coordinates'][0], 10.0)
-    eq_(p['coordinates'][1], 125.8)
+    data = rv.data.decode('utf-8')
+    ok_(r' name="point"></textarea>' in data)

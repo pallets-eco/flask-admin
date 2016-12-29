@@ -52,10 +52,12 @@ else:
     class Translations(object):
         ''' Fixes WTForms translation support and uses wtforms translations '''
         def gettext(self, string):
-            return wtforms_domain.gettext(string)
+            t = wtforms_domain.get_translations()
+            return t.ugettext(string)
 
         def ngettext(self, singular, plural, n):
-            return wtforms_domain.ngettext(singular, plural, n)
+            t = wtforms_domain.get_translations()
+            return t.ungettext(singular, plural, n)
 
 
 # lazy imports

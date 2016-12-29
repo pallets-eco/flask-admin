@@ -84,7 +84,7 @@ def create_models(db):
 
         # Relation
         model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
-        model1 = db.relationship(Model1, backref='model2')
+        model1 = db.relationship(lambda: Model1, backref='model2')
 
     db.create_all()
 
@@ -640,7 +640,7 @@ def test_column_filters():
     view = CustomModelView(Model2, db.session,
                            column_filters=['model1.bool_field'])
 
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Bool Field']],
+    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'model1 / Model1 / Bool Field']],
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -1834,6 +1834,28 @@ def test_modelview_localization():
     for locale in locales:
         test_locale(locale)
 
+
+def test_modelview_named_filter_localization():
+    app, db, admin = setup()
+
+    app.config['BABEL_DEFAULT_LOCALE'] = 'de'
+    Babel(app)
+
+    Model1, _ = create_models(db)
+
+    view = CustomModelView(
+        Model1, db.session,
+        named_filter_urls=True,
+        column_filters=['test1'],
+    )
+
+    filters = view.get_filters()
+    flt = filters[2]
+    with app.test_request_context():
+        flt_name = view.get_filter_arg(2, flt)
+    eq_('test1_equals', flt_name)
+
+
 def test_custom_form_base():
     app, db, admin = setup()
 
@@ -2025,6 +2047,28 @@ def test_simple_list_pager():
 
     count, data = view.get_list(0, None, None, None, None)
     assert_true(count is None)
+
+
+def test_unlimited_page_size():
+    app, db, admin = setup()
+    M1, _ = create_models(db)
+
+    db.session.add_all([M1('1'), M1('2'), M1('3'), M1('4'), M1('5'), M1('6'),
+                        M1('7'), M1('8'), M1('9'), M1('10'), M1('11'),
+                        M1('12'), M1('13'), M1('14'), M1('15'), M1('16'),
+                        M1('17'), M1('18'), M1('19'), M1('20'), M1('21')])
+
+    view = CustomModelView(M1, db.session)
+
+    # test 0 as page_size
+    _, data = view.get_list(0, None, None, None, None, execute=True,
+                            page_size=0)
+    eq_(len(data), 21)
+
+    # test False as page_size
+    _, data = view.get_list(0, None, None, None, None, execute=True,
+                            page_size=False)
+    eq_(len(data), 21)
 
 
 def test_advanced_joins():

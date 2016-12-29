@@ -3,11 +3,12 @@ import re
 import csv
 import mimetypes
 import time
+from math import ceil
 
 from werkzeug import secure_filename
 
-from flask import (request, redirect, flash, abort, json, Response,
-                   get_flashed_messages, stream_with_context)
+from flask import (current_app, request, redirect, flash, abort, json,
+                   Response, get_flashed_messages, stream_with_context)
 from jinja2 import contextfunction
 try:
     import tablib
@@ -41,8 +42,9 @@ class ViewArgs(object):
     """
         List view arguments.
     """
-    def __init__(self, page=None, sort=None, sort_desc=None, search=None, filters=None, extra_args=None):
+    def __init__(self, page=None, page_size=None, sort=None, sort_desc=None, search=None, filters=None, extra_args=None):
         self.page = page
+        self.page_size = page_size
         self.sort = sort
         self.sort_desc = bool(sort_desc)
         self.search = search
@@ -60,6 +62,7 @@ class ViewArgs(object):
             flt = None
 
         kwargs.setdefault('page', self.page)
+        kwargs.setdefault('page_size', self.page_size)
         kwargs.setdefault('sort', self.sort)
         kwargs.setdefault('sort_desc', self.sort_desc)
         kwargs.setdefault('search', self.search)
@@ -718,10 +721,15 @@ class BaseModelView(BaseView, ActionsMixin):
         for supported types.
     """
 
-    # Various settings
+    # Pagination settings
     page_size = 20
     """
         Default page size for pagination.
+    """
+
+    can_set_page_size = False
+    """
+        Allows to select page size via dropdown list
     """
 
     def __init__(self, model,
@@ -847,12 +855,10 @@ class BaseModelView(BaseView, ActionsMixin):
         self._sortable_columns = self.get_sortable_columns()
 
         # Details view
-        if self.can_view_details:
-            self._details_columns = self.get_details_columns()
+        self._details_columns = self.get_details_columns()
 
         # Export view
-        if self.can_export:
-            self._export_columns = self.get_export_columns()
+        self._export_columns = self.get_export_columns()
 
         # Labels
         if self.column_labels is None:
@@ -929,23 +935,6 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             return self._prettify_name(field)
 
-    def get_list_columns(self):
-        """
-            Returns a list of tuples with the model field name and formatted
-            field name. If `column_list` was set, returns it. Otherwise calls
-            `scaffold_list_columns` to generate the list from the model.
-        """
-        columns = self.column_list
-
-        if columns is None:
-            columns = self.scaffold_list_columns()
-
-            # Filter excluded columns
-            if self.column_exclude_list:
-                columns = [c for c in columns if c not in self.column_exclude_list]
-
-        return [(c, self.get_column_name(c)) for c in columns]
-
     def get_list_row_actions(self):
         """
             Return list of row action objects, each is instance of :class:`~flask_admin.model.template.BaseListRowAction`
@@ -969,45 +958,66 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return actions + (self.column_extra_row_actions or [])
 
+    def get_column_names(self, only_columns, excluded_columns):
+        """
+            Returns a list of tuples with the model field name and formatted
+            field name.
+
+            :param only_columns:
+                List of columns to include in the results. If not set,
+                `scaffold_list_columns` will generate the list from the model.
+            :param excluded_columns:
+                List of columns to exclude from the results if `only_columns`
+                is not set.
+        """
+        if excluded_columns:
+            only_columns = [c for c in only_columns if c not in excluded_columns]
+
+        return [(c, self.get_column_name(c)) for c in only_columns]
+
+    def get_list_columns(self):
+        """
+            Uses `get_column_names` to get a list of tuples with the model
+            field name and formatted name for the columns in `column_list`
+            and not in `column_exclude_list`. If `column_list` is not set,
+            the columns from `scaffold_list_columns` will be used.
+        """
+        return self.get_column_names(
+            only_columns=self.column_list or self.scaffold_list_columns(),
+            excluded_columns=self.column_exclude_list,
+        )
+
     def get_details_columns(self):
         """
-            Returns a list of the model field names in the details view. If
-            `column_details_list` was set, returns it. Otherwise calls
-            `scaffold_list_columns` to generate the list from the model.
+            Uses `get_column_names` to get a list of tuples with the model
+            field name and formatted name for the columns in `column_details_list`
+            and not in `column_details_exclude_list`. If `column_details_list`
+            is not set, it will attempt to use the columns from `column_list`
+            or finally the columns from `scaffold_list_columns` will be used.
         """
-        columns = self.column_details_list
+        only_columns = (self.column_details_list or self.column_list or
+                        self.scaffold_list_columns())
 
-        if columns is None:
-            columns = self.scaffold_list_columns()
-
-            # Filter excluded columns
-            if self.column_details_exclude_list:
-                columns = [c for c in columns
-                           if c not in self.column_details_exclude_list]
-
-        return [(c, self.get_column_name(c)) for c in columns]
+        return self.get_column_names(
+            only_columns=only_columns,
+            excluded_columns=self.column_details_exclude_list,
+        )
 
     def get_export_columns(self):
         """
-            Returns a list of the model field names in the export view. If
-            `column_export_list` was set, returns it. Otherwise, if
-            `column_list` was set, returns it. Otherwise calls
-            `scaffold_list_columns` to generate the list from the model.
+            Uses `get_column_names` to get a list of tuples with the model
+            field name and formatted name for the columns in `column_export_list`
+            and not in `column_export_exclude_list`. If `column_export_list` is
+            not set, it will attempt to use the columns from `column_list`
+            or finally the columns from `scaffold_list_columns` will be used.
         """
-        columns = self.column_export_list
+        only_columns = (self.column_export_list or self.column_list or
+                        self.scaffold_list_columns())
 
-        if columns is None:
-            columns = self.column_list
-
-            if columns is None:
-                columns = self.scaffold_list_columns()
-
-            # Filter excluded columns
-            if self.column_export_exclude_list:
-                columns = [c for c in columns
-                           if c not in self.column_export_exclude_list]
-
-        return [(c, self.get_column_name(c)) for c in columns]
+        return self.get_column_names(
+            only_columns=only_columns,
+            excluded_columns=self.column_export_exclude_list,
+        )
 
     def scaffold_sortable_columns(self):
         """
@@ -1114,7 +1124,15 @@ class BaseModelView(BaseView, ActionsMixin):
                 Filter instance
         """
         if self.named_filter_urls:
-            name = ('%s %s' % (flt.name, as_unicode(flt.operation()))).lower()
+            operation = flt.operation()
+
+            try:
+                # get lazy string original value
+                operation = operation._args[0]
+            except AttributeError:
+                pass
+
+            name = ('%s %s' % (flt.name, as_unicode(operation))).lower()
             name = filter_char_re.sub('', name)
             name = filter_compact_re.sub('_', name)
             return name
@@ -1435,8 +1453,11 @@ class BaseModelView(BaseView, ActionsMixin):
     # Exception handler
     def handle_view_exception(self, exc):
         if isinstance(exc, ValidationError):
-            flash(as_unicode(exc))
+            flash(as_unicode(exc), 'error')
             return True
+
+        if current_app.config.get('ADMIN_RAISE_ON_VIEW_EXCEPTION'):
+            raise
 
         if self._debug:
             raise
@@ -1620,7 +1641,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     if flt.validate(value):
                         filters.append((pos, (idx, as_unicode(flt.name), value)))
                     else:
-                        flash(gettext('Invalid Filter Value: %(value)s', value=value))
+                        flash(gettext('Invalid Filter Value: %(value)s', value=value), 'error')
 
             # Sort filters
             return [v[1] for v in sorted(filters, key=lambda n: n[0])]
@@ -1632,6 +1653,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Return arguments from query string.
         """
         return ViewArgs(page=request.args.get('page', 0, type=int),
+                        page_size=request.args.get('page_size', 0, type=int),
                         sort=request.args.get('sort', None, type=int),
                         sort_desc=request.args.get('desc', None, type=int),
                         search=request.args.get('search', None),
@@ -1653,6 +1675,9 @@ class BaseModelView(BaseView, ActionsMixin):
 
         kwargs = dict(page=page, sort=view_args.sort, desc=desc, search=view_args.search)
         kwargs.update(view_args.extra_args)
+
+        if view_args.page_size:
+            kwargs['page_size'] = view_args.page_size
 
         if view_args.filters:
             for i, pair in enumerate(view_args.filters):
@@ -1807,9 +1832,12 @@ class BaseModelView(BaseView, ActionsMixin):
         if sort_column is not None:
             sort_column = sort_column[0]
 
+        # Get page size
+        page_size = view_args.page_size or self.page_size
+
         # Get count and data
         count, data = self.get_list(view_args.page, sort_column, view_args.sort_desc,
-                                    view_args.search, view_args.filters)
+                                    view_args.search, view_args.filters, page_size=page_size)
 
         list_forms = {}
         if self.column_editable_list:
@@ -1817,12 +1845,12 @@ class BaseModelView(BaseView, ActionsMixin):
                 list_forms[self.get_pk_value(row)] = self.list_form(obj=row)
 
         # Calculate number of pages
-        if count is not None:
-            num_pages = count // self.page_size
-            if count % self.page_size != 0:
-                num_pages += 1
+        if count is not None and page_size:
+            num_pages = int(ceil(count / float(page_size)))
+        elif not page_size:
+            num_pages = 0  # hide pager for unlimited page_size
         else:
-            num_pages = None
+            num_pages = None  # use simple pager
 
         # Various URL generation helpers
         def pager_url(p):
@@ -1832,13 +1860,17 @@ class BaseModelView(BaseView, ActionsMixin):
 
             return self._get_list_url(view_args.clone(page=p))
 
-        def sort_url(column, invert=False):
-            desc = None
-
-            if invert and not view_args.sort_desc:
+        def sort_url(column, invert=False, desc=None):
+            if not desc and invert and not view_args.sort_desc:
                 desc = 1
 
             return self._get_list_url(view_args.clone(sort=column, sort_desc=desc))
+
+        def page_size_url(s):
+            if not s:
+                s = self.page_size
+
+            return self._get_list_url(view_args.clone(page_size=s))
 
         # Actions
         actions, actions_confirmation = self.get_actions_list()
@@ -1865,8 +1897,10 @@ class BaseModelView(BaseView, ActionsMixin):
             count=count,
             pager_url=pager_url,
             num_pages=num_pages,
+            can_set_page_size=self.can_set_page_size,
+            page_size_url=page_size_url,
             page=view_args.page,
-            page_size=self.page_size,
+            page_size=page_size,
 
             # Sorting
             sort_column=view_args.sort,
@@ -1913,7 +1947,7 @@ class BaseModelView(BaseView, ActionsMixin):
             # in later versions, this is the model itself
             model = self.create_model(form)
             if model:
-                flash(gettext('Record was successfully created.'))
+                flash(gettext('Record was successfully created.'), 'success')
                 if '_add_another' in request.form:
                     return redirect(request.url)
                 elif '_continue_editing' in request.form:
@@ -1957,7 +1991,7 @@ class BaseModelView(BaseView, ActionsMixin):
         model = self.get_one(id)
 
         if model is None:
-            flash(gettext('Record does not exist.'))
+            flash(gettext('Record does not exist.'), 'error')
             return redirect(return_url)
 
         form = self.edit_form(obj=model)
@@ -1966,12 +2000,14 @@ class BaseModelView(BaseView, ActionsMixin):
 
         if self.validate_form(form):
             if self.update_model(form, model):
-
+                # set missing fields back to default value (missing fields mean the browser didn't send them, which means the fields were empty in the browser)
+                # ref: https://github.com/flask-admin/flask-admin/issues/357
+                # ref: https://github.com/select2/select2/issues/983
                 for missing_field in [form._fields[field].name for field in form._fields if not form._fields[field].raw_data]:
                     model[missing_field] = form._fields[missing_field].default()
                     model.save()
 
-                flash(gettext('Record was successfully saved.'))
+                flash(gettext('Record was successfully saved.'), 'success')
 
                 if '_add_another' in request.form:
                     return redirect(self.get_url('.create_view', url=return_url))
@@ -1981,7 +2017,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     # save button
                     return redirect(self.get_save_return_url(model, is_created=False))
 
-        if request.method == 'GET':
+        if request.method == 'GET' or form.errors:
             self.on_form_prefill(form, id)
 
         form_opts = FormOpts(widget_args=self.form_widget_args,
@@ -2015,7 +2051,7 @@ class BaseModelView(BaseView, ActionsMixin):
         model = self.get_one(id)
 
         if model is None:
-            flash(gettext('Record does not exist.'))
+            flash(gettext('Record does not exist.'), 'error')
             return redirect(return_url)
 
         if self.details_modal and request.args.get('modal'):
@@ -2048,12 +2084,12 @@ class BaseModelView(BaseView, ActionsMixin):
             model = self.get_one(id)
 
             if model is None:
-                flash(gettext('Record does not exist.'))
+                flash(gettext('Record does not exist.'), 'error')
                 return redirect(return_url)
 
             # message is flashed from within delete_model if it fails
             if self.delete_model(model):
-                flash(gettext('Record was successfully deleted.'))
+                flash(gettext('Record was successfully deleted.'), 'success')
                 return redirect(return_url)
         else:
             flash_errors(form, message='Failed to delete record. %(error)s')
@@ -2103,7 +2139,7 @@ class BaseModelView(BaseView, ActionsMixin):
         return_url = get_redirect_target() or self.get_url('.index_view')
 
         if not self.can_export or (export_type not in self.export_types):
-            flash(gettext('Permission denied.'))
+            flash(gettext('Permission denied.'), 'error')
             return redirect(return_url)
 
         if export_type == 'csv':
@@ -2157,7 +2193,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Exports a variety of formats using the tablib library.
         """
         if tablib is None:
-            flash(gettext('Tablib dependency not installed.'))
+            flash(gettext('Tablib dependency not installed.'), 'error')
             return redirect(return_url)
 
         filename = self.get_export_name(export_type)
@@ -2185,7 +2221,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 response_data = getattr(ds, export_type)
         except (AttributeError, tablib.UnsupportedFormat):
             flash(gettext('Export type "%(type)s not supported.',
-                          type=export_type))
+                          type=export_type), 'error')
             return redirect(return_url)
 
         return Response(

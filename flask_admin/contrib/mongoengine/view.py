@@ -671,7 +671,7 @@ class ModelView(BaseModelView):
             flash(ngettext('Record was successfully deleted.',
                            '%(count)s records were successfully deleted.',
                            count,
-                           count=count))
+                           count=count), 'success')
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 flash(gettext('Failed to delete records. %(error)s', error=str(ex)),

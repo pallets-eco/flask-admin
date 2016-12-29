@@ -12,9 +12,14 @@
         <meta name="author" content="">
     {% endblock %}
     {% block head_css %}
-        <link href="{{ admin_static.url(filename='bootstrap/bootstrap2/css/bootstrap.css', v='2.3.2') }}" rel="stylesheet">
+        <link href="{{ admin_static.url(filename='bootstrap/bootstrap2/swatch/{swatch}/bootstrap.min.css'.format(swatch=config.get('FLASK_ADMIN_SWATCH', 'default')), v='2.3.2') }}" rel="stylesheet">
         <link href="{{ admin_static.url(filename='bootstrap/bootstrap2/css/bootstrap-responsive.css', v='2.3.2') }}" rel="stylesheet">
         <link href="{{ admin_static.url(filename='admin/css/bootstrap2/admin.css', v='1.1.1') }}" rel="stylesheet">
+        {% if admin_view.extra_css %}
+          {% for css_url in admin_view.extra_css %}
+            <link href="{{ css_url }}" rel="stylesheet">
+          {% endfor %}
+        {% endif %}
         <style>
         body {
             padding-top: 4px;
@@ -32,7 +37,7 @@
       <div class="navbar">
         <div class="navbar-inner">
           {% block brand %}
-          <span class="brand">{{ admin_view.admin.name }}</span>
+          <a class="brand" href="{{ admin_view.admin.url }}">{{ admin_view.admin.name }}</a>
           {% endblock %}
           {% block main_menu %}
           <ul class="nav">
@@ -65,6 +70,11 @@
     <script src="{{ admin_static.url(filename='bootstrap/bootstrap2/js/bootstrap.min.js', v='2.3.2') }}" type="text/javascript"></script>
     <script src="{{ admin_static.url(filename='vendor/moment.min.js', v='2.9.0') }}" type="text/javascript"></script>
     <script src="{{ admin_static.url(filename='vendor/select2/select2.min.js', v='3.5.2') }}" type="text/javascript"></script>
+    {% if admin_view.extra_js %}
+      {% for js_url in admin_view.extra_js %}
+        <script src="{{ js_url }}" type="text/javascript"></script>
+      {% endfor %}
+    {% endif %}
     {% endblock %}
 
     {% block tail %}

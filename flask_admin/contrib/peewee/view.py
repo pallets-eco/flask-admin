@@ -130,6 +130,8 @@ class ModelView(BaseModelView):
 
         3. Django-like ``InlineFormAdmin`` class instance::
 
+            from flask_admin.model.form import InlineFormAdmin
+
             class MyInlineModelForm(InlineFormAdmin):
                 form_columns = ('title', 'date')
 
@@ -257,6 +259,11 @@ class ModelView(BaseModelView):
                               only=self.form_columns,
                               exclude=self.form_excluded_columns,
                               field_args=self.form_args,
+                              # Allow child to specify pk, so inline_models
+                              # can be ModelViews. But don't auto-generate
+                              # pk field if form_columns is empty -- allow
+                              # default behaviour in that case.
+                              allow_pk=bool(self.form_columns),
                               extra_fields=self.form_extra_fields)
 
         if self.inline_models:
@@ -498,7 +505,7 @@ class ModelView(BaseModelView):
             flash(ngettext('Record was successfully deleted.',
                            '%(count)s records were successfully deleted.',
                            count,
-                           count=count))
+                           count=count), 'success')
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 flash(gettext('Failed to delete records. %(error)s', error=str(ex)), 'error')

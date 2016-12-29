@@ -1,4 +1,5 @@
 import inspect
+import warnings
 
 from flask_admin.form import BaseForm, rules
 from flask_admin._compat import iteritems
@@ -107,7 +108,7 @@ class InlineBaseFormAdmin(object):
         """
         return form_class
 
-    def on_model_change(self, form, model):
+    def on_model_change(self, form, model, is_created):
         """
             Called when inline model is about to be saved.
 
@@ -115,8 +116,23 @@ class InlineBaseFormAdmin(object):
                 Inline form
             :param model:
                 Model
+            :param is_created:
+                Will be set to True if the model is being created, False if edited
         """
         pass
+
+    def _on_model_change(self, form, model, is_created):
+        """
+            Compatibility helper.
+        """
+        try:
+            self.on_model_change(form, model, is_created)
+        except TypeError:
+            msg = ('%s.on_model_change() now accepts third ' +
+                   'parameter is_created. Please update your code') % self.model
+            warnings.warn(msg)
+
+            self.on_model_change(form, model)
 
 
 class InlineFormAdmin(InlineBaseFormAdmin):

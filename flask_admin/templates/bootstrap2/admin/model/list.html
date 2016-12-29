@@ -39,6 +39,12 @@
         </li>
         {% endif %}
 
+        {% if can_set_page_size %}
+        <li class="dropdown">
+            {{ model_layout.page_size_form(page_size_url) }}
+        </li>
+        {% endif %}
+
         {% if actions %}
         <li class="dropdown">
             {{ actionlib.dropdown(actions) }}
@@ -61,8 +67,9 @@
     {% endif %}
 
     {% block model_list_table %}
-    <table class="table table-striped table-bordered table-hover model-list">
-        <thead>
+    <div id="no-more-tables">
+    <table class="table table-striped table-bordered table-hover model-list cf">
+        <thead class="cf">
             <tr>
                 {% block list_header scoped %}
                     {% if actions %}
@@ -127,7 +134,7 @@
                 {% endblock %}
 
                 {% for c, name in list_columns %}
-                    <td class="col-{{c}}">
+                    <td class="col-{{c}}" data-title="{{ name }}">
                     {% if admin_view.is_editable(c) %}
                         {% set form = list_forms[get_pk_value(row)] %}
                         {% if form.csrf_token %}
@@ -154,6 +161,7 @@
         </tr>
         {% endfor %}
     </table>
+    </div>
     {% block list_pager %}
     {% if num_pages is not none %}
     {{ lib.pager(page, num_pages, pager_url) }}

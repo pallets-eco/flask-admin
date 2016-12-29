@@ -39,8 +39,8 @@ def create_models(db):
     class Model1(BaseModel):
         def __init__(self, test1=None, test2=None, test3=None, test4=None,
                      date_field=None, timeonly_field=None,
-                     datetime_field=None):
-            super(Model1, self).__init__()
+                     datetime_field=None, **kwargs):
+            super(Model1, self).__init__(**kwargs)
 
             self.test1 = test1
             self.test2 = test2
@@ -65,8 +65,8 @@ def create_models(db):
 
     class Model2(BaseModel):
         def __init__(self, char_field=None, int_field=None, float_field=None,
-                     bool_field=0):
-            super(Model2, self).__init__()
+                     bool_field=0, **kwargs):
+            super(Model2, self).__init__(**kwargs)
 
             self.char_field = char_field
             self.int_field = int_field
@@ -934,6 +934,7 @@ def test_form_args():
 
     # ensure shared field_args don't create duplicate validators
     create_form = view.create_form()
+
     eq_(len(create_form.test.validators), 2)
 
     edit_form = view.edit_form()
