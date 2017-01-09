@@ -166,10 +166,11 @@ class Select2TagsField(fields.StringField):
         super(Select2TagsField, self).__init__(label, validators, **kwargs)
 
     def process_formdata(self, valuelist):
-        if self.save_as_list:
-            self.data = [self.coerce(v.strip()) for v in valuelist[0].split(',') if v.strip()]
-        else:
-            self.data = self.coerce(valuelist[0])
+        if valuelist:
+            if self.save_as_list:
+                self.data = [self.coerce(v.strip()) for v in valuelist[0].split(',') if v.strip()]
+            else:
+                self.data = self.coerce(valuelist[0])
 
     def _value(self):
         if isinstance(self.data, (list, tuple)):
