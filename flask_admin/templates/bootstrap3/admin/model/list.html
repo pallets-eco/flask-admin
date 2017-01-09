@@ -202,5 +202,22 @@
                 );
             {% endif %}
         })(jQuery);
+
+        // Catch exception when closing dialog with <esc> key
+        // and prevent accidental deletions.
+        function safeConfirm(msg) {
+          try {
+            var isconfirmed = confirm(msg);
+            if (isconfirmed == true) {
+              return true;
+            }
+            else {
+              return false;
+            }
+          }
+          catch(err) {
+            return false;
+          }
+        }
     </script>
 {% endblock %}
