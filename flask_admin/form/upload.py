@@ -83,6 +83,7 @@ class ImageUploadInput(object):
     data_template = ('<div class="image-thumbnail">'
                      ' <img %(image)s>'
                      ' <input type="checkbox" name="%(marker)s">Delete</input>'
+                     ' <input %(text)s>'
                      '</div>'
                      '<input %(file)s>')
 
@@ -91,6 +92,9 @@ class ImageUploadInput(object):
         kwargs.setdefault('name', field.name)
 
         args = {
+            'text': html_params(type='hidden',
+                                value=field.data,
+                                name=field.name),
             'file': html_params(type='file',
                                 **kwargs),
             'marker': '_%s-delete' % field.name
