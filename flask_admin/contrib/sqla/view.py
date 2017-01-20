@@ -2,7 +2,6 @@ import logging
 import warnings
 import inspect
 
-from speaklater import is_lazy_string, make_lazy_string
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import joinedload, aliased
 from sqlalchemy.sql.expression import desc
@@ -652,14 +651,11 @@ class ModelView(BaseModelView):
                 if not isinstance(name, string_types):
                     visible_name = self.get_column_name(name.property.key)
                 else:
-                    column_name = self.get_column_name(name)
-
-                    def prettify():
-                        return column_name.replace('.', ' / ')
-                    if is_lazy_string(column_name):
-                        visible_name = make_lazy_string(prettify)
+                    if self.column_labels and name in self.column_labels:
+                        visible_name = self.column_labels[name]
                     else:
-                        visible_name = prettify()
+                        visible_name = self.get_column_name(name)
+                        visible_name = visible_name.replace('.', ' / ')
 
             type_name = type(column.type).__name__
 

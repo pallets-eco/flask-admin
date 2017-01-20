@@ -1,20 +1,9 @@
-import json
-
-from nose.tools import eq_, ok_, raises, assert_true
-from speaklater import make_lazy_string
+from flask_admin.babel import lazy_gettext
+from flask_babelex import Babel
+from nose.tools import eq_, ok_
 
 from . import setup
 from .test_basic import CustomModelView, create_models
-
-
-class Translator:
-    translate = False
-
-    def __call__(self, string):
-        if self.translate:
-            return 'Translated: "{0}"'.format(string)
-        else:
-            return string
 
 
 def test_column_label_translation():
@@ -22,8 +11,10 @@ def test_column_label_translation():
 
     Model1, _ = create_models(db)
 
-    translated = Translator()
-    label = make_lazy_string(translated, 'Column1')
+    app.config['BABEL_DEFAULT_LOCALE'] = 'es'
+    Babel(app)
+
+    label = lazy_gettext('Name')
 
     view = CustomModelView(Model1, db.session,
                            column_list=['test1', 'test3'],
@@ -31,12 +22,8 @@ def test_column_label_translation():
                            column_filters=('test1',))
     admin.add_view(view)
 
-    translated.translate = True
-    non_lazy_groups = view._get_filter_groups()
-    json.dumps(non_lazy_groups)  # Filter dict is JSON serializable.
-    ok_(translated('Column1') in non_lazy_groups)  # Label was translated.
-
     client = app.test_client()
-    # Render index with active filter.
+
     rv = client.get('/admin/model1/?flt1_0=test')
     eq_(rv.status_code, 200)
+    ok_('{"Nombre":' in rv.data.decode('utf-8'))
