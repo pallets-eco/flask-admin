@@ -379,7 +379,7 @@ def test_csrf():
 
     # Create with CSRF token
     rv = client.post('/admin/secure/new/', data=dict(name='test1',
-                                                   csrf_token=csrf_token))
+                                                     csrf_token=csrf_token))
     eq_(rv.status_code, 302)
 
     ###############
@@ -423,6 +423,23 @@ def test_csrf():
                      follow_redirects=True)
     eq_(rv.status_code, 200)
     ok_(u'Record was successfully deleted.' in rv.data.decode('utf-8'))
+
+    ################
+    # actions
+    ################
+    rv = client.get('/admin/secure/')
+    eq_(rv.status_code, 200)
+    ok_(u'name="csrf_token"' in rv.data.decode('utf-8'))
+
+    csrf_token = get_csrf_token(rv.data.decode('utf-8'))
+
+    # Delete without CSRF token, test validation errors
+    rv = client.post('/admin/secure/action/',
+                     data=dict(rowid='1', url='/admin/secure/', action='delete'),
+                     follow_redirects=True)
+    eq_(rv.status_code, 200)
+    ok_(u'Record was successfully deleted.' not in rv.data.decode('utf-8'))
+    ok_(u'Failed to perform action.' in rv.data.decode('utf-8'))
 
 
 def test_custom_form():
