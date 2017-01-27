@@ -55,12 +55,22 @@ class S3Storage(object):
             raise ValueError('Could not import boto. You can install boto by '
                              'using pip install boto')
 
-        connection = s3.connect_to_region(region,
-                                          aws_access_key_id=aws_access_key_id,
-                                          aws_secret_access_key=
-                                          aws_secret_access_key)
-        self.bucket = connection.get_bucket(bucket_name)
+        self._bucket = None
+        self.bucket_name = bucket_name
+        self.region = region
+        self.aws_access_key_id = aws_access_key_id
+        self.aws_secret_access_key = aws_secret_access_key
         self.separator = '/'
+
+    @property
+    def bucket(self):
+        if self._bucket is None:
+            connection = s3.connect_to_region(
+                self.region,
+                aws_access_key_id=self.aws_access_key_id,
+                aws_secret_access_key=self.aws_secret_access_key)
+            self._bucket = connection.get_bucket(self.bucket_name)
+        return self._bucket
 
     def get_files(self, path, directory):
         def _strip_path(name, path):
