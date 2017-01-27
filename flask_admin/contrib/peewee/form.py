@@ -3,6 +3,8 @@ from wtforms import fields
 from peewee import (CharField, DateTimeField, DateField, TimeField,
                     PrimaryKeyField, ForeignKeyField, BaseModel)
 
+from playhouse.postgres_ext import ArrayField, JSONField, BinaryJSONField
+
 from wtfpeewee.orm import ModelConverter, model_form
 
 from flask_admin import form
@@ -98,6 +100,8 @@ class CustomModelConverter(ModelConverter):
         self.converters[DateTimeField] = self.handle_datetime
         self.converters[DateField] = self.handle_date
         self.converters[TimeField] = self.handle_time
+        self.converters[JSONField] = self.handle_json
+        self.converters[BinaryJSONField] = self.handle_json
 
         self.overrides = getattr(self.view, 'form_overrides', None) or {}
 
@@ -126,6 +130,9 @@ class CustomModelConverter(ModelConverter):
 
     def handle_time(self, model, field, **kwargs):
         return field.name, form.TimeField(**kwargs)
+
+    def handle_json(self, model, field, **kwargs):
+        return field.name, form.JSONField(**kwargs)
 
 
 def get_form(model, converter,
