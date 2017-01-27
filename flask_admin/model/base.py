@@ -795,6 +795,7 @@ class BaseModelView(BaseView, ActionsMixin):
         self._create_form_class = self.get_create_form()
         self._edit_form_class = self.get_edit_form()
         self._delete_form_class = self.get_delete_form()
+        self._action_form_class = self.get_action_form()
 
         # List View In-Line Editing
         if self.column_editable_list:
@@ -1254,6 +1255,19 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return DeleteForm
 
+    def get_action_form(self):
+        """
+            Create form class for a model action.
+
+            Override to implement customized behavior.
+        """
+        class ActionForm(self.form_base_class):
+            action = HiddenField()
+            url = HiddenField()
+            # rowid is retrieved using getlist, for backward compatibility
+
+        return ActionForm
+
     def create_form(self, obj=None):
         """
             Instantiate model creation form and return it.
@@ -1294,6 +1308,14 @@ class BaseModelView(BaseView, ActionsMixin):
             Override to implement custom behavior.
         """
         return self._list_form_class(get_form_data(), obj=obj)
+
+    def action_form(self, obj=None):
+        """
+            Instantiate model action form and return it.
+
+            Override to implement custom behavior.
+        """
+        return self._action_form_class(get_form_data(), obj=obj)
 
     def validate_form(self, form):
         """
@@ -1540,7 +1562,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         pass
 
-    def on_form_prefill (self, form, id):
+    def on_form_prefill(self, form, id):
         """
             Perform additional actions to pre-fill the edit form.
 
@@ -1874,6 +1896,10 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # Actions
         actions, actions_confirmation = self.get_actions_list()
+        if actions:
+            action_form = self.action_form()
+        else:
+            action_form = None
 
         clear_search_url = self._get_list_url(view_args.clone(page=0,
                                                               sort=view_args.sort,
@@ -1886,6 +1912,7 @@ class BaseModelView(BaseView, ActionsMixin):
             data=data,
             list_forms=list_forms,
             delete_form=delete_form,
+            action_form=action_form,
 
             # List
             list_columns=self._list_columns,

@@ -413,6 +413,19 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         return DeleteForm
 
+    def get_action_form(self):
+        """
+            Create form class for model action.
+
+            Override to implement customized behavior.
+        """
+        class ActionForm(self.form_base_class):
+            action = fields.HiddenField()
+            url = fields.HiddenField()
+            # rowid is retrieved using getlist, for backward compatibility
+
+        return ActionForm
+
     def upload_form(self):
         """
             Instantiate file upload form and return it.
@@ -470,6 +483,18 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             return delete_form_class(request.form)
         else:
             return delete_form_class()
+
+    def action_form(self):
+        """
+            Instantiate action form and return it.
+
+            Override to implement custom behavior.
+        """
+        action_form_class = self.get_action_form()
+        if request.form:
+            return action_form_class(request.form)
+        else:
+            return action_form_class()
 
     def is_file_allowed(self, filename):
         """
@@ -812,6 +837,10 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         # Actions
         actions, actions_confirmation = self.get_actions_list()
+        if actions:
+            action_form = self.action_form()
+        else:
+            action_form = None
 
         def sort_url(column, invert=False):
             desc = None
@@ -829,6 +858,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                            items=items,
                            actions=actions,
                            actions_confirmation=actions_confirmation,
+                           action_form=action_form,
                            delete_form=delete_form,
                            sort_column=sort_column,
                            sort_desc=sort_desc,
