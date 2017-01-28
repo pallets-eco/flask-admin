@@ -60,7 +60,7 @@ class CustomModelConverter(orm.ModelConverter):
             return form.recreate_field(field.field)
 
         kwargs = {
-            'label': getattr(field, 'verbose_name', field.name),
+            'label': getattr(field, 'verbose_name', None),
             'description': getattr(field, 'help_text', ''),
             'validators': [],
             'filters': [],
