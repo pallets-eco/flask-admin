@@ -243,7 +243,7 @@ class AdminModelConverter(ModelConverterBase):
             form_choices = getattr(self.view, 'form_choices', None)
 
             if mapper.class_ == self.view.model and form_choices:
-                choices = form_choices.get(column.key)
+                choices = form_choices.get(prop.key)
                 if choices:
                     return form.Select2Field(
                         choices=choices,
@@ -537,7 +537,7 @@ class InlineModelConverter(InlineModelConverterBase):
     def _calculate_mapping_key_pair(self, model, info):
         """
             Calculate mapping property key pair between `model` and inline model,
-                including the forward one for `model` and the reverse one for inline model. 
+                including the forward one for `model` and the reverse one for inline model.
                 Override the method to map your own inline models.
 
             :param model:
