@@ -630,7 +630,7 @@ class ModelView(BaseModelView):
             # If filter related to relation column (represented by
             # relation_name.target_column) we collect here relation name
             joined_column_name = None
-            if '.' in name:
+            if isinstance(name, string_types) and '.' in name:
                 joined_column_name = name.split('.')[0]
 
             # Join not needed for hybrid properties
