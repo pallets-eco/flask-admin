@@ -856,7 +856,8 @@ class BaseModelView(BaseView, ActionsMixin):
         self._sortable_columns = self.get_sortable_columns()
 
         # Details view
-        self._details_columns = self.get_details_columns()
+        if self.can_view_details:
+            self._details_columns = self.get_details_columns()
 
         # Export view
         self._export_columns = self.get_export_columns()
@@ -993,11 +994,12 @@ class BaseModelView(BaseView, ActionsMixin):
             Uses `get_column_names` to get a list of tuples with the model
             field name and formatted name for the columns in `column_details_list`
             and not in `column_details_exclude_list`. If `column_details_list`
-            is not set, it will attempt to use the columns from `column_list`
-            or finally the columns from `scaffold_list_columns` will be used.
+            is not set, the columns from `scaffold_list_columns` will be used.
         """
-        only_columns = (self.column_details_list or self.column_list or
-                        self.scaffold_list_columns())
+        try:
+            only_columns = self.column_details_list or self.scaffold_list_columns()
+        except NotImplementedError:
+            raise Exception('Please define column_details_list')
 
         return self.get_column_names(
             only_columns=only_columns,
