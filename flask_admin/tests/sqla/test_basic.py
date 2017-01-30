@@ -1310,6 +1310,20 @@ def test_column_filters():
     ok_('test1_val_2' not in data)
 
 
+def test_column_filters_sqla_obj():
+    app, db, admin = setup()
+
+    Model1, Model2 = create_models(db)
+
+    view = CustomModelView(
+        Model1, db.session,
+        column_filters=[Model1.test1]
+    )
+    admin.add_view(view)
+
+    eq_(len(view._filters), 7)
+
+
 def test_hybrid_property():
     app, db, admin = setup()
 
