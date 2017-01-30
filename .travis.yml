@@ -6,6 +6,7 @@ python:
   - "3.3"
   - "3.4"
   - "3.5"
+  - "3.6"
 
 env:
   - WTFORMS_VERSION=1
@@ -17,17 +18,16 @@ addons:
 services:
   - postgresql
   - mongodb
-  
+
 before_script:
   - psql -U postgres -c 'CREATE DATABASE flask_admin_test;'
   - psql -U postgres -c 'CREATE EXTENSION postgis;' flask_admin_test
   - psql -U postgres -c 'CREATE EXTENSION hstore;' flask_admin_test
 
 install:
-  - pip install "wtforms<$WTFORMS_VERSION.99"
-  - pip install -r requirements-dev.txt
+  - pip install tox
 
-script: nosetests flask_admin/tests --with-coverage --cover-erase --cover-inclusive
+script: tox -e py-WTForms$WTFORMS_VERSION
 
 after_success:
     - coveralls
