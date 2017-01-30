@@ -1,3 +1,4 @@
+# flake8: noqa
 try:
     import pymongo
 except ImportError:

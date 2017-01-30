@@ -37,7 +37,6 @@ class Select2TagsWidget(widgets.TextInput):
         return super(Select2TagsWidget, self).__call__(field, **kwargs)
 
 
-
 class DatePickerWidget(widgets.TextInput):
     """
         Date picker widget.

@@ -36,15 +36,22 @@ class InlineModelFormList(InlineFieldList):
     def display_row_controls(self, field):
         return field.get_pk() is not None
 
-    # *** bryhoyt removed def process() entirely, because I believe it was buggy
-    # (but worked because another part of the code had a complimentary bug)
-    # and I'm not sure why it was necessary anyway.
-    # If we want it back in, we need to fix the following bogus query:
-    # self.model.select().where(attr == data).execute()     # `data` is not an ID, and only happened to be so because we patched it in in .contribute() below
-    #
-    # For reference:
-    # .process() introduced in https://github.com/flask-admin/flask-admin/commit/2845e4b28cb40b25e2bf544b327f6202dc7e5709
-    # Fixed, brokenly I think, in https://github.com/flask-admin/flask-admin/commit/4383eef3ce7eb01878f086928f8773adb9de79f8#diff-f87e7cd76fb9bc48c8681b24f238fb13R30
+    """ bryhoyt removed def process() entirely, because I believe it was buggy
+        (but worked because another part of the code had a complimentary bug)
+        and I'm not sure why it was necessary anyway.
+
+        If we want it back in, we need to fix the following bogus query:
+        self.model.select().where(attr == data).execute()
+
+        `data` is not an ID, and only happened to be so because we patched it
+        in in .contribute() below
+
+        For reference, .process() introduced in:
+        https://github.com/flask-admin/flask-admin/commit/2845e4b28cb40b25e2bf544b327f6202dc7e5709
+
+        Fixed, brokenly I think, in:
+        https://github.com/flask-admin/flask-admin/commit/4383eef3ce7eb01878f086928f8773adb9de79f8#diff-f87e7cd76fb9bc48c8681b24f238fb13R30
+    """
 
     def populate_obj(self, obj, name):
         pass
@@ -245,7 +252,6 @@ class InlineModelConverter(InlineModelConverterBase):
                                     field_args=info.form_args,
                                     allow_pk=True,
                                     converter=converter)
-
 
         prop_name = reverse_field.related_name
 

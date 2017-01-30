@@ -119,6 +119,7 @@ def iterencode(iter):
                     .replace(CHAR_SEPARATOR, CHAR_ESCAPE + CHAR_SEPARATOR)
                     for v in iter)
 
+
 def iterdecode(value):
     """
         Decode enumerable from string presentation as a tuple

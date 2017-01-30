@@ -9,7 +9,7 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 from flask_admin._compat import filter_list, string_types
-from flask_admin.tools import iterencode, iterdecode, escape
+from flask_admin.tools import iterencode, iterdecode, escape  # noqa: F401
 
 
 def parse_like_term(term):
@@ -79,9 +79,9 @@ def tuple_operator_in(model_pk, ids):
     for id in ids:
         k = []
         for i in range(len(model_pk)):
-            k.append(eq(model_pk[i],id[i]))
+            k.append(eq(model_pk[i], id[i]))
         l.append(and_(*k))
-    if len(l)>=1:
+    if len(l) >= 1:
         return or_(*l)
     else:
         return None
@@ -117,10 +117,10 @@ def get_query_for_ids(modelquery, model, ids):
 
 def get_columns_for_field(field):
     if (not field or
-        not hasattr(field, 'property') or
-        not hasattr(field.property, 'columns') or
-        not field.property.columns):
-            raise Exception('Invalid field %s: does not contains any columns.' % field)
+            not hasattr(field, 'property') or
+            not hasattr(field.property, 'columns') or
+            not field.property.columns):
+        raise Exception('Invalid field %s: does not contains any columns.' % field)
 
     return field.property.columns
 
@@ -196,7 +196,7 @@ def is_hybrid_property(model, attr_name):
     if isinstance(attr_name, string_types):
         names = attr_name.split('.')
         last_model = model
-        for i in range(len(names)-1):
+        for i in range(len(names) - 1):
             attr = getattr(last_model, names[i])
             if is_association_proxy(attr):
                 attr = attr.remote_attr

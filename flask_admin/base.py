@@ -9,7 +9,7 @@ from flask_admin._compat import with_metaclass, as_unicode
 from flask_admin import helpers as h
 
 # For compatibility reasons import MenuLink
-from flask_admin.menu import MenuCategory, MenuView, MenuLink
+from flask_admin.menu import MenuCategory, MenuView, MenuLink  # noqa: F401
 
 
 def expose(url='/', methods=('GET',)):
@@ -669,7 +669,6 @@ class Admin(object):
         # Register views
         for view in self._views:
             app.register_blueprint(view.create_blueprint(self))
-
 
     def _init_extension(self):
         if not hasattr(self.app, 'extensions'):

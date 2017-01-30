@@ -7,7 +7,6 @@ from flask_mongoengine.wtf import orm, fields as mongo_fields
 from flask_admin import form
 from flask_admin.model.form import FieldPlaceholder
 from flask_admin.model.fields import InlineFieldList, AjaxSelectField, AjaxSelectMultipleField
-from flask_admin.model.widgets import InlineFormWidget
 from flask_admin._compat import iteritems
 
 from .fields import ModelFormField, MongoFileField, MongoImageField

@@ -342,7 +342,7 @@ def test_multi_instances_init():
     class ManageIndex(base.AdminIndexView):
         pass
 
-    _ = base.Admin(app, index_view=ManageIndex(url='/manage', endpoint='manage'))
+    _ = base.Admin(app, index_view=ManageIndex(url='/manage', endpoint='manage'))  # noqa: F841
 
 
 @raises(Exception)

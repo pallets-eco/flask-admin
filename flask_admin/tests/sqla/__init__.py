@@ -15,6 +15,7 @@ def setup():
 
     return app, db, admin
 
+
 def setup_postgres():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = '1'

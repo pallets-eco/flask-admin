@@ -3,6 +3,7 @@ from google.appengine.ext import ndb
 
 import decimal
 
+
 class GeoPtPropertyField(StringField):
     def process_formdata(self, valuelist):
         if valuelist:

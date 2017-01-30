@@ -61,8 +61,8 @@ def fill_db(Model1, Model2):
     Model2('string_field_val_4', 9000, 75.5).save()
     Model2('string_field_val_5', 6169453081680413441).save()
 
-    Model1('datetime_obj1', datetime_field=datetime(2014,4,3,1,9,0)).save()
-    Model1('datetime_obj2', datetime_field=datetime(2013,3,2,0,8,0)).save()
+    Model1('datetime_obj1', datetime_field=datetime(2014, 4, 3, 1, 9, 0)).save()
+    Model1('datetime_obj2', datetime_field=datetime(2013, 3, 2, 0, 8, 0)).save()
 
 
 def test_model():
@@ -157,7 +157,7 @@ def test_column_editable_list():
     ok_('data-role="x-editable"' in data)
 
     # Form - Test basic in-line edit functionality
-    obj1 = Model1.objects.get(test1 = 'test1_val_3')
+    obj1 = Model1.objects.get(test1='test1_val_3')
     rv = client.post('/admin/model1/ajax/update/', data={
         'list_form_pk': str(obj1.id),
         'test1': 'change-success-1',
@@ -171,7 +171,7 @@ def test_column_editable_list():
     ok_('change-success-1' in data)
 
     # Test validation error
-    obj2 = Model1.objects.get(test1 = 'datetime_obj1')
+    obj2 = Model1.objects.get(test1='datetime_obj1')
     rv = client.post('/admin/model1/ajax/update/', data={
         'list_form_pk': str(obj2.id),
         'datetime_field': 'problematic-input',
@@ -198,7 +198,7 @@ def test_column_editable_list():
     view = CustomModelView(Model2, column_editable_list=['model1'])
     admin.add_view(view)
 
-    obj3 = Model2.objects.get(string_field = 'string_field_val_1')
+    obj3 = Model2.objects.get(string_field='string_field_val_1')
     rv = client.post('/admin/model2/ajax/update/', data={
         'list_form_pk': str(obj3.id),
         'model1': str(obj1.id),
@@ -283,7 +283,8 @@ def test_column_filters():
 
     eq_(len(view._filters), 7)
 
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
         [
             (0, 'contains'),
             (1, 'not contains'),
@@ -292,7 +293,8 @@ def test_column_filters():
             (4, 'empty'),
             (5, 'in list'),
             (6, 'not in list'),
-        ])
+        ]
+    )
 
     # Make some test clients
     client = app.test_client()
@@ -363,7 +365,8 @@ def test_column_filters():
     view = CustomModelView(Model2, column_filters=['int_field'])
     admin.add_view(view)
 
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Int Field']],
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Int Field']],
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -372,7 +375,8 @@ def test_column_filters():
             (4, 'empty'),
             (5, 'in list'),
             (6, 'not in list'),
-        ])
+        ]
+    )
 
     # integer - equals
     rv = client.get('/admin/model2/?flt0_0=5000')
@@ -469,11 +473,13 @@ def test_column_filters():
                            endpoint="_bools")
     admin.add_view(view)
 
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Bool Field']],
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Bool Field']],
         [
             (0, 'equals'),
             (1, 'not equal'),
-        ])
+        ]
+    )
 
     # boolean - equals - Yes
     rv = client.get('/admin/_bools/?flt0_0=1')
@@ -481,7 +487,6 @@ def test_column_filters():
     data = rv.data.decode('utf-8')
     ok_('string_field_val_1' in data)
     ok_('string_field_val_2' not in data)
-    #ok_('string_field_val_3' not in data)
 
     # boolean - equals - No
     rv = client.get('/admin/_bools/?flt0_0=0')
@@ -489,7 +494,6 @@ def test_column_filters():
     data = rv.data.decode('utf-8')
     ok_('string_field_val_1' not in data)
     ok_('string_field_val_2' in data)
-    #ok_('string_field_val_3' in data)
 
     # boolean - not equals - Yes
     rv = client.get('/admin/_bools/?flt0_1=1')
@@ -497,7 +501,6 @@ def test_column_filters():
     data = rv.data.decode('utf-8')
     ok_('string_field_val_1' not in data)
     ok_('string_field_val_2' in data)
-    #ok_('string_field_val_3' in data)
 
     # boolean - not equals - No
     rv = client.get('/admin/_bools/?flt0_1=0')
@@ -505,14 +508,14 @@ def test_column_filters():
     data = rv.data.decode('utf-8')
     ok_('string_field_val_1' in data)
     ok_('string_field_val_2' not in data)
-    #ok_('string_field_val_3' not in data)
 
     # Test float filter
     view = CustomModelView(Model2, column_filters=['float_field'],
                            endpoint="_float")
     admin.add_view(view)
 
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Float Field']],
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Float Field']],
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -521,7 +524,8 @@ def test_column_filters():
             (4, 'empty'),
             (5, 'in list'),
             (6, 'not in list'),
-        ])
+        ]
+    )
 
     # float - equals
     rv = client.get('/admin/_float/?flt0_0=25.9')
@@ -605,7 +609,8 @@ def test_column_filters():
                            endpoint="_datetime")
     admin.add_view(view)
 
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Datetime Field']],
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Datetime Field']],
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -614,7 +619,8 @@ def test_column_filters():
             (4, 'between'),
             (5, 'not between'),
             (6, 'empty'),
-        ])
+        ]
+    )
 
     # datetime - equals
     rv = client.get('/admin/_datetime/?flt0_0=2014-04-03+01%3A09%3A00')
@@ -673,6 +679,7 @@ def test_column_filters():
     ok_('test1_val_1' not in data)
     ok_('datetime_obj1' in data)
     ok_('datetime_obj2' in data)
+
 
 def test_default_sort():
     app, db, admin = setup()
@@ -780,7 +787,7 @@ def test_subdocument_config():
     # Check only
     view1 = CustomModelView(
         Model1,
-        form_subdocuments = {
+        form_subdocuments={
             'subdoc': {
                 'form_columns': ('name',)
             }
@@ -796,7 +803,7 @@ def test_subdocument_config():
     # Check exclude
     view2 = CustomModelView(
         Model1,
-        form_subdocuments = {
+        form_subdocuments={
             'subdoc': {
                 'form_excluded_columns': ('value',)
             }
@@ -827,7 +834,7 @@ def test_subdocument_class_config():
     # Check only
     view1 = CustomModelView(
         Model1,
-        form_subdocuments = {
+        form_subdocuments={
             'subdoc': EmbeddedConfig()
         }
     )
@@ -855,7 +862,7 @@ def test_nested_subdocument_config():
 
     view1 = CustomModelView(
         Model1,
-        form_subdocuments = {
+        form_subdocuments={
             'nested': {
                 'form_subdocuments': {
                     'comment': {
@@ -885,7 +892,7 @@ def test_nested_list_subdocument():
     # Check only
     view1 = CustomModelView(
         Model1,
-        form_subdocuments = {
+        form_subdocuments={
             'subdoc': {
                 'form_subdocuments': {
                     None: {
@@ -918,14 +925,13 @@ def test_nested_sortedlist_subdocument():
     # Check only
     view1 = CustomModelView(
         Model1,
-        form_subdocuments = {
+        form_subdocuments={
             'subdoc': {
                 'form_subdocuments': {
                     None: {
                         'form_columns': ('name',)
                     }
                 }
-
             }
         }
     )
@@ -961,6 +967,7 @@ def test_sortedlist_subdocument_validation():
     eq_(rv.status_code, 200)
     ok_('This field is required' in rv.data)
 
+
 def test_list_subdocument_validation():
     app, db, admin = setup()
 
@@ -984,6 +991,7 @@ def test_list_subdocument_validation():
                      data={'test1': 'test1large', 'subdoc-0-name': '', 'subdoc-0-value': 'test'})
     eq_(rv.status_code, 200)
     ok_('This field is required' in rv.data)
+
 
 def test_ajax_fk():
     app, db, admin = setup()
@@ -1066,7 +1074,7 @@ def test_nested_ajax_refs():
 
     view1 = CustomModelView(
         Model1,
-        form_subdocuments = {
+        form_subdocuments={
             'nested': {
                 'form_ajax_refs': {
                     'comment': {
@@ -1127,7 +1135,7 @@ def test_form_args_embeddeddoc():
 
     view = CustomModelView(
         Model,
-        form_args= {
+        form_args={
             'info': {'label': 'Information'},
             'timestamp': {'label': 'Last Updated Time'}
         }
