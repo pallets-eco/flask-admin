@@ -95,6 +95,8 @@ For all the tests to pass successfully, you'll need Postgres & MongoDB to be run
     CREATE DATABASE flask_admin_test;
     CREATE EXTENSION postgis;
 
+You can also run the tests on multiple environments using *tox*.
+
 3rd Party Stuff
 ---------------
 

@@ -26,3 +26,4 @@ examples/appengine/lib
 env
 *.egg
 .eggs
+.tox/
