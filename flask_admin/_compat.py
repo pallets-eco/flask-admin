@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# flake8: noqa
 """
     flask_admin._compat
     ~~~~~~~~~~~~~~~~~~~~~~~

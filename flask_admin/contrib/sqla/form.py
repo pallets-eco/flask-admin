@@ -201,10 +201,10 @@ class AdminModelConverter(ModelConverterBase):
             optional_types = getattr(self.view, 'form_optional_types', (Boolean,))
 
             if (
-                not column.nullable
-                and not isinstance(column.type, optional_types)
-                and not column.default
-                and not column.server_default
+                not column.nullable and
+                not isinstance(column.type, optional_types) and
+                not column.default and
+                not column.server_default
             ):
                 kwargs['validators'].append(validators.InputRequired())
 
@@ -222,7 +222,7 @@ class AdminModelConverter(ModelConverterBase):
 
                 if value is not None:
                     if getattr(default, 'is_callable', False):
-                        value = lambda: default.arg(None)
+                        value = lambda: default.arg(None)  # noqa: E731
                     else:
                         if not getattr(default, 'is_scalar', True):
                             value = None
@@ -547,8 +547,6 @@ class InlineModelConverter(InlineModelConverterBase):
             :return:
                 A tuple of forward property key and reverse property key
         """
-
-
         mapper = model._sa_class_manager.mapper
 
         # Find property from target model to current model

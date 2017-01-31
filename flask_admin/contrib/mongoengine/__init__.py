@@ -1,3 +1,4 @@
+# flake8: noqa
 try:
     import flask_mongoengine
 except ImportError:

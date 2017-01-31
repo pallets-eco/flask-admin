@@ -42,7 +42,8 @@ class ViewArgs(object):
     """
         List view arguments.
     """
-    def __init__(self, page=None, page_size=None, sort=None, sort_desc=None, search=None, filters=None, extra_args=None):
+    def __init__(self, page=None, page_size=None, sort=None, sort_desc=None,
+                 search=None, filters=None, extra_args=None):
         self.page = page
         self.page_size = page_size
         self.sort = sort
@@ -599,7 +600,10 @@ class BaseModelView(BaseView, ActionsMixin):
                 start=dict(format='%Y-%m-%d %I:%M %p') # changes how the input is parsed by strptime (12 hour time)
             )
             form_widget_args = dict(
-                start={'data-date-format': u'yyyy-mm-dd HH:ii P', 'data-show-meridian': 'True'} # changes how the DateTimeField displays the time
+                start={
+                    'data-date-format': u'yyyy-mm-dd HH:ii P',
+                    'data-show-meridian': 'True'
+                } # changes how the DateTimeField displays the time
             )
     """
 
@@ -939,7 +943,8 @@ class BaseModelView(BaseView, ActionsMixin):
 
     def get_list_row_actions(self):
         """
-            Return list of row action objects, each is instance of :class:`~flask_admin.model.template.BaseListRowAction`
+            Return list of row action objects, each is instance of
+            :class:`~flask_admin.model.template.BaseListRowAction`
         """
         actions = []
 
@@ -2099,7 +2104,7 @@ class BaseModelView(BaseView, ActionsMixin):
         form = self.delete_form()
 
         if self.validate_form(form):
-             # id is InputRequired()
+            # id is InputRequired()
             id = form.id.data
 
             model = self.get_one(id)

@@ -1,3 +1,4 @@
+# flake8: noqa
 try:
     import geoalchemy2
     import shapely

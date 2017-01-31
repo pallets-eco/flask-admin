@@ -2,9 +2,9 @@ from wtforms import form, __version__ as wtforms_version
 from wtforms.fields.core import UnboundField
 from flask_admin.babel import Translations
 
-from .fields import *
-from .widgets import *
-from .upload import *
+from .fields import *  # noqa: F403,F401
+from .widgets import *  # noqa: F403,F401
+from .upload import *  # noqa: F403,F401
 
 
 class BaseForm(form.Form):

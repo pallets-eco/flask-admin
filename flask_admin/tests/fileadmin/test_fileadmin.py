@@ -134,6 +134,7 @@ def test_file_admin():
     ok_('path=dummy_renamed_dir' not in rv.data.decode('utf-8'))
     ok_('path=dummy.txt' in rv.data.decode('utf-8'))
 
+
 def test_modal_edit():
     # bootstrap 2 - test edit_modal
     app_bs2 = Flask(__name__)

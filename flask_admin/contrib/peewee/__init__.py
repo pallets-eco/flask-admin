@@ -1,3 +1,4 @@
+# flake8: noqa
 try:
     import peewee
     import wtfpeewee

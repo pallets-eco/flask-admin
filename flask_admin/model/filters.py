@@ -248,10 +248,10 @@ class BaseTimeBetweenFilter(BaseFilter):
     def clean(self, value):
         timetuples = [time.strptime(range, '%H:%M:%S')
                       for range in value.split(' to ')]
-        return [datetime.time(timetuple.tm_hour,
-                              timetuple.tm_min,
-                              timetuple.tm_sec)
-                              for timetuple in timetuples]
+        return [
+            datetime.time(timetuple.tm_hour, timetuple.tm_min, timetuple.tm_sec)
+            for timetuple in timetuples
+        ]
 
     def operation(self):
         return lazy_gettext('between')

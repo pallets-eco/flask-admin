@@ -101,6 +101,7 @@ def flash_errors(form, message):
         errors = form[field_name].label.text + u": " + u", ".join(errors)
         flash(gettext(message, error=str(errors)), 'error')
 
+
 @contextfunction
 def resolve_ctx(context):
     """

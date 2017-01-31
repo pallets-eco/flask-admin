@@ -200,9 +200,7 @@ class FileUploadField(fields.StringField):
                 map(lambda x: x.lower(), self.allowed_extensions))
 
     def _is_uploaded_file(self, data):
-        return (data
-                and isinstance(data, FileStorage)
-                and data.filename)
+        return (data and isinstance(data, FileStorage) and data.filename)
 
     def pre_validate(self, form):
         if self._is_uploaded_file(self.data) and not self.is_file_allowed(self.data.filename):
@@ -279,7 +277,7 @@ class FileUploadField(fields.StringField):
         if not op.exists(op.dirname(path)):
             os.makedirs(os.path.dirname(path), self.permission | 0o111)
 
-        if self._allow_overwrite == False and os.path.exists(path):
+        if (self._allow_overwrite is False) and os.path.exists(path):
             raise ValueError(gettext('File "%s" already exists.' % path))
 
         data.save(path)

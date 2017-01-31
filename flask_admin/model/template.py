@@ -126,4 +126,3 @@ def macro(name):
         return m(model=model, column=column)
 
     return inner
-

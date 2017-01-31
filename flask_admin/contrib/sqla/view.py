@@ -52,7 +52,7 @@ class ModelView(BaseModelView):
     """
 
     column_select_related_list = ObsoleteAttr('column_select_related',
-                                             'list_select_related',
+                                              'list_select_related',
                                               None)
     """
         List of parameters for SQLAlchemy `subqueryload`. Overrides `column_auto_select_related`
@@ -831,12 +831,12 @@ class ModelView(BaseModelView):
                 if isinstance(column, tuple):
                     query = query.order_by(*map(desc, column))
                 else:
-	                query = query.order_by(desc(column))
+                    query = query.order_by(desc(column))
             else:
                 if isinstance(column, tuple):
                     query = query.order_by(*column)
                 else:
-	                query = query.order_by(column)
+                    query = query.order_by(column)
 
         return query, joins
 
@@ -940,7 +940,8 @@ class ModelView(BaseModelView):
                 spec = inspect.getargspec(flt.apply)
 
                 if len(spec.args) == 3:
-                    warnings.warn('Please update your custom filter %s to include additional `alias` parameter.' % repr(flt))
+                    warnings.warn('Please update your custom filter %s to '
+                                  'include additional `alias` parameter.' % repr(flt))
                 else:
                     raise
 

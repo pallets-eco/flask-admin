@@ -11,6 +11,7 @@ from flask_wtf import Form
 from flask_admin.model.form import create_editable_list_form
 from .form import AdminModelConverter
 
+
 class NdbModelView(BaseModelView):
     """
     AppEngine NDB model scaffolding.
@@ -32,7 +33,7 @@ class NdbModelView(BaseModelView):
         pass
 
     def scaffold_filters(self):
-        #TODO: implement
+        # TODO: implement
         pass
 
     form_args = None
@@ -75,7 +76,7 @@ class NdbModelView(BaseModelView):
 
     def get_list(self, page, sort_field, sort_desc, search, filters,
                  page_size=None):
-        #TODO: implement filters (don't think search can work here)
+        # TODO: implement filters (don't think search can work here)
 
         q = self.model.query()
 
@@ -88,7 +89,7 @@ class NdbModelView(BaseModelView):
         if not page_size:
             page_size = self.page_size
 
-        results = q.fetch(page_size, offset=page*page_size)
+        results = q.fetch(page_size, offset=page * page_size)
 
         return q.count(), results
 
@@ -102,7 +103,7 @@ class NdbModelView(BaseModelView):
             model.put()
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                #flash(gettext('Failed to create record. %(error)s',
+                # flash(gettext('Failed to create record. %(error)s',
                 #    error=ex), 'error')
                 logging.exception('Failed to create record.')
             return False
@@ -117,7 +118,7 @@ class NdbModelView(BaseModelView):
             model.put()
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                #flash(gettext('Failed to update record. %(error)s',
+                # flash(gettext('Failed to update record. %(error)s',
                 #    error=ex), 'error')
                 logging.exception('Failed to update record.')
             return False
@@ -126,19 +127,19 @@ class NdbModelView(BaseModelView):
 
         return True
 
-    def delete_model(self,  model):
+    def delete_model(self, model):
         try:
             model.key.delete()
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                #flash(gettext('Failed to delete record. %(error)s',
+                # flash(gettext('Failed to delete record. %(error)s',
                 #    error=ex),
                 #    'error')
                 logging.exception('Failed to delete record.')
             return False
         else:
             self.after_model_delete(model)
-        
+
         return True
 
 
@@ -155,7 +156,8 @@ class DbModelView(BaseModelView):
 
     def scaffold_sortable_columns(self):
         # We use getattr() because ReferenceProperty does not specify a 'indexed' field
-        return [k for (k, v) in self.model.__dict__.iteritems() if isinstance(v, db.Property) and getattr(v, 'indexed', None)]
+        return [k for (k, v) in self.model.__dict__.iteritems()
+                if isinstance(v, db.Property) and getattr(v, 'indexed', None)]
 
     def init_search(self):
         return None
@@ -164,14 +166,14 @@ class DbModelView(BaseModelView):
         pass
 
     def scaffold_filters(self):
-        #TODO: implement
+        # TODO: implement
         pass
 
     def scaffold_form(self):
         return wt_db.model_form(self.model())
 
     def get_list(self, page, sort_field, sort_desc, search, filters):
-        #TODO: implement filters (don't think search can work here)
+        # TODO: implement filters (don't think search can work here)
 
         q = self.model.all()
 
@@ -180,7 +182,7 @@ class DbModelView(BaseModelView):
                 sort_field = "-" + sort_field
             q.order(sort_field)
 
-        results = q.fetch(self.page_size, offset=page*self.page_size)
+        results = q.fetch(self.page_size, offset=page * self.page_size)
         return q.count(), results
 
     def get_one(self, encoded_key):
@@ -194,7 +196,7 @@ class DbModelView(BaseModelView):
             return model
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                #flash(gettext('Failed to create record. %(error)s',
+                # flash(gettext('Failed to create record. %(error)s',
                 #    error=ex), 'error')
                 logging.exception('Failed to create record.')
             return False
@@ -206,22 +208,23 @@ class DbModelView(BaseModelView):
             return True
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                #flash(gettext('Failed to update record. %(error)s',
+                # flash(gettext('Failed to update record. %(error)s',
                 #    error=ex), 'error')
                 logging.exception('Failed to update record.')
             return False
 
-    def delete_model(self,  model):
+    def delete_model(self, model):
         try:
             model.delete()
             return True
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                #flash(gettext('Failed to delete record. %(error)s',
+                # flash(gettext('Failed to delete record. %(error)s',
                 #    error=ex),
                 #    'error')
                 logging.exception('Failed to delete record.')
         return False
+
 
 def ModelView(model):
     if issubclass(model, ndb.Model):
