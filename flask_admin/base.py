@@ -664,7 +664,12 @@ class Admin(object):
         self._init_extension()
 
         # Register Index view
-        self._set_admin_index_view(index_view=index_view, endpoint=endpoint, url=url)
+        if index_view is not None:
+            self._set_admin_index_view(
+                index_view=index_view,
+                endpoint=endpoint,
+                url=url
+            )
 
         # Register views
         for view in self._views:
