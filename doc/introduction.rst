@@ -102,7 +102,7 @@ could be as simple as::
     class MicroBlogModelView(sqla.ModelView):
 
         def is_accessible(self):
-            return login.current_user.is_authenticated()
+            return login.current_user.is_authenticated
 
         def inaccessible_callback(self, name, **kwargs):
             # redirect to login page if user doesn't have access
