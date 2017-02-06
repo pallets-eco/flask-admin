@@ -3,8 +3,6 @@ from wtforms import fields
 from peewee import (CharField, DateTimeField, DateField, TimeField,
                     PrimaryKeyField, ForeignKeyField, BaseModel)
 
-from playhouse.postgres_ext import ArrayField, JSONField, BinaryJSONField
-
 from wtfpeewee.orm import ModelConverter, model_form
 
 from flask_admin import form
@@ -14,7 +12,11 @@ from flask_admin.model.fields import InlineModelFormField, InlineFieldList, Ajax
 
 from .tools import get_primary_key, get_meta_fields
 from .ajax import create_ajax_loader
-
+try:
+    from playhouse.postgres_ext import JSONField, BinaryJSONField
+    pg_ext = True
+except:
+    pg_ext = False
 
 class InlineModelFormList(InlineFieldList):
     """
@@ -100,8 +102,10 @@ class CustomModelConverter(ModelConverter):
         self.converters[DateTimeField] = self.handle_datetime
         self.converters[DateField] = self.handle_date
         self.converters[TimeField] = self.handle_time
-        self.converters[JSONField] = self.handle_json
-        self.converters[BinaryJSONField] = self.handle_json
+
+        if pg_ext:
+            self.converters[JSONField] = self.handle_json
+            self.converters[BinaryJSONField] = self.handle_json
 
         self.overrides = getattr(self.view, 'form_overrides', None) or {}
 
