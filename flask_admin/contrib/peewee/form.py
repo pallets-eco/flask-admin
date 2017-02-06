@@ -18,6 +18,7 @@ try:
 except:
     pg_ext = False
 
+
 class InlineModelFormList(InlineFieldList):
     """
         Customized inline model form list field.
