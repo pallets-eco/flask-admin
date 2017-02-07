@@ -12,6 +12,11 @@ from flask_admin.model.fields import InlineModelFormField, InlineFieldList, Ajax
 
 from .tools import get_primary_key, get_meta_fields
 from .ajax import create_ajax_loader
+try:
+    from playhouse.postgres_ext import JSONField, BinaryJSONField
+    pg_ext = True
+except:
+    pg_ext = False
 
 
 class InlineModelFormList(InlineFieldList):
@@ -106,6 +111,10 @@ class CustomModelConverter(ModelConverter):
         self.converters[DateField] = self.handle_date
         self.converters[TimeField] = self.handle_time
 
+        if pg_ext:
+            self.converters[JSONField] = self.handle_json
+            self.converters[BinaryJSONField] = self.handle_json
+
         self.overrides = getattr(self.view, 'form_overrides', None) or {}
 
     def handle_foreign_key(self, model, field, **kwargs):
@@ -133,6 +142,9 @@ class CustomModelConverter(ModelConverter):
 
     def handle_time(self, model, field, **kwargs):
         return field.name, form.TimeField(**kwargs)
+
+    def handle_json(self, model, field, **kwargs):
+        return field.name, form.JSONField(**kwargs)
 
 
 def get_form(model, converter,
