@@ -1688,6 +1688,24 @@ class BaseModelView(BaseView, ActionsMixin):
                         search=request.args.get('search', None),
                         filters=self._get_list_filter_args())
 
+    def _get_filters(self, filters):
+        """
+            Get active filters as dictionary of URL arguments and values
+
+            :param filters:
+                List of filters from ViewArgs object
+        """
+        kwargs = {}
+
+        if filters:
+            for i, pair in enumerate(filters):
+                idx, flt_name, value = pair
+
+                key = 'flt%d_%s' % (i, self.get_filter_arg(idx, self._filters[idx]))
+                kwargs[key] = value
+
+        return kwargs
+
     # URL generation helpers
     def _get_list_url(self, view_args):
         """
@@ -1708,12 +1726,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if view_args.page_size:
             kwargs['page_size'] = view_args.page_size
 
-        if view_args.filters:
-            for i, pair in enumerate(view_args.filters):
-                idx, flt_name, value = pair
-
-                key = 'flt%d_%s' % (i, self.get_filter_arg(idx, self._filters[idx]))
-                kwargs[key] = value
+        kwargs.update(self._get_filters(view_args.filters))
 
         return self.get_url('.index_view', **kwargs)
 
@@ -1935,6 +1948,7 @@ class BaseModelView(BaseView, ActionsMixin):
             page_size_url=page_size_url,
             page=view_args.page,
             page_size=page_size,
+            default_page_size=self.page_size,
 
             # Sorting
             sort_column=view_args.sort,
@@ -1950,6 +1964,7 @@ class BaseModelView(BaseView, ActionsMixin):
             filters=self._filters,
             filter_groups=self._get_filter_groups(),
             active_filters=view_args.filters,
+            filter_args=self._get_filters(view_args.filters),
 
             # Actions
             actions=actions,
