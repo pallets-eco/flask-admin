@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2017-02-07 00:17-0600\n"
-"PO-Revision-Date: 2017-02-07 01:19-0500\n"
+"PO-Revision-Date: 2017-02-13 09:18-0500\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -295,7 +295,7 @@ msgstr "не между"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:247
 msgid "ObjectId equals"
-msgstr ""
+msgstr "Id объекта равно"
 
 #: ../flask_admin/contrib/mongoengine/view.py:551
 #, python-format
@@ -343,7 +343,7 @@ msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
 msgstr[0] "Запись успешно удалена."
 msgstr[1] "Было удалено %(count)s записей."
-msgstr[2] "Было удаено %(count)s записей."
+msgstr[2] "Было удалено %(count)s записей."
 
 #: ../flask_admin/contrib/mongoengine/view.py:674
 #: ../flask_admin/contrib/peewee/view.py:511
@@ -530,7 +530,7 @@ msgstr "Вы уверены что хотите удалить \\'%(name)s\\'?"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:125
 msgid "Size"
-msgstr ""
+msgstr "Размер"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:185
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:185
@@ -630,7 +630,7 @@ msgstr "Поиск"
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:76
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:77
 msgid "items"
-msgstr ""
+msgstr "элементы"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:23
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:25

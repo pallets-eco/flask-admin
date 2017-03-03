@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2017-02-07 00:17-0600\n"
-"PO-Revision-Date: 2017-02-07 01:19-0500\n"
+"PO-Revision-Date: 2017-02-13 09:18-0500\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -528,7 +528,7 @@ msgstr "Sind Sie sicher, dass Sie \\'%(name)s\\' löschen möchten?"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:125
 msgid "Size"
-msgstr ""
+msgstr "Größe"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:185
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:185
@@ -605,7 +605,7 @@ msgstr "Export"
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:38
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:38
 msgid "Apply"
-msgstr "Anwenden"
+msgstr "Übernehmen"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/layout.html:40
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:40
@@ -628,7 +628,7 @@ msgstr "Suche"
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:76
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:77
 msgid "items"
-msgstr ""
+msgstr "Elemente"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:23
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:25

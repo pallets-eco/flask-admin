@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2017-02-07 00:17-0600\n"
-"PO-Revision-Date: 2017-02-07 01:19-0500\n"
+"PO-Revision-Date: 2017-02-13 09:18-0500\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Turkish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.1.1\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: flask-admin\n"
 "X-Crowdin-Language: tr\n"
@@ -35,7 +35,7 @@ msgstr "Gerekli dosya."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:365
 msgid "Invalid file type."
-msgstr "Geçersiz dosya türü."
+msgstr "Geçersiz dosya tipi."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:376
 msgid "Content"
@@ -528,7 +528,7 @@ msgstr "\\'%(name)s\\' silmek istedi─ƒinizden emin misiniz?"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:125
 msgid "Size"
-msgstr ""
+msgstr "Boyut"
 
 #: ../flask_admin/templates/bootstrap2/admin/file/list.html:185
 #: ../flask_admin/templates/bootstrap3/admin/file/list.html:185
@@ -628,7 +628,7 @@ msgstr "Arama"
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:76
 #: ../flask_admin/templates/bootstrap3/admin/model/layout.html:77
 msgid "items"
-msgstr ""
+msgstr "Öğeler"
 
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:23
 #: ../flask_admin/templates/bootstrap2/admin/model/list.html:25

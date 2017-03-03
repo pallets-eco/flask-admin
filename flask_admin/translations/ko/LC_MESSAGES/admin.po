@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2017-02-07 00:17-0600\n"
-"PO-Revision-Date: 2017-02-07 01:19-0500\n"
+"PO-Revision-Date: 2017-03-03 00:31-0500\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language-Team: Korean\n"
 "MIME-Version: 1.0\n"
@@ -435,7 +435,7 @@ msgstr "\"%(type)s 타입의 가져오기가 지원되지 않습니다."
 
 #: ../flask_admin/model/filters.py:103 ../flask_admin/model/widgets.py:111
 msgid "Yes"
-msgstr "레코드가 저장되었습니다."
+msgstr "예"
 
 #: ../flask_admin/model/filters.py:104 ../flask_admin/model/widgets.py:110
 msgid "No"
