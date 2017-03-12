@@ -9,19 +9,19 @@ Changelog
 * Flask-Admin would not recursively save inline models, allowing arbitrary nesting
 * Added configuration properties that allow injection of additional CSS and JS dependencies into templates without overriding them
 * SQLAlchemy backend
- - Updated hybrid property detection using new SQLAlchemy APIs
- - Added support for association proxies
- - Added support for remote hybrid properties filters
- - Added support for ARRAY column type
+  - Updated hybrid property detection using new SQLAlchemy APIs
+  - Added support for association proxies
+  - Added support for remote hybrid properties filters
+  - Added support for ARRAY column type
 * Localization-related fixes 
 * MongoEngine backend is now properly formats model labels
 * Improved Google App Engine support:
- - Added TextProperty, KeyProperty and SelectField support
- - Added support for form_args, excluded_columns, page_size and after_model_update
+  - Added TextProperty, KeyProperty and SelectField support
+  - Added support for form_args, excluded_columns, page_size and after_model_update
 * Fixed URL generation with localized named filters
 * FileAdmin has Bootstrap 2 support now
-* Geoalchemy support fixes
- - Use Google Places (by default) for place search
+* Geoalchemy fixes
+  - Use Google Places (by default) for place search
 * Updated translations
 * Bug fixes
 
