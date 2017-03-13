@@ -1,14 +1,18 @@
-from tinymongo import TinyMongoClient
-from bson.objectid import ObjectId
+"""
+Example of Flask-Admin using TinyDB with TinyMongo
+refer to README.txt for instructions
 
-from flask import Flask
+Author:  Bruno Rocha <@rochacbruno>
+Based in PyMongo Example and TinyMongo
+"""
 import flask_admin as admin
-
-from wtforms import form, fields
-
-from flask_admin.form import Select2Widget
+from flask import Flask
 from flask_admin.contrib.pymongo import ModelView, filters
-from flask_admin.model.fields import InlineFormField, InlineFieldList
+from flask_admin.form import Select2Widget
+from flask_admin.model.fields import InlineFieldList, InlineFormField
+from wtforms import fields, form
+
+from tinymongo import TinyMongoClient
 
 # Create application
 app = Flask(__name__)
@@ -16,8 +20,11 @@ app = Flask(__name__)
 # Create dummy secrey key so we can use sessions
 app.config['SECRET_KEY'] = '123456790'
 
-# Create models
-conn = TinyMongoClient('/tmp/flask_admin_test')
+# Create models in a JSON file localted at
+
+DATAFOLDER = '/tmp/flask_admin_test'
+
+conn = TinyMongoClient(DATAFOLDER)
 db = conn.test
 
 # create some users for testing
@@ -73,22 +80,18 @@ class TweetView(ModelView):
                       filters.FilterNotLike('name', 'Name'),
                       filters.BooleanEqualFilter('testie', 'Testie'))
 
-    column_searchable_list = ('name', 'text')
+    # column_searchable_list = ('name', 'text')
 
     form = TweetForm
 
     def get_list(self, *args, **kwargs):
         count, data = super(TweetView, self).get_list(*args, **kwargs)
 
-        # Grab user names
-        query = {'_id': {'$in': [x['user_id'] for x in data]}}
-        users = db.user.find(query, fields=('name',))
-
-        # Contribute user names to the models
-        users_map = dict((x['_id'], x['name']) for x in users)
-
+        # Contribute user_name to the models
         for item in data:
-            item['user_name'] = users_map.get(item['user_id'])
+            item['user_name'] = db.user.find_one(
+                {'_id': item['user_id']}
+            )['name']
 
         return count, data
 
