@@ -24,6 +24,7 @@ db = conn.test
 # for i in range(30):
 #     db.user.insert({'name': 'Mike %s' % i})
 
+
 # User admin
 class InnerForm(form.Form):
     name = fields.StringField('Name')
@@ -51,6 +52,7 @@ class UserView(ModelView):
 
     page_size = 20
     can_set_page_size = True
+
 
 # Tweet view
 class TweetForm(form.Form):
