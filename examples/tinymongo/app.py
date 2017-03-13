@@ -122,7 +122,7 @@ def index():
 
 if __name__ == '__main__':
     # Create admin
-    admin = admin.Admin(app, name='Example: PyMongo')
+    admin = admin.Admin(app, name='Example: TinyMongo - TinyDB')
 
     # Add views
     admin.add_view(UserView(db.user, 'User'))
