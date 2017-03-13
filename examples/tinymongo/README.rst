@@ -1,4 +1,6 @@
-PyMongo model backend integration example.
+TinyMongo model backend integration example.
+
+TinyMongo is the Pymongo for TinyDB and it stores data in JSON files.
 
 To run this example:
 
@@ -14,9 +16,9 @@ To run this example:
 
 3. Install requirements::
 
-    pip install -r 'examples/pymongo/requirements.txt'
+    pip install -r 'examples/tinymongo/requirements.txt'
 
 4. Run the application::
 
-    python examples/pymongo/app.py
+    python examples/tinymongo/app.py
 
