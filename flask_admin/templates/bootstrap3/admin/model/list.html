@@ -81,8 +81,8 @@
                         <th class="col-md-1">&nbsp;</th>
                         {% endif %}
                     {% endblock %}
-                    {% set column = 0 %}
                     {% for c, name in list_columns %}
+                    {% set column = loop.index0 %}
                     <th class="column-header col-{{c}}">
                         {% if admin_view.is_sortable(c) %}
                             {% if sort_column == column %}
@@ -107,7 +107,6 @@
                             ></a>
                         {% endif %}
                     </th>
-                    {% set column = column + 1 %}
                     {% endfor %}
                 {% endblock %}
             </tr>
@@ -202,5 +201,22 @@
                 );
             {% endif %}
         })(jQuery);
+
+        // Catch exception when closing dialog with <esc> key
+        // and prevent accidental deletions.
+        function safeConfirm(msg) {
+          try {
+            var isconfirmed = confirm(msg);
+            if (isconfirmed == true) {
+              return true;
+            }
+            else {
+              return false;
+            }
+          }
+          catch(err) {
+            return false;
+          }
+        }
     </script>
 {% endblock %}

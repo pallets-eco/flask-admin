@@ -14,11 +14,13 @@
 {% macro form(actions, url) %}
     {% if actions %}
     <form id="action_form" action="{{ url }}" method="POST" style="display: none">
-        {% if csrf_token %}
+        {% if action_form.csrf_token %}
+        {{ action_form.csrf_token }}
+        {% elif csrf_token %}
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         {% endif %}
-        <input type="hidden" name="url" value="{{ return_url }}">
-        <input type="hidden" id="action" name="action" />
+        {{ action_form.url(value=return_url) }}
+        {{ action_form.action() }}
     </form>
     {% endif %}
 {% endmacro %}

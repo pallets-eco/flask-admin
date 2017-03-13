@@ -1,4 +1,4 @@
-from nose.tools import eq_, ok_, raises
+from nose.tools import eq_, ok_
 
 from . import setup
 from .test_basic import CustomModelView, create_models

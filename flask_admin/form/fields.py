@@ -9,7 +9,8 @@ from flask_admin._compat import text_type, as_unicode
 from . import widgets as admin_widgets
 
 """
-An understanding of WTForms's Custom Widgets is helpful for understanding this code: http://wtforms.simplecodes.com/docs/0.6.2/widgets.html#custom-widgets
+An understanding of WTForms's Custom Widgets is helpful for understanding this code:
+http://wtforms.simplecodes.com/docs/0.6.2/widgets.html#custom-widgets
 """
 
 __all__ = ['DateTimeField', 'TimeField', 'Select2Field', 'Select2TagsField',
@@ -21,6 +22,7 @@ class DateTimeField(fields.DateTimeField):
        Allows modifying the datetime format of a DateTimeField using form_args.
     """
     widget = admin_widgets.DateTimePickerWidget()
+
     def __init__(self, label=None, validators=None, format=None, **kwargs):
         """
             Constructor
@@ -166,10 +168,11 @@ class Select2TagsField(fields.StringField):
         super(Select2TagsField, self).__init__(label, validators, **kwargs)
 
     def process_formdata(self, valuelist):
-        if self.save_as_list:
-            self.data = [self.coerce(v.strip()) for v in valuelist[0].split(',') if v.strip()]
-        else:
-            self.data = self.coerce(valuelist[0])
+        if valuelist:
+            if self.save_as_list:
+                self.data = [self.coerce(v.strip()) for v in valuelist[0].split(',') if v.strip()]
+            else:
+                self.data = self.coerce(valuelist[0])
 
     def _value(self):
         if isinstance(self.data, (list, tuple)):

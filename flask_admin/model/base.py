@@ -42,7 +42,8 @@ class ViewArgs(object):
     """
         List view arguments.
     """
-    def __init__(self, page=None, page_size=None, sort=None, sort_desc=None, search=None, filters=None, extra_args=None):
+    def __init__(self, page=None, page_size=None, sort=None, sort_desc=None,
+                 search=None, filters=None, extra_args=None):
         self.page = page
         self.page_size = page_size
         self.sort = sort
@@ -599,7 +600,10 @@ class BaseModelView(BaseView, ActionsMixin):
                 start=dict(format='%Y-%m-%d %I:%M %p') # changes how the input is parsed by strptime (12 hour time)
             )
             form_widget_args = dict(
-                start={'data-date-format': u'yyyy-mm-dd HH:ii P', 'data-show-meridian': 'True'} # changes how the DateTimeField displays the time
+                start={
+                    'data-date-format': u'yyyy-mm-dd HH:ii P',
+                    'data-show-meridian': 'True'
+                } # changes how the DateTimeField displays the time
             )
     """
 
@@ -795,6 +799,7 @@ class BaseModelView(BaseView, ActionsMixin):
         self._create_form_class = self.get_create_form()
         self._edit_form_class = self.get_edit_form()
         self._delete_form_class = self.get_delete_form()
+        self._action_form_class = self.get_action_form()
 
         # List View In-Line Editing
         if self.column_editable_list:
@@ -855,7 +860,8 @@ class BaseModelView(BaseView, ActionsMixin):
         self._sortable_columns = self.get_sortable_columns()
 
         # Details view
-        self._details_columns = self.get_details_columns()
+        if self.can_view_details:
+            self._details_columns = self.get_details_columns()
 
         # Export view
         self._export_columns = self.get_export_columns()
@@ -937,7 +943,8 @@ class BaseModelView(BaseView, ActionsMixin):
 
     def get_list_row_actions(self):
         """
-            Return list of row action objects, each is instance of :class:`~flask_admin.model.template.BaseListRowAction`
+            Return list of row action objects, each is instance of
+            :class:`~flask_admin.model.template.BaseListRowAction`
         """
         actions = []
 
@@ -992,11 +999,12 @@ class BaseModelView(BaseView, ActionsMixin):
             Uses `get_column_names` to get a list of tuples with the model
             field name and formatted name for the columns in `column_details_list`
             and not in `column_details_exclude_list`. If `column_details_list`
-            is not set, it will attempt to use the columns from `column_list`
-            or finally the columns from `scaffold_list_columns` will be used.
+            is not set, the columns from `scaffold_list_columns` will be used.
         """
-        only_columns = (self.column_details_list or self.column_list or
-                        self.scaffold_list_columns())
+        try:
+            only_columns = self.column_details_list or self.scaffold_list_columns()
+        except NotImplementedError:
+            raise Exception('Please define column_details_list')
 
         return self.get_column_names(
             only_columns=only_columns,
@@ -1254,6 +1262,19 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return DeleteForm
 
+    def get_action_form(self):
+        """
+            Create form class for a model action.
+
+            Override to implement customized behavior.
+        """
+        class ActionForm(self.form_base_class):
+            action = HiddenField()
+            url = HiddenField()
+            # rowid is retrieved using getlist, for backward compatibility
+
+        return ActionForm
+
     def create_form(self, obj=None):
         """
             Instantiate model creation form and return it.
@@ -1294,6 +1315,14 @@ class BaseModelView(BaseView, ActionsMixin):
             Override to implement custom behavior.
         """
         return self._list_form_class(get_form_data(), obj=obj)
+
+    def action_form(self, obj=None):
+        """
+            Instantiate model action form and return it.
+
+            Override to implement custom behavior.
+        """
+        return self._action_form_class(get_form_data(), obj=obj)
 
     def validate_form(self, form):
         """
@@ -1540,7 +1569,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         pass
 
-    def on_form_prefill (self, form, id):
+    def on_form_prefill(self, form, id):
         """
             Perform additional actions to pre-fill the edit form.
 
@@ -1659,6 +1688,24 @@ class BaseModelView(BaseView, ActionsMixin):
                         search=request.args.get('search', None),
                         filters=self._get_list_filter_args())
 
+    def _get_filters(self, filters):
+        """
+            Get active filters as dictionary of URL arguments and values
+
+            :param filters:
+                List of filters from ViewArgs object
+        """
+        kwargs = {}
+
+        if filters:
+            for i, pair in enumerate(filters):
+                idx, flt_name, value = pair
+
+                key = 'flt%d_%s' % (i, self.get_filter_arg(idx, self._filters[idx]))
+                kwargs[key] = value
+
+        return kwargs
+
     # URL generation helpers
     def _get_list_url(self, view_args):
         """
@@ -1679,12 +1726,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if view_args.page_size:
             kwargs['page_size'] = view_args.page_size
 
-        if view_args.filters:
-            for i, pair in enumerate(view_args.filters):
-                idx, flt_name, value = pair
-
-                key = 'flt%d_%s' % (i, self.get_filter_arg(idx, self._filters[idx]))
-                kwargs[key] = value
+        kwargs.update(self._get_filters(view_args.filters))
 
         return self.get_url('.index_view', **kwargs)
 
@@ -1874,6 +1916,10 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # Actions
         actions, actions_confirmation = self.get_actions_list()
+        if actions:
+            action_form = self.action_form()
+        else:
+            action_form = None
 
         clear_search_url = self._get_list_url(view_args.clone(page=0,
                                                               sort=view_args.sort,
@@ -1886,6 +1932,7 @@ class BaseModelView(BaseView, ActionsMixin):
             data=data,
             list_forms=list_forms,
             delete_form=delete_form,
+            action_form=action_form,
 
             # List
             list_columns=self._list_columns,
@@ -1901,6 +1948,7 @@ class BaseModelView(BaseView, ActionsMixin):
             page_size_url=page_size_url,
             page=view_args.page,
             page_size=page_size,
+            default_page_size=self.page_size,
 
             # Sorting
             sort_column=view_args.sort,
@@ -1916,6 +1964,7 @@ class BaseModelView(BaseView, ActionsMixin):
             filters=self._filters,
             filter_groups=self._get_filter_groups(),
             active_filters=view_args.filters,
+            filter_args=self._get_filters(view_args.filters),
 
             # Actions
             actions=actions,
@@ -2070,7 +2119,7 @@ class BaseModelView(BaseView, ActionsMixin):
         form = self.delete_form()
 
         if self.validate_form(form):
-             # id is InputRequired()
+            # id is InputRequired()
             id = form.id.data
 
             model = self.get_one(id)

@@ -1,3 +1,4 @@
+# flake8: noqa
 try:
     import wtforms_appengine
 except ImportError:

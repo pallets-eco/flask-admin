@@ -4,10 +4,10 @@ Flask-Admin
 The project was recently moved into its own organization. Please update your
 references to *git@github.com:flask-admin/flask-admin.git*.
 
-.. image:: https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.png
+.. image:: https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.svg
 	:target: https://crowdin.com/project/flask-admin
 
-.. image:: https://travis-ci.org/flask-admin/flask-admin.png?branch=master
+.. image:: https://travis-ci.org/flask-admin/flask-admin.svg?branch=master
 	:target: https://travis-ci.org/flask-admin/flask-admin
 
 Introduction
@@ -100,6 +100,8 @@ For all the tests to pass successfully, you'll need Postgres & MongoDB to be run
     CREATE EXTENSION postgis;
     CREATE EXTENSION hstore;
     \q
+
+You can also run the tests on multiple environments using *tox*.
 
 3rd Party Stuff
 ---------------

@@ -64,7 +64,8 @@ def test_model():
         "name": "test1",
         "point": '{"type": "Point", "coordinates": [125.8, 10.0]}',
         "line": '{"type": "LineString", "coordinates": [[50.2345, 94.2], [50.21, 94.87]]}',
-        "polygon": '{"type": "Polygon", "coordinates": [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]}',
+        "polygon": ('{"type": "Polygon", "coordinates": [[[100.0, 0.0], [101.0, 0.0],'
+                    ' [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]}'),
         "multi": '{"type": "MultiPoint", "coordinates": [[100.0, 0.0], [101.0, 1.0]]}',
     })
     eq_(rv.status_code, 302)

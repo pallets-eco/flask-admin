@@ -323,7 +323,7 @@ class ModelView(BaseModelView):
             field_class = type(f)
 
             if (field_class == mongoengine.ListField and
-                isinstance(f.field, mongoengine.EmbeddedDocumentField)):
+                    isinstance(f.field, mongoengine.EmbeddedDocumentField)):
                 continue
 
             if field_class == mongoengine.EmbeddedDocumentField:
@@ -626,7 +626,6 @@ class ModelView(BaseModelView):
 
         return True
 
-
     # FileField access API
     @expose('/api/file/')
     def api_file_view(self):
@@ -645,9 +644,7 @@ class ModelView(BaseModelView):
 
         return Response(data.read(),
                         content_type=data.content_type,
-                        headers={
-                            'Content-Length': data.length
-                        })
+                        headers={'Content-Length': data.length})
 
     # Default model actions
     def is_action_allowed(self, name):

@@ -201,10 +201,10 @@ class AdminModelConverter(ModelConverterBase):
             optional_types = getattr(self.view, 'form_optional_types', (Boolean,))
 
             if (
-                not column.nullable
-                and not isinstance(column.type, optional_types)
-                and not column.default
-                and not column.server_default
+                not column.nullable and
+                not isinstance(column.type, optional_types) and
+                not column.default and
+                not column.server_default
             ):
                 kwargs['validators'].append(validators.InputRequired())
 
@@ -222,7 +222,7 @@ class AdminModelConverter(ModelConverterBase):
 
                 if value is not None:
                     if getattr(default, 'is_callable', False):
-                        value = lambda: default.arg(None)
+                        value = lambda: default.arg(None)  # noqa: E731
                     else:
                         if not getattr(default, 'is_scalar', True):
                             value = None
@@ -243,7 +243,7 @@ class AdminModelConverter(ModelConverterBase):
             form_choices = getattr(self.view, 'form_choices', None)
 
             if mapper.class_ == self.view.model and form_choices:
-                choices = form_choices.get(column.key)
+                choices = form_choices.get(prop.key)
                 if choices:
                     return form.Select2Field(
                         choices=choices,
@@ -537,7 +537,7 @@ class InlineModelConverter(InlineModelConverterBase):
     def _calculate_mapping_key_pair(self, model, info):
         """
             Calculate mapping property key pair between `model` and inline model,
-                including the forward one for `model` and the reverse one for inline model. 
+                including the forward one for `model` and the reverse one for inline model.
                 Override the method to map your own inline models.
 
             :param model:
@@ -547,8 +547,6 @@ class InlineModelConverter(InlineModelConverterBase):
             :return:
                 A tuple of forward property key and reverse property key
         """
-
-
         mapper = model._sa_class_manager.mapper
 
         # Find property from target model to current model

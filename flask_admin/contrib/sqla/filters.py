@@ -86,9 +86,9 @@ class FilterSmaller(BaseSQLAFilter):
 class FilterEmpty(BaseSQLAFilter, filters.BaseBooleanFilter):
     def apply(self, query, value, alias=None):
         if value == '1':
-            return query.filter(self.get_column(alias) == None)
+            return query.filter(self.get_column(alias) == None)  # noqa: E711
         else:
-            return query.filter(self.get_column(alias) != None)
+            return query.filter(self.get_column(alias) != None)  # noqa: E711
 
     def operation(self):
         return lazy_gettext('empty')
@@ -112,7 +112,7 @@ class FilterNotInList(FilterInList):
     def apply(self, query, value, alias=None):
         # NOT IN can exclude NULL values, so "or_ == None" needed to be added
         column = self.get_column(alias)
-        return query.filter(or_(~column.in_(value), column == None))
+        return query.filter(or_(~column.in_(value), column == None))  # noqa: E711
 
     def operation(self):
         return lazy_gettext('not in list')
@@ -323,7 +323,7 @@ class EnumFilterInList(FilterInList):
     def clean(self, value):
         values = super(EnumFilterInList, self).clean(value)
         if self.enum_class is not None:
-            values = [self.enum_class(value) for value in values]
+            values = [self.enum_class(val) for val in values]
         return values
 
 
@@ -335,7 +335,7 @@ class EnumFilterNotInList(FilterNotInList):
     def clean(self, value):
         values = super(EnumFilterNotInList, self).clean(value)
         if self.enum_class is not None:
-            values = [self.enum_class(value) for value in values]
+            values = [self.enum_class(val) for val in values]
         return values
 
 

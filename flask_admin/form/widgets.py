@@ -33,10 +33,8 @@ class Select2TagsWidget(widgets.TextInput):
     You must include select2.js, form-x.x.x.js and select2 stylesheet for it to work.
     """
     def __call__(self, field, **kwargs):
-        kwargs.setdefault('data-role', u'select2')
-        kwargs.setdefault('data-tags', u'1')
+        kwargs.setdefault('data-role', u'select2-tags')
         return super(Select2TagsWidget, self).__call__(field, **kwargs)
-
 
 
 class DatePickerWidget(widgets.TextInput):

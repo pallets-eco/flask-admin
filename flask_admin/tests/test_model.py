@@ -379,7 +379,7 @@ def test_csrf():
 
     # Create with CSRF token
     rv = client.post('/admin/secure/new/', data=dict(name='test1',
-                                                   csrf_token=csrf_token))
+                                                     csrf_token=csrf_token))
     eq_(rv.status_code, 302)
 
     ###############
@@ -423,6 +423,23 @@ def test_csrf():
                      follow_redirects=True)
     eq_(rv.status_code, 200)
     ok_(u'Record was successfully deleted.' in rv.data.decode('utf-8'))
+
+    ################
+    # actions
+    ################
+    rv = client.get('/admin/secure/')
+    eq_(rv.status_code, 200)
+    ok_(u'name="csrf_token"' in rv.data.decode('utf-8'))
+
+    csrf_token = get_csrf_token(rv.data.decode('utf-8'))
+
+    # Delete without CSRF token, test validation errors
+    rv = client.post('/admin/secure/action/',
+                     data=dict(rowid='1', url='/admin/secure/', action='delete'),
+                     follow_redirects=True)
+    eq_(rv.status_code, 200)
+    ok_(u'Record was successfully deleted.' not in rv.data.decode('utf-8'))
+    ok_(u'Failed to perform action.' in rv.data.decode('utf-8'))
 
 
 def test_custom_form():
@@ -562,7 +579,7 @@ def test_export_csv():
     # test explicit use of column_export_list
     view = MockModelView(Model, view_data, can_export=True,
                          column_list=['col1', 'col2'],
-                         column_export_list=['id','col1','col2'],
+                         column_export_list=['id', 'col1', 'col2'],
                          endpoint='exportinclusion')
     admin.add_view(view)
 
@@ -612,7 +629,7 @@ def test_export_csv():
     view = MockModelView(
         Model, view_data, can_export=True, column_list=['col1', 'col2'],
         column_labels={'col1': 'Str Field', 'col2': 'Int Field'},
-        column_formatters=dict(col2=lambda v, c, m, p: m.col2*2),
+        column_formatters=dict(col2=lambda v, c, m, p: m.col2 * 2),
         endpoint="types_and_formatters"
     )
     admin.add_view(view)
@@ -630,8 +647,8 @@ def test_export_csv():
 
     view = MockModelView(
         Model, view_data, can_export=True, column_list=['col1', 'col2'],
-        column_formatters_export=dict(col2=lambda v, c, m, p: m.col2*3),
-        column_formatters=dict(col2=lambda v, c, m, p: m.col2*2),  # overridden
+        column_formatters_export=dict(col2=lambda v, c, m, p: m.col2 * 3),
+        column_formatters=dict(col2=lambda v, c, m, p: m.col2 * 2),  # overridden
         column_type_formatters_export=type_formatters,
         endpoint="export_types_and_formatters"
     )

@@ -2,7 +2,6 @@ import logging
 import warnings
 import inspect
 
-from speaklater import is_lazy_string, make_lazy_string
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import joinedload, aliased
 from sqlalchemy.sql.expression import desc
@@ -53,7 +52,7 @@ class ModelView(BaseModelView):
     """
 
     column_select_related_list = ObsoleteAttr('column_select_related',
-                                             'list_select_related',
+                                              'list_select_related',
                                               None)
     """
         List of parameters for SQLAlchemy `subqueryload`. Overrides `column_auto_select_related`
@@ -631,7 +630,7 @@ class ModelView(BaseModelView):
             # If filter related to relation column (represented by
             # relation_name.target_column) we collect here relation name
             joined_column_name = None
-            if '.' in name:
+            if isinstance(name, string_types) and '.' in name:
                 joined_column_name = name.split('.')[0]
 
             # Join not needed for hybrid properties
@@ -652,14 +651,11 @@ class ModelView(BaseModelView):
                 if not isinstance(name, string_types):
                     visible_name = self.get_column_name(name.property.key)
                 else:
-                    column_name = self.get_column_name(name)
-
-                    def prettify():
-                        return column_name.replace('.', ' / ')
-                    if is_lazy_string(column_name):
-                        visible_name = make_lazy_string(prettify)
+                    if self.column_labels and name in self.column_labels:
+                        visible_name = self.column_labels[name]
                     else:
-                        visible_name = prettify()
+                        visible_name = self.get_column_name(name)
+                        visible_name = visible_name.replace('.', ' / ')
 
             type_name = type(column.type).__name__
 
@@ -835,12 +831,12 @@ class ModelView(BaseModelView):
                 if isinstance(column, tuple):
                     query = query.order_by(*map(desc, column))
                 else:
-	                query = query.order_by(desc(column))
+                    query = query.order_by(desc(column))
             else:
                 if isinstance(column, tuple):
                     query = query.order_by(*column)
                 else:
-	                query = query.order_by(column)
+                    query = query.order_by(column)
 
         return query, joins
 
@@ -944,7 +940,8 @@ class ModelView(BaseModelView):
                 spec = inspect.getargspec(flt.apply)
 
                 if len(spec.args) == 3:
-                    warnings.warn('Please update your custom filter %s to include additional `alias` parameter.' % repr(flt))
+                    warnings.warn('Please update your custom filter %s to '
+                                  'include additional `alias` parameter.' % repr(flt))
                 else:
                     raise
 
