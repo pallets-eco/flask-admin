@@ -594,7 +594,7 @@ class ModelView(BaseModelView):
                     if column.foreign_keys or column.primary_key:
                         continue
 
-                    visible_name = '%s / %s' % (self.get_column_name(attr.prop.table.name),
+                    visible_name = '%s / %s' % (self.get_column_name(attr.prop.target.name),
                                                 self.get_column_name(p.key))
 
                     type_name = type(column.type).__name__
