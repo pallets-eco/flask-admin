@@ -106,7 +106,7 @@ class DeleteRowAction(TemplateLinkRowAction):
     def __init__(self):
         super(DeleteRowAction, self).__init__(
             'row_actions.delete_row',
-            gettext('Edit Record'))
+            gettext('Delete Record'))
 
 
 # Macro helper
