@@ -381,12 +381,12 @@ class FilterConverter(filters.BaseFilterConverter):
     def conv_bool(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.bool_filters]
 
-    @filters.convert('int', 'integer', 'smallinteger', 'smallint', 'numeric',
+    @filters.convert('int', 'integer', 'smallinteger', 'smallint',
                      'biginteger', 'bigint', 'mediumint')
     def conv_int(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.int_filters]
 
-    @filters.convert('float', 'real', 'decimal', 'double_precision', 'double')
+    @filters.convert('float', 'real', 'decimal', 'numeric', 'double_precision', 'double')
     def conv_float(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.float_filters]
 
