@@ -1,7 +1,7 @@
 import warnings
 
 from wtforms import fields, validators
-from sqlalchemy import Boolean, Column
+from sqlalchemy import Boolean, Column, BigInteger, Integer, SmallInteger
 
 from flask_admin import form
 from flask_admin.model.form import (converts, ModelConverterBase,
@@ -314,9 +314,21 @@ class AdminModelConverter(ModelConverterBase):
 
     @converts('Integer')  # includes BigInteger and SmallInteger
     def handle_integer_types(self, column, field_args, **extra):
+        if isinstance(column.type, SmallInteger):
+            _min = -32768
+            _max = 32767
+        elif isinstance(column.type, Integer):
+            _min = -2147483648
+            _max = 2147483647
+        elif isinstance(column.type, BigInteger):
+            _min = -9223372036854775808
+            _max = 9223372036854775807
+
         unsigned = getattr(column.type, 'unsigned', False)
         if unsigned:
-            field_args['validators'].append(validators.NumberRange(min=0))
+            _min = 0
+
+        field_args['validators'].append(validators.NumberRange(min=_min, max=_max))
         return fields.IntegerField(**field_args)
 
     @converts('Numeric')  # includes DECIMAL, Float/FLOAT, REAL, and DOUBLE
