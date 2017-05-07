@@ -106,8 +106,19 @@
         }
 
         var editableLayers;
+
+        var removeLayer = function (layer) {
+          editableLayers.removeLayer(layer);
+          saveToTextArea();
+        };
+
+        var bindPopup = function (layer) {
+          var popupContent = $('<div>Remove</div>').on('click', removeLayer.bind(null, layer)).get(0);
+          layer.bindPopup(popupContent);
+        };
+
         if ($el.val()) {
-          editableLayers = new L.geoJson(JSON.parse($el.val()));
+          editableLayers = new L.geoJson(JSON.parse($el.val())).eachLayer(bindPopup);
           center = center || editableLayers.getBounds().getCenter();
         } else {
           editableLayers = new L.geoJson();
@@ -254,6 +265,7 @@
             editableLayers.clearLayers();
           }
           editableLayers.addLayer(e.layer);
+          bindPopup(e.layer);
           saveToTextArea();
         })
         map.on('draw:edited', saveToTextArea);
