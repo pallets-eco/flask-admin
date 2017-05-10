@@ -1070,8 +1070,8 @@ class ModelView(BaseModelView):
         try:
             model = self.model()
             form.populate_obj(model)
-            self.session.add(model)
             self._on_model_change(form, model, True)
+            self.session.add(model)
             self.session.commit()
         except Exception as ex:
             if not self.handle_view_exception(ex):
