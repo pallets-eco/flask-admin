@@ -151,7 +151,10 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
     $('a.filter', filtersElement).click(function() {
         var name = ($(this).text().trim !== undefined ? $(this).text().trim() : $(this).text().replace(/^\s+|\s+$/g,''));
         
-        addFilter(name, filterGroups[name], false, null);
+        // allow immediate typing in text filter box
+        if ($filterField.attr('type') === 'text') {
+            $filterField.focus();
+        }
         
         $('button', $root).show();        
     });
