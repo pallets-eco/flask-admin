@@ -126,11 +126,11 @@
                 {{ size|filesizeformat }}
             </td>
             {% endif %}
+            {% endif %}
             {% if admin_view.is_column_visible('date') %}
             <td>
                 {{ timestamp_format(date) }}
             </td>
-            {% endif %}
             {% endif %}
             {% endblock %}
         </tr>
