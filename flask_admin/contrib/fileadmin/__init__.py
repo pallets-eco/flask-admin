@@ -822,6 +822,12 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         sort_desc = request.args.get('desc', 0, type=int)
 
         if sort_column is None:
+            if self.default_sort_column:
+                sort_column = self.default_sort_column
+            if self.default_desc:
+                sort_desc = self.default_desc
+
+        if sort_column is None:
             # Sort by name
             items.sort(key=itemgetter(0))
             # Sort by type
