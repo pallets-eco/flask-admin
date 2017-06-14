@@ -848,13 +848,13 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         else:
             action_form = None
 
-        def sort_url(column, invert=False):
+        def sort_url(column, path, invert=False):
             desc = None
 
             if invert and not sort_desc:
                 desc = 1
 
-            return self.get_url('.index_view', sort=column, desc=desc)
+            return self.get_url('.index_view', path=path, sort=column, desc=desc)
 
         return self.render(self.list_template,
                            dir_path=path,
