@@ -851,6 +851,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         def sort_url(column, path, invert=False):
             desc = None
 
+            if not path:
+                path = None
+
             if invert and not sort_desc:
                 desc = 1
 
