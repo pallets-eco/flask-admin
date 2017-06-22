@@ -295,6 +295,9 @@ class ModelView(BaseModelView):
         """
         return self.coll.find_one({'_id': self._get_valid_id(id)})
 
+    def find_in(self, ids):
+        return self.coll.find({'_id': {'$in': [self._get_valid_id(i) for i in ids]}})
+
     def edit_form(self, obj):
         """
             Create edit form from the MongoDB document
@@ -385,12 +388,11 @@ class ModelView(BaseModelView):
             lazy_gettext('Are you sure you want to delete selected records?'))
     def action_delete(self, ids):
         try:
-            count = 0
+            deleted_models = self.find_in(ids)
+            for model in deleted_models:
+                self.delete_model(model)
 
-            # TODO: Optimize me
-            for pk in ids:
-                if self.delete_model(self.get_one(pk)):
-                    count += 1
+            count = len(deleted_models)
 
             flash(ngettext('Record was successfully deleted.',
                            '%(count)s records were successfully deleted.',
