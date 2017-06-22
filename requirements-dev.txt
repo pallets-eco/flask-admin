@@ -12,7 +12,5 @@ shapely==1.5.9
 geoalchemy2
 psycopg2
 nose
-sphinx
-sphinx-intl
 coveralls
 pylint
