@@ -210,7 +210,13 @@ class ModelView(BaseModelView):
     def init_search(self):
         if self.column_searchable_list:
             for p in self.column_searchable_list:
-                if isinstance(p, string_types):
+
+                if "." in p:
+                    m, p = p.split('.')
+                    m = getattr(self.model, m).rel_model
+                    p = getattr(m, p)
+
+                elif isinstance(p, string_types):
                     p = getattr(self.model, p)
 
                 field_type = type(p)
