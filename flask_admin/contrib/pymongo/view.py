@@ -238,7 +238,7 @@ class ModelView(BaseModelView):
 
             for flt, flt_name, value in filters:
                 f = self._filters[flt]
-                data = f.apply(data, value)
+                data = f.apply(data, f.clean(value))
 
             if data:
                 if len(data) == 1:
