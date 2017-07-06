@@ -360,6 +360,12 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(BaseModelView):
                 column_sortable_list = ('name', ('user', 'user.username'))
 
+        You can also specify multiple fields to be used while sorting::
+
+            class MyModelView(BaseModelView):
+                column_sortable_list = (
+                    'name', ('user', ('user.first_name', 'user.last_name')))
+
         When using SQLAlchemy models, model attributes can be used instead
         of strings::
 
@@ -381,6 +387,13 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 column_default_sort = ('user', True)
+
+        You can also sort by multiple columns. In following example,
+        items will be sorted by email ascending first, and then sorted by user
+        descending::
+
+            class MyModelView(BaseModelView):
+                column_default_sort = ('email', ('user', True))
     """
 
     column_searchable_list = ObsoleteAttr('column_searchable_list',
