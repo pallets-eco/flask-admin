@@ -1689,8 +1689,8 @@ class BaseModelView(BaseView, ActionsMixin):
                         filters=self._get_list_filter_args(),
                         extra_args=dict([
                             (k, v) for k, v in request.args.items()
-                            if k not in ('page', 'page_size', 'sort', 'desc', 'search', )
-                                and not k.startswith('flt')
+                            if k not in ('page', 'page_size', 'sort', 'desc', 'search', ) and
+                            not k.startswith('flt')
                         ]))
 
     def _get_filters(self, filters):
