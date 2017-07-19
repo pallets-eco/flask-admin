@@ -830,7 +830,8 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             # Sort by type
             items.sort(key=itemgetter(2), reverse=True)
             # Sort by modified date
-            # items.sort(key=lambda x: (x[0], x[1], x[2], x[3], datetime.fromtimestamp(x[4])), reverse=True)
+            if not self._on_windows:
+                items.sort(key=lambda x: (x[0], x[1], x[2], x[3], datetime.fromtimestamp(x[4])), reverse=True)
         else:
             column_index = self.possible_columns.index(sort_column)
             items.sort(key=itemgetter(column_index), reverse=sort_desc)
