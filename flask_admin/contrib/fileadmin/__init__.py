@@ -593,6 +593,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             :param path:
                 Static file path
         """
+        if self._on_windows:
+            path = path.replace('\\', '/')
+
         if self.is_file_editable(path):
             route = '.edit'
         else:
@@ -818,8 +821,8 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             if self.is_accessible_path(rel_path):
                 items.append(item)
 
-        sort_column = request.args.get('sort', None, type=str)
-        sort_desc = request.args.get('desc', 0, type=int)
+        sort_column = request.args.get('sort', None, type=str) or self.default_sort_column
+        sort_desc = request.args.get('desc', 0, type=int) or self.default_desc
 
         if sort_column is None:
             # Sort by name
@@ -827,7 +830,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             # Sort by type
             items.sort(key=itemgetter(2), reverse=True)
             # Sort by modified date
-            items.sort(key=lambda x: (x[0], x[1], x[2], x[3], datetime.fromtimestamp(x[4])), reverse=True)
+            # items.sort(key=lambda x: (x[0], x[1], x[2], x[3], datetime.fromtimestamp(x[4])), reverse=True)
         else:
             column_index = self.possible_columns.index(sort_column)
             items.sort(key=itemgetter(column_index), reverse=sort_desc)
