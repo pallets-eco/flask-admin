@@ -593,6 +593,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             :param path:
                 Static file path
         """
+        if self._on_windows:
+            path = path.replace('\\', '/')
+
         if self.is_file_editable(path):
             route = '.edit'
         else:
