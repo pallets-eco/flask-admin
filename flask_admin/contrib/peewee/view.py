@@ -183,7 +183,6 @@ class ModelView(BaseModelView):
 
     def get_pk_value(self, model):
         if self.model._meta.composite_key:
-            # return self.model.get(**dict(zip(self.model._meta.primary_key.field_names, id)))
             return tuple([
                 model._data[field_name]
                 for field_name in self.model._meta.primary_key.field_names])
