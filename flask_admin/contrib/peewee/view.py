@@ -214,7 +214,7 @@ class ModelView(BaseModelView):
                     p = getattr(self.model, p)
 
                 # Check type
-                if not isinstance(p, (CharField, TextField, )):
+                if not isinstance(p, (CharField, TextField)):
                         raise Exception('Can only search on text columns. ' +
                                         'Failed to setup search for "%s"' % p)
 
