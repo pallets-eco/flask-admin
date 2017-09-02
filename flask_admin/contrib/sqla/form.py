@@ -264,7 +264,7 @@ class AdminModelConverter(ModelConverterBase):
 
     @classmethod
     def _string_common(cls, column, field_args, **extra):
-        if isinstance(column.type.length, int) and column.type.length:
+        if hasattr(column.type, 'length') and isinstance(column.type.length, int) and column.type.length:
             field_args['validators'].append(validators.Length(max=column.type.length))
 
     @converts('String')  # includes VARCHAR, CHAR, and Unicode
@@ -290,7 +290,7 @@ class AdminModelConverter(ModelConverterBase):
         self._string_common(column=column, field_args=field_args, **extra)
         return fields.StringField(**field_args)
 
-    @converts('Text', 'LargeBinary', 'Binary')  # includes UnicodeText
+    @converts('Text', 'LargeBinary', 'Binary', 'CIText')  # includes UnicodeText
     def conv_Text(self, field_args, **extra):
         self._string_common(field_args=field_args, **extra)
         return fields.TextAreaField(**field_args)
