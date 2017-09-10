@@ -1051,7 +1051,10 @@ class ModelView(BaseModelView):
     # Error handler
     def handle_view_exception(self, exc):
         if isinstance(exc, IntegrityError):
-            if current_app.config.get('ADMIN_RAISE_ON_VIEW_EXCEPTION'):
+            if current_app.config.get(
+                'ADMIN_RAISE_ON_INTEGRITY_ERROR',
+                current_app.config.get('ADMIN_RAISE_ON_VIEW_EXCEPTION')
+            ):
                 raise
             else:
                 flash(gettext('Integrity error. %(message)s', message=text_type(exc)), 'error')
