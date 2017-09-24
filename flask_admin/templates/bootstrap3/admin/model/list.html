@@ -3,6 +3,7 @@
 {% import 'admin/static.html' as admin_static with context%}
 {% import 'admin/model/layout.html' as model_layout with context %}
 {% import 'admin/actions.html' as actionlib with context %}
+{% import 'admin/model/row_actions.html' as row_actions with context %}
 
 {% block head %}
     {{ super() }}
@@ -38,6 +39,12 @@
         </li>
         {% endif %}
 
+        {% if can_set_page_size %}
+        <li class="dropdown">
+            {{ model_layout.page_size_form(page_size_url) }}
+        </li>
+        {% endif %}
+
         {% if actions %}
         <li class="dropdown">
             {{ actionlib.dropdown(actions) }}
@@ -59,6 +66,7 @@
     {% endif %}
 
     {% block model_list_table %}
+    <div class="table-responsive">
     <table class="table table-striped table-bordered table-hover model-list">
         <thead>
             <tr>
@@ -73,8 +81,8 @@
                         <th class="col-md-1">&nbsp;</th>
                         {% endif %}
                     {% endblock %}
-                    {% set column = 0 %}
                     {% for c, name in list_columns %}
+                    {% set column = loop.index0 %}
                     <th class="column-header col-{{c}}">
                         {% if admin_view.is_sortable(c) %}
                             {% if sort_column == column %}
@@ -99,7 +107,6 @@
                             ></a>
                         {% endif %}
                     </th>
-                    {% set column = column + 1 %}
                     {% endfor %}
                 {% endblock %}
             </tr>
@@ -116,38 +123,9 @@
                     {% if admin_view.column_display_actions %}
                     <td class="list-buttons-column">
                         {% block list_row_actions scoped %}
-                            {%- if admin_view.can_view_details -%}
-                                {%- if admin_view.details_modal -%}
-                                    {{ lib.add_modal_button(url=get_url('.details_view', id=get_pk_value(row), url=return_url, modal=True), title=_gettext('View Record'), content='<span class="fa fa-eye glyphicon glyphicon-eye-open"></span>') }}
-                                {% else %}
-                                    <a class="icon" href="{{ get_url('.details_view', id=get_pk_value(row), url=return_url) }}" title="{{ _gettext('View Record') }}">
-                                        <span class="fa fa-eye glyphicon glyphicon-eye-open"></span>
-                                    </a>
-                                {%- endif -%}
-                            {%- endif -%}
-                            {%- if admin_view.can_edit -%}
-                                {%- if admin_view.edit_modal -%}
-                                    {{ lib.add_modal_button(url=get_url('.edit_view', id=get_pk_value(row), url=return_url, modal=True), title=_gettext('Edit Record'), content='<span class="fa fa-pencil glyphicon glyphicon-pencil"></span>') }}
-                                {% else %}
-                                    <a class="icon" href="{{ get_url('.edit_view', id=get_pk_value(row), url=return_url) }}" title="{{ _gettext('Edit Record') }}">
-                                        <span class="fa fa-pencil glyphicon glyphicon-pencil"></span>
-                                    </a>
-                                {%- endif -%}
-                            {%- endif -%}
-                            {%- if admin_view.can_delete -%}
-                            <form class="icon" method="POST" action="{{ get_url('.delete_view') }}">
-                                {{ delete_form.id(value=get_pk_value(row)) }}
-                                {{ delete_form.url(value=return_url) }}
-                                {% if delete_form.csrf_token %}
-                                {{ delete_form.csrf_token }}
-                                {% elif csrf_token %}
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                {% endif %}
-                                <button onclick="return confirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="Delete record">
-                                    <span class="fa fa-trash glyphicon glyphicon-trash"></span>
-                                </button>
-                            </form>
-                            {%- endif -%}
+                          {% for action in list_row_actions %}
+                          {{ action.render_ctx(get_pk_value(row), row) }}
+                          {% endfor %}
                         {% endblock %}
                     </td>
                     {%- endif -%}
@@ -181,6 +159,7 @@
         </tr>
         {% endfor %}
     </table>
+    </div>
     {% block list_pager %}
     {% if num_pages is not none %}
     {{ lib.pager(page, num_pages, pager_url) }}
@@ -222,5 +201,22 @@
                 );
             {% endif %}
         })(jQuery);
+
+        // Catch exception when closing dialog with <esc> key
+        // and prevent accidental deletions.
+        function safeConfirm(msg) {
+          try {
+            var isconfirmed = confirm(msg);
+            if (isconfirmed == true) {
+              return true;
+            }
+            else {
+              return false;
+            }
+          }
+          catch(err) {
+            return false;
+          }
+        }
     </script>
 {% endblock %}

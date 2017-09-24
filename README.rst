@@ -4,10 +4,10 @@ Flask-Admin
 The project was recently moved into its own organization. Please update your
 references to *git@github.com:flask-admin/flask-admin.git*.
 
-.. image:: https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.png
+.. image:: https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.svg
 	:target: https://crowdin.com/project/flask-admin
 
-.. image:: https://travis-ci.org/flask-admin/flask-admin.png?branch=master
+.. image:: https://travis-ci.org/flask-admin/flask-admin.svg?branch=master
 	:target: https://travis-ci.org/flask-admin/flask-admin
 
 Introduction
@@ -49,15 +49,14 @@ To run the examples on your local environment, one at a time, do something like:
 
 Documentation
 -------------
-Flask-Admin is extensively documented, you can find all of the documentation at `http://flask-admin.readthedocs.org/en/latest/ <http://flask-admin.readthedocs.org/en/latest/>`_.
+Flask-Admin is extensively documented, you can find all of the documentation at `https://flask-admin.readthedocs.io/en/latest/ <https://flask-admin.readthedocs.io/en/latest/>`_.
 
 The docs are auto-generated from the *.rst* files in the */doc* folder. So if you come across any errors, or
 if you think of anything else that should be included, then please make the changes and submit them as a *pull-request*.
 
 To build the docs in your local environment, from the project directory::
 
-    pip install -r requirements-dev.txt
-    sudo make html
+    tox -e docs-html
 
 And if you want to preview any *.rst* snippets that you may want to contribute, go to `http://rst.ninjs.org/ <http://rst.ninjs.org/>`_.
 
@@ -75,7 +74,7 @@ Or alternatively, you can download the repository and install manually by doing:
 
 Tests
 -----
-Test are run with *nose*. If you are not familiar with this package you can get some more info from `their website <http://nose.readthedocs.org/>`_.
+Test are run with *nose*. If you are not familiar with this package you can get some more info from `their website <https://nose.readthedocs.io/>`_.
 
 To run the tests, from the project directory, simply::
 
@@ -94,6 +93,8 @@ For all the tests to pass successfully, you'll need Postgres & MongoDB to be run
 
     CREATE DATABASE flask_admin_test;
     CREATE EXTENSION postgis;
+
+You can also run the tests on multiple environments using *tox*.
 
 3rd Party Stuff
 ---------------

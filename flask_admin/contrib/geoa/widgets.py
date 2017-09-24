@@ -22,7 +22,7 @@ class LeafletWidget(TextArea):
         editable.
     """
     def __init__(
-            self, width=300, height=300, center=None,
+            self, width='auto', height=350, center=None,
             zoom=None, min_zoom=None, max_zoom=None, max_bounds=None):
         self.width = width
         self.height = height
@@ -38,9 +38,9 @@ class LeafletWidget(TextArea):
         kwargs.setdefault('data-geometry-type', gtype)
 
         # set optional values from constructor
-        if not "data-width" in kwargs:
+        if "data-width" not in kwargs:
             kwargs["data-width"] = self.width
-        if not "data-height" in kwargs:
+        if "data-height" not in kwargs:
             kwargs["data-height"] = self.height
         if self.center:
             kwargs["data-lat"] = lat(self.center)

@@ -149,7 +149,7 @@
           }
         } else {
           // look up user's location by IP address
-          $.getJSON("http://ip-api.com/json/?callback=?", function(data) {
+          $.getJSON("//ip-api.com/json/?callback=?", function(data) {
             map.setView([data["lat"], data["lon"]], 12);
           }).fail(function() {
               map.setView([0, 0], 1)
@@ -158,8 +158,8 @@
 
         // set up tiles
         var mapboxVersion = window.MAPBOX_ACCESS_TOKEN ? 4 : 3;
-        L.tileLayer('http://{s}.tiles.mapbox.com/v'+mapboxVersion+'/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png?access_token='+window.MAPBOX_ACCESS_TOKEN, {
-          attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        L.tileLayer('//{s}.tiles.mapbox.com/v'+mapboxVersion+'/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png?access_token='+window.MAPBOX_ACCESS_TOKEN, {
+          attribution: 'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="//mapbox.com">Mapbox</a>',
           maxZoom: 18
         }).addTo(map);
 
@@ -195,34 +195,35 @@
         }
         var drawControl = new L.Control.Draw(drawOptions);
         map.addControl(drawControl);
+        if (window.MAPBOX_SEARCH) {
+          var circle = L.circleMarker([0, 0]);
+          var $autocompleteEl = $('<input style="position: absolute; z-index: 9999; display: block; margin: -42px 0 0 10px; width: 50%">');
+          var $form = $($el.get(0).form);
 
-        if (window.google) {
-          var geocoder = new google.maps.Geocoder();
-
-          function googleGeocoding(text, callResponse) {
-            geocoder.geocode({address: text}, callResponse);
-          }
-
-          function filterJSONCall(rawjson) {
-            var json = {}, key, loc, disp = [];
-            for (var i in rawjson) {
-              key = rawjson[i].formatted_address;
-              loc = L.latLng(rawjson[i].geometry.location.lat(),
-                             rawjson[i].geometry.location.lng());
-              json[key] = loc;
+          $autocompleteEl.insertAfter($map);
+          $form.on('submit', function (evt) {
+            if ($autocompleteEl.is(':focus')) {
+              evt.preventDefault();
+              return false;
             }
-            return json;
-          }
-
-          map.addControl(new L.Control.Search({
-            callData: googleGeocoding,
-            filterJSON: filterJSONCall,
-            markerLocation: true,
-            autoType: false,
-            autoCollapse: true,
-            minLength: 2,
-            zoom: 10
-          }));
+          });
+          var autocomplete = new google.maps.places.Autocomplete($autocompleteEl.get(0));
+          autocomplete.addListener('place_changed', function() {
+            var place = autocomplete.getPlace();
+            var loc = place.geometry.location;
+            var viewport = place.geometry.viewport;
+            circle.setLatLng(L.latLng(loc.lat(), loc.lng()));
+            circle.addTo(map);
+            if (viewport) {
+              map.fitBounds([
+                viewport.getNorthEast().toJSON(),
+                viewport.getSouthWest().toJSON(),
+              ]);
+            }
+            else {
+              map.fitBounds(circle.getBounds());
+            }
+          });
         }
 
 

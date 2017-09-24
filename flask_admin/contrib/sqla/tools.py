@@ -1,10 +1,15 @@
-from sqlalchemy import tuple_, or_, and_
+import types
+
+from sqlalchemy import tuple_, or_, and_, inspect
+from sqlalchemy.ext.declarative.clsregistry import _class_resolver
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
 from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 from flask_admin._compat import filter_list, string_types
-from flask_admin.tools import iterencode, iterdecode, escape
+from flask_admin.tools import iterencode, iterdecode, escape  # noqa: F401
 
 
 def parse_like_term(term):
@@ -74,9 +79,9 @@ def tuple_operator_in(model_pk, ids):
     for id in ids:
         k = []
         for i in range(len(model_pk)):
-            k.append(eq(model_pk[i],id[i]))
+            k.append(eq(model_pk[i], id[i]))
         l.append(and_(*k))
-    if len(l)>=1:
+    if len(l) >= 1:
         return or_(*l)
     else:
         return None
@@ -112,10 +117,10 @@ def get_query_for_ids(modelquery, model, ids):
 
 def get_columns_for_field(field):
     if (not field or
-        not hasattr(field, 'property') or
-        not hasattr(field.property, 'columns') or
-        not field.property.columns):
-            raise Exception('Invalid field %s: does not contains any columns.' % field)
+            not hasattr(field, 'property') or
+            not hasattr(field.property, 'columns') or
+            not field.property.columns):
+        raise Exception('Invalid field %s: does not contains any columns.' % field)
 
     return field.property.columns
 
@@ -127,7 +132,7 @@ def need_join(model, table):
     return table not in model._sa_class_manager.mapper.tables
 
 
-def get_field_with_path(model, name):
+def get_field_with_path(model, name, return_remote_proxy_attr=True):
     """
         Resolve property by name and figure out its join path.
 
@@ -140,24 +145,30 @@ def get_field_with_path(model, name):
         # create a copy to keep original model as `model`
         current_model = model
 
+        value = None
         for attribute in name.split('.'):
             value = getattr(current_model, attribute)
 
-            if (hasattr(value, 'property') and
-                    hasattr(value.property, 'direction')):
-                current_model = value.property.mapper.class_
+            if is_association_proxy(value):
+                relation_values = value.attr
+                if return_remote_proxy_attr:
+                    value = value.remote_attr
+            else:
+                relation_values = [value]
 
-                table = current_model.__table__
+            for relation_value in relation_values:
+                if is_relationship(relation_value):
+                    current_model = relation_value.property.mapper.class_
+                    table = current_model.__table__
+                    if need_join(model, table):
+                        path.append(relation_value)
 
-                if need_join(model, table):
-                    path.append(value)
-
-            attr = value
+        attr = value
     else:
         attr = name
 
         # Determine joins if table.column (relation object) is provided
-        if isinstance(attr, InstrumentedAttribute):
+        if isinstance(attr, InstrumentedAttribute) or is_association_proxy(attr):
             columns = get_columns_for_field(attr)
 
             if len(columns) > 1:
@@ -170,3 +181,39 @@ def get_field_with_path(model, name):
                 path.append(column.table)
 
     return attr, path
+
+
+# copied from sqlalchemy-utils
+def get_hybrid_properties(model):
+    return dict(
+        (key, prop)
+        for key, prop in inspect(model).all_orm_descriptors.items()
+        if isinstance(prop, hybrid_property)
+    )
+
+
+def is_hybrid_property(model, attr_name):
+    if isinstance(attr_name, string_types):
+        names = attr_name.split('.')
+        last_model = model
+        for i in range(len(names) - 1):
+            attr = getattr(last_model, names[i])
+            if is_association_proxy(attr):
+                attr = attr.remote_attr
+            last_model = attr.property.argument
+            if isinstance(last_model, _class_resolver):
+                last_model = model._decl_class_registry[last_model.arg]
+            elif isinstance(last_model, types.FunctionType):
+                last_model = last_model()
+        last_name = names[-1]
+        return last_name in get_hybrid_properties(last_model)
+    else:
+        return attr_name.name in get_hybrid_properties(model)
+
+
+def is_relationship(attr):
+    return hasattr(attr, 'property') and hasattr(attr.property, 'direction')
+
+
+def is_association_proxy(attr):
+    return hasattr(attr, 'extension_type') and attr.extension_type == ASSOCIATION_PROXY

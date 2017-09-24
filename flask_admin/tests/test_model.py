@@ -379,7 +379,7 @@ def test_csrf():
 
     # Create with CSRF token
     rv = client.post('/admin/secure/new/', data=dict(name='test1',
-                                                   csrf_token=csrf_token))
+                                                     csrf_token=csrf_token))
     eq_(rv.status_code, 302)
 
     ###############
@@ -423,6 +423,23 @@ def test_csrf():
                      follow_redirects=True)
     eq_(rv.status_code, 200)
     ok_(u'Record was successfully deleted.' in rv.data.decode('utf-8'))
+
+    ################
+    # actions
+    ################
+    rv = client.get('/admin/secure/')
+    eq_(rv.status_code, 200)
+    ok_(u'name="csrf_token"' in rv.data.decode('utf-8'))
+
+    csrf_token = get_csrf_token(rv.data.decode('utf-8'))
+
+    # Delete without CSRF token, test validation errors
+    rv = client.post('/admin/secure/action/',
+                     data=dict(rowid='1', url='/admin/secure/', action='delete'),
+                     follow_redirects=True)
+    eq_(rv.status_code, 200)
+    ok_(u'Record was successfully deleted.' not in rv.data.decode('utf-8'))
+    ok_(u'Failed to perform action.' in rv.data.decode('utf-8'))
 
 
 def test_custom_form():
@@ -562,7 +579,7 @@ def test_export_csv():
     # test explicit use of column_export_list
     view = MockModelView(Model, view_data, can_export=True,
                          column_list=['col1', 'col2'],
-                         column_export_list=['id','col1','col2'],
+                         column_export_list=['id', 'col1', 'col2'],
                          endpoint='exportinclusion')
     admin.add_view(view)
 
@@ -612,7 +629,7 @@ def test_export_csv():
     view = MockModelView(
         Model, view_data, can_export=True, column_list=['col1', 'col2'],
         column_labels={'col1': 'Str Field', 'col2': 'Int Field'},
-        column_formatters=dict(col2=lambda v, c, m, p: m.col2*2),
+        column_formatters=dict(col2=lambda v, c, m, p: m.col2 * 2),
         endpoint="types_and_formatters"
     )
     admin.add_view(view)
@@ -630,8 +647,8 @@ def test_export_csv():
 
     view = MockModelView(
         Model, view_data, can_export=True, column_list=['col1', 'col2'],
-        column_formatters_export=dict(col2=lambda v, c, m, p: m.col2*3),
-        column_formatters=dict(col2=lambda v, c, m, p: m.col2*2),  # overridden
+        column_formatters_export=dict(col2=lambda v, c, m, p: m.col2 * 3),
+        column_formatters=dict(col2=lambda v, c, m, p: m.col2 * 2),  # overridden
         column_type_formatters_export=type_formatters,
         endpoint="export_types_and_formatters"
     )
@@ -726,3 +743,70 @@ def test_export_csv():
     rv = client.get('/admin/macro_exception_macro_override/export/csv/')
     data = rv.data.decode('utf-8')
     eq_(rv.status_code, 500)
+
+
+def test_list_row_actions():
+    app, admin = setup()
+    client = app.test_client()
+
+    from flask_admin.model import template
+
+    # Test default actions
+    view = MockModelView(Model, endpoint='test')
+    admin.add_view(view)
+
+    actions = view.get_list_row_actions()
+    ok_(isinstance(actions[0], template.EditRowAction))
+    ok_(isinstance(actions[1], template.DeleteRowAction))
+
+    rv = client.get('/admin/test/')
+    eq_(rv.status_code, 200)
+
+    # Test default actions
+    view = MockModelView(Model, endpoint='test1', can_edit=False, can_delete=False, can_view_details=True)
+    admin.add_view(view)
+
+    actions = view.get_list_row_actions()
+    eq_(len(actions), 1)
+    ok_(isinstance(actions[0], template.ViewRowAction))
+
+    rv = client.get('/admin/test1/')
+    eq_(rv.status_code, 200)
+
+    # Test popups
+    view = MockModelView(Model, endpoint='test2',
+                         can_view_details=True,
+                         details_modal=True,
+                         edit_modal=True)
+    admin.add_view(view)
+
+    actions = view.get_list_row_actions()
+    ok_(isinstance(actions[0], template.ViewPopupRowAction))
+    ok_(isinstance(actions[1], template.EditPopupRowAction))
+    ok_(isinstance(actions[2], template.DeleteRowAction))
+
+    rv = client.get('/admin/test2/')
+    eq_(rv.status_code, 200)
+
+    # Test custom views
+    view = MockModelView(Model, endpoint='test3',
+                         column_extra_row_actions=[
+                             template.LinkRowAction('glyphicon glyphicon-off', 'http://localhost/?id={row_id}'),
+                             template.EndpointLinkRowAction('glyphicon glyphicon-test', 'test1.index_view')
+                         ])
+    admin.add_view(view)
+
+    actions = view.get_list_row_actions()
+    ok_(isinstance(actions[0], template.EditRowAction))
+    ok_(isinstance(actions[1], template.DeleteRowAction))
+    ok_(isinstance(actions[2], template.LinkRowAction))
+    ok_(isinstance(actions[3], template.EndpointLinkRowAction))
+
+    rv = client.get('/admin/test3/')
+    eq_(rv.status_code, 200)
+
+    data = rv.data.decode('utf-8')
+
+    ok_('glyphicon-off' in data)
+    ok_('http://localhost/?id=' in data)
+    ok_('glyphicon-test' in data)

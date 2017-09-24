@@ -148,22 +148,11 @@ classes as follows::
         widget = CKTextAreaWidget()
 
     class MessageAdmin(ModelView):
+        extra_js = ['//cdn.ckeditor.com/4.6.0/standard/ckeditor.js']
+
         form_overrides = {
             'body': CKTextAreaField
         }
-        create_template = 'ckeditor.html'
-        edit_template = 'ckeditor.html'
-
-For this to work, you would also need to create a template that extends the default
-functionality by including the necessary CKEditor javascript on the `create` and
-`edit` pages. Save this in `templates/ckeditor.html`::
-
-    {% extends 'admin/model/edit.html' %}
-
-    {% block tail %}
-      {{ super() }}
-      <script src="//cdn.ckeditor.com/4.5.1/standard/ckeditor.js"></script>
-    {% endblock %}
 
 File & Image Fields
 *******************
@@ -189,7 +178,7 @@ Managing Geographical Models
 
 If you want to store spatial information in a GIS database, Flask-Admin has
 you covered. The GeoAlchemy backend extends the SQLAlchemy backend (just as
-`GeoAlchemy <http://geoalchemy-2.readthedocs.org/>`_  extends SQLAlchemy) to give you a pretty and functional map-based
+`GeoAlchemy <https://geoalchemy-2.readthedocs.io/>`_  extends SQLAlchemy) to give you a pretty and functional map-based
 editor for your admin pages.
 
 Some notable features include:
@@ -200,7 +189,7 @@ Some notable features include:
    interactively using `Leaflet.Draw <https://github.com/Leaflet/Leaflet.draw>`_.
  - Graceful fallback: `GeoJSON <http://geojson.org/>`_ data can be edited in a ``<textarea>``, if the
    user has turned off Javascript.
- - Works with a `Geometry <http://geoalchemy-2.readthedocs.org/en/latest/types.html#geoalchemy2.types.Geometry>`_ SQL field that is integrated with `Shapely <http://toblerity.org/shapely/>`_ objects.
+ - Works with a `Geometry <https://geoalchemy-2.readthedocs.io/en/latest/types.html#geoalchemy2.types.Geometry>`_ SQL field that is integrated with `Shapely <http://toblerity.org/shapely/>`_ objects.
 
 To get started, define some fields on your model using GeoAlchemy's *Geometry*
 field. Next, add model views to your interface using the ModelView class
@@ -387,7 +376,7 @@ Features:
  - GridFS support for file and image uploads
 
 In order to use MongoEngine integration, install the
-`Flask-MongoEngine <https://flask-mongoengine.readthedocs.org>`_ package.
+`Flask-MongoEngine <https://flask-mongoengine.readthedocs.io>`_ package.
 Flask-Admin uses form scaffolding from it.
 
 Known issues:
@@ -407,7 +396,7 @@ Features:
  - Inline editing of related models;
 
 In order to use peewee integration, you need to install two additional Python
-packages: `peewee <https://peewee.readthedocs.org/>`_ and `wtf-peewee <https://github.com/coleifer/wtf-peewee/>`_.
+packages: `peewee <http://docs.peewee-orm.com/>`_ and `wtf-peewee <https://github.com/coleifer/wtf-peewee/>`_.
 
 Known issues:
 
@@ -428,8 +417,8 @@ The bare minimum you have to provide for Flask-Admin to work with PyMongo:
 This is minimal PyMongo view::
 
   class UserForm(Form):
-      name = TextField('Name')
-      email = TextField('Email')
+      name = StringField('Name')
+      email = StringField('Email')
 
   class UserView(ModelView):
       column_list = ('name', 'email')
@@ -519,7 +508,7 @@ do with it, so it won't generate a form field. In this case, you would need to m
     class MyView(ModelView):
         def scaffold_form(self):
             form_class = super(UserView, self).scaffold_form()
-            form_class.extra = TextField('Extra')
+            form_class.extra = StringField('Extra')
             return form_class
 
 Customizing Batch Actions

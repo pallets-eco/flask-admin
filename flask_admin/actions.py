@@ -3,7 +3,7 @@ from flask import request, redirect
 
 from flask_admin import tools
 from flask_admin._compat import text_type
-from flask_admin.helpers import get_redirect_target
+from flask_admin.helpers import get_redirect_target, flash_errors
 
 
 def action(name, text, confirmation=None):
@@ -104,16 +104,22 @@ class ActionsMixin(object):
                 If not provided, will return user to the return url in the form
                 or the list view.
         """
-        action = request.form.get('action')
-        ids = request.form.getlist('rowid')
+        form = self.action_form()
 
-        handler = self._actions_data.get(action)
+        if self.validate_form(form):
+            # using getlist instead of FieldList for backward compatibility
+            ids = request.form.getlist('rowid')
+            action = form.action.data
 
-        if handler and self.is_action_allowed(action):
-            response = handler[0](ids)
+            handler = self._actions_data.get(action)
 
-            if response is not None:
-                return response
+            if handler and self.is_action_allowed(action):
+                response = handler[0](ids)
+
+                if response is not None:
+                    return response
+        else:
+            flash_errors(form, message='Failed to perform action. %(error)s')
 
         if return_view:
             url = self.get_url('.' + return_view)

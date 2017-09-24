@@ -82,8 +82,10 @@ class RedisCli(BaseView):
         self._contribute_commands()
 
         if self.shlex_check and VER < (2, 7, 3):
-            warnings.warn('Warning: rediscli uses shlex library and it does not work with unicode until Python 2.7.3. ' +
-                          'To remove this warning, upgrade to Python 2.7.3 or suppress it by setting shlex_check attribute ' +
+            warnings.warn('Warning: rediscli uses shlex library and it does '
+                          'not work with unicode until Python 2.7.3. To '
+                          'remove this warning, upgrade to Python 2.7.3 or '
+                          'suppress it by setting shlex_check attribute '
                           'to False.')
 
     def _inspect_commands(self):

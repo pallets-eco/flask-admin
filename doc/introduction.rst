@@ -52,7 +52,7 @@ Straight out of the box, this gives you a set of fully featured *CRUD* views for
     * An optional, read-only `details` view.
 
 There are many options available for customizing the display and functionality of these built-in views.
-For more details on that, see :ref:`customising-builtin-views`. For more details on the other
+For more details on that, see :ref:`customizing-builtin-views`. For more details on the other
 ORM backends that are available, see :ref:`database-backends`.
 
 Adding Content to the Index Page
@@ -85,7 +85,7 @@ with your database models, and it doesn't require you to write any new view logi
 template code. So it's great for when you're deploying something that's still
 under development, before you want the whole world to see it.
 
-Have a look at `Flask-BasicAuth <http://flask-basicauth.readthedocs.org/>`_ to see just how
+Have a look at `Flask-BasicAuth <https://flask-basicauth.readthedocs.io/>`_ to see just how
 easy it is to put your whole application behind HTTP Basic Auth.
 
 Unfortunately, there is no easy way of applying HTTP Basic Auth just to your admin
@@ -96,13 +96,13 @@ Rolling Your Own
 For a more flexible solution, Flask-Admin lets you define access control rules
 on each of your admin view classes by simply overriding the `is_accessible` method.
 How you implement the logic is up to you, but if you were to use a low-level library like
-`Flask-Login <https://flask-login.readthedocs.org/>`_, then restricting access
+`Flask-Login <https://flask-login.readthedocs.io/>`_, then restricting access
 could be as simple as::
 
     class MicroBlogModelView(sqla.ModelView):
 
         def is_accessible(self):
-            return login.current_user.is_authenticated()
+            return login.current_user.is_authenticated
 
         def inaccessible_callback(self, name, **kwargs):
             # redirect to login page if user doesn't have access
@@ -149,7 +149,7 @@ https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth.
 The example only uses the built-in `register` and `login` views, but you could follow the same
 approach for including the other views, like `forgot_password`, `send_confirmation`, etc.
 
-.. _customising-builtin-views:
+.. _customizing-builtin-views:
 
 Customizing Built-in Views
 =========================
@@ -265,6 +265,13 @@ When your forms contain foreign keys, have those **related models loaded via aja
             'fields': ['first_name', 'last_name', 'email'],
             'page_size': 10
         }
+    }
+
+To filter the results that are loaded via ajax, you can use::
+
+    form_ajax_refs = {
+        'active_user': QueryAjaxModelLoader('user', db.session, User,
+                                     filters=["is_active=True", "id>1000"])
     }
 
 To **manage related models inline**::

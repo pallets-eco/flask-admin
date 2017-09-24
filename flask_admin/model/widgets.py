@@ -58,7 +58,7 @@ class AjaxSelect2Widget(object):
                 kwargs['value'] = data[0]
                 kwargs['data-json'] = json.dumps(data)
 
-        placeholder = gettext(field.loader.options.get('placeholder', 'Please select model'))
+        placeholder = field.loader.options.get('placeholder', gettext('Please select model'))
         kwargs.setdefault('data-placeholder', placeholder)
 
         return HTMLString('<input %s>' % html_params(name=field.name, **kwargs))
@@ -111,7 +111,7 @@ class XEditableWidget(object):
                 {'value': '1', 'text': gettext('Yes')}
             ])
             kwargs['data-role'] = 'x-editable-boolean'
-        elif field.type == 'Select2Field':
+        elif field.type in ['Select2Field', 'SelectField']:
             kwargs['data-type'] = 'select'
             choices = [{'value': x, 'text': y} for x, y in field.choices]
 
@@ -142,7 +142,7 @@ class XEditableWidget(object):
             kwargs['data-type'] = 'number'
             kwargs['data-step'] = 'any'
         elif field.type in ['QuerySelectField', 'ModelSelectField',
-                            'QuerySelectMultipleField']:
+                            'QuerySelectMultipleField', 'KeyPropertyField']:
             # QuerySelectField and ModelSelectField are for relations
             kwargs['data-type'] = 'select'
 

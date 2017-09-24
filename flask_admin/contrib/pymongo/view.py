@@ -238,7 +238,7 @@ class ModelView(BaseModelView):
 
             for flt, flt_name, value in filters:
                 f = self._filters[flt]
-                data = f.apply(data, value)
+                data = f.apply(data, f.clean(value))
 
             if data:
                 if len(data) == 1:
@@ -395,6 +395,6 @@ class ModelView(BaseModelView):
             flash(ngettext('Record was successfully deleted.',
                            '%(count)s records were successfully deleted.',
                            count,
-                           count=count))
+                           count=count), 'success')
         except Exception as ex:
             flash(gettext('Failed to delete records. %(error)s', error=str(ex)), 'error')

@@ -1,0 +1,38 @@
+{% import 'admin/lib.html' as lib with context %}
+
+{% macro link(action, url, icon_class=None) %}
+<a class="icon" href="{{ url }}" title="{{ action.title or '' }}">
+  <span class="{{ icon_class or action.icon_class }}"></span>
+</a>
+{% endmacro %}
+
+{% macro view_row(action, row_id, row) %}
+  {{ link(action, get_url('.details_view', id=row_id, url=return_url), 'fa fa-eye glyphicon icon-eye-open') }}
+{% endmacro %}
+
+{% macro view_row_popup(action, row_id, row) %}
+  {{ lib.add_modal_button(url=get_url('.details_view', id=row_id, url=return_url, modal=True), title=action.title, content='<span class="fa fa-eye glyphicon icon-eye-open"></span>') }}
+{% endmacro %}
+
+{% macro edit_row(action, row_id, row) %}
+  {{ link(action, get_url('.edit_view', id=row_id, url=return_url), 'fa fa-pencil glyphicon icon-pencil') }}
+{% endmacro %}
+
+{% macro edit_row_popup(action, row_id, row) %}
+  {{ lib.add_modal_button(url=get_url('.edit_view', id=row_id, url=return_url, modal=True), title=action.title, content='<span class="fa fa-pencil glyphicon icon-pencil"></span>') }}
+{% endmacro %}
+
+{% macro delete_row(action, row_id, row) %}
+<form class="icon" method="POST" action="{{ get_url('.delete_view') }}">
+  {{ delete_form.id(value=get_pk_value(row)) }}
+  {{ delete_form.url(value=return_url) }}
+  {% if delete_form.csrf_token %}
+  {{ delete_form.csrf_token }}
+  {% elif csrf_token %}
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+  {% endif %}
+  <button onclick="return confirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="Delete record">
+    <span class="fa fa-trash glyphicon icon-trash"></span>
+  </button>
+</form>
+{% endmacro %}

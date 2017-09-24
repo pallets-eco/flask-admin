@@ -83,6 +83,7 @@ class ImageUploadInput(object):
     data_template = ('<div class="image-thumbnail">'
                      ' <img %(image)s>'
                      ' <input type="checkbox" name="%(marker)s">Delete</input>'
+                     ' <input %(text)s>'
                      '</div>'
                      '<input %(file)s>')
 
@@ -91,6 +92,9 @@ class ImageUploadInput(object):
         kwargs.setdefault('name', field.name)
 
         args = {
+            'text': html_params(type='hidden',
+                                value=field.data,
+                                name=field.name),
             'file': html_params(type='file',
                                 **kwargs),
             'marker': '_%s-delete' % field.name
@@ -196,9 +200,7 @@ class FileUploadField(fields.StringField):
                 map(lambda x: x.lower(), self.allowed_extensions))
 
     def _is_uploaded_file(self, data):
-        return (data
-                and isinstance(data, FileStorage)
-                and data.filename)
+        return (data and isinstance(data, FileStorage) and data.filename)
 
     def pre_validate(self, form):
         if self._is_uploaded_file(self.data) and not self.is_file_allowed(self.data.filename):
@@ -275,7 +277,7 @@ class FileUploadField(fields.StringField):
         if not op.exists(op.dirname(path)):
             os.makedirs(os.path.dirname(path), self.permission | 0o111)
 
-        if self._allow_overwrite == False and os.path.exists(path):
+        if (self._allow_overwrite is False) and os.path.exists(path):
             raise ValueError(gettext('File "%s" already exists.' % path))
 
         data.save(path)

@@ -9,7 +9,7 @@ from flask_admin._compat import with_metaclass, as_unicode
 from flask_admin import helpers as h
 
 # For compatibility reasons import MenuLink
-from flask_admin.menu import MenuCategory, MenuView, MenuLink, SubMenuCategory
+from flask_admin.menu import MenuCategory, MenuView, MenuLink, SubMenuCategory # noqa: F401
 
 
 def expose(url='/', methods=('GET',)):
@@ -518,8 +518,8 @@ class Admin(object):
         self.template_mode = template_mode or 'bootstrap2'
         self.category_icon_classes = category_icon_classes or dict()
 
-        # Add predefined index view
-        self.add_view(self.index_view)
+        # Add index view
+        self._set_admin_index_view(index_view=index_view, endpoint=endpoint, url=url)
 
         # Register with application
         if app is not None:
@@ -540,6 +540,30 @@ class Admin(object):
             self.app.register_blueprint(view.create_blueprint(self))
 
         self._add_view_to_menu(view)
+
+    def _set_admin_index_view(self, index_view=None,
+                              endpoint=None, url=None):
+        """
+            Add the admin index view.
+
+          :param index_view:
+               Home page view to use. Defaults to `AdminIndexView`.
+           :param url:
+               Base URL
+          :param endpoint:
+               Base endpoint name for index view. If you use multiple instances of the `Admin` class with
+               a single Flask application, you have to set a unique endpoint name for each instance.
+        """
+        self.index_view = index_view or AdminIndexView(endpoint=endpoint, url=url)
+        self.endpoint = endpoint or self.index_view.endpoint
+        self.url = url or self.index_view.url
+
+        # Add predefined index view
+        # assume index view is always the first element of views.
+        if len(self._views) > 0:
+            self._views[0] = self.index_view
+        else:
+            self.add_view(self.index_view)
 
     def add_views(self, *args):
         """
@@ -648,7 +672,8 @@ class Admin(object):
     def get_category_menu_item(self, name):
         return self._menu_categories.get(name)
 
-    def init_app(self, app):
+    def init_app(self, app, index_view=None,
+                 endpoint=None, url=None):
         """
             Register all views with the Flask application.
 
@@ -658,6 +683,14 @@ class Admin(object):
         self.app = app
 
         self._init_extension()
+
+        # Register Index view
+        if index_view is not None:
+            self._set_admin_index_view(
+                index_view=index_view,
+                endpoint=endpoint,
+                url=url
+            )
 
         # Register views
         for view in self._views:

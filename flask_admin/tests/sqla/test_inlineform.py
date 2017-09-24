@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from nose.tools import eq_, ok_, raises
+from nose.tools import eq_, ok_
 
 from wtforms import fields
 
@@ -62,8 +62,8 @@ def test_inline_form():
     eq_(User.query.count(), 1)
     eq_(UserInfo.query.count(), 0)
 
-    rv = client.post('/admin/user/new/', data={'name': u'fbar', \
-                     'info-0-key': 'foo', 'info-0-val' : 'bar'})
+    data = {'name': u'fbar', 'info-0-key': 'foo', 'info-0-val': 'bar'}
+    rv = client.post('/admin/user/new/', data=data)
     eq_(rv.status_code, 302)
     eq_(User.query.count(), 2)
     eq_(UserInfo.query.count(), 1)
@@ -72,15 +72,28 @@ def test_inline_form():
     rv = client.get('/admin/user/edit/?id=2')
     eq_(rv.status_code, 200)
     # Edit - update
-    rv = client.post('/admin/user/edit/?id=2', data={'name': u'barfoo', \
-                     'info-0-id': 1, 'info-0-key': u'xxx', 'info-0-val':u'yyy'})
+    data = {
+        'name': u'barfoo',
+        'info-0-id': 1,
+        'info-0-key': u'xxx',
+        'info-0-val': u'yyy',
+    }
+    rv = client.post('/admin/user/edit/?id=2', data=data)
     eq_(UserInfo.query.count(), 1)
     eq_(UserInfo.query.one().key, u'xxx')
 
     # Edit - add & delete
-    rv = client.post('/admin/user/edit/?id=2', data={'name': u'barf', \
-                     'del-info-0': 'on', 'info-0-id': '1', 'info-0-key': 'yyy', 'info-0-val': 'xxx',
-                     'info-1-id': None, 'info-1-key': u'bar', 'info-1-val' : u'foo'})
+    data = {
+        'name': u'barf',
+        'del-info-0': 'on',
+        'info-0-id': '1',
+        'info-0-key': 'yyy',
+        'info-0-val': 'xxx',
+        'info-1-id': None,
+        'info-1-key': u'bar',
+        'info-1-val': u'foo',
+    }
+    rv = client.post('/admin/user/edit/?id=2', data=data)
     eq_(rv.status_code, 302)
     eq_(User.query.count(), 2)
     eq_(User.query.get(2).name, u'barf')
@@ -259,7 +272,7 @@ def test_inline_form_base_class():
 
     # Set up Admin
     class UserModelView(ModelView):
-        inline_models = ((UserEmail,{"form_base_class": StubBaseForm}),)
+        inline_models = ((UserEmail, {"form_base_class": StubBaseForm}),)
         form_args = {
             "emails": {"validators": [ItemsRequired()]}
         }

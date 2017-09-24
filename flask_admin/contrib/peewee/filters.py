@@ -1,6 +1,3 @@
-import time
-import datetime
-
 from flask_admin.babel import lazy_gettext
 
 from flask_admin.model import filters
@@ -99,7 +96,7 @@ class FilterInList(BasePeeweeFilter):
         return [v.strip() for v in value.split(',') if v.strip()]
 
     def apply(self, query, value):
-        return query.filter(self.column << value)
+        return query.filter(self.column << (value or [None]))
 
     def operation(self):
         return lazy_gettext('in list')
@@ -108,7 +105,7 @@ class FilterInList(BasePeeweeFilter):
 class FilterNotInList(FilterInList):
     def apply(self, query, value):
         # NOT IN can exclude NULL values, so "or_ == None" needed to be added
-        return query.filter(~(self.column << value) | (self.column >> None))
+        return query.filter(~(self.column << (value or [None])) | (self.column >> None))
 
     def operation(self):
         return lazy_gettext('not in list')
@@ -322,7 +319,7 @@ class FilterConverter(filters.BaseFilterConverter):
     def conv_bool(self, column, name):
         return [f(column, name) for f in self.bool_filters]
 
-    @filters.convert('IntegerField', 'BigIntegerField')
+    @filters.convert('IntegerField', 'BigIntegerField', 'PrimaryKeyField')
     def conv_int(self, column, name):
         return [f(column, name) for f in self.int_filters]
 

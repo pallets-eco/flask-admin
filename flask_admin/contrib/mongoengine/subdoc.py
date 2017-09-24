@@ -18,6 +18,7 @@ def convert_subdocuments(values):
         elif isinstance(p, EmbeddedForm):
             result[name] = p
         else:
-            raise ValueError('Invalid subdocument type: expecting dict or instance of flask_admin.contrib.mongoengine.EmbeddedForm, got %s' % type(p))
+            raise ValueError('Invalid subdocument type: expecting dict or '
+                             'instance of flask_admin.contrib.mongoengine.EmbeddedForm, got %s' % type(p))
 
     return result

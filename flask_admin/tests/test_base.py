@@ -1,3 +1,5 @@
+import os
+
 from nose.tools import ok_, eq_, raises
 
 from flask import Flask, request, abort, url_for
@@ -114,6 +116,25 @@ def test_custom_index_view():
     eq_(admin._views[0], view)
 
 
+def test_custom_index_view_in_init_app():
+    view = base.AdminIndexView(name='a', category='b', endpoint='c',
+                               url='/d', template='e')
+    app = Flask(__name__)
+    admin = base.Admin()
+    admin.init_app(app, index_view=view)
+
+    eq_(admin.endpoint, 'c')
+    eq_(admin.url, '/d')
+    ok_(admin.index_view is view)
+    eq_(view.name, 'a')
+    eq_(view.category, 'b')
+    eq_(view._template, 'e')
+
+    # Check if view was added
+    eq_(len(admin._views), 1)
+    eq_(admin._views[0], view)
+
+
 def test_base_registration():
     app = Flask(__name__)
     admin = base.Admin(app)
@@ -157,7 +178,7 @@ def test_baseview_registration():
     # Verify generated blueprint properties
     eq_(bp.name, view.endpoint)
     eq_(bp.url_prefix, view.url)
-    eq_(bp.template_folder, 'templates/bootstrap2')
+    eq_(bp.template_folder, os.path.join('templates', 'bootstrap2'))
     eq_(bp.static_folder, view.static_folder)
 
     # Verify customizations
@@ -321,7 +342,7 @@ def test_multi_instances_init():
     class ManageIndex(base.AdminIndexView):
         pass
 
-    _ = base.Admin(app, index_view=ManageIndex(url='/manage', endpoint='manage'))
+    _ = base.Admin(app, index_view=ManageIndex(url='/manage', endpoint='manage'))  # noqa: F841
 
 
 @raises(Exception)

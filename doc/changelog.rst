@@ -1,6 +1,44 @@
 Changelog
 =========
 
+1.5.0
+-----
+
+* Fixed CSRF generation logic for multi-process deployments
+* Added WTForms >= 3.0 support
+* Flask-Admin would not recursively save inline models, allowing arbitrary nesting
+* Added configuration properties that allow injection of additional CSS and JS dependencies into templates without overriding them
+* SQLAlchemy backend
+  - Updated hybrid property detection using new SQLAlchemy APIs
+  - Added support for association proxies
+  - Added support for remote hybrid properties filters
+  - Added support for ARRAY column type
+* Localization-related fixes 
+* MongoEngine backend is now properly formats model labels
+* Improved Google App Engine support:
+  - Added TextProperty, KeyProperty and SelectField support
+  - Added support for form_args, excluded_columns, page_size and after_model_update
+* Fixed URL generation with localized named filters
+* FileAdmin has Bootstrap 2 support now
+* Geoalchemy fixes
+  - Use Google Places (by default) for place search
+* Updated translations
+* Bug fixes
+
+1.4.2
+-----
+* Small bug fix release. Fixes regression that prevented usage of "virtual" columns with a custom formatter.
+
+1.4.1
+-----
+
+* Official Python 3.5 support
+* Customizable row actions
+* Tablib support (exporting to XLS, XLSX, CSV, etc)
+* Updated external dependencies (jQuery, x-editable, etc)
+* Added settings that allows exceptions to be raised on view errors
+* Bug fixes
+
 1.4.0
 -----
 
@@ -25,26 +63,4 @@ Changelog
 * Updated client-side dependencies (jQuery, Select2, etc)
 * Updated documentation and examples
 * Updated translations
-* Bug fixes
-
-1.2.0
------
-
-* Codebase was migrated to Flask-Admin GitHub organization
-* Automatically inject Flask-WTF CSRF token to internal Flask-Admin forms
-* MapBox v4 support for GeoAlchemy
-* Updated translations with help of CrowdIn
-* Show warning if field was ignored in form rendering rules
-* Simple AppEngine backend
-* Optional support for Font Awesome in templates and menus
-* Bug fixes
-
-1.1.0
------
-
-Mostly bug fix release. Highlights:
-
-* Inline model editing on the list page
-* FileAdmin refactoring and fixes
-* FileUploadField and ImageUploadField will work with Required() validator
 * Bug fixes

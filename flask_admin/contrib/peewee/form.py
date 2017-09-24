@@ -12,6 +12,11 @@ from flask_admin.model.fields import InlineModelFormField, InlineFieldList, Ajax
 
 from .tools import get_primary_key, get_meta_fields
 from .ajax import create_ajax_loader
+try:
+    from playhouse.postgres_ext import JSONField, BinaryJSONField
+    pg_ext = True
+except:
+    pg_ext = False
 
 
 class InlineModelFormList(InlineFieldList):
@@ -36,15 +41,22 @@ class InlineModelFormList(InlineFieldList):
     def display_row_controls(self, field):
         return field.get_pk() is not None
 
-    # *** bryhoyt removed def process() entirely, because I believe it was buggy
-    # (but worked because another part of the code had a complimentary bug)
-    # and I'm not sure why it was necessary anyway.
-    # If we want it back in, we need to fix the following bogus query:
-    # self.model.select().where(attr == data).execute()     # `data` is not an ID, and only happened to be so because we patched it in in .contribute() below
-    #
-    # For reference:
-    # .process() introduced in https://github.com/flask-admin/flask-admin/commit/2845e4b28cb40b25e2bf544b327f6202dc7e5709
-    # Fixed, brokenly I think, in https://github.com/flask-admin/flask-admin/commit/4383eef3ce7eb01878f086928f8773adb9de79f8#diff-f87e7cd76fb9bc48c8681b24f238fb13R30
+    """ bryhoyt removed def process() entirely, because I believe it was buggy
+        (but worked because another part of the code had a complimentary bug)
+        and I'm not sure why it was necessary anyway.
+
+        If we want it back in, we need to fix the following bogus query:
+        self.model.select().where(attr == data).execute()
+
+        `data` is not an ID, and only happened to be so because we patched it
+        in in .contribute() below
+
+        For reference, .process() introduced in:
+        https://github.com/flask-admin/flask-admin/commit/2845e4b28cb40b25e2bf544b327f6202dc7e5709
+
+        Fixed, brokenly I think, in:
+        https://github.com/flask-admin/flask-admin/commit/4383eef3ce7eb01878f086928f8773adb9de79f8#diff-f87e7cd76fb9bc48c8681b24f238fb13R30
+    """
 
     def populate_obj(self, obj, name):
         pass
@@ -61,7 +73,8 @@ class InlineModelFormList(InlineFieldList):
         for field in self.entries:
             field_id = field.get_pk()
 
-            if field_id in pk_map:
+            is_created = field_id not in pk_map
+            if not is_created:
                 model = pk_map[field_id]
 
                 if self.should_delete(field):
@@ -75,9 +88,14 @@ class InlineModelFormList(InlineFieldList):
             # Force relation
             setattr(model, self.prop, model_id)
 
-            self.inline_view.on_model_change(field, model)
+            self.inline_view._on_model_change(field, model, is_created)
 
             model.save()
+
+            # Recurse, to save multi-level nested inlines
+            for f in itervalues(field.form._fields):
+                if f.type == 'InlineModelFormList':
+                    f.save_related(model)
 
 
 class CustomModelConverter(ModelConverter):
@@ -92,6 +110,10 @@ class CustomModelConverter(ModelConverter):
         self.converters[DateTimeField] = self.handle_datetime
         self.converters[DateField] = self.handle_date
         self.converters[TimeField] = self.handle_time
+
+        if pg_ext:
+            self.converters[JSONField] = self.handle_json
+            self.converters[BinaryJSONField] = self.handle_json
 
         self.overrides = getattr(self.view, 'form_overrides', None) or {}
 
@@ -120,6 +142,9 @@ class CustomModelConverter(ModelConverter):
 
     def handle_time(self, model, field, **kwargs):
         return field.name, form.TimeField(**kwargs)
+
+    def handle_json(self, model, field, **kwargs):
+        return field.name, form.JSONField(**kwargs)
 
 
 def get_form(model, converter,
@@ -239,7 +264,6 @@ class InlineModelConverter(InlineModelConverterBase):
                                     field_args=info.form_args,
                                     allow_pk=True,
                                     converter=converter)
-
 
         prop_name = reverse_field.related_name
 

@@ -2,7 +2,7 @@ def parse_like_term(term):
     """
         Parse search term into (operation, term) tuple. Recognizes operators
         in the beginning of the search term.
-        
+
         * = case insensitive (can precede other operators)
         ^ = starts with
         = = exact
@@ -24,5 +24,5 @@ def parse_like_term(term):
         oper = 'contains'
     # add case insensitive flag
     if case_insensitive:
-        oper = 'i'+oper
+        oper = 'i' + oper
     return oper, term

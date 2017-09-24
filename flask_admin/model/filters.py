@@ -8,7 +8,7 @@ class BaseFilter(object):
     """
         Base filter class.
     """
-    def __init__(self, name, options=None, data_type=None):
+    def __init__(self, name, options=None, data_type=None, key_name=None):
         """
             Constructor.
 
@@ -18,10 +18,13 @@ class BaseFilter(object):
                 List of fixed options. If provided, will use drop down instead of textbox.
             :param data_type:
                 Client-side widget type to use.
+            :param key_name:
+                Optional name who represent this filter.
         """
         self.name = name
         self.options = options
         self.data_type = data_type
+        self.key_name = key_name
 
     def get_options(self, view):
         """
@@ -67,12 +70,14 @@ class BaseFilter(object):
         """
         return value
 
-    def apply(self, query):
+    def apply(self, query, value):
         """
             Apply search criteria to the query and return new query.
 
             :param query:
                 Query
+            :param value:
+                Search criteria
         """
         raise NotImplementedError()
 
@@ -160,7 +165,7 @@ class BaseDateBetweenFilter(BaseFilter):
         Apply method is different for each back-end.
     """
     def clean(self, value):
-        return [datetime.datetime.strptime(range, '%Y-%m-%d')
+        return [datetime.datetime.strptime(range, '%Y-%m-%d').date()
                 for range in value.split(' to ')]
 
     def operation(self):
@@ -168,7 +173,7 @@ class BaseDateBetweenFilter(BaseFilter):
 
     def validate(self, value):
         try:
-            value = [datetime.datetime.strptime(range, '%Y-%m-%d')
+            value = [datetime.datetime.strptime(range, '%Y-%m-%d').date()
                      for range in value.split(' to ')]
             # if " to " is missing, fail validation
             # sqlalchemy's .between() will not work if end date is before start date
@@ -243,10 +248,10 @@ class BaseTimeBetweenFilter(BaseFilter):
     def clean(self, value):
         timetuples = [time.strptime(range, '%H:%M:%S')
                       for range in value.split(' to ')]
-        return [datetime.time(timetuple.tm_hour,
-                              timetuple.tm_min,
-                              timetuple.tm_sec)
-                              for timetuple in timetuples]
+        return [
+            datetime.time(timetuple.tm_hour, timetuple.tm_min, timetuple.tm_sec)
+            for timetuple in timetuples
+        ]
 
     def operation(self):
         return lazy_gettext('between')

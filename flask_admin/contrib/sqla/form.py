@@ -16,7 +16,7 @@ from .fields import (QuerySelectField, QuerySelectMultipleField,
                      InlineModelFormList, InlineHstoreList, HstoreForm)
 from flask_admin.model.fields import InlineFormField
 from .tools import (has_multiple_pks, filter_foreign_columns,
-                    get_field_with_path)
+                    get_field_with_path, is_association_proxy, is_relationship)
 from .ajax import create_ajax_loader
 
 
@@ -86,10 +86,10 @@ class AdminModelConverter(ModelConverterBase):
         else:
             return QuerySelectField(**kwargs)
 
-    def _convert_relation(self, prop, kwargs):
+    def _convert_relation(self, name, prop, property_is_association_proxy, kwargs):
         # Check if relation is specified
         form_columns = getattr(self.view, 'form_columns', None)
-        if form_columns and prop.key not in form_columns:
+        if form_columns and name not in form_columns:
             return None
 
         remote_model = prop.mapper.class_
@@ -100,34 +100,31 @@ class AdminModelConverter(ModelConverterBase):
         if not column.foreign_keys:
             column = prop.local_remote_pairs[0][1]
 
-        kwargs['label'] = self._get_label(prop.key, kwargs)
-        kwargs['description'] = self._get_description(prop.key, kwargs)
+        kwargs['label'] = self._get_label(name, kwargs)
+        kwargs['description'] = self._get_description(name, kwargs)
 
         # determine optional/required, or respect existing
         requirement_options = (validators.Optional, validators.InputRequired)
-        if not any(isinstance(v, requirement_options) for v in kwargs['validators']):
-            if column.nullable or prop.direction.name != 'MANYTOONE':
+        requirement_validator_specified = any(isinstance(v, requirement_options) for v in kwargs['validators'])
+        if property_is_association_proxy or column.nullable or prop.direction.name != 'MANYTOONE':
+            kwargs['allow_blank'] = True
+            if not requirement_validator_specified:
                 kwargs['validators'].append(validators.Optional())
-            else:
+        else:
+            kwargs['allow_blank'] = False
+            if not requirement_validator_specified:
                 kwargs['validators'].append(validators.InputRequired())
-
-        # Contribute model-related parameters
-        if 'allow_blank' not in kwargs:
-            kwargs['allow_blank'] = column.nullable
 
         # Override field type if necessary
         override = self._get_field_override(prop.key)
         if override:
             return override(**kwargs)
 
-        if prop.direction.name == 'MANYTOONE' or not prop.uselist:
-            return self._model_select_field(prop, False, remote_model, **kwargs)
-        elif prop.direction.name == 'ONETOMANY':
-            return self._model_select_field(prop, True, remote_model, **kwargs)
-        elif prop.direction.name == 'MANYTOMANY':
-            return self._model_select_field(prop, True, remote_model, **kwargs)
+        multiple = (property_is_association_proxy or
+                    (prop.direction.name in ('ONETOMANY', 'MANYTOMANY') and prop.uselist))
+        return self._model_select_field(prop, multiple, remote_model, **kwargs)
 
-    def convert(self, model, mapper, prop, field_args, hidden_pk):
+    def convert(self, model, mapper, name, prop, field_args, hidden_pk):
         # Properly handle forced fields
         if isinstance(prop, FieldPlaceholder):
             return form.recreate_field(prop.field)
@@ -145,120 +142,123 @@ class AdminModelConverter(ModelConverterBase):
             kwargs['validators'] = list(kwargs['validators'])
 
         # Check if it is relation or property
-        if hasattr(prop, 'direction'):
-            return self._convert_relation(prop, kwargs)
-        else:
-            # Ignore pk/fk
-            if hasattr(prop, 'columns'):
-                # Check if more than one column mapped to the property
-                if len(prop.columns) > 1:
-                    columns = filter_foreign_columns(model.__table__, prop.columns)
+        if hasattr(prop, 'direction') or is_association_proxy(prop):
+            property_is_association_proxy = is_association_proxy(prop)
+            if property_is_association_proxy:
+                if not hasattr(prop.remote_attr, 'prop'):
+                    raise Exception('Association proxy referencing another association proxy is not supported.')
+                prop = prop.remote_attr.prop
+            return self._convert_relation(name, prop, property_is_association_proxy, kwargs)
+        elif hasattr(prop, 'columns'):  # Ignore pk/fk
+            # Check if more than one column mapped to the property
+            if len(prop.columns) > 1:
+                columns = filter_foreign_columns(model.__table__, prop.columns)
 
-                    if len(columns) > 1:
-                        warnings.warn('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
+                if len(columns) > 1:
+                    warnings.warn('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
+                    return None
+
+                column = columns[0]
+            else:
+                # Grab column
+                column = prop.columns[0]
+
+            form_columns = getattr(self.view, 'form_columns', None) or ()
+
+            # Do not display foreign keys - use relations, except when explicitly instructed
+            if column.foreign_keys and prop.key not in form_columns:
+                return None
+
+            # Only display "real" columns
+            if not isinstance(column, Column):
+                return None
+
+            unique = False
+
+            if column.primary_key:
+                if hidden_pk:
+                    # If requested to add hidden field, show it
+                    return fields.HiddenField()
+                else:
+                    # By default, don't show primary keys either
+                    # If PK is not explicitly allowed, ignore it
+                    if prop.key not in form_columns:
                         return None
 
-                    column = columns[0]
-                else:
-                    # Grab column
-                    column = prop.columns[0]
+                    # Current Unique Validator does not work with multicolumns-pks
+                    if not has_multiple_pks(model):
+                        kwargs['validators'].append(Unique(self.session,
+                                                           model,
+                                                           column))
+                        unique = True
 
-                form_columns = getattr(self.view, 'form_columns', None) or ()
+            # If field is unique, validate it
+            if column.unique and not unique:
+                kwargs['validators'].append(Unique(self.session,
+                                                   model,
+                                                   column))
 
-                # Do not display foreign keys - use relations, except when explicitly instructed
-                if column.foreign_keys and prop.key not in form_columns:
-                    return None
+            optional_types = getattr(self.view, 'form_optional_types', (Boolean,))
 
-                # Only display "real" columns
-                if not isinstance(column, Column):
-                    return None
+            if (
+                not column.nullable and
+                not isinstance(column.type, optional_types) and
+                not column.default and
+                not column.server_default
+            ):
+                kwargs['validators'].append(validators.InputRequired())
 
-                unique = False
+            # Apply label and description if it isn't inline form field
+            if self.view.model == mapper.class_:
+                kwargs['label'] = self._get_label(prop.key, kwargs)
+                kwargs['description'] = self._get_description(prop.key, kwargs)
 
-                if column.primary_key:
-                    if hidden_pk:
-                        # If requested to add hidden field, show it
-                        return fields.HiddenField()
-                    else:
-                        # By default, don't show primary keys either
-                        # If PK is not explicitly allowed, ignore it
-                        if prop.key not in form_columns:
-                            return None
+            # Figure out default value
+            default = getattr(column, 'default', None)
+            value = None
 
-                        # Current Unique Validator does not work with multicolumns-pks
-                        if not has_multiple_pks(model):
-                            kwargs['validators'].append(Unique(self.session,
-                                                               model,
-                                                               column))
-                            unique = True
-
-                # If field is unique, validate it
-                if column.unique and not unique:
-                    kwargs['validators'].append(Unique(self.session,
-                                                       model,
-                                                       column))
-
-                optional_types = getattr(self.view, 'form_optional_types', (Boolean,))
-
-                if (
-                    not column.nullable
-                    and not isinstance(column.type, optional_types)
-                    and not column.default
-                    and not column.server_default
-                ):
-                    kwargs['validators'].append(validators.InputRequired())
-
-                # Apply label and description if it isn't inline form field
-                if self.view.model == mapper.class_:
-                    kwargs['label'] = self._get_label(prop.key, kwargs)
-                    kwargs['description'] = self._get_description(prop.key, kwargs)
-
-                # Figure out default value
-                default = getattr(column, 'default', None)
-                value = None
-
-                if default is not None:
-                    value = getattr(default, 'arg', None)
-
-                    if value is not None:
-                        if getattr(default, 'is_callable', False):
-                            value = lambda: default.arg(None)
-                        else:
-                            if not getattr(default, 'is_scalar', True):
-                                value = None
+            if default is not None:
+                value = getattr(default, 'arg', None)
 
                 if value is not None:
-                    kwargs['default'] = value
+                    if getattr(default, 'is_callable', False):
+                        value = lambda: default.arg(None)  # noqa: E731
+                    else:
+                        if not getattr(default, 'is_scalar', True):
+                            value = None
 
-                # Check nullable
-                if column.nullable:
-                    kwargs['validators'].append(validators.Optional())
+            if value is not None:
+                kwargs['default'] = value
 
-                # Override field type if necessary
-                override = self._get_field_override(prop.key)
-                if override:
-                    return override(**kwargs)
+            # Check nullable
+            if column.nullable:
+                kwargs['validators'].append(validators.Optional())
 
-                # Check choices
-                form_choices = getattr(self.view, 'form_choices', None)
+            # Override field type if necessary
+            override = self._get_field_override(prop.key)
+            if override:
+                return override(**kwargs)
 
-                if mapper.class_ == self.view.model and form_choices:
-                    choices = form_choices.get(column.key)
-                    if choices:
-                        return form.Select2Field(
-                            choices=choices,
-                            allow_blank=column.nullable,
-                            **kwargs
-                        )
+            # Check choices
+            form_choices = getattr(self.view, 'form_choices', None)
 
-                # Run converter
-                converter = self.get_converter(column)
+            if mapper.class_ == self.view.model and form_choices:
+                choices = form_choices.get(prop.key)
+                if choices:
+                    return form.Select2Field(
+                        choices=choices,
+                        allow_blank=column.nullable,
+                        **kwargs
+                    )
 
-                if converter is None:
-                    return None
+            # Run converter
+            converter = self.get_converter(column)
 
-                return converter(model=model, mapper=mapper, prop=prop,
-                                 column=column, field_args=kwargs)
+            if converter is None:
+                return None
+
+            return converter(model=model, mapper=mapper, prop=prop,
+                             column=column, field_args=kwargs)
 
         return None
 
@@ -343,7 +343,8 @@ class AdminModelConverter(ModelConverterBase):
         field_args['validators'].append(validators.UUID())
         return fields.StringField(**field_args)
 
-    @converts('sqlalchemy.dialects.postgresql.base.ARRAY')
+    @converts('sqlalchemy.dialects.postgresql.base.ARRAY',
+              'sqlalchemy.sql.sqltypes.ARRAY')
     def conv_ARRAY(self, field_args, **extra):
         return form.Select2TagsField(save_as_list=True, **field_args)
 
@@ -351,6 +352,10 @@ class AdminModelConverter(ModelConverterBase):
     def conv_HSTORE(self, field_args, **extra):
         inner_form = field_args.pop('form', HstoreForm)
         return InlineHstoreList(InlineFormField(inner_form), **field_args)
+
+    @converts('JSON')
+    def convert_JSON(self, field_args, **extra):
+        return form.JSONField(**field_args)
 
 
 def _resolve_prop(prop):
@@ -412,16 +417,19 @@ def get_form(model, converter,
             if extra_fields and name in extra_fields:
                 return name, FieldPlaceholder(extra_fields[name])
 
-            column, path = get_field_with_path(model, name)
+            column, path = get_field_with_path(model, name, return_remote_proxy_attr=False)
 
-            if path and not hasattr(column.prop, 'direction'):
+            if path and not (is_relationship(column) or is_association_proxy(column)):
                 raise Exception("form column is located in another table and "
                                 "requires inline_models: {0}".format(name))
 
-            name = column.key
+            if is_association_proxy(column):
+                return name, column
+
+            relation_name = column.key
 
             if column is not None and hasattr(column, 'property'):
-                return name, column.property
+                return relation_name, column.property
 
             raise ValueError('Invalid model property name %s.%s' % (model, name))
 
@@ -438,7 +446,7 @@ def get_form(model, converter,
 
         prop = _resolve_prop(p)
 
-        field = converter.convert(model, mapper, prop, field_args.get(name), hidden_pk)
+        field = converter.convert(model, mapper, name, prop, field_args.get(name), hidden_pk)
         if field is not None:
             field_dict[name] = field
 
@@ -526,36 +534,24 @@ class InlineModelConverter(InlineModelConverterBase):
 
         return result
 
-    def contribute(self, model, form_class, inline_model):
+    def _calculate_mapping_key_pair(self, model, info):
         """
-            Generate form fields for inline forms and contribute them to
-            the `form_class`
+            Calculate mapping property key pair between `model` and inline model,
+                including the forward one for `model` and the reverse one for inline model.
+                Override the method to map your own inline models.
 
-            :param converter:
-                ModelConverterBase instance
-            :param session:
-                SQLAlchemy session
             :param model:
                 Model class
-            :param form_class:
-                Form to add properties to
-            :param inline_model:
-                Inline model. Can be one of:
-
-                 - ``tuple``, first value is related model instance,
-                 second is dictionary with options
-                 - ``InlineFormAdmin`` instance
-                 - Model class
-
+            :param info:
+                The InlineFormAdmin instance
             :return:
-                Form class
+                A tuple of forward property key and reverse property key
         """
-
         mapper = model._sa_class_manager.mapper
-        info = self.get_info(inline_model)
 
         # Find property from target model to current model
-        target_mapper = info.model._sa_class_manager.mapper
+        # Use the base mapper to support inheritance
+        target_mapper = info.model._sa_class_manager.mapper.base_mapper
 
         reverse_prop = None
 
@@ -583,8 +579,39 @@ class InlineModelConverter(InlineModelConverterBase):
         else:
             raise Exception('Cannot find forward relation for model %s' % info.model)
 
+        return forward_prop.key, reverse_prop.key
+
+    def contribute(self, model, form_class, inline_model):
+        """
+            Generate form fields for inline forms and contribute them to
+            the `form_class`
+
+            :param converter:
+                ModelConverterBase instance
+            :param session:
+                SQLAlchemy session
+            :param model:
+                Model class
+            :param form_class:
+                Form to add properties to
+            :param inline_model:
+                Inline model. Can be one of:
+
+                 - ``tuple``, first value is related model instance,
+                 second is dictionary with options
+                 - ``InlineFormAdmin`` instance
+                 - Model class
+
+            :return:
+                Form class
+        """
+
+        info = self.get_info(inline_model)
+
+        forward_prop_key, reverse_prop_key = self._calculate_mapping_key_pair(model, info)
+
         # Remove reverse property from the list
-        ignore = [reverse_prop.key]
+        ignore = [reverse_prop_key]
 
         if info.form_excluded_columns:
             exclude = ignore + list(info.form_excluded_columns)
@@ -612,21 +639,21 @@ class InlineModelConverter(InlineModelConverterBase):
 
         kwargs = dict()
 
-        label = self.get_label(info, forward_prop.key)
+        label = self.get_label(info, forward_prop_key)
         if label:
             kwargs['label'] = label
 
         if self.view.form_args:
-            field_args = self.view.form_args.get(forward_prop.key, {})
+            field_args = self.view.form_args.get(forward_prop_key, {})
             kwargs.update(**field_args)
 
         # Contribute field
         setattr(form_class,
-                forward_prop.key,
+                forward_prop_key,
                 self.inline_field_list_type(child_form,
                                             self.session,
                                             info.model,
-                                            reverse_prop.key,
+                                            reverse_prop_key,
                                             info,
                                             **kwargs))
 

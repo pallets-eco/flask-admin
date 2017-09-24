@@ -2,9 +2,9 @@ from wtforms import form, __version__ as wtforms_version
 from wtforms.fields.core import UnboundField
 from flask_admin.babel import Translations
 
-from .fields import *
-from .widgets import *
-from .upload import *
+from .fields import *  # noqa: F403,F401
+from .widgets import *  # noqa: F403,F401
+from .upload import *  # noqa: F403,F401
 
 
 class BaseForm(form.Form):
@@ -43,8 +43,9 @@ def recreate_field(unbound):
 if int(wtforms_version[0]) > 1:
     # only WTForms 2+ has built-in CSRF functionality
     from os import urandom
-    from flask import session
+    from flask import session, current_app
     from wtforms.csrf.session import SessionCSRF
+    from flask_admin._compat import text_type
 
     class SecureForm(BaseForm):
         """
@@ -55,7 +56,14 @@ if int(wtforms_version[0]) > 1:
         class Meta:
             csrf = True
             csrf_class = SessionCSRF
-            csrf_secret = urandom(24)
+            _csrf_secret = urandom(24)
+
+            @property
+            def csrf_secret(self):
+                secret = current_app.secret_key or self._csrf_secret
+                if isinstance(secret, text_type):
+                    secret = secret.encode('utf-8')
+                return secret
 
             @property
             def csrf_context(self):

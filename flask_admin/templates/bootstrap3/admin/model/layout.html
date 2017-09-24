@@ -34,6 +34,18 @@
 
 {% macro filter_form() %}
     <form id="filter_form" method="GET" action="{{ return_url }}">
+        {% if sort_column is not none %}
+        <input type="hidden" name="sort" value="{{ sort_column }}">
+        {% endif %}
+        {% if sort_desc %}
+        <input type="hidden" name="desc" value="{{ sort_desc }}">
+        {% endif %}
+        {% if search %}
+        <input type="hidden" name="search" value="{{ search }}">
+        {% endif %}
+        {% if page_size != default_page_size %}
+        <input type="hidden" name="page_size" value="{{ page_size }}">
+        {% endif %}
         <div class="pull-right">
             <button type="submit" class="btn btn-primary" style="display: none">{{ _gettext('Apply') }}</button>
             {% if active_filters %}
@@ -48,6 +60,12 @@
 
 {% macro search_form(input_class="col-md-2") %}
 <form method="GET" action="{{ return_url }}" class="navbar-form navbar-left" role="search">
+    {% for flt_name, flt_value in filter_args.items() %}
+    <input type="hidden" name="{{ flt_name }}" value="{{ flt_value }}">
+    {% endfor %}
+    {% if page_size != default_page_size %}
+    <input type="hidden" name="page_size" value="{{ page_size }}">
+    {% endif %}
     {% if sort_column is not none %}
     <input type="hidden" name="sort" value="{{ sort_column }}">
     {% endif %}
@@ -65,4 +83,15 @@
     </div>
     {% endif %}
 </form>
+{% endmacro %}
+
+{% macro page_size_form(generator, btn_class='dropdown-toggle') %}
+    <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
+        {{ page_size }} {{ _gettext('items') }}<b class="caret"></b>
+    </a>
+    <ul class="dropdown-menu">
+        <li><a href="{{ generator(20) }}">20 {{ _gettext('items') }}</a></li>
+        <li><a href="{{ generator(50) }}">50 {{ _gettext('items') }}</a></li>
+        <li><a href="{{ generator(100) }}">100 {{ _gettext('items') }}</a></li>
+    </ul>
 {% endmacro %}

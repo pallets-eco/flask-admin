@@ -39,8 +39,8 @@ def create_models(db):
     class Model1(BaseModel):
         def __init__(self, test1=None, test2=None, test3=None, test4=None,
                      date_field=None, timeonly_field=None,
-                     datetime_field=None):
-            super(Model1, self).__init__()
+                     datetime_field=None, **kwargs):
+            super(Model1, self).__init__(**kwargs)
 
             self.test1 = test1
             self.test2 = test2
@@ -65,8 +65,8 @@ def create_models(db):
 
     class Model2(BaseModel):
         def __init__(self, char_field=None, int_field=None, float_field=None,
-                     bool_field=0):
-            super(Model2, self).__init__()
+                     bool_field=0, **kwargs):
+            super(Model2, self).__init__(**kwargs)
 
             self.char_field = char_field
             self.int_field = int_field
@@ -100,12 +100,12 @@ def fill_db(Model1, Model2):
     Model2('char_field_val_4', 9000, 75.5).save()
     Model2('char_field_val_5', 6169453081680413441).save()
 
-    Model1('date_obj1', date_field=date(2014,11,17)).save()
-    Model1('date_obj2', date_field=date(2013,10,16)).save()
-    Model1('timeonly_obj1', timeonly_field=time(11,10,9)).save()
-    Model1('timeonly_obj2', timeonly_field=time(10,9,8)).save()
-    Model1('datetime_obj1', datetime_field=datetime(2014,4,3,1,9,0)).save()
-    Model1('datetime_obj2', datetime_field=datetime(2013,3,2,0,8,0)).save()
+    Model1('date_obj1', date_field=date(2014, 11, 17)).save()
+    Model1('date_obj2', date_field=date(2013, 10, 16)).save()
+    Model1('timeonly_obj1', timeonly_field=time(11, 10, 9)).save()
+    Model1('timeonly_obj2', timeonly_field=time(10, 9, 8)).save()
+    Model1('datetime_obj1', datetime_field=datetime(2014, 4, 3, 1, 9, 0)).save()
+    Model1('datetime_obj2', datetime_field=datetime(2013, 3, 2, 0, 8, 0)).save()
 
 
 def test_model():
@@ -216,7 +216,8 @@ def test_column_editable_list():
     # Test validation error
     rv = client.post('/admin/model1/ajax/update/', data={
         'list_form_pk': '1',
-        'test1': 'longerthantwentycharacterslongerthantwentycharacterslongerthantwentycharacterslongerthantwentycharacters',
+        'test1': ('longerthantwentycharacterslongerthantwentycharacterslonger'
+                  'thantwentycharacterslongerthantwentycharacters'),
     })
     data = rv.data.decode('utf-8')
     eq_(rv.status_code, 500)
@@ -320,7 +321,8 @@ def test_column_filters():
 
     eq_(len(view._filters), 7)
 
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
         [
             (0, 'contains'),
             (1, 'not contains'),
@@ -329,7 +331,8 @@ def test_column_filters():
             (4, 'empty'),
             (5, 'in list'),
             (6, 'not in list'),
-        ])
+        ]
+    )
 
     # Make some test clients
     client = app.test_client()
@@ -400,7 +403,8 @@ def test_column_filters():
     view = CustomModelView(Model2, column_filters=['int_field'])
     admin.add_view(view)
 
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Int Field']],
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Int Field']],
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -409,7 +413,8 @@ def test_column_filters():
             (4, 'empty'),
             (5, 'in list'),
             (6, 'not in list'),
-        ])
+        ]
+    )
 
     # integer - equals
     rv = client.get('/admin/model2/?flt0_0=5000')
@@ -506,11 +511,13 @@ def test_column_filters():
                            endpoint="_bools")
     admin.add_view(view)
 
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Bool Field']],
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Bool Field']],
         [
             (0, 'equals'),
             (1, 'not equal'),
-        ])
+        ]
+    )
 
     # boolean - equals - Yes
     rv = client.get('/admin/_bools/?flt0_0=1')
@@ -549,7 +556,8 @@ def test_column_filters():
                            endpoint="_float")
     admin.add_view(view)
 
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Float Field']],
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Float Field']],
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -558,7 +566,8 @@ def test_column_filters():
             (4, 'empty'),
             (5, 'in list'),
             (6, 'not in list'),
-        ])
+        ]
+    )
 
     # float - equals
     rv = client.get('/admin/_float/?flt0_0=25.9')
@@ -642,7 +651,8 @@ def test_column_filters():
                            endpoint="_datetime")
     admin.add_view(view)
 
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Date Field']],
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Date Field']],
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -651,9 +661,11 @@ def test_column_filters():
             (4, 'between'),
             (5, 'not between'),
             (6, 'empty'),
-        ])
+        ]
+    )
 
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Datetime Field']],
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Datetime Field']],
         [
             (7, 'equals'),
             (8, 'not equal'),
@@ -662,9 +674,11 @@ def test_column_filters():
             (11, 'between'),
             (12, 'not between'),
             (13, 'empty'),
-        ])
+        ]
+    )
 
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'Timeonly Field']],
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Timeonly Field']],
         [
             (14, 'equals'),
             (15, 'not equal'),
@@ -673,7 +687,8 @@ def test_column_filters():
             (18, 'between'),
             (19, 'not between'),
             (20, 'empty'),
-        ])
+        ]
+    )
 
     # date - equals
     rv = client.get('/admin/_datetime/?flt0_0=2014-11-17')
@@ -849,6 +864,7 @@ def test_column_filters():
     ok_('timeonly_obj1' in data)
     ok_('timeonly_obj2' in data)
 
+
 def test_default_sort():
     app, db, admin = setup()
     M1, _ = create_models(db)
@@ -934,6 +950,7 @@ def test_form_args():
 
     # ensure shared field_args don't create duplicate validators
     create_form = view.create_form()
+
     eq_(len(create_form.test.validators), 2)
 
     edit_form = view.edit_form()

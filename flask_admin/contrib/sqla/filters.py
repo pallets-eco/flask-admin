@@ -29,7 +29,7 @@ class BaseSQLAFilter(filters.BaseFilter):
         return self.column if alias is None else getattr(alias, self.column.key)
 
     def apply(self, query, value, alias=None):
-        return super(self, BaseSQLAFilter).apply(query, value)
+        return super(BaseSQLAFilter, self).apply(query, value)
 
 
 # Common filters
@@ -86,9 +86,9 @@ class FilterSmaller(BaseSQLAFilter):
 class FilterEmpty(BaseSQLAFilter, filters.BaseBooleanFilter):
     def apply(self, query, value, alias=None):
         if value == '1':
-            return query.filter(self.get_column(alias) == None)
+            return query.filter(self.get_column(alias) == None)  # noqa: E711
         else:
-            return query.filter(self.get_column(alias) != None)
+            return query.filter(self.get_column(alias) != None)  # noqa: E711
 
     def operation(self):
         return lazy_gettext('empty')
@@ -112,7 +112,7 @@ class FilterNotInList(FilterInList):
     def apply(self, query, value, alias=None):
         # NOT IN can exclude NULL values, so "or_ == None" needed to be added
         column = self.get_column(alias)
-        return query.filter(or_(~column.in_(value), column == None))
+        return query.filter(or_(~column.in_(value), column == None))  # noqa: E711
 
     def operation(self):
         return lazy_gettext('not in list')
@@ -287,6 +287,58 @@ class TimeNotBetweenFilter(TimeBetweenFilter):
         return lazy_gettext('not between')
 
 
+class EnumEqualFilter(FilterEqual):
+    def __init__(self, column, name, options=None, enum_class=None, **kwargs):
+        self.enum_class = enum_class
+        super(EnumEqualFilter, self).__init__(column, name, options, **kwargs)
+
+    def clean(self, value):
+        if self.enum_class is None:
+            return super(EnumEqualFilter, self).clean(value)
+        return self.enum_class(value)
+
+
+class EnumFilterNotEqual(FilterNotEqual):
+    def __init__(self, column, name, options=None, enum_class=None, **kwargs):
+        self.enum_class = enum_class
+        super(EnumFilterNotEqual, self).__init__(column, name, options, **kwargs)
+
+    def clean(self, value):
+        if self.enum_class is None:
+            return super(EnumFilterNotEqual, self).clean(value)
+        return self.enum_class(value)
+
+
+class EnumFilterEmpty(FilterEmpty):
+    def __init__(self, column, name, options=None, enum_class=None, **kwargs):
+        self.enum_class = enum_class
+        super(EnumFilterEmpty, self).__init__(column, name, options, **kwargs)
+
+
+class EnumFilterInList(FilterInList):
+    def __init__(self, column, name, options=None, enum_class=None, **kwargs):
+        self.enum_class = enum_class
+        super(EnumFilterInList, self).__init__(column, name, options, **kwargs)
+
+    def clean(self, value):
+        values = super(EnumFilterInList, self).clean(value)
+        if self.enum_class is not None:
+            values = [self.enum_class(val) for val in values]
+        return values
+
+
+class EnumFilterNotInList(FilterNotInList):
+    def __init__(self, column, name, options=None, enum_class=None, **kwargs):
+        self.enum_class = enum_class
+        super(EnumFilterNotInList, self).__init__(column, name, options, **kwargs)
+
+    def clean(self, value):
+        values = super(EnumFilterNotInList, self).clean(value)
+        if self.enum_class is not None:
+            values = [self.enum_class(val) for val in values]
+        return values
+
+
 # Base SQLA filter field converter
 class FilterConverter(filters.BaseFilterConverter):
     strings = (FilterLike, FilterNotLike, FilterEqual, FilterNotEqual,
@@ -298,8 +350,8 @@ class FilterConverter(filters.BaseFilterConverter):
                      FloatSmallerFilter, FilterEmpty, FloatInListFilter,
                      FloatNotInListFilter)
     bool_filters = (BooleanEqualFilter, BooleanNotEqualFilter)
-    enum = (FilterEqual, FilterNotEqual, FilterEmpty, FilterInList,
-            FilterNotInList)
+    enum = (EnumEqualFilter, EnumFilterNotEqual, EnumFilterEmpty, EnumFilterInList,
+            EnumFilterNotInList)
     date_filters = (DateEqualFilter, DateNotEqualFilter, DateGreaterFilter,
                     DateSmallerFilter, DateBetweenFilter, DateNotBetweenFilter,
                     FilterEmpty)
@@ -329,12 +381,12 @@ class FilterConverter(filters.BaseFilterConverter):
     def conv_bool(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.bool_filters]
 
-    @filters.convert('int', 'integer', 'smallinteger', 'smallint', 'numeric',
+    @filters.convert('int', 'integer', 'smallinteger', 'smallint',
                      'biginteger', 'bigint', 'mediumint')
     def conv_int(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.int_filters]
 
-    @filters.convert('float', 'real', 'decimal', 'double_precision', 'double')
+    @filters.convert('float', 'real', 'decimal', 'numeric', 'double_precision', 'double')
     def conv_float(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.float_filters]
 
@@ -357,4 +409,12 @@ class FilterConverter(filters.BaseFilterConverter):
                 (v, v)
                 for v in column.type.enums
             ]
+        try:
+            from sqlalchemy_enum34 import EnumType
+        except ImportError:
+            pass
+        else:
+            if isinstance(column.type, EnumType):
+                kwargs['enum_class'] = column.type._enum_class
+
         return [f(column, name, options, **kwargs) for f in self.enum]

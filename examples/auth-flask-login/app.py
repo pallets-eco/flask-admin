@@ -51,7 +51,7 @@ class User(db.Model):
 
 # Define login and registration forms (for flask-login)
 class LoginForm(form.Form):
-    login = fields.TextField(validators=[validators.required()])
+    login = fields.StringField(validators=[validators.required()])
     password = fields.PasswordField(validators=[validators.required()])
 
     def validate_login(self, field):
@@ -71,8 +71,8 @@ class LoginForm(form.Form):
 
 
 class RegistrationForm(form.Form):
-    login = fields.TextField(validators=[validators.required()])
-    email = fields.TextField()
+    login = fields.StringField(validators=[validators.required()])
+    email = fields.StringField()
     password = fields.PasswordField(validators=[validators.required()])
 
     def validate_login(self, field):

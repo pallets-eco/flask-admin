@@ -221,7 +221,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         Base form class. Will be used to create the upload, rename, edit, and delete form.
 
         Allows enabling CSRF validation and useful if you want to have custom
-        contructor or override some fields.
+        constructor or override some fields.
 
         Example::
 
@@ -246,6 +246,28 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
     edit_modal = False
     """Setting this to true will display the edit view as a modal dialog."""
+
+    # List view
+    possible_columns = 'name', 'rel_path', 'is_dir', 'size', 'date'
+    """A list of possible columns to display."""
+
+    column_list = 'name', 'size', 'date'
+    """A list of columns to display."""
+
+    column_sortable_list = column_list
+    """A list of sortable columns."""
+
+    default_sort_column = None
+    """The default sort column."""
+
+    default_desc = 0
+    """The default desc value."""
+
+    column_labels = dict((column, column.capitalize()) for column in column_list)
+    """A dict from column names to their labels."""
+
+    date_format = '%Y-%m-%d %H:%M:%S'
+    """Date column display format."""
 
     def __init__(self, base_url=None, name=None, category=None, endpoint=None,
                  url=None, verify_path=True, menu_class_name=None,
@@ -278,12 +300,12 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         # Convert allowed_extensions to set for quick validation
         if (self.allowed_extensions and
-            not isinstance(self.allowed_extensions, set)):
+                not isinstance(self.allowed_extensions, set)):
             self.allowed_extensions = set(self.allowed_extensions)
 
         # Convert editable_extensions to set for quick validation
         if (self.editable_extensions and
-            not isinstance(self.editable_extensions, set)):
+                not isinstance(self.editable_extensions, set)):
             self.editable_extensions = set(self.editable_extensions)
 
         super(BaseFileAdmin, self).__init__(name, category, endpoint, url,
@@ -391,6 +413,19 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         return DeleteForm
 
+    def get_action_form(self):
+        """
+            Create form class for model action.
+
+            Override to implement customized behavior.
+        """
+        class ActionForm(self.form_base_class):
+            action = fields.HiddenField()
+            url = fields.HiddenField()
+            # rowid is retrieved using getlist, for backward compatibility
+
+        return ActionForm
+
     def upload_form(self):
         """
             Instantiate file upload form and return it.
@@ -401,7 +436,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         if request.form:
             # Workaround for allowing both CSRF token + FileField to be submitted
             # https://bitbucket.org/danjac/flask-wtf/issue/12/fieldlist-filefield-does-not-follow
-            formdata = request.form.copy() # as request.form is immutable
+            formdata = request.form.copy()  # as request.form is immutable
             formdata.update(request.files)
 
             # admin=self allows the form to use self.is_file_allowed
@@ -448,6 +483,18 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             return delete_form_class(request.form)
         else:
             return delete_form_class()
+
+    def action_form(self):
+        """
+            Instantiate action form and return it.
+
+            Override to implement custom behavior.
+        """
+        action_form_class = self.get_action_form()
+        if request.form:
+            return action_form_class(request.form)
+        else:
+            return action_form_class()
 
     def is_file_allowed(self, filename):
         """
@@ -670,6 +717,38 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         pass
 
+    def is_column_visible(self, column):
+        """
+        Determines if the given column is visible.
+        :param column: The column to query.
+        :return: Whether the column is visible.
+        """
+        return column in self.column_list
+
+    def is_column_sortable(self, column):
+        """
+        Determines if the given column is sortable.
+        :param column: The column to query.
+        :return: Whether the column is sortable.
+        """
+        return column in self.column_sortable_list
+
+    def column_label(self, column):
+        """
+        Gets the column's label.
+        :param column: The column to query.
+        :return: The column's label.
+        """
+        return self.column_labels[column]
+
+    def timestamp_format(self, timestamp):
+        """
+        Formats the timestamp to a date format.
+        :param timestamp: The timestamp to format.
+        :return: A formatted date.
+        """
+        return datetime.fromtimestamp(timestamp).strftime(self.date_format)
+
     def _save_form_files(self, directory, path, form):
         filename = self._separator.join([directory, secure_filename(form.upload.data.filename)])
 
@@ -739,20 +818,37 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             if self.is_accessible_path(rel_path):
                 items.append(item)
 
-        # Sort by name
-        items.sort(key=itemgetter(0))
+        sort_column = request.args.get('sort', None, type=str)
+        sort_desc = request.args.get('desc', 0, type=int)
 
-        # Sort by type
-        items.sort(key=itemgetter(2), reverse=True)
-
-        # Sort by modified date
-        items.sort(key=lambda values: (values[0], values[1], values[2], values[3], datetime.fromtimestamp(values[4])), reverse=True)
+        if sort_column is None:
+            # Sort by name
+            items.sort(key=itemgetter(0))
+            # Sort by type
+            items.sort(key=itemgetter(2), reverse=True)
+            # Sort by modified date
+            items.sort(key=lambda x: (x[0], x[1], x[2], x[3], datetime.fromtimestamp(x[4])), reverse=True)
+        else:
+            column_index = self.possible_columns.index(sort_column)
+            items.sort(key=itemgetter(column_index), reverse=sort_desc)
 
         # Generate breadcrumbs
         breadcrumbs = self._get_breadcrumbs(path)
 
         # Actions
         actions, actions_confirmation = self.get_actions_list()
+        if actions:
+            action_form = self.action_form()
+        else:
+            action_form = None
+
+        def sort_url(column, invert=False):
+            desc = None
+
+            if invert and not sort_desc:
+                desc = 1
+
+            return self.get_url('.index_view', sort=column, desc=desc)
 
         return self.render(self.list_template,
                            dir_path=path,
@@ -762,7 +858,12 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                            items=items,
                            actions=actions,
                            actions_confirmation=actions_confirmation,
-                           delete_form=delete_form)
+                           action_form=action_form,
+                           delete_form=delete_form,
+                           sort_column=sort_column,
+                           sort_desc=sort_desc,
+                           sort_url=sort_url,
+                           timestamp_format=self.timestamp_format)
 
     @expose('/upload/', methods=('GET', 'POST'))
     @expose('/upload/<path:path>', methods=('GET', 'POST'))
@@ -789,7 +890,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             try:
                 self._save_form_files(directory, path, form)
                 flash(gettext('Successfully saved file: %(name)s',
-                              name=form.upload.data.filename))
+                              name=form.upload.data.filename), 'success')
                 return redirect(self._get_dir_url('.index_view', path))
             except Exception as ex:
                 flash(gettext('Failed to save file: %(error)s', error=ex), 'error')
@@ -853,7 +954,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                 self.storage.make_dir(directory, form.name.data)
                 self.on_mkdir(directory, form.name.data)
                 flash(gettext('Successfully created directory: %(directory)s',
-                              directory=form.name.data))
+                              directory=form.name.data), 'success')
                 return redirect(dir_url)
             except Exception as ex:
                 flash(gettext('Failed to create directory: %(error)s', error=ex), 'error')
@@ -907,7 +1008,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     self.before_directory_delete(full_path, path)
                     self.storage.delete_tree(full_path)
                     self.on_directory_delete(full_path, path)
-                    flash(gettext('Directory "%(path)s" was successfully deleted.', path=path))
+                    flash(gettext('Directory "%(path)s" was successfully deleted.', path=path), 'success')
                 except Exception as ex:
                     flash(gettext('Failed to delete directory: %(error)s', error=ex), 'error')
             else:
@@ -915,7 +1016,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     self.before_file_delete(full_path, path)
                     self.delete_file(full_path)
                     self.on_file_delete(full_path, path)
-                    flash(gettext('File "%(name)s" was successfully deleted.', name=path))
+                    flash(gettext('File "%(name)s" was successfully deleted.', name=path), 'success')
                 except Exception as ex:
                     flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
         else:
@@ -958,7 +1059,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                 self.on_rename(full_path, dir_base, filename)
                 flash(gettext('Successfully renamed "%(src)s" to "%(dst)s"',
                               src=op.basename(path),
-                              dst=filename))
+                              dst=filename), 'success')
             except Exception as ex:
                 flash(gettext('Failed to rename: %(error)s', error=ex), 'error')
 
@@ -1015,7 +1116,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     error = True
                 else:
                     self.on_edit_file(full_path, path)
-                    flash(gettext("Changes to %(name)s saved successfully.", name=path))
+                    flash(gettext("Changes to %(name)s saved successfully.", name=path), 'success')
                     return redirect(next_url)
         else:
             helpers.flash_errors(form, message='Failed to edit file. %(error)s')
@@ -1072,7 +1173,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             if self.is_accessible_path(path):
                 try:
                     self.delete_file(full_path)
-                    flash(gettext('File "%(name)s" was successfully deleted.', name=path))
+                    flash(gettext('File "%(name)s" was successfully deleted.', name=path), 'success')
                 except Exception as ex:
                     flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
 

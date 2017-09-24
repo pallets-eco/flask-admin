@@ -229,7 +229,6 @@ def test_image_upload_field():
             eq_(dummy.upload, 'test1.jpg')
             ok_(op.exists(op.join(path, 'test1.jpg')))
 
-
     # check allowed extensions
     for extension in ('gif', 'jpg', 'jpeg', 'png', 'tiff'):
         filename = 'copyleft.' + extension

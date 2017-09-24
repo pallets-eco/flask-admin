@@ -9,6 +9,7 @@ def prettify_name(name):
     """
     return name.replace('_', ' ').title()
 
+
 def get_mdict_item_or_list(mdict, key):
     """
         Return the value for the given key of the multidict.
