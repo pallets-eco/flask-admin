@@ -569,11 +569,13 @@ class Admin(object):
                 The name of a parent_name category
         """
 
-        category = self.get_category_menu_item(name)
-        parent = self.get_category_menu_item(parent_name)
+        name_text = as_unicode(name)
+        parent_name_text = as_unicode(parent_name)
+        category = self.get_category_menu_item(name_text)
+        parent = self.get_category_menu_item(parent_name_text)
         if category is None and parent is not None:
             category = SubMenuCategory(name)
-            self._menu_categories[name] = category
+            self._menu_categories[name_text] = category
             parent.add_child(category)
 
     def add_link(self, link):
