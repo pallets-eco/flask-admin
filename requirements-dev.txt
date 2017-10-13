@@ -14,3 +14,4 @@ psycopg2
 nose
 coveralls
 pylint
+sqlalchemy-citext
