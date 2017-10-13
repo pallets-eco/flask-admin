@@ -591,7 +591,7 @@ class ModelView(BaseModelView):
                     # TODO: Check for multiple columns
                     column = p.columns[0]
 
-                    if column.foreign_keys or column.primary_key:
+                    if column.foreign_keys:
                         continue
 
                     visible_name = '%s / %s' % (self.get_column_name(attr.prop.target.name),
