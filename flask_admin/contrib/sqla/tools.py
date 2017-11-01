@@ -75,14 +75,14 @@ def tuple_operator_in(model_pk, ids):
 
     The returning operator can be used within a filter(), as it is just an or_ operator
     """
-    l = []
+    ands = []
     for id in ids:
         k = []
         for i in range(len(model_pk)):
             k.append(eq(model_pk[i], id[i]))
-        l.append(and_(*k))
-    if len(l) >= 1:
-        return or_(*l)
+        ands.append(and_(*k))
+    if len(ands) >= 1:
+        return or_(*ands)
     else:
         return None
 
