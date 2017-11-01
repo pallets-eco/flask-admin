@@ -33,6 +33,9 @@ matrix:
 
 addons:
   postgresql: "9.4"
+  apt:
+    packages:
+      - postgresql-9.4-postgis-2.1 # Workaround https://github.com/travis-ci/travis-ci/issues/5178
 
 services:
   - postgresql
