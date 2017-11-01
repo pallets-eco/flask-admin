@@ -213,10 +213,8 @@ class ModelView(BaseModelView):
                 if isinstance(p, string_types):
                     p = getattr(self.model, p)
 
-                field_type = type(p)
-
                 # Check type
-                if (field_type != CharField and field_type != TextField):
+                if not isinstance(p, (CharField, TextField)):
                         raise Exception('Can only search on text columns. ' +
                                         'Failed to setup search for "%s"' % p)
 
