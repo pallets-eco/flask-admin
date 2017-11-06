@@ -33,6 +33,10 @@ matrix:
 
 addons:
   postgresql: "9.4"
+  apt:
+    packages:
+      - postgresql-9.4-postgis-2.4
+      - postgresql-9.4-postgis-2.4-scripts
 
 services:
   - postgresql
