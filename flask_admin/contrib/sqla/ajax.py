@@ -62,9 +62,11 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         with self.session.no_autoflush:
             return self.session.query(self.model).get(pk)
 
-    def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
-        query = self.session.query(self.model)
+    def get_query(self):
+        return self.session.query(self.model)
 
+    def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
+        query = self.get_query()
         filters = (field.ilike(u'%%%s%%' % term) for field in self._cached_fields)
         query = query.filter(or_(*filters))
 
