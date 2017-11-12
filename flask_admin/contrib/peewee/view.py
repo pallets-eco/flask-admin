@@ -2,7 +2,7 @@ import logging
 
 from flask import flash
 
-from flask_admin._compat import string_types, iteritems
+from flask_admin._compat import string_types
 from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
@@ -13,7 +13,7 @@ from flask_admin.actions import action
 from flask_admin.contrib.peewee import filters
 
 from .form import get_form, CustomModelConverter, InlineModelConverter, save_inline
-from .tools import get_primary_key, parse_like_term
+from .tools import get_meta_fields, get_primary_key, parse_like_term
 from .ajax import create_ajax_loader
 
 # Set up logger
@@ -176,7 +176,9 @@ class ModelView(BaseModelView):
         if model is None:
             model = self.model
 
-        return iteritems(model._meta.fields)
+        return (
+            (field.name, field)
+            for field in get_meta_fields(model))
 
     def scaffold_pk(self):
         return get_primary_key(self.model)
