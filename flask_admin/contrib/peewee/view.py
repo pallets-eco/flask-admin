@@ -7,7 +7,7 @@ from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
 
-from peewee import PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
+from peewee import JOIN, PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
 
 from flask_admin.actions import action
 from flask_admin.contrib.peewee import filters
@@ -309,7 +309,7 @@ class ModelView(BaseModelView):
             model_name = field.model_class.__name__
 
             if model_name not in joins:
-                query = query.join(field.model_class)
+                query = query.join(field.model_class, JOIN.LEFT_OUTER)
                 joins.add(model_name)
 
         return query
