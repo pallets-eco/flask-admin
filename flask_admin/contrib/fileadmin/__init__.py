@@ -821,6 +821,11 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         sort_column = request.args.get('sort', None, type=str)
         sort_desc = request.args.get('desc', 0, type=int)
 
+        try:
+            column_index = self.possible_columns.index(sort_column)
+        except ValueError:
+            sort_column = self.default_sort_column
+
         if sort_column is None:
             # Sort by name
             items.sort(key=itemgetter(0))
@@ -829,7 +834,6 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             # Sort by modified date
             items.sort(key=lambda x: (x[0], x[1], x[2], x[3], datetime.fromtimestamp(x[4])), reverse=True)
         else:
-            column_index = self.possible_columns.index(sort_column)
             items.sort(key=itemgetter(column_index), reverse=sort_desc)
 
         # Generate breadcrumbs
