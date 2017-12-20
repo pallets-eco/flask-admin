@@ -79,6 +79,7 @@ var RedisCli = function(postUrl) {
 		sendCommand(val);
 
 		$input.val('');
+		return false;
 	}
 
 	function onKeyPress(e) {

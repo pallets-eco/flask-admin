@@ -14,8 +14,8 @@ def parse_like_term(term):
 
 
 def get_meta_fields(model):
-    try:
+    if hasattr(model._meta, 'sorted_fields'):
         fields = model._meta.sorted_fields
-    except AttributeError:
+    else:
         fields = model._meta.get_fields()
     return fields

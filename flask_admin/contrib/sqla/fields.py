@@ -276,7 +276,7 @@ class InlineModelFormList(InlineFieldList):
 
         # Handle request data
         for field in self.entries:
-            field_id = field.get_pk()
+            field_id = str(field.get_pk())
 
             is_created = field_id not in pk_map
             if not is_created:
