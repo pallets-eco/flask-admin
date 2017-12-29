@@ -17,6 +17,7 @@ from flask_admin.form import FormOpts, BaseForm, Select2Widget
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 from flask_admin.babel import lazy_gettext
 
+
 class QuerySelectField(SelectFieldBase):
     """
     Will display a select drop-down field to choose between ORM results in a
