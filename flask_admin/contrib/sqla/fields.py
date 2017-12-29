@@ -17,13 +17,6 @@ from flask_admin.form import FormOpts, BaseForm, Select2Widget
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 from flask_admin.babel import lazy_gettext
 
-try:
-    from sqlalchemy.orm.util import identity_key
-    has_identity_key = True
-except ImportError:
-    has_identity_key = False
-
-
 class QuerySelectField(SelectFieldBase):
     """
     Will display a select drop-down field to choose between ORM results in a
@@ -63,8 +56,6 @@ class QuerySelectField(SelectFieldBase):
         self.query_factory = query_factory
 
         if get_pk is None:
-            if not has_identity_key:
-                raise Exception(u'The sqlalchemy identity_key function could not be imported.')
             self.get_pk = get_pk_from_identity
         else:
             self.get_pk = get_pk
