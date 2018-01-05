@@ -17,12 +17,6 @@ from flask_admin.form import FormOpts, BaseForm, Select2Widget
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 from flask_admin.babel import lazy_gettext
 
-try:
-    from sqlalchemy.orm.util import identity_key
-    has_identity_key = True
-except ImportError:
-    has_identity_key = False
-
 
 class QuerySelectField(SelectFieldBase):
     """
@@ -63,8 +57,6 @@ class QuerySelectField(SelectFieldBase):
         self.query_factory = query_factory
 
         if get_pk is None:
-            if not has_identity_key:
-                raise Exception(u'The sqlalchemy identity_key function could not be imported.')
             self.get_pk = get_pk_from_identity
         else:
             self.get_pk = get_pk
@@ -295,6 +287,5 @@ class InlineModelFormList(InlineFieldList):
 
 
 def get_pk_from_identity(obj):
-    # TODO: Remove me
-    cls, key = identity_key(instance=obj)
+    key = obj.__mapper__.primary_key_from_instance(instance=obj)
     return u':'.join(text_type(x) for x in key)
