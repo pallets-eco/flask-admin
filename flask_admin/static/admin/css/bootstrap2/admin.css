@@ -139,3 +139,7 @@ table.filters tr td {
     */
     #no-more-tables td:before { content: attr(data-title); }
 }
+
+.editable-input .select2-container {
+    min-width: 220px;
+}
