@@ -316,17 +316,24 @@ class ModelView(BaseModelView):
 
         return query
 
-    def _order_by(self, query, joins, sort_field, sort_desc):
+    def _order_by(self, query, joins, order):
+        clauses = []
+        for sort_field, sort_desc in order:
+            query, joins, clause = self._sort_clause(
+                query, joins, sort_field, sort_desc)
+            clauses.append(clause)
+        query = query.order_by(*clauses)
+        return query, joins
+
+    def _sort_clause(self, query, joins, sort_field, sort_desc):
         if isinstance(sort_field, string_types):
             field = getattr(self.model, sort_field)
-            query = query.order_by(field.desc() if sort_desc else field.asc())
+            clause = field.desc() if sort_desc else field.asc()
         elif isinstance(sort_field, Field):
             if sort_field.model_class != self.model:
                 query = self._handle_join(query, sort_field, joins)
-
-            query = query.order_by(sort_field.desc() if sort_desc else sort_field.asc())
-
-        return query, joins
+            clause = sort_field.desc() if sort_desc else sort_field.asc()
+        return query, joins, clause
 
     def get_query(self):
         return self.model.select()
@@ -395,13 +402,12 @@ class ModelView(BaseModelView):
         # Apply sorting
         if sort_column is not None:
             sort_field = self._sortable_columns[sort_column]
-
-            query, joins = self._order_by(query, joins, sort_field, sort_desc)
+            order = [(sort_field, sort_desc)]
+            query, joins = self._order_by(query, joins, order)
         else:
             order = self._get_default_order()
-
             if order:
-                query, joins = self._order_by(query, joins, order[0], order[1])
+                query, joins = self._order_by(query, joins, order)
 
         # Pagination
         if page_size is None:

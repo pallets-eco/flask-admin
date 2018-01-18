@@ -381,6 +381,12 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 column_default_sort = ('user', True)
+
+        If you want to sort by more than one column,
+        you can pass a list of tuples::
+
+            class MyModelView(BaseModelView):
+                column_default_sort = [('name', True), ('last_name', True)]
     """
 
     column_searchable_list = ObsoleteAttr('column_searchable_list',
@@ -1435,10 +1441,12 @@ class BaseModelView(BaseView, ActionsMixin):
             Return default sort order
         """
         if self.column_default_sort:
-            if isinstance(self.column_default_sort, tuple):
+            if isinstance(self.column_default_sort, list):
                 return self.column_default_sort
+            if isinstance(self.column_default_sort, tuple):
+                return [self.column_default_sort]
             else:
-                return self.column_default_sort, False
+                return [(self.column_default_sort, False)]
 
         return None
 
