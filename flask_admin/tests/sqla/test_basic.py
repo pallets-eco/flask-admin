@@ -1676,7 +1676,7 @@ def test_default_sort():
     app, db, admin = setup()
     M1, _ = create_models(db)
 
-    db.session.add_all([M1('c'), M1('b'), M1('a')])
+    db.session.add_all([M1('c', 'x'), M1('b', 'x'), M1('a', 'y')])
     db.session.commit()
     eq_(M1.query.count(), 3)
 
@@ -1714,6 +1714,18 @@ def test_default_sort():
     eq_(data[0].test1, 'a')
     eq_(data[1].test1, 'b')
     eq_(data[2].test1, 'c')
+
+    # test default sort with multiple columns
+    order = [('test2', False), ('test1', False)]
+    view4 = CustomModelView(M1, db.session, column_default_sort=order, endpoint='m1_4')
+    admin.add_view(view4)
+
+    _, data = view4.get_list(0, None, None, None, None)
+
+    eq_(len(data), 3)
+    eq_(data[0].test1, 'b')
+    eq_(data[1].test1, 'c')
+    eq_(data[2].test1, 'a')
 
 
 def test_complex_sort():
