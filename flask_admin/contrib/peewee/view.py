@@ -328,11 +328,11 @@ class ModelView(BaseModelView):
     def _sort_clause(self, query, joins, sort_field, sort_desc):
         if isinstance(sort_field, string_types):
             field = getattr(self.model, sort_field)
-            clause = field.desc() if sort_desc else field.asc()
         elif isinstance(sort_field, Field):
             if sort_field.model_class != self.model:
                 query = self._handle_join(query, sort_field, joins)
-            clause = sort_field.desc() if sort_desc else sort_field.asc()
+            field = sort_field
+        clause = field.desc() if sort_desc else field.asc()
         return query, joins, clause
 
     def get_query(self):
