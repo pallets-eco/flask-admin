@@ -521,7 +521,7 @@ class ModelView(BaseModelView):
 
             if order:
                 keys = ['%s%s' % ('-' if desc else '', col)
-                        for (desc, col) in order]
+                        for (col, desc) in order]
                 query = query.order_by(*keys)
 
         # Pagination
