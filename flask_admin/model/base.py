@@ -3,6 +3,7 @@ import re
 import csv
 import mimetypes
 import time
+import six
 from math import ceil
 
 from werkzeug import secure_filename
@@ -1516,9 +1517,10 @@ class BaseModelView(BaseView, ActionsMixin):
         """
             Compatibility helper.
         """
-        try:
+        arg_count = six.get_function_code(self.on_model_change).co_argcount
+        if arg_count == 4:
             self.on_model_change(form, model, is_created)
-        except TypeError:
+        else:
             msg = ('%s.on_model_change() now accepts third ' +
                    'parameter is_created. Please update your code') % self.model
             warnings.warn(msg)

@@ -1620,6 +1620,40 @@ def test_relations():
     # TODO: test relations
     pass
 
+def test_on_model_change_compatibility():
+    app, db, admin = setup()
+    Model1, Model2 = create_models(db)
+
+
+    class ModelView(CustomModelView):
+        def on_model_change(self, form, model, is_created):
+            model.test1 = model.test1.upper()
+
+    view = ModelView(Model1, db.session)
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    client.post('/admin/model1/new/',
+                data=dict(test1='test1large', test2='test2'))
+
+    model = db.session.query(Model1).first()
+    eq_(model.test1, 'TEST1LARGE')
+
+    class OldModelView(CustomModelView):
+        def on_model_change(self, form, model):
+            model.string_field = model.string_field.upper()
+
+    view = OldModelView(Model2, db.session)
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    client.post('/admin/model2/new/',
+                data=dict(string_field='test2large'))
+
+    model = db.session.query(Model2).first()
+    eq_(model.string_field, 'TEST2LARGE')
 
 def test_on_model_change_delete():
     app, db, admin = setup()
