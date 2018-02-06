@@ -154,7 +154,9 @@ class AdminModelConverter(ModelConverterBase):
             if len(prop.columns) > 1:
                 columns = filter_foreign_columns(model.__table__, prop.columns)
 
-                if len(columns) > 1:
+                if len(columns) == 0:
+                    return None
+                elif len(columns) > 1:
                     warnings.warn('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
                     return None
 
