@@ -28,7 +28,7 @@
 
 /* List View - fix overlapping border between actions and table */
 .model-list  {
-    position: relative;
+    position: static;
     margin-top: -1px;
     z-index: 999;
 }
