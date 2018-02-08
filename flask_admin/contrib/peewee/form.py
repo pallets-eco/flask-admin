@@ -1,7 +1,7 @@
 from wtforms import fields
 
 from peewee import (CharField, DateTimeField, DateField, TimeField,
-                    PrimaryKeyField, ForeignKeyField, BaseModel)
+                    PrimaryKeyField, ForeignKeyField, Model)
 
 from wtfpeewee.orm import ModelConverter, model_form
 
@@ -189,7 +189,7 @@ class InlineModelConverter(InlineModelConverterBase):
         info = super(InlineModelConverter, self).get_info(p)
 
         if info is None:
-            if isinstance(p, BaseModel):
+            if isinstance(p, Model):
                 info = InlineFormAdmin(p)
             else:
                 model = getattr(p, 'model', None)
