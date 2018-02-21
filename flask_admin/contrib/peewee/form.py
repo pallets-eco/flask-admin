@@ -1,7 +1,16 @@
 from wtforms import fields
 
 from peewee import (CharField, DateTimeField, DateField, TimeField,
-                    PrimaryKeyField, ForeignKeyField, BaseModel)
+                    PrimaryKeyField, ForeignKeyField)
+
+# Fix for Issue: #1602 & #1606 
+# Section below trys BaseModel (for versions of PeeWee < 3.0) and if that fails,
+# load the new ModelBase as BaseModel (to not break things looking for BaseModel in flask-peewee and etc.)
+
+try:
+    from peewee import BaseModel
+except ImportError:
+    from peewee import ModelBase as BaseModel
 
 from wtfpeewee.orm import ModelConverter, model_form
 
