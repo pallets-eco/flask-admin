@@ -41,7 +41,7 @@ Support
 
 ****
 
-Python 2.6 - 2.7 and 3.3 - 3.4.
+Python 2.7 and 3.3 or higher.
 
 Indices And Tables
 ------------------

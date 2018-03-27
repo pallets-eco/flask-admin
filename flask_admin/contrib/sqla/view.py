@@ -420,7 +420,9 @@ class ModelView(BaseModelView):
                 if len(p.columns) > 1:
                     filtered = tools.filter_foreign_columns(self.model.__table__, p.columns)
 
-                    if len(filtered) > 1:
+                    if len(filtered) == 0:
+                        continue
+                    elif len(filtered) > 1:
                         warnings.warn('Can not convert multiple-column properties (%s.%s)' % (self.model, p.key))
                         continue
 
