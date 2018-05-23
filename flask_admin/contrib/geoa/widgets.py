@@ -23,7 +23,8 @@ class LeafletWidget(TextArea):
     """
     def __init__(
             self, width='auto', height=350, center=None,
-            zoom=None, min_zoom=None, max_zoom=None, max_bounds=None):
+            zoom=None, min_zoom=None, max_zoom=None, max_bounds=None,
+            tile_layer_url=None, tile_layer_attribution=None):
         self.width = width
         self.height = height
         self.center = center
@@ -31,6 +32,8 @@ class LeafletWidget(TextArea):
         self.min_zoom = min_zoom
         self.max_zoom = max_zoom
         self.max_bounds = max_bounds
+        self.tile_layer_url = tile_layer_url
+        self.tile_layer_attribution = tile_layer_attribution
 
     def __call__(self, field, **kwargs):
         kwargs.setdefault('data-role', self.data_role)
@@ -38,6 +41,10 @@ class LeafletWidget(TextArea):
         kwargs.setdefault('data-geometry-type', gtype)
 
         # set optional values from constructor
+        if self.tile_layer_url:
+            kwargs['data-tile-layer-url'] = self.tile_layer_url
+        if self.tile_layer_attribution:
+            kwargs['data-tile-layer-attribution'] = self.tile_layer_attribution
         if "data-width" not in kwargs:
             kwargs["data-width"] = self.width
         if "data-height" not in kwargs:
