@@ -2218,6 +2218,34 @@ def test_multipath_joins():
     eq_(rv.status_code, 200)
 
 
+def test_different_bind_joins():
+    app, db, admin = setup()
+    app.config['SQLALCHEMY_BINDS'] = {
+        'other': 'sqlite:///'
+    }
+
+    class Model1(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        val1 = db.Column(db.String(20))
+
+    class Model2(db.Model):
+        __bind_key__ = 'other'
+        id = db.Column(db.Integer, primary_key=True)
+        val1 = db.Column(db.String(20))
+        first_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
+        first = db.relationship(Model1)
+
+    db.create_all()
+
+    view = CustomModelView(Model2, db.session)
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model2/')
+    eq_(rv.status_code, 200)
+
+
 def test_model_default():
     app, db, admin = setup()
     _, Model2 = create_models(db)

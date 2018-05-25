@@ -765,6 +765,12 @@ class ModelView(BaseModelView):
                 if p.mapper.class_ == self.model:
                     continue
 
+                # Check if it is pointing to a differnet bind
+                source_bind = getattr(self.model, '__bind_key__', None)
+                target_bind = getattr(p.mapper.class_, '__bind_key__', None)
+                if source_bind != target_bind:
+                    continue
+
                 if p.direction.name in ['MANYTOONE', 'MANYTOMANY']:
                     relations.add(p.key)
 
