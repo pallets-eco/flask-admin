@@ -2,18 +2,18 @@ import logging
 
 from flask import flash
 
-from flask_admin._compat import string_types, iteritems
+from flask_admin._compat import string_types
 from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
 
-from peewee import PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
+from peewee import JOIN, PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
 
 from flask_admin.actions import action
 from flask_admin.contrib.peewee import filters
 
 from .form import get_form, CustomModelConverter, InlineModelConverter, save_inline
-from .tools import get_primary_key, parse_like_term
+from .tools import get_meta_fields, get_primary_key, parse_like_term
 from .ajax import create_ajax_loader
 
 # Set up logger
@@ -176,7 +176,9 @@ class ModelView(BaseModelView):
         if model is None:
             model = self.model
 
-        return iteritems(model._meta.fields)
+        return (
+            (field.name, field)
+            for field in get_meta_fields(model))
 
     def scaffold_pk(self):
         return get_primary_key(self.model)
@@ -219,10 +221,8 @@ class ModelView(BaseModelView):
                 elif isinstance(p, string_types):
                     p = getattr(self.model, p)
 
-                field_type = type(p)
-
                 # Check type
-                if (field_type != CharField and field_type != TextField):
+                if not isinstance(p, (CharField, TextField)):
                         raise Exception('Can only search on text columns. ' +
                                         'Failed to setup search for "%s"' % p)
 
@@ -240,14 +240,24 @@ class ModelView(BaseModelView):
             raise Exception('Failed to find field for filter: %s' % name)
 
         # Check if field is in different model
-        if attr.model_class != self.model:
-            visible_name = '%s / %s' % (self.get_column_name(attr.model_class.__name__),
-                                        self.get_column_name(attr.name))
-        else:
-            if not isinstance(name, string_types):
-                visible_name = self.get_column_name(attr.name)
+        try:
+            if attr.model_class != self.model:
+                visible_name = '%s / %s' % (self.get_column_name(attr.model_class.__name__),
+                                            self.get_column_name(attr.name))
             else:
-                visible_name = self.get_column_name(name)
+                if not isinstance(name, string_types):
+                    visible_name = self.get_column_name(attr.name)
+                else:
+                    visible_name = self.get_column_name(name)
+        except AttributeError:
+            if attr.model != self.model:
+                visible_name = '%s / %s' % (self.get_column_name(attr.model.__name__),
+                                            self.get_column_name(attr.name))
+            else:
+                if not isinstance(name, string_types):
+                    visible_name = self.get_column_name(attr.name)
+                else:
+                    visible_name = self.get_column_name(name)
 
         type_name = type(attr).__name__
         flt = self.filter_converter.convert(type_name,
@@ -313,12 +323,20 @@ class ModelView(BaseModelView):
         return create_ajax_loader(self.model, name, name, options)
 
     def _handle_join(self, query, field, joins):
-        if field.model_class != self.model:
-            model_name = field.model_class.__name__
+        try:
+            if field.model_class != self.model:
+                model_name = field.model_class.__name__
 
-            if model_name not in joins:
-                query = query.join(field.model_class)
-                joins.add(model_name)
+                if model_name not in joins:
+                    query = query.join(field.model_class, JOIN.LEFT_OUTER)
+                    joins.add(model_name)
+        except AttributeError:
+            if field.model != self.model:
+                model_name = field.model.__name__
+
+                if model_name not in joins:
+                    query = query.join(field.model, JOIN.LEFT_OUTER)
+                    joins.add(model_name)
 
         return query
 
@@ -327,8 +345,12 @@ class ModelView(BaseModelView):
             field = getattr(self.model, sort_field)
             query = query.order_by(field.desc() if sort_desc else field.asc())
         elif isinstance(sort_field, Field):
-            if sort_field.model_class != self.model:
-                query = self._handle_join(query, sort_field, joins)
+            try:
+                if sort_field.model_class != self.model:
+                    query = self._handle_join(query, sort_field, joins)
+            except AttributeError:
+                if sort_field.model != self.model:
+                    query = self._handle_join(query, sort_field, joins)
 
             query = query.order_by(sort_field.desc() if sort_desc else sort_field.asc())
 

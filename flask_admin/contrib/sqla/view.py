@@ -420,7 +420,9 @@ class ModelView(BaseModelView):
                 if len(p.columns) > 1:
                     filtered = tools.filter_foreign_columns(self.model.__table__, p.columns)
 
-                    if len(filtered) > 1:
+                    if len(filtered) == 0:
+                        continue
+                    elif len(filtered) > 1:
                         warnings.warn('Can not convert multiple-column properties (%s.%s)' % (self.model, p.key))
                         continue
 
@@ -761,6 +763,12 @@ class ModelView(BaseModelView):
             if hasattr(p, 'direction'):
                 # Check if it is pointing to same model
                 if p.mapper.class_ == self.model:
+                    continue
+
+                # Check if it is pointing to a differnet bind
+                source_bind = getattr(self.model, '__bind_key__', None)
+                target_bind = getattr(p.mapper.class_, '__bind_key__', None)
+                if source_bind != target_bind:
                     continue
 
                 if p.direction.name in ['MANYTOONE', 'MANYTOMANY']:

@@ -84,6 +84,13 @@ EXPORT_FORMATTERS = {
     dict: dict_formatter,
 }
 
+DETAIL_FORMATTERS = {
+    type(None): empty_formatter,
+    list: list_formatter,
+    dict: dict_formatter,
+}
+
 if Enum is not None:
     BASE_FORMATTERS[Enum] = enum_formatter
     EXPORT_FORMATTERS[Enum] = enum_formatter
+    DETAIL_FORMATTERS[Enum] = enum_formatter
