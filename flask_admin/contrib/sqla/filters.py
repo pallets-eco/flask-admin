@@ -373,7 +373,7 @@ class FilterConverter(filters.BaseFilterConverter):
 
     @filters.convert('string', 'char', 'unicode', 'varchar', 'tinytext',
                      'text', 'mediumtext', 'longtext', 'unicodetext',
-                     'nchar', 'nvarchar', 'ntext')
+                     'nchar', 'nvarchar', 'ntext', 'citext')
     def conv_string(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.strings]
 

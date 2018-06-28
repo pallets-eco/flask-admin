@@ -36,9 +36,6 @@ install_requires = [
     'wtforms'
 ]
 
-if sys.version_info[:2] < (2, 7):
-    install_requires.append('ordereddict')
-
 setup(
     name='Flask-Admin',
     version=grep('__version__'),
@@ -76,10 +73,10 @@ setup(
         'Programming Language :: Python',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
     test_suite='nose.collector'
 )
