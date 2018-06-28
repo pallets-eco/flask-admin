@@ -157,11 +157,19 @@
         }
 
         // set up tiles
-        var mapboxVersion = window.MAPBOX_ACCESS_TOKEN ? 4 : 3;
-        L.tileLayer('//{s}.tiles.mapbox.com/v'+mapboxVersion+'/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png?access_token='+window.MAPBOX_ACCESS_TOKEN, {
-          attribution: 'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="//mapbox.com">Mapbox</a>',
-          maxZoom: 18
-        }).addTo(map);
+        if($el.data('tile-layer-url')){
+          var attribution = $el.data('tile-layer-attribution') || ''
+          L.tileLayer('//'+$el.data('tile-layer-url'), {
+            attribution: attribution,
+            maxZoom: 18
+          }).addTo(map)
+        } else {
+          var mapboxVersion = window.MAPBOX_ACCESS_TOKEN ? 4 : 3;
+          L.tileLayer('//{s}.tiles.mapbox.com/v'+mapboxVersion+'/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png?access_token='+window.MAPBOX_ACCESS_TOKEN, {
+            attribution: 'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="//mapbox.com">Mapbox</a>',
+            maxZoom: 18
+          }).addTo(map);
+        }
 
 
         // everything below here is to set up editing, so if we're not editable,
@@ -451,7 +459,8 @@
                     params: overrideXeditableParams,
                     combodate: {
                         // prevent minutes from showing in 5 minute increments
-                        minuteStep: 1
+                        minuteStep: 1,
+                        maxYear: 2030,
                     }
                 });
                 return true;
