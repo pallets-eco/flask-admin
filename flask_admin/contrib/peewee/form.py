@@ -1,7 +1,7 @@
 from wtforms import fields
 
-from peewee import (CharField, DateTimeField, DateField, TimeField,
-                    PrimaryKeyField, ForeignKeyField, Model)
+from peewee import (CharField, DateTimeField, DateField, Model, TimeField,
+                    PrimaryKeyField, ForeignKeyField)
 
 from wtfpeewee.orm import ModelConverter, model_form
 
@@ -265,7 +265,10 @@ class InlineModelConverter(InlineModelConverterBase):
                                     allow_pk=True,
                                     converter=converter)
 
-        prop_name = reverse_field.related_name
+        try:
+            prop_name = reverse_field.related_name
+        except AttributeError:
+            prop_name = reverse_field.backref
 
         label = self.get_label(info, prop_name)
 
