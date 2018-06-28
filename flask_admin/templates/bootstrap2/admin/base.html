@@ -33,7 +33,7 @@
   </head>
   <body>
     {% block page_body %}
-    <div class="container">
+    <div class="container{%if config.get('FLASK_ADMIN_FLUID_LAYOUT', False) %}-fluid{% endif %}">
       <div class="navbar">
         <div class="navbar-inner">
           {% block brand %}
