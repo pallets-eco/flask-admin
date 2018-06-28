@@ -1,4 +1,5 @@
 import warnings
+from enum import Enum
 
 from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
@@ -9,7 +10,7 @@ from flask_admin.model.form import (converts, ModelConverterBase,
 from flask_admin.model.fields import AjaxSelectField, AjaxSelectMultipleField
 from flask_admin.model.helpers import prettify_name
 from flask_admin._backwards import get_property
-from flask_admin._compat import iteritems
+from flask_admin._compat import iteritems, text_type
 
 from .validators import Unique
 from .fields import (QuerySelectField, QuerySelectMultipleField,
@@ -154,7 +155,9 @@ class AdminModelConverter(ModelConverterBase):
             if len(prop.columns) > 1:
                 columns = filter_foreign_columns(model.__table__, prop.columns)
 
-                if len(columns) > 1:
+                if len(columns) == 0:
+                    return None
+                elif len(columns) > 1:
                     warnings.warn('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
                     return None
 
@@ -279,6 +282,7 @@ class AdminModelConverter(ModelConverterBase):
                 accepted_values.append(None)
 
             field_args['validators'].append(validators.AnyOf(accepted_values))
+            field_args['coerce'] = lambda v: v.name if isinstance(v, Enum) else text_type(v)
 
             return form.Select2Field(**field_args)
 
