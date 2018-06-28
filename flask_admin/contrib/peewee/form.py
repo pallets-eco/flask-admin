@@ -1,7 +1,6 @@
 from wtforms import fields
 
-from peewee import (CharField, DateTimeField, DateField, TimeField,
-                    PrimaryKeyField, ForeignKeyField, Model)
+from peewee import (CharField, DateTimeField, DateField, Model, TimeField,
                     PrimaryKeyField, ForeignKeyField)
 
 from wtfpeewee.orm import ModelConverter, model_form
