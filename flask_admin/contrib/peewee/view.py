@@ -237,14 +237,14 @@ class ModelView(BaseModelView):
         try:
             if attr.model_class != self.model:
                 visible_name = '%s / %s' % (self.get_column_name(attr.model_class.__name__),
-                                        self.get_column_name(attr.name))
+                                            self.get_column_name(attr.name))
             else:
                 if not isinstance(name, string_types):
                     visible_name = self.get_column_name(attr.name)
                 else:
                     visible_name = self.get_column_name(name)
         except AttributeError:
-            if attr.model !=  self.model:
+            if attr.model != self.model:
                 visible_name = '%s / %s' % (self.get_column_name(attr.model.__name__),
                                             self.get_column_name(attr.name))
             else:
