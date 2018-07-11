@@ -11,6 +11,7 @@ from flask_admin._compat import iteritems
 
 from .fields import ModelFormField, MongoFileField, MongoImageField
 from .subdoc import EmbeddedForm
+from .validators import ListFieldInputRequired
 
 
 class CustomModelConverter(orm.ModelConverter):
@@ -74,7 +75,10 @@ class CustomModelConverter(orm.ModelConverter):
             kwargs['validators'] = list(kwargs['validators'])
 
         if field.required:
-            kwargs['validators'].append(validators.InputRequired())
+            if isinstance(field, ListField):
+                kwargs['validators'].append(ListFieldInputRequired())
+            else:
+                kwargs['validators'].append(validators.InputRequired())
         elif not isinstance(field, ListField):
             kwargs['validators'].append(validators.Optional())
 
