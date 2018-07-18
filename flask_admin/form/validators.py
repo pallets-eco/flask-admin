@@ -1,8 +1,8 @@
 from wtforms.validators import StopValidation
 
 
-class ListFieldInputRequired(object):
-    """ Validates that at least one item was provided for a ListField to match """
+class FieldListInputRequired(object):
+    """Validates that at least one item was provided for a FieldList"""
 
     field_flags = ('required',)
 

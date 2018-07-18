@@ -7,11 +7,11 @@ from flask_mongoengine.wtf import orm, fields as mongo_fields
 from flask_admin import form
 from flask_admin.model.form import FieldPlaceholder
 from flask_admin.model.fields import InlineFieldList, AjaxSelectField, AjaxSelectMultipleField
+from flask_admin.form.validators import FieldListInputRequired
 from flask_admin._compat import iteritems
 
 from .fields import ModelFormField, MongoFileField, MongoImageField
 from .subdoc import EmbeddedForm
-from .validators import ListFieldInputRequired
 
 
 class CustomModelConverter(orm.ModelConverter):
@@ -76,7 +76,7 @@ class CustomModelConverter(orm.ModelConverter):
 
         if field.required:
             if isinstance(field, ListField):
-                kwargs['validators'].append(ListFieldInputRequired())
+                kwargs['validators'].append(FieldListInputRequired())
             else:
                 kwargs['validators'].append(validators.InputRequired())
         elif not isinstance(field, ListField):

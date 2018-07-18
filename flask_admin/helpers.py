@@ -2,12 +2,13 @@ from re import sub
 from jinja2 import contextfunction
 from flask import g, request, url_for, flash
 from wtforms.validators import DataRequired, InputRequired
-from flask_admin.contrib.mongoengine.validators import ListFieldInputRequired
+from flask_admin.form.validators import FieldListInputRequired
 
 from flask_admin._compat import urljoin, urlparse, iteritems
 
 from ._compat import string_types
 
+REQUIRED_VALIDATORS = {DataRequired, InputRequired, FieldListInputRequired}
 
 def set_current_view(view):
     g._admin_view = view
@@ -41,15 +42,13 @@ def get_url(endpoint, **kwargs):
 
 def is_required_form_field(field):
     """
-        Check if form field has `DataRequired` or `InputRequired` validators.
+        Check if form field has `DataRequired`, `InputRequired`, or
+        `FieldListInputRequired` validators.
 
         :param field:
             WTForms field to check
     """
-    for validator in field.validators:
-        if isinstance(validator, (DataRequired, InputRequired, ListFieldInputRequired)):
-            return True
-    return False
+    return any(type(v) in REQUIRED_VALIDATORS for v in field.validators)
 
 
 def is_form_submitted():
