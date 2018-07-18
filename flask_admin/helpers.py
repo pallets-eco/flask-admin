@@ -10,6 +10,7 @@ from ._compat import string_types
 
 REQUIRED_VALIDATORS = {DataRequired, InputRequired, FieldListInputRequired}
 
+
 def set_current_view(view):
     g._admin_view = view
 
