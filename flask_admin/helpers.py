@@ -2,7 +2,7 @@ from re import sub
 from jinja2 import contextfunction
 from flask import g, request, url_for, flash
 from wtforms.validators import DataRequired, InputRequired
-from contrib.mongoengine.validators import ListFieldInputRequired
+from flask_admin.contrib.mongoengine.validators import ListFieldInputRequired
 
 from flask_admin._compat import urljoin, urlparse, iteritems
 
