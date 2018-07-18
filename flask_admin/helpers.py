@@ -2,6 +2,7 @@ from re import sub
 from jinja2 import contextfunction
 from flask import g, request, url_for, flash
 from wtforms.validators import DataRequired, InputRequired
+from contrib.mongoengine.validators import ListFieldInputRequired
 
 from flask_admin._compat import urljoin, urlparse, iteritems
 
@@ -46,7 +47,7 @@ def is_required_form_field(field):
             WTForms field to check
     """
     for validator in field.validators:
-        if isinstance(validator, (DataRequired, InputRequired)):
+        if isinstance(validator, (DataRequired, InputRequired, ListFieldInputRequired)):
             return True
     return False
 
