@@ -604,9 +604,11 @@
     // Add on event handler
     $('body').on('click', '.inline-remove-field' , function(e) {
         e.preventDefault();
-
+        var r = confirm('Are you sure you want to delete this record?');
         var form = $(this).closest('.inline-field');
+        if (r == true){
         form.remove();
+      }
     });
 
     // Expose faForm globally
