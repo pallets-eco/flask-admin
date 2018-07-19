@@ -604,9 +604,9 @@
     // Add on event handler
     $('body').on('click', '.inline-remove-field' , function(e) {
         e.preventDefault();
-        var r = confirm('Are you sure you want to delete this record?');
+        var r = confirm($('.inline-remove-field').attr('value'));
         var form = $(this).closest('.inline-field');
-        if (r == true){
+        if ( r == true ){
         form.remove();
       }
     });
