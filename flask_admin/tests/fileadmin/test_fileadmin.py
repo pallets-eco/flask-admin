@@ -1,6 +1,7 @@
+import os
 import os.path as op
 
-from nose.tools import eq_, ok_
+from nose.tools import eq_, ok_, with_setup
 
 from flask_admin.contrib import fileadmin
 from flask_admin import Admin
@@ -133,6 +134,78 @@ def test_file_admin():
     eq_(rv.status_code, 200)
     ok_('path=dummy_renamed_dir' not in rv.data.decode('utf-8'))
     ok_('path=dummy.txt' in rv.data.decode('utf-8'))
+
+
+def add_file():
+    # make sure that 'files/dummy2.txt' exists, is newest and has bigger size
+    with open(op.join(op.dirname(__file__), 'files', 'dummy2.txt'), 'w') as fp:
+        fp.write('test')
+
+
+def remove_file():
+    try:
+        os.remove(op.join(op.dirname(__file__), 'files', 'dummy2.txt'))
+    except (IOError, OSError):
+        pass
+
+
+@with_setup(add_file, remove_file)
+def test_fileadmin_sort_default():
+    app, admin, view = create_view()
+    client = app.test_client()
+
+    # default sort order is newest first
+    rv = client.get('/admin/myfileadmin/')
+    eq_(rv.status_code, 200)
+    ok_(rv.data.decode('utf-8').find('path=dummy2.txt') <
+        rv.data.decode('utf-8').find('path=dummy.txt'))
+
+
+@with_setup(add_file, remove_file)
+def test_fileadmin_sort_url_param_sort():
+    app, admin, view = create_view()
+    client = app.test_client()
+
+    rv = client.get('/admin/myfileadmin/?sort=name')
+    eq_(rv.status_code, 200)
+    ok_(rv.data.decode('utf-8').find('path=dummy.txt') <
+        rv.data.decode('utf-8').find('path=dummy2.txt'))
+
+
+@with_setup(add_file, remove_file)
+def test_fileadmin_sort_url_param_desc():
+    app, admin, view = create_view()
+    client = app.test_client()
+
+    rv = client.get('/admin/myfileadmin/?sort=size')
+    eq_(rv.status_code, 200)
+    ok_(rv.data.decode('utf-8').find('path=dummy.txt') <
+        rv.data.decode('utf-8').find('path=dummy2.txt'))
+
+
+@with_setup(add_file, remove_file)
+def test_fileadmin_sort_default_sort_column():
+    app, admin, view = create_view()
+    client = app.test_client()
+
+    view.default_sort_column = 'name'
+    rv = client.get('/admin/myfileadmin/')
+    eq_(rv.status_code, 200)
+    ok_(rv.data.decode('utf-8').find('path=dummy.txt') <
+        rv.data.decode('utf-8').find('path=dummy2.txt'))
+
+
+@with_setup(add_file, remove_file)
+def test_fileadmin_sort_default_desc():
+    app, admin, view = create_view()
+    client = app.test_client()
+
+    view.default_sort_column = 'name'
+    view.default_desc = True
+    rv = client.get('/admin/myfileadmin/')
+    eq_(rv.status_code, 200)
+    ok_(rv.data.decode('utf-8').find('path=dummy2.txt') <
+        rv.data.decode('utf-8').find('path=dummy.txt'))
 
 
 def test_modal_edit():
