@@ -1,0 +1,85 @@
+{% macro menu_icon(item) -%}
+{% set icon_type = item.get_icon_type() %}
+{%- if icon_type %}
+  {% set icon_value = item.get_icon_value() %}
+  {% if icon_type == 'fa' %}
+    <i class="{{ icon_value }}"></i>
+  {% else %}
+    <i class="{{ icon_value }}"></i>
+  {% endif %}
+{% endif %}
+{%- endmacro %}
+
+{% macro menu(menu_root=None) %}
+  {% if menu_root is none %}{% set menu_root = admin_view.admin.menu() %}{% endif %}
+  {%- for item in menu_root %}
+    {%- if item.is_category() -%}
+      {% set children = item.get_children() %}
+      {%- if children %}
+        {% set class_name = item.get_class_name() %}
+        {%- if item.is_active(admin_view) %}
+        <li class="active dropdown">
+        {% else -%}
+        <li class="dropdown">
+        {%- endif %}
+          <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
+            {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}{{ item.name }}<b class="caret"></b>
+          </a>
+          <ul class="dropdown-menu">
+          {%- for child in children -%}
+            {% set class_name = child.get_class_name() %}
+            {%- if child.is_active(admin_view) %}
+            <li class="dropdown-item active{% if class_name %} {{class_name}}{% endif %}">
+            {% else %}
+            <li{% if class_name %} class="dropdown-item {{class_name}}"{% endif %}>
+            {%- endif %}
+              <a href="{{ child.get_url() }}"{% if child.target %} target="{{ child.target }}"{% endif %}>{{ menu_icon(child) }}{{ child.name }}</a>
+            </li>
+          {%- endfor %}
+          </ul>
+        </li>
+      {% endif %}
+    {%- else %}
+      {%- if item.is_accessible() and item.is_visible() -%}
+        {% set class_name = item.get_class_name() %}
+        {%- if item.is_active(admin_view) %}
+        <li class="nav-item active {% if class_name %} {{class_name}}{% endif %}">
+        {%- else %}
+        <li class="nav-item {% if class_name %} {{class_name}}{% endif %}">
+        {%- endif %}
+          <a class="nav-link" href="{{ item.get_url() }}"{% if item.target %} target="{{ item.target }}"{% endif %}>{{ menu_icon(item) }}{{ item.name }}</a>
+        </li>
+      {%- endif -%}
+    {% endif -%}
+  {% endfor %}
+{% endmacro %}
+
+{% macro menu_links(links=None) %}
+  {% if links is none %}{% set links = admin_view.admin.menu_links() %}{% endif %}
+  {% for item in links %}
+    {% if item.is_accessible() and item.is_visible() %}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ item.get_url() }}">{{ menu_icon(item) }}{{ item.name }}</a>
+      </li>
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+{% macro messages() %}
+  {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+      {% for category, m in messages %}
+        {% if category %}
+        {# alert-error changed to alert-danger in bootstrap 3, mapping is for backwards compatibility #}
+        {% set mapping = {'message': 'info', 'error': 'danger'} %}
+        <div class="alert alert-{{ mapping.get(category, category) }} alert-dismissable">
+        {% else %}
+        <div class="alert alert-dismissable">
+        {% endif %}
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          {{ m }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+{% endmacro %}
