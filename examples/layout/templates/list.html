@@ -1,7 +1,7 @@
 {% extends 'admin/model/list.html' %}
 {% import 'admin/model/layout.html' as model_layout with context %}
 
-{% block brand %}
+{% block model_menu_bar %}
     <h2 id="brand">{{ admin_view.name|capitalize }} list</h2>
     {% if admin_view.can_create %}
     <div class="btn-menu">
@@ -28,7 +28,4 @@
     {% endif %}
     <div class="clearfix"></div>
     <hr>
-{% endblock %}
-
-{% block model_menu_bar %}
 {% endblock %}
