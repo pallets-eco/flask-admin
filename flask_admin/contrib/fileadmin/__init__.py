@@ -822,12 +822,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         sort_desc = request.args.get('desc', 0, type=int)
 
         if sort_column is None:
-            # Sort by name
-            items.sort(key=itemgetter(0))
-            # Sort by type
-            items.sort(key=itemgetter(2), reverse=True)
-            # Sort by modified date
-            items.sort(key=lambda x: (x[0], x[1], x[2], x[3], datetime.fromtimestamp(x[4])), reverse=True)
+            items.sort(key=self._sort_by_name_key)
+            items.sort(key=self._sort_by_type_key, reverse=True)
+            items.sort(key=self._sort_by_modified_date_key, reverse=True)
         else:
             column_index = self.possible_columns.index(sort_column)
             items.sort(key=itemgetter(column_index), reverse=sort_desc)
@@ -864,6 +861,13 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                            sort_desc=sort_desc,
                            sort_url=sort_url,
                            timestamp_format=self.timestamp_format)
+
+    _sort_by_name_key = itemgetter(0)
+    _sort_by_type_key = itemgetter(2)
+
+    @staticmethod
+    def _sort_by_modified_date_key(x):
+        return x[4] if x[4] > 0 else float('inf')
 
     @expose('/upload/', methods=('GET', 'POST'))
     @expose('/upload/<path:path>', methods=('GET', 'POST'))
