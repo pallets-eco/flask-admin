@@ -82,6 +82,9 @@ class AzureStorage(object):
         return cls.separator.join(path_parts).lstrip(cls.separator)
 
     def get_files(self, path, directory):
+        if directory and path != directory:
+            path = op.join(path, directory)
+
         path = self._ensure_blob_path(path)
         directory = self._ensure_blob_path(directory)
 
