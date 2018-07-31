@@ -107,6 +107,20 @@ class LocalFileStorage(object):
         """
         return send_file(file_path)
 
+    def read_file(self, path):
+        """
+            Reads the content of the file located at `file_path`.
+        """
+        with open(path, 'rb') as f:
+            return f.read()
+
+    def write_file(self, path, content):
+        """
+            Writes `content` to the file located at `file_path`.
+        """
+        with open(path, 'w') as f:
+            return f.write(content)
+
     def save_file(self, path, file_data):
         """
             Save uploaded file to the disk
@@ -822,12 +836,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         sort_desc = request.args.get('desc', 0, type=int)
 
         if sort_column is None:
-            # Sort by name
-            items.sort(key=itemgetter(0))
-            # Sort by type
-            items.sort(key=itemgetter(2), reverse=True)
-            # Sort by modified date
-            items.sort(key=lambda x: (x[0], x[1], x[2], x[3], datetime.fromtimestamp(x[4])), reverse=True)
+            items.sort(key=self._sort_by_name_key)
+            items.sort(key=self._sort_by_type_key, reverse=True)
+            items.sort(key=self._sort_by_modified_date_key, reverse=True)
         else:
             column_index = self.possible_columns.index(sort_column)
             items.sort(key=itemgetter(column_index), reverse=sort_desc)
@@ -864,6 +875,13 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                            sort_desc=sort_desc,
                            sort_url=sort_url,
                            timestamp_format=self.timestamp_format)
+
+    _sort_by_name_key = itemgetter(0)
+    _sort_by_type_key = itemgetter(2)
+
+    @staticmethod
+    def _sort_by_modified_date_key(x):
+        return x[4] if x[4] > 0 else float('inf')
 
     @expose('/upload/', methods=('GET', 'POST'))
     @expose('/upload/<path:path>', methods=('GET', 'POST'))
@@ -1109,8 +1127,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             form.process(request.form, content='')
             if form.validate():
                 try:
-                    with open(full_path, 'w') as f:
-                        f.write(request.form['content'])
+                    self.storage.write_file(full_path, request.form['content'])
                 except IOError:
                     flash(gettext("Error saving changes to %(name)s.", name=path), 'error')
                     error = True
@@ -1122,8 +1139,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             helpers.flash_errors(form, message='Failed to edit file. %(error)s')
 
             try:
-                with open(full_path, 'rb') as f:
-                    content = f.read()
+                content = self.storage.read_file(full_path)
             except IOError:
                 flash(gettext("Error reading %(name)s.", name=path), 'error')
                 error = True

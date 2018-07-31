@@ -33,11 +33,13 @@ addons:
 services:
   - postgresql
   - mongodb
+  - docker
 
 before_script:
   - psql -U postgres -c 'CREATE DATABASE flask_admin_test;'
   - psql -U postgres -c 'CREATE EXTENSION postgis;' flask_admin_test
   - psql -U postgres -c 'CREATE EXTENSION hstore;' flask_admin_test
+  - docker run --restart always -d -e executable=blob -p 10000:10000 --tmpfs /opt/azurite/folder arafato/azurite:2.6.5
 
 install:
   - pip install tox
