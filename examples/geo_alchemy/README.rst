@@ -32,7 +32,7 @@ To run this example:
 
 5. Run the application::
 
-    python examples/sqla/app.py
+    python examples/geo_alchemy/app.py
 
 6. You will notice that the maps are not rendered. To see them, you will have
 to register for a free account at `Mapbox <https://www.mapbox.com/>`_ and set
