@@ -1,6 +1,25 @@
 Changelog
 =========
 
+1.5.2
+-----
+
+* Fixed XSS vulnerability
+* Fixed Peewee support
+* Added detail view column formatters
+* Updated Flask-Login example to work with the newer version of the library
+* Various SQLAlchemy-related fixes
+* Various Windows related fixes for the file admin
+
+1.5.1
+-----
+
+* Dropped Python 2.6 support
+* Fixed SQLAlchemy >= 1.2 compatibility
+* Fixed Pewee 3.0 compatibility
+* Fixed max year for a combo date inline editor
+* Lots of small bug fixes
+
 1.5.0
 -----
 
