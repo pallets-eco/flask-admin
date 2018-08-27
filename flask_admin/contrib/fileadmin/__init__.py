@@ -822,6 +822,12 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         sort_desc = request.args.get('desc', 0, type=int)
 
         if sort_column is None:
+            if self.default_sort_column:
+                sort_column = self.default_sort_column
+            if self.default_desc:
+                sort_desc = self.default_desc
+
+        if sort_column is None:
             # Sort by name
             items.sort(key=itemgetter(0))
             # Sort by type
@@ -842,13 +848,16 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         else:
             action_form = None
 
-        def sort_url(column, invert=False):
+        def sort_url(column, path, invert=False):
             desc = None
+
+            if not path:
+                path = None
 
             if invert and not sort_desc:
                 desc = 1
 
-            return self.get_url('.index_view', sort=column, desc=desc)
+            return self.get_url('.index_view', path=path, sort=column, desc=desc)
 
         return self.render(self.list_template,
                            dir_path=path,
