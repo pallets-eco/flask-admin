@@ -1,6 +1,5 @@
 from flask import Flask, redirect, url_for
-from flask.ext import login
-from flask_login import current_user, UserMixin
+from flask_login import current_user, UserMixin, login_user, logout_user, LoginManager
 from flask_admin.base import MenuLink, Admin, BaseView, expose
 
 
@@ -52,17 +51,17 @@ def index():
 
 @app.route('/login/')
 def login_view():
-    login.login_user(User())
+    login_user(User())
     return redirect(url_for('admin.index'))
 
 
 @app.route('/logout/')
 def logout_view():
-    login.logout_user()
+    logout_user()
     return redirect(url_for('admin.index'))
 
 
-login_manager = login.LoginManager()
+login_manager = LoginManager()
 login_manager.init_app(app)
 
 
