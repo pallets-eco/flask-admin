@@ -8,6 +8,9 @@ from flask_admin._compat import urljoin, urlparse, iteritems
 from ._compat import string_types
 
 
+VALID_SCHEMES = ['http', 'https']
+
+
 def set_current_view(view):
     g._admin_view = view
 
@@ -128,10 +131,16 @@ def prettify_class_name(name):
 
 
 def is_safe_url(target):
+    # prevent urls starting with "javascript:"
+    target = target.strip()
+    target_info = urlparse(target)
+    target_scheme = target_info.scheme
+    if target_scheme and target_scheme not in VALID_SCHEMES:
+        return False
+
     ref_url = urlparse(request.host_url)
     test_url = urlparse(urljoin(request.host_url, target))
-    return (test_url.scheme in ('http', 'https') and
-            ref_url.netloc == test_url.netloc)
+    return ref_url.netloc == test_url.netloc
 
 
 def get_redirect_target(param_name='url'):
