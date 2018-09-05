@@ -10,6 +10,7 @@ from ._compat import string_types
 
 VALID_SCHEMES = ['http', 'https']
 _substitute_whitespace = compile(r'[\s\x00-\x08\x0B\x0C\x0E-\x19]+').sub
+_fix_multiple_slashes = compile(r'(^([^/]+:)?//)/*').sub
 
 
 def set_current_view(view):
@@ -137,8 +138,13 @@ def is_safe_url(target):
     # refs https://stackoverflow.com/questions/10438008
     target = target.replace('\\', '/')
 
-    # prevent urls starting with "javascript:"
+    # handle cases like "j a v a s c r i p t:"
     target = _substitute_whitespace('', target)
+
+    # Chrome and FireFox "fix" more than two slashes into two after protocol
+    target = _fix_multiple_slashes(lambda m: m.group(1), target, 1)
+
+    # prevent urls starting with "javascript:"
     target_info = urlparse(target)
     target_scheme = target_info.scheme
     if target_scheme and target_scheme not in VALID_SCHEMES:
