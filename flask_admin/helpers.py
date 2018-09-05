@@ -1,4 +1,4 @@
-from re import sub
+from re import sub, compile
 from jinja2 import contextfunction
 from flask import g, request, url_for, flash
 from wtforms.validators import DataRequired, InputRequired
@@ -9,6 +9,7 @@ from ._compat import string_types
 
 
 VALID_SCHEMES = ['http', 'https']
+_substitute_whitespace = compile(r'[\s\x00-\x08\x0B\x0C\x0E-\x19]+').sub
 
 
 def set_current_view(view):
@@ -131,8 +132,13 @@ def prettify_class_name(name):
 
 
 def is_safe_url(target):
+    # prevent urls like "\\www.google.com"
+    # some browser will change \\ to // (eg: Chrome)
+    # refs https://stackoverflow.com/questions/10438008
+    target = target.replace('\\', '/')
+
     # prevent urls starting with "javascript:"
-    target = target.strip()
+    target = _substitute_whitespace('', target)
     target_info = urlparse(target)
     target_scheme = target_info.scheme
     if target_scheme and target_scheme not in VALID_SCHEMES:
