@@ -107,6 +107,20 @@ class LocalFileStorage(object):
         """
         return send_file(file_path)
 
+    def read_file(self, path):
+        """
+            Reads the content of the file located at `file_path`.
+        """
+        with open(path, 'rb') as f:
+            return f.read()
+
+    def write_file(self, path, content):
+        """
+            Writes `content` to the file located at `file_path`.
+        """
+        with open(path, 'w') as f:
+            return f.write(content)
+
     def save_file(self, path, file_data):
         """
             Save uploaded file to the disk
@@ -1118,8 +1132,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             form.process(request.form, content='')
             if form.validate():
                 try:
-                    with open(full_path, 'w') as f:
-                        f.write(request.form['content'])
+                    self.storage.write_file(full_path, request.form['content'])
                 except IOError:
                     flash(gettext("Error saving changes to %(name)s.", name=path), 'error')
                     error = True
@@ -1131,8 +1144,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             helpers.flash_errors(form, message='Failed to edit file. %(error)s')
 
             try:
-                with open(full_path, 'rb') as f:
-                    content = f.read()
+                content = self.storage.read_file(full_path)
             except IOError:
                 flash(gettext("Error reading %(name)s.", name=path), 'error')
                 error = True
