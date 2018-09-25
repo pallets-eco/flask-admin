@@ -195,10 +195,12 @@
           drawOptions.draw.rectangle = false;
         } else if ($.inArray(geometryType, ["LINESTRING", "MULTILINESTRING"]) > -1) {
           drawOptions.draw.marker = false;
+          drawOptions.draw.circlemarker = false;
           drawOptions.draw.polygon = false;
           drawOptions.draw.rectangle = false;
         } else if ($.inArray(geometryType, ["POLYGON", "MULTIPOLYGON"]) > -1) {
           drawOptions.draw.marker = false;
+          drawOptions.draw.circlemarker = false;
           drawOptions.draw.polyline = false;
         }
         var drawControl = new L.Control.Draw(drawOptions);
