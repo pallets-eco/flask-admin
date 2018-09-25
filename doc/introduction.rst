@@ -80,6 +80,9 @@ are a few different ways of approaching this.
 
 HTTP Basic Auth
 ---------------
+Unfortunately, there is no easy way of applying HTTP Basic Auth just to your admin
+interface.
+
 The simplest form of authentication is HTTP Basic Auth. It doesn't interfere
 with your database models, and it doesn't require you to write any new view logic or
 template code. So it's great for when you're deploying something that's still
@@ -87,9 +90,6 @@ under development, before you want the whole world to see it.
 
 Have a look at `Flask-BasicAuth <https://flask-basicauth.readthedocs.io/>`_ to see just how
 easy it is to put your whole application behind HTTP Basic Auth.
-
-Unfortunately, there is no easy way of applying HTTP Basic Auth just to your admin
-interface.
 
 Rolling Your Own
 ----------------

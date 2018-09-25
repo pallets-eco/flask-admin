@@ -373,7 +373,7 @@ class FilterConverter(filters.BaseFilterConverter):
 
     @filters.convert('string', 'char', 'unicode', 'varchar', 'tinytext',
                      'text', 'mediumtext', 'longtext', 'unicodetext',
-                     'nchar', 'nvarchar', 'ntext')
+                     'nchar', 'nvarchar', 'ntext', 'citext')
     def conv_string(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.strings]
 
@@ -381,12 +381,12 @@ class FilterConverter(filters.BaseFilterConverter):
     def conv_bool(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.bool_filters]
 
-    @filters.convert('int', 'integer', 'smallinteger', 'smallint', 'numeric',
+    @filters.convert('int', 'integer', 'smallinteger', 'smallint',
                      'biginteger', 'bigint', 'mediumint')
     def conv_int(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.int_filters]
 
-    @filters.convert('float', 'real', 'decimal', 'double_precision', 'double')
+    @filters.convert('float', 'real', 'decimal', 'numeric', 'double_precision', 'double')
     def conv_float(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.float_filters]
 

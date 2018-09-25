@@ -56,8 +56,7 @@ if you think of anything else that should be included, then please make the chan
 
 To build the docs in your local environment, from the project directory::
 
-    pip install -r requirements-dev.txt
-    sudo make html
+    tox -e docs-html
 
 And if you want to preview any *.rst* snippets that you may want to contribute, go to `http://rst.ninjs.org/ <http://rst.ninjs.org/>`_.
 
@@ -99,7 +98,6 @@ For all the tests to pass successfully, you'll need Postgres & MongoDB to be run
     > psql flask_admin_test
     CREATE EXTENSION postgis;
     CREATE EXTENSION hstore;
-    \q
 
 You can also run the tests on multiple environments using *tox*.
 

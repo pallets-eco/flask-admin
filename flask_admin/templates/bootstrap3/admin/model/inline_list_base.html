@@ -13,7 +13,7 @@
                         <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
                         <label for="del-{{ subfield.id }}" style="display: inline">{{ _gettext('Delete?') }}</label>
                         {% else %}
-                        <a href="javascript:void(0)" class="inline-remove-field"><i class="fa fa-times glyphicon glyphicon-remove"></i></a>
+                        <a href="javascript:void(0)" value="{{ _gettext('Are you sure you want to delete this record?') }}" class="inline-remove-field"><i class="fa fa-times glyphicon glyphicon-remove"></i></a>
                         {% endif %}
                     </div>
                 </small>
@@ -32,7 +32,7 @@
             <legend>
                 <small>{{ _gettext('New') }} {{ field.label.text }}</small>
                 <div class="pull-right">
-                    <a href="javascript:void(0)" class="inline-remove-field"><span class="fa fa-times glyphicon glyphicon-remove"></span></a>
+                    <a href="javascript:void(0)" value="{{ _gettext('Are you sure you want to delete this record?') }}" class="inline-remove-field"><span class="fa fa-times glyphicon glyphicon-remove"></span></a>
                 </div>
             </legend>
             <div class='clearfix'></div>

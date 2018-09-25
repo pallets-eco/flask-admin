@@ -1,4 +1,5 @@
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, cast
+from sqlalchemy.types import String
 
 from flask_admin._compat import as_unicode, string_types
 from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
@@ -55,7 +56,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         if not model:
             return None
 
-        return (getattr(model, self.pk), as_unicode(model))
+        return getattr(model, self.pk), as_unicode(model)
 
     def get_one(self, pk):
         # prevent autoflush from occuring during populate_obj
@@ -65,11 +66,11 @@ class QueryAjaxModelLoader(AjaxModelLoader):
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
         query = self.session.query(self.model)
 
-        filters = (field.ilike(u'%%%s%%' % term) for field in self._cached_fields)
+        filters = (cast(field, String).ilike(u'%%%s%%' % term) for field in self._cached_fields)
         query = query.filter(or_(*filters))
 
         if self.filters:
-            filters = ["%s.%s" % (self.model.__name__.lower(), value) for value in self.filters]
+            filters = ["%s.%s" % (self.model.__tablename__.lower(), value) for value in self.filters]
             query = query.filter(and_(*filters))
 
         if self.order_by:

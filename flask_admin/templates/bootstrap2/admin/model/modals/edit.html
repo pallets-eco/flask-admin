@@ -21,10 +21,5 @@
   $('.modal-header h3').html('{% block header_text -%}
     {{ _gettext('Edit Record') + ' #' + request.args.get('id') }}
   {%- endblock %}');
-
-  $(function() {
-    // Apply flask-admin form styles after the modal is loaded
-    window.faForm.applyGlobalStyles(document);
-  });
   </script>
 {% endblock %}

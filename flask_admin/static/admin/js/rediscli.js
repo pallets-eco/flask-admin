@@ -79,6 +79,7 @@ var RedisCli = function(postUrl) {
 		sendCommand(val);
 
 		$input.val('');
+		return false;
 	}
 
 	function onKeyPress(e) {
@@ -114,3 +115,7 @@ var RedisCli = function(postUrl) {
 
 	sendCommand('ping');
 };
+
+$(function() {
+    var redisCli = new RedisCli(JSON.parse($('#execute-view-data').text()));
+});
