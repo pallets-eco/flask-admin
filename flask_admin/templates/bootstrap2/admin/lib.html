@@ -219,8 +219,8 @@
   <link href="{{ admin_static.url(filename='vendor/select2/select2.css', v='3.5.2') }}" rel="stylesheet">
   <link href="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker-bs2.css', v='1.3.22') }}" rel="stylesheet">
   {% if config.MAPBOX_MAP_ID %}
-  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css', v='1.0.0') }}" rel="stylesheet">
-  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css', v='0.3.2') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css', v='1.0.2') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css', v='0.4.6') }}" rel="stylesheet">
   {% endif %}
   {% if editable_columns %}
   <link href="{{ admin_static.url(filename='vendor/x-editable/css/bootstrap2-editable.css', v='1.5.1.1') }}" rel="stylesheet">
@@ -234,9 +234,13 @@
   {% if config.MAPBOX_ACCESS_TOKEN %}
   window.MAPBOX_ACCESS_TOKEN = "{{ config.MAPBOX_ACCESS_TOKEN }}";
   {% endif %}
+  {% if config.DEFAULT_CENTER_LAT and config.DEFAULT_CENTER_LONG %}
+  window.DEFAULT_CENTER_LAT = "{{ config.DEFAULT_CENTER_LAT }}";
+  window.DEFAULT_CENTER_LONG = "{{ config.DEFAULT_CENTER_LONG }}";
+  {% endif %}
   </script>
-  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js', v='0.7.3') }}"></script>
-  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js', v='0.2.3') }}"></script>
+  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js', v='1.0.2') }}"></script>
+  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js', v='0.4.6') }}"></script>
   {% if config.MAPBOX_SEARCH %}
   <script>
   window.MAPBOX_SEARCH = "{{ config.MAPBOX_SEARCH }}";

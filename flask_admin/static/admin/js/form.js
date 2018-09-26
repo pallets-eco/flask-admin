@@ -77,6 +77,10 @@
           console.error("You must set MAPBOX_MAP_ID in your Flask settings to use the map widget");
           return false;
         }
+        if (!window.DEFAULT_CENTER_LAT || !window.DEFAULT_CENTER_LONG) {
+          console.error("You must set DEFAULT_CENTER_LAT and DEFAULT_CENTER_LONG in your Flask settings to use the map widget");
+          return false;
+        }
 
         var geometryType = $el.data("geometry-type")
         if (geometryType) {
@@ -148,12 +152,8 @@
             map.fitBounds(bounds);
           }
         } else {
-          // look up user's location by IP address
-          $.getJSON("//ip-api.com/json/?callback=?", function(data) {
-            map.setView([data["lat"], data["lon"]], 12);
-          }).fail(function() {
-              map.setView([0, 0], 1)
-          });
+          // use the default map center
+          map.setView([window.DEFAULT_CENTER_LAT, window.DEFAULT_CENTER_LONG], 12);
         }
 
         // set up tiles
@@ -182,7 +182,8 @@
         var drawOptions = {
           draw: {
             // circles are not geometries in geojson
-            circle: false
+            circle: false,
+            circlemarker: false
           },
           edit: {
             featureGroup: editableLayers
