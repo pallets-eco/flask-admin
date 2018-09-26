@@ -50,7 +50,7 @@ class TyreAdmin(sqla.ModelView):
     form_columns = ['car', 'tyre_id', 'desc']
 
 # Create admin
-admin = admin.Admin(app, name='Example: SQLAlchemy2', template_mode='bootstrap3')
+admin = admin.Admin(app, name='Example: SQLAlchemy2', template_mode='bootstrap4')
 admin.add_view(CarAdmin(Car, db.session))
 admin.add_view(TyreAdmin(Tyre, db.session))
 

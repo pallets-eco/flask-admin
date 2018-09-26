@@ -68,7 +68,7 @@ class PersonAdmin(sqla.ModelView):
 
 # Create admin
 admin = admin.Admin(app, name='Example: SQLAlchemy - Filtered Form Selectable',
-                    template_mode='bootstrap3')
+                    template_mode='bootstrap4')
 admin.add_view(PersonAdmin(Person, db.session))
 admin.add_view(sqla.ModelView(Pet, db.session))
 
