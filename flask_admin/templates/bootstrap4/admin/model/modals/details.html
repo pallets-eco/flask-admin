@@ -1,0 +1,42 @@
+{% import 'admin/static.html' as admin_static with context%}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block body %}
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    {% block header_text %}
+      <h3>{{ _gettext('View Record') + ' #' + request.args.get('id') }}</h3>
+    {% endblock %}
+  </div>
+
+  <div class="modal-body">
+  {% block details_search %}
+    <div class="input-group fa_filter_container col-lg-6">
+      <div class="input-group-prepend">
+        <span class="input-group-text">{{ _gettext('Filter') }}</span>
+      </div>
+      <input id="fa_filter" type="text" class="form-control">
+    </div>
+  {% endblock %}
+
+  {% block details_table %}
+    <table class="table table-hover table-bordered searchable">
+    {% for c, name in details_columns %}
+      <tr>
+        <td>
+          <b>{{ name }}</b>
+        </td>
+        <td>
+        {{ get_value(model, c) }}
+        </td>
+      </tr>
+    {% endfor %}
+    </table>
+  {% endblock %}
+  </div>
+{% endblock %}
+
+{% block tail %}
+  <script src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
+  <script src="{{ admin_static.url(filename='admin/js/bs3_modal.js', v='1.0.0') }}"></script>
+{% endblock %}
