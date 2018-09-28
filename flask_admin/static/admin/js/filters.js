@@ -35,7 +35,7 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
     // triggered when the filter operation (equals, not equals, etc) is changed
     function changeOperation(subfilters, $el, filter, $select) {
         // get the filter_group subfilter based on the index of the selected option
-        var selectedFilter = subfilters[$select.select2('data').element[0].index];
+        var selectedFilter = subfilters[$select.select2('data')[0].element.index];
         var $inputContainer = $el.find('td').last();
 
         // recreate and style the input field (turn into date range or select2 if necessary)
