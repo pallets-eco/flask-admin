@@ -1717,7 +1717,12 @@ class BaseModelView(BaseView, ActionsMixin):
                         sort=request.args.get('sort', None, type=int),
                         sort_desc=request.args.get('desc', None, type=int),
                         search=request.args.get('search', None),
-                        filters=self._get_list_filter_args())
+                        filters=self._get_list_filter_args(),
+                        extra_args=dict([
+                            (k, v) for k, v in request.args.items()
+                            if k not in ('page', 'page_size', 'sort', 'desc', 'search', ) and
+                            not k.startswith('flt')
+                        ]))
 
     def _get_filters(self, filters):
         """
@@ -2026,6 +2031,9 @@ class BaseModelView(BaseView, ActionsMixin):
             get_pk_value=self.get_pk_value,
             get_value=self.get_list_value,
             return_url=self._get_list_url(view_args),
+
+            # Extras
+            extra_args=view_args.extra_args,
         )
 
     @expose('/new/', methods=('GET', 'POST'))
