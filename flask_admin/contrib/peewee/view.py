@@ -347,7 +347,12 @@ class ModelView(BaseModelView):
         if isinstance(sort_field, string_types):
             field = getattr(self.model, sort_field)
         elif isinstance(sort_field, Field):
-            if sort_field.model_class != self.model:
+            model_class = None:
+            try:
+                model_class = sort_field.model_class
+            except AttributeError:
+                model_class = sort_field.model
+            if model_class != self.model:
                 query = self._handle_join(query, sort_field, joins)
             field = sort_field
         clause = field.desc() if sort_desc else field.asc()
