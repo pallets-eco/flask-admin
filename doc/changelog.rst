@@ -1,6 +1,12 @@
 Changelog
 =========
 
+next release
+-----
+
+* Sort on multiple columns with `column_default_sort`
+* Upgrade Leaflet and Leaflet.draw plugins, used for geoalchemy integration
+
 1.5.2
 -----
 
@@ -32,7 +38,7 @@ Changelog
   - Added support for association proxies
   - Added support for remote hybrid properties filters
   - Added support for ARRAY column type
-* Localization-related fixes 
+* Localization-related fixes
 * MongoEngine backend is now properly formats model labels
 * Improved Google App Engine support:
   - Added TextProperty, KeyProperty and SelectField support
