@@ -520,7 +520,9 @@ class ModelView(BaseModelView):
             order = self._get_default_order()
 
             if order:
-                query = query.order_by('%s%s' % ('-' if order[1] else '', order[0]))
+                keys = ['%s%s' % ('-' if desc else '', col)
+                        for (col, desc) in order]
+                query = query.order_by(*keys)
 
         # Pagination
         if page_size is None:
