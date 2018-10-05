@@ -339,7 +339,7 @@ class ModelView(BaseModelView):
         if isinstance(sort_field, string_types):
             field = getattr(self.model, sort_field)
         elif isinstance(sort_field, Field):
-            model_class = None:
+            model_class = None
             try:
                 model_class = sort_field.model_class
             except AttributeError:
