@@ -234,24 +234,20 @@ class ModelView(BaseModelView):
             raise Exception('Failed to find field for filter: %s' % name)
 
         # Check if field is in different model
+        model_class = None
         try:
-            if attr.model_class != self.model:
-                visible_name = '%s / %s' % (self.get_column_name(attr.model_class.__name__),
-                                            self.get_column_name(attr.name))
-            else:
-                if not isinstance(name, string_types):
-                    visible_name = self.get_column_name(attr.name)
-                else:
-                    visible_name = self.get_column_name(name)
+            model_class = attr.model_class
         except AttributeError:
-            if attr.model != self.model:
-                visible_name = '%s / %s' % (self.get_column_name(attr.model.__name__),
-                                            self.get_column_name(attr.name))
+            model_class = attr.model
+
+        if model_class != self.model:
+            visible_name = '%s / %s' % (self.get_column_name(model_class.__name__),
+                                        self.get_column_name(attr.name))
+        else:
+            if not isinstance(name, string_types):
+                visible_name = self.get_column_name(attr.name)
             else:
-                if not isinstance(name, string_types):
-                    visible_name = self.get_column_name(attr.name)
-                else:
-                    visible_name = self.get_column_name(name)
+                visible_name = self.get_column_name(name)
 
         type_name = type(attr).__name__
         flt = self.filter_converter.convert(type_name,
@@ -317,21 +313,17 @@ class ModelView(BaseModelView):
         return create_ajax_loader(self.model, name, name, options)
 
     def _handle_join(self, query, field, joins):
+        model_class = None
         try:
-            if field.model_class != self.model:
-                model_name = field.model_class.__name__
-
-                if model_name not in joins:
-                    query = query.join(field.model_class, JOIN.LEFT_OUTER)
-                    joins.add(model_name)
+            model_class = field.model_class
         except AttributeError:
-            if field.model != self.model:
-                model_name = field.model.__name__
+            model_class = field.model
+        if model_class != self.model:
+            model_name = model_class.__name__
 
-                if model_name not in joins:
-                    query = query.join(field.model, JOIN.LEFT_OUTER)
-                    joins.add(model_name)
-
+            if model_name not in joins:
+                query = query.join(model_class, JOIN.LEFT_OUTER)
+                joins.add(model_name)
         return query
 
     def _order_by(self, query, joins, order):
