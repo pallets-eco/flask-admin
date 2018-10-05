@@ -61,6 +61,9 @@ class AjaxSelect2Widget(object):
         placeholder = field.loader.options.get('placeholder', gettext('Please select model'))
         kwargs.setdefault('data-placeholder', placeholder)
 
+        minimum_input_length = int(field.loader.options.get('minimum_input_length', 1))
+        kwargs.setdefault('data-minimum-input-length', minimum_input_length)
+
         return HTMLString('<input %s>' % html_params(name=field.name, **kwargs))
 
 
