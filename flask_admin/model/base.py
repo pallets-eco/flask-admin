@@ -671,7 +671,9 @@ class BaseModelView(BaseView, ActionsMixin):
                 form_ajax_refs = {
                     'user': {
                         'fields': ('first_name', 'last_name', 'email'),
-                        'page_size': 10
+                        'placeholder': 'Please select',
+                        'page_size': 10,
+                        'minimum_input_length': 0,
                     }
                 }
 
