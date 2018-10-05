@@ -6,6 +6,7 @@ next release
 
 * Sort on multiple columns with `column_default_sort`
 * Upgrade Leaflet and Leaflet.draw plugins, used for geoalchemy integration
+* Specify `minimum_input_length` for ajax widget
 
 1.5.2
 -----
