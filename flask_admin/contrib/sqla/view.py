@@ -850,15 +850,9 @@ class ModelView(BaseModelView):
 
     def _get_default_order(self):
         order = super(ModelView, self)._get_default_order()
-
-        if order is not None:
-            field, direction = order
-
+        for field, direction in (order or []):
             attr, joins = tools.get_field_with_path(self.model, field)
-
-            return attr, joins, direction
-
-        return None
+            yield attr, joins, direction
 
     def _apply_sorting(self, query, joins, sort_column, sort_desc):
         if sort_column is not None:
@@ -869,10 +863,7 @@ class ModelView(BaseModelView):
                 query, joins = self._order_by(query, joins, sort_joins, sort_field, sort_desc)
         else:
             order = self._get_default_order()
-
-            if order:
-                sort_field, sort_joins, sort_desc = order
-
+            for sort_field, sort_joins, sort_desc in order:
                 query, joins = self._order_by(query, joins, sort_joins, sort_field, sort_desc)
 
         return query, joins
