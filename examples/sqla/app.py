@@ -130,8 +130,11 @@ class PostAdmin(sqla.ModelView):
             'fields': (User.username, User.email)
         },
         'tags': {
-            'fields': (Tag.name,)
-        }
+            'fields': (Tag.name,),
+            'minimum_input_length': 0,
+            'placeholder': 'Please select',
+            'page_size': 5,
+        },
     }
 
     def __init__(self, session):
