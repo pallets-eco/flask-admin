@@ -272,11 +272,11 @@ class InlineModelFormList(InlineFieldList):
             return
 
         # Create primary key map
-        pk_map = dict((str(getattr(v, self._pk)), v) for v in values)
+        pk_map = dict((get_obj_pk(v, self._pk), v) for v in values)
 
         # Handle request data
         for field in self.entries:
-            field_id = str(field.get_pk())
+            field_id = get_field_id(field)
 
             is_created = field_id not in pk_map
             if not is_created:
@@ -298,3 +298,27 @@ def get_pk_from_identity(obj):
     # TODO: Remove me
     key = identity_key(instance=obj)[1]
     return u':'.join(text_type(x) for x in key)
+
+
+def get_obj_pk(obj, pk):
+    """
+    get and format pk from obj
+    :rtype: text_type
+    """
+
+    if isinstance(pk, tuple):
+        return tuple(text_type(getattr(obj, k)) for k in pk)
+
+    return text_type(getattr(obj, pk))
+
+
+def get_field_id(field):
+    """
+    get and format id from field
+    :rtype: text_type
+    """
+    field_id = field.get_pk()
+    if isinstance(field_id, tuple):
+        return tuple(text_type(_) for _ in field_id)
+
+    return text_type(field_id)

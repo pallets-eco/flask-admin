@@ -7,6 +7,7 @@ next release
 * Sort on multiple columns with `column_default_sort`
 * Upgrade Leaflet and Leaflet.draw plugins, used for geoalchemy integration
 * Specify `minimum_input_length` for ajax widget
+* SQLAlchemy fix that lets you use inline model forms where models have multiple primary keys
 
 1.5.2
 -----
