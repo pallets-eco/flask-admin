@@ -484,13 +484,21 @@ class ModelView(BaseModelView):
 
             for c in self.column_sortable_list:
                 if isinstance(c, tuple):
-                    column, path = tools.get_field_with_path(self.model, c[1])
-                    column_name = c[0]
+                    if isinstance(c[1], tuple):
+                        column, path = [], []
+                        for item in c[1]:
+                            column_item, path_item = tools.get_field_with_path(self.model, item)
+                            column.append(column_item)
+                            path.append(path_item)
+                        column_name = c[0]
+                    else:
+                        column, path = tools.get_field_with_path(self.model, c[1])
+                        column_name = c[0]
                 else:
                     column, path = tools.get_field_with_path(self.model, c)
                     column_name = text_type(c)
 
-                if path and hasattr(path[0], 'property'):
+                if path and (hasattr(path[0], 'property') or isinstance(path[0], list)):
                     self._sortable_joins[column_name] = path
                 elif path:
                     raise Exception("For sorting columns in a related table, "
@@ -836,15 +844,9 @@ class ModelView(BaseModelView):
             column = sort_field if alias is None else getattr(alias, sort_field.key)
 
             if sort_desc:
-                if isinstance(column, tuple):
-                    query = query.order_by(*map(desc, column))
-                else:
-                    query = query.order_by(desc(column))
+                query = query.order_by(desc(column))
             else:
-                if isinstance(column, tuple):
-                    query = query.order_by(*column)
-                else:
-                    query = query.order_by(column)
+                query = query.order_by(column)
 
         return query, joins
 
@@ -860,7 +862,11 @@ class ModelView(BaseModelView):
                 sort_field = self._sortable_columns[sort_column]
                 sort_joins = self._sortable_joins.get(sort_column)
 
-                query, joins = self._order_by(query, joins, sort_joins, sort_field, sort_desc)
+                if isinstance(sort_field, list):
+                    for field_item, join_item in zip(sort_field, sort_joins):
+                        query, joins = self._order_by(query, joins, join_item, field_item, sort_desc)
+                else:
+                    query, joins = self._order_by(query, joins, sort_joins, sort_field, sort_desc)
         else:
             order = self._get_default_order()
             for sort_field, sort_joins, sort_desc in order:
