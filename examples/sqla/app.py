@@ -31,7 +31,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True)
 
     def __str__(self):
-        return "{} {}".format(self.first_name, self.last_name)
+        return "{}, {}".format(self.last_name, self.first_name)
 
 
 # Create M2M table
@@ -45,7 +45,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
     text = db.Column(db.Text, nullable=False)
-    date = db.Column(db.DateTime)
+    date = db.Column(db.Date)
 
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
     user = db.relationship(User, backref='posts')
@@ -108,6 +108,7 @@ class UserAdmin(sqla.ModelView):
 # Customized Post model admin
 class PostAdmin(sqla.ModelView):
     column_exclude_list = ['text']
+    column_default_sort = ('date', True)
     column_sortable_list = [
         'title',
         'date',
@@ -193,7 +194,7 @@ def build_sample_db():
         user = User()
         user.first_name = first_names[i]
         user.last_name = last_names[i]
-        user.email = user.first_names[i].lower() + "@example.com"
+        user.email = first_names[i].lower() + "@example.com"
         user_list.append(user)
         db.session.add(user)
 
