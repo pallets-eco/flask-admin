@@ -1732,13 +1732,17 @@ def test_complex_sort():
     app, db, admin = setup()
     M1, M2 = create_models(db)
 
-    m1 = M1('b')
+    m1 = M1(test1='c', test2='x')
     db.session.add(m1)
     db.session.add(M2('c', model1=m1))
 
-    m2 = M1('a')
+    m2 = M1(test1='b', test2='x')
     db.session.add(m2)
-    db.session.add(M2('c', model1=m2))
+    db.session.add(M2('b', model1=m2))
+
+    m3 = M1(test1='a', test2='y')
+    db.session.add(m3)
+    db.session.add(M2('a', model1=m3))
 
     db.session.commit()
 
@@ -1750,8 +1754,29 @@ def test_complex_sort():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model2/?sort=1')
+    rv = client.get('/admin/model2/?sort=0')
     eq_(rv.status_code, 200)
+
+    _, data = view.get_list(0, 'model1.test1', False, None, None)
+
+    eq_(data[0].model1.test1, 'a')
+    eq_(data[1].model1.test1, 'b')
+    eq_(data[2].model1.test1, 'c')
+
+    # test sorting on multiple columns in related model
+    view2 = CustomModelView(M2, db.session,
+                           column_list=['string_field', 'model1'],
+                           column_sortable_list=[('model1', ('model1.test2', 'model1.test1'))], endpoint="m1_2")
+    admin.add_view(view2)
+
+    rv = client.get('/admin/m1_2/?sort=0')
+    eq_(rv.status_code, 200)
+
+    _, data = view2.get_list(0, 'model1', False, None, None)
+
+    eq_(data[0].model1.test1, 'b')
+    eq_(data[1].model1.test1, 'c')
+    eq_(data[2].model1.test1, 'a')
 
 
 @raises(Exception)
