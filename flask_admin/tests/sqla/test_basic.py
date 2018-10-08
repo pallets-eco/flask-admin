@@ -1765,8 +1765,8 @@ def test_complex_sort():
 
     # test sorting on multiple columns in related model
     view2 = CustomModelView(M2, db.session,
-                           column_list=['string_field', 'model1'],
-                           column_sortable_list=[('model1', ('model1.test2', 'model1.test1'))], endpoint="m1_2")
+                            column_list=['string_field', 'model1'],
+                            column_sortable_list=[('model1', ('model1.test2', 'model1.test1'))], endpoint="m1_2")
     admin.add_view(view2)
 
     rv = client.get('/admin/m1_2/?sort=0')
