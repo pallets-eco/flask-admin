@@ -28,11 +28,10 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
-    username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
 
     def __str__(self):
-        return self.username
+        return "{}, {}".format(self.last_name, self.first_name)
 
 
 # Create M2M table
@@ -46,7 +45,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
     text = db.Column(db.Text, nullable=False)
-    date = db.Column(db.DateTime)
+    date = db.Column(db.Date)
 
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
     user = db.relationship(User, backref='posts')
@@ -54,7 +53,7 @@ class Post(db.Model):
     tags = db.relationship('Tag', secondary=post_tags_table)
 
     def __str__(self):
-        return self.title
+        return "{}".format(self.title)
 
 
 class Tag(db.Model):
@@ -62,7 +61,7 @@ class Tag(db.Model):
     name = db.Column(db.Unicode(64))
 
     def __str__(self):
-        return self.name
+        return "{}".format(self.name)
 
 
 class UserInfo(db.Model):
@@ -75,7 +74,7 @@ class UserInfo(db.Model):
     user = db.relationship(User, backref='info')
 
     def __str__(self):
-        return '%s - %s' % (self.key, self.value)
+        return "{} - {}".format(self.key, self.value)
 
 
 class Tree(db.Model):
@@ -85,7 +84,7 @@ class Tree(db.Model):
     parent = db.relationship('Tree', remote_side=[id], backref='children')
 
     def __str__(self):
-        return self.name
+        return "{}".format(self.name)
 
 
 # Flask views
@@ -96,28 +95,39 @@ def index():
 
 # Customized User model admin
 class UserAdmin(sqla.ModelView):
+    column_list = [
+        'id',
+        'last_name',
+        'first_name',
+        'email',
+    ]
+    column_default_sort = [('last_name', False), ('first_name', False)]  # sort on multiple columns
     inline_models = (UserInfo,)
 
 
 # Customized Post model admin
 class PostAdmin(sqla.ModelView):
-    # Visible columns in the list view
     column_exclude_list = ['text']
-
-    # List of columns that can be sorted. For 'user' column, use User.username as
-    # a column.
-    column_sortable_list = ('title', ('user', 'user.username'), 'date')
-
-    # Rename 'title' columns to 'Post Title' in list view
-    column_labels = dict(title='Post Title')
-
-    column_searchable_list = ('title', User.username, 'tags.name')
-
-    column_filters = ('user',
-                      'title',
-                      'date',
-                      'tags',
-                      filters.FilterLike(Post.title, 'Fixed Title', options=(('test1', 'Test 1'), ('test2', 'Test 2'))))
+    column_default_sort = ('date', True)
+    column_sortable_list = [
+        'title',
+        'date',
+        ('user', ('user.last_name', 'user.first_name')),  # sort on multiple columns
+    ]
+    column_labels = dict(title='Post Title')  # Rename 'title' column in list view
+    column_searchable_list = [
+        'title',
+        User.first_name,
+        User.last_name,
+        'tags.name',
+    ]
+    column_filters = [
+        'user',
+        'title',
+        'date',
+        'tags',
+        filters.FilterLike(Post.title, 'Fixed Title', options=(('test1', 'Test 1'), ('test2', 'Test 2'))),
+    ]
 
     # Pass arguments to WTForms. In this case, change label for text field to
     # be 'Big Text' and add required() validator.
@@ -127,11 +137,11 @@ class PostAdmin(sqla.ModelView):
 
     form_ajax_refs = {
         'user': {
-            'fields': (User.username, User.email)
+            'fields': (User.first_name, User.last_name)
         },
         'tags': {
             'fields': (Tag.name,),
-            'minimum_input_length': 0,
+            'minimum_input_length': 0,  # show suggestions, even before any user input
             'placeholder': 'Please select',
             'page_size': 5,
         },
@@ -174,8 +184,8 @@ def build_sample_db():
         'Riley', 'William', 'James', 'Geoffrey', 'Lisa', 'Benjamin', 'Stacey', 'Lucy'
     ]
     last_names = [
-        'Brown', 'Smith', 'Patel', 'Jones', 'Williams', 'Johnson', 'Taylor', 'Thomas',
-        'Roberts', 'Khan', 'Lewis', 'Jackson', 'Clarke', 'James', 'Phillips', 'Wilson',
+        'Brown', 'Brown', 'Patel', 'Jones', 'Williams', 'Johnson', 'Taylor', 'Thomas',
+        'Roberts', 'Khan', 'Clarke', 'Clarke', 'Clarke', 'James', 'Phillips', 'Wilson',
         'Ali', 'Mason', 'Mitchell', 'Rose', 'Davis', 'Davies', 'Rodriguez', 'Cox', 'Alexander'
     ]
 
@@ -183,9 +193,8 @@ def build_sample_db():
     for i in range(len(first_names)):
         user = User()
         user.first_name = first_names[i]
-        user.username = first_names[i].lower()
         user.last_name = last_names[i]
-        user.email = user.username + "@example.com"
+        user.email = first_names[i].lower() + "@example.com"
         user_list.append(user)
         db.session.add(user)
 
