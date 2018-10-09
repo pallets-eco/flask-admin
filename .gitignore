@@ -23,6 +23,7 @@ examples/appengine/lib
 .DS_Store
 .idea/
 *.sqlite
+*.sqlite3
 env
 *.egg
 .eggs
