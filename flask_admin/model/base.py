@@ -2116,7 +2116,15 @@ class BaseModelView(BaseView, ActionsMixin):
 
         if self.validate_form(form):
             if self.update_model(form, model):
+                # set missing fields back to default value (missing fields mean the browser didn't send them, which means the fields were empty in the browser)
+                # ref: https://github.com/flask-admin/flask-admin/issues/357
+                # ref: https://github.com/select2/select2/issues/983
+                for missing_field in [form._fields[field].name for field in form._fields if not form._fields[field].raw_data]:
+                    model[missing_field] = form._fields[missing_field].default()
+                    model.save()
+
                 flash(gettext('Record was successfully saved.'), 'success')
+
                 if '_add_another' in request.form:
                     return redirect(self.get_url('.create_view', url=return_url))
                 elif '_continue_editing' in request.form:
