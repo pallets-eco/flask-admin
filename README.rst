@@ -27,6 +27,8 @@ Out-of-the-box, Flask-Admin plays nicely with various ORM's, including
 
 - `Peewee <https://github.com/coleifer/peewee>`_.
 
+- `Django <https://www.djangoproject.com/>`_.
+
 It also boasts a simple file management interface and a `redis client <http://redis.io/>`_ console.
 
 The biggest feature of Flask-Admin is flexibility. It aims to provide a set of simple tools that can be used for

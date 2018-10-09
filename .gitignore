@@ -27,3 +27,6 @@ env
 *.egg
 .eggs
 .tox/
+.project
+.pydevproject
+.settings/
