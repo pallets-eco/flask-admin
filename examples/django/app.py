@@ -14,13 +14,8 @@ from flask import Flask
 import flask_admin as admin
 from flask_admin.contrib.django.view import ModelView
 
-
-try:
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-    from django.contrib.auth.models import User
-    print 'import django User model ok'
-except Exception, e:
-    print 'error !', e
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+from django.contrib.auth.models import User
 from polls.models import Question, Choice
 
 application = get_wsgi_application()
