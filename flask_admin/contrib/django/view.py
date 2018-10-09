@@ -299,7 +299,7 @@ class ModelView(BaseModelView):
             self.on_model_delete(model)
             model.delete()
         except Exception as ex:
-            print 'Failed to delete record.', ex
+            print('Failed to delete record. %s' % ex)
 
             return False
         else:
