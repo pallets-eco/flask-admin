@@ -1,6 +1,8 @@
 import os
 import os.path as op
 
+import ast
+
 from werkzeug import secure_filename
 from werkzeug.datastructures import FileStorage
 
@@ -24,8 +26,8 @@ except ImportError:
     Image = None
     ImageOps = None
 
-__all__ = ['FileUploadInput', 'FileUploadField',
-           'ImageUploadInput', 'ImageUploadField',
+__all__ = ['FileUploadInput', 'MultipleFileUploadInput', 'FileUploadField', 'MultipleFileUploadField',
+           'ImageUploadInput', 'MultipleImageUploadInput', 'ImageUploadField', 'MultipleImageUploadField',
            'namegen_filename', 'thumbgen_filename']
 
 
@@ -69,6 +71,52 @@ class FileUploadInput(object):
                                 **kwargs),
             'marker': '_%s-delete' % field.name
         })
+
+
+class MultipleFileUploadInput(object):
+    """
+        Render a file input chooser field which you can choose multiple files.
+
+        You can customize `empty_template` and `data_template` members to customize
+        look and feel.
+    """
+
+    empty_template = ('<input %(file)s multiple>')
+
+    data_template = ('<div>'
+                     '    %(files)s'
+                     '</div>'
+                     '<input %(file)s multiple>')
+
+    def __call__(self, field, **kwargs):
+        kwargs.setdefault('id', field.id)
+        kwargs.setdefault('name', field.name)
+
+        template = self.data_template if field.data else self.empty_template
+
+        if field.errors:
+            template = self.empty_template
+
+        if field.data and isinstance(field.data, string_types):
+
+            filenames = self.get_filenames(field)
+
+            files = "&emsp;".join([("<input type='text', readonly='readonly', value='{}', name='{}' />"
+                                    "<input type='checkbox' name='_{}-delete'>Delete</input>")
+                                  .format(filename, filename, filename) for filename in filenames])
+        else:
+
+            files = ""
+
+        return HTMLString(template % {
+            "files": files,
+            "file": html_params(type="file", **kwargs)
+        })
+
+    def get_filenames(self, field):
+
+        for filename in ast.literal_eval(field.data):
+            yield filename
 
 
 class ImageUploadInput(object):
@@ -120,6 +168,57 @@ class ImageUploadInput(object):
             filename = urljoin(field.url_relative_path, filename)
 
         return get_url(field.endpoint, filename=filename)
+
+
+class MultipleImageUploadInput(object):
+
+    """
+        Render a image input chooser field which you can choose multiple images.
+
+        You can customize `empty_template` and `data_template` members to customize
+        look and feel.
+    """
+
+    empty_template = ('<input %(file)s multiple>')
+
+    data_template = ('<div class="image-thumbnail">'
+                     '    %(images)s'
+                     '</div>'
+                     '<input %(file)s multiple>')
+
+    def __call__(self, field, **kwargs):
+        kwargs.setdefault('id', field.id)
+        kwargs.setdefault('name', field.name)
+
+        args = {"file": html_params(type="file", **kwargs)}
+
+        if field.data and isinstance(field.data, string_types):
+
+            attributes = self.get_attributes(field)
+
+            args["images"] = "&emsp;".join(["<img src='{}' /><input type='checkbox' name='_{}-delete'>Delete</input>"
+                                           .format(src, filename) for src, filename in attributes])
+
+            template = self.data_template
+
+        else:
+            template = self.empty_template
+
+        return HTMLString(template % args)
+
+    def get_attributes(self, field):
+
+        for item in ast.literal_eval(field.data):
+
+            filename = item
+
+            if field.thumbnail_size:
+                filename = field.thumbnail_fn(filename)
+
+            if field.url_relative_path:
+                filename = urljoin(field.url_relative_path, filename)
+
+            yield get_url(field.endpoint, filename=filename), item
 
 
 # Fields
@@ -283,6 +382,55 @@ class FileUploadField(fields.StringField):
         data.save(path)
 
         return filename
+
+
+class MultipleFileUploadField(FileUploadField):
+    """
+        Customizable multiple file-upload field.
+
+        Saves files to configured path, handles updates and deletions. Inherits from `FileUploadField`,
+        resulting filename will be stored as string representation of list.
+    """
+
+    widget = MultipleFileUploadInput()
+
+    def process(self, formdata, data=unset_value):
+        self.formdata = formdata
+
+        return super(MultipleFileUploadField, self).process(formdata, data)
+
+    def process_formdata(self, valuelist):
+        self.data = list()
+
+        for value in valuelist:
+            if self._is_uploaded_file(value):
+                self.data.append(value)
+
+    def populate_obj(self, obj, name):
+        field = getattr(obj, name, None)
+
+        if field:
+            filenames = ast.literal_eval(field)
+
+            for filename in filenames[:]:
+
+                if "_{}-delete".format(filename) in self.formdata:
+                    self._delete_file(filename)
+                    filenames.remove(filename)
+        else:
+            filenames = list()
+
+        for data in self.data:
+
+            if self._is_uploaded_file(data):
+
+                filename = self.generate_name(obj, data)
+                filename = self._save_file(data, filename)
+                data.filename = filename
+
+                filenames.append(filename)
+
+        setattr(obj, name, str(filenames))
 
 
 class ImageUploadField(FileUploadField):
@@ -477,6 +625,63 @@ class ImageUploadField(FileUploadField):
             return filename, 'JPEG'
 
         return filename, image.format
+
+
+class MultipleImageUploadField(ImageUploadField):
+    """
+        Multiple image upload field.
+
+        Does image validation, thumbnail generation, updating and deleting images.
+
+        Requires PIL (or Pillow) to be installed.
+    """
+
+    widget = MultipleImageUploadInput()
+
+    def process(self, formdata, data=unset_value):
+        self.formdata = formdata
+
+        return super(MultipleImageUploadField, self).process(formdata, data)
+
+    def process_formdata(self, valuelist):
+        self.data = list()
+
+        for value in valuelist:
+            if self._is_uploaded_file(value):
+                self.data.append(value)
+
+    def populate_obj(self, obj, name):
+        field = getattr(obj, name, None)
+
+        if field:
+            filenames = ast.literal_eval(field)
+
+            for filename in filenames[:]:
+
+                if "_{}-delete".format(filename) in self.formdata:
+                    self._delete_file(filename)
+                    filenames.remove(filename)
+
+        else:
+
+            filenames = list()
+
+        for data in self.data:
+
+            if self._is_uploaded_file(data):
+
+                try:
+                    self.image = Image.open(data)
+                except Exception as e:
+                    raise ValidationError('Invalid image: %s' % e)
+
+                filename = self.generate_name(obj, data)
+                filename = self._save_file(data, filename)
+                data.filename = filename
+
+                filenames.append(filename)
+
+        setattr(obj, name, str(filenames))
 
 
 # Helpers
