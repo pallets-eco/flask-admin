@@ -117,10 +117,16 @@ class PostAdmin(sqla.ModelView):
     column_labels = dict(title='Post Title')  # Rename 'title' column in list view
     column_searchable_list = [
         'title',
-        User.first_name,
-        User.last_name,
         'tags.name',
+        'user.first_name',
+        'user.last_name',
     ]
+    column_labels = {
+        'title': 'Title',
+        'tags.name': 'tags',
+        'user.first_name': 'user\'s first name',
+        'user.last_name': 'last name',
+    }
     column_filters = [
         'user',
         'title',
