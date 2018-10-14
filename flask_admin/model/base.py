@@ -2205,9 +2205,10 @@ class BaseModelView(BaseView, ActionsMixin):
             # message is flashed from within delete_model if it fails
             if self.delete_model(model):
                 count = 1
-                flash(ngettext('Record was successfully deleted.',
-                      '%(count)s records were successfully deleted.',
-                      count, count=count), 'success')
+                flash(
+                    ngettext('Record was successfully deleted.',
+                        '%(count)s records were successfully deleted.',
+                        count, count=count), 'success')
                 return redirect(return_url)
         else:
             flash_errors(form, message='Failed to delete record. %(error)s')
