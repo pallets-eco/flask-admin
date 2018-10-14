@@ -18,7 +18,7 @@ from wtforms.fields import HiddenField
 from wtforms.fields.core import UnboundField
 from wtforms.validators import ValidationError, InputRequired
 
-from flask_admin.babel import gettext
+from flask_admin.babel import gettext, ngettext
 
 from flask_admin.base import BaseView, expose
 from flask_admin.form import BaseForm, FormOpts, rules
@@ -2204,7 +2204,10 @@ class BaseModelView(BaseView, ActionsMixin):
 
             # message is flashed from within delete_model if it fails
             if self.delete_model(model):
-                flash(gettext('Record was successfully deleted.'), 'success')
+                count = 1
+                flash(ngettext('Record was successfully deleted.',
+                      '%(count)s records were successfully deleted.',
+                      count, count=count), 'success')
                 return redirect(return_url)
         else:
             flash_errors(form, message='Failed to delete record. %(error)s')
