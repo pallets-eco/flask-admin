@@ -1107,6 +1107,12 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return False
 
+    def search_placeholder(self):
+        """
+            Return search placeholder.
+        """
+        return 'Search'
+
     # Filter helpers
     def scaffold_filters(self, name):
         """
@@ -2026,6 +2032,7 @@ class BaseModelView(BaseView, ActionsMixin):
             search_supported=self._search_supported,
             clear_search_url=clear_search_url,
             search=view_args.search,
+            search_placeholder=self.search_placeholder(),
 
             # Filters
             filters=self._filters,

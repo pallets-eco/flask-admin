@@ -582,6 +582,33 @@ class ModelView(BaseModelView):
 
         return bool(self.column_searchable_list)
 
+    def search_placeholder(self):
+        """
+            Return search placeholder.
+
+            For example, if set column_labels and column_searchable_list:
+
+            class MyModelView(BaseModelView):
+                column_labels = dict(name='Name', last_name='Last Name')
+                column_searchable_list = ('name', 'last_name')
+
+            placeholder is: "Search: Name, Last Name"
+        """
+        if not self.column_searchable_list:
+            return 'Search'
+
+        placeholders = []
+
+        for searchable in self.column_searchable_list:
+            if isinstance(searchable, InstrumentedAttribute):
+                placeholders.append(
+                    self.column_labels.get(searchable.key, searchable.key))
+            else:
+                placeholders.append(
+                    self.column_labels.get(searchable, searchable))
+
+        return 'Search: %s' % u', '.join(placeholders)
+
     def scaffold_filters(self, name):
         """
             Return list of enabled filters
