@@ -73,10 +73,9 @@
     <input type="hidden" name="desc" value="{{ sort_desc }}">
     {% endif %}
     {%- set full_search_placeholder = _gettext('Search') %}
-    {%- set min_size = config.get('FLASK_ADMIN_SEARCH_SIZE_MIN', 30) %}
     {%- set max_size = config.get('FLASK_ADMIN_SEARCH_SIZE_MAX', 100) %}
     {%- if search_placeholder %}{% set full_search_placeholder = [full_search_placeholder, search_placeholder] | join(": ") %}{% endif %}
-    {%- set input_size = [[full_search_placeholder | length, min_size] | max, max_size] | min %}
+    {%- set input_size = [[full_search_placeholder | length, 30] | max, max_size] | min %}
     {% if search %}
     <div class="input-group">
         <input type="search" name="search" value="{{ search }}" class="form-control" size="{{ input_size }}" placeholder="{{ full_search_placeholder }}">
