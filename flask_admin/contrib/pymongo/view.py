@@ -4,13 +4,13 @@ import pymongo
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from flask import flash
+from flask import flash, Response, stream_with_context
 
 from flask_admin._compat import string_types
 from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.model import BaseModelView
 from flask_admin.actions import action
-from flask_admin.helpers import get_form_data
+from flask_admin.helpers import get_form_data, get_redirect_target
 
 from .filters import BasePyMongoFilter
 from .tools import parse_like_term
@@ -399,3 +399,17 @@ class ModelView(BaseModelView):
                            count=count), 'success')
         except Exception as ex:
             flash(gettext('Failed to delete records. %(error)s', error=str(ex)), 'error')
+
+    @action('export', lazy_gettext('Export'))
+    def action_export_selected(self, ids):
+        try:
+            ids = map(ObjectId, ids)
+            return_url = get_redirect_target() or self.get_url('.index_view')
+
+            if not self.can_export:
+                flash(gettext('Permission denied.'), 'error')
+                return redirect(return_url)
+
+            return self._export_csv(return_url, ids)
+        except Exception as ex:
+                flash(gettext('Failed to export records. %(error)s', error=str(ex)), 'error')
