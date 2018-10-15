@@ -2207,8 +2207,8 @@ class BaseModelView(BaseView, ActionsMixin):
                 count = 1
                 flash(
                     ngettext('Record was successfully deleted.',
-                        '%(count)s records were successfully deleted.',
-                        count, count=count), 'success')
+                             '%(count)s records were successfully deleted.',
+                             count, count=count), 'success')
                 return redirect(return_url)
         else:
             flash_errors(form, message='Failed to delete record. %(error)s')
