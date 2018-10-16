@@ -783,7 +783,7 @@ class BaseModelView(BaseView, ActionsMixin):
             :param name:
                 View name. If not provided, will use the model class name
             :param category:
-                View category
+                Optional category name, for grouping views in the menu
             :param endpoint:
                 Base endpoint. If not provided, will use the model name.
             :param url:
