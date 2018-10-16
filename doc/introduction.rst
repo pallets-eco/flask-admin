@@ -301,7 +301,7 @@ To nest related views within these drop-downs, use the `add_sub_category` method
 
     admin.add_sub_category(name="Links", parent_name="Team")
 
-And to add arbitrary hyperlinks to the menu:
+And to add arbitrary hyperlinks to the menu::
 
   admin.add_link(MenuLink(name='Home Page', url='/', category='Links'))
 
