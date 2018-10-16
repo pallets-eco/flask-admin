@@ -2325,12 +2325,12 @@ class BaseModelView(BaseView, ActionsMixin):
         if encoding:
             mimetype = '%s; charset=%s' % (mimetype, encoding)
 
-        ds = tablib.Dataset(headers=[c[1] for c in self._export_columns])
+        ds = tablib.Dataset(headers=[csv_encode(c[1]) for c in self._export_columns])
 
         count, data = self._export_data()
 
         for row in data:
-            vals = [self.get_export_value(row, c[0]) for c in self._export_columns]
+            vals = [csv_encode(self.get_export_value(row, c[0])) for c in self._export_columns]
             ds.append(vals)
 
         try:
