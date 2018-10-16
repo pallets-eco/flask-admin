@@ -95,6 +95,7 @@ def index():
 
 # Customized User model admin
 class UserAdmin(sqla.ModelView):
+    action_disallowed_list = ['delete', ]
     column_list = [
         'id',
         'last_name',
