@@ -4,6 +4,7 @@ Changelog
 next release
 -----
 
+* Support nested categories in the navbar menu
 * SQLA: Sort on multiple columns with `column_default_sort` and related models in `column_sortable_list`
 * Upgrade Leaflet and Leaflet.draw plugins, used for geoalchemy integration
 * Specify `minimum_input_length` for ajax widget
