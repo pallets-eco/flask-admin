@@ -8,6 +8,7 @@ from wtforms import validators
 import flask_admin as admin
 from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import filters
+from flask_admin.base import MenuLink
 
 
 # Create application
@@ -163,7 +164,11 @@ admin = admin.Admin(app, name='Example: SQLAlchemy', template_mode='bootstrap3')
 admin.add_view(UserAdmin(User, db.session))
 admin.add_view(sqla.ModelView(Tag, db.session))
 admin.add_view(PostAdmin(db.session))
-admin.add_view(TreeView(Tree, db.session))
+admin.add_view(TreeView(Tree, db.session, category="Other"))
+admin.add_sub_category(name="Links", parent_name="Other")
+admin.add_link(MenuLink(name='Back Home', url='/', category='Links'))
+admin.add_link(MenuLink(name='Google', url='http://www.google.com/', category='Links'))
+admin.add_link(MenuLink(name='Mozilla', url='http://mozilla.org/', category='Links'))
 
 
 def build_sample_db():
