@@ -16,6 +16,9 @@ The first step is to initialize an empty admin interface for your Flask app::
     from flask import Flask
     from flask_admin import Admin
 
+    # set optional bootswatch theme
+    app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
+
     app = Flask(__name__)
 
     admin = Admin(app, name='microblog', template_mode='bootstrap3')
@@ -27,7 +30,8 @@ Here, both the *name* and *template_mode* parameters are optional. Alternatively
 you could use the :meth:`~flask_admin.base.Admin.init_app` method.
 
 If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
-you should see an empty page with a navigation bar on top.
+you should see an empty page with a navigation bar on top. Customize the look by
+specifying a Bootswatch theme that suits your needs (see http://bootswatch.com/3/ for available swatches).
 
 Adding Model Views
 ------------------
