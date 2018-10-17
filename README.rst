@@ -91,7 +91,11 @@ You should see output similar to::
 
 For all the tests to pass successfully, you'll need Postgres & MongoDB to be running locally. For Postgres::
 
+    > psql postgres
     CREATE DATABASE flask_admin_test;
+    \q
+
+    > psql flask_admin_test
     CREATE EXTENSION postgis;
     CREATE EXTENSION hstore;
 

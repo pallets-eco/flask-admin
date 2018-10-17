@@ -37,7 +37,7 @@
                 <th>
                     {% if admin_view.is_column_sortable(column) %}
                     {% if sort_column == column %}
-                        <a href="{{ sort_url(column, True) }}" title="{{ _gettext('Sort by %(name)s', name=column) }}">
+                        <a href="{{ sort_url(column, dir_path, True) }}" title="{{ _gettext('Sort by %(name)s', name=column) }}">
                             {{ admin_view.column_label(column) }}
                             {% if sort_desc %}
                                 <span class="fa fa-chevron-up glyphicon glyphicon-chevron-up"></span>
@@ -46,7 +46,7 @@
                             {% endif %}
                         </a>
                     {% else %}
-                        <a href="{{ sort_url(column) }}" title="{{ _gettext('Sort by %(name)s', name=column) }}">{{ admin_view.column_label(column) }}</a>
+                        <a href="{{ sort_url(column, dir_path) }}" title="{{ _gettext('Sort by %(name)s', name=column) }}">{{ admin_view.column_label(column) }}</a>
                     {% endif %}
                     {% else %}
                     {{ _gettext(admin_view.column_label(column)) }}
@@ -126,11 +126,11 @@
                 {{ size|filesizeformat }}
             </td>
             {% endif %}
+            {% endif %}
             {% if admin_view.is_column_visible('date') %}
             <td>
                 {{ timestamp_format(date) }}
             </td>
-            {% endif %}
             {% endif %}
             {% endblock %}
         </tr>

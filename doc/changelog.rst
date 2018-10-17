@@ -1,6 +1,36 @@
 Changelog
 =========
 
+next release
+-----
+
+* Support nested categories in the navbar menu
+* SQLA: Sort on multiple columns with `column_default_sort` and related models in `column_sortable_list`
+* Upgrade Leaflet and Leaflet.draw plugins, used for geoalchemy integration
+* Specify `minimum_input_length` for ajax widget
+* SQLAlchemy fix that lets you use inline model forms where models have multiple primary keys
+* Peewee: support composite keys
+* MongoEngine: when searching/filtering the input is now regarded as case-insensitive by default
+
+1.5.2
+-----
+
+* Fixed XSS vulnerability
+* Fixed Peewee support
+* Added detail view column formatters
+* Updated Flask-Login example to work with the newer version of the library
+* Various SQLAlchemy-related fixes
+* Various Windows related fixes for the file admin
+
+1.5.1
+-----
+
+* Dropped Python 2.6 support
+* Fixed SQLAlchemy >= 1.2 compatibility
+* Fixed Pewee 3.0 compatibility
+* Fixed max year for a combo date inline editor
+* Lots of small bug fixes
+
 1.5.0
 -----
 
@@ -13,7 +43,7 @@ Changelog
   - Added support for association proxies
   - Added support for remote hybrid properties filters
   - Added support for ARRAY column type
-* Localization-related fixes 
+* Localization-related fixes
 * MongoEngine backend is now properly formats model labels
 * Improved Google App Engine support:
   - Added TextProperty, KeyProperty and SelectField support

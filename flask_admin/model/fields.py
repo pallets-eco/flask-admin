@@ -118,6 +118,10 @@ class InlineModelFormField(FormField):
         self.form_opts = form_opts
 
     def get_pk(self):
+
+        if isinstance(self._pk, (tuple, list)):
+            return tuple(getattr(self.form, pk).data for pk in self._pk)
+
         return getattr(self.form, self._pk).data
 
     def populate_obj(self, obj, name):

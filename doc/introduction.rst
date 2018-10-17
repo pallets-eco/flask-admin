@@ -156,12 +156,9 @@ Customizing Built-in Views
 
 ****
 
-The built-in `ModelView` class is great for getting started quickly. But, you'll want
-to configure its functionality to suit your particular models. This is done by setting
-values for the configuration attributes that are made available in the `ModelView` class.
-
-To specify some global configuration parameters, you can subclass `ModelView` and use that
-subclass when adding your models to the interface::
+When inheriting from `ModelView`, values can be specified for numerous
+configuration parameters. Use these to customize the views to suit your
+particular models::
 
     from flask_admin.contrib.sqla import ModelView
 
@@ -286,6 +283,28 @@ To **enable csv export** of the model view::
     can_export = True
 
 This will add a button to the model view that exports records, truncating at :attr:`~flask_admin.model.BaseModelView.export_max_rows`.
+
+
+Grouping Views
+==============
+When adding a view, specify a value for the `category` parameter
+to group related views together in the menu::
+
+    admin.add_view(UserView(User, db.session, category="Team"))
+    admin.add_view(ModelView(Role, db.session, category="Team"))
+    admin.add_view(ModelView(Permission, db.session, category="Team"))
+
+This will create a top-level menu item named 'Team', and a drop-down containing
+links to the three views.
+
+To nest related views within these drop-downs, use the `add_sub_category` method::
+
+    admin.add_sub_category(name="Links", parent_name="Team")
+
+And to add arbitrary hyperlinks to the menu::
+
+  admin.add_link(MenuLink(name='Home Page', url='/', category='Links'))
+
 
 Adding Your Own Views
 =====================

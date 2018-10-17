@@ -18,7 +18,7 @@ from wtforms.fields import HiddenField
 from wtforms.fields.core import UnboundField
 from wtforms.validators import ValidationError, InputRequired
 
-from flask_admin.babel import gettext
+from flask_admin.babel import gettext, ngettext
 
 from flask_admin.base import BaseView, expose
 from flask_admin.form import BaseForm, FormOpts, rules
@@ -382,6 +382,12 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(BaseModelView):
                 column_sortable_list = ('name', ('user', 'user.username'))
 
+        You can also specify multiple fields to be used while sorting::
+
+            class MyModelView(BaseModelView):
+                column_sortable_list = (
+                    'name', ('user', ('user.first_name', 'user.last_name')))
+
         When using SQLAlchemy models, model attributes can be used instead
         of strings::
 
@@ -403,6 +409,12 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 column_default_sort = ('user', True)
+
+        If you want to sort by more than one column,
+        you can pass a list of tuples::
+
+            class MyModelView(BaseModelView):
+                column_default_sort = [('name', True), ('last_name', True)]
     """
 
     column_searchable_list = ObsoleteAttr('column_searchable_list',
@@ -665,7 +677,9 @@ class BaseModelView(BaseView, ActionsMixin):
                 form_ajax_refs = {
                     'user': {
                         'fields': ('first_name', 'last_name', 'email'),
-                        'page_size': 10
+                        'placeholder': 'Please select',
+                        'page_size': 10,
+                        'minimum_input_length': 0,
                     }
                 }
 
@@ -769,7 +783,7 @@ class BaseModelView(BaseView, ActionsMixin):
             :param name:
                 View name. If not provided, will use the model class name
             :param category:
-                View category
+                Optional category name, for grouping views in the menu
             :param endpoint:
                 Base endpoint. If not provided, will use the model name.
             :param url:
@@ -1092,6 +1106,12 @@ class BaseModelView(BaseView, ActionsMixin):
             `init_search` will return `False`.
         """
         return False
+
+    def search_placeholder(self):
+        """
+            Return search placeholder.
+        """
+        return 'Search'
 
     # Filter helpers
     def scaffold_filters(self, name):
@@ -1463,10 +1483,12 @@ class BaseModelView(BaseView, ActionsMixin):
             Return default sort order
         """
         if self.column_default_sort:
-            if isinstance(self.column_default_sort, tuple):
+            if isinstance(self.column_default_sort, list):
                 return self.column_default_sort
+            if isinstance(self.column_default_sort, tuple):
+                return [self.column_default_sort]
             else:
-                return self.column_default_sort, False
+                return [(self.column_default_sort, False)]
 
         return None
 
@@ -1547,7 +1569,7 @@ class BaseModelView(BaseView, ActionsMixin):
         try:
             self.on_model_change(form, model, is_created)
         except TypeError as e:
-            if re.match(r'on_model_change\(\) takes .* 3 .* arguments .* 4 .* given .*', e.message):
+            if re.match(r'on_model_change\(\) takes .* 3 .* arguments .* 4 .* given .*', str(e)):
                 msg = ('%s.on_model_change() now accepts third ' +
                        'parameter is_created. Please update your code') % self.model
                 warnings.warn(msg)
@@ -2015,6 +2037,7 @@ class BaseModelView(BaseView, ActionsMixin):
             search_supported=self._search_supported,
             clear_search_url=clear_search_url,
             search=view_args.search,
+            search_placeholder=self.search_placeholder(),
 
             # Filters
             filters=self._filters,
@@ -2189,7 +2212,11 @@ class BaseModelView(BaseView, ActionsMixin):
 
             # message is flashed from within delete_model if it fails
             if self.delete_model(model):
-                flash(gettext('Record was successfully deleted.'), 'success')
+                count = 1
+                flash(
+                    ngettext('Record was successfully deleted.',
+                             '%(count)s records were successfully deleted.',
+                             count, count=count), 'success')
                 return redirect(return_url)
         else:
             flash_errors(form, message='Failed to delete record. %(error)s')

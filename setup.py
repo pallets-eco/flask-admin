@@ -31,6 +31,12 @@ def grep(attrname):
     return strval
 
 
+extras_require = {
+    'aws': ['boto'],
+    'azure': ['azure-storage-blob']
+}
+
+
 install_requires = [
     'Flask>=0.7',
     'wtforms'
@@ -49,6 +55,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     platforms='any',
+    extras_require=extras_require,
     install_requires=install_requires,
     tests_require=[
         'nose>=1.0',

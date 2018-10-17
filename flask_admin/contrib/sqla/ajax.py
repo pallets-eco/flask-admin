@@ -56,7 +56,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         if not model:
             return None
 
-        return (getattr(model, self.pk), as_unicode(model))
+        return getattr(model, self.pk), as_unicode(model)
 
     def get_one(self, pk):
         # prevent autoflush from occuring during populate_obj

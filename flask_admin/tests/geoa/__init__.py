@@ -9,6 +9,7 @@ def setup():
     app.config['CSRF_ENABLED'] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/flask_admin_test'
     app.config['SQLALCHEMY_ECHO'] = True
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db = SQLAlchemy(app)
     admin = Admin(app)

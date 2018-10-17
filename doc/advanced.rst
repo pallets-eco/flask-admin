@@ -34,7 +34,7 @@ Enabling localization is simple:
 
 #. Initialize Flask-BabelEx by creating instance of `Babel` class::
 
-        from flask import app
+        from flask import Flask
         from flask_babelex import Babel
 
         app = Flask(__name__)
