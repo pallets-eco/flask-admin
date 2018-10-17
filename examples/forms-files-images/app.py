@@ -3,6 +3,7 @@ import os.path as op
 
 from flask import Flask, url_for
 from flask_sqlalchemy import SQLAlchemy
+from redis import Redis
 from wtforms import fields, widgets
 
 from sqlalchemy.event import listens_for
@@ -10,7 +11,7 @@ from jinja2 import Markup
 
 from flask_admin import Admin, form
 from flask_admin.form import rules
-from flask_admin.contrib import sqla
+from flask_admin.contrib import sqla, rediscli
 
 
 # Create application
@@ -199,6 +200,7 @@ admin.add_view(FileView(File, db.session))
 admin.add_view(ImageView(Image, db.session))
 admin.add_view(UserView(User, db.session))
 admin.add_view(PageView(Page, db.session))
+admin.add_view(rediscli.RedisCli(Redis()))
 
 
 def build_sample_db():

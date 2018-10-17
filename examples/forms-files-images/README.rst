@@ -1,10 +1,10 @@
 This example shows how you can::
 
-    * define your own custom forms by using form
-rendering rules
+    * define your own custom forms by using form rendering rules
     * handle generic static file uploads
     * handle image uploads
     * turn a TextArea field into a rich WYSIWYG editor using WTForms and CKEditor
+    * set up a Flask-Admin view as a Redis terminal
 
 
 To run this example:
