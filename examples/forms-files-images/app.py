@@ -15,6 +15,10 @@ from flask_admin.contrib import sqla
 # Create application
 app = Flask(__name__, static_folder='files')
 
+# set optional bootswatch theme
+# see http://bootswatch.com/3/ for available swatches
+app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
+
 # Create dummy secrey key so we can use sessions
 app.config['SECRET_KEY'] = '123456790'
 
