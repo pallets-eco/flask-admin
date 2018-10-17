@@ -2,5 +2,12 @@
 
 {% block tail %}
     {{ super() }}
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.0.1/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/11.1.1/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('.ckeditor'))
+            .catch(error => {
+                console.error( error );
+            });
+    </script>
 {% endblock %}
