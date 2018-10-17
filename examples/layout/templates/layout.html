@@ -7,15 +7,15 @@
 {% endblock %}
 
 {% block page_body %}
-<div class="container">
+<div class="container-fluid">
   <div class="row">
-    <div class="span2">
+    <div class="col-sm-3">
       <ul class="nav nav-pills nav-stacked">
         {{ layout.menu() }}
         {{ layout.menu_links() }}
       </ul>
     </div>
-    <div class="span10">
+    <div class="col-sm-9">
       <div id="content">
         {% block brand %}
           <h2 id="brand">{{ admin_view.name|capitalize }}</h2>
