@@ -3,6 +3,7 @@ import os.path as op
 
 from flask import Flask, url_for
 from flask_sqlalchemy import SQLAlchemy
+from wtforms import fields, widgets
 
 from sqlalchemy.event import listens_for
 from jinja2 import Markup
@@ -66,6 +67,15 @@ class User(db.Model):
     notes = db.Column(db.UnicodeText)
 
 
+class Page(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode(64))
+    text = db.Column(db.UnicodeText)
+
+    def __unicode__(self):
+        return self.name
+
+
 # Delete hooks for models, delete files if models are getting deleted
 @listens_for(File, 'after_delete')
 def del_file(mapper, connection, target):
@@ -94,7 +104,28 @@ def del_image(mapper, connection, target):
             pass
 
 
+# define a custom wtforms widget and field.
+# see https://wtforms.readthedocs.io/en/latest/widgets.html#custom-widgets
+class CKTextAreaWidget(widgets.TextArea):
+    def __call__(self, field, **kwargs):
+        # add WYSIWYG class to existing classes
+        existing_classes = kwargs.pop('class', '') or kwargs.pop('class_', '')
+        kwargs['class'] = '{} {}'.format(existing_classes, "ckeditor")
+        return super(CKTextAreaWidget, self).__call__(field, **kwargs)
+
+
+class CKTextAreaField(fields.TextAreaField):
+    widget = CKTextAreaWidget()
+
+
 # Administrative views
+class PageView(sqla.ModelView):
+    form_overrides = {
+        'text': CKTextAreaField
+    }
+    create_template = 'create_page.html'
+    edit_template = 'edit_page.html'
+
 class FileView(sqla.ModelView):
     # Override form field to use Flask-Admin FileUploadField
     form_overrides = {
@@ -144,15 +175,15 @@ class UserView(sqla.ModelView):
         rules.Field('city'),
         # String is resolved to form field, so there's no need to explicitly use `rules.Field`
         'country',
-        # Show macro from Flask-Admin lib.html (it is included with 'lib' prefix)
+        # Show macro that's included in the templates
         rules.Container('rule_demo.wrap', rules.Field('notes'))
     ]
 
     # Use same rule set for edit page
     form_edit_rules = form_create_rules
 
-    create_template = 'rule_create.html'
-    edit_template = 'rule_edit.html'
+    create_template = 'create_user.html'
+    edit_template = 'edit_user.html'
 
 
 # Flask views
@@ -166,7 +197,8 @@ admin = Admin(app, 'Example: Forms', template_mode='bootstrap3')
 # Add views
 admin.add_view(FileView(File, db.session))
 admin.add_view(ImageView(Image, db.session))
-admin.add_view(UserView(User, db.session, name='User'))
+admin.add_view(UserView(User, db.session))
+admin.add_view(PageView(Page, db.session))
 
 
 def build_sample_db():
@@ -241,6 +273,10 @@ def build_sample_db():
         file.name = "Example " + str(i)
         file.path = "example_" + str(i) + ".pdf"
         db.session.add(file)
+
+    sample_text = "<h2>This is a test</h2>" + \
+    "<p>Create HTML content in a text area field with the help of <i>WTForms</i> and <i>CKEditor</i>.</p>"
+    db.session.add(Page(name="Test Page", text=sample_text))
 
     db.session.commit()
     return

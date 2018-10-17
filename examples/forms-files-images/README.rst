@@ -1,4 +1,10 @@
-This example shows how you can define your own custom forms by using form rendering rules. It also demonstrates general file handling as well as the handling of image files specifically.
+This example shows how you can::
+
+    * define your own custom forms by using form
+rendering rules
+    * handle generic static file uploads
+    * handle image uploads
+    * turn a TextArea field into a rich WYSIWYG editor using WTForms and CKEditor
 
 
 To run this example:
