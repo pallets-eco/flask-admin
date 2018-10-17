@@ -14,6 +14,10 @@ from flask_admin.base import MenuLink
 # Create application
 app = Flask(__name__)
 
+# set optional bootswatch theme
+# see http://bootswatch.com/3/ for available swatches
+app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'  
+
 # Create dummy secrey key so we can use sessions
 app.config['SECRET_KEY'] = '123456790'
 
