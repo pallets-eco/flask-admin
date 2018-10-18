@@ -38,9 +38,20 @@ class User(db.Model):
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
     email = db.Column(db.String(120), unique=True)
+    pets = db.relationship('Pet', backref='owner')
 
     def __str__(self):
         return "{}, {}".format(self.last_name, self.first_name)
+
+
+class Pet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    person_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    available = db.Column(db.Boolean)
+
+    def __str__(self):
+        return self.name
 
 
 # Create M2M table
@@ -140,9 +151,11 @@ class UserAdmin(sqla.ModelView):
         'last_name',
         'first_name',
         'email',
+        'pets',
     ]
     column_default_sort = [('last_name', False), ('first_name', False)]  # sort on multiple columns
-    # each filter in the list is a filter operation (equals, not equals, etc)
+
+    # custom filter: each filter in the list is a filter operation (equals, not equals, etc)
     # filters with the same name will appear as operations under the same filter
     column_filters = [
         FilterEqual(column=User.last_name, name='Last Name'),
@@ -150,6 +163,25 @@ class UserAdmin(sqla.ModelView):
                             options=(('1', 'Yes'), ('0', 'No')))
     ]
     inline_models = [(UserInfo, inline_form_options), ]
+
+    # setup create & edit forms so that only 'available' pets can be selected
+    def create_form(self):
+        return self._use_filtered_parent(
+            super(UserAdmin, self).create_form()
+        )
+
+    def edit_form(self, obj):
+        return self._use_filtered_parent(
+            super(UserAdmin, self).edit_form(obj)
+        )
+
+    def _use_filtered_parent(self, form):
+        form.pets.query_factory = self._get_parent_list
+        return form
+
+    def _get_parent_list(self):
+        # only show available pets in the form
+        return Pet.query.filter_by(available=True).all()
 
 
 
@@ -219,6 +251,7 @@ admin = admin.Admin(app, name='Example: SQLAlchemy', template_mode='bootstrap3')
 admin.add_view(UserAdmin(User, db.session))
 admin.add_view(sqla.ModelView(Tag, db.session))
 admin.add_view(PostAdmin(db.session))
+admin.add_view(sqla.ModelView(Pet, db.session, category="Other"))
 admin.add_view(sqla.ModelView(UserInfo, db.session, category="Other"))
 admin.add_view(TreeView(Tree, db.session, category="Other"))
 admin.add_view(ScreenView(Screen, db.session, category="Other"))
@@ -332,6 +365,12 @@ def build_sample_db():
             leaf.name = "Leaf " + str(j+1)
             leaf.parent = branch
             db.session.add(leaf)
+
+    db.session.add(Pet(name='Dog', available=True))
+    db.session.add(Pet(name='Fish', available=True))
+    db.session.add(Pet(name='Cat', available=True))
+    db.session.add(Pet(name='Parrot', available=True))
+    db.session.add(Pet(name='Ocelot', available=False))
 
     db.session.add(Screen(width=500, height=2000))
     db.session.add(Screen(width=550, height=1900))
