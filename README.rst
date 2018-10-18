@@ -38,14 +38,28 @@ Flask-Admin is an active project, well-tested and production ready.
 
 Examples
 --------
-Several usage examples are included in the */examples* folder. Please feel free to add your own examples, or improve
-on some of the existing ones, and then submit them via GitHub as a *pull-request*.
+Several usage examples are included in the */examples* folder. Please add your own, or improve
+on the existing examples, and submit a *pull-request*.
 
-You can see some of these examples in action at `http://examples.flask-admin.org <http://examples.flask-admin.org/>`_.
-To run the examples on your local environment, one at a time, do something like::
+To run the examples in your local environment::
 
+1. Clone the repository::
+
+    git clone https://github.com/flask-admin/flask-admin.git
     cd flask-admin
-    python examples/simple/app.py
+
+2. Create and activate a virtual environment::
+
+    virtualenv env -p python3
+    source env/bin/activate
+
+3. Install requirements::
+
+    pip install -r 'examples/sqla/requirements.txt'
+
+4. Run the application::
+
+    python examples/sqla/app.py
 
 Documentation
 -------------
