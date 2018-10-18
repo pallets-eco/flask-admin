@@ -6,9 +6,11 @@ from flask_sqlalchemy import SQLAlchemy
 from wtforms import validators
 
 import flask_admin as admin
+from flask_admin.base import MenuLink
 from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import filters
-from flask_admin.base import MenuLink
+from flask_admin.contrib.sqla.form import InlineModelConverter
+from flask_admin.contrib.sqla.fields import InlineModelFormList
 
 
 # Create application
@@ -99,6 +101,13 @@ def index():
 
 
 # Customized User model admin
+inline_form_options = {
+    'form_label': "Info item",
+    'form_columns': ['id', 'key', 'value'],
+    'form_args': None,
+    'form_extra_fields': None,
+}
+
 class UserAdmin(sqla.ModelView):
     column_display_pk = True
     column_list = [
@@ -108,7 +117,7 @@ class UserAdmin(sqla.ModelView):
         'email',
     ]
     column_default_sort = [('last_name', False), ('first_name', False)]  # sort on multiple columns
-    inline_models = (UserInfo,)
+    inline_models = [(UserInfo, inline_form_options), ]
 
 
 # Customized Post model admin
@@ -169,6 +178,7 @@ admin = admin.Admin(app, name='Example: SQLAlchemy', template_mode='bootstrap3')
 admin.add_view(UserAdmin(User, db.session))
 admin.add_view(sqla.ModelView(Tag, db.session))
 admin.add_view(PostAdmin(db.session))
+admin.add_view(sqla.ModelView(UserInfo, db.session, category="Other"))
 admin.add_view(TreeView(Tree, db.session, category="Other"))
 admin.add_sub_category(name="Links", parent_name="Other")
 admin.add_link(MenuLink(name='Back Home', url='/', category='Links'))
