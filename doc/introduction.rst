@@ -463,7 +463,7 @@ list_row_actions        Row action cell with edit/remove/etc buttons
 empty_list_message      Message that will be displayed if there are no models found
 ======================= ============================================
 
-Have a look at the `layout` example at https://github.com/flask-admin/flask-admin/tree/master/examples/layout
+Have a look at the `layout` example at https://github.com/flask-admin/flask-admin/tree/master/examples/custom-layout
 to see how you can take full stylistic control over the admin interface.
 
 Environment Variables
