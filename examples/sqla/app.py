@@ -16,7 +16,7 @@ app = Flask(__name__)
 
 # set optional bootswatch theme
 # see http://bootswatch.com/3/ for available swatches
-app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'  
+app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
 # Create dummy secrey key so we can use sessions
 app.config['SECRET_KEY'] = '123456790'
@@ -100,6 +100,7 @@ def index():
 
 # Customized User model admin
 class UserAdmin(sqla.ModelView):
+    column_display_pk = True
     column_list = [
         'id',
         'last_name',
