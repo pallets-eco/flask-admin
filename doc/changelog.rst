@@ -11,6 +11,7 @@ next release
 * SQLAlchemy fix that lets you use inline model forms where models have multiple primary keys
 * Peewee: support composite keys
 * MongoEngine: when searching/filtering the input is now regarded as case-insensitive by default
+* FileAdmin: handle special characters in filename
 
 1.5.2
 -----
