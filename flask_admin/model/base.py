@@ -1739,7 +1739,12 @@ class BaseModelView(BaseView, ActionsMixin):
                         sort=request.args.get('sort', None, type=int),
                         sort_desc=request.args.get('desc', None, type=int),
                         search=request.args.get('search', None),
-                        filters=self._get_list_filter_args())
+                        filters=self._get_list_filter_args(),
+                        extra_args=dict([
+                            (k, v) for k, v in request.args.items()
+                            if k not in ('page', 'page_size', 'sort', 'desc', 'search', ) and
+                            not k.startswith('flt')
+                        ]))
 
     def _get_filters(self, filters):
         """
