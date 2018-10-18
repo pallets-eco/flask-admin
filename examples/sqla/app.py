@@ -12,6 +12,7 @@ from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import filters
 from flask_admin.contrib.sqla.form import InlineModelConverter
 from flask_admin.contrib.sqla.fields import InlineModelFormList
+from flask_admin.contrib.sqla.filters import BaseSQLAFilter, FilterEqual
 
 
 # Create application
@@ -112,6 +113,18 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
+# Custom filter class
+class FilterLastNameBrown(BaseSQLAFilter):
+    def apply(self, query, value, alias=None):
+        if value == '1':
+            return query.filter(self.column == "Brown")
+        else:
+            return query.filter(self.column != "Brown")
+
+    def operation(self):
+        return 'is Brown'
+
+
 # Customized User model admin
 inline_form_options = {
     'form_label': "Info item",
@@ -129,7 +142,15 @@ class UserAdmin(sqla.ModelView):
         'email',
     ]
     column_default_sort = [('last_name', False), ('first_name', False)]  # sort on multiple columns
+    # each filter in the list is a filter operation (equals, not equals, etc)
+    # filters with the same name will appear as operations under the same filter
+    column_filters = [
+        FilterEqual(column=User.last_name, name='Last Name'),
+        FilterLastNameBrown(column=User.last_name, name='Last Name',
+                            options=(('1', 'Yes'), ('0', 'No')))
+    ]
     inline_models = [(UserInfo, inline_form_options), ]
+
 
 
 # Customized Post model admin
