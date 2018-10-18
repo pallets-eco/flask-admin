@@ -2,6 +2,7 @@ import os
 import os.path as op
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from wtforms import validators
 
@@ -94,6 +95,17 @@ class Tree(db.Model):
         return "{}".format(self.name)
 
 
+class Screen(db.Model):
+    __tablename__ = 'screen'
+    id = db.Column(db.Integer, primary_key=True)
+    width = db.Column(db.Integer, nullable=False)
+    height = db.Column(db.Integer, nullable=False)
+
+    @hybrid_property
+    def number_of_pixels(self):
+        return self.width * self.height
+
+
 # Flask views
 @app.route('/')
 def index():
@@ -171,6 +183,14 @@ class TreeView(sqla.ModelView):
     form_excluded_columns = ['children', ]
 
 
+class ScreenView(sqla.ModelView):
+    column_list = ['id', 'width', 'height', 'number_of_pixels']  # not that 'number_of_pixels' is a hybrid property, not a field
+    column_sortable_list = ['id', 'width', 'height', 'number_of_pixels']
+
+    # Flask-admin can automatically detect the relevant filters for hybrid properties.
+    column_filters = ('number_of_pixels', )
+
+
 # Create admin
 admin = admin.Admin(app, name='Example: SQLAlchemy', template_mode='bootstrap3')
 
@@ -180,6 +200,7 @@ admin.add_view(sqla.ModelView(Tag, db.session))
 admin.add_view(PostAdmin(db.session))
 admin.add_view(sqla.ModelView(UserInfo, db.session, category="Other"))
 admin.add_view(TreeView(Tree, db.session, category="Other"))
+admin.add_view(ScreenView(Screen, db.session, category="Other"))
 admin.add_sub_category(name="Links", parent_name="Other")
 admin.add_link(MenuLink(name='Back Home', url='/', category='Links'))
 admin.add_link(MenuLink(name='Google', url='http://www.google.com/', category='Links'))
@@ -215,6 +236,7 @@ def build_sample_db():
         user.first_name = first_names[i]
         user.last_name = last_names[i]
         user.email = first_names[i].lower() + "@example.com"
+        user.info.append(UserInfo(key="foo", value="bar"))
         user_list.append(user)
         db.session.add(user)
 
@@ -289,6 +311,9 @@ def build_sample_db():
             leaf.name = "Leaf " + str(j+1)
             leaf.parent = branch
             db.session.add(leaf)
+
+    db.session.add(Screen(width=500, height=2000))
+    db.session.add(Screen(width=550, height=1900))
 
     db.session.commit()
     return
