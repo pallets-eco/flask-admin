@@ -12,7 +12,7 @@ from werkzeug import secure_filename
 from wtforms import fields, validators
 
 from flask_admin import form, helpers
-from flask_admin._compat import urljoin, as_unicode
+from flask_admin._compat import urljoin, as_unicode, quote
 from flask_admin.base import BaseView, expose
 from flask_admin.actions import action, ActionsMixin
 from flask_admin.babel import gettext, lazy_gettext
@@ -944,7 +944,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         base_url = self.get_base_url()
         if base_url:
             base_url = urljoin(self.get_url('.index_view'), base_url)
-            return redirect(urljoin(base_url, path))
+            return redirect(urljoin(quote(base_url), quote(path)))
 
         return self.storage.send_file(directory)
 
