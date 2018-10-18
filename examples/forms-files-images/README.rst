@@ -21,11 +21,11 @@ To run this example:
 
 3. Install requirements::
 
-    pip install -r 'examples/forms/requirements.txt'
+    pip install -r 'examples/forms-files-images/requirements.txt'
 
 4. Run the application::
 
-    python examples/forms/app.py
+    python examples/forms-files-images/app.py
 
 The first time you run this example, a sample sqlite database gets populated automatically. To suppress this behaviour,
 comment the following lines in app.py:::

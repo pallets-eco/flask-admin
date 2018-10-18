@@ -14,10 +14,8 @@ To run this example:
 
 3. Install requirements::
 
-    pip install -r 'examples/sqla-inline/requirements.txt'
+    pip install -r 'examples/sqla-custom-inline-forms/requirements.txt'
 
 4. Run the application::
 
-    python examples/sqla-inline/app.py
-
-
+    python examples/sqla-custom-inline-forms/app.py

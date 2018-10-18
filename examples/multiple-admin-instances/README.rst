@@ -14,9 +14,8 @@ To run this example:
 
 3. Install requirements::
 
-    pip install -r 'examples/multi/requirements.txt'
+    pip install -r 'examples/multiple-admin-instances/requirements.txt'
 
 4. Run the application::
 
-    python examples/multi/app.py
-
+    python examples/multiple-admin-instances/app.py
