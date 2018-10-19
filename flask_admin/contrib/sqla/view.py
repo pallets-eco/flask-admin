@@ -509,8 +509,6 @@ class ModelView(BaseModelView):
                     # column is in same table, use only model attribute name
                     if getattr(column, 'key', None) is not None:
                         column_name = column.key
-                    else:
-                        column_name = text_type(c)
 
                 # column_name must match column_name used in `get_list_columns`
                 result[column_name] = column
