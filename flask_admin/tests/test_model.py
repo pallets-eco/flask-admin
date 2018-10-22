@@ -123,7 +123,6 @@ class MockModelView(base.BaseModelView):
 
 def setup():
     app = Flask(__name__)
-    app.config['CSRF_ENABLED'] = False
     app.secret_key = '1'
     admin = Admin(app)
 
