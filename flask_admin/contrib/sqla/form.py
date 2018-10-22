@@ -244,7 +244,7 @@ class AdminModelConverter(ModelConverterBase):
                 return override(**kwargs)
 
             # Check choices
-            form_choices = getattr(self.view, 'form_choices', None)
+            form_choices = getattr(self.view, 'form_choices', getattr(self.view, 'choices', None))
 
             if mapper.class_ == self.view.model and form_choices:
                 choices = form_choices.get(prop.key)
@@ -271,12 +271,16 @@ class AdminModelConverter(ModelConverterBase):
         if hasattr(column.type, 'length') and isinstance(column.type.length, int) and column.type.length:
             field_args['validators'].append(validators.Length(max=column.type.length))
 
-    @converts('String')  # includes VARCHAR, CHAR, and Unicode
+    @converts('String', 'ChoiceType')  # includes VARCHAR, CHAR, and Unicode
     def conv_String(self, column, field_args, **extra):
+        available_choices = []
         if hasattr(column.type, 'enums'):
-            accepted_values = list(column.type.enums)
-
-            field_args['choices'] = [(f, f) for f in column.type.enums]
+            available_choices = [(f, f) for f in column.type.enums]
+        elif hasattr(column.type, 'choices'):
+            available_choices = column.type.choices
+        if available_choices:
+            field_args['choices'] = available_choices
+            accepted_values = [key for key, val in available_choices]
 
             if column.nullable:
                 field_args['allow_blank'] = column.nullable
@@ -321,7 +325,7 @@ class AdminModelConverter(ModelConverterBase):
     def convert_email(self, field_args, **extra):
         field_args['validators'].append(validators.Email())
         return fields.StringField(**field_args)
-        
+
     @converts('Integer')  # includes BigInteger and SmallInteger
     def handle_integer_types(self, column, field_args, **extra):
         unsigned = getattr(column.type, 'unsigned', False)

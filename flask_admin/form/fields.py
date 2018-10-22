@@ -117,13 +117,6 @@ class Select2Field(fields.SelectField):
         self.allow_blank = allow_blank
         self.blank_text = blank_text or ' '
 
-        try:
-            from sqlalchemy_utils.types.choice import Choice
-        except ImportError:
-            class Choice(object):
-                pass
-        self.choice_cls = Choice
-
     def iter_choices(self):
         if self.allow_blank:
             yield (u'__None', self.blank_text, self.data is None)
@@ -136,10 +129,7 @@ class Select2Field(fields.SelectField):
             self.data = None
         else:
             try:
-                if isinstance(value, self.choice_cls):
-                    self.data = self.coerce(value.code)
-                else:
-                    self.data = self.coerce(value)
+                self.data = self.coerce(value)
             except (ValueError, TypeError):
                 self.data = None
 

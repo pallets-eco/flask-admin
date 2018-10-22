@@ -10,6 +10,8 @@ from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import filters
 from flask_admin.base import MenuLink
 
+from sqlalchemy_utils.types import ChoiceType, EmailType
+
 
 # Create application
 app = Flask(__name__)
@@ -26,10 +28,15 @@ db = SQLAlchemy(app)
 
 # Create models
 class User(db.Model):
+    AVAILABLE_TYPES = [
+        (u'admin', u'Admin'),
+        (u'regular-user', u'Regular user')
+    ]
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
-    email = db.Column(db.String(120), unique=True)
+    type = db.Column(ChoiceType(AVAILABLE_TYPES), nullable=True)
+    email = db.Column(EmailType, unique=True, nullable=False)
 
     def __str__(self):
         return "{}, {}".format(self.last_name, self.first_name)
@@ -101,6 +108,7 @@ class UserAdmin(sqla.ModelView):
         'last_name',
         'first_name',
         'email',
+        'type',
     ]
     column_default_sort = [('last_name', False), ('first_name', False)]  # sort on multiple columns
     inline_models = (UserInfo,)
