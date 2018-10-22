@@ -317,6 +317,11 @@ class AdminModelConverter(ModelConverterBase):
     def convert_time(self, field_args, **extra):
         return form.TimeField(**field_args)
 
+    @converts('EmailType')
+    def convert_email(self, field_args, **extra):
+        field_args['validators'].append(validators.Email())
+        return fields.StringField(**field_args)
+        
     @converts('Integer')  # includes BigInteger and SmallInteger
     def handle_integer_types(self, column, field_args, **extra):
         unsigned = getattr(column.type, 'unsigned', False)

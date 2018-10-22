@@ -9,6 +9,7 @@ from flask_admin.contrib.sqla import ModelView, filters, tools
 from flask_babelex import Babel
 
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy_utils.types.email import EmailType
 
 from . import setup
 
@@ -30,7 +31,7 @@ def create_models(db):
     class Model1(db.Model):
         def __init__(self, test1=None, test2=None, test3=None, test4=None,
                      bool_field=False, date_field=None, time_field=None,
-                     datetime_field=None, enum_field=None):
+                     datetime_field=None, enum_field=None, email_field=None):
             self.test1 = test1
             self.test2 = test2
             self.test3 = test3
@@ -48,10 +49,10 @@ def create_models(db):
         test4 = db.Column(db.UnicodeText)
         bool_field = db.Column(db.Boolean)
         enum_field = db.Column(db.Enum('model1_v1', 'model1_v2'), nullable=True)
-
         date_field = db.Column(db.Date)
         time_field = db.Column(db.Time)
         datetime_field = db.Column(db.DateTime)
+        email_field = db.Column(EmailType)
 
         def __unicode__(self):
             return self.test1
@@ -153,6 +154,7 @@ def test_model():
     eq_(view._create_form_class.test2.field_class, fields.StringField)
     eq_(view._create_form_class.test3.field_class, fields.TextAreaField)
     eq_(view._create_form_class.test4.field_class, fields.TextAreaField)
+    eq_(view._create_form_class.email_field.field_class, fields.StringField)
 
     # Make some test clients
     client = app.test_client()
@@ -166,7 +168,8 @@ def test_model():
     rv = client.post('/admin/model1/new/',
                      data=dict(test1='test1large',
                                test2='test2',
-                               time_field=time(0, 0, 0)))
+                               time_field=time(0, 0, 0),
+                               email_field="Test@TEST.com"))
     eq_(rv.status_code, 302)
 
     model = db.session.query(Model1).first()
@@ -174,6 +177,7 @@ def test_model():
     eq_(model.test2, u'test2')
     eq_(model.test3, u'')
     eq_(model.test4, u'')
+    eq_(model.email_field, u'test@test.com')
 
     rv = client.get('/admin/model1/')
     eq_(rv.status_code, 200)
@@ -187,7 +191,9 @@ def test_model():
     ok_(u'00:00:00' in rv.data.decode('utf-8'))
 
     rv = client.post(url,
-                     data=dict(test1='test1small', test2='test2large'))
+                     data=dict(test1='test1small',
+                               test2='test2large',
+                               email_field='Test2@TEST.com'))
     eq_(rv.status_code, 302)
 
     model = db.session.query(Model1).first()
@@ -195,6 +201,7 @@ def test_model():
     eq_(model.test2, 'test2large')
     eq_(model.test3, '')
     eq_(model.test4, '')
+    eq_(model.email_field, u'test2@test.com')
 
     url = '/admin/model1/delete/?id=%s' % model.id
     rv = client.post(url)
@@ -285,7 +292,7 @@ def test_exclude_columns():
 
     eq_(
         view._list_columns,
-        [('test1', 'Test1'), ('test3', 'Test3'), ('bool_field', 'Bool Field')]
+        [('test1', 'Test1'), ('test3', 'Test3'), ('bool_field', 'Bool Field'), ('email_field', 'Email Field')]
     )
 
     client = app.test_client()
