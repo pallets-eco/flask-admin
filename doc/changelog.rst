@@ -5,10 +5,13 @@ next release
 -----
 
 * Support nested categories in the navbar menu
-* SQLA: Sort on multiple columns with `column_default_sort` and related models in `column_sortable_list`
+* SQLAlchemy
+  * sort on multiple columns with `column_default_sort`
+  * sort on related models in `column_sortable_list`
+  * fix: inline model forms can now also be used for models with multiple primary keys
+  * support for using mapped `column_property`
 * Upgrade Leaflet and Leaflet.draw plugins, used for geoalchemy integration
 * Specify `minimum_input_length` for ajax widget
-* SQLAlchemy fix that lets you use inline model forms where models have multiple primary keys
 * Peewee: support composite keys
 * MongoEngine: when searching/filtering the input is now regarded as case-insensitive by default
 * FileAdmin: handle special characters in filename + fix a bug with listing directories on Windows
