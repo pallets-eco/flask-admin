@@ -1,3 +1,0 @@
-Flask
-Flask-Admin
-redis

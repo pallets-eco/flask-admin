@@ -1,4 +1,4 @@
-SQLAlchemy model backend integration examples.
+This example shows how you can customize the look & feel of the admin interface. This is done by overriding some of the built-in templates.
 
 To run this example:
 
@@ -14,11 +14,11 @@ To run this example:
 
 3. Install requirements::
 
-    pip install -r 'examples/sqla/requirements.txt'
+    pip install -r 'examples/custom-layout/requirements.txt'
 
 4. Run the application::
 
-    python examples/sqla/app.py
+    python examples/custom-layout/app.py
 
 The first time you run this example, a sample sqlite database gets populated automatically. To suppress this behaviour,
 comment the following lines in app.py:::

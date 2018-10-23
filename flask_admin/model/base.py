@@ -18,7 +18,7 @@ from wtforms.fields import HiddenField
 from wtforms.fields.core import UnboundField
 from wtforms.validators import ValidationError, InputRequired
 
-from flask_admin.babel import gettext
+from flask_admin.babel import gettext, ngettext
 
 from flask_admin.base import BaseView, expose
 from flask_admin.form import BaseForm, FormOpts, rules
@@ -783,7 +783,7 @@ class BaseModelView(BaseView, ActionsMixin):
             :param name:
                 View name. If not provided, will use the model class name
             :param category:
-                View category
+                Optional category name, for grouping views in the menu
             :param endpoint:
                 Base endpoint. If not provided, will use the model name.
             :param url:
@@ -1739,7 +1739,12 @@ class BaseModelView(BaseView, ActionsMixin):
                         sort=request.args.get('sort', None, type=int),
                         sort_desc=request.args.get('desc', None, type=int),
                         search=request.args.get('search', None),
-                        filters=self._get_list_filter_args())
+                        filters=self._get_list_filter_args(),
+                        extra_args=dict([
+                            (k, v) for k, v in request.args.items()
+                            if k not in ('page', 'page_size', 'sort', 'desc', 'search', ) and
+                            not k.startswith('flt')
+                        ]))
 
     def _get_filters(self, filters):
         """
@@ -2204,7 +2209,11 @@ class BaseModelView(BaseView, ActionsMixin):
 
             # message is flashed from within delete_model if it fails
             if self.delete_model(model):
-                flash(gettext('Record was successfully deleted.'), 'success')
+                count = 1
+                flash(
+                    ngettext('Record was successfully deleted.',
+                             '%(count)s records were successfully deleted.',
+                             count, count=count), 'success')
                 return redirect(return_url)
         else:
             flash_errors(form, message='Failed to delete record. %(error)s')

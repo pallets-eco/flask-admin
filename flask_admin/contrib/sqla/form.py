@@ -3,6 +3,7 @@ from enum import Enum
 
 from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
+from sqlalchemy.orm import ColumnProperty
 
 from flask_admin import form
 from flask_admin.model.form import (converts, ModelConverterBase,
@@ -152,7 +153,7 @@ class AdminModelConverter(ModelConverterBase):
             return self._convert_relation(name, prop, property_is_association_proxy, kwargs)
         elif hasattr(prop, 'columns'):  # Ignore pk/fk
             # Check if more than one column mapped to the property
-            if len(prop.columns) > 1:
+            if len(prop.columns) > 1 and not isinstance(prop, ColumnProperty):
                 columns = filter_foreign_columns(model.__table__, prop.columns)
 
                 if len(columns) == 0:
