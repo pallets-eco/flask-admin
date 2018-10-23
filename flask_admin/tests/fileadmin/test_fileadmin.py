@@ -1,3 +1,4 @@
+import os
 import os.path as op
 import unittest
 
@@ -208,3 +209,37 @@ class LocalFileAdminTests(Base.FileAdminTests):
 
     def fileadmin_args(self):
         return (self._test_files_root, '/files'), {}
+
+    def test_fileadmin_sort_bogus_url_param(self):
+        fileadmin_class = self.fileadmin_class()
+        fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+        app, admin = setup()
+
+        class MyFileAdmin(fileadmin_class):
+            editable_extensions = ('txt',)
+
+        view_kwargs = dict(fileadmin_kwargs)
+        view_kwargs.setdefault('name', 'Files')
+        view = MyFileAdmin(*fileadmin_args, **view_kwargs)
+
+        admin.add_view(view)
+
+        client = app.test_client()
+        with open(op.join(self._test_files_root, 'dummy2.txt'), 'w') as fp:
+            # make sure that 'files/dummy2.txt' exists, is newest and has bigger size
+            fp.write('test')
+
+            rv = client.get('/admin/myfileadmin/?sort=bogus')
+            eq_(rv.status_code, 200)
+            ok_(rv.data.decode('utf-8').find('path=dummy2.txt') <
+                rv.data.decode('utf-8').find('path=dummy.txt'))
+
+            rv = client.get('/admin/myfileadmin/?sort=name')
+            eq_(rv.status_code, 200)
+            ok_(rv.data.decode('utf-8').find('path=dummy.txt') <
+                rv.data.decode('utf-8').find('path=dummy2.txt'))
+        try:
+            # clean up
+            os.remove(op.join(self._test_files_root, 'dummy2.txt'))
+        except (IOError, OSError):
+            pass
