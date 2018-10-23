@@ -43,6 +43,9 @@ class User(db.Model):
     def __str__(self):
         return "{}, {}".format(self.last_name, self.first_name)
 
+    def __repr__(self):
+        return "{}: {}".format(self.id, self.__str__())
+
 
 class Pet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -187,9 +190,10 @@ class UserAdmin(sqla.ModelView):
 
 # Customized Post model admin
 class PostAdmin(sqla.ModelView):
-    column_exclude_list = ['text']
+    column_list = ['id', 'user', 'title', 'date', 'tags']
     column_default_sort = ('date', True)
     column_sortable_list = [
+        'id',
         'title',
         'date',
         ('user', ('user.last_name', 'user.first_name')),  # sort on multiple columns
@@ -208,6 +212,9 @@ class PostAdmin(sqla.ModelView):
         'tags',
         filters.FilterLike(Post.title, 'Fixed Title', options=(('test1', 'Test 1'), ('test2', 'Test 2'))),
     ]
+    can_export = True
+    export_max_rows = 1000
+    export_types = ['csv', 'xls']
 
     # Pass arguments to WTForms. In this case, change label for text field to
     # be 'Big Text' and add required() validator.
