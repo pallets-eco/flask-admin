@@ -148,6 +148,7 @@ inline_form_options = {
 }
 
 class UserAdmin(sqla.ModelView):
+    action_disallowed_list = ['delete', ]
     column_display_pk = True
     column_list = [
         'id',
