@@ -15,6 +15,12 @@ from flask_admin.contrib.sqla.fields import InlineModelFormList
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter, FilterEqual
 
 from sqlalchemy_utils.types import ChoiceType, EmailType
+import enum
+
+
+class EnumChoices(enum.Enum):
+    first = 1
+    second = 2
 
 
 # Create application
@@ -46,6 +52,7 @@ class User(db.Model):
     type = db.Column(ChoiceType(AVAILABLE_TYPES), nullable=True)
     email = db.Column(EmailType, unique=True, nullable=False)
     pets = db.relationship('Pet', backref='owner')
+    enum_choice_field = db.Column(ChoiceType(EnumChoices, impl=db.Integer()), nullable=True)
 
     def __str__(self):
         return "{}, {}".format(self.last_name, self.first_name)

@@ -1,9 +1,10 @@
 import warnings
-from enum import Enum
+from enum import Enum, EnumMeta
 
 from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
 from sqlalchemy.orm import ColumnProperty
+from sqlalchemy_utils import Choice
 
 from flask_admin import form
 from flask_admin.model.form import (converts, ModelConverterBase,
@@ -277,7 +278,10 @@ class AdminModelConverter(ModelConverterBase):
         if hasattr(column.type, 'enums'):
             available_choices = [(f, f) for f in column.type.enums]
         elif hasattr(column.type, 'choices'):
-            available_choices = column.type.choices
+            if isinstance(column.type.choices, EnumMeta):
+                available_choices = [(str(f.value), f.name) for f in column.type.choices]
+            else:
+                available_choices = column.type.choices
         if available_choices:
             field_args['choices'] = available_choices
             accepted_values = [key for key, val in available_choices]
@@ -287,7 +291,7 @@ class AdminModelConverter(ModelConverterBase):
                 accepted_values.append(None)
 
             field_args['validators'].append(validators.AnyOf(accepted_values))
-            field_args['coerce'] = lambda v: v.name if isinstance(v, Enum) else text_type(v)
+            field_args['coerce'] = lambda v: v.name if isinstance(v, Enum) else (v.code if isinstance(v, Choice) else text_type(v))
 
             return form.Select2Field(**field_args)
 
