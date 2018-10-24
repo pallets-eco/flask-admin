@@ -1,5 +1,6 @@
 import warnings
 from enum import Enum, EnumMeta
+import inspect
 
 from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
@@ -244,9 +245,8 @@ class AdminModelConverter(ModelConverterBase):
             if override:
                 return override(**kwargs)
 
-            # Check choices
-            form_choices = getattr(self.view, 'form_choices', getattr(self.view, 'choices', None))
-
+            # Check if a list of 'form_choices' are specified
+            form_choices = getattr(self.view, 'form_choices', None)
             if mapper.class_ == self.view.model and form_choices:
                 choices = form_choices.get(prop.key)
                 if choices:
@@ -264,7 +264,6 @@ class AdminModelConverter(ModelConverterBase):
 
             return converter(model=model, mapper=mapper, prop=prop,
                              column=column, field_args=kwargs)
-
         return None
 
     @classmethod
@@ -272,29 +271,8 @@ class AdminModelConverter(ModelConverterBase):
         if hasattr(column.type, 'length') and isinstance(column.type.length, int) and column.type.length:
             field_args['validators'].append(validators.Length(max=column.type.length))
 
-    @converts('String', 'ChoiceType')  # includes VARCHAR, CHAR, and Unicode
+    @converts('String')  # includes VARCHAR, CHAR, and Unicode
     def conv_String(self, column, field_args, **extra):
-        available_choices = []
-        if hasattr(column.type, 'enums'):
-            available_choices = [(f, f) for f in column.type.enums]
-        elif hasattr(column.type, 'choices'):
-            if isinstance(column.type.choices, EnumMeta):
-                available_choices = [(str(f.value), f.name) for f in column.type.choices]
-            else:
-                available_choices = column.type.choices
-        if available_choices:
-            field_args['choices'] = available_choices
-            accepted_values = [key for key, val in available_choices]
-
-            if column.nullable:
-                field_args['allow_blank'] = column.nullable
-                accepted_values.append(None)
-
-            field_args['validators'].append(validators.AnyOf(accepted_values))
-            field_args['coerce'] = lambda v: v.name if isinstance(v, Enum) else (v.code if isinstance(v, Choice) else text_type(v))
-
-            return form.Select2Field(**field_args)
-
         if column.nullable:
             filters = field_args.get('filters', [])
             filters.append(lambda x: x or None)
@@ -302,6 +280,45 @@ class AdminModelConverter(ModelConverterBase):
 
         self._string_common(column=column, field_args=field_args, **extra)
         return fields.StringField(**field_args)
+
+    @converts('sqlalchemy.sql.sqltypes.Enum')
+    def convert_enum(self, column, field_args, **extra):
+        available_choices = [(f, f) for f in column.type.enums]
+        accepted_values = [key for key, val in available_choices]
+
+        if column.nullable:
+            field_args['allow_blank'] = column.nullable
+            accepted_values.append(None)
+            filters = field_args.get('filters', [])
+            filters.append(lambda x: x or None)
+            field_args['filters'] = filters
+
+        field_args['choices'] = available_choices
+        field_args['validators'].append(validators.AnyOf(accepted_values))
+        field_args['coerce'] = lambda v: v.name if isinstance(v, Enum) else text_type(v)
+        return form.Select2Field(**field_args)
+
+    @converts('sqlalchemy_utils.types.choice.ChoiceType')
+    def convert_choice_type(self, column, field_args, **extra):
+        available_choices = []
+        # choices can either be specified as an enum, or as a list of tuples
+        if isinstance(column.type.choices, EnumMeta):
+            available_choices = [(f.value, f.name) for f in column.type.choices]
+        else:
+            available_choices = column.type.choices
+        accepted_values = [key for key, val in available_choices]
+
+        if column.nullable:
+            field_args['allow_blank'] = column.nullable
+            accepted_values.append(None)
+            filters = field_args.get('filters', [])
+            filters.append(lambda x: x or None)
+            field_args['filters'] = filters
+
+        field_args['choices'] = available_choices
+        field_args['validators'].append(validators.AnyOf(accepted_values))
+        field_args['coerce'] = choice_type_coerce_factory(column.type)
+        return form.Select2Field(**field_args)
 
     @converts('Text', 'LargeBinary', 'Binary', 'CIText')  # includes UnicodeText
     def conv_Text(self, field_args, **extra):
@@ -375,6 +392,29 @@ class AdminModelConverter(ModelConverterBase):
     def convert_JSON(self, field_args, **extra):
         return form.JSONField(**field_args)
 
+def choice_type_coerce_factory(type_):
+    """
+    Return a function needed to coerce a ChoiceTyped column. This function is
+    then passed to generated SelectField as the default coerce function.
+    :param type_: ChoiceType object
+    """
+    choices = type_.choices
+    if (
+        # Enum is not None and
+        isinstance(choices, type)
+        and issubclass(choices, Enum)
+    ):
+        key, choice_cls = 'value', choices
+    else:
+        key, choice_cls = 'code', Choice
+
+    def choice_coerce(value):
+        if value is None:
+            return None
+        if isinstance(value, choice_cls):
+            return getattr(value, key)
+        return type_.python_type(value)
+    return choice_coerce
 
 def _resolve_prop(prop):
     """
