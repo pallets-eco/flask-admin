@@ -10,7 +10,7 @@ from flask_admin.contrib.sqla import ModelView, filters, tools
 from flask_babelex import Babel
 
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy_utils import EmailType
+from sqlalchemy_utils import EmailType, ChoiceType
 
 from . import setup
 
@@ -53,6 +53,10 @@ def create_models(db):
             self.choice_field = choice_field
             self.enum_field = enum_field
 
+        class EnumChoices(enum.Enum):
+            first = 1
+            second = 2
+
         id = db.Column(db.Integer, primary_key=True)
         test1 = db.Column(db.String(20))
         test2 = db.Column(db.Unicode(20))
@@ -65,6 +69,11 @@ def create_models(db):
         email_field = db.Column(EmailType)
         enum_field = db.Column(db.Enum('model1_v1', 'model1_v2'), nullable=True)
         choice_field = db.Column(db.String, nullable=True)
+        sqla_utils_choice_field = db.Column(ChoiceType([
+            ('choice-1', u'First choice'),
+            ('choice-2', u'Second choice')
+        ]))
+        sqla_utils_enum_field = db.Column(ChoiceType(EnumChoices, impl=db.Integer()))
 
         def __unicode__(self):
             return self.test1
@@ -170,6 +179,8 @@ def test_model():
     eq_(view._create_form_class.email_field.field_class, fields.StringField)
     eq_(view._create_form_class.choice_field.field_class, Select2Field)
     eq_(view._create_form_class.enum_field.field_class, Select2Field)
+    eq_(view._create_form_class.sqla_utils_choice_field.field_class, Select2Field)
+    eq_(view._create_form_class.sqla_utils_enum_field.field_class, Select2Field)
 
     # Make some test clients
     client = app.test_client()
@@ -189,7 +200,9 @@ def test_model():
                                time_field=time(0, 0, 0),
                                email_field="Test@TEST.com",
                                choice_field="choice-1",
-                               enum_field='model1_v1'))
+                               enum_field='model1_v1',
+                               sqla_utils_choice_field="choice-1",
+                               sqla_utils_enum_field=1))
     eq_(rv.status_code, 302)
 
     # check that the new record was persisted
@@ -201,6 +214,8 @@ def test_model():
     eq_(model.email_field, u'test@test.com')
     eq_(model.choice_field, u'choice-1')
     eq_(model.enum_field, u'model1_v1')
+    eq_(model.sqla_utils_choice_field, u'choice-1')
+    eq_(model.sqla_utils_enum_field.value, 1)
 
     # check that the new record shows up on the list view
     rv = client.get('/admin/model1/')
@@ -221,7 +236,9 @@ def test_model():
                                test2='test2large',
                                email_field='Test2@TEST.com',
                                choice_field='__None',
-                               enum_field='__None'))
+                               enum_field='__None',
+                               sqla_utils_choice_field='__None',
+                               sqla_utils_enum_field='__None'))
     eq_(rv.status_code, 302)
 
     # check that the changes were persisted
@@ -233,6 +250,8 @@ def test_model():
     eq_(model.email_field, u'test2@test.com')
     eq_(model.choice_field, None)
     eq_(model.enum_field, None)
+    eq_(model.sqla_utils_choice_field, None)
+    eq_(model.sqla_utils_enum_field, None)
 
     # check that the model can be deleted
     url = '/admin/model1/delete/?id=%s' % model.id
@@ -318,7 +337,9 @@ def test_exclude_columns():
 
     view = CustomModelView(
         Model1, db.session,
-        column_exclude_list=['test2', 'test4', 'enum_field', 'date_field', 'time_field', 'datetime_field']
+        column_exclude_list=['test2', 'test4', 'enum_field', 'date_field',
+                             'time_field', 'datetime_field',
+                             'sqla_utils_choice_field', 'sqla_utils_enum_field']
     )
     admin.add_view(view)
 
@@ -1593,13 +1614,21 @@ def test_form_columns():
         text_field = db.Column(db.UnicodeText)
         excluded_column = db.Column(db.String)
 
-
     class ChildModel(db.Model):
+        class EnumChoices(enum.Enum):
+            first = 1
+            second = 2
+
         id = db.Column(db.String, primary_key=True)
         model_id = db.Column(db.Integer, db.ForeignKey(Model.id))
         model = db.relationship(Model, backref='backref')
         enum_field = db.Column(db.Enum('model1_v1', 'model1_v2'), nullable=True)
         choice_field = db.Column(db.String, nullable=True)
+        sqla_utils_choice_field = db.Column(ChoiceType([
+            ('choice-1', u'First choice'),
+            ('choice-2', u'Second choice')
+        ]))
+        sqla_utils_enum_field = db.Column(ChoiceType(EnumChoices, impl=db.Integer()))
 
     db.create_all()
 
@@ -1626,6 +1655,10 @@ def test_form_columns():
 
     # check that select field is rendered for enum fields
     ok_(type(form3.enum_field).__name__ == 'Select2Field')
+
+    # check that sqlalchemy_utils field types are handled appropriately
+    ok_(type(form3.sqla_utils_choice_field).__name__ == 'Select2Field')
+    ok_(type(form3.sqla_utils_enum_field).__name__ == 'Select2Field')
 
     # test form_columns with model objects
     view4 = CustomModelView(Model, db.session, endpoint='view1',

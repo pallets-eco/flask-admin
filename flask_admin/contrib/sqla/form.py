@@ -1,6 +1,5 @@
 import warnings
 from enum import Enum, EnumMeta
-import inspect
 
 from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
@@ -392,18 +391,14 @@ class AdminModelConverter(ModelConverterBase):
     def convert_JSON(self, field_args, **extra):
         return form.JSONField(**field_args)
 
+
 def choice_type_coerce_factory(type_):
     """
-    Return a function needed to coerce a ChoiceTyped column. This function is
-    then passed to generated SelectField as the default coerce function.
+    Return a function to coerce a ChoiceType column, for use by Select2Field.
     :param type_: ChoiceType object
     """
     choices = type_.choices
-    if (
-        # Enum is not None and
-        isinstance(choices, type)
-        and issubclass(choices, Enum)
-    ):
+    if isinstance(choices, type) and issubclass(choices, Enum):
         key, choice_cls = 'value', choices
     else:
         key, choice_cls = 'code', Choice
@@ -415,6 +410,7 @@ def choice_type_coerce_factory(type_):
             return getattr(value, key)
         return type_.python_type(value)
     return choice_coerce
+
 
 def _resolve_prop(prop):
     """
