@@ -339,6 +339,77 @@ class EnumFilterNotInList(FilterNotInList):
         return values
 
 
+class ChoiceTypeEqualFilter(FilterEqual):
+    def __init__(self, column, name, options=None, **kwargs):
+        super(ChoiceTypeEqualFilter, self).__init__(column, name, options, **kwargs)
+
+    def apply(self, query, user_query, alias=None):
+        column = self.get_column(alias)
+        choice_type = user_query
+        # loop through choice 'values' to try and find an exact match
+        for type, value in column.type.choices:
+            if value == user_query:
+                choice_type = type
+                break
+        return query.filter(column == choice_type)
+
+
+class ChoiceTypeNotEqualFilter(FilterNotEqual):
+    def __init__(self, column, name, options=None, **kwargs):
+        super(ChoiceTypeNotEqualFilter, self).__init__(column, name, options, **kwargs)
+
+    def apply(self, query, user_query, alias=None):
+        column = self.get_column(alias)
+        choice_type = None
+        # loop through choice 'values' to try and find an exact match
+        for type, value in column.type.choices:
+            if value == user_query:
+                choice_type = type
+                break
+        if choice_type:
+            # != can exclude NULL values, so "or_ == None" needed to be added
+            return query.filter(or_(column != choice_type, column == None))
+        else:
+            return query
+
+
+class ChoiceTypeLikeFilter(FilterLike):
+    def __init__(self, column, name, options=None, **kwargs):
+        super(ChoiceTypeLikeFilter, self).__init__(column, name, options, **kwargs)
+
+    def apply(self, query, user_query, alias=None):
+        column = self.get_column(alias)
+        choice_types = []
+        if user_query:
+            # loop through choice 'values' looking for matches
+            for type, value in column.type.choices:
+                if user_query.lower() in value.lower():
+                    choice_types.append(type)
+        if choice_types:
+            return query.filter(column.in_(choice_types))
+        else:
+            return query
+
+
+class ChoiceTypeNotLikeFilter(FilterNotLike):
+    def __init__(self, column, name, options=None, **kwargs):
+        super(ChoiceTypeNotLikeFilter, self).__init__(column, name, options, **kwargs)
+
+    def apply(self, query, user_query, alias=None):
+        column = self.get_column(alias)
+        choice_types = []
+        if user_query:
+            # loop through choice 'values' looking for matches
+            for type, value in column.type.choices:
+                if user_query.lower() in value.lower():
+                    choice_types.append(type)
+        if choice_types:
+            # != can exclude NULL values, so "or_ == None" needed to be added
+            return query.filter(or_(column.notin_(choice_types), column == None))
+        else:
+            return query
+
+
 # Base SQLA filter field converter
 class FilterConverter(filters.BaseFilterConverter):
     strings = (FilterLike, FilterNotLike, FilterEqual, FilterNotEqual,
@@ -362,6 +433,8 @@ class FilterConverter(filters.BaseFilterConverter):
     time_filters = (TimeEqualFilter, TimeNotEqualFilter, TimeGreaterFilter,
                     TimeSmallerFilter, TimeBetweenFilter, TimeNotBetweenFilter,
                     FilterEmpty)
+    choice_type_filters = (ChoiceTypeEqualFilter, ChoiceTypeNotEqualFilter,
+                           ChoiceTypeLikeFilter, ChoiceTypeNotLikeFilter, FilterEmpty)
 
     def convert(self, type_name, column, name, **kwargs):
         filter_name = type_name.lower()
@@ -373,7 +446,7 @@ class FilterConverter(filters.BaseFilterConverter):
 
     @filters.convert('string', 'char', 'unicode', 'varchar', 'tinytext',
                      'text', 'mediumtext', 'longtext', 'unicodetext',
-                     'nchar', 'nvarchar', 'ntext', 'citext')
+                     'nchar', 'nvarchar', 'ntext', 'citext', 'emailtype')
     def conv_string(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.strings]
 
@@ -401,6 +474,10 @@ class FilterConverter(filters.BaseFilterConverter):
     @filters.convert('time')
     def conv_time(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.time_filters]
+
+    @filters.convert('ChoiceType')
+    def conv_sqla_utils_choice(self, column, name, **kwargs):
+        return [f(column, name, **kwargs) for f in self.choice_type_filters]
 
     @filters.convert('enum')
     def conv_enum(self, column, name, options=None, **kwargs):
