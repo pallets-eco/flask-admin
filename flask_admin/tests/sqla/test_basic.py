@@ -10,17 +10,12 @@ from flask_admin.contrib.sqla import ModelView, filters, tools
 from flask_babelex import Babel
 
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy_utils import EmailType, ChoiceType
+from sqlalchemy_utils import EmailType
 
 from . import setup
 
 from datetime import datetime, time, date
 import enum
-
-
-class EnumChoices(enum.Enum):
-    first = 1
-    second = 2
 
 
 class CustomModelView(ModelView):
@@ -32,14 +27,20 @@ class CustomModelView(ModelView):
 
         super(CustomModelView, self).__init__(model, session, name, category,
                                               endpoint, url)
+    form_choices = {
+        'choice_field': [
+            ('choice-1', 'One'),
+            ('choice-2', 'Two')
+        ]
+    }
 
 
 def create_models(db):
     class Model1(db.Model):
         def __init__(self, test1=None, test2=None, test3=None, test4=None,
                      bool_field=False, date_field=None, time_field=None,
-                     datetime_field=None, enum_field=None, email_field=None,
-                     choice_field=None, enum_choice_field=None):
+                     datetime_field=None, email_field=None,
+                     choice_field=None, enum_field=None):
             self.test1 = test1
             self.test2 = test2
             self.test3 = test3
@@ -48,10 +49,9 @@ def create_models(db):
             self.date_field = date_field
             self.time_field = time_field
             self.datetime_field = datetime_field
-            self.enum_field = enum_field
             self.email_field = email_field
             self.choice_field = choice_field
-            self.enum_choice_field = enum_choice_field
+            self.enum_field = enum_field
 
         id = db.Column(db.Integer, primary_key=True)
         test1 = db.Column(db.String(20))
@@ -59,16 +59,12 @@ def create_models(db):
         test3 = db.Column(db.Text)
         test4 = db.Column(db.UnicodeText)
         bool_field = db.Column(db.Boolean)
-        enum_field = db.Column(db.Enum('model1_v1', 'model1_v2'), nullable=True)
         date_field = db.Column(db.Date)
         time_field = db.Column(db.Time)
         datetime_field = db.Column(db.DateTime)
         email_field = db.Column(EmailType)
-        choice_field = db.Column(ChoiceType([
-            ('choice-1', u'First choice'),
-            ('choice-2', u'Second choice')
-        ]))
-        enum_choice_field = db.Column(ChoiceType(EnumChoices, impl=db.Integer()))
+        enum_field = db.Column(db.Enum('model1_v1', 'model1_v2'), nullable=True)
+        choice_field = db.Column(db.String, nullable=True)
 
         def __unicode__(self):
             return self.test1
@@ -147,6 +143,7 @@ def test_model():
     Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1, db.session)
+
     admin.add_view(view)
 
     eq_(view.model, Model1)
@@ -172,26 +169,30 @@ def test_model():
     eq_(view._create_form_class.test4.field_class, fields.TextAreaField)
     eq_(view._create_form_class.email_field.field_class, fields.StringField)
     eq_(view._create_form_class.choice_field.field_class, Select2Field)
-    eq_(view._create_form_class.enum_choice_field.field_class, Select2Field)
+    eq_(view._create_form_class.enum_field.field_class, Select2Field)
 
     # Make some test clients
     client = app.test_client()
 
+    # check that we can retrieve a list view
     rv = client.get('/admin/model1/')
     eq_(rv.status_code, 200)
 
+    # check that we can retrieve a 'create' view
     rv = client.get('/admin/model1/new/')
     eq_(rv.status_code, 200)
 
+    # create a new record
     rv = client.post('/admin/model1/new/',
                      data=dict(test1='test1large',
                                test2='test2',
                                time_field=time(0, 0, 0),
                                email_field="Test@TEST.com",
                                choice_field="choice-1",
-                               enum_choice_field=1))
+                               enum_field='model1_v1'))
     eq_(rv.status_code, 302)
 
+    # check that the new record was persisted
     model = db.session.query(Model1).first()
     eq_(model.test1, u'test1large')
     eq_(model.test2, u'test2')
@@ -199,12 +200,14 @@ def test_model():
     eq_(model.test4, u'')
     eq_(model.email_field, u'test@test.com')
     eq_(model.choice_field, u'choice-1')
-    eq_(model.enum_choice_field, EnumChoices(1))
+    eq_(model.enum_field, u'model1_v1')
 
+    # check that the new record shows up on the list view
     rv = client.get('/admin/model1/')
     eq_(rv.status_code, 200)
     ok_(u'test1large' in rv.data.decode('utf-8'))
 
+    # check that we can retrieve an edit view
     url = '/admin/model1/edit/?id=%s' % model.id
     rv = client.get(url)
     eq_(rv.status_code, 200)
@@ -212,20 +215,26 @@ def test_model():
     # verify that midnight does not show as blank
     ok_(u'00:00:00' in rv.data.decode('utf-8'))
 
+    # edit the record
     rv = client.post(url,
                      data=dict(test1='test1small',
                                test2='test2large',
                                email_field='Test2@TEST.com',
-                               choice_field=None))
+                               choice_field='__None',
+                               enum_field='__None'))
     eq_(rv.status_code, 302)
 
+    # check that the changes were persisted
     model = db.session.query(Model1).first()
     eq_(model.test1, 'test1small')
     eq_(model.test2, 'test2large')
     eq_(model.test3, '')
     eq_(model.test4, '')
     eq_(model.email_field, u'test2@test.com')
+    eq_(model.choice_field, None)
+    eq_(model.enum_field, None)
 
+    # check that the model can be deleted
     url = '/admin/model1/delete/?id=%s' % model.id
     rv = client.post(url)
     eq_(rv.status_code, 302)
@@ -316,8 +325,7 @@ def test_exclude_columns():
     eq_(
         view._list_columns,
         [('test1', 'Test1'), ('test3', 'Test3'), ('bool_field', 'Bool Field'),
-         ('email_field', 'Email Field'), ('choice_field', 'Choice Field'),
-         ('enum_choice_field', 'Enum Choice Field')]
+         ('email_field', 'Email Field'), ('choice_field', 'Choice Field')]
     )
 
     client = app.test_client()
@@ -672,13 +680,65 @@ def test_column_filters():
     )
 
     eq_(
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Enum Field']],
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Date Field']],
         [
             (30, u'equals'),
             (31, u'not equal'),
-            (32, u'empty'),
-            (33, u'in list'),
-            (34, u'not in list'),
+            (32, u'greater than'),
+            (33, u'smaller than'),
+            (34, u'between'),
+            (35, u'not between'),
+            (36, u'empty'),
+        ]
+    )
+
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Time Field']],
+        [
+            (37, u'equals'),
+            (38, u'not equal'),
+            (39, u'greater than'),
+            (40, u'smaller than'),
+            (41, u'between'),
+            (42, u'not between'),
+            (43, u'empty'),
+        ]
+    )
+
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Datetime Field']],
+        [
+            (44, u'equals'),
+            (45, u'not equal'),
+            (46, u'greater than'),
+            (47, u'smaller than'),
+            (48, u'between'),
+            (49, u'not between'),
+            (50, u'empty'),
+        ]
+    )
+
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Enum Field']],
+        [
+            (51, u'equals'),
+            (52, u'not equal'),
+            (53, u'empty'),
+            (54, u'in list'),
+            (55, u'not in list'),
+        ]
+    )
+
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Choice Field']],
+        [
+            (56, u'contains'),
+            (57, u'not contains'),
+            (58, u'equals'),
+            (59, u'not equal'),
+            (60, u'empty'),
+            (61, u'in list'),
+            (62, u'not in list'),
         ]
     )
 
@@ -1533,10 +1593,13 @@ def test_form_columns():
         text_field = db.Column(db.UnicodeText)
         excluded_column = db.Column(db.String)
 
+
     class ChildModel(db.Model):
         id = db.Column(db.String, primary_key=True)
         model_id = db.Column(db.Integer, db.ForeignKey(Model.id))
         model = db.relationship(Model, backref='backref')
+        enum_field = db.Column(db.Enum('model1_v1', 'model1_v2'), nullable=True)
+        choice_field = db.Column(db.String, nullable=True)
 
     db.create_all()
 
@@ -1555,16 +1618,20 @@ def test_form_columns():
     ok_('datetime_field' not in form1._fields)
     ok_('excluded_column' not in form2._fields)
 
+    # check that relation shows up as a query select
     ok_(type(form3.model).__name__ == 'QuerySelectField')
+
+    # check that select field is rendered if form_choices were specified
+    ok_(type(form3.choice_field).__name__ == 'Select2Field')
+
+    # check that select field is rendered for enum fields
+    ok_(type(form3.enum_field).__name__ == 'Select2Field')
 
     # test form_columns with model objects
     view4 = CustomModelView(Model, db.session, endpoint='view1',
                             form_columns=[Model.int_field])
     form4 = view4.create_form()
     ok_('int_field' in form4._fields)
-
-    # test form_columns with special sqlalchemy_utils types
-
 
 
 @raises(Exception)
