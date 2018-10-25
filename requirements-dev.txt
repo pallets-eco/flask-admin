@@ -1,3 +1,4 @@
+flake8
 Flask>=0.7
 Flask-SQLAlchemy>=0.15
 peewee
