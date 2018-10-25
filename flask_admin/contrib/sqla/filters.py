@@ -2,6 +2,7 @@ from flask_admin.babel import lazy_gettext
 from flask_admin.model import filters
 from flask_admin.contrib.sqla import tools
 from sqlalchemy.sql import not_, or_
+import enum
 
 
 class BaseSQLAFilter(filters.BaseFilter):
@@ -345,13 +346,22 @@ class ChoiceTypeEqualFilter(FilterEqual):
 
     def apply(self, query, user_query, alias=None):
         column = self.get_column(alias)
-        choice_type = user_query
+        choice_type = None
         # loop through choice 'values' to try and find an exact match
-        for type, value in column.type.choices:
-            if value == user_query:
-                choice_type = type
-                break
-        return query.filter(column == choice_type)
+        if isinstance(column.type.choices, enum.EnumMeta):
+            for choice in column.type.choices:
+                if choice.name == user_query:
+                    choice_type = choice.value
+                    break
+        else:
+            for type, value in column.type.choices:
+                if value == user_query:
+                    choice_type = type
+                    break
+        if choice_type:
+            return query.filter(column == choice_type)
+        else:
+            return query.filter(column.in_([]))
 
 
 class ChoiceTypeNotEqualFilter(FilterNotEqual):
@@ -362,10 +372,16 @@ class ChoiceTypeNotEqualFilter(FilterNotEqual):
         column = self.get_column(alias)
         choice_type = None
         # loop through choice 'values' to try and find an exact match
-        for type, value in column.type.choices:
-            if value == user_query:
-                choice_type = type
-                break
+        if isinstance(column.type.choices, enum.EnumMeta):
+            for choice in column.type.choices:
+                if choice.name == user_query:
+                    choice_type = choice.value
+                    break
+        else:
+            for type, value in column.type.choices:
+                if value == user_query:
+                    choice_type = type
+                    break
         if choice_type:
             # != can exclude NULL values, so "or_ == None" needed to be added
             return query.filter(or_(column != choice_type, column == None))
@@ -382,9 +398,14 @@ class ChoiceTypeLikeFilter(FilterLike):
         choice_types = []
         if user_query:
             # loop through choice 'values' looking for matches
-            for type, value in column.type.choices:
-                if user_query.lower() in value.lower():
-                    choice_types.append(type)
+            if isinstance(column.type.choices, enum.EnumMeta):
+                for choice in column.type.choices:
+                    if user_query.lower() in choice.name.lower():
+                        choice_types.append(choice.value)
+            else:
+                for type, value in column.type.choices:
+                    if user_query.lower() in value.lower():
+                        choice_types.append(type)
         if choice_types:
             return query.filter(column.in_(choice_types))
         else:
@@ -400,9 +421,14 @@ class ChoiceTypeNotLikeFilter(FilterNotLike):
         choice_types = []
         if user_query:
             # loop through choice 'values' looking for matches
-            for type, value in column.type.choices:
-                if user_query.lower() in value.lower():
-                    choice_types.append(type)
+            if isinstance(column.type.choices, enum.EnumMeta):
+                for choice in column.type.choices:
+                    if user_query.lower() in choice.name.lower():
+                        choice_types.append(choice.value)
+            else:
+                for type, value in column.type.choices:
+                    if user_query.lower() in value.lower():
+                        choice_types.append(type)
         if choice_types:
             # != can exclude NULL values, so "or_ == None" needed to be added
             return query.filter(or_(column.notin_(choice_types), column == None))
