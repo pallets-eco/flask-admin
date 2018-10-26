@@ -4,7 +4,6 @@ from enum import Enum, EnumMeta
 from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
 from sqlalchemy.orm import ColumnProperty
-from sqlalchemy_utils import Choice
 
 from flask_admin import form
 from flask_admin.model.form import (converts, ModelConverterBase,
@@ -428,6 +427,8 @@ def choice_type_coerce_factory(type_):
     Return a function to coerce a ChoiceType column, for use by Select2Field.
     :param type_: ChoiceType object
     """
+    from sqlalchemy_utils import Choice
+
     choices = type_.choices
     if isinstance(choices, type) and issubclass(choices, Enum):
         key, choice_cls = 'value', choices

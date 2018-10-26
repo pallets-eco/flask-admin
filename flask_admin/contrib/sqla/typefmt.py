@@ -1,10 +1,8 @@
 from sqlalchemy.ext.associationproxy import _AssociationList
 
 from flask_admin.model.typefmt import BASE_FORMATTERS, EXPORT_FORMATTERS, \
-    DETAIL_FORMATTERS, list_formatter
+    list_formatter
 from sqlalchemy.orm.collections import InstrumentedList
-from sqlalchemy_utils import Choice
-from arrow import Arrow
 
 
 def choice_formatter(view, choice):
@@ -42,15 +40,20 @@ def arrow_export_formatter(view, arrow_time):
 
 DEFAULT_FORMATTERS = BASE_FORMATTERS.copy()
 EXPORT_FORMATTERS = EXPORT_FORMATTERS.copy()
-DETAIL_FORMATTERS = DETAIL_FORMATTERS.copy()
 
 DEFAULT_FORMATTERS.update({
     InstrumentedList: list_formatter,
     _AssociationList: list_formatter,
-    Choice: choice_formatter,
-    Arrow: arrow_formatter,
 })
-
-EXPORT_FORMATTERS.update({
-    Arrow: arrow_export_formatter,
-})
+try:
+    from sqlalchemy_utils import Choice
+    DEFAULT_FORMATTERS[Choice] = choice_formatter
+except ImportError:
+    pass
+    
+try:
+    from arrow import Arrow
+    DEFAULT_FORMATTERS[Arrow] = arrow_formatter
+    EXPORT_FORMATTERS[Arrow] = arrow_export_formatter
+except ImportError:
+    pass

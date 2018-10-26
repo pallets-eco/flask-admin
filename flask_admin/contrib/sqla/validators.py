@@ -1,5 +1,4 @@
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy_utils import Currency
 
 from wtforms import ValidationError
 try:
@@ -70,6 +69,7 @@ class ItemsRequired(InputRequired):
 
 
 def valid_currency(form, field):
+    from sqlalchemy_utils import Currency
     try:
         Currency(field.data)
     except (TypeError, ValueError):

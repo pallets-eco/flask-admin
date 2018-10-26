@@ -18,3 +18,5 @@ pylint
 sqlalchemy-citext
 sqlalchemy_utils
 azure-storage-blob
+arrow
+colour
