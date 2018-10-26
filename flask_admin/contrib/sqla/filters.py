@@ -384,7 +384,7 @@ class ChoiceTypeNotEqualFilter(FilterNotEqual):
                     break
         if choice_type:
             # != can exclude NULL values, so "or_ == None" needed to be added
-            return query.filter(or_(column != choice_type, column == None))
+            return query.filter(or_(column != choice_type, column == None))  # noqa: E711
         else:
             return query
 
@@ -431,7 +431,7 @@ class ChoiceTypeNotLikeFilter(FilterNotLike):
                         choice_types.append(type)
         if choice_types:
             # != can exclude NULL values, so "or_ == None" needed to be added
-            return query.filter(or_(column.notin_(choice_types), column == None))
+            return query.filter(or_(column.notin_(choice_types), column == None))  # noqa: E711
         else:
             return query
 

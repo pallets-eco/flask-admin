@@ -14,7 +14,7 @@ from flask_admin.model.helpers import prettify_name
 from flask_admin._backwards import get_property
 from flask_admin._compat import iteritems, text_type
 
-from .validators import Unique
+from .validators import Unique, valid_currency, valid_color, TimeZoneValidator
 from .fields import (QuerySelectField, QuerySelectMultipleField,
                      InlineModelFormList, InlineHstoreList, HstoreForm)
 from flask_admin.model.fields import InlineFormField
@@ -341,9 +341,39 @@ class AdminModelConverter(ModelConverterBase):
     def convert_time(self, field_args, **extra):
         return form.TimeField(**field_args)
 
-    @converts('EmailType')
+    @converts('sqlalchemy_utils.types.arrow.ArrowType')
+    def convert_arrow_time(self, field_args, **extra):
+        return form.DateTimeField(**field_args)
+
+    @converts('sqlalchemy_utils.types.email.EmailType')
     def convert_email(self, field_args, **extra):
         field_args['validators'].append(validators.Email())
+        return fields.StringField(**field_args)
+
+    @converts('sqlalchemy_utils.types.url.URLType')
+    def convert_url(self, field_args, **extra):
+        field_args['validators'].append(validators.URL())
+        return fields.StringField(**field_args)
+
+    @converts('sqlalchemy_utils.types.ip_address.IPAddressType')
+    def convert_ip_address(self, field_args, **extra):
+        field_args['validators'].append(validators.IPAddress())
+        return fields.StringField(**field_args)
+
+    @converts('sqlalchemy_utils.types.color.ColorType')
+    def convert_color(self, field_args, **extra):
+        field_args['validators'].append(valid_color)
+        return fields.StringField(**field_args)
+
+    @converts('sqlalchemy_utils.types.currency.CurrencyType')
+    def convert_currency(self, field_args, **extra):
+        field_args['validators'].append(valid_currency)
+        return fields.StringField(**field_args)
+
+    @converts('sqlalchemy_utils.types.timezone.TimezoneType')
+    def convert_timezone(self, column, field_args, **extra):
+
+        field_args['validators'].append(TimeZoneValidator(coerce_function=column.type._coerce))
         return fields.StringField(**field_args)
 
     @converts('Integer')  # includes BigInteger and SmallInteger
@@ -371,7 +401,8 @@ class AdminModelConverter(ModelConverterBase):
         field_args['validators'].append(validators.MacAddress())
         return fields.StringField(**field_args)
 
-    @converts('sqlalchemy.dialects.postgresql.base.UUID')
+    @converts('sqlalchemy.dialects.postgresql.base.UUID',
+              'sqlalchemy_utils.types.uuid.UUIDType')
     def conv_PGUuid(self, field_args, **extra):
         field_args.setdefault('label', u'UUID')
         field_args['validators'].append(validators.UUID())
