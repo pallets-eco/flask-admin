@@ -50,7 +50,7 @@ try:
     DEFAULT_FORMATTERS[Choice] = choice_formatter
 except ImportError:
     pass
-    
+
 try:
     from arrow import Arrow
     DEFAULT_FORMATTERS[Arrow] = arrow_formatter
