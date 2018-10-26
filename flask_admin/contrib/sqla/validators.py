@@ -1,6 +1,5 @@
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy_utils import Currency
-from colour import Color
 
 from wtforms import ValidationError
 try:
@@ -78,6 +77,7 @@ def valid_currency(form, field):
 
 
 def valid_color(form, field):
+    from colour import Color
     try:
         Color(field.data)
     except (ValueError):
