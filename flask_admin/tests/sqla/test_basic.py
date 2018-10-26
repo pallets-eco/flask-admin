@@ -740,26 +740,61 @@ def test_column_filters():
     )
 
     eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Email Field']],
+        [
+            (51, u'contains'),
+            (52, u'not contains'),
+            (53, u'equals'),
+            (54, u'not equal'),
+            (55, u'empty'),
+            (56, u'in list'),
+            (57, u'not in list'),
+        ]
+    )
+
+    eq_(
         [(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Enum Field']],
         [
-            (51, u'equals'),
-            (52, u'not equal'),
-            (53, u'empty'),
-            (54, u'in list'),
-            (55, u'not in list'),
+            (58, u'equals'),
+            (59, u'not equal'),
+            (60, u'empty'),
+            (61, u'in list'),
+            (62, u'not in list'),
         ]
     )
 
     eq_(
         [(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Choice Field']],
         [
-            (56, u'contains'),
-            (57, u'not contains'),
-            (58, u'equals'),
-            (59, u'not equal'),
-            (60, u'empty'),
-            (61, u'in list'),
-            (62, u'not in list'),
+            (63, u'contains'),
+            (64, u'not contains'),
+            (65, u'equals'),
+            (66, u'not equal'),
+            (67, u'empty'),
+            (68, u'in list'),
+            (69, u'not in list'),
+        ]
+    )
+
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Sqla Utils Choice Field']],
+        [
+            (70, u'equals'),
+            (71, u'not equal'),
+            (72, u'contains'),
+            (73, u'not contains'),
+            (74, u'empty'),
+        ]
+    )
+
+    eq_(
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Sqla Utils Enum Field']],
+        [
+            (75, u'equals'),
+            (76, u'not equal'),
+            (77, u'contains'),
+            (78, u'not contains'),
+            (79, u'empty'),
         ]
     )
 
