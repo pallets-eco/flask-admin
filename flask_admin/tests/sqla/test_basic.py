@@ -10,8 +10,7 @@ from flask_admin.contrib.sqla import ModelView, filters, tools
 from flask_babelex import Babel
 
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy_utils import EmailType, ChoiceType, UUIDType, URLType, CurrencyType, Currency, ColorType, \
-    ArrowType, IPAddressType, TimezoneType
+from sqlalchemy_utils import EmailType, ChoiceType, UUIDType, URLType, CurrencyType, ColorType, ArrowType, IPAddressType
 from . import setup
 
 from datetime import datetime, time, date
