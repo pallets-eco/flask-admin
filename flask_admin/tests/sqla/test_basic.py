@@ -3,19 +3,21 @@ from nose.tools import eq_, ok_, raises, assert_true
 from wtforms import fields, validators
 
 from flask_admin import form
-from flask_admin.form.fields import Select2Field
+from flask_admin.form.fields import Select2Field, DateTimeField
 from flask_admin._compat import as_unicode
 from flask_admin._compat import iteritems
 from flask_admin.contrib.sqla import ModelView, filters, tools
 from flask_babelex import Babel
 
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy_utils import EmailType, ChoiceType
-
+from sqlalchemy_utils import EmailType, ChoiceType, UUIDType, URLType, CurrencyType, Currency, ColorType, \
+    ArrowType, IPAddressType, TimezoneType
 from . import setup
 
 from datetime import datetime, time, date
+import uuid
 import enum
+import arrow
 
 
 class CustomModelView(ModelView):
@@ -69,11 +71,17 @@ def create_models(db):
         email_field = db.Column(EmailType)
         enum_field = db.Column(db.Enum('model1_v1', 'model1_v2'), nullable=True)
         choice_field = db.Column(db.String, nullable=True)
-        sqla_utils_choice_field = db.Column(ChoiceType([
+        sqla_utils_choice = db.Column(ChoiceType([
             ('choice-1', u'First choice'),
             ('choice-2', u'Second choice')
         ]))
-        sqla_utils_enum_field = db.Column(ChoiceType(EnumChoices, impl=db.Integer()))
+        sqla_utils_enum = db.Column(ChoiceType(EnumChoices, impl=db.Integer()))
+        sqla_utils_arrow = db.Column(ArrowType, default=arrow.utcnow())
+        sqla_utils_uuid = db.Column(UUIDType(binary=False), default=uuid.uuid4)
+        sqla_utils_url = db.Column(URLType)
+        sqla_utils_ip_address = db.Column(IPAddressType)
+        sqla_utils_currency = db.Column(CurrencyType)
+        sqla_utils_color = db.Column(ColorType)
 
         def __unicode__(self):
             return self.test1
@@ -179,8 +187,14 @@ def test_model():
     eq_(view._create_form_class.email_field.field_class, fields.StringField)
     eq_(view._create_form_class.choice_field.field_class, Select2Field)
     eq_(view._create_form_class.enum_field.field_class, Select2Field)
-    eq_(view._create_form_class.sqla_utils_choice_field.field_class, Select2Field)
-    eq_(view._create_form_class.sqla_utils_enum_field.field_class, Select2Field)
+    eq_(view._create_form_class.sqla_utils_choice.field_class, Select2Field)
+    eq_(view._create_form_class.sqla_utils_enum.field_class, Select2Field)
+    eq_(view._create_form_class.sqla_utils_arrow.field_class, DateTimeField)
+    eq_(view._create_form_class.sqla_utils_uuid.field_class, fields.StringField)
+    eq_(view._create_form_class.sqla_utils_url.field_class, fields.StringField)
+    eq_(view._create_form_class.sqla_utils_ip_address.field_class, fields.StringField)
+    eq_(view._create_form_class.sqla_utils_currency.field_class, fields.StringField)
+    eq_(view._create_form_class.sqla_utils_color.field_class, fields.StringField)
 
     # Make some test clients
     client = app.test_client()
@@ -194,15 +208,26 @@ def test_model():
     eq_(rv.status_code, 200)
 
     # create a new record
-    rv = client.post('/admin/model1/new/',
-                     data=dict(test1='test1large',
-                               test2='test2',
-                               time_field=time(0, 0, 0),
-                               email_field="Test@TEST.com",
-                               choice_field="choice-1",
-                               enum_field='model1_v1',
-                               sqla_utils_choice_field="choice-1",
-                               sqla_utils_enum_field=1))
+    uuid_val = str(uuid.uuid4())
+    rv = client.post(
+        '/admin/model1/new/',
+        data=dict(
+            test1='test1large',
+            test2='test2',
+            time_field=time(0, 0, 0),
+            email_field="Test@TEST.com",
+            choice_field="choice-1",
+            enum_field='model1_v1',
+            sqla_utils_choice="choice-1",
+            sqla_utils_enum=1,
+            sqla_utils_arrow='2018-10-27 14:17:00',
+            sqla_utils_uuid=uuid_val,
+            sqla_utils_url="http://www.example.com",
+            sqla_utils_ip_address='127.0.0.1',
+            sqla_utils_currency='USD',
+            sqla_utils_color='#f0f0f0',
+        )
+    )
     eq_(rv.status_code, 302)
 
     # check that the new record was persisted
@@ -214,8 +239,14 @@ def test_model():
     eq_(model.email_field, u'test@test.com')
     eq_(model.choice_field, u'choice-1')
     eq_(model.enum_field, u'model1_v1')
-    eq_(model.sqla_utils_choice_field, u'choice-1')
-    eq_(model.sqla_utils_enum_field.value, 1)
+    eq_(model.sqla_utils_choice, u'choice-1')
+    eq_(model.sqla_utils_enum.value, 1)
+    eq_(model.sqla_utils_arrow, arrow.get('2018-10-27 14:17:00'))
+    eq_(str(model.sqla_utils_uuid), uuid_val)
+    eq_(model.sqla_utils_url, "http://www.example.com")
+    eq_(str(model.sqla_utils_ip_address), '127.0.0.1')
+    eq_(str(model.sqla_utils_currency), 'USD')
+    eq_(model.sqla_utils_color.hex, '#f0f0f0')
 
     # check that the new record shows up on the list view
     rv = client.get('/admin/model1/')
@@ -231,14 +262,22 @@ def test_model():
     ok_(u'00:00:00' in rv.data.decode('utf-8'))
 
     # edit the record
+    new_uuid_val = str(uuid.uuid4())
     rv = client.post(url,
                      data=dict(test1='test1small',
                                test2='test2large',
                                email_field='Test2@TEST.com',
                                choice_field='__None',
                                enum_field='__None',
-                               sqla_utils_choice_field='__None',
-                               sqla_utils_enum_field='__None'))
+                               sqla_utils_choice='__None',
+                               sqla_utils_enum='__None',
+                               sqla_utils_arrow='',
+                               sqla_utils_uuid=new_uuid_val,
+                               sqla_utils_url='',
+                               sqla_utils_ip_address='',
+                               sqla_utils_currency='',
+                               sqla_utils_color='',
+                               ))
     eq_(rv.status_code, 302)
 
     # check that the changes were persisted
@@ -250,8 +289,14 @@ def test_model():
     eq_(model.email_field, u'test2@test.com')
     eq_(model.choice_field, None)
     eq_(model.enum_field, None)
-    eq_(model.sqla_utils_choice_field, None)
-    eq_(model.sqla_utils_enum_field, None)
+    eq_(model.sqla_utils_choice, None)
+    eq_(model.sqla_utils_enum, None)
+    eq_(model.sqla_utils_arrow, None)
+    eq_(str(model.sqla_utils_uuid), new_uuid_val)
+    eq_(model.sqla_utils_url, None)
+    eq_(model.sqla_utils_ip_address, None)
+    eq_(model.sqla_utils_currency, None)
+    eq_(model.sqla_utils_color, None)
 
     # check that the model can be deleted
     url = '/admin/model1/delete/?id=%s' % model.id
@@ -337,9 +382,9 @@ def test_exclude_columns():
 
     view = CustomModelView(
         Model1, db.session,
-        column_exclude_list=['test2', 'test4', 'enum_field', 'date_field',
-                             'time_field', 'datetime_field',
-                             'sqla_utils_choice_field', 'sqla_utils_enum_field']
+        column_exclude_list=['test2', 'test4', 'enum_field', 'date_field', 'time_field', 'datetime_field',
+                             'sqla_utils_choice', 'sqla_utils_enum', 'sqla_utils_arrow', 'sqla_utils_uuid',
+                             'sqla_utils_url', 'sqla_utils_ip_address', 'sqla_utils_currency', 'sqla_utils_color']
     )
     admin.add_view(view)
 
@@ -777,7 +822,7 @@ def test_column_filters():
     )
 
     eq_(
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Sqla Utils Choice Field']],
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Sqla Utils Choice']],
         [
             (70, u'equals'),
             (71, u'not equal'),
@@ -788,7 +833,7 @@ def test_column_filters():
     )
 
     eq_(
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Sqla Utils Enum Field']],
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Model1 / Sqla Utils Enum']],
         [
             (75, u'equals'),
             (76, u'not equal'),
@@ -1659,11 +1704,11 @@ def test_form_columns():
         model = db.relationship(Model, backref='backref')
         enum_field = db.Column(db.Enum('model1_v1', 'model1_v2'), nullable=True)
         choice_field = db.Column(db.String, nullable=True)
-        sqla_utils_choice_field = db.Column(ChoiceType([
+        sqla_utils_choice = db.Column(ChoiceType([
             ('choice-1', u'First choice'),
             ('choice-2', u'Second choice')
         ]))
-        sqla_utils_enum_field = db.Column(ChoiceType(EnumChoices, impl=db.Integer()))
+        sqla_utils_enum = db.Column(ChoiceType(EnumChoices, impl=db.Integer()))
 
     db.create_all()
 
@@ -1692,8 +1737,8 @@ def test_form_columns():
     ok_(type(form3.enum_field).__name__ == 'Select2Field')
 
     # check that sqlalchemy_utils field types are handled appropriately
-    ok_(type(form3.sqla_utils_choice_field).__name__ == 'Select2Field')
-    ok_(type(form3.sqla_utils_enum_field).__name__ == 'Select2Field')
+    ok_(type(form3.sqla_utils_choice).__name__ == 'Select2Field')
+    ok_(type(form3.sqla_utils_enum).__name__ == 'Select2Field')
 
     # test form_columns with model objects
     view4 = CustomModelView(Model, db.session, endpoint='view1',

@@ -352,6 +352,7 @@ class AdminModelConverter(ModelConverterBase):
     @converts('sqlalchemy_utils.types.url.URLType')
     def convert_url(self, field_args, **extra):
         field_args['validators'].append(validators.URL())
+        field_args['filters'] = [avoid_empty_strings]  # don't accept empty strings, or whitespace
         return fields.StringField(**field_args)
 
     @converts('sqlalchemy_utils.types.ip_address.IPAddressType')
@@ -362,6 +363,7 @@ class AdminModelConverter(ModelConverterBase):
     @converts('sqlalchemy_utils.types.color.ColorType')
     def convert_color(self, field_args, **extra):
         field_args['validators'].append(valid_color)
+        field_args['filters'] = [avoid_empty_strings]  # don't accept empty strings, or whitespace
         return fields.StringField(**field_args)
 
     @converts('sqlalchemy_utils.types.currency.CurrencyType')
