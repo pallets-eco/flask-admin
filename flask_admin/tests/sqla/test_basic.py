@@ -207,7 +207,7 @@ def test_model():
     eq_(rv.status_code, 200)
 
     # create a new record
-    uuid_val = str(uuid.uuid4())
+    uuid_obj = uuid.uuid4()
     rv = client.post(
         '/admin/model1/new/',
         data=dict(
@@ -220,7 +220,7 @@ def test_model():
             sqla_utils_choice="choice-1",
             sqla_utils_enum=1,
             sqla_utils_arrow='2018-10-27 14:17:00',
-            sqla_utils_uuid=uuid_val,
+            sqla_utils_uuid=str(uuid_obj),
             sqla_utils_url="http://www.example.com",
             sqla_utils_ip_address='127.0.0.1',
             sqla_utils_currency='USD',
@@ -241,7 +241,7 @@ def test_model():
     eq_(model.sqla_utils_choice, u'choice-1')
     eq_(model.sqla_utils_enum.value, 1)
     eq_(model.sqla_utils_arrow, arrow.get('2018-10-27 14:17:00'))
-    eq_(str(model.sqla_utils_uuid), uuid_val)
+    eq_(model.sqla_utils_uuid, uuid_obj)
     eq_(model.sqla_utils_url, "http://www.example.com")
     eq_(str(model.sqla_utils_ip_address), '127.0.0.1')
     eq_(str(model.sqla_utils_currency), 'USD')
@@ -261,7 +261,7 @@ def test_model():
     ok_(u'00:00:00' in rv.data.decode('utf-8'))
 
     # edit the record
-    new_uuid_val = str(uuid.uuid4())
+    new_uuid_obj = uuid.uuid4()
     rv = client.post(url,
                      data=dict(test1='test1small',
                                test2='test2large',
@@ -271,7 +271,7 @@ def test_model():
                                sqla_utils_choice='__None',
                                sqla_utils_enum='__None',
                                sqla_utils_arrow='',
-                               sqla_utils_uuid=new_uuid_val,
+                               sqla_utils_uuid=str(new_uuid_obj),
                                sqla_utils_url='',
                                sqla_utils_ip_address='',
                                sqla_utils_currency='',
@@ -291,7 +291,7 @@ def test_model():
     eq_(model.sqla_utils_choice, None)
     eq_(model.sqla_utils_enum, None)
     eq_(model.sqla_utils_arrow, None)
-    eq_(str(model.sqla_utils_uuid), new_uuid_val)
+    eq_(model.sqla_utils_uuid, new_uuid_obj)
     eq_(model.sqla_utils_url, None)
     eq_(model.sqla_utils_ip_address, None)
     eq_(model.sqla_utils_currency, None)

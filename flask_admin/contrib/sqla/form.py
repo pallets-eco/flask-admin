@@ -408,6 +408,7 @@ class AdminModelConverter(ModelConverterBase):
     def conv_PGUuid(self, field_args, **extra):
         field_args.setdefault('label', u'UUID')
         field_args['validators'].append(validators.UUID())
+        field_args['filters'] = [avoid_empty_strings]  # don't accept empty strings, or whitespace
         return fields.StringField(**field_args)
 
     @converts('sqlalchemy.dialects.postgresql.base.ARRAY',
