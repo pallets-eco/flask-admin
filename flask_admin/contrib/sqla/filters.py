@@ -440,8 +440,7 @@ class ChoiceTypeNotLikeFilter(FilterNotLike):
 class FilterConverter(filters.BaseFilterConverter):
     strings = (FilterLike, FilterNotLike, FilterEqual, FilterNotEqual,
                FilterEmpty, FilterInList, FilterNotInList)
-    string_key_filters = (FilterEqual, FilterNotEqual,
-               FilterEmpty, FilterInList, FilterNotInList)
+    string_key_filters = (FilterEqual, FilterNotEqual, FilterEmpty, FilterInList, FilterNotInList)
     int_filters = (IntEqualFilter, IntNotEqualFilter, IntGreaterFilter,
                    IntSmallerFilter, FilterEmpty, IntInListFilter,
                    IntNotInListFilter)
@@ -458,14 +457,11 @@ class FilterConverter(filters.BaseFilterConverter):
                         DateTimeGreaterFilter, DateTimeSmallerFilter,
                         DateTimeBetweenFilter, DateTimeNotBetweenFilter,
                         FilterEmpty)
-    time_filters = (TimeEqualFilter, TimeNotEqualFilter, TimeGreaterFilter,
-                    TimeSmallerFilter, TimeBetweenFilter, TimeNotBetweenFilter,
-                    FilterEmpty)
+    time_filters = (TimeEqualFilter, TimeNotEqualFilter, TimeGreaterFilter, TimeSmallerFilter,
+                    TimeBetweenFilter, TimeNotBetweenFilter, FilterEmpty)
     choice_type_filters = (ChoiceTypeEqualFilter, ChoiceTypeNotEqualFilter,
-                           ChoiceTypeLikeFilter, ChoiceTypeNotLikeFilter,
-                           FilterEmpty)
-    arrow_type_filters = (DateTimeGreaterFilter, DateTimeSmallerFilter, 
-                          FilterEmpty)
+                           ChoiceTypeLikeFilter, ChoiceTypeNotLikeFilter, FilterEmpty)
+    arrow_type_filters = (DateTimeGreaterFilter, DateTimeSmallerFilter, FilterEmpty)
 
     def convert(self, type_name, column, name, **kwargs):
         filter_name = type_name.lower()

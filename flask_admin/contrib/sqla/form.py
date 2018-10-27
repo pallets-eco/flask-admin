@@ -367,6 +367,7 @@ class AdminModelConverter(ModelConverterBase):
     @converts('sqlalchemy_utils.types.currency.CurrencyType')
     def convert_currency(self, field_args, **extra):
         field_args['validators'].append(valid_currency)
+        field_args['filters'] = [avoid_empty_strings]  # don't accept empty strings, or whitespace
         return fields.StringField(**field_args)
 
     @converts('sqlalchemy_utils.types.timezone.TimezoneType')
@@ -420,6 +421,19 @@ class AdminModelConverter(ModelConverterBase):
     @converts('JSON')
     def convert_JSON(self, field_args, **extra):
         return form.JSONField(**field_args)
+
+
+def avoid_empty_strings(value):
+    """
+    Return None if the incoming value is an empty string or whitespace.
+    """
+    if value:
+        try:
+            value = value.strip()
+        except AttributeError:
+            # values are not always strings
+            pass
+    return value if value else None
 
 
 def choice_type_coerce_factory(type_):
