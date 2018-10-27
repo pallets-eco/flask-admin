@@ -440,6 +440,8 @@ class ChoiceTypeNotLikeFilter(FilterNotLike):
 class FilterConverter(filters.BaseFilterConverter):
     strings = (FilterLike, FilterNotLike, FilterEqual, FilterNotEqual,
                FilterEmpty, FilterInList, FilterNotInList)
+    string_key_filters = (FilterEqual, FilterNotEqual,
+               FilterEmpty, FilterInList, FilterNotInList)
     int_filters = (IntEqualFilter, IntNotEqualFilter, IntGreaterFilter,
                    IntSmallerFilter, FilterEmpty, IntInListFilter,
                    IntNotInListFilter)
@@ -460,7 +462,10 @@ class FilterConverter(filters.BaseFilterConverter):
                     TimeSmallerFilter, TimeBetweenFilter, TimeNotBetweenFilter,
                     FilterEmpty)
     choice_type_filters = (ChoiceTypeEqualFilter, ChoiceTypeNotEqualFilter,
-                           ChoiceTypeLikeFilter, ChoiceTypeNotLikeFilter, FilterEmpty)
+                           ChoiceTypeLikeFilter, ChoiceTypeNotLikeFilter,
+                           FilterEmpty)
+    arrow_type_filters = (DateTimeGreaterFilter, DateTimeSmallerFilter, 
+                          FilterEmpty)
 
     def convert(self, type_name, column, name, **kwargs):
         filter_name = type_name.lower()
@@ -472,9 +477,14 @@ class FilterConverter(filters.BaseFilterConverter):
 
     @filters.convert('string', 'char', 'unicode', 'varchar', 'tinytext',
                      'text', 'mediumtext', 'longtext', 'unicodetext',
-                     'nchar', 'nvarchar', 'ntext', 'citext', 'emailtype')
+                     'nchar', 'nvarchar', 'ntext', 'citext', 'emailtype',
+                     'URLType', 'IPAddressType')
     def conv_string(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.strings]
+
+    @filters.convert('UUIDType', 'ColorType', 'TimezoneType', 'CurrencyType')
+    def conv_string_keys(self, column, name, **kwargs):
+        return [f(column, name, **kwargs) for f in self.string_key_filters]
 
     @filters.convert('boolean', 'tinyint')
     def conv_bool(self, column, name, **kwargs):
@@ -504,6 +514,10 @@ class FilterConverter(filters.BaseFilterConverter):
     @filters.convert('ChoiceType')
     def conv_sqla_utils_choice(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.choice_type_filters]
+
+    @filters.convert('ArrowType')
+    def conv_sqla_utils_arrow(self, column, name, **kwargs):
+        return [f(column, name, **kwargs) for f in self.arrow_type_filters]
 
     @filters.convert('enum')
     def conv_enum(self, column, name, options=None, **kwargs):
