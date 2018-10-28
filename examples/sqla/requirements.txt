@@ -2,3 +2,6 @@ Flask
 Flask-Admin
 Flask-SQLAlchemy
 tablib
+sqlalchemy_utils
+arrow
+colour
