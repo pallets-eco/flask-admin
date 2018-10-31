@@ -1,4 +1,0 @@
-Flask
-Flask-Admin
-Flask-SQLAlchemy
-pillow==2.9.0

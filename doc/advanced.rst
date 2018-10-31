@@ -164,7 +164,7 @@ Image handling also requires you to have `Pillow <https://pypi.python.org/pypi/P
 installed if you need to do any processing on the image files.
 
 Have a look at the example at
-https://github.com/flask-admin/Flask-Admin/tree/master/examples/forms.
+https://github.com/flask-admin/Flask-Admin/tree/master/examples/forms-files-images.
 
 If you are using the MongoEngine backend, Flask-Admin supports GridFS-backed image and file uploads through WTForms fields. Documentation can be found at :mod:`flask_admin.contrib.mongoengine.fields`.
 
@@ -544,4 +544,3 @@ While the wrapped function should accept only one parameter - `ids`::
                     raise
 
                 flash(gettext('Failed to approve users. %(error)s', error=str(ex)), 'error')
-

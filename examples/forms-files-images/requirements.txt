@@ -1,4 +1,5 @@
 Flask
 Flask-Admin
 Flask-SQLAlchemy
-tablib
+pillow
+redis

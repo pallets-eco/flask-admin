@@ -2,17 +2,25 @@ import os
 import os.path as op
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from wtforms import validators
 
 import flask_admin as admin
+from flask_admin.base import MenuLink
 from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import filters
-from flask_admin.base import MenuLink
+from flask_admin.contrib.sqla.form import InlineModelConverter
+from flask_admin.contrib.sqla.fields import InlineModelFormList
+from flask_admin.contrib.sqla.filters import BaseSQLAFilter, FilterEqual
 
 
 # Create application
 app = Flask(__name__)
+
+# set optional bootswatch theme
+# see http://bootswatch.com/3/ for available swatches
+app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
 # Create dummy secrey key so we can use sessions
 app.config['SECRET_KEY'] = '123456790'
@@ -30,9 +38,23 @@ class User(db.Model):
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
     email = db.Column(db.String(120), unique=True)
+    pets = db.relationship('Pet', backref='owner')
 
     def __str__(self):
         return "{}, {}".format(self.last_name, self.first_name)
+
+    def __repr__(self):
+        return "{}: {}".format(self.id, self.__str__())
+
+
+class Pet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    person_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    available = db.Column(db.Boolean)
+
+    def __str__(self):
+        return self.name
 
 
 # Create M2M table
@@ -88,29 +110,91 @@ class Tree(db.Model):
         return "{}".format(self.name)
 
 
+class Screen(db.Model):
+    __tablename__ = 'screen'
+    id = db.Column(db.Integer, primary_key=True)
+    width = db.Column(db.Integer, nullable=False)
+    height = db.Column(db.Integer, nullable=False)
+
+    @hybrid_property
+    def number_of_pixels(self):
+        return self.width * self.height
+
+
 # Flask views
 @app.route('/')
 def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
+# Custom filter class
+class FilterLastNameBrown(BaseSQLAFilter):
+    def apply(self, query, value, alias=None):
+        if value == '1':
+            return query.filter(self.column == "Brown")
+        else:
+            return query.filter(self.column != "Brown")
+
+    def operation(self):
+        return 'is Brown'
+
+
 # Customized User model admin
+inline_form_options = {
+    'form_label': "Info item",
+    'form_columns': ['id', 'key', 'value'],
+    'form_args': None,
+    'form_extra_fields': None,
+}
+
 class UserAdmin(sqla.ModelView):
+    action_disallowed_list = ['delete', ]
+    column_display_pk = True
     column_list = [
         'id',
         'last_name',
         'first_name',
         'email',
+        'pets',
     ]
     column_default_sort = [('last_name', False), ('first_name', False)]  # sort on multiple columns
-    inline_models = (UserInfo,)
+
+    # custom filter: each filter in the list is a filter operation (equals, not equals, etc)
+    # filters with the same name will appear as operations under the same filter
+    column_filters = [
+        FilterEqual(column=User.last_name, name='Last Name'),
+        FilterLastNameBrown(column=User.last_name, name='Last Name',
+                            options=(('1', 'Yes'), ('0', 'No')))
+    ]
+    inline_models = [(UserInfo, inline_form_options), ]
+
+    # setup create & edit forms so that only 'available' pets can be selected
+    def create_form(self):
+        return self._use_filtered_parent(
+            super(UserAdmin, self).create_form()
+        )
+
+    def edit_form(self, obj):
+        return self._use_filtered_parent(
+            super(UserAdmin, self).edit_form(obj)
+        )
+
+    def _use_filtered_parent(self, form):
+        form.pets.query_factory = self._get_parent_list
+        return form
+
+    def _get_parent_list(self):
+        # only show available pets in the form
+        return Pet.query.filter_by(available=True).all()
+
 
 
 # Customized Post model admin
 class PostAdmin(sqla.ModelView):
-    column_exclude_list = ['text']
+    column_list = ['id', 'user', 'title', 'date', 'tags']
     column_default_sort = ('date', True)
     column_sortable_list = [
+        'id',
         'title',
         'date',
         ('user', ('user.last_name', 'user.first_name')),  # sort on multiple columns
@@ -129,6 +213,9 @@ class PostAdmin(sqla.ModelView):
         'tags',
         filters.FilterLike(Post.title, 'Fixed Title', options=(('test1', 'Test 1'), ('test2', 'Test 2'))),
     ]
+    can_export = True
+    export_max_rows = 1000
+    export_types = ['csv', 'xls']
 
     # Pass arguments to WTForms. In this case, change label for text field to
     # be 'Big Text' and add required() validator.
@@ -157,6 +244,14 @@ class TreeView(sqla.ModelView):
     form_excluded_columns = ['children', ]
 
 
+class ScreenView(sqla.ModelView):
+    column_list = ['id', 'width', 'height', 'number_of_pixels']  # not that 'number_of_pixels' is a hybrid property, not a field
+    column_sortable_list = ['id', 'width', 'height', 'number_of_pixels']
+
+    # Flask-admin can automatically detect the relevant filters for hybrid properties.
+    column_filters = ('number_of_pixels', )
+
+
 # Create admin
 admin = admin.Admin(app, name='Example: SQLAlchemy', template_mode='bootstrap3')
 
@@ -164,7 +259,10 @@ admin = admin.Admin(app, name='Example: SQLAlchemy', template_mode='bootstrap3')
 admin.add_view(UserAdmin(User, db.session))
 admin.add_view(sqla.ModelView(Tag, db.session))
 admin.add_view(PostAdmin(db.session))
+admin.add_view(sqla.ModelView(Pet, db.session, category="Other"))
+admin.add_view(sqla.ModelView(UserInfo, db.session, category="Other"))
 admin.add_view(TreeView(Tree, db.session, category="Other"))
+admin.add_view(ScreenView(Screen, db.session, category="Other"))
 admin.add_sub_category(name="Links", parent_name="Other")
 admin.add_link(MenuLink(name='Back Home', url='/', category='Links'))
 admin.add_link(MenuLink(name='Google', url='http://www.google.com/', category='Links'))
@@ -200,6 +298,7 @@ def build_sample_db():
         user.first_name = first_names[i]
         user.last_name = last_names[i]
         user.email = first_names[i].lower() + "@example.com"
+        user.info.append(UserInfo(key="foo", value="bar"))
         user_list.append(user)
         db.session.add(user)
 
@@ -274,6 +373,15 @@ def build_sample_db():
             leaf.name = "Leaf " + str(j+1)
             leaf.parent = branch
             db.session.add(leaf)
+
+    db.session.add(Pet(name='Dog', available=True))
+    db.session.add(Pet(name='Fish', available=True))
+    db.session.add(Pet(name='Cat', available=True))
+    db.session.add(Pet(name='Parrot', available=True))
+    db.session.add(Pet(name='Ocelot', available=False))
+
+    db.session.add(Screen(width=500, height=2000))
+    db.session.add(Screen(width=550, height=1900))
 
     db.session.commit()
     return

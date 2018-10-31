@@ -509,8 +509,6 @@ class ModelView(BaseModelView):
                     # column is in same table, use only model attribute name
                     if getattr(column, 'key', None) is not None:
                         column_name = column.key
-                    else:
-                        column_name = text_type(c)
 
                 # column_name must match column_name used in `get_list_columns`
                 result[column_name] = column
@@ -1083,7 +1081,10 @@ class ModelView(BaseModelView):
     # Error handler
     def handle_view_exception(self, exc):
         if isinstance(exc, IntegrityError):
-            if current_app.config.get('ADMIN_RAISE_ON_VIEW_EXCEPTION'):
+            if current_app.config.get(
+                'ADMIN_RAISE_ON_INTEGRITY_ERROR',
+                current_app.config.get('ADMIN_RAISE_ON_VIEW_EXCEPTION')
+            ):
                 raise
             else:
                 flash(gettext('Integrity error. %(message)s', message=text_type(exc)), 'error')
