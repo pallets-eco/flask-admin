@@ -109,6 +109,7 @@ class XEditableWidget(object):
             kwargs['data-rows'] = '5'
         elif field.type == 'BooleanField':
             kwargs['data-type'] = 'select2'
+            kwargs['data-value'] = '1' if field.data else ''
             # data-source = dropdown options
             kwargs['data-source'] = json.dumps([
                 {'value': '', 'text': gettext('No')},

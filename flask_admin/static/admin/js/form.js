@@ -495,13 +495,11 @@
                 $el.editable({
                     params: overrideXeditableParams,
                     display: function(value, sourceData, response) {
-                       // display new boolean value as an icon
-                       if(response) {
-                           if(value == '1') {
-                               $(this).html('<span class="fa fa-check-circle glyphicon glyphicon-ok-circle icon-ok-circle"></span>');
-                           } else {
-                               $(this).html('<span class="fa fa-minus-circle glyphicon glyphicon-minus-sign icon-minus-sign"></span>');
-                           }
+                       // display boolean value as an icon
+                       if(value == '1') {
+                           $(this).html('<span class="fa fa-check-circle glyphicon glyphicon-ok-circle icon-ok-circle"></span>');
+                       } else {
+                           $(this).html('<span class="fa fa-minus-circle glyphicon glyphicon-minus-sign icon-minus-sign"></span>');
                        }
                     }
                 });
