@@ -501,6 +501,14 @@
                        } else {
                            $(this).html('<span class="fa fa-minus-circle glyphicon glyphicon-minus-sign icon-minus-sign"></span>');
                        }
+                    },
+                    success: function(response, newValue) {
+                      // update display
+                      if(newValue == '1') {
+                          $(this).html('<span class="fa fa-check-circle glyphicon glyphicon-ok-circle icon-ok-circle"></span>');
+                      } else {
+                          $(this).html('<span class="fa fa-minus-circle glyphicon glyphicon-minus-sign icon-minus-sign"></span>');
+                      }
                     }
                 });
         }
