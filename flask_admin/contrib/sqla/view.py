@@ -833,6 +833,17 @@ class ModelView(BaseModelView):
                 class MyView(ModelView):
                     def get_query(self):
                         return super(MyView, self).get_query().filter(User.username == current_user.username)
+
+            Individual elements that are filtered in the list view are still
+            accessible through the edit view by simply changing the URL, even
+            when they are filtered by `get_query`. To prohibit this, also
+            override `get_one`.
+
+            Example::
+
+                def get_one(self, id):
+                    query = self.get_query()
+                    return query.filter(self.model.id == id).first()
         """
         return self.session.query(self.model)
 
@@ -1072,6 +1083,8 @@ class ModelView(BaseModelView):
     def get_one(self, id):
         """
             Return a single model by its id.
+
+            Also see `get_query` for how to filter the list view.
 
             :param id:
                 Model id
