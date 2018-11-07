@@ -824,8 +824,6 @@ class ModelView(BaseModelView):
         """
             Return a query for the model type.
 
-            If you override this method, don't forget to override `get_count_query` as well.
-
             This method can be used to set a "persistent filter" on an index_view.
 
             Example::
@@ -834,16 +832,9 @@ class ModelView(BaseModelView):
                     def get_query(self):
                         return super(MyView, self).get_query().filter(User.username == current_user.username)
 
-            Individual elements that are filtered in the list view are still
-            accessible through the edit view by simply changing the URL, even
-            when they are filtered by `get_query`. To prohibit this, also
-            override `get_one`.
 
-            Example::
-
-                def get_one(self, id):
-                    query = self.get_query()
-                    return query.filter(self.model.id == id).first()
+            If you override this method, don't forget to also override `get_count_query`, for displaying the correct
+            item count in the list view, and `get_one`, which is used when retrieving records for the edit view.
         """
         return self.session.query(self.model)
 
@@ -1083,6 +1074,12 @@ class ModelView(BaseModelView):
     def get_one(self, id):
         """
             Return a single model by its id.
+
+            Example::
+
+                def get_one(self, id):
+                    query = self.get_query()
+                    return query.filter(self.model.id == id).one()
 
             Also see `get_query` for how to filter the list view.
 
