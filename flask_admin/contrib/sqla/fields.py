@@ -13,6 +13,7 @@ except ImportError:
 
 from .tools import get_primary_key
 from flask_admin._compat import text_type, string_types, iteritems
+from flask_admin.contrib.sqla.widgets import CheckboxListInput
 from flask_admin.form import FormOpts, BaseForm, Select2Widget
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 from flask_admin.babel import lazy_gettext
@@ -179,6 +180,30 @@ class QuerySelectMultipleField(QuerySelectField):
             for v in self.data:
                 if v not in obj_list:
                     raise ValidationError(self.gettext(u'Not a valid choice'))
+
+
+class CheckboxListField(QuerySelectMultipleField):
+    """
+    Alternative field for many-to-many relationships.
+
+    Can be used instead of `QuerySelectMultipleField`.
+    Appears as the list of checkboxes.
+    Example::
+
+        class MyView(ModelView):
+            form_columns = (
+                'languages',
+            )
+            form_args = {
+                'languages': {
+                    'query_factory': Language.query,
+                },
+            }
+            form_overrides = {
+                'languages': CheckboxListField,
+            }
+    """
+    widget = CheckboxListInput()
 
 
 class HstoreForm(BaseForm):
