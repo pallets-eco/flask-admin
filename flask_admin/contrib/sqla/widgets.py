@@ -1,4 +1,4 @@
-from wtforms.widgets.core import HTMLString, escape_html
+from wtforms.widgets.core import HTMLString, escape
 
 
 class CheckboxListInput:
@@ -22,7 +22,7 @@ class CheckboxListInput:
             args = {
                 'id': val,
                 'name': field.name,
-                'label': escape_html(label, quote=False),
+                'label': escape(label),
                 'selected': ' checked' if selected else '',
             }
             items.append(self.template % args)
