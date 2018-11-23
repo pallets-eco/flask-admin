@@ -109,7 +109,7 @@ class ModelView(BaseModelView):
 
         - If you prefix your search term with ``=``, it will perform an exact match.
           For example, if you entered ``=ZZZ``, the statement ``ILIKE 'ZZZ'`` will be used.
-        
+
         - If you prefix your search term with ``*``, it will perform case-sensitive search.
           For example, if you entered ``*ZZZ``, the statement ``LIKE 'ZZZ'`` will be used.
     """
