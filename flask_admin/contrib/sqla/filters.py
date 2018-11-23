@@ -51,8 +51,9 @@ class FilterNotEqual(BaseSQLAFilter):
 
 class FilterLike(BaseSQLAFilter):
     def apply(self, query, value, alias=None):
-        stmt = tools.parse_like_term(value)
-        return query.filter(self.get_column(alias).ilike(stmt))
+        oper, stmt = tools.parse_like_term(value)
+        search_operator = getattr(self.get_column(alias), oper)
+        return query.filter(search_operator(stmt))
 
     def operation(self):
         return lazy_gettext('contains')
@@ -60,8 +61,9 @@ class FilterLike(BaseSQLAFilter):
 
 class FilterNotLike(BaseSQLAFilter):
     def apply(self, query, value, alias=None):
-        stmt = tools.parse_like_term(value)
-        return query.filter(~self.get_column(alias).ilike(stmt))
+        oper, stmt = tools.parse_like_term(value)
+        search_operator = getattr(self.get_column(alias), oper)
+        return query.filter(~search_operator(stmt))
 
     def operation(self):
         return lazy_gettext('not contains')
