@@ -11,11 +11,15 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
             :param fields:
                 Fields to run query against
+
+            :param filters:
+                List of Q objects for additional filtering
         """
         super(QueryAjaxModelLoader, self).__init__(name, options)
 
         self.model = model
         self.fields = options.get('fields')
+        self.filters = options.get('filters')
 
         self._cached_fields = self._process_fields()
 
@@ -49,6 +53,10 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
         query = self.model.objects
+
+        if self.filters:
+            for f in self.filters:
+                query = query.filter(f)
 
         if len(term) > 0:
             criteria = None
