@@ -659,3 +659,6 @@ msgstr "Por favor, seleccione al menos un elemento."
 msgid "Are you sure you want to delete this record?"
 msgstr "¿Está seguro de que quiere borrar este elemento?"
 
+
+msgid "Delete record"
+msgstr "Borrar registro"
