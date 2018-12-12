@@ -494,7 +494,7 @@
             case 'x-editable-boolean':
                 $el.editable({
                     params: overrideXeditableParams,
-                    display: function(value, sourceData, response) {
+                    display: function(value, response) {
                        // display new boolean value as an icon
                        if(response) {
                            if(value == '1') {
