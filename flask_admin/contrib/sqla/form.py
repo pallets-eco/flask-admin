@@ -549,7 +549,7 @@ class InlineModelConverter(InlineModelConverterBase):
             :param info:
                 The InlineFormAdmin instance
             :return:
-                A tuple of forward property key and reverse property key
+                A dict of forward property key and reverse property key
         """
         mapper = model._sa_class_manager.mapper
 
@@ -557,33 +557,37 @@ class InlineModelConverter(InlineModelConverterBase):
         # Use the base mapper to support inheritance
         target_mapper = info.model._sa_class_manager.mapper.base_mapper
 
-        reverse_prop = None
-
+        reverse_props = []
+        forward_reverse_props_keys = dict()
         for prop in target_mapper.iterate_properties:
             if hasattr(prop, 'direction') and prop.direction.name in ('MANYTOONE', 'MANYTOMANY'):
                 if issubclass(model, prop.mapper.class_):
-                    reverse_prop = prop
-                    break
-        else:
+                    # store props in reverse_props list
+                    reverse_props.append(prop)
+
+        if not reverse_props:
             raise Exception('Cannot find reverse relation for model %s' % info.model)
 
-        # Find forward property
-        forward_prop = None
+        for reverse_prop in reverse_props:
+            # Find forward property
+            forward_prop = None
 
-        if prop.direction.name == 'MANYTOONE':
-            candidate = 'ONETOMANY'
-        else:
-            candidate = 'MANYTOMANY'
+            if reverse_prop.direction.name == 'MANYTOONE':
+                candidate = 'ONETOMANY'
+            else:
+                candidate = 'MANYTOMANY'
 
-        for prop in mapper.iterate_properties:
-            if hasattr(prop, 'direction') and prop.direction.name == candidate:
-                if prop.mapper.class_ == target_mapper.class_:
-                    forward_prop = prop
-                    break
-        else:
-            raise Exception('Cannot find forward relation for model %s' % info.model)
+            for prop in mapper.iterate_properties:
+                if hasattr(prop, 'direction') and prop.direction.name == candidate:
+                    # check if prop is not handled yet
+                    # issubclass is more useful than equal comparator in the case of inheritance
+                    if prop.key not in forward_reverse_props_keys.keys() and issubclass(target_mapper.class_, prop.mapper.class_):
+                        forward_reverse_props_keys[prop.key] = reverse_prop.key
+                        break
+            else:
+                raise Exception('Cannot find forward relation for model %s' % info.model)
 
-        return forward_prop.key, reverse_prop.key
+        return forward_reverse_props_keys
 
     def contribute(self, model, form_class, inline_model):
         """
@@ -612,53 +616,54 @@ class InlineModelConverter(InlineModelConverterBase):
 
         info = self.get_info(inline_model)
 
-        forward_prop_key, reverse_prop_key = self._calculate_mapping_key_pair(model, info)
+        forward_reverse_props_keys = self._calculate_mapping_key_pair(model, info)
 
-        # Remove reverse property from the list
-        ignore = [reverse_prop_key]
+        for forward_prop_key, reverse_prop_key in forward_reverse_props_keys.items():
+            # Remove reverse property from the list
+            ignore = [reverse_prop_key]
 
-        if info.form_excluded_columns:
-            exclude = ignore + list(info.form_excluded_columns)
-        else:
-            exclude = ignore
+            if info.form_excluded_columns:
+                exclude = ignore + list(info.form_excluded_columns)
+            else:
+                exclude = ignore
 
-        # Create converter
-        converter = self.model_converter(self.session, info)
+            # Create converter
+            converter = self.model_converter(self.session, info)
 
-        # Create form
-        child_form = info.get_form()
+            # Create form
+            child_form = info.get_form()
 
-        if child_form is None:
-            child_form = get_form(info.model,
-                                  converter,
-                                  base_class=info.form_base_class or form.BaseForm,
-                                  only=info.form_columns,
-                                  exclude=exclude,
-                                  field_args=info.form_args,
-                                  hidden_pk=True,
-                                  extra_fields=info.form_extra_fields)
+            if child_form is None:
+                child_form = get_form(info.model,
+                                      converter,
+                                      base_class=info.form_base_class or form.BaseForm,
+                                      only=info.form_columns,
+                                      exclude=exclude,
+                                      field_args=info.form_args,
+                                      hidden_pk=True,
+                                      extra_fields=info.form_extra_fields)
 
-        # Post-process form
-        child_form = info.postprocess_form(child_form)
+            # Post-process form
+            child_form = info.postprocess_form(child_form)
 
-        kwargs = dict()
+            kwargs = dict()
 
-        label = self.get_label(info, forward_prop_key)
-        if label:
-            kwargs['label'] = label
+            label = self.get_label(info, forward_prop_key)
+            if label:
+                kwargs['label'] = label
 
-        if self.view.form_args:
-            field_args = self.view.form_args.get(forward_prop_key, {})
-            kwargs.update(**field_args)
+            if self.view.form_args:
+                field_args = self.view.form_args.get(forward_prop_key, {})
+                kwargs.update(**field_args)
 
-        # Contribute field
-        setattr(form_class,
-                forward_prop_key,
-                self.inline_field_list_type(child_form,
-                                            self.session,
-                                            info.model,
-                                            reverse_prop_key,
-                                            info,
-                                            **kwargs))
+            # Contribute field
+            setattr(form_class,
+                    forward_prop_key,
+                    self.inline_field_list_type(child_form,
+                                                self.session,
+                                                info.model,
+                                                reverse_prop_key,
+                                                info,
+                                                **kwargs))
 
         return form_class
