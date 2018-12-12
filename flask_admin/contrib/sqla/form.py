@@ -570,7 +570,6 @@ class InlineModelConverter(InlineModelConverterBase):
 
         for reverse_prop in reverse_props:
             # Find forward property
-            forward_prop = None
 
             if reverse_prop.direction.name == 'MANYTOONE':
                 candidate = 'ONETOMANY'
@@ -581,7 +580,8 @@ class InlineModelConverter(InlineModelConverterBase):
                 if hasattr(prop, 'direction') and prop.direction.name == candidate:
                     # check if prop is not handled yet
                     # issubclass is more useful than equal comparator in the case of inheritance
-                    if prop.key not in forward_reverse_props_keys.keys() and issubclass(target_mapper.class_, prop.mapper.class_):
+                    if prop.key not in forward_reverse_props_keys.keys() and issubclass(target_mapper.class_,
+                                                                                        prop.mapper.class_):
                         forward_reverse_props_keys[prop.key] = reverse_prop.key
                         break
             else:
