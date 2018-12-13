@@ -39,9 +39,7 @@ def check_model_list_components_translation(template_mode):
     rv = client.get('/admin/model/')
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
-
-    regex = re.compile('<th[^>]*>\s+(.*)\s+</th>')
-    column_names = re.findall(regex, rv.data)
+    column_names = re.findall(r'<th[^>]*>\s+(.*)\s+</th>', data)
     ok_('Nombre' in column_names)
     ok_('title="Borrar registro"' in data)
     ok_('title="Editar Registro"' in data)
