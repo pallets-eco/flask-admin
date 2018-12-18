@@ -33,9 +33,9 @@ class MongoFileInput(object):
             }
 
         return Markup('%s<input %s>' % (placeholder,
-                                            html_params(name=field.name,
-                                                        type='file',
-                                                        **kwargs)))
+                      html_params(name=field.name,
+                                  type='file',
+                                  **kwargs)))
 
 
 class MongoImageInput(object):
@@ -60,6 +60,6 @@ def __call__(self, field, **kwargs):
             }
 
         return Markup('%s<input %s>' % (placeholder,
-                                            html_params(name=field.name,
-                                                        type='file',
-                                                        **kwargs)))
+                      html_params(name=field.name,
+                                  type='file',
+                                  **kwargs)))

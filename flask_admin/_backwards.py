@@ -11,7 +11,7 @@ import warnings
 try:
     from wtforms.widgets import HTMLString as Markup
 except ImportError:
-    from markupsafe import Markup
+    from markupsafe import Markup  # noqa: F401
 
 
 def get_property(obj, name, old_name, default=None):
