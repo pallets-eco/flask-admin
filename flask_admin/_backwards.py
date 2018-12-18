@@ -8,6 +8,11 @@
 import sys
 import warnings
 
+try:
+    from wtforms.widgets import HTMLString as Markup
+except ImportError:
+    from markupsafe import Markup
+
 
 def get_property(obj, name, old_name, default=None):
     """

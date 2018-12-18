@@ -1,4 +1,6 @@
-from wtforms.widgets.core import HTMLString, escape
+from wtforms.widgets.core import escape
+
+from flask_admin._backwards import Markup
 
 
 class CheckboxListInput:
@@ -26,4 +28,4 @@ class CheckboxListInput:
                 'selected': ' checked' if selected else '',
             }
             items.append(self.template % args)
-        return HTMLString(''.join(items))
+        return Markup(''.join(items))
