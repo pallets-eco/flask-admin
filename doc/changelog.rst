@@ -1,9 +1,10 @@
 Changelog
 =========
 
-next release
+1.5.3
 -----
 
+* Fixed XSS vulnerability
 * Support nested categories in the navbar menu
 * SQLAlchemy
     * sort on multiple columns with `column_default_sort`
@@ -18,6 +19,7 @@ next release
     * handle special characters in filename
     * fix a bug with listing directories on Windows
     * avoid raising an exception when unknown sort parameter is encountered
+* WTForms 3 support
 
 1.5.2
 -----
