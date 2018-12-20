@@ -43,23 +43,23 @@ on the existing examples, and submit a *pull-request*.
 
 To run the examples in your local environment::
 
-1. Clone the repository::
+  1. Clone the repository::
 
-    git clone https://github.com/flask-admin/flask-admin.git
-    cd flask-admin
+        git clone https://github.com/flask-admin/flask-admin.git
+        cd flask-admin
 
-2. Create and activate a virtual environment::
+  2. Create and activate a virtual environment::
 
-    virtualenv env -p python3
-    source env/bin/activate
+        virtualenv env -p python3
+        source env/bin/activate
 
-3. Install requirements::
+  3. Install requirements::
 
-    pip install -r 'examples/sqla/requirements.txt'
+        pip install -r 'examples/sqla/requirements.txt'
 
-4. Run the application::
+  4. Run the application::
 
-    python examples/sqla/app.py
+        python examples/sqla/app.py
 
 Documentation
 -------------
