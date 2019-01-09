@@ -5,7 +5,7 @@ from werkzeug import secure_filename
 from werkzeug.datastructures import FileStorage
 
 from wtforms import ValidationError, fields
-from wtforms.widgets import HTMLString, html_params
+from wtforms.widgets import html_params
 
 try:
     from wtforms.fields.core import _unset_value as unset_value
@@ -15,6 +15,7 @@ except ImportError:
 from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
 
+from flask_admin._backwards import Markup
 from flask_admin._compat import string_types, urljoin
 
 
@@ -59,7 +60,7 @@ class FileUploadInput(object):
         else:
             value = field.data or ''
 
-        return HTMLString(template % {
+        return Markup(template % {
             'text': html_params(type='text',
                                 readonly='readonly',
                                 value=value,
@@ -108,7 +109,7 @@ class ImageUploadInput(object):
         else:
             template = self.empty_template
 
-        return HTMLString(template % args)
+        return Markup(template % args)
 
     def get_url(self, field):
         if field.thumbnail_size:
