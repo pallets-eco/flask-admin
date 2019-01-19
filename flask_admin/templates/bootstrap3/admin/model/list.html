@@ -11,6 +11,9 @@
 {% endblock %}
 
 {% block body %}
+    {% if admin_view.table_prefix_html %}
+    {{ admin_view.table_prefix_html|safe }}
+    {% endif %}
     {% block model_menu_bar %}
     <ul class="nav nav-tabs actions-nav">
         <li class="active">

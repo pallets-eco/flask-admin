@@ -772,6 +772,11 @@ class BaseModelView(BaseView, ActionsMixin):
         Allows to select page size via dropdown list
     """
 
+    table_prefix_html = None
+    """
+        HTML above table
+    """
+
     def __init__(self, model,
                  name=None, category=None, endpoint=None, url=None, static_folder=None,
                  menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
