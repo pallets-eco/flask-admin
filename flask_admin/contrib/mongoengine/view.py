@@ -140,7 +140,8 @@ class ModelView(BaseModelView):
 
     allowed_search_types = (mongoengine.StringField,
                             mongoengine.URLField,
-                            mongoengine.EmailField)
+                            mongoengine.EmailField,
+                            mongoengine.ReferenceField)
     """
         List of allowed search field types.
     """
@@ -466,7 +467,12 @@ class ModelView(BaseModelView):
         criteria = None
 
         for field in self._search_fields:
-            flt = {'%s__%s' % (field.name, op): term}
+            if type(field) == mongoengine.ReferenceField:
+                import re
+                regex = re.compile('.*%s.*' % term)
+            else:
+                regex = term
+            flt = {'%s__%s' % (field.name, op): regex}
             q = mongoengine.Q(**flt)
 
             if criteria is None:
