@@ -235,7 +235,7 @@ msgstr "дорівнює"
 #: ../flask_admin/contrib/pymongo/filters.py:47
 #: ../flask_admin/contrib/sqla/filters.py:49
 msgid "not equal"
-msgstr "дорівнює"
+msgstr "не дорівнює"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:58
 #: ../flask_admin/contrib/peewee/filters.py:52

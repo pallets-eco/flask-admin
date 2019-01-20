@@ -8,3 +8,7 @@ SQLALCHEMY_ECHO = True
 # credentials for loading map tiles from mapbox
 MAPBOX_MAP_ID = '...'
 MAPBOX_ACCESS_TOKEN = '...'
+
+# when the creating new shapes, use this default map center
+DEFAULT_CENTER_LAT = -33.918861
+DEFAULT_CENTER_LONG = 18.423300
