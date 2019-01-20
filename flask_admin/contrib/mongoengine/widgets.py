@@ -48,7 +48,7 @@ class MongoImageInput(object):
                 '</div>')
 
 
-def __call__(self, field, **kwargs):
+    def __call__(self, field, **kwargs):
         kwargs.setdefault('id', field.id)
 
         placeholder = ''
