@@ -226,7 +226,8 @@ class ModelView(BaseModelView):
 
     def __init__(self, model, name=None,
                  category=None, endpoint=None, url=None, static_folder=None,
-                 menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
+                 menu_class_name=None, menu_icon_type=None,
+                 menu_icon_value=None, menu_order=0):
         """
             Constructor
 
@@ -252,13 +253,16 @@ class ModelView(BaseModelView):
 
             :param menu_icon_value:
                 Icon glyph name or URL, depending on `menu_icon_type` setting
+            :param menu_order:
+                An integer that determines the order of this view in the menu
         """
         self._search_fields = []
 
         super(ModelView, self).__init__(model, name, category, endpoint, url, static_folder,
                                         menu_class_name=menu_class_name,
                                         menu_icon_type=menu_icon_type,
-                                        menu_icon_value=menu_icon_value)
+                                        menu_icon_value=menu_icon_value,
+                                        menu_order=menu_order)
 
         self._primary_key = self.scaffold_pk()
 
