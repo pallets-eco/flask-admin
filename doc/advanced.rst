@@ -118,6 +118,19 @@ instance running on the same machine as your app, you can::
     admin.add_view(rediscli.RedisCli(Redis()))
 
 
+Controling The Sort Order of The Admin Menu Links
+--------------------------------
+
+****
+
+The `menu_order` attribute of any admin view allows you to specify an integer that would be used to sort links in the admin menu regardless of the order of view registration.
+The typical usage of this attribute is to pass it as a keyword argument when initializing your admin views.
+Suppose you want to register an admin view called `MyView`, and you want it to be listed first,
+then you should give it a sufficiently large `menu_order`::
+
+    admin.add_view(MyView("myview", endpoint=".myview", menu_order=500))
+
+
 Replacing Individual Form Fields
 --------------------------------
 
