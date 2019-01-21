@@ -1,3 +1,4 @@
+import math
 import os
 
 from nose.tools import ok_, eq_, raises
@@ -223,6 +224,45 @@ def test_add_views():
     admin.add_views(MockView(endpoint='test1'), MockView(endpoint='test2'))
 
     eq_(len(admin.menu()), 3)
+
+
+def test_menu_order():
+    app = Flask(__name__)
+    admin = base.Admin(app)
+
+    view_no_order = MockView(endpoint='test_no_order')
+    admin.add_view(view_no_order)
+    eq_(admin._menu[-1].sort_order, 0)
+    ok_(admin._menu[0].sort_order is math.inf)
+
+    view1 = MockView(endpoint='test1', menu_order=20)
+    view2 = MockView(endpoint='test2', menu_order=30)
+    view3 = MockView(endpoint='test3', menu_order=40)
+    admin.add_views(view3, view1, view2)
+    ok_(admin._menu[1]._view is view3)
+    eq_(admin._menu[2].sort_order, view2.menu_order)
+    ok_(admin._menu[0]._view is admin.index_view)
+
+    catname = "test_category"
+    admin.category_menu_orders[catname] = 50
+    view_with_cat = MockView(endpoint="test_with_category", category=catname)
+    admin.add_view(view_with_cat)
+    eq_(admin._menu[1].name, catname)
+
+    admin.add_link(base.MenuLink('Link1', endpoint='.link1', sort_order=100))
+    admin.add_link(base.MenuLink('Link2', endpoint='.link2', sort_order=110))
+    eq_(admin._menu_links[0].name, "Link2")
+
+    admin.add_link(base.MenuLink('LinkWithCategory1',
+            endpoint='.linkcat1',
+            category=catname,
+            sort_order=200))
+    admin.add_link(base.MenuLink('LinkWithCategory2',
+        endpoint='.linkcat2',
+        category=catname,
+        sort_order=220))
+    children = admin._menu[1].get_children()
+    eq_(children[0].name, "LinkWithCategory2")
 
 
 @raises(Exception)

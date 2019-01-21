@@ -1,3 +1,4 @@
+from operator import attrgetter
 from flask import url_for
 
 
@@ -5,12 +6,13 @@ class BaseMenu(object):
     """
         Base menu item
     """
-    def __init__(self, name, class_name=None, icon_type=None, icon_value=None, target=None):
+    def __init__(self, name, class_name=None, icon_type=None, icon_value=None, target=None, sort_order=None):
         self.name = name
         self.class_name = class_name if class_name is not None else ''
         self.icon_type = icon_type
         self.icon_value = icon_value
         self.target = target
+        self.sort_order = sort_order
 
         self.parent = None
         self._children = []
@@ -19,6 +21,7 @@ class BaseMenu(object):
         # TODO: Check if menu item is already assigned to some parent
         menu.parent = self
         self._children.append(menu)
+        self._children.sort(key=attrgetter("sort_order"), reverse=True)
 
     def get_url(self):
         raise NotImplementedError()
@@ -85,7 +88,8 @@ class MenuView(BaseMenu):
         super(MenuView, self).__init__(name,
                                        class_name=view.menu_class_name,
                                        icon_type=view.menu_icon_type,
-                                       icon_value=view.menu_icon_value)
+                                       icon_value=view.menu_icon_value,
+                                       sort_order=view.menu_order)
 
         self._view = view
         self._cache = cache
@@ -131,8 +135,8 @@ class MenuLink(BaseMenu):
         Link item
     """
     def __init__(self, name, url=None, endpoint=None, category=None, class_name=None,
-                 icon_type=None, icon_value=None, target=None):
-        super(MenuLink, self).__init__(name, class_name, icon_type, icon_value, target)
+                 icon_type=None, icon_value=None, target=None, sort_order=None):
+        super(MenuLink, self).__init__(name, class_name, icon_type, icon_value, target, sort_order)
 
         self.category = category
 

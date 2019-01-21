@@ -1,6 +1,8 @@
+import math
 import os.path as op
 import warnings
 
+from operator import attrgetter
 from functools import wraps
 
 from flask import Blueprint, current_app, render_template, abort, g, url_for
@@ -155,7 +157,8 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
     def __init__(self, name=None, category=None, endpoint=None, url=None,
                  static_folder=None, static_url_path=None,
-                 menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
+                 menu_class_name=None, menu_icon_type=None,
+                 menu_icon_value=None, menu_order=0):
         """
             Constructor.
 
@@ -186,6 +189,8 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
                  - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
             :param menu_icon_value:
                 Icon glyph name or URL, depending on `menu_icon_type` setting
+            :param menu_order:
+                An integer that determines the order of this view in the menu
         """
         self.name = name
         self.category = category
@@ -198,6 +203,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         self.menu_class_name = menu_class_name
         self.menu_icon_type = menu_icon_type
         self.menu_icon_value = menu_icon_value
+        self.menu_order = menu_order
 
         # Initialized from create_blueprint
         self.admin = None
@@ -436,7 +442,8 @@ class AdminIndexView(BaseView):
                  template='admin/index.html',
                  menu_class_name=None,
                  menu_icon_type=None,
-                 menu_icon_value=None):
+                 menu_icon_value=None,
+                 menu_order=math.inf):
         super(AdminIndexView, self).__init__(name or babel.lazy_gettext('Home'),
                                              category,
                                              endpoint or 'admin',
@@ -444,7 +451,8 @@ class AdminIndexView(BaseView):
                                              'static',
                                              menu_class_name=menu_class_name,
                                              menu_icon_type=menu_icon_type,
-                                             menu_icon_value=menu_icon_value)
+                                             menu_icon_value=menu_icon_value,
+                                             menu_order=menu_order)
         self._template = template
 
     @expose()
@@ -464,7 +472,8 @@ class Admin(object):
                  static_url_path=None,
                  base_template=None,
                  template_mode=None,
-                 category_icon_classes=None):
+                 category_icon_classes=None,
+                 category_menu_orders=None):
         """
             Constructor.
 
@@ -495,6 +504,9 @@ class Admin(object):
             :param category_icon_classes:
                 A dict of category names as keys and html classes as values to be added to menu category icons.
                 Example: {'Favorites': 'glyphicon glyphicon-star'}
+            :param category_menu_orders:
+                A dict of category names as keys and integer ordering keys as values to be used for sorting categories in the menu.
+                Example: {'First Category': 200}
         """
         self.app = app
 
@@ -517,6 +529,7 @@ class Admin(object):
         self.base_template = base_template or 'admin/base.html'
         self.template_mode = template_mode or 'bootstrap2'
         self.category_icon_classes = category_icon_classes or dict()
+        self.category_menu_orders = category_menu_orders or dict()
 
         # Add index view
         self._set_admin_index_view(index_view=index_view, endpoint=endpoint, url=url)
@@ -609,10 +622,13 @@ class Admin(object):
             :param link:
                 Link to add.
         """
+        if link.sort_order is None:
+            link.sort_order = 0
         if link.category:
             self.add_menu_item(link, link.category)
         else:
             self._menu_links.append(link)
+            self._menu_links.sort(key=attrgetter("sort_order"), reverse=True)
 
     def add_links(self, *args):
         """
@@ -646,7 +662,8 @@ class Admin(object):
 
             # create a new menu category if one does not exist already
             if category is None:
-                category = MenuCategory(target_category)
+                category_order = self.category_menu_orders.get(cat_text, 0)
+                category = MenuCategory(target_category, sort_order=category_order)
                 category.class_name = self.category_icon_classes.get(cat_text)
                 self._menu_categories[cat_text] = category
 
@@ -655,6 +672,7 @@ class Admin(object):
             category.add_child(menu_item)
         else:
             self._menu.append(menu_item)
+        self._menu.sort(key=attrgetter("sort_order"), reverse=True)
 
     def _add_menu_item(self, menu_item, target_category):
         warnings.warn('Admin._add_menu_item is obsolete - use Admin.add_menu_item instead.')
