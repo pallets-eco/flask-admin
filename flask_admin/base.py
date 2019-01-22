@@ -504,7 +504,7 @@ class Admin(object):
                 A dict of category names as keys and html classes as values to be added to menu category icons.
                 Example: {'Favorites': 'glyphicon glyphicon-star'}
             :param category_menu_orders:
-                A dict of category names as keys and integer ordering keys as values to be used for sorting categories in the menu.
+                A dict of category names as keys and sort keys as values for ordering this view in the menu.
                 Example: {'First Category': 200}
         """
         self.app = app

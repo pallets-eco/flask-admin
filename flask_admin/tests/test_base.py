@@ -252,14 +252,8 @@ def test_menu_order():
     admin.add_link(base.MenuLink('Link2', endpoint='.link2', sort_order=110))
     eq_(admin._menu_links[0].name, "Link2")
 
-    admin.add_link(base.MenuLink('LinkWithCategory1',
-            endpoint='.linkcat1',
-            category=catname,
-            sort_order=200))
-    admin.add_link(base.MenuLink('LinkWithCategory2',
-        endpoint='.linkcat2',
-        category=catname,
-        sort_order=220))
+    admin.add_link(base.MenuLink('LinkWithCategory1', endpoint='.linkcat1', category=catname, sort_order=200))
+    admin.add_link(base.MenuLink('LinkWithCategory2', endpoint='.linkcat2', category=catname, sort_order=220))
     children = admin._menu[1].get_children()
     eq_(children[0].name, "LinkWithCategory2")
 
