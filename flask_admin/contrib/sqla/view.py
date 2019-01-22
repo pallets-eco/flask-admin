@@ -590,10 +590,10 @@ class ModelView(BaseModelView):
                 column_labels = dict(name='Name', last_name='Last Name')
                 column_searchable_list = ('name', 'last_name')
 
-            placeholder is: "Search: Name, Last Name"
+            placeholder is: "Name, Last Name"
         """
         if not self.column_searchable_list:
-            return 'Search'
+            return None
 
         placeholders = []
 
@@ -605,7 +605,7 @@ class ModelView(BaseModelView):
                 placeholders.append(
                     self.column_labels.get(searchable, searchable))
 
-        return 'Search: %s' % u', '.join(placeholders)
+        return u', '.join(placeholders)
 
     def scaffold_filters(self, name):
         """
