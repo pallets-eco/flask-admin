@@ -1,4 +1,3 @@
-import math
 import os.path as op
 import warnings
 
@@ -443,7 +442,7 @@ class AdminIndexView(BaseView):
                  menu_class_name=None,
                  menu_icon_type=None,
                  menu_icon_value=None,
-                 menu_order=math.inf):
+                 menu_order=99999):
         super(AdminIndexView, self).__init__(name or babel.lazy_gettext('Home'),
                                              category,
                                              endpoint or 'admin',

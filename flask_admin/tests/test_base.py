@@ -1,4 +1,3 @@
-import math
 import os
 
 from nose.tools import ok_, eq_, raises
@@ -233,7 +232,7 @@ def test_menu_order():
     view_no_order = MockView(endpoint='test_no_order')
     admin.add_view(view_no_order)
     eq_(admin._menu[-1].sort_order, 0)
-    ok_(admin._menu[0].sort_order is math.inf)
+    eq_(admin._menu[0].sort_order, 99999)
 
     view1 = MockView(endpoint='test1', menu_order=20)
     view2 = MockView(endpoint='test2', menu_order=30)
