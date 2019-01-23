@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Next release
+-----
+
+* Fix display of inline x-editable boolean fields on list view
+
 1.5.3
 -----
 
