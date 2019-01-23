@@ -494,7 +494,7 @@
             case 'x-editable-boolean':
                 $el.editable({
                     params: overrideXeditableParams,
-                    display: function(value, sourceData, response) {
+                    display: function(value, response) {
                        // display boolean value as an icon
                        if(value == '1') {
                            $(this).html('<span class="fa fa-check-circle glyphicon glyphicon-ok-circle icon-ok-circle"></span>');
