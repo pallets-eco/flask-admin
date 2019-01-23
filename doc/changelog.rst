@@ -1,12 +1,16 @@
 Changelog
 =========
 
+Next release
+-----
+
+* Fix display of inline x-editable boolean fields on list view
+
 1.5.3
 -----
 
 * Fixed XSS vulnerability
 * Support nested categories in the navbar menu
-* Fix display of inline x-editable boolean fields on list view
 * SQLAlchemy
     * sort on multiple columns with `column_default_sort`
     * sort on related models in `column_sortable_list`
