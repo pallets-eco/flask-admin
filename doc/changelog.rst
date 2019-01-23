@@ -1,6 +1,12 @@
 Changelog
 =========
 
+-----
+Next release
+
+* Add support for several SQLAlchemy-Utils data types
+
+
 1.5.3
 -----
 
