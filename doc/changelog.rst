@@ -1,13 +1,15 @@
 Changelog
 =========
 
-next release
+1.5.3
 -----
 
+* Fixed XSS vulnerability
 * Support nested categories in the navbar menu
 * SQLAlchemy
     * sort on multiple columns with `column_default_sort`
     * sort on related models in `column_sortable_list`
+    * show searchable fields in search input's placeholder text
     * fix: inline model forms can now also be used for models with multiple primary keys
     * support for using mapped `column_property`
 * Upgrade Leaflet and Leaflet.draw plugins, used for geoalchemy integration
@@ -18,6 +20,7 @@ next release
     * handle special characters in filename
     * fix a bug with listing directories on Windows
     * avoid raising an exception when unknown sort parameter is encountered
+* WTForms 3 support
 
 1.5.2
 -----

@@ -143,3 +143,23 @@ table.filters tr td {
 .editable-input .select2-container {
     min-width: 220px;
 }
+
+[placeholder]{
+    text-overflow:ellipsis;
+}
+
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    text-overflow:ellipsis;
+}
+
+::-moz-placeholder { /* Firefox 19+ */
+    text-overflow:ellipsis;
+}
+
+:-ms-input-placeholder { /* IE 10+ */
+    text-overflow:ellipsis;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+    text-overflow:ellipsis;
+}
