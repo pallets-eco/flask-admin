@@ -590,10 +590,10 @@ class ModelView(BaseModelView):
                 column_labels = dict(name='Name', last_name='Last Name')
                 column_searchable_list = ('name', 'last_name')
 
-            placeholder is: "Search: Name, Last Name"
+            placeholder is: "Name, Last Name"
         """
         if not self.column_searchable_list:
-            return 'Search'
+            return None
 
         placeholders = []
 
@@ -605,7 +605,7 @@ class ModelView(BaseModelView):
                 placeholders.append(
                     self.column_labels.get(searchable, searchable))
 
-        return 'Search: %s' % u', '.join(placeholders)
+        return u', '.join(placeholders)
 
     def scaffold_filters(self, name):
         """
@@ -824,8 +824,6 @@ class ModelView(BaseModelView):
         """
             Return a query for the model type.
 
-            If you override this method, don't forget to override `get_count_query` as well.
-
             This method can be used to set a "persistent filter" on an index_view.
 
             Example::
@@ -833,6 +831,10 @@ class ModelView(BaseModelView):
                 class MyView(ModelView):
                     def get_query(self):
                         return super(MyView, self).get_query().filter(User.username == current_user.username)
+
+
+            If you override this method, don't forget to also override `get_count_query`, for displaying the correct
+            item count in the list view, and `get_one`, which is used when retrieving records for the edit view.
         """
         return self.session.query(self.model)
 
@@ -1072,6 +1074,14 @@ class ModelView(BaseModelView):
     def get_one(self, id):
         """
             Return a single model by its id.
+
+            Example::
+
+                def get_one(self, id):
+                    query = self.get_query()
+                    return query.filter(self.model.id == id).one()
+
+            Also see `get_query` for how to filter the list view.
 
             :param id:
                 Model id
