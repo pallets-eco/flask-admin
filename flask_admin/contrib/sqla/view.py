@@ -3,6 +3,7 @@ import warnings
 import inspect
 
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.orm.base import manager_of_class
 from sqlalchemy.orm import joinedload, aliased
 from sqlalchemy.sql.expression import desc
 from sqlalchemy import Boolean, Table, func, or_
@@ -327,6 +328,8 @@ class ModelView(BaseModelView):
                                         menu_class_name=menu_class_name,
                                         menu_icon_type=menu_icon_type,
                                         menu_icon_value=menu_icon_value)
+
+        self._manager = manager_of_class(self.model)
 
         # Primary key
         self._primary_key = self.scaffold_pk()
@@ -1111,7 +1114,7 @@ class ModelView(BaseModelView):
                 Form instance
         """
         try:
-            model = self.model()
+            model = self._manager.new_instance()
             form.populate_obj(model)
             self.session.add(model)
             self._on_model_change(form, model, True)
