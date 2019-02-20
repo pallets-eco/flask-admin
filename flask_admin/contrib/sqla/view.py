@@ -1115,7 +1115,8 @@ class ModelView(BaseModelView):
         """
         try:
             model = self._manager.new_instance()
-            # TODO: We need a better way to create model instances and stay compatible with SQLAlchemy __init__() behavior
+            # TODO: We need a better way to create model instances and stay compatible with
+            # SQLAlchemy __init__() behavior
             state = instance_state(model)
             self._manager.dispatch.init(state, [], {})
 
