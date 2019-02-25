@@ -217,7 +217,7 @@
 
 {% macro form_css() %}
   <link href="{{ admin_static.url(filename='vendor/select2/select2.css', v='3.5.2') }}" rel="stylesheet">
-  <link href="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker-bs2.css', v='1.3.22') }}" rel="stylesheet">
+  <link href="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker-bs2.css', v='3.0.3') }}" rel="stylesheet">
   {% if config.MAPBOX_MAP_ID %}
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css', v='1.0.2') }}" rel="stylesheet">
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css', v='0.4.6') }}" rel="stylesheet">
@@ -248,7 +248,7 @@
   <script src="https://maps.googleapis.com/maps/api/js?v=3&libraries=places&key={{ config.get('GOOGLE_MAPS_API_KEY') }}"></script>
   {% endif %}
   {% endif %}
-  <script src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js', v='1.3.22') }}"></script>
+  <script src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js', v='3.0.3') }}"></script>
   {% if editable_columns %}
   <script src="{{ admin_static.url(filename='vendor/x-editable/js/bootstrap2-editable.min.js', v='1.5.1.1') }}"></script>
   {% endif %}
