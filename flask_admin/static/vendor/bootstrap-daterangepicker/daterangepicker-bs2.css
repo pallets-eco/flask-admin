@@ -1,5 +1,5 @@
 /*!
- * Stylesheet for the Date Range Picker, for use with Bootstrap 3.x
+ * Stylesheet for the Date Range Picker, for use with Bootstrap 2.x
  *
  * Copyright 2013-2015 Dan Grossman ( http://www.dangrossman.info )
  * Licensed under the MIT license. See http://www.opensource.org/licenses/mit-license.php
@@ -7,7 +7,7 @@
  * Built for http://www.improvely.com
  */
 
- .daterangepicker {
+.daterangepicker {
   position: absolute;
   color: inherit;
   background-color: #fff;
