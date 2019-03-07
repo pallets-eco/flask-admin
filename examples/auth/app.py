@@ -55,9 +55,10 @@ security = Security(app, user_datastore)
 # Create customized model view class
 class MyModelView(sqla.ModelView):
     def is_accessible(self):
-        if not current_user.is_active or not current_user.is_authenticated:
-            return False
-        return current_user.has_role('superuser')
+        return (current_user.is_active and
+                current_user.is_authenticated and
+                current_user.has_role('superuser')
+        )
 
     def _handle_view(self, name, **kwargs):
         """
