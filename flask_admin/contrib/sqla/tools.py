@@ -8,6 +8,11 @@ from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
+try:
+    from sqlalchemy.ext.association_proxy import AssociationProxyInstance
+except ImportError:
+    AssociationProxyInstance = type('AssociationProxyInstance', (), {})
+
 from flask_admin._compat import filter_list, string_types
 from flask_admin.tools import iterencode, iterdecode, escape  # noqa: F401
 
@@ -216,4 +221,7 @@ def is_relationship(attr):
 
 
 def is_association_proxy(attr):
-    return hasattr(attr, 'extension_type') and attr.extension_type == ASSOCIATION_PROXY
+    return (
+        (hasattr(attr, 'extension_type') and attr.extension_type == ASSOCIATION_PROXY)
+        or isinstance(attr, AssociationProxyInstance)
+    )
