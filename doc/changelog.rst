@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Next release
+-----
+
+* Fix display of inline x-editable boolean fields on list view
+
 1.5.3
 -----
 
@@ -9,6 +14,7 @@ Changelog
 * SQLAlchemy
     * sort on multiple columns with `column_default_sort`
     * sort on related models in `column_sortable_list`
+    * show searchable fields in search input's placeholder text
     * fix: inline model forms can now also be used for models with multiple primary keys
     * support for using mapped `column_property`
 * Upgrade Leaflet and Leaflet.draw plugins, used for geoalchemy integration

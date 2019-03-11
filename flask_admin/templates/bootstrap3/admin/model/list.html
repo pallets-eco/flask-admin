@@ -186,8 +186,8 @@
       <div id="active-filters-data" style="display:none;">{{ active_filters|tojson|safe }}</div>
     {% endif %}
 
-    <script src="{{ admin_static.url(filename='admin/js/filters.js', v='1.0.0') }}"></script>
     {{ lib.form_js() }}
+    <script src="{{ admin_static.url(filename='admin/js/filters.js', v='1.0.0') }}"></script>
 
     {{ actionlib.script(_gettext('Please select at least one record.'),
                         actions,

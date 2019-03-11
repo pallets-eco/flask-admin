@@ -47,10 +47,8 @@ class MongoImageInput(object):
                 ' <input type="checkbox" name="%(marker)s">Delete</input>'
                 '</div>')
 
-
-def __call__(self, field, **kwargs):
+    def __call__(self, field, **kwargs):
         kwargs.setdefault('id', field.id)
-
         placeholder = ''
         if field.data and isinstance(field.data, ImageGridFsProxy):
             args = helpers.make_thumb_args(field.data)

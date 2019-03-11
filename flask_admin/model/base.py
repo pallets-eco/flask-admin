@@ -1109,9 +1109,9 @@ class BaseModelView(BaseView, ActionsMixin):
 
     def search_placeholder(self):
         """
-            Return search placeholder.
+            Return search placeholder text.
         """
-        return 'Search'
+        return None
 
     # Filter helpers
     def scaffold_filters(self, name):
