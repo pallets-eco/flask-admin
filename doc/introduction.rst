@@ -18,6 +18,9 @@ The first step is to initialize an empty admin interface for your Flask app::
 
     app = Flask(__name__)
 
+    # set optional bootswatch theme
+    app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
+
     admin = Admin(app, name='microblog', template_mode='bootstrap3')
     # Add administrative views here
 
@@ -27,7 +30,8 @@ Here, both the *name* and *template_mode* parameters are optional. Alternatively
 you could use the :meth:`~flask_admin.base.Admin.init_app` method.
 
 If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
-you should see an empty page with a navigation bar on top.
+you should see an empty page with a navigation bar on top. Customize the look by
+specifying a Bootswatch theme that suits your needs (see http://bootswatch.com/3/ for available swatches).
 
 Adding Model Views
 ------------------
@@ -80,6 +84,9 @@ are a few different ways of approaching this.
 
 HTTP Basic Auth
 ---------------
+Unfortunately, there is no easy way of applying HTTP Basic Auth just to your admin
+interface.
+
 The simplest form of authentication is HTTP Basic Auth. It doesn't interfere
 with your database models, and it doesn't require you to write any new view logic or
 template code. So it's great for when you're deploying something that's still
@@ -87,9 +94,6 @@ under development, before you want the whole world to see it.
 
 Have a look at `Flask-BasicAuth <https://flask-basicauth.readthedocs.io/>`_ to see just how
 easy it is to put your whole application behind HTTP Basic Auth.
-
-Unfortunately, there is no easy way of applying HTTP Basic Auth just to your admin
-interface.
 
 Rolling Your Own
 ----------------
@@ -156,12 +160,9 @@ Customizing Built-in Views
 
 ****
 
-The built-in `ModelView` class is great for getting started quickly. But, you'll want
-to configure its functionality to suit your particular models. This is done by setting
-values for the configuration attributes that are made available in the `ModelView` class.
-
-To specify some global configuration parameters, you can subclass `ModelView` and use that
-subclass when adding your models to the interface::
+When inheriting from `ModelView`, values can be specified for numerous
+configuration parameters. Use these to customize the views to suit your
+particular models::
 
     from flask_admin.contrib.sqla import ModelView
 
@@ -286,6 +287,28 @@ To **enable csv export** of the model view::
     can_export = True
 
 This will add a button to the model view that exports records, truncating at :attr:`~flask_admin.model.BaseModelView.export_max_rows`.
+
+
+Grouping Views
+==============
+When adding a view, specify a value for the `category` parameter
+to group related views together in the menu::
+
+    admin.add_view(UserView(User, db.session, category="Team"))
+    admin.add_view(ModelView(Role, db.session, category="Team"))
+    admin.add_view(ModelView(Permission, db.session, category="Team"))
+
+This will create a top-level menu item named 'Team', and a drop-down containing
+links to the three views.
+
+To nest related views within these drop-downs, use the `add_sub_category` method::
+
+    admin.add_sub_category(name="Links", parent_name="Team")
+
+And to add arbitrary hyperlinks to the menu::
+
+  admin.add_link(MenuLink(name='Home Page', url='/', category='Links'))
+
 
 Adding Your Own Views
 =====================
@@ -440,7 +463,7 @@ list_row_actions        Row action cell with edit/remove/etc buttons
 empty_list_message      Message that will be displayed if there are no models found
 ======================= ============================================
 
-Have a look at the `layout` example at https://github.com/flask-admin/flask-admin/tree/master/examples/layout
+Have a look at the `layout` example at https://github.com/flask-admin/flask-admin/tree/master/examples/custom-layout
 to see how you can take full stylistic control over the admin interface.
 
 Environment Variables

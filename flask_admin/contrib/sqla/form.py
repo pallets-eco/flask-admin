@@ -1,7 +1,9 @@
 import warnings
+from enum import Enum
 
 from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
+from sqlalchemy.orm import ColumnProperty
 
 from flask_admin import form
 from flask_admin.model.form import (converts, ModelConverterBase,
@@ -9,7 +11,7 @@ from flask_admin.model.form import (converts, ModelConverterBase,
 from flask_admin.model.fields import AjaxSelectField, AjaxSelectMultipleField
 from flask_admin.model.helpers import prettify_name
 from flask_admin._backwards import get_property
-from flask_admin._compat import iteritems
+from flask_admin._compat import iteritems, text_type
 
 from .validators import Unique
 from .fields import (QuerySelectField, QuerySelectMultipleField,
@@ -151,10 +153,12 @@ class AdminModelConverter(ModelConverterBase):
             return self._convert_relation(name, prop, property_is_association_proxy, kwargs)
         elif hasattr(prop, 'columns'):  # Ignore pk/fk
             # Check if more than one column mapped to the property
-            if len(prop.columns) > 1:
+            if len(prop.columns) > 1 and not isinstance(prop, ColumnProperty):
                 columns = filter_foreign_columns(model.__table__, prop.columns)
 
-                if len(columns) > 1:
+                if len(columns) == 0:
+                    return None
+                elif len(columns) > 1:
                     warnings.warn('Can not convert multiple-column properties (%s.%s)' % (model, prop.key))
                     return None
 
@@ -264,7 +268,7 @@ class AdminModelConverter(ModelConverterBase):
 
     @classmethod
     def _string_common(cls, column, field_args, **extra):
-        if isinstance(column.type.length, int) and column.type.length:
+        if hasattr(column.type, 'length') and isinstance(column.type.length, int) and column.type.length:
             field_args['validators'].append(validators.Length(max=column.type.length))
 
     @converts('String')  # includes VARCHAR, CHAR, and Unicode
@@ -279,6 +283,7 @@ class AdminModelConverter(ModelConverterBase):
                 accepted_values.append(None)
 
             field_args['validators'].append(validators.AnyOf(accepted_values))
+            field_args['coerce'] = lambda v: v.name if isinstance(v, Enum) else text_type(v)
 
             return form.Select2Field(**field_args)
 
@@ -290,7 +295,7 @@ class AdminModelConverter(ModelConverterBase):
         self._string_common(column=column, field_args=field_args, **extra)
         return fields.StringField(**field_args)
 
-    @converts('Text', 'LargeBinary', 'Binary')  # includes UnicodeText
+    @converts('Text', 'LargeBinary', 'Binary', 'CIText')  # includes UnicodeText
     def conv_Text(self, field_args, **extra):
         self._string_common(field_args=field_args, **extra)
         return fields.TextAreaField(**field_args)

@@ -1676,7 +1676,7 @@ def test_default_sort():
     app, db, admin = setup()
     M1, _ = create_models(db)
 
-    db.session.add_all([M1('c'), M1('b'), M1('a')])
+    db.session.add_all([M1('c', 'x'), M1('b', 'x'), M1('a', 'y')])
     db.session.commit()
     eq_(M1.query.count(), 3)
 
@@ -1715,18 +1715,34 @@ def test_default_sort():
     eq_(data[1].test1, 'b')
     eq_(data[2].test1, 'c')
 
+    # test default sort with multiple columns
+    order = [('test2', False), ('test1', False)]
+    view4 = CustomModelView(M1, db.session, column_default_sort=order, endpoint='m1_4')
+    admin.add_view(view4)
+
+    _, data = view4.get_list(0, None, None, None, None)
+
+    eq_(len(data), 3)
+    eq_(data[0].test1, 'b')
+    eq_(data[1].test1, 'c')
+    eq_(data[2].test1, 'a')
+
 
 def test_complex_sort():
     app, db, admin = setup()
     M1, M2 = create_models(db)
 
-    m1 = M1('b')
+    m1 = M1(test1='c', test2='x')
     db.session.add(m1)
     db.session.add(M2('c', model1=m1))
 
-    m2 = M1('a')
+    m2 = M1(test1='b', test2='x')
     db.session.add(m2)
-    db.session.add(M2('c', model1=m2))
+    db.session.add(M2('b', model1=m2))
+
+    m3 = M1(test1='a', test2='y')
+    db.session.add(m3)
+    db.session.add(M2('a', model1=m3))
 
     db.session.commit()
 
@@ -1738,8 +1754,29 @@ def test_complex_sort():
 
     client = app.test_client()
 
-    rv = client.get('/admin/model2/?sort=1')
+    rv = client.get('/admin/model2/?sort=0')
     eq_(rv.status_code, 200)
+
+    _, data = view.get_list(0, 'model1.test1', False, None, None)
+
+    eq_(data[0].model1.test1, 'a')
+    eq_(data[1].model1.test1, 'b')
+    eq_(data[2].model1.test1, 'c')
+
+    # test sorting on multiple columns in related model
+    view2 = CustomModelView(M2, db.session,
+                            column_list=['string_field', 'model1'],
+                            column_sortable_list=[('model1', ('model1.test2', 'model1.test1'))], endpoint="m1_2")
+    admin.add_view(view2)
+
+    rv = client.get('/admin/m1_2/?sort=0')
+    eq_(rv.status_code, 200)
+
+    _, data = view2.get_list(0, 'model1', False, None, None)
+
+    eq_(data[0].model1.test1, 'b')
+    eq_(data[1].model1.test1, 'c')
+    eq_(data[2].model1.test1, 'a')
 
 
 @raises(Exception)
@@ -2210,6 +2247,34 @@ def test_multipath_joins():
     db.create_all()
 
     view = CustomModelView(Model2, db.session, filters=['first.test'])
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get('/admin/model2/')
+    eq_(rv.status_code, 200)
+
+
+def test_different_bind_joins():
+    app, db, admin = setup()
+    app.config['SQLALCHEMY_BINDS'] = {
+        'other': 'sqlite:///'
+    }
+
+    class Model1(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        val1 = db.Column(db.String(20))
+
+    class Model2(db.Model):
+        __bind_key__ = 'other'
+        id = db.Column(db.Integer, primary_key=True)
+        val1 = db.Column(db.String(20))
+        first_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
+        first = db.relationship(Model1)
+
+    db.create_all()
+
+    view = CustomModelView(Model2, db.session)
     admin.add_view(view)
 
     client = app.test_client()

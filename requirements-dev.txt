@@ -1,3 +1,4 @@
+flake8
 Flask>=0.7
 Flask-SQLAlchemy>=0.15
 peewee
@@ -14,3 +15,5 @@ psycopg2
 nose
 coveralls
 pylint
+sqlalchemy-citext
+azure-storage-blob

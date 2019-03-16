@@ -43,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'flask-admin'
-copyright = u'2012-2015, Serge S. Koval'
+copyright = u'2012-2019, Flask-Admin Team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -256,13 +256,13 @@ intersphinx_mapping = {'http://docs.python.org/': None}
 # fall back if theme is not there
 try:
     __import__('flask_theme_support')
-except ImportError, e:
-    print '-' * 74
-    print 'Warning: Flask themes unavailable. Building with default theme'
-    print 'If you want the Flask themes, run this command and build again:'
-    print
-    print ' git submodule update --init'
-    print '-' * 74
+except ImportError as e:
+    print('-' * 74)
+    print('Warning: Flask themes unavailable. Building with default theme')
+    print('If you want the Flask themes, run this command and build again:')
+    print()
+    print(' git submodule update --init')
+    print('-' * 74)
 
     pygments_style = 'tango'
     html_theme = 'default'

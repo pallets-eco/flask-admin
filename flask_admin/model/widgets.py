@@ -1,7 +1,8 @@
 from flask import json
 from jinja2 import escape
-from wtforms.widgets import HTMLString, html_params
+from wtforms.widgets import html_params
 
+from flask_admin._backwards import Markup
 from flask_admin._compat import as_unicode, text_type
 from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
@@ -61,7 +62,10 @@ class AjaxSelect2Widget(object):
         placeholder = field.loader.options.get('placeholder', gettext('Please select model'))
         kwargs.setdefault('data-placeholder', placeholder)
 
-        return HTMLString('<input %s>' % html_params(name=field.name, **kwargs))
+        minimum_input_length = int(field.loader.options.get('minimum_input_length', 1))
+        kwargs.setdefault('data-minimum-input-length', minimum_input_length)
+
+        return Markup('<input %s>' % html_params(name=field.name, **kwargs))
 
 
 class XEditableWidget(object):
@@ -72,7 +76,8 @@ class XEditableWidget(object):
         field inside of the FieldList (StringField, IntegerField, etc).
     """
     def __call__(self, field, **kwargs):
-        kwargs.setdefault('data-value', kwargs.pop('display_value', ''))
+        display_value = kwargs.pop('display_value', '')
+        kwargs.setdefault('data-value', display_value)
 
         kwargs.setdefault('data-role', 'x-editable')
         kwargs.setdefault('data-url', './ajax/update/')
@@ -89,9 +94,9 @@ class XEditableWidget(object):
 
         kwargs = self.get_kwargs(field, kwargs)
 
-        return HTMLString(
+        return Markup(
             '<a %s>%s</a>' % (html_params(**kwargs),
-                              escape(kwargs['data-value']))
+                              escape(display_value))
         )
 
     def get_kwargs(self, field, kwargs):
@@ -104,7 +109,8 @@ class XEditableWidget(object):
             kwargs['data-type'] = 'textarea'
             kwargs['data-rows'] = '5'
         elif field.type == 'BooleanField':
-            kwargs['data-type'] = 'select'
+            kwargs['data-type'] = 'select2'
+            kwargs['data-value'] = '1' if field.data else ''
             # data-source = dropdown options
             kwargs['data-source'] = json.dumps([
                 {'value': '', 'text': gettext('No')},
@@ -112,7 +118,7 @@ class XEditableWidget(object):
             ])
             kwargs['data-role'] = 'x-editable-boolean'
         elif field.type in ['Select2Field', 'SelectField']:
-            kwargs['data-type'] = 'select'
+            kwargs['data-type'] = 'select2'
             choices = [{'value': x, 'text': y} for x, y in field.choices]
 
             # prepend a blank field to choices if allow_blank = True
@@ -144,7 +150,7 @@ class XEditableWidget(object):
         elif field.type in ['QuerySelectField', 'ModelSelectField',
                             'QuerySelectMultipleField', 'KeyPropertyField']:
             # QuerySelectField and ModelSelectField are for relations
-            kwargs['data-type'] = 'select'
+            kwargs['data-type'] = 'select2'
 
             choices = []
             selected_ids = []
@@ -162,12 +168,13 @@ class XEditableWidget(object):
             kwargs['data-source'] = json.dumps(choices)
 
             if field.type == 'QuerySelectMultipleField':
-                kwargs['data-type'] = 'select2'
                 kwargs['data-role'] = 'x-editable-select2-multiple'
 
                 # must use id instead of text or prefilled values won't work
                 separator = getattr(field, 'separator', ',')
                 kwargs['data-value'] = separator.join(selected_ids)
+            else:
+                kwargs['data-value'] = text_type(selected_ids[0])
         else:
             raise Exception('Unsupported field type: %s' % (type(field),))
 

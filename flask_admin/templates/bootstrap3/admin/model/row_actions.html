@@ -31,7 +31,7 @@
   {% elif csrf_token %}
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   {% endif %}
-  <button onclick="return safeConfirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="Delete record">
+  <button onclick="return faHelpers.safeConfirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="{{ _gettext('Delete record') }}">
     <span class="fa fa-trash glyphicon glyphicon-trash"></span>
   </button>
 </form>

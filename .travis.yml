@@ -2,10 +2,6 @@ sudo: false
 language: python
 matrix:
   include:
-    - python: 2.6
-      env: TOX_ENV=py26-WTForms1
-    - python: 2.6
-      env: TOX_ENV=py26-WTForms2
     - python: 2.7
       env: TOX_ENV=py27-WTForms1
     - python: 2.7
@@ -14,10 +10,6 @@ matrix:
       env: TOX_ENV=flake8
     - python: 2.7
       env: TOX_ENV=docs-html
-    - python: 3.3
-      env: TOX_ENV=py33-WTForms1
-    - python: 3.3
-      env: TOX_ENV=py33-WTForms2
     - python: 3.4
       env: TOX_ENV=py34-WTForms1
     - python: 3.4
@@ -36,16 +28,18 @@ addons:
   apt:
     packages:
       - postgresql-9.4-postgis-2.4
-      - postgresql-9.4-postgis-2.4-scrip
+      - postgresql-9.4-postgis-2.4-scripts
 
 services:
   - postgresql
   - mongodb
+  - docker
 
 before_script:
   - psql -U postgres -c 'CREATE DATABASE flask_admin_test;'
   - psql -U postgres -c 'CREATE EXTENSION postgis;' flask_admin_test
   - psql -U postgres -c 'CREATE EXTENSION hstore;' flask_admin_test
+  - docker run --restart always -d -e executable=blob -p 10000:10000 --tmpfs /opt/azurite/folder arafato/azurite:2.6.5
 
 install:
   - pip install tox

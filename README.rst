@@ -38,14 +38,28 @@ Flask-Admin is an active project, well-tested and production ready.
 
 Examples
 --------
-Several usage examples are included in the */examples* folder. Please feel free to add your own examples, or improve
-on some of the existing ones, and then submit them via GitHub as a *pull-request*.
+Several usage examples are included in the */examples* folder. Please add your own, or improve
+on the existing examples, and submit a *pull-request*.
 
-You can see some of these examples in action at `http://examples.flask-admin.org <http://examples.flask-admin.org/>`_.
-To run the examples on your local environment, one at a time, do something like::
+To run the examples in your local environment::
 
-    cd flask-admin
-    python examples/simple/app.py
+  1. Clone the repository::
+
+        git clone https://github.com/flask-admin/flask-admin.git
+        cd flask-admin
+
+  2. Create and activate a virtual environment::
+
+        virtualenv env -p python3
+        source env/bin/activate
+
+  3. Install requirements::
+
+        pip install -r 'examples/sqla/requirements.txt'
+
+  4. Run the application::
+
+        python examples/sqla/app.py
 
 Documentation
 -------------
@@ -91,15 +105,21 @@ You should see output similar to::
 
 For all the tests to pass successfully, you'll need Postgres & MongoDB to be running locally. For Postgres::
 
+    > psql postgres
     CREATE DATABASE flask_admin_test;
+    \q
+
+    > psql flask_admin_test
     CREATE EXTENSION postgis;
+    CREATE EXTENSION hstore;
 
 You can also run the tests on multiple environments using *tox*.
 
 3rd Party Stuff
 ---------------
 
-Flask-Admin is built with the help of `Bootstrap <http://getbootstrap.com/>`_ and `Select2 <https://github.com/ivaynberg/select2>`_.
+Flask-Admin is built with the help of `Bootstrap <http://getbootstrap.com/>`_,  `Select2 <https://github.com/ivaynberg/select2>`_
+and `Bootswatch <http://bootswatch.com/>`_.
 
 If you want to localize your application, install the `Flask-BabelEx <https://pypi.python.org/pypi/Flask-BabelEx>`_ package.
 

@@ -23,9 +23,9 @@ because they let you group together all of the usual
 *Create, Read, Update, Delete* (CRUD) view logic into a single, self-contained
 class for each of your models.
 
-**What does it look like?** At http://examples.flask-admin.org/ you can see
-some examples of Flask-Admin in action, or browse through the `examples/`
-directory in the `GitHub repository <https://github.com/flask-admin/flask-admin>`_.
+**What does it look like?** Clone the `GitHub repository <https://github.com/flask-admin/flask-admin>`_
+and run the provided examples locally to get a feel for Flask-Admin. There are several to choose from
+in the `examples` directory.
 
 .. toctree::
    :maxdepth: 2
@@ -41,7 +41,7 @@ Support
 
 ****
 
-Python 2.6 - 2.7 and 3.3 - 3.4.
+Python 2.7 and 3.3 or higher.
 
 Indices And Tables
 ------------------

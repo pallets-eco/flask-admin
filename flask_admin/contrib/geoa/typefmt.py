@@ -14,9 +14,13 @@ def geom_formatter(view, value):
         "data-height": 70,
         "data-geometry-type": to_shape(value).geom_type,
         "data-zoom": 15,
+        "data-tile-layer-url": view.tile_layer_url,
+        "data-tile-layer-attribution": view.tile_layer_attribution
     })
-    if value.srid is -1:
+
+    if value.srid == -1:
         value.srid = 4326
+
     geojson = view.session.query(view.model).with_entities(func.ST_AsGeoJSON(value)).scalar()
     return Markup('<textarea %s>%s</textarea>' % (params, geojson))
 
