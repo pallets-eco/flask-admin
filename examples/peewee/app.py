@@ -1,10 +1,10 @@
-from flask import Flask
+import uuid
 
 import peewee
+from flask import Flask
 
 import flask_admin as admin
 from flask_admin.contrib.peewee import ModelView
-
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '123456790'
@@ -36,6 +36,7 @@ class UserInfo(BaseModel):
 
 
 class Post(BaseModel):
+    id = peewee.UUIDField(primary_key=True, default=uuid.uuid4)
     title = peewee.CharField(max_length=120)
     text = peewee.TextField(null=False)
     date = peewee.DateTimeField()
@@ -80,6 +81,7 @@ def index():
 
 if __name__ == '__main__':
     import logging
+
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
 
