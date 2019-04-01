@@ -45,13 +45,15 @@ def get_url(endpoint, **kwargs):
 
 def is_required_form_field(field):
     """
-        Check if form field has `DataRequired` or `InputRequired` validators.
+        Check if form field has `DataRequired`, `InputRequired`, or
+        `FieldListInputRequired` validators.
 
         :param field:
             WTForms field to check
     """
+    from flask_admin.form.validators import FieldListInputRequired
     for validator in field.validators:
-        if isinstance(validator, (DataRequired, InputRequired)):
+        if isinstance(validator, (DataRequired, InputRequired, FieldListInputRequired)):
             return True
     return False
 
