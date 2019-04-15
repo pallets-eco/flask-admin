@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAEA,UAUC;EATC,WAAW,EAAE,uBAAuB;EACpC,UAAU,EAAE,MAAM;EAClB,WAAW,EAAE,MAAM;EACnB,GAAG,EAAE,oCAAyC;EAC9C,GAAG,EAAE,8SAI8D;AAGrE,IAAK;EACH,WAAW,EAAE,uBAAuB",
+"sources": ["fa-brands.scss"],
+"names": [],
+"file": "fa-brands.css"
+}

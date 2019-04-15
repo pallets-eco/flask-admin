@@ -1,0 +1,116 @@
+{%- macro filter_options(btn_class='dropdown-toggle') -%}
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+           aria-expanded="false">
+        {{ _gettext('Add Filter') }}
+        </a>
+    <ul class="dropdown-menu field-filters">
+        {% for k in filter_groups %}
+        <li class="dropdown-item">
+            <a href="javascript:void(0)" class="filter" onclick="return false;">{{ k }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    </li>
+{%- endmacro -%}
+
+{%- macro export_options(btn_class='dropdown-toggle') -%}
+    <li class="nav-item dropdown">
+        <a class="nav-link {{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
+            {{ _gettext('Export') }}<b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu field-filters">
+            {%- for export_type in admin_view.export_types -%}
+            <li class="dropdown-item">
+                <a href="{{ get_url('.export', export_type=export_type, **request.args) }}" title="{{ _gettext('Export') }}">{{ _gettext('Export') + ' ' + export_type|upper }}</a>
+            </li>
+            {%- endfor -%}
+        </ul>
+    </li>
+{%- endmacro -%}
+
+{% macro filter_form() %}
+    <form id="filter_form" method="GET" action="{{ return_url }}">
+        {%- if sort_column is not none -%}
+            <input type="hidden" class="form-control" name="sort" value="{{ sort_column }}">
+        {%- endif -%}
+        {%- if sort_desc -%}
+            <input type="hidden" class="form-control" name="desc" value="{{ sort_desc }}">
+        {%- endif -%}
+        {%- if search -%}
+            <input type="hidden" class="form-control" name="search" value="{{ search }}">
+        {%- endif -%}
+        {%- if page_size != default_page_size -%}
+            <input type="hidden" class="form-control" name="page_size" value="{{ page_size }}">
+        {%- endif -%}
+        <div class="float-right">
+            <button type="submit" class="btn btn-primary" style="display: none">{{ _gettext('Apply') }}</button>
+            {%- if active_filters -%}
+                <a href="{{ clear_search_url }}" class="btn btn-secondary">{{ _gettext('Reset Filters') }}</a>
+            {%- endif -%}
+        </div>
+
+        <table class="filters"></table>
+    </form>
+    <div class="clearfix"></div>
+{% endmacro %}
+
+{% macro search_form(input_class="") %}
+<form method="GET" action="{{ return_url }}" class="form-inline" role="search">
+    {% for flt_name, flt_value in filter_args.items() %}
+    <input type="hidden" name="{{ flt_name }}" value="{{ flt_value }}">
+    {% endfor %}
+    {% if page_size != default_page_size %}
+    <input type="hidden" name="page_size" value="{{ page_size }}">
+    {% endif %}
+    {% if sort_column is not none %}
+    <input type="hidden" name="sort" value="{{ sort_column }}">
+    {% endif %}
+    {% if sort_desc %}
+    <input type="hidden" name="desc" value="{{ sort_desc }}">
+    {% endif %}
+    {% if search %}
+    <div class="input-group">
+        <input type="text" name="search" value="{{ search }}" class="{{ input_class }} form-control" placeholder="{{ _gettext('Search') }}">
+        <div class="input-group-append">
+            <a href="{{ clear_search_url }}" class="input-group-text">
+                <span class="fas fa-times"></span>
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="form-group">
+        <input type="text" name="search" value="" class="{{ input_class }} form-control" placeholder="{{ _gettext('Search') }}">
+    </div>
+    {% endif %}
+</form>
+{% endmacro %}
+
+{%- macro page_size_form(generator, btn_class='dropdown-toggle') -%}
+    <li class="nav-item dropdown">
+        <a class="nav-link {{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
+        {{ page_size }} {{ _gettext('items') }}<b class="caret"></b>
+    </a>
+    <ul class="dropdown-menu">
+        <li class="dropdown-item"><a href="{{ generator(20) }}">20 {{ _gettext('items') }}</a></li>
+        <li class="dropdown-item"><a href="{{ generator(50) }}">50 {{ _gettext('items') }}</a></li>
+        <li class="dropdown-item"><a href="{{ generator(100) }}">100 {{ _gettext('items') }}</a></li>
+    </ul>
+    </li>
+{%- endmacro -%}
+
+{%- macro actions(actions) -%}
+    <li class="nav-item dropdown">
+        <a class="nav-link  dropdown-toggle{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
+            {{ _gettext('With selected') }}<b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+            {%- for p in actions -%}
+                <li class="dropdown-item">
+                    <a href="javascript:void(0)"
+                       onclick="return modelActions.execute('{{ p[0] }}');">{{ _gettext(p[1]) }}</a>
+                </li>
+            {%- endfor -%}
+        </ul>
+    </li>
+{%- endmacro -%}
