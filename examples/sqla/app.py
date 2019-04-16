@@ -1,20 +1,20 @@
+import mimetypes
 import os
 import os.path as op
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.hybrid import hybrid_property
-
 from wtforms import validators
 
 import flask_admin as admin
 from flask_admin.base import MenuLink
-from flask_admin.contrib import sqla
+from flask_admin.contrib import sqla, rediscli
 from flask_admin.contrib.sqla import filters
-from flask_admin.contrib.sqla.form import InlineModelConverter
-from flask_admin.contrib.sqla.fields import InlineModelFormList
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter, FilterEqual
 
-
+mimetypes.add_type('text/css', '.css')
+mimetypes.add_type('text/javascript', '.js')
 # Create application
 app = Flask(__name__)
 
@@ -147,9 +147,14 @@ inline_form_options = {
     'form_extra_fields': None,
 }
 
+
 class UserAdmin(sqla.ModelView):
     action_disallowed_list = ['delete', ]
     column_display_pk = True
+    create_modal = True
+    edit_modal = True
+    details_modal = True
+    can_view_details = True
     column_list = [
         'id',
         'last_name',
@@ -186,7 +191,6 @@ class UserAdmin(sqla.ModelView):
     def _get_parent_list(self):
         # only show available pets in the form
         return Pet.query.filter_by(available=True).all()
-
 
 
 # Customized Post model admin
@@ -226,8 +230,8 @@ class PostAdmin(sqla.ModelView):
     # Pass arguments to WTForms. In this case, change label for text field to
     # be 'Big Text' and add required() validator.
     form_args = dict(
-                    text=dict(label='Big Text', validators=[validators.required()])
-                )
+        text=dict(label='Big Text', validators=[validators.required()])
+    )
 
     form_ajax_refs = {
         'user': {
@@ -251,16 +255,23 @@ class TreeView(sqla.ModelView):
 
 
 class ScreenView(sqla.ModelView):
-    column_list = ['id', 'width', 'height', 'number_of_pixels']  # not that 'number_of_pixels' is a hybrid property, not a field
+    column_list = ['id', 'width', 'height',
+                   'number_of_pixels']  # not that 'number_of_pixels' is a hybrid property, not a field
     column_sortable_list = ['id', 'width', 'height', 'number_of_pixels']
+    can_view_details = True
 
     # Flask-admin can automatically detect the relevant filters for hybrid properties.
-    column_filters = ('number_of_pixels', )
+    column_filters = ('number_of_pixels',)
 
 
 # Create admin
-admin = admin.Admin(app, name='Example: SQLAlchemy', template_mode='bootstrap3')
+admin = admin.Admin(app, name='Example: SQLAlchemy', template_mode='bootstrap4-left')
+from redis import Redis
 
+# Flask setup here
+
+
+admin.add_view(rediscli.RedisCli(Redis()))
 # Add views
 admin.add_view(UserAdmin(User, db.session))
 admin.add_view(sqla.ModelView(Tag, db.session))
@@ -361,7 +372,7 @@ def build_sample_db():
         post.user = user
         post.title = entry['title']
         post.text = entry['content']
-        tmp = int(1000*random.random())  # random number between 0 and 1000:
+        tmp = int(1000 * random.random())  # random number between 0 and 1000:
         post.date = datetime.datetime.now() - datetime.timedelta(days=tmp)
         post.tags = random.sample(tag_list, 2)  # select a couple of tags at random
         db.session.add(post)
@@ -371,12 +382,12 @@ def build_sample_db():
     db.session.add(trunk)
     for i in range(5):
         branch = Tree()
-        branch.name = "Branch " + str(i+1)
+        branch.name = "Branch " + str(i + 1)
         branch.parent = trunk
         db.session.add(branch)
         for j in range(5):
             leaf = Tree()
-            leaf.name = "Leaf " + str(j+1)
+            leaf.name = "Leaf " + str(j + 1)
             leaf.parent = branch
             db.session.add(leaf)
 
@@ -391,6 +402,7 @@ def build_sample_db():
 
     db.session.commit()
     return
+
 
 if __name__ == '__main__':
     # Build a sample db on the fly, if one does not exist yet.
