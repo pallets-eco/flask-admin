@@ -2,8 +2,9 @@
 {% import 'admin/static.html' as admin_static with context %}
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>{% block title %}{% if admin_view.category %}{{ admin_view.category }} - {% endif %}{{ admin_view.name }} - {{ admin_view.admin.name }}{% endblock %}</title>
+<head>
+    <title>{% block title %}{% if admin_view.category %}{{ admin_view.category }} - {% endif %}{{ admin_view.name }} -
+        {{ admin_view.admin.name }}{% endblock %}</title>
     {% block head_meta %}
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -12,12 +13,14 @@
         <meta name="author" content="">
     {% endblock %}
     {% block head_css %}
-        <link href="{{ admin_static.url(filename='bootstrap/bootstrap4/bootstrap.min.css', v='4.1.2') }}" rel="stylesheet">
-        <link href="{{ admin_static.url(filename='vendor/fontawesome-free-5.1.0-web/css/all.css', v='5.1.0') }}" rel="stylesheet">
+        <link href="{{ admin_static.url(filename='bootstrap/bootstrap4/bootstrap.min.css', v='4.1.2') }}"
+              rel="stylesheet">
+        <link href="{{ admin_static.url(filename='vendor/fontawesome-free-5.1.0-web/css/all.css', v='5.1.0') }}"
+              rel="stylesheet">
         {% if admin_view.extra_css %}
-          {% for css_url in admin_view.extra_css %}
-            <link href="{{ css_url }}" rel="stylesheet">
-          {% endfor %}
+            {% for css_url in admin_view.extra_css %}
+                <link href="{{ css_url }}" rel="stylesheet">
+            {% endfor %}
         {% endif %}
         <!-- Main css for admin pages -->
         <link rel="stylesheet" href="{{ admin_static.url(filename="admin/css/bootstrap4/admin.css") }}">
@@ -27,7 +30,7 @@
     {% endblock %}
     {% block head_tail %}
     {% endblock %}
-  </head>
+</head>
 <body>
 {% block page_body %}
     <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
@@ -38,12 +41,10 @@
                 {{ admin_view.admin.name }}
             </a>
         {% endblock %}
-        <input class="form-control form-control-dark w-100" type="text" placeholder="{{ _gettext("Search") }}" aria-label="Search">
-        <ul class="navbar-nav px-3">
-            <li class="nav-item text-nowrap">
-                <a class="nav-link" href="{# todo: Disconnect link #}">{{ _gettext("Disconnect") }}</a>
-            </li>
-        </ul>
+        <input class="form-control form-control-dark w-100" type="text" placeholder="{{ ("Search") }}"
+               aria-label="Search">
+        {{ layout.connection() }}
+
     </nav>
 
     <div class="container-fluid">
@@ -79,20 +80,23 @@
     </div>
 {% endblock %}
 
-    {% block tail_js %}
-    <script src="{{ admin_static.url(filename='vendor/jquery-3.4.0.min.js', v='2.1.4') }}" type="text/javascript"></script>
+{% block tail_js %}
+    <script src="{{ admin_static.url(filename='vendor/jquery-3.4.0.min.js', v='2.1.4') }}"
+            type="text/javascript"></script>
     <script src="{{ admin_static.url(filename='bootstrap/bootstrap4/popper.min.js') }}" type="text/javascript"></script>
-    <script src="{{ admin_static.url(filename='bootstrap/bootstrap4/bootstrap.min.js', v='4.1.2') }}" type="text/javascript"></script>
+    <script src="{{ admin_static.url(filename='bootstrap/bootstrap4/bootstrap.min.js', v='4.1.2') }}"
+            type="text/javascript"></script>
     <script src="{{ admin_static.url(filename='vendor/moment.min.js', v='2.9.0') }}" type="text/javascript"></script>
-    <script src="{{ admin_static.url(filename='vendor/select2/select2.min.js', v='3.5.2') }}" type="text/javascript"></script> 
+    <script src="{{ admin_static.url(filename='vendor/select2/select2.min.js', v='3.5.2') }}"
+            type="text/javascript"></script>
     {% if admin_view.extra_js %}
         {% for js_url in admin_view.extra_js %}
             <script src="{{ js_url }}" type="text/javascript"></script>
         {% endfor %}
     {% endif %}
-    {% endblock %}
+{% endblock %}
 
-    {% block tail %}
-    {% endblock %}
-  </body>
+{% block tail %}
+{% endblock %}
+</body>
 </html>

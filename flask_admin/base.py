@@ -1,15 +1,14 @@
 import os.path as op
 import warnings
-
 from functools import wraps
 
 from flask import Blueprint, current_app, render_template, abort, g, url_for
-from flask_admin import babel
-from flask_admin._compat import with_metaclass, as_unicode
-from flask_admin import helpers as h
 
+from flask_admin import babel
+from flask_admin import helpers as h
+from flask_admin._compat import with_metaclass, as_unicode
 # For compatibility reasons import MenuLink
-from flask_admin.menu import MenuCategory, MenuView, MenuLink, SubMenuCategory  # noqa: F401
+from flask_admin.menu import MenuCategory, MenuView, SubMenuCategory  # noqa: F401
 
 
 def expose(url='/', methods=('GET',)):
@@ -21,11 +20,13 @@ def expose(url='/', methods=('GET',)):
         :param methods:
             Allowed HTTP methods. By default only GET is allowed.
     """
+
     def wrap(f):
         if not hasattr(f, '_urls'):
             f._urls = []
         f._urls.append((url, methods))
         return f
+
     return wrap
 
 
@@ -39,6 +40,7 @@ def expose_plugview(url='/'):
 
         .. versionadded:: 1.0.4
     """
+
     def wrap(v):
         handler = expose(url, v.methods)
 
@@ -80,6 +82,7 @@ class AdminViewMeta(type):
         Does some precalculations (like getting list of view methods from the class) to avoid
         calculating them for each view class instance.
     """
+
     def __init__(cls, classname, bases, fields):
         type.__init__(cls, classname, bases, fields)
 
@@ -122,6 +125,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
             admin.add_view(MyView(name='My View', menu_icon_type='glyph', menu_icon_value='glyphicon-home'))
     """
+
     @property
     def _template_args(self):
         """
@@ -290,6 +294,10 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         kwargs['admin_view'] = self
         kwargs['admin_base_template'] = self.admin.base_template
 
+        # Data for login/logout routes
+        kwargs['disconnect_route'] = self.admin.disconnect_route
+        kwargs['connect_route'] = self.admin.connect_route
+
         # Provide i18n support even if flask-babel is not installed
         # or enabled.
         kwargs['_gettext'] = babel.gettext
@@ -431,6 +439,7 @@ class AdminIndexView(BaseView):
         * Automatically associates with static folder.
         * Default template is ``admin/index.html``
     """
+
     def __init__(self, name=None, category=None,
                  endpoint=None, url=None,
                  template='admin/index.html',
@@ -456,6 +465,7 @@ class Admin(object):
     """
         Collection of the admin views. Also manages menu structure.
     """
+
     def __init__(self, app=None, name=None,
                  url=None, subdomain=None,
                  index_view=None,
@@ -464,7 +474,9 @@ class Admin(object):
                  static_url_path=None,
                  base_template=None,
                  template_mode=None,
-                 category_icon_classes=None):
+                 category_icon_classes=None,
+                 disconnect_route=None,
+                 connect_route=None):
         """
             Constructor.
 
@@ -520,6 +532,10 @@ class Admin(object):
 
         # Add index view
         self._set_admin_index_view(index_view=index_view, endpoint=endpoint, url=url)
+
+        # Data for login/logout routes
+        self.disconnect_route = disconnect_route or None
+        self.connect_route = connect_route or None
 
         # Register with application
         if app is not None:
