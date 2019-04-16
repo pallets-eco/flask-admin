@@ -8,7 +8,7 @@ from flask_admin import babel
 from flask_admin import helpers as h
 from flask_admin._compat import with_metaclass, as_unicode
 # For compatibility reasons import MenuLink
-from flask_admin.menu import MenuCategory, MenuView, SubMenuCategory  # noqa: F401
+from flask_admin.menu import MenuCategory, MenuView, MenuLink, SubMenuCategory  # noqa: F401
 
 
 def expose(url='/', methods=('GET',)):
