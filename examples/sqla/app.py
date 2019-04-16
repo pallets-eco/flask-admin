@@ -1,4 +1,3 @@
-import mimetypes
 import os
 import os.path as op
 
@@ -9,12 +8,10 @@ from wtforms import validators
 
 import flask_admin as admin
 from flask_admin.base import MenuLink
-from flask_admin.contrib import sqla, rediscli
+from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import filters
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter, FilterEqual
 
-mimetypes.add_type('text/css', '.css')
-mimetypes.add_type('text/javascript', '.js')
 # Create application
 app = Flask(__name__)
 
@@ -151,10 +148,6 @@ inline_form_options = {
 class UserAdmin(sqla.ModelView):
     action_disallowed_list = ['delete', ]
     column_display_pk = True
-    create_modal = True
-    edit_modal = True
-    details_modal = True
-    can_view_details = True
     column_list = [
         'id',
         'last_name',
@@ -258,20 +251,16 @@ class ScreenView(sqla.ModelView):
     column_list = ['id', 'width', 'height',
                    'number_of_pixels']  # not that 'number_of_pixels' is a hybrid property, not a field
     column_sortable_list = ['id', 'width', 'height', 'number_of_pixels']
-    can_view_details = True
 
     # Flask-admin can automatically detect the relevant filters for hybrid properties.
     column_filters = ('number_of_pixels',)
 
 
 # Create admin
-admin = admin.Admin(app, name='Example: SQLAlchemy', template_mode='bootstrap4-left')
-from redis import Redis
+admin = admin.Admin(app, name='Example: SQLAlchemy', template_mode='bootstrap3')
 
 # Flask setup here
 
-
-admin.add_view(rediscli.RedisCli(Redis()))
 # Add views
 admin.add_view(UserAdmin(User, db.session))
 admin.add_view(sqla.ModelView(Tag, db.session))

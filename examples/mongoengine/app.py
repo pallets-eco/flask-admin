@@ -119,7 +119,7 @@ def index():
 
 if __name__ == '__main__':
     # Create admin
-    admin = admin.Admin(app, 'Example: MongoEngine',  template_mode='bootstrap4-left')
+    admin = admin.Admin(app, 'Example: MongoEngine')
 
     # Add views
     admin.add_view(UserView(User))
