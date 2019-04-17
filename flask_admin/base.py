@@ -298,6 +298,9 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
         kwargs['disconnect_route'] = self.admin.disconnect_route
         kwargs['connect_route'] = self.admin.connect_route
 
+        # Data for favicon
+        kwargs['favicon'] = self.admin.favicon
+
         # Provide i18n support even if flask-babel is not installed
         # or enabled.
         kwargs['_gettext'] = babel.gettext
@@ -476,7 +479,8 @@ class Admin(object):
                  template_mode=None,
                  category_icon_classes=None,
                  disconnect_route=None,
-                 connect_route=None):
+                 connect_route=None,
+                 favicon=None):
         """
             Constructor.
 
@@ -507,6 +511,14 @@ class Admin(object):
             :param category_icon_classes:
                 A dict of category names as keys and html classes as values to be added to menu category icons.
                 Example: {'Favorites': 'glyphicon glyphicon-star'}
+            :param connect_route:
+                Route for login, for example security.login if you use flask-security (only used for template
+                bootstrap4-left).
+            :param disconnect_route:
+                Route for logout, for example security.logout if you use flask-security (only used for template
+                bootstrap4-left).
+            :param favicon:
+                Static path to favicon
         """
         self.app = app
 
@@ -536,6 +548,9 @@ class Admin(object):
         # Data for login/logout routes
         self.disconnect_route = disconnect_route or None
         self.connect_route = connect_route or None
+
+        # Favicon static path
+        self.favicon = favicon
 
         # Register with application
         if app is not None:

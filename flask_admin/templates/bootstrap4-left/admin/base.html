@@ -25,7 +25,9 @@
         <!-- Main css for admin pages -->
         <link rel="stylesheet" href="{{ admin_static.url(filename="admin/css/bootstrap4/admin.css") }}">
     {% endblock %}
-    <link rel="icon" href="{{ admin_static.url(filename="admin/favicon.ico") }}"/>
+{% if favicon %}
+    <link rel="icon" href="{{ url_for("static", filename=favicon) }}">
+{% endif %}
     {% block head %}
     {% endblock %}
     {% block head_tail %}
