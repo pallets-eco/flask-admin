@@ -70,7 +70,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         query = query.filter(or_(*filters))
 
         if self.filters:
-            filters = [text("%s.%s") % (self.model.__tablename__.lower(), value) for value in self.filters]
+            filters = [text("%s.%s" % (self.model.__tablename__.lower(), value)) for value in self.filters]
             query = query.filter(and_(*filters))
 
         if self.order_by:
