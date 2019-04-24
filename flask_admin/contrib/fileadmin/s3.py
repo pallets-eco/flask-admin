@@ -166,6 +166,14 @@ class S3Storage(object):
         keys = self._get_path_keys(path + self.separator)
         return len(keys) == 1
 
+    def read_file(self, path):
+        key = Key(self.bucket, path)
+        return key.get_contents_as_string()
+
+    def write_file(self, path, content):
+        key = Key(self.bucket, path)
+        key.set_contents_from_file(content)
+
 
 class S3FileAdmin(BaseFileAdmin):
     """

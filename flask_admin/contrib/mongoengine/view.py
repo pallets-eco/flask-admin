@@ -140,7 +140,8 @@ class ModelView(BaseModelView):
 
     allowed_search_types = (mongoengine.StringField,
                             mongoengine.URLField,
-                            mongoengine.EmailField)
+                            mongoengine.EmailField,
+                            mongoengine.ReferenceField)
     """
         List of allowed search field types.
     """
@@ -363,8 +364,8 @@ class ModelView(BaseModelView):
 
                 # Check type
                 if (field_type not in self.allowed_search_types):
-                        raise Exception('Can only search on text columns. ' +
-                                        'Failed to setup search for "%s"' % p)
+                    raise Exception('Can only search on text columns. ' +
+                                    'Failed to setup search for "%s"' % p)
 
                 self._search_fields.append(p)
 
@@ -466,7 +467,12 @@ class ModelView(BaseModelView):
         criteria = None
 
         for field in self._search_fields:
-            flt = {'%s__%s' % (field.name, op): term}
+            if type(field) == mongoengine.ReferenceField:
+                import re
+                regex = re.compile('.*%s.*' % term)
+            else:
+                regex = term
+            flt = {'%s__%s' % (field.name, op): regex}
             q = mongoengine.Q(**flt)
 
             if criteria is None:
@@ -520,7 +526,9 @@ class ModelView(BaseModelView):
             order = self._get_default_order()
 
             if order:
-                query = query.order_by('%s%s' % ('-' if order[1] else '', order[0]))
+                keys = ['%s%s' % ('-' if desc else '', col)
+                        for (col, desc) in order]
+                query = query.order_by(*keys)
 
         # Pagination
         if page_size is None:

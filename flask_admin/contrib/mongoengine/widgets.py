@@ -1,9 +1,10 @@
-from wtforms.widgets import HTMLString, html_params
+from wtforms.widgets import html_params
 
 from jinja2 import escape
 
 from mongoengine.fields import GridFSProxy, ImageGridFsProxy
 
+from flask_admin._backwards import Markup
 from flask_admin.helpers import get_url
 from . import helpers
 
@@ -31,10 +32,10 @@ class MongoFileInput(object):
                 'marker': '_%s-delete' % field.name
             }
 
-        return HTMLString('%s<input %s>' % (placeholder,
-                                            html_params(name=field.name,
-                                                        type='file',
-                                                        **kwargs)))
+        return Markup('%s<input %s>' % (placeholder,
+                      html_params(name=field.name,
+                                  type='file',
+                                  **kwargs)))
 
 
 class MongoImageInput(object):
@@ -48,7 +49,6 @@ class MongoImageInput(object):
 
     def __call__(self, field, **kwargs):
         kwargs.setdefault('id', field.id)
-
         placeholder = ''
         if field.data and isinstance(field.data, ImageGridFsProxy):
             args = helpers.make_thumb_args(field.data)
@@ -57,7 +57,7 @@ class MongoImageInput(object):
                 'marker': '_%s-delete' % field.name
             }
 
-        return HTMLString('%s<input %s>' % (placeholder,
-                                            html_params(name=field.name,
-                                                        type='file',
-                                                        **kwargs)))
+        return Markup('%s<input %s>' % (placeholder,
+                      html_params(name=field.name,
+                                  type='file',
+                                  **kwargs)))

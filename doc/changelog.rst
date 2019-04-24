@@ -1,6 +1,51 @@
 Changelog
 =========
 
+Next release
+-----
+
+* Fix display of inline x-editable boolean fields on list view
+
+1.5.3
+-----
+
+* Fixed XSS vulnerability
+* Support nested categories in the navbar menu
+* SQLAlchemy
+    * sort on multiple columns with `column_default_sort`
+    * sort on related models in `column_sortable_list`
+    * show searchable fields in search input's placeholder text
+    * fix: inline model forms can now also be used for models with multiple primary keys
+    * support for using mapped `column_property`
+* Upgrade Leaflet and Leaflet.draw plugins, used for geoalchemy integration
+* Specify `minimum_input_length` for ajax widget
+* Peewee: support composite keys
+* MongoEngine: when searching/filtering the input is now regarded as case-insensitive by default
+* FileAdmin
+    * handle special characters in filename
+    * fix a bug with listing directories on Windows
+    * avoid raising an exception when unknown sort parameter is encountered
+* WTForms 3 support
+
+1.5.2
+-----
+
+* Fixed XSS vulnerability
+* Fixed Peewee support
+* Added detail view column formatters
+* Updated Flask-Login example to work with the newer version of the library
+* Various SQLAlchemy-related fixes
+* Various Windows related fixes for the file admin
+
+1.5.1
+-----
+
+* Dropped Python 2.6 support
+* Fixed SQLAlchemy >= 1.2 compatibility
+* Fixed Pewee 3.0 compatibility
+* Fixed max year for a combo date inline editor
+* Lots of small bug fixes
+
 1.5.0
 -----
 
@@ -13,7 +58,7 @@ Changelog
   - Added support for association proxies
   - Added support for remote hybrid properties filters
   - Added support for ARRAY column type
-* Localization-related fixes 
+* Localization-related fixes
 * MongoEngine backend is now properly formats model labels
 * Improved Google App Engine support:
   - Added TextProperty, KeyProperty and SelectField support

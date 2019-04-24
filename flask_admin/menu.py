@@ -7,7 +7,7 @@ class BaseMenu(object):
     """
     def __init__(self, name, class_name=None, icon_type=None, icon_value=None, target=None):
         self.name = name
-        self.class_name = class_name
+        self.class_name = class_name if class_name is not None else ''
         self.icon_type = icon_type
         self.icon_value = icon_value
         self.target = target
@@ -141,3 +141,9 @@ class MenuLink(BaseMenu):
 
     def get_url(self):
         return self.url or url_for(self.endpoint)
+
+
+class SubMenuCategory(MenuCategory):
+    def __init__(self, *args, **kwargs):
+        super(SubMenuCategory, self).__init__(*args, **kwargs)
+        self.class_name += ' dropdown-submenu'

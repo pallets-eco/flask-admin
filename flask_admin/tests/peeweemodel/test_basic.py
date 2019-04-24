@@ -870,8 +870,8 @@ def test_default_sort():
     M1, _ = create_models(db)
 
     M1('c', 1).save()
-    M1('b', 2).save()
-    M1('a', 3).save()
+    M1('b', 1).save()
+    M1('a', 2).save()
 
     eq_(M1.select().count(), 3)
 
@@ -883,6 +883,18 @@ def test_default_sort():
     eq_(data[0].test1, 'a')
     eq_(data[1].test1, 'b')
     eq_(data[2].test1, 'c')
+
+    # test default sort with multiple columns
+    order = [('test2', False), ('test1', False)]
+    view2 = CustomModelView(M1, column_default_sort=order, endpoint='m1_2')
+    admin.add_view(view2)
+
+    _, data = view2.get_list(0, None, None, None, None)
+
+    eq_(len(data), 3)
+    eq_(data[0].test1, 'b')
+    eq_(data[1].test1, 'c')
+    eq_(data[2].test1, 'a')
 
 
 def test_extra_fields():

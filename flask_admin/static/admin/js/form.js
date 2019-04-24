@@ -11,7 +11,7 @@
 
         var opts = {
           width: 'resolve',
-          minimumInputLength: 1,
+          minimumInputLength: $el.attr('data-minimum-input-length'),
           placeholder: 'data-placeholder',
           ajax: {
             url: $el.attr('data-url'),
@@ -75,6 +75,10 @@
       function processLeafletWidget($el, name) {
         if (!window.MAPBOX_MAP_ID) {
           console.error("You must set MAPBOX_MAP_ID in your Flask settings to use the map widget");
+          return false;
+        }
+        if (!window.DEFAULT_CENTER_LAT || !window.DEFAULT_CENTER_LONG) {
+          console.error("You must set DEFAULT_CENTER_LAT and DEFAULT_CENTER_LONG in your Flask settings to use the map widget");
           return false;
         }
 
@@ -148,12 +152,8 @@
             map.fitBounds(bounds);
           }
         } else {
-          // look up user's location by IP address
-          $.getJSON("//ip-api.com/json/?callback=?", function(data) {
-            map.setView([data["lat"], data["lon"]], 12);
-          }).fail(function() {
-              map.setView([0, 0], 1)
-          });
+          // use the default map center
+          map.setView([window.DEFAULT_CENTER_LAT, window.DEFAULT_CENTER_LONG], 12);
         }
 
         // set up tiles
@@ -182,7 +182,8 @@
         var drawOptions = {
           draw: {
             // circles are not geometries in geojson
-            circle: false
+            circle: false,
+            circlemarker: false
           },
           edit: {
             featureGroup: editableLayers
@@ -303,6 +304,8 @@
 
                 if ($el.attr('data-allow-blank'))
                     opts['allowClear'] = true;
+
+                opts['minimumInputLength'] = $el.attr('data-minimum-input-length');
 
                 if ($el.attr('data-tags')) {
                     $.extend(opts, {
@@ -491,15 +494,21 @@
             case 'x-editable-boolean':
                 $el.editable({
                     params: overrideXeditableParams,
-                    display: function(value, sourceData, response) {
-                       // display new boolean value as an icon
-                       if(response) {
-                           if(value == '1') {
-                               $(this).html('<span class="fa fa-check-circle glyphicon glyphicon-ok-circle icon-ok-circle"></span>');
-                           } else {
-                               $(this).html('<span class="fa fa-minus-circle glyphicon glyphicon-minus-sign icon-minus-sign"></span>');
-                           }
+                    display: function(value, response) {
+                       // display boolean value as an icon
+                       if(value == '1') {
+                           $(this).html('<span class="fa fa-check-circle glyphicon glyphicon-ok-circle icon-ok-circle"></span>');
+                       } else {
+                           $(this).html('<span class="fa fa-minus-circle glyphicon glyphicon-minus-sign icon-minus-sign"></span>');
                        }
+                    },
+                    success: function(response, newValue) {
+                      // update display
+                      if(newValue == '1') {
+                          $(this).html('<span class="fa fa-check-circle glyphicon glyphicon-ok-circle icon-ok-circle"></span>');
+                      } else {
+                          $(this).html('<span class="fa fa-minus-circle glyphicon glyphicon-minus-sign icon-minus-sign"></span>');
+                      }
                     }
                 });
         }
@@ -604,9 +613,11 @@
     // Add on event handler
     $('body').on('click', '.inline-remove-field' , function(e) {
         e.preventDefault();
-
+        var r = confirm($('.inline-remove-field').attr('value'));
         var form = $(this).closest('.inline-field');
+        if ( r == true ){
         form.remove();
+      }
     });
 
     // Expose faForm globally

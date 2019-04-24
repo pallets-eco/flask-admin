@@ -27,9 +27,8 @@
 
 {% macro script(message, actions, actions_confirmation) %}
     {% if actions %}
-    <script src="{{ admin_static.url(filename='admin/js/actions.js', v='1.0.0') }}"></script>
-    <script language="javascript">
-        var modelActions = new AdminModelActions({{ message|tojson|safe }}, {{ actions_confirmation|tojson|safe }});
-    </script>
+        <div id="actions-confirmation-data" style="display:none;">{{ actions_confirmation|tojson|safe }}</div>
+        <div id="message-data" style="display:none;">{{ message|tojson|safe }}</div>
+        <script src="{{ admin_static.url(filename='admin/js/actions.js', v='1.0.0') }}"></script>
     {% endif %}
 {% endmacro %}

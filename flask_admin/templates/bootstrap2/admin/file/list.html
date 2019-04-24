@@ -37,7 +37,7 @@
                 <th>
                     {% if admin_view.is_column_sortable(column) %}
                     {% if sort_column == column %}
-                        <a href="{{ sort_url(column, True) }}" title="{{ _gettext('Sort by %(name)s', name=column) }}">
+                        <a href="{{ sort_url(column, dir_path, True) }}" title="{{ _gettext('Sort by %(name)s', name=column) }}">
                             {{ admin_view.column_label(column) }}
                             {% if sort_desc %}
                                 <i class="fa fa-chevron-up icon-chevron-up"></i>
@@ -46,7 +46,7 @@
                             {% endif %}
                         </a>
                     {% else %}
-                        <a href="{{ sort_url(column) }}" title="{{ _gettext('Sort by %(name)s', name=column) }}">{{ admin_view.column_label(column) }}</a>
+                        <a href="{{ sort_url(column, dir_path) }}" title="{{ _gettext('Sort by %(name)s', name=column) }}">{{ admin_view.column_label(column) }}</a>
                     {% endif %}
                     {% else %}
                     {{ _gettext(admin_view.column_label(column)) }}
@@ -84,7 +84,11 @@
                         {% if name != '..' and admin_view.can_delete_dirs %}
                         <form class="icon" method="POST" action="{{ get_url('.delete') }}">
                             {{ delete_form.path(value=path) }}
-                            {{ delete_form.csrf_token }}
+                            {% if delete_form.csrf_token %}
+                                {{ delete_form.csrf_token }}
+                            {% elif csrf_token %}
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                {% endif %}
                             <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
                                 <i class="fa fa-times icon-remove"></i>
                             </button>
@@ -93,7 +97,11 @@
                     {% else %}
                     <form class="icon" method="POST" action="{{ get_url('.delete') }}">
                         {{ delete_form.path(value=path) }}
-                        {{ delete_form.csrf_token }}
+                            {% if delete_form.csrf_token %}
+                                {{ delete_form.csrf_token }}
+                            {% elif csrf_token %}
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                {% endif %}
                         <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
                             <i class="fa fa-times icon-remove"></i>
                         </button>
