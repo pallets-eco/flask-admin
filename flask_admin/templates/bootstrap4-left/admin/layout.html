@@ -29,9 +29,6 @@
                     <a href="#{{ item.name|e }}Submenu" data-toggle="collapse" aria-expanded="false"
                        class="dropdown-toggle nav-link">
                 {% endif %}
-                {% if class_name %}
-                    <span class="{{ class_name }}"></span>
-                {% endif %}
             {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}
             {{ menu_icon(item) }}{{ item.name }}
             {% if 'dropdown-submenu' in class_name %}
