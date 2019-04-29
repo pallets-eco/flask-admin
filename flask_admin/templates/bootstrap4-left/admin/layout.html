@@ -18,9 +18,9 @@
             {% if children %}
                 {% set class_name = item.get_class_name() or '' %}
                 {% if item.is_active(admin_view) %}
-                    <li class="nav-item active{% if class_name %} {{ class_name }}{% endif %}">
+                    <li class="nav-item active">
                         {% else %}
-                    <li class="nav-item{% if class_name %} {{ class_name }}{% endif %}">
+                    <li class="nav-item">
                 {% endif %}
                 {% if item.is_active(admin_view) %}
                     <a href="#{{ item.name|e }}Submenu" data-toggle="collapse" aria-expanded="true"
@@ -28,6 +28,9 @@
                 {% else %}
                     <a href="#{{ item.name|e }}Submenu" data-toggle="collapse" aria-expanded="false"
                        class="dropdown-toggle nav-link">
+                {% endif %}
+                {% if class_name %}
+                    <span class="{{ class_name }}"></span>
                 {% endif %}
             {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}
             {{ menu_icon(item) }}{{ item.name }}
