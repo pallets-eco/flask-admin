@@ -455,7 +455,14 @@
                 processLeafletWidget($el, name);
                 return true;
             case 'x-editable':
-                $el.editable({params: overrideXeditableParams});
+                $el.editable({
+                    params: overrideXeditableParams,
+                    combodate: {
+                        // prevent minutes from showing in 5 minute increments
+                        minuteStep: 1,
+                        maxYear: 2030,
+                    }                    
+                });
                 return true;
             case 'x-editable-combodate':
                 $el.editable({
