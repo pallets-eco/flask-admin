@@ -4,7 +4,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 import flask_admin as admin
-print(admin.__version__)
 from flask_admin.contrib.sqla import ModelView
 
 
@@ -13,6 +12,7 @@ app = Flask(__name__)
 
 # Create dummy secrey key so we can use sessions
 app.config['SECRET_KEY'] = '123456790'
+app.config['FLASK_ADMIN_SWATCH'] = 'Flatly'
 
 # Create in-memory database
 app.config['DATABASE_FILE'] = 'sample_db.sqlite'
@@ -137,6 +137,7 @@ def build_sample_db():
 
     db.session.commit()
     return
+
 
 if __name__ == '__main__':
 
