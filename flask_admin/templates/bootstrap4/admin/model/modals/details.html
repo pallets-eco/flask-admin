@@ -12,9 +12,7 @@
   <div class="modal-body">
   {% block details_search %}
     <div class="input-group fa_filter_container col-lg-6">
-      <div class="input-group-prepend">
-        <span class="input-group-text">{{ _gettext('Filter') }}</span>
-      </div>
+      <span class="input-group-addon">{{ _gettext('Filter') }}</span>
       <input id="fa_filter" type="text" class="form-control">
     </div>
   {% endblock %}

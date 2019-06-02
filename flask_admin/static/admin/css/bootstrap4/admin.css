@@ -1,99 +1,110 @@
-body {
-    font-size: .875rem;
-}
-
-.feather {
-    width: 16px;
-    height: 16px;
-    vertical-align: text-bottom;
-}
-
-/*
- * Sidebar
- */
-
-.sidebar {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 100; /* Behind the navbar */
-    padding: 48px 0 0; /* Height of navbar */
-    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-}
-
-.sidebar-sticky {
-    position: relative;
-    top: 0;
-    height: calc(100vh - 48px);
-    padding-top: .5rem;
-    overflow-x: hidden;
-    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
-}
-
-@supports ((position: -webkit-sticky) or (position: sticky)) {
-    .sidebar-sticky {
-        position: -webkit-sticky;
-        position: sticky;
-    }
-}
-
-.sidebar .nav-link {
-    font-weight: 500;
-    color: #333;
-}
-
-.sidebar .nav-link.active {
-    color: #007bff;
-}
-
-.sidebar-heading {
-    font-size: .75rem;
-    text-transform: uppercase;
-}
-
-/*
- * Content
- */
-
-[role="main"] {
-    padding-top: 60px; /* Space for fixed navbar */
-}
-
-/*
- * Navbar
- */
-
-.navbar-brand {
-    padding-top: .75rem;
-    padding-bottom: .75rem;
-    font-size: 1rem;
-    background-color: rgba(0, 0, 0, .25);
-    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
-}
-
-.navbar .form-control {
-    padding: .75rem 1rem;
-    border-width: 0;
-    border-radius: 0;
-}
-
-.form-control-dark {
-    color: #fff;
-    background-color: rgba(255, 255, 255, .1);
-    border-color: rgba(255, 255, 255, .1);
-}
-
-.form-control-dark:focus {
-    border-color: transparent;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
-}
-
-.actions form {
+/* List View - fix trash icon inside table column */
+.model-list form.icon {
     display: inline;
-    /*margin-right: -40px;*/
 }
 
-.hide {
-    display: none;
+.model-list form.icon button {
+    border: none;
+    background: transparent;
+    text-decoration: none;
+    padding: 0;
+    line-height: normal;
+}
+
+.model-list a.icon:first-child {
+    margin-left: 10px;
+}
+
+/* List View - prevent link icons from differing from trash icon */
+.model-list a.icon {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* List View - fix checkbox column width */
+.list-checkbox-column {
+    width: 14px;
+}
+
+/* List View - fix overlapping border between actions and table */
+.model-list  {
+    position: static;
+    margin-top: -1px;
+    z-index: 999;
+}
+
+/* List View Search Form - fix gap between form and table */
+.actions-nav form.navbar-form {
+    margin: 1px 0 0 0;
+}
+
+/* List View - prevent word wrap on buttons column, to keep it on one line */
+.list-buttons-column {
+    white-space: nowrap;
+}
+
+/* Filters */
+table.filters {
+    border-collapse: collapse;
+    border-spacing: 4px;
+}
+
+/* prevents gap between table and actions while there are no filters set */
+table.filters:not(:empty) {
+    margin: 12px 0px 20px 0px;
+}
+
+/* spacing between filter X button, operation, and value field */
+/* uses tables instead of form classes for bootstrap2-3 compatibility */
+table.filters tr td {
+    padding-right: 5px;
+    padding-bottom: 3px;
+}
+
+/* Filters - Select2 Boxes */
+.filters .filter-op {
+    width: 130px;
+}
+
+.filters .filter-val {
+    width: 220px;
+}
+
+/* Image thumbnails */
+.image-thumbnail img {
+    max-width: 100px;
+    max-height: 100px;
+}
+
+/* Forms */
+/* adds spacing between navbar and edit/create form (non-modal only) */
+/* required because form-horizontal removes top padding */
+div.container > .admin-form {
+    margin-top: 35px;
+}
+
+/* Form Field Description - Appears when field has 'description' attribute */
+/* Test with: form_args = {'name':{'description': 'test'}} */
+/* prevents awkward gap after help-block - This is default for bootstrap2 */
+.admin-form  .help-block {
+    margin-bottom: 0px;
+}
+
+/* Modals */
+/* hack to prevent cut-off left side of select2 inside of modal */
+/* may be able to remove this after Bootstrap v3.3.5 */
+body.modal-open {
+    overflow-y: scroll;
+    padding-right: 0 !important;
+}
+
+/* Details View - add space between navbar and results */
+.fa_filter_container {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.table-responsive
+{
+    overflow-x: auto;
 }
