@@ -38,8 +38,10 @@
     <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
         {% block brand %}
             <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{{ admin_view.admin.url }}">
-                <img src="{{ admin_static.url(filename="admin/favicon.ico") }}" width="30" height="30"
-                     class="d-inline-block align-top" alt="">
+                {% if favicon %}
+                    <img src="{{ admin_static.url(filename=favicon }}" width="30" height="30"
+                         class="d-inline-block align-top" alt="">
+                {% endif %}
                 {{ admin_view.admin.name }}
             </a>
         {% endblock %}
