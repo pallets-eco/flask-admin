@@ -39,7 +39,7 @@
         {% block brand %}
             <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{{ admin_view.admin.url }}">
                 {% if favicon %}
-                    <img src="{{ admin_static.url(filename=favicon }}" width="30" height="30"
+                    <img src="{{ admin_static.url(filename=favicon) }}" width="30" height="30"
                          class="d-inline-block align-top" alt="">
                 {% endif %}
                 {{ admin_view.admin.name }}
