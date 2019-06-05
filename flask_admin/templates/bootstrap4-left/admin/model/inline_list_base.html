@@ -30,10 +30,10 @@
     {# template for new inline form fields #}
     <div class="inline-field-template hide">
         {% filter forceescape %}
-        <div class="inline-field well well-sm">
-            <legend>
+        <div class="inline-field well well-sm card">
+            <legend class="card-header">
                 <small>{{ _gettext('New') }} {{ field.label.text }}</small>
-                <div class="pull-right">
+                <div style="float:right">
                     <a href="javascript:void(0)" value="{{ _gettext('Are you sure you want to delete this record?') }}"
                        class="inline-remove-field"><span class="fa fa-times glyphicon glyphicon-remove"></span></a>
                 </div>
