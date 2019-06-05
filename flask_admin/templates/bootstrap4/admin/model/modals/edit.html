@@ -5,22 +5,23 @@
 {% set render_ctx = h.resolve_ctx() %}
 
 {% block body %}
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+    </button>
     {% block header_text %}
-      <h3>{{ _gettext('Edit Record') + ' #' + request.args.get('id') }}</h3>
+    <h3>{{ _gettext('Edit Record') + ' #' + request.args.get('id') }}</h3>
     {% endblock %}
-  </div>
-  <div class="modal-body">
+</div>
+<div class="modal-body">
     {# "save and continue" button is removed from modal (it won't function properly) #}
     {% block edit_form %}
-      {{ lib.render_form(form, return_url, extra=None, form_opts=form_opts,
-                         action=url_for('.edit_view', id=request.args.get('id'), url=return_url),
-                         is_modal=True) }}
+    {{ lib.render_form(form, return_url, extra=None, form_opts=form_opts,
+    action=url_for('.edit_view', id=request.args.get('id'), url=return_url),
+    is_modal=True) }}
     {% endblock %}
-  </div>
+</div>
 {% endblock %}
 
 {% block tail %}
-  <script src="{{ admin_static.url(filename='admin/js/bs3_modal.js', v='1.0.0') }}"></script>
+<script src="{{ admin_static.url(filename='admin/js/bs3_modal.js', v='1.0.0') }}"></script>
 {% endblock %}

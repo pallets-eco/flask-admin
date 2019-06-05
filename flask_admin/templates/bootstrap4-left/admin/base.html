@@ -69,13 +69,13 @@
                     {% endblock %}
                 </div>
             </nav>
-            {% block messages %}
-                {{ layout.messages() }}
-            {% endblock %}
 
             {# store the jinja2 context for form_rules rendering logic #}
             {% set render_ctx = h.resolve_ctx() %}
             <main class="col-md-9 ml-sm-auto col-lg-10 px-4" role="main">
+                {% block messages %}
+                    {{ layout.messages() }}
+                {% endblock %}
                 {% block body %}{% endblock %}
             </main>
 
