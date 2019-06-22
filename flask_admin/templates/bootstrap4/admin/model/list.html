@@ -180,6 +180,7 @@
 
 {% block tail %}
     {{ super() }}
+    <script src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
     <script src="{{ admin_static.url(filename='admin/js/filters.js', v='1.0.0') }}"></script>
     {{ lib.form_js() }}
 
