@@ -363,8 +363,8 @@ class ModelView(BaseModelView):
 
                 # Check type
                 if (field_type not in self.allowed_search_types):
-                        raise Exception('Can only search on text columns. ' +
-                                        'Failed to setup search for "%s"' % p)
+                    raise Exception('Can only search on text columns. ' +
+                                    'Failed to setup search for "%s"' % p)
 
                 self._search_fields.append(p)
 
