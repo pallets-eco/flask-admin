@@ -1,5 +1,6 @@
 import time
 import datetime
+import uuid
 
 from flask_admin.babel import lazy_gettext
 
@@ -267,6 +268,29 @@ class BaseTimeBetweenFilter(BaseFilter):
         except ValueError:
             raise
             return False
+
+
+class BaseUuidFilter(BaseFilter):
+    """
+        Base uuid filter
+    """
+    def __init__(self, name, options=None, data_type=None):
+        super(BaseUuidFilter, self).__init__(name,
+                                             options,
+                                             data_type='uuid')
+
+    def clean(self, value):
+        value = uuid.UUID(value)
+        return str(value)
+
+
+class BaseUuidListFilter(BaseFilter):
+    """
+        Base uuid list filter
+    """
+
+    def clean(self, value):
+        return [str(uuid.UUID(v.strip())) for v in value.split(',') if v.strip()]
 
 
 def convert(*args):

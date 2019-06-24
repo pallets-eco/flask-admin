@@ -436,6 +436,22 @@ class ChoiceTypeNotLikeFilter(FilterNotLike):
             return query
 
 
+class UuidFilterEqual(FilterEqual, filters.BaseUuidFilter):
+    pass
+
+
+class UuidFilterNotEqual(FilterNotEqual, filters.BaseUuidFilter):
+    pass
+
+
+class UuidFilterInList(filters.BaseUuidListFilter, FilterInList):
+    pass
+
+
+class UuidFilterNotInList(filters.BaseUuidListFilter, FilterNotInList):
+    pass
+
+
 # Base SQLA filter field converter
 class FilterConverter(filters.BaseFilterConverter):
     strings = (FilterLike, FilterNotLike, FilterEqual, FilterNotEqual,
@@ -457,11 +473,15 @@ class FilterConverter(filters.BaseFilterConverter):
                         DateTimeGreaterFilter, DateTimeSmallerFilter,
                         DateTimeBetweenFilter, DateTimeNotBetweenFilter,
                         FilterEmpty)
-    time_filters = (TimeEqualFilter, TimeNotEqualFilter, TimeGreaterFilter, TimeSmallerFilter,
-                    TimeBetweenFilter, TimeNotBetweenFilter, FilterEmpty)
+    time_filters = (TimeEqualFilter, TimeNotEqualFilter, TimeGreaterFilter,
+                    TimeSmallerFilter, TimeBetweenFilter, TimeNotBetweenFilter,
+                    FilterEmpty)
     choice_type_filters = (ChoiceTypeEqualFilter, ChoiceTypeNotEqualFilter,
                            ChoiceTypeLikeFilter, ChoiceTypeNotLikeFilter, FilterEmpty)
+    uuid_filters = (UuidFilterEqual, UuidFilterNotEqual, FilterEmpty,
+                    UuidFilterInList, UuidFilterNotInList)
     arrow_type_filters = (DateTimeGreaterFilter, DateTimeSmallerFilter, FilterEmpty)
+
 
     def convert(self, type_name, column, name, **kwargs):
         filter_name = type_name.lower()
@@ -531,3 +551,7 @@ class FilterConverter(filters.BaseFilterConverter):
                 kwargs['enum_class'] = column.type._enum_class
 
         return [f(column, name, options, **kwargs) for f in self.enum]
+
+    @filters.convert('uuid')
+    def conv_uuid(self, column, name, **kwargs):
+        return [f(column, name, **kwargs) for f in self.uuid_filters]
