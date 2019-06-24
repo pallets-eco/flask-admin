@@ -482,7 +482,6 @@ class FilterConverter(filters.BaseFilterConverter):
                     UuidFilterInList, UuidFilterNotInList)
     arrow_type_filters = (DateTimeGreaterFilter, DateTimeSmallerFilter, FilterEmpty)
 
-
     def convert(self, type_name, column, name, **kwargs):
         filter_name = type_name.lower()
 
