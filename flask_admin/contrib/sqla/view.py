@@ -852,12 +852,13 @@ class ModelView(BaseModelView):
         """
         return self.session.query(func.count('*')).select_from(self.model)
 
-    def get_estimated_count_query(self):
+    def get_count_estimate(self, query):
         """
-            Return an estimated count for the model type. This can be used to
+            Return an estimated result count for the specified query. This can be used to
             avoid running an expensive 'get_count_query', while still showing
             an estimate of the number of records that are present.
-            Note: you'll need to provide the query yourself.
+            Note: There's no default, so you'll need to provide the logic for
+            making the estimation yourself.
         """
         return None
 
@@ -1039,7 +1040,7 @@ class ModelView(BaseModelView):
         count_joins = {}
 
         query = self.get_query()
-        count_query = self.get_count_query() if not self.simple_list_pager else self.get_estimated_count_query()
+        count_query = self.get_count_query()
 
         # Ignore eager-loaded relations (prevent unnecessary joins)
         # TODO: Separate join detection for query and count query?
@@ -1065,7 +1066,10 @@ class ModelView(BaseModelView):
                                                                          filters)
 
         # Calculate number of rows if necessary
-        count = count_query.scalar() if count_query else None
+        if self.simple_list_pager:
+            count = self.get_count_estimator(query).scalar()
+        else:
+            count = count_query.scalar() if count_query else None
 
         # Auto join
         for j in self._auto_joins:
