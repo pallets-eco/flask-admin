@@ -843,14 +843,23 @@ class ModelView(BaseModelView):
 
     def get_count_query(self):
         """
-            Return a the count query for the model type
+            Return the count query for the model type
 
             A ``query(self.model).count()`` approach produces an excessive
-            subquery, so ``query(func.count('*'))`` should be used instead.
+            subquery, so ``query(func.count('*'))`` is used here instead.
 
             See commit ``#45a2723`` for details.
         """
         return self.session.query(func.count('*')).select_from(self.model)
+
+    def get_estimated_count_query(self):
+        """
+            Return an estimated count for the model type. This can be used to
+            avoid running an expensive 'get_count_query', while still showing
+            an estimate of the number of records that are present.
+            Note: you'll need to provide the query yourself.
+        """
+        return None
 
     def _order_by(self, query, joins, sort_joins, sort_field, sort_desc):
         """
@@ -1030,7 +1039,7 @@ class ModelView(BaseModelView):
         count_joins = {}
 
         query = self.get_query()
-        count_query = self.get_count_query() if not self.simple_list_pager else None
+        count_query = self.get_count_query() if not self.simple_list_pager else self.get_estimated_count_query()
 
         # Ignore eager-loaded relations (prevent unnecessary joins)
         # TODO: Separate join detection for query and count query?
