@@ -517,8 +517,9 @@ class BaseModelView(BaseView, ActionsMixin):
 
     simple_list_pager = False
     """
-        Enable or disable simple list pager.
-        If enabled, model interface would not run count query and will only show prev/next pager buttons.
+        Enables a simple list pager that only show prev/next buttons, and that
+        doesn't rely on the default count query, which can be very expensive
+        to run on large tables.
     """
 
     form = None
@@ -1965,7 +1966,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 list_forms[self.get_pk_value(row)] = self.list_form(obj=row)
 
         # Calculate number of pages
-        if count is not None and page_size:
+        if count is not None and page_size and not self.simple_list_pager:
             num_pages = int(ceil(count / float(page_size)))
         elif not page_size:
             num_pages = 0  # hide pager for unlimited page_size
