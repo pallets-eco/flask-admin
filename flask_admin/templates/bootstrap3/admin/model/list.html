@@ -14,7 +14,7 @@
     {% block model_menu_bar %}
     <ul class="nav nav-tabs actions-nav">
         <li class="active">
-            <a href="javascript:void(0)">{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a>
+            <a href="javascript:void(0)">{{ _gettext('List') }}{% if count %} ({% if decimalformat is callable %}{{ count | decimalformat(format="###,###,###,###") }}{% else %}{{ count }}{% endif %}){% endif %}</a>
         </li>
 
         {% if admin_view.can_create %}
