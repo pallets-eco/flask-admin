@@ -16,4 +16,7 @@ nose
 coveralls
 pylint
 sqlalchemy-citext
+sqlalchemy_utils
 azure-storage-blob
+arrow<0.14.0
+colour

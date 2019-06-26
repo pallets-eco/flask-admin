@@ -1,4 +1,8 @@
 Flask
 Flask-Admin
+Flask-BabelEx
 Flask-SQLAlchemy
 tablib
+sqlalchemy_utils
+arrow
+colour

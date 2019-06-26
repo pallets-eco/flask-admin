@@ -5,6 +5,7 @@ Next release
 -----
 
 * Fix display of inline x-editable boolean fields on list view
+* Add support for several SQLAlchemy-Utils data types
 
 1.5.3
 -----
