@@ -221,8 +221,8 @@ class ModelView(BaseModelView):
 
                 # Check type
                 if not isinstance(p, (CharField, TextField)):
-                        raise Exception('Can only search on text columns. ' +
-                                        'Failed to setup search for "%s"' % p)
+                    raise Exception('Can only search on text columns. ' +
+                                    'Failed to setup search for "%s"' % p)
 
                 self._search_fields.append(p)
 
