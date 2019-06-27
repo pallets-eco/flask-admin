@@ -191,24 +191,17 @@ class ModelView(BaseModelView):
         return getattr(model, self._primary_key)
 
     def scaffold_list_columns(self):
-        columns = []
-
-        for n, f in self._get_model_fields():
-            # Verify type
-            field_class = type(f)
-
-            if field_class == ForeignKeyField:
-                columns.append(n)
-            elif self.column_display_pk or field_class != PrimaryKeyField:
-                columns.append(n)
-
-        return columns
+        return [
+            n for n, f in self._get_model_fields()
+            if isinstance(f, ForeignKeyField) or self.column_display_pk or
+            not isinstance(f, (PrimaryKeyField, PrimaryKeyField.__base__))
+        ]
 
     def scaffold_sortable_columns(self):
         columns = dict()
 
         for n, f in self._get_model_fields():
-            if self.column_display_pk or type(f) != PrimaryKeyField:
+            if self.column_display_pk or not isinstance(f, (PrimaryKeyField, PrimaryKeyField.__base__)):
                 columns[n] = f
 
         return columns
@@ -227,7 +220,7 @@ class ModelView(BaseModelView):
 
                 # Check type
                 if not isinstance(p, (CharField, TextField)):
-                    raise Exception('Can only search on text columns. ' +
+                    raise Exception('Can only search on text columns. '
                                     'Failed to setup search for "%s"' % p)
 
                 self._search_fields.append(p)
