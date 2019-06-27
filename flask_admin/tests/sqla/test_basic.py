@@ -419,21 +419,34 @@ def test_column_searchable_list():
     eq_(view._search_fields[1][0].name, 'int_field')
 
     db.session.add(Model2('model1-test', 5000))
-    db.session.add(Model2('model2-test', 9000))
+    db.session.add(Model2('model2-TEST', 9000))
     db.session.commit()
 
     client = app.test_client()
 
+    # search on string field
     rv = client.get('/admin/model2/?search=model1')
     data = rv.data.decode('utf-8')
     ok_('model1-test' in data)
-    ok_('model2-test' not in data)
+    ok_('model2-TEST' not in data)
 
+    # search on int field
     rv = client.get('/admin/model2/?search=9000')
     data = rv.data.decode('utf-8')
     ok_('model1-test' not in data)
-    ok_('model2-test' in data)
+    ok_('model2-TEST' in data)
 
+    # case-insensitive search
+    rv = client.get('/admin/model2/?search=test')
+    data = rv.data.decode('utf-8')
+    ok_('model1-test' in data)
+    ok_('model2-TEST' in data)
+
+    # case-sensitive search
+    rv = client.get('/admin/model2/?search=*TEST')
+    data = rv.data.decode('utf-8')
+    ok_('model1-test' not in data)
+    ok_('model2-TEST' in data)
 
 def test_complex_searchable_list():
     app, db, admin = setup()
