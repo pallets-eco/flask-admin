@@ -13,6 +13,23 @@ from flask_admin.tools import iterencode, iterdecode, escape  # noqa: F401
 
 
 def parse_like_term(term):
+    """
+        Parse search term into (operation, term) tuple. Recognizes operators
+        in the beginning of the search term. Case insensitive is the default.
+
+        * = case sensitive (can precede other operators)
+        ^ = starts with
+        = = exact
+
+        :param term:
+            Search term
+    """
+    case_sensitive = term.startswith('*')
+    if case_sensitive:
+        term = term[1:]
+
+    oper = 'like' if case_sensitive else 'ilike'
+
     if term.startswith('^'):
         stmt = '%s%%' % term[1:]
     elif term.startswith('='):
@@ -20,7 +37,7 @@ def parse_like_term(term):
     else:
         stmt = '%%%s%%' % term
 
-    return stmt
+    return oper, stmt
 
 
 def filter_foreign_columns(base_table, columns):

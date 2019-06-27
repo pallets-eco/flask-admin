@@ -110,6 +110,9 @@ class ModelView(BaseModelView):
 
         - If you prefix your search term with ``=``, it will perform an exact match.
           For example, if you entered ``=ZZZ``, the statement ``ILIKE 'ZZZ'`` will be used.
+
+        - If you prefix your search term with ``*``, it will perform case-sensitive search.
+          For example, if you entered ``*ZZZ``, the statement ``LIKE 'ZZZ'`` will be used.
     """
 
     column_filters = None
@@ -914,7 +917,7 @@ class ModelView(BaseModelView):
             if not term:
                 continue
 
-            stmt = tools.parse_like_term(term)
+            oper, stmt = tools.parse_like_term(term)
 
             filter_stmt = []
             count_filter_stmt = []
@@ -931,11 +934,13 @@ class ModelView(BaseModelView):
                                                                                    inner_join=False)
 
                 column = field if alias is None else getattr(alias, field.key)
-                filter_stmt.append(cast(column, Unicode).ilike(stmt))
+                search_operator = getattr(cast(column, Unicode), oper)
+                filter_stmt.append(search_operator(stmt))
 
                 if count_filter_stmt is not None:
                     column = field if count_alias is None else getattr(count_alias, field.key)
-                    count_filter_stmt.append(cast(column, Unicode).ilike(stmt))
+                    search_operator = getattr(cast(column, Unicode), oper)
+                    count_filter_stmt.append(search_operator(stmt))
 
             query = query.filter(or_(*filter_stmt))
 
