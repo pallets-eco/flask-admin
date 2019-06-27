@@ -448,6 +448,7 @@ def test_column_searchable_list():
     ok_('model1-test' not in data)
     ok_('model2-TEST' in data)
 
+
 def test_complex_searchable_list():
     app, db, admin = setup()
 
