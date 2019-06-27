@@ -1066,8 +1066,8 @@ class ModelView(BaseModelView):
                                                                          filters)
 
         # Calculate number of rows if necessary
-        if self.simple_list_pager:
-            count = self.get_count_estimator(query).scalar()
+        if self.simple_list_pager and self.get_count_estimate:
+            count = self.get_count_estimate(query).scalar()
         else:
             count = count_query.scalar() if count_query else None
 
