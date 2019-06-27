@@ -10,6 +10,7 @@ from flask_admin.contrib.sqla import ModelView, filters, tools
 from flask_babelex import Babel
 
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import cast
 from sqlalchemy_utils import EmailType, ChoiceType, UUIDType, URLType, CurrencyType, ColorType, ArrowType, IPAddressType
 from . import setup
 
@@ -1559,6 +1560,14 @@ def test_hybrid_property():
         def number_of_pixels(self):
             return self.width * self.height
 
+        @hybrid_property
+        def number_of_pixels_str(self):
+            return str(self.number_of_pixels())
+
+        @number_of_pixels_str.expression
+        def number_of_pixels_str(cls):
+            return cast(cls.width * cls.height, db.String)
+
     db.create_all()
 
     db.session.add(Model1(id=1, name="test_row_1", width=25, height=25))
@@ -1571,7 +1580,8 @@ def test_hybrid_property():
         Model1, db.session,
         column_default_sort='number_of_pixels',
         column_filters=[filters.IntGreaterFilter(Model1.number_of_pixels,
-                                                 'Number of Pixels')]
+                                                 'Number of Pixels')],
+        column_searchable_list=['number_of_pixels_str', ]
     )
     admin.add_view(view)
 
@@ -1591,6 +1601,13 @@ def test_hybrid_property():
     eq_(len(data), 2)
     eq_(data[0].name, 'test_row_2')
     eq_(data[1].name, 'test_row_1')
+
+    # searching
+    rv = client.get('/admin/model1/?search=100')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('test_row_2' in data)
+    ok_('test_row_1' not in data)
 
 
 def test_url_args():

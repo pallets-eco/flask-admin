@@ -4,6 +4,7 @@ from flask import Flask, Markup
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import composite
+from sqlalchemy import sql, cast
 import uuid
 import random
 import string
@@ -85,8 +86,12 @@ class User(db.Model):
     def phone_number(self):
         if self.dialling_code and self.local_phone_number:
             number = str(self.local_phone_number)
-            return "+{} ({}){} {} {}".format(self.dialling_code, number[0], number[1:3], number[3:6], number[6::])
+            return "+{} ({}) {} {} {}".format(self.dialling_code, number[0], number[1:3], number[3:6], number[6::])
         return
+
+    @phone_number.expression
+    def phone_number(cls):
+        return sql.operators.ColumnOperators.concat(cast(cls.dialling_code, db.String), cls.local_phone_number)
 
     def __str__(self):
         return "{}, {}".format(self.last_name, self.first_name)
@@ -197,6 +202,7 @@ class UserAdmin(sqla.ModelView):
     column_searchable_list = [
         'first_name',
         'last_name',
+        'phone_number',
         'email',
     ]
     column_editable_list = ['type', 'currency', 'timezone']
@@ -233,6 +239,7 @@ class UserAdmin(sqla.ModelView):
         FilterEqual(column=User.last_name, name='Last Name'),
         FilterLastNameBrown(column=User.last_name, name='Last Name',
                             options=(('1', 'Yes'), ('0', 'No'))),
+        'phone_number',
         'email',
         'ip_address',
         'currency',
