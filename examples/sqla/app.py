@@ -202,6 +202,7 @@ class UserAdmin(sqla.ModelView):
     column_searchable_list = [
         'first_name',
         'last_name',
+        'phone_number',
         'email',
     ]
     column_editable_list = ['type', 'currency', 'timezone']
