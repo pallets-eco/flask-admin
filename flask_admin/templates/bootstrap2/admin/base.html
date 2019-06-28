@@ -66,9 +66,9 @@
     {% endblock %}
 
     {% block tail_js %}
-    <script src="{{ admin_static.url(filename='vendor/jquery.min.js', v='2.1.4') }}" type="text/javascript"></script>
+    <script src="{{ admin_static.url(filename='vendor/jquery.min.js', v='3.3.1') }}" type="text/javascript"></script>
     <script src="{{ admin_static.url(filename='bootstrap/bootstrap2/js/bootstrap.min.js', v='2.3.2') }}" type="text/javascript"></script>
-    <script src="{{ admin_static.url(filename='vendor/moment.min.js', v='2.9.0') }}" type="text/javascript"></script>
+    <script src="{{ admin_static.url(filename='vendor/moment.min.js', v='2.22.2') }}" type="text/javascript"></script>
     <script src="{{ admin_static.url(filename='vendor/select2/select2.min.js', v='3.5.2') }}" type="text/javascript"></script>
     {% if admin_view.extra_js %}
       {% for js_url in admin_view.extra_js %}

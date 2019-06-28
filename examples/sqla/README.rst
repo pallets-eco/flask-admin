@@ -16,10 +16,9 @@ To run this example:
 
     pip install -r 'examples/sqla/requirements.txt'
 
-4. Run either of these applications::
+4. Run the application::
 
     python examples/sqla/app.py
-    python examples/sqla/app2.py
 
 The first time you run this example, a sample sqlite database gets populated automatically. To suppress this behaviour,
 comment the following lines in app.py:::

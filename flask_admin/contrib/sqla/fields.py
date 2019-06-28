@@ -13,6 +13,7 @@ except ImportError:
 
 from .tools import get_primary_key
 from flask_admin._compat import text_type, string_types, iteritems
+from flask_admin.contrib.sqla.widgets import CheckboxListInput
 from flask_admin.form import FormOpts, BaseForm, Select2Widget
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 from flask_admin.babel import lazy_gettext
@@ -181,6 +182,30 @@ class QuerySelectMultipleField(QuerySelectField):
                     raise ValidationError(self.gettext(u'Not a valid choice'))
 
 
+class CheckboxListField(QuerySelectMultipleField):
+    """
+    Alternative field for many-to-many relationships.
+
+    Can be used instead of `QuerySelectMultipleField`.
+    Appears as the list of checkboxes.
+    Example::
+
+        class MyView(ModelView):
+            form_columns = (
+                'languages',
+            )
+            form_args = {
+                'languages': {
+                    'query_factory': Language.query,
+                },
+            }
+            form_overrides = {
+                'languages': CheckboxListField,
+            }
+    """
+    widget = CheckboxListInput()
+
+
 class HstoreForm(BaseForm):
     """ Form used in InlineFormField/InlineHstoreList for HSTORE columns """
     key = StringField(lazy_gettext('Key'))
@@ -272,11 +297,11 @@ class InlineModelFormList(InlineFieldList):
             return
 
         # Create primary key map
-        pk_map = dict((str(getattr(v, self._pk)), v) for v in values)
+        pk_map = dict((get_obj_pk(v, self._pk), v) for v in values)
 
         # Handle request data
         for field in self.entries:
-            field_id = str(field.get_pk())
+            field_id = get_field_id(field)
 
             is_created = field_id not in pk_map
             if not is_created:
@@ -298,3 +323,27 @@ def get_pk_from_identity(obj):
     # TODO: Remove me
     key = identity_key(instance=obj)[1]
     return u':'.join(text_type(x) for x in key)
+
+
+def get_obj_pk(obj, pk):
+    """
+    get and format pk from obj
+    :rtype: text_type
+    """
+
+    if isinstance(pk, tuple):
+        return tuple(text_type(getattr(obj, k)) for k in pk)
+
+    return text_type(getattr(obj, pk))
+
+
+def get_field_id(field):
+    """
+    get and format id from field
+    :rtype: text_type
+    """
+    field_id = field.get_pk()
+    if isinstance(field_id, tuple):
+        return tuple(text_type(_) for _ in field_id)
+
+    return text_type(field_id)

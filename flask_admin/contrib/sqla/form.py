@@ -1,8 +1,9 @@
 import warnings
-from enum import Enum
+from enum import Enum, EnumMeta
 
 from wtforms import fields, validators
 from sqlalchemy import Boolean, Column
+from sqlalchemy.orm import ColumnProperty
 
 from flask_admin import form
 from flask_admin.model.form import (converts, ModelConverterBase,
@@ -12,7 +13,7 @@ from flask_admin.model.helpers import prettify_name
 from flask_admin._backwards import get_property
 from flask_admin._compat import iteritems, text_type
 
-from .validators import Unique
+from .validators import Unique, valid_currency, valid_color, TimeZoneValidator
 from .fields import (QuerySelectField, QuerySelectMultipleField,
                      InlineModelFormList, InlineHstoreList, HstoreForm)
 from flask_admin.model.fields import InlineFormField
@@ -152,7 +153,7 @@ class AdminModelConverter(ModelConverterBase):
             return self._convert_relation(name, prop, property_is_association_proxy, kwargs)
         elif hasattr(prop, 'columns'):  # Ignore pk/fk
             # Check if more than one column mapped to the property
-            if len(prop.columns) > 1:
+            if len(prop.columns) > 1 and not isinstance(prop, ColumnProperty):
                 columns = filter_foreign_columns(model.__table__, prop.columns)
 
                 if len(columns) == 0:
@@ -242,9 +243,8 @@ class AdminModelConverter(ModelConverterBase):
             if override:
                 return override(**kwargs)
 
-            # Check choices
+            # Check if a list of 'form_choices' are specified
             form_choices = getattr(self.view, 'form_choices', None)
-
             if mapper.class_ == self.view.model and form_choices:
                 choices = form_choices.get(prop.key)
                 if choices:
@@ -262,7 +262,6 @@ class AdminModelConverter(ModelConverterBase):
 
             return converter(model=model, mapper=mapper, prop=prop,
                              column=column, field_args=kwargs)
-
         return None
 
     @classmethod
@@ -272,20 +271,6 @@ class AdminModelConverter(ModelConverterBase):
 
     @converts('String')  # includes VARCHAR, CHAR, and Unicode
     def conv_String(self, column, field_args, **extra):
-        if hasattr(column.type, 'enums'):
-            accepted_values = list(column.type.enums)
-
-            field_args['choices'] = [(f, f) for f in column.type.enums]
-
-            if column.nullable:
-                field_args['allow_blank'] = column.nullable
-                accepted_values.append(None)
-
-            field_args['validators'].append(validators.AnyOf(accepted_values))
-            field_args['coerce'] = lambda v: v.name if isinstance(v, Enum) else text_type(v)
-
-            return form.Select2Field(**field_args)
-
         if column.nullable:
             filters = field_args.get('filters', [])
             filters.append(lambda x: x or None)
@@ -293,6 +278,45 @@ class AdminModelConverter(ModelConverterBase):
 
         self._string_common(column=column, field_args=field_args, **extra)
         return fields.StringField(**field_args)
+
+    @converts('sqlalchemy.sql.sqltypes.Enum')
+    def convert_enum(self, column, field_args, **extra):
+        available_choices = [(f, f) for f in column.type.enums]
+        accepted_values = [key for key, val in available_choices]
+
+        if column.nullable:
+            field_args['allow_blank'] = column.nullable
+            accepted_values.append(None)
+            filters = field_args.get('filters', [])
+            filters.append(lambda x: x or None)
+            field_args['filters'] = filters
+
+        field_args['choices'] = available_choices
+        field_args['validators'].append(validators.AnyOf(accepted_values))
+        field_args['coerce'] = lambda v: v.name if isinstance(v, Enum) else text_type(v)
+        return form.Select2Field(**field_args)
+
+    @converts('sqlalchemy_utils.types.choice.ChoiceType')
+    def convert_choice_type(self, column, field_args, **extra):
+        available_choices = []
+        # choices can either be specified as an enum, or as a list of tuples
+        if isinstance(column.type.choices, EnumMeta):
+            available_choices = [(f.value, f.name) for f in column.type.choices]
+        else:
+            available_choices = column.type.choices
+        accepted_values = [key for key, val in available_choices]
+
+        if column.nullable:
+            field_args['allow_blank'] = column.nullable
+            accepted_values.append(None)
+            filters = field_args.get('filters', [])
+            filters.append(lambda x: x or None)
+            field_args['filters'] = filters
+
+        field_args['choices'] = available_choices
+        field_args['validators'].append(validators.AnyOf(accepted_values))
+        field_args['coerce'] = choice_type_coerce_factory(column.type)
+        return form.Select2Field(**field_args)
 
     @converts('Text', 'LargeBinary', 'Binary', 'CIText')  # includes UnicodeText
     def conv_Text(self, field_args, **extra):
@@ -315,6 +339,44 @@ class AdminModelConverter(ModelConverterBase):
     @converts('Time')
     def convert_time(self, field_args, **extra):
         return form.TimeField(**field_args)
+
+    @converts('sqlalchemy_utils.types.arrow.ArrowType')
+    def convert_arrow_time(self, field_args, **extra):
+        return form.DateTimeField(**field_args)
+
+    @converts('sqlalchemy_utils.types.email.EmailType')
+    def convert_email(self, field_args, **extra):
+        field_args['validators'].append(validators.Email())
+        return fields.StringField(**field_args)
+
+    @converts('sqlalchemy_utils.types.url.URLType')
+    def convert_url(self, field_args, **extra):
+        field_args['validators'].append(validators.URL())
+        field_args['filters'] = [avoid_empty_strings]  # don't accept empty strings, or whitespace
+        return fields.StringField(**field_args)
+
+    @converts('sqlalchemy_utils.types.ip_address.IPAddressType')
+    def convert_ip_address(self, field_args, **extra):
+        field_args['validators'].append(validators.IPAddress())
+        return fields.StringField(**field_args)
+
+    @converts('sqlalchemy_utils.types.color.ColorType')
+    def convert_color(self, field_args, **extra):
+        field_args['validators'].append(valid_color)
+        field_args['filters'] = [avoid_empty_strings]  # don't accept empty strings, or whitespace
+        return fields.StringField(**field_args)
+
+    @converts('sqlalchemy_utils.types.currency.CurrencyType')
+    def convert_currency(self, field_args, **extra):
+        field_args['validators'].append(valid_currency)
+        field_args['filters'] = [avoid_empty_strings]  # don't accept empty strings, or whitespace
+        return fields.StringField(**field_args)
+
+    @converts('sqlalchemy_utils.types.timezone.TimezoneType')
+    def convert_timezone(self, column, field_args, **extra):
+
+        field_args['validators'].append(TimeZoneValidator(coerce_function=column.type._coerce))
+        return fields.StringField(**field_args)
 
     @converts('Integer')  # includes BigInteger and SmallInteger
     def handle_integer_types(self, column, field_args, **extra):
@@ -341,10 +403,12 @@ class AdminModelConverter(ModelConverterBase):
         field_args['validators'].append(validators.MacAddress())
         return fields.StringField(**field_args)
 
-    @converts('sqlalchemy.dialects.postgresql.base.UUID')
+    @converts('sqlalchemy.dialects.postgresql.base.UUID',
+              'sqlalchemy_utils.types.uuid.UUIDType')
     def conv_PGUuid(self, field_args, **extra):
         field_args.setdefault('label', u'UUID')
         field_args['validators'].append(validators.UUID())
+        field_args['filters'] = [avoid_empty_strings]  # don't accept empty strings, or whitespace
         return fields.StringField(**field_args)
 
     @converts('sqlalchemy.dialects.postgresql.base.ARRAY',
@@ -360,6 +424,41 @@ class AdminModelConverter(ModelConverterBase):
     @converts('JSON')
     def convert_JSON(self, field_args, **extra):
         return form.JSONField(**field_args)
+
+
+def avoid_empty_strings(value):
+    """
+    Return None if the incoming value is an empty string or whitespace.
+    """
+    if value:
+        try:
+            value = value.strip()
+        except AttributeError:
+            # values are not always strings
+            pass
+    return value if value else None
+
+
+def choice_type_coerce_factory(type_):
+    """
+    Return a function to coerce a ChoiceType column, for use by Select2Field.
+    :param type_: ChoiceType object
+    """
+    from sqlalchemy_utils import Choice
+
+    choices = type_.choices
+    if isinstance(choices, type) and issubclass(choices, Enum):
+        key, choice_cls = 'value', choices
+    else:
+        key, choice_cls = 'code', Choice
+
+    def choice_coerce(value):
+        if value is None:
+            return None
+        if isinstance(value, choice_cls):
+            return getattr(value, key)
+        return type_.python_type(value)
+    return choice_coerce
 
 
 def _resolve_prop(prop):

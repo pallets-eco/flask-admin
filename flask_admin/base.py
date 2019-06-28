@@ -9,7 +9,7 @@ from flask_admin._compat import with_metaclass, as_unicode
 from flask_admin import helpers as h
 
 # For compatibility reasons import MenuLink
-from flask_admin.menu import MenuCategory, MenuView, MenuLink  # noqa: F401
+from flask_admin.menu import MenuCategory, MenuView, MenuLink, SubMenuCategory  # noqa: F401
 
 
 def expose(url='/', methods=('GET',)):
@@ -562,6 +562,7 @@ class Admin(object):
         # assume index view is always the first element of views.
         if len(self._views) > 0:
             self._views[0] = self.index_view
+            self._menu[0] = MenuView(self.index_view.name, self.index_view)
         else:
             self.add_view(self.index_view)
 
@@ -580,6 +581,27 @@ class Admin(object):
         """
         for view in args:
             self.add_view(view)
+
+    def add_sub_category(self, name, parent_name):
+
+        """
+            Add a category of a given name underneath
+            the category with parent_name.
+
+            :param name:
+                The name of the new menu category.
+            :param parent_name:
+                The name of a parent_name category
+        """
+
+        name_text = as_unicode(name)
+        parent_name_text = as_unicode(parent_name)
+        category = self.get_category_menu_item(name_text)
+        parent = self.get_category_menu_item(parent_name_text)
+        if category is None and parent is not None:
+            category = SubMenuCategory(name)
+            self._menu_categories[name_text] = category
+            parent.add_child(category)
 
     def add_link(self, link):
         """

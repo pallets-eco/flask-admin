@@ -58,7 +58,7 @@
     <div class="clearfix"></div>
 {% endmacro %}
 
-{% macro search_form(input_class="span2") %}
+{% macro search_form(input_class=None) %}
 <form method="GET" action="{{ return_url }}" class="search-form">
     {% for flt_name, flt_value in filter_args.items() %}
     <input type="hidden" name="{{ flt_name }}" value="{{ flt_value }}">
@@ -72,17 +72,17 @@
     {% if sort_desc %}
     <input type="hidden" name="desc" value="{{ sort_desc }}">
     {% endif %}
+    {%- set full_search_placeholder = _gettext('Search') %}
+    {%- if search_placeholder %}{% set full_search_placeholder = [full_search_placeholder, search_placeholder] | join(": ") %}{% endif %}
     {% if search %}
     <div class="input-append">
-            <input type="text" name="search" value="{{ search }}" class="{{ input_class }}" placeholder="{{ _gettext('Search') }}">
+            <input type="search" name="search" class="input-xlarge{% if input_class %} {{ input_class }}{% endif %}" value="{{ search }}" placeholder="{{ full_search_placeholder }}">
             <a href="{{ clear_search_url }}" class="clear add-on">
                 <i class="fa fa-times icon-remove"></i>
             </a>
     </div>
     {% else %}
-    <div>
-        <input type="text" name="search" value="" class="{{ input_class }}" placeholder="{{ _gettext('Search') }}">
-    </div>
+    <input type="search" name="search" class="input-xlarge{% if input_class %} {{ input_class }}{% endif %}" value="" placeholder="{{ full_search_placeholder }}">
     {% endif %}
 </form>
 {% endmacro %}
