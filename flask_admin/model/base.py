@@ -1570,7 +1570,7 @@ class BaseModelView(BaseView, ActionsMixin):
             self.on_model_change(form, model, is_created)
         except TypeError as e:
             if re.match(r'on_model_change\(\) takes .* 3 .* arguments .* 4 .* given .*', str(e)):
-                msg = ('%s.on_model_change() now accepts third ' +
+                msg = ('%s.on_model_change() now accepts third '
                        'parameter is_created. Please update your code') % self.model
                 warnings.warn(msg)
 
@@ -1831,13 +1831,9 @@ class BaseModelView(BaseView, ActionsMixin):
         if choices_map:
             return choices_map.get(value) or value
 
-        type_fmt = None
         for typeobj, formatter in column_type_formatters.items():
             if isinstance(value, typeobj):
-                type_fmt = formatter
-                break
-        if type_fmt is not None:
-            value = type_fmt(self, value)
+                return formatter(self, value)
 
         return value
 
