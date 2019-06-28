@@ -4,7 +4,7 @@
 
 {% block head %}
     {{ super() }}
-    <link href="{{ admin_static.url(filename='admin/css/bootstrap3/rediscli.css', v='1.0.0') }}" rel="stylesheet">
+    <link href="{{ admin_static.url(filename='admin/css/bootstrap4/rediscli.css', v='1.0.0') }}" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
@@ -21,10 +21,7 @@
 
 {% block tail %}
   {{ super() }}
+
+  <div id="execute-view-data" style="display:none;">{{ admin_view.get_url('.execute_view')|tojson|safe }}</div>
   <script src="{{ admin_static.url(filename='admin/js/rediscli.js', v='1.0.0') }}"></script>
-  <script language="javascript">
-    $(function() {
-      var redisCli = new RedisCli({{ admin_view.get_url('.execute_view')|tojson }});
-    });
-  </script>
 {% endblock %}

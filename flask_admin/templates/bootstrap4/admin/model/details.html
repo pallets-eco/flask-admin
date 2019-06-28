@@ -4,30 +4,28 @@
 {% block body %}
   {% block navlinks %}
   <ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link" href="{{ return_url }}">{{ _gettext('List') }}</a>
+    <li>
+        <a href="{{ return_url }}">{{ _gettext('List') }}</a>
     </li>
     {%- if admin_view.can_create -%}
-    <li class="nav-item">
-        <a class="nav-link" href="{{ get_url('.create_view', url=return_url) }}">{{ _gettext('Create') }}</a>
+    <li>
+        <a href="{{ get_url('.create_view', url=return_url) }}">{{ _gettext('Create') }}</a>
     </li>
     {%- endif -%}
     {%- if admin_view.can_edit -%}
-    <li class="nav-item">
-        <a class="nav-link" href="{{ get_url('.edit_view', id=request.args.get('id'), url=return_url) }}">{{ _gettext('Edit') }}</a>
+    <li>
+        <a href="{{ get_url('.edit_view', id=request.args.get('id'), url=return_url) }}">{{ _gettext('Edit') }}</a>
     </li>
     {%- endif -%}
-    <li class="nav-item">
-        <a class="nav-link active" href="javascript:void(0)">{{ _gettext('Details') }}</a>
+    <li class="active">
+        <a href="javascript:void(0)">{{ _gettext('Details') }}</a>
     </li>
   </ul>
   {% endblock %}
 
   {% block details_search %}
     <div class="input-group fa_filter_container col-lg-6">
-      <div class="input-group-prepend">
-        <span class="input-group-text">{{ _gettext('Filter') }}</span>
-      </div>
+      <span class="input-group-addon">{{ _gettext('Filter') }}</span>
       <input id="fa_filter" type="text" class="form-control">
     </div>
   {% endblock %}

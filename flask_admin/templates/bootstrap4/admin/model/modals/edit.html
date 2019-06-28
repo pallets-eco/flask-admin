@@ -23,11 +23,4 @@
 
 {% block tail %}
   <script src="{{ admin_static.url(filename='admin/js/bs3_modal.js', v='1.0.0') }}"></script>
-
-  <script>
-  $(function() {
-    // Apply flask-admin form styles after the modal is loaded
-    window.faForm.applyGlobalStyles(document);
-  });
-  </script>
 {% endblock %}

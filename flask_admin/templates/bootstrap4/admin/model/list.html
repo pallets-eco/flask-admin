@@ -12,9 +12,9 @@
 
 {% block body %}
     {% block model_menu_bar %}
-    <ul class="nav nav-tabs actions-nav">
+    <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link active" href="javascript:void(0)">{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a>
+            <a href="javascript:void(0)" class="nav-link active">{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a>
         </li>
 
         {% if admin_view.can_create %}
@@ -22,7 +22,7 @@
           {%- if admin_view.create_modal -%}
             {{ lib.add_modal_button(url=get_url('.create_view', url=return_url, modal=True), title=_gettext('Create New Record'), content=_gettext('Create')) }}
           {% else %}
-            <a class="nav-link" href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create New Record') }}">{{ _gettext('Create') }}</a>
+            <a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create New Record') }}" class="nav-link">{{ _gettext('Create') }}</a>
           {%- endif -%}
         </li>
         {% endif %}
@@ -34,25 +34,25 @@
         {% block model_menu_bar_before_filters %}{% endblock %}
 
         {% if filters %}
-        <li class="dropdown">
+        <li class="nav-item dropdown">
             {{ model_layout.filter_options() }}
         </li>
         {% endif %}
 
         {% if can_set_page_size %}
-        <li class="dropdown">
+        <li class="nav-item dropdown">
             {{ model_layout.page_size_form(page_size_url) }}
         </li>
         {% endif %}
 
         {% if actions %}
-        <li class="dropdown">
+        <li class="nav-item dropdown">
             {{ actionlib.dropdown(actions) }}
         </li>
         {% endif %}
 
         {% if search_supported %}
-        <li>
+        <li class="nav-item">
             {{ model_layout.search_form() }}
         </li>
         {% endif %}
@@ -78,7 +78,7 @@
                     {% endif %}
                     {% block list_row_actions_header %}
                         {% if admin_view.column_display_actions %}
-                        <th>&nbsp;</th>
+                        <th class="">&nbsp;</th>
                         {% endif %}
                     {% endblock %}
                     {% for c, name in list_columns %}
@@ -121,7 +121,7 @@
                 {% endif %}
                 {% block list_row_actions_column scoped %}
                     {% if admin_view.column_display_actions %}
-                    <td>
+                    <td class="list-buttons-column">
                         {% block list_row_actions scoped %}
                           {% for action in list_row_actions %}
                           {{ action.render_ctx(get_pk_value(row), row) }}
@@ -180,44 +180,16 @@
 
 {% block tail %}
     {{ super() }}
-    <script src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
+
+    {% if filter_groups %}
+      <div id="filter-groups-data" style="display:none;">{{ filter_groups|tojson|safe }}</div>
+      <div id="active-filters-data" style="display:none;">{{ active_filters|tojson|safe }}</div>
+    {% endif %}
+
     <script src="{{ admin_static.url(filename='admin/js/filters.js', v='1.0.0') }}"></script>
     {{ lib.form_js() }}
 
     {{ actionlib.script(_gettext('Please select at least one record.'),
                         actions,
                         actions_confirmation) }}
-
-    <script language="javascript">
-        (function($) {
-            $('[data-role=tooltip]').tooltip({
-                html: true,
-                placement: 'bottom'
-            });
-            {% if filter_groups %}
-                var filter = new AdminFilters(
-                    '#filter_form', '.field-filters',
-                    {{ filter_groups|tojson|safe }},
-                    {{ active_filters|tojson|safe }}
-                );
-            {% endif %}
-        })(jQuery);
-
-        // Catch exception when closing dialog with <esc> key
-        // and prevent accidental deletions.
-        function safeConfirm(msg) {
-          try {
-            var isconfirmed = confirm(msg);
-            if (isconfirmed == true) {
-              return true;
-            }
-            else {
-              return false;
-            }
-          }
-          catch(err) {
-            return false;
-          }
-        }
-    </script>
 {% endblock %}
