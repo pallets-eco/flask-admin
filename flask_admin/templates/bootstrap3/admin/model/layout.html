@@ -58,7 +58,7 @@
     <div class="clearfix"></div>
 {% endmacro %}
 
-{% macro search_form(input_class="col-md-2") %}
+{% macro search_form(input_class=None) %}
 <form method="GET" action="{{ return_url }}" class="navbar-form navbar-left" role="search">
     {% for flt_name, flt_value in filter_args.items() %}
     <input type="hidden" name="{{ flt_name }}" value="{{ flt_value }}">
@@ -72,14 +72,18 @@
     {% if sort_desc %}
     <input type="hidden" name="desc" value="{{ sort_desc }}">
     {% endif %}
+    {%- set full_search_placeholder = _gettext('Search') %}
+    {%- set max_size = config.get('FLASK_ADMIN_SEARCH_SIZE_MAX', 100) %}
+    {%- if search_placeholder %}{% set full_search_placeholder = [full_search_placeholder, search_placeholder] | join(": ") %}{% endif %}
+    {%- set input_size = [[full_search_placeholder | length, 30] | max, max_size] | min %}
     {% if search %}
     <div class="input-group">
-        <input type="text" name="search" value="{{ search }}" class="{{ input_class }} form-control" placeholder="{{ _gettext('Search') }}">
+        <input type="search" name="search" value="{{ search }}" class="form-control{% if input_class %} {{ input_class }}{% endif %}" size="{{ input_size }}" placeholder="{{ full_search_placeholder }}">
         <a href="{{ clear_search_url }}" class="input-group-addon clear"><span class="fa fa-times glyphicon glyphicon-remove"></span></a>
     </div>
     {% else %}
     <div class="form-group">
-        <input type="text" name="search" value="" class="{{ input_class }} form-control" placeholder="{{ _gettext('Search') }}">
+        <input type="search" name="search" value="" class="form-control{% if input_class %} {{ input_class }}{% endif %}" size="{{ input_size }}" placeholder="{{ full_search_placeholder }}">
     </div>
     {% endif %}
 </form>

@@ -12,7 +12,7 @@ from werkzeug import secure_filename
 from wtforms import fields, validators
 
 from flask_admin import form, helpers
-from flask_admin._compat import urljoin, as_unicode
+from flask_admin._compat import urljoin, as_unicode, quote
 from flask_admin.base import BaseView, expose
 from flask_admin.actions import action, ActionsMixin
 from flask_admin.babel import gettext, lazy_gettext
@@ -607,6 +607,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             :param path:
                 Static file path
         """
+        if self._on_windows:
+            path = path.replace('\\', '/')
+
         if self.is_file_editable(path):
             route = '.edit'
         else:
@@ -832,8 +835,8 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             if self.is_accessible_path(rel_path):
                 items.append(item)
 
-        sort_column = request.args.get('sort', None, type=str)
-        sort_desc = request.args.get('desc', 0, type=int)
+        sort_column = request.args.get('sort', None, type=str) or self.default_sort_column
+        sort_desc = request.args.get('desc', 0, type=int) or self.default_desc
 
         if sort_column is None:
             if self.default_sort_column:
@@ -841,15 +844,20 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             if self.default_desc:
                 sort_desc = self.default_desc
 
+        try:
+            column_index = self.possible_columns.index(sort_column)
+        except ValueError:
+            sort_column = self.default_sort_column
+
         if sort_column is None:
             # Sort by name
             items.sort(key=itemgetter(0))
             # Sort by type
             items.sort(key=itemgetter(2), reverse=True)
-            # Sort by modified date
-            items.sort(key=lambda x: (x[0], x[1], x[2], x[3], datetime.utcfromtimestamp(x[4])), reverse=True)
+            if not self._on_windows:
+                # Sort by modified date
+                items.sort(key=lambda x: (x[0], x[1], x[2], x[3], datetime.utcfromtimestamp(x[4])), reverse=True)
         else:
-            column_index = self.possible_columns.index(sort_column)
             items.sort(key=itemgetter(column_index), reverse=sort_desc)
 
         # Generate breadcrumbs
@@ -944,7 +952,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         base_url = self.get_base_url()
         if base_url:
             base_url = urljoin(self.get_url('.index_view'), base_url)
-            return redirect(urljoin(base_url, path))
+            return redirect(urljoin(quote(base_url), quote(path)))
 
         return self.storage.send_file(directory)
 

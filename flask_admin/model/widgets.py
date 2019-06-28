@@ -1,7 +1,8 @@
 from flask import json
 from jinja2 import escape
-from wtforms.widgets import HTMLString, html_params
+from wtforms.widgets import html_params
 
+from flask_admin._backwards import Markup
 from flask_admin._compat import as_unicode, text_type
 from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
@@ -61,7 +62,10 @@ class AjaxSelect2Widget(object):
         placeholder = field.loader.options.get('placeholder', gettext('Please select model'))
         kwargs.setdefault('data-placeholder', placeholder)
 
-        return HTMLString('<input %s>' % html_params(name=field.name, **kwargs))
+        minimum_input_length = int(field.loader.options.get('minimum_input_length', 1))
+        kwargs.setdefault('data-minimum-input-length', minimum_input_length)
+
+        return Markup('<input %s>' % html_params(name=field.name, **kwargs))
 
 
 class XEditableWidget(object):
@@ -90,7 +94,7 @@ class XEditableWidget(object):
 
         kwargs = self.get_kwargs(field, kwargs)
 
-        return HTMLString(
+        return Markup(
             '<a %s>%s</a>' % (html_params(**kwargs),
                               escape(display_value))
         )
@@ -106,6 +110,7 @@ class XEditableWidget(object):
             kwargs['data-rows'] = '5'
         elif field.type == 'BooleanField':
             kwargs['data-type'] = 'select2'
+            kwargs['data-value'] = '1' if field.data else ''
             # data-source = dropdown options
             kwargs['data-source'] = json.dumps([
                 {'value': '', 'text': gettext('No')},

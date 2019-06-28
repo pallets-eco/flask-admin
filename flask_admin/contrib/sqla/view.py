@@ -3,6 +3,7 @@ import warnings
 import inspect
 
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.orm.base import manager_of_class, instance_state
 from sqlalchemy.orm import joinedload, aliased
 from sqlalchemy.sql.expression import desc
 from sqlalchemy import Boolean, Table, func, or_
@@ -328,6 +329,8 @@ class ModelView(BaseModelView):
                                         menu_icon_type=menu_icon_type,
                                         menu_icon_value=menu_icon_value)
 
+        self._manager = manager_of_class(self.model)
+
         # Primary key
         self._primary_key = self.scaffold_pk()
 
@@ -484,13 +487,21 @@ class ModelView(BaseModelView):
 
             for c in self.column_sortable_list:
                 if isinstance(c, tuple):
-                    column, path = tools.get_field_with_path(self.model, c[1])
-                    column_name = c[0]
+                    if isinstance(c[1], tuple):
+                        column, path = [], []
+                        for item in c[1]:
+                            column_item, path_item = tools.get_field_with_path(self.model, item)
+                            column.append(column_item)
+                            path.append(path_item)
+                        column_name = c[0]
+                    else:
+                        column, path = tools.get_field_with_path(self.model, c[1])
+                        column_name = c[0]
                 else:
                     column, path = tools.get_field_with_path(self.model, c)
                     column_name = text_type(c)
 
-                if path and hasattr(path[0], 'property'):
+                if path and (hasattr(path[0], 'property') or isinstance(path[0], list)):
                     self._sortable_joins[column_name] = path
                 elif path:
                     raise Exception("For sorting columns in a related table, "
@@ -501,8 +512,6 @@ class ModelView(BaseModelView):
                     # column is in same table, use only model attribute name
                     if getattr(column, 'key', None) is not None:
                         column_name = column.key
-                    else:
-                        column_name = text_type(c)
 
                 # column_name must match column_name used in `get_list_columns`
                 result[column_name] = column
@@ -563,16 +572,49 @@ class ModelView(BaseModelView):
         if self.column_searchable_list:
             self._search_fields = []
 
-            for p in self.column_searchable_list:
-                attr, joins = tools.get_field_with_path(self.model, p)
+            for name in self.column_searchable_list:
+                attr, joins = tools.get_field_with_path(self.model, name)
 
                 if not attr:
-                    raise Exception('Failed to find field for search field: %s' % p)
+                    raise Exception('Failed to find field for search field: %s' % name)
 
-                for column in tools.get_columns_for_field(attr):
+                if tools.is_hybrid_property(self.model, name):
+                    column = attr
+                    if isinstance(name, string_types):
+                        column.key = name.split('.')[-1]
                     self._search_fields.append((column, joins))
+                else:
+                    for column in tools.get_columns_for_field(attr):
+                        self._search_fields.append((column, joins))
 
         return bool(self.column_searchable_list)
+
+    def search_placeholder(self):
+        """
+            Return search placeholder.
+
+            For example, if set column_labels and column_searchable_list:
+
+            class MyModelView(BaseModelView):
+                column_labels = dict(name='Name', last_name='Last Name')
+                column_searchable_list = ('name', 'last_name')
+
+            placeholder is: "Name, Last Name"
+        """
+        if not self.column_searchable_list:
+            return None
+
+        placeholders = []
+
+        for searchable in self.column_searchable_list:
+            if isinstance(searchable, InstrumentedAttribute):
+                placeholders.append(
+                    self.column_labels.get(searchable.key, searchable.key))
+            else:
+                placeholders.append(
+                    self.column_labels.get(searchable, searchable))
+
+        return u', '.join(placeholders)
 
     def scaffold_filters(self, name):
         """
@@ -791,8 +833,6 @@ class ModelView(BaseModelView):
         """
             Return a query for the model type.
 
-            If you override this method, don't forget to override `get_count_query` as well.
-
             This method can be used to set a "persistent filter" on an index_view.
 
             Example::
@@ -800,6 +840,10 @@ class ModelView(BaseModelView):
                 class MyView(ModelView):
                     def get_query(self):
                         return super(MyView, self).get_query().filter(User.username == current_user.username)
+
+
+            If you override this method, don't forget to also override `get_count_query`, for displaying the correct
+            item count in the list view, and `get_one`, which is used when retrieving records for the edit view.
         """
         return self.session.query(self.model)
 
@@ -836,29 +880,17 @@ class ModelView(BaseModelView):
             column = sort_field if alias is None else getattr(alias, sort_field.key)
 
             if sort_desc:
-                if isinstance(column, tuple):
-                    query = query.order_by(*map(desc, column))
-                else:
-                    query = query.order_by(desc(column))
+                query = query.order_by(desc(column))
             else:
-                if isinstance(column, tuple):
-                    query = query.order_by(*column)
-                else:
-                    query = query.order_by(column)
+                query = query.order_by(column)
 
         return query, joins
 
     def _get_default_order(self):
         order = super(ModelView, self)._get_default_order()
-
-        if order is not None:
-            field, direction = order
-
+        for field, direction in (order or []):
             attr, joins = tools.get_field_with_path(self.model, field)
-
-            return attr, joins, direction
-
-        return None
+            yield attr, joins, direction
 
     def _apply_sorting(self, query, joins, sort_column, sort_desc):
         if sort_column is not None:
@@ -866,13 +898,14 @@ class ModelView(BaseModelView):
                 sort_field = self._sortable_columns[sort_column]
                 sort_joins = self._sortable_joins.get(sort_column)
 
-                query, joins = self._order_by(query, joins, sort_joins, sort_field, sort_desc)
+                if isinstance(sort_field, list):
+                    for field_item, join_item in zip(sort_field, sort_joins):
+                        query, joins = self._order_by(query, joins, join_item, field_item, sort_desc)
+                else:
+                    query, joins = self._order_by(query, joins, sort_joins, sort_field, sort_desc)
         else:
             order = self._get_default_order()
-
-            if order:
-                sort_field, sort_joins, sort_desc = order
-
+            for sort_field, sort_joins, sort_desc in order:
                 query, joins = self._order_by(query, joins, sort_joins, sort_field, sort_desc)
 
         return query, joins
@@ -1051,6 +1084,14 @@ class ModelView(BaseModelView):
         """
             Return a single model by its id.
 
+            Example::
+
+                def get_one(self, id):
+                    query = self.get_query()
+                    return query.filter(self.model.id == id).one()
+
+            Also see `get_query` for how to filter the list view.
+
             :param id:
                 Model id
         """
@@ -1059,7 +1100,10 @@ class ModelView(BaseModelView):
     # Error handler
     def handle_view_exception(self, exc):
         if isinstance(exc, IntegrityError):
-            if current_app.config.get('ADMIN_RAISE_ON_VIEW_EXCEPTION'):
+            if current_app.config.get(
+                'ADMIN_RAISE_ON_INTEGRITY_ERROR',
+                current_app.config.get('ADMIN_RAISE_ON_VIEW_EXCEPTION')
+            ):
                 raise
             else:
                 flash(gettext('Integrity error. %(message)s', message=text_type(exc)), 'error')
@@ -1076,7 +1120,12 @@ class ModelView(BaseModelView):
                 Form instance
         """
         try:
-            model = self.model()
+            model = self._manager.new_instance()
+            # TODO: We need a better way to create model instances and stay compatible with
+            # SQLAlchemy __init__() behavior
+            state = instance_state(model)
+            self._manager.dispatch.init(state, [], {})
+
             form.populate_obj(model)
             self.session.add(model)
             self._on_model_change(form, model, True)

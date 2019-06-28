@@ -1,4 +1,4 @@
-from re import sub
+from re import sub, compile
 from jinja2 import contextfunction
 from flask import g, request, url_for, flash
 from wtforms.validators import DataRequired, InputRequired
@@ -9,6 +9,8 @@ from ._compat import string_types
 
 
 VALID_SCHEMES = ['http', 'https']
+_substitute_whitespace = compile(r'[\s\x00-\x08\x0B\x0C\x0E-\x19]+').sub
+_fix_multiple_slashes = compile(r'(^([^/]+:)?//)/*').sub
 
 
 def set_current_view(view):
@@ -43,13 +45,15 @@ def get_url(endpoint, **kwargs):
 
 def is_required_form_field(field):
     """
-        Check if form field has `DataRequired` or `InputRequired` validators.
+        Check if form field has `DataRequired`, `InputRequired`, or
+        `FieldListInputRequired` validators.
 
         :param field:
             WTForms field to check
     """
+    from flask_admin.form.validators import FieldListInputRequired
     for validator in field.validators:
-        if isinstance(validator, (DataRequired, InputRequired)):
+        if isinstance(validator, (DataRequired, InputRequired, FieldListInputRequired)):
             return True
     return False
 
@@ -131,8 +135,18 @@ def prettify_class_name(name):
 
 
 def is_safe_url(target):
+    # prevent urls like "\\www.google.com"
+    # some browser will change \\ to // (eg: Chrome)
+    # refs https://stackoverflow.com/questions/10438008
+    target = target.replace('\\', '/')
+
+    # handle cases like "j a v a s c r i p t:"
+    target = _substitute_whitespace('', target)
+
+    # Chrome and FireFox "fix" more than two slashes into two after protocol
+    target = _fix_multiple_slashes(lambda m: m.group(1), target, 1)
+
     # prevent urls starting with "javascript:"
-    target = target.strip()
     target_info = urlparse(target)
     target_scheme = target_info.scheme
     if target_scheme and target_scheme not in VALID_SCHEMES:

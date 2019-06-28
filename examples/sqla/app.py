@@ -1,17 +1,38 @@
 import os
 import os.path as op
-from flask import Flask
+from flask import Flask, Markup
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import composite
+from sqlalchemy import sql, cast
+import uuid
+import random
+import string
 
 from wtforms import validators
 
 import flask_admin as admin
+from flask_admin.base import MenuLink
 from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import filters
+from flask_admin.contrib.sqla.form import InlineModelConverter
+from flask_admin.contrib.sqla.fields import InlineModelFormList
+from flask_admin.contrib.sqla.filters import BaseSQLAFilter, FilterEqual
+from flask_admin.babel import gettext
+
+from sqlalchemy_utils import ChoiceType, EmailType, UUIDType, URLType, CurrencyType, Currency
+from colour import Color
+from sqlalchemy_utils import ColorType, ArrowType, IPAddressType, TimezoneType
+import arrow
+import enum
 
 
 # Create application
 app = Flask(__name__)
+
+# set optional bootswatch theme
+# see http://bootswatch.com/3/ for available swatches
+app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
 # Create dummy secrey key so we can use sessions
 app.config['SECRET_KEY'] = '123456790'
@@ -22,17 +43,61 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.config['DATABASE_FILE
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
+class EnumChoices(enum.Enum):
+    first = 1
+    second = 2
+
+AVAILABLE_USER_TYPES = [
+    (u'admin', u'Admin'),
+    (u'content-writer', u'Content writer'),
+    (u'editor', u'Editor'),
+    (u'regular-user', u'Regular user'),
+]
 
 # Create models
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(UUIDType(binary=False), default=uuid.uuid4, primary_key=True)
+
+    # use a regular string field, for which we can specify a list of available choices later on
+    type = db.Column(db.String(100))
+
+    # fixed choices can be handled in a number of different ways:
+    enum_choice_field = db.Column(db.Enum(EnumChoices), nullable=True)
+    sqla_utils_choice_field = db.Column(ChoiceType(AVAILABLE_USER_TYPES), nullable=True)
+    sqla_utils_enum_choice_field = db.Column(ChoiceType(EnumChoices, impl=db.Integer()), nullable=True)
+
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
-    username = db.Column(db.String(80), unique=True)
-    email = db.Column(db.String(120), unique=True)
+
+    # some sqlalchemy_utils data types (see https://sqlalchemy-utils.readthedocs.io/)
+    email = db.Column(EmailType, unique=True, nullable=False)
+    website = db.Column(URLType)
+    ip_address = db.Column(IPAddressType)
+    currency = db.Column(CurrencyType, nullable=True, default=None)
+    timezone = db.Column(TimezoneType(backend='pytz'))
+
+    dialling_code = db.Column(db.Integer())
+    local_phone_number = db.Column(db.String(10))
+
+    featured_post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    featured_post = db.relationship('Post', foreign_keys=[featured_post_id])
+
+    @hybrid_property
+    def phone_number(self):
+        if self.dialling_code and self.local_phone_number:
+            number = str(self.local_phone_number)
+            return "+{} ({}) {} {} {}".format(self.dialling_code, number[0], number[1:3], number[3:6], number[6::])
+        return
+
+    @phone_number.expression
+    def phone_number(cls):
+        return sql.operators.ColumnOperators.concat(cast(cls.dialling_code, db.String), cls.local_phone_number)
 
     def __str__(self):
-        return self.username
+        return "{}, {}".format(self.last_name, self.first_name)
+
+    def __repr__(self):
+        return "{}: {}".format(self.id, self.__str__())
 
 
 # Create M2M table
@@ -46,36 +111,26 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
     text = db.Column(db.Text, nullable=False)
-    date = db.Column(db.DateTime)
+    date = db.Column(db.Date)
 
-    user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
-    user = db.relationship(User, backref='posts')
+    # some sqlalchemy_utils data types (see https://sqlalchemy-utils.readthedocs.io/)
+    background_color = db.Column(ColorType)
+    created_at = db.Column(ArrowType, default=arrow.utcnow())
+    user_id = db.Column(UUIDType(binary=False), db.ForeignKey(User.id))
 
+    user = db.relationship(User, foreign_keys=[user_id], backref='posts')
     tags = db.relationship('Tag', secondary=post_tags_table)
 
     def __str__(self):
-        return self.title
+        return "{}".format(self.title)
 
 
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(64))
+    name = db.Column(db.Unicode(64), unique=True)
 
     def __str__(self):
-        return self.name
-
-
-class UserInfo(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-
-    key = db.Column(db.String(64), nullable=False)
-    value = db.Column(db.String(64))
-
-    user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
-    user = db.relationship(User, backref='info')
-
-    def __str__(self):
-        return '%s - %s' % (self.key, self.value)
+        return "{}".format(self.name)
 
 
 class Tree(db.Model):
@@ -85,7 +140,7 @@ class Tree(db.Model):
     parent = db.relationship('Tree', remote_side=[id], backref='children')
 
     def __str__(self):
-        return self.name
+        return "{}".format(self.name)
 
 
 # Flask views
@@ -94,44 +149,173 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
-# Customized User model admin
-class UserAdmin(sqla.ModelView):
-    inline_models = (UserInfo,)
+# Custom filter class
+class FilterLastNameBrown(BaseSQLAFilter):
+    def apply(self, query, value, alias=None):
+        if value == '1':
+            return query.filter(self.column == "Brown")
+        else:
+            return query.filter(self.column != "Brown")
 
+    def operation(self):
+        return 'is Brown'
+
+
+# Customized User model admin
+def phone_number_formatter (view, context, model, name):
+    return Markup("<nobr>{}</nobr>".format(model.phone_number)) if model.phone_number else None
+
+def is_numberic_validator(form, field):
+    if field.data and not field.data.isdigit():
+        raise validators.ValidationError(gettext('Only numbers are allowed.'))
+
+class UserAdmin(sqla.ModelView):
+
+    can_view_details = True  # show a modal dialog with records details
+    action_disallowed_list = ['delete', ]
+
+    form_choices = {
+        'type': AVAILABLE_USER_TYPES,
+    }
+    form_args = {
+        'dialling_code': {'label': 'Dialling code'},
+        'local_phone_number': {
+            'label': 'Phone number',
+            'validators': [is_numberic_validator]
+        },
+    }
+    form_widget_args = {
+        'id':{
+            'readonly':True
+        }
+    }
+    column_list = [
+        'type',
+        'last_name',
+        'first_name',
+        'email',
+        'ip_address',
+        'currency',
+        'timezone',
+        'phone_number',
+    ]
+    column_searchable_list = [
+        'first_name',
+        'last_name',
+        'phone_number',
+        'email',
+    ]
+    column_editable_list = ['type', 'currency', 'timezone']
+    column_details_list = [
+        'id',
+        'featured_post',
+        'website',
+        'enum_choice_field',
+        'sqla_utils_choice_field',
+        'sqla_utils_enum_choice_field',
+        ] + column_list
+    form_columns = [
+        'id',
+        'type',
+        'featured_post',
+        'enum_choice_field',
+        'sqla_utils_choice_field',
+        'sqla_utils_enum_choice_field',
+        'last_name',
+        'first_name',
+        'email',
+        'website',
+        'dialling_code',
+        'local_phone_number',
+    ]
+
+    column_auto_select_related = True
+    column_default_sort = [('last_name', False), ('first_name', False)]  # sort on multiple columns
+
+    # custom filter: each filter in the list is a filter operation (equals, not equals, etc)
+    # filters with the same name will appear as operations under the same filter
+    column_filters = [
+        'first_name',
+        FilterEqual(column=User.last_name, name='Last Name'),
+        FilterLastNameBrown(column=User.last_name, name='Last Name',
+                            options=(('1', 'Yes'), ('0', 'No'))),
+        'phone_number',
+        'email',
+        'ip_address',
+        'currency',
+        'timezone',
+    ]
+    column_formatters = {'phone_number': phone_number_formatter}
+
+    # setup create & edit forms so that only posts created by this user can be selected as 'featured'
+    def create_form(self):
+        return self._filtered_posts(
+            super(UserAdmin, self).create_form()
+        )
+
+    def edit_form(self, obj):
+        return self._filtered_posts(
+            super(UserAdmin, self).edit_form(obj)
+        )
+
+    def _filtered_posts(self, form):
+        form.featured_post.query_factory = lambda: Post.query.filter(Post.user_id == form._obj.id).all()
+        return form
 
 # Customized Post model admin
 class PostAdmin(sqla.ModelView):
-    # Visible columns in the list view
-    column_exclude_list = ['text']
-
-    # List of columns that can be sorted. For 'user' column, use User.username as
-    # a column.
-    column_sortable_list = ('title', ('user', 'user.username'), 'date')
-
-    # Rename 'title' columns to 'Post Title' in list view
-    column_labels = dict(title='Post Title')
-
-    column_searchable_list = ('title', User.username, 'tags.name')
-
-    column_filters = ('user',
-                      'title',
-                      'date',
-                      'tags',
-                      filters.FilterLike(Post.title, 'Fixed Title', options=(('test1', 'Test 1'), ('test2', 'Test 2'))))
+    column_display_pk = True
+    column_list = ['id', 'user', 'title', 'date', 'tags', 'background_color', 'created_at',]
+    column_editable_list = ['background_color', ]
+    column_default_sort = ('date', True)
+    column_sortable_list = [
+        'id',
+        'title',
+        'date',
+        ('user', ('user.last_name', 'user.first_name')),  # sort on multiple columns
+    ]
+    column_labels = dict(title='Post Title')  # Rename 'title' column in list view
+    column_searchable_list = [
+        'title',
+        'tags.name',
+        'user.first_name',
+        'user.last_name',
+    ]
+    column_labels = {
+        'title': 'Title',
+        'tags.name': 'tags',
+        'user.first_name': 'user\'s first name',
+        'user.last_name': 'last name',
+    }
+    column_filters = [
+        'background_color',
+        'created_at',
+        'user',
+        'title',
+        'date',
+        'tags',
+        filters.FilterLike(Post.title, 'Fixed Title', options=(('test1', 'Test 1'), ('test2', 'Test 2'))),
+    ]
+    can_export = True
+    export_max_rows = 1000
+    export_types = ['csv', 'xls']
 
     # Pass arguments to WTForms. In this case, change label for text field to
-    # be 'Big Text' and add required() validator.
-    form_args = dict(
-                    text=dict(label='Big Text', validators=[validators.required()])
-                )
+    # be 'Big Text' and add DataRequired() validator.
+    form_args = {
+        'text': dict(label='Big Text', validators=[validators.DataRequired()])
+    }
 
     form_ajax_refs = {
         'user': {
-            'fields': (User.username, User.email)
+            'fields': (User.first_name, User.last_name)
         },
         'tags': {
-            'fields': (Tag.name,)
-        }
+            'fields': (Tag.name,),
+            'minimum_input_length': 0,  # show suggestions, even before any user input
+            'placeholder': 'Please select',
+            'page_size': 5,
+        },
     }
 
     def __init__(self, session):
@@ -150,7 +334,10 @@ admin = admin.Admin(app, name='Example: SQLAlchemy', template_mode='bootstrap4')
 admin.add_view(UserAdmin(User, db.session))
 admin.add_view(sqla.ModelView(Tag, db.session))
 admin.add_view(PostAdmin(db.session))
-admin.add_view(TreeView(Tree, db.session))
+admin.add_view(TreeView(Tree, db.session, category="Other"))
+admin.add_sub_category(name="Links", parent_name="Other")
+admin.add_link(MenuLink(name='Back Home', url='/', category='Links'))
+admin.add_link(MenuLink(name='External link', url='http://www.example.com/', category='Links'))
 
 
 def build_sample_db():
@@ -171,18 +358,40 @@ def build_sample_db():
         'Riley', 'William', 'James', 'Geoffrey', 'Lisa', 'Benjamin', 'Stacey', 'Lucy'
     ]
     last_names = [
-        'Brown', 'Smith', 'Patel', 'Jones', 'Williams', 'Johnson', 'Taylor', 'Thomas',
-        'Roberts', 'Khan', 'Lewis', 'Jackson', 'Clarke', 'James', 'Phillips', 'Wilson',
+        'Brown', 'Brown', 'Patel', 'Jones', 'Williams', 'Johnson', 'Taylor', 'Thomas',
+        'Roberts', 'Khan', 'Clarke', 'Clarke', 'Clarke', 'James', 'Phillips', 'Wilson',
         'Ali', 'Mason', 'Mitchell', 'Rose', 'Davis', 'Davies', 'Rodriguez', 'Cox', 'Alexander'
+    ]
+
+    countries = [
+        ("ZA", "South Africa", 27, "ZAR", "Africa/Johannesburg"),
+        ("BF", "Burkina Faso", 226, "XOF", "Africa/Ouagadougou"),
+        ("US", "United States of America", 1, "USD", "America/New_York"),
+        ("BR", "Brazil", 55, "BRL", "America/Sao_Paulo"),
+        ("TZ", "Tanzania", 255, "TZS", "Africa/Dar_es_Salaam"),
+        ("DE", "Germany", 49, "EUR", "Europe/Berlin"),
+        ("CN", "China", 86, "CNY", "Asia/Shanghai"),
     ]
 
     user_list = []
     for i in range(len(first_names)):
         user = User()
+        country = random.choice(countries)
+        user.type = random.choice(AVAILABLE_USER_TYPES)[0]
         user.first_name = first_names[i]
-        user.username = first_names[i].lower()
         user.last_name = last_names[i]
-        user.email = user.username + "@example.com"
+        user.email = first_names[i].lower() + "@example.com"
+
+        user.website = "https://www.example.com"
+        user.ip_address = "127.0.0.1"
+
+        user.coutry = country[1]
+        user.currency = country[3]
+        user.timezone = country[4]
+
+        user.dialling_code = country[2]
+        user.local_phone_number = '0' + ''.join(random.choices('123456789', k=9))
+
         user_list.append(user)
         db.session.add(user)
 
@@ -239,6 +448,7 @@ def build_sample_db():
         post.user = user
         post.title = entry['title']
         post.text = entry['content']
+        post.background_color = random.choice(["#cccccc", "red", "lightblue", "#0f0"])
         tmp = int(1000*random.random())  # random number between 0 and 1000:
         post.date = datetime.datetime.now() - datetime.timedelta(days=tmp)
         post.tags = random.sample(tag_list, 2)  # select a couple of tags at random
