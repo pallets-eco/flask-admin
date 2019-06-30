@@ -42,6 +42,11 @@ install_requires = [
     'wtforms'
 ]
 
+if sys.version_info[0:2] < (3, 4):
+    # required for python < 3.4
+    install_requires.append('enum34>=1.1.6')
+
+
 setup(
     name='Flask-Admin',
     version=grep('__version__'),

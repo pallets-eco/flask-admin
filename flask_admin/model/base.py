@@ -1833,8 +1833,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         for typeobj, formatter in column_type_formatters.items():
             if isinstance(value, typeobj):
-                value = formatter(self, value)
-                break
+                return formatter(self, value)
 
         return value
 

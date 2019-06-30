@@ -3,6 +3,7 @@ Flask-Admin
 Flask-BabelEx
 Flask-SQLAlchemy
 tablib
+enum34; python_version < '3.0'
 sqlalchemy_utils
 arrow
 colour
