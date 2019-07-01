@@ -436,6 +436,47 @@ def test_column_searchable_list():
     ok_('model2-test' in data)
 
 
+def test_extra_args_search():
+    app, db, admin = setup()
+
+    Model1, Model2 = create_models(db)
+
+    view1 = CustomModelView(Model1, db.session,
+                           column_searchable_list=['test1', ])
+
+    admin.add_view(view1)
+
+    db.session.add(Model2('model1-test', ))
+    db.session.commit()
+
+    client = app.test_client()
+
+    # check that extra args in the url are propagated as hidden fields in the search form
+    rv = client.get('/admin/model1/?search=model1&foo=bar')
+    data = rv.data.decode('utf-8')
+    ok_('<input type="hidden" name="foo" value="bar">' in data)
+
+
+def test_extra_args_filter():
+    app, db, admin = setup()
+
+    Model1, Model2 = create_models(db)
+
+    view2 = CustomModelView(Model2, db.session,
+                           column_filters=['int_field', ])
+    admin.add_view(view2)
+
+    db.session.add(Model2('model2-test', 5000))
+    db.session.commit()
+
+    client = app.test_client()
+
+    # check that extra args in the url are propagated as hidden fields in the  form
+    rv = client.get('/admin/model2/?flt1_0=5000&foo=bar')
+    data = rv.data.decode('utf-8')
+    ok_('<input type="hidden" name="foo" value="bar">' in data)
+
+
 def test_complex_searchable_list():
     app, db, admin = setup()
 
