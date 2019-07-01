@@ -173,7 +173,6 @@ class UserAdmin(sqla.ModelView):
 
     can_view_details = True  # show a modal dialog with records details
     action_disallowed_list = ['delete', ]
-
     form_choices = {
         'type': AVAILABLE_USER_TYPES,
     }
@@ -264,6 +263,8 @@ class UserAdmin(sqla.ModelView):
 
 # Customized Post model admin
 class PostAdmin(sqla.ModelView):
+    create_modal = True
+    edit_modal = True
     column_display_pk = True
     column_list = ['id', 'user', 'title', 'date', 'tags', 'background_color', 'created_at',]
     column_editable_list = ['background_color', ]
