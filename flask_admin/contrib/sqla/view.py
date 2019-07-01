@@ -716,9 +716,6 @@ class ModelView(BaseModelView):
             # target column to replace previous)
             if joined_column_name:
                 key_name = "{0}.{1}".format(joined_column_name, column)
-                if self._filter_joins.get(key_name):
-                    key_name = '{0}.alias'.format(key_name)
-
                 for f in flt:
                     f.key_name = key_name
 
