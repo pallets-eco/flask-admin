@@ -442,7 +442,7 @@ def test_extra_args_search():
     Model1, Model2 = create_models(db)
 
     view1 = CustomModelView(Model1, db.session,
-                           column_searchable_list=['test1', ])
+                            column_searchable_list=['test1', ])
 
     admin.add_view(view1)
 
@@ -463,7 +463,7 @@ def test_extra_args_filter():
     Model1, Model2 = create_models(db)
 
     view2 = CustomModelView(Model2, db.session,
-                           column_filters=['int_field', ])
+                            column_filters=['int_field', ])
     admin.add_view(view2)
 
     db.session.add(Model2('model2-test', 5000))
