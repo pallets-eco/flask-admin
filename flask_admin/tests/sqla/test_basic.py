@@ -92,7 +92,7 @@ def create_models(db):
     class Model2(db.Model):
         def __init__(self, string_field=None, int_field=None, bool_field=None,
                      model1=None, float_field=None, string_field_default=None,
-                     string_field_empty_default=None, parent=None):
+                     string_field_empty_default=None):
             self.string_field = string_field
             self.int_field = int_field
             self.bool_field = bool_field
@@ -100,7 +100,6 @@ def create_models(db):
             self.float_field = float_field
             self.string_field_default = string_field_default
             self.string_field_empty_default = string_field_empty_default
-            self.parent = parent
 
         id = db.Column(db.Integer, primary_key=True)
         string_field = db.Column(db.String)
@@ -117,10 +116,6 @@ def create_models(db):
         model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
         model1 = db.relationship(lambda: Model1, backref='model2')
 
-        # Recursive relation
-        parent_id = db.Column(db.Integer, db.ForeignKey('model2.id'))
-        parent = db.relationship('Model2', remote_side=[id], backref='children')
-
     db.create_all()
 
     return Model1, Model2
@@ -133,7 +128,7 @@ def fill_db(db, Model1, Model2):
     model1_obj4 = Model1('test1_val_4', 'test2_val_4', email_field="test@test.com", choice_field="choice-1")
 
     model2_obj1 = Model2('test2_val_1', model1=model1_obj1, float_field=None)
-    model2_obj2 = Model2('test2_val_2', model1=model1_obj2, float_field=None, parent=model2_obj1)
+    model2_obj2 = Model2('test2_val_2', model1=model1_obj2, float_field=None)
     model2_obj3 = Model2('test2_val_3', int_field=5000, float_field=25.9)
     model2_obj4 = Model2('test2_val_4', int_field=9000, float_field=75.5)
     model2_obj5 = Model2('test2_val_5', int_field=6169453081680413441)
@@ -1276,27 +1271,6 @@ def test_column_filters():
     data = rv.data.decode('utf-8')
     ok_('test2_val_1' in data)
     ok_('test2_val_2' not in data)
-    ok_('test2_val_3' not in data)
-    ok_('test2_val_4' not in data)
-
-    # Test filters to recursively joined table field
-    view = CustomModelView(
-        Model2, db.session,
-        endpoint='_model2_recursive',
-        column_filters=[filters.FilterEqual('parent.id', "Parent ID")],
-        column_list=[
-            'string_field',
-            'parent.id',
-        ]
-    )
-    admin.add_view(view)
-
-    rv = client.get('/admin/_model2_recursive/?flt1_0=1')
-    eq_(rv.status_code, 200)
-    data = rv.data.decode('utf-8')
-
-    ok_('test2_val_1' not in data)
-    ok_('test2_val_2' in data)
     ok_('test2_val_3' not in data)
     ok_('test2_val_4' not in data)
 
