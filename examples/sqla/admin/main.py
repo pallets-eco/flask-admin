@@ -1,6 +1,6 @@
 from admin import app, db
 from admin.models import AVAILABLE_USER_TYPES, User, Post, Tag, Tree
-from flask import Markup
+from flask import Markup, send_file
 
 from wtforms import validators
 
@@ -29,6 +29,11 @@ def index():
 <p><a href="/admin/?lang=zh_TW">Click me to get to Admin! (Chinese - Traditional)</a></p>
 """
     return tmp
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_file('static/favicon.ico')
 
 
 # Custom filter class
