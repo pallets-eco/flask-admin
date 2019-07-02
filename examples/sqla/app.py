@@ -338,6 +338,7 @@ class PostAdmin(sqla.ModelView):
 
 
 class TreeView(sqla.ModelView):
+    list_template = 'tree_list.html'
     column_auto_select_related = True
     column_list = [
         'id',
@@ -347,6 +348,9 @@ class TreeView(sqla.ModelView):
     form_excluded_columns = ['children', ]
     column_filters = ['id', 'name', 'parent',]
 
+    # override the 'render' method to pass your own parameters to the template
+    def render(self, template, **kwargs):
+        return super(TreeView, self).render(template, foo="bar", **kwargs)
 
 # Create admin
 admin = admin.Admin(app, name='Example: SQLAlchemy', template_mode='bootstrap3')
