@@ -34,6 +34,9 @@
 
 {% macro filter_form() %}
     <form id="filter_form" method="GET" action="{{ return_url }}">
+        {% for arg_name, arg_value in extra_args.items() %}
+        <input type="hidden" name="{{ arg_name }}" value="{{ arg_value }}">
+        {% endfor %}
         {% if sort_column is not none %}
         <input type="hidden" name="sort" value="{{ sort_column }}">
         {% endif %}
@@ -63,8 +66,8 @@
     {% for flt_name, flt_value in filter_args.items() %}
     <input type="hidden" name="{{ flt_name }}" value="{{ flt_value }}">
     {% endfor %}
-    {% for flt_name, flt_value in extra_args.items() %}
-    <input type="hidden" name="{{ flt_name }}" value="{{ flt_value }}">
+    {% for arg_name, arg_value in extra_args.items() %}
+    <input type="hidden" name="{{ arg_name }}" value="{{ arg_value }}">
     {% endfor %}
     {% if page_size != default_page_size %}
     <input type="hidden" name="page_size" value="{{ page_size }}">

@@ -405,6 +405,10 @@ Now, to make your view classes use this template, set the appropriate class prop
         edit_template = 'microblog_edit.html'
         # create_template = 'microblog_create.html'
         # list_template = 'microblog_list.html'
+        # details_template = 'microblog_details.html'
+        # edit_modal_template = 'microblog_edit_modal.html'
+        # create_modal_template = 'microblog_create_modal.html'
+        # details_modal_template = 'microblog_details_modal.html'
 
 If you want to use your own base template, then pass the name of the template to
 the admin constructor during initialization::
