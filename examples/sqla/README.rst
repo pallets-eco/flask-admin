@@ -9,7 +9,7 @@ To run this example:
 
 2. Create and activate a virtual environment::
 
-    virtualenv env
+    virtualenv env -p python3
     source env/bin/activate
 
 3. Install requirements::
@@ -18,10 +18,7 @@ To run this example:
 
 4. Run the application::
 
-    python examples/sqla/app.py
+    python examples/sqla/run_server.py
 
-The first time you run this example, a sample sqlite database gets populated automatically. To suppress this behaviour,
-comment the following lines in app.py:::
-
-    if not os.path.exists(database_path):
-        build_sample_db()
+The first time you run this example, a sample sqlite database gets populated automatically. To start
+with a fresh database: `rm examples/sqla/admin/sample_db.sqlite`, and then restart the application.
