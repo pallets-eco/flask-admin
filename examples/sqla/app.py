@@ -136,6 +136,8 @@ class Tag(db.Model):
 class Tree(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
+
+    # recursive relationship
     parent_id = db.Column(db.Integer, db.ForeignKey('tree.id'))
     parent = db.relationship('Tree', remote_side=[id], backref='children')
 
@@ -191,8 +193,8 @@ class UserAdmin(sqla.ModelView):
     }
     column_list = [
         'type',
-        'last_name',
         'first_name',
+        'last_name',
         'email',
         'ip_address',
         'currency',
@@ -228,6 +230,12 @@ class UserAdmin(sqla.ModelView):
         'dialling_code',
         'local_phone_number',
     ]
+    form_create_rules = [
+        'last_name',
+        'first_name',
+        'type',
+        'email',
+    ]
 
     column_auto_select_related = True
     column_default_sort = [('last_name', False), ('first_name', False)]  # sort on multiple columns
@@ -247,12 +255,7 @@ class UserAdmin(sqla.ModelView):
     ]
     column_formatters = {'phone_number': phone_number_formatter}
 
-    # setup create & edit forms so that only posts created by this user can be selected as 'featured'
-    def create_form(self):
-        return self._filtered_posts(
-            super(UserAdmin, self).create_form()
-        )
-
+    # setup edit forms so that only posts created by this user can be selected as 'featured'
     def edit_form(self, obj):
         return self._filtered_posts(
             super(UserAdmin, self).edit_form(obj)
@@ -268,13 +271,17 @@ class PostAdmin(sqla.ModelView):
     column_list = ['id', 'user', 'title', 'date', 'tags', 'background_color', 'created_at',]
     column_editable_list = ['background_color', ]
     column_default_sort = ('date', True)
+    create_modal = True
+    edit_modal = True
     column_sortable_list = [
         'id',
         'title',
         'date',
         ('user', ('user.last_name', 'user.first_name')),  # sort on multiple columns
     ]
-    column_labels = dict(title='Post Title')  # Rename 'title' column in list view
+    column_labels = {
+        'title': 'Post Title'  # Rename 'title' column in list view
+    }
     column_searchable_list = [
         'title',
         'tags.name',
@@ -283,14 +290,16 @@ class PostAdmin(sqla.ModelView):
     ]
     column_labels = {
         'title': 'Title',
-        'tags.name': 'tags',
-        'user.first_name': 'user\'s first name',
-        'user.last_name': 'last name',
+        'tags.name': 'Tags',
+        'user.first_name': 'User\'s first name',
+        'user.last_name': 'Last name',
     }
     column_filters = [
+        'id',
+        'user.first_name',
+        'user.id',
         'background_color',
         'created_at',
-        'user',
         'title',
         'date',
         'tags',
@@ -304,6 +313,11 @@ class PostAdmin(sqla.ModelView):
     # be 'Big Text' and add DataRequired() validator.
     form_args = {
         'text': dict(label='Big Text', validators=[validators.DataRequired()])
+    }
+    form_widget_args = {
+        'text': {
+            'rows': 10
+        }
     }
 
     form_ajax_refs = {
@@ -324,7 +338,14 @@ class PostAdmin(sqla.ModelView):
 
 
 class TreeView(sqla.ModelView):
+    column_auto_select_related = True
+    column_list = [
+        'id',
+        'name',
+        'parent',
+    ]
     form_excluded_columns = ['children', ]
+    column_filters = ['id', 'name', 'parent',]
 
 
 # Create admin
@@ -408,37 +429,37 @@ def build_sample_db():
         {
             'title': "de Finibus Bonorum et Malorum - Part I",
             'content': "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor \
-                        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud \
-                        exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure \
-                        dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. \
-                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt \
-                        mollit anim id est laborum."
+incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud \
+exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure \
+dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. \
+Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt \
+mollit anim id est laborum."
         },
         {
             'title': "de Finibus Bonorum et Malorum - Part II",
             'content': "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque \
-                        laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto \
-                        beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur \
-                        aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi \
-                        nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, \
-                        adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam \
-                        aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam \
-                        corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum \
-                        iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum \
-                        qui dolorem eum fugiat quo voluptas nulla pariatur?"
+laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto \
+beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur \
+aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi \
+nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, \
+adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam \
+aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam \
+corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum \
+iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum \
+qui dolorem eum fugiat quo voluptas nulla pariatur?"
         },
         {
             'title': "de Finibus Bonorum et Malorum - Part III",
             'content': "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium \
-                        voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati \
-                        cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id \
-                        est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam \
-                        libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod \
-                        maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. \
-                        Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet \
-                        ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur \
-                        a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis \
-                        doloribus asperiores repellat."
+voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati \
+cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id \
+est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam \
+libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod \
+maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. \
+Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet \
+ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur \
+a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis \
+doloribus asperiores repellat."
         }
     ]
 
@@ -446,7 +467,7 @@ def build_sample_db():
         entry = random.choice(sample_text)  # select text at random
         post = Post()
         post.user = user
-        post.title = entry['title']
+        post.title = "{}'s opinion on {}".format(user.first_name, entry['title'])
         post.text = entry['content']
         post.background_color = random.choice(["#cccccc", "red", "lightblue", "#0f0"])
         tmp = int(1000*random.random())  # random number between 0 and 1000:

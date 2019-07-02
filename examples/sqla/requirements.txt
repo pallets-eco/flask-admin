@@ -1,5 +1,5 @@
 Flask
-Flask-Admin
+-e /Users/petrus/code/flask-admin
 Flask-BabelEx
 Flask-SQLAlchemy
 tablib
