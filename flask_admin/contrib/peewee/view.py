@@ -186,7 +186,7 @@ class ModelView(BaseModelView):
     def get_pk_value(self, model):
         if self.model._meta.composite_key:
             return tuple([
-                model._data[field_name]
+                getattr(model, field_name)
                 for field_name in self.model._meta.primary_key.field_names])
         return getattr(model, self._primary_key)
 
@@ -221,7 +221,7 @@ class ModelView(BaseModelView):
 
                 # Check type
                 if not isinstance(p, (CharField, TextField)):
-                    raise Exception('Can only search on text columns. ' +
+                    raise Exception('Can only search on text columns. '
                                     'Failed to setup search for "%s"' % p)
 
                 self._search_fields.append(p)
