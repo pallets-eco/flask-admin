@@ -59,7 +59,7 @@ To run the examples in your local environment::
 
   4. Run the application::
 
-        python examples/sqla/app.py
+        python examples/sqla/run_server.py
 
 Documentation
 -------------
