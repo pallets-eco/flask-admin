@@ -9,7 +9,7 @@ app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 
 # Build a sample db on the fly, if one does not exist yet.
-app_dir = op.join(op.realpath(os.path.dirname(__file__)), 'admin')
+app_dir = os.path.realpath(os.path.dirname(__file__))
 database_path = op.join(app_dir, app.config['DATABASE_FILE'])
 if not os.path.exists(database_path):
     from admin.data import build_sample_db
