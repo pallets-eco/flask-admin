@@ -139,6 +139,8 @@
                         {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c), csrf=form.csrf_token._value()) }}
                         {% elif csrf_token %}
                         {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c), csrf=csrf_token()) }}
+                        {% else %}
+                        {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c))}}}
                         {% endif %}
                     {% else %}
                     {{ get_value(row, c) }}
