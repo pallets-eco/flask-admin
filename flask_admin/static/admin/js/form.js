@@ -627,6 +627,28 @@
       }
     });
 
+    function dismissAddRelatedObjectPopup(win, newId, newRepr) {
+        var name = win.name;
+        var elem = document.getElementById(name);
+        if (elem) {
+            var elemName = elem.nodeName.toUpperCase();
+            if (elemName === 'SELECT') {
+                elem.options[elem.options.length] = new Option(newRepr, newId, true, true);
+            }
+            else if (elemName === 'INPUT') {
+                if (elem.className.indexOf('vManyToManyRawIdAdminField') !== -1 && elem.value) {
+                    elem.value += ',' + newId;
+                } else {
+                    elem.value = newId;
+                }
+            }
+            win.close();
+            $(elem).trigger('change');
+        }
+    }
+
+    window.dismissAddRelatedObjectPopup = dismissAddRelatedObjectPopup;
+
     // Expose faForm globally
     var faForm = window.faForm = new AdminForm();
 

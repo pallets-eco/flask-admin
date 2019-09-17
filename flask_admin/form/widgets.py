@@ -1,5 +1,7 @@
+from werkzeug.routing import BuildError
 from wtforms import widgets
 from flask.globals import _request_ctx_stack
+from flask import url_for
 from flask_admin.babel import gettext, ngettext
 from flask_admin import helpers as h
 
@@ -25,7 +27,20 @@ class Select2Widget(widgets.Select):
         if allow_blank and not self.multiple:
             kwargs['data-allow-blank'] = u'1'
 
-        return super(Select2Widget, self).__call__(field, **kwargs)
+        return super(Select2Widget, self).__call__(field, **kwargs) + self.create_related_link(field)
+
+    def create_related_link(self, field):
+        try:
+            url = url_for(field.name + ".create_view")
+            html = """
+                <a class="add-related" onclick='window.open("%s?in-new-window=true", "%s", "width=600, height=450")'>
+                    <span class="glyphicon glyphicon-plus"
+                    style="cursor:pointer; position: absolute; top: 0px; left: -3px;"></span>
+                </a>
+                """ % (url, field.name)
+        except BuildError:
+            html = ""
+        return html
 
 
 class Select2TagsWidget(widgets.TextInput):

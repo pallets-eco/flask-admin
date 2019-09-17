@@ -1887,6 +1887,33 @@ def test_form_onetoone():
     eq_(view2._create_form_class.model1.field_class.widget.multiple, False)
 
 
+def test_create_related_form_from_onetomany():
+    app, db, admin = setup()
+
+    class Author(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        name = db.Column(db.String)
+        books = db.relationship('Book', backref='author', lazy='dynamic')
+
+    class Book(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        author_id = db.Column(db.Integer, db.ForeignKey(Author.id))
+        name = db.Column(db.String)
+
+    db.create_all()
+
+    author_view = CustomModelView(Author, db.session)
+    book_view = CustomModelView(Book, db.session)
+    admin.add_view(author_view)
+    admin.add_view(book_view)
+    client = app.test_client()
+    response = client.get('http://localhost/admin/book/new/')
+    eq_(response.status_code, 200)
+    ok_("/admin/author/new/?in-new-window=true" in str(response.data))
+    response = client.get("http://localhost/admin/author/new/?in-new-window=true", data=dict(name="name", ))
+    eq_(response.status_code, 200)
+
+
 def test_relations():
     # TODO: test relations
     pass
