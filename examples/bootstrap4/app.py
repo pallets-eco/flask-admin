@@ -48,6 +48,9 @@ class CustomView(ModelView):
 class UserAdmin(CustomView):
     column_searchable_list = ('name',)
     column_filters = ('name', 'email')
+    create_modal = True
+    edit_modal = True
+    column_editable_list = ('name', 'email',)
 
 
 # Flask views
