@@ -64,7 +64,7 @@ setup(
     install_requires=install_requires,
     tests_require=[
         'nose>=1.0',
-        'pillow==2.9.0',
+        'pillow>=3.3.2',
         'mongoengine',
         'pymongo',
         'wtf-peewee',
