@@ -466,7 +466,7 @@ class ImageUploadField(FileUploadField):
 
     def _save_image(self, image, path, format='JPEG'):
         # New Pillow versions require RGB format for JPEGs
-        if format == 'JPEG':
+        if format == 'JPEG' and image.mode != 'RGB':
             image = image.convert('RGB')
         elif image.mode not in ('RGB', 'RGBA'):
             image = image.convert('RGBA')
