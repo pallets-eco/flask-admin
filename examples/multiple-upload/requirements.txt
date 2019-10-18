@@ -1,0 +1,16 @@
+appdirs==1.4.3
+click==6.7
+Flask==0.12
+Flask-Admin==1.5.0
+Flask-SQLAlchemy==2.2
+itsdangerous==0.24
+Jinja2==2.9.5
+MarkupSafe==1.0
+olefile==0.44
+packaging==16.8
+Pillow==4.0.0
+pyparsing==2.2.0
+six==1.10.0
+SQLAlchemy==1.1.6
+Werkzeug==0.12.1
+WTForms==2.1
