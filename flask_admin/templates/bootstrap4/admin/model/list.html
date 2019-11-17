@@ -20,7 +20,7 @@
         {% if admin_view.can_create %}
         <li class="nav-item">
           {%- if admin_view.create_modal -%}
-            {{ lib.add_modal_button(url=get_url('.create_view', url=return_url, modal=True), title=_gettext('Create New Record'), content=_gettext('Create')) }}
+            {{ lib.add_modal_button(url=get_url('.create_view', url=return_url, modal=True), btn_class='nav-link', title=_gettext('Create New Record'), content=_gettext('Create')) }}
           {% else %}
             <a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create New Record') }}" class="nav-link">{{ _gettext('Create') }}</a>
           {%- endif -%}
