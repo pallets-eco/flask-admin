@@ -377,28 +377,14 @@ class Row(NestedRule):
 
 class Group(Macro):
 
-    def __init__(self, field_name, *args, prepend=None, append=None, **kwargs):
+    def __init__(self, field_name, prepend=None, append=None, **kwargs):
         '''
             Bootstrap Input group.
         '''
         render_field = kwargs.get('render_field', 'lib.render_field')
         super(Group, self).__init__(render_field)
         self.field_name = field_name
-
         self._addons = []
-
-        for cnf in args:
-            if isinstance(cnf, str):
-                self._addons.append({
-                    'pos': 'append',
-                    'type': 'text',
-                    'text': cnf
-                })
-                continue
-
-            if cnf['type'] in ('field', 'html', 'text'):
-                cnf.setdefault('pos', 'append')
-                self._addons.append(cnf)
 
         if prepend:
             if not isinstance(prepend, (tuple, list)):
