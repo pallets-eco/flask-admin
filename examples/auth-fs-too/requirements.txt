@@ -1,0 +1,5 @@
+Flask
+Flask-Admin
+Flask-BabelEx
+Flask-SQLAlchemy
+Flask-Security-Too>=3.3.1

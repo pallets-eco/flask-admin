@@ -1,0 +1,30 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+{{ super() }}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <h1>Flask-Admin example</h1>
+            <p class="lead">
+                Authentication
+            </p>
+            <p>
+                This example shows how you can use <a href="https://flask-security-too.readthedocs.io/en/stable/" target="_blank">Flask-Security-Too</a> for authentication.
+            </p>
+            {% if not current_user.is_authenticated %}
+            <p>You can register as a regular user, or log in as a superuser with the following credentials:
+            <ul>
+                <li>{{ _fsdomain('Email Address') }}: <b>admin@example.com</b></li>
+                <li>{{ _fsdomain('Password') }}: <b>admin</b></li>
+            </ul>
+            <p>
+                <a class="btn btn-primary" href="{{ url_for('security.login') }}">{{ _fsdomain('Login') }}</a> <a class="btn btn-default" href="{{ url_for('security.register') }}">{{ _fsdomain('Register') }}</a>
+            </p>
+            {% endif %}
+            <p>
+                <a class="btn btn-primary" href="/"><i class="glyphicon glyphicon-chevron-left"></i> Back</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock body %}

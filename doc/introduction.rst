@@ -119,6 +119,42 @@ at https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth-flask-lo
 The main drawback is that you still need to implement all of the relevant login,
 registration, and account management views yourself.
 
+Using Flask-Security-Too
+-------------------------
+
+If you want a more polished solution, you could
+use `Flask-Security-Too <https://flask-security-too.readthedocs.io/en/stable/>`_,
+which is a higher-level library. Key features include:
+
+  * API endpoints for registration, login,
+    change/reset password, and confirmation
+  * Full support for JSON and/or form input
+  * Support for handling CSRF
+  * Authorization decorators for protecting your endpoints
+  * And more!
+
+As explained in `Customizing <https://flask-security-too.readthedocs.io/en/stable/customizing.html>`_
+the built-in views are great to get started, but will need modification to integrate smoothly with the
+Flask-Admin templates. To do this, start with a Flask-Admin template and cut-n-paste the appropriate form
+information from the default Flask-Security-Too templates.
+
+Now, you'll need to manually pass in some context variables for the Flask-Admin
+templates to render correctly when they're being called from the Flask-Security views.
+Defining a `security_context_processor` function will take care of this for you::
+
+    def security_context_processor():
+        return dict(
+            admin_base_template=admin.base_template,
+            admin_view=admin.index_view,
+            h=admin_helpers,
+        )
+
+For a working example of using Flask-Security-Too with Flask-Admin, have a look at
+https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth-fs-too.
+
+The example has templates for `register`, `login`, `forgot_password`, `change_password`
+and `reset_password` views. Furthermore, the example shows how to utilize Flask-Security-Too's
+translations within your views.
 
 Using Flask-Security
 --------------------
