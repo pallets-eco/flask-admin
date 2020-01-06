@@ -1,4 +1,4 @@
-from sqlalchemy import or_, and_, cast
+from sqlalchemy import or_, and_, cast, text
 from sqlalchemy.types import String
 
 from flask_admin._compat import as_unicode, string_types
@@ -73,7 +73,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         query = query.filter(or_(*filters))
 
         if self.filters:
-            filters = ["%s.%s" % (self.model.__tablename__.lower(), value) for value in self.filters]
+            filters = [text("%s.%s" % (self.model.__tablename__.lower(), value)) for value in self.filters]
             query = query.filter(and_(*filters))
 
         if self.order_by:
