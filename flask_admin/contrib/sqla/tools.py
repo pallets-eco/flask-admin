@@ -9,9 +9,10 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 try:
-    from sqlalchemy.ext.association_proxy import AssociationProxyInstance
+    from sqlalchemy.ext.associationproxy import AssociationProxyInstance
 except ImportError:
-    AssociationProxyInstance = type('AssociationProxyInstance', (), {})
+    # backwards-compatibility for SQLAlchemy < 1.3
+    AssociationProxyInstance = type('AssociationProxyInstance', (object,), {})
 
 from flask_admin._compat import filter_list, string_types
 from flask_admin.tools import iterencode, iterdecode, escape  # noqa: F401
@@ -221,7 +222,8 @@ def is_relationship(attr):
 
 
 def is_association_proxy(attr):
-    return (
-        (hasattr(attr, 'extension_type') and attr.extension_type == ASSOCIATION_PROXY)
-        or isinstance(attr, AssociationProxyInstance)
-    )
+    if isinstance(attr, AssociationProxyInstance):
+        return True
+
+    # backwards-compatibility for SQLAlchemy < 1.3
+    return hasattr(attr, 'extension_type') and attr.extension_type == ASSOCIATION_PROXY
