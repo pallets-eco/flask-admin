@@ -31,10 +31,10 @@ class GeoJSONField(JSONField):
             return self.raw_data[0]
         if type(self.data) is geoalchemy2.elements.WKBElement:
             if self.srid == -1:
-                return self.session.scalar(func.ST_AsGeoJson(self.data))
+                return self.session.scalar(func.ST_AsGeoJSON(self.data))
             else:
                 return self.session.scalar(
-                    func.ST_AsGeoJson(
+                    func.ST_AsGeoJSON(
                         func.ST_Transform(self.data, self.web_srid)
                     )
                 )

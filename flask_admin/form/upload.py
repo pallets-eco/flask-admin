@@ -1,7 +1,7 @@
 import os
 import os.path as op
 
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
 from wtforms import ValidationError, fields
@@ -465,7 +465,10 @@ class ImageUploadField(FileUploadField):
         return image
 
     def _save_image(self, image, path, format='JPEG'):
-        if image.mode not in ('RGB', 'RGBA'):
+        # New Pillow versions require RGB format for JPEGs
+        if format == 'JPEG' and image.mode != 'RGB':
+            image = image.convert('RGB')
+        elif image.mode not in ('RGB', 'RGBA'):
             image = image.convert('RGBA')
 
         with open(path, 'wb') as fp:

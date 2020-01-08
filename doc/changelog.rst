@@ -1,10 +1,18 @@
 Changelog
 =========
 
-Next release
+1.5.4
 -----
 
 * Fix display of inline x-editable boolean fields on list view
+* Add support for several SQLAlchemy-Utils data types
+* Support searching on SQLAlchemy hybrid properties
+* Extra URL paramaters are now propagated to the next page when searching / filtering
+* Add enum34 dependency when running on legacy Python version
+* Update Mapbox API v1 URL format
+* Update jQuery and moment dependencies in templates
+* Fixed a datepicker issue, where only dates up to 2015 were showing up
+* Updated Pillow dependency version
 
 1.5.3
 -----
