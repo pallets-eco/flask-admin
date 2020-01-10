@@ -70,7 +70,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         query = self.get_query()
 
         # no type casting to string if a ColumnAssociationProxyInstance is given
-        filters = (field.ilike(u'%%%s%%' % term) if is_association_proxy(field) 
+        filters = (field.ilike(u'%%%s%%' % term) if is_association_proxy(field)
                    else cast(field, String).ilike(u'%%%s%%' % term) for field in self._cached_fields)
         query = query.filter(or_(*filters))
 
