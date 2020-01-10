@@ -216,4 +216,6 @@ def is_relationship(attr):
 
 
 def is_association_proxy(attr):
+    if hasattr(attr, 'parent'):
+        attr = attr.parent
     return hasattr(attr, 'extension_type') and attr.extension_type == ASSOCIATION_PROXY
