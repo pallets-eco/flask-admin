@@ -69,7 +69,9 @@ class QueryAjaxModelLoader(AjaxModelLoader):
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
         query = self.get_query()
 
-        filters = (cast(field, String).ilike(u'%%%s%%' % term) for field in self._cached_fields)
+        # no type casting to string if a ColumnAssociationProxyInstance is given
+        filters = (field.ilike(u'%%%s%%' % term) if is_association_proxy(field)
+                   else cast(field, String).ilike(u'%%%s%%' % term) for field in self._cached_fields)
         query = query.filter(or_(*filters))
 
         if self.filters:
