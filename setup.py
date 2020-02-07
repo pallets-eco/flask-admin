@@ -39,6 +39,7 @@ extras_require = {
 
 install_requires = [
     'Flask>=0.7',
+    'werkzeug<1',
     'wtforms'
 ]
 
