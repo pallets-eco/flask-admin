@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.5.5
+-----
+
+* Werkzeug 1.0 compatibility fix
+* Use fa-circle-o icon for unchecked booleans
+* A few SQLAlchemy-related bug fixes
+
 1.5.4
 -----
 
