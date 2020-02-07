@@ -84,7 +84,7 @@ Or alternatively, you can download the repository and install manually by doing:
 
     git clone git@github.com:flask-admin/flask-admin.git
     cd flask-admin
-    python setup.py install
+    pip install .
 
 Tests
 -----
