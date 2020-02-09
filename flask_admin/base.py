@@ -257,7 +257,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
                 self.static_folder = 'static'
                 self.static_url_path = '/static/admin'
 
-        # If name is not povided, use capitalized endpoint name
+        # If name is not provided, use capitalized endpoint name
         if self.name is None:
             self.name = self._prettify_class_name(self.__class__.__name__)
 

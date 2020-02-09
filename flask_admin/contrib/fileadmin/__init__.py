@@ -8,7 +8,7 @@ import shutil
 from operator import itemgetter
 
 from flask import flash, redirect, abort, request, send_file
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from wtforms import fields, validators
 
 from flask_admin import form, helpers

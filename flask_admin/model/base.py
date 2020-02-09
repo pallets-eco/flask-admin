@@ -5,7 +5,7 @@ import mimetypes
 import time
 from math import ceil
 
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 
 from flask import (current_app, request, redirect, flash, abort, json,
                    Response, get_flashed_messages, stream_with_context)
