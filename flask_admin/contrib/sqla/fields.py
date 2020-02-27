@@ -98,7 +98,10 @@ class QuerySelectField(SelectFieldBase):
 
     def _get_object_list(self):
         if self._object_list is None:
-            query = self.query or self.query_factory()
+            query = (
+                self.query if self.query is not None
+                else self.query_factory()
+            )
             get_pk = self.get_pk
             self._object_list = [(text_type(get_pk(obj)), obj) for obj in query]
         return self._object_list
