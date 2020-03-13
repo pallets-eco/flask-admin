@@ -1,5 +1,5 @@
 from sqlalchemy.orm.exc import NoResultFound
-
+from flask_admin.babel import gettext, ngettext
 from wtforms import ValidationError
 try:
     from wtforms.validators import InputRequired
@@ -39,7 +39,7 @@ class Unique(object):
 
             if not hasattr(form, '_obj') or not form._obj == obj:
                 if self.message is None:
-                    self.message = field.gettext(u'Already exists.')
+                    self.message = gettext(u'Already exists.')
                 raise ValidationError(self.message)
         except NoResultFound:
             pass
@@ -57,7 +57,7 @@ class ItemsRequired(InputRequired):
     def __call__(self, form, field):
         if len(field.data) < self.min:
             if self.message is None:
-                message = field.ngettext(
+                message = ngettext(
                     u"At least %(num)d item is required",
                     u"At least %(num)d items are required",
                     self.min
