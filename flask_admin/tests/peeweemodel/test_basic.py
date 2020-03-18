@@ -1,9 +1,4 @@
-from unittest import SkipTest
-
-# Skip test on PY3
-from flask_admin._compat import PY2, as_unicode
-if not PY2:
-    raise SkipTest('Peewee is not Python 3 compatible')
+from flask_admin._compat import as_unicode
 
 import peewee
 
@@ -157,7 +152,7 @@ def test_model():
 
     rv = client.get('/admin/model1/')
     assert rv.status_code == 200
-    assert 'test1large' in rv.data
+    assert b'test1large' in rv.data
 
     url = '/admin/model1/edit/?id=%s' % model.id
     rv = client.get(url)
@@ -1028,7 +1023,7 @@ def test_ajax_fk():
     client = app.test_client()
 
     req = client.get(u'/admin/view/ajax/lookup/?name=model1&query=foo')
-    assert req.data == u'[[%s, "foo"]]' % model2.id
+    assert req.data == b'[[%d, "foo"]]' % model2.id
 
     # Check submitting
     client.post('/admin/view/new/', data={u'model1': as_unicode(model.id)})
