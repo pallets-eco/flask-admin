@@ -56,7 +56,7 @@ setup(
     author_email=grep('__email__'),
     description='Simple and extensible admin interface framework for Flask',
     long_description=desc(),
-    packages=find_packages(),
+    packages=find_packages(exclude=['*.tests', 'tests.*', '*.tests.*']),
     include_package_data=True,
     zip_safe=False,
     platforms='any',
