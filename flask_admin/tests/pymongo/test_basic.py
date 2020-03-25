@@ -26,7 +26,7 @@ def test_model():
     admin.add_view(view)
 
     # Drop existing data (if any)
-    db.test.remove()
+    db.test.delete_many({})
 
     eq_(view.name, 'Test')
     eq_(view.endpoint, 'testview')
