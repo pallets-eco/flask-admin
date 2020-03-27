@@ -42,10 +42,10 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         if not model:
             return None
 
-        return (as_unicode(model.id), as_unicode(model))
+        return (as_unicode(model.pk), as_unicode(model))
 
     def get_one(self, pk):
-        return self.model.objects.filter(id=pk).first()
+        return self.model.objects.filter(pk=pk).first()
 
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
         query = self.model.objects

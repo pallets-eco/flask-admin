@@ -4,7 +4,10 @@ from nose.tools import eq_, ok_
 
 from flask import Flask
 
-from werkzeug.wsgi import DispatcherMiddleware
+try:
+    from werkzeug.middleware.dispatcher import DispatcherMiddleware
+except ImportError:
+    from werkzeug.wsgi import DispatcherMiddleware
 from werkzeug.test import Client
 
 from wtforms import fields

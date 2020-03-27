@@ -42,6 +42,11 @@ install_requires = [
     'wtforms'
 ]
 
+if sys.version_info[0:2] < (3, 4):
+    # required for python < 3.4
+    install_requires.append('enum34>=1.1.6')
+
+
 setup(
     name='Flask-Admin',
     version=grep('__version__'),
@@ -59,7 +64,7 @@ setup(
     install_requires=install_requires,
     tests_require=[
         'nose>=1.0',
-        'pillow==2.9.0',
+        'pillow>=3.3.2',
         'mongoengine',
         'pymongo',
         'wtf-peewee',
