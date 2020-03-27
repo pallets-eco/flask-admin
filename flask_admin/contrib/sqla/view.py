@@ -8,7 +8,6 @@ from sqlalchemy.sql.expression import desc
 from sqlalchemy import Boolean, Table, func, or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import cast
-from sqlalchemy import Unicode
 
 from flask import current_app, flash
 
@@ -928,11 +927,11 @@ class ModelView(BaseModelView):
                                                                                    inner_join=False)
 
                 column = field if alias is None else getattr(alias, field.key)
-                filter_stmt.append(cast(column, Unicode).ilike(stmt))
+                filter_stmt.append(cast(column, column.type).ilike(stmt))
 
                 if count_filter_stmt is not None:
                     column = field if count_alias is None else getattr(count_alias, field.key)
-                    count_filter_stmt.append(cast(column, Unicode).ilike(stmt))
+                    count_filter_stmt.append(cast(column, column.type).ilike(stmt))
 
             query = query.filter(or_(*filter_stmt))
 

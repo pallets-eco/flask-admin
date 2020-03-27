@@ -1,5 +1,4 @@
 from sqlalchemy import or_, and_, cast
-from sqlalchemy.types import String
 
 from flask_admin._compat import as_unicode, string_types
 from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
@@ -66,7 +65,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
         query = self.session.query(self.model)
 
-        filters = (cast(field, String).ilike(u'%%%s%%' % term) for field in self._cached_fields)
+        filters = (cast(field, field.type).ilike(u'%%%s%%' % term) for field in self._cached_fields)
         query = query.filter(or_(*filters))
 
         if self.filters:
