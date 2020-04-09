@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.5.6
+-----
+
+* SQLAlchemy 1.3.6 compatibility fix
+* Python 3.8 support
+
 1.5.5
 -----
 
