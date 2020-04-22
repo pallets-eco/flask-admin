@@ -100,7 +100,7 @@
 {# ---------------------- Modal Window ------------------- #}
 {% macro add_modal_window(modal_window_id='fa_modal_window', modal_label_id='fa_modal_label') %}
   <div class="modal fade" id="{{ modal_window_id }}" tabindex="-1" role="dialog" aria-labelledby="{{ modal_label_id }}">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-xl" role="document">
       {# bootstrap version > 3.1.0 required for this to work #}
       <div class="modal-content">
       </div>
@@ -117,28 +117,46 @@
 {# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field, kwargs={}, caller=None) %}
   {% set direct_error = h.is_field_error(field.errors) %}
-  <div class="form-group{{ ' has-error' if direct_error else '' }}">
-    <label for="{{ field.id }}" class="col-md-2 control-label">{{ field.label.text }}
+  {% set prepend = kwargs.pop('prepend', None) %}
+  {% set append = kwargs.pop('append', None) %}
+  <div class="form-group {{ kwargs.get('column_class', '') }}">
+    <label for="{{ field.id }}" class="control-label">{{ field.label.text }}
         {% if h.is_required_form_field(field) %}
           <strong style="color: red">&#42;</strong>
         {%- else -%}
           &nbsp;
         {%- endif %}
     </label>
-    <div class="{{ kwargs.get('column_class', 'col-md-10') }}">
-      {% set _dummy = kwargs.setdefault('class', 'form-control') %}
-      {{ field(**kwargs)|safe }}
-      {% if field.description %}
-      <p class="help-block">{{ field.description|safe }}</p>
-      {% endif %}
+    {% if prepend or append %}
+    <div class="input-group">
+      {%- if prepend -%}
+      <div class="input-group-prepend">
+        {{ prepend }}
+      </div>
+      {%- endif -%}
+    {% endif %}
+      {% set _class = kwargs.setdefault('class', 'form-control') %}
+      {%- if direct_error %} {% set _ = kwargs.update({'class': kwargs['class'] ~ ' is-invalid'}) %} {% endif -%}
+      {{ field(**kwargs) | safe }}
+      {%- if append -%}
+      <div class="input-group-append">
+        {{ append }}
+      </div>
+      {%- endif -%}
       {% if direct_error %}
-        <ul class="help-block input-errors">
-        {% for e in field.errors if e is string %}
-          <li>{{ e }}</li>
-        {% endfor %}
-        </ul>
+        <div class="invalid-feedback">
+          <ul class="help-block">
+          {% for e in field.errors if e is string %}
+            <li>{{ e }}</li>
+          {% endfor %}
+          </ul>
+        </div>
+      {% elif field.description %}
+        <div class="help-block">{{ field.description|safe }}</div>
       {% endif %}
+    {% if prepend or append %}
     </div>
+    {% endif %}
     {% if caller %}
       {{ caller(form, field, direct_error, kwargs) }}
     {% endif %}
@@ -178,7 +196,7 @@
 {% endmacro %}
 
 {% macro form_tag(form=None, action=None) %}
-    <form action="{{ action or '' }}" method="POST" role="form" class="admin-form form-horizontal" enctype="multipart/form-data">
+    <form action="{{ action or '' }}" method="POST" role="form" class="admin-form" enctype="multipart/form-data">
     <fieldset>
       {{ caller() }}
     </fieldset>
@@ -186,6 +204,15 @@
 {% endmacro %}
 
 {% macro render_form_buttons(cancel_url, extra=None, is_modal=False) %}
+  {% if is_modal %}
+        <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
+        {% if extra %}
+        {{ extra }}
+        {% endif %}
+        {% if cancel_url %}
+          <a href="{{ cancel_url }}" class="btn btn-danger" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
+        {% endif %}
+  {% else %}
     <hr>
     <div class="form-group">
       <div class="col-md-offset-2 col-md-10 submit-row">
@@ -198,6 +225,7 @@
         {% endif %}
       </div>
     </div>
+  {% endif %}
 {% endmacro %}
 
 {% macro render_form(form, cancel_url, extra=None, form_opts=None, action=None, is_modal=False) -%}
