@@ -1111,6 +1111,20 @@ class ModelView(BaseModelView):
 
         return super(ModelView, self).handle_view_exception(exc)
 
+    def build_new_instance(self):
+        """
+            Build new instance of a model. Useful to override the Flask-Admin behavior
+            when the model has a custom __init__ method.
+        """
+        model = self._manager.new_instance()
+
+        # TODO: We need a better way to create model instances and stay compatible with
+        # SQLAlchemy __init__() behavior
+        state = instance_state(model)
+        self._manager.dispatch.init(state, [], {})
+
+        return model
+
     # Model handlers
     def create_model(self, form):
         """
@@ -1120,11 +1134,7 @@ class ModelView(BaseModelView):
                 Form instance
         """
         try:
-            model = self._manager.new_instance()
-            # TODO: We need a better way to create model instances and stay compatible with
-            # SQLAlchemy __init__() behavior
-            state = instance_state(model)
-            self._manager.dispatch.init(state, [], {})
+            model = self.build_new_instance()
 
             form.populate_obj(model)
             self.session.add(model)
