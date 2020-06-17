@@ -20,7 +20,6 @@ app.config['SECRET_KEY'] = '123456790'
 uri = "Paste connection string"
 db = conn.test
 
-
 # User admin
 class InnerForm(form.Form):
     name = fields.StringField('Name')
