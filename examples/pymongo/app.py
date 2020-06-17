@@ -2,7 +2,7 @@ import pymongo
 from bson.objectid import ObjectId
 
 from flask import Flask
-import flask_admin as admin
+from flask_admin import Admin
 
 from wtforms import form, fields
 
@@ -17,20 +17,21 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = '123456790'
 
 # Create models
-conn = pymongo.Connection()
+uri = "mongodb+srv://Admin:Admin1@cluster0-6fxtf.mongodb.net/test?retryWrites=true&w=majority"
+conn = pymongo.MongoClient(uri)
 db = conn.test
 
 
 # User admin
 class InnerForm(form.Form):
-    name = fields.StringField('Name')
-    test = fields.StringField('Test')
+    name = fields.TextField('Name')
+    test = fields.TextField('Test')
 
 
 class UserForm(form.Form):
-    name = fields.StringField('Name')
-    email = fields.StringField('Email')
-    password = fields.StringField('Password')
+    name = fields.TextField('Name')
+    email = fields.TextField('Email')
+    password = fields.TextField('Password')
 
     # Inner form
     inner = InlineFormField(InnerForm)
@@ -48,9 +49,9 @@ class UserView(ModelView):
 
 # Tweet view
 class TweetForm(form.Form):
-    name = fields.StringField('Name')
+    name = fields.TextField('Name')
     user_id = fields.SelectField('User', widget=Select2Widget())
-    text = fields.StringField('Text')
+    text = fields.TextField('Text')
 
     testie = fields.BooleanField('Test')
 
@@ -74,7 +75,7 @@ class TweetView(ModelView):
 
         # Grab user names
         query = {'_id': {'$in': [x['user_id'] for x in data]}}
-        users = db.user.find(query, fields=('name',))
+        users = db.user.find(query, {'name': 1})
 
         # Contribute user names to the models
         users_map = dict((x['_id'], x['name']) for x in users)
@@ -86,7 +87,7 @@ class TweetView(ModelView):
 
     # Contribute list of user choices to the forms
     def _feed_user_choices(self, form):
-        users = db.user.find(fields=('name',))
+        users = db.user.find({}, {'name': 1})
         form.user_id.choices = [(str(x['_id']), x['name']) for x in users]
         return form
 
@@ -99,7 +100,7 @@ class TweetView(ModelView):
         return self._feed_user_choices(form)
 
     # Correct user_id reference before saving
-    def on_model_change(self, form, model):
+    def on_model_change(self, form, model, is_created):
         user_id = model.get('user_id')
         model['user_id'] = ObjectId(user_id)
 
@@ -114,7 +115,7 @@ def index():
 
 if __name__ == '__main__':
     # Create admin
-    admin = admin.Admin(app, name='Example: PyMongo')
+    admin = Admin(app, name='Example: PyMongo')
 
     # Add views
     admin.add_view(UserView(db.user, 'User'))
