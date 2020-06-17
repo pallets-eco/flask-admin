@@ -16,9 +16,8 @@ app = Flask(__name__)
 # Create dummy secrey key so we can use sessions
 app.config['SECRET_KEY'] = '123456790'
 
-# Create models
-uri = "mongodb+srv://Admin:Admin1@cluster0-6fxtf.mongodb.net/test?retryWrites=true&w=majority"
-conn = pymongo.MongoClient(uri)
+# Connection to mongodb 
+uri = "Paste connection string"
 db = conn.test
 
 
