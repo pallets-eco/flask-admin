@@ -104,3 +104,12 @@ class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
     def apply(self, query, value):
         query.append({self.column: value != '1'})
         return query
+
+
+class FilterEmpty(FilterEqual, filters.BaseBooleanFilter):
+    def apply(self, query, value):
+        query.append({self.column: {"$eq": None} if value == "1" else {"$ne": None}})
+        return query
+
+    def operation(self):
+        return lazy_gettext("empty")
