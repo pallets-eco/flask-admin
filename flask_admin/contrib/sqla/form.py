@@ -414,6 +414,9 @@ class AdminModelConverter(ModelConverterBase):
     @converts('sqlalchemy.dialects.postgresql.base.ARRAY',
               'sqlalchemy.sql.sqltypes.ARRAY')
     def conv_ARRAY(self, field_args, **extra):
+        coerce = extra['column'].type.item_type.python_type
+        if coerce != str:
+            return form.Select2TagsField(save_as_list=True, coerce=coerce, **field_args)
         return form.Select2TagsField(save_as_list=True, **field_args)
 
     @converts('HSTORE')
