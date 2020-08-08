@@ -45,7 +45,7 @@
               {% else %}
               <li{% if class_name %} class="{{class_name}}"{% endif %}>
               {%- endif %}
-              <a class="nav-link" href="{{ child.get_url() }}"{% if child.target %}
+              <a class="nav-link text-reset" href="{{ child.get_url() }}"{% if child.target %}
                target="{{ child.target }}"{% endif %}>
               {{ menu_icon(child) }}{{ child.name }}</a>
               </li>
