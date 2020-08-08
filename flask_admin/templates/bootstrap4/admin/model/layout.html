@@ -22,7 +22,7 @@
         </li>
     {% else %}
         <li>
-            <a href="{{ get_url('.export', export_type=admin_view.export_types[0], **request.args) }}"
+            <a class="nav-link" href="{{ get_url('.export', export_type=admin_view.export_types[0], **request.args) }}"
                title="{{ _gettext('Export') }}">{{ _gettext('Export') }}</a>
         </li>
     {% endif %}

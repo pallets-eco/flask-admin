@@ -48,6 +48,8 @@ class CustomView(ModelView):
 class UserAdmin(CustomView):
     column_searchable_list = ('name',)
     column_filters = ('name', 'email')
+    can_export = True
+    export_types = ['csv', 'xlsx']
 
 
 # Flask views
