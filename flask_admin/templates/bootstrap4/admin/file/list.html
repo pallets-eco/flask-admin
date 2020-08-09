@@ -143,7 +143,7 @@
     {% block toolbar %}
     <div class="btn-toolbar">
         {% if admin_view.can_upload %}
-        <div class="mx-1">
+        <div class="btn-group">
             {%- if admin_view.upload_modal -%}
               {{ lib.add_modal_button(url=get_dir_url('.upload', path=dir_path, modal=True),
                                       btn_class="btn btn-secondary",
@@ -187,4 +187,5 @@
     {{ actionslib.script(_gettext('Please select at least one file.'),
                          actions,
                          actions_confirmation) }}
+  <script src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
 {% endblock %}
