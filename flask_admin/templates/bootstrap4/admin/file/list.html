@@ -4,21 +4,23 @@
 
 {% block body %}
     {% block breadcrums %}
-    <ul class="breadcrumb">
-        <li>
+      <nav area-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
             <a href="{{ get_dir_url('.index_view', path=None) }}">{{ _gettext('Root') }}</a>
-        </li>
-        {% for name, path in breadcrumbs[:-1] %}
-        <li>
+          </li>
+          {% for name, path in breadcrumbs[:-1] %}
+          <li class="breadcrumb-item">
             <a href="{{ get_dir_url('.index_view', path=path) }}">{{ name }}</a>
-        </li>
-        {% endfor %}
-        {% if breadcrumbs %}
-        <li>
+          </li>
+          {% endfor %}
+          {% if breadcrumbs %}
+          <li class="breadcrumb-item">
             <a href="{{ get_dir_url('.index_view', path=breadcrumbs[-1][1]) }}">{{ breadcrumbs[-1][0] }}</a>
-        </li>
+          </li>
         {% endif %}
-    </ul>
+        </ol>
+      </nav>
     {% endblock %}
 
     {% block file_list_table %}
@@ -144,27 +146,27 @@
         <div class="btn-group">
             {%- if admin_view.upload_modal -%}
               {{ lib.add_modal_button(url=get_dir_url('.upload', path=dir_path, modal=True),
-                                      btn_class="btn btn-default btn-large",
+                                      btn_class="btn btn-secondary",
                                       content=_gettext('Upload File')) }}
             {% else %}
-              <a class="btn btn-default btn-large" href="{{ get_dir_url('.upload', path=dir_path) }}">{{ _gettext('Upload File') }}</a>
+              <a class="btn btn-secondary" href="{{ get_dir_url('.upload', path=dir_path) }}">{{ _gettext('Upload File') }}</a>
             {%- endif -%}
         </div>
         {% endif %}
         {% if admin_view.can_mkdir %}
-        <div class="btn-group">
+        <div class="mx-1">
             {%- if admin_view.mkdir_modal -%}
               {{ lib.add_modal_button(url=get_dir_url('.mkdir', path=dir_path, modal=True),
-                                      btn_class="btn btn-default btn-large",
+                                      btn_class="btn btn-secondary",
                                       content=_gettext('Create Directory')) }}
             {% else %}
-              <a class="btn btn-default btn-large" href="{{ get_dir_url('.mkdir', path=dir_path) }}">{{ _gettext('Create Directory') }}</a>
+              <a class="btn btn-secondary" href="{{ get_dir_url('.mkdir', path=dir_path) }}">{{ _gettext('Create Directory') }}</a>
             {%- endif -%}
         </div>
         {% endif %}
         {% if actions %}
-        <div class="btn-group">
-            {{ actionslib.dropdown(actions, 'dropdown-toggle btn btn-default btn-large') }}
+        <div class="mx-1">
+            {{ actionslib.dropdown(actions, 'dropdown-toggle btn btn-secondary') }}
         </div>
         {% endif %}
     </div>
@@ -185,4 +187,5 @@
     {{ actionslib.script(_gettext('Please select at least one file.'),
                          actions,
                          actions_confirmation) }}
+  <script src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
 {% endblock %}
