@@ -54,7 +54,7 @@
     <div class="clearfix"></div>
 {% endmacro %}
 
-{% macro search_form(input_class="col-md-4") %}
+{% macro search_form(input_class="col-auto") %}
     <form method="GET" action="{{ return_url }}" class="form-inline my-2 my-lg-0" role="search">
         {% for flt_name, flt_value in filter_args.items() %}
             <input type="hidden" name="{{ flt_name }}" value="{{ flt_value }}">
@@ -69,18 +69,23 @@
             <input type="hidden" name="desc" value="{{ sort_desc }}">
         {% endif %}
         {% if search %}
-            <div class="input-group">
-                <input  class="form-control mr-sm-2 {{ input_class }}" size="30" type="text" name="search" value="{{ search }}"
+            <div class="form-inline input-group">
+              <input  class="form-control {{ input_class }}" size="30" type="text" name="search" value="{{ search }}"
                        placeholder="{{ _gettext('%(placeholder)s', placeholder=search_placeholder) }}">
-                <a href="{{ clear_search_url }}" class="input-group-addon clear"><span
-                        class="fa fa-times glyphicon glyphicon-remove"></span></a>
-                  <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+                <div class="input-group-append">
+                  <span class="input-group-text">
+                    <a href="{{ clear_search_url }}" class="align-middle">
+                      <span class="fa fa-times glyphicon glyphicon-remove"></span>
+                    </a>
+                  </span>
+                </div>
+                <button class="btn btn-secondary my-2 my-sm-0 ml-2" type="submit">{{ _gettext('Search') }}</button>
             </div>
         {% else %}
-            <div class="form-group">
-                <input class="form-control mr-sm-2 {{ input_class }}" size="30" type="text" name="search" value=""
+            <div class="form-inline">
+              <input class="form-control {{ input_class }}" size="30" type="text" name="search" value=""
                        placeholder="{{ _gettext('%(placeholder)s', placeholder=search_placeholder) }}">
-                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+                <button class="btn btn-secondary my-2 my-sm-0 ml-2" type="submit">{{ _gettext('Search') }}</button>
             </div>
         {% endif %}
     </form>
