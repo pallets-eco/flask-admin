@@ -137,6 +137,8 @@
     {% endif %}
       {% if field.widget.input_type == 'checkbox' %}
         {% set _class = kwargs.setdefault('class', 'form-control-lg') %}
+      {% elif field.widget.input_type == 'file' %}
+        {% set _class = kwargs.setdefault('class', 'form-control-file') %}
       {% else %}
         {% set _class = kwargs.setdefault('class', 'form-control') %}
       {% endif %}
