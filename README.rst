@@ -55,11 +55,11 @@ To run the examples in your local environment::
 
   3. Install requirements::
 
-        pip install -r 'examples/sqla/requirements.txt'
+        pip install -r examples/sqla/requirements.txt
 
   4. Run the application::
 
-        python examples/sqla/app.py
+        python examples/sqla/run_server.py
 
 Documentation
 -------------

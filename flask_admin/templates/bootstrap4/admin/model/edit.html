@@ -1,0 +1,40 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+{% from 'admin/lib.html' import extra with context %} {# backward compatible #}
+
+{% block head %}
+  {{ super() }}
+  {{ lib.form_css() }}
+{% endblock %}
+
+{% block body %}
+  {% block navlinks %}
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a href="{{ return_url }}" class="nav-link">{{ _gettext('List') }}</a>
+    </li>
+    {%- if admin_view.can_create -%}
+    <li class="nav-item">
+        <a href="{{ get_url('.create_view', url=return_url) }}" class="nav-link">{{ _gettext('Create') }}</a>
+    </li>
+    {%- endif -%}
+    <li class="nav-item">
+        <a href="javascript:void(0)" class="nav-link active">{{ _gettext('Edit') }}</a>
+    </li>
+    {%- if admin_view.can_view_details -%}
+    <li class="nav-item">
+        <a class="nav-link" href="{{ get_url('.details_view', id=request.args.get('id'), url=return_url) }}">{{ _gettext('Details') }}</a>
+    </li>
+    {%- endif -%}
+  </ul>
+  {% endblock %}
+
+  {% block edit_form %}
+    {{ lib.render_form(form, return_url, extra(), form_opts) }}
+  {% endblock %}
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  {{ lib.form_js() }}
+{% endblock %}

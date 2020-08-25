@@ -572,14 +572,20 @@ class ModelView(BaseModelView):
         if self.column_searchable_list:
             self._search_fields = []
 
-            for p in self.column_searchable_list:
-                attr, joins = tools.get_field_with_path(self.model, p)
+            for name in self.column_searchable_list:
+                attr, joins = tools.get_field_with_path(self.model, name)
 
                 if not attr:
-                    raise Exception('Failed to find field for search field: %s' % p)
+                    raise Exception('Failed to find field for search field: %s' % name)
 
-                for column in tools.get_columns_for_field(attr):
+                if tools.is_hybrid_property(self.model, name):
+                    column = attr
+                    if isinstance(name, string_types):
+                        column.key = name.split('.')[-1]
                     self._search_fields.append((column, joins))
+                else:
+                    for column in tools.get_columns_for_field(attr):
+                        self._search_fields.append((column, joins))
 
         return bool(self.column_searchable_list)
 
@@ -1105,6 +1111,20 @@ class ModelView(BaseModelView):
 
         return super(ModelView, self).handle_view_exception(exc)
 
+    def build_new_instance(self):
+        """
+            Build new instance of a model. Useful to override the Flask-Admin behavior
+            when the model has a custom __init__ method.
+        """
+        model = self._manager.new_instance()
+
+        # TODO: We need a better way to create model instances and stay compatible with
+        # SQLAlchemy __init__() behavior
+        state = instance_state(model)
+        self._manager.dispatch.init(state, [], {})
+
+        return model
+
     # Model handlers
     def create_model(self, form):
         """
@@ -1114,11 +1134,7 @@ class ModelView(BaseModelView):
                 Form instance
         """
         try:
-            model = self._manager.new_instance()
-            # TODO: We need a better way to create model instances and stay compatible with
-            # SQLAlchemy __init__() behavior
-            state = instance_state(model)
-            self._manager.dispatch.init(state, [], {})
+            model = self.build_new_instance()
 
             form.populate_obj(model)
             self.session.add(model)

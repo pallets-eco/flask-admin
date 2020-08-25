@@ -1,4 +1,4 @@
-from sqlalchemy import or_, and_, cast
+from sqlalchemy import or_, and_, cast, text
 from sqlalchemy.types import String
 
 from flask_admin._compat import as_unicode, string_types
@@ -58,19 +58,24 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return getattr(model, self.pk), as_unicode(model)
 
+    def get_query(self):
+        return self.session.query(self.model)
+
     def get_one(self, pk):
         # prevent autoflush from occuring during populate_obj
         with self.session.no_autoflush:
-            return self.session.query(self.model).get(pk)
+            return self.get_query().get(pk)
 
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
-        query = self.session.query(self.model)
+        query = self.get_query()
 
-        filters = (cast(field, String).ilike(u'%%%s%%' % term) for field in self._cached_fields)
+        # no type casting to string if a ColumnAssociationProxyInstance is given
+        filters = (field.ilike(u'%%%s%%' % term) if is_association_proxy(field)
+                   else cast(field, String).ilike(u'%%%s%%' % term) for field in self._cached_fields)
         query = query.filter(or_(*filters))
 
         if self.filters:
-            filters = ["%s.%s" % (self.model.__tablename__.lower(), value) for value in self.filters]
+            filters = [text("%s.%s" % (self.model.__tablename__.lower(), value)) for value in self.filters]
             query = query.filter(and_(*filters))
 
         if self.order_by:

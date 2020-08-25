@@ -203,7 +203,7 @@ def is_hybrid_property(model, attr_name):
             last_model = attr.property.argument
             if isinstance(last_model, _class_resolver):
                 last_model = model._decl_class_registry[last_model.arg]
-            elif isinstance(last_model, types.FunctionType):
+            elif isinstance(last_model, (types.FunctionType, types.MethodType)):
                 last_model = last_model()
         last_name = names[-1]
         return last_name in get_hybrid_properties(last_model)
@@ -216,4 +216,6 @@ def is_relationship(attr):
 
 
 def is_association_proxy(attr):
+    if hasattr(attr, 'parent'):
+        attr = attr.parent
     return hasattr(attr, 'extension_type') and attr.extension_type == ASSOCIATION_PROXY

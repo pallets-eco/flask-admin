@@ -87,7 +87,7 @@ class KeywordAdmin(sqla.ModelView):
 
 
 # Create admin
-admin = admin.Admin(app, name='Example: SQLAlchemy Association Proxy', template_mode='bootstrap3')
+admin = admin.Admin(app, name='Example: SQLAlchemy Association Proxy', template_mode='bootstrap4')
 admin.add_view(UserAdmin(User, db.session))
 admin.add_view(KeywordAdmin(Keyword, db.session))
 

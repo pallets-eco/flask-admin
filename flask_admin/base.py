@@ -257,7 +257,7 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
                 self.static_folder = 'static'
                 self.static_url_path = '/static/admin'
 
-        # If name is not povided, use capitalized endpoint name
+        # If name is not provided, use capitalized endpoint name
         if self.name is None:
             self.name = self._prettify_class_name(self.__class__.__name__)
 
@@ -491,7 +491,7 @@ class Admin(object):
                 Override base HTML template for all static views. Defaults to `admin/base.html`.
             :param template_mode:
                 Base template path. Defaults to `bootstrap2`. If you want to use
-                Bootstrap 3 integration, change it to `bootstrap3`.
+                Bootstrap 3 or 4 integration, change it to `bootstrap3` or `bootstrap4`.
             :param category_icon_classes:
                 A dict of category names as keys and html classes as values to be added to menu category icons.
                 Example: {'Favorites': 'glyphicon glyphicon-star'}
@@ -562,6 +562,7 @@ class Admin(object):
         # assume index view is always the first element of views.
         if len(self._views) > 0:
             self._views[0] = self.index_view
+            self._menu[0] = MenuView(self.index_view.name, self.index_view)
         else:
             self.add_view(self.index_view)
 

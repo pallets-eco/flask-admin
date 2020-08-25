@@ -1,7 +1,7 @@
 import os
 import os.path as op
 
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
 from wtforms import ValidationError, fields
@@ -39,6 +39,7 @@ class FileUploadInput(object):
         look and feel.
     """
     empty_template = ('<input %(file)s>')
+    input_type = 'file'
 
     data_template = ('<div>'
                      ' <input %(text)s>'
@@ -80,6 +81,7 @@ class ImageUploadInput(object):
         look and feel.
     """
     empty_template = ('<input %(file)s>')
+    input_type = 'file'
 
     data_template = ('<div class="image-thumbnail">'
                      ' <img %(image)s>'
@@ -465,7 +467,10 @@ class ImageUploadField(FileUploadField):
         return image
 
     def _save_image(self, image, path, format='JPEG'):
-        if image.mode not in ('RGB', 'RGBA'):
+        # New Pillow versions require RGB format for JPEGs
+        if format == 'JPEG' and image.mode != 'RGB':
+            image = image.convert('RGB')
+        elif image.mode not in ('RGB', 'RGBA'):
             image = image.convert('RGBA')
 
         with open(path, 'wb') as fp:

@@ -5,7 +5,7 @@ import mimetypes
 import time
 from math import ceil
 
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 
 from flask import (current_app, request, redirect, flash, abort, json,
                    Response, get_flashed_messages, stream_with_context)
@@ -1701,29 +1701,39 @@ class BaseModelView(BaseView, ActionsMixin):
     def get_empty_list_message(self):
         return gettext('There are no items in the table.')
 
+    def get_invalid_value_msg(self, value, filter):
+        """
+        Returns message, which should be printed in case of failed validation.
+        :param value: Invalid value
+        :param filter: Filter
+        :return: string
+        """
+        return gettext('Invalid Filter Value: %(value)s', value=value)
+
     # URL generation helpers
     def _get_list_filter_args(self):
         if self._filters:
             filters = []
 
-            for n in request.args:
-                if not n.startswith('flt'):
+            for arg in request.args:
+                if not arg.startswith('flt'):
                     continue
 
-                if '_' not in n:
+                if '_' not in arg:
                     continue
 
-                pos, key = n[3:].split('_', 1)
+                pos, key = arg[3:].split('_', 1)
 
                 if key in self._filter_args:
                     idx, flt = self._filter_args[key]
 
-                    value = request.args[n]
+                    value = request.args[arg]
 
                     if flt.validate(value):
-                        filters.append((pos, (idx, as_unicode(flt.name), value)))
+                        data = (pos, (idx, as_unicode(flt.name), value))
+                        filters.append(data)
                     else:
-                        flash(gettext('Invalid Filter Value: %(value)s', value=value), 'error')
+                        flash(self.get_invalid_value_msg(value, flt), 'error')
 
             # Sort filters
             return [v[1] for v in sorted(filters, key=lambda n: n[0])]
@@ -2054,6 +2064,9 @@ class BaseModelView(BaseView, ActionsMixin):
             get_pk_value=self.get_pk_value,
             get_value=self.get_list_value,
             return_url=self._get_list_url(view_args),
+
+            # Extras
+            extra_args=view_args.extra_args,
         )
 
     @expose('/new/', methods=('GET', 'POST'))

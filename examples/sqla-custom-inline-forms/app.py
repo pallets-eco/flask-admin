@@ -1,7 +1,7 @@
 import os
 import os.path as op
 
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from sqlalchemy import event
 
 from flask import Flask, request, render_template

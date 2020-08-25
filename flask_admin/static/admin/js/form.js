@@ -164,8 +164,8 @@
             maxZoom: 18
           }).addTo(map)
         } else {
-          var mapboxVersion = window.MAPBOX_ACCESS_TOKEN ? 4 : 3;
-          L.tileLayer('//{s}.tiles.mapbox.com/v'+mapboxVersion+'/'+MAPBOX_MAP_ID+'/{z}/{x}/{y}.png?access_token='+window.MAPBOX_ACCESS_TOKEN, {
+          var mapboxUrl = 'https://api.mapbox.com/styles/v1/mapbox/'+window.MAPBOX_MAP_ID+'/tiles/{z}/{x}/{y}?access_token='+window.MAPBOX_ACCESS_TOKEN
+          L.tileLayer(mapboxUrl, {
             attribution: 'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="//mapbox.com">Mapbox</a>',
             maxZoom: 18
           }).addTo(map);
@@ -467,7 +467,14 @@
                 processLeafletWidget($el, name);
                 return true;
             case 'x-editable':
-                $el.editable({params: overrideXeditableParams});
+                $el.editable({
+                    params: overrideXeditableParams,
+                    combodate: {
+                        // prevent minutes from showing in 5 minute increments
+                        minuteStep: 1,
+                        maxYear: 2030,
+                    }                    
+                });
                 return true;
             case 'x-editable-combodate':
                 $el.editable({

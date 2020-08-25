@@ -66,3 +66,34 @@ class ItemsRequired(InputRequired):
                 message = self.message
 
             raise ValidationError(message)
+
+
+def valid_currency(form, field):
+    from sqlalchemy_utils import Currency
+    try:
+        Currency(field.data)
+    except (TypeError, ValueError):
+        raise ValidationError(field.gettext(u'Not a valid ISO currency code (e.g. USD, EUR, CNY).'))
+
+
+def valid_color(form, field):
+    from colour import Color
+    try:
+        Color(field.data)
+    except (ValueError):
+        raise ValidationError(field.gettext(u'Not a valid color (e.g. "red", "#f00", "#ff0000").'))
+
+
+class TimeZoneValidator(object):
+    """
+    Tries to coerce a TimZone object from input data
+    """
+    def __init__(self, coerce_function):
+        self.coerce_function = coerce_function
+
+    def __call__(self, form, field):
+        try:
+            self.coerce_function(str(field.data))
+        except Exception:
+            msg = u'Not a valid timezone (e.g. "America/New_York", "Africa/Johannesburg", "Asia/Singapore").'
+            raise ValidationError(field.gettext(msg))

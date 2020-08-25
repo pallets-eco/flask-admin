@@ -54,15 +54,11 @@ security = Security(app, user_datastore)
 
 # Create customized model view class
 class MyModelView(sqla.ModelView):
-
     def is_accessible(self):
-        if not current_user.is_active or not current_user.is_authenticated:
-            return False
-
-        if current_user.has_role('superuser'):
-            return True
-
-        return False
+        return (current_user.is_active and
+                current_user.is_authenticated and
+                current_user.has_role('superuser')
+        )
 
     def _handle_view(self, name, **kwargs):
         """
@@ -86,7 +82,7 @@ admin = flask_admin.Admin(
     app,
     'Example: Auth',
     base_template='my_master.html',
-    template_mode='bootstrap3',
+    template_mode='bootstrap4',
 )
 
 # Add model views
