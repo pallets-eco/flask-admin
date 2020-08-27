@@ -1,7 +1,20 @@
 Changelog
 =========
 
-Next release
+1.5.6
+-----
+
+* SQLAlchemy 1.3.6 compatibility fix
+* Python 3.8 support
+
+1.5.5
+-----
+
+* Werkzeug 1.0 compatibility fix
+* Use fa-circle-o icon for unchecked booleans
+* A few SQLAlchemy-related bug fixes
+
+1.5.4
 -----
 
 * Fix display of inline x-editable boolean fields on list view
@@ -12,6 +25,7 @@ Next release
 * Update Mapbox API v1 URL format
 * Update jQuery and moment dependencies in templates
 * Fixed a datepicker issue, where only dates up to 2015 were showing up
+* Updated Pillow dependency version
 
 1.5.3
 -----
