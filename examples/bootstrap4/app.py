@@ -1,3 +1,4 @@
+import datetime
 import os
 import os.path as op
 from flask import Flask
@@ -27,6 +28,7 @@ class User(db.Model):
     name = db.Column(db.Unicode(64))
     email = db.Column(db.Unicode(64))
     active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __unicode__(self):
         return self.name
