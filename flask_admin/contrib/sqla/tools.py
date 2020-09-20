@@ -1,7 +1,7 @@
 import types
 
 from sqlalchemy import tuple_, or_, and_, inspect
-from sqlalchemy.ext.declarative.clsregistry import _class_resolver
+from sqlalchemy.orm.clsregistry import _class_resolver
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
 from sqlalchemy.sql.operators import eq
