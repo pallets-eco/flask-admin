@@ -8,11 +8,13 @@ from . import setup
 
 
 class TestForm(form.Form):
+    __test__ = False
     test1 = fields.StringField('Test1')
     test2 = fields.StringField('Test2')
 
 
 class TestView(ModelView):
+    __test__ = False
     column_list = ('test1', 'test2', 'test3', 'test4')
     column_sortable_list = ('test1', 'test2')
 
@@ -26,7 +28,7 @@ def test_model():
     admin.add_view(view)
 
     # Drop existing data (if any)
-    db.test.remove()
+    db.test.delete_many({})
 
     eq_(view.name, 'Test')
     eq_(view.endpoint, 'testview')

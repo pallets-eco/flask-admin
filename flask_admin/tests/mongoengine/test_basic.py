@@ -15,7 +15,7 @@ class CustomModelView(ModelView):
     def __init__(self, model,
                  name=None, category=None, endpoint=None, url=None,
                  **kwargs):
-        for k, v in kwargs.iteritems():
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
         super(CustomModelView, self).__init__(model,
@@ -49,20 +49,27 @@ def create_models(db):
 
 
 def fill_db(Model1, Model2):
-    Model1('test1_val_1', 'test2_val_1').save()
-    Model1('test1_val_2', 'test2_val_2').save()
-    Model1('test1_val_3', 'test2_val_3').save()
-    Model1('test1_val_4', 'test2_val_4').save()
-    Model1(None, 'empty_obj').save()
+    Model1(test1='test1_val_1', test2='test2_val_1').save()
+    Model1(test1='test1_val_2', test2='test2_val_2').save()
+    Model1(test1='test1_val_3', test2='test2_val_3').save()
+    Model1(test1='test1_val_4', test2='test2_val_4').save()
+    Model1(test1=None, test2='empty_obj').save()
 
-    Model2('string_field_val_1', None, None, True).save()
-    Model2('string_field_val_2', None, None, False).save()
-    Model2('string_field_val_3', 5000, 25.9).save()
-    Model2('string_field_val_4', 9000, 75.5).save()
-    Model2('string_field_val_5', 6169453081680413441).save()
+    Model2(string_field='string_field_val_1', int_field=None,
+           float_field=None, bool_field=True).save()
+    Model2(string_field='string_field_val_2', int_field=None,
+           float_field=None, bool_field=False).save()
+    Model2(string_field='string_field_val_3', int_field=5000,
+           float_field=25.9).save()
+    Model2(string_field='string_field_val_4', int_field=9000,
+           float_field=75.5).save()
+    Model2(string_field='string_field_val_5',
+           int_field=6169453081680413441).save()
 
-    Model1('datetime_obj1', datetime_field=datetime(2014, 4, 3, 1, 9, 0)).save()
-    Model1('datetime_obj2', datetime_field=datetime(2013, 3, 2, 0, 8, 0)).save()
+    Model1(test1='datetime_obj1',
+           datetime_field=datetime(2014, 4, 3, 1, 9, 0)).save()
+    Model1(test1='datetime_obj2',
+           datetime_field=datetime(2013, 3, 2, 0, 8, 0)).save()
 
 
 def test_model():
@@ -116,7 +123,7 @@ def test_model():
 
     rv = client.get('/admin/model1/')
     eq_(rv.status_code, 200)
-    ok_('test1large' in rv.data)
+    ok_(b'test1large' in rv.data)
 
     url = '/admin/model1/edit/?id=%s' % model.id
     rv = client.get(url)
@@ -977,7 +984,7 @@ def test_sortedlist_subdocument_validation():
     rv = client.post('/admin/model1/new/',
                      data={'test1': 'test1large', 'subdoc-0-name': '', 'subdoc-0-value': 'test'})
     eq_(rv.status_code, 200)
-    ok_('This field is required' in rv.data)
+    ok_(b'This field is required' in rv.data)
 
 
 def test_list_subdocument_validation():
@@ -1002,7 +1009,7 @@ def test_list_subdocument_validation():
     rv = client.post('/admin/model1/new/',
                      data={'test1': 'test1large', 'subdoc-0-name': '', 'subdoc-0-value': 'test'})
     eq_(rv.status_code, 200)
-    ok_('This field is required' in rv.data)
+    ok_(b'This field is required' in rv.data)
 
 
 def test_ajax_fk():
@@ -1056,7 +1063,7 @@ def test_ajax_fk():
     client = app.test_client()
 
     req = client.get(u'/admin/view/ajax/lookup/?name=model1&query=foo')
-    eq_(req.data, u'[["%s", "foo"]]' % model2.id)
+    eq_(req.data.decode('utf-8'), u'[["%s", "foo"]]' % model2.id)
 
     # Check submitting
     client.post('/admin/view/new/', data={u'model1': as_unicode(model.id)})

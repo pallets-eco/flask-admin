@@ -1,4 +1,4 @@
-import pymongo
+from pymongo import MongoClient
 
 from flask import Flask
 from flask_admin import Admin
@@ -9,8 +9,8 @@ def setup():
     app.config['SECRET_KEY'] = '1'
     app.config['CSRF_ENABLED'] = False
 
-    conn = pymongo.Connection()
-    db = conn.tests
+    client = MongoClient()
+    db = client.tests
 
     admin = Admin(app)
 
