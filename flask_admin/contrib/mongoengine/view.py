@@ -653,7 +653,8 @@ class ModelView(BaseModelView):
         return Response(data.read(),
                         content_type=data.content_type,
                         headers={'Content-Length': data.length, 
-                        "Content-disposition": "attachment; filename={}".format(data.filename)})
+                        "Content-disposition": "attachment; filename=%(filename)s" % 
+                        {'filename': data.filename}})
 
     # Default model actions
     def is_action_allowed(self, name):
