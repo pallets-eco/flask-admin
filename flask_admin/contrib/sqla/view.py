@@ -9,7 +9,7 @@ from sqlalchemy.sql.expression import desc
 from sqlalchemy import Boolean, Table, func, or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import cast
-from sqlalchemy import Unicode
+from sqlalchemy import Unicode, distinct
 
 from flask import current_app, flash
 
@@ -337,6 +337,11 @@ class ModelView(BaseModelView):
         if self._primary_key is None:
             raise Exception('Model %s does not have primary key.' % self.model.__name__)
 
+        if isinstance(self._primary_key, tuple):
+            self._primary_key_value = tuple(getattr(model, attr) for attr in self._primary_key)
+        else:
+            self._primary_key_value = getattr(model, self._primary_key)
+
         # Configuration
         if not self.column_select_related_list:
             self._auto_joins = self.scaffold_auto_joins()
@@ -404,10 +409,10 @@ class ModelView(BaseModelView):
             Return the primary key value from a model object.
             If there are multiple primary keys, they're encoded into string representation.
         """
-        if isinstance(self._primary_key, tuple):
-            return tools.iterencode(getattr(model, attr) for attr in self._primary_key)
+        if isinstance(self._primary_key_value, tuple):
+            return tools.iterencode(self._primary_key_value)
         else:
-            return tools.escape(getattr(model, self._primary_key))
+            return tools.escape(self._primary_key_value)
 
     def scaffold_list_columns(self):
         """
@@ -845,7 +850,7 @@ class ModelView(BaseModelView):
             If you override this method, don't forget to also override `get_count_query`, for displaying the correct
             item count in the list view, and `get_one`, which is used when retrieving records for the edit view.
         """
-        return self.session.query(self.model)
+        return self.session.query(self.model).distinct(self._primary_key_value)
 
     def get_count_query(self):
         """
@@ -856,7 +861,7 @@ class ModelView(BaseModelView):
 
             See commit ``#45a2723`` for details.
         """
-        return self.session.query(func.count('*')).select_from(self.model)
+        return self.session.query(func.count(distinct(self._primary_key_value))).select_from(self.model)
 
     def _order_by(self, query, joins, sort_joins, sort_field, sort_desc):
         """
