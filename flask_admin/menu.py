@@ -146,4 +146,4 @@ class MenuLink(BaseMenu):
 class SubMenuCategory(MenuCategory):
     def __init__(self, *args, **kwargs):
         super(SubMenuCategory, self).__init__(*args, **kwargs)
-        self.class_name += ' dropdown-submenu'
+        self.class_name += ' dropdown-submenu dropright'

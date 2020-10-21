@@ -39,6 +39,7 @@ class FileUploadInput(object):
         look and feel.
     """
     empty_template = ('<input %(file)s>')
+    input_type = 'file'
 
     data_template = ('<div>'
                      ' <input %(text)s>'
@@ -80,6 +81,7 @@ class ImageUploadInput(object):
         look and feel.
     """
     empty_template = ('<input %(file)s>')
+    input_type = 'file'
 
     data_template = ('<div class="image-thumbnail">'
                      ' <img %(image)s>'

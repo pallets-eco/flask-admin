@@ -465,8 +465,11 @@
                 });
                 return true;
             case 'x-editable-combodate':
+                let template  = $el.data('template')
+                el.removeAttribute('data-template')
                 $el.editable({
                     params: overrideXeditableParams,
+                    template: template,
                     combodate: {
                         // prevent minutes from showing in 5 minute increments
                         minuteStep: 1,
