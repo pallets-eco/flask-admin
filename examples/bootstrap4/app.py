@@ -52,6 +52,10 @@ class UserAdmin(CustomView):
     column_searchable_list = ('name',)
     column_filters = ('name', 'email')
     can_export = True
+    can_create = True
+    can_import = True
+    create_modal = True
+    import_modal = True
     export_types = ['csv', 'xlsx']
 
 

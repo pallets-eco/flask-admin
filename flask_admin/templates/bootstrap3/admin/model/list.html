@@ -26,6 +26,16 @@
           {%- endif -%}
         </li>
         {% endif %}
+        
+        {% if admin_view.can_import %}
+        <li class="nav-item">
+          {%- if admin_view.import_modal -%}
+            {{ lib.add_modal_button(url=get_url('.import_view', url=return_url, modal=True), btn_class='nav-link', title=_gettext('Import New Record'), content=_gettext('Import')) }}
+          {% else %}
+            <a href="{{ get_url('.import_view', url=return_url) }}" title="{{ _gettext('Import New Record') }}" class="nav-link">{{ _gettext('Import') }}</a>
+          {%- endif -%}
+        </li>
+        {% endif %}
 
         {% if admin_view.can_export %}
             {{ model_layout.export_options() }}
