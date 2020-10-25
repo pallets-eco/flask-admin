@@ -25,6 +25,12 @@ from flask_admin.contrib.sqla import form, filters as sqla_filters, tools
 from .typefmt import DEFAULT_FORMATTERS
 from .ajax import create_ajax_loader
 
+try:
+    import tablib
+except ImportError:
+    tablib = None
+    
+
 # Set up logger
 log = logging.getLogger("flask-admin.sqla")
 
@@ -1222,6 +1228,35 @@ class ModelView(BaseModelView):
             return False
         else:
             self.after_model_delete(model)
+
+        return True
+
+    def import_model(self, form):
+        """
+            Import model from form.
+
+            :param form:
+                Form instance
+        """
+        filename = form.import_file.data.filename.lower()
+
+        if filename.endswith(".csv"):
+            imported_data = tablib.Dataset().load(form.import_file.data.stream.read().decode(), format='csv')
+        else:
+            imported_data = tablib.Dataset().load(form.import_file.data.stream.read(), format='xls')
+        for row in imported_data:
+            try:
+                model = self.model(**{key: row[i] for i, key in enumerate(imported_data.headers)})
+                self.session.add(model)
+                self.session.commit()
+            except Exception as ex:
+                if not self.handle_view_exception(ex):
+                    flash(gettext('Failed to import record. %(error)s', error=str(ex)), 'error')
+                    log.exception('Failed to import record.')
+
+                self.session.rollback()
+
+                return False
 
         return True
 
