@@ -98,7 +98,8 @@ def test_model():
     rv = client.get(url)
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
-    ok_(r' name="multi">{"type":"MultiPoint","coordinates":[[100,0],[101,1]]}</textarea>' in data)
+    ok_(r'{"type":"MultiPoint","coordinates":[[100,0],[101,1]]}</textarea>' in data or
+        r'{&#34;type&#34;:&#34;MultiPoint&#34;,&#34;coordinates&#34;:[[100,0],[101,1]]}' in data)
 
     # rv = client.post(url, data={
     #     "name": "edited",
@@ -150,4 +151,6 @@ def test_none():
     rv = client.get(url)
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
-    ok_(r' name="point"></textarea>' in data)
+    ok_(r' name="point"></textarea>' in data or
+        ' name="point">\n</textarea>' in data or
+        ' name="point">\r\n</textarea>' in data)

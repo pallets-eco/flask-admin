@@ -75,7 +75,8 @@ def test_json():
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('json_test' in data)
-    ok_('>{"test_key1": "test_value1"}<' in data)
+    ok_('>{"test_key1": "test_value1"}<' in data or
+        '{&#34;test_key1&#34;: &#34;test_value1&#34;}<' in data)
 
 
 def test_citext():
@@ -111,4 +112,6 @@ def test_citext():
     eq_(rv.status_code, 200)
     data = rv.data.decode('utf-8')
     ok_('name="citext_test"' in data)
-    ok_('>Foo<' in data)
+    ok_('>Foo</' in data or
+        '>\nFoo</' in data or
+        '>\r\nFoo</' in data)

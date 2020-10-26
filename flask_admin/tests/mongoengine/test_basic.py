@@ -1055,8 +1055,8 @@ def test_ajax_fk():
         ok_(u'value=""' not in form.model1())
 
         form.model1.data = model
-        needle = u'data-json="[&quot;%s&quot;, &quot;first&quot;]"' % as_unicode(model.id)
-        ok_(needle in form.model1())
+        ok_(u'data-json="[&quot;%s&quot;, &quot;first&quot;]"' % as_unicode(model.id) in form.model1() or
+            u'data-json="[&#34;%s&#34;, &#34;first&#34;]"' % as_unicode(model.id) in form.model1())
         ok_(u'value="%s"' % as_unicode(model.id) in form.model1())
 
     # Check querying

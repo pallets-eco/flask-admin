@@ -2273,7 +2273,8 @@ def test_ajax_fk():
         ok_(u'value=""' not in form.model1())
 
         form.model1.data = model
-        ok_(u'data-json="[%s, &quot;first&quot;]"' % model.id in form.model1())
+        ok_(u'data-json="[%s, &quot;first&quot;]"' % model.id in form.model1() or
+            u'data-json="[%s, &#34;first&#34;]"' % model.id in form.model1())
         ok_(u'value="1"' in form.model1())
 
     # Check querying
@@ -2345,7 +2346,8 @@ def test_ajax_fk_multi():
         ok_(u'data-json="[]"' in form.model1())
 
         form.model1.data = [model]
-        ok_(u'data-json="[[1, &quot;first&quot;]]"' in form.model1())
+        ok_(u'data-json="[[1, &quot;first&quot;]]"' in form.model1() or
+            u'data-json="[[1, &#34;first&#34;]]"' in form.model1())
 
     # Check submitting
     client = app.test_client()
