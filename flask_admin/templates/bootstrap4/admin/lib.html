@@ -119,7 +119,7 @@
   {% set direct_error = h.is_field_error(field.errors) %}
   {% set prepend = kwargs.pop('prepend', None) %}
   {% set append = kwargs.pop('append', None) %}
-  <div class="form-group {{ kwargs.get('column_class', '') }}">
+  <div class="form-group row {{ kwargs.get('column_class', '') }}">
     <label for="{{ field.id }}" class="control-label" {% if field.widget.input_type == 'checkbox' %}style="display: block"{% endif %}>{{ field.label.text }}
         {% if h.is_required_form_field(field) %}
           <strong style="color: red">&#42;</strong>
@@ -220,7 +220,7 @@
         {% endif %}
   {% else %}
     <hr>
-    <div class="form-group">
+    <div class="form-group row">
       <div class="col-md-offset-2 col-md-10 submit-row">
         <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
         {% if extra %}
