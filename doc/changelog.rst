@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.5.7
+-----
+
+* Bootstrap 4 support!
+* Added hook for custom SQLAlchemy models initializers
+* SQLAlchemy 1.4/2.0 compatibility fix
+
 1.5.6
 -----
 
