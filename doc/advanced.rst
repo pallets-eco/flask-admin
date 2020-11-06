@@ -432,8 +432,8 @@ This is minimal PyMongo view::
 
 On top of that you can add sortable columns, filters, text search, etc.
 
-For more, check the :class:`~flask_admin.contrib.pymongoe` API documentation. Or look at
-the Peewee example at https://github.com/flask-admin/flask-admin/tree/master/examples/pymongo.
+For more, check the :class:`~flask_admin.contrib.pymongo` API documentation. Or look at
+the pymongo example at https://github.com/flask-admin/flask-admin/tree/master/examples/pymongo.
 
 Migrating From Django
 ---------------------
