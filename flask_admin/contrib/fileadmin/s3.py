@@ -134,7 +134,10 @@ class S3Storage(object):
 
     def save_file(self, path, file_data):
         key = Key(self.bucket, path)
-        key.set_contents_from_file(file_data.stream)
+        headers = {
+            'Content-Type' : file_data.content_type,
+        }
+        key.set_contents_from_file(file_data.stream, headers=headers)
 
     def delete_tree(self, directory):
         self._check_empty_directory(directory)
