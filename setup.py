@@ -39,7 +39,8 @@ extras_require = {
 
 install_requires = [
     'Flask>=0.7',
-    'wtforms'
+    'wtforms',
+    'Flask-WTF'
 ]
 
 if sys.version_info[0:2] < (3, 4):

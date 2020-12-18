@@ -1,5 +1,5 @@
 from wtforms.fields import StringField
-from google.appengine.ext import ndb
+from google.cloud import ndb
 
 import decimal
 
