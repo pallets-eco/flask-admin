@@ -8,6 +8,7 @@ from google.cloud import ndb
 from flask_wtf import FlaskForm
 from flask_admin.model.form import create_editable_list_form
 from .form import AdminModelConverter
+from ast import literal_eval
 
 
 class NdbModelView(BaseModelView):
@@ -92,6 +93,10 @@ class NdbModelView(BaseModelView):
         return q.count(), results
 
     def get_one(self, urlsafe_key):
+        try:
+            urlsafe_key = literal_eval(urlsafe_key)
+        except:
+            pass
         return ndb.Key(urlsafe=urlsafe_key).get()
 
     def create_model(self, form):
