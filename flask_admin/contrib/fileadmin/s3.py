@@ -135,7 +135,7 @@ class S3Storage(object):
     def save_file(self, path, file_data):
         key = Key(self.bucket, path)
         headers = {
-            'Content-Type' : file_data.content_type,
+            'Content-Type': file_data.content_type,
         }
         key.set_contents_from_file(file_data.stream, headers=headers)
 
