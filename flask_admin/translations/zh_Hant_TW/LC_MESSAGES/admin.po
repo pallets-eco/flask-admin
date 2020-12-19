@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-09-16 00:18+0200\n"
 "PO-Revision-Date: 2018-11-05 05:43+0800\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Grey Li <withlihui@gmail.com>\n"
 "Language: zh_Hant_TW\n"
 "Language-Team: zh_Hant_TW <LL@li.org>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -25,7 +25,7 @@ msgstr "首頁"
 
 #: ../flask_admin/contrib/rediscli.py:118
 msgid "Cli: Invalid command."
-msgstr "Cli： 錯誤的指令。"
+msgstr "Cli：錯誤的指令。"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:414
 msgid "File to upload"
@@ -74,7 +74,7 @@ msgstr "上傳檔案已被禁用。"
 #: ../flask_admin/contrib/fileadmin/__init__.py:1003
 #, python-format
 msgid "Successfully saved file: %(name)s"
-msgstr "已成功保存的檔: %(name)s"
+msgstr "已成功保存的檔案: %(name)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1012
 #, python-format
@@ -94,7 +94,7 @@ msgstr "建立資料夾的功能已被禁用。"
 #: ../flask_admin/contrib/fileadmin/__init__.py:1087
 #, python-format
 msgid "Successfully created directory: %(directory)s"
-msgstr "成功創建的目錄: %(directory)s"
+msgstr "成功創建的資料夾: %(directory)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1096
 #, python-format
@@ -113,17 +113,17 @@ msgstr "刪除已被禁用。"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1149
 msgid "Directory deletion is disabled."
-msgstr "刪除目錄已被禁用。"
+msgstr "刪除資料夾已被禁用。"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1157
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
-msgstr "已成功刪除目錄\"%(path)s\"。"
+msgstr "已成功刪除資料夾 \"%(path)s\"。"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1164
 #, python-format
 msgid "Failed to delete directory: %(error)s"
-msgstr "刪除檔案的時候發生異常：%(error)s"
+msgstr "刪除資料夾的時候發生異常：%(error)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1175
 #: ../flask_admin/contrib/fileadmin/__init__.py:1378
@@ -135,7 +135,7 @@ msgstr "檔案 \"%(name)s\" 已被成功刪除。"
 #: ../flask_admin/contrib/fileadmin/__init__.py:1384
 #, python-format
 msgid "Failed to delete file: %(name)s"
-msgstr "無法刪除檔案：%(name)s"
+msgstr "刪除檔案的時候發生異常：%(name)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1207
 msgid "Renaming is disabled."
@@ -215,7 +215,7 @@ msgstr "編輯"
 
 #: ../flask_admin/contrib/fileadmin/s3.py:233
 msgid "Cannot operate on non empty directories"
-msgstr "無法對非空目錄進行操作"
+msgstr "無法對非空資料夾進行操作"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:41
 #: ../flask_admin/contrib/peewee/filters.py:47
@@ -289,7 +289,7 @@ msgstr "不是之間"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:248
 msgid "ObjectId equals"
-msgstr "ObjectId 等于"
+msgstr "ObjectId 等於"
 
 #: ../flask_admin/contrib/mongoengine/form.py:121
 #: ../flask_admin/contrib/sqla/fields.py:151
@@ -302,7 +302,7 @@ msgstr "選擇的值不正確"
 #: ../flask_admin/contrib/mongoengine/view.py:606
 #, python-format
 msgid "Failed to get model. %(error)s"
-msgstr "無法取得模型。%(error)s"
+msgstr "未能獲取模型。%(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:627
 #: ../flask_admin/contrib/peewee/view.py:550
@@ -359,7 +359,7 @@ msgstr "鍵"
 
 #: ../flask_admin/contrib/sqla/fields.py:247
 msgid "Value"
-msgstr "價值"
+msgstr "值"
 
 #: ../flask_admin/contrib/sqla/validators.py:43
 msgid "Already exists."
@@ -390,7 +390,7 @@ msgstr "時間格式錯誤"
 
 #: ../flask_admin/form/fields.py:202
 msgid "Invalid Choice: could not coerce"
-msgstr "不正確選擇： 不能強迫"
+msgstr "不正確選擇：强制轉換格式失敗"
 
 #: ../flask_admin/form/fields.py:291
 msgid "Invalid JSON"
@@ -415,7 +415,7 @@ msgstr "不正確篩選器值： %(value)s"
 
 #: ../flask_admin/model/base.py:2348
 msgid "Record was successfully created."
-msgstr "資料新增成功。"
+msgstr "記錄新增成功。"
 
 #: ../flask_admin/model/base.py:2395 ../flask_admin/model/base.py:2449
 #: ../flask_admin/model/base.py:2483 ../flask_admin/model/base.py:2701
@@ -426,10 +426,15 @@ msgstr "記錄不存在。"
 msgid "Record was successfully saved."
 msgstr "記錄已成功保存。"
 
-#: ../flask_admin/model/base.py:2645
+
+#: ../flask_admin/model/base.py:2222
+msgid "Tablib dependency not installed."
+msgstr "Tablib 依賴未安裝。"
+
+#: ../flask_admin/model/base.py:2249
 #, python-format
-msgid "Export type \"%(type)s\" is not supported."
-msgstr "不支援匯出類型「%(type)s」。"
+msgid "Export type \"%(type)s not supported."
+msgstr "導出類型 \"%(type)s 不支持"
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
 msgid "Yes"
@@ -459,13 +464,17 @@ msgstr "編輯紀錄"
 msgid "Delete Record"
 msgstr "刪除記錄"
 
+#: ../flask_admin/model/widgets.py:61
+msgid "Please select model"
+msgstr "請選擇模型"
+
 #: ../flask_admin/model/widgets.py:71
 msgid "Please select model"
 msgstr "請選擇模型"
 
 #: ../flask_admin/templates/bootstrap4/admin/actions.html:5
 msgid "With selected"
-msgstr "選中的 "
+msgstr "選中的"
 
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:216
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:227
@@ -512,7 +521,13 @@ msgstr "您確定要遞歸刪除 \\'%(name)s\\' 嗎？"
 msgid "Are you sure you want to delete \\'%(name)s\\'?"
 msgstr "您確定要遞歸刪除 \\'%(name)s\\' 嗎?"
 
-#: ../flask_admin/templates/bootstrap4/admin/file/list.html:191
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:125
+msgid "Size"
+msgstr "大小"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:185
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:185
 msgid "Please select at least one file."
 msgstr "請至少選擇一個檔案。"
 
@@ -548,6 +563,84 @@ msgstr "刪除？"
 #: ../flask_admin/templates/bootstrap4/admin/model/inline_list_base.html:16
 #: ../flask_admin/templates/bootstrap4/admin/model/inline_list_base.html:35
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:30
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:33
+msgid "New"
+msgstr "添加"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:40
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:43
+msgid "Add"
+msgstr "新增"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:3
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:3
+msgid "Add Filter"
+msgstr "新增過濾器"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:18
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:23
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:30
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:18
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:30
+msgid "Export"
+msgstr "導出"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:38
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:38
+msgid "Apply"
+msgstr "套用"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:40
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:40
+msgid "Reset Filters"
+msgstr "重置過濾器"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:59
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:66
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:59
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:64
+msgid "Search"
+msgstr "搜尋"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:74
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:77
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:78
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:79
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:72
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:75
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:76
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:77
+msgid "items"
+msgstr "項目"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:25
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/create.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:25
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/create.html:10
+msgid "Create New Record"
+msgstr "創建新記錄"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:77
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:76
+msgid "Select all records"
+msgstr "選擇所有紀錄"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:120
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:119
+msgid "Select record"
+msgstr "選擇記錄"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:185
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:186
+msgid "Please select at least one record."
+msgstr "請至少選擇一筆記錄。"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/row_actions.html:34
+#: ../flask_admin/templates/bootstrap3/admin/model/row_actions.html:34
 msgid "Are you sure you want to delete this record?"
 msgstr "您確定要刪除這筆記錄嗎？"
 
