@@ -77,7 +77,7 @@ class NdbModelView(BaseModelView):
                  page_size=None):
         # TODO: implement filters (don't think search can work here)
 
-        q = self.model.query()
+        q = self.model.query(*filters) if filters else self.model.query()
 
         if sort_field:
             order_field = getattr(self.model, sort_field)
