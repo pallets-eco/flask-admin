@@ -79,11 +79,18 @@ class NdbModelView(BaseModelView):
 
         q = self.model.query(*filters) if filters else self.model.query()
 
-        if sort_field:
+        def _get_order_field(sort_field, sort_desc):
             order_field = getattr(self.model, sort_field)
             if sort_desc:
                 order_field = -order_field
+            return order_field
+
+        if sort_field:
+            order_field = _get_order_field(sort_field, sort_desc)
             q = q.order(order_field)
+        else:
+            order_list = [_get_order_field(x, y) for x, y in self._get_default_order()]
+            q = q.order(*order_list)
 
         if not page_size:
             page_size = self.page_size
