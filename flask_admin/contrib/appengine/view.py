@@ -89,7 +89,10 @@ class NdbModelView(BaseModelView):
             order_field = _get_order_field(sort_field, sort_desc)
             q = q.order(order_field)
         else:
-            order_list = [_get_order_field(x, y) for x, y in self._get_default_order()]
+            default_order = self._get_default_order()
+            if default_order:
+                order_list = [_get_order_field(x, y) for x, y in default_order]
+                q = q.order(*order_list)
             q = q.order(*order_list)
 
         if not page_size:
