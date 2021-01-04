@@ -151,8 +151,8 @@ class NdbModelView(BaseModelView):
     def create_model(self, form):
         try:
             model = self.model()
-            form.populate_obj(model)
             self.on_model_change(form, model, False)
+            form.populate_obj(model)
             model.put()
         except Exception as ex:
             if not self.handle_view_exception(ex):
@@ -167,9 +167,8 @@ class NdbModelView(BaseModelView):
 
     def update_model(self, form, model):
         try:
-
-            form.populate_obj(model)
             self.on_model_change(form, model, False)
+            form.populate_obj(model)
             model.put()
         except Exception as ex:
             if not self.handle_view_exception(ex):
