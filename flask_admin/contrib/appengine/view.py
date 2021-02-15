@@ -53,6 +53,7 @@ class NdbModelView(BaseModelView):
             exclude=self.form_excluded_columns,
             field_args=self.form_args,
             converter=self.model_form_converter(),
+            extra_fields=self.form_extra_fields
         )
         return form_class
 
