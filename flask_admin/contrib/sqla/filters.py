@@ -120,7 +120,7 @@ class FilterNotInList(FilterInList):
 
 class FilterInListMultiple(BaseSQLAFilter):
     def __init__(self, column, name, options=None, data_type=None):
-        super(FilterInListMultiple, self).__init__(column, name, options, data_type='select2-tags')
+        super(FilterInListMultiple, self).__init__(column, name, options, data_type='multiple-strings')
 
     def clean(self, value):
         return [v.strip() for v in value.split(',') if v.strip()]

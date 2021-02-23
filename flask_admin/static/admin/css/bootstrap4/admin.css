@@ -59,6 +59,7 @@ table.filters:not(:empty) {
 table.filters tr td {
     padding-right: 5px;
     padding-bottom: 3px;
+    vertical-align: top;
 }
 
 /* Filters - Select2 Boxes */
