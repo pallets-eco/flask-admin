@@ -118,18 +118,16 @@ class FilterNotInList(FilterInList):
     def operation(self):
         return lazy_gettext('not in list')
 
-class FilterInListMultiple(BaseSQLAFilter):
+class FilterLikeMultiple(BaseSQLAFilter):
     def __init__(self, column, name, options=None, data_type=None):
-        super(FilterInListMultiple, self).__init__(column, name, options, data_type='multiple-strings')
-
-    def clean(self, value):
-        return [v.strip() for v in value.split(',') if v.strip()]
+        super(FilterLikeMultiple, self).__init__(column, name, options, data_type='like-multiple')
 
     def apply(self, query, value, alias=None):
-        return query.filter(self.get_column(alias).in_(value))
+        stmt = tools.parse_like_term(value)
+        return query.filter(self.get_column(alias).ilike(stmt))
 
     def operation(self):
-        return lazy_gettext('in list (multiple)')
+        return lazy_gettext('contains multiple')
 
 
 # Customized type filters
@@ -164,10 +162,6 @@ class IntInListFilter(filters.BaseIntListFilter, FilterInList):
 class IntNotInListFilter(filters.BaseIntListFilter, FilterNotInList):
     pass
 
-class IntInListFilterMultiple(filters.BaseIntListFilter, FilterInListMultiple):
-    pass
-
-
 class FloatEqualFilter(FilterEqual, filters.BaseFloatFilter):
     pass
 
@@ -189,9 +183,6 @@ class FloatInListFilter(filters.BaseFloatListFilter, FilterInList):
 
 
 class FloatNotInListFilter(filters.BaseFloatListFilter, FilterNotInList):
-    pass
-
-class FloatInListFilterMultiple(filters.BaseFloatListFilter, FilterInListMultiple):
     pass
 
 
@@ -358,17 +349,6 @@ class EnumFilterNotInList(FilterNotInList):
             values = [self.enum_class(val) for val in values]
         return values
 
-class EnumFilterInListMultiple(FilterInListMultiple):
-    def __init__(self, column, name, options=None, enum_class=None, **kwargs):
-        self.enum_class = enum_class
-        super(EnumFilterInListMultiple, self).__init__(column, name, options, **kwargs)
-
-    def clean(self, value):
-        values = super(EnumFilterInListMultiple, self).clean(value)
-        if self.enum_class is not None:
-            values = [self.enum_class(val) for val in values]
-        return values
-
 class ChoiceTypeEqualFilter(FilterEqual):
     def __init__(self, column, name, options=None, **kwargs):
         super(ChoiceTypeEqualFilter, self).__init__(column, name, options, **kwargs)
@@ -480,15 +460,12 @@ class UuidFilterInList(filters.BaseUuidListFilter, FilterInList):
 class UuidFilterNotInList(filters.BaseUuidListFilter, FilterNotInList):
     pass
 
-class UuidFilterInListMultiple(filters.BaseUuidListFilter, FilterInListMultiple):
-    pass
-
 
 # Base SQLA filter field converter
 class FilterConverter(filters.BaseFilterConverter):
     strings = (FilterLike, FilterNotLike, FilterEqual, FilterNotEqual,
-               FilterEmpty, FilterInList, FilterNotInList, FilterInListMultiple)
-    string_key_filters = (FilterEqual, FilterNotEqual, FilterEmpty, FilterInList, FilterNotInList, FilterInListMultiple)
+               FilterEmpty, FilterInList, FilterNotInList, FilterLikeMultiple)
+    string_key_filters = (FilterEqual, FilterNotEqual, FilterEmpty, FilterInList, FilterNotInList)
     int_filters = (IntEqualFilter, IntNotEqualFilter, IntGreaterFilter,
                    IntSmallerFilter, FilterEmpty, IntInListFilter,
                    IntNotInListFilter)
@@ -511,7 +488,7 @@ class FilterConverter(filters.BaseFilterConverter):
     choice_type_filters = (ChoiceTypeEqualFilter, ChoiceTypeNotEqualFilter,
                            ChoiceTypeLikeFilter, ChoiceTypeNotLikeFilter, FilterEmpty)
     uuid_filters = (UuidFilterEqual, UuidFilterNotEqual, FilterEmpty,
-                    UuidFilterInList, UuidFilterNotInList, FilterInListMultiple)
+                    UuidFilterInList, UuidFilterNotInList)
     arrow_type_filters = (DateTimeGreaterFilter, DateTimeSmallerFilter, FilterEmpty)
 
     def convert(self, type_name, column, name, **kwargs):

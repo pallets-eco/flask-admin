@@ -46,14 +46,14 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
     }
 
     function resetMultipleStringsListeners() {
-        $(".filter-multiple-strings").off("change", onMultipleStringsChange);
-        $(".filter-multiple-strings").on("change", onMultipleStringsChange);
-        $(".filter-multiple-strings").off("keyup", onMultipleStringsChange);
-        $(".filter-multiple-strings").on("keyup", onMultipleStringsChange);
+        $(".filter-like-multiple").off("change", onMultipleStringsChange);
+        $(".filter-like-multiple").on("change", onMultipleStringsChange);
+        $(".filter-like-multiple").off("keyup", onMultipleStringsChange);
+        $(".filter-like-multiple").on("keyup", onMultipleStringsChange);
     }
 
     function onMultipleStringsChange(e) {
-        var $field = $('<input type="text" class="filter-val filter-multiple-strings form-control" />').attr('name', makeName("multiple-string"));
+        var $field = $('<input type="text" class="filter-val filter-like-multiple form-control" />').attr('name', makeName("like-multiple"));
         var inputsCount = $(e.target).parent().children().length;
         var filledCount = 0;
         var emptyCount = 0;
@@ -80,8 +80,8 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
         if (filter.type == "select2-tags") {
             var $field = $('<input type="hidden" class="filter-val form-control" />').attr('name', makeName(filter.arg));
             $field.val(filterValue);
-        } else if (filter.type == "multiple-strings") {
-            var $field = $('<input type="text" class="filter-val filter-multiple-strings form-control" />').attr('name', makeName(filter.arg));
+        } else if (filter.type == "like-multiple") {
+            var $field = $('<input type="text" class="filter-val filter-like-multiple form-control" />').attr('name', makeName(filter.arg));
             $field.val(filterValue);
         } else if (filter.options) {
             var $field = $('<select class="filter-val" />').attr('name', makeName(filter.arg));
