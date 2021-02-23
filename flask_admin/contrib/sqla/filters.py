@@ -122,9 +122,11 @@ class FilterLikeMultiple(BaseSQLAFilter):
     def __init__(self, column, name, options=None, data_type=None):
         super(FilterLikeMultiple, self).__init__(column, name, options, data_type='like-multiple')
 
-    def apply(self, query, value, alias=None):
-        stmt = tools.parse_like_term(value)
-        return query.filter(self.get_column(alias).ilike(stmt))
+    def clean(self, value):
+        return [v.strip() for v in value.split('|') if v.strip()]
+
+    def apply(self, query, values, alias=None):
+        return query.filter(or_(*[self.get_column(alias).ilike(tools.parse_like_term(value)) for value in values]))
 
     def operation(self):
         return lazy_gettext('contains multiple')
