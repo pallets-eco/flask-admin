@@ -4,6 +4,7 @@ from flask_admin.model import BaseModelView
 from wtforms_appengine import ndb as wt_ndb
 
 from google.cloud import ndb
+from google.cloud.ndb.query import DisjunctionNode
 
 from flask_wtf import FlaskForm
 from flask_admin.model.form import create_editable_list_form
@@ -113,19 +114,23 @@ class NdbModelView(BaseModelView):
 
     def get_list(self, page, sort_field, sort_desc, search, filters,
                  page_size=None):
-        filters_to_apply = []
-        if self._filters:
-            for flt, flt_name, value in filters:
-                f = self._filters[flt]
-                filters_to_apply.append(f.apply(self.model, f.clean(value)))
-
-        q = self.model.query(*filters_to_apply) if filters_to_apply else self.model.query()
 
         def _get_order_field(sort_field, sort_desc):
             order_field = getattr(self.model, sort_field)
             if sort_desc:
                 order_field = -order_field
             return order_field
+
+        q = self.model.query()
+
+        if self._filters:
+            for flt, flt_name, value in filters:
+                f = self._filters[flt]
+                filter = f.apply(self.model, f.clean(value))
+                q = q.filter(filter)
+                if isinstance(filter, DisjunctionNode):
+                    order_field = _get_order_field(f.column, True)
+                    q = q.order(order_field)
 
         if sort_field:
             order_field = _get_order_field(sort_field, sort_desc)
