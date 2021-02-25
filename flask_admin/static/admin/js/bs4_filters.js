@@ -45,22 +45,26 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
         $('button', $root).show();
     }
 
-    function resetMultipleStrings() {
+    function generateMultipleStringsInputs() {
         $(".filters").children().each(function (key, elm) {
             if ($(elm).find(".filter-like-multiple").length) {
-                while ($(elm).find(".filter-like-multiple").first().val() && $(elm).find(".filter-like-multiple").first().val().indexOf("|") >= 0) {
-                    const vals = $(elm).find(".filter-like-multiple").last().val().split("|");
-                    $(elm).find(".filter-like-multiple").last().val(vals[0]);
-                    var $field = $(`<input type="text" class="filter-val filter-like-multiple form-control" value="${vals.slice(1).join("|")}" />`).attr('name', makeName("like-multiple"));
-                    $(elm).find(".filter-like-multiple").last().after($field);
-                }
+                const values = JSON.parse($(elm).find(".filter-like-multiple").first().val());
+                values.forEach(function (value, key) {
+                    if (key === 0) {
+                        $(elm).find(".filter-like-multiple").first().val(value);
+                    }
+                    else {
+                        var field = $(`<input type="text" class="filter-val filter-like-multiple form-control" value="${value}" />`).attr('name', $(elm).find(".filter-like-multiple").first().parent().children().first().attr("name"));
+                        $(elm).find(".filter-like-multiple").last().after(field);
+                    }
+                });
+                var field = $(`<input type="text" class="filter-val filter-like-multiple form-control" />`).attr('name', $(elm).find(".filter-like-multiple").first().parent().children().first().attr("name"));
+                $(elm).find(".filter-like-multiple").last().after(field);
             }
         });
-        $(".filter-like-multiple").each(function (key, elm) {
-            if (elm.value && elm.value.indexOf("|") >= 0) {
-                elm.value = elm.value.replace(new RegExp("[|]", "gu"), "");
-            }
-        });
+    }
+
+    function resetMultipleStringsInputListeners() {
         $(".filter-like-multiple").off("change", onMultipleStringsChange);
         $(".filter-like-multiple").on("change", onMultipleStringsChange);
         $(".filter-like-multiple").off("keyup", onMultipleStringsChange);
@@ -68,10 +72,13 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
     }
 
     function onMultipleStringsChange(e) {
-        var $field = $('<input type="text" class="filter-val filter-like-multiple form-control" />').attr('name', makeName("like-multiple"));
-        var inputsCount = $(e.target).parent().children().length;
-        var filledCount = 0;
-        var emptyCount = 0;
+        const field = $('<input type="text" class="filter-val filter-like-multiple form-control" />').attr('name', $(e.target).parent().children().first().attr("name"));
+        const inputsCount = $(e.target).parent().children().length;
+        if (!$(e.target).val() && e.key === "Backspace") {
+            $(e.target).prev().focus();
+        }
+        let filledCount = 0;
+        let emptyCount = 0;
         $(e.target).parent().children().each(function (key, child) {
             if (child.value) {
                 filledCount++;
@@ -79,15 +86,20 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
             else {
                 emptyCount++;
                 if (emptyCount > 1) {
-                    $(e.target).prev().focus();
+                    if ($(e.target).prev().hasClass("filter-like-multiple")) {
+                        $(e.target).prev().focus();
+                    }
+                    else {
+                        $(e.target).next().focus();
+                    }
                     $(e.target).remove();
                 }
             }
         });
         if (e.target.value && filledCount === inputsCount) {
-            $(e.target).after($field);
+            $(e.target).after(field);
         }
-        resetMultipleStrings();
+        resetMultipleStringsInputListeners();
     }
 
     // generate HTML for filter input - allows changing filter input type to one with options or tags
@@ -116,8 +128,12 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
             $field.val(filterValue);
         }
         inputContainer.replaceWith($('<td/>').append($field));
-        resetMultipleStrings();
-
+        if (filter.type == "like-multiple") {
+            if (filterValue) {
+                generateMultipleStringsInputs()
+            }
+            resetMultipleStringsInputListeners();
+        }
         return $field;
     }
 
@@ -237,10 +253,12 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
     $('#filter_form').submit(function (e) {
         $(".filters").children().each(function (key, elm) {
             if ($(elm).find(".filter-like-multiple").length) {
+                $(elm).find(".filter-like-multiple").first().parent().attr("hidden", true);
                 const values = [];
                 $(elm).find(".filter-like-multiple").each(function (key, elm) {
+                    const value = $(elm).val();
                     if (value) {
-                        values.push($(elm).val());
+                        values.push(value);
                     }
                     if (key > 0) {
                         $(elm).remove();
