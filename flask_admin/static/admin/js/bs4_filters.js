@@ -1,4 +1,4 @@
-var AdminFilters = function (element, filtersElement, filterGroups, activeFilters) {
+var AdminFilters = function(element, filtersElement, filterGroups, activeFilters) {
     var $root = $(element);
     var $container = $('.filters', $root);
     var lastCount = 0;
@@ -101,7 +101,7 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
         } else if (filter.options) {
             var $field = $('<select class="filter-val" />').attr('name', makeName(filter.arg));
 
-            $(filter.options).each(function () {
+            $(filter.options).each(function() {
                 // for active filter inputs with options, add "selected" if there is a matching active filter
                 if (filterValue && (filterValue == this[0])) {
                     $field.append($('<option/>')
@@ -133,7 +133,7 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
             } else if (filter.type == "select2-tags") {
                 var options = [];
                 if (filter.options) {
-                    filter.options.forEach(function (option) {
+                    filter.options.forEach(function(option) {
                         options.push({ id: option[0], text: option[1] });
                     });
                     // save tag options as json on data attribute
@@ -168,7 +168,7 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
 
         // if one of the subfilters are selected, use that subfilter to create the input field
         var filterSelection = 0;
-        $.each(subfilters, function (subfilterIndex, subfilter) {
+        $.each(subfilters, function(subfilterIndex, subfilter) {
             if (this.index == selectedIndex) {
                 $select.append($('<option/>').attr('value', subfilter.arg).attr('selected', true).text(subfilter.operation));
                 filterSelection = subfilterIndex;
@@ -182,7 +182,7 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
         );
 
         // select2 for filter-op (equal, not equal, etc)
-        $select.select2({ width: 'resolve' }).on("change", function (e) {
+        $select.select2({ width: 'resolve' }).on("change", function(e) {
             changeOperation(subfilters, $el, filter, $select);
         });
 
@@ -197,7 +197,7 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
     }
 
     // Add Filter Button, new filter
-    $('a.filter', filtersElement).click(function () {
+    $('a.filter', filtersElement).click(function() {
         var name = ($(this).text().trim !== undefined ? $(this).text().trim() : $(this).text().replace(/^\s+|\s+$/g, ''));
 
         addFilter(name, filterGroups[name], false, null);
@@ -206,7 +206,7 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
     });
 
     // on page load - add active filters
-    $.each(activeFilters, function (activeIndex, activeFilter) {
+    $.each(activeFilters, function(activeIndex, activeFilter) {
         var idx = activeFilter[0],
             name = activeFilter[1],
             filterValue = activeFilter[2];
@@ -214,13 +214,13 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
     });
 
     // show "Apply Filter" button when filter input is changed
-    $('.filter-val', $root).on('input change', function () {
+    $('.filter-val', $root).on('input change', function() {
         $('button', $root).show();
     });
 
     $('.remove-filter', $root).click(removeFilter);
 
-    $('.filter-val', $root).not('.select2-container').each(function () {
+    $('.filter-val', $root).not('.select2-container').each(function() {
         var count = getCount($(this).attr('name'));
         if (count > lastCount)
             lastCount = count;
@@ -229,7 +229,7 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
     lastCount += 1;
 };
 
-(function ($) {
+(function($) {
     $('[data-role=tooltip]').tooltip({
         html: true,
         placement: 'bottom'
