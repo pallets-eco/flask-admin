@@ -165,6 +165,7 @@ class IntInListFilter(filters.BaseIntListFilter, FilterInList):
 class IntNotInListFilter(filters.BaseIntListFilter, FilterNotInList):
     pass
 
+
 class FloatEqualFilter(FilterEqual, filters.BaseFloatFilter):
     pass
 
