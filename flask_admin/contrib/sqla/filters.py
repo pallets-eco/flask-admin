@@ -352,7 +352,7 @@ class EnumFilterNotInList(FilterNotInList):
         if self.enum_class is not None:
             values = [self.enum_class(val) for val in values]
         return values
-        
+
 
 class ChoiceTypeEqualFilter(FilterEqual):
     def __init__(self, column, name, options=None, **kwargs):
