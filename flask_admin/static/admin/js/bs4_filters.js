@@ -54,11 +54,11 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
                         $(elm).find(".filter-like-multiple").first().val(value);
                     }
                     else {
-                        var field = $(`<input type="text" class="filter-val filter-like-multiple form-control" value="${value}" />`).attr('name', $(elm).find(".filter-like-multiple").first().parent().children().first().attr("name"));
+                        var field = $(`<input type="search" class="filter-val filter-like-multiple form-control" value="${value}" />`).attr('name', $(elm).find(".filter-like-multiple").first().parent().children().first().attr("name"));
                         $(elm).find(".filter-like-multiple").last().after(field);
                     }
                 });
-                var field = $(`<input type="text" class="filter-val filter-like-multiple form-control" />`).attr('name', $(elm).find(".filter-like-multiple").first().parent().children().first().attr("name"));
+                var field = $(`<input type="search" class="filter-val filter-like-multiple form-control" />`).attr('name', $(elm).find(".filter-like-multiple").first().parent().children().first().attr("name"));
                 $(elm).find(".filter-like-multiple").last().after(field);
             }
         });
@@ -72,7 +72,7 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
     }
 
     function onMultipleStringsChange(e) {
-        const field = $('<input type="text" class="filter-val filter-like-multiple form-control" />').attr('name', $(e.target).parent().children().first().attr("name"));
+        const field = $('<input type="search" class="filter-val filter-like-multiple form-control" />').attr('name', $(e.target).parent().children().first().attr("name"));
         const inputsCount = $(e.target).parent().children().length;
         if (!$(e.target).val() && e.key === "Backspace") {
             $(e.target).prev().focus();
@@ -108,7 +108,7 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
             var $field = $('<input type="hidden" class="filter-val form-control" />').attr('name', makeName(filter.arg));
             $field.val(filterValue);
         } else if (filter.type == "like-multiple") {
-            var $field = $('<input type="text" class="filter-val filter-like-multiple form-control" />').attr('name', makeName(filter.arg));
+            var $field = $('<input type="search" class="filter-val filter-like-multiple form-control" />').attr('name', makeName(filter.arg));
             $field.val(filterValue);
         } else if (filter.options) {
             var $field = $('<select class="filter-val" />').attr('name', makeName(filter.arg));
