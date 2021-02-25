@@ -49,17 +49,22 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
         $(".filters").children().each(function (key, elm) {
             if ($(elm).find(".filter-like-multiple").length) {
                 const values = JSON.parse($(elm).find(".filter-like-multiple").first().val());
-                values.forEach(function (value, key) {
-                    if (key === 0) {
-                        $(elm).find(".filter-like-multiple").first().val(value);
-                    }
-                    else {
-                        var field = $(`<input type="search" class="filter-val filter-like-multiple form-control" value="${value}" />`).attr('name', $(elm).find(".filter-like-multiple").first().parent().children().first().attr("name"));
-                        $(elm).find(".filter-like-multiple").last().after(field);
-                    }
-                });
-                var field = $(`<input type="search" class="filter-val filter-like-multiple form-control" />`).attr('name', $(elm).find(".filter-like-multiple").first().parent().children().first().attr("name"));
-                $(elm).find(".filter-like-multiple").last().after(field);
+                if (values.length) {
+                    values.forEach(function (value, key) {
+                        if (key === 0) {
+                            $(elm).find(".filter-like-multiple").first().val(value);
+                        }
+                        else {
+                            var field = $(`<input type="search" class="filter-val filter-like-multiple form-control" value="${value}" />`).attr('name', $(elm).find(".filter-like-multiple").first().parent().children().first().attr("name"));
+                            $(elm).find(".filter-like-multiple").last().after(field);
+                        }
+                    });
+                    var field = $(`<input type="search" class="filter-val filter-like-multiple form-control" />`).attr('name', $(elm).find(".filter-like-multiple").first().parent().children().first().attr("name"));
+                    $(elm).find(".filter-like-multiple").last().after(field);
+                }
+                else {
+                    $(elm).find(".filter-like-multiple").first().val("");
+                }
             }
         });
     }
