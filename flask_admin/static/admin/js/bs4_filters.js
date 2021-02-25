@@ -237,17 +237,16 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
     $('#filter_form').submit(function (e) {
         $(".filters").children().each(function (key, elm) {
             if ($(elm).find(".filter-like-multiple").length) {
-                const pieces = [];
+                const values = [];
                 $(elm).find(".filter-like-multiple").each(function (key, elm) {
-                    const value = $(elm).val();
                     if (value) {
-                        pieces.push(value);
+                        values.push($(elm).val());
                     }
                     if (key > 0) {
                         $(elm).remove();
                     }
                 })
-                $(elm).find(".filter-like-multiple").first().val(pieces.join("|"));
+                $(elm).find(".filter-like-multiple").first().val(JSON.stringify(values));
             }
         });
     });
