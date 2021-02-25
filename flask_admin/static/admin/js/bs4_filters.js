@@ -6,7 +6,7 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
     function getCount(name) {
         var idx = name.indexOf('_');
 
-        if (idx === -1) {
+        if(idx === -1) {
             return 0;
         }
 
@@ -21,7 +21,7 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
 
     function removeFilter() {
         $(this).closest('tr').remove();
-        if ($('.filters tr').length == 0) {
+        if($('.filters tr').length == 0) {
             $('button', $root).hide();
             $('a[class=btn]', $root).hide();
             $('.filters tbody').remove();
@@ -47,7 +47,7 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
 
     function resetMultipleStrings() {
         $(".filters").children().each((key, elm) => {
-            if ($(elm).find(".filter-like-multiple").length) {
+            if($(elm).find(".filter-like-multiple").length) {
                 while ($(elm).find(".filter-like-multiple").first().val() && $(elm).find(".filter-like-multiple").first().val().indexOf("|") >= 0) {
                     const vals = $(elm).find(".filter-like-multiple").last().val().split("|");
                     $(elm).find(".filter-like-multiple").last().val(vals[0]);
@@ -57,7 +57,7 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
             }
         });
         $(".filter-like-multiple").each((key, elm) => {
-            if (elm.value && elm.value.indexOf("|") >= 0) {
+            if(elm.value && elm.value.indexOf("|") >= 0) {
                 elm.value = elm.value.replace(new RegExp("[|]", "gu"), "");
             }
         });
@@ -73,18 +73,18 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
         var filledCount = 0;
         var emptyCount = 0;
         $(e.target).parent().children().each((key, child) => {
-            if (child.value) {
+            if(child.value) {
                 filledCount++;
             }
             else {
                 emptyCount++;
-                if (emptyCount > 1) {
+                if(emptyCount > 1) {
                     $(e.target).prev().focus();
                     $(e.target).remove();
                 }
             }
         });
-        if (e.target.value && filledCount === inputsCount) {
+        if(e.target.value && filledCount === inputsCount) {
             $(e.target).after($field);
         }
         resetMultipleStrings();
@@ -92,18 +92,18 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
 
     // generate HTML for filter input - allows changing filter input type to one with options or tags
     function createFilterInput(inputContainer, filterValue, filter) {
-        if (filter.type == "select2-tags") {
+        if(filter.type == "select2-tags") {
             var $field = $('<input type="hidden" class="filter-val form-control" />').attr('name', makeName(filter.arg));
             $field.val(filterValue);
-        } else if (filter.type == "like-multiple") {
+        } else if(filter.type == "like-multiple") {
             var $field = $('<input type="text" class="filter-val filter-like-multiple form-control" />').attr('name', makeName(filter.arg));
             $field.val(filterValue);
-        } else if (filter.options) {
+        } else if(filter.options) {
             var $field = $('<select class="filter-val" />').attr('name', makeName(filter.arg));
 
             $(filter.options).each(function() {
                 // for active filter inputs with options, add "selected" if there is a matching active filter
-                if (filterValue && (filterValue == this[0])) {
+                if(filterValue && (filterValue == this[0])) {
                     $field.append($('<option/>')
                         .val(this[0]).text(this[1]).attr('selected', true));
                 } else {
@@ -123,16 +123,16 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
 
     // add styling to input field, accommodates filters that change the input field's HTML
     function styleFilterInput(filter, field) {
-        if (filter.type) {
-            if ((filter.type == "datepicker") || (filter.type == "daterangepicker")) {
+        if(filter.type) {
+            if((filter.type == "datepicker") || (filter.type == "daterangepicker")) {
                 field.attr('data-date-format', "YYYY-MM-DD");
-            } else if ((filter.type == "datetimepicker") || (filter.type == "datetimerangepicker")) {
+            } else if((filter.type == "datetimepicker") || (filter.type == "datetimerangepicker")) {
                 field.attr('data-date-format', "YYYY-MM-DD HH:mm:ss");
-            } else if ((filter.type == "timepicker") || (filter.type == "timerangepicker")) {
+            } else if((filter.type == "timepicker") || (filter.type == "timerangepicker")) {
                 field.attr('data-date-format', "HH:mm:ss");
-            } else if (filter.type == "select2-tags") {
+            } else if(filter.type == "select2-tags") {
                 var options = [];
-                if (filter.options) {
+                if(filter.options) {
                     filter.options.forEach(function(option) {
                         options.push({ id: option[0], text: option[1] });
                     });
@@ -141,7 +141,7 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
                 }
             }
             faForm.applyStyle(field, filter.type);
-        } else if (filter.options) {
+        } else if(filter.options) {
             filter.type = "select2";
             faForm.applyStyle(field, filter.type);
         }
@@ -169,7 +169,7 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
         // if one of the subfilters are selected, use that subfilter to create the input field
         var filterSelection = 0;
         $.each(subfilters, function(subfilterIndex, subfilter) {
-            if (this.index == selectedIndex) {
+            if(this.index == selectedIndex) {
                 $select.append($('<option/>').attr('value', subfilter.arg).attr('selected', true).text(subfilter.operation));
                 filterSelection = subfilterIndex;
             } else {
@@ -222,7 +222,7 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
 
     $('.filter-val', $root).not('.select2-container').each(function() {
         var count = getCount($(this).attr('name'));
-        if (count > lastCount)
+        if(count > lastCount)
             lastCount = count;
     });
 
@@ -236,14 +236,14 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
     });
     $('#filter_form').submit((e) => {
         $(".filters").children().each((key, elm) => {
-            if ($(elm).find(".filter-like-multiple").length) {
+            if($(elm).find(".filter-like-multiple").length) {
                 const pieces = [];
                 $(elm).find(".filter-like-multiple").each((key, elm) => {
                     const value = $(elm).val();
-                    if (value) {
+                    if(value) {
                         pieces.push(value);
                     }
-                    if (key > 0) {
+                    if(key > 0) {
                         $(elm).remove();
                     }
                 })
@@ -251,7 +251,7 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
             }
         });
     });
-    if ($('#filter-groups-data').length == 1) {
+    if($('#filter-groups-data').length == 1) {
         var filter = new AdminFilters(
             '#filter_form', '.field-filters',
             JSON.parse($('#filter-groups-data').text()),
