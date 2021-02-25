@@ -46,7 +46,7 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
     }
 
     function resetMultipleStrings() {
-        $(".filters").children().each((key, elm) => {
+        $(".filters").children().each(function (key, elm) {
             if ($(elm).find(".filter-like-multiple").length) {
                 while ($(elm).find(".filter-like-multiple").first().val() && $(elm).find(".filter-like-multiple").first().val().indexOf("|") >= 0) {
                     const vals = $(elm).find(".filter-like-multiple").last().val().split("|");
@@ -56,7 +56,7 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
                 }
             }
         });
-        $(".filter-like-multiple").each((key, elm) => {
+        $(".filter-like-multiple").each(function (key, elm) {
             if (elm.value && elm.value.indexOf("|") >= 0) {
                 elm.value = elm.value.replace(new RegExp("[|]", "gu"), "");
             }
@@ -72,7 +72,7 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
         var inputsCount = $(e.target).parent().children().length;
         var filledCount = 0;
         var emptyCount = 0;
-        $(e.target).parent().children().each((key, child) => {
+        $(e.target).parent().children().each(function (key, child) {
             if (child.value) {
                 filledCount++;
             }
@@ -234,11 +234,11 @@ var AdminFilters = function (element, filtersElement, filterGroups, activeFilter
         html: true,
         placement: 'bottom'
     });
-    $('#filter_form').submit((e) => {
-        $(".filters").children().each((key, elm) => {
+    $('#filter_form').submit(function (e) {
+        $(".filters").children().each(function (key, elm) {
             if ($(elm).find(".filter-like-multiple").length) {
                 const pieces = [];
-                $(elm).find(".filter-like-multiple").each((key, elm) => {
+                $(elm).find(".filter-like-multiple").each(function (key, elm) {
                     const value = $(elm).val();
                     if (value) {
                         pieces.push(value);
