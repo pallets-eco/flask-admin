@@ -3,6 +3,7 @@ from flask_admin.model import filters
 from flask_admin.contrib.sqla import tools
 from sqlalchemy.sql import not_, or_
 import enum
+import json
 
 
 class BaseSQLAFilter(filters.BaseFilter):
@@ -123,7 +124,7 @@ class FilterLikeMultiple(BaseSQLAFilter):
         super(FilterLikeMultiple, self).__init__(column, name, options, data_type='like-multiple')
 
     def clean(self, value):
-        return [v.strip() for v in value.split('|') if v.strip()]
+        return [v.strip() for v in json.loads(value) if v.strip()]
 
     def apply(self, query, values, alias=None):
         return query.filter(or_(*[self.get_column(alias).ilike(tools.parse_like_term(value)) for value in values]))
