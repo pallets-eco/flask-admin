@@ -206,7 +206,7 @@ details view** by setting::
     can_view_details = True
 
 **Removing columns** from the list view is easy, just pass a list of column names for
-the *column_excludes_list* parameter::
+the *column_exclude_list* parameter::
 
     column_exclude_list = ['password', ]
 
