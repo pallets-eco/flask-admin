@@ -1611,6 +1611,11 @@ def test_hybrid_property():
 
     db.create_all()
 
+    ok_(tools.is_hybrid_property(Model1, 'number_of_pixels'))
+    ok_(tools.is_hybrid_property(Model1, 'number_of_pixels_str'))
+    ok_(not tools.is_hybrid_property(Model1, 'height'))
+    ok_(not tools.is_hybrid_property(Model1, 'width'))
+
     db.session.add(Model1(id=1, name="test_row_1", width=25, height=25))
     db.session.add(Model1(id=2, name="test_row_2", width=10, height=10))
     db.session.commit()
@@ -1649,6 +1654,52 @@ def test_hybrid_property():
     data = rv.data.decode('utf-8')
     ok_('test_row_2' in data)
     ok_('test_row_1' not in data)
+
+
+def test_hybrid_property_nested():
+    app, db, admin = setup()
+
+    class Model1(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        firstname = db.Column(db.String)
+        lastname = db.Column(db.String)
+
+        @hybrid_property
+        def fullname(self):
+            return f'{self.firstname} {self.lastname}'
+
+    class Model2(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        name = db.Column(db.String)
+        owner_id = db.Column(db.Integer, db.ForeignKey('model1.id', ondelete='CASCADE'))
+        owner = db.relationship('Model1', backref=db.backref("tiles"), uselist=False)
+
+    db.create_all()
+
+    ok_(tools.is_hybrid_property(Model2, 'owner.fullname'))
+    ok_(not tools.is_hybrid_property(Model2, 'owner.firstname'))
+
+    db.session.add(Model1(id=1, firstname="John", lastname="Dow"))
+    db.session.add(Model1(id=2, firstname="Jim", lastname="Smith"))
+    db.session.add(Model2(id=1, name="pencil", owner_id=1))
+    db.session.add(Model2(id=2, name="key", owner_id=1))
+    db.session.add(Model2(id=3, name="map", owner_id=2))
+    db.session.commit()
+
+    client = app.test_client()
+
+    view = CustomModelView(
+        Model2, db.session,
+        column_list=('id', 'name', 'owner.fullname'),
+        column_default_sort='id',
+    )
+    admin.add_view(view)
+
+    rv = client.get('/admin/model2/')
+    eq_(rv.status_code, 200)
+    data = rv.data.decode('utf-8')
+    ok_('John Dow' in data)
+    ok_('Jim Smith' in data)
 
 
 def test_url_args():
@@ -2484,8 +2535,10 @@ def test_advanced_joins():
     q2, joins, alias = view2._apply_path_joins(query, joins, path)
 
     eq_(len(joins), 2)
-    for p in q2._join_entities:
-        ok_(p in q1._join_entities)
+
+    if hasattr(q2, '_join_entities'):
+        for p in q2._join_entities:
+            ok_(p in q1._join_entities)
 
     ok_(alias is not None)
 
