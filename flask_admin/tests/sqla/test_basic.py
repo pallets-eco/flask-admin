@@ -2535,8 +2535,10 @@ def test_advanced_joins():
     q2, joins, alias = view2._apply_path_joins(query, joins, path)
 
     eq_(len(joins), 2)
-    for p in q2._join_entities:
-        ok_(p in q1._join_entities)
+
+    if hasattr(q2, '_join_entities'):
+        for p in q2._join_entities:
+            ok_(p in q1._join_entities)
 
     ok_(alias is not None)
 
