@@ -518,7 +518,7 @@ class FilterConverter(filters.BaseFilterConverter):
     def conv_date(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.date_filters]
 
-    @filters.convert('datetime', 'datetime2', 'timestamp', 'smalldatetime')
+    @filters.convert('datetime', 'datetime2', 'timestamp', 'smalldatetime', 'UtcDateTime')
     def conv_datetime(self, column, name, **kwargs):
         return [f(column, name, **kwargs) for f in self.datetime_filters]
 
