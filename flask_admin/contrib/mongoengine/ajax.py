@@ -2,7 +2,7 @@ import mongoengine
 
 from flask_admin._compat import string_types, as_unicode, iteritems
 from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
-
+from bson.dbref import DBRef
 
 class QueryAjaxModelLoader(AjaxModelLoader):
     def __init__(self, name, model, **options):
@@ -41,8 +41,10 @@ class QueryAjaxModelLoader(AjaxModelLoader):
     def format(self, model):
         if not model:
             return None
-
-        return (as_unicode(model.pk), as_unicode(model))
+        if not isinstance(model, DBRef):
+            return (as_unicode(model.pk), as_unicode(model))
+        else:
+            return (as_unicode(model), as_unicode(model))
 
     def get_one(self, pk):
         return self.model.objects.filter(pk=pk).first()
