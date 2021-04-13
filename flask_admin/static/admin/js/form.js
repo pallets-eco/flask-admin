@@ -632,6 +632,7 @@
 
     // Expose faForm globally
     var faForm = window.faForm = new AdminForm();
+    $(document).trigger('adminFormReady')
 
     // Apply global styles for current page after page loaded
     $(function() {
