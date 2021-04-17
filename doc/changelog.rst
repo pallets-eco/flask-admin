@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.5.8
+-----
+
+* SQLAlchemy 1.4.5+ compatibility fixes
+* Redis CLI fixes
+
 1.5.7
 -----
 
