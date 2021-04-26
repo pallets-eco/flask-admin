@@ -2308,6 +2308,7 @@ class BaseModelView(BaseView, ActionsMixin):
         def generate():
             # Append the column titles at the beginning
             titles = [csv_encode(c[1]) for c in self._export_columns]
+            titles[0] = codecs.BOM_UTF8.decode("utf8") + codecs.BOM_UTF8.decode() + titles[0]
             yield writer.writerow(titles)
 
             for row in data:
