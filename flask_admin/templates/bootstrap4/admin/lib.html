@@ -289,6 +289,9 @@
   {% if admin_view.can_create %}
   <input name="_add_another" type="submit" class="btn btn-secondary" value="{{ _gettext('Save and Add Another') }}" />
   {% endif %}
+  {% if admin_view.can_create and admin_view.allow_frozen_fields %}
+  <input name="_freeze_fields" type="submit" class="btn btn-secondary" value="{{ _gettext('Save and Add Another (Freeze Fields)') }}" />
+  {% endif %}
   {% if admin_view.can_edit %}
   <input name="_continue_editing" type="submit" class="btn btn-secondary" value="{{ _gettext('Save and Continue Editing') }}" />
   {% endif %}
