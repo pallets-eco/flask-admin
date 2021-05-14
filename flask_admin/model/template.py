@@ -1,6 +1,4 @@
-from jinja2 import contextfunction
-
-from flask_admin._compat import string_types, reduce
+from flask_admin._compat import pass_context, string_types, reduce
 from flask_admin.babel import gettext
 
 
@@ -11,7 +9,7 @@ class BaseListRowAction(object):
     def render(self, context, row_id, row):
         raise NotImplementedError()
 
-    @contextfunction
+    @pass_context
     def render_ctx(self, context, row_id, row):
         return self.render(context, row_id, row)
 
