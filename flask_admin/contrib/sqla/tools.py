@@ -206,7 +206,9 @@ def is_hybrid_property(model, attr_name):
             if is_association_proxy(attr):
                 attr = attr.remote_attr
             last_model = attr.property.argument
-            if isinstance(last_model, _class_resolver):
+            if isinstance(last_model, string_types):
+                last_model = attr.property._clsregistry_resolve_name(last_model)()
+            elif isinstance(last_model, _class_resolver):
                 last_model = model._decl_class_registry[last_model.arg]
             elif isinstance(last_model, (types.FunctionType, types.MethodType)):
                 last_model = last_model()

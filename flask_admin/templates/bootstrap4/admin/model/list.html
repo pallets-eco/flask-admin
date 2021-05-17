@@ -137,6 +137,8 @@
                         {% set form = list_forms[get_pk_value(row)] %}
                         {% if form.csrf_token %}
                         {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c), csrf=form.csrf_token._value()) }}
+                        {% elif csrf_token %}
+                        {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c), csrf=csrf_token()) }}
                         {% else %}
                         {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c)) }}
                         {% endif %}
@@ -185,10 +187,10 @@
       <div id="filter-groups-data" style="display:none;">{{ filter_groups|tojson|safe }}</div>
       <div id="active-filters-data" style="display:none;">{{ active_filters|tojson|safe }}</div>
     {% endif %}
-
+    {{ lib.form_js() }}
     <script src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
     <script src="{{ admin_static.url(filename='admin/js/bs4_filters.js', v='1.0.0') }}"></script>
-    {{ lib.form_js() }}
+    
 
     {{ actionlib.script(_gettext('Please select at least one record.'),
                         actions,
