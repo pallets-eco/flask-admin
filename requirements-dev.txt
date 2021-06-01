@@ -12,7 +12,8 @@ flask-babelex
 shapely==1.5.9
 geoalchemy2
 psycopg2
-nose
+pytest
+pytest-cov
 coveralls
 pylint
 sqlalchemy-citext
