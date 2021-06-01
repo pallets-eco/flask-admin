@@ -1644,7 +1644,7 @@ def test_hybrid_property_nested():
 
         @hybrid_property
         def fullname(self):
-            return f'{self.firstname} {self.lastname}'
+            return '{} {}'.format(self.firstname, self.lastname)
 
     class Model2(db.Model):
         id = db.Column(db.Integer, primary_key=True)
