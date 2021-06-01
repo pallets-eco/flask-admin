@@ -72,7 +72,7 @@ def test_model():
     model = db.session.query(GeoModel).first()
     assert model.name == "test1"
     assert to_shape(model.point).geom_type == "Point"
-    assert list(to_shape(model.point).coords) == [(125.8, 10.0])
+    assert list(to_shape(model.point).coords) == [(125.8, 10.0,)]
     assert to_shape(model.line).geom_type == "LineString"
     assert list(to_shape(model.line).coords) == [(50.2345, 94.2, (50.21, 94.87)])
     assert to_shape(model.polygon).geom_type == "Polygon"
