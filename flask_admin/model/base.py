@@ -9,7 +9,6 @@ from werkzeug.utils import secure_filename
 
 from flask import (current_app, request, redirect, flash, abort, json,
                    Response, get_flashed_messages, stream_with_context)
-from jinja2 import contextfunction
 try:
     import tablib
 except ImportError:
@@ -29,7 +28,7 @@ from flask_admin.helpers import (get_form_data, validate_form_on_submit,
 from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
 from flask_admin._compat import (iteritems, itervalues, OrderedDict,
-                                 as_unicode, csv_encode, text_type)
+                                 as_unicode, csv_encode, text_type, pass_context)
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
 
@@ -1851,7 +1850,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return value
 
-    @contextfunction
+    @pass_context
     def get_list_value(self, context, model, name):
         """
             Returns the value to be displayed in the list view
@@ -1871,7 +1870,7 @@ class BaseModelView(BaseView, ActionsMixin):
             self.column_type_formatters,
         )
 
-    @contextfunction
+    @pass_context
     def get_detail_value(self, context, model, name):
         """
             Returns the value to be displayed in the detail view

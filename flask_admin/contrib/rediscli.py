@@ -4,7 +4,7 @@ import warnings
 
 from flask import request
 
-from jinja2 import Markup
+from markupsafe import Markup
 
 from flask_admin.base import BaseView, expose
 from flask_admin.babel import gettext
