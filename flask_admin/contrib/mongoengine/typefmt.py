@@ -1,4 +1,4 @@
-from jinja2 import Markup, escape
+from markupsafe import Markup, escape
 
 from mongoengine.base import BaseList
 from mongoengine.fields import GridFSProxy, ImageGridFsProxy
