@@ -36,7 +36,7 @@ def bool_formatter(view, value):
             Value to check
     """
     glyph = 'ok-circle' if value else 'minus-sign'
-    fa = 'fa fa-check-circle' if value else 'far fa-circle'
+    fa = 'fas fa-check-circle' if value else 'far fa-circle'
     return Markup('<span class="%s glyphicon glyphicon-%s icon-%s"></span>' % (fa, glyph, glyph))
 
 
