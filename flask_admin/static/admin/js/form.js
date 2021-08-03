@@ -465,8 +465,10 @@
                 });
                 return true;
             case 'x-editable-combodate':
-                let template  = $el.data('template')
-                el.removeAttribute('data-template')
+                // Fixes bootstrap4 issue where data-template breaks bs4 popover.
+                // https://github.com/flask-admin/flask-admin/issues/2022
+                let template = $el.data('template');
+                $el.removeAttr('data-template');
                 $el.editable({
                     params: overrideXeditableParams,
                     template: template,
