@@ -1,13 +1,14 @@
 from __future__ import unicode_literals
-import json
+
 import re
 
-from flask_admin.contrib.geoa import ModelView
-from flask_admin.contrib.geoa.fields import GeoJSONField
+from flask import json
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
 from nose.tools import eq_, ok_
 
+from flask_admin.contrib.geoa import ModelView
+from flask_admin.contrib.geoa.fields import GeoJSONField
 from . import setup
 
 

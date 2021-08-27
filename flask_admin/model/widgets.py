@@ -5,8 +5,8 @@ from wtforms.widgets import html_params
 from flask_admin._backwards import Markup
 from flask_admin._compat import as_unicode, text_type
 from flask_admin.babel import gettext
-from flask_admin.helpers import get_url
 from flask_admin.form import RenderTemplateWidget
+from flask_admin.helpers import get_url
 
 
 class InlineFieldListWidget(RenderTemplateWidget):
@@ -75,6 +75,7 @@ class XEditableWidget(object):
         Determines how to display the x-editable/ajax form based on the
         field inside of the FieldList (StringField, IntegerField, etc).
     """
+
     def __call__(self, field, **kwargs):
         display_value = kwargs.pop('display_value', '')
         kwargs.setdefault('data-value', display_value)

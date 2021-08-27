@@ -1,7 +1,8 @@
-import json
-
+from flask import json
 from markupsafe import Markup
+
 from flask_admin._compat import text_type
+
 try:
     from enum import Enum
 except ImportError:
