@@ -52,6 +52,7 @@ class AjaxSelect2Widget(object):
             kwargs['value'] = separator.join(ids)
             kwargs['data-json'] = json.dumps(result)
             kwargs['data-multiple'] = u'1'
+            kwargs['data-separator'] = separator
         else:
             data = field.loader.format(field.data)
 
@@ -64,6 +65,8 @@ class AjaxSelect2Widget(object):
 
         minimum_input_length = int(field.loader.options.get('minimum_input_length', 1))
         kwargs.setdefault('data-minimum-input-length', minimum_input_length)
+
+        kwargs.setdefault('data-separator', ',')
 
         return Markup('<input %s>' % html_params(name=field.name, **kwargs))
 
