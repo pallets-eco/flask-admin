@@ -70,7 +70,7 @@ setup(
         'pymongo',
         'wtf-peewee',
         'sqlalchemy',
-        'flask-mongoengine',
+        'flask-mongoengine<=0.21.0',
         'flask-sqlalchemy',
         'flask-babelex',
         'shapely',
