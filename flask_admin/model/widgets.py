@@ -131,6 +131,7 @@ class XEditableWidget(object):
             kwargs['data-type'] = 'combodate'
             kwargs['data-format'] = 'YYYY-MM-DD'
             kwargs['data-template'] = 'YYYY-MM-DD'
+            kwargs['data-role'] = 'x-editable-combodate'
         elif field.type == 'DateTimeField':
             kwargs['data-type'] = 'combodate'
             kwargs['data-format'] = 'YYYY-MM-DD HH:mm:ss'
