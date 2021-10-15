@@ -345,7 +345,11 @@ class AdminModelConverter(ModelConverterBase):
         return form.DateTimeField(**field_args)
 
     @converts('sqlalchemy_utils.types.email.EmailType')
-    def convert_email(self, field_args, **extra):
+    def convert_email(self, field_args, column=None, **extra):
+        if column.nullable:
+            filters = field_args.get('filters', [])
+            filters.append(lambda x: x or None)
+            field_args['filters'] = filters
         field_args['validators'].append(validators.Email())
         return fields.StringField(**field_args)
 

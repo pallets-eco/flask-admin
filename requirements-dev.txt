@@ -3,7 +3,7 @@ Flask>=0.7
 Flask-SQLAlchemy>=0.15
 peewee
 wtf-peewee
-mongoengine
+mongoengine<=0.21.0
 pymongo
 flask-mongoengine==0.8.2
 pillow>=3.3.2
