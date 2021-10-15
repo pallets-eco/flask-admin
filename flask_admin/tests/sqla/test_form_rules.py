@@ -1,5 +1,3 @@
-from nose.tools import eq_, ok_
-
 from . import setup
 from .test_basic import CustomModelView, create_models
 
@@ -19,16 +17,16 @@ def test_form_rules():
     client = app.test_client()
 
     rv = client.get('/admin/model1/new/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     data = rv.data.decode('utf-8')
     pos1 = data.find('Test1')
     pos2 = data.find('Test2')
     pos3 = data.find('Test3')
     pos4 = data.find('Test4')
-    ok_(pos1 > pos2)
-    ok_(pos4 > pos1)
-    ok_(pos3 == -1)
+    assert pos1 > pos2
+    assert pos4 > pos1
+    assert pos3 == -1
 
 
 def test_rule_macro():
@@ -46,11 +44,11 @@ def test_rule_macro():
     client = app.test_client()
 
     rv = client.get('/admin/model1/new/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     data = rv.data.decode('utf-8')
-    ok_('Value = foobar' in data)
-    ok_('Hello another_test' in data)
+    assert 'Value = foobar' in data
+    assert 'Hello another_test' in data
 
 
 def test_rule_container():
@@ -67,16 +65,16 @@ def test_rule_container():
     client = app.test_client()
 
     rv = client.get('/admin/model1/new/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     data = rv.data.decode('utf-8')
     pos1 = data.find('<wrapper>')
     pos2 = data.find('another_test')
     pos3 = data.find('</wrapper>')
-    ok_(pos1 != -1)
-    ok_(pos2 != -1)
-    ok_(pos3 != -1)
-    ok_(pos1 < pos2 < pos3)
+    assert pos1 != -1
+    assert pos2 != -1
+    assert pos3 != -1
+    assert pos1 < pos2 < pos3
 
 
 def test_rule_header():
@@ -92,10 +90,10 @@ def test_rule_header():
     client = app.test_client()
 
     rv = client.get('/admin/model1/new/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     data = rv.data.decode('utf-8')
-    ok_('<h3>hello</h3>' in data)
+    assert '<h3>hello</h3>' in data
 
 
 def test_rule_field_set():
@@ -111,17 +109,17 @@ def test_rule_field_set():
     client = app.test_client()
 
     rv = client.get('/admin/model1/new/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     data = rv.data.decode('utf-8')
-    ok_('<h3>header</h3>' in data)
+    assert '<h3>header</h3>' in data
     pos1 = data.find('Test1')
     pos2 = data.find('Test2')
     pos3 = data.find('Test3')
     pos4 = data.find('Test4')
-    ok_(pos1 > pos2)
-    ok_(pos4 > pos1)
-    ok_(pos3 == -1)
+    assert pos1 > pos2
+    assert pos4 > pos1
+    assert pos3 == -1
 
 
 def test_rule_inlinefieldlist():
@@ -138,7 +136,7 @@ def test_rule_inlinefieldlist():
     client = app.test_client()
 
     rv = client.get('/admin/model1/new/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
 
 def test_inline_model_rules():
@@ -154,7 +152,7 @@ def test_inline_model_rules():
     client = app.test_client()
 
     rv = client.get('/admin/model1/new/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     data = rv.data.decode('utf-8')
-    ok_('int_field' not in data)
+    assert 'int_field' not in data

@@ -1,7 +1,5 @@
 import wtforms
 
-from nose.tools import eq_, ok_
-
 from flask import Flask
 
 try:
@@ -139,62 +137,62 @@ def test_mockview():
     view = MockModelView(Model)
     admin.add_view(view)
 
-    eq_(view.model, Model)
+    assert view.model == Model
 
-    eq_(view.name, 'Model')
-    eq_(view.endpoint, 'model')
+    assert view.name == 'Model'
+    assert view.endpoint == 'model'
 
     # Verify scaffolding
-    eq_(view._sortable_columns, ['col1', 'col2', 'col3'])
-    eq_(view._create_form_class, Form)
-    eq_(view._edit_form_class, Form)
-    eq_(view._search_supported, False)
-    eq_(view._filters, None)
+    assert view._sortable_columns == ['col1', 'col2', 'col3']
+    assert view._create_form_class == Form
+    assert view._edit_form_class == Form
+    assert view._search_supported == False
+    assert view._filters == None
 
     client = app.test_client()
 
     # Make model view requests
     rv = client.get('/admin/model/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     # Test model creation view
     rv = client.get('/admin/model/new/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     rv = client.post('/admin/model/new/',
                      data=dict(col1='test1', col2='test2', col3='test3'))
-    eq_(rv.status_code, 302)
-    eq_(len(view.created_models), 1)
+    assert rv.status_code == 302
+    assert len(view.created_models) == 1
 
     model = view.created_models.pop()
-    eq_(model.id, 3)
-    eq_(model.col1, 'test1')
-    eq_(model.col2, 'test2')
-    eq_(model.col3, 'test3')
+    assert model.id == 3
+    assert model.col1 == 'test1'
+    assert model.col2 == 'test2'
+    assert model.col3 == 'test3'
 
     # Try model edit view
     rv = client.get('/admin/model/edit/?id=3')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test1' in data)
+    assert 'test1' in data
 
     rv = client.post('/admin/model/edit/?id=3',
                      data=dict(col1='test!', col2='test@', col3='test#'))
-    eq_(rv.status_code, 302)
-    eq_(len(view.updated_models), 1)
+    assert rv.status_code == 302
+    assert len(view.updated_models) == 1
 
     model = view.updated_models.pop()
-    eq_(model.col1, 'test!')
-    eq_(model.col2, 'test@')
-    eq_(model.col3, 'test#')
+    assert model.col1 == 'test!'
+    assert model.col2 == 'test@'
+    assert model.col3 == 'test#'
 
     rv = client.get('/admin/model/edit/?id=4')
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     # Attempt to delete model
     rv = client.post('/admin/model/delete/?id=3')
-    eq_(rv.status_code, 302)
-    eq_(rv.headers['location'], 'http://localhost/admin/model/')
+    assert rv.status_code == 302
+    assert rv.headers['location'] == 'http://localhost/admin/model/'
 
     # Create a dispatched application to test that edit view's "save and
     # continue" functionality works when app is not located at root
@@ -206,10 +204,10 @@ def test_mockview():
         '/dispatched/admin/model/edit/?id=3',
         data=dict(col1='another test!', col2='test@', col3='test#', _continue_editing='True'))
 
-    eq_(status, '302 FOUND')
-    eq_(headers['Location'], 'http://localhost/dispatched/admin/model/edit/?id=3')
+    assert status == '302 FOUND'
+    assert headers['Location'] == 'http://localhost/dispatched/admin/model/edit/?id=3'
     model = view.updated_models.pop()
-    eq_(model.col1, 'another test!')
+    assert model.col1 == 'another test!'
 
 
 def test_permissions():
@@ -222,15 +220,15 @@ def test_permissions():
 
     view.can_create = False
     rv = client.get('/admin/model/new/')
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     view.can_edit = False
     rv = client.get('/admin/model/edit/?id=1')
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     view.can_delete = False
     rv = client.post('/admin/model/delete/?id=1')
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
 
 def test_templates():
@@ -246,13 +244,13 @@ def test_templates():
     view.edit_template = 'mock.html'
 
     rv = client.get('/admin/model/')
-    eq_(rv.data, b'Success!')
+    assert rv.data == b'Success!'
 
     rv = client.get('/admin/model/new/')
-    eq_(rv.data, b'Success!')
+    assert rv.data == b'Success!'
 
     rv = client.get('/admin/model/edit/?id=1')
-    eq_(rv.data, b'Success!')
+    assert rv.data == b'Success!'
 
 
 def test_list_columns():
@@ -263,15 +261,15 @@ def test_list_columns():
                          column_labels=dict(col1='Column1'))
     admin.add_view(view)
 
-    eq_(len(view._list_columns), 2)
-    eq_(view._list_columns, [('col1', 'Column1'), ('col3', 'Col3')])
+    assert len(view._list_columns) == 2
+    assert view._list_columns == [('col1', 'Column1'), ('col3', 'Col3')]
 
     client = app.test_client()
 
     rv = client.get('/admin/model/')
     data = rv.data.decode('utf-8')
-    ok_('Column1' in data)
-    ok_('Col2' not in data)
+    assert 'Column1' in data
+    assert 'Col2' not in data
 
 
 def test_exclude_columns():
@@ -280,14 +278,14 @@ def test_exclude_columns():
     view = MockModelView(Model, column_exclude_list=['col2'])
     admin.add_view(view)
 
-    eq_(view._list_columns, [('col1', 'Col1'), ('col3', 'Col3')])
+    assert view._list_columns == [('col1', 'Col1'), ('col3', 'Col3')]
 
     client = app.test_client()
 
     rv = client.get('/admin/model/')
     data = rv.data.decode('utf-8')
-    ok_('Col1' in data)
-    ok_('Col2' not in data)
+    assert 'Col1' in data
+    assert 'Col2' not in data
 
 
 def test_sortable_columns():
@@ -296,7 +294,7 @@ def test_sortable_columns():
     view = MockModelView(Model, column_sortable_list=['col1', ('col2', 'test1')])
     admin.add_view(view)
 
-    eq_(view._sortable_columns, dict(col1='col1', col2='test1'))
+    assert view._sortable_columns == dict(col1='col1', col2='test1')
 
 
 def test_column_searchable_list():
@@ -305,7 +303,7 @@ def test_column_searchable_list():
     view = MockModelView(Model, column_searchable_list=['col1', 'col2'])
     admin.add_view(view)
 
-    eq_(view._search_supported, True)
+    assert view._search_supported == True
 
     # TODO: Make calls with search
 
@@ -316,12 +314,12 @@ def test_column_filters():
     view = MockModelView(Model, column_filters=['col1', 'col2'])
     admin.add_view(view)
 
-    eq_(len(view._filters), 2)
-    eq_(view._filters[0].name, 'col1')
-    eq_(view._filters[1].name, 'col2')
+    assert len(view._filters) == 2
+    assert view._filters[0].name == 'col1'
+    assert view._filters[1].name == 'col2'
 
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'col1']], [(0, 'test')])
-    eq_([(f['index'], f['operation']) for f in view._filter_groups[u'col2']], [(1, 'test')])
+    assert [(f['index'] == f['operation']) for f in view._filter_groups[u'col1']], [(0, 'test')]
+    assert [(f['index'] == f['operation']) for f in view._filter_groups[u'col2']], [(1, 'test')]
 
     # TODO: Make calls with filters
 
@@ -335,8 +333,8 @@ def test_filter_list_callable():
     admin.add_view(view)
 
     opts = flt.get_options(view)
-    eq_(len(opts), 2)
-    eq_(opts, [('1', 'Test 1'), ('2', 'Test 2')])
+    assert len(opts) == 2
+    assert opts == [('1', 'Test 1'), ('2', 'Test 2')]
 
 
 def test_form():
@@ -371,68 +369,68 @@ def test_csrf():
     # create_view
     ################
     rv = client.get('/admin/secure/new/')
-    eq_(rv.status_code, 200)
-    ok_(u'name="csrf_token"' in rv.data.decode('utf-8'))
+    assert rv.status_code == 200
+    assert u'name="csrf_token"' in rv.data.decode('utf-8')
 
     csrf_token = get_csrf_token(rv.data.decode('utf-8'))
 
     # Create without CSRF token
     rv = client.post('/admin/secure/new/', data=dict(name='test1'))
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     # Create with CSRF token
     rv = client.post('/admin/secure/new/', data=dict(name='test1',
                                                      csrf_token=csrf_token))
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     ###############
     # edit_view
     ###############
     rv = client.get('/admin/secure/edit/?url=%2Fadmin%2Fsecure%2F&id=1')
-    eq_(rv.status_code, 200)
-    ok_(u'name="csrf_token"' in rv.data.decode('utf-8'))
+    assert rv.status_code == 200
+    assert u'name="csrf_token"' in rv.data.decode('utf-8')
 
     csrf_token = get_csrf_token(rv.data.decode('utf-8'))
 
     # Edit without CSRF token
     rv = client.post('/admin/secure/edit/?url=%2Fadmin%2Fsecure%2F&id=1',
                      data=dict(name='test1'))
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     # Edit with CSRF token
     rv = client.post('/admin/secure/edit/?url=%2Fadmin%2Fsecure%2F&id=1',
                      data=dict(name='test1', csrf_token=csrf_token))
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     ################
     # delete_view
     ################
     rv = client.get('/admin/secure/')
-    eq_(rv.status_code, 200)
-    ok_(u'name="csrf_token"' in rv.data.decode('utf-8'))
+    assert rv.status_code == 200
+    assert u'name="csrf_token"' in rv.data.decode('utf-8')
 
     csrf_token = get_csrf_token(rv.data.decode('utf-8'))
 
     # Delete without CSRF token, test validation errors
     rv = client.post('/admin/secure/delete/',
                      data=dict(id="1", url="/admin/secure/"), follow_redirects=True)
-    eq_(rv.status_code, 200)
-    ok_(u'Record was successfully deleted.' not in rv.data.decode('utf-8'))
-    ok_(u'Failed to delete record.' in rv.data.decode('utf-8'))
+    assert rv.status_code == 200
+    assert u'Record was successfully deleted.' not in rv.data.decode('utf-8')
+    assert u'Failed to delete record.' in rv.data.decode('utf-8')
 
     # Delete with CSRF token
     rv = client.post('/admin/secure/delete/',
                      data=dict(id="1", url="/admin/secure/", csrf_token=csrf_token),
                      follow_redirects=True)
-    eq_(rv.status_code, 200)
-    ok_(u'Record was successfully deleted.' in rv.data.decode('utf-8'))
+    assert rv.status_code == 200
+    assert u'Record was successfully deleted.' in rv.data.decode('utf-8')
 
     ################
     # actions
     ################
     rv = client.get('/admin/secure/')
-    eq_(rv.status_code, 200)
-    ok_(u'name="csrf_token"' in rv.data.decode('utf-8'))
+    assert rv.status_code == 200
+    assert u'name="csrf_token"' in rv.data.decode('utf-8')
 
     csrf_token = get_csrf_token(rv.data.decode('utf-8'))
 
@@ -440,9 +438,9 @@ def test_csrf():
     rv = client.post('/admin/secure/action/',
                      data=dict(rowid='1', url='/admin/secure/', action='delete'),
                      follow_redirects=True)
-    eq_(rv.status_code, 200)
-    ok_(u'Record was successfully deleted.' not in rv.data.decode('utf-8'))
-    ok_(u'Failed to perform action.' in rv.data.decode('utf-8'))
+    assert rv.status_code == 200
+    assert u'Record was successfully deleted.' not in rv.data.decode('utf-8')
+    assert u'Failed to perform action.' in rv.data.decode('utf-8')
 
 
 def test_custom_form():
@@ -454,10 +452,10 @@ def test_custom_form():
     view = MockModelView(Model, form=TestForm)
     admin.add_view(view)
 
-    eq_(view._create_form_class, TestForm)
-    eq_(view._edit_form_class, TestForm)
+    assert view._create_form_class == TestForm
+    assert view._edit_form_class == TestForm
 
-    ok_(not hasattr(view._create_form_class, 'col1'))
+    assert not hasattr(view._create_form_class, 'col1')
 
 
 def test_modal_edit():
@@ -482,27 +480,27 @@ def test_modal_edit():
 
     # bootstrap 2 - ensure modal window is added when edit_modal is enabled
     rv = client_bs2.get('/admin/edit_modal_on/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('fa_modal_window' in data)
+    assert 'fa_modal_window' in data
 
     # bootstrap 2 - test edit modal disabled
     rv = client_bs2.get('/admin/edit_modal_off/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('fa_modal_window' not in data)
+    assert 'fa_modal_window' not in data
 
     # bootstrap 2 - ensure modal window is added when create_modal is enabled
     rv = client_bs2.get('/admin/create_modal_on/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('fa_modal_window' in data)
+    assert 'fa_modal_window' in data
 
     # bootstrap 2 - test create modal disabled
     rv = client_bs2.get('/admin/create_modal_off/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('fa_modal_window' not in data)
+    assert 'fa_modal_window' not in data
 
     # bootstrap 3
     app_bs3 = Flask(__name__)
@@ -517,27 +515,27 @@ def test_modal_edit():
 
     # bootstrap 3 - ensure modal window is added when edit_modal is enabled
     rv = client_bs3.get('/admin/edit_modal_on/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('fa_modal_window' in data)
+    assert 'fa_modal_window' in data
 
     # bootstrap 3 - test modal disabled
     rv = client_bs3.get('/admin/edit_modal_off/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('fa_modal_window' not in data)
+    assert 'fa_modal_window' not in data
 
     # bootstrap 3 - ensure modal window is added when edit_modal is enabled
     rv = client_bs3.get('/admin/create_modal_on/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('fa_modal_window' in data)
+    assert 'fa_modal_window' in data
 
     # bootstrap 3 - test modal disabled
     rv = client_bs3.get('/admin/create_modal_off/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('fa_modal_window' not in data)
+    assert 'fa_modal_window' not in data
 
 
 def check_class_name():
@@ -545,7 +543,7 @@ def check_class_name():
         pass
 
     view = DummyView(Model)
-    eq_(view.name, 'Dummy View')
+    assert view.name == 'Dummy View'
 
 
 def test_export_csv():
@@ -557,7 +555,7 @@ def test_export_csv():
     admin.add_view(view)
 
     rv = client.get('/admin/test/export/csv/')
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     # basic test of csv export with a few records
     view_data = {
@@ -572,12 +570,12 @@ def test_export_csv():
 
     rv = client.get('/admin/model/export/csv/')
     data = rv.data.decode('utf-8')
-    eq_(rv.mimetype, 'text/csv')
-    eq_(rv.status_code, 200)
-    ok_("Col1,Col2\r\n"
-        "col1_1,col2_1\r\n"
-        "col1_2,col2_2\r\n"
-        "col1_3,col2_3\r\n" == data)
+    assert rv.mimetype == 'text/csv'
+    assert rv.status_code == 200
+    assert "Col1,Col2\r\n" + \
+        "col1_1,col2_1\r\n" + \
+        "col1_2,col2_2\r\n" + \
+        "col1_3,col2_3\r\n" == data
 
     # test explicit use of column_export_list
     view = MockModelView(Model, view_data, can_export=True,
@@ -588,12 +586,12 @@ def test_export_csv():
 
     rv = client.get('/admin/exportinclusion/export/csv/')
     data = rv.data.decode('utf-8')
-    eq_(rv.mimetype, 'text/csv')
-    eq_(rv.status_code, 200)
-    ok_("Id,Col1,Col2\r\n"
-        "1,col1_1,col2_1\r\n"
-        "2,col1_2,col2_2\r\n"
-        "3,col1_3,col2_3\r\n" == data)
+    assert rv.mimetype == 'text/csv'
+    assert rv.status_code == 200
+    assert "Id,Col1,Col2\r\n" + \
+        "1,col1_1,col2_1\r\n" + \
+        "2,col1_2,col2_2\r\n" + \
+        "3,col1_3,col2_3\r\n" == data
 
     # test explicit use of column_export_exclude_list
     view = MockModelView(Model, view_data, can_export=True,
@@ -604,12 +602,12 @@ def test_export_csv():
 
     rv = client.get('/admin/exportexclusion/export/csv/')
     data = rv.data.decode('utf-8')
-    eq_(rv.mimetype, 'text/csv')
-    eq_(rv.status_code, 200)
-    ok_("Col1\r\n"
-        "col1_1\r\n"
-        "col1_2\r\n"
-        "col1_3\r\n" == data)
+    assert rv.mimetype == 'text/csv'
+    assert rv.status_code == 200
+    assert "Col1\r\n" + \
+        "col1_1\r\n" + \
+        "col1_2\r\n" + \
+        "col1_3\r\n" == data
 
     # test utf8 characters in csv export
     view_data[4] = Model(1, u'\u2013ut8_1\u2013', u'\u2013utf8_2\u2013')
@@ -619,8 +617,8 @@ def test_export_csv():
 
     rv = client.get('/admin/utf8/export/csv/')
     data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 200)
-    ok_(u'\u2013ut8_1\u2013,\u2013utf8_2\u2013\r\n' in data)
+    assert rv.status_code == 200
+    assert u'\u2013ut8_1\u2013,\u2013utf8_2\u2013\r\n' in data
 
     # test None type, integer type, column_labels, and column_formatters
     view_data = {
@@ -639,11 +637,11 @@ def test_export_csv():
 
     rv = client.get('/admin/types_and_formatters/export/csv/')
     data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 200)
-    ok_("Str Field,Int Field\r\n"
-        "col1_1,2\r\n"
-        "col1_2,4\r\n"
-        ",6\r\n" == data)
+    assert rv.status_code == 200
+    assert "Str Field,Int Field\r\n" + \
+        "col1_1,2\r\n" + \
+        "col1_2,4\r\n" + \
+        ",6\r\n" == data
 
     # test column_formatters_export and column_formatters_export
     type_formatters = {type(None): lambda view, value: "null"}
@@ -659,11 +657,11 @@ def test_export_csv():
 
     rv = client.get('/admin/export_types_and_formatters/export/csv/')
     data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 200)
-    ok_("Col1,Col2\r\n"
-        "col1_1,3\r\n"
-        "col1_2,6\r\n"
-        "null,9\r\n" == data)
+    assert rv.status_code == 200
+    assert "Col1,Col2\r\n" + \
+        "col1_1,3\r\n" + \
+        "col1_2,6\r\n" + \
+        "null,9\r\n" == data
 
     # Macros are not implemented for csv export yet and will throw an error
     view = MockModelView(
@@ -675,7 +673,7 @@ def test_export_csv():
 
     rv = client.get('/admin/macro_exception/export/csv/')
     data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 500)
+    assert rv.status_code == 500
 
     # We should be able to specify column_formatters_export
     # and not get an exception if a column_formatter is using a macro
@@ -692,11 +690,11 @@ def test_export_csv():
 
     rv = client.get('/admin/macro_exception_formatter_override/export/csv/')
     data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 200)
-    ok_("Col1,Col2\r\n"
-        "col1_1,1\r\n"
-        "col1_2,2\r\n"
-        ",3\r\n" == data)
+    assert rv.status_code == 200
+    assert "Col1,Col2\r\n" + \
+        "col1_1,1\r\n" + \
+        "col1_2,2\r\n" + \
+        ",3\r\n" == data
 
     # We should not get an exception if a column_formatter is
     # using a macro but it is on the column_export_exclude_list
@@ -710,11 +708,11 @@ def test_export_csv():
 
     rv = client.get('/admin/macro_exception_exclude_override/export/csv/')
     data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 200)
-    ok_("Col2\r\n"
-        "1\r\n"
-        "2\r\n"
-        "3\r\n" == data)
+    assert rv.status_code == 200
+    assert "Col2\r\n" + \
+        "1\r\n" + \
+        "2\r\n" + \
+        "3\r\n" == data
 
     # When we use column_export_list to hide the macro field
     # we should not get an exception
@@ -728,11 +726,11 @@ def test_export_csv():
 
     rv = client.get('/admin/macro_exception_list_override/export/csv/')
     data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 200)
-    ok_("Col2\r\n"
-        "1\r\n"
-        "2\r\n"
-        "3\r\n" == data)
+    assert rv.status_code == 200
+    assert "Col2\r\n" + \
+        "1\r\n" + \
+        "2\r\n" + \
+        "3\r\n" == data
 
     # If they define a macro on the column_formatters_export list
     # then raise an exception
@@ -745,7 +743,7 @@ def test_export_csv():
 
     rv = client.get('/admin/macro_exception_macro_override/export/csv/')
     data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 500)
+    assert rv.status_code == 500
 
 
 def test_list_row_actions():
@@ -759,22 +757,22 @@ def test_list_row_actions():
     admin.add_view(view)
 
     actions = view.get_list_row_actions()
-    ok_(isinstance(actions[0], template.EditRowAction))
-    ok_(isinstance(actions[1], template.DeleteRowAction))
+    assert isinstance(actions[0], template.EditRowAction)
+    assert isinstance(actions[1], template.DeleteRowAction)
 
     rv = client.get('/admin/test/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     # Test default actions
     view = MockModelView(Model, endpoint='test1', can_edit=False, can_delete=False, can_view_details=True)
     admin.add_view(view)
 
     actions = view.get_list_row_actions()
-    eq_(len(actions), 1)
-    ok_(isinstance(actions[0], template.ViewRowAction))
+    assert len(actions) == 1
+    assert isinstance(actions[0], template.ViewRowAction)
 
     rv = client.get('/admin/test1/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     # Test popups
     view = MockModelView(Model, endpoint='test2',
@@ -784,12 +782,12 @@ def test_list_row_actions():
     admin.add_view(view)
 
     actions = view.get_list_row_actions()
-    ok_(isinstance(actions[0], template.ViewPopupRowAction))
-    ok_(isinstance(actions[1], template.EditPopupRowAction))
-    ok_(isinstance(actions[2], template.DeleteRowAction))
+    assert isinstance(actions[0], template.ViewPopupRowAction)
+    assert isinstance(actions[1], template.EditPopupRowAction)
+    assert isinstance(actions[2], template.DeleteRowAction)
 
     rv = client.get('/admin/test2/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     # Test custom views
     view = MockModelView(Model, endpoint='test3',
@@ -800,16 +798,16 @@ def test_list_row_actions():
     admin.add_view(view)
 
     actions = view.get_list_row_actions()
-    ok_(isinstance(actions[0], template.EditRowAction))
-    ok_(isinstance(actions[1], template.DeleteRowAction))
-    ok_(isinstance(actions[2], template.LinkRowAction))
-    ok_(isinstance(actions[3], template.EndpointLinkRowAction))
+    assert isinstance(actions[0], template.EditRowAction)
+    assert isinstance(actions[1], template.DeleteRowAction)
+    assert isinstance(actions[2], template.LinkRowAction)
+    assert isinstance(actions[3], template.EndpointLinkRowAction)
 
     rv = client.get('/admin/test3/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     data = rv.data.decode('utf-8')
 
-    ok_('glyphicon-off' in data)
-    ok_('http://localhost/?id=' in data)
-    ok_('glyphicon-test' in data)
+    assert 'glyphicon-off' in data
+    assert 'http://localhost/?id=' in data
+    assert 'glyphicon-test' in data

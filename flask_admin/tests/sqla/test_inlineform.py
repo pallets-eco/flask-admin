@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from nose.tools import eq_, ok_
-
 from wtforms import fields
 
 from flask_admin import form
@@ -42,35 +40,35 @@ def test_inline_form():
     admin.add_view(view)
 
     # Basic tests
-    ok_(view._create_form_class is not None)
-    ok_(view._edit_form_class is not None)
-    eq_(view.endpoint, 'user')
+    assert view._create_form_class is not None
+    assert view._edit_form_class is not None
+    assert view.endpoint == 'user'
 
     # Verify form
-    eq_(view._create_form_class.name.field_class, fields.StringField)
-    eq_(view._create_form_class.info.field_class, InlineModelFormList)
+    assert view._create_form_class.name.field_class == fields.StringField
+    assert view._create_form_class.info.field_class == InlineModelFormList
 
     rv = client.get('/admin/user/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     rv = client.get('/admin/user/new/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     # Create
     rv = client.post('/admin/user/new/', data=dict(name=u'äõüxyz'))
-    eq_(rv.status_code, 302)
-    eq_(User.query.count(), 1)
-    eq_(UserInfo.query.count(), 0)
+    assert rv.status_code == 302
+    assert User.query.count() == 1
+    assert UserInfo.query.count() == 0
 
     data = {'name': u'fbar', 'info-0-key': 'foo', 'info-0-val': 'bar'}
     rv = client.post('/admin/user/new/', data=data)
-    eq_(rv.status_code, 302)
-    eq_(User.query.count(), 2)
-    eq_(UserInfo.query.count(), 1)
+    assert rv.status_code == 302
+    assert User.query.count() == 2
+    assert UserInfo.query.count() == 1
 
     # Edit
     rv = client.get('/admin/user/edit/?id=2')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     # Edit - update
     data = {
         'name': u'barfoo',
@@ -79,8 +77,8 @@ def test_inline_form():
         'info-0-val': u'yyy',
     }
     rv = client.post('/admin/user/edit/?id=2', data=data)
-    eq_(UserInfo.query.count(), 1)
-    eq_(UserInfo.query.one().key, u'xxx')
+    assert UserInfo.query.count() == 1
+    assert UserInfo.query.one().key == u'xxx'
 
     # Edit - add & delete
     data = {
@@ -94,20 +92,20 @@ def test_inline_form():
         'info-1-val': u'foo',
     }
     rv = client.post('/admin/user/edit/?id=2', data=data)
-    eq_(rv.status_code, 302)
-    eq_(User.query.count(), 2)
-    eq_(User.query.get(2).name, u'barf')
-    eq_(UserInfo.query.count(), 1)
-    eq_(UserInfo.query.one().key, u'bar')
+    assert rv.status_code == 302
+    assert User.query.count() == 2
+    assert User.query.get(2).name == u'barf'
+    assert UserInfo.query.count() == 1
+    assert UserInfo.query.one().key == u'bar'
 
     # Delete
     rv = client.post('/admin/user/delete/?id=2')
-    eq_(rv.status_code, 302)
-    eq_(User.query.count(), 1)
+    assert rv.status_code == 302
+    assert User.query.count() == 1
     rv = client.post('/admin/user/delete/?id=1')
-    eq_(rv.status_code, 302)
-    eq_(User.query.count(), 0)
-    eq_(UserInfo.query.count(), 0)
+    assert rv.status_code == 302
+    assert User.query.count() == 0
+    assert UserInfo.query.count() == 0
 
 
 def test_inline_form_required():
@@ -145,17 +143,17 @@ def test_inline_form_required():
 
     # Create
     rv = client.post('/admin/user/new/', data=dict(name=u'no-email'))
-    eq_(rv.status_code, 200)
-    eq_(User.query.count(), 0)
+    assert rv.status_code == 200
+    assert User.query.count() == 0
 
     data = {
         'name': 'hasEmail',
         'emails-0-email': 'foo@bar.com',
     }
     rv = client.post('/admin/user/new/', data=data)
-    eq_(rv.status_code, 302)
-    eq_(User.query.count(), 1)
-    eq_(UserEmail.query.count(), 1)
+    assert rv.status_code == 302
+    assert User.query.count() == 1
+    assert UserEmail.query.count() == 1
 
 
 def test_inline_form_ajax_fk():
@@ -208,10 +206,10 @@ def test_inline_form_ajax_fk():
     form = view.create_form()
     user_info_form = form.info.unbound_field.args[0]
     loader = user_info_form.tag.args[0]
-    eq_(loader.name, 'userinfo-tag')
-    eq_(loader.model, Tag)
+    assert loader.name == 'userinfo-tag'
+    assert loader.model == Tag
 
-    ok_('userinfo-tag' in view._form_ajax_refs)
+    assert 'userinfo-tag' in view._form_ajax_refs
 
 
 def test_inline_form_self():
@@ -232,7 +230,7 @@ def test_inline_form_self():
     parent = Tree()
     child = Tree(parent=parent)
     form = view.edit_form(child)
-    eq_(form.parent.data, parent)
+    assert form.parent.data == parent
 
 
 def test_inline_form_base_class():
@@ -286,6 +284,6 @@ def test_inline_form_base_class():
         'emails-0-email': '',
     }
     rv = client.post('/admin/user/new/', data=data)
-    eq_(rv.status_code, 200)
-    eq_(User.query.count(), 0)
-    ok_(b'success!' in rv.data, rv.data)
+    assert rv.status_code == 200
+    assert User.query.count() == 0
+    assert b'success!' in rv.data, rv.data

@@ -1,4 +1,4 @@
-from nose.plugins.skip import SkipTest
+from unittest import SkipTest
 from wtforms import __version__ as wtforms_version
 
 if int(wtforms_version[0]) < 2:

@@ -88,12 +88,12 @@ Or alternatively, you can download the repository and install manually by doing:
 
 Tests
 -----
-Test are run with *nose*. If you are not familiar with this package you can get some more info from `their website <https://nose.readthedocs.io/>`_.
+Test are run with *pytest*. If you are not familiar with this package you can get some more info from `their website <https://pytest.org/>`_.
 
 To run the tests, from the project directory, simply::
 
     pip install -r requirements-dev.txt
-    nosetests
+    pytest
 
 You should see output similar to::
 
