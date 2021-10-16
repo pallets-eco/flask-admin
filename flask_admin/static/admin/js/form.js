@@ -492,7 +492,9 @@
                     display: function(value) {
                         // override to display text instead of ids on list view
                         var html = [];
-                        var data = $.fn.editableutils.itemsByValue(value, $el.data('source'), 'id');
+                        // temporary patch to provide bs3 & bs4 compatibility
+                        var data = $.fn.editableutils.itemsByValue(value, $el.data('source'), 'id') +
+                            $.fn.editableutils.itemsByValue(value, $el.data('source'), 'value');
 
                         if(data.length) {
                             $.each(data, function(i, v) { html.push($.fn.editableutils.escape(v.text)); });
