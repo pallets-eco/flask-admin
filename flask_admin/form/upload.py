@@ -4,7 +4,7 @@ import os.path as op
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
-from wtforms import ValidationError, fields
+from wtforms import ValidationError, fields, __version__ as wtforms_version
 from wtforms.widgets import html_params
 
 try:
@@ -186,6 +186,9 @@ class FileUploadField(fields.StringField):
 
         self._should_delete = False
 
+        if int(float(wtforms_version[0])) < 3:
+            kwargs.pop('extra_filters', None)
+
         super(FileUploadField, self).__init__(label, validators, **kwargs)
 
     def is_file_allowed(self, filename):
@@ -216,13 +219,16 @@ class FileUploadField(fields.StringField):
         if not self._allow_overwrite and os.path.exists(self._get_path(self.data.filename)):
             raise ValidationError(gettext('File "%s" already exists.' % self.data.filename))
 
-    def process(self, formdata, data=unset_value):
+    def process(self, formdata, data=unset_value, extra_filters=None):
         if formdata:
             marker = '_%s-delete' % self.name
             if marker in formdata:
                 self._should_delete = True
 
-        return super(FileUploadField, self).process(formdata, data)
+        if int(float(wtforms_version[0])) < 3:
+            return super(FileUploadField, self).process(formdata, data)
+        else:
+            return super(FileUploadField, self).process(formdata, data, extra_filters)  # noqa
 
     def process_formdata(self, valuelist):
         if self._should_delete:

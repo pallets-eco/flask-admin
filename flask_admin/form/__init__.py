@@ -40,7 +40,7 @@ def recreate_field(unbound):
     return unbound.field_class(*unbound.args, **unbound.kwargs)
 
 
-if int(wtforms_version[0]) > 1:
+if int(float(wtforms_version[0])) > 1:
     # only WTForms 2+ has built-in CSRF functionality
     from os import urandom
     from flask import session, current_app
