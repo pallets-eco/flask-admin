@@ -186,7 +186,7 @@ class FileUploadField(fields.StringField):
 
         self._should_delete = False
 
-        if int(float(wtforms_version[0])) < 3:
+        if int(wtforms_version[0]) < 3:
             kwargs.pop('extra_filters', None)
 
         super(FileUploadField, self).__init__(label, validators, **kwargs)
@@ -225,7 +225,7 @@ class FileUploadField(fields.StringField):
             if marker in formdata:
                 self._should_delete = True
 
-        if int(float(wtforms_version[0])) < 3:
+        if int(wtforms_version[0]) < 3:
             return super(FileUploadField, self).process(formdata, data)
         else:
             return super(FileUploadField, self).process(formdata, data, extra_filters)  # noqa
