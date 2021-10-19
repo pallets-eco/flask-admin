@@ -64,7 +64,7 @@ setup(
     extras_require=extras_require,
     install_requires=install_requires,
     tests_require=[
-        'nose>=1.0',
+        'pytest',
         'pillow>=3.3.2',
         'mongoengine',
         'pymongo',
@@ -91,5 +91,5 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
-    test_suite='nose.collector'
+    test_suite='flask_admin.tests'
 )

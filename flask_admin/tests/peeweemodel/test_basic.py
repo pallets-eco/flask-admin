@@ -1,5 +1,4 @@
-from nose.tools import eq_, ok_
-from nose.plugins.skip import SkipTest
+from unittest import SkipTest
 
 # Skip test on PY3
 from flask_admin._compat import PY2, as_unicode
@@ -115,69 +114,69 @@ def test_model():
     view = CustomModelView(Model1)
     admin.add_view(view)
 
-    eq_(view.model, Model1)
-    eq_(view.name, 'Model1')
-    eq_(view.endpoint, 'model1')
+    assert view.model == Model1
+    assert view.name == 'Model1'
+    assert view.endpoint == 'model1'
 
-    eq_(view._primary_key, 'id')
+    assert view._primary_key == 'id'
 
-    ok_('test1' in view._sortable_columns)
-    ok_('test2' in view._sortable_columns)
-    ok_('test3' in view._sortable_columns)
-    ok_('test4' in view._sortable_columns)
+    assert 'test1' in view._sortable_columns
+    assert 'test2' in view._sortable_columns
+    assert 'test3' in view._sortable_columns
+    assert 'test4' in view._sortable_columns
 
-    ok_(view._create_form_class is not None)
-    ok_(view._edit_form_class is not None)
-    eq_(view._search_supported, False)
-    eq_(view._filters, None)
+    assert view._create_form_class is not None
+    assert view._edit_form_class is not None
+    assert not view._search_supported
+    assert view._filters is None
 
     # Verify form
-    eq_(view._create_form_class.test1.field_class, fields.StringField)
-    eq_(view._create_form_class.test2.field_class, fields.StringField)
-    eq_(view._create_form_class.test3.field_class, fields.TextAreaField)
-    eq_(view._create_form_class.test4.field_class, fields.TextAreaField)
+    assert view._create_form_class.test1.field_class == fields.StringField
+    assert view._create_form_class.test2.field_class == fields.StringField
+    assert view._create_form_class.test3.field_class == fields.TextAreaField
+    assert view._create_form_class.test4.field_class == fields.TextAreaField
 
     # Make some test clients
     client = app.test_client()
 
     rv = client.get('/admin/model1/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     rv = client.get('/admin/model1/new/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     rv = client.post('/admin/model1/new/',
                      data=dict(test1='test1large', test2='test2'))
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     model = Model1.select().get()
-    eq_(model.test1, 'test1large')
-    eq_(model.test2, 'test2')
-    ok_(model.test3 is None or model.test3 == '')
-    ok_(model.test4 is None or model.test4 == '')
+    assert model.test1 == 'test1large'
+    assert model.test2 == 'test2'
+    assert model.test3 is None or model.test3 == ''
+    assert model.test4 is None or model.test4 == ''
 
     rv = client.get('/admin/model1/')
-    eq_(rv.status_code, 200)
-    ok_('test1large' in rv.data)
+    assert rv.status_code == 200
+    assert 'test1large' in rv.data
 
     url = '/admin/model1/edit/?id=%s' % model.id
     rv = client.get(url)
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     rv = client.post(url,
                      data=dict(test1='test1small', test2='test2large'))
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     model = Model1.select().get()
-    eq_(model.test1, 'test1small')
-    eq_(model.test2, 'test2large')
-    ok_(model.test3 is None or model.test3 == '')
-    ok_(model.test4 is None or model.test4 == '')
+    assert model.test1 == 'test1small'
+    assert model.test2 == 'test2large'
+    assert model.test3 is None or model.test3 == ''
+    assert model.test4 is None or model.test4 == ''
 
     url = '/admin/model1/delete/?id=%s' % model.id
     rv = client.post(url)
-    eq_(rv.status_code, 302)
-    eq_(Model1.select().count(), 0)
+    assert rv.status_code == 302
+    assert Model1.select().count() == 0
 
 
 def test_column_editable_list():
@@ -198,7 +197,7 @@ def test_column_editable_list():
     # Test in-line edit field rendering
     rv = client.get('/admin/model1/')
     data = rv.data.decode('utf-8')
-    ok_('data-role="x-editable"' in data)
+    assert 'data-role="x-editable"' in data
 
     # Form - Test basic in-line edit functionality
     rv = client.post('/admin/model1/ajax/update/', data={
@@ -206,12 +205,12 @@ def test_column_editable_list():
         'test1': 'change-success-1',
     })
     data = rv.data.decode('utf-8')
-    ok_('Record was successfully saved.' == data)
+    assert 'Record was successfully saved.' == data
 
     # ensure the value has changed
     rv = client.get('/admin/model1/')
     data = rv.data.decode('utf-8')
-    ok_('change-success-1' in data)
+    assert 'change-success-1' in data
 
     # Test validation error
     rv = client.post('/admin/model1/ajax/update/', data={
@@ -220,7 +219,7 @@ def test_column_editable_list():
                   'thantwentycharacterslongerthantwentycharacters'),
     })
     data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 500)
+    assert rv.status_code == 500
 
     # Test invalid primary key
     rv = client.post('/admin/model1/ajax/update/', data={
@@ -228,7 +227,7 @@ def test_column_editable_list():
         'test1': 'problematic-input',
     })
     data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 500)
+    assert rv.status_code == 500
 
     # Test editing column not in column_editable_list
     rv = client.post('/admin/model1/ajax/update/', data={
@@ -236,7 +235,7 @@ def test_column_editable_list():
         'test2': 'problematic-input',
     })
     data = rv.data.decode('utf-8')
-    ok_('problematic-input' not in data)
+    assert 'problematic-input' not in data
 
     # Test in-line editing for relations
     view = CustomModelView(Model2, column_editable_list=['model1'])
@@ -247,12 +246,12 @@ def test_column_editable_list():
         'model1': '3',
     })
     data = rv.data.decode('utf-8')
-    ok_('Record was successfully saved.' == data)
+    assert 'Record was successfully saved.' == data
 
     # confirm the value has changed
     rv = client.get('/admin/model2/')
     data = rv.data.decode('utf-8')
-    ok_('test1_val_3' in data)
+    assert 'test1_val_3' in data
 
 
 def test_details_view():
@@ -280,32 +279,32 @@ def test_details_view():
     # ensure link to details is hidden when can_view_details is disabled
     rv = client.get('/admin/model1/')
     data = rv.data.decode('utf-8')
-    ok_('/admin/model1/details/' not in data)
+    assert '/admin/model1/details/' not in data
 
     # ensure link to details view appears
     rv = client.get('/admin/model2/')
     data = rv.data.decode('utf-8')
-    ok_('/admin/model2/details/' in data)
+    assert '/admin/model2/details/' in data
 
     # test redirection when details are disabled
     rv = client.get('/admin/model1/details/?url=%2Fadmin%2Fmodel1%2F&id=3')
-    eq_(rv.status_code, 302)
+    assert rv.status_code == 302
 
     # test if correct data appears in details view when enabled
     rv = client.get('/admin/model2/details/?url=%2Fadmin%2Fmodel2%2F&id=3')
     data = rv.data.decode('utf-8')
-    ok_('Char Field' in data)
-    ok_('char_field_val_3' in data)
-    ok_('Int Field' in data)
-    ok_('5000' in data)
+    assert 'Char Field' in data
+    assert 'char_field_val_3' in data
+    assert 'Int Field' in data
+    assert '5000' in data
 
     # test column_details_list
     rv = client.get('/admin/cf_view/details/?url=%2Fadmin%2Fcf_view%2F&id=3')
     data = rv.data.decode('utf-8')
-    ok_('Char Field' in data)
-    ok_('char_field_val_3' in data)
-    ok_('Int Field' not in data)
-    ok_('5000' not in data)
+    assert 'Char Field' in data
+    assert 'char_field_val_3' in data
+    assert 'Int Field' not in data
+    assert '5000' not in data
 
 
 def test_column_filters():
@@ -319,10 +318,10 @@ def test_column_filters():
     view = CustomModelView(Model1, column_filters=['test1'])
     admin.add_view(view)
 
-    eq_(len(view._filters), 7)
+    assert len(view._filters) == 7
 
-    eq_(
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Test1']],
+    assert \
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Test1']] == \
         [
             (0, 'contains'),
             (1, 'not contains'),
@@ -332,79 +331,78 @@ def test_column_filters():
             (5, 'in list'),
             (6, 'not in list'),
         ]
-    )
 
     # Make some test clients
     client = app.test_client()
 
     # string - equals
     rv = client.get('/admin/model1/?flt0_0=test1_val_1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test2_val_1' in data)
-    ok_('test1_val_2' not in data)
+    assert 'test2_val_1' in data
+    assert 'test1_val_2' not in data
 
     # string - not equal
     rv = client.get('/admin/model1/?flt0_1=test1_val_1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test2_val_1' not in data)
-    ok_('test1_val_2' in data)
+    assert 'test2_val_1' not in data
+    assert 'test1_val_2' in data
 
     # string - contains
     rv = client.get('/admin/model1/?flt0_2=test1_val_1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test2_val_1' in data)
-    ok_('test1_val_2' not in data)
+    assert 'test2_val_1' in data
+    assert 'test1_val_2' not in data
 
     # string - not contains
     rv = client.get('/admin/model1/?flt0_3=test1_val_1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test2_val_1' not in data)
-    ok_('test1_val_2' in data)
+    assert 'test2_val_1' not in data
+    assert 'test1_val_2' in data
 
     # string - empty
     rv = client.get('/admin/model1/?flt0_4=1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('empty_obj' in data)
-    ok_('test1_val_1' not in data)
-    ok_('test1_val_2' not in data)
+    assert 'empty_obj' in data
+    assert 'test1_val_1' not in data
+    assert 'test1_val_2' not in data
 
     # string - not empty
     rv = client.get('/admin/model1/?flt0_4=0')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('empty_obj' not in data)
-    ok_('test1_val_1' in data)
-    ok_('test1_val_2' in data)
+    assert 'empty_obj' not in data
+    assert 'test1_val_1' in data
+    assert 'test1_val_2' in data
 
     # string - in list
     rv = client.get('/admin/model1/?flt0_5=test1_val_1%2Ctest1_val_2')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test2_val_1' in data)
-    ok_('test2_val_2' in data)
-    ok_('test1_val_3' not in data)
-    ok_('test1_val_4' not in data)
+    assert 'test2_val_1' in data
+    assert 'test2_val_2' in data
+    assert 'test1_val_3' not in data
+    assert 'test1_val_4' not in data
 
     # string - not in list
     rv = client.get('/admin/model1/?flt0_6=test1_val_1%2Ctest1_val_2')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test2_val_1' not in data)
-    ok_('test2_val_2' not in data)
-    ok_('test1_val_3' in data)
-    ok_('test1_val_4' in data)
+    assert 'test2_val_1' not in data
+    assert 'test2_val_2' not in data
+    assert 'test1_val_3' in data
+    assert 'test1_val_4' in data
 
     # Test int filter
     view = CustomModelView(Model2, column_filters=['int_field'])
     admin.add_view(view)
 
-    eq_(
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Int Field']],
+    assert \
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Int Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -414,150 +412,148 @@ def test_column_filters():
             (5, 'in list'),
             (6, 'not in list'),
         ]
-    )
 
     # integer - equals
     rv = client.get('/admin/model2/?flt0_0=5000')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_3' in data)
-    ok_('char_field_val_4' not in data)
+    assert 'char_field_val_3' in data
+    assert 'char_field_val_4' not in data
 
     # integer - equals (huge number)
     rv = client.get('/admin/model2/?flt0_0=6169453081680413441')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_5' in data)
-    ok_('char_field_val_4' not in data)
+    assert 'char_field_val_5' in data
+    assert 'char_field_val_4' not in data
 
     # integer - equals - test validation
     rv = client.get('/admin/model2/?flt0_0=badval')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('Invalid Filter Value' in data)
+    assert 'Invalid Filter Value' in data
 
     # integer - not equal
     rv = client.get('/admin/model2/?flt0_1=5000')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_3' not in data)
-    ok_('char_field_val_4' in data)
+    assert 'char_field_val_3' not in data
+    assert 'char_field_val_4' in data
 
     # integer - greater
     rv = client.get('/admin/model2/?flt0_2=6000')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_3' not in data)
-    ok_('char_field_val_4' in data)
+    assert 'char_field_val_3' not in data
+    assert 'char_field_val_4' in data
 
     # integer - smaller
     rv = client.get('/admin/model2/?flt0_3=6000')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_3' in data)
-    ok_('char_field_val_4' not in data)
+    assert 'char_field_val_3' in data
+    assert 'char_field_val_4' not in data
 
     # integer - empty
     rv = client.get('/admin/model2/?flt0_4=1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_1' in data)
-    ok_('char_field_val_2' in data)
-    ok_('char_field_val_3' not in data)
-    ok_('char_field_val_4' not in data)
+    assert 'char_field_val_1' in data
+    assert 'char_field_val_2' in data
+    assert 'char_field_val_3' not in data
+    assert 'char_field_val_4' not in data
 
     # integer - not empty
     rv = client.get('/admin/model2/?flt0_4=0')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_1' not in data)
-    ok_('char_field_val_2' not in data)
-    ok_('char_field_val_3' in data)
-    ok_('char_field_val_4' in data)
+    assert 'char_field_val_1' not in data
+    assert 'char_field_val_2' not in data
+    assert 'char_field_val_3' in data
+    assert 'char_field_val_4' in data
 
     # integer - in list
     rv = client.get('/admin/model2/?flt0_5=5000%2C9000')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_1' not in data)
-    ok_('char_field_val_2' not in data)
-    ok_('char_field_val_3' in data)
-    ok_('char_field_val_4' in data)
+    assert 'char_field_val_1' not in data
+    assert 'char_field_val_2' not in data
+    assert 'char_field_val_3' in data
+    assert 'char_field_val_4' in data
 
     # integer - in list (huge number)
     rv = client.get('/admin/model2/?flt0_5=6169453081680413441')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_1' not in data)
-    ok_('char_field_val_5' in data)
+    assert 'char_field_val_1' not in data
+    assert 'char_field_val_5' in data
 
     # integer - in list - test validation
     rv = client.get('/admin/model2/?flt0_5=5000%2Cbadval')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('Invalid Filter Value' in data)
+    assert 'Invalid Filter Value' in data
 
     # integer - not in list
     rv = client.get('/admin/model2/?flt0_6=5000%2C9000')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_1' in data)
-    ok_('char_field_val_2' in data)
-    ok_('char_field_val_3' not in data)
-    ok_('char_field_val_4' not in data)
+    assert 'char_field_val_1' in data
+    assert 'char_field_val_2' in data
+    assert 'char_field_val_3' not in data
+    assert 'char_field_val_4' not in data
 
     # Test boolean filter
     view = CustomModelView(Model2, column_filters=['bool_field'],
                            endpoint="_bools")
     admin.add_view(view)
 
-    eq_(
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Bool Field']],
+    assert \
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Bool Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
         ]
-    )
 
     # boolean - equals - Yes
     rv = client.get('/admin/_bools/?flt0_0=1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_1' in data)
-    ok_('char_field_val_2' not in data)
-    ok_('char_field_val_3' not in data)
+    assert 'char_field_val_1' in data
+    assert 'char_field_val_2' not in data
+    assert 'char_field_val_3' not in data
 
     # boolean - equals - No
     rv = client.get('/admin/_bools/?flt0_0=0')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_1' not in data)
-    ok_('char_field_val_2' in data)
-    ok_('char_field_val_3' in data)
+    assert 'char_field_val_1' not in data
+    assert 'char_field_val_2' in data
+    assert 'char_field_val_3' in data
 
     # boolean - not equals - Yes
     rv = client.get('/admin/_bools/?flt0_1=1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_1' not in data)
-    ok_('char_field_val_2' in data)
-    ok_('char_field_val_3' in data)
+    assert 'char_field_val_1' not in data
+    assert 'char_field_val_2' in data
+    assert 'char_field_val_3' in data
 
     # boolean - not equals - No
     rv = client.get('/admin/_bools/?flt0_1=0')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_1' in data)
-    ok_('char_field_val_2' not in data)
-    ok_('char_field_val_3' not in data)
+    assert 'char_field_val_1' in data
+    assert 'char_field_val_2' not in data
+    assert 'char_field_val_3' not in data
 
     # Test float filter
     view = CustomModelView(Model2, column_filters=['float_field'],
                            endpoint="_float")
     admin.add_view(view)
 
-    eq_(
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Float Field']],
+    assert \
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Float Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -567,83 +563,82 @@ def test_column_filters():
             (5, 'in list'),
             (6, 'not in list'),
         ]
-    )
 
     # float - equals
     rv = client.get('/admin/_float/?flt0_0=25.9')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_3' in data)
-    ok_('char_field_val_4' not in data)
+    assert 'char_field_val_3' in data
+    assert 'char_field_val_4' not in data
 
     # float - equals - test validation
     rv = client.get('/admin/_float/?flt0_0=badval')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('Invalid Filter Value' in data)
+    assert 'Invalid Filter Value' in data
 
     # float - not equal
     rv = client.get('/admin/_float/?flt0_1=25.9')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_3' not in data)
-    ok_('char_field_val_4' in data)
+    assert 'char_field_val_3' not in data
+    assert 'char_field_val_4' in data
 
     # float - greater
     rv = client.get('/admin/_float/?flt0_2=60.5')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_3' not in data)
-    ok_('char_field_val_4' in data)
+    assert 'char_field_val_3' not in data
+    assert 'char_field_val_4' in data
 
     # float - smaller
     rv = client.get('/admin/_float/?flt0_3=60.5')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_3' in data)
-    ok_('char_field_val_4' not in data)
+    assert 'char_field_val_3' in data
+    assert 'char_field_val_4' not in data
 
     # float - empty
     rv = client.get('/admin/_float/?flt0_4=1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_1' in data)
-    ok_('char_field_val_2' in data)
-    ok_('char_field_val_3' not in data)
-    ok_('char_field_val_4' not in data)
+    assert 'char_field_val_1' in data
+    assert 'char_field_val_2' in data
+    assert 'char_field_val_3' not in data
+    assert 'char_field_val_4' not in data
 
     # float - not empty
     rv = client.get('/admin/_float/?flt0_4=0')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_1' not in data)
-    ok_('char_field_val_2' not in data)
-    ok_('char_field_val_3' in data)
-    ok_('char_field_val_4' in data)
+    assert 'char_field_val_1' not in data
+    assert 'char_field_val_2' not in data
+    assert 'char_field_val_3' in data
+    assert 'char_field_val_4' in data
 
     # float - in list
     rv = client.get('/admin/_float/?flt0_5=25.9%2C75.5')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_1' not in data)
-    ok_('char_field_val_2' not in data)
-    ok_('char_field_val_3' in data)
-    ok_('char_field_val_4' in data)
+    assert 'char_field_val_1' not in data
+    assert 'char_field_val_2' not in data
+    assert 'char_field_val_3' in data
+    assert 'char_field_val_4' in data
 
     # float - in list - test validation
     rv = client.get('/admin/_float/?flt0_5=25.9%2Cbadval')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('Invalid Filter Value' in data)
+    assert 'Invalid Filter Value' in data
 
     # float - not in list
     rv = client.get('/admin/_float/?flt0_6=25.9%2C75.5')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('char_field_val_1' in data)
-    ok_('char_field_val_2' in data)
-    ok_('char_field_val_3' not in data)
-    ok_('char_field_val_4' not in data)
+    assert 'char_field_val_1' in data
+    assert 'char_field_val_2' in data
+    assert 'char_field_val_3' not in data
+    assert 'char_field_val_4' not in data
 
     # Test date, time, and datetime filters
     view = CustomModelView(Model1,
@@ -651,8 +646,8 @@ def test_column_filters():
                            endpoint="_datetime")
     admin.add_view(view)
 
-    eq_(
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Date Field']],
+    assert \
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Date Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -662,10 +657,9 @@ def test_column_filters():
             (5, 'not between'),
             (6, 'empty'),
         ]
-    )
 
-    eq_(
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Datetime Field']],
+    assert \
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Datetime Field']] == \
         [
             (7, 'equals'),
             (8, 'not equal'),
@@ -675,10 +669,9 @@ def test_column_filters():
             (12, 'not between'),
             (13, 'empty'),
         ]
-    )
 
-    eq_(
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Timeonly Field']],
+    assert \
+        [(f['index'], f['operation']) for f in view._filter_groups[u'Timeonly Field']] == \
         [
             (14, 'equals'),
             (15, 'not equal'),
@@ -688,181 +681,180 @@ def test_column_filters():
             (19, 'not between'),
             (20, 'empty'),
         ]
-    )
 
     # date - equals
     rv = client.get('/admin/_datetime/?flt0_0=2014-11-17')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('date_obj1' in data)
-    ok_('date_obj2' not in data)
+    assert 'date_obj1' in data
+    assert 'date_obj2' not in data
 
     # date - not equal
     rv = client.get('/admin/_datetime/?flt0_1=2014-11-17')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('date_obj1' not in data)
-    ok_('date_obj2' in data)
+    assert 'date_obj1' not in data
+    assert 'date_obj2' in data
 
     # date - greater
     rv = client.get('/admin/_datetime/?flt0_2=2014-11-16')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('date_obj1' in data)
-    ok_('date_obj2' not in data)
+    assert 'date_obj1' in data
+    assert 'date_obj2' not in data
 
     # date - smaller
     rv = client.get('/admin/_datetime/?flt0_3=2014-11-16')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('date_obj1' not in data)
-    ok_('date_obj2' in data)
+    assert 'date_obj1' not in data
+    assert 'date_obj2' in data
 
     # date - between
     rv = client.get('/admin/_datetime/?flt0_4=2014-11-13+to+2014-11-20')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('date_obj1' in data)
-    ok_('date_obj2' not in data)
+    assert 'date_obj1' in data
+    assert 'date_obj2' not in data
 
     # date - not between
     rv = client.get('/admin/_datetime/?flt0_5=2014-11-13+to+2014-11-20')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('date_obj1' not in data)
-    ok_('date_obj2' in data)
+    assert 'date_obj1' not in data
+    assert 'date_obj2' in data
 
     # date - empty
     rv = client.get('/admin/_datetime/?flt0_6=1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test1_val_1' in data)
-    ok_('date_obj1' not in data)
-    ok_('date_obj2' not in data)
+    assert 'test1_val_1' in data
+    assert 'date_obj1' not in data
+    assert 'date_obj2' not in data
 
     # date - empty
     rv = client.get('/admin/_datetime/?flt0_6=0')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test1_val_1' not in data)
-    ok_('date_obj1' in data)
-    ok_('date_obj2' in data)
+    assert 'test1_val_1' not in data
+    assert 'date_obj1' in data
+    assert 'date_obj2' in data
 
     # datetime - equals
     rv = client.get('/admin/_datetime/?flt0_7=2014-04-03+01%3A09%3A00')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('datetime_obj1' in data)
-    ok_('datetime_obj2' not in data)
+    assert 'datetime_obj1' in data
+    assert 'datetime_obj2' not in data
 
     # datetime - not equal
     rv = client.get('/admin/_datetime/?flt0_8=2014-04-03+01%3A09%3A00')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('datetime_obj1' not in data)
-    ok_('datetime_obj2' in data)
+    assert 'datetime_obj1' not in data
+    assert 'datetime_obj2' in data
 
     # datetime - greater
     rv = client.get('/admin/_datetime/?flt0_9=2014-04-03+01%3A08%3A00')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('datetime_obj1' in data)
-    ok_('datetime_obj2' not in data)
+    assert 'datetime_obj1' in data
+    assert 'datetime_obj2' not in data
 
     # datetime - smaller
     rv = client.get('/admin/_datetime/?flt0_10=2014-04-03+01%3A08%3A00')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('datetime_obj1' not in data)
-    ok_('datetime_obj2' in data)
+    assert 'datetime_obj1' not in data
+    assert 'datetime_obj2' in data
 
     # datetime - between
     rv = client.get('/admin/_datetime/?flt0_11=2014-04-02+00%3A00%3A00+to+2014-11-20+23%3A59%3A59')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('datetime_obj1' in data)
-    ok_('datetime_obj2' not in data)
+    assert 'datetime_obj1' in data
+    assert 'datetime_obj2' not in data
 
     # datetime - not between
     rv = client.get('/admin/_datetime/?flt0_12=2014-04-02+00%3A00%3A00+to+2014-11-20+23%3A59%3A59')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('datetime_obj1' not in data)
-    ok_('datetime_obj2' in data)
+    assert 'datetime_obj1' not in data
+    assert 'datetime_obj2' in data
 
     # datetime - empty
     rv = client.get('/admin/_datetime/?flt0_13=1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test1_val_1' in data)
-    ok_('datetime_obj1' not in data)
-    ok_('datetime_obj2' not in data)
+    assert 'test1_val_1' in data
+    assert 'datetime_obj1' not in data
+    assert 'datetime_obj2' not in data
 
     # datetime - not empty
     rv = client.get('/admin/_datetime/?flt0_13=0')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test1_val_1' not in data)
-    ok_('datetime_obj1' in data)
-    ok_('datetime_obj2' in data)
+    assert 'test1_val_1' not in data
+    assert 'datetime_obj1' in data
+    assert 'datetime_obj2' in data
 
     # time - equals
     rv = client.get('/admin/_datetime/?flt0_14=11%3A10%3A09')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('timeonly_obj1' in data)
-    ok_('timeonly_obj2' not in data)
+    assert 'timeonly_obj1' in data
+    assert 'timeonly_obj2' not in data
 
     # time - not equal
     rv = client.get('/admin/_datetime/?flt0_15=11%3A10%3A09')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('timeonly_obj1' not in data)
-    ok_('timeonly_obj2' in data)
+    assert 'timeonly_obj1' not in data
+    assert 'timeonly_obj2' in data
 
     # time - greater
     rv = client.get('/admin/_datetime/?flt0_16=11%3A09%3A09')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('timeonly_obj1' in data)
-    ok_('timeonly_obj2' not in data)
+    assert 'timeonly_obj1' in data
+    assert 'timeonly_obj2' not in data
 
     # time - smaller
     rv = client.get('/admin/_datetime/?flt0_17=11%3A09%3A09')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('timeonly_obj1' not in data)
-    ok_('timeonly_obj2' in data)
+    assert 'timeonly_obj1' not in data
+    assert 'timeonly_obj2' in data
 
     # time - between
     rv = client.get('/admin/_datetime/?flt0_18=10%3A40%3A00+to+11%3A50%3A59')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('timeonly_obj1' in data)
-    ok_('timeonly_obj2' not in data)
+    assert 'timeonly_obj1' in data
+    assert 'timeonly_obj2' not in data
 
     # time - not between
     rv = client.get('/admin/_datetime/?flt0_19=10%3A40%3A00+to+11%3A50%3A59')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('timeonly_obj1' not in data)
-    ok_('timeonly_obj2' in data)
+    assert 'timeonly_obj1' not in data
+    assert 'timeonly_obj2' in data
 
     # time - empty
     rv = client.get('/admin/_datetime/?flt0_20=1')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test1_val_1' in data)
-    ok_('timeonly_obj1' not in data)
-    ok_('timeonly_obj2' not in data)
+    assert 'test1_val_1' in data
+    assert 'timeonly_obj1' not in data
+    assert 'timeonly_obj2' not in data
 
     # time - not empty
     rv = client.get('/admin/_datetime/?flt0_20=0')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
     data = rv.data.decode('utf-8')
-    ok_('test1_val_1' not in data)
-    ok_('timeonly_obj1' in data)
-    ok_('timeonly_obj2' in data)
+    assert 'test1_val_1' not in data
+    assert 'timeonly_obj1' in data
+    assert 'timeonly_obj2' in data
 
 
 def test_default_sort():
@@ -873,16 +865,16 @@ def test_default_sort():
     M1('b', 1).save()
     M1('a', 2).save()
 
-    eq_(M1.select().count(), 3)
+    assert M1.select().count() == 3
 
     view = CustomModelView(M1, column_default_sort='test1')
     admin.add_view(view)
 
     _, data = view.get_list(0, None, None, None, None)
 
-    eq_(data[0].test1, 'a')
-    eq_(data[1].test1, 'b')
-    eq_(data[2].test1, 'c')
+    assert data[0].test1 == 'a'
+    assert data[1].test1 == 'b'
+    assert data[2].test1 == 'c'
 
     # test default sort with multiple columns
     order = [('test2', False), ('test1', False)]
@@ -891,10 +883,10 @@ def test_default_sort():
 
     _, data = view2.get_list(0, None, None, None, None)
 
-    eq_(len(data), 3)
-    eq_(data[0].test1, 'b')
-    eq_(data[1].test1, 'c')
-    eq_(data[2].test1, 'a')
+    assert len(data) == 3
+    assert data[0].test1 == 'b'
+    assert data[1].test1 == 'c'
+    assert data[2].test1 == 'a'
 
 
 def test_extra_fields():
@@ -913,14 +905,14 @@ def test_extra_fields():
     client = app.test_client()
 
     rv = client.get('/admin/model1/new/')
-    eq_(rv.status_code, 200)
+    assert rv.status_code == 200
 
     # Check presence and order
     data = rv.data.decode('utf-8')
-    ok_('Extra Field' in data)
+    assert 'Extra Field' in data
     pos1 = data.find('Extra Field')
     pos2 = data.find('Test1')
-    ok_(pos2 < pos1)
+    assert pos2 < pos1
 
 
 def test_custom_form_base():
@@ -937,10 +929,10 @@ def test_custom_form_base():
     )
     admin.add_view(view)
 
-    ok_(hasattr(view._create_form_class, 'test1'))
+    assert hasattr(view._create_form_class, 'test1')
 
     create_form = view.create_form()
-    ok_(isinstance(create_form, TestForm))
+    assert isinstance(create_form, TestForm)
 
 
 def test_form_args():
@@ -963,10 +955,10 @@ def test_form_args():
     # ensure shared field_args don't create duplicate validators
     create_form = view.create_form()
 
-    eq_(len(create_form.test.validators), 2)
+    assert len(create_form.test.validators) == 2
 
     edit_form = view.edit_form()
-    eq_(len(edit_form.test.validators), 2)
+    assert len(edit_form.test.validators) == 2
 
 
 def test_ajax_fk():
@@ -1000,7 +992,7 @@ def test_ajax_fk():
     )
     admin.add_view(view)
 
-    ok_(u'model1' in view._form_ajax_refs)
+    assert u'model1' in view._form_ajax_refs
 
     model = Model1(test1=u'first', test2=u'')
     model.save()
@@ -1010,42 +1002,42 @@ def test_ajax_fk():
     # Check loader
     loader = view._form_ajax_refs[u'model1']
     mdl = loader.get_one(model.id)
-    eq_(mdl.test1, model.test1)
+    assert mdl.test1 == model.test1
 
     items = loader.get_list(u'fir')
-    eq_(len(items), 1)
-    eq_(items[0].id, model.id)
+    assert len(items) == 1
+    assert items[0].id == model.id
 
     items = loader.get_list(u'bar')
-    eq_(len(items), 1)
-    eq_(items[0].test1, u'foo')
+    assert len(items) == 1
+    assert items[0].test1 == u'foo'
 
     # Check form generation
     form = view.create_form()
-    eq_(form.model1.__class__.__name__, u'AjaxSelectField')
+    assert form.model1.__class__.__name__ == u'AjaxSelectField'
 
     with app.test_request_context('/admin/view/'):
-        ok_(u'value=""' not in form.model1())
+        assert u'value=""' not in form.model1()
 
         form.model1.data = model
-        ok_(u'data-json="[%s, &quot;first&quot;]"' % as_unicode(model.id) in form.model1() or
-            u'data-json="[%s, &#34;first&#34;]"' % as_unicode(model.id))
-        ok_(u'value="%s"' % as_unicode(model.id) in form.model1())
+        assert (u'data-json="[%s, &quot;first&quot;]"' % as_unicode(model.id) in form.model1() or
+                u'data-json="[%s, &#34;first&#34;]"' % as_unicode(model.id))
+        assert u'value="%s"' % as_unicode(model.id) in form.model1()
 
     # Check querying
     client = app.test_client()
 
     req = client.get(u'/admin/view/ajax/lookup/?name=model1&query=foo')
-    eq_(req.data, u'[[%s, "foo"]]' % model2.id)
+    assert req.data == u'[[%s, "foo"]]' % model2.id
 
     # Check submitting
     client.post('/admin/view/new/', data={u'model1': as_unicode(model.id)})
     mdl = Model2.select().first()
 
-    ok_(mdl is not None)
-    ok_(mdl.model1 is not None)
-    eq_(mdl.model1.id, model.id)
-    eq_(mdl.model1.test1, u'first')
+    assert mdl is not None
+    assert mdl.model1 is not None
+    assert mdl.model1.id == model.id
+    assert mdl.model1.test1 == u'first'
 
 
 def test_export_csv():
@@ -1066,10 +1058,10 @@ def test_export_csv():
     # test export_max_rows
     rv = client.get('/admin/row_limit_2/export/csv/')
     data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 200)
-    ok_("Test1,Test2\r\n"
-        "test1_val_1,test2_val_1\r\n"
-        "test1_val_2,test2_val_2\r\n" == data)
+    assert rv.status_code == 200
+    assert "Test1,Test2\r\n" + \
+        "test1_val_1,test2_val_1\r\n" + \
+        "test1_val_2,test2_val_2\r\n" == data
 
     view = CustomModelView(Model1, can_export=True,
                            column_list=['test1', 'test2'],
@@ -1079,5 +1071,5 @@ def test_export_csv():
     # test row limit without export_max_rows
     rv = client.get('/admin/no_row_limit/export/csv/')
     data = rv.data.decode('utf-8')
-    eq_(rv.status_code, 200)
-    ok_(len(data.splitlines()) > 21)
+    assert rv.status_code == 200
+    assert len(data.splitlines()) > 21

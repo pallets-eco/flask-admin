@@ -1466,7 +1466,7 @@ class BaseModelView(BaseView, ActionsMixin):
             :param name:
                 Column name.
         """
-        return name in self.column_editable_list
+        return name in self.column_editable_list and self.can_edit
 
     def _get_column_by_idx(self, idx):
         """

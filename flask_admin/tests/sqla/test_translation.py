@@ -1,6 +1,5 @@
 from flask_admin.babel import lazy_gettext
 from flask_babelex import Babel
-from nose.tools import eq_, ok_
 
 from . import setup
 from .test_basic import CustomModelView, create_models
@@ -25,5 +24,5 @@ def test_column_label_translation():
     client = app.test_client()
 
     rv = client.get('/admin/model1/?flt1_0=test')
-    eq_(rv.status_code, 200)
-    ok_('{"Nombre":' in rv.data.decode('utf-8'))
+    assert rv.status_code == 200
+    assert '{"Nombre":' in rv.data.decode('utf-8')
