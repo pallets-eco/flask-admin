@@ -187,11 +187,11 @@ class JSONField(fields.TextAreaField):
     def _value(self):
         if self.raw_data:
             return self.raw_data[0]
-        elif self.data is not None:
+        elif self.data:
             # prevent utf8 characters from being converted to ascii
             return as_unicode(json.dumps(self.data, ensure_ascii=False))
         else:
-            return ''
+            return '{}'
 
     def process_formdata(self, valuelist):
         if valuelist:
