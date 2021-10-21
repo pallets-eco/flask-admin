@@ -191,7 +191,7 @@ class JSONField(fields.TextAreaField):
             # prevent utf8 characters from being converted to ascii
             return as_unicode(json.dumps(self.data, ensure_ascii=False))
         else:
-            return ''
+            return '{}'
 
     def process_formdata(self, valuelist):
         if valuelist:
