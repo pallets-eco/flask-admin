@@ -78,11 +78,6 @@ class XEditableWidget(object):
     def __call__(self, field, **kwargs):
         display_value = kwargs.pop('display_value', '')
         kwargs.setdefault('data-value', display_value)
-
-        lazy_load = field.type in ('AjaxSelectField', 'AjaxSelectMultipleField')
-        if lazy_load:
-            kwargs.setdefault('data-url-lookup', get_url('.ajax_lookup', name=field.loader.name))
-
         kwargs.setdefault('data-role', 'x-editable')
         kwargs.setdefault('data-url', './ajax/update/')
 
@@ -90,7 +85,8 @@ class XEditableWidget(object):
         kwargs.setdefault('name', field.name)
         kwargs.setdefault('href', '#')
 
-        if lazy_load:
+        if field.type in ('AjaxSelectField', 'AjaxSelectMultipleField'):
+            kwargs.setdefault('data-url-lookup', get_url('.ajax_lookup', name=field.loader.name))
             kwargs.setdefault('type', 'hidden')
             kwargs.setdefault(
                 'data-placeholder',
