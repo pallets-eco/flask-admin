@@ -2000,7 +2000,7 @@ class BaseModelView(BaseView, ActionsMixin):
             if not s:
                 s = self.page_size
 
-            return self._get_list_url(view_args.clone(page_size=s))
+            return self._get_list_url(view_args.clone(page=False, page_size=s))
 
         # Actions
         actions, actions_confirmation = self.get_actions_list()
