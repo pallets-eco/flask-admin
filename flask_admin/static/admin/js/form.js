@@ -462,6 +462,10 @@
                         minuteStep: 1,
                         maxYear: 2030,
                     },
+                    ajaxOptions: {
+                        // prevents keys with the same value from getting converted into arrays
+                        traditional: $el.attr("data-multiple") == "1"
+                    },
                     select2: {
                         minimumInputLength: $el.attr("data-minimum-input-length"),
                         placeholder: "data-placeholder",
