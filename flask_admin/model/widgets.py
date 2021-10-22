@@ -79,12 +79,48 @@ class XEditableWidget(object):
         display_value = kwargs.pop('display_value', '')
         kwargs.setdefault('data-value', display_value)
 
+        lazy_load = field.type in ('AjaxSelectField', 'AjaxSelectMultipleField')
+        if lazy_load:
+            kwargs.setdefault('data-url-lookup', get_url('.ajax_lookup', name=field.loader.name))
+
         kwargs.setdefault('data-role', 'x-editable')
         kwargs.setdefault('data-url', './ajax/update/')
 
         kwargs.setdefault('id', field.id)
         kwargs.setdefault('name', field.name)
         kwargs.setdefault('href', '#')
+
+        if lazy_load:
+            kwargs.setdefault('type', 'hidden')
+            kwargs.setdefault(
+                'data-placeholder',
+                field.loader.options.get('placeholder', gettext('Search'))
+            )
+            kwargs.setdefault(
+                'data-minimum-input-length',
+                int(field.loader.options.get('minimum_input_length', 0))
+            )
+
+            if field.type == 'AjaxSelectMultipleField':
+                result = []
+                ids = []
+
+                for value in field.data:
+                    data = field.loader.format(value)
+                    result.append(data)
+                    ids.append(as_unicode(data[0]))
+
+                separator = getattr(field, 'separator', ',')
+
+                kwargs['value'] = separator.join(ids)
+                kwargs['data-json'] = json.dumps(result)
+                kwargs['data-multiple'] = u'1'
+            else:
+                data = field.loader.format(field.data)
+
+                if data:
+                    kwargs['value'] = data[0]
+                    kwargs['data-json'] = json.dumps(data)
 
         if not kwargs.get('pk'):
             raise Exception('pk required')
@@ -148,6 +184,8 @@ class XEditableWidget(object):
         elif field.type in ['FloatField', 'DecimalField']:
             kwargs['data-type'] = 'number'
             kwargs['data-step'] = 'any'
+        elif field.type in ['AjaxSelectField', 'AjaxSelectMultipleField']:
+            kwargs['data-type'] = 'select2'
         elif field.type in ['QuerySelectField', 'ModelSelectField',
                             'QuerySelectMultipleField', 'KeyPropertyField']:
             # QuerySelectField and ModelSelectField are for relations

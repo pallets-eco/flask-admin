@@ -461,6 +461,36 @@
                         // prevent minutes from showing in 5 minute increments
                         minuteStep: 1,
                         maxYear: 2030,
+                    },
+                    select2: {
+                        minimumInputLength: $el.attr("data-minimum-input-length"),
+                        placeholder: "data-placeholder",
+                        allowClear: $el.attr("data-allow-blank") == "1",
+                        multiple: $el.attr("data-multiple") == "1",
+                        ajax: {
+                            // Special data-url just for the GET request
+                            url: $el.attr("data-url-lookup"),
+                            data: function (term, page) {
+                                return {
+                                    query: term,
+                                    offset: (page - 1) * 10,
+                                    limit: 10,
+                                };
+                            },
+                            results: function (data, page) {
+                                var results = [];
+
+                                for (var k in data) {
+                                    var v = data[k];
+                                    results.push({ id: v[0], text: v[1] });
+                                }
+
+                                return {
+                                    results: results,
+                                    more: results.length == 10,
+                                };
+                            },
+                        },
                     }
                 });
                 return true;
