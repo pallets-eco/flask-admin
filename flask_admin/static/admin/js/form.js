@@ -471,6 +471,7 @@
                         placeholder: "data-placeholder",
                         allowClear: $el.attr("data-allow-blank") == "1",
                         multiple: $el.attr("data-multiple") == "1",
+                        closeOnSelect: $el.attr("data-multiple") != "1",
                         ajax: {
                             // Special data-url just for the GET request
                             url: $el.attr("data-url-lookup"),
@@ -495,6 +496,27 @@
                                 };
                             },
                         },
+                        initSelection: function(_, callback) {
+                            var value = jQuery.parseJSON($el.attr('data-json'));
+                            var result = null;
+
+                            if (value) {
+                                if ($el.attr("data-multiple") == "1") {
+                                    result = [];
+
+                                    for (var k in value) {
+                                        var v = value[k];
+                                        result.push({id: v[0], text: v[1]});
+                                    }
+
+                                    callback(result);
+                                } else {
+                                    result = {id: value[0], text: value[1]};
+                                }
+                            }
+
+                            callback(result);
+                        }
                     }
                 });
                 return true;
