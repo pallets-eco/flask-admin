@@ -467,8 +467,9 @@
                         traditional: $el.attr("data-multiple") == "1"
                     },
                     select2: {
-                        minimumInputLength: $el.attr("data-minimum-input-length"),
+                        dropdownAutoWidth: true,
                         placeholder: "data-placeholder",
+                        minimumInputLength: $el.attr("data-minimum-input-length"),
                         allowClear: $el.attr("data-allow-blank") == "1",
                         multiple: $el.attr("data-multiple") == "1",
                         closeOnSelect: $el.attr("data-multiple") != "1",
