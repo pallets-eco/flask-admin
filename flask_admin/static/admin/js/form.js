@@ -455,6 +455,7 @@
                 processLeafletWidget($el, name);
                 return true;
             case 'x-editable':
+                var choices = {};
                 $el.editable({
                     params: overrideXeditableParams,
                     combodate: {
@@ -467,6 +468,9 @@
                         traditional: $el.attr("data-multiple") == "1"
                     },
                     select2: {
+                        // institute delay and cache ajax calls to prevent overloading server
+                        delay: 250,
+                        cacheDatasource: true,
                         dropdownAutoWidth: true,
                         placeholder: "data-placeholder",
                         minimumInputLength: $el.attr("data-minimum-input-length"),
@@ -488,6 +492,7 @@
 
                                 for (var k in data) {
                                     var v = data[k];
+                                    choices[v[0]] = v[1];
                                     results.push({ id: v[0], text: v[1] });
                                 }
 
@@ -507,6 +512,7 @@
 
                                     for (var k in value) {
                                         var v = value[k];
+                                        choices[v[0]] = v[1];
                                         result.push({id: v[0], text: v[1]});
                                     }
 
@@ -517,6 +523,33 @@
                             }
 
                             callback(result);
+                        },
+                    },
+                    display: function(selections) {
+                        var escapedValue;
+                        if(Array.isArray(selections)) {
+                            var html = []
+                            $.each(selections, function(i, v) {
+                                if (v in choices){
+                                    escapedValue = $.fn.editableutils.escape(choices[v]);
+                                } else {
+                                    // initial values, already present in table (text instead of pk)
+                                    escapedValue = $.fn.editableutils.escape(v);
+                                }
+                                if (!html.includes(escapedValue))
+                                    html.push(escapedValue);
+                            });
+                            $(this).html(html.join(', '));
+                        } else if (selections) {
+                            if (selections in choices){
+                                escapedValue = $.fn.editableutils.escape(choices[selections]);
+                            } else {
+                                // initial values, already present in table (text instead of pk)
+                                escapedValue = $.fn.editableutils.escape(selections);
+                            }
+                            $(this).html(escapedValue);
+                        } else {
+                            $(this).empty();
                         }
                     }
                 });
