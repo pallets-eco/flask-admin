@@ -43,9 +43,7 @@ jobs:
       - name: Setup postgis
         env:
           PGPASSWORD: postgres
-        run: |
-#          psql -U postgres -h localhost -c 'CREATE EXTENSION postgis;' flask_admin_test
-          psql -U postgres -h localhost -c 'CREATE EXTENSION hstore;' flask_admin_test
+        run: psql -U postgres -h localhost -c 'CREATE EXTENSION hstore;' flask_admin_test
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
