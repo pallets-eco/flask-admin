@@ -10,7 +10,7 @@ jobs:
       matrix:
 #        python-version: ['2.7', '3.6', '3.7', '3.8', '3.9']
         python-version: ['3.6']
-#        tox-version: [ '2.x', '3.x', 'pypy-2.7', 'pypy-3.6', 'pypy-3.7' ]
+        tox-version: [ 'py36-WTForms1', 'py36-WTForms2' ]
     services:
       # Label used to access the service container
       postgres:
@@ -50,3 +50,5 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install tox
         run: pip install tox
+      - name: Run tests
+        run: tox -e ${{ matrix.tox-version }}
