@@ -39,7 +39,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
       - name: Install postgis
-        run: sudo apt-get install -y postgresql-12-postgis-3 postgresql-12-postgis-3-scripts
+        run: sudo apt-get install -y postgis postgresql-12-postgis-3 postgresql-12-postgis-3-scripts
       - name: Setup postgis
         env:
           PGPASSWORD: postgres
