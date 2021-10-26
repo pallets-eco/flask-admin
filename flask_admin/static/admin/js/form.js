@@ -503,7 +503,7 @@
                             },
                         },
                         initSelection: function(_, callback) {
-                            var value = jQuery.parseJSON($el.attr('data-json'));
+                            var value = JSON.parse($el.attr('data-json'));
                             var result = null;
 
                             if (value) {
