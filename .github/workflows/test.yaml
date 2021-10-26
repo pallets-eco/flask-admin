@@ -28,6 +28,10 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      mongo:
+        image: mongo:3.1
+        ports:
+          - 27017:27017
       azurite:
         image: arafato/azurite:2.6.5
         env:
