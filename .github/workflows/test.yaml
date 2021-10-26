@@ -25,12 +25,24 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      azurite:
+        image: arafato/azurite:2.6.5
+        env:
+          executable: blob
+        ports:
+          - 10000:10000
+        tmpfs:
+          - /opt/azurite/folder
     steps:
       # Downloads a copy of the code in your repository before running CI tests
       - name: Check out repository code
         uses: actions/checkout@v2
       - name: Install postgis
         run: sudo apt-get install -y postgresql-12-postgis-3 postgresql-12-postgis-3-scripts
+      - name: Setup postgis
+        run: |
+          psql -U postgres -c 'CREATE EXTENSION postgis;' flask_admin_test
+          psql -U postgres -c 'CREATE EXTENSION hstore;' flask_admin_test
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
