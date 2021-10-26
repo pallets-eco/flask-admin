@@ -1,0 +1,37 @@
+name: Run tests
+on: pull_request
+
+jobs:
+  test-job:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['2.7', '3.6', '3.7', '3.8', '3.9']
+#        tox-version: [ '2.x', '3.x', 'pypy-2.7', 'pypy-3.6', 'pypy-3.7' ]
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:12
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: flask_admin_test
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      # Downloads a copy of the code in your repository before running CI tests
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Install postgis
+        run: sudo apt-get install -y postgresql-12-postgis-3 postgresql-12-postgis-3-scripts
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install tox
+        run: pip install tox
