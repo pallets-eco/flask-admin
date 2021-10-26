@@ -41,6 +41,8 @@ jobs:
       - name: Install postgis
         run: sudo apt-get install -y postgresql-12-postgis-3 postgresql-12-postgis-3-scripts
       - name: Setup postgis
+        env:
+          PGPASSWORD: postgres
         run: |
           psql -U postgres -h localhost -c 'CREATE EXTENSION postgis;' flask_admin_test
           psql -U postgres -h localhost -c 'CREATE EXTENSION hstore;' flask_admin_test
