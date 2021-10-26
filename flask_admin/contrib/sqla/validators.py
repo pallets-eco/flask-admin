@@ -1,4 +1,5 @@
 from sqlalchemy.orm.exc import NoResultFound
+from flask_admin.babel import gettext
 
 from wtforms import ValidationError
 try:
@@ -39,7 +40,7 @@ class Unique(object):
 
             if not hasattr(form, '_obj') or not form._obj == obj:
                 if self.message is None:
-                    self.message = field.gettext(u'Already exists.')
+                    self.message = gettext(u'Already exists.')
                 raise ValidationError(self.message)
         except NoResultFound:
             pass
