@@ -31,8 +31,6 @@ jobs:
           executable: blob
         ports:
           - 10000:10000
-        tmpfs:
-          - /opt/azurite/folder
     steps:
       # Downloads a copy of the code in your repository before running CI tests
       - name: Check out repository code
