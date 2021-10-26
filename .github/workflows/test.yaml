@@ -8,7 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['2.7', '3.6', '3.7', '3.8', '3.9']
+#        python-version: ['2.7', '3.6', '3.7', '3.8', '3.9']
+        python-version: ['3.6']
 #        tox-version: [ '2.x', '3.x', 'pypy-2.7', 'pypy-3.6', 'pypy-3.7' ]
     services:
       # Label used to access the service container
@@ -19,6 +20,8 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: flask_admin_test
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: 5432
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
