@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 import json
 import re
 
-from nose.tools import eq_
 
 from flask_admin.contrib.geoa import ModelView
 from flask_admin.contrib.geoa.fields import GeoJSONField
