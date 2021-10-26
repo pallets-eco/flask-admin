@@ -4,6 +4,7 @@ import pytest
 
 from flask import Flask, request, abort, url_for
 from flask.views import MethodView
+
 from flask_admin import base
 
 
@@ -233,23 +234,23 @@ def test_add_category():
     admin.add_view(MockView(name='Test 1', endpoint='test1', category='Category1'))
     admin.add_view(MockView(name='Test 2', endpoint='test2', category='Category2'))
 
-    eq_(len(admin.menu()), 3)
+    assert len(admin.menu()) == 3
 
     # Test 1 should be underneath Category1
-    eq_(admin.menu()[1].name, 'Category1')
-    eq_(admin.menu()[1].get_class_name(), 'class-name')
-    eq_(admin.menu()[1].get_icon_type(), 'icon-type')
-    eq_(admin.menu()[1].get_icon_value(), 'icon-value')
-    eq_(len(admin.menu()[1].get_children()), 1)
-    eq_(admin.menu()[1].get_children()[0].name, 'Test 1')
+    assert admin.menu()[1].name == 'Category1'
+    assert admin.menu()[1].get_class_name() == 'class-name'
+    assert admin.menu()[1].get_icon_type() == 'icon-type'
+    assert admin.menu()[1].get_icon_value() == 'icon-value'
+    assert len(admin.menu()[1].get_children()) == 1
+    assert admin.menu()[1].get_children()[0].name == 'Test 1'
 
     # Test 2 should be underneath Category2
-    eq_(admin.menu()[2].name, 'Category2')
-    eq_(admin.menu()[2].get_class_name(), None)
-    eq_(admin.menu()[2].get_icon_type(), None)
-    eq_(admin.menu()[2].get_icon_value(), None)
-    eq_(len(admin.menu()[2].get_children()), 1)
-    eq_(admin.menu()[2].get_children()[0].name, 'Test 2')
+    assert admin.menu()[2].name == 'Category2'
+    assert admin.menu()[2].get_class_name() == None
+    assert admin.menu()[2].get_icon_type() == None
+    assert admin.menu()[2].get_icon_value() == None
+    assert len(admin.menu()[2].get_children()) == 1
+    assert admin.menu()[2].get_children()[0].name == 'Test 2'
 
 
 @pytest.mark.xfail(raises=Exception)
