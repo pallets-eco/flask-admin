@@ -8,14 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-#        python-version: ['2.7', '3.6', '3.7', '3.8', '3.9']
-        python-version: ['3.6', '3.7', '3.8', '3.9']
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
         tox-version: [ 'WTForms2' ]
-        exclude:
-          - python-version: 3.8
-            tox-version: WTForms1
-          - python-version: 3.9
-            tox-version: WTForms1
+        include:
+          - python-version: 3.6
+            tox-version: flake8
+          - python-version: 3.6
+            tox-version: docs-html
     services:
       # Label used to access the service container
       postgres:
