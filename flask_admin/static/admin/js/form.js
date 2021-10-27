@@ -456,6 +456,7 @@
                 return true;
             case 'x-editable':
                 var choices = {};
+                var text_to_pk = {};
                 $el.editable({
                     params: overrideXeditableParams,
                     combodate: {
@@ -493,6 +494,7 @@
                                 for (var k in data) {
                                     var v = data[k];
                                     choices[v[0]] = v[1];
+                                    text_to_pk[v[1]] = parseInt(v[0]);
                                     results.push({ id: v[0], text: v[1] });
                                 }
 
@@ -513,6 +515,7 @@
                                     for (var k in value) {
                                         var v = value[k];
                                         choices[v[0]] = v[1];
+                                        text_to_pk[v[1]] = parseInt(v[0]);
                                         result.push({id: v[0], text: v[1]});
                                     }
 
@@ -526,28 +529,57 @@
                         },
                     },
                     display: function(selections) {
+                        // TODO 1: Fix persistence from table cell to select2 modal after being set from select2 modal (without refresh)
+                        // TODO 2: Fix deletions persistence from select2 modal to table cell (without refresh)
+                        // NOTE 1: When a pk is present in selections and the text is not, that means it was added
+                        // NOTE 2: When a value is present in selections and the pk is not, that means either:
+                        //   1) It is a value provided during initialization/page-load
+                        //   2) It was deleted
                         var escapedValue;
-                        if(Array.isArray(selections)) {
+                        var updatedDataJson = [];
+                        if (Array.isArray(selections)) {
                             var html = []
                             $.each(selections, function(i, v) {
                                 if (v in choices){
                                     escapedValue = $.fn.editableutils.escape(choices[v]);
+                                    if (!(choices[v] in selections))
+                                        // pk present, text not present - value was newly-added
+                                        updatedDataJson.push([parseInt(v), escapedValue]);
                                 } else {
-                                    // initial values, already present in table (text instead of pk)
+                                    // initial values or values that were just deleted
                                     escapedValue = $.fn.editableutils.escape(v);
+                                    if (text_to_pk[v])
+                                        updatedDataJson.push([text_to_pk[v], escapedValue]);
                                 }
                                 if (!html.includes(escapedValue))
                                     html.push(escapedValue);
                             });
                             $(this).html(html.join(', '));
+                            $(this).attr('data-value', html.join(','));
+                            if (updatedDataJson.length)
+                                $(this).attr('data-json', JSON.stringify(updatedDataJson));
+                                $(this).prop('value', updatedDataJson.map(function(value){
+                                    return value[0];
+                                }).join(','));
                         } else if (selections) {
                             if (selections in choices){
                                 escapedValue = $.fn.editableutils.escape(choices[selections]);
+
+                                updatedDataJson.push([parseInt(selections), escapedValue]);
+
                             } else {
-                                // initial values, already present in table (text instead of pk)
                                 escapedValue = $.fn.editableutils.escape(selections);
+
+                                //if (text_to_pk[selections])
+                                updatedDataJson.push([text_to_pk[selections], escapedValue]);
                             }
                             $(this).html(escapedValue);
+                            $(this).attr('data-value', escapedValue);
+                            if (updatedDataJson.length)
+                                $(this).attr('data-json', JSON.stringify(updatedDataJson));
+                                $(this).prop('value', updatedDataJson.map(function(value){
+                                    return value[0];
+                                }).join(','));
                         } else {
                             $(this).empty();
                         }
