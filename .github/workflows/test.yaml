@@ -9,8 +9,13 @@ jobs:
     strategy:
       matrix:
 #        python-version: ['2.7', '3.6', '3.7', '3.8', '3.9']
-        python-version: ['3.6']
-        tox-version: [ 'py36-WTForms1', 'py36-WTForms2' ]
+        python-version: ['3.6', '3.7', '3.8', '3.9']
+        tox-version: [ 'WTForms1', 'WTForms2' ]
+        exclude:
+          - python-version: 3.8
+            tox-version: WTForms1
+          - python-version: 3.9
+              tox-version: WTForms1
     services:
       # Label used to access the service container
       postgres:
