@@ -282,7 +282,7 @@ class AdminModelConverter(ModelConverterBase):
     @converts('sqlalchemy.sql.sqltypes.Enum')
     def convert_enum(self, column, field_args, **extra):
         available_choices = [(f, f) for f in column.type.enums]
-        accepted_values = [data[1] for data in available_choices]
+        accepted_values = [choice[0] for choice in available_choices]
 
         if column.nullable:
             field_args['allow_blank'] = column.nullable
@@ -304,7 +304,7 @@ class AdminModelConverter(ModelConverterBase):
             available_choices = [(f.value, f.name) for f in column.type.choices]
         else:
             available_choices = column.type.choices
-        accepted_values = [choice.value for choice in available_choices]
+        accepted_values = [choice[0] for choice in available_choices]
 
         if column.nullable:
             field_args['allow_blank'] = column.nullable
