@@ -529,12 +529,14 @@
                         },
                     },
                     display: function(selections) {
-                        // TODO 1: Fix persistence from table cell to select2 modal after being set from select2 modal (without refresh)
-                        // TODO 2: Fix deletions persistence from select2 modal to table cell (without refresh)
-                        // NOTE 1: When a pk is present in selections and the text is not, that means it was added
-                        // NOTE 2: When a value is present in selections and the pk is not, that means either:
+                        // TODO: Fix deletions persistence from select2 modal to table cell (without refresh)
+                        // NOTE: When a value is present in selections and the pk is not, that means either:
                         //   1) It is a value provided during initialization/page-load
                         //   2) It was deleted
+                        var uniqueArrays = (value, index, self) =>{
+                            var findIndex = (element) => element[0] == value[0];
+                            return self.findIndex(findIndex) === index;
+                        }
                         var escapedValue;
                         var updatedDataJson = [];
                         if (Array.isArray(selections)) {
@@ -557,27 +559,25 @@
                             $(this).html(html.join(', '));
                             $(this).attr('data-value', html.join(','));
                             if (updatedDataJson.length)
+                                updatedDataJson = updatedDataJson.filter(uniqueArrays);
                                 $(this).attr('data-json', JSON.stringify(updatedDataJson));
-                                $(this).prop('value', updatedDataJson.map(function(value){
+                                $(this).attr('value', updatedDataJson.map(function(value){
                                     return value[0];
                                 }).join(','));
                         } else if (selections) {
                             if (selections in choices){
                                 escapedValue = $.fn.editableutils.escape(choices[selections]);
-
                                 updatedDataJson.push([parseInt(selections), escapedValue]);
-
                             } else {
                                 escapedValue = $.fn.editableutils.escape(selections);
-
-                                //if (text_to_pk[selections])
                                 updatedDataJson.push([text_to_pk[selections], escapedValue]);
                             }
                             $(this).html(escapedValue);
                             $(this).attr('data-value', escapedValue);
                             if (updatedDataJson.length)
+                                updatedDataJson = updatedDataJson.filter(uniqueArrays);
                                 $(this).attr('data-json', JSON.stringify(updatedDataJson));
-                                $(this).prop('value', updatedDataJson.map(function(value){
+                                $(this).attr('value', updatedDataJson.map(function(value){
                                     return value[0];
                                 }).join(','));
                         } else {
