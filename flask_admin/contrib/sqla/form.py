@@ -304,7 +304,7 @@ class AdminModelConverter(ModelConverterBase):
             available_choices = [(f.value, f.name) for f in column.type.choices]
         else:
             available_choices = column.type.choices
-        accepted_values = [key for key, val in available_choices]
+        accepted_values = [choice.value for choice in available_choices]
 
         if column.nullable:
             field_args['allow_blank'] = column.nullable
