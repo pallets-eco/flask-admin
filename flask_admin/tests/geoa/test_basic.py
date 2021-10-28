@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 import json
 import re
 
+
 from flask_admin.contrib.geoa import ModelView
 from flask_admin.contrib.geoa.fields import GeoJSONField
 from geoalchemy2 import Geometry
@@ -74,14 +75,14 @@ def test_model():
     assert to_shape(model.point).geom_type == "Point"
     assert list(to_shape(model.point).coords) == [(125.8, 10.0,)]
     assert to_shape(model.line).geom_type == "LineString"
-    assert list(to_shape(model.line).coords) == [(50.2345, 94.2, (50.21, 94.87)])
+    assert list(to_shape(model.line).coords) == [(50.2345, 94.2), (50.21, 94.87)]
     assert to_shape(model.polygon).geom_type == "Polygon"
-    eq_(list(to_shape(model.polygon).exterior.coords),
-        [(100.0, 0.0), (101.0, 0.0), (101.0, 1.0), (100.0, 1.0), (100.0, 0.0)])
+    assert list(to_shape(model.polygon).exterior.coords) == \
+           [(100.0, 0.0), (101.0, 0.0), (101.0, 1.0), (100.0, 1.0), (100.0, 0.0)]
     assert to_shape(model.multi).geom_type == "MultiPoint"
     assert len(to_shape(model.multi).geoms) == 2
-    assert list(to_shape(model.multi).geoms[0].coords) == [(100.0, 0.0])
-    assert list(to_shape(model.multi).geoms[1].coords) == [(101.0, 1.0])
+    assert list(to_shape(model.multi).geoms[0].coords) == [(100.0, 0.0)]
+    assert list(to_shape(model.multi).geoms[1].coords) == [(101.0, 1.0)]
 
     rv = client.get('/admin/geomodel/')
     assert rv.status_code == 200
