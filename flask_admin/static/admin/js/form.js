@@ -456,7 +456,6 @@
                 return true;
             case 'x-editable':
                 var choices = {};
-                var text_to_pk = {};
                 $el.editable({
                     params: overrideXeditableParams,
                     combodate: {
@@ -494,7 +493,6 @@
                                 for (var k in data) {
                                     var v = data[k];
                                     choices[v[0]] = v[1];
-                                    text_to_pk[v[1]] = parseInt(v[0]);
                                     results.push({ id: v[0], text: v[1] });
                                 }
 
@@ -515,7 +513,6 @@
                                     for (var k in value) {
                                         var v = value[k];
                                         choices[v[0]] = v[1];
-                                        text_to_pk[v[1]] = parseInt(v[0]);
                                         result.push({id: v[0], text: v[1]});
                                     }
 
@@ -529,17 +526,15 @@
                         },
                     },
                     display: function(selections) {
-                        // TODO: Fix deletions persistence from select2 modal to table cell (without refresh)
-                        // NOTE: When a value is present in selections and the pk is not, that means either:
-                        //   1) It is a value provided during initialization/page-load
-                        //   2) It was deleted
-                        var uniqueArrays = (value, index, self) =>{
+                        var unique = (value, index, self) =>{
                             var findIndex = (element) => element[0] == value[0];
                             return self.findIndex(findIndex) === index;
                         }
                         var escapedValue;
                         var updatedDataJson = [];
-                        if (Array.isArray(selections)) {
+                        if (!(Array.isArray(selections)))
+                            selections = [selections];
+                        if (selections.length) {
                             var html = []
                             $.each(selections, function(i, v) {
                                 if (v in choices){
@@ -547,39 +542,37 @@
                                     if (!(choices[v] in selections))
                                         // pk present, text not present - value was newly-added
                                         updatedDataJson.push([parseInt(v), escapedValue]);
+                                    if (!html.includes(escapedValue))
+                                        html.push(escapedValue);
                                 } else {
-                                    // initial values or values that were just deleted
                                     escapedValue = $.fn.editableutils.escape(v);
-                                    if (text_to_pk[v])
-                                        updatedDataJson.push([text_to_pk[v], escapedValue]);
+                                    if (html.includes(escapedValue)) {
+                                        // value was just deleted, remove from html
+                                        html = html.filter(function(value, index, arr){
+                                            return value != escapedValue;
+                                        });
+                                    } else {
+                                        // page-load, field being instantiated
+                                        html.push(escapedValue);
+                                    }
                                 }
-                                if (!html.includes(escapedValue))
-                                    html.push(escapedValue);
                             });
-                            $(this).html(html.join(', '));
-                            $(this).attr('data-value', html.join(','));
-                            if (updatedDataJson.length)
-                                updatedDataJson = updatedDataJson.filter(uniqueArrays);
+                            if (html.length)
+                                $(this).html(html.join(', '));
+                                $(this).attr('data-value', html.join(','));
+                            if (updatedDataJson.length) {
+                                updatedDataJson = updatedDataJson.filter(unique);
                                 $(this).attr('data-json', JSON.stringify(updatedDataJson));
                                 $(this).attr('value', updatedDataJson.map(function(value){
                                     return value[0];
                                 }).join(','));
-                        } else if (selections) {
-                            if (selections in choices){
-                                escapedValue = $.fn.editableutils.escape(choices[selections]);
-                                updatedDataJson.push([parseInt(selections), escapedValue]);
-                            } else {
-                                escapedValue = $.fn.editableutils.escape(selections);
-                                updatedDataJson.push([text_to_pk[selections], escapedValue]);
+                            } else if ($el.attr("data-multiple") == "1") {
+                                // handle initialization
+                                $(this).attr('data-json', $(this).attr('data-json'));
+                                $(this).attr('value', JSON.parse($(this).attr('data-json')).map(function(value){
+                                    return value[0];
+                                }).join(','));
                             }
-                            $(this).html(escapedValue);
-                            $(this).attr('data-value', escapedValue);
-                            if (updatedDataJson.length)
-                                updatedDataJson = updatedDataJson.filter(uniqueArrays);
-                                $(this).attr('data-json', JSON.stringify(updatedDataJson));
-                                $(this).attr('value', updatedDataJson.map(function(value){
-                                    return value[0];
-                                }).join(','));
                         } else {
                             $(this).empty();
                         }
