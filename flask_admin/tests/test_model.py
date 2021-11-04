@@ -146,8 +146,8 @@ def test_mockview():
     assert view._sortable_columns == ['col1', 'col2', 'col3']
     assert view._create_form_class == Form
     assert view._edit_form_class == Form
-    assert view._search_supported == False
-    assert view._filters == None
+    assert view._search_supported is False
+    assert view._filters is None
 
     client = app.test_client()
 
@@ -303,7 +303,7 @@ def test_column_searchable_list():
     view = MockModelView(Model, column_searchable_list=['col1', 'col2'])
     admin.add_view(view)
 
-    assert view._search_supported == True
+    assert view._search_supported is True
 
     # TODO: Make calls with search
 
