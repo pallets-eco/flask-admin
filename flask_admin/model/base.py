@@ -2144,7 +2144,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 if '_add_another' in request.form:
                     return redirect(self.get_url('.create_view', url=return_url))
                 elif '_continue_editing' in request.form:
-                    return redirect(request.url)
+                    return redirect(self.get_url('.edit_view', id=self.get_pk_value(model)))
                 else:
                     # save button
                     return redirect(self.get_save_return_url(model, is_created=False))
