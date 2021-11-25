@@ -36,12 +36,6 @@ class RedisCli(BaseView):
         To use it, simply pass `Redis` connection object to the constructor.
     """
 
-    shlex_check = True
-    """
-        shlex from stdlib does not work with unicode on 2.7.2 and lower.
-        If you want to suppress warning, set this attribute to False.
-    """
-
     remapped_commands = {
         'del': 'delete'
     }
@@ -80,13 +74,6 @@ class RedisCli(BaseView):
 
         self._inspect_commands()
         self._contribute_commands()
-
-        if self.shlex_check and VER < (2, 7, 3):
-            warnings.warn('Warning: rediscli uses shlex library and it does '
-                          'not work with unicode until Python 2.7.3. To '
-                          'remove this warning, upgrade to Python 2.7.3 or '
-                          'suppress it by setting shlex_check attribute '
-                          'to False.')
 
     def _inspect_commands(self):
         """
@@ -136,10 +123,6 @@ class RedisCli(BaseView):
             :param cmd:
                 Command to parse
         """
-        if VER < (2, 7, 3):
-            # shlex can't work with unicode until 2.7.3
-            return tuple(x.decode('utf-8') for x in shlex.split(cmd.encode('utf-8')))
-
         return tuple(shlex.split(cmd))
 
     def _error(self, msg):
