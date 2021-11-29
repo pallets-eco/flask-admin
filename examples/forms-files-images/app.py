@@ -7,7 +7,7 @@ from redis import Redis
 from wtforms import fields, widgets
 
 from sqlalchemy.event import listens_for
-from jinja2 import Markup
+from MarkupSafe import Markup
 
 from flask_admin import Admin, form
 from flask_admin.form import rules
