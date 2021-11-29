@@ -3,7 +3,7 @@ from markupsafe import escape
 from wtforms.widgets import html_params
 
 from flask_admin._backwards import Markup
-from flask_admin._compat import as_unicode, text_type
+from flask_admin._compat import as_unicode
 from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
 from flask_admin.form import RenderTemplateWidget
@@ -157,11 +157,11 @@ class XEditableWidget(object):
             selected_ids = []
             for value, label, selected in field.iter_choices():
                 try:
-                    label = text_type(label)
+                    label = str(label)
                 except TypeError:
                     # unable to display text value
                     label = ''
-                choices.append({'value': text_type(value), 'text': label})
+                choices.append({'value': str(value), 'text': label})
                 if selected:
                     selected_ids.append(value)
 
@@ -175,7 +175,7 @@ class XEditableWidget(object):
                 separator = getattr(field, 'separator', ',')
                 kwargs['data-value'] = separator.join(selected_ids)
             else:
-                kwargs['data-value'] = text_type(selected_ids[0])
+                kwargs['data-value'] = str(selected_ids[0])
         else:
             raise Exception('Unsupported field type: %s' % (type(field),))
 

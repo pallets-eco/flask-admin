@@ -4,7 +4,7 @@ import json
 
 from wtforms import fields
 from flask_admin.babel import gettext
-from flask_admin._compat import text_type, as_unicode
+from flask_admin._compat import as_unicode
 
 from . import widgets as admin_widgets
 
@@ -109,7 +109,7 @@ class Select2Field(fields.SelectField):
     """
     widget = admin_widgets.Select2Widget()
 
-    def __init__(self, label=None, validators=None, coerce=text_type,
+    def __init__(self, label=None, validators=None, coerce=str,
                  choices=None, allow_blank=False, blank_text=None, **kwargs):
         super(Select2Field, self).__init__(
             label, validators, coerce, choices, **kwargs
@@ -159,7 +159,7 @@ class Select2TagsField(fields.StringField):
     """
     widget = admin_widgets.Select2TagsWidget()
 
-    def __init__(self, label=None, validators=None, save_as_list=False, coerce=text_type, **kwargs):
+    def __init__(self, label=None, validators=None, save_as_list=False, coerce=str, **kwargs):
         """Initialization
 
         :param save_as_list:

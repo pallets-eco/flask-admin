@@ -28,7 +28,7 @@ from flask_admin.helpers import (get_form_data, validate_form_on_submit,
 from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
 from flask_admin._compat import (iteritems, itervalues, OrderedDict,
-                                 as_unicode, csv_encode, text_type, pass_context)
+                                 as_unicode, csv_encode, pass_context)
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
 
@@ -87,7 +87,7 @@ class FilterGroup(object):
             copy['operation'] = as_unicode(copy['operation'])
             options = copy['options']
             if options:
-                copy['options'] = [(k, text_type(v)) for k, v in options]
+                copy['options'] = [(k, str(v)) for k, v in options]
 
             filters.append(copy)
         return as_unicode(self.label), filters

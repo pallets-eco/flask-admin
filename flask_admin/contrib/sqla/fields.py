@@ -12,7 +12,7 @@ except ImportError:
     from wtforms.utils import unset_value
 
 from .tools import get_primary_key
-from flask_admin._compat import text_type, string_types, iteritems
+from flask_admin._compat import string_types, iteritems
 from flask_admin.contrib.sqla.widgets import CheckboxListInput
 from flask_admin.form import FormOpts, BaseForm, Select2Widget
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
@@ -100,7 +100,7 @@ class QuerySelectField(SelectFieldBase):
         if self._object_list is None:
             query = self.query or self.query_factory()
             get_pk = self.get_pk
-            self._object_list = [(text_type(get_pk(obj)), obj) for obj in query]
+            self._object_list = [(str(get_pk(obj)), obj) for obj in query]
         return self._object_list
 
     def iter_choices(self):
@@ -322,7 +322,7 @@ class InlineModelFormList(InlineFieldList):
 def get_pk_from_identity(obj):
     # TODO: Remove me
     key = identity_key(instance=obj)[1]
-    return u':'.join(text_type(x) for x in key)
+    return u':'.join(str(x) for x in key)
 
 
 def get_obj_pk(obj, pk):
@@ -332,9 +332,9 @@ def get_obj_pk(obj, pk):
     """
 
     if isinstance(pk, tuple):
-        return tuple(text_type(getattr(obj, k)) for k in pk)
+        return tuple(str(getattr(obj, k)) for k in pk)
 
-    return text_type(getattr(obj, pk))
+    return str(getattr(obj, pk))
 
 
 def get_field_id(field):
@@ -344,6 +344,6 @@ def get_field_id(field):
     """
     field_id = field.get_pk()
     if isinstance(field_id, tuple):
-        return tuple(text_type(_) for _ in field_id)
+        return tuple(str(_) for _ in field_id)
 
-    return text_type(field_id)
+    return str(field_id)

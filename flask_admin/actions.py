@@ -2,7 +2,6 @@ from flask import request, redirect
 
 
 from flask_admin import tools
-from flask_admin._compat import text_type
 from flask_admin.helpers import get_redirect_target, flash_errors
 
 
@@ -87,11 +86,11 @@ class ActionsMixin(object):
             name, text = act
 
             if self.is_action_allowed(name):
-                actions.append((name, text_type(text)))
+                actions.append((name, str(text)))
 
                 confirmation = self._actions_data[name][2]
                 if confirmation:
-                    actions_confirmation[name] = text_type(confirmation)
+                    actions_confirmation[name] = str(confirmation)
 
         return actions, actions_confirmation
 

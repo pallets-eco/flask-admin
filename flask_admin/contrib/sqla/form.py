@@ -11,7 +11,7 @@ from flask_admin.model.form import (converts, ModelConverterBase,
 from flask_admin.model.fields import AjaxSelectField, AjaxSelectMultipleField
 from flask_admin.model.helpers import prettify_name
 from flask_admin._backwards import get_property
-from flask_admin._compat import iteritems, text_type
+from flask_admin._compat import iteritems
 
 from .validators import Unique, valid_currency, valid_color, TimeZoneValidator
 from .fields import (QuerySelectField, QuerySelectMultipleField,
@@ -293,7 +293,7 @@ class AdminModelConverter(ModelConverterBase):
 
         field_args['choices'] = available_choices
         field_args['validators'].append(validators.AnyOf(accepted_values))
-        field_args['coerce'] = lambda v: v.name if isinstance(v, Enum) else text_type(v)
+        field_args['coerce'] = lambda v: v.name if isinstance(v, Enum) else str(v)
         return form.Select2Field(**field_args)
 
     @converts('sqlalchemy_utils.types.choice.ChoiceType')

@@ -1,7 +1,6 @@
 import json
 
 from markupsafe import Markup
-from flask_admin._compat import text_type
 try:
     from enum import Enum
 except ImportError:
@@ -47,7 +46,7 @@ def list_formatter(view, values):
         :param values:
             Value to check
     """
-    return u', '.join(text_type(v) for v in values)
+    return u', '.join(str(v) for v in values)
 
 
 def enum_formatter(view, value):

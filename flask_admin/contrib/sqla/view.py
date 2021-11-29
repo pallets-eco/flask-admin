@@ -13,7 +13,7 @@ from sqlalchemy import Unicode
 
 from flask import current_app, flash
 
-from flask_admin._compat import string_types, text_type
+from flask_admin._compat import string_types
 from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.contrib.sqla.tools import is_relationship
 from flask_admin.model import BaseModelView
@@ -499,7 +499,7 @@ class ModelView(BaseModelView):
                         column_name = c[0]
                 else:
                     column, path = tools.get_field_with_path(self.model, c)
-                    column_name = text_type(c)
+                    column_name = str(c)
 
                 if path and (hasattr(path[0], 'property') or isinstance(path[0], list)):
                     self._sortable_joins[column_name] = path
@@ -541,18 +541,18 @@ class ModelView(BaseModelView):
 
                 if path:
                     # column is a relation (InstrumentedAttribute), use full path
-                    column_name = text_type(c)
+                    column_name = str(c)
                 else:
                     # column is in same table, use only model attribute name
                     if getattr(column, 'key', None) is not None:
                         column_name = column.key
                     else:
-                        column_name = text_type(c)
+                        column_name = str(c)
             except AttributeError:
                 # TODO: See ticket #1299 - allow virtual columns. Probably figure out
                 # better way to handle it. For now just assume if column was not found - it
                 # is virtual and there's column formatter for it.
-                column_name = text_type(c)
+                column_name = str(c)
 
             visible_name = self.get_column_name(column_name)
 
@@ -1106,7 +1106,7 @@ class ModelView(BaseModelView):
             ):
                 raise
             else:
-                flash(gettext('Integrity error. %(message)s', message=text_type(exc)), 'error')
+                flash(gettext('Integrity error. %(message)s', message=str(exc)), 'error')
             return True
 
         return super(ModelView, self).handle_view_exception(exc)
