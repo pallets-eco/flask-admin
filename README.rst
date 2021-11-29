@@ -7,8 +7,9 @@ references to *git@github.com:flask-admin/flask-admin.git*.
 .. image:: https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.svg
 	:target: https://crowdin.com/project/flask-admin
 
-.. image:: https://travis-ci.org/flask-admin/flask-admin.svg?branch=master
-	:target: https://travis-ci.org/flask-admin/flask-admin
+.. image:: https://github.com/flask-admin/flask-admin/actions/workflows/test.yaml/badge.svg
+	:target: https://github.com/flask-admin/flask-admin/actions/workflows/test.yaml
+
 
 Introduction
 ------------
