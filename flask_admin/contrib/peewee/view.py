@@ -2,7 +2,6 @@ import logging
 
 from flask import flash
 
-from flask_admin._compat import string_types
 from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
@@ -216,7 +215,7 @@ class ModelView(BaseModelView):
     def init_search(self):
         if self.column_searchable_list:
             for p in self.column_searchable_list:
-                if isinstance(p, string_types):
+                if isinstance(p, str):
                     p = getattr(self.model, p)
 
                 # Check type
@@ -229,7 +228,7 @@ class ModelView(BaseModelView):
         return bool(self._search_fields)
 
     def scaffold_filters(self, name):
-        if isinstance(name, string_types):
+        if isinstance(name, str):
             attr = getattr(self.model, name, None)
         else:
             attr = name
@@ -248,7 +247,7 @@ class ModelView(BaseModelView):
             visible_name = '%s / %s' % (self.get_column_name(model_class.__name__),
                                         self.get_column_name(attr.name))
         else:
-            if not isinstance(name, string_types):
+            if not isinstance(name, str):
                 visible_name = self.get_column_name(attr.name)
             else:
                 visible_name = self.get_column_name(name)
@@ -340,7 +339,7 @@ class ModelView(BaseModelView):
         return query, joins
 
     def _sort_clause(self, query, joins, sort_field, sort_desc):
-        if isinstance(sort_field, string_types):
+        if isinstance(sort_field, str):
             field = getattr(self.model, sort_field)
         elif isinstance(sort_field, Field):
             model_class = None

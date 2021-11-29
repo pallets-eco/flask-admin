@@ -13,7 +13,7 @@ from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
-from flask_admin._compat import filter_list, string_types
+from flask_admin._compat import filter_list
 from flask_admin.tools import iterencode, iterdecode, escape  # noqa: F401
 
 
@@ -146,7 +146,7 @@ def get_field_with_path(model, name, return_remote_proxy_attr=True):
     path = []
 
     # For strings, resolve path
-    if isinstance(name, string_types):
+    if isinstance(name, str):
         # create a copy to keep original model as `model`
         current_model = model
 
@@ -198,7 +198,7 @@ def get_hybrid_properties(model):
 
 
 def is_hybrid_property(model, attr_name):
-    if isinstance(attr_name, string_types):
+    if isinstance(attr_name, str):
         names = attr_name.split('.')
         last_model = model
         for i in range(len(names) - 1):
@@ -206,7 +206,7 @@ def is_hybrid_property(model, attr_name):
             if is_association_proxy(attr):
                 attr = attr.remote_attr
             last_model = attr.property.argument
-            if isinstance(last_model, string_types):
+            if isinstance(last_model, str):
                 last_model = attr.property._clsregistry_resolve_name(last_model)()
             elif isinstance(last_model, _class_resolver):
                 last_model = model._decl_class_registry[last_model.arg]

@@ -1,7 +1,7 @@
 from sqlalchemy import or_, and_, cast, text
 from sqlalchemy.types import String
 
-from flask_admin._compat import as_unicode, string_types
+from flask_admin._compat import as_unicode
 from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
 
 from .tools import get_primary_key, has_multiple_pks, is_relationship, is_association_proxy
@@ -39,7 +39,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         remote_fields = []
 
         for field in self.fields:
-            if isinstance(field, string_types):
+            if isinstance(field, str):
                 attr = getattr(self.model, field, None)
 
                 if not attr:

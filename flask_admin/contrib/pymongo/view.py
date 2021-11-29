@@ -6,7 +6,6 @@ from bson.errors import InvalidId
 
 from flask import flash
 
-from flask_admin._compat import string_types
 from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.model import BaseModelView
 from flask_admin.actions import action
@@ -136,7 +135,7 @@ class ModelView(BaseModelView):
         """
         if self.column_searchable_list:
             for p in self.column_searchable_list:
-                if not isinstance(p, string_types):
+                if not isinstance(p, str):
                     raise ValueError('Expected string')
 
                 # TODO: Validation?

@@ -1,6 +1,5 @@
 from markupsafe import Markup
 
-from flask_admin._compat import string_types
 from flask_admin import helpers
 
 
@@ -541,7 +540,7 @@ class RuleSet(object):
         result = []
 
         for r in rules:
-            if isinstance(r, string_types):
+            if isinstance(r, str):
                 result.append(self.convert_string(r).configure(self, parent))
             elif isinstance(r, (tuple, list)):
                 row = Row(*r)

@@ -4,8 +4,6 @@ from wtforms.validators import DataRequired, InputRequired
 
 from flask_admin._compat import iteritems, pass_context, urljoin, urlparse
 
-from ._compat import string_types
-
 
 VALID_SCHEMES = ['http', 'https']
 _substitute_whitespace = compile(r'[\s\x00-\x08\x0B\x0C\x0E-\x19]+').sub
@@ -95,7 +93,7 @@ def is_field_error(errors):
     """
     if isinstance(errors, (list, tuple)):
         for e in errors:
-            if isinstance(e, string_types):
+            if isinstance(e, str):
                 return True
 
     return False

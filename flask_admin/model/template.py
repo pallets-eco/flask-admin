@@ -1,4 +1,4 @@
-from flask_admin._compat import pass_context, string_types, reduce
+from flask_admin._compat import pass_context, reduce
 from flask_admin.babel import gettext
 
 
@@ -32,7 +32,7 @@ class LinkRowAction(BaseListRowAction):
     def render(self, context, row_id, row):
         m = self._resolve_symbol(context, 'row_actions.link')
 
-        if isinstance(self.url, string_types):
+        if isinstance(self.url, str):
             url = self.url.format(row_id=row_id)
         else:
             url = self.url(self, row_id, row)

@@ -16,7 +16,7 @@ from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
 
 from flask_admin._backwards import Markup
-from flask_admin._compat import string_types, urljoin
+from flask_admin._compat import urljoin
 
 
 try:
@@ -103,7 +103,7 @@ class ImageUploadInput(object):
             'marker': '_%s-delete' % field.name
         }
 
-        if field.data and isinstance(field.data, string_types):
+        if field.data and isinstance(field.data, str):
             url = self.get_url(field)
             args['image'] = html_params(src=url)
 

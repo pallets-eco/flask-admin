@@ -6,7 +6,7 @@ from flask_admin import expose
 from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
-from flask_admin._compat import iteritems, string_types
+from flask_admin._compat import iteritems
 
 import mongoengine
 import gridfs
@@ -354,7 +354,7 @@ class ModelView(BaseModelView):
         """
         if self.column_searchable_list:
             for p in self.column_searchable_list:
-                if isinstance(p, string_types):
+                if isinstance(p, str):
                     p = self.model._fields.get(p)
 
                 if p is None:
@@ -378,7 +378,7 @@ class ModelView(BaseModelView):
             :param name:
                 Either field name or field instance
         """
-        if isinstance(name, string_types):
+        if isinstance(name, str):
             attr = self.model._fields.get(name)
         else:
             attr = name
@@ -389,7 +389,7 @@ class ModelView(BaseModelView):
         # Find name
         visible_name = None
 
-        if not isinstance(name, string_types):
+        if not isinstance(name, str):
             visible_name = self.get_column_name(attr.name)
 
         if not visible_name:

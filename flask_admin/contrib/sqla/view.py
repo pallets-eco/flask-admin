@@ -13,7 +13,6 @@ from sqlalchemy import Unicode
 
 from flask import current_app, flash
 
-from flask_admin._compat import string_types
 from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.contrib.sqla.tools import is_relationship
 from flask_admin.model import BaseModelView
@@ -580,7 +579,7 @@ class ModelView(BaseModelView):
 
                 if tools.is_hybrid_property(self.model, name):
                     column = attr
-                    if isinstance(name, string_types):
+                    if isinstance(name, str):
                         column.key = name.split('.')[-1]
                     self._search_fields.append((column, joins))
                 else:
@@ -661,7 +660,7 @@ class ModelView(BaseModelView):
             is_hybrid_property = tools.is_hybrid_property(self.model, name)
             if is_hybrid_property:
                 column = attr
-                if isinstance(name, string_types):
+                if isinstance(name, str):
                     column.key = name.split('.')[-1]
             else:
                 columns = tools.get_columns_for_field(attr)
@@ -674,7 +673,7 @@ class ModelView(BaseModelView):
             # If filter related to relation column (represented by
             # relation_name.target_column) we collect here relation name
             joined_column_name = None
-            if isinstance(name, string_types) and '.' in name:
+            if isinstance(name, str) and '.' in name:
                 joined_column_name = name.split('.')[0]
 
             # Join not needed for hybrid properties
@@ -692,7 +691,7 @@ class ModelView(BaseModelView):
                         self.get_column_name(column.name)
                     )
             else:
-                if not isinstance(name, string_types):
+                if not isinstance(name, str):
                     visible_name = self.get_column_name(name.property.key)
                 else:
                     if self.column_labels and name in self.column_labels:
