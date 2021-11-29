@@ -1,6 +1,5 @@
 import logging
 import shlex
-import warnings
 
 from flask import request
 
@@ -8,7 +7,7 @@ from markupsafe import Markup
 
 from flask_admin.base import BaseView, expose
 from flask_admin.babel import gettext
-from flask_admin._compat import VER
+
 
 # Set up logger
 log = logging.getLogger("flask-admin.redis")
