@@ -246,9 +246,9 @@ def test_add_category():
 
     # Test 2 should be underneath Category2
     assert admin.menu()[2].name == 'Category2'
-    assert admin.menu()[2].get_class_name() == None
-    assert admin.menu()[2].get_icon_type() == None
-    assert admin.menu()[2].get_icon_value() == None
+    assert admin.menu()[2].get_class_name() is None
+    assert admin.menu()[2].get_icon_type() is None
+    assert admin.menu()[2].get_icon_value() is None
     assert len(admin.menu()[2].get_children()) == 1
     assert admin.menu()[2].get_children()[0].name == 'Test 2'
 
