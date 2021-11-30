@@ -1,8 +1,9 @@
 from re import sub, compile
 from flask import g, request, url_for, flash
+from urllib.parse import urljoin, urlparse
 from wtforms.validators import DataRequired, InputRequired
 
-from flask_admin._compat import pass_context, urljoin, urlparse
+from flask_admin._compat import pass_context
 
 
 VALID_SCHEMES = ['http', 'https']

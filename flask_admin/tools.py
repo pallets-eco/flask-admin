@@ -1,8 +1,7 @@
 import sys
 import traceback
 
-# Python 3 compatibility
-from ._compat import reduce
+from functools import reduce
 
 CHAR_ESCAPE = '.'
 CHAR_SEPARATOR = ','

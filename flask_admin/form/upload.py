@@ -1,5 +1,6 @@
 import os
 import os.path as op
+from urllib.parse import urljoin
 
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
@@ -16,7 +17,6 @@ from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
 
 from flask_admin._backwards import Markup
-from flask_admin._compat import urljoin
 
 
 try:
