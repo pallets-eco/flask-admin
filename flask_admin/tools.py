@@ -2,10 +2,10 @@ import sys
 import traceback
 
 # Python 3 compatibility
-from ._compat import reduce, as_unicode
+from ._compat import reduce
 
-CHAR_ESCAPE = u'.'
-CHAR_SEPARATOR = u','
+CHAR_ESCAPE = '.'
+CHAR_SEPARATOR = ','
 
 
 def import_module(name, required=True):
@@ -102,7 +102,7 @@ def get_dict_attr(obj, attr, default=None):
 
 
 def escape(value):
-    return (as_unicode(value)
+    return (str(value)
             .replace(CHAR_ESCAPE, CHAR_ESCAPE + CHAR_ESCAPE)
             .replace(CHAR_SEPARATOR, CHAR_ESCAPE + CHAR_SEPARATOR))
 
@@ -114,7 +114,7 @@ def iterencode(iter):
         :param iter:
             Enumerable
     """
-    return ','.join(as_unicode(v)
+    return ','.join(str(v)
                     .replace(CHAR_ESCAPE, CHAR_ESCAPE + CHAR_ESCAPE)
                     .replace(CHAR_SEPARATOR, CHAR_ESCAPE + CHAR_SEPARATOR)
                     for v in iter)

@@ -4,7 +4,6 @@ import json
 
 from wtforms import fields
 from flask_admin.babel import gettext
-from flask_admin._compat import as_unicode
 
 from . import widgets as admin_widgets
 
@@ -179,9 +178,9 @@ class Select2TagsField(fields.StringField):
 
     def _value(self):
         if isinstance(self.data, (list, tuple)):
-            return u','.join(as_unicode(v) for v in self.data)
+            return u','.join(str(v) for v in self.data)
         elif self.data:
-            return as_unicode(self.data)
+            return str(self.data)
         else:
             return u''
 
@@ -192,7 +191,7 @@ class JSONField(fields.TextAreaField):
             return self.raw_data[0]
         elif self.data:
             # prevent utf8 characters from being converted to ascii
-            return as_unicode(json.dumps(self.data, ensure_ascii=False))
+            return str(json.dumps(self.data, ensure_ascii=False))
         else:
             return '{}'
 

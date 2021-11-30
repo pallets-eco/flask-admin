@@ -4,7 +4,6 @@ from wtforms import fields, validators
 
 from flask_admin import form
 from flask_admin.form.fields import Select2Field, DateTimeField
-from flask_admin._compat import as_unicode
 from flask_admin._compat import iteritems
 from flask_admin.contrib.sqla import ModelView, filters, tools
 from flask_babelex import Babel
@@ -2312,7 +2311,7 @@ def test_ajax_fk():
     assert req.data.decode('utf-8') == u'[[%s, "foo"]]' % model2.id
 
     # Check submitting
-    req = client.post('/admin/view/new/', data={u'model1': as_unicode(model.id)})
+    req = client.post('/admin/view/new/', data={u'model1': str(model.id)})
     mdl = db.session.query(Model2).first()
 
     assert mdl is not None
@@ -2379,7 +2378,7 @@ def test_ajax_fk_multi():
 
     # Check submitting
     client = app.test_client()
-    client.post('/admin/view/new/', data={u'model1': as_unicode(model.id)})
+    client.post('/admin/view/new/', data={u'model1': str(model.id)})
     mdl = db.session.query(Model2).first()
 
     assert mdl is not None

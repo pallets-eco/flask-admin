@@ -1,7 +1,6 @@
 from sqlalchemy import or_, and_, cast, text
 from sqlalchemy.types import String
 
-from flask_admin._compat import as_unicode
 from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
 
 from .tools import get_primary_key, has_multiple_pks, is_relationship, is_association_proxy
@@ -56,7 +55,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         if not model:
             return None
 
-        return getattr(model, self.pk), as_unicode(model)
+        return getattr(model, self.pk), str(model)
 
     def get_query(self):
         return self.session.query(self.model)

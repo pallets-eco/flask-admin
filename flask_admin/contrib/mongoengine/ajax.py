@@ -1,6 +1,6 @@
 import mongoengine
 
-from flask_admin._compat import as_unicode, iteritems
+from flask_admin._compat import iteritems
 from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
 
 
@@ -42,7 +42,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         if not model:
             return None
 
-        return (as_unicode(model.pk), as_unicode(model))
+        return str(model.pk), str(model)
 
     def get_one(self, pk):
         return self.model.objects.filter(pk=pk).first()
@@ -93,7 +93,7 @@ def process_ajax_references(references, view):
         if base:
             return ('%s-%s' % (base, name)).lower()
         else:
-            return as_unicode(name).lower()
+            return name.lower()
 
     def handle_field(field, subdoc, base):
         ftype = type(field).__name__

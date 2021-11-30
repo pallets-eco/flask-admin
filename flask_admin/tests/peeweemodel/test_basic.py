@@ -1,7 +1,7 @@
 from unittest import SkipTest
 
 # Skip test on PY3
-from flask_admin._compat import PY2, as_unicode
+from flask_admin._compat import PY2
 if not PY2:
     raise SkipTest('Peewee is not Python 3 compatible')
 
@@ -1020,9 +1020,9 @@ def test_ajax_fk():
         assert u'value=""' not in form.model1()
 
         form.model1.data = model
-        assert (u'data-json="[%s, &quot;first&quot;]"' % as_unicode(model.id) in form.model1() or
-                u'data-json="[%s, &#34;first&#34;]"' % as_unicode(model.id))
-        assert u'value="%s"' % as_unicode(model.id) in form.model1()
+        assert (u'data-json="[%s, &quot;first&quot;]"' % str(model.id) in form.model1() or
+                u'data-json="[%s, &#34;first&#34;]"' % str(model.id))
+        assert u'value="%s"' % str(model.id) in form.model1()
 
     # Check querying
     client = app.test_client()
@@ -1031,7 +1031,7 @@ def test_ajax_fk():
     assert req.data == u'[[%s, "foo"]]' % model2.id
 
     # Check submitting
-    client.post('/admin/view/new/', data={u'model1': as_unicode(model.id)})
+    client.post('/admin/view/new/', data={u'model1': str(model.id)})
     mdl = Model2.select().first()
 
     assert mdl is not None

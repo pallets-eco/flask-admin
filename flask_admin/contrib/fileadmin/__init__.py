@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 from wtforms import fields, validators
 
 from flask_admin import form, helpers
-from flask_admin._compat import urljoin, as_unicode, quote
+from flask_admin._compat import urljoin, quote
 from flask_admin.base import BaseView, expose
 from flask_admin.actions import action, ActionsMixin
 from flask_admin.babel import gettext, lazy_gettext
@@ -26,7 +26,7 @@ class LocalFileStorage(object):
             :param base_path:
                 Base file storage location
         """
-        self.base_path = as_unicode(base_path)
+        self.base_path = base_path
 
         self.separator = os.sep
 

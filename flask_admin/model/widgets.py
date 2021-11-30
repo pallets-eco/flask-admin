@@ -3,7 +3,6 @@ from markupsafe import escape
 from wtforms.widgets import html_params
 
 from flask_admin._backwards import Markup
-from flask_admin._compat import as_unicode
 from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
 from flask_admin.form import RenderTemplateWidget
@@ -45,7 +44,7 @@ class AjaxSelect2Widget(object):
             for value in field.data:
                 data = field.loader.format(value)
                 result.append(data)
-                ids.append(as_unicode(data[0]))
+                ids.append(str(data[0]))
 
             separator = getattr(field, 'separator', ',')
 

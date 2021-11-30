@@ -29,7 +29,7 @@ from flask_admin.helpers import (get_form_data, validate_form_on_submit,
 from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
 from flask_admin._compat import (iteritems, itervalues,
-                                 as_unicode, csv_encode, pass_context)
+                                 pass_context)
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
 
@@ -85,13 +85,14 @@ class FilterGroup(object):
         filters = []
         for item in self.filters:
             copy = dict(item)
-            copy['operation'] = as_unicode(copy['operation'])
+            copy['operation'] = str(copy['operation'])
             options = copy['options']
             if options:
                 copy['options'] = [(k, str(v)) for k, v in options]
 
             filters.append(copy)
-        return as_unicode(self.label), filters
+
+        return str(self.label), filters
 
     def __iter__(self):
         return iter(self.filters)
@@ -851,7 +852,7 @@ class BaseModelView(BaseView, ActionsMixin):
             self._filter_args = {}
 
             for i, flt in enumerate(self._filters):
-                key = as_unicode(flt.name)
+                key = str(flt.name)
                 if key not in self._filter_groups:
                     self._filter_groups[key] = FilterGroup(flt.name)
                 self._filter_groups[key].append({
@@ -1188,7 +1189,7 @@ class BaseModelView(BaseView, ActionsMixin):
             except AttributeError:
                 pass
 
-            name = ('%s %s' % (flt.name, as_unicode(operation))).lower()
+            name = ('%s %s' % (flt.name, str(operation))).lower()
             name = filter_char_re.sub('', name)
             name = filter_compact_re.sub('_', name)
             return name
@@ -1532,7 +1533,7 @@ class BaseModelView(BaseView, ActionsMixin):
     # Exception handler
     def handle_view_exception(self, exc):
         if isinstance(exc, ValidationError):
-            flash(as_unicode(exc), 'error')
+            flash(str(exc), 'error')
             return True
 
         if current_app.config.get('ADMIN_RAISE_ON_VIEW_EXCEPTION'):
@@ -1730,7 +1731,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     value = request.args[arg]
 
                     if flt.validate(value):
-                        data = (pos, (idx, as_unicode(flt.name), value))
+                        data = (pos, (idx, str(flt.name), value))
                         filters.append(data)
                     else:
                         flash(self.get_invalid_value_msg(value, flt), 'error')
@@ -2307,12 +2308,11 @@ class BaseModelView(BaseView, ActionsMixin):
 
         def generate():
             # Append the column titles at the beginning
-            titles = [csv_encode(c[1]) for c in self._export_columns]
+            titles = [c[1] for c in self._export_columns]
             yield writer.writerow(titles)
 
             for row in data:
-                vals = [csv_encode(self.get_export_value(row, c[0]))
-                        for c in self._export_columns]
+                vals = [self.get_export_value(row, c[0]) for c in self._export_columns]
                 yield writer.writerow(vals)
 
         filename = self.get_export_name(export_type='csv')
@@ -2343,12 +2343,12 @@ class BaseModelView(BaseView, ActionsMixin):
         if encoding:
             mimetype = '%s; charset=%s' % (mimetype, encoding)
 
-        ds = tablib.Dataset(headers=[csv_encode(c[1]) for c in self._export_columns])
+        ds = tablib.Dataset(headers=[c[1] for c in self._export_columns])
 
         count, data = self._export_data()
 
         for row in data:
-            vals = [csv_encode(self.get_export_value(row, c[0])) for c in self._export_columns]
+            vals = [self.get_export_value(row, c[0]) for c in self._export_columns]
             ds.append(vals)
 
         try:

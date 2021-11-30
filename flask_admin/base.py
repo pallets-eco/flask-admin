@@ -5,7 +5,7 @@ from functools import wraps
 
 from flask import Blueprint, current_app, render_template, abort, g, url_for
 from flask_admin import babel
-from flask_admin._compat import with_metaclass, as_unicode
+from flask_admin._compat import with_metaclass
 from flask_admin import helpers as h
 
 # For compatibility reasons import MenuLink
@@ -595,14 +595,12 @@ class Admin(object):
             :param icon_value:
                 The icon value for the new menu category.
         """
-        cat_text = as_unicode(name)
-
         category = self.get_category_menu_item(name)
         if category:
             return
 
         category = MenuCategory(name, class_name=class_name, icon_type=icon_type, icon_value=icon_value)
-        self._menu_categories[cat_text] = category
+        self._menu_categories[name] = category
         self._menu.append(category)
 
     def add_sub_category(self, name, parent_name):
@@ -616,14 +614,12 @@ class Admin(object):
             :param parent_name:
                 The name of a parent_name category
         """
+        category = self.get_category_menu_item(name)
+        parent = self.get_category_menu_item(parent_name)
 
-        name_text = as_unicode(name)
-        parent_name_text = as_unicode(parent_name)
-        category = self.get_category_menu_item(name_text)
-        parent = self.get_category_menu_item(parent_name_text)
         if category is None and parent is not None:
             category = SubMenuCategory(name)
-            self._menu_categories[name_text] = category
+            self._menu_categories[name] = category
             parent.add_child(category)
 
     def add_link(self, link):
@@ -664,15 +660,13 @@ class Admin(object):
                 Target category name
         """
         if target_category:
-            cat_text = as_unicode(target_category)
-
-            category = self._menu_categories.get(cat_text)
+            category = self._menu_categories.get(target_category)
 
             # create a new menu category if one does not exist already
             if category is None:
                 category = MenuCategory(target_category)
-                category.class_name = self.category_icon_classes.get(cat_text)
-                self._menu_categories[cat_text] = category
+                category.class_name = self.category_icon_classes.get(target_category)
+                self._menu_categories[target_category] = category
 
                 self._menu.append(category)
 

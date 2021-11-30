@@ -1,7 +1,6 @@
 from wtforms import fields, validators
 
 from flask_admin import form
-from flask_admin._compat import as_unicode
 from flask_admin.contrib.mongoengine import ModelView
 
 from . import setup
@@ -1048,9 +1047,9 @@ def test_ajax_fk():
         assert u'value=""' not in form.model1()
 
         form.model1.data = model
-        assert (u'data-json="[&quot;%s&quot;, &quot;first&quot;]"' % as_unicode(model.id) in form.model1() or
-                u'data-json="[&#34;%s&#34;, &#34;first&#34;]"' % as_unicode(model.id) in form.model1())
-        assert u'value="%s"' % as_unicode(model.id) in form.model1()
+        assert (u'data-json="[&quot;%s&quot;, &quot;first&quot;]"' % str(model.id) in form.model1() or
+                u'data-json="[&#34;%s&#34;, &#34;first&#34;]"' % str(model.id) in form.model1())
+        assert u'value="%s"' % str(model.id) in form.model1()
 
     # Check querying
     client = app.test_client()
@@ -1059,7 +1058,7 @@ def test_ajax_fk():
     assert req.data.decode('utf-8') == u'[["%s", "foo"]]' % model2.id
 
     # Check submitting
-    client.post('/admin/view/new/', data={u'model1': as_unicode(model.id)})
+    client.post('/admin/view/new/', data={u'model1': str(model.id)})
     mdl = Model2.objects.first()
 
     assert mdl is not None
