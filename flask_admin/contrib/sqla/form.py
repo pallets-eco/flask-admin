@@ -11,7 +11,6 @@ from flask_admin.model.form import (converts, ModelConverterBase,
 from flask_admin.model.fields import AjaxSelectField, AjaxSelectMultipleField
 from flask_admin.model.helpers import prettify_name
 from flask_admin._backwards import get_property
-from flask_admin._compat import iteritems
 
 from .validators import Unique, valid_currency, valid_color, TimeZoneValidator
 from .fields import (QuerySelectField, QuerySelectMultipleField,
@@ -559,7 +558,7 @@ def get_form(model, converter,
 
     # Contribute extra fields
     if not only and extra_fields:
-        for name, field in iteritems(extra_fields):
+        for name, field in extra_fields.items():
             field_dict[name] = form.recreate_field(field)
 
     return type(model.__name__ + 'Form', (base_class, ), field_dict)
@@ -627,7 +626,7 @@ class InlineModelConverter(InlineModelConverterBase):
         result = {}
 
         if refs:
-            for name, opts in iteritems(refs):
+            for name, opts in refs.items():
                 new_name = '%s-%s' % (info.model.__name__.lower(), name)
 
                 loader = None

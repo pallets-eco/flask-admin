@@ -11,7 +11,6 @@ except ImportError:
 from wtfpeewee.orm import ModelConverter, model_form
 
 from flask_admin import form
-from flask_admin._compat import iteritems, itervalues
 from flask_admin.model.form import InlineFormAdmin, InlineModelConverterBase
 from flask_admin.model.fields import InlineModelFormField, InlineFieldList, AjaxSelectField
 
@@ -98,7 +97,7 @@ class InlineModelFormList(InlineFieldList):
             model.save()
 
             # Recurse, to save multi-level nested inlines
-            for f in itervalues(field.form._fields):
+            for f in field.form._fields.items():
                 if f.type == 'InlineModelFormList':
                     f.save_related(model)
 
@@ -171,7 +170,7 @@ def get_form(model, converter,
                         converter=converter)
 
     if extra_fields:
-        for name, field in iteritems(extra_fields):
+        for name, field in extra_fields.items():
             setattr(result, name, form.recreate_field(field))
 
     return result
@@ -220,7 +219,7 @@ class InlineModelConverter(InlineModelConverterBase):
         result = {}
 
         if refs:
-            for name, opts in iteritems(refs):
+            for name, opts in refs.items():
                 new_name = '%s.%s' % (info.model.__name__.lower(), name)
 
                 loader = None
@@ -289,6 +288,6 @@ class InlineModelConverter(InlineModelConverterBase):
 
 
 def save_inline(form, model):
-    for f in itervalues(form._fields):
+    for f in form._fields.items():
         if f.type == 'InlineModelFormList':
             f.save_related(model)

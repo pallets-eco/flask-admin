@@ -12,7 +12,6 @@ except ImportError:
     from wtforms.utils import unset_value
 
 from .tools import get_primary_key
-from flask_admin._compat import iteritems
 from flask_admin.contrib.sqla.widgets import CheckboxListInput
 from flask_admin.form import FormOpts, BaseForm, Select2Widget
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
@@ -228,7 +227,7 @@ class InlineHstoreList(InlineFieldList):
             process a dict. This overrides `process` to convert the dict
             returned by SQLAlchemy to a list of classes before processing. """
         if isinstance(data, dict):
-            data = [KeyValue(k, v) for k, v in iteritems(data)]
+            data = [KeyValue(k, v) for k, v in data.items()]
         super(InlineHstoreList, self).process(formdata, data)
 
     def populate_obj(self, obj, name):

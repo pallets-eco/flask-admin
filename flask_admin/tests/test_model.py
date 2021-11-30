@@ -11,7 +11,7 @@ from werkzeug.test import Client
 from wtforms import fields
 
 from flask_admin import Admin, form
-from flask_admin._compat import iteritems, itervalues
+from flask_admin._compat import itervalues
 from flask_admin.model import base, filters
 from flask_admin.model.template import macro
 
@@ -51,7 +51,7 @@ class MockModelView(base.BaseModelView):
     def __init__(self, model, data=None, name=None, category=None,
                  endpoint=None, url=None, **kwargs):
         # Allow to set any attributes from parameters
-        for k, v in iteritems(kwargs):
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
         super(MockModelView, self).__init__(model, name, category, endpoint, url)

@@ -8,7 +8,6 @@ from flask_admin import form
 from flask_admin.model.form import FieldPlaceholder
 from flask_admin.model.fields import InlineFieldList, AjaxSelectField, AjaxSelectMultipleField
 from flask_admin.form.validators import FieldListInputRequired
-from flask_admin._compat import iteritems
 
 from .fields import ModelFormField, MongoFileField, MongoImageField
 from .subdoc import EmbeddedForm
@@ -223,7 +222,7 @@ def get_form(model, converter,
     field_args = field_args or {}
 
     # Find properties
-    properties = sorted(((k, v) for k, v in iteritems(model._fields)),
+    properties = sorted(((k, v) for k, v in model._fields.items()),
                         key=lambda v: v[1].creation_counter)
 
     if only:
@@ -252,7 +251,7 @@ def get_form(model, converter,
 
     # Contribute extra fields
     if not only and extra_fields:
-        for name, field in iteritems(extra_fields):
+        for name, field in extra_fields.items():
             field_dict[name] = form.recreate_field(field)
 
     field_dict['model_class'] = model

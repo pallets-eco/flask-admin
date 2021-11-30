@@ -1,6 +1,5 @@
 import mongoengine
 
-from flask_admin._compat import iteritems
 from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
 
 
@@ -108,7 +107,7 @@ def process_ajax_references(references, view):
 
             ajax_refs = getattr(subdoc, 'form_ajax_refs', {})
 
-            for field_name, opts in iteritems(ajax_refs):
+            for field_name, opts in ajax_refs.items():
                 child_name = make_name(base, field_name)
 
                 if isinstance(opts, dict):
@@ -130,7 +129,7 @@ def process_ajax_references(references, view):
     def handle_subdoc(model, subdoc, base):
         documents = getattr(subdoc, '_form_subdocuments', {})
 
-        for name, doc in iteritems(documents):
+        for name, doc in documents.items():
             field = getattr(model, name, None)
 
             if not field:

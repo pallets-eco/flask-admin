@@ -6,7 +6,6 @@ from flask_admin import expose
 from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
-from flask_admin._compat import iteritems
 
 import mongoengine
 import gridfs
@@ -298,7 +297,7 @@ class ModelView(BaseModelView):
         if model is None:
             model = self.model
 
-        return sorted(iteritems(model._fields), key=lambda n: n[1].creation_counter)
+        return sorted(model._fields.items(), key=lambda n: n[1].creation_counter)
 
     def scaffold_pk(self):
         # MongoEngine models have predefined 'id' as a key

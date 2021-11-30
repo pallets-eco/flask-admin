@@ -28,7 +28,7 @@ from flask_admin.helpers import (get_form_data, validate_form_on_submit,
                                  get_redirect_target, flash_errors)
 from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
-from flask_admin._compat import (iteritems, itervalues,
+from flask_admin._compat import (itervalues,
                                  pass_context)
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
@@ -1275,7 +1275,7 @@ class BaseModelView(BaseView, ActionsMixin):
             # get only validators, other form_args can break FieldList wrapper
             validators = dict(
                 (key, {'validators': value["validators"]})
-                for key, value in iteritems(self.form_args)
+                for key, value in self.form_args.items()
                 if value.get("validators")
             )
         else:
@@ -1418,7 +1418,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
     def _validate_form_class(self, ruleset, form_class, remove_missing=True):
         form_fields = []
-        for name, obj in iteritems(form_class.__dict__):
+        for name, obj in form_class.__dict__.items():
             if isinstance(obj, UnboundField):
                 form_fields.append(name)
 
@@ -1928,7 +1928,7 @@ class BaseModelView(BaseView, ActionsMixin):
         result = {}
 
         if self.form_ajax_refs:
-            for name, options in iteritems(self.form_ajax_refs):
+            for name, options in self.form_ajax_refs.items():
                 if isinstance(options, dict):
                     result[name] = self._create_ajax_loader(name, options)
                 elif isinstance(options, AjaxModelLoader):
@@ -2245,7 +2245,7 @@ class BaseModelView(BaseView, ActionsMixin):
         # Macros in column_formatters are not supported.
         # Macros will have a function name 'inner'
         # This causes non-macro functions named 'inner' not work.
-        for col, func in iteritems(self.column_formatters_export):
+        for col, func in self.column_formatters_export.items():
             # skip checking columns not being exported
             if col not in [col for col, _ in self._export_columns]:
                 continue

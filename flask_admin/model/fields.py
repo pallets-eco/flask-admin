@@ -8,7 +8,6 @@ try:
 except ImportError:
     from wtforms.utils import unset_value
 
-from flask_admin._compat import iteritems
 from .widgets import (InlineFieldListWidget, InlineFormWidget,
                       AjaxSelect2Widget)
 
@@ -125,7 +124,7 @@ class InlineModelFormField(FormField):
         return getattr(self.form, self._pk).data
 
     def populate_obj(self, obj, name):
-        for name, field in iteritems(self.form._fields):
+        for name, field in self.form._fields.items():
             if name != self._pk:
                 field.populate_obj(obj, name)
 

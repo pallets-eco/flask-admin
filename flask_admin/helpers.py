@@ -2,7 +2,7 @@ from re import sub, compile
 from flask import g, request, url_for, flash
 from wtforms.validators import DataRequired, InputRequired
 
-from flask_admin._compat import iteritems, pass_context, urljoin, urlparse
+from flask_admin._compat import pass_context, urljoin, urlparse
 
 
 VALID_SCHEMES = ['http', 'https']
@@ -101,7 +101,7 @@ def is_field_error(errors):
 
 def flash_errors(form, message):
     from flask_admin.babel import gettext
-    for field_name, errors in iteritems(form.errors):
+    for field_name, errors in form.errors.items():
         errors = form[field_name].label.text + u": " + u", ".join(errors)
         flash(gettext(message, error=str(errors)), 'error')
 

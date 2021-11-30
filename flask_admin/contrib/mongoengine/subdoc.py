@@ -1,4 +1,3 @@
-from flask_admin._compat import iteritems
 from flask_admin.model.form import InlineBaseFormAdmin
 
 
@@ -12,7 +11,7 @@ class EmbeddedForm(InlineBaseFormAdmin):
 def convert_subdocuments(values):
     result = {}
 
-    for name, p in iteritems(values):
+    for name, p in values.items():
         if isinstance(p, dict):
             result[name] = EmbeddedForm(**p)
         elif isinstance(p, EmbeddedForm):

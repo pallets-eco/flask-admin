@@ -2,7 +2,6 @@ import inspect
 import warnings
 
 from flask_admin.form import BaseForm, rules
-from flask_admin._compat import iteritems
 
 from wtforms.fields import HiddenField
 from wtforms.fields.core import UnboundField
@@ -40,7 +39,7 @@ def create_editable_list_form(form_base_class, form_class, widget=None):
         list_form_pk = HiddenField(validators=[InputRequired()])
 
     # iterate FormMeta to get unbound fields, replace widget, copy to ListForm
-    for name, obj in iteritems(form_class.__dict__):
+    for name, obj in form_class.__dict__.items():
         if isinstance(obj, UnboundField):
             obj.kwargs['widget'] = widget
             setattr(ListForm, name, obj)
@@ -74,7 +73,7 @@ class InlineBaseFormAdmin(object):
             if not hasattr(self, k):
                 setattr(self, k, None)
 
-        for k, v in iteritems(kwargs):
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
         # Convert form rules

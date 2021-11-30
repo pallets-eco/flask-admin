@@ -4,7 +4,6 @@ from wtforms import fields, validators
 
 from flask_admin import form
 from flask_admin.form.fields import Select2Field, DateTimeField
-from flask_admin._compat import iteritems
 from flask_admin.contrib.sqla import ModelView, filters, tools
 from flask_babelex import Babel
 
@@ -23,7 +22,7 @@ class CustomModelView(ModelView):
     def __init__(self, model, session,
                  name=None, category=None, endpoint=None, url=None,
                  **kwargs):
-        for k, v in iteritems(kwargs):
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
         super(CustomModelView, self).__init__(model, session, name, category,
