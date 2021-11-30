@@ -3,6 +3,7 @@ import re
 import csv
 import mimetypes
 import time
+from collections import OrderedDict
 from math import ceil
 
 from werkzeug.utils import secure_filename
@@ -27,7 +28,7 @@ from flask_admin.helpers import (get_form_data, validate_form_on_submit,
                                  get_redirect_target, flash_errors)
 from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
-from flask_admin._compat import (iteritems, itervalues, OrderedDict,
+from flask_admin._compat import (iteritems, itervalues,
                                  as_unicode, csv_encode, pass_context)
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
