@@ -28,8 +28,7 @@ from flask_admin.helpers import (get_form_data, validate_form_on_submit,
                                  get_redirect_target, flash_errors)
 from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
-from flask_admin._compat import (itervalues,
-                                 pass_context)
+from flask_admin._compat import pass_context
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
 
@@ -1203,7 +1202,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if self._filter_groups:
             results = OrderedDict()
 
-            for group in itervalues(self._filter_groups):
+            for group in self._filter_groups.values():
                 key, items = group.non_lazy()
                 results[key] = items
 

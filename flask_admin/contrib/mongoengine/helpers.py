@@ -1,6 +1,5 @@
 from mongoengine import ValidationError
 from wtforms.validators import ValidationError as wtfValidationError
-from flask_admin._compat import itervalues
 
 
 def make_gridfs_args(value):
@@ -35,6 +34,6 @@ def format_error(error):
         return str(error)
 
     if isinstance(error, wtfValidationError):
-        return '. '.join(itervalues(error.to_dict()))
+        return '. '.join(error.to_dict().values())
 
     return str(error)

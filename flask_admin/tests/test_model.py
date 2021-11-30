@@ -11,7 +11,6 @@ from werkzeug.test import Client
 from wtforms import fields
 
 from flask_admin import Admin, form
-from flask_admin._compat import itervalues
 from flask_admin.model import base, filters
 from flask_admin.model.template import macro
 
@@ -97,7 +96,7 @@ class MockModelView(base.BaseModelView):
     def get_list(self, page, sort_field, sort_desc, search, filters,
                  page_size=None):
         self.search_arguments.append((page, sort_field, sort_desc, search, filters))
-        return len(self.all_models), itervalues(self.all_models)
+        return len(self.all_models), self.all_models.values()
 
     def get_one(self, id):
         return self.all_models.get(int(id))
