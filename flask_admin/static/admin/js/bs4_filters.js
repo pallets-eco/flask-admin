@@ -193,5 +193,6 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
                 JSON.parse($('#active-filters-data').text())
             );
         }
-    })
+    });
+    $(document).trigger('adminFormReady');  // trigger event to allow dynamic filter form to function properly
 })(jQuery);
