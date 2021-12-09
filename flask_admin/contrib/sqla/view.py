@@ -4,7 +4,7 @@ import inspect
 
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.base import manager_of_class, instance_state
-from sqlalchemy.orm import joinedload, aliased
+from sqlalchemy.orm import joinedload, aliased, subqueryload
 from sqlalchemy.sql.expression import desc
 from sqlalchemy import Boolean, Table, func, or_
 from sqlalchemy.exc import IntegrityError
@@ -56,9 +56,10 @@ class ModelView(BaseModelView):
                                               'list_select_related',
                                               None)
     """
-        List of parameters for SQLAlchemy `subqueryload`. Overrides `column_auto_select_related`
-        property.
-
+        List of parameters for SQLAlchemy `joinload`. Overrides `column_auto_select_related` property.
+        Check the `Relationship Loading Techniques` from SQLAlchemy documentation 
+        for difference between `joinload` and `subqueryload`.
+        
         For example::
 
             class PostAdmin(ModelView):
@@ -68,6 +69,25 @@ class ModelView(BaseModelView):
 
             class PostAdmin(ModelView):
                 column_select_related_list = (Post.user, Post.city)
+
+        Please refer to the `joinload` on list of possible values.
+    """
+
+    column_subquery_related_list = []
+    """
+        List of parameters for SQLAlchemy `subquery`.
+        Check the `Relationship Loading Techniques` from SQLAlchemy documentation 
+        for difference between `joinload` and `subqueryload`.
+
+        For example::
+
+            class PostAdmin(ModelView):
+                column_fetch_related_list = ('user', 'city')
+
+        You can also use properties::
+
+            class PostAdmin(ModelView):
+                column_fetch_related_list = (Post.user, Post.city)
 
         Please refer to the `subqueryload` on list of possible values.
     """
@@ -1067,6 +1087,8 @@ class ModelView(BaseModelView):
         # Auto join
         for j in self._auto_joins:
             query = query.options(joinedload(j))
+        for s in self.column_subquery_related_list:
+            query = query.options(subqueryload(s))
 
         # Sorting
         query, joins = self._apply_sorting(query, joins, sort_column, sort_desc)
