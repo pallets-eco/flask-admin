@@ -7,7 +7,7 @@ from redis import Redis
 from wtforms import fields, widgets
 
 from sqlalchemy.event import listens_for
-from jinja2 import Markup
+from MarkupSafe import Markup
 
 from flask_admin import Admin, form
 from flask_admin.form import rules
@@ -193,7 +193,7 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 # Create admin
-admin = Admin(app, 'Example: Forms', template_mode='bootstrap3')
+admin = Admin(app, 'Example: Forms', template_mode='bootstrap4')
 
 # Add views
 admin.add_view(FileView(File, db.session))

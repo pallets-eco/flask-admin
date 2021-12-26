@@ -2,7 +2,7 @@ import os.path as op
 from os import getenv
 from uuid import uuid4
 
-from nose import SkipTest
+from unittest import SkipTest
 
 from flask_admin.contrib.fileadmin import azure
 

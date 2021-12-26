@@ -1,5 +1,5 @@
 from flask_admin.contrib.sqla.typefmt import DEFAULT_FORMATTERS as BASE_FORMATTERS
-from jinja2 import Markup
+from markupsafe import Markup
 from wtforms.widgets import html_params
 from geoalchemy2.shape import to_shape
 from geoalchemy2.elements import WKBElement

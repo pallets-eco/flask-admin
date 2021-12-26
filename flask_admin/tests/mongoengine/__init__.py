@@ -1,10 +1,5 @@
-from nose.plugins.skip import SkipTest
+from unittest import SkipTest
 from wtforms import __version__ as wtforms_version
-
-# Skip test on PY3
-from flask_admin._compat import PY2
-if not PY2:
-    raise SkipTest('MongoEngine is not Python 3 compatible')
 
 if int(wtforms_version[0]) < 2:
     raise SkipTest('MongoEngine does not support WTForms 1.')

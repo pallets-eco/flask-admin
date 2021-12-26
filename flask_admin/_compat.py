@@ -90,3 +90,8 @@ try:
     from collections import OrderedDict
 except ImportError:
     from ordereddict import OrderedDict
+
+try:
+    from jinja2 import pass_context
+except ImportError:
+    from jinja2 import contextfunction as pass_context

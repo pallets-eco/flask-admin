@@ -1,0 +1,191 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+{% import 'admin/actions.html' as actionslib with context %}
+
+{% block body %}
+    {% block breadcrums %}
+      <nav area-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="{{ get_dir_url('.index_view', path=None) }}">{{ _gettext('Root') }}</a>
+          </li>
+          {% for name, path in breadcrumbs[:-1] %}
+          <li class="breadcrumb-item">
+            <a href="{{ get_dir_url('.index_view', path=path) }}">{{ name }}</a>
+          </li>
+          {% endfor %}
+          {% if breadcrumbs %}
+          <li class="breadcrumb-item">
+            <a href="{{ get_dir_url('.index_view', path=breadcrumbs[-1][1]) }}">{{ breadcrumbs[-1][0] }}</a>
+          </li>
+        {% endif %}
+        </ol>
+      </nav>
+    {% endblock %}
+
+    {% block file_list_table %}
+    <div class="table-responsive">
+    <table class="table table-striped table-bordered model-list">
+        <thead>
+            <tr>
+                {% block list_header scoped %}
+                {% if actions %}
+                <th class="list-checkbox-column">
+                    <input type="checkbox" name="rowtoggle" class="action-rowtoggle" />
+                </th>
+                {% endif %}
+                <th class="">&nbsp;</th>
+                {% for column in admin_view.column_list %}
+                <th>
+                    {% if admin_view.is_column_sortable(column) %}
+                    {% if sort_column == column %}
+                        <a href="{{ sort_url(column, dir_path, True) }}" title="{{ _gettext('Sort by %(name)s', name=column) }}">
+                            {{ admin_view.column_label(column) }}
+                            {% if sort_desc %}
+                                <span class="fa fa-chevron-up glyphicon glyphicon-chevron-up"></span>
+                            {% else %}
+                                <span class="fa fa-chevron-down glyphicon glyphicon-chevron-down"></span>
+                            {% endif %}
+                        </a>
+                    {% else %}
+                        <a href="{{ sort_url(column, dir_path) }}" title="{{ _gettext('Sort by %(name)s', name=column) }}">{{ admin_view.column_label(column) }}</a>
+                    {% endif %}
+                    {% else %}
+                    {{ _gettext(admin_view.column_label(column)) }}
+                    {% endif %}
+                </th>
+                {% endfor %}
+                {% endblock %}
+            </tr>
+        </thead>
+        {% for name, path, is_dir, size, date in items %}
+        <tr>
+            {% block list_row scoped %}
+            {% if actions %}
+            <td>
+                {% if not is_dir %}
+                <input type="checkbox" name="rowid" class="action-checkbox" value="{{ path }}" />
+                {% endif %}
+            </td>
+            {% endif %}
+            <td>
+                {% block list_row_actions scoped %}
+                {% if admin_view.can_rename and path and name != '..' %}
+                  {%- if admin_view.rename_modal -%}
+                    {{ lib.add_modal_button(url=get_url('.rename', path=path, modal=True),
+                                            title=_gettext('Rename File'),
+                                            content='<i class="fa fa-pencil glyphicon glyphicon-pencil"></i>') }}
+                  {% else %}
+                    <a class="icon" href="{{ get_url('.rename', path=path) }}" title="{{ _gettext('Rename File') }}">
+                      <i class="fa fa-pencil glyphicon glyphicon-pencil"></i>
+                    </a>
+                  {%- endif -%}
+                {% endif %}
+                {%- if admin_view.can_delete and path -%}
+                    {% if is_dir %}
+                        {% if name != '..' and admin_view.can_delete_dirs %}
+                        <form class="icon" method="POST" action="{{ get_url('.delete') }}">
+                            {{ delete_form.path(value=path) }}
+                            {{ delete_form.csrf_token }}
+                            <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
+                                <i class="fa fa-times glyphicon glyphicon-remove"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    {% else %}
+                    <form class="icon" method="POST" action="{{ get_url('.delete') }}">
+                        {{ delete_form.path(value=path) }}
+                        {{ delete_form.csrf_token }}
+                        <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
+                            <i class="fa fa-trash glyphicon glyphicon-trash"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                {%- endif -%}
+                {% endblock %}
+            </td>
+            {% if is_dir %}
+            <td colspan="2">
+                <a href="{{ get_dir_url('.index_view', path)|safe }}">
+                    <i class="fa fa-folder-o glyphicon glyphicon-folder-close"></i> <span>{{ name }}</span>
+                </a>
+            </td>
+            {% else %}
+            <td>
+                {% if admin_view.can_download %}
+                  {%- if admin_view.edit_modal and admin_view.is_file_editable(path) -%}
+                    {{ lib.add_modal_button(url=get_file_url(path, modal=True)|safe,
+                                            btn_class='', content=name) }}
+                  {% else %}
+                    <a href="{{ get_file_url(path)|safe }}">{{ name }}</a>
+                  {%- endif -%}
+                {% else %}
+                  {{ name }}
+                {% endif %}
+            </td>
+            {% if admin_view.is_column_visible('size') %}
+            <td>
+                {{ size|filesizeformat }}
+            </td>
+            {% endif %}
+            {% endif %}
+            {% if admin_view.is_column_visible('date') %}
+            <td>
+                {{ timestamp_format(date) }}
+            </td>
+            {% endif %}
+            {% endblock %}
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+    {% endblock %}
+    {% block toolbar %}
+    <div class="btn-toolbar">
+        {% if admin_view.can_upload %}
+        <div class="btn-group">
+            {%- if admin_view.upload_modal -%}
+              {{ lib.add_modal_button(url=get_dir_url('.upload', path=dir_path, modal=True),
+                                      btn_class="btn btn-secondary",
+                                      content=_gettext('Upload File')) }}
+            {% else %}
+              <a class="btn btn-secondary" href="{{ get_dir_url('.upload', path=dir_path) }}">{{ _gettext('Upload File') }}</a>
+            {%- endif -%}
+        </div>
+        {% endif %}
+        {% if admin_view.can_mkdir %}
+        <div class="mx-1">
+            {%- if admin_view.mkdir_modal -%}
+              {{ lib.add_modal_button(url=get_dir_url('.mkdir', path=dir_path, modal=True),
+                                      btn_class="btn btn-secondary",
+                                      content=_gettext('Create Directory')) }}
+            {% else %}
+              <a class="btn btn-secondary" href="{{ get_dir_url('.mkdir', path=dir_path) }}">{{ _gettext('Create Directory') }}</a>
+            {%- endif -%}
+        </div>
+        {% endif %}
+        {% if actions %}
+        <div class="mx-1">
+            {{ actionslib.dropdown(actions, 'dropdown-toggle btn btn-secondary') }}
+        </div>
+        {% endif %}
+    </div>
+    {% endblock %}
+
+    {% block actions %}
+    {{ actionslib.form(actions, get_url('.action_view')) }}
+    {% endblock %}
+
+    {%- if admin_view.rename_modal or admin_view.mkdir_modal
+           or admin_view.upload_modal or admin_view.edit_modal -%}
+        {{ lib.add_modal_window() }}
+    {%- endif -%}
+{% endblock %}
+
+{% block tail %}
+    {{ super() }}
+    {{ actionslib.script(_gettext('Please select at least one file.'),
+                         actions,
+                         actions_confirmation) }}
+  <script src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
+{% endblock %}

@@ -121,8 +121,11 @@ class Select2Field(fields.SelectField):
         if self.allow_blank:
             yield (u'__None', self.blank_text, self.data is None)
 
-        for value, label in self.choices:
-            yield (value, label, self.coerce(value) == self.data)
+        for choice in self.choices:
+            if isinstance(choice, tuple):
+                yield (choice[0], choice[1], self.coerce(choice[0]) == self.data)
+            else:
+                yield (choice.value, choice.name, self.coerce(choice.value) == self.data)
 
     def process_data(self, value):
         if value is None:
@@ -191,7 +194,7 @@ class JSONField(fields.TextAreaField):
             # prevent utf8 characters from being converted to ascii
             return as_unicode(json.dumps(self.data, ensure_ascii=False))
         else:
-            return ''
+            return '{}'
 
     def process_formdata(self, valuelist):
         if valuelist:

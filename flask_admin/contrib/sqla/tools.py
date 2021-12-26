@@ -1,7 +1,12 @@
 import types
 
 from sqlalchemy import tuple_, or_, and_, inspect
-from sqlalchemy.ext.declarative.clsregistry import _class_resolver
+try:
+    # Attempt _class_resolver import from SQLALchemy 1.4/2.0 module architecture.
+    from sqlalchemy.orm.clsregistry import _class_resolver
+except ImportError:
+    # If 1.4/2.0 module import fails, fall back to <1.3.x architecture.
+    from sqlalchemy.ext.declarative.clsregistry import _class_resolver
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
 from sqlalchemy.sql.operators import eq
@@ -201,9 +206,11 @@ def is_hybrid_property(model, attr_name):
             if is_association_proxy(attr):
                 attr = attr.remote_attr
             last_model = attr.property.argument
-            if isinstance(last_model, _class_resolver):
+            if isinstance(last_model, string_types):
+                last_model = attr.property._clsregistry_resolve_name(last_model)()
+            elif isinstance(last_model, _class_resolver):
                 last_model = model._decl_class_registry[last_model.arg]
-            elif isinstance(last_model, types.FunctionType):
+            elif isinstance(last_model, (types.FunctionType, types.MethodType)):
                 last_model = last_model()
         last_name = names[-1]
         return last_name in get_hybrid_properties(last_model)
@@ -216,4 +223,6 @@ def is_relationship(attr):
 
 
 def is_association_proxy(attr):
+    if hasattr(attr, 'parent'):
+        attr = attr.parent
     return hasattr(attr, 'extension_type') and attr.extension_type == ASSOCIATION_PROXY

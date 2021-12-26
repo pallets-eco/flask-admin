@@ -1,6 +1,32 @@
 Changelog
 =========
 
+1.5.8
+-----
+
+* SQLAlchemy 1.4.5+ compatibility fixes
+* Redis CLI fixes
+
+1.5.7
+-----
+
+* Bootstrap 4 support!
+* Added hook for custom SQLAlchemy models initializers
+* SQLAlchemy 1.4/2.0 compatibility fix
+
+1.5.6
+-----
+
+* SQLAlchemy 1.3.6 compatibility fix
+* Python 3.8 support
+
+1.5.5
+-----
+
+* Werkzeug 1.0 compatibility fix
+* Use fa-circle-o icon for unchecked booleans
+* A few SQLAlchemy-related bug fixes
+
 1.5.4
 -----
 
