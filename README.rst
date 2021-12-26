@@ -7,8 +7,9 @@ references to *git@github.com:flask-admin/flask-admin.git*.
 .. image:: https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.svg
 	:target: https://crowdin.com/project/flask-admin
 
-.. image:: https://travis-ci.org/flask-admin/flask-admin.svg?branch=master
-	:target: https://travis-ci.org/flask-admin/flask-admin
+.. image:: https://github.com/flask-admin/flask-admin/actions/workflows/test.yaml/badge.svg
+	:target: https://github.com/flask-admin/flask-admin/actions/workflows/test.yaml
+
 
 Introduction
 ------------
@@ -88,12 +89,12 @@ Or alternatively, you can download the repository and install manually by doing:
 
 Tests
 -----
-Test are run with *nose*. If you are not familiar with this package you can get some more info from `their website <https://nose.readthedocs.io/>`_.
+Test are run with *pytest*. If you are not familiar with this package you can get some more info from `their website <https://pytest.org/>`_.
 
 To run the tests, from the project directory, simply::
 
     pip install -r requirements-dev.txt
-    nosetests
+    pytest
 
 You should see output similar to::
 

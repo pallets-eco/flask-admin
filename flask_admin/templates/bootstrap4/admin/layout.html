@@ -80,7 +80,8 @@
     {% set class_name = item.get_class_name() %}
     {% if item.is_accessible() and item.is_visible() %}
       <li{% if class_name %} class="{{ class_name }}"{% endif %}>
-        <a class="nav-link" href="{{ item.get_url() }}">{{ menu_icon(item) }}{{ item.name }}</a>
+        <a class="nav-link" href="{{ item.get_url() }}"{% if item.target %} target="{{ item.target }}"{% endif %}>
+          {{ menu_icon(item) }}{{ item.name }}</a>
       </li>
     {% endif %}
   {% endfor %}

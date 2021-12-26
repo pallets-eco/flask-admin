@@ -40,8 +40,9 @@ class InlineFieldList(FieldList):
     def display_row_controls(self, field):
         return True
 
-    def process(self, formdata, data=unset_value):
-        res = super(InlineFieldList, self).process(formdata, data)
+    def process(self, formdata, data=unset_value, extra_filters=None):
+        res = super(InlineFieldList, self).process(
+            formdata, data)
 
         # Postprocess - contribute flag
         if formdata:

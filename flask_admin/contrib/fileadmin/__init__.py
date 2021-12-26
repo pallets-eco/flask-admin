@@ -388,7 +388,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         class EditForm(self.form_base_class):
             content = fields.TextAreaField(lazy_gettext('Content'),
-                                           (validators.required(),))
+                                           (validators.InputRequired(),))
 
         return EditForm
 
@@ -410,7 +410,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                 Validates if provided name is valid for *nix and Windows systems.
             """
             name = fields.StringField(lazy_gettext('Name'),
-                                      validators=[validators.Required(),
+                                      validators=[validators.InputRequired(),
                                                   validate_name])
             path = fields.HiddenField()
 
@@ -423,7 +423,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             Override to implement customized behavior.
         """
         class DeleteForm(self.form_base_class):
-            path = fields.HiddenField(validators=[validators.Required()])
+            path = fields.HiddenField(validators=[validators.InputRequired()])
 
         return DeleteForm
 

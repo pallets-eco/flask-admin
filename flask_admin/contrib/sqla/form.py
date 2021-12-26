@@ -282,7 +282,7 @@ class AdminModelConverter(ModelConverterBase):
     @converts('sqlalchemy.sql.sqltypes.Enum')
     def convert_enum(self, column, field_args, **extra):
         available_choices = [(f, f) for f in column.type.enums]
-        accepted_values = [key for key, val in available_choices]
+        accepted_values = [choice[0] for choice in available_choices]
 
         if column.nullable:
             field_args['allow_blank'] = column.nullable
@@ -304,7 +304,7 @@ class AdminModelConverter(ModelConverterBase):
             available_choices = [(f.value, f.name) for f in column.type.choices]
         else:
             available_choices = column.type.choices
-        accepted_values = [key for key, val in available_choices]
+        accepted_values = [choice[0] if isinstance(choice, tuple) else choice.value for choice in available_choices]
 
         if column.nullable:
             field_args['allow_blank'] = column.nullable
@@ -345,7 +345,11 @@ class AdminModelConverter(ModelConverterBase):
         return form.DateTimeField(**field_args)
 
     @converts('sqlalchemy_utils.types.email.EmailType')
-    def convert_email(self, field_args, **extra):
+    def convert_email(self, field_args, column=None, **extra):
+        if column.nullable:
+            filters = field_args.get('filters', [])
+            filters.append(lambda x: x or None)
+            field_args['filters'] = filters
         field_args['validators'].append(validators.Email())
         return fields.StringField(**field_args)
 

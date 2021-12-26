@@ -185,11 +185,14 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
         html: true,
         placement: 'bottom'
     });
-    if ($('#filter-groups-data').length == 1) {
-        var filter = new AdminFilters(
-            '#filter_form', '.field-filters',
-            JSON.parse($('#filter-groups-data').text()),
-            JSON.parse($('#active-filters-data').text())
-        );
-    }
+    $(document).on('adminFormReady', function(evt){
+        if ($('#filter-groups-data').length == 1) {
+            var filter = new AdminFilters(
+                '#filter_form', '.field-filters',
+                JSON.parse($('#filter-groups-data').text()),
+                JSON.parse($('#active-filters-data').text())
+            );
+        }
+    });
+    $(document).trigger('adminFormReady');  // trigger event to allow dynamic filter form to function properly
 })(jQuery);

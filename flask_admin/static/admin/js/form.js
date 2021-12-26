@@ -39,7 +39,7 @@
           },
           initSelection: function(element, callback) {
             $el = $(element);
-            var value = jQuery.parseJSON($el.attr('data-json'));
+            var value = JSON.parse($el.attr('data-json'));
             var result = null;
 
             if (value) {
@@ -461,12 +461,14 @@
                         // prevent minutes from showing in 5 minute increments
                         minuteStep: 1,
                         maxYear: 2030,
-                    }                    
+                    }
                 });
                 return true;
             case 'x-editable-combodate':
-                let template  = $el.data('template')
-                el.removeAttribute('data-template')
+                // Fixes bootstrap4 issue where data-template breaks bs4 popover.
+                // https://github.com/flask-admin/flask-admin/issues/2022
+                let template = $el.data('template');
+                $el.removeAttr('data-template');
                 $el.editable({
                     params: overrideXeditableParams,
                     template: template,
@@ -490,7 +492,9 @@
                     display: function(value) {
                         // override to display text instead of ids on list view
                         var html = [];
-                        var data = $.fn.editableutils.itemsByValue(value, $el.data('source'), 'id');
+                        // temporary patch to provide bs3 & bs4 compatibility
+                        var data = $.fn.editableutils.itemsByValue(value, $el.data('source'), 'id') +
+                            $.fn.editableutils.itemsByValue(value, $el.data('source'), 'value');
 
                         if(data.length) {
                             $.each(data, function(i, v) { html.push($.fn.editableutils.escape(v.text)); });
@@ -632,6 +636,7 @@
 
     // Expose faForm globally
     var faForm = window.faForm = new AdminForm();
+    $(document).trigger('adminFormReady')
 
     // Apply global styles for current page after page loaded
     $(function() {
