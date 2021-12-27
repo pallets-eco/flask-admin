@@ -42,7 +42,7 @@ class InlineFieldList(FieldList):
 
     def process(self, formdata, data=unset_value, extra_filters=None):
         res = super(InlineFieldList, self).process(
-            formdata, data, extra_filters=extra_filters)
+            formdata, data)
 
         # Postprocess - contribute flag
         if formdata:
