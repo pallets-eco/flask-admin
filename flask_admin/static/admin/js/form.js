@@ -208,7 +208,7 @@
         map.addControl(drawControl);
         if (window.MAPBOX_SEARCH) {
 	  L.Control.geocoder({
-		  geocoder: L.Control.Geocoder.opencage('8b85c7d17777437980879385adfb19b5')
+		  geocoder: L.Control.Geocoder.mapbox({'apiKey': window.MAPBOX_ACCESS_TOKEN})
 	  }).addTo(map);
         }
 
