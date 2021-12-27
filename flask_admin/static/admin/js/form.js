@@ -161,7 +161,9 @@
           var attribution = $el.data('tile-layer-attribution') || ''
           L.tileLayer('//'+$el.data('tile-layer-url'), {
             attribution: attribution,
-            maxZoom: 18
+            maxZoom: 18,
+            accessToken: window.MAPBOX_ACCESS_TOKEN,
+            id: 'mapbox/streets-v11',
           }).addTo(map)
         } else {
           var mapboxUrl = 'https://api.mapbox.com/styles/v1/mapbox/'+window.MAPBOX_MAP_ID+'/tiles/{z}/{x}/{y}?access_token='+window.MAPBOX_ACCESS_TOKEN
