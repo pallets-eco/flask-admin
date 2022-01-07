@@ -319,6 +319,64 @@ class InlineModelFormList(InlineFieldList):
             self.inline_view._on_model_change(field, model, is_created)
 
 
+class InlineModelOneToOneField(InlineModelFormField):
+    def __init__(self, form, session, model, prop, inline_view, **kwargs):
+        self.form = form
+        self.session = session
+        self.model = model
+        self.prop = prop
+        self.inline_view = inline_view
+
+        self._pk = get_primary_key(model)
+
+        # Generate inline form field
+        form_opts = FormOpts(
+            widget_args=getattr(inline_view, 'form_widget_args', None),
+            form_rules=inline_view._form_rules
+        )
+        super().__init__(form, self._pk, form_opts=form_opts, **kwargs)
+
+    @staticmethod
+    def _looks_empty(field):
+        """
+        Check while installed fields is not null
+        """
+        if field is None:
+            return True
+
+        if isinstance(field, str) and not field:
+            return True
+
+        return False
+
+    def populate_obj(self, model, field_name):
+        inline_model = getattr(model, field_name, None)
+        is_created = False
+        form_is_empty = True
+
+        if not inline_model:
+            is_created = True
+            inline_model = self.model()
+
+        # iterate all inline form fields and fill model
+        for name, field in iteritems(self.form._fields):
+            if name != self._pk:
+                field.populate_obj(inline_model, name)
+
+            if form_is_empty and not self._looks_empty(field.data):
+                form_is_empty = False
+
+        # don't create inline model if perhaps one field was not filled
+        if form_is_empty:
+            return
+
+        # set for our model updated inline model
+        setattr(model, field_name, inline_model)
+
+        # save results
+        self.inline_view.on_model_change(self.form, model, is_created)
+
+
 def get_pk_from_identity(obj):
     # TODO: Remove me
     key = identity_key(instance=obj)[1]
