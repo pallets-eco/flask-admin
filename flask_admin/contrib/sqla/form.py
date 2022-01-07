@@ -773,8 +773,8 @@ class InlineOneToOneModelConverter(InlineModelConverter):
 
     def _calculate_mapping_key_pair(self, model, info):
 
-        mapper = model._sa_class_manager.mapper
-        target_mapper = info.model._sa_class_manager.mapper.base_mapper
+        mapper = info.model._sa_class_manager.mapper.base_mapper
+        target_mapper = model._sa_class_manager.mapper
 
         inline_relationship = dict()
 
@@ -797,7 +797,7 @@ class InlineOneToOneModelConverter(InlineModelConverter):
                 ref = getattr(forward_prop, 'back_populates')
 
             if ref:
-                inline_relationship[forward_prop.key] = ref
+                inline_relationship[ref] = forward_prop.key
                 continue
 
             # here we suppose that model has only one relationship
@@ -810,7 +810,7 @@ class InlineOneToOneModelConverter(InlineModelConverter):
                     continue
 
                 if issubclass(model, backward_prop.mapper.class_):
-                    inline_relationship[forward_prop.key] = backward_prop.key
+                    inline_relationship[backward_prop.key] = forward_prop.key
                     break
             else:
                 raise Exception(
