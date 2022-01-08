@@ -247,19 +247,19 @@ class ModelView(BaseModelView):
             class MyModel1View(Base):
                 inline_models = (Model2,)
                 column_labels = {'models': 'Hello'}
-                
-        By default used ManyToMany relationship for inline models. 
+
+        By default used ManyToMany relationship for inline models.
         You may configure inline model for OneToOne relationship.
-        To achieve this, you need to install special ``inline_converter`` 
+        To achieve this, you need to install special ``inline_converter``
         for your model::
-            
+
             from flask_admin.contrib.sqla.form import \
                 InlineOneToOneModelConverter
-            
+
             class MyInlineModelForm(InlineFormAdmin):
                 form_columns = ('title', 'date')
                 inline_converter = InlineOneToOneModelConverter
-                
+
             class MyModelView(ModelView):
                 inline_models = (MyInlineModelForm(MyInlineModel),)
     """
