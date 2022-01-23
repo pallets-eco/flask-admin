@@ -36,9 +36,9 @@ class DateTimeField(fields.DateTimeField):
             :param kwargs:
                 Any additional parameters
         """
-        super(DateTimeField, self).__init__(label, validators, **kwargs)
+        format = format or '%Y-%m-%d %H:%M:%S'
+        super(DateTimeField, self).__init__(label, validators, format, **kwargs)
 
-        self.format = format or '%Y-%m-%d %H:%M:%S'
 
 
 class TimeField(fields.Field):
