@@ -206,10 +206,10 @@
         }
         var drawControl = new L.Control.Draw(drawOptions);
         map.addControl(drawControl);
-        if (window.MAPBOX_SEARCH) {
-	  L.Control.geocoder({
-		  geocoder: L.Control.Geocoder.mapbox({'apiKey': window.MAPBOX_ACCESS_TOKEN})
-	  }).addTo(map);
+        if (window.LEAFLET_CONTROL_GEOCODER) {
+          L.Control.geocoder({
+            geocoder: L.Control.Geocoder.nominatim()
+          }).addTo(map);
         }
 
         // save when the editableLayers are edited
