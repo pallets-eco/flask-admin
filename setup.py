@@ -48,6 +48,7 @@ setup(
     version=grep('__version__'),
     url='https://github.com/flask-admin/flask-admin/',
     license='BSD',
+    python_requires='>=3.6',
     author=grep('__author__'),
     author_email=grep('__email__'),
     description='Simple and extensible admin interface framework for Flask',
