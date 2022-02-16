@@ -25,6 +25,9 @@ from flask_admin.contrib.sqla import form, filters as sqla_filters, tools
 from .typefmt import DEFAULT_FORMATTERS
 from .ajax import create_ajax_loader
 
+from sqlalchemy.dialects.oracle import VARCHAR, VARCHAR2, CHAR
+from sqlalchemy.types import Integer, String
+
 # Set up logger
 log = logging.getLogger("flask-admin.sqla")
 
@@ -931,6 +934,15 @@ class ModelView(BaseModelView):
 
         return query, joins
 
+    @staticmethod
+    def _safe_cast(column, type):
+        if isinstance(column.type, Integer):
+            return cast(column, type)
+        if not isinstance(column.type, VARCHAR) and not isinstance(column.type, VARCHAR2) and not isinstance(column.type, CHAR):
+            return cast(column, String(32))
+        else:
+            return column
+
     def _apply_search(self, query, count_query, joins, count_joins, search):
         """
             Apply search to a query.
@@ -958,11 +970,11 @@ class ModelView(BaseModelView):
                                                                                    inner_join=False)
 
                 column = field if alias is None else getattr(alias, field.key)
-                filter_stmt.append(cast(column, Unicode).ilike(stmt))
+                filter_stmt.append(self._safe_cast(column, Unicode).ilike(stmt))
 
                 if count_filter_stmt is not None:
                     column = field if count_alias is None else getattr(count_alias, field.key)
-                    count_filter_stmt.append(cast(column, Unicode).ilike(stmt))
+                    count_filter_stmt.append(self._safe_cast(column, Unicode).ilike(stmt))
 
             query = query.filter(or_(*filter_stmt))
 
