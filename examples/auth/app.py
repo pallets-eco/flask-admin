@@ -1,8 +1,8 @@
 import os
 
 from flask import Flask, abort, redirect, render_template, request, url_for
-from flask_security import RoleMixin, SQLAlchemyUserDatastore, Security, \
-    UserMixin, current_user
+from flask_security import (RoleMixin, SQLAlchemyUserDatastore, Security,
+                            UserMixin, current_user)
 from flask_security.utils import hash_password
 from flask_sqlalchemy import SQLAlchemy
 
@@ -13,6 +13,7 @@ from flask_admin.contrib import sqla
 # Create Flask application
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
+
 db = SQLAlchemy(app)
 
 # Define models
@@ -43,6 +44,8 @@ class User(db.Model, UserMixin):
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
 
+    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
+
     def __str__(self):
         return self.email
 
@@ -62,7 +65,8 @@ class MyModelView(sqla.ModelView):
 
     def _handle_view(self, name, **kwargs):
         """
-        Override builtin _handle_view in order to redirect users when a view is not accessible.
+        Override builtin _handle_view in order to redirect users when a view
+        is not accessible.
         """
         if not self.is_accessible():
             if current_user.is_authenticated:
@@ -118,37 +122,34 @@ def build_sample_db():
     with app.app_context():
         user_role = Role(name='user')
         super_user_role = Role(name='superuser')
+
         db.session.add(user_role)
         db.session.add(super_user_role)
         db.session.commit()
 
         test_user = user_datastore.create_user(
             first_name='Admin',
-            email='admin',
+            email='admin@example.com',
             password=hash_password('admin'),
             roles=[user_role, super_user_role]
         )
 
         first_names = [
             'Harry', 'Amelia', 'Oliver', 'Jack', 'Isabella', 'Charlie',
-            'Sophie', 'Mia',
-            'Jacob', 'Thomas', 'Emily', 'Lily', 'Ava', 'Isla', 'Alfie',
-            'Olivia', 'Jessica',
-            'Riley', 'William', 'James', 'Geoffrey', 'Lisa', 'Benjamin',
-            'Stacey', 'Lucy'
+            'Sophie', 'Mia', 'Jacob', 'Thomas', 'Emily', 'Lily', 'Ava',
+            'Isla', 'Alfie', 'Olivia', 'Jessica', 'Riley', 'William', 'James',
+            'Geoffrey', 'Lisa', 'Benjamin', 'Stacey', 'Lucy'
         ]
         last_names = [
             'Brown', 'Smith', 'Patel', 'Jones', 'Williams', 'Johnson',
-            'Taylor', 'Thomas',
-            'Roberts', 'Khan', 'Lewis', 'Jackson', 'Clarke', 'James',
-            'Phillips', 'Wilson',
-            'Ali', 'Mason', 'Mitchell', 'Rose', 'Davis', 'Davies', 'Rodriguez',
-            'Cox', 'Alexander'
+            'Taylor', 'Thomas', 'Roberts', 'Khan', 'Lewis', 'Jackson',
+            'Clarke', 'James', 'Phillips', 'Wilson', 'Ali', 'Mason',
+            'Mitchell', 'Rose', 'Davis', 'Davies', 'Rodriguez', 'Cox',
+            'Alexander'
         ]
 
         for i in range(len(first_names)):
-            tmp_email = first_names[i].lower() + "." + last_names[
-                i].lower() + "@example.com"
+            tmp_email = first_names[i].lower() + "." + last_names[i].lower() + "@example.com"
             tmp_pass = ''.join(
                 random.choice(string.ascii_lowercase + string.digits) for i in
                 range(10))
@@ -156,7 +157,7 @@ def build_sample_db():
                 first_name=first_names[i],
                 last_name=last_names[i],
                 email=tmp_email,
-                password=encrypt_password(tmp_pass),
+                password=hash_password(tmp_pass),
                 roles=[user_role, ]
             )
         db.session.commit()
@@ -164,7 +165,6 @@ def build_sample_db():
 
 
 if __name__ == '__main__':
-
     # Build a sample db on the fly, if one does not exist yet.
     app_dir = os.path.realpath(os.path.dirname(__file__))
     database_path = os.path.join(app_dir, app.config['DATABASE_FILE'])
