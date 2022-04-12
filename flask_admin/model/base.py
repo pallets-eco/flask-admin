@@ -7,8 +7,8 @@ from math import ceil
 
 from werkzeug.utils import secure_filename
 
-from flask import (current_app, request, redirect, flash, abort, json,
-                   Response, get_flashed_messages, stream_with_context)
+from flask import (has_app_context, current_app, request, redirect, flash, abort,
+                   json, Response, get_flashed_messages, stream_with_context)
 try:
     import tablib
 except ImportError:
@@ -1327,6 +1327,8 @@ class BaseModelView(BaseView, ActionsMixin):
             Override to implement customized behavior.
         """
         def get_upload_path():
+            if not has_app_context():
+                return None
             return current_app.config['IMPORT_UPLOAD_PATH']
 
         class ImportForm(self.form_base_class):
