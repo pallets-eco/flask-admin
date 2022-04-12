@@ -1328,7 +1328,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Override to implement customized behavior.
         """
         def get_upload_path():
-            return os.path.join("./", "uploads", "import_files")
+            return current_app.config['IMPORT_UPLOAD_PATH']
 
         class ImportForm(self.form_base_class):
             import_file = FileUploadField('Import File', base_path=get_upload_path(), allowed_extensions=['csv', 'xls'])
@@ -1404,7 +1404,6 @@ class BaseModelView(BaseView, ActionsMixin):
             Override to implement custom behavior.
         """
         return self._import_form_class(get_form_data(), obj=obj)
-
 
     def validate_form(self, form):
         """
@@ -2158,11 +2157,18 @@ class BaseModelView(BaseView, ActionsMixin):
 
         if not self.can_import:
             return redirect(return_url)
-        
+
+        if not current_app.config.get('IMPORT_UPLOAD_PATH'):
+            flash(
+                gettext('IMPORT_UPLOAD_PATH setting required to utilize import functionality'),
+                'error'
+            )
+            return redirect(return_url)
+
         if tablib is None:
             flash(gettext('Tablib dependency not installed.'), 'error')
             return redirect(return_url)
-        
+
         form = self.import_form()
 
         if self.validate_form(form):
@@ -2186,7 +2192,6 @@ class BaseModelView(BaseView, ActionsMixin):
                            form=form,
                            form_opts=form_opts,
                            return_url=return_url)
-
 
     @expose('/edit/', methods=('GET', 'POST'))
     def edit_view(self):

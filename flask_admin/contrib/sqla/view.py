@@ -29,7 +29,7 @@ try:
     import tablib
 except ImportError:
     tablib = None
-    
+
 
 # Set up logger
 log = logging.getLogger("flask-admin.sqla")
@@ -1240,7 +1240,7 @@ class ModelView(BaseModelView):
         """
         filename = form.import_file.data.filename.lower()
 
-        if filename.endswith(".csv"):
+        if filename.endswith('.csv'):
             imported_data = tablib.Dataset().load(form.import_file.data.stream.read().decode(), format='csv')
         else:
             imported_data = tablib.Dataset().load(form.import_file.data.stream.read(), format='xls')
