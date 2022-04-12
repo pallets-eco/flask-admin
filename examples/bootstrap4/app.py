@@ -14,6 +14,7 @@ app = Flask(__name__)
 # Create dummy secrey key so we can use sessions
 app.config['SECRET_KEY'] = '123456790'
 app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
+app.config['IMPORT_UPLOAD_PATH'] = op.abspath(op.dirname(__file__))
 
 # Create in-memory database
 app.config['DATABASE_FILE'] = 'sample_db.sqlite'
