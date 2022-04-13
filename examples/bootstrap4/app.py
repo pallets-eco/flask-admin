@@ -1,6 +1,6 @@
-import datetime
 import os
 import os.path as op
+from datetime import datetime
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
@@ -29,7 +29,7 @@ class User(db.Model):
     name = db.Column(db.Unicode(64))
     email = db.Column(db.Unicode(64))
     active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.now)
+    created_at = db.Column(db.DateTime, default=datetime.now)
 
     def __unicode__(self):
         return self.name
@@ -50,14 +50,26 @@ class CustomView(ModelView):
 
 
 class UserAdmin(CustomView):
+    def coerce_bool(self, cell_value):
+        return cell_value.upper() == 'TRUE'
+
+    def coerce_datetime(self, cell_value):
+        if not cell_value:
+            return None
+        return datetime.strptime(cell_value, '%m/%d/%Y %H:%M')
     column_searchable_list = ('name',)
     column_filters = ('name', 'email')
+    column_display_pk = True
     can_export = True
     can_create = True
     can_import = True
     create_modal = True
     import_modal = True
     export_types = ['csv', 'xlsx']
+    column_formatters_import = {
+        'active': coerce_bool,
+        'created_at': coerce_datetime
+    }
 
 
 # Flask views
