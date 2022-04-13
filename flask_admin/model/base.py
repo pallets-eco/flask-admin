@@ -262,6 +262,21 @@ class BaseModelView(BaseView, ActionsMixin):
                 pass
     """
 
+    column_formatters_import = None
+    """
+        Dictionary of import column formatters to be used for import.
+
+        Defaults to assuming all columns are strings (due to nature of CSVs).
+
+        The Callback function has the prototype ::
+
+            def a_formatter(self, cell_value):
+                return str(cell_value)       # string example
+                # return int(cell_value)       # integer example
+                # return cell_value == "TRUE"  # boolean example
+                # return datetime.strptime(cell_value, "%Y-%m-%d %H:%M:%S")  # datetime example
+    """
+
     column_formatters_export = None
     """
         Dictionary of list view column formatters to be used for export.
