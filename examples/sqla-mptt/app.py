@@ -25,6 +25,7 @@ class NodeAdmin(ModelView):
 
     list_template = "admin/treelist.html"
 
+    column_editable_list = ["parent"]
     column_exclude_list = ["tree_id", "left", "right", "level"]
     form_excluded_columns = ["tree_id", "children", "left", "right", "level"]
 
