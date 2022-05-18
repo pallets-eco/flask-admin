@@ -68,7 +68,7 @@
                  parent: dropNodeId,
               }).done(function() {
                 $('table.model-list').treetable('move', dragNodeId, dropNodeId);
-                $(e.target).find('td span.indent a').each(applyExpansionIcons);
+                $('table.model-list td span.indent a').each(applyExpansionIcons);
               })
             },
             hoverClass: 'accept',
