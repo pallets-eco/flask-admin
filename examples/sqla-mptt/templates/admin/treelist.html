@@ -64,10 +64,10 @@
               var dragNodeId = $(ui.draggable).data('tt-id');
               var dropNodeId = $(this).data('tt-id');
               $.post('/admin/node/ajax/update/', {
-                 list_form_pk: dragNodeId,
-                 parent: dropNodeId,
+                list_form_pk: dragNodeId,
+                parent: dropNodeId,
               }).done(function() {
-                 location.reload();
+                location.reload();
               })
             },
             hoverClass: 'accept',
