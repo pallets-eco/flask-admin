@@ -19,6 +19,9 @@ class Node(db.Model, BaseNestedSets):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
 
+    def __str__(self):
+        return self.name
+
 
 # Administrative class
 class NodeAdmin(ModelView):
