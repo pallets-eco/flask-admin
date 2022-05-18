@@ -8,7 +8,7 @@ from sqlalchemy_mptt.mixins import BaseNestedSets
 app = Flask(__name__)
 
 # Create dummy secret key so we can use sessions
-app.config['SECRET_KEY'] = '123456790'
+app.config["SECRET_KEY"] = "123456790"
 
 # Create in-memory database
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.sqlite"
