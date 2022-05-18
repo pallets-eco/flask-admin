@@ -22,8 +22,8 @@
     $(function() {
         // Assign ID data attributes to nodes in the tree
         $('table.model-list tr').map(function() {
-          var treeId = $(this).find('input.action-checkbox').val();
-          $(this).data('tt-id', treeId);
+          var nodeId = $(this).find('input.action-checkbox').val();
+          $(this).data('tt-id', nodeId);
 
           var parentId = $(this).find('.col-parent').text().trim();
           $(this).data('tt-parent-id', parentId);
