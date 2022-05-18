@@ -43,6 +43,13 @@
           indent: 32,
         });
 
+        // Sort each root branch of the tree on the client; display order may differ
+        // from the HTML element ordering rendered onto the page by the server
+        $('table.model-list tr.branch').each(function() {
+          var node = $('table.model-list').treetable('node', $(this).data('tt-id'));
+          $('table.model-list').treetable('sortBranch', node);
+        });
+
         var applyExpansionIcons = function() {
           var expand = $(this).attr('title') === 'Expand';
           $(this).removeClass().addClass(expand ? 'icon-plus' : 'icon-minus');
