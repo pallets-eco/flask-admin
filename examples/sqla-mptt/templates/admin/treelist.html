@@ -67,8 +67,7 @@
                  list_form_pk: dragNodeId,
                  parent: dropNodeId,
               }).done(function() {
-                $('table.model-list').treetable('move', dragNodeId, dropNodeId);
-                $('table.model-list td span.indent a').each(applyExpansionIcons);
+                 location.reload();
               })
             },
             hoverClass: 'accept',
