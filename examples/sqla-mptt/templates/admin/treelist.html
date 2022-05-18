@@ -32,6 +32,9 @@
         // Remove the 'parent' column from the table (only rendered for purposes of ID retrieval)
         $('table.model-list .col-parent').remove();
 
+        // Prevent wrapping within the item checkbox selection column
+        $('table.model-list td input.action-checkbox').parent().css('white-space', 'nowrap');
+
         // Re-render the table nodes in tree format
         $('table.model-list').treetable({
           expandable: true,
