@@ -31,7 +31,7 @@ class NodeAdmin(ModelView):
         super(NodeAdmin, self).__init__(Node, db.session, name="Nodes")
 
 
-# Simple page to show images
+# Simple page to list tree nodes
 @app.route("/")
 def index():
     nodes = Node.get_tree(session=db.session)
