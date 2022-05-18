@@ -39,7 +39,18 @@
         $('table.model-list').treetable({
           expandable: true,
           initialState: 'expanded',
+          indenterTemplate: '<span class="indent"></span>',
+          indent: 32,
         });
+
+        var applyExpansionIcons = function() {
+          var expand = $(this).attr('title') === 'Expand';
+          $(this).removeClass().addClass(expand ? 'icon-plus' : 'icon-minus');
+        };
+
+        // Apply icons for node expand and collapse buttons
+        $('table.model-list td span.indent a').click(applyExpansionIcons);
+        $('table.model-list td span.indent a').each(applyExpansionIcons);
 
         // Allow each table row to be dragged
         $('table.model-list tr').draggable({
