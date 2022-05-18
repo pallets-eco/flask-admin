@@ -47,7 +47,12 @@
         $('table.model-list tr').each(function() {
           $(this).droppable({
             drop: function(e, ui) {
-              $('table.model-list').treetable('move', $(ui.draggable).data('tt-id'), $(this).data('tt-id'));
+              var dragNodeId = $(ui.draggable).data('tt-id');
+              var dropNodeId = $(this).data('tt-id');
+              $.post(`/admin/node/edit/?id=${dragNodeId}`, {parent: dropNodeId})
+                .done(function() {
+                  $('table.model-list').treetable('move', dragNodeId, dropNodeId);
+                })
             },
             hoverClass: 'accept',
             over: function(e, ui) {
