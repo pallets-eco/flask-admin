@@ -28,12 +28,18 @@ class NodeAdmin(ModelView):
 
     list_template = "admin/treelist.html"
 
+    # Allow the AJAX endpoint to update only the parent relationship on each node
     column_editable_list = ["parent"]
+
     column_exclude_list = ["tree_id", "left", "right", "level"]
     form_excluded_columns = ["tree_id", "children", "left", "right", "level"]
 
+    # Retrieve and render only the primary key from each parent key relationship since
+    # that's all that is required to associate nodes on the client
     column_formatters = dict(parent=lambda _, __, m, ___: m.parent_id)
 
+    # Pagination can cause partially-rendered (and therefore inconsistent) tree
+    # rendering, so it is disabled here
     page_size = 0
 
     def __init__(self):
