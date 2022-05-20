@@ -34,6 +34,8 @@ class NodeAdmin(ModelView):
 
     column_formatters = dict(parent=lambda _, __, m, ___: m.parent_id)
 
+    page_size = 0
+
     def __init__(self):
         super(NodeAdmin, self).__init__(Node, db.session, name="Nodes")
 
