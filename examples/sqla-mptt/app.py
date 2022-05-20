@@ -1,5 +1,5 @@
-import flask_admin
 from flask import Flask, render_template
+from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_mptt.mixins import BaseNestedSets
@@ -47,7 +47,7 @@ def index():
 
 if __name__ == "__main__":
     # Create admin
-    admin = flask_admin.Admin(app, name="Example: Tree of Models")
+    admin = Admin(app, name="Example: Tree of Models")
 
     # Add views
     admin.add_view(NodeAdmin())
