@@ -31,7 +31,7 @@ class NodeAdmin(ModelView):
     # Allow the AJAX endpoint to update only the parent relationship on each node
     column_editable_list = ["parent"]
 
-    column_exclude_list = ["tree_id", "left", "right", "level"]
+    column_list = ["name", "parent_id"]
     form_excluded_columns = ["tree_id", "children", "left", "right", "level"]
 
     # Retrieve and render only the primary key from each parent key relationship since

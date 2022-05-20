@@ -25,12 +25,12 @@
           var nodeId = $(this).find('input.action-checkbox').val();
           $(this).data('tt-id', nodeId);
 
-          var parentId = $(this).find('.col-parent').text().trim();
+          var parentId = $(this).find('.col-parent_id').text().trim();
           $(this).data('tt-parent-id', parentId);
         })
 
-        // Remove the 'parent' column from the table (only rendered for purposes of ID retrieval)
-        $('table.model-list .col-parent').remove();
+        // Remove the parent ID column from the table
+        $('table.model-list .col-parent_id').remove();
 
         // Prevent wrapping within the item checkbox selection column
         $('table.model-list td input.action-checkbox').parent().css('white-space', 'nowrap');
