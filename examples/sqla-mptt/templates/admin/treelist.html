@@ -77,7 +77,6 @@
                 location.reload();
               })
             },
-            hoverClass: 'accept',
             over: function(e, ui) {
               if ($(this).is($(ui.draggable)) && !$(this).is('.expanded')) {
                 $('table.model-list').treetable('expandNode', $(this).data('tt-id'));
