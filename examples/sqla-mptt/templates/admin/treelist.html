@@ -70,7 +70,7 @@
             drop: function(e, ui) {
               var dragNodeId = $(ui.draggable).data('tt-id');
               var dropNodeId = $(this).data('tt-id');
-              $.post('/admin/node/ajax/update/', {
+              $.post('ajax/update/', {
                 list_form_pk: dragNodeId,
                 parent: dropNodeId,
               }).done(function() {
