@@ -8,6 +8,9 @@
     .col-parent_id {
         display: none;
     }
+    table.model-list td span.indent {
+        white-space: no-wrap;
+    }
     </style>
 {% endblock %}
 
@@ -33,9 +36,6 @@
           var parentId = $(this).find('.col-parent_id').text().trim();
           $(this).data('tt-parent-id', parentId);
         })
-
-        // Prevent wrapping within the item checkbox selection column
-        $('table.model-list td input.action-checkbox').parent().css('white-space', 'nowrap');
 
         // Re-render the table nodes in tree format
         $('table.model-list').treetable({
