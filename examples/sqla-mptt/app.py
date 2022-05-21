@@ -45,6 +45,16 @@ class NodeAdmin(ModelView):
     def __init__(self):
         super(NodeAdmin, self).__init__(Node, db.session, name="Nodes")
 
+    def get_list(self, page, sort_column, sort_desc, search, filters,
+                 execute=True, page_size=None):
+        results = []
+        sources = deque(Product.query.filter(Product.parent_id == None))
+        while sources:
+            product = sources.popleft()
+            results.append(product)
+            sources.extendleft(product.get_children())
+        return len(results), results
+
 
 # Simple page to list tree nodes
 @app.route("/")
