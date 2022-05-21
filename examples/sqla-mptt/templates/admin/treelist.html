@@ -4,6 +4,11 @@
     {{ super() }}
     <link href="{{ url_for('static', filename='jquery-ui.css') }}" rel="stylesheet" />
     <link href="{{ url_for('static', filename='jquery.treetable.css') }}" rel="stylesheet" />
+    <style>
+    .col-parent_id {
+        display: none;
+    }
+    </style>
 {% endblock %}
 
 {% block list_header %}
@@ -28,9 +33,6 @@
           var parentId = $(this).find('.col-parent_id').text().trim();
           $(this).data('tt-parent-id', parentId);
         })
-
-        // Remove the parent ID column from the table
-        $('table.model-list .col-parent_id').remove();
 
         // Prevent wrapping within the item checkbox selection column
         $('table.model-list td input.action-checkbox').parent().css('white-space', 'nowrap');
