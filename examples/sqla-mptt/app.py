@@ -1,3 +1,4 @@
+from collections import deque
 from flask import Flask, render_template
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
