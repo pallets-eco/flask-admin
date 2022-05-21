@@ -49,7 +49,7 @@ class NodeAdmin(ModelView):
     def get_list(self, page, sort_column, sort_desc, search, filters,
                  execute=True, page_size=None):
         results = []
-        sources = deque(Product.query.filter(Product.parent_id == None))
+        sources = deque(Node.query.filter(Node.parent_id == None))
         while sources:
             product = sources.popleft()
             results.append(product)
