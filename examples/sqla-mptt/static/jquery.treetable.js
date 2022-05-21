@@ -6,6 +6,8 @@
  * Dual licensed under the MIT or GPL Version 2 licenses.
  */
 (function($) {
+  "use strict";
+
   var Node, Tree, methods;
 
   Node = (function() {
@@ -28,9 +30,11 @@
       this.treeCell = $(this.row.children(this.settings.columnElType)[this.settings.column]);
       this.expander = $(this.settings.expanderTemplate);
       this.indenter = $(this.settings.indenterTemplate);
+      this.cell = $(this.settings.cellTemplate);
       this.children = [];
       this.initialized = false;
       this.treeCell.prepend(this.indenter);
+      this.treeCell.wrapInner(this.cell);
     }
 
     Node.prototype.addChild = function(child) {
@@ -81,7 +85,7 @@
         this.settings.onNodeExpand.apply(this);
       }
 
-      if ($(this.row).is(":visible")) {
+      if (!this.row[0].hidden) {
         this._showChildren();
       }
 
@@ -432,6 +436,7 @@
         expanderTemplate: "<a href='#'>&nbsp;</a>",
         indent: 19,
         indenterTemplate: "<span class='indenter'></span>",
+        cellTemplate: '',
         initialState: "collapsed",
         nodeIdAttr: "ttId", // maps to data-tt-id
         parentIdAttr: "ttParentId", // maps to data-tt-parent-id
@@ -508,20 +513,21 @@
     },
 
     loadBranch: function(node, rows) {
-      var settings = this.data("treetable").settings,
-          tree = this.data("treetable").tree;
+      var treetable = this.data("treetable");
+      var settings = treetable.settings,
+          tree = treetable.tree;
 
-      // TODO Switch to $.parseHTML
+      // do NOT switch to $.parseHTML in order to allow raw HTML as well as a jQuery object containing rows
       rows = $(rows);
 
       if (node == null) { // Inserting new root nodes
         this.append(rows);
       } else {
-        var lastNode = this.data("treetable").findLastNode(node);
+        var lastNode = treetable.findLastNode(node);
         rows.insertAfter(lastNode.row);
       }
 
-      this.data("treetable").loadRows(rows);
+      treetable.loadRows(rows);
 
       // Make sure nodes are properly initialized
       rows.filter("tr").each(function() {
@@ -537,11 +543,11 @@
     },
 
     move: function(nodeId, destinationId) {
-      var destination, node;
+      var destination, node, treetable = this.data("treetable");
 
-      node = this.data("treetable").tree[nodeId];
-      destination = this.data("treetable").tree[destinationId];
-      this.data("treetable").move(node, destination);
+      node = treetable.tree[nodeId];
+      destination = treetable.tree[destinationId];
+      treetable.move(node, destination);
 
       return this;
     },
@@ -623,7 +629,7 @@
   };
 
   // Expose classes to world
-  this.TreeTable || (this.TreeTable = {});
-  this.TreeTable.Node = Node;
-  this.TreeTable.Tree = Tree;
+  window.TreeTable || (window.TreeTable = {});
+  window.TreeTable.Node = Node;
+  window.TreeTable.Tree = Tree;
 })(jQuery);
