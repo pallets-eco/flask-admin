@@ -1,7 +1,8 @@
 import itertools
 
 from wtforms.validators import ValidationError
-from wtforms.fields import FieldList, FormField, SelectFieldBase
+from wtforms.fields import FieldList, FormField, SelectFieldBase, TextAreaField
+from wtforms.widgets.core import Input
 
 try:
     from wtforms.fields import _unset_value as unset_value
@@ -225,3 +226,11 @@ class AjaxSelectMultipleField(AjaxSelectField):
     def pre_validate(self, form):
         if self._invalid_formdata:
             raise ValidationError(self.gettext(u'Not a valid choice'))
+
+
+class ColorField(TextAreaField):
+    """
+        Create a special ColorInput field for selecting a
+        HEX color in the edit menu. For the ModelTypeView in particular.
+    """
+    widget = Input(input_type="color")
