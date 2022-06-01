@@ -468,7 +468,6 @@
                 // Fixes bootstrap4 issue where data-template breaks bs4 popover.
                 // https://github.com/flask-admin/flask-admin/issues/2022
                 let template = $el.data('template');
-                $el.removeAttr('data-template');
                 $el.editable({
                     params: overrideXeditableParams,
                     template: template,
@@ -525,6 +524,121 @@
                       }
                     }
                 });
+                return true;
+            case 'x-editable-ajax':
+                // Custom data-role for using form_ajax_refs with a column_editable_list
+                // so the 'editable' fields can also use AJAX, not just in the 'edit' form
+                var multiple = $el.attr('data-multiple') == '1';
+                var optsSelect2 = {
+                    minimumInputLength: $el.attr('data-minimum-input-length'),
+                    placeholder: 'data-placeholder',
+                    allowClear: $el.attr('data-allow-blank') == '1',
+                    multiple: multiple,
+                    ajax: {
+                        // Special data-url just for the GET request
+                        url: $el.attr('data-url-lookup'),
+                        data: function (term, page) {
+                            return {
+                                query: term,
+                                offset: (page - 1) * 10,
+                                limit: 10,
+                            };
+                        },
+                        results: function (data, page) {
+                            var results = [];
+
+                            for (var k in data) {
+                                var v = data[k];
+
+                                results.push({ id: v[0], text: v[1] });
+                            }
+
+                            return {
+                                results: results,
+                                more: results.length == 10,
+                            };
+                        },
+                    },
+                    // initSelection populates the multiselect with the already-selected values
+                    initSelection: function (element, callback) {
+                        // Keep $el how it is so we can grab the data-json attribute
+                        // $el = $(element);
+                        var value = JSON.parse($el.attr('data-json'));
+                        var result = null;
+
+                        if (value) {
+                            if (multiple) {
+                                result = [];
+
+                                for (var k in value) {
+                                    var v = value[k];
+                                    result.push({ id: v[0], text: v[1] });
+                                }
+
+                                callback(result);
+                            } else {
+                                result = { id: value[0], text: value[1] };
+                            }
+                        }
+
+                        callback(result);
+                    },
+                };
+                // From x-editable
+                $el.editable({
+                    params: overrideXeditableParams,
+                    combodate: {
+                        // prevent minutes from showing in 5 minute increments
+                        minuteStep: 1,
+                        maxYear: 2030,
+                    },
+                    // So the select2 dropdown will lazy-load values from the DB on-demand
+                    select2: optsSelect2,
+                });
+                return true;
+            case 'x-editable-color':
+                // Custom data-role/type for using x-editable-ajax with a color picker
+                // Nice pastel colors
+                var colorsource = [
+                    { value: '#f7f7f7', text: '#f7f7f7' },
+                    { value: '#292b2c', text: '#292b2c' },
+                    { value: '#87CEEB', text: '#87CEEB' },
+                    { value: '#32CD32', text: '#32CD32' },
+                    { value: '#BA55D3', text: '#BA55D3' },
+                    { value: '#F08080', text: '#F08080' },
+                    { value: '#4682B4', text: '#4682B4' },
+                    { value: '#9ACD32', text: '#9ACD32' },
+                    { value: '#40E0D0', text: '#40E0D0' },
+                    { value: '#FF69B4', text: '#FF69B4' },
+                    { value: '#F0E68C', text: '#F0E68C' },
+                    { value: '#D2B48C', text: '#D2B48C' },
+                    { value: '#8FBC8B', text: '#8FBC8B' },
+                    { value: '#6495ED', text: '#6495ED' },
+                    { value: '#DDA0DD', text: '#DDA0DD' },
+                    { value: '#5F9EA0', text: '#5F9EA0' },
+                    { value: '#FFDAB9', text: '#FFDAB9' },
+                    { value: '#FFA07A', text: '#FFA07A' },
+                    { value: '#fce38a', text: '#fce38a' },
+                    { value: '#eaffd0', text: '#eaffd0' },
+                    { value: '#95e1d3', text: '#95e1d3' },
+                ]
+                var optsSelect2 = {
+                    placeholder: $el.attr('data-value'),
+                    minimumInputLength: $el.attr('data-minimum-input-length'),
+                    allowClear: $el.attr('data-allow-blank') == '1',
+                    multiple: $el.attr('data-multiple') == '1',
+                    // Display the actual color next to the hex value of the color
+                    formatResult: function (item) { return "<span style='padding-left: 20px; border-left: 20px solid " + item.text + "'>" + item.text + "</span>"; },
+                    formatSelection: function (item) { return item.text; },
+                };
+                $el.editable({
+                    // Source data for list of colors, as array of objects
+                    source: colorsource,
+                    params: overrideXeditableParams,
+                    // select2-specific options
+                    select2: optsSelect2,
+                });
+                return true;
         }
       };
 
@@ -629,9 +743,9 @@
         e.preventDefault();
         var r = confirm($('.inline-remove-field').attr('value'));
         var form = $(this).closest('.inline-field');
-        if ( r == true ){
-        form.remove();
-      }
+        if ( r == true ) {
+            form.remove();
+        }
     });
 
     // Expose faForm globally

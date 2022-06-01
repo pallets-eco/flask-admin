@@ -75,11 +75,24 @@ class XEditableWidget(object):
         Determines how to display the x-editable/ajax form based on the
         field inside of the FieldList (StringField, IntegerField, etc).
     """
+    def __init__(self, multiple=False):
+        """
+            :param multiple:
+                For x-editable Select2 dropdowns with multiple options.
+                (e.g. many-to-many relationships)
+        """
+        self.multiple = multiple
+
     def __call__(self, field, **kwargs):
+        """
+            Called when rendering the Jinja2 template
+        """
         display_value = kwargs.pop('display_value', '')
         kwargs.setdefault('data-value', display_value)
 
         kwargs.setdefault('data-role', 'x-editable')
+
+        # For POST requests
         kwargs.setdefault('data-url', './ajax/update/')
 
         kwargs.setdefault('id', field.id)
@@ -130,7 +143,6 @@ class XEditableWidget(object):
         elif field.type == 'DateField':
             kwargs['data-type'] = 'combodate'
             kwargs['data-format'] = 'YYYY-MM-DD'
-            kwargs['data-template'] = 'YYYY-MM-DD'
             kwargs['data-role'] = 'x-editable-combodate'
         elif field.type == 'DateTimeField':
             kwargs['data-type'] = 'combodate'
@@ -176,6 +188,47 @@ class XEditableWidget(object):
                 kwargs['data-value'] = separator.join(selected_ids)
             else:
                 kwargs['data-value'] = text_type(selected_ids[0])
+        elif field.type in ("AjaxSelectField", "AjaxSelectMultipleField"):
+            # x-editable-ajax is a custom type in form.js for
+            # lazy-loading the dropdown options by AJAX instead of hard-coding in the HTML,
+            # which significantly slows down the page loading time.
+            kwargs["data-role"] = "x-editable-ajax"
+            kwargs["data-type"] = "select2"
+
+            # For GET requests
+            kwargs.setdefault("data-url-lookup", get_url(".ajax_lookup", name=field.loader.name))
+        
+            minimum_input_length = int(field.loader.options.get("minimum_input_length", 0))
+            kwargs.setdefault("data-minimum-input-length", minimum_input_length)
+
+            placeholder = field.loader.options.get("placeholder", gettext("Search"))
+            kwargs.setdefault("data-placeholder", placeholder)
+
+            allow_blank = getattr(field, "allow_blank", False)
+            if allow_blank and not self.multiple:
+                kwargs["data-allow-blank"] = "1"
+
+            if field.type == "AjaxSelectField":
+                data = field.loader.format(field.data)
+                if data:
+                    kwargs["value"] = data[0]
+                    kwargs["data-json"] = json.dumps(data)
+            elif field.type == "AjaxSelectMultipleField":
+                kwargs["data-multiple"] = "1"
+                result = []
+                ids = []
+                for value in field.data:
+                    data = field.loader.format(value)
+                    result.append(data)
+                    ids.append(as_unicode(data[0]))
+                kwargs["data-json"] = json.dumps(result)
+
+                separator = getattr(field, "separator", ",")
+                kwargs["value"] = separator.join(ids)
+        elif field.type == "ColorField":
+            # A select2 list of pre-defined colors, formatted to display the actual color
+            kwargs["data-role"] = "x-editable-color"
+            kwargs["data-type"] = "select2"
         else:
             raise Exception('Unsupported field type: %s' % (type(field),))
 
