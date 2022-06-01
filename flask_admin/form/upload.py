@@ -1,3 +1,5 @@
+import io
+import base64
 import os
 import os.path as op
 
@@ -26,7 +28,7 @@ except ImportError:
     ImageOps = None
 
 __all__ = ['FileUploadInput', 'FileUploadField',
-           'ImageUploadInput', 'ImageUploadField',
+           'ImageUploadInput', 'ImageUploadField', 'ImageUploadFieldDB',
            'namegen_filename', 'thumbgen_filename']
 
 
@@ -489,6 +491,112 @@ class ImageUploadField(FileUploadField):
             return filename, 'JPEG'
 
         return filename, image.format
+
+
+class ImageUploadFieldDB(ImageUploadField):
+    """
+        Upload an image to a SQL database as a "large binary" object,
+        rather than saving to a file as in the "ImageUploadField" base class.
+
+        Does image validation, thumbnail generation, updating and deleting images.
+
+        Requires PIL (or Pillow) to be installed.
+    """
+    def _delete_file(self, filename):
+        """
+            There's no image file on the hard drive to delete (just in the database)
+        """
+        return
+
+    def _save_file(self, data, filename):
+        """
+            There's no image file on the hard drive to save (just in the database)
+        """
+        return
+
+    def _save_image(self, image, path, format='JPEG'):
+        """
+            We're saving to the database, not to the hard drive
+        """
+        return
+
+    @staticmethod
+    def image_to_bytes(image: Image, format: str):
+        """Convert Pillow image to bytes (e.g. for database)"""
+        # Get stream of binary data
+        stream = io.BytesIO()
+        # Save the image to the stream
+        image.save(stream, format=format)
+        # Get the binary bytes from the stream
+        image_bytes = stream.getvalue()
+        return image_bytes
+
+    @staticmethod
+    def binary_to_image(binary):
+        """Convert binary data (e.g. from database) to Pillow image"""
+        stream = io.BytesIO(binary)
+        image = Image.open(stream)
+        return image
+
+    def populate_obj(self, obj, name):
+        """
+            Save the binary data from the uploaded image, to the database.
+
+            The binary data has already been opened to self.image in pre_validate()
+        """
+        field = getattr(obj, name, None)
+        if field:
+            # If field should be deleted, clean it up
+            if self._should_delete:
+                setattr(obj, name, None)
+                return
+                
+        if self._is_uploaded_file(self.data):
+            # Resize first?
+            if self.max_size:
+                image = self._resize(self.image, self.max_size)
+            else:
+                image = self.image
+
+            image_bytes = self.image_to_bytes(image, image.format)
+
+            # Set the object's data to the image_bytes
+            setattr(obj, name, image_bytes)
+
+    @staticmethod
+    def resize(image, width: int, height: int, force: bool=True):
+        """Resize image file"""
+
+        if image.size[0] > width or image.size[1] > height:
+            if force:
+                return ImageOps.fit(image, (width, height), Image.ANTIALIAS)
+            else:
+                thumb = image.copy()
+                thumb.thumbnail((width, height), Image.ANTIALIAS)
+                return thumb
+
+        return image
+
+    @classmethod
+    def display_thumbnail(cls, view, context, model, name):
+        """
+            Open and display a thumbnail image in Flask Admin list view
+        """
+        try:
+            binary = getattr(model, name)
+            image = cls.binary_to_image(binary)
+        except Exception:
+            return "No preview available"
+
+        # There's no thumbnail saved in the database,
+        # so resize the original now, before sending/displaying
+        thumb = cls.resize(image, 100, 100, True)
+        image_bytes = cls.image_to_bytes(thumb, format=image.format)
+
+        data_uri = base64.b64encode(image_bytes).decode("utf-8")
+        format = str(image.format).lower()
+
+        return Markup(f'<img src="data:image/{format};base64,{data_uri}">')
 
 
 # Helpers
