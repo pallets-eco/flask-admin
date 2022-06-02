@@ -359,50 +359,6 @@ class FieldSet(NestedRule):
         super(FieldSet, self).__init__(rule_set, separator=separator)
 
 
-class Row(NestedRule):
-    """
-        Bootstrap grid "row" div with automatic Bootstrap columns
-    """
-    def __init__(self, *columns, **kw):
-        """
-            Constructor
-
-            :param columns:
-                Arguments (args, unlimited number) which each will become Bootstrap columns.
-            :param kw:
-                Keyword arguments, which may contain:
-                "row_classes"
-                    Specify the classes for the Bootstrap row (e.g. "form-row justify-content-center").
-                    Default "form-row"
-                "col_classes":
-                    Space-separated classes to use for the Bootstrap columns (e.g. "col-md-6").
-                    Default "col"
-        """
-        super(Row, self).__init__(rules=columns, separator="")
-        self.row_classes = kw.get("row_classes", "form-row")
-        self.col_classes = kw.get("col_classes", "col")
-
-    def __call__(self, form, form_opts=None, field_args={}):
-        """
-        Render all children when called in the Jinja template.
-
-        :param form:
-            Form object
-        :param form_opts:
-            Form options
-        :param field_args:
-            Optional arguments that should be passed to template or the field
-        """
-        cols = []
-        for col in self.rules:
-            if col.visible_fields:
-                w_args = form_opts.widget_args.setdefault(col.visible_fields[0], {})
-                w_args.setdefault("column_class", self.col_classes)
-            cols.append(col(form, form_opts, field_args))
-
-        return Markup('<div class="%s">%s</div>' % (self.row_classes, "".join(cols)))
-
-
 class NestedRuleClasses(NestedRule):
     """
         Nested rule inside a <div> with customizable classes.
@@ -443,10 +399,10 @@ class NestedRuleClasses(NestedRule):
             result.append(rule(form, form_opts, field_args))
 
         children = self.separator.join(result)
-        return Markup('<div class="%s">%s</div>' % (self.classes, children))
+        return Markup('<div class="%s %s">%s</div>' % (self.main_class, self.classes, children))
 
 
-class BSContainer(NestedRuleClasses):
+class ContainerBootstrap(NestedRuleClasses):
     """
         Bootstrap container, which should have Bootstrap rows and columns nested inside.
     """
@@ -463,10 +419,10 @@ class BSContainer(NestedRuleClasses):
                 Try something like classes="container-fluid" to make a full-width container.
         """
         classes = "container {}".format(classes)
-        super(BSContainer, self).__init__(rules=rules, separator=separator, classes=classes)
+        super(ContainerBootstrap, self).__init__(rules=rules, separator=separator, classes=classes)
 
 
-class BSRow(NestedRuleClasses):
+class Row(NestedRuleClasses):
     """
         Bootstrap row, which should have Bootstrap columns nested inside.
     """
@@ -483,22 +439,14 @@ class BSRow(NestedRuleClasses):
                 Try something like classes="justify-content-center" to center your columns in the row.
         """
         classes = "form-row {}".format(classes)
-
-        # Ensure the children in a Bootstrap row are BSCol classes
-        columns = []
-        for rule in rules:
-            if isinstance(rule, str):
-                rule = BSCol(rules=[rule])
-            columns.append(rule)
-
-        super(BSRow, self).__init__(rules=columns, separator=separator, classes=classes)
+        super(Row, self).__init__(rules=rules, separator=separator, classes=classes)
 
 
-class BSCol(NestedRuleClasses):
+class Col(NestedRuleClasses):
     """
         Bootstrap column, which can have another rule nested inside.
     """
-    def __init__(self, rules=[], separator="", classes=""):
+    def __init__(self, rules=[], separator="", classes="col"):
         """
             Constructor
 
@@ -507,12 +455,12 @@ class BSCol(NestedRuleClasses):
             :param separator:
                 Default separator between rules when rendering them.
             :param classes:
-                Space-separated classes to add to the default "col" class.
+                Space-separated classes to use (default is "col").
                 Try something like classes="col-md-3" to have the column fill 1/4
                 of the screen if it's at least a medium-sized device.
         """
         classes = "col {}".format(classes)
-        super(BSCol, self).__init__(rules=rules, separator=separator, classes=classes)
+        super(Col, self).__init__(rules=rules, separator=separator, classes=classes)
 
 
 class Group(Macro):
