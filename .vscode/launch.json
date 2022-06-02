@@ -13,7 +13,8 @@
       // "console": "integratedTerminal", 
       "module": "flask",
       "env": {
-        "FLASK_APP": "examples/sqla-images-postgres-x-editable-ajax/app:app",
+        // "FLASK_APP": "examples/sqla-images-postgres-x-editable-ajax/app:app",
+        "FLASK_APP": "${file}:app",
         "FLASK_ENV": "development",
         "FLASK_DEBUG": "0"
       },
