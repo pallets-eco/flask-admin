@@ -213,23 +213,23 @@
 
 {% macro render_form_buttons(cancel_url, extra=None, is_modal=False) %}
   {% if is_modal %}
-        <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
+        <input type="submit" class="btn btn-primary mr-1 mb-1" value="{{ _gettext('Save') }}" />
         {% if extra %}
         {{ extra }}
         {% endif %}
         {% if cancel_url %}
-          <a href="{{ cancel_url }}" class="btn btn-danger" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
+          <a href="{{ cancel_url }}" class="btn btn-danger mr-1 mb-1" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
         {% endif %}
   {% else %}
     <hr>
     <div class="form-group">
       <div class="col-md-offset-2 col-md-10 submit-row">
-        <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
+        <input type="submit" class="btn btn-primary mr-1 mb-1" value="{{ _gettext('Save') }}" />
         {% if extra %}
         {{ extra }}
         {% endif %}
         {% if cancel_url %}
-          <a href="{{ cancel_url }}" class="btn btn-danger" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
+          <a href="{{ cancel_url }}" class="btn btn-danger mr-1 mb-1" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
         {% endif %}
       </div>
     </div>
@@ -289,9 +289,9 @@
 
 {% macro extra() %}
   {% if admin_view.can_create %}
-  <input name="_add_another" type="submit" class="btn btn-secondary" value="{{ _gettext('Save and Add Another') }}" />
+  <input name="_add_another" type="submit" class="btn btn-secondary mr-1 mb-1" value="{{ _gettext('Save and Add Another') }}" />
   {% endif %}
   {% if admin_view.can_edit %}
-  <input name="_continue_editing" type="submit" class="btn btn-secondary" value="{{ _gettext('Save and Continue Editing') }}" />
+  <input name="_continue_editing" type="submit" class="btn btn-secondary mr-1 mb-1" value="{{ _gettext('Save and Continue Editing') }}" />
   {% endif %}
 {% endmacro %}
