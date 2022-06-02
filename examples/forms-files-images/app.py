@@ -8,7 +8,7 @@ from wtforms import fields, widgets
 
 from sqlalchemy.orm import relationship
 from sqlalchemy.event import listens_for
-from MarkupSafe import Markup
+from markupsafe import Markup
 
 from flask_admin import Admin, form
 from flask_admin.form import rules
@@ -29,6 +29,7 @@ app.config['SECRET_KEY'] = '123456790'
 app.config['DATABASE_FILE'] = 'sample_db.sqlite'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.config['DATABASE_FILE']
 app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # Create directory for file fields to use
@@ -224,7 +225,26 @@ class UserView(sqla.ModelView):
         'addresses',
         rules.Row('country', 'continent'),
         # Show macro that's included in the templates
-        rules.Container('rule_demo.wrap', rules.Field('notes'))
+        rules.Container('rule_demo.wrap', rules.Field('notes')),
+        # Bootstrap container with embedded row and columns
+        rules.BSContainer(
+            rules=[
+                rules.BSRow(
+                    rules=[
+                        rules.BSCol(
+                            rules=["email"],
+                            classes="col-xs-6"
+                        ),
+                        rules.BSCol(
+                            rules=["phone"],
+                            classes="col-xs-6"
+                        )
+                    ],
+                    classes="justify-content-center"
+                )
+            ],
+            classes="container-fluid"
+        )
     ]
 
     # Use same rule set for edit page
@@ -349,4 +369,4 @@ if __name__ == '__main__':
         build_sample_db()
         
     # Start app
-    app.run(debug=True)
+    app.run(debug=False)
