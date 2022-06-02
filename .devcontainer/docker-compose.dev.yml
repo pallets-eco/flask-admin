@@ -1,5 +1,9 @@
 version: '3.7'
 services:
+  redis:
+    image: "redis:6.0-rc1-alpine"
+    restart: unless-stopped
+
   flask_admin_dev:
     volumes:
       # Mount the root folder that contains .git
@@ -9,12 +13,16 @@ services:
       # i.e. either a path to a directory containing a Dockerfile, or a url to a git repository
       context: ..
       dockerfile: Dockerfile.dev
-    # env_file: 
-    #   - ../.env
-    # environment:
-    #   FLASK_CONFIG: development
-    # Forwards port 0.0.0.0:5005 from the Docker host (e.g. Windows desktop) to the dev environment container's port 5000
+    env_file: 
+      - ../.env
+    environment:
+      DOCKER_BUILDKIT: 1
+      COMPOSE_DOCKER_CLI_BUILD: 1
+      BUILDKIT_INLINE_CACHE: 1
+      FLASK_CONFIG: development
+      FLASK_ENV: development
     user: user
+    # Forwards port 0.0.0.0:5005 from the Docker host (e.g. Windows desktop) to the dev environment container's port 5000
     ports:
       - 0.0.0.0:5005:5005
     # Overrides default command so things don't shut down after the process ends.
