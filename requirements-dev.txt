@@ -11,7 +11,7 @@ Babel<=2.9.1
 flask-babelex
 shapely==1.5.9
 geoalchemy2
-psycopg2
+psycopg2-binary
 pytest
 pytest-cov
 coveralls
@@ -23,3 +23,4 @@ arrow<0.14.0
 colour
 email-validator
 wtforms==2.3.3
+black

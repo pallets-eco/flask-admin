@@ -1,0 +1,67 @@
+// For format details, see https://aka.ms/vscode-remote/devcontainer.json or the definition README at
+// https://github.com/microsoft/vscode-dev-containers/tree/master/containers/python-3-miniconda
+{
+	"name": "flask_admin_dev",
+	// Path that the Docker build should be run from relative to devcontainer.json. 
+	// For example, a value of ".." would allow you to reference content in sibling directories. Defaults to "."
+	"context": "..",
+	// Use either the Dockerfile or docker-compose.yml to create the Docker container
+	// "dockerFile": "Dockerfile",
+	"dockerComposeFile": "docker-compose.dev.yml",
+	// Required if using dockerComposeFile. The name of the service VS Code should connect to once running.
+	// The 'service' property is the name of the service for the container that VS Code should
+	// use. Update this value and .devcontainer/docker-compose.yml to the real service name.
+	"service": "flask_admin_dev",
+	
+	// The optional 'workspaceFolder' property is the path VS Code should open by default when
+	// connected. This is typically a file mount in .devcontainer/docker-compose.yml
+	"workspaceFolder": "/workspace",
+
+	"remoteUser": "user",
+	// "containerUser": "user",
+
+	// Forward Docker container port 5000 to Docker host port 8080 with -p 8080:5000 (host port localhost:8080 or http://127.0.0.1/:8080)
+	// "forwardPorts": [5000],
+	// "appPort": ["0.0.0.0:5005:5000"],
+
+	// Map the Docker sockets with -v argument
+	// Run as --privileged
+	// Set environment variables with -e argument
+	// "runArgs": [
+	// 	"-v", "/var/run/docker.sock:/var/run/docker.sock", 
+	// 	// "-v", "${env:HOME}${env:USERPROFILE}:/c-users-sean",
+	// 	// Avoid reinstalling extensions on container rebuilds (only works if only one VS Code instance is doing this at a time)
+	// 	// "-v", "extensions_volume:/root/.vscode-server",
+	// 	"--privileged",],
+
+	// Uncomment the next line to use a non-root user. See https://aka.ms/vscode-remote/containers/non-root-user.
+	// "runArgs": [ "-u", "1000" ],
+	// "runArgs": ["-u", "vscode"],
+
+	"extensions": [
+		"ms-python.python",
+		"dbaeumer.vscode-eslint",
+		"ms-azuretools.vscode-docker",
+		"ms-python.vscode-pylance"
+	],
+	"settings": {
+		// "python.pythonPath": "/app/venv/bin/python",
+		"python.linting.pylintEnabled": true,
+		"python.linting.enabled": true,
+		"remote.extensionKind": {
+			"ms-azuretools.vscode-docker": "workspace"
+		},
+		// "macros": {  // requires macros extension by publisher:"geddski" 
+		// 	"pythonExecSelectionAndCursorDown": [
+		// 		"python.execSelectionInTerminal", 
+		// 		//"vscode.window.activeTextEditor.show()",
+		// 		"cursorDown" 
+		// 	]
+		// },
+		"git.enableSmartCommit": true,
+		"git.autofetch": true,
+	},
+
+	// Run commands after the container is created.
+	// "postCreateCommand": "cd /workspaces/upload_to_aws/client && npm install && npm run build"
+}

@@ -1,0 +1,56 @@
+FROM python:3.8-slim-buster
+
+ARG USERNAME=user
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+# Use Docker BuildKit for better caching and faster builds
+ARG DOCKER_BUILDKIT=1
+ARG BUILDKIT_INLINE_CACHE=1
+# Enable BuildKit for Docker-Compose
+ARG COMPOSE_DOCKER_CLI_BUILD=1
+
+# Configure apt and install packages
+RUN apt-get update && \
+    apt-get -y install --no-install-recommends apt-utils dialog curl unzip 2>&1 && \
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    #
+    # Verify git, process tools, lsb-release (common in install instructions for CLIs) installed
+    apt-get -y install git redis-server libpq-dev sass procps iproute2 lsb-release && \
+    #
+    # Clean up
+    apt-get autoremove -y && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/*
+
+# ENV POETRY_VERSION=1.1.7
+RUN pip3 install --upgrade pip && \
+    pip3 install poetry==1.1.7
+
+# Add a new non-root user and install a few packages
+RUN groupadd --system --gid $USER_GID $USERNAME && \
+    useradd --system --uid $USER_UID --gid $USER_GID --home /home/$USERNAME -m $USERNAME && \
+    chown -R $USER_UID:$USER_GID /workspace && \
+    #
+    # [Optional] Add sudo support. Omit if you don't need to install software after connecting.
+    apt-get update && \
+    apt-get install -y sudo && \
+    echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
+    chmod 0440 /etc/sudoers.d/$USERNAME
+
+WORKDIR /workspace
+
+# Set the user so nobody can run as root on the Docker host (security)
+USER $USERNAME
+
+# Copy my preferred .bashrc to /root/ so that it's automatically "sourced" when the container starts
+COPY .bashrc /root/
+
+# COPY requirements-dev.txt ./
+# RUN pip3 install -r requirements-dev.txt
+
+COPY poetry.lock pyproject.toml ./
+RUN poetry config virtualenvs.create false && \
+  poetry install --no-interaction --no-ansi

@@ -1,0 +1,147 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    // Debug with Flask
+    {
+      "name": "flask run --no-debugger --no-reload",
+      "type": "python",
+      "request": "launch",
+      // "program": "${file}",
+      // "console": "integratedTerminal", 
+      "module": "flask",
+      "env": {
+        "FLASK_APP": "examples/sqla-images-postgres-x-editable-ajax/app:app",
+        "FLASK_ENV": "development",
+        "FLASK_DEBUG": "0"
+      },
+      "args": [
+        "run",
+        "--no-debugger",
+        "--no-reload",
+        // "--with-threads"
+        // "--without-threads"
+      ],
+      "jinja": true,
+      "justMyCode": false,
+      // "stopOnEntry": true,
+    },
+    // Pytest all files
+    {
+      "name": "Pytest All Files",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal",
+      "args": [
+        "/home/user/workspace/tests/",
+        "-v",
+        // "--lf",
+        "--durations=0",
+        // // Debugger doesn't always stop on breakpoints with coverage enabled
+        // "--no-cov",
+      ],
+      "jinja": true,
+      "justMyCode": false,
+      // "stopOnEntry": true,
+    },
+    // Pytest all files last-failed
+    {
+      "name": "Pytest All Files Last-Failed",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal",
+      "args": [
+        "/home/user/workspace/tests/",
+        "-v",
+        "--lf",
+        "--durations=0",
+        // // Debugger doesn't always stop on breakpoints with coverage enabled
+        // "--no-cov",
+      ],
+      "jinja": true,
+      "justMyCode": false,
+      // "stopOnEntry": true,
+    },
+    // Pytest run the current file only
+    {
+      "name": "Pytest Current File",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal",
+      "args": [
+        "${file}",
+        "-v",
+        // "--lf",
+        "--durations=0",
+        // // Debugger doesn't always stop on breakpoints with coverage enabled
+        // "--no-cov",
+      ],
+      "jinja": true,
+      "justMyCode": false,
+      // "stopOnEntry": true,
+      "env": {
+        "_PYTEST_RAISE": "1"
+      },
+    },
+    // Pytest run the current file only, with only the last-failed tests
+    {
+      "name": "Pytest Current File Last-Failed",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal",
+      "args": [
+        "${file}",
+        "-v",
+        "--lf",
+        "--durations=0",
+        // // Debugger doesn't always stop on breakpoints with coverage enabled
+        // "--no-cov",
+      ],
+      "jinja": true,
+      "justMyCode": false,
+      // "stopOnEntry": true,
+      "env": {
+        "_PYTEST_RAISE": "1"
+      },
+    },
+    // Regular Python file debugger to run the current file
+    {
+      "name": "Python Run Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "jinja": true,
+      "justMyCode": false,
+      // "stopOnEntry": true,
+    },
+    // Login and freeze the docs/ html for PostCSS/PurgeCSS
+    {
+      "name": "Freeze Static HTML Templates for PurgeCSS",
+      "type": "python",
+      "request": "launch",
+      "module": "freeze",
+      "console": "integratedTerminal",
+    },
+    {
+      "name": "NPM Run",
+      "request": "launch",
+      "runtimeArgs": [
+        "run-script",
+        "watch",
+        // "start",
+      ],
+      "runtimeExecutable": "npm",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "pwa-node"
+    },
+  ]
+}
