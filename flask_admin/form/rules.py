@@ -360,13 +360,39 @@ class FieldSet(NestedRule):
 
 
 class Row(NestedRule):
+    """
+        Bootstrap grid "row" div with automatic Bootstrap columns
+    """
     def __init__(self, *columns, **kw):
-        super(Row, self).__init__()
+        """
+            Constructor
+
+            :param columns:
+                Arguments (args, unlimited number) which each will become Bootstrap columns.
+            :param kw:
+                Keyword arguments, which may contain:
+                "row_classes"
+                    Specify the classes for the Bootstrap row (e.g. "form-row justify-content-center").
+                    Default "form-row"
+                "col_classes":
+                    Space-separated classes to use for the Bootstrap columns (e.g. "col-md-6").
+                    Default "col"
+        """
+        super(Row, self).__init__(rules=columns, separator="")
         self.row_classes = kw.get("row_classes", "form-row")
         self.col_classes = kw.get("col_classes", "col")
-        self.rules = columns
 
     def __call__(self, form, form_opts=None, field_args={}):
+        """
+        Render all children when called in the Jinja template.
+
+        :param form:
+            Form object
+        :param form_opts:
+            Form options
+        :param field_args:
+            Optional arguments that should be passed to template or the field
+        """
         cols = []
         for col in self.rules:
             if col.visible_fields:

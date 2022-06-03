@@ -84,7 +84,9 @@ class User(db.Model):
     email = db.Column(db.Unicode(128))
     phone = db.Column(db.Unicode(32))
     city = db.Column(db.Unicode(128))
+    state = db.Column(db.Unicode(128))
     country = db.Column(db.Unicode(128))
+    continent = db.Column(db.Unicode(128))
     notes = db.Column(db.UnicodeText)
     is_admin = db.Column(db.Boolean, default=False)
 
@@ -220,9 +222,7 @@ class UserView(sqla.ModelView):
         # Separate header and few fields
         rules.Header('Location'),
         # String is resolved to form field, so there's no need to explicitly use `rules.Field`
-        rules.Row('city', 'state'),
-        # many-to-many field (multi-select)
-        'addresses',
+        'state',
         rules.Row('country', 'continent'),
         # Show macro that's included in the templates
         rules.Container('rule_demo.wrap', rules.Field('notes')),
