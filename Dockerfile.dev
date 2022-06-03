@@ -97,8 +97,6 @@ RUN curl -sS https://deb.nodesource.com/setup_16.x | bash - && \
 USER $USER_UID_NEW
 # ARG TEST=testing
 
-# COPY . .
-
 # ENV PATH="/home/user/workspace:$PATH"
 COPY poetry.lock pyproject.toml scripts/poetry_install.sh ./
 # COPY pyproject.toml scripts/poetry_install.sh ./
