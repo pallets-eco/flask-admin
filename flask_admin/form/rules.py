@@ -483,14 +483,22 @@ class BSRow(NestedRuleClasses):
                 Try something like classes="justify-content-center" to center your columns in the row.
         """
         classes = "form-row {}".format(classes)
-        super(BSRow, self).__init__(rules=rules, separator=separator, classes=classes)
+
+        # Ensure the children in a Bootstrap row are BSCol classes
+        columns = []
+        for rule in rules:
+            if isinstance(rule, str):
+                rule = BSCol(rules=[rule])
+            columns.append(rule)
+
+        super(BSRow, self).__init__(rules=columns, separator=separator, classes=classes)
 
 
 class BSCol(NestedRuleClasses):
     """
         Bootstrap column, which can have another rule nested inside.
     """
-    def __init__(self, rules=[], separator="", classes="col"):
+    def __init__(self, rules=[], separator="", classes=""):
         """
             Constructor
 
@@ -499,7 +507,7 @@ class BSCol(NestedRuleClasses):
             :param separator:
                 Default separator between rules when rendering them.
             :param classes:
-                Space-separated classes to use (default is "col").
+                Space-separated classes to add to the default "col" class.
                 Try something like classes="col-md-3" to have the column fill 1/4
                 of the screen if it's at least a medium-sized device.
         """
