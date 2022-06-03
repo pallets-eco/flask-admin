@@ -97,11 +97,14 @@ RUN curl -sS https://deb.nodesource.com/setup_16.x | bash - && \
 USER $USER_UID_NEW
 # ARG TEST=testing
 
+# COPY . .
+
 # ENV PATH="/home/user/workspace:$PATH"
 COPY poetry.lock pyproject.toml scripts/poetry_install.sh ./
+# COPY pyproject.toml scripts/poetry_install.sh ./
 # COPY auth.toml config.toml /home/user/.config/pypoetry/
 # RUN --mount=type=secret,id=secret_envs echo "before script... PYPI_USERNAME_PRIVATE: $PYPI_USERNAME_PRIVATE" && ./poetry_install.sh
-RUN \
+RUN echo "Installing with Poetry now..." && \
     # in-project .venv makes it very slow since it's sharing files with Windows/WSL...
     # poetry config virtualenvs.in-project true
     # These settings get put into the ~/.config./pyconfig/config.toml file
