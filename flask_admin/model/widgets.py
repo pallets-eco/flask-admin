@@ -197,7 +197,7 @@ class XEditableWidget(object):
 
             # For GET requests
             kwargs.setdefault("data-url-lookup", get_url(".ajax_lookup", name=field.loader.name))
-        
+
             minimum_input_length = int(field.loader.options.get("minimum_input_length", 0))
             kwargs.setdefault("data-minimum-input-length", minimum_input_length)
 
