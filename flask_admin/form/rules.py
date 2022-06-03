@@ -400,7 +400,7 @@ class Row(NestedRule):
                 w_args.setdefault("column_class", self.col_classes)
             cols.append(col(form, form_opts, field_args))
 
-        return Markup('<div class="form-row">%s</div>' % (self.row_classes, "".join(cols)))
+        return Markup('<div class="%s">%s</div>' % (self.row_classes, "".join(cols)))
 
 
 class NestedRuleClasses(NestedRule):
