@@ -120,6 +120,9 @@
       "console": "integratedTerminal",
       "jinja": true,
       "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "/home/user/workspace"
+      }
       // "stopOnEntry": true,
     },
     // Login and freeze the docs/ html for PostCSS/PurgeCSS

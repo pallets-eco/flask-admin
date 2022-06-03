@@ -97,8 +97,6 @@ RUN curl -sS https://deb.nodesource.com/setup_16.x | bash - && \
 USER $USER_UID_NEW
 # ARG TEST=testing
 
-# COPY . .
-
 # ENV PATH="/home/user/workspace:$PATH"
 COPY poetry.lock pyproject.toml scripts/poetry_install.sh ./
 # COPY pyproject.toml scripts/poetry_install.sh ./
@@ -114,7 +112,8 @@ RUN echo "Installing with Poetry now..." && \
     # poetry config http-basic.ijack_private $PYPI_USERNAME_PRIVATE $PYPI_PASSWORD_PRIVATE
     echo "Running poetry install..." && \
     # poetry add --dev gateway-setup
-    poetry install --no-interaction --no-ansi
+    # --no-root means to skip installing the local flask_admin package we're working on
+    poetry install --no-interaction --no-ansi --no-root
 
 # RUN bash ./poetry_install.sh
 
