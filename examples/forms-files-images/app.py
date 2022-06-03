@@ -192,10 +192,7 @@ class UserView(sqla.ModelView):
                             rules=["email"],
                             classes="col-xs-6"
                         ),
-                        rules.BSCol(
-                            rules=["phone"],
-                            classes="col-xs-6"
-                        )
+                        "phone"
                     ],
                     classes="justify-content-center"
                 )
