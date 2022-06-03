@@ -4,6 +4,21 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
+    // Regular Python file debugger to run the current file
+    {
+      "name": "Python Run Current File",
+      "type": "python",
+      "request": "launch",
+      // Run whichever file is open (perfect for running different examples)
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "jinja": true,
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "/home/user/workspace"
+      }
+      // "stopOnEntry": true,
+    },
     // Debug with Flask
     {
       "name": "flask run --no-debugger --no-reload",
@@ -37,7 +52,7 @@
       "module": "pytest",
       "console": "integratedTerminal",
       "args": [
-        "/home/user/workspace/tests/",
+        "/home/user/workspace/flask_admin/tests/",
         "-v",
         // "--lf",
         "--durations=0",
@@ -56,7 +71,7 @@
       "module": "pytest",
       "console": "integratedTerminal",
       "args": [
-        "/home/user/workspace/tests/",
+        "/home/user/workspace/flask_admin/tests/",
         "-v",
         "--lf",
         "--durations=0",
@@ -110,42 +125,6 @@
       "env": {
         "_PYTEST_RAISE": "1"
       },
-    },
-    // Regular Python file debugger to run the current file
-    {
-      "name": "Python Run Current File",
-      "type": "python",
-      "request": "launch",
-      "program": "${file}",
-      "console": "integratedTerminal",
-      "jinja": true,
-      "justMyCode": false,
-      "env": {
-        "PYTHONPATH": "/home/user/workspace"
-      }
-      // "stopOnEntry": true,
-    },
-    // Login and freeze the docs/ html for PostCSS/PurgeCSS
-    {
-      "name": "Freeze Static HTML Templates for PurgeCSS",
-      "type": "python",
-      "request": "launch",
-      "module": "freeze",
-      "console": "integratedTerminal",
-    },
-    {
-      "name": "NPM Run",
-      "request": "launch",
-      "runtimeArgs": [
-        "run-script",
-        "watch",
-        // "start",
-      ],
-      "runtimeExecutable": "npm",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "type": "pwa-node"
     },
   ]
 }
