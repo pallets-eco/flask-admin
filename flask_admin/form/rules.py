@@ -363,24 +363,24 @@ class Row(NestedRule):
     """
         Bootstrap grid "row" div with automatic Bootstrap columns
     """
-    def __init__(self, columns=[], separator="", row_classes="form-row", col_classes="col"):
+    def __init__(self, *columns, **kw):
         """
             Constructor
 
             :param columns:
-                Child rule list of column names.
-            :param separator:
-                Default separator between rules when rendering them.
-            :param row_classes:
-                Space-separated classes to use for the Bootstrap row (e.g. "form-row justify-content-center").
-                Default "form-row"
-            :param col_classes:
-                Space-separated classes to use for the Bootstrap columns (e.g. "col-md-6").
-                Default "col"
+                Arguments (args, unlimited number) which each will become Bootstrap columns.
+            :param kw:
+                Keyword arguments, which may contain:
+                "row_classes"
+                    Specify the classes for the Bootstrap row (e.g. "form-row justify-content-center").
+                    Default "form-row"
+                "col_classes":
+                    Space-separated classes to use for the Bootstrap columns (e.g. "col-md-6").
+                    Default "col"
         """
-        super(Row, self).__init__(rules=columns, separator=separator)
-        self.row_classes = row_classes
-        self.col_classes = col_classes
+        super(Row, self).__init__(rules=columns, separator="")
+        self.row_classes = kw.get("row_classes", "form-row")
+        self.col_classes = kw.get("col_classes", "col")
 
     def __call__(self, form, form_opts=None, field_args={}):
         """
