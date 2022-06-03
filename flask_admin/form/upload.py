@@ -550,7 +550,7 @@ class ImageUploadFieldDB(ImageUploadField):
             if self._should_delete:
                 setattr(obj, name, None)
                 return
-                
+
         if self._is_uploaded_file(self.data):
             # Resize first?
             if self.max_size:
@@ -564,7 +564,7 @@ class ImageUploadFieldDB(ImageUploadField):
             setattr(obj, name, image_bytes)
 
     @staticmethod
-    def resize(image, width: int, height: int, force: bool=True):
+    def resize(image, width: int, height: int, force: bool = True):
         """Resize image file"""
 
         if image.size[0] > width or image.size[1] > height:
