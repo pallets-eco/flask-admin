@@ -359,6 +359,24 @@ class FieldSet(NestedRule):
         super(FieldSet, self).__init__(rule_set, separator=separator)
 
 
+class Row(NestedRule):
+    def __init__(self, *columns, **kw):
+        super(Row, self).__init__()
+        self.row_classes = kw.get("row_classes", "form-row")
+        self.col_classes = kw.get("col_classes", "col")
+        self.rules = columns
+
+    def __call__(self, form, form_opts=None, field_args={}):
+        cols = []
+        for col in self.rules:
+            if col.visible_fields:
+                w_args = form_opts.widget_args.setdefault(col.visible_fields[0], {})
+                w_args.setdefault("column_class", self.col_classes)
+            cols.append(col(form, form_opts, field_args))
+
+        return Markup('<div class="%s">%s</div>' % (self.row_classes, "".join(cols)))
+
+
 class NestedRuleClasses(NestedRule):
     """
         Nested rule inside a <div> with customizable classes.
