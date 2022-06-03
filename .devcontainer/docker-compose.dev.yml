@@ -6,14 +6,14 @@ services:
 
   flask_admin_dev:
     volumes:
-      # Mount the root folder that contains .git
-      - ..:/workspace
+      # Mount the root folder that contains .git and all my files
+      - ..:/home/user/workspace:cached
     build:
       # context: where should docker-compose look for the Dockerfile?
       # i.e. either a path to a directory containing a Dockerfile, or a url to a git repository
       context: ..
       dockerfile: Dockerfile.dev
-    env_file: 
+    env_file:
       - ../.env
     environment:
       DOCKER_BUILDKIT: 1
