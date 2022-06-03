@@ -399,10 +399,10 @@ class NestedRuleClasses(NestedRule):
             result.append(rule(form, form_opts, field_args))
 
         children = self.separator.join(result)
-        return Markup('<div class="%s %s">%s</div>' % (self.main_class, self.classes, children))
+        return Markup('<div class="%s">%s</div>' % (self.classes, children))
 
 
-class ContainerBootstrap(NestedRuleClasses):
+class BSContainer(NestedRuleClasses):
     """
         Bootstrap container, which should have Bootstrap rows and columns nested inside.
     """
@@ -419,10 +419,10 @@ class ContainerBootstrap(NestedRuleClasses):
                 Try something like classes="container-fluid" to make a full-width container.
         """
         classes = "container {}".format(classes)
-        super(ContainerBootstrap, self).__init__(rules=rules, separator=separator, classes=classes)
+        super(BSContainer, self).__init__(rules=rules, separator=separator, classes=classes)
 
 
-class Row(NestedRuleClasses):
+class BSRow(NestedRuleClasses):
     """
         Bootstrap row, which should have Bootstrap columns nested inside.
     """
@@ -439,10 +439,10 @@ class Row(NestedRuleClasses):
                 Try something like classes="justify-content-center" to center your columns in the row.
         """
         classes = "form-row {}".format(classes)
-        super(Row, self).__init__(rules=rules, separator=separator, classes=classes)
+        super(BSRow, self).__init__(rules=rules, separator=separator, classes=classes)
 
 
-class Col(NestedRuleClasses):
+class BSCol(NestedRuleClasses):
     """
         Bootstrap column, which can have another rule nested inside.
     """
@@ -460,7 +460,7 @@ class Col(NestedRuleClasses):
                 of the screen if it's at least a medium-sized device.
         """
         classes = "col {}".format(classes)
-        super(Col, self).__init__(rules=rules, separator=separator, classes=classes)
+        super(BSCol, self).__init__(rules=rules, separator=separator, classes=classes)
 
 
 class Group(Macro):
