@@ -17,6 +17,7 @@ flask-redis = "^0.4.0"
 Flask-SQLAlchemy = "^2.5.1"
 WTForms = "^3.0.1"
 MarkupSafe = "^2.1.1"
+flake8 = "^4.0.1"
 
 [build-system]
 requires = ["poetry>=0.12"]
