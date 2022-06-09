@@ -1,4 +1,3 @@
 Flask
 Flask-Admin
 Flask-SQLAlchemy
-sqlalchemy_mptt

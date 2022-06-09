@@ -3,7 +3,7 @@ from flask import Flask, render_template
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy_mptt.mixins import BaseNestedSets
+from sqlalchemy.orm import joinedload
 
 # Create application
 app = Flask(__name__)
@@ -16,8 +16,12 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.sqlite"
 db = SQLAlchemy(app)
 
 # Create models
-class Node(db.Model, BaseNestedSets):
+class Node(db.Model):
+    parent_fk = db.ForeignKey("node.id", deferrable=True)
+    parent_id = db.Column(db.Integer, parent_fk, index=True)
+
     id = db.Column(db.Integer, primary_key=True)
+    parent = db.relationship("Node", uselist=False, remote_side=[id], backref="children")
     name = db.Column(db.Unicode(64))
 
     def __str__(self):
@@ -33,11 +37,7 @@ class NodeAdmin(ModelView):
     column_editable_list = ["parent"]
 
     column_list = ["name", "parent_id"]
-    form_excluded_columns = ["tree_id", "children", "left", "right", "level"]
-
-    # Retrieve and render only the primary key from each parent key relationship since
-    # that's all that is required to associate nodes on the client
-    column_formatters = dict(parent=lambda _, __, m, ___: m.parent_id)
+    form_columns = ["parent", "name"]
 
     # Pagination can cause partially-rendered (and therefore inconsistent) tree
     # rendering, so it is disabled here
@@ -49,18 +49,19 @@ class NodeAdmin(ModelView):
     def get_list(self, page, sort_column, sort_desc, search, filters,
                  execute=True, page_size=None):
         results = []
-        sources = deque(Node.query.filter(Node.parent_id == None))
+        nodes = Node.query.options(joinedload(Node.children)).order_by(Node.id)
+        sources = deque([node for node in nodes if node.parent is None])
         while sources:
             product = sources.popleft()
             results.append(product)
-            sources.extendleft(product.get_children())
+            sources.extendleft(sorted(product.children, key=lambda p: p.id, reverse=True))
         return len(results), results
 
 
 # Simple page to list tree nodes
 @app.route("/")
 def index():
-    nodes = Node.get_tree(session=db.session)
+    nodes = Node.query.all()
     return render_template("nodes.html", nodes=nodes)
 
 
