@@ -214,8 +214,6 @@ class UserView(sqla.ModelView):
     """
     This class demonstrates the use of 'rules' for controlling the rendering of forms.
     """
-    can_view_details = True
-
     form_create_rules = [
         # Header and four fields. Email field will go above phone field.
         rules.FieldSet(('first_name', 'last_name', 'email', 'phone', 'is_admin'), 'Personal'),
@@ -249,7 +247,6 @@ class UserView(sqla.ModelView):
 
     create_template = 'create_user.html'
     edit_template = 'edit_user.html'
-    details_template = 'details_user.html'
 
     column_descriptions = {
         "is_admin": "Is this an admin user?",
