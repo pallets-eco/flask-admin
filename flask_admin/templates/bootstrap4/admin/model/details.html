@@ -2,8 +2,8 @@
 {% import 'admin/lib.html' as lib with context %}
 
 {% block body %}
-  {% block navlinks %}
-  <ul class="nav nav-tabs">
+{% block navlinks %}
+<ul class="nav nav-tabs">
     <li class="nav-item">
         <a class="nav-link" href="{{ return_url }}">{{ _gettext('List') }}</a>
     </li>
@@ -14,39 +14,42 @@
     {%- endif -%}
     {%- if admin_view.can_edit -%}
     <li class="nav-item">
-        <a class="nav-link" href="{{ get_url('.edit_view', id=request.args.get('id'), url=return_url) }}">{{ _gettext('Edit') }}</a>
+        <a class="nav-link" href="{{ get_url('.edit_view', id=request.args.get('id'), url=return_url) }}">{{
+            _gettext('Edit') }}</a>
     </li>
     {%- endif -%}
     <li class="nav-item">
         <a class="nav-link active disabled" href="javascript:void(0)">{{ _gettext('Details') }}</a>
     </li>
-  </ul>
-  {% endblock %}
+</ul>
+{% endblock %}
 
-  {% block details_search %}
-    <div class="form-inline fa_filter_container col-lg-6">
-      <label for="fa_filter">{{ _gettext('Filter') }}</label>
-      <input id="fa_filter" type="text" class="ml-3 form-control">
-    </div>
-  {% endblock %}
+{% block details_search %}
+<div class="form-inline fa_filter_container col-lg-6">
+    <label for="fa_filter">{{ _gettext('Filter') }}</label>
+    <input id="fa_filter" type="text" class="ml-3 form-control">
+</div>
+{% endblock %}
 
-  {% block details_table %}
-    <table class="table table-hover table-bordered searchable">
+{% block details_table %}
+<table class="table table-hover table-bordered searchable">
     {% for c, name in details_columns %}
-      <tr>
+    <tr>
         <td>
-          <b>{{ name }}</b>
+            <b>{{ name }}</b>
         </td>
         <td>
-        {{ get_value(model, c) }}
+            {{ get_value(model, c) }}
         </td>
-      </tr>
+    </tr>
     {% endfor %}
-    </table>
-  {% endblock %}
+</table>
+{% block edit_form %}
+{{ lib.render_form(form, return_url, extra=None, form_opts=form_opts, render_buttons=False) }}
+{% endblock %}
 {% endblock %}
 
 {% block tail %}
-  {{ super() }}
-  <script src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
+{{ super() }}
+<script src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
 {% endblock %}
