@@ -234,10 +234,13 @@
   {% endif %}
 {% endmacro %}
 
-{% macro render_form(form, cancel_url, extra=None, form_opts=None, action=None, is_modal=False) -%}
+{% macro render_form(form, cancel_url, extra=None, form_opts=None, action=None, is_modal=False, render_buttons=True) -%}
     {% call form_tag(action=action) %}
         {{ render_form_fields(form, form_opts=form_opts) }}
-        {{ render_form_buttons(cancel_url, extra, is_modal) }}
+        {# The "details" view doesn't need or want "Save" and "Cancel" buttons #}
+        {% if render_buttons %}
+            {{ render_form_buttons(cancel_url, extra, is_modal) }}
+        {% endif %}
     {% endcall %}
 {% endmacro %}
 

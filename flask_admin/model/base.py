@@ -2169,7 +2169,8 @@ class BaseModelView(BaseView, ActionsMixin):
     @expose('/details/')
     def details_view(self):
         """
-            Details model view
+            Details model view, which looks like the "create" and "edit" views,
+            but with read-only fields.
         """
         return_url = get_redirect_target() or self.get_url('.index_view')
 
@@ -2186,6 +2187,22 @@ class BaseModelView(BaseView, ActionsMixin):
             flash(gettext('Record does not exist.'), 'error')
             return redirect(return_url)
 
+        # Send the form to the template, same as the "edit" view
+        form = self.edit_form(obj=model)
+        if not hasattr(form, '_validated_ruleset') or not form._validated_ruleset:
+            self._validate_form_instance(ruleset=self._form_edit_rules, form=form)
+        
+        self.on_form_prefill(form, id)
+
+        # Make the input fields "read-only" since this isn't the "edit" view
+        widget_args = {}
+        for field in self._form_edit_rules.visible_fields:
+            widget_args[field] = self.form_widget_args.get(field, {})
+            widget_args[field]['readonly'] = True
+
+        form_opts = FormOpts(widget_args=widget_args,
+                             form_rules=self._form_edit_rules)
+
         if self.details_modal and request.args.get('modal'):
             template = self.details_modal_template
         else:
@@ -2193,6 +2210,8 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return self.render(template,
                            model=model,
+                           form=form,
+                           form_opts=form_opts,
                            details_columns=self._details_columns,
                            get_value=self.get_detail_value,
                            return_url=return_url)
