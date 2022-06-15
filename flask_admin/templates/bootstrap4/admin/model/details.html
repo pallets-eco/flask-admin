@@ -3,13 +3,13 @@
 {% from 'admin/lib.html' import extra with context %} {# backward compatible #}
 
 {% block head %}
-  {{ super() }}
-  {{ lib.form_css() }}
+{{ super() }}
+{{ lib.form_css() }}
 {% endblock %}
 
 {% block body %}
-  {% block navlinks %}
-  <ul class="nav nav-tabs">
+{% block navlinks %}
+<ul class="nav nav-tabs">
     <li class="nav-item">
         <a class="nav-link" href="{{ return_url }}">{{ _gettext('List') }}</a>
     </li>
@@ -20,21 +20,22 @@
     {%- endif -%}
     {%- if admin_view.can_edit -%}
     <li class="nav-item">
-        <a class="nav-link" href="{{ get_url('.edit_view', id=request.args.get('id'), url=return_url) }}">{{ _gettext('Edit') }}</a>
+        <a class="nav-link" href="{{ get_url('.edit_view', id=request.args.get('id'), url=return_url) }}">{{
+            _gettext('Edit') }}</a>
     </li>
     {%- endif -%}
     <li class="nav-item">
         <a class="nav-link active disabled" href="javascript:void(0)">{{ _gettext('Details') }}</a>
     </li>
-  </ul>
-  {% endblock %}
+</ul>
+{% endblock %}
 
-  {% block edit_form %}
-    {{ lib.render_form(form, return_url, extra=None, form_opts=form_opts, render_buttons=False) }}
-  {% endblock %}
+{% block edit_form %}
+{{ lib.render_form(form, return_url, extra=None, form_opts=form_opts, render_buttons=False, input_disable=True) }}
+{% endblock %}
 {% endblock %}
 
 {% block tail %}
-  {{ super() }}
-  {{ lib.form_js() }}
+{{ super() }}
+{{ lib.form_js() }}
 {% endblock %}

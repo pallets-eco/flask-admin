@@ -2196,7 +2196,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # Make the input fields "read-only" since this isn't the "edit" view
         widget_args = {}
-        for field, _ in self.get_details_columns():
+        for field in self._form_edit_rules.visible_fields:
             widget_args[field] = self.form_widget_args.get(field, {})
             widget_args[field]['readonly'] = True
 
