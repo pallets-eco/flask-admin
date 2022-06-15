@@ -20,3 +20,4 @@ poetry build
 # poetry publish --build 
 # poetry publish --build --username $PYPI_USERNAME_PROD --password $PYPI_PASSWORD_PROD
 poetry publish --username __token__ --password $PYPI_TOKEN_PROD
+
