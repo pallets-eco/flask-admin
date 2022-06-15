@@ -7,3 +7,4 @@ cd "$(dirname "$0")"
 echo "Current working directory: $(pwd)"
 
 poetry build
+
