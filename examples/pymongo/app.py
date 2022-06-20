@@ -17,7 +17,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = '123456790'
 
 # Create models
-conn = pymongo.Connection()
+conn = pymongo.MongoClient()
 db = conn.test
 
 
