@@ -85,6 +85,7 @@ class User(db.Model):
     city = db.Column(db.Unicode(128))
     country = db.Column(db.Unicode(128))
     notes = db.Column(db.UnicodeText)
+    is_admin = db.Column(db.Boolean, default=False)
 
     # many-to-many relationship
     addresses = relationship(
@@ -214,8 +215,7 @@ class UserView(sqla.ModelView):
 
     form_create_rules = [
         # Header and four fields. Email field will go above phone field.
-        rules.FieldSet(('first_name', 'last_name', 'email', 'phone', ), 'Personal'),
-        rules.Field('is_admin'),
+        rules.FieldSet(('first_name', 'last_name', 'email', 'phone', 'is_admin'), 'Personal'),
         # Separate header and few fields
         rules.Header('Location'),
         # String is resolved to form field, so there's no need to explicitly use `rules.Field`
@@ -238,8 +238,6 @@ class UserView(sqla.ModelView):
         "is_admin": "Is this an admin user?",
     }
 
-class AddressView(sqla.ModelView):
-    """Address records view"""
 
 # Flask views
 @app.route('/')
@@ -349,6 +347,6 @@ if __name__ == '__main__':
     database_path = op.join(app_dir, app.config['DATABASE_FILE'])
     if not os.path.exists(database_path):
         build_sample_db()
-
+        
     # Start app
     app.run(debug=True)
