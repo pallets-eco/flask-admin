@@ -27,3 +27,4 @@ env
 *.egg
 .eggs
 .tox/
+.env
