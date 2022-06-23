@@ -1846,7 +1846,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 type_fmt = formatter
                 break
         if type_fmt is not None:
-            value = type_fmt(self, value)
+            value = type_fmt(self, value, name)
 
         return value
 
