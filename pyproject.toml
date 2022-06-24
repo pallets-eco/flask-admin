@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flask_admin_plus"
-version = "1.6.7"
+version = "1.6.8"
 description = "Flask Admin with a few more features and improvements"
 authors = ["Sean McCarthy <smccarthy@myijack.com>"]
 packages = [
