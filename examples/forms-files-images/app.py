@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from redis import Redis
 from wtforms import fields, widgets
 
+from sqlalchemy.orm import relationship
 from sqlalchemy.event import listens_for
 from MarkupSafe import Markup
 
@@ -57,6 +58,24 @@ class Image(db.Model):
         return self.name
 
 
+# many-to-many relationship between User and Address
+user_address_rel = db.Table(
+    "user_address_rel",
+    db.Column(
+        "user_id",
+        db.Integer,
+        db.ForeignKey("user.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    db.Column(
+        "address_id",
+        db.Integer,
+        db.ForeignKey("address.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+)
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.Unicode(64))
@@ -66,6 +85,29 @@ class User(db.Model):
     city = db.Column(db.Unicode(128))
     country = db.Column(db.Unicode(128))
     notes = db.Column(db.UnicodeText)
+
+    # many-to-many relationship
+    addresses = relationship(
+        "Address",
+        secondary=user_address_rel,
+        back_populates="users",
+        cascade="all, delete",
+        passive_deletes=True,
+    )
+
+
+class Address(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    address = db.Column(db.Unicode(128))
+
+    # many-to-many relationship
+    users = relationship(
+        "User",
+        secondary=user_address_rel,
+        back_populates="addresses",
+        cascade="all, delete",
+        passive_deletes=True,
+    )
 
 
 class Page(db.Model):
@@ -172,12 +214,15 @@ class UserView(sqla.ModelView):
 
     form_create_rules = [
         # Header and four fields. Email field will go above phone field.
-        rules.FieldSet(('first_name', 'last_name', 'email', 'phone'), 'Personal'),
+        rules.FieldSet(('first_name', 'last_name', 'email', 'phone', ), 'Personal'),
+        rules.Field('is_admin'),
         # Separate header and few fields
         rules.Header('Location'),
-        rules.Field('city'),
         # String is resolved to form field, so there's no need to explicitly use `rules.Field`
-        'country',
+        rules.Row('city', 'state'),
+        # many-to-many field (multi-select)
+        'addresses',
+        rules.Row('country', 'continent'),
         # Show macro that's included in the templates
         rules.Container('rule_demo.wrap', rules.Field('notes'))
     ]
@@ -189,6 +234,12 @@ class UserView(sqla.ModelView):
     edit_template = 'edit_user.html'
     details_template = 'details_user.html'
 
+    column_descriptions = {
+        "is_admin": "Is this an admin user?",
+    }
+
+class AddressView(sqla.ModelView):
+    """Address records view"""
 
 # Flask views
 @app.route('/')
@@ -204,6 +255,7 @@ admin.add_view(ImageView(Image, db.session))
 admin.add_view(UserView(User, db.session))
 admin.add_view(PageView(Page, db.session))
 admin.add_view(rediscli.RedisCli(Redis()))
+admin.add_view(sqla.ModelView(Address, db.session))
 
 
 def build_sample_db():
@@ -278,6 +330,10 @@ def build_sample_db():
         file.name = "Example " + str(i)
         file.path = "example_" + str(i) + ".pdf"
         db.session.add(file)
+
+        address = Address()
+        address.address = "Example address " + str(i)
+        db.session.add(address)
 
     sample_text = "<h2>This is a test</h2>" + \
     "<p>Create HTML content in a text area field with the help of <i>WTForms</i> and <i>CKEditor</i>.</p>"
