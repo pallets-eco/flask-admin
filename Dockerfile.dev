@@ -18,7 +18,7 @@ ARG COMPOSE_DOCKER_CLI_BUILD=1
 # Configure apt and install packages
 # I had to add --insecure since curl didn't work...
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends apt-utils dialog curl iputils-ping unzip 2>&1 && \
+    apt-get install -y --no-install-recommends apt-utils dialog curl iputils-ping unzip dos2unix 2>&1 && \
     # Install AWS CLI
     curl --insecure "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
