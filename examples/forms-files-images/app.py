@@ -216,11 +216,14 @@ class UserView(sqla.ModelView):
     """
     form_create_rules = [
         # Header and four fields. Email field will go above phone field.
-        rules.FieldSet(('first_name', 'last_name', 'email', 'phone', 'is_admin'), 'Personal'),
+        rules.FieldSet(('first_name', 'last_name', 'email', 'phone', ), 'Personal'),
+        rules.Field('is_admin'),
         # Separate header and few fields
         rules.Header('Location'),
         # String is resolved to form field, so there's no need to explicitly use `rules.Field`
-        'state',
+        rules.Row('city', 'state'),
+        # many-to-many field (multi-select)
+        'addresses',
         rules.Row('country', 'continent'),
         # Show macro that's included in the templates
         rules.Container('rule_demo.wrap', rules.Field('notes')),
@@ -255,6 +258,8 @@ class UserView(sqla.ModelView):
         "is_admin": "Is this an admin user?",
     }
 
+class AddressView(sqla.ModelView):
+    """Address records view"""
 
 # Flask views
 @app.route('/')
