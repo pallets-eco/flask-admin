@@ -41,7 +41,7 @@
         <input type="hidden" name="sort" value="{{ sort_column }}">
         {% endif %}
         {% if sort_desc %}
-        <input type="hidden" name="desc" value="{{ sort_desc }}">
+        <input type="hidden" name="desc" value="1">
         {% endif %}
         {% if search %}
         <input type="hidden" name="search" value="{{ search }}">
@@ -76,7 +76,7 @@
     <input type="hidden" name="sort" value="{{ sort_column }}">
     {% endif %}
     {% if sort_desc %}
-    <input type="hidden" name="desc" value="{{ sort_desc }}">
+    <input type="hidden" name="desc" value="1">
     {% endif %}
     {%- set full_search_placeholder = _gettext('Search') %}
     {%- if search_placeholder %}{% set full_search_placeholder = [full_search_placeholder, search_placeholder] | join(": ") %}{% endif %}
