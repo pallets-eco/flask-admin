@@ -114,6 +114,15 @@ For all the tests to pass successfully, you'll need Postgres & MongoDB to be run
     CREATE EXTENSION postgis;
     CREATE EXTENSION hstore;
 
+If you're using Homebrew on MacOS, you might need this::
+
+    # install postgis
+    > brew install postgis
+
+    # set up postgresql user
+    > createuser -s postgresql
+    > brew services restart postgresql
+
 You can also run the tests on multiple environments using *tox*.
 
 3rd Party Stuff
