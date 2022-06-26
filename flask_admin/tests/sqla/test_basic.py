@@ -2401,7 +2401,15 @@ def test_safe_redirect():
                                _continue_editing='Save and Continue Editing'))
 
     assert rv.status_code == 302
-    assert rv.location.startswith('http://localhost/admin/model1/edit/')
+
+    # werkzeug 2.1.0+ now returns *relative* redirect/location by default.
+    expected = '/admin/model1/edit/'
+
+    # handle old werkzeug (or if relative location is disabled via `autocorrect_location_header=True`)
+    if not hasattr(rv, 'autocorrect_location_header') or rv.autocorrect_location_header:
+        expected = 'http://localhost' + expected
+
+    assert rv.location.startswith(expected)
     assert 'url=http%3A%2F%2Flocalhost%2Fadmin%2Fmodel2view%2F' in rv.location
     assert 'id=1' in rv.location
 
@@ -2410,7 +2418,7 @@ def test_safe_redirect():
                                _continue_editing='Save and Continue Editing'))
 
     assert rv.status_code == 302
-    assert rv.location.startswith('http://localhost/admin/model1/edit/')
+    assert rv.location.startswith(expected)
     assert 'url=%2Fadmin%2Fmodel1%2F' in rv.location
     assert 'id=2' in rv.location
 
