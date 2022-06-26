@@ -192,7 +192,8 @@ def test_mockview():
     # Attempt to delete model
     rv = client.post('/admin/model/delete/?id=3')
     assert rv.status_code == 302
-    assert rv.headers['location'] == 'http://localhost/admin/model/'
+    # werkzeug 2.1.0+ returns *relative* location header by default, so just check the end
+    assert rv.headers['location'].endswith('/admin/model/')
 
     # Create a dispatched application to test that edit view's "save and
     # continue" functionality works when app is not located at root
@@ -200,12 +201,19 @@ def test_mockview():
     dispatched_app = DispatcherMiddleware(dummy_app, {'/dispatched': app})
     dispatched_client = Client(dispatched_app)
 
-    app_iter, status, headers = dispatched_client.post(
+    rv = dispatched_client.post(
         '/dispatched/admin/model/edit/?id=3',
         data=dict(col1='another test!', col2='test@', col3='test#', _continue_editing='True'))
 
+    # werkzeug 2.1.0+ always returns a `TestResponse` instance (backward-compat as tuple is removed)
+    if isinstance(rv, tuple):
+        app_iter, status, headers = rv
+    else:
+        status = rv.status
+        headers = rv.headers
+
     assert status == '302 FOUND'
-    assert headers['Location'] == 'http://localhost/dispatched/admin/model/edit/?id=3'
+    assert headers['Location'].endswith('/dispatched/admin/model/edit/?id=3')
     model = view.updated_models.pop()
     assert model.col1 == 'another test!'
 
