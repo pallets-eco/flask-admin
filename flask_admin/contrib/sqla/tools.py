@@ -69,7 +69,7 @@ def has_multiple_pks(model):
 def tuple_operator_in(model_pk, ids):
     """The tuple_ Operator only works on certain engines like MySQL or Postgresql. It does not work with sqlite.
 
-    The function returns an or_ - operator, that containes and_ - operators for every single tuple in ids.
+    The function returns an or_ - operator, that contains and_ - operators for every single tuple in ids.
 
     Example::
 
