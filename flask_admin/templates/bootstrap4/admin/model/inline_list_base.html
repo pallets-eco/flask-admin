@@ -3,7 +3,7 @@
     {# existing inline form fields #}
     <div class="inline-field-list">
         {% for subfield in field %}
-        <div id="{{ subfield.id }}" class="inline-field card card-body bg-light">
+        <div id="{{ subfield.id }}" class="inline-field card card-body bg-light mb-3">
             {%- if not check or check(subfield) %}
             <legend>
                 <small>
