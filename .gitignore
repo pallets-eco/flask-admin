@@ -28,3 +28,4 @@ env
 .eggs
 .tox/
 .env
+flask-admin-master/

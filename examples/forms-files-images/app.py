@@ -214,6 +214,8 @@ class UserView(sqla.ModelView):
     """
     This class demonstrates the use of 'rules' for controlling the rendering of forms.
     """
+    can_view_details = True
+
     form_create_rules = [
         # Header and four fields. Email field will go above phone field.
         rules.FieldSet(('first_name', 'last_name', 'email', 'phone', ), 'Personal'),
@@ -226,7 +228,8 @@ class UserView(sqla.ModelView):
         'addresses',
         rules.Row('country', 'continent'),
         # Show macro that's included in the templates
-        rules.Container('rule_demo.wrap', rules.Field('notes')),
+        # rules.Container('rule_demo.wrap', rules.Field('notes')),
+        rules.Field('notes'),
         # Bootstrap container with embedded row and columns
         rules.BSContainer(
             rules=[
@@ -257,6 +260,12 @@ class UserView(sqla.ModelView):
     column_descriptions = {
         "is_admin": "Is this an admin user?",
     }
+
+    # ensure the many-to-many "addresses" is in the details list
+    column_details_list = [
+        'first_name', 'last_name', 'email', 'phone', 'is_admin',
+        'Location', 'city', 'state', 'country', 'continent', 'addresses', 'notes'
+    ]
 
 class AddressView(sqla.ModelView):
     """Address records view"""
