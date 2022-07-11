@@ -67,6 +67,8 @@ class CustomInlineModelFormList(InlineModelFormList):
     widget = CustomInlineFieldListWidget()
 
     def display_row_controls(self, field):
+        """Whether to display the edit/delete/duplicate controls"""
+        # return field.get_pk() is not None
         return False
 
 
@@ -113,22 +115,22 @@ def index():
     return render_template('locations.html', locations=locations)
 
 
-if __name__ == '__main__':
-    # Create upload directory
-    try:
-        os.mkdir(base_path)
-    except OSError:
-        pass
+# if __name__ == '__main__':
+# Create upload directory
+try:
+    os.mkdir(base_path)
+except OSError:
+    pass
 
-    # Create admin
-    admin = admin.Admin(app, name='Example: Inline Models')
+# Create admin
+admin = admin.Admin(app, name='Example: Inline Models')
 
-    # Add views
-    admin.add_view(LocationAdmin())
+# Add views
+admin.add_view(LocationAdmin())
 
-    # Create DB
-    db.create_all()
+# Create DB
+db.create_all()
 
-    # # Start app
-    # app.run(debug=True)
-    print("Started")
+# Start app
+app.run(debug=True)
+print("Started")
