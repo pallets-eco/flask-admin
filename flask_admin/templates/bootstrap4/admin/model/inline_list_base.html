@@ -28,7 +28,7 @@
     {# template for new inline form fields #}
     <div class="inline-field-template hide">
         {% filter forceescape %}
-        <div class="inline-field card card-body bg-light">
+        <div class="inline-field card card-body bg-light mb-3">
             <legend>
                 <small>{{ _gettext('New') }} {{ field.label.text }}</small>
                 <div class="pull-right">
@@ -40,6 +40,6 @@
         </div>
         {% endfilter %}
     </div>
-    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn btn-primary" role="button" onclick="faForm.addInlineField(this, '{{ field.id }}');">{{ _gettext('Add') }} {{ field.label.text }}</a>
+    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn btn-primary mt-2" role="button" onclick="faForm.addInlineField(this, '{{ field.id }}');">{{ _gettext('Add') }} {{ field.label.text }}</a>
 </div>
 {% endmacro %}
