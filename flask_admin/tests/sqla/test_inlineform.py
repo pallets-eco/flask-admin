@@ -155,6 +155,17 @@ def test_inline_form_required():
     assert User.query.count() == 1
     assert UserEmail.query.count() == 1
 
+    # Attempted delete, prevented by ItemsRequired
+    data = {
+        'name': 'hasEmail',
+        'del-emails-0': 'on',
+        'emails-0-email': 'foo@bar.com',
+    }
+    rv = client.post('/admin/user/edit/?id=1', data=data)
+    assert rv.status_code == 200
+    assert User.query.count() == 1
+    assert UserEmail.query.count() == 1
+
 
 def test_inline_form_ajax_fk():
     app, db, admin = setup()
