@@ -1,5 +1,6 @@
 import os
 import os.path as op
+from pathlib import Path
 
 from werkzeug.utils import secure_filename
 from sqlalchemy import event
@@ -37,6 +38,7 @@ class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
 
+
 class ImageType(db.Model):
     """
     Just so the LocationImage can have another foreign key,
@@ -44,6 +46,13 @@ class ImageType(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
+
+    def __repr__(self) -> str:
+        """
+        Represent this model as a string
+        (e.g. in the Image Type list dropdown when creating an inline model)
+        """
+        return self.name
 
 
 class LocationImage(db.Model):
@@ -90,23 +99,26 @@ class CustomInlineModelConverter(InlineModelConverter):
 
 
 # Customized inline form handler
-class InlineModelForm(InlineFormAdmin):
+class LocationImageInlineModelForm(InlineFormAdmin):
     form_excluded_columns = ('path',)
 
     form_label = 'Image'
 
     # Setup AJAX lazy-loading for the ImageType inside the inline model
-    form_ajax_refs = (
-        (
-            ImageType,
-            {
-                "form_ajax_refs": QueryAjaxModelLoader("image_type", db.session, ImageType)
-            }
-        ),
-    )
+    form_ajax_refs = {
+        "image_type": QueryAjaxModelLoader(
+            name="image_type",
+            session=db.session,
+            model=ImageType,
+            fields=("name",),
+            order_by="name",
+            placeholder="Please use an AJAX query to select an image type for the image",
+            minimum_input_length=0,
+        )
+    }
 
     def __init__(self):
-        return super(InlineModelForm, self).__init__(LocationImage)
+        return super(LocationImageInlineModelForm, self).__init__(LocationImage)
 
     def postprocess_form(self, form_class):
         form_class.upload = fields.FileField('Image')
@@ -124,7 +136,7 @@ class InlineModelForm(InlineFormAdmin):
 class LocationAdmin(ModelView):
     inline_model_form_converter = CustomInlineModelConverter
 
-    inline_models = (InlineModelForm(),)
+    inline_models = (LocationImageInlineModelForm(),)
 
     def __init__(self):
         super(LocationAdmin, self).__init__(Location, db.session, name='Locations')
@@ -135,6 +147,23 @@ class LocationAdmin(ModelView):
 def index():
     locations = db.session.query(Location).all()
     return render_template('locations.html', locations=locations)
+
+
+def first_time_setup():
+    """Run this to setup the database for the first time"""
+    # Create DB
+    db.drop_all()
+    db.create_all()
+
+    # Add some image types for the form_ajax_refs inside the inline_model
+    image_types = ("JPEG", "PNG", "GIF")
+    for image_type in image_types:
+        model = ImageType(name=image_type)
+        db.session.add(model)
+
+    db.session.commit()
+
+    return
 
 
 # if __name__ == '__main__':
@@ -151,7 +180,7 @@ admin = admin.Admin(app, name='Example: Inline Models')
 admin.add_view(LocationAdmin())
 
 # Create DB
-db.create_all()
+first_time_setup()
 
 # Start app
 app.run(debug=True)
