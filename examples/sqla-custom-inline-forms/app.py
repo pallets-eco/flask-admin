@@ -10,6 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 from wtforms import fields
 
 import flask_admin as admin
+from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from flask_admin.form import RenderTemplateWidget
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin.contrib.sqla import ModelView
@@ -36,6 +37,14 @@ class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
 
+class ImageType(db.Model):
+    """
+    Just so the LocationImage can have another foreign key,
+    so we can test the "form_ajax_refs" inside the "inline_models"
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+
 
 class LocationImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,6 +53,9 @@ class LocationImage(db.Model):
 
     location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     location = db.relation(Location, backref='images')
+
+    image_type_id = db.Column(db.Integer, db.ForeignKey(ImageType.id))
+    image_type = db.relation(ImageType, backref='images')
 
 
 # Register after_delete handler which will delete image file after model gets deleted
@@ -80,6 +92,16 @@ class InlineModelForm(InlineFormAdmin):
     form_excluded_columns = ('path',)
 
     form_label = 'Image'
+
+    # Setup AJAX lazy-loading for the ImageType inside the inline model
+    form_ajax_refs = (
+        (
+            ImageType,
+            {
+                "form_ajax_refs": QueryAjaxModelLoader("image_type", db.session, ImageType)
+            }
+        ),
+    )
 
     def __init__(self):
         return super(InlineModelForm, self).__init__(LocationImage)
