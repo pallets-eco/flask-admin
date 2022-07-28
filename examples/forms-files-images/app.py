@@ -102,7 +102,9 @@ class User(db.Model):
 
 class Address(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    address = db.Column(db.Unicode(128))
+    street = db.Column(db.Unicode(128))
+    city = db.Column(db.Unicode(128))
+    country = db.Column(db.Unicode(128))
 
     # many-to-many relationship
     users = relationship(
@@ -258,10 +260,22 @@ class UserView(sqla.ModelView):
         "is_admin": "Is this an admin user?",
     }
 
-    # ensure the many-to-many "addresses" is in the details list
-    column_details_list = [
+    column_list = [
         'first_name', 'last_name', 'email', 'phone', 'is_admin',
-        'Location', 'city', 'state', 'country', 'continent', 'addresses', 'notes'
+        'city', 'state', 'country', 'continent', 'addresses', 'notes'
+    ]
+
+    form_columns = column_list
+    column_editable_list = form_columns
+    
+    # ensure the many-to-many "addresses" is in the details list
+    column_details_list = column_list
+
+    inline_models = [
+        (
+            Address,
+            {"form_columns": ["street", "city"]}
+        )
     ]
 
 class AddressView(sqla.ModelView):
@@ -358,7 +372,9 @@ def build_sample_db():
         db.session.add(file)
 
         address = Address()
-        address.address = "Example address " + str(i)
+        address.street = "Example street " + str(i)
+        address.city = "Example city " + str(i)
+        address.country = "Example country " + str(i)
         db.session.add(address)
 
     sample_text = "<h2>This is a test</h2>" + \
