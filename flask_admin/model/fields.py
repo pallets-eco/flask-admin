@@ -121,17 +121,19 @@ class InlineModelFormField(FormField):
 
     def get_pk(self):
         """Get the primary key value from the form"""
+        try:
+            if isinstance(self._pk, (tuple, list)):
+                return tuple(getattr(self.form, pk).data for pk in self._pk)
 
-        if self._pk not in self.form:
-            raise AttributeError(
-                'Primary key field "%s" not included in the inline_models "form_columns": %s'
-                % (self._pk, self.form._fields.keys())
-            )
+            return getattr(self.form, self._pk).data
+        except AttributeError:
+            if self._pk not in self.form:
+                raise AttributeError(
+                    'Primary key field "%s" is required in inline_models "form_columns". Available form fields: %s'
+                    % (self._pk, self.form._fields.keys())
+                )
+            raise
 
-        if isinstance(self._pk, (tuple, list)):
-            return tuple(getattr(self.form, pk).data for pk in self._pk)
-
-        return getattr(self.form, self._pk).data
 
     def populate_obj(self, obj, name):
         for name, field in iteritems(self.form._fields):
