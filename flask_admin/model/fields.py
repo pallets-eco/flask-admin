@@ -120,6 +120,13 @@ class InlineModelFormField(FormField):
         self.form_opts = form_opts
 
     def get_pk(self):
+        """Get the primary key value from the form"""
+
+        if self._pk not in self.form:
+            raise AttributeError(
+                'Primary key field "%s" not included in the inline_models "form_columns": %s'
+                % (self._pk, self.form._fields.keys())
+            )
 
         if isinstance(self._pk, (tuple, list)):
             return tuple(getattr(self.form, pk).data for pk in self._pk)
