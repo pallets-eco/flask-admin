@@ -274,7 +274,9 @@ class UserView(sqla.ModelView):
     inline_models = [
         (
             Address,
-            {"form_columns": ["street", "city"]}
+            # Note, the primary key "id" MUST be included in this list to avoid errors!
+            # {"form_columns": ["street", "city"]}
+            {"form_columns": ["street", "city", "id"]}
         )
     ]
 
