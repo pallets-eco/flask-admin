@@ -1,5 +1,5 @@
 from wtforms import widgets
-from flask.globals import _request_ctx_stack
+from flask import current_app
 from flask_admin.babel import gettext, ngettext
 from flask_admin import helpers as h
 
@@ -89,9 +89,6 @@ class RenderTemplateWidget(object):
         self.template = template
 
     def __call__(self, field, **kwargs):
-        ctx = _request_ctx_stack.top
-        jinja_env = ctx.app.jinja_env
-
         kwargs.update({
             'field': field,
             '_gettext': gettext,
@@ -99,5 +96,5 @@ class RenderTemplateWidget(object):
             'h': h,
         })
 
-        template = jinja_env.get_template(self.template)
+        template = current_app.jinja_env.get_template(self.template)
         return template.render(kwargs)
