@@ -22,13 +22,11 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
     function removeFilter() {
         $(this).closest('tr').remove();
         if($('.filters tr').length == 0) {
-            $('button', $root).hide();
             $('a[class=btn]', $root).hide();
             $('.filters tbody').remove();
-        } else {
-            $('button', $root).show();
-        }
+        } 
 
+        $('button', $root).show();
         return false;
     }
 
