@@ -18,7 +18,7 @@ SecureForm class in your *ModelView* subclass by specifying the *form_base_class
 SecureForm requires WTForms 2 or greater. It uses the WTForms SessionCSRF class
 to generate and validate the tokens for you when the forms are submitted.
 
-Localization With Flask-Babelex
+Localization With Flask-Babel
 -------------------------------
 
 ****
@@ -26,16 +26,15 @@ Localization With Flask-Babelex
 Flask-Admin comes with translations for several languages.
 Enabling localization is simple:
 
-#. Install `Flask-BabelEx <http://github.com/mrjoes/flask-babelex/>`_ to do the heavy
-   lifting. It's a fork of the
-   `Flask-Babel <http://github.com/mitshuhiko/flask-babel/>`_ package::
+#. Install `Flask-Babel <https://github.com/python-babel/flask-babel>`_ to do the heavy
+   lifting::
 
-        pip install flask-babelex
+        pip install Flask-Babel
 
-#. Initialize Flask-BabelEx by creating instance of `Babel` class::
+#. Initialize Flask-Babel by creating instance of `Babel` class::
 
         from flask import Flask
-        from flask_babelex import Babel
+        from flask_babel import Babel
 
         app = Flask(__name__)
         babel = Babel(app)
@@ -54,7 +53,7 @@ Go ahead and add your own logic to the locale selector function. The application
 a user profile, cookie, session, etc. It can also use the `Accept-Language`
 header to make the selection automatically.
 
-If the built-in translations are not enough, look at the `Flask-BabelEx documentation <https://pythonhosted.org/Flask-BabelEx/>`_
+If the built-in translations are not enough, look at the `Flask-Babel documentation <https://python-babel.github.io/flask-babel/>`_
 to see how you can add your own.
 
 .. _file-admin:
