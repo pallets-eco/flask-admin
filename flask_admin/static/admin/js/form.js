@@ -509,20 +509,22 @@
                 $el.editable({
                     params: overrideXeditableParams,
                     display: function(value, response) {
-                       // display boolean value as an icon
-                       if(value == '1') {
-                           $(this).html('<span class="fa fa-check-circle glyphicon glyphicon-ok-circle icon-ok-circle"></span>');
-                       } else {
-                           $(this).html('<span class="fa fa-minus-circle glyphicon glyphicon-minus-sign icon-minus-sign"></span>');
-                       }
+                      // display boolean value as an icon
+                      var glyph = (value == '1') ? 'ok-circle' : 'minus-sign';
+                      var fa = (value == '1') ? 'fa-check' : 'fa-minus-circle';
+                      $(this).empty().append($('<span />', {
+                        'class': `fa ${fa} glyphicon glyphicon-${glyph} icon-${glyph}`,
+                        'title': $(this).parent().data('title'),
+                      }));
                     },
                     success: function(response, newValue) {
                       // update display
-                      if(newValue == '1') {
-                          $(this).html('<span class="fa fa-check-circle glyphicon glyphicon-ok-circle icon-ok-circle"></span>');
-                      } else {
-                          $(this).html('<span class="fa fa-minus-circle glyphicon glyphicon-minus-sign icon-minus-sign"></span>');
-                      }
+                      var glyph = (newValue == '1') ? 'ok-circle' : 'minus-sign';
+                      var fa = (newValue  == '1') ? 'fa-check' : 'fa-minus-circle';
+                      $(this).empty().append($('<span />', {
+                        'class': `fa ${fa} glyphicon glyphicon-${glyph} icon-${glyph}`,
+                        'title': $(this).parent().data('title'),
+                      }));
                     }
                 });
         }

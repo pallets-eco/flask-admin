@@ -652,7 +652,7 @@ def test_export_csv():
         ",6\r\n" == data
 
     # test column_formatters_export and column_formatters_export
-    type_formatters = {type(None): lambda view, value: "null"}
+    type_formatters = {type(None): lambda view, value, name: "null"}
 
     view = MockModelView(
         Model, view_data, can_export=True, column_list=['col1', 'col2'],
