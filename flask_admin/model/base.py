@@ -4,6 +4,7 @@ import csv
 import mimetypes
 import time
 from math import ceil
+import inspect
 
 from werkzeug.utils import secure_filename
 
@@ -1846,7 +1847,18 @@ class BaseModelView(BaseView, ActionsMixin):
                 type_fmt = formatter
                 break
         if type_fmt is not None:
-            value = type_fmt(self, value, name)
+            try:
+                value = type_fmt(self, value, name)
+            except TypeError:
+                spec = inspect.getfullargspec(type_fmt)
+
+                if len(spec.args) == 2:
+                    warnings.warn(f'Please update your type formatter {type_fmt} to '
+                                  'include additional `name` parameter.')
+                else:
+                    raise
+
+                value = type_fmt(self, value)
 
         return value
 
