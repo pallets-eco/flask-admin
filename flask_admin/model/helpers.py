@@ -10,6 +10,18 @@ def prettify_name(name):
     return name.replace('_', ' ').title()
 
 
+def dbify_name(name):
+    """
+        Reverts prettified pythonic variable names.
+
+        For example, 'Hello World' will be converted to 'hello_world'
+
+        :param name:
+            Name to db column-ify
+    """
+    return name.replace(' ', '_').lower()
+
+
 def get_mdict_item_or_list(mdict, key):
     """
         Return the value for the given key of the multidict.

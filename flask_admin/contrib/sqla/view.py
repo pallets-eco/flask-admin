@@ -18,12 +18,19 @@ from flask_admin.babel import gettext, ngettext, lazy_gettext
 from flask_admin.contrib.sqla.tools import is_relationship
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
+from flask_admin.model.helpers import dbify_name
 from flask_admin.actions import action
 from flask_admin._backwards import ObsoleteAttr
 
 from flask_admin.contrib.sqla import form, filters as sqla_filters, tools
 from .typefmt import DEFAULT_FORMATTERS
 from .ajax import create_ajax_loader
+
+try:
+    import tablib
+except ImportError:
+    tablib = None
+
 
 # Set up logger
 log = logging.getLogger("flask-admin.sqla")
@@ -1222,6 +1229,55 @@ class ModelView(BaseModelView):
             return False
         else:
             self.after_model_delete(model)
+
+        return True
+
+    def import_model(self, form):
+        """
+            Import model from form.
+
+            .. warning::
+               If you plan on using the import functionality to update existing records
+               make sure :attr:`~.column_display_pk` is set to ``True``. Otherwise, records
+               will be duplicated.
+
+            :param form:
+                Form instance
+        """
+        filename = form.import_file.data.filename.lower()
+
+        if filename.endswith('.csv'):
+            imported_data = tablib.Dataset().load(form.import_file.data.stream.read().decode(), format='csv')
+        else:
+            imported_data = tablib.Dataset().load(form.import_file.data.stream.read(), format='xls')
+
+        labels = self.column_labels if self.column_labels else {}
+        reversed_labels = dict((v, k) for k, v in labels.items())
+        model_columns = {
+            header: reversed_labels[header]
+            if header in reversed_labels
+            else dbify_name(header)
+            for header in imported_data.headers
+        }
+
+        for row in imported_data:
+            try:
+                model = self.model(**{
+                    model_columns[key]: row[i]
+                    if model_columns[key] not in self.column_formatters_import
+                    else self.column_formatters_import[model_columns[key]](self, row[i])
+                    for i, key in enumerate(imported_data.headers)
+                })
+                self.session.add(model)
+                self.session.commit()
+            except Exception as ex:
+                if not self.handle_view_exception(ex):
+                    flash(gettext('Failed to import record. %(error)s', error=str(ex)), 'error')
+                    log.exception('Failed to import record.')
+
+                self.session.rollback()
+
+                return False
 
         return True
 

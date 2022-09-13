@@ -1,6 +1,6 @@
-import datetime
 import os
 import os.path as op
+from datetime import datetime
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
@@ -14,6 +14,7 @@ app = Flask(__name__)
 # Create dummy secrey key so we can use sessions
 app.config['SECRET_KEY'] = '123456790'
 app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
+app.config['IMPORT_UPLOAD_PATH'] = op.abspath(op.dirname(__file__))
 
 # Create in-memory database
 app.config['DATABASE_FILE'] = 'sample_db.sqlite'
@@ -28,7 +29,7 @@ class User(db.Model):
     name = db.Column(db.Unicode(64))
     email = db.Column(db.Unicode(64))
     active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.now)
+    created_at = db.Column(db.DateTime, default=datetime.now)
 
     def __unicode__(self):
         return self.name
@@ -49,10 +50,26 @@ class CustomView(ModelView):
 
 
 class UserAdmin(CustomView):
+    def coerce_bool(self, cell_value):
+        return cell_value.upper() == 'TRUE'
+
+    def coerce_datetime(self, cell_value):
+        if not cell_value:
+            return None
+        return datetime.strptime(cell_value, '%m/%d/%Y %H:%M')
     column_searchable_list = ('name',)
     column_filters = ('name', 'email')
+    column_display_pk = True
     can_export = True
+    can_create = True
+    can_import = True
+    create_modal = True
+    import_modal = True
     export_types = ['csv', 'xlsx']
+    column_formatters_import = {
+        'active': coerce_bool,
+        'created_at': coerce_datetime
+    }
 
 
 # Flask views
