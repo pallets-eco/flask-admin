@@ -6,6 +6,7 @@ from flask import Flask, request, abort, url_for
 from flask.views import MethodView
 
 from flask_admin import base
+from flask_admin import helpers as h
 
 
 class MockView(base.BaseView):
@@ -48,31 +49,38 @@ class MockMethodView(base.BaseView):
 
     @base.expose_plugview('/_api/1')
     class API1(MethodView):
-        def get(self, cls):
-            return cls.render('method.html', request=request, name='API1')
+        def get(self):
+            view_class = h.get_current_view()
+            return view_class.render('method.html', request=request, name='API1')
 
-        def post(self, cls):
-            return cls.render('method.html', request=request, name='API1')
+        def post(self):
+            view_class = h.get_current_view()
+            return view_class.render('method.html', request=request, name='API1')
 
-        def put(self, cls):
-            return cls.render('method.html', request=request, name='API1')
+        def put(self):
+            view_class = h.get_current_view()
+            return view_class.render('method.html', request=request, name='API1')
 
-        def delete(self, cls):
-            return cls.render('method.html', request=request, name='API1')
+        def delete(self):
+            view_class = h.get_current_view()
+            return view_class.render('method.html', request=request, name='API1')
 
     @base.expose_plugview('/_api/2')
     class API2(MethodView):
-        def get(self, cls):
-            return cls.render('method.html', request=request, name='API2')
+        def get(self):
+            view_class = h.get_current_view()
+            return view_class.render('method.html', request=request, name='API2')
 
-        def post(self, cls):
-            return cls.render('method.html', request=request, name='API2')
+        def post(self):
+            view_class = h.get_current_view()
+            return view_class.render('method.html', request=request, name='API2')
 
     @base.expose_plugview('/_api/3')
     @base.expose_plugview('/_api/4')
     class DoubleExpose(MethodView):
-        def get(self, cls):
-            return cls.render('method.html', request=request, name='API3')
+        def get(self):
+            view_class = h.get_current_view()
+            return view_class.render('method.html', request=request, name='API3')
 
 
 def test_baseview_defaults():
