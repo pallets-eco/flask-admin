@@ -2,6 +2,7 @@ import os.path as op
 import warnings
 
 from functools import wraps
+import inspect
 
 from flask import Blueprint, current_app, render_template, abort, g, url_for
 from flask_admin import babel
@@ -365,7 +366,19 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             :param kwargs:
                 Arguments
         """
-        return fn(self, *args, **kwargs)
+        # Workaround for https://github.com/flask-admin/flask-admin/issues/2289
+        #
+        # From flask version 2.2.0 onwards, view methods accept keyword arguments only, and
+        # should not accept positional arguments.
+        #
+        # flask-admin wraps a mixture of instance and non-instance view functions; it would
+        # be preferable to distinguish those and use separate wrapping techniques for each,
+        # but here we check the function signature for positional arguments and provide the
+        # view object (self) if any are expected.
+        spec = inspect.getfullargspec(fn)
+        if spec.args:
+            return fn(self, **kwargs)
+        return fn(**kwargs)
 
     def inaccessible_callback(self, name, **kwargs):
         """
