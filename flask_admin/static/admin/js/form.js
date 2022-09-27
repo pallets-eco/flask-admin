@@ -455,12 +455,127 @@
                 processLeafletWidget($el, name);
                 return true;
             case 'x-editable':
+                var choices = {};
                 $el.editable({
                     params: overrideXeditableParams,
                     combodate: {
                         // prevent minutes from showing in 5 minute increments
                         minuteStep: 1,
                         maxYear: 2030,
+                    },
+                    ajaxOptions: {
+                        // prevents keys with the same value from getting converted into arrays
+                        traditional: $el.attr("data-multiple") == "1"
+                    },
+                    select2: {
+                        // institute delay and cache ajax calls to prevent overloading server
+                        delay: 250,
+                        cacheDatasource: true,
+                        dropdownAutoWidth: true,
+                        placeholder: "data-placeholder",
+                        minimumInputLength: $el.attr("data-minimum-input-length"),
+                        allowClear: $el.attr("data-allow-blank") == "1",
+                        multiple: $el.attr("data-multiple") == "1",
+                        closeOnSelect: $el.attr("data-multiple") != "1",
+                        ajax: {
+                            // Special data-url just for the GET request
+                            url: $el.attr("data-url-lookup"),
+                            data: function (term, page) {
+                                return {
+                                    query: term,
+                                    offset: (page - 1) * 10,
+                                    limit: 10,
+                                };
+                            },
+                            results: function (data, page) {
+                                var results = [];
+
+                                for (var k in data) {
+                                    var v = data[k];
+                                    choices[v[0]] = v[1];
+                                    results.push({ id: v[0], text: v[1] });
+                                }
+
+                                return {
+                                    results: results,
+                                    more: results.length == 10,
+                                };
+                            },
+                        },
+                        initSelection: function(_, callback) {
+                            var value = JSON.parse($el.attr('data-json'));
+                            var result = null;
+
+                            if (value) {
+                                if ($el.attr("data-multiple") == "1") {
+                                    result = [];
+
+                                    for (var k in value) {
+                                        var v = value[k];
+                                        choices[v[0]] = v[1];
+                                        result.push({id: v[0], text: v[1]});
+                                    }
+
+                                    callback(result);
+                                } else {
+                                    result = {id: value[0], text: value[1]};
+                                }
+                            }
+
+                            callback(result);
+                        },
+                    },
+                    display: function(selections) {
+                        var unique = (value, index, self) =>{
+                            var findIndex = (element) => element[0] == value[0];
+                            return self.findIndex(findIndex) === index;
+                        }
+                        var escapedValue;
+                        var updatedDataJson = [];
+                        if (!(Array.isArray(selections)))
+                            selections = [selections];
+                        if (selections.length) {
+                            var html = []
+                            $.each(selections, function(i, v) {
+                                if (v in choices){
+                                    escapedValue = $.fn.editableutils.escape(choices[v]);
+                                    if (!(choices[v] in selections))
+                                        // pk present, text not present - value was newly-added
+                                        updatedDataJson.push([parseInt(v), escapedValue]);
+                                    if (!html.includes(escapedValue))
+                                        html.push(escapedValue);
+                                } else {
+                                    escapedValue = $.fn.editableutils.escape(v);
+                                    if (html.includes(escapedValue)) {
+                                        // value was just deleted, remove from html
+                                        html = html.filter(function(value, index, arr){
+                                            return value != escapedValue;
+                                        });
+                                    } else {
+                                        // page-load, field being instantiated
+                                        html.push(escapedValue);
+                                    }
+                                }
+                            });
+                            if (html.length)
+                                $(this).html(html.join(', '));
+                                $(this).attr('data-value', html.join(','));
+                            if (updatedDataJson.length) {
+                                updatedDataJson = updatedDataJson.filter(unique);
+                                $(this).attr('data-json', JSON.stringify(updatedDataJson));
+                                $(this).attr('value', updatedDataJson.map(function(value){
+                                    return value[0];
+                                }).join(','));
+                            } else if ($el.attr("data-multiple") == "1") {
+                                // handle initialization
+                                $(this).attr('data-json', $(this).attr('data-json'));
+                                $(this).attr('value', JSON.parse($(this).attr('data-json')).map(function(value){
+                                    return value[0];
+                                }).join(','));
+                            }
+                        } else {
+                            $(this).empty();
+                        }
                     }
                 });
                 return true;
