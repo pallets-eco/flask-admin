@@ -127,7 +127,8 @@ if __name__ == '__main__':
     admin.add_view(LocationAdmin())
 
     # Create DB
-    db.create_all()
+    with app.app_context():
+        db.create_all()
 
     # Start app
     app.run(debug=True)

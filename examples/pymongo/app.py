@@ -70,7 +70,7 @@ class TweetView(ModelView):
     form = TweetForm
 
     def get_list(self, *args, **kwargs):
-        count, data = super(TweetView, self).get_list(*args, **kwargs)
+        count_documents, data = super(TweetView, self).get_list(*args, **kwargs)
 
         # Grab user names
         query = {'_id': {'$in': [x['user_id'] for x in data]}}
@@ -82,7 +82,7 @@ class TweetView(ModelView):
         for item in data:
             item['user_name'] = users_map.get(item['user_id'])
 
-        return count, data
+        return count_documents, data
 
     # Contribute list of user choices to the forms
     def _feed_user_choices(self, form):

@@ -51,8 +51,8 @@ class User(db.Document):
 
 # Define login and registration forms (for flask-login)
 class LoginForm(form.Form):
-    login = fields.StringField(validators=[validators.required()])
-    password = fields.PasswordField(validators=[validators.required()])
+    login = fields.StringField(validators=[validators.DataRequired()])
+    password = fields.PasswordField(validators=[validators.DataRequired()])
 
     def validate_login(self, field):
         user = self.get_user()
@@ -68,9 +68,9 @@ class LoginForm(form.Form):
 
 
 class RegistrationForm(form.Form):
-    login = fields.StringField(validators=[validators.required()])
+    login = fields.StringField(validators=[validators.DataRequired()])
     email = fields.StringField()
-    password = fields.PasswordField(validators=[validators.required()])
+    password = fields.PasswordField(validators=[validators.DataRequired()])
 
     def validate_login(self, field):
         if User.objects(login=self.login.data):
@@ -80,7 +80,7 @@ class RegistrationForm(form.Form):
 # Initialize flask-login
 def init_login():
     login_manager = login.LoginManager()
-    login_manager.setup_app(app)
+    login_manager.init_app(app)
 
     # Create user loader function
     @login_manager.user_loader

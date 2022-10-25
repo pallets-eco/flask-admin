@@ -109,10 +109,9 @@ def build_sample_db():
     import string
     import random
 
-    db.drop_all()
-    db.create_all()
-
     with app.app_context():
+        db.drop_all()
+        db.create_all()
         user_role = Role(name='user')
         super_user_role = Role(name='superuser')
         db.session.add(user_role)
