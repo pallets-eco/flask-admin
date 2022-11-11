@@ -34,6 +34,7 @@ class Select2TagsWidget(widgets.TextInput):
     """
     def __call__(self, field, **kwargs):
         kwargs.setdefault('data-role', u'select2-tags')
+        kwargs.setdefault('data-allow-duplicate-tags', "true" if getattr(field, 'allow_duplicates', False) else "false")
         return super(Select2TagsWidget, self).__call__(field, **kwargs)
 
 
