@@ -424,7 +424,7 @@ msgstr "La riga non esiste."
 
 #: ../flask_admin/model/base.py:2037 ../flask_admin/model/base.py:2301
 msgid "Record was successfully saved."
-msgstr "Record stato salvato con successo."
+msgstr "Il record è stato salvato con successo."
 
 #: ../flask_admin/model/base.py:2222
 msgid "Tablib dependency not installed."
