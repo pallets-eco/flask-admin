@@ -327,6 +327,12 @@ def test_list_columns():
                            column_labels=dict(test1='Column1'))
     admin.add_view(view)
 
+    # test column_list with a list of SQLAlchemy columns
+    view2 = CustomModelView(Model1, db.session, endpoint='model1_2',
+                            column_list=[Model1.test1, Model1.test3],
+                            column_labels=dict(test1='Column1'))
+    admin.add_view(view2)
+
     assert len(view._list_columns) == 2
     assert view._list_columns == [('test1', 'Column1'), ('test3', 'Test3')]
 
@@ -336,12 +342,6 @@ def test_list_columns():
     data = rv.data.decode('utf-8')
     assert 'Column1' in data
     assert 'Test2' not in data
-
-    # test column_list with a list of SQLAlchemy columns
-    view2 = CustomModelView(Model1, db.session, endpoint='model1_2',
-                            column_list=[Model1.test1, Model1.test3],
-                            column_labels=dict(test1='Column1'))
-    admin.add_view(view2)
 
     assert len(view2._list_columns) == 2
     assert view2._list_columns == [('test1', 'Column1'), ('test3', 'Test3')]
@@ -485,6 +485,10 @@ def test_complex_searchable_list():
                            column_searchable_list=['model1.test1'])
     admin.add_view(view)
 
+    view2 = CustomModelView(Model1, db.session,
+                            column_searchable_list=[Model2.string_field])
+    admin.add_view(view2)
+
     m1 = Model1('model1-test1-val')
     m2 = Model1('model1-test2-val')
     db.session.add(m1)
@@ -500,10 +504,6 @@ def test_complex_searchable_list():
     data = rv.data.decode('utf-8')
     assert 'model2-test1-val' in data
     assert 'model2-test2-val' not in data
-
-    view2 = CustomModelView(Model1, db.session,
-                            column_searchable_list=[Model2.string_field])
-    admin.add_view(view2)
 
     # test relation object - Model2.string_field
     rv = client.get('/admin/model1/?search=model2-test1')
@@ -539,6 +539,10 @@ def test_column_editable_list():
 
     view = CustomModelView(Model1, db.session,
                            column_editable_list=['test1', 'enum_field'])
+    admin.add_view(view)
+
+    # Test in-line editing for relations
+    view = CustomModelView(Model2, db.session, column_editable_list=['model1'])
     admin.add_view(view)
 
     fill_db(db, Model1, Model2)
@@ -585,10 +589,6 @@ def test_column_editable_list():
     })
     data = rv.data.decode('utf-8')
     assert 'problematic-input' not in data
-
-    # Test in-line editing for relations
-    view = CustomModelView(Model2, db.session, column_editable_list=['model1'])
-    admin.add_view(view)
 
     rv = client.post('/admin/model2/ajax/update/', data={
         'list_form_pk': '1',
@@ -698,18 +698,79 @@ def test_column_filters():
 
     Model1, Model2 = create_models(db)
 
-    view = CustomModelView(
+    view1 = CustomModelView(
         Model1, db.session,
         column_filters=['test1']
     )
+    admin.add_view(view1)
+
+    # Test string filter
+    view2 = CustomModelView(Model1, db.session,
+                            column_filters=['test1'], endpoint='_strings')
+    admin.add_view(view2)
+
+    # Test integer filter
+    view3 = CustomModelView(Model2, db.session,
+                           column_filters=['int_field'])
+    admin.add_view(view3)
+
+    # Test boolean filter
+    view4 = CustomModelView(Model1, db.session, column_filters=['bool_field'],
+                           endpoint="_bools")
+    admin.add_view(view4)
+
+    # Test float filter
+    view5 = CustomModelView(Model2, db.session, column_filters=['float_field'],
+                            endpoint="_float")
+    admin.add_view(view5)
+
+    # Test filters to joined table field
+    view = CustomModelView(
+        Model2, db.session,
+        endpoint='_model2',
+        column_filters=['model1.bool_field'],
+        column_list=[
+            'string_field',
+            'model1.id',
+            'model1.bool_field',
+        ]
+    )
+    admin.add_view(view)
+
+    # Test human readable URLs
+    view = CustomModelView(
+        Model1, db.session,
+        column_filters=['test1'],
+        endpoint='_model3',
+        named_filter_urls=True
+    )
+    admin.add_view(view)
+
+    # Test date, time, and datetime filters
+    view6 = CustomModelView(Model1, db.session,
+                            column_filters=['date_field', 'datetime_field', 'time_field'],
+                            endpoint="_datetime")
+    admin.add_view(view6)
+
+    # Test enum filter
+    view = CustomModelView(Model1, db.session,
+                           column_filters=['enum_field'],
+                           endpoint="_enumfield")
+    admin.add_view(view)
+
+    # Test single custom filter on relation
+    view = CustomModelView(Model2, db.session,
+                           column_filters=[
+                               filters.FilterEqual(Model1.test1, "Test1")
+                           ], endpoint='_relation_test')
     admin.add_view(view)
 
     client = app.test_client()
 
-    assert len(view._filters) == 7
+    assert len(view1._filters) == 7
 
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Test1']] == \
+        [(f['index'], f['operation']) for f in view1._filter_groups[u'Test1']] == \
         [
             (0, u'contains'),
             (1, u'not contains'),
@@ -910,13 +971,8 @@ def test_column_filters():
     assert 'test1_val_2' in data
     assert 'test2_val_1' not in data
 
-    # Test string filter
-    view = CustomModelView(Model1, db.session,
-                           column_filters=['test1'], endpoint='_strings')
-    admin.add_view(view)
-
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Test1']] == \
+        [(f['index'], f['operation']) for f in view2._filter_groups[u'Test1']] == \
         [
             (0, 'contains'),
             (1, 'not contains'),
@@ -989,13 +1045,8 @@ def test_column_filters():
     assert 'test1_val_3' in data
     assert 'test1_val_4' in data
 
-    # Test integer filter
-    view = CustomModelView(Model2, db.session,
-                           column_filters=['int_field'])
-    admin.add_view(view)
-
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Int Field']] == \
+        [(f['index'], f['operation']) for f in view3._filter_groups[u'Int Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -1096,13 +1147,8 @@ def test_column_filters():
     assert 'test2_val_3' not in data
     assert 'test2_val_4' not in data
 
-    # Test boolean filter
-    view = CustomModelView(Model1, db.session, column_filters=['bool_field'],
-                           endpoint="_bools")
-    admin.add_view(view)
-
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Bool Field']] == \
+        [(f['index'], f['operation']) for f in view4._filter_groups[u'Bool Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -1140,13 +1186,8 @@ def test_column_filters():
     assert 'test2_val_2' not in data
     assert 'test2_val_3' not in data
 
-    # Test float filter
-    view = CustomModelView(Model2, db.session, column_filters=['float_field'],
-                           endpoint="_float")
-    admin.add_view(view)
-
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Float Field']] == \
+        [(f['index'], f['operation']) for f in view5._filter_groups[u'Float Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -1233,19 +1274,6 @@ def test_column_filters():
     assert 'test2_val_3' not in data
     assert 'test2_val_4' not in data
 
-    # Test filters to joined table field
-    view = CustomModelView(
-        Model2, db.session,
-        endpoint='_model2',
-        column_filters=['model1.bool_field'],
-        column_list=[
-            'string_field',
-            'model1.id',
-            'model1.bool_field',
-        ]
-    )
-    admin.add_view(view)
-
     rv = client.get('/admin/_model2/?flt1_0=1')
     assert rv.status_code == 200
     data = rv.data.decode('utf-8')
@@ -1254,29 +1282,14 @@ def test_column_filters():
     assert 'test2_val_3' not in data
     assert 'test2_val_4' not in data
 
-    # Test human readable URLs
-    view = CustomModelView(
-        Model1, db.session,
-        column_filters=['test1'],
-        endpoint='_model3',
-        named_filter_urls=True
-    )
-    admin.add_view(view)
-
     rv = client.get('/admin/_model3/?flt1_test1_equals=test1_val_1')
     assert rv.status_code == 200
     data = rv.data.decode('utf-8')
     assert 'test1_val_1' in data
     assert 'test1_val_2' not in data
 
-    # Test date, time, and datetime filters
-    view = CustomModelView(Model1, db.session,
-                           column_filters=['date_field', 'datetime_field', 'time_field'],
-                           endpoint="_datetime")
-    admin.add_view(view)
-
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Date Field']] == \
+        [(f['index'], f['operation']) for f in view6._filter_groups[u'Date Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -1288,7 +1301,7 @@ def test_column_filters():
         ]
 
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Datetime Field']] == \
+        [(f['index'], f['operation']) for f in view6._filter_groups[u'Datetime Field']] == \
         [
             (7, 'equals'),
             (8, 'not equal'),
@@ -1300,7 +1313,7 @@ def test_column_filters():
         ]
 
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Time Field']] == \
+        [(f['index'], f['operation']) for f in view6._filter_groups[u'Time Field']] == \
         [
             (14, 'equals'),
             (15, 'not equal'),
@@ -1485,12 +1498,6 @@ def test_column_filters():
     assert 'timeonly_obj1' in data
     assert 'timeonly_obj2' in data
 
-    # Test enum filter
-    view = CustomModelView(Model1, db.session,
-                           column_filters=['enum_field'],
-                           endpoint="_enumfield")
-    admin.add_view(view)
-
     # enum - equals
     rv = client.get('/admin/_enumfield/?flt0_0=model1_v1')
     assert rv.status_code == 200
@@ -1536,13 +1543,6 @@ def test_column_filters():
     assert 'test1_val_1' in data
     assert 'enum_obj1' not in data
     assert 'enum_obj2' not in data
-
-    # Test single custom filter on relation
-    view = CustomModelView(Model2, db.session,
-                           column_filters=[
-                               filters.FilterEqual(Model1.test1, "Test1")
-                           ], endpoint='_relation_test')
-    admin.add_view(view)
 
     rv = client.get('/admin/_relation_test/?flt1_0=test1_val_1')
     data = rv.data.decode('utf-8')
@@ -2051,6 +2051,12 @@ def test_complex_sort():
                            column_sortable_list=['model1.test1'])
     admin.add_view(view)
 
+    # test sorting on multiple columns in related model
+    view2 = CustomModelView(M2, db.session,
+                            column_list=['string_field', 'model1'],
+                            column_sortable_list=[('model1', ('model1.test2', 'model1.test1'))], endpoint="m1_2")
+    admin.add_view(view2)
+
     client = app.test_client()
 
     rv = client.get('/admin/model2/?sort=0')
@@ -2061,12 +2067,6 @@ def test_complex_sort():
     assert data[0].model1.test1 == 'a'
     assert data[1].model1.test1 == 'b'
     assert data[2].model1.test1 == 'c'
-
-    # test sorting on multiple columns in related model
-    view2 = CustomModelView(M2, db.session,
-                            column_list=['string_field', 'model1'],
-                            column_sortable_list=[('model1', ('model1.test2', 'model1.test1'))], endpoint="m1_2")
-    admin.add_view(view2)
 
     rv = client.get('/admin/m1_2/?sort=0')
     assert rv.status_code == 200
@@ -2621,6 +2621,11 @@ def test_export_csv():
                            endpoint='row_limit_2')
     admin.add_view(view)
 
+    view = CustomModelView(Model1, db.session, can_export=True,
+                           column_list=['test1', 'test2'],
+                           endpoint='no_row_limit')
+    admin.add_view(view)
+
     client = app.test_client()
 
     # test export_max_rows
@@ -2630,11 +2635,6 @@ def test_export_csv():
     assert "Test1,Test2\r\n" + \
         "test1_val_1,test2_val_1\r\n" + \
         "test1_val_2,test2_val_2\r\n" == data
-
-    view = CustomModelView(Model1, db.session, can_export=True,
-                           column_list=['test1', 'test2'],
-                           endpoint='no_row_limit')
-    admin.add_view(view)
 
     # test row limit without export_max_rows
     rv = client.get('/admin/no_row_limit/export/csv/')

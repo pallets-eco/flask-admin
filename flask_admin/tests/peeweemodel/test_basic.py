@@ -185,6 +185,10 @@ def test_column_editable_list():
                            form_args=form_args)
     admin.add_view(view)
 
+    # Test in-line editing for relations
+    view = CustomModelView(Model2, column_editable_list=['model1'])
+    admin.add_view(view)
+
     fill_db(Model1, Model2)
 
     client = app.test_client()
@@ -231,10 +235,6 @@ def test_column_editable_list():
     })
     data = rv.data.decode('utf-8')
     assert 'problematic-input' not in data
-
-    # Test in-line editing for relations
-    view = CustomModelView(Model2, column_editable_list=['model1'])
-    admin.add_view(view)
 
     rv = client.post('/admin/model2/ajax/update/', data={
         'list_form_pk': '1',
@@ -327,6 +327,26 @@ def test_column_filters():
             (6, 'not in list'),
         ]
 
+    # Test int filter
+    view2 = CustomModelView(Model2, column_filters=['int_field'])
+    admin.add_view(view2)
+
+    # Test boolean filter
+    view3 = CustomModelView(Model2, column_filters=['bool_field'],
+                            endpoint="_bools")
+    admin.add_view(view3)
+
+    # Test float filter
+    view4 = CustomModelView(Model2, column_filters=['float_field'],
+                            endpoint="_float")
+    admin.add_view(view4)
+
+    # Test date, time, and datetime filters
+    view5 = CustomModelView(Model1,
+                            column_filters=['date_field', 'datetime_field', 'timeonly_field'],
+                            endpoint="_datetime")
+    admin.add_view(view5)
+
     # Make some test clients
     client = app.test_client()
 
@@ -392,12 +412,8 @@ def test_column_filters():
     assert 'test1_val_3' in data
     assert 'test1_val_4' in data
 
-    # Test int filter
-    view = CustomModelView(Model2, column_filters=['int_field'])
-    admin.add_view(view)
-
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Int Field']] == \
+        [(f['index'], f['operation']) for f in view2._filter_groups[u'Int Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -498,13 +514,8 @@ def test_column_filters():
     assert 'char_field_val_3' not in data
     assert 'char_field_val_4' not in data
 
-    # Test boolean filter
-    view = CustomModelView(Model2, column_filters=['bool_field'],
-                           endpoint="_bools")
-    admin.add_view(view)
-
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Bool Field']] == \
+        [(f['index'], f['operation']) for f in view3._filter_groups[u'Bool Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -542,13 +553,8 @@ def test_column_filters():
     assert 'char_field_val_2' not in data
     assert 'char_field_val_3' not in data
 
-    # Test float filter
-    view = CustomModelView(Model2, column_filters=['float_field'],
-                           endpoint="_float")
-    admin.add_view(view)
-
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Float Field']] == \
+        [(f['index'], f['operation']) for f in view4._filter_groups[u'Float Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -635,14 +641,8 @@ def test_column_filters():
     assert 'char_field_val_3' not in data
     assert 'char_field_val_4' not in data
 
-    # Test date, time, and datetime filters
-    view = CustomModelView(Model1,
-                           column_filters=['date_field', 'datetime_field', 'timeonly_field'],
-                           endpoint="_datetime")
-    admin.add_view(view)
-
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Date Field']] == \
+        [(f['index'], f['operation']) for f in view5._filter_groups[u'Date Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -654,7 +654,7 @@ def test_column_filters():
         ]
 
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Datetime Field']] == \
+        [(f['index'], f['operation']) for f in view5._filter_groups[u'Datetime Field']] == \
         [
             (7, 'equals'),
             (8, 'not equal'),
@@ -666,7 +666,7 @@ def test_column_filters():
         ]
 
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Timeonly Field']] == \
+        [(f['index'], f['operation']) for f in view5._filter_groups[u'Timeonly Field']] == \
         [
             (14, 'equals'),
             (15, 'not equal'),
@@ -1045,6 +1045,11 @@ def test_export_csv():
                            endpoint='row_limit_2')
     admin.add_view(view)
 
+    view = CustomModelView(Model1, can_export=True,
+                           column_list=['test1', 'test2'],
+                           endpoint='no_row_limit')
+    admin.add_view(view)
+
     for x in range(5):
         fill_db(Model1, Model2)
 
@@ -1057,11 +1062,6 @@ def test_export_csv():
     assert "Test1,Test2\r\n" + \
         "test1_val_1,test2_val_1\r\n" + \
         "test1_val_2,test2_val_2\r\n" == data
-
-    view = CustomModelView(Model1, can_export=True,
-                           column_list=['test1', 'test2'],
-                           endpoint='no_row_limit')
-    admin.add_view(view)
 
     # test row limit without export_max_rows
     rv = client.get('/admin/no_row_limit/export/csv/')
