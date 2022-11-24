@@ -2569,7 +2569,7 @@ def test_multipath_joins():
 def test_different_bind_joins():
     app, db, admin = setup()
     app.config['SQLALCHEMY_BINDS'] = {
-        'other': 'sqlite:///'
+        "other": "sqlite:///"
     }
 
     class Model1(db.Model):
@@ -2583,6 +2583,7 @@ def test_different_bind_joins():
         first_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
         first = db.relationship(Model1)
 
+    db.init_app(app)
     db.create_all()
 
     view = CustomModelView(Model2, db.session)
