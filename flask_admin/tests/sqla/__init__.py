@@ -11,6 +11,8 @@ def setup():
     app.config['SQLALCHEMY_ECHO'] = True
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    app.app_context().push()
+
     db = SQLAlchemy(app)
     admin = Admin(app)
 
@@ -24,6 +26,8 @@ def setup_postgres():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/flask_admin_test'
     app.config['SQLALCHEMY_ECHO'] = True
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    app.app_context().push()
 
     db = SQLAlchemy(app)
     admin = Admin(app)
