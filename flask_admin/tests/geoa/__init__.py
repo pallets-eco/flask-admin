@@ -14,4 +14,6 @@ def setup():
     db = SQLAlchemy(app)
     admin = Admin(app)
 
+    app.app_context().push()
+
     return app, db, admin
