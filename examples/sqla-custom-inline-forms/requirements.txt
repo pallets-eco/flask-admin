@@ -1,4 +1,4 @@
 Flask
 Flask-Admin
 Flask-SQLAlchemy
-WTForms==2.3.3
+WTForms
