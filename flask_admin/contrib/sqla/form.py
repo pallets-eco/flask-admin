@@ -636,6 +636,12 @@ class InlineModelConverter(InlineModelConverterBase):
                     loader = create_ajax_loader(info.model, self.session, new_name, name, opts)
                 else:
                     loader = opts
+                    # If we're changing the name in self.view._form_ajax_refs,
+                    # we must also change loader.name property. Otherwise
+                    # when the widget tries to set the 'data-url' property in the <input> tag,
+                    # it won't be able to find the loader since it'll be using the "field.loader.name"
+                    # of the previously-configured loader.
+                    setattr(loader, "name", new_name)
 
                 result[name] = loader
                 self.view._form_ajax_refs[new_name] = loader
