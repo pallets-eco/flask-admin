@@ -332,10 +332,33 @@
                     var tokenSeparators = [','];
                 }
 
+                if ($el.attr('data-allow-duplicate-tags')) {
+                    var allowDuplicateTags = JSON.parse($el.attr('data-allow-duplicate-tags'));
+                } else {
+                    var allowDuplicateTags = false;
+                }
+
+                if (allowDuplicateTags) {
+                    // To allow duplicate tags, we need to have a unique ID for each entry.
+                    // The easiest way to do this is appending the current Unix timestamp.
+                    // However, this causes the ID to change (the ID is what flask-admin receives later on).
+                    // We separate the date with a '#' and put a space at the end of the ID
+                    // (something the user can't do due to 'trim') to specially mark these entries.
+                    var createSearchChoice = function (term) {
+                        return {
+                            id: $.trim(term) + "#" + new Date().getTime() + " ",
+                            text: $.trim(term)
+                        };
+                    };
+                } else {
+                    var createSearchChoice = undefined;
+                }
+
                 var opts = {
                     width: 'resolve',
                     tags: tags,
                     tokenSeparators: tokenSeparators,
+                    createSearchChoice: createSearchChoice,
                     formatNoMatches: function() {
                         return 'Enter comma separated values';
                     }
