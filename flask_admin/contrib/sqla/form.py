@@ -266,18 +266,21 @@ class AdminModelConverter(ModelConverterBase):
         return None
 
     @classmethod
+    def _nullable_common(cls, column, field_args):
+        if column.nullable:
+            filters = field_args.get('filters', [])
+            filters.append(lambda x: x or None)
+            field_args['filters'] = filters
+
+    @classmethod
     def _string_common(cls, column, field_args, **extra):
         if hasattr(column.type, 'length') and isinstance(column.type.length, int) and column.type.length:
             field_args['validators'].append(validators.Length(max=column.type.length))
 
     @converts('String')  # includes VARCHAR, CHAR, and Unicode
     def conv_String(self, column, field_args, **extra):
-        if column.nullable:
-            filters = field_args.get('filters', [])
-            filters.append(lambda x: x or None)
-            field_args['filters'] = filters
-
         self._string_common(column=column, field_args=field_args, **extra)
+        self._nullable_common(column, field_args)
         return fields.StringField(**field_args)
 
     @converts('sqlalchemy.sql.sqltypes.Enum')
@@ -288,9 +291,8 @@ class AdminModelConverter(ModelConverterBase):
         if column.nullable:
             field_args['allow_blank'] = column.nullable
             accepted_values.append(None)
-            filters = field_args.get('filters', [])
-            filters.append(lambda x: x or None)
-            field_args['filters'] = filters
+
+        self._nullable_common(column, field_args)
 
         field_args['choices'] = available_choices
         field_args['validators'].append(validators.AnyOf(accepted_values))
@@ -310,9 +312,8 @@ class AdminModelConverter(ModelConverterBase):
         if column.nullable:
             field_args['allow_blank'] = column.nullable
             accepted_values.append(None)
-            filters = field_args.get('filters', [])
-            filters.append(lambda x: x or None)
-            field_args['filters'] = filters
+
+        self._nullable_common(column, field_args)
 
         field_args['choices'] = available_choices
         field_args['validators'].append(validators.AnyOf(accepted_values))
@@ -347,10 +348,7 @@ class AdminModelConverter(ModelConverterBase):
 
     @converts('sqlalchemy_utils.types.email.EmailType')
     def convert_email(self, field_args, column=None, **extra):
-        if column.nullable:
-            filters = field_args.get('filters', [])
-            filters.append(lambda x: x or None)
-            field_args['filters'] = filters
+        self._nullable_common(column, field_args)
         field_args['validators'].append(validators.Email())
         return fields.StringField(**field_args)
 
