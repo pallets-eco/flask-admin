@@ -5,7 +5,7 @@ from flask_admin.model.typefmt import BASE_FORMATTERS, EXPORT_FORMATTERS, \
 from sqlalchemy.orm.collections import InstrumentedList
 
 
-def choice_formatter(view, choice):
+def choice_formatter(view, choice, name):
     """
         Return label of selected choice
         see https://sqlalchemy-utils.readthedocs.io/
@@ -16,7 +16,7 @@ def choice_formatter(view, choice):
     return choice.value
 
 
-def arrow_formatter(view, arrow_time):
+def arrow_formatter(view, arrow_time, name):
     """
         Return human-friendly string of the time relative to now.
         see https://arrow.readthedocs.io/
@@ -27,7 +27,7 @@ def arrow_formatter(view, arrow_time):
     return arrow_time.humanize()
 
 
-def arrow_export_formatter(view, arrow_time):
+def arrow_export_formatter(view, arrow_time, name):
     """
         Return string representation of Arrow object
         see https://arrow.readthedocs.io/
