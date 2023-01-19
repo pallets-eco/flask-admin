@@ -1116,7 +1116,7 @@ class ModelView(BaseModelView):
             :param id:
                 Model id
         """
-        return self.session.query(self.model).get(tools.iterdecode(id))
+        return self.session.get(self.model, tools.iterdecode(id))
 
     # Error handler
     def handle_view_exception(self, exc):

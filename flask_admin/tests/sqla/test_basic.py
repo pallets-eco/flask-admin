@@ -114,7 +114,7 @@ def create_models(db):
 
         # Relation
         model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
-        model1 = db.relationship(lambda: Model1, backref='model2')
+        model1 = db.relationship(lambda: Model1, backref='model2', cascade_backrefs=False)
 
     db.create_all()
 
@@ -357,8 +357,9 @@ def test_complex_list_columns():
     M1, M2 = create_models(db)
 
     m1 = M1('model1_val1')
+    m2 = M2('model2_val1', model1=m1)
     db.session.add(m1)
-    db.session.add(M2('model2_val1', model1=m1))
+    db.session.add(m2)
 
     db.session.commit()
 
@@ -487,10 +488,12 @@ def test_complex_searchable_list():
 
     m1 = Model1('model1-test1-val')
     m2 = Model1('model1-test2-val')
+    m2_m1 = Model2('model2-test1-val', model1=m1)
+    m2_m2 = Model2('model2-test2-val', model1=m2)
     db.session.add(m1)
     db.session.add(m2)
-    db.session.add(Model2('model2-test1-val', model1=m1))
-    db.session.add(Model2('model2-test2-val', model1=m2))
+    db.session.add(m2_m1)
+    db.session.add(m2_m2)
     db.session.commit()
 
     client = app.test_client()
@@ -1786,7 +1789,7 @@ def test_form_columns():
 
         id = db.Column(db.String, primary_key=True)
         model_id = db.Column(db.Integer, db.ForeignKey(Model.id))
-        model = db.relationship(Model, backref='backref')
+        model = db.relationship(Model, backref='backref', cascade_backrefs=False)
         enum_field = db.Column(db.Enum('model1_v1', 'model1_v2'), nullable=True)
         choice_field = db.Column(db.String, nullable=True)
         sqla_utils_choice = db.Column(ChoiceType([
@@ -1893,7 +1896,7 @@ def test_form_onetoone():
         id = db.Column(db.Integer, primary_key=True)
 
         model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
-        model1 = db.relationship(Model1, backref=db.backref('model2', uselist=False))
+        model1 = db.relationship(Model1, backref=db.backref('model2', uselist=False), cascade_backrefs=False)
 
     db.create_all()
 
@@ -2032,16 +2035,19 @@ def test_complex_sort():
     M1, M2 = create_models(db)
 
     m1 = M1(test1='c', test2='x')
+    m2 = M2('c', model1=m1)
     db.session.add(m1)
-    db.session.add(M2('c', model1=m1))
-
-    m2 = M1(test1='b', test2='x')
     db.session.add(m2)
-    db.session.add(M2('b', model1=m2))
 
-    m3 = M1(test1='a', test2='y')
-    db.session.add(m3)
-    db.session.add(M2('a', model1=m3))
+    m1 = M1(test1='b', test2='x')
+    m2 = M2('b', model1=m1)
+    db.session.add(m1)
+    db.session.add(m2)
+
+    m1 = M1(test1='a', test2='y')
+    m2 = M2('a', model1=m1)
+    db.session.add(m1)
+    db.session.add(m2)
 
     db.session.commit()
 
@@ -2101,12 +2107,14 @@ def test_default_complex_sort():
     M1, M2 = create_models(db)
 
     m1 = M1('b')
+    m2 = M2('c', model1=m1)
     db.session.add(m1)
-    db.session.add(M2('c', model1=m1))
-
-    m2 = M1('a')
     db.session.add(m2)
-    db.session.add(M2('c', model1=m2))
+
+    m1 = M1('a')
+    m2 = M2('c', model1=m1)
+    db.session.add(m1)
+    db.session.add(m2)
 
     db.session.commit()
 
@@ -2313,6 +2321,7 @@ def test_ajax_fk():
 
     # Check submitting
     req = client.post('/admin/view/new/', data={u'model1': as_unicode(model.id)})
+    assert req.status_code == 302
     mdl = db.session.query(Model2).first()
 
     assert mdl is not None
@@ -2345,7 +2354,7 @@ def test_ajax_fk_multi():
         name = db.Column(db.String(20))
 
         model1_id = db.Column(db.Integer(), db.ForeignKey(Model1.id))
-        model1 = db.relationship(Model1, backref='models2', secondary=table)
+        model1 = db.relationship(Model1, backref='models2', secondary=table, cascade_backrefs=False)
 
     db.create_all()
 
@@ -2475,14 +2484,14 @@ def test_advanced_joins():
         val2 = db.Column(db.String(20))
 
         model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
-        model1 = db.relationship(Model1, backref='model2')
+        model1 = db.relationship(Model1, backref='model2', cascade_backrefs=False)
 
     class Model3(db.Model):
         id = db.Column(db.Integer, primary_key=True)
         val2 = db.Column(db.String(20))
 
         model2_id = db.Column(db.Integer, db.ForeignKey(Model2.id))
-        model2 = db.relationship(Model2, backref='model3')
+        model2 = db.relationship(Model2, backref='model3', cascade_backrefs=False)
 
     view1 = CustomModelView(Model1, db.session)
     admin.add_view(view1)
@@ -2550,10 +2559,10 @@ def test_multipath_joins():
         val2 = db.Column(db.String(20))
 
         first_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
-        first = db.relationship(Model1, backref='first', foreign_keys=[first_id])
+        first = db.relationship(Model1, backref='first', foreign_keys=[first_id], cascade_backrefs=False)
 
         second_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
-        second = db.relationship(Model1, backref='second', foreign_keys=[second_id])
+        second = db.relationship(Model1, backref='second', foreign_keys=[second_id], cascade_backrefs=False)
 
     db.create_all()
 
@@ -2581,7 +2590,7 @@ def test_different_bind_joins():
         id = db.Column(db.Integer, primary_key=True)
         val1 = db.Column(db.String(20))
         first_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
-        first = db.relationship(Model1)
+        first = db.relationship(Model1, cascade_backrefs=False)
 
     db.create_all()
 

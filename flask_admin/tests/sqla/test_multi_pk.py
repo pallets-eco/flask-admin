@@ -2,7 +2,7 @@ from . import setup
 from .test_basic import CustomModelView
 
 from flask_sqlalchemy.model import Model
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 
 def test_multiple_pk():
@@ -86,7 +86,7 @@ def test_single_table_inheritance():
     # Test multiple primary keys - mix int and string together
     app, db, admin = setup()
 
-    CustomModel = declarative_base(Model, name='Model')
+    CustomModel = declarative_base(cls=Model, name="Model")
 
     class Parent(CustomModel):
         __tablename__ = 'parent'

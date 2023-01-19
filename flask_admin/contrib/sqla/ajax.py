@@ -1,4 +1,4 @@
-from sqlalchemy import or_, and_, cast, text
+from sqlalchemy import or_, and_, cast, text, select
 from sqlalchemy.types import String
 
 from flask_admin._compat import as_unicode, string_types
@@ -58,16 +58,13 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return getattr(model, self.pk), as_unicode(model)
 
-    def get_query(self):
-        return self.session.query(self.model)
-
     def get_one(self, pk):
         # prevent autoflush from occuring during populate_obj
         with self.session.no_autoflush:
-            return self.get_query().get(pk)
+            return self.session.get(self.model, pk)
 
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
-        query = self.get_query()
+        query = select(self.model)
 
         # no type casting to string if a ColumnAssociationProxyInstance is given
         filters = (field.ilike(u'%%%s%%' % term) if is_association_proxy(field)
@@ -81,7 +78,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         if self.order_by:
             query = query.order_by(self.order_by)
 
-        return query.offset(offset).limit(limit).all()
+        return self.session.execute(query.offset(offset).limit(limit)).scalars().all()
 
 
 def create_ajax_loader(model, session, name, field_name, options):
