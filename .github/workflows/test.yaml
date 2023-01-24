@@ -47,7 +47,10 @@ jobs:
         ports:
           - 10000:10000
     steps:
-      # Downloads a copy of the code in your repository before running CI tests
+      - name: Install Ubuntu packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgeos-c1v5
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Set up PostgreSQL hstore module
