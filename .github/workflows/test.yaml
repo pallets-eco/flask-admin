@@ -50,9 +50,7 @@ jobs:
       # Downloads a copy of the code in your repository before running CI tests
       - name: Check out repository code
         uses: actions/checkout@v2
-      - name: Install postgis
-        run: sudo apt-get install -y postgis postgresql-12-postgis-3 postgresql-12-postgis-3-scripts
-      - name: Setup postgis
+      - name: Set up PostgreSQL hstore module
         env:
           PGPASSWORD: postgres
         run: psql -U postgres -h localhost -c 'CREATE EXTENSION hstore;' flask_admin_test
