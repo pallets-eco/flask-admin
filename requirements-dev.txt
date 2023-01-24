@@ -1,5 +1,5 @@
 flake8
-Flask>=0.7
+Flask<=2.0.0
 Flask-SQLAlchemy>=0.15
 peewee
 wtf-peewee
