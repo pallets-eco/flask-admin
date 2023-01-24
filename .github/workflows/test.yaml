@@ -49,13 +49,13 @@ jobs:
     steps:
       # Downloads a copy of the code in your repository before running CI tests
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up PostgreSQL hstore module
         env:
           PGPASSWORD: postgres
         run: psql -U postgres -h localhost -c 'CREATE EXTENSION hstore;' flask_admin_test
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install tox
