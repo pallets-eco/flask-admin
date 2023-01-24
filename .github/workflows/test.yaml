@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11']
         tox-version: [ 'WTForms2' ]
         include:
-          - python-version: 3.6
+          - python-version: 3.11
             tox-version: flake8
-          - python-version: 3.6
+          - python-version: 3.11
             tox-version: docs-html
     services:
       # Label used to access the service container
