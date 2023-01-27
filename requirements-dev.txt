@@ -1,8 +1,7 @@
 flake8
-Flask>=2.0.0
+Flask>=1.0.0<=2.0.0
 werkzeug<=2.0.0
-Flask-SQLAlchemy>=3.0.2
-sqlalchemy>=2.0
+Flask-SQLAlchemy>=2.5.1
 peewee
 wtf-peewee
 mongoengine<=0.21.0
