@@ -2,6 +2,7 @@ flake8
 Flask<2.0.0
 werkzeug<2.0.0
 sqlalchemy<2.0
+jinja2<=3.0.0
 Flask-SQLAlchemy<3.0.0
 peewee
 wtf-peewee
