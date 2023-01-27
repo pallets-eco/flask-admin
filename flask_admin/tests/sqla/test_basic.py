@@ -266,20 +266,20 @@ def test_model():
         # edit the record
         new_uuid_obj = uuid.uuid4()
         rv = client.post(url,
-                        data=dict(test1='test1small',
-                                test2='test2large',
-                                email_field='Test2@TEST.com',
-                                choice_field='__None',
-                                enum_field='__None',
-                                sqla_utils_choice='__None',
-                                sqla_utils_enum='__None',
-                                sqla_utils_arrow='',
-                                sqla_utils_uuid=str(new_uuid_obj),
-                                sqla_utils_url='',
-                                sqla_utils_ip_address='',
-                                sqla_utils_currency='',
-                                sqla_utils_color='',
-                                ))
+                         data=dict(test1='test1small',
+                                   test2='test2large',
+                                   email_field='Test2@TEST.com',
+                                   choice_field='__None',
+                                   enum_field='__None',
+                                   sqla_utils_choice='__None',
+                                   sqla_utils_enum='__None',
+                                   sqla_utils_arrow='',
+                                   sqla_utils_uuid=str(new_uuid_obj),
+                                   sqla_utils_url='',
+                                   sqla_utils_ip_address='',
+                                   sqla_utils_currency='',
+                                   sqla_utils_color='',
+                                   ))
         assert rv.status_code == 302
 
         # check that the changes were persisted
@@ -326,8 +326,8 @@ def test_list_columns():
 
         # test column_list with a list of strings
         view = CustomModelView(Model1, db.session,
-                            column_list=['test1', 'test3'],
-                            column_labels=dict(test1='Column1'))
+                               column_list=['test1', 'test3'],
+                               column_labels=dict(test1='Column1'))
         admin.add_view(view)
 
         # test column_list with a list of SQLAlchemy columns
@@ -369,7 +369,7 @@ def test_complex_list_columns():
 
         # test column_list with a list of strings on a relation
         view = CustomModelView(M2, db.session,
-                            column_list=['model1.test1'])
+                               column_list=['model1.test1'])
         admin.add_view(view)
 
         client = app.test_client()
@@ -389,15 +389,15 @@ def test_exclude_columns():
         view = CustomModelView(
             Model1, db.session,
             column_exclude_list=['test2', 'test4', 'enum_field', 'date_field', 'time_field', 'datetime_field',
-                                'sqla_utils_choice', 'sqla_utils_enum', 'sqla_utils_arrow', 'sqla_utils_uuid',
-                                'sqla_utils_url', 'sqla_utils_ip_address', 'sqla_utils_currency', 'sqla_utils_color']
+                                 'sqla_utils_choice', 'sqla_utils_enum', 'sqla_utils_arrow', 'sqla_utils_uuid',
+                                 'sqla_utils_url', 'sqla_utils_ip_address', 'sqla_utils_currency', 'sqla_utils_color']
         )
         admin.add_view(view)
 
         assert \
             view._list_columns == \
             [('test1', 'Test1'), ('test3', 'Test3'), ('bool_field', 'Bool Field'),
-            ('email_field', 'Email Field'), ('choice_field', 'Choice Field')]
+             ('email_field', 'Email Field'), ('choice_field', 'Choice Field')]
 
         client = app.test_client()
 
@@ -414,7 +414,7 @@ def test_column_searchable_list():
         Model1, Model2 = create_models(db)
 
         view = CustomModelView(Model2, db.session,
-                            column_searchable_list=['string_field', 'int_field'])
+                               column_searchable_list=['string_field', 'int_field'])
         admin.add_view(view)
 
         assert view._search_supported
@@ -492,7 +492,7 @@ def test_complex_searchable_list():
         Model1, Model2 = create_models(db)
 
         view = CustomModelView(Model2, db.session,
-                            column_searchable_list=['model1.test1'])
+                               column_searchable_list=['model1.test1'])
         admin.add_view(view)
         view2 = CustomModelView(Model1, db.session,
                                 column_searchable_list=[Model2.string_field])
@@ -528,8 +528,8 @@ def test_complex_searchable_list_missing_children():
         Model1, Model2 = create_models(db)
 
         view = CustomModelView(Model1, db.session,
-                            column_searchable_list=[
-                                'test1', 'model2.string_field'])
+                               column_searchable_list=[
+                                   'test1', 'model2.string_field'])
         admin.add_view(view)
 
         db.session.add(Model1('magic string'))
@@ -549,7 +549,7 @@ def test_column_editable_list():
         Model1, Model2 = create_models(db)
 
         view = CustomModelView(Model1, db.session,
-                            column_editable_list=['test1', 'enum_field'])
+                               column_editable_list=['test1', 'enum_field'])
         admin.add_view(view)
         # Test in-line editing for relations
         view = CustomModelView(Model2, db.session, column_editable_list=['model1'])
@@ -723,22 +723,22 @@ def test_column_filters():
 
         # Generate views
         view2 = CustomModelView(Model2, db.session,
-                            column_filters=['model1'])
+                                column_filters=['model1'])
 
         view5 = CustomModelView(Model1, db.session,
-                            column_filters=['test1'], endpoint='_strings')
+                                column_filters=['test1'], endpoint='_strings')
         admin.add_view(view5)
 
         view6 = CustomModelView(Model2, db.session,
-                            column_filters=['int_field'])
+                                column_filters=['int_field'])
         admin.add_view(view6)
 
         view7 = CustomModelView(Model1, db.session, column_filters=['bool_field'],
-                            endpoint="_bools")
+                                endpoint="_bools")
         admin.add_view(view7)
 
         view8 = CustomModelView(Model2, db.session, column_filters=['float_field'],
-                            endpoint="_float")
+                                endpoint="_float")
         admin.add_view(view8)
 
         view9 = CustomModelView(
@@ -762,19 +762,19 @@ def test_column_filters():
         admin.add_view(view10)
 
         view11 = CustomModelView(Model1, db.session,
-                            column_filters=['date_field', 'datetime_field', 'time_field'],
-                            endpoint="_datetime")
+                                 column_filters=['date_field', 'datetime_field', 'time_field'],
+                                 endpoint="_datetime")
         admin.add_view(view11)
 
         view12 = CustomModelView(Model1, db.session,
-                            column_filters=['enum_field'],
-                            endpoint="_enumfield")
+                                 column_filters=['enum_field'],
+                                 endpoint="_enumfield")
         admin.add_view(view12)
 
         view13 = CustomModelView(Model2, db.session,
-                            column_filters=[
-                                filters.FilterEqual(Model1.test1, "Test1")
-                            ], endpoint='_relation_test')
+                                 column_filters=[
+                                     filters.FilterEqual(Model1.test1, "Test1")
+                                 ], endpoint='_relation_test')
         admin.add_view(view13)
 
         # Test views
@@ -938,7 +938,7 @@ def test_column_filters():
 
         # Test filter with a dot
         view3 = CustomModelView(Model2, db.session,
-                            column_filters=['model1.bool_field'])
+                                column_filters=['model1.bool_field'])
 
         assert \
             [(f['index'], f['operation']) for f in view3._filter_groups[u'model1 / Model1 / Bool Field']] == \
@@ -949,11 +949,11 @@ def test_column_filters():
 
         # Test column_labels on filters
         view4 = CustomModelView(Model2, db.session,
-                            column_filters=['model1.bool_field', 'string_field'],
-                            column_labels={
-                                'model1.bool_field': 'Test Filter #1',
-                                'string_field': 'Test Filter #2',
-                            })
+                                column_filters=['model1.bool_field', 'string_field'],
+                                column_labels={
+                                    'model1.bool_field': 'Test Filter #1',
+                                    'string_field': 'Test Filter #2',
+                                })
 
         assert list(view4._filter_groups.keys()) == [u'Test Filter #1', u'Test Filter #2']
 
@@ -1620,7 +1620,7 @@ def test_hybrid_property():
             Model1, db.session,
             column_default_sort='number_of_pixels',
             column_filters=[filters.IntGreaterFilter(Model1.number_of_pixels,
-                                                    'Number of Pixels')],
+                                                     'Number of Pixels')],
             column_searchable_list=['number_of_pixels_str', ]
         )
         admin.add_view(view)
@@ -1705,9 +1705,9 @@ def test_url_args():
         Model1, Model2 = create_models(db)
 
         view = CustomModelView(Model1, db.session,
-                            page_size=2,
-                            column_searchable_list=['test1'],
-                            column_filters=['test1'])
+                               page_size=2,
+                               column_searchable_list=['test1'],
+                               column_filters=['test1'])
         admin.add_view(view)
 
         db.session.add(Model1('data1'))
@@ -1777,7 +1777,7 @@ def test_non_int_pk():
         assert rv.status_code == 200
 
         rv = client.post('/admin/model/new/',
-                        data=dict(id='test1', test='test2'))
+                         data=dict(id='test1', test='test2'))
         assert rv.status_code == 302
 
         rv = client.get('/admin/model/')
@@ -2084,8 +2084,8 @@ def test_complex_sort():
 
         # test sorting on relation string - 'model1.test1'
         view = CustomModelView(M2, db.session,
-                            column_list=['string_field', 'model1.test1'],
-                            column_sortable_list=['model1.test1'])
+                               column_list=['string_field', 'model1.test1'],
+                               column_sortable_list=['model1.test1'])
         admin.add_view(view)
         view2 = CustomModelView(M2, db.session,
                                 column_list=['string_field', 'model1'],
@@ -2123,7 +2123,7 @@ def test_complex_sort_exception():
 
         # test column_sortable_list on a related table's column object
         view = CustomModelView(M2, db.session, endpoint="model2_3",
-                            column_sortable_list=[M1.test1])
+                               column_sortable_list=[M1.test1])
         admin.add_view(view)
 
         sort_column = view._get_column_by_idx(0)[0]
@@ -2380,9 +2380,9 @@ def test_ajax_fk_multi():
                 return self.name
 
         table = db.Table('m2m', db.Model.metadata,
-                        db.Column('model1_id', db.Integer, db.ForeignKey('model1.id')),
-                        db.Column('model2_id', db.Integer, db.ForeignKey('model2.id'))
-                        )
+                         db.Column('model1_id', db.Integer, db.ForeignKey('model1.id')),
+                         db.Column('model2_id', db.Integer, db.ForeignKey('model2.id'))
+                         )
 
         class Model2(db.Model):
             __tablename__ = 'model2'
@@ -2445,8 +2445,8 @@ def test_safe_redirect():
         client = app.test_client()
 
         rv = client.post('/admin/model1/new/?url=http://localhost/admin/model2view/',
-                        data=dict(test1='test1large', test2='test2',
-                                _continue_editing='Save and Continue Editing'))
+                         data=dict(test1='test1large', test2='test2',
+                                   _continue_editing='Save and Continue Editing'))
 
         assert rv.status_code == 302
 
@@ -2462,8 +2462,8 @@ def test_safe_redirect():
         assert 'id=1' in rv.location
 
         rv = client.post('/admin/model1/new/?url=http://google.com/evil/',
-                        data=dict(test1='test1large', test2='test2',
-                                _continue_editing='Save and Continue Editing'))
+                         data=dict(test1='test1large', test2='test2',
+                                   _continue_editing='Save and Continue Editing'))
 
         assert rv.status_code == 302
         assert rv.location.startswith(expected)
@@ -2615,6 +2615,7 @@ def test_multipath_joins():
         rv = client.get('/admin/model2/')
         assert rv.status_code == 200
 
+
 # TODO: Why this fails?
 @pytest.mark.xfail(raises=Exception)
 def test_different_bind_joins():
@@ -2672,14 +2673,13 @@ def test_export_csv():
             fill_db(db, Model1, Model2)
 
         view1 = CustomModelView(Model1, db.session, can_export=True,
-                            column_list=['test1', 'test2'], export_max_rows=2,
-                            endpoint='row_limit_2')
+                                column_list=['test1', 'test2'], export_max_rows=2,
+                                endpoint='row_limit_2')
         admin.add_view(view1)
         view2 = CustomModelView(Model1, db.session, can_export=True,
-                            column_list=['test1', 'test2'],
-                            endpoint='no_row_limit')
+                                column_list=['test1', 'test2'],
+                                endpoint='no_row_limit')
         admin.add_view(view2)
-
 
         client = app.test_client()
 

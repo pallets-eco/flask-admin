@@ -12,7 +12,7 @@ def test_form_rules():
         db.create_all()
 
         view = CustomModelView(Model1, db.session,
-                            form_rules=('test2', 'test1', rules.Field('test4')))
+                               form_rules=('test2', 'test1', rules.Field('test4')))
         admin.add_view(view)
 
         client = app.test_client()
@@ -38,9 +38,9 @@ def test_rule_macro():
         db.create_all()
 
         view = CustomModelView(Model1, db.session,
-                            create_template='macro.html',
-                            form_create_rules=(rules.Macro('test', arg='foobar'),
-                                                rules.Macro('test_lib.another_test')))
+                               create_template='macro.html',
+                               form_create_rules=(rules.Macro('test', arg='foobar'),
+                                                  rules.Macro('test_lib.another_test')))
         admin.add_view(view)
 
         client = app.test_client()
@@ -61,8 +61,8 @@ def test_rule_container():
         db.create_all()
 
         view = CustomModelView(Model1, db.session,
-                            create_template='macro.html',
-                            form_create_rules=(rules.Container('wrap', rules.Macro('test_lib.another_test')),))
+                               create_template='macro.html',
+                               form_create_rules=(rules.Container('wrap', rules.Macro('test_lib.another_test')),))
         admin.add_view(view)
 
         client = app.test_client()
@@ -87,7 +87,7 @@ def test_rule_header():
         db.create_all()
 
         view = CustomModelView(Model1, db.session,
-                            form_create_rules=(rules.Header('hello'),))
+                               form_create_rules=(rules.Header('hello'),))
         admin.add_view(view)
 
         client = app.test_client()
@@ -106,7 +106,7 @@ def test_rule_field_set():
         db.create_all()
 
         view = CustomModelView(Model1, db.session,
-                            form_create_rules=(rules.FieldSet(['test2', 'test1', 'test4'], 'header'),))
+                               form_create_rules=(rules.FieldSet(['test2', 'test1', 'test4'], 'header'),))
         admin.add_view(view)
 
         client = app.test_client()
@@ -132,8 +132,8 @@ def test_rule_inlinefieldlist():
         db.create_all()
 
         view = CustomModelView(Model1, db.session,
-                            inline_models=(Model2,),
-                            form_create_rules=('test1', 'model2'))
+                               inline_models=(Model2,),
+                               form_create_rules=('test1', 'model2'))
         admin.add_view(view)
 
         client = app.test_client()
@@ -149,7 +149,7 @@ def test_inline_model_rules():
         db.create_all()
 
         view = CustomModelView(Model1, db.session,
-                            inline_models=[(Model2, dict(form_rules=('string_field', 'bool_field')))])
+                               inline_models=[(Model2, dict(form_rules=('string_field', 'bool_field')))])
         admin.add_view(view)
 
         client = app.test_client()

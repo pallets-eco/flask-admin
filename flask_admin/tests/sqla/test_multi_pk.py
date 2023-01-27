@@ -26,7 +26,7 @@ def test_multiple_pk():
         assert rv.status_code == 200
 
         rv = client.post('/admin/model/new/',
-                        data=dict(id=1, id2='two', test='test3'))
+                         data=dict(id=1, id2='two', test='test3'))
         assert rv.status_code == 302
 
         rv = client.get('/admin/model/')
@@ -74,7 +74,7 @@ def test_joined_inheritance():
         assert rv.status_code == 200
 
         rv = client.post('/admin/child/new/',
-                        data=dict(id=1, test='foo', name='bar'))
+                         data=dict(id=1, test='foo', name='bar'))
         assert rv.status_code == 302
 
         rv = client.get('/admin/child/edit/?id=1')
@@ -115,7 +115,7 @@ def test_single_table_inheritance():
         assert rv.status_code == 200
 
         rv = client.post('/admin/child/new/',
-                        data=dict(id=1, test='foo', name='bar'))
+                         data=dict(id=1, test='foo', name='bar'))
         assert rv.status_code == 302
 
         rv = client.get('/admin/child/edit/?id=1')
@@ -151,7 +151,7 @@ def test_concrete_table_inheritance():
         assert rv.status_code == 200
 
         rv = client.post('/admin/child/new/',
-                        data=dict(id=1, test='foo', name='bar'))
+                         data=dict(id=1, test='foo', name='bar'))
         assert rv.status_code == 302
 
         rv = client.get('/admin/child/edit/?id=1')
@@ -188,7 +188,7 @@ def test_concrete_multipk_inheritance():
         assert rv.status_code == 200
 
         rv = client.post('/admin/child/new/',
-                        data=dict(id=1, id2=2, test='foo', name='bar'))
+                         data=dict(id=1, id2=2, test='foo', name='bar'))
         assert rv.status_code == 302
 
         rv = client.get('/admin/child/edit/?id=1,2')
