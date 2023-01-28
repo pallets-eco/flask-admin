@@ -9,7 +9,7 @@ Flask-SQLAlchemy<3.0.0
 peewee
 wtf-peewee
 mongoengine<=0.21.0
-pymongo
+pymongo>=3.7.0
 flask-mongoengine==0.8.2
 pillow>=3.3.2
 Babel<=2.9.1
