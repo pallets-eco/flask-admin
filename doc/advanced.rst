@@ -199,7 +199,8 @@ from the GeoAlchemy backend, rather than the usual SQLAlchemy backend::
     from flask_admin.contrib.geoa import ModelView
 
     # .. flask initialization
-    db = SQLAlchemy(app)
+    db = SQLAlchemy()
+    db.init_app(app)
 
     class Location(db.Model):
         id = db.Column(db.Integer, primary_key=True)

@@ -11,7 +11,8 @@ def setup():
     app.config['SQLALCHEMY_ECHO'] = True
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    db = SQLAlchemy(app)
+    db = SQLAlchemy()
+    db.init_app(app)
     admin = Admin(app)
 
     return app, db, admin
@@ -25,7 +26,8 @@ def setup_postgres():
     app.config['SQLALCHEMY_ECHO'] = True
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    db = SQLAlchemy(app)
+    db = SQLAlchemy()
+    db.init_app(app)
     admin = Admin(app)
 
     return app, db, admin
