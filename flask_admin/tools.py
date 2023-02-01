@@ -1,8 +1,9 @@
+from functools import reduce
 import sys
 import traceback
 
 # Python 3 compatibility
-from ._compat import reduce, as_unicode
+from ._compat import as_unicode
 
 CHAR_ESCAPE = u'.'
 CHAR_SEPARATOR = u','
