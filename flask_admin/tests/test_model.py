@@ -1,5 +1,3 @@
-import wtforms
-
 from flask import Flask
 
 try:
@@ -14,14 +12,6 @@ from flask_admin import Admin, form
 from flask_admin._compat import iteritems, itervalues
 from flask_admin.model import base, filters
 from flask_admin.model.template import macro
-
-
-def wtforms2_and_up(func):
-    """Decorator for skipping test if wtforms <2
-    """
-    if int(wtforms.__version__[0]) < 2:
-        func.__test__ = False
-    return func
 
 
 class Model(object):
@@ -353,7 +343,6 @@ def test_form():
     pass
 
 
-@wtforms2_and_up
 def test_csrf():
     class SecureModelView(MockModelView):
         form_base_class = form.SecureForm
