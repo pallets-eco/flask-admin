@@ -3,6 +3,8 @@
 """
 import operator
 
+from sqlalchemy.orm.util import identity_key
+
 from wtforms.fields import SelectFieldBase, StringField
 from wtforms.utils import unset_value
 from wtforms.validators import ValidationError
@@ -13,12 +15,6 @@ from flask_admin.contrib.sqla.widgets import CheckboxListInput
 from flask_admin.form import FormOpts, BaseForm, Select2Widget
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 from flask_admin.babel import lazy_gettext
-
-try:
-    from sqlalchemy.orm.util import identity_key
-    has_identity_key = True
-except ImportError:
-    has_identity_key = False
 
 
 class QuerySelectField(SelectFieldBase):
@@ -60,8 +56,6 @@ class QuerySelectField(SelectFieldBase):
         self.query_factory = query_factory
 
         if get_pk is None:
-            if not has_identity_key:
-                raise Exception(u'The sqlalchemy identity_key function could not be imported.')
             self.get_pk = get_pk_from_identity
         else:
             self.get_pk = get_pk
