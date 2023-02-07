@@ -45,10 +45,7 @@ else:
     ngettext = domain.ngettext
     lazy_gettext = domain.lazy_gettext
 
-    try:
-        from wtforms.i18n import messages_path
-    except ImportError:
-        from wtforms.ext.i18n.utils import messages_path
+    from wtforms.i18n import messages_path
 
     wtforms_domain = Domain(messages_path(), domain='wtforms')
 

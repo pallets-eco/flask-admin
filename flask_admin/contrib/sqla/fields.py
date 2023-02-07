@@ -4,12 +4,8 @@
 import operator
 
 from wtforms.fields import SelectFieldBase, StringField
+from wtforms.utils import unset_value
 from wtforms.validators import ValidationError
-
-try:
-    from wtforms.fields import _unset_value as unset_value
-except ImportError:
-    from wtforms.utils import unset_value
 
 from .tools import get_primary_key
 from flask_admin._compat import text_type, string_types, iteritems
