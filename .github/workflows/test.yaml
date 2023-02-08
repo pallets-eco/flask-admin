@@ -15,9 +15,9 @@ jobs:
         python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
         tox-env: [ 'WTForms2' ]
         include:
-          - python-version: 3.11
+          - python-version: '3.x'
             tox-env: flake8
-          - python-version: 3.11
+          - python-version: '3.x'
             tox-env: docs-html
     services:
       # Label used to access the service container
