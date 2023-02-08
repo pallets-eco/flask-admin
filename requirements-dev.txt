@@ -18,7 +18,7 @@ geoalchemy2
 psycopg2
 sqlalchemy-citext
 sqlalchemy-utils>=0.36.6
-azure-storage-blob
+azure-storage-blob<12
 arrow<0.14.0
 colour
 email-validator
