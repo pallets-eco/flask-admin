@@ -116,8 +116,8 @@ def test_model():
     model = Model1.objects.first()
     assert model.test1 == 'test1large'
     assert model.test2 == 'test2'
-    assert model.test3 == ''
-    assert model.test4 == ''
+    assert model.test3 in ('', None)  # WTForms 2, WTForms 3
+    assert model.test4 in ('', None)  # WTForms 2, WTForms 3
 
     rv = client.get('/admin/model1/')
     assert rv.status_code == 200
@@ -134,8 +134,8 @@ def test_model():
     model = Model1.objects.first()
     assert model.test1 == 'test1small'
     assert model.test2 == 'test2large'
-    assert model.test3 == ''
-    assert model.test4 == ''
+    assert model.test3 in ('', None)  # WTForms 2, WTForms 3
+    assert model.test4 in ('', None)  # WTForms 2, WTForms 3
 
     url = '/admin/model1/delete/?id=%s' % model.id
     rv = client.post(url)
