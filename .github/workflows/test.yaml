@@ -13,12 +13,12 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
-        tox-version: [ 'WTForms2' ]
+        tox-env: [ 'WTForms2' ]
         include:
           - python-version: 3.11
-            tox-version: flake8
+            tox-env: flake8
           - python-version: 3.11
-            tox-version: docs-html
+            tox-env: docs-html
     services:
       # Label used to access the service container
       postgres:
@@ -64,4 +64,4 @@ jobs:
       - name: Install tox
         run: pip install tox
       - name: Run tests
-        run: tox -e ${{ matrix.tox-version }}
+        run: tox -e ${{ matrix.tox-env }}
