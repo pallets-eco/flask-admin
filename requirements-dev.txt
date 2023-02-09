@@ -10,7 +10,7 @@ mongoengine
 pymongo
 flask-mongoengine
 pillow
-flask-babelex
+flask-babel
 shapely
 geoalchemy2
 psycopg2
