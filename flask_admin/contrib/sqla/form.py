@@ -669,6 +669,7 @@ class InlineModelConverter(InlineModelConverterBase):
 
         reverse_prop = None
 
+        model.registry.configure()
         for prop in target_mapper.iterate_properties:
             if hasattr(prop, 'direction') and prop.direction.name in ('MANYTOONE', 'MANYTOMANY'):
                 if issubclass(model, prop.mapper.class_):

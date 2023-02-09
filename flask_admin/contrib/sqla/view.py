@@ -366,6 +366,7 @@ class ModelView(BaseModelView):
         if model is None:
             model = self.model
 
+        model.registry.configure()
         return model._sa_class_manager.mapper.iterate_properties
 
     def _apply_path_joins(self, query, joins, path, inner_join=True):
