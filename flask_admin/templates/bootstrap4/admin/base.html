@@ -37,38 +37,38 @@
   </head>
 <body>
 {% block page_body %}
-    <div class="container{% if config.get('FLASK_ADMIN_FLUID_LAYOUT', False) %}-fluid{% endif %}">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-2" role="navigation">
-            <!-- Brand and toggle get grouped for better mobile display -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-2" role="navigation">
+    <!-- Brand and toggle get grouped for better mobile display -->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#admin-navbar-collapse"
-                    aria-controls="admin-navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <!-- navbar content -->
+            aria-controls="admin-navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- navbar content -->
             <div class="collapse navbar-collapse" id="admin-navbar-collapse">
-            {% block brand %}
+                {% block brand %}
                 <a class="navbar-brand" href="{{ admin_view.admin.url }}">{{ admin_view.admin.name }}</a>
-            {% endblock %}
-            {% block main_menu %}
+                {% endblock %}
+                {% block main_menu %}
                 <ul class="nav navbar-nav mr-auto">
                     {{ layout.menu() }}
                 </ul>
-            {% endblock %}
-
+                {% endblock %}
+                
                 {% block menu_links %}
                 <ul class="nav navbar-nav navbar-right">
                     {{ layout.menu_links() }}
                 </ul>
                 {% endblock %}
-            {% block access_control %}
-            {% endblock %}
+                {% block access_control %}
+                {% endblock %}
             </div>
         </nav>
-
+        
+    <div class="container{% if config.get('FLASK_ADMIN_FLUID_LAYOUT', False) %}-fluid{% endif %}">
         {% block messages %}
-            {{ layout.messages() }}
+        {{ layout.messages() }}
         {% endblock %}
-
+        
         {# store the jinja2 context for form_rules rendering logic #}
         {% set render_ctx = h.resolve_ctx() %}
 

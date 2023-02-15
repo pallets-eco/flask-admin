@@ -33,9 +33,8 @@
   </head>
   <body>
     {% block page_body %}
-    <div class="container{%if config.get('FLASK_ADMIN_FLUID_LAYOUT', False) %}-fluid{% endif %}">
-      <div class="navbar">
-        <div class="navbar-inner">
+    <div class="navbar">
+      <div class="navbar-inner">
           {% block brand %}
           <a class="brand" href="{{ admin_view.admin.url }}">{{ admin_view.admin.name }}</a>
           {% endblock %}
@@ -53,18 +52,19 @@
           {% endblock %}
         </div>
       </div>
-
+      
+    <div class="container{%if config.get('FLASK_ADMIN_FLUID_LAYOUT', False) %}-fluid{% endif %}">
       {% block messages %}
       {{ layout.messages() }}
       {% endblock %}
-
+      
       {# store the jinja2 context for form_rules rendering logic #}
       {% set render_ctx = h.resolve_ctx() %}
-
+      
       {% block body %}{% endblock %}
     </div>
     {% endblock %}
-
+    
     {% block tail_js %}
     <script src="{{ admin_static.url(filename='vendor/jquery.min.js', v='3.5.1') }}" type="text/javascript"></script>
     <script src="{{ admin_static.url(filename='bootstrap/bootstrap2/js/bootstrap.min.js', v='2.3.2') }}" type="text/javascript"></script>
