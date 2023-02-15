@@ -1,5 +1,8 @@
 from re import sub, compile
-from jinja2 import contextfunction
+try:
+    from jinja2 import contextfunction
+except ImportError:
+    from jinja2 import pass_context as contextfunction
 from flask import g, request, url_for, flash
 from wtforms.validators import DataRequired, InputRequired
 

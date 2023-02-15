@@ -1,4 +1,7 @@
-from jinja2 import contextfunction
+try:
+    from jinja2 import contextfunction
+except ImportError:
+    from jinja2 import pass_context as contextfunction
 
 from flask_admin._compat import string_types, reduce
 from flask_admin.babel import gettext

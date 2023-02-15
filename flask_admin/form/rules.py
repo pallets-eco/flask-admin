@@ -1,4 +1,8 @@
-from jinja2 import Markup
+try:
+    from jinja2 import Markup
+except ImportError:
+    from jinja2.utils import markupsafe
+    Markup = markupsafe.Markup
 
 from flask_admin._compat import string_types
 from flask_admin import helpers

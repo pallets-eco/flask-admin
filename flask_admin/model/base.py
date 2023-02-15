@@ -9,7 +9,10 @@ from werkzeug.utils import secure_filename
 
 from flask import (current_app, request, redirect, flash, abort, json,
                    Response, get_flashed_messages, stream_with_context)
-from jinja2 import contextfunction
+try:
+    from jinja2 import contextfunction
+except ImportError:
+    from jinja2 import pass_context as contextfunction
 try:
     import tablib
 except ImportError:

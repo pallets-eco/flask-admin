@@ -1,5 +1,9 @@
 from flask import json
-from jinja2 import escape
+try:
+    from jinja2 import escape
+except ImportError:
+    from markupsafe import escape
+
 from wtforms.widgets import html_params
 
 from flask_admin._backwards import Markup
