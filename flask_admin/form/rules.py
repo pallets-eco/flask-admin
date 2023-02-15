@@ -1,8 +1,4 @@
-try:
-    from jinja2 import Markup
-except ImportError:
-    from jinja2.utils import markupsafe
-    Markup = markupsafe.Markup
+from markupsafe import Markup
 
 from flask_admin._compat import string_types
 from flask_admin import helpers
@@ -363,6 +359,143 @@ class FieldSet(NestedRule):
         super(FieldSet, self).__init__(rule_set, separator=separator)
 
 
+class Row(NestedRule):
+    def __init__(self, *columns, **kw):
+        super(Row, self).__init__()
+        self.rules = columns
+
+    def __call__(self, form, form_opts=None, field_args={}):
+        cols = []
+        for col in self.rules:
+            if col.visible_fields:
+                w_args = form_opts.widget_args.setdefault(col.visible_fields[0], {})
+                w_args.setdefault('column_class', 'col')
+            cols.append(col(form, form_opts, field_args))
+
+        return Markup('<div class="form-row">%s</div>' % ''.join(cols))
+
+
+class Group(Macro):
+
+    def __init__(self, field_name, prepend=None, append=None, **kwargs):
+        '''
+            Bootstrap Input group.
+        '''
+        render_field = kwargs.get('render_field', 'lib.render_field')
+        super(Group, self).__init__(render_field)
+        self.field_name = field_name
+        self._addons = []
+
+        if prepend:
+            if not isinstance(prepend, (tuple, list)):
+                prepend = [prepend]
+
+            for cnf in prepend:
+                if isinstance(cnf, str):
+                    self._addons.append({
+                        'pos': 'prepend',
+                        'type': 'text',
+                        'text': cnf
+                    })
+                    continue
+
+                if cnf['type'] in ('field', 'html', 'text'):
+                    cnf['pos'] = 'prepend'
+                    self._addons.append(cnf)
+
+        if append:
+            if not isinstance(append, (tuple, list)):
+                append = [append]
+
+            for cnf in append:
+                if isinstance(cnf, str):
+                    self._addons.append({
+                        'pos': 'append',
+                        'type': 'text',
+                        'text': cnf
+                    })
+                    continue
+
+                if cnf['type'] in ('field', 'html', 'text'):
+                    cnf['pos'] = 'append'
+                    self._addons.append(cnf)
+
+        print(self._addons)
+
+    @property
+    def visible_fields(self):
+        fields = [self.field_name]
+        for cnf in self._addons:
+            if cnf['type'] == 'field':
+                fields.append(cnf['name'])
+        return fields
+
+    def __call__(self, form, form_opts=None, field_args={}):
+        """
+            Render field.
+
+            :param form:
+                Form object
+            :param form_opts:
+                Form options
+            :param field_args:
+                Optional arguments that should be passed to template or the field
+        """
+        field = getattr(form, self.field_name, None)
+
+        if field is None:
+            raise ValueError('Form %s does not have field %s' % (form, self.field_name))
+
+        if form_opts:
+            widget_args = form_opts.widget_args
+        else:
+            widget_args = {}
+
+        opts = {}
+        prepend = []
+        append = []
+        for cnf in self._addons:
+            ctn = None
+            typ = cnf['type']
+            if typ == 'field':
+                name = cnf['name']
+                fld = form._fields.get(name, None)
+                if fld:
+                    w_args = widget_args.setdefault(name, {})
+                    if fld.type in ('BooleanField', 'RadioField'):
+                        w_args.setdefault('class', 'form-check-input')
+                    else:
+                        w_args.setdefault('class', 'form-control')
+                    ctn = fld(**w_args)
+            elif typ == 'text':
+                ctn = '<span class="input-group-text">%s</span>' % cnf['text']
+            elif typ == 'html':
+                ctn = cnf['html']
+
+            if ctn:
+                if cnf['pos'] == 'prepend':
+                    prepend.append(ctn)
+                else:
+                    append.append(ctn)
+
+        if prepend:
+            opts['prepend'] = Markup(''.join(prepend))
+
+        if append:
+            opts['append'] = Markup(''.join(append))
+
+        opts.update(widget_args.get(self.field_name, {}))
+        opts.update(field_args)
+
+        params = {
+            'form': form,
+            'field': field,
+            'kwargs': opts
+        }
+
+        return super(Group, self).__call__(form, form_opts, params)
+
+
 class RuleSet(object):
     """
         Rule set.
@@ -410,6 +543,9 @@ class RuleSet(object):
         for r in rules:
             if isinstance(r, string_types):
                 result.append(self.convert_string(r).configure(self, parent))
+            elif isinstance(r, (tuple, list)):
+                row = Row(*r)
+                result.append(row.configure(self, parent))
             else:
                 try:
                     result.append(r.configure(self, parent))

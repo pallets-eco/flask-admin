@@ -18,17 +18,15 @@
     </li>
     {%- endif -%}
     <li class="nav-item">
-        <a class="nav-link active" href="javascript:void(0)">{{ _gettext('Details') }}</a>
+        <a class="nav-link active disabled" href="javascript:void(0)">{{ _gettext('Details') }}</a>
     </li>
   </ul>
   {% endblock %}
 
   {% block details_search %}
-    <div class="input-group fa_filter_container col-lg-6">
-      <div class="input-group-prepend">
-        <span class="input-group-text">{{ _gettext('Filter') }}</span>
-      </div>
-      <input id="fa_filter" type="text" class="form-control">
+    <div class="form-inline fa_filter_container col-lg-6">
+      <label for="fa_filter">{{ _gettext('Filter') }}</label>
+      <input id="fa_filter" type="text" class="ml-3 form-control">
     </div>
   {% endblock %}
 

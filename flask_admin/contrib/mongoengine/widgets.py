@@ -1,6 +1,6 @@
 from wtforms.widgets import html_params
 
-from jinja2 import escape
+from markupsafe import escape
 
 from mongoengine.fields import GridFSProxy, ImageGridFsProxy
 

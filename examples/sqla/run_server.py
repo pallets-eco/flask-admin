@@ -7,7 +7,9 @@ import os.path as op
 app_dir = op.join(op.realpath(os.path.dirname(__file__)), 'admin')
 database_path = op.join(app_dir, app.config['DATABASE_FILE'])
 if not os.path.exists(database_path):
-    build_sample_db()
+    with app.app_context():
+        build_sample_db()
 
-# Start app
-app.run(debug=True)
+if __name__ == '__main__':
+    # Start app
+    app.run(debug=True)

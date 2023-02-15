@@ -1,6 +1,26 @@
 Changelog
 =========
 
+1.6.0
+-----
+
+* Dropped Python 2 support
+* WTForms 3.0 support
+* Various fixes
+
+1.5.8
+-----
+
+* SQLAlchemy 1.4.5+ compatibility fixes
+* Redis CLI fixes
+
+1.5.7
+-----
+
+* Bootstrap 4 support!
+* Added hook for custom SQLAlchemy models initializers
+* SQLAlchemy 1.4/2.0 compatibility fix
+
 1.5.6
 -----
 

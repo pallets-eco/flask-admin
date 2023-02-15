@@ -27,3 +27,7 @@ env
 *.egg
 .eggs
 .tox/
+.env
+.session.vim
+tags
+tags.tmp

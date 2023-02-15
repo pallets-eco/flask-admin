@@ -452,7 +452,7 @@ class ModelView(BaseModelView):
             model = self.model()
             form.populate_obj(model)
             self._on_model_change(form, model, True)
-            model.save()
+            model.save(force_insert=True)
 
             # For peewee have to save inline forms after model was saved
             save_inline(form, model)

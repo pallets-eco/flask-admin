@@ -87,22 +87,24 @@ class KeywordAdmin(sqla.ModelView):
 
 
 # Create admin
-admin = admin.Admin(app, name='Example: SQLAlchemy Association Proxy', template_mode='bootstrap3')
+admin = admin.Admin(app, name='Example: SQLAlchemy Association Proxy', template_mode='bootstrap4')
 admin.add_view(UserAdmin(User, db.session))
 admin.add_view(KeywordAdmin(Keyword, db.session))
 
 if __name__ == '__main__':
 
     # Create DB
-    db.create_all()
+    with app.app_context():
+        db.create_all()
 
     # Add sample data
     user = User('log')
     for kw in (Keyword('new_from_blammo'), Keyword('its_big')):
         user.keywords.append(kw)
 
-    db.session.add(user)
-    db.session.commit()
+    with app.app_context():
+        db.session.add(user)
+        db.session.commit()
 
     # Start app
     app.run(debug=True)

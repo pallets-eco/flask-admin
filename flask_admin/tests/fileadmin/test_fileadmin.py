@@ -2,8 +2,6 @@ import os
 import os.path as op
 import unittest
 
-from nose.tools import eq_, ok_, with_setup
-
 from flask_admin.contrib import fileadmin
 from flask_admin import Admin
 from flask import Flask
@@ -45,98 +43,98 @@ class Base:
 
             # index
             rv = client.get('/admin/myfileadmin/')
-            eq_(rv.status_code, 200)
-            ok_('path=dummy.txt' in rv.data.decode('utf-8'))
+            assert rv.status_code == 200
+            assert 'path=dummy.txt' in rv.data.decode('utf-8')
 
             # edit
             rv = client.get('/admin/myfileadmin/edit/?path=dummy.txt')
-            eq_(rv.status_code, 200)
-            ok_('dummy.txt' in rv.data.decode('utf-8'))
+            assert rv.status_code == 200
+            assert 'dummy.txt' in rv.data.decode('utf-8')
 
             rv = client.post('/admin/myfileadmin/edit/?path=dummy.txt',
                              data=dict(content='new_string'))
-            eq_(rv.status_code, 302)
+            assert rv.status_code == 302
 
             rv = client.get('/admin/myfileadmin/edit/?path=dummy.txt')
-            eq_(rv.status_code, 200)
-            ok_('dummy.txt' in rv.data.decode('utf-8'))
-            ok_('new_string' in rv.data.decode('utf-8'))
+            assert rv.status_code == 200
+            assert 'dummy.txt' in rv.data.decode('utf-8')
+            assert 'new_string' in rv.data.decode('utf-8')
 
             # rename
             rv = client.get('/admin/myfileadmin/rename/?path=dummy.txt')
-            eq_(rv.status_code, 200)
-            ok_('dummy.txt' in rv.data.decode('utf-8'))
+            assert rv.status_code == 200
+            assert 'dummy.txt' in rv.data.decode('utf-8')
 
             rv = client.post('/admin/myfileadmin/rename/?path=dummy.txt',
                              data=dict(name='dummy_renamed.txt',
                                        path='dummy.txt'))
-            eq_(rv.status_code, 302)
+            assert rv.status_code == 302
 
             rv = client.get('/admin/myfileadmin/')
-            eq_(rv.status_code, 200)
-            ok_('path=dummy_renamed.txt' in rv.data.decode('utf-8'))
-            ok_('path=dummy.txt' not in rv.data.decode('utf-8'))
+            assert rv.status_code == 200
+            assert 'path=dummy_renamed.txt' in rv.data.decode('utf-8')
+            assert 'path=dummy.txt' not in rv.data.decode('utf-8')
 
             # upload
             rv = client.get('/admin/myfileadmin/upload/')
-            eq_(rv.status_code, 200)
+            assert rv.status_code == 200
 
             rv = client.post('/admin/myfileadmin/upload/',
                              data=dict(upload=(StringIO(""), 'dummy.txt')))
-            eq_(rv.status_code, 302)
+            assert rv.status_code == 302
 
             rv = client.get('/admin/myfileadmin/')
-            eq_(rv.status_code, 200)
-            ok_('path=dummy.txt' in rv.data.decode('utf-8'))
-            ok_('path=dummy_renamed.txt' in rv.data.decode('utf-8'))
+            assert rv.status_code == 200
+            assert 'path=dummy.txt' in rv.data.decode('utf-8')
+            assert 'path=dummy_renamed.txt' in rv.data.decode('utf-8')
 
             # delete
             rv = client.post('/admin/myfileadmin/delete/',
                              data=dict(path='dummy_renamed.txt'))
-            eq_(rv.status_code, 302)
+            assert rv.status_code == 302
 
             rv = client.get('/admin/myfileadmin/')
-            eq_(rv.status_code, 200)
-            ok_('path=dummy_renamed.txt' not in rv.data.decode('utf-8'))
-            ok_('path=dummy.txt' in rv.data.decode('utf-8'))
+            assert rv.status_code == 200
+            assert 'path=dummy_renamed.txt' not in rv.data.decode('utf-8')
+            assert 'path=dummy.txt' in rv.data.decode('utf-8')
 
             # mkdir
             rv = client.get('/admin/myfileadmin/mkdir/')
-            eq_(rv.status_code, 200)
+            assert rv.status_code == 200
 
             rv = client.post('/admin/myfileadmin/mkdir/',
                              data=dict(name='dummy_dir'))
-            eq_(rv.status_code, 302)
+            assert rv.status_code == 302
 
             rv = client.get('/admin/myfileadmin/')
-            eq_(rv.status_code, 200)
-            ok_('path=dummy.txt' in rv.data.decode('utf-8'))
-            ok_('path=dummy_dir' in rv.data.decode('utf-8'))
+            assert rv.status_code == 200
+            assert 'path=dummy.txt' in rv.data.decode('utf-8')
+            assert 'path=dummy_dir' in rv.data.decode('utf-8')
 
             # rename - directory
             rv = client.get('/admin/myfileadmin/rename/?path=dummy_dir')
-            eq_(rv.status_code, 200)
-            ok_('dummy_dir' in rv.data.decode('utf-8'))
+            assert rv.status_code == 200
+            assert 'dummy_dir' in rv.data.decode('utf-8')
 
             rv = client.post('/admin/myfileadmin/rename/?path=dummy_dir',
                              data=dict(name='dummy_renamed_dir',
                                        path='dummy_dir'))
-            eq_(rv.status_code, 302)
+            assert rv.status_code == 302
 
             rv = client.get('/admin/myfileadmin/')
-            eq_(rv.status_code, 200)
-            ok_('path=dummy_renamed_dir' in rv.data.decode('utf-8'))
-            ok_('path=dummy_dir' not in rv.data.decode('utf-8'))
+            assert rv.status_code == 200
+            assert 'path=dummy_renamed_dir' in rv.data.decode('utf-8')
+            assert 'path=dummy_dir' not in rv.data.decode('utf-8')
 
             # delete - directory
             rv = client.post('/admin/myfileadmin/delete/',
                              data=dict(path='dummy_renamed_dir'))
-            eq_(rv.status_code, 302)
+            assert rv.status_code == 302
 
             rv = client.get('/admin/myfileadmin/')
-            eq_(rv.status_code, 200)
-            ok_('path=dummy_renamed_dir' not in rv.data.decode('utf-8'))
-            ok_('path=dummy.txt' in rv.data.decode('utf-8'))
+            assert rv.status_code == 200
+            assert 'path=dummy_renamed_dir' not in rv.data.decode('utf-8')
+            assert 'path=dummy.txt' in rv.data.decode('utf-8')
 
         def test_modal_edit(self):
             # bootstrap 2 - test edit_modal
@@ -170,15 +168,15 @@ class Base:
             # bootstrap 2 - ensure modal window is added when edit_modal is
             # enabled
             rv = client_bs2.get('/admin/edit_modal_on/')
-            eq_(rv.status_code, 200)
+            assert rv.status_code == 200
             data = rv.data.decode('utf-8')
-            ok_('fa_modal_window' in data)
+            assert 'fa_modal_window' in data
 
             # bootstrap 2 - test edit modal disabled
             rv = client_bs2.get('/admin/edit_modal_off/')
-            eq_(rv.status_code, 200)
+            assert rv.status_code == 200
             data = rv.data.decode('utf-8')
-            ok_('fa_modal_window' not in data)
+            assert 'fa_modal_window' not in data
 
             # bootstrap 3
             app_bs3 = Flask(__name__)
@@ -192,15 +190,15 @@ class Base:
             # bootstrap 3 - ensure modal window is added when edit_modal is
             # enabled
             rv = client_bs3.get('/admin/edit_modal_on/')
-            eq_(rv.status_code, 200)
+            assert rv.status_code == 200
             data = rv.data.decode('utf-8')
-            ok_('fa_modal_window' in data)
+            assert 'fa_modal_window' in data
 
             # bootstrap 3 - test modal disabled
             rv = client_bs3.get('/admin/edit_modal_off/')
-            eq_(rv.status_code, 200)
+            assert rv.status_code == 200
             data = rv.data.decode('utf-8')
-            ok_('fa_modal_window' not in data)
+            assert 'fa_modal_window' not in data
 
 
 class LocalFileAdminTests(Base.FileAdminTests):
@@ -230,14 +228,14 @@ class LocalFileAdminTests(Base.FileAdminTests):
             fp.write('test')
 
             rv = client.get('/admin/myfileadmin/?sort=bogus')
-            eq_(rv.status_code, 200)
-            ok_(rv.data.decode('utf-8').find('path=dummy2.txt') <
-                rv.data.decode('utf-8').find('path=dummy.txt'))
+            assert rv.status_code == 200
+            assert rv.data.decode('utf-8').find('path=dummy2.txt') < \
+                rv.data.decode('utf-8').find('path=dummy.txt')
 
             rv = client.get('/admin/myfileadmin/?sort=name')
-            eq_(rv.status_code, 200)
-            ok_(rv.data.decode('utf-8').find('path=dummy.txt') <
-                rv.data.decode('utf-8').find('path=dummy2.txt'))
+            assert rv.status_code == 200
+            assert rv.data.decode('utf-8').find('path=dummy.txt') < \
+                rv.data.decode('utf-8').find('path=dummy2.txt')
         try:
             # clean up
             os.remove(op.join(self._test_files_root, 'dummy2.txt'))

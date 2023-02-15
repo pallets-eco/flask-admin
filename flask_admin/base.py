@@ -365,7 +365,10 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             :param kwargs:
                 Arguments
         """
-        return fn(self, *args, **kwargs)
+        try:
+            return fn(self, *args, **kwargs)
+        except TypeError:
+            return fn(cls=self, **kwargs)
 
     def inaccessible_callback(self, name, **kwargs):
         """
@@ -491,7 +494,7 @@ class Admin(object):
                 Override base HTML template for all static views. Defaults to `admin/base.html`.
             :param template_mode:
                 Base template path. Defaults to `bootstrap2`. If you want to use
-                Bootstrap 3 integration, change it to `bootstrap3`.
+                Bootstrap 3 or 4 integration, change it to `bootstrap3` or `bootstrap4`.
             :param category_icon_classes:
                 A dict of category names as keys and html classes as values to be added to menu category icons.
                 Example: {'Favorites': 'glyphicon glyphicon-star'}
@@ -581,6 +584,29 @@ class Admin(object):
         """
         for view in args:
             self.add_view(view)
+
+    def add_category(self, name, class_name=None, icon_type=None, icon_value=None):
+        """
+            Add a category of a given name
+
+            :param name:
+                The name of the new menu category.
+            :param class_name:
+                The class name for the new menu category.
+            :param icon_type:
+                The icon name for the new menu category.
+            :param icon_value:
+                The icon value for the new menu category.
+        """
+        cat_text = as_unicode(name)
+
+        category = self.get_category_menu_item(name)
+        if category:
+            return
+
+        category = MenuCategory(name, class_name=class_name, icon_type=icon_type, icon_value=icon_value)
+        self._menu_categories[cat_text] = category
+        self._menu.append(category)
 
     def add_sub_category(self, name, parent_name):
 

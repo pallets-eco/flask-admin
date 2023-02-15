@@ -1,6 +1,7 @@
 import time
 import datetime
 import json
+import re
 
 from wtforms import fields
 from flask_admin.babel import gettext
@@ -36,9 +37,8 @@ class DateTimeField(fields.DateTimeField):
             :param kwargs:
                 Any additional parameters
         """
-        super(DateTimeField, self).__init__(label, validators, **kwargs)
-
-        self.format = format or '%Y-%m-%d %H:%M:%S'
+        super(DateTimeField, self).__init__(
+            label, validators, format or '%Y-%m-%d %H:%M:%S', **kwargs)
 
 
 class TimeField(fields.Field):
@@ -121,8 +121,11 @@ class Select2Field(fields.SelectField):
         if self.allow_blank:
             yield (u'__None', self.blank_text, self.data is None)
 
-        for value, label in self.choices:
-            yield (value, label, self.coerce(value) == self.data)
+        for choice in self.choices:
+            if isinstance(choice, tuple):
+                yield (choice[0], choice[1], self.coerce(choice[0]) == self.data)
+            else:
+                yield (choice.value, choice.name, self.coerce(choice.value) == self.data)
 
     def process_data(self, value):
         if value is None:
@@ -155,24 +158,34 @@ class Select2TagsField(fields.StringField):
     You must include select2.js, form-x.x.x.js and select2 stylesheet for it to work.
     """
     widget = admin_widgets.Select2TagsWidget()
+    _strip_regex = re.compile(r'#\d+(?:(,)|\s$)')  # e.g., 'tag#123, anothertag#425 ' => 'tag, anothertag'
 
-    def __init__(self, label=None, validators=None, save_as_list=False, coerce=text_type, **kwargs):
+    def __init__(self, label=None, validators=None, save_as_list=False, coerce=text_type, allow_duplicates=False,
+                 **kwargs):
         """Initialization
 
         :param save_as_list:
             If `True` then populate ``obj`` using list else string
+        :param allow_duplicates
+            If `True` then duplicate tags are allowed in the field.
         """
         self.save_as_list = save_as_list
+        self.allow_duplicates = allow_duplicates
         self.coerce = coerce
 
         super(Select2TagsField, self).__init__(label, validators, **kwargs)
 
     def process_formdata(self, valuelist):
         if valuelist:
+            entrylist = valuelist[0]
+            if self.allow_duplicates and entrylist.endswith(' '):
+                # This means this is an allowed duplicate (see form.js, `createSearchChoice`), so its ID was modified.
+                # Hence, we need to restore the original IDs.
+                entrylist = re.sub(self._strip_regex, '\\1', entrylist)
             if self.save_as_list:
-                self.data = [self.coerce(v.strip()) for v in valuelist[0].split(',') if v.strip()]
+                self.data = [self.coerce(v.strip()) for v in entrylist.split(',') if v.strip()]
             else:
-                self.data = self.coerce(valuelist[0])
+                self.data = self.coerce(entrylist)
 
     def _value(self):
         if isinstance(self.data, (list, tuple)):
@@ -191,7 +204,7 @@ class JSONField(fields.TextAreaField):
             # prevent utf8 characters from being converted to ascii
             return as_unicode(json.dumps(self.data, ensure_ascii=False))
         else:
-            return ''
+            return '{}'
 
     def process_formdata(self, valuelist):
         if valuelist:

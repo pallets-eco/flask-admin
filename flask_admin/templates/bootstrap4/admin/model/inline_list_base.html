@@ -3,19 +3,17 @@
     {# existing inline form fields #}
     <div class="inline-field-list">
         {% for subfield in field %}
-        <div id="{{ subfield.id }}" class="inline-field card-body bg-light">
+        <div id="{{ subfield.id }}" class="inline-field card card-body bg-light mb-3">
             {%- if not check or check(subfield) %}
             <legend>
                 <small>
                     {{ field.label.text }} #{{ loop.index }}
-                    <div class="float-right">
+                    <div class="pull-right">
                         {% if subfield.get_pk and subfield.get_pk() %}
                         <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
                         <label for="del-{{ subfield.id }}" style="display: inline">{{ _gettext('Delete?') }}</label>
                         {% else %}
-                        <a href="javascript:void(0)" class="inline-remove-field">
-                            <i class="fas fa-times"></i>
-                        </a>
+                        <a href="javascript:void(0)" value="{{ _gettext('Are you sure you want to delete this record?') }}" class="inline-remove-field"><i class="fa fa-times glyphicon glyphicon-remove"></i></a>
                         {% endif %}
                     </div>
                 </small>
@@ -28,21 +26,20 @@
     </div>
 
     {# template for new inline form fields #}
-    <div class="inline-field-template d-none">
+    <div class="inline-field-template hide">
         {% filter forceescape %}
-        <div class="inline-field card-body bg-light">
+        <div class="inline-field card card-body bg-light mb-3">
             <legend>
                 <small>{{ _gettext('New') }} {{ field.label.text }}</small>
-                <div class="float-right">
-                    <a href="javascript:void(0)" class="inline-remove-field">
-                        <span class="fas fa-times"></span>
-                    </a>
+                <div class="pull-right">
+                    <a href="javascript:void(0)" value="{{ _gettext('Are you sure you want to delete this record?') }}" class="inline-remove-field"><span class="fa fa-times glyphicon glyphicon-remove"></span></a>
                 </div>
             </legend>
+            <div class='clearfix'></div>
             {{ render(template) }}
         </div>
         {% endfilter %}
     </div>
-    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn btn-secondary" onclick="faForm.addInlineField(this, '{{ field.id }}');">{{ _gettext('Add') }} {{ field.label.text }}</a>
+    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn btn-primary" role="button" onclick="faForm.addInlineField(this, '{{ field.id }}');">{{ _gettext('Add') }} {{ field.label.text }}</a>
 </div>
 {% endmacro %}

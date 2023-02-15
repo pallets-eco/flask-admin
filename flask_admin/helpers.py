@@ -1,12 +1,8 @@
 from re import sub, compile
-try:
-    from jinja2 import contextfunction
-except ImportError:
-    from jinja2 import pass_context as contextfunction
 from flask import g, request, url_for, flash
 from wtforms.validators import DataRequired, InputRequired
 
-from flask_admin._compat import urljoin, urlparse, iteritems
+from flask_admin._compat import iteritems, pass_context, urljoin, urlparse
 
 from ._compat import string_types
 
@@ -112,7 +108,7 @@ def flash_errors(form, message):
         flash(gettext(message, error=str(errors)), 'error')
 
 
-@contextfunction
+@pass_context
 def resolve_ctx(context):
     """
         Resolve current Jinja2 context and store it for general consumption.

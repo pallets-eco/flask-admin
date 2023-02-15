@@ -1,9 +1,19 @@
 import types
 
 from sqlalchemy import tuple_, or_, and_, inspect
-from sqlalchemy.ext.declarative.clsregistry import _class_resolver
+try:
+    # Attempt _class_resolver import from SQLALchemy 1.4/2.0 module architecture.
+    from sqlalchemy.orm.clsregistry import _class_resolver
+except ImportError:
+    # If 1.4/2.0 module import fails, fall back to <1.3.x architecture.
+    from sqlalchemy.ext.declarative.clsregistry import _class_resolver
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
+try:
+    # Attempt ASSOCATION_PROXY import from pre-2.0 release
+    from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
+except ImportError:
+    from sqlalchemy.ext.associationproxy import AssociationProxyExtensionType
+    ASSOCIATION_PROXY = AssociationProxyExtensionType.ASSOCIATION_PROXY
 from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
@@ -201,7 +211,9 @@ def is_hybrid_property(model, attr_name):
             if is_association_proxy(attr):
                 attr = attr.remote_attr
             last_model = attr.property.argument
-            if isinstance(last_model, _class_resolver):
+            if isinstance(last_model, string_types):
+                last_model = attr.property._clsregistry_resolve_name(last_model)()
+            elif isinstance(last_model, _class_resolver):
                 last_model = model._decl_class_registry[last_model.arg]
             elif isinstance(last_model, (types.FunctionType, types.MethodType)):
                 last_model = last_model()

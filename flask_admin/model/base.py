@@ -4,15 +4,12 @@ import csv
 import mimetypes
 import time
 from math import ceil
+import inspect
 
 from werkzeug.utils import secure_filename
 
 from flask import (current_app, request, redirect, flash, abort, json,
                    Response, get_flashed_messages, stream_with_context)
-try:
-    from jinja2 import contextfunction
-except ImportError:
-    from jinja2 import pass_context as contextfunction
 try:
     import tablib
 except ImportError:
@@ -32,7 +29,7 @@ from flask_admin.helpers import (get_form_data, validate_form_on_submit,
 from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
 from flask_admin._compat import (iteritems, itervalues, OrderedDict,
-                                 as_unicode, csv_encode, text_type)
+                                 as_unicode, csv_encode, text_type, pass_context)
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
 
@@ -1470,7 +1467,7 @@ class BaseModelView(BaseView, ActionsMixin):
             :param name:
                 Column name.
         """
-        return name in self.column_editable_list
+        return name in self.column_editable_list and self.can_edit
 
     def _get_column_by_idx(self, idx):
         """
@@ -1846,11 +1843,25 @@ class BaseModelView(BaseView, ActionsMixin):
 
         for typeobj, formatter in column_type_formatters.items():
             if isinstance(value, typeobj):
-                return formatter(self, value)
+                type_fmt = formatter
+                break
+        if type_fmt is not None:
+            try:
+                value = type_fmt(self, value, name)
+            except TypeError:
+                spec = inspect.getfullargspec(type_fmt)
+
+                if len(spec.args) == 2:
+                    warnings.warn(f'Please update your type formatter {type_fmt} to '
+                                  'include additional `name` parameter.')
+                else:
+                    raise
+
+                value = type_fmt(self, value)
 
         return value
 
-    @contextfunction
+    @pass_context
     def get_list_value(self, context, model, name):
         """
             Returns the value to be displayed in the list view
@@ -1870,7 +1881,7 @@ class BaseModelView(BaseView, ActionsMixin):
             self.column_type_formatters,
         )
 
-    @contextfunction
+    @pass_context
     def get_detail_value(self, context, model, name):
         """
             Returns the value to be displayed in the detail view
@@ -2144,7 +2155,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 if '_add_another' in request.form:
                     return redirect(self.get_url('.create_view', url=return_url))
                 elif '_continue_editing' in request.form:
-                    return redirect(request.url)
+                    return redirect(self.get_url('.edit_view', id=self.get_pk_value(model)))
                 else:
                     # save button
                     return redirect(self.get_save_return_url(model, is_created=False))

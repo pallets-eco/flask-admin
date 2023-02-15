@@ -42,16 +42,13 @@ install_requires = [
     'wtforms'
 ]
 
-if sys.version_info[0:2] < (3, 4):
-    # required for python < 3.4
-    install_requires.append('enum34>=1.1.6')
-
 
 setup(
     name='Flask-Admin',
     version=grep('__version__'),
     url='https://github.com/flask-admin/flask-admin/',
     license='BSD',
+    python_requires='>=3.6',
     author=grep('__author__'),
     author_email=grep('__email__'),
     description='Simple and extensible admin interface framework for Flask',
@@ -63,13 +60,13 @@ setup(
     extras_require=extras_require,
     install_requires=install_requires,
     tests_require=[
-        'nose>=1.0',
+        'pytest',
         'pillow>=3.3.2',
         'mongoengine',
         'pymongo',
         'wtf-peewee',
         'sqlalchemy',
-        'flask-mongoengine',
+        'flask-mongoengine<=0.21.0',
         'flask-sqlalchemy',
         'flask-babelex',
         'shapely',
@@ -84,11 +81,12 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
     ],
-    test_suite='nose.collector'
+    test_suite='flask_admin.tests'
 )

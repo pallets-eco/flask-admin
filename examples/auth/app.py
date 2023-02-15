@@ -82,7 +82,7 @@ admin = flask_admin.Admin(
     app,
     'Example: Auth',
     base_template='my_master.html',
-    template_mode='bootstrap3',
+    template_mode='bootstrap4',
 )
 
 # Add model views
@@ -156,7 +156,8 @@ if __name__ == '__main__':
     app_dir = os.path.realpath(os.path.dirname(__file__))
     database_path = os.path.join(app_dir, app.config['DATABASE_FILE'])
     if not os.path.exists(database_path):
-        build_sample_db()
+        with app.app_context():
+            build_sample_db()
 
     # Start app
     app.run(debug=True)
