@@ -545,3 +545,20 @@ While the wrapped function should accept only one parameter - `ids`::
                     raise
 
                 flash(gettext('Failed to approve users. %(error)s', error=str(ex)), 'error')
+
+
+Settings reference
+------------------
+
+This section list settings supported in the current release
+
+  FLASK_ADMIN_SWATCH
+    Theme for bootswatch in order to customize you UI. See https://bootswatch.com/
+    Example : FLASK_ADMIN_SWATCH = "simplex"
+
+  FLASK_ADMIN_FLUID_LAYOUT
+    Boolean. Use this if you want to use the bootstrap "container-fluid" (use the full width of the screen)
+    
+  ADMIN_RAISE_ON_INTEGRITY_ERROR
+    Boolean. Control if any exeption is raised on integrity error or if flash messages are returned
+    Default = None (flash message)
