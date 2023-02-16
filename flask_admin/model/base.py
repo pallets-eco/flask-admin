@@ -1841,6 +1841,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if choices_map:
             return choices_map.get(value) or value
 
+        type_fmt = None
         for typeobj, formatter in column_type_formatters.items():
             if isinstance(value, typeobj):
                 type_fmt = formatter
