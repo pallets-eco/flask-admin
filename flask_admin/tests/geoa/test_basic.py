@@ -23,15 +23,14 @@ def create_models(db):
         def __unicode__(self):
             return self.name
 
-    db.create_all()
-
     return GeoModel
 
 
 def test_model():
     app, db, admin = setup()
     GeoModel = create_models(db)
-    db.create_all()
+    with app.app_context():
+        db.create_all()
     GeoModel.query.delete()
     db.session.commit()
 
@@ -130,7 +129,8 @@ def test_model():
 def test_none():
     app, db, admin = setup()
     GeoModel = create_models(db)
-    db.create_all()
+    with app.app_context():
+        db.create_all()
     GeoModel.query.delete()
     db.session.commit()
 
