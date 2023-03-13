@@ -8,7 +8,7 @@ except ImportError:
     Enum = None
 
 
-def null_formatter(view, value):
+def null_formatter(view, value, name):
     """
         Return `NULL` as the string for `None` value
 
@@ -18,7 +18,7 @@ def null_formatter(view, value):
     return Markup('<i>NULL</i>')
 
 
-def empty_formatter(view, value):
+def empty_formatter(view, value, name):
     """
         Return empty string for `None` value
 
@@ -28,7 +28,7 @@ def empty_formatter(view, value):
     return ''
 
 
-def bool_formatter(view, value):
+def bool_formatter(view, value, name):
     """
         Return check icon if value is `True` or empty string otherwise.
 
@@ -37,10 +37,11 @@ def bool_formatter(view, value):
     """
     glyph = 'ok-circle' if value else 'minus-sign'
     fa = 'fa-check-circle' if value else 'fa-minus-circle'
-    return Markup('<span class="fa %s glyphicon glyphicon-%s icon-%s"></span>' % (fa, glyph, glyph))
+    label = f'{name}: {"true" if value else "false"}'
+    return Markup('<span class="fa %s glyphicon glyphicon-%s icon-%s" title="%s"></span>' % (fa, glyph, glyph, label))
 
 
-def list_formatter(view, values):
+def list_formatter(view, values, name):
     """
         Return string with comma separated values
 
@@ -50,7 +51,7 @@ def list_formatter(view, values):
     return u', '.join(text_type(v) for v in values)
 
 
-def enum_formatter(view, value):
+def enum_formatter(view, value, name):
     """
         Return the name of the enumerated member.
 
@@ -60,7 +61,7 @@ def enum_formatter(view, value):
     return value.name
 
 
-def dict_formatter(view, value):
+def dict_formatter(view, value, name):
     """
         Removes unicode entities when displaying dict as string. Also unescapes
         non-ASCII characters stored in the JSON.

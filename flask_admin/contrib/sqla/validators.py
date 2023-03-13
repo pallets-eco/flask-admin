@@ -6,6 +6,8 @@ try:
 except ImportError:
     from wtforms.validators import Required as InputRequired
 
+from flask_admin._compat import filter_list
+
 
 class Unique(object):
     """Checks field value unicity against specified table field.
@@ -55,7 +57,8 @@ class ItemsRequired(InputRequired):
         self.min = min
 
     def __call__(self, form, field):
-        if len(field.data) < self.min:
+        items = filter_list(lambda e: not field.should_delete(e), field.entries)
+        if len(items) < self.min:
             if self.message is None:
                 message = field.ngettext(
                     u"At least %(num)d item is required",

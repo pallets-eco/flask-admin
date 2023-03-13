@@ -392,7 +392,8 @@ if __name__ == '__main__':
     app_dir = op.realpath(os.path.dirname(__file__))
     database_path = op.join(app_dir, app.config['DATABASE_FILE'])
     if not os.path.exists(database_path):
-        build_sample_db()
+        with app.app_context():
+            build_sample_db()
         
     # Start app
     app.run(debug=False)

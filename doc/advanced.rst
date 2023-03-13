@@ -74,7 +74,7 @@ can use it by adding a FileAdmin view to your app::
 
     # Flask setup here
 
-    admin = Admin(app, name='microblog', template_mode='bootstrap3')
+    admin = Admin(app, name='microblog', template_mode='bootstrap4')
 
     path = op.join(op.dirname(__file__), 'static')
     admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
@@ -113,7 +113,7 @@ instance running on the same machine as your app, you can::
 
     # Flask setup here
 
-    admin = Admin(app, name='microblog', template_mode='bootstrap3')
+    admin = Admin(app, name='microblog', template_mode='bootstrap4')
 
     admin.add_view(rediscli.RedisCli(Redis()))
 
@@ -199,7 +199,8 @@ from the GeoAlchemy backend, rather than the usual SQLAlchemy backend::
     from flask_admin.contrib.geoa import ModelView
 
     # .. flask initialization
-    db = SQLAlchemy(app)
+    db = SQLAlchemy()
+    db.init_app(app)
 
     class Location(db.Model):
         id = db.Column(db.Integer, primary_key=True)

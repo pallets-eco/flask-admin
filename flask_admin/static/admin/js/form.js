@@ -332,10 +332,33 @@
                     var tokenSeparators = [','];
                 }
 
+                if ($el.attr('data-allow-duplicate-tags')) {
+                    var allowDuplicateTags = JSON.parse($el.attr('data-allow-duplicate-tags'));
+                } else {
+                    var allowDuplicateTags = false;
+                }
+
+                if (allowDuplicateTags) {
+                    // To allow duplicate tags, we need to have a unique ID for each entry.
+                    // The easiest way to do this is appending the current Unix timestamp.
+                    // However, this causes the ID to change (the ID is what flask-admin receives later on).
+                    // We separate the date with a '#' and put a space at the end of the ID
+                    // (something the user can't do due to 'trim') to specially mark these entries.
+                    var createSearchChoice = function (term) {
+                        return {
+                            id: $.trim(term) + "#" + new Date().getTime() + " ",
+                            text: $.trim(term)
+                        };
+                    };
+                } else {
+                    var createSearchChoice = undefined;
+                }
+
                 var opts = {
                     width: 'resolve',
                     tags: tags,
                     tokenSeparators: tokenSeparators,
+                    createSearchChoice: createSearchChoice,
                     formatNoMatches: function() {
                         return 'Enter comma separated values';
                     }
@@ -492,8 +515,8 @@
                         // override to display text instead of ids on list view
                         var html = [];
                         // temporary patch to provide bs3 & bs4 compatibility
-                        var data = $.fn.editableutils.itemsByValue(value, $el.data('source'), 'id') +
-                            $.fn.editableutils.itemsByValue(value, $el.data('source'), 'value');
+                        var data = $.fn.editableutils.itemsByValue(value, $el.data('source'), 'id').concat(
+                            $.fn.editableutils.itemsByValue(value, $el.data('source'), 'value'));
 
                         if(data.length) {
                             $.each(data, function(i, v) { html.push($.fn.editableutils.escape(v.text)); });
@@ -508,20 +531,22 @@
                 $el.editable({
                     params: overrideXeditableParams,
                     display: function(value, response) {
-                       // display boolean value as an icon
-                       if(value == '1') {
-                           $(this).html('<span class="fa fa-check-circle glyphicon glyphicon-ok-circle icon-ok-circle"></span>');
-                       } else {
-                           $(this).html('<span class="fa fa-minus-circle glyphicon glyphicon-minus-sign icon-minus-sign"></span>');
-                       }
+                      // display boolean value as an icon
+                      var glyph = (value == '1') ? 'ok-circle' : 'minus-sign';
+                      var fa = (value == '1') ? 'fa-check' : 'fa-minus-circle';
+                      $(this).empty().append($('<span />', {
+                        'class': `fa ${fa} glyphicon glyphicon-${glyph} icon-${glyph}`,
+                        'title': $(this).parent().data('title'),
+                      }));
                     },
                     success: function(response, newValue) {
                       // update display
-                      if(newValue == '1') {
-                          $(this).html('<span class="fa fa-check-circle glyphicon glyphicon-ok-circle icon-ok-circle"></span>');
-                      } else {
-                          $(this).html('<span class="fa fa-minus-circle glyphicon glyphicon-minus-sign icon-minus-sign"></span>');
-                      }
+                      var glyph = (newValue == '1') ? 'ok-circle' : 'minus-sign';
+                      var fa = (newValue  == '1') ? 'fa-check' : 'fa-minus-circle';
+                      $(this).empty().append($('<span />', {
+                        'class': `fa ${fa} glyphicon glyphicon-${glyph} icon-${glyph}`,
+                        'title': $(this).parent().data('title'),
+                      }));
                     }
                 });
                 return true;

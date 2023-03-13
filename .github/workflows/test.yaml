@@ -1,19 +1,23 @@
 name: Run tests
 on:
-  - pull_request
-  - push
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   test-job:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
         tox-version: [ 'WTForms2' ]
         include:
-          - python-version: 3.6
+          - python-version: 3.11
             tox-version: flake8
-          - python-version: 3.6
+          - python-version: 3.11
             tox-version: docs-html
     services:
       # Label used to access the service container
@@ -33,7 +37,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       mongo:
-        image: mongo:5.0.4-focal
+        image: mongo:5.0.14-focal
         ports:
           - 27017:27017
       azurite:
@@ -43,17 +47,18 @@ jobs:
         ports:
           - 10000:10000
     steps:
-      # Downloads a copy of the code in your repository before running CI tests
+      - name: Install Ubuntu packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgeos-c1v5
       - name: Check out repository code
-        uses: actions/checkout@v2
-      - name: Install postgis
-        run: sudo apt-get install -y postgis postgresql-12-postgis-3 postgresql-12-postgis-3-scripts
-      - name: Setup postgis
+        uses: actions/checkout@v3
+      - name: Set up PostgreSQL hstore module
         env:
           PGPASSWORD: postgres
         run: psql -U postgres -h localhost -c 'CREATE EXTENSION hstore;' flask_admin_test
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install tox

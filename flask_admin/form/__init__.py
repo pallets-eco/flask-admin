@@ -1,5 +1,11 @@
-from wtforms import form, __version__ as wtforms_version
+from os import urandom
+
+from flask import session, current_app
+from wtforms import form
+from wtforms.csrf.session import SessionCSRF
 from wtforms.fields.core import UnboundField
+
+from flask_admin._compat import text_type
 from flask_admin.babel import Translations
 
 from .fields import *  # noqa: F403,F401
@@ -40,35 +46,24 @@ def recreate_field(unbound):
     return unbound.field_class(*unbound.args, **unbound.kwargs)
 
 
-if int(wtforms_version[0]) > 1:
-    # only WTForms 2+ has built-in CSRF functionality
-    from os import urandom
-    from flask import session, current_app
-    from wtforms.csrf.session import SessionCSRF
-    from flask_admin._compat import text_type
+class SecureForm(BaseForm):
+    """
+        BaseForm with CSRF token generation and validation support.
 
-    class SecureForm(BaseForm):
-        """
-            BaseForm with CSRF token generation and validation support.
+        Requires WTForms 2+
+    """
+    class Meta:
+        csrf = True
+        csrf_class = SessionCSRF
+        _csrf_secret = urandom(24)
 
-            Requires WTForms 2+
-        """
-        class Meta:
-            csrf = True
-            csrf_class = SessionCSRF
-            _csrf_secret = urandom(24)
+        @property
+        def csrf_secret(self):
+            secret = current_app.secret_key or self._csrf_secret
+            if isinstance(secret, text_type):
+                secret = secret.encode('utf-8')
+            return secret
 
-            @property
-            def csrf_secret(self):
-                secret = current_app.secret_key or self._csrf_secret
-                if isinstance(secret, text_type):
-                    secret = secret.encode('utf-8')
-                return secret
-
-            @property
-            def csrf_context(self):
-                return session
-else:
-    class SecureForm(BaseForm):
-        def __init__(self, *args, **kwargs):
-            raise Exception("SecureForm requires WTForms 2+")
+        @property
+        def csrf_context(self):
+            return session

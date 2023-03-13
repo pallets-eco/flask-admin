@@ -1,9 +1,3 @@
-from unittest import SkipTest
-from wtforms import __version__ as wtforms_version
-
-if int(wtforms_version[0]) < 2:
-    raise SkipTest('MongoEngine does not support WTForms 1.')
-
 from flask import Flask
 from flask_admin import Admin
 from flask_mongoengine import MongoEngine
