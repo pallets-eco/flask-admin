@@ -1,0 +1,101 @@
+# Flask-Admin
+# http://flask-admin.readthedocs.io/en/latest/
+#
+# Copyright (C) 2012-2015, Serge S. Koval
+# This file is distributed under the same license as the flask-admin
+# package.
+# 1dot75cm <sensor.wen@gmail.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: flask-admin 1.4.2\n"
+"Report-Msgid-Bugs-To: https://github.com/sixu05202004/Flask-extensions-docs\n"
+"POT-Creation-Date: 2016-11-25 03:00+0800\n"
+"PO-Revision-Date: 2016-11-25 03:00+0800\n"
+"Last-Translator: 1dot75cm <sensor.wen@gmail.com>\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#: ../../index.rst:4
+msgid "Flask-Admin"
+msgstr "Flask-Admin"
+
+#: ../../index.rst:6
+msgid ""
+"**Why Flask?** As a micro-framework, `Flask <http://flask.pocoo.org/>`_ "
+"lets you build web services with very little overhead. It offers freedom "
+"for you, the designer, to implement your project in a way that suits your"
+" particular application."
+msgstr ""
+"**为什么选择 Flask？** 作为一个微框架，`Flask <http://flask.pocoo.org/>`_ "
+"允许您以非常少的开销构建 Web 服务。它为您的设计提供了自由，使您能够以适合特定应用程序"
+"的方式实现您的项目。"
+
+#: ../../index.rst:10
+msgid ""
+"**Why Flask-Admin?** In a world of micro-services and APIs, Flask-Admin "
+"solves the boring problem of building an admin interface on top of an "
+"existing data model. With little effort, it lets you manage your web "
+"service's data through a user-friendly interface."
+msgstr ""
+"**为什么选择 Flask-Admin？** 在微服务和 API 的世界中，Flask-Admin 解决了"
+"在现有数据模型之上构建管理界面的无聊问题。通过很少的努力，它允许您通过用户友好的"
+"界面管理您的 Web 服务的数据。"
+
+#: ../../index.rst:15
+msgid ""
+"**How does it work?** The basic concept behind Flask-Admin, is that it "
+"lets you build complicated interfaces by grouping individual views "
+"together in classes: Each web page you see on the frontend, represents a "
+"method on a class that has explicitly been added to the interface."
+msgstr ""
+"**它是如何工作的？** Flask-Admin 背后的基本概念是，它允许你通过将各个视图在类中组合"
+"来构建复杂的接口：你在前端看到的每个页面，都代表一个已明确添加到接口中的类方法。"
+
+#: ../../index.rst:20
+msgid ""
+"These view classes are especially helpful when they are tied to "
+"particular database models, because they let you group together all of "
+"the usual *Create, Read, Update, Delete* (CRUD) view logic into a single,"
+" self-contained class for each of your models."
+msgstr ""
+"这些视图类在绑定到特定数据库模型时特别有用，因为它们允许您将所有常用的 "
+"*Create, Read, Update, Delete* (CRUD) 视图逻辑分组到每个模型的单独类中。"
+
+#: ../../index.rst:26
+msgid ""
+"**What does it look like?** At http://examples.flask-admin.org/ you can "
+"see some examples of Flask-Admin in action, or browse through the "
+"`examples/` directory in the `GitHub repository <https://github.com"
+"/flask-admin/flask-admin>`_."
+msgstr ""
+"**它是什么样子的？** 在 http://examples.flask-admin.org/，你可以看到 "
+"Flask-Admin 的一些示例，也可以直接浏览 `GitHub 存储库 <https://github.com"
+"/flask-admin/flask-admin>`_ 中的 `examples/` 目录。"
+
+#: ../../index.rst:40
+msgid "Support"
+msgstr "支持"
+
+#: ../../index.rst:44
+msgid "Python 2.6 - 2.7 and 3.3 - 3.4."
+msgstr "Python 2.6 - 2.7 和 3.3 - 3.4。"
+
+#: ../../index.rst:47
+msgid "Indices And Tables"
+msgstr "索引和表格"
+
+#: ../../index.rst:51
+msgid ":ref:`genindex`"
+msgstr ":ref:`genindex`"
+
+#: ../../index.rst:52
+msgid ":ref:`modindex`"
+msgstr ":ref:`modindex`"
+
+#: ../../index.rst:53
+msgid ":ref:`search`"
+msgstr ":ref:`search`"

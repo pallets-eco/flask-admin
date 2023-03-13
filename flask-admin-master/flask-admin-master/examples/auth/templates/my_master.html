@@ -1,0 +1,18 @@
+{% extends 'admin/base.html' %}
+
+{% block access_control %}
+{% if current_user.is_authenticated %}
+<div class="navbar-text btn-group pull-right">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+        <i class="glyphicon glyphicon-user"></i>
+        {% if current_user.first_name -%}
+        {{ current_user.first_name }}
+        {% else -%}
+        {{ current_user.email }}
+        {%- endif %}<span class="caret"></span></a>
+    <ul class="dropdown-menu" role="menu">
+        <li><a href="{{ url_for('security.logout') }}">Log out</a></li>
+    </ul>
+</div>
+{% endif %}
+{% endblock %}

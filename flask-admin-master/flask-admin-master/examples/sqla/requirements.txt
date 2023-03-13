@@ -1,0 +1,14 @@
+Flask
+Flask-Admin
+Flask-BabelEx
+Flask-SQLAlchemy
+tablib
+enum34; python_version < '3.0'
+sqlalchemy_utils
+arrow
+colour
+email_validator
+
+# note: for local development, replace 'Flask-Admin' above with a reference to
+# your local copy of the repo e.g. '-e .' if you're installing this from the
+# repo's root directory

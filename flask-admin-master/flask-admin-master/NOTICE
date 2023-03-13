@@ -1,0 +1,12 @@
+Flask-Admin includes some bundled software to ease installation.
+
+Select2
+=======
+
+Distributed under `APLv2 <http://www.apache.org/licenses/LICENSE-2.0>`_.
+
+Bootstrap
+=================
+
+v3.1.0 and subsequent versions distributed under `MIT <http://opensource.org/licenses/MIT>`_.
+Versions prior to v3.1.0 distributed under `APLv2 <http://www.apache.org/licenses/LICENSE-2.0>`_.

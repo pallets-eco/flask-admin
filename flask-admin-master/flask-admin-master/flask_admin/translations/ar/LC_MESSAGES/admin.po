@@ -1,0 +1,669 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: flask-admin\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-02-07 00:17-0600\n"
+"PO-Revision-Date: 2017-02-07 01:19-0500\n"
+"Last-Translator: mrjoes <serge.koval@gmail.com>\n"
+"Language-Team: Arabic\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.1.1\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: flask-admin\n"
+"X-Crowdin-Language: ar\n"
+"X-Crowdin-File: admin.pot\n"
+"Language: ar_SA\n"
+
+#: ../flask_admin/base.py:440
+msgid "Home"
+msgstr "الصفحة الرئيسية"
+
+#: ../flask_admin/contrib/rediscli.py:127
+msgid "Cli: Invalid command."
+msgstr "Cli: أمر غير صالح."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:352
+msgid "File to upload"
+msgstr "ملف لتحميله"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:360
+msgid "File required."
+msgstr "الملف المطلوب."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:365
+msgid "Invalid file type."
+msgstr "امتداد الملف غير صالح."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:376
+msgid "Content"
+msgstr "محتوى السكريبت"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:390
+msgid "Invalid name"
+msgstr "اسم غير صالح"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:398
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:106
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:112
+#: ../flask_admin/tests/sqla/test_translation.py:17
+msgid "Name"
+msgstr "الإسم"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:757
+#, python-format
+msgid "File \"%(name)s\" already exists."
+msgstr "ملف \"%(name)s\" موجود بالفعل."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:802
+#: ../flask_admin/contrib/fileadmin/__init__.py:885
+#: ../flask_admin/contrib/fileadmin/__init__.py:947
+#: ../flask_admin/contrib/fileadmin/__init__.py:1000
+#: ../flask_admin/contrib/fileadmin/__init__.py:1047
+#: ../flask_admin/contrib/fileadmin/__init__.py:1099
+#: ../flask_admin/model/base.py:2168
+msgid "Permission denied."
+msgstr "ممنوع الدخول."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:881
+msgid "File uploading is disabled."
+msgstr "تحميل الملف معطل."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:892
+#, python-format
+msgid "Successfully saved file: %(name)s"
+msgstr "ملف تم حفظه بنجاح: %(name)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:896
+#, python-format
+msgid "Failed to save file: %(error)s"
+msgstr "فشل في حفظ الملف: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:904
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:148
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:150
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:148
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:150
+msgid "Upload File"
+msgstr "تحميل الملف"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:943
+msgid "Directory creation is disabled."
+msgstr "يتم تعطيل إنشاء الدليل."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:956
+#, python-format
+msgid "Successfully created directory: %(directory)s"
+msgstr "الدليل الذي تم إنشاؤه بنجاح: %(directory)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:960
+#, python-format
+msgid "Failed to create directory: %(error)s"
+msgstr "فشل إنشاء الدليل: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:970
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:159
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:161
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:159
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:161
+msgid "Create Directory"
+msgstr "إنشاء دليل"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:996
+msgid "Deletion is disabled."
+msgstr "يتم تعطيل الحذف."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1005
+msgid "Directory deletion is disabled."
+msgstr "يتم تعطيل حذف الدليل."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1011
+#, python-format
+msgid "Directory \"%(path)s\" was successfully deleted."
+msgstr "تم بنجاح حذف الدليل \"%(path)s\"."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1013
+#, python-format
+msgid "Failed to delete directory: %(error)s"
+msgstr "فشل في حذف الدليل: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1019
+#: ../flask_admin/contrib/fileadmin/__init__.py:1176
+#, python-format
+msgid "File \"%(name)s\" was successfully deleted."
+msgstr "تم بنجاح حذف الملف \"%(name)s\"."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1021
+#: ../flask_admin/contrib/fileadmin/__init__.py:1178
+#, python-format
+msgid "Failed to delete file: %(name)s"
+msgstr "فشل في حذف الملف: %(name)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1043
+msgid "Renaming is disabled."
+msgstr "إعادة تسمية معطل."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1051
+msgid "Path does not exist."
+msgstr "المسار غير موجود."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1061
+#, python-format
+msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
+msgstr "أعيدت تسميته بنجاح \"%(src)s\" إلى \"%(dst)s\""
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1064
+#, python-format
+msgid "Failed to rename: %(error)s"
+msgstr "فشل إعادة تسمية: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1078
+#, python-format
+msgid "Rename %(name)s"
+msgstr "إعادة تسمية %(name)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1115
+#, python-format
+msgid "Error saving changes to %(name)s."
+msgstr "حدث خطأ أثناء حفظ التغييرات إلى %(name)s."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1119
+#, python-format
+msgid "Changes to %(name)s saved successfully."
+msgstr "التغييرات إلى %(name)s حفظه بنجاح."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1128
+#, python-format
+msgid "Error reading %(name)s."
+msgstr "خطأ القراءة %(name)s."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1131
+#: ../flask_admin/contrib/fileadmin/__init__.py:1140
+#, python-format
+msgid "Unexpected error while reading from %(name)s"
+msgstr "حدث خطأ غير متوقع أثناء القراءة من %(name)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1137
+#, python-format
+msgid "Cannot edit %(name)s."
+msgstr "لا يمكن تحرير %(name)s."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1155
+#, python-format
+msgid "Editing %(path)s"
+msgstr "تحرير %(path)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1163
+#: ../flask_admin/contrib/mongoengine/view.py:658
+#: ../flask_admin/contrib/peewee/view.py:487
+#: ../flask_admin/contrib/pymongo/view.py:384
+#: ../flask_admin/contrib/sqla/view.py:1149
+msgid "Delete"
+msgstr "مسح"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1164
+msgid "Are you sure you want to delete these files?"
+msgstr "هل تريد فعلا حذف %d من الملفات؟?"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1167
+msgid "File deletion is disabled."
+msgstr "يتم تعطيل حذف الملف."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1180
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:17
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:22
+msgid "Edit"
+msgstr "عدل"
+
+#: ../flask_admin/contrib/fileadmin/s3.py:153
+msgid "Cannot operate on non empty directories"
+msgstr ""
+
+#: ../flask_admin/contrib/mongoengine/filters.py:39
+#: ../flask_admin/contrib/peewee/filters.py:35
+#: ../flask_admin/contrib/pymongo/filters.py:38
+#: ../flask_admin/contrib/sqla/filters.py:41
+msgid "equals"
+msgstr "يساوي"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:48
+#: ../flask_admin/contrib/peewee/filters.py:43
+#: ../flask_admin/contrib/pymongo/filters.py:47
+#: ../flask_admin/contrib/sqla/filters.py:49
+msgid "not equal"
+msgstr "لا تساوي"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:58
+#: ../flask_admin/contrib/peewee/filters.py:52
+#: ../flask_admin/contrib/pymongo/filters.py:57
+#: ../flask_admin/contrib/sqla/filters.py:58
+msgid "contains"
+msgstr "يحتوي على"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:68
+#: ../flask_admin/contrib/peewee/filters.py:61
+#: ../flask_admin/contrib/pymongo/filters.py:67
+#: ../flask_admin/contrib/sqla/filters.py:67
+msgid "not contains"
+msgstr "لا تحتوي علي"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:77
+#: ../flask_admin/contrib/peewee/filters.py:69
+#: ../flask_admin/contrib/pymongo/filters.py:80
+#: ../flask_admin/contrib/sqla/filters.py:75
+msgid "greater than"
+msgstr "اكبر من"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:86
+#: ../flask_admin/contrib/peewee/filters.py:77
+#: ../flask_admin/contrib/pymongo/filters.py:93
+#: ../flask_admin/contrib/sqla/filters.py:83
+msgid "smaller than"
+msgstr "أصغر من"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:98
+#: ../flask_admin/contrib/peewee/filters.py:88
+#: ../flask_admin/contrib/sqla/filters.py:94
+msgid "empty"
+msgstr "فارغ"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:113
+#: ../flask_admin/contrib/peewee/filters.py:102
+#: ../flask_admin/contrib/sqla/filters.py:108
+msgid "in list"
+msgstr "في قائمة"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:122
+#: ../flask_admin/contrib/peewee/filters.py:111
+#: ../flask_admin/contrib/sqla/filters.py:118
+msgid "not in list"
+msgstr "غير موجود في قائمة"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:222
+#: ../flask_admin/contrib/peewee/filters.py:207
+#: ../flask_admin/contrib/peewee/filters.py:244
+#: ../flask_admin/contrib/peewee/filters.py:281
+#: ../flask_admin/contrib/sqla/filters.py:213
+#: ../flask_admin/contrib/sqla/filters.py:250
+#: ../flask_admin/contrib/sqla/filters.py:287
+msgid "not between"
+msgstr "ليس بين"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:247
+msgid "ObjectId equals"
+msgstr ""
+
+#: ../flask_admin/contrib/mongoengine/view.py:551
+#, python-format
+msgid "Failed to get model. %(error)s"
+msgstr "فشل في الحصول على نموذج. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:570
+#: ../flask_admin/contrib/peewee/view.py:435
+#: ../flask_admin/contrib/pymongo/view.py:316
+#: ../flask_admin/contrib/sqla/view.py:1078
+#, python-format
+msgid "Failed to create record. %(error)s"
+msgstr "فشل في إنشاء سجل. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:596
+#: ../flask_admin/contrib/peewee/view.py:454
+#: ../flask_admin/contrib/pymongo/view.py:341
+#: ../flask_admin/contrib/sqla/view.py:1104 ../flask_admin/model/base.py:2305
+#: ../flask_admin/model/base.py:2313 ../flask_admin/model/base.py:2315
+#, python-format
+msgid "Failed to update record. %(error)s"
+msgstr "فشل في إنشاء سجل. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:619
+#: ../flask_admin/contrib/peewee/view.py:469
+#: ../flask_admin/contrib/pymongo/view.py:366
+#: ../flask_admin/contrib/sqla/view.py:1129
+#, python-format
+msgid "Failed to delete record. %(error)s"
+msgstr "فشل في حذف السجل. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:659
+#: ../flask_admin/contrib/peewee/view.py:488
+#: ../flask_admin/contrib/pymongo/view.py:385
+#: ../flask_admin/contrib/sqla/view.py:1150
+msgid "Are you sure you want to delete selected records?"
+msgstr "هل أنت متأكد من أنك تريد حذف السجلات المحددة؟?"
+
+#: ../flask_admin/contrib/mongoengine/view.py:668
+#: ../flask_admin/contrib/peewee/view.py:505
+#: ../flask_admin/contrib/pymongo/view.py:395
+#: ../flask_admin/contrib/sqla/view.py:1166 ../flask_admin/model/base.py:2118
+#, python-format
+msgid "Record was successfully deleted."
+msgid_plural "%(count)s records were successfully deleted."
+msgstr[0] "تم بنجاح حذف السجلات %(count)s."
+msgstr[1] "تم حذف السجل بنجاح."
+msgstr[2] "تم بنجاح حذف السجلات %(count)s."
+msgstr[3] "تم بنجاح حذف السجلات %(count)s."
+msgstr[4] "تم بنجاح حذف السجلات %(count)s."
+msgstr[5] "تم بنجاح حذف السجلات %(count)s."
+
+#: ../flask_admin/contrib/mongoengine/view.py:674
+#: ../flask_admin/contrib/peewee/view.py:511
+#: ../flask_admin/contrib/pymongo/view.py:400
+#: ../flask_admin/contrib/sqla/view.py:1174
+#, python-format
+msgid "Failed to delete records. %(error)s"
+msgstr "فشل في حذف السجل. %(error)s"
+
+#: ../flask_admin/contrib/sqla/fields.py:126
+#: ../flask_admin/contrib/sqla/fields.py:176
+#: ../flask_admin/contrib/sqla/fields.py:181 ../flask_admin/model/fields.py:173
+#: ../flask_admin/model/fields.py:222
+msgid "Not a valid choice"
+msgstr "ليس خياراً صالحاً"
+
+#: ../flask_admin/contrib/sqla/fields.py:186
+msgid "Key"
+msgstr ""
+
+#: ../flask_admin/contrib/sqla/fields.py:187
+msgid "Value"
+msgstr ""
+
+#: ../flask_admin/contrib/sqla/validators.py:42
+msgid "Already exists."
+msgstr "موجود بالفعل."
+
+#: ../flask_admin/contrib/sqla/validators.py:60
+#, python-format
+msgid "At least %(num)d item is required"
+msgid_plural "At least %(num)d items are required"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
+#: ../flask_admin/contrib/sqla/view.py:1057
+#, python-format
+msgid "Integrity error. %(message)s"
+msgstr "خطأ سلامة. %(message)s"
+
+#: ../flask_admin/form/fields.py:98
+msgid "Invalid time format"
+msgstr "تنسيق الوقت غير صالح"
+
+#: ../flask_admin/form/fields.py:144
+msgid "Invalid Choice: could not coerce"
+msgstr "خيار غير صالح: لا يمكن إرغام"
+
+#: ../flask_admin/form/fields.py:208
+msgid "Invalid JSON"
+msgstr "JSON غير صالح"
+
+#: ../flask_admin/form/upload.py:207
+msgid "Invalid file extension"
+msgstr "ملحق الملف غير صالح"
+
+#: ../flask_admin/form/upload.py:214 ../flask_admin/form/upload.py:281
+#, python-format
+msgid "File \"%s\" already exists."
+msgstr "ملف \"%s\" موجود بالفعل."
+
+#: ../flask_admin/model/base.py:1649
+msgid "There are no items in the table."
+msgstr "لا توجد أي عناصر في الجدول."
+
+#: ../flask_admin/model/base.py:1673
+#, python-format
+msgid "Invalid Filter Value: %(value)s"
+msgstr "قيمة عامل التصفية غير صالح: %(value)s"
+
+#: ../flask_admin/model/base.py:1984
+msgid "Record was successfully created."
+msgstr "تم إنشاء السجل بنجاح."
+
+#: ../flask_admin/model/base.py:2028 ../flask_admin/model/base.py:2080
+#: ../flask_admin/model/base.py:2113 ../flask_admin/model/base.py:2297
+msgid "Record does not exist."
+msgstr "السجل غير موجود."
+
+#: ../flask_admin/model/base.py:2037 ../flask_admin/model/base.py:2301
+msgid "Record was successfully saved."
+msgstr "تم حفظ السجل بنجاح."
+
+#: ../flask_admin/model/base.py:2222
+msgid "Tablib dependency not installed."
+msgstr ""
+
+#: ../flask_admin/model/base.py:2249
+#, python-format
+msgid "Export type \"%(type)s not supported."
+msgstr ""
+
+#: ../flask_admin/model/filters.py:103 ../flask_admin/model/widgets.py:111
+msgid "Yes"
+msgstr "نعم"
+
+#: ../flask_admin/model/filters.py:104 ../flask_admin/model/widgets.py:110
+msgid "No"
+msgstr "لا"
+
+#: ../flask_admin/model/filters.py:172 ../flask_admin/model/filters.py:212
+#: ../flask_admin/model/filters.py:257
+msgid "between"
+msgstr "بين"
+
+#: ../flask_admin/model/template.py:81 ../flask_admin/model/template.py:88
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
+msgid "View Record"
+msgstr "عرض السجل"
+
+#: ../flask_admin/model/template.py:95 ../flask_admin/model/template.py:102
+#: ../flask_admin/model/template.py:109
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:11
+msgid "Edit Record"
+msgstr "تحرير سجل"
+
+#: ../flask_admin/model/widgets.py:61
+msgid "Please select model"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/actions.html:4
+#: ../flask_admin/templates/bootstrap3/admin/actions.html:4
+msgid "With selected"
+msgstr "مع تحديد"
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:200
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:190
+msgid "Save"
+msgstr "احفظ"
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:205
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:195
+msgid "Cancel"
+msgstr "إالغاء"
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:256
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:247
+msgid "Save and Add Another"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:259
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:250
+msgid "Save and Continue Editing"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
+msgid "Root"
+msgstr "الجذر"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:40
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:49
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:90
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:99
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:40
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:49
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:89
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:98
+#, python-format
+msgid "Sort by %(name)s"
+msgstr "فرز حسب %(name)s"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:74
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:77
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:74
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:77
+msgid "Rename File"
+msgstr "إعادة تسمية الملف"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:88
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:88
+#, python-format
+msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
+msgstr "هل أنت متأكد من أنك تريد حذف \\'%(name)s\\' بشكل متكرر؟"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:97
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:97
+#, python-format
+msgid "Are you sure you want to delete \\'%(name)s\\'?"
+msgstr "هل أنت متأكد من أنك تريد حذف \\'%(name)s\\ '؟"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:125
+msgid "Size"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:185
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:185
+msgid "Please select at least one file."
+msgstr "الرجاء تحديد ملف واحد على الأقل."
+
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:14
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:8
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:14
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:14
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:8
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:14
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:17
+msgid "List"
+msgstr "قائمة"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:17
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:12
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:18
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:25
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:12
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:18
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:25
+msgid "Create"
+msgstr "إنشاء"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:21
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:26
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:21
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:26
+msgid "Details"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:29
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:8
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:28
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:15
+msgid "Filter"
+msgstr "الذهاب »"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:14
+msgid "Delete?"
+msgstr "مسح?"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:30
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:33
+msgid "New"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:40
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:43
+msgid "Add"
+msgstr "إضافة"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:3
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:3
+msgid "Add Filter"
+msgstr "إضافة عامل تصفية"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:18
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:23
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:30
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:18
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:30
+msgid "Export"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:38
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:38
+msgid "Apply"
+msgstr "تطبيق"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:40
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:40
+msgid "Reset Filters"
+msgstr "إعادة تعيين عوامل تصفية"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:59
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:66
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:59
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:64
+msgid "Search"
+msgstr "البحث"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:74
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:77
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:78
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:79
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:72
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:75
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:76
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:77
+msgid "items"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:25
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/create.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:25
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/create.html:10
+msgid "Create New Record"
+msgstr "قم بإنشاء سجل جديد"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:77
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:76
+msgid "Select all records"
+msgstr "تحديد كافة السجلات"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:120
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:119
+msgid "Select record"
+msgstr "حدد السجل"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:185
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:186
+msgid "Please select at least one record."
+msgstr "الرجاء تحديد سجل واحد على الأقل."
+
+#: ../flask_admin/templates/bootstrap2/admin/model/row_actions.html:34
+#: ../flask_admin/templates/bootstrap3/admin/model/row_actions.html:34
+msgid "Are you sure you want to delete this record?"
+msgstr "هل أنت متأكد من أنك تريد حذف هذا السجل؟"
+

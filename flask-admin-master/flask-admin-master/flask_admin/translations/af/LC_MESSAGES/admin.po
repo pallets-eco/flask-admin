@@ -1,0 +1,661 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: flask-admin\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-02-07 00:17-0600\n"
+"PO-Revision-Date: 2017-02-07 01:19-0500\n"
+"Last-Translator: mrjoes <serge.koval@gmail.com>\n"
+"Language-Team: Afrikaans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.1.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: flask-admin\n"
+"X-Crowdin-Language: af\n"
+"X-Crowdin-File: admin.pot\n"
+"Language: af_ZA\n"
+
+#: ../flask_admin/base.py:440
+msgid "Home"
+msgstr "Tuiste"
+
+#: ../flask_admin/contrib/rediscli.py:127
+msgid "Cli: Invalid command."
+msgstr "Cli: Ongeldige opdrag."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:352
+msgid "File to upload"
+msgstr "Lêer te laai"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:360
+msgid "File required."
+msgstr "Lêer vereis."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:365
+msgid "Invalid file type."
+msgstr "Ongeldig lêer tipe."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:376
+msgid "Content"
+msgstr "Inhoud"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:390
+msgid "Invalid name"
+msgstr "Ongeldige naam"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:398
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:106
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:112
+#: ../flask_admin/tests/sqla/test_translation.py:17
+msgid "Name"
+msgstr "Naam"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:757
+#, python-format
+msgid "File \"%(name)s\" already exists."
+msgstr "Lêer \"%(name)s\" bestaan reeds."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:802
+#: ../flask_admin/contrib/fileadmin/__init__.py:885
+#: ../flask_admin/contrib/fileadmin/__init__.py:947
+#: ../flask_admin/contrib/fileadmin/__init__.py:1000
+#: ../flask_admin/contrib/fileadmin/__init__.py:1047
+#: ../flask_admin/contrib/fileadmin/__init__.py:1099
+#: ../flask_admin/model/base.py:2168
+msgid "Permission denied."
+msgstr "Toestemming geweier."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:881
+msgid "File uploading is disabled."
+msgstr "Lêer oplaai is afgeskakel."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:892
+#, python-format
+msgid "Successfully saved file: %(name)s"
+msgstr "Suksesvol gestoor lêer: %(name)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:896
+#, python-format
+msgid "Failed to save file: %(error)s"
+msgstr "Kon lêer te stoor: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:904
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:148
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:150
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:148
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:150
+msgid "Upload File"
+msgstr "Laai Lêer"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:943
+msgid "Directory creation is disabled."
+msgstr "Gids skepping is afgeskakel."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:956
+#, python-format
+msgid "Successfully created directory: %(directory)s"
+msgstr "Suksesvol geskep gids: %(directory)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:960
+#, python-format
+msgid "Failed to create directory: %(error)s"
+msgstr "Kon gids te skep: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:970
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:159
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:161
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:159
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:161
+msgid "Create Directory"
+msgstr "Skep Gids"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:996
+msgid "Deletion is disabled."
+msgstr "Skrap is afgeskakel."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1005
+msgid "Directory deletion is disabled."
+msgstr "Gids skrap is afgeskakel."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1011
+#, python-format
+msgid "Directory \"%(path)s\" was successfully deleted."
+msgstr "Gids \"%(path)s\" is suksesvol verwyder."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1013
+#, python-format
+msgid "Failed to delete directory: %(error)s"
+msgstr "Kon directory verwyder: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1019
+#: ../flask_admin/contrib/fileadmin/__init__.py:1176
+#, python-format
+msgid "File \"%(name)s\" was successfully deleted."
+msgstr "Lêer \"%(name)s\" is suksesvol verwyder."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1021
+#: ../flask_admin/contrib/fileadmin/__init__.py:1178
+#, python-format
+msgid "Failed to delete file: %(name)s"
+msgstr "Kon lêer verwyder: %(name)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1043
+msgid "Renaming is disabled."
+msgstr "Herbenaming is afgeskakel."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1051
+msgid "Path does not exist."
+msgstr "Pad bestaan nie."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1061
+#, python-format
+msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
+msgstr "Suksesvol herdoop \"%(src)s\" na \"%(dst)s\""
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1064
+#, python-format
+msgid "Failed to rename: %(error)s"
+msgstr "Versuim om te hernoem: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1078
+#, python-format
+msgid "Rename %(name)s"
+msgstr "Hernoem %(name)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1115
+#, python-format
+msgid "Error saving changes to %(name)s."
+msgstr "Fout tydens stoor veranderinge aan %(name)s."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1119
+#, python-format
+msgid "Changes to %(name)s saved successfully."
+msgstr "Wysigings aan %(name)s suksesvol gestoor."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1128
+#, python-format
+msgid "Error reading %(name)s."
+msgstr "Fout lees %(name)s."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1131
+#: ../flask_admin/contrib/fileadmin/__init__.py:1140
+#, python-format
+msgid "Unexpected error while reading from %(name)s"
+msgstr "Onverwagte fout met die lees van %(name)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1137
+#, python-format
+msgid "Cannot edit %(name)s."
+msgstr "Kan %(name)s nie wysig."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1155
+#, python-format
+msgid "Editing %(path)s"
+msgstr "Redigering %(path)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1163
+#: ../flask_admin/contrib/mongoengine/view.py:658
+#: ../flask_admin/contrib/peewee/view.py:487
+#: ../flask_admin/contrib/pymongo/view.py:384
+#: ../flask_admin/contrib/sqla/view.py:1149
+msgid "Delete"
+msgstr "Verwyder"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1164
+msgid "Are you sure you want to delete these files?"
+msgstr "Is jy seker jy wil hierdie lêers verwyder?"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1167
+msgid "File deletion is disabled."
+msgstr "Lêer skrap is afgeskakel."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1180
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:17
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:22
+msgid "Edit"
+msgstr "Wysig"
+
+#: ../flask_admin/contrib/fileadmin/s3.py:153
+msgid "Cannot operate on non empty directories"
+msgstr ""
+
+#: ../flask_admin/contrib/mongoengine/filters.py:39
+#: ../flask_admin/contrib/peewee/filters.py:35
+#: ../flask_admin/contrib/pymongo/filters.py:38
+#: ../flask_admin/contrib/sqla/filters.py:41
+msgid "equals"
+msgstr "gelyk"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:48
+#: ../flask_admin/contrib/peewee/filters.py:43
+#: ../flask_admin/contrib/pymongo/filters.py:47
+#: ../flask_admin/contrib/sqla/filters.py:49
+msgid "not equal"
+msgstr "nie gelyk"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:58
+#: ../flask_admin/contrib/peewee/filters.py:52
+#: ../flask_admin/contrib/pymongo/filters.py:57
+#: ../flask_admin/contrib/sqla/filters.py:58
+msgid "contains"
+msgstr "bevat"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:68
+#: ../flask_admin/contrib/peewee/filters.py:61
+#: ../flask_admin/contrib/pymongo/filters.py:67
+#: ../flask_admin/contrib/sqla/filters.py:67
+msgid "not contains"
+msgstr "nie bevat"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:77
+#: ../flask_admin/contrib/peewee/filters.py:69
+#: ../flask_admin/contrib/pymongo/filters.py:80
+#: ../flask_admin/contrib/sqla/filters.py:75
+msgid "greater than"
+msgstr "groter as"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:86
+#: ../flask_admin/contrib/peewee/filters.py:77
+#: ../flask_admin/contrib/pymongo/filters.py:93
+#: ../flask_admin/contrib/sqla/filters.py:83
+msgid "smaller than"
+msgstr "kleiner as"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:98
+#: ../flask_admin/contrib/peewee/filters.py:88
+#: ../flask_admin/contrib/sqla/filters.py:94
+msgid "empty"
+msgstr "leë"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:113
+#: ../flask_admin/contrib/peewee/filters.py:102
+#: ../flask_admin/contrib/sqla/filters.py:108
+msgid "in list"
+msgstr "in lys"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:122
+#: ../flask_admin/contrib/peewee/filters.py:111
+#: ../flask_admin/contrib/sqla/filters.py:118
+msgid "not in list"
+msgstr "nie in die lys"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:222
+#: ../flask_admin/contrib/peewee/filters.py:207
+#: ../flask_admin/contrib/peewee/filters.py:244
+#: ../flask_admin/contrib/peewee/filters.py:281
+#: ../flask_admin/contrib/sqla/filters.py:213
+#: ../flask_admin/contrib/sqla/filters.py:250
+#: ../flask_admin/contrib/sqla/filters.py:287
+msgid "not between"
+msgstr "nie tussen"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:247
+msgid "ObjectId equals"
+msgstr ""
+
+#: ../flask_admin/contrib/mongoengine/view.py:551
+#, python-format
+msgid "Failed to get model. %(error)s"
+msgstr "Kon model kry. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:570
+#: ../flask_admin/contrib/peewee/view.py:435
+#: ../flask_admin/contrib/pymongo/view.py:316
+#: ../flask_admin/contrib/sqla/view.py:1078
+#, python-format
+msgid "Failed to create record. %(error)s"
+msgstr "Kon rekord te skep. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:596
+#: ../flask_admin/contrib/peewee/view.py:454
+#: ../flask_admin/contrib/pymongo/view.py:341
+#: ../flask_admin/contrib/sqla/view.py:1104 ../flask_admin/model/base.py:2305
+#: ../flask_admin/model/base.py:2313 ../flask_admin/model/base.py:2315
+#, python-format
+msgid "Failed to update record. %(error)s"
+msgstr "Kon rekord te werk. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:619
+#: ../flask_admin/contrib/peewee/view.py:469
+#: ../flask_admin/contrib/pymongo/view.py:366
+#: ../flask_admin/contrib/sqla/view.py:1129
+#, python-format
+msgid "Failed to delete record. %(error)s"
+msgstr "Kon rekord verwyder. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:659
+#: ../flask_admin/contrib/peewee/view.py:488
+#: ../flask_admin/contrib/pymongo/view.py:385
+#: ../flask_admin/contrib/sqla/view.py:1150
+msgid "Are you sure you want to delete selected records?"
+msgstr "Is jy seker jy wil gekies rekords skrap?"
+
+#: ../flask_admin/contrib/mongoengine/view.py:668
+#: ../flask_admin/contrib/peewee/view.py:505
+#: ../flask_admin/contrib/pymongo/view.py:395
+#: ../flask_admin/contrib/sqla/view.py:1166 ../flask_admin/model/base.py:2118
+#, python-format
+msgid "Record was successfully deleted."
+msgid_plural "%(count)s records were successfully deleted."
+msgstr[0] "Rekord is suksesvol verwyder."
+msgstr[1] "%(count)s rekords is suksesvol verwyder."
+
+#: ../flask_admin/contrib/mongoengine/view.py:674
+#: ../flask_admin/contrib/peewee/view.py:511
+#: ../flask_admin/contrib/pymongo/view.py:400
+#: ../flask_admin/contrib/sqla/view.py:1174
+#, python-format
+msgid "Failed to delete records. %(error)s"
+msgstr "Versuim om rekords te skrap. %(error)s"
+
+#: ../flask_admin/contrib/sqla/fields.py:126
+#: ../flask_admin/contrib/sqla/fields.py:176
+#: ../flask_admin/contrib/sqla/fields.py:181 ../flask_admin/model/fields.py:173
+#: ../flask_admin/model/fields.py:222
+msgid "Not a valid choice"
+msgstr "Nie 'n geldige keuse"
+
+#: ../flask_admin/contrib/sqla/fields.py:186
+msgid "Key"
+msgstr ""
+
+#: ../flask_admin/contrib/sqla/fields.py:187
+msgid "Value"
+msgstr ""
+
+#: ../flask_admin/contrib/sqla/validators.py:42
+msgid "Already exists."
+msgstr "Bestaan reeds."
+
+#: ../flask_admin/contrib/sqla/validators.py:60
+#, python-format
+msgid "At least %(num)d item is required"
+msgid_plural "At least %(num)d items are required"
+msgstr[0] "Ten minste %(num)d item vereis"
+msgstr[1] "Ten minste %(num)d items vereis"
+
+#: ../flask_admin/contrib/sqla/view.py:1057
+#, python-format
+msgid "Integrity error. %(message)s"
+msgstr "Integriteit fout. %(message)s"
+
+#: ../flask_admin/form/fields.py:98
+msgid "Invalid time format"
+msgstr "Ongeldige tyd formaat"
+
+#: ../flask_admin/form/fields.py:144
+msgid "Invalid Choice: could not coerce"
+msgstr "Ongeldig Choice: kon nie dwing"
+
+#: ../flask_admin/form/fields.py:208
+msgid "Invalid JSON"
+msgstr "Ongeldig JSON"
+
+#: ../flask_admin/form/upload.py:207
+msgid "Invalid file extension"
+msgstr "Ongeldig lêer uitbreiding"
+
+#: ../flask_admin/form/upload.py:214 ../flask_admin/form/upload.py:281
+#, python-format
+msgid "File \"%s\" already exists."
+msgstr "Lêer \"%s\" bestaan reeds."
+
+#: ../flask_admin/model/base.py:1649
+msgid "There are no items in the table."
+msgstr "Daar is geen items in die tabel."
+
+#: ../flask_admin/model/base.py:1673
+#, python-format
+msgid "Invalid Filter Value: %(value)s"
+msgstr "Ongeldig Filter Waarde: %(value)s"
+
+#: ../flask_admin/model/base.py:1984
+msgid "Record was successfully created."
+msgstr "Rekord is suksesvol geskep."
+
+#: ../flask_admin/model/base.py:2028 ../flask_admin/model/base.py:2080
+#: ../flask_admin/model/base.py:2113 ../flask_admin/model/base.py:2297
+msgid "Record does not exist."
+msgstr "Rekord bestaan nie."
+
+#: ../flask_admin/model/base.py:2037 ../flask_admin/model/base.py:2301
+msgid "Record was successfully saved."
+msgstr "Rekord suksesvol gestoor."
+
+#: ../flask_admin/model/base.py:2222
+msgid "Tablib dependency not installed."
+msgstr ""
+
+#: ../flask_admin/model/base.py:2249
+#, python-format
+msgid "Export type \"%(type)s not supported."
+msgstr ""
+
+#: ../flask_admin/model/filters.py:103 ../flask_admin/model/widgets.py:111
+msgid "Yes"
+msgstr "Ja"
+
+#: ../flask_admin/model/filters.py:104 ../flask_admin/model/widgets.py:110
+msgid "No"
+msgstr "Geen"
+
+#: ../flask_admin/model/filters.py:172 ../flask_admin/model/filters.py:212
+#: ../flask_admin/model/filters.py:257
+msgid "between"
+msgstr "tussen"
+
+#: ../flask_admin/model/template.py:81 ../flask_admin/model/template.py:88
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
+msgid "View Record"
+msgstr "View Record"
+
+#: ../flask_admin/model/template.py:95 ../flask_admin/model/template.py:102
+#: ../flask_admin/model/template.py:109
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:11
+msgid "Edit Record"
+msgstr "Rekord Wysig"
+
+#: ../flask_admin/model/widgets.py:61
+msgid "Please select model"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/actions.html:4
+#: ../flask_admin/templates/bootstrap3/admin/actions.html:4
+msgid "With selected"
+msgstr "Met geselekteerde"
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:200
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:190
+msgid "Save"
+msgstr "Red"
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:205
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:195
+msgid "Cancel"
+msgstr "Kanselleer"
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:256
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:247
+msgid "Save and Add Another"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:259
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:250
+msgid "Save and Continue Editing"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
+msgid "Root"
+msgstr "Wortel"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:40
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:49
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:90
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:99
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:40
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:49
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:89
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:98
+#, python-format
+msgid "Sort by %(name)s"
+msgstr "Sorteer %(name)s"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:74
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:77
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:74
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:77
+msgid "Rename File"
+msgstr "Hernoem Lêer"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:88
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:88
+#, python-format
+msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
+msgstr "Is jy seker jy wil \\'%(name)s\\' rekursief verwyder?"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:97
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:97
+#, python-format
+msgid "Are you sure you want to delete \\'%(name)s\\'?"
+msgstr "Is jy seker jy wil verwyder \\'%(name)s \\'?"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:125
+msgid "Size"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:185
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:185
+msgid "Please select at least one file."
+msgstr "Kies ten minste een lêer."
+
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:14
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:8
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:14
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:14
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:8
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:14
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:17
+msgid "List"
+msgstr "Lys"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:17
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:12
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:18
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:25
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:12
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:18
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:25
+msgid "Create"
+msgstr "Skep"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:21
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:26
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:21
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:26
+msgid "Details"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:29
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:8
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:28
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:15
+msgid "Filter"
+msgstr "Filtreer"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:14
+msgid "Delete?"
+msgstr "Verwyder?"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:30
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:33
+msgid "New"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:40
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:43
+msgid "Add"
+msgstr "Voeg"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:3
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:3
+msgid "Add Filter"
+msgstr "Filter Voeg"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:18
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:23
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:30
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:18
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:30
+msgid "Export"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:38
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:38
+msgid "Apply"
+msgstr "Toepassing"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:40
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:40
+msgid "Reset Filters"
+msgstr "Filters Herstel"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:59
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:66
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:59
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:64
+msgid "Search"
+msgstr "Soek"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:74
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:77
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:78
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:79
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:72
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:75
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:76
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:77
+msgid "items"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:25
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/create.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:25
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/create.html:10
+msgid "Create New Record"
+msgstr "Skep Nuwe Rekord"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:77
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:76
+msgid "Select all records"
+msgstr "Kies alle rekords"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:120
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:119
+msgid "Select record"
+msgstr "Kies rekord"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:185
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:186
+msgid "Please select at least one record."
+msgstr "Kies ten minste een rekord."
+
+#: ../flask_admin/templates/bootstrap2/admin/model/row_actions.html:34
+#: ../flask_admin/templates/bootstrap3/admin/model/row_actions.html:34
+msgid "Are you sure you want to delete this record?"
+msgstr "Is jy seker jy wil hierdie rekord verwyder?"
+

@@ -1,0 +1,16 @@
+{% extends 'admin/model/create.html' %}
+
+{% block brand %}
+    <h2 id="brand">Create {{ admin_view.name|capitalize }}</h2>
+    <div class="clearfix"></div>
+    <hr>
+{% endblock %}
+
+{% block body %}
+  {% call lib.form_tag(form) %}
+      {{ lib.render_form_fields(form, form_opts=form_opts) }}
+      <div class="form-buttons">
+        {{ lib.render_form_buttons(return_url, extra()) }}
+      </div>
+  {% endcall %}
+{% endblock %}
