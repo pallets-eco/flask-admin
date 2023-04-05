@@ -161,7 +161,9 @@
           var attribution = $el.data('tile-layer-attribution') || ''
           L.tileLayer('//'+$el.data('tile-layer-url'), {
             attribution: attribution,
-            maxZoom: 18
+            maxZoom: 18,
+            accessToken: window.MAPBOX_ACCESS_TOKEN,
+            id: 'mapbox/streets-v11',
           }).addTo(map)
         } else {
           var mapboxUrl = 'https://api.mapbox.com/styles/v1/mapbox/'+window.MAPBOX_MAP_ID+'/tiles/{z}/{x}/{y}?access_token='+window.MAPBOX_ACCESS_TOKEN
@@ -204,37 +206,11 @@
         }
         var drawControl = new L.Control.Draw(drawOptions);
         map.addControl(drawControl);
-        if (window.MAPBOX_SEARCH) {
-          var circle = L.circleMarker([0, 0]);
-          var $autocompleteEl = $('<input style="position: absolute; z-index: 9999; display: block; margin: -42px 0 0 10px; width: 50%">');
-          var $form = $($el.get(0).form);
-
-          $autocompleteEl.insertAfter($map);
-          $form.on('submit', function (evt) {
-            if ($autocompleteEl.is(':focus')) {
-              evt.preventDefault();
-              return false;
-            }
-          });
-          var autocomplete = new google.maps.places.Autocomplete($autocompleteEl.get(0));
-          autocomplete.addListener('place_changed', function() {
-            var place = autocomplete.getPlace();
-            var loc = place.geometry.location;
-            var viewport = place.geometry.viewport;
-            circle.setLatLng(L.latLng(loc.lat(), loc.lng()));
-            circle.addTo(map);
-            if (viewport) {
-              map.fitBounds([
-                viewport.getNorthEast().toJSON(),
-                viewport.getSouthWest().toJSON(),
-              ]);
-            }
-            else {
-              map.fitBounds(circle.getBounds());
-            }
-          });
+        if (window.LEAFLET_CONTROL_GEOCODER) {
+          L.Control.geocoder({
+            geocoder: L.Control.Geocoder.nominatim()
+          }).addTo(map);
         }
-
 
         // save when the editableLayers are edited
         var saveToTextArea = function() {

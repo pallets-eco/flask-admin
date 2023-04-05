@@ -9,6 +9,8 @@ SQLALCHEMY_ECHO = True
 MAPBOX_MAP_ID = '...'
 MAPBOX_ACCESS_TOKEN = '...'
 
+LEAFLET_CONTROL_GEOCODER = True
+
 # when the creating new shapes, use this default map center
 DEFAULT_CENTER_LAT = -33.918861
 DEFAULT_CENTER_LONG = 18.423300
