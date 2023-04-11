@@ -10,6 +10,15 @@ references to *git@github.com:flask-admin/flask-admin.git*.
 .. image:: https://github.com/flask-admin/flask-admin/actions/workflows/test.yaml/badge.svg
 	:target: https://github.com/flask-admin/flask-admin/actions/workflows/test.yaml
 
+Notes about this fork
+---------------------
+
+This fork contains pieces necessary to support the Content Security Policy (CSP) nonce feature.
+
+You must either:
+
+* Install and configure Flask-Talisman
+* Ensure that a "csp_nonce" function is passed to the template context. This function should return a cryptographically strong random string that will be used as the nonce.
 
 Introduction
 ------------
