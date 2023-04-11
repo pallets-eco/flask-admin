@@ -5,8 +5,9 @@
        aria-expanded="false">{{ _gettext('With selected') }}<b class="caret"></b></a>
     <div class="dropdown-menu">
         {% for p in actions %}
-            <a class="dropdown-item" href="javascript:void(0)"
-               onclick="return modelActions.execute('{{ p[0] }}');">{{ _gettext(p[1]) }}</a>
+            <a class="dropdown-item modelactions" href="javascript:void(0)" data-action="{{ p[0] }}">
+                {{ _gettext(p[1]) }}
+            </a>
         {% endfor %}
     </div>
 {% endmacro %}

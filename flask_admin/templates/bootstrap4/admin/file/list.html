@@ -87,19 +87,35 @@
                         <form class="icon" method="POST" action="{{ get_url('.delete') }}">
                             {{ delete_form.path(value=path) }}
                             {{ delete_form.csrf_token }}
-                            <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
+                            <button class="delete-button" role="button">
                                 <i class="fa fa-times glyphicon glyphicon-remove"></i>
                             </button>
                         </form>
+                        <script nonce="{{ csp_nonce() }}">
+                          $(function() {
+                            $('.delete-button').click(function() {
+                              var $this = $(this);
+                              return confirm({{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }})
+                            });
+                          });
+                        </script>
                         {% endif %}
                     {% else %}
                     <form class="icon" method="POST" action="{{ get_url('.delete') }}">
                         {{ delete_form.path(value=path) }}
                         {{ delete_form.csrf_token }}
-                        <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
+                        <button class="delete-button" role="button">
                             <i class="fa fa-trash glyphicon glyphicon-trash"></i>
                         </button>
                     </form>
+                    <script nonce="{{ csp_nonce() }}">
+                      $(function() {
+                        $('.delete-button').click(function() {
+                          var $this = $(this);
+                          return confirm({{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }})
+                        });
+                      });
+                    </script>
                     {% endif %}
                 {%- endif -%}
                 {% endblock %}

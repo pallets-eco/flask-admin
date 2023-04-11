@@ -5,7 +5,7 @@
     <ul class="dropdown-menu">
         {% for p in actions %}
         <li>
-            <a href="javascript:void(0)" onclick="return modelActions.execute('{{ p[0] }}');">{{ _gettext(p[1]) }}</a>
+            <a class="modelactions" href="javascript:void(0)" data-action="{{ p[0] }}">{{ _gettext(p[1]) }}</a>
         </li>
         {% endfor %}
     </ul>

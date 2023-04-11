@@ -5,10 +5,23 @@
     <ul class="dropdown-menu field-filters">
         {% for k in filter_groups %}
         <li>
-            <a href="javascript:void(0)" class="filter" onclick="return false;">{{ k }}</a>
+            <a href="javascript:void(0)" class="filter">{{ k }}</a>
         </li>
         {% endfor %}
     </ul>
+    <script nonce="{{ csp_nonce() }}">
+        document.addEventListener("DOMContentLoaded", function(){
+            var buttons = document.querySelectorAll('.field-filters a.filter');
+            for (var i = 0; i < buttons.length; i++ ) {
+                buttons[i].addEventListener(
+                    "click",
+                    function(){
+                        return false;
+                    }
+                )
+            }
+        })
+    </script>
 {% endmacro %}
 
 {% macro export_options(btn_class='dropdown-toggle') %}

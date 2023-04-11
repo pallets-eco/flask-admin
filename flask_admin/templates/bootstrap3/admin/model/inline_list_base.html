@@ -40,6 +40,14 @@
         </div>
         {% endfilter %}
     </div>
-    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn btn-default" onclick="faForm.addInlineField(this, '{{ field.id }}');">{{ _gettext('Add') }} {{ field.label.text }}</a>
+    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn btn-default">{{ _gettext('Add') }} {{ field.label.text }}</a>
 </div>
+<script nonce="{{ csp_nonce() }}">
+    document.addEventListener('DOMContentLoaded', function() {
+        var button = document.getElementById('{{ field.id }}-button');
+        button.addEventListener('click', function() {
+            return faForm.addInlineField(this, '{{ field.id }}');
+        });
+    }, false);
+</script>
 {% endmacro %}

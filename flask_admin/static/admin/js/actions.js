@@ -1,6 +1,6 @@
-var AdminModelActions = function(actionErrorMessage, actionConfirmations) {
+var AdminModelActions = function (actionErrorMessage, actionConfirmations) {
     // batch actions helpers
-    this.execute = function(name) {
+    this.execute = function (name) {
         var selected = $('input.action-checkbox:checked').length;
 
         if (selected === 0) {
@@ -19,7 +19,7 @@ var AdminModelActions = function(actionErrorMessage, actionConfirmations) {
         $('#action', form).val(name);
 
         $('input.action-checkbox', form).remove();
-        $('input.action-checkbox:checked').each(function() {
+        $('input.action-checkbox:checked').each(function () {
             form.append($(this).clone());
         });
 
@@ -28,15 +28,15 @@ var AdminModelActions = function(actionErrorMessage, actionConfirmations) {
         return false;
     };
 
-    $(function() {
-        $('.action-rowtoggle').change(function() {
+    $(function () {
+        $('.action-rowtoggle').change(function () {
             $('input.action-checkbox').prop('checked', this.checked);
         });
     });
 
-    $(function() {
+    $(function () {
         var inputs = $('input.action-checkbox');
-        inputs.change(function() {
+        inputs.change(function () {
             var allInputsChecked = true;
             for (var i = 0; i < inputs.length; i++) {
                 if (!inputs[i].checked) {
@@ -48,4 +48,15 @@ var AdminModelActions = function(actionErrorMessage, actionConfirmations) {
         });
     });
 };
+
 var modelActions = new AdminModelActions(JSON.parse($('#message-data').text()), JSON.parse($('#actions-confirmation-data').text()));
+
+document.addEventListener('DOMContentLoaded', function () {
+    var actionButtons = document.querySelectorAll('.modelactions');
+    for (var i = 0; i < actionButtons.length; i++) {
+        actionButtons[i].addEventListener('click', function (e) {
+            e.preventDefault();
+            modelActions.execute(this.dataset.action);
+        });
+    }
+});

@@ -37,6 +37,16 @@
         {% endfilter %}
     </div>
 
-    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn" onclick="faForm.addInlineField(this, '{{ field.id }}');">{{ _gettext('Add') }} {{ field.label.text }}</a>
+    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn">{{ _gettext('Add') }} {{ field.label.text }}</a>
 </div>
+<script nonce="{{ csp_nonce() }}">
+    document.addEventListener('DOMContentLoaded', function() {
+        var field = document.getElementById('{{ field.id }}-button');
+        field.addEventListener('click', function() {
+            faForm.addInlineField(this, '{{ field.id }}');
+        });
+    }, false);
+
+</script>
+
 {% endmacro %}

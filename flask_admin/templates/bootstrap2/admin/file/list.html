@@ -89,10 +89,18 @@
                             {% elif csrf_token %}
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 {% endif %}
-                            <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
+                            <button>
                                 <i class="fa fa-times icon-remove"></i>
                             </button>
                         </form>
+                        <script nonce="{{ csp_nonce() }}">
+                            $(function() {
+                                $('form.icon button').click(function() {
+                                    return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}');
+                                });
+                            });
+                        </script>
+
                         {% endif %}
                     {% else %}
                     <form class="icon" method="POST" action="{{ get_url('.delete') }}">
@@ -102,10 +110,17 @@
                             {% elif csrf_token %}
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 {% endif %}
-                        <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
+                        <button>
                             <i class="fa fa-times icon-remove"></i>
                         </button>
                     </form>
+                    <script nonce="{{ csp_nonce() }}">
+                        $(function() {
+                            $('form.icon button').click(function() {
+                                return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}');
+                            });
+                        });
+                    </script>
                     {% endif %}
                 {%- endif -%}
                 {% endblock %}
