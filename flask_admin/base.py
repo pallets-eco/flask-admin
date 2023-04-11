@@ -304,6 +304,11 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
 
         # Contribute extra arguments
         kwargs.update(self._template_args)
+        
+        # Test if csp_nonce function is available, if not define it as a lambda that returns an empty string
+        
+        if 'csp_nonce' not in kwargs:
+            kwargs['csp_nonce'] = lambda: ''
 
         return render_template(template, **kwargs)
 
