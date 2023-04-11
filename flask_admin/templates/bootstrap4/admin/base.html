@@ -12,16 +12,36 @@
         <meta name="author" content="">
     {% endblock %}
     {% block head_css %}
-        <link nonce={{ csp_nonce() }} href="{{ admin_static.url(filename='bootstrap/bootstrap4/swatch/{swatch}/bootstrap.min.css'.format(swatch=config.get('FLASK_ADMIN_SWATCH', 'default')), v='4.2.1') }}"
+        <link 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ href="{{ admin_static.url(filename='bootstrap/bootstrap4/swatch/{swatch}/bootstrap.min.css'.format(swatch=config.get('FLASK_ADMIN_SWATCH', 'default')), v='4.2.1') }}"
               rel="stylesheet">
         {% if config.get('FLASK_ADMIN_SWATCH', 'default') == 'default' %}
-        <link nonce={{ csp_nonce() }} href="{{ admin_static.url(filename='bootstrap/bootstrap4/css/bootstrap.min.css', v='4.2.1') }}" rel="stylesheet">
+        <link 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ href="{{ admin_static.url(filename='bootstrap/bootstrap4/css/bootstrap.min.css', v='4.2.1') }}" rel="stylesheet">
         {% endif %}
-        <link nonce={{ csp_nonce() }} href="{{ admin_static.url(filename='admin/css/bootstrap4/admin.css', v='1.1.1') }}" rel="stylesheet">
-        <link nonce={{ csp_nonce() }} href="{{ admin_static.url(filename='bootstrap/bootstrap4/css/font-awesome.min.css', v='4.7.0') }}" rel="stylesheet">
+        <link 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ href="{{ admin_static.url(filename='admin/css/bootstrap4/admin.css', v='1.1.1') }}" rel="stylesheet">
+        <link 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ href="{{ admin_static.url(filename='bootstrap/bootstrap4/css/font-awesome.min.css', v='4.7.0') }}" rel="stylesheet">
         {% if admin_view.extra_css %}
           {% for css_url in admin_view.extra_css %}
-            <link nonce={{ csp_nonce() }} href="{{ css_url }}" rel="stylesheet">
+            <link 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ href="{{ css_url }}" rel="stylesheet">
           {% endfor %}
         {% endif %}
         <style>
@@ -77,20 +97,60 @@
 {% endblock %}
 
 {% block tail_js %}
-    <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='vendor/jquery.min.js', v='3.5.1') }}" type="text/javascript"></script>
-    <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='bootstrap/bootstrap4/js/popper.min.js') }}" type="text/javascript"></script>
-    <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='bootstrap/bootstrap4/js/bootstrap.min.js', v='4.2.1') }}"
+    <script 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ admin_static.url(filename='vendor/jquery.min.js', v='3.5.1') }}" type="text/javascript"></script>
+    <script 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ admin_static.url(filename='bootstrap/bootstrap4/js/popper.min.js') }}" type="text/javascript"></script>
+    <script 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ admin_static.url(filename='bootstrap/bootstrap4/js/bootstrap.min.js', v='4.2.1') }}"
             type="text/javascript"></script>
-    <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='vendor/moment.min.js', v='2.9.0') }}" type="text/javascript"></script>
-    <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='vendor/bootstrap4/util.js', v='4.3.1') }}" type="text/javascript"></script>
-    <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='vendor/bootstrap4/dropdown.js', v='4.3.1') }}" type="text/javascript"></script>
-    <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='vendor/select2/select2.min.js', v='4.2.1') }}"
+    <script 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ admin_static.url(filename='vendor/moment.min.js', v='2.9.0') }}" type="text/javascript"></script>
+    <script 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ admin_static.url(filename='vendor/bootstrap4/util.js', v='4.3.1') }}" type="text/javascript"></script>
+    <script 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ admin_static.url(filename='vendor/bootstrap4/dropdown.js', v='4.3.1') }}" type="text/javascript"></script>
+    <script 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ admin_static.url(filename='vendor/select2/select2.min.js', v='4.2.1') }}"
             type="text/javascript"></script>
-    <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='vendor/multi-level-dropdowns-bootstrap/bootstrap4-dropdown-ml-hack.js') }}" type="text/javascript"></script>
-    <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='admin/js/helpers.js', v='1.0.0') }}" type="text/javascript"></script>
+    <script 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ admin_static.url(filename='vendor/multi-level-dropdowns-bootstrap/bootstrap4-dropdown-ml-hack.js') }}" type="text/javascript"></script>
+    <script 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ admin_static.url(filename='admin/js/helpers.js', v='1.0.0') }}" type="text/javascript"></script>
     {% if admin_view.extra_js %}
         {% for js_url in admin_view.extra_js %}
-            <script nonce={{ csp_nonce() }} src="{{ js_url }}" type="text/javascript"></script>
+            <script 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ js_url }}" type="text/javascript"></script>
         {% endfor %}
     {% endif %}
 {% endblock %}

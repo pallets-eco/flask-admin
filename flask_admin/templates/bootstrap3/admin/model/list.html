@@ -189,7 +189,11 @@
     {% endif %}
 
     {{ lib.form_js() }}
-    <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='admin/js/filters.js', v='1.0.0') }}"></script>
+    <script 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ admin_static.url(filename='admin/js/filters.js', v='1.0.0') }}"></script>
 
     {{ actionlib.script(_gettext('Please select at least one record.'),
                         actions,

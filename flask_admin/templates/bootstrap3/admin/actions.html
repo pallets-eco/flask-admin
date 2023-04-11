@@ -29,6 +29,10 @@
     {% if actions %}
         <div id="actions-confirmation-data" style="display:none;">{{ actions_confirmation|tojson|safe }}</div>
         <div id="message-data" style="display:none;">{{ message|tojson|safe }}</div>
-        <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='admin/js/actions.js', v='1.0.0') }}"></script>
+        <script 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ admin_static.url(filename='admin/js/actions.js', v='1.0.0') }}"></script>
     {% endif %}
 {% endmacro %}

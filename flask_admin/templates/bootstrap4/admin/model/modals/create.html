@@ -32,5 +32,9 @@
 {% endblock %}
 
 {% block tail %}
-  <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
+  <script 
+{% if csp_nonce is not none %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
 {% endblock %}
