@@ -9,10 +9,11 @@ from flask_admin._compat import with_metaclass, as_unicode
 from flask_admin import helpers as h
 
 # For compatibility reasons import MenuLink
+# noqa: F401
 from flask_admin.menu import (
     MenuCategory,
     MenuView,
-    MenuLink, # noqa: F401
+    MenuLink,  # noqa: F401
     SubMenuCategory,
 ) 
 
