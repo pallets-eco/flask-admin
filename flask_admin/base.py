@@ -12,7 +12,6 @@ from flask_admin import helpers as h
 from flask_admin.menu import (
     MenuCategory,
     MenuView,
-    MenuLink,
     SubMenuCategory,
 )  # noqa: F401
 
