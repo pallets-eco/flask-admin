@@ -35,6 +35,6 @@
 {% endblock %}
 
 {% block tail %}
-  <script src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
-  <script src="{{ admin_static.url(filename='admin/js/bs3_modal.js', v='1.0.0') }}"></script>
+  <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
+  <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='admin/js/bs3_modal.js', v='1.0.0') }}"></script>
 {% endblock %}

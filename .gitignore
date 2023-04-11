@@ -28,3 +28,5 @@ env
 .eggs
 .tox/
 .env
+
+.vscode

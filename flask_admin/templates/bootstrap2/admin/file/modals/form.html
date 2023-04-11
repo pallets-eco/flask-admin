@@ -9,9 +9,9 @@
 {% endblock %}
 
 {% block tail %}
-  <script src="{{ admin_static.url(filename='admin/js/bs2_modal.js', v='1.0.0') }}"></script>
+  <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='admin/js/bs2_modal.js', v='1.0.0') }}"></script>
 
-  <script>
+  <script nonce={{ csp_nonce() }}>
   // fill the header of modal dynamically
   $('.modal-header h3').html('{% block header %}{{ header_text }}{% endblock %}');
   </script>

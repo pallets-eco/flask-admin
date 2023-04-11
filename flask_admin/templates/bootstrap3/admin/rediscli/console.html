@@ -4,7 +4,7 @@
 
 {% block head %}
     {{ super() }}
-    <link href="{{ admin_static.url(filename='admin/css/bootstrap3/rediscli.css', v='1.0.0') }}" rel="stylesheet">
+    <link nonce={{ csp_nonce() }} href="{{ admin_static.url(filename='admin/css/bootstrap3/rediscli.css', v='1.0.0') }}" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
@@ -23,5 +23,5 @@
   {{ super() }}
 
   <div id="execute-view-data" style="display:none;">{{ admin_view.get_url('.execute_view')|tojson|safe }}</div>
-  <script src="{{ admin_static.url(filename='admin/js/rediscli.js', v='1.0.0') }}"></script>
+  <script nonce={{ csp_nonce() }} src="{{ admin_static.url(filename='admin/js/rediscli.js', v='1.0.0') }}"></script>
 {% endblock %}
