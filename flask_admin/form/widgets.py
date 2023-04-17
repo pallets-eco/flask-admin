@@ -1,5 +1,5 @@
 from wtforms import widgets
-from flask import current_app
+from flask import current_app, request
 from flask_admin.babel import gettext, ngettext
 from flask_admin import helpers as h
 
@@ -115,5 +115,11 @@ class RenderTemplateWidget(object):
         )
 
         template = current_app.jinja_env.get_template(self.template)
+
+        # Detect if csp_nonce function for jinja2 exists
+        # If not, define it as a lambda function that returns an empty string
+
+        if not hasattr(template.environment.globals, "csp_nonce"):
+            template.environment.globals["csp_nonce"] = lambda: getattr(request, "csp_nonce", "")
 
         return template.render(kwargs)
