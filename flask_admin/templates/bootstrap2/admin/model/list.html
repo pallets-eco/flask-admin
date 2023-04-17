@@ -189,7 +189,7 @@
 
     {{ lib.form_js() }}
     <script 
-{% if csp_nonce is not none %}
+{% if callable(csp_nonce) %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='admin/js/filters.js', v='1.0.0') }}"></script>

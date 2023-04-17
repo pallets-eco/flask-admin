@@ -5,7 +5,7 @@
 {% block head %}
     {{ super() }}
     <link 
-{% if csp_nonce is not none %}
+{% if callable(csp_nonce) %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  href="{{ admin_static.url(filename='admin/css/bootstrap3/rediscli.css', v='1.0.0') }}" rel="stylesheet">
@@ -28,7 +28,7 @@
 
   <div id="execute-view-data" style="display:none;">{{ admin_view.get_url('.execute_view')|tojson|safe }}</div>
   <script 
-{% if csp_nonce is not none %}
+{% if callable(csp_nonce) %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='admin/js/rediscli.js', v='1.0.0') }}"></script>
