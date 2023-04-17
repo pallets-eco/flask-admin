@@ -66,7 +66,10 @@
     >{{ _gettext('Add') }} {{ field.label.text }}</a
   >
 </div>
-<script nonce="{{ csp_nonce() }}">
+<script
+{% if csp_nonce is callable %}
+nonce="{{ csp_nonce() }}"
+{% endif %}>
   document.addEventListener("DOMContentLoaded", function () {
     $("#{{ field.id }}-button").click(function () {
       faForm.addInlineField(this, "{{ field.id }}");

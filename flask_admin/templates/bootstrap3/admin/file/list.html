@@ -93,7 +93,10 @@
                                 <i class="fa fa-times glyphicon glyphicon-remove"></i>
                             </button>
                         </form>
-                        <script nonce="{{ csp_nonce() }}">
+                        <script
+{% if csp_nonce is callable %}
+nonce="{{ csp_nonce() }}"
+{% endif %}>
                             $(function() {
                                 $('form.icon button').click(function() {
                                     return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')
@@ -113,7 +116,10 @@
                             <i class="fa fa-trash glyphicon glyphicon-trash"></i>
                         </button>
                     </form>
-                    <script nonce="{{ csp_nonce() }}">
+                    <script
+{% if csp_nonce is callable %}
+nonce="{{ csp_nonce() }}"
+{% endif %}>
                         $(function() {
                             $('form.icon button').click(function() {
                                 return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')

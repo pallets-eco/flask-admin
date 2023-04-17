@@ -35,7 +35,10 @@
     <span class="fa fa-trash glyphicon icon-trash"></span>
   </button>
 </form>
-<script nonce="{{ csp_nonce() }}">
+<script
+{% if csp_nonce is callable %}
+nonce="{{ csp_nonce() }}"
+{% endif %}>
   document.addEventListener("DOMContentLoaded", function () {
     var deleteButtons = document.querySelectorAll('.delete-button');
     for (var i = 0; i < deleteButtons.length; i++) {

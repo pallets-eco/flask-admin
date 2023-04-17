@@ -39,7 +39,10 @@
 
     <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn">{{ _gettext('Add') }} {{ field.label.text }}</a>
 </div>
-<script nonce="{{ csp_nonce() }}">
+<script
+{% if csp_nonce is callable %}
+nonce="{{ csp_nonce() }}"
+{% endif %}>
     document.addEventListener('DOMContentLoaded', function() {
         var field = document.getElementById('{{ field.id }}-button');
         field.addEventListener('click', function() {

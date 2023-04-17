@@ -9,7 +9,10 @@
         </li>
         {% endfor %}
     </ul>
-    <script nonce="{{ csp_nonce() }}">
+    <script
+{% if csp_nonce is callable %}
+nonce="{{ csp_nonce() }}"
+{% endif %}>
         document.addEventListener(
             "DOMContentLoaded",
             function () {

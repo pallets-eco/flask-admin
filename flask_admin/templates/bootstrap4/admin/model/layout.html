@@ -5,7 +5,10 @@
             <a class="dropdown-item filter">{{ k }}</a>
         {% endfor %}
     </div>
-    <script nonce="{{ csp_nonce() }}">
+    <script
+{% if csp_nonce is callable %}
+nonce="{{ csp_nonce() }}"
+{% endif %}>
         const buttons = document.querySelectorAll('.field-filters a.filter');
         buttons.forEach(function (button) {
             button.addEventListener('click', function (e) {
