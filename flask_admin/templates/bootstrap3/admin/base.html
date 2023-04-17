@@ -13,31 +13,31 @@
     {% endblock %}
     {% block head_css %}
         <link 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  href="{{ admin_static.url(filename='bootstrap/bootstrap3/swatch/{swatch}/bootstrap.min.css'.format(swatch=config.get('FLASK_ADMIN_SWATCH', 'default')), v='3.3.5') }}" rel="stylesheet">
         {%if config.get('FLASK_ADMIN_SWATCH', 'default') == 'default' %}
         <link 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  href="{{ admin_static.url(filename='bootstrap/bootstrap3/css/bootstrap-theme.min.css', v='3.3.5') }}" rel="stylesheet">
         {%endif%}
         <link 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  href="{{ admin_static.url(filename='admin/css/bootstrap3/admin.css', v='1.1.1') }}" rel="stylesheet">
 	<link 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  href="{{ admin_static.url(filename='admin/css/bootstrap3/submenu.css') }}" rel="stylesheet">
         {% if admin_view.extra_css %}
           {% for css_url in admin_view.extra_css %}
             <link 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  href="{{ css_url }}" rel="stylesheet">
@@ -101,34 +101,34 @@
 
     {% block tail_js %}
     <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='vendor/jquery.min.js', v='3.5.1') }}" type="text/javascript"></script>
     <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='bootstrap/bootstrap3/js/bootstrap.min.js', v='3.3.5') }}" type="text/javascript"></script>
     <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='vendor/moment.min.js', v='2.22.2') }}" type="text/javascript"></script>
     <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='vendor/select2/select2.min.js', v='3.5.2') }}" type="text/javascript"></script>
     <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='admin/js/helpers.js', v='1.0.0') }}" type="text/javascript"></script>
     {% if admin_view.extra_js %}
       {% for js_url in admin_view.extra_js %}
         <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ js_url }}" type="text/javascript"></script>

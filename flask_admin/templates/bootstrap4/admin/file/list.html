@@ -204,7 +204,7 @@
                          actions,
                          actions_confirmation) }}
   <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>

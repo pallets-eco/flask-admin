@@ -51,7 +51,7 @@
 {% block tail %}
   {{ super() }}
   <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>

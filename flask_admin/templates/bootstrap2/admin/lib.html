@@ -217,30 +217,30 @@
 
 {% macro form_css() %}
   <link 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  href="{{ admin_static.url(filename='vendor/select2/select2.css', v='3.5.2') }}" rel="stylesheet">
   <link 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  href="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker-bs2.css', v='1.3.22') }}" rel="stylesheet">
   {% if config.MAPBOX_MAP_ID %}
   <link 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css', v='1.0.2') }}" rel="stylesheet">
   <link 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css', v='0.4.6') }}" rel="stylesheet">
   {% endif %}
   {% if editable_columns %}
   <link 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  href="{{ admin_static.url(filename='vendor/x-editable/css/bootstrap2-editable.css', v='1.5.1.1') }}" rel="stylesheet">
@@ -250,7 +250,7 @@
 {% macro form_js() %}
   {% if config.MAPBOX_MAP_ID %}
   <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
 >
@@ -264,44 +264,44 @@
   {% endif %}
   </script>
   <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js', v='1.0.2') }}"></script>
   <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js', v='0.4.6') }}"></script>
   {% if config.MAPBOX_SEARCH %}
   <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
 >
   window.MAPBOX_SEARCH = "{{ config.MAPBOX_SEARCH }}";
   </script>
   <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="https://maps.googleapis.com/maps/api/js?v=3&libraries=places&key={{ config.get('GOOGLE_MAPS_API_KEY') }}"></script>
   {% endif %}
   {% endif %}
   <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js', v='1.3.22') }}"></script>
   {% if editable_columns %}
   <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='vendor/x-editable/js/bootstrap2-editable.min.js', v='1.5.1.1') }}"></script>
   {% endif %}
   <script 
-{% if callable(csp_nonce) %}
+{% if csp_nonce is callable %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='admin/js/form.js', v='1.0.1') }}"></script>
