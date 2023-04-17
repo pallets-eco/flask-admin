@@ -189,12 +189,12 @@
     {% endif %}
     {{ lib.form_js() }}
     <script 
-{% if csp_nonce is callable %}
+{% if csp_nonce is defined %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
     <script 
-{% if csp_nonce is callable %}
+{% if csp_nonce is defined %}
     nonce="{{ csp_nonce() }}"
 {% endif %}
  src="{{ admin_static.url(filename='admin/js/bs4_filters.js', v='1.0.0') }}"></script>

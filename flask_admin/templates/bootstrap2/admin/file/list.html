@@ -94,7 +94,7 @@
                             </button>
                         </form>
                         <script
-{% if csp_nonce is callable %}
+{% if csp_nonce is defined %}
 nonce="{{ csp_nonce() }}"
 {% endif %}>
                             $(function() {
@@ -118,7 +118,7 @@ nonce="{{ csp_nonce() }}"
                         </button>
                     </form>
                     <script
-{% if csp_nonce is callable %}
+{% if csp_nonce is defined %}
 nonce="{{ csp_nonce() }}"
 {% endif %}>
                         $(function() {

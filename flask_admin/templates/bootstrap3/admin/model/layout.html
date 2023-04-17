@@ -10,7 +10,7 @@
         {% endfor %}
     </ul>
     <script
-{% if csp_nonce is callable %}
+{% if csp_nonce is defined %}
 nonce="{{ csp_nonce() }}"
 {% endif %}>
         document.addEventListener(

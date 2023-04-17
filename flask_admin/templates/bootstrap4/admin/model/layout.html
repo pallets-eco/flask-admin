@@ -6,7 +6,7 @@
         {% endfor %}
     </div>
     <script
-{% if csp_nonce is callable %}
+{% if csp_nonce is defined %}
 nonce="{{ csp_nonce() }}"
 {% endif %}>
         const buttons = document.querySelectorAll('.field-filters a.filter');
