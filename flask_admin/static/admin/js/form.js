@@ -81,6 +81,10 @@
           console.error("You must set DEFAULT_CENTER_LAT and DEFAULT_CENTER_LONG in your Flask settings to use the map widget");
           return false;
         }
+        if ($el.css('display') == 'none') {
+          console.error("map widget being processed for a second time");
+          return false;
+        }
 
         var geometryType = $el.data("geometry-type")
         if (geometryType) {
