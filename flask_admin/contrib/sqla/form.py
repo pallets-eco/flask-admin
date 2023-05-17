@@ -670,6 +670,13 @@ class InlineModelConverter(InlineModelConverterBase):
         reverse_prop = None
 
         for prop in target_mapper.iterate_properties:
+            try:
+                # Loading the mapper property will populate a lazy direction
+                # attribute
+                prop.mapper
+            except AttributeError:
+                continue
+
             if hasattr(prop, 'direction') and prop.direction.name in ('MANYTOONE', 'MANYTOMANY'):
                 if issubclass(model, prop.mapper.class_):
                     reverse_prop = prop
