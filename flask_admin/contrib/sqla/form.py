@@ -145,7 +145,7 @@ class AdminModelConverter(ModelConverterBase):
             kwargs['validators'] = list(kwargs['validators'])
 
         # Check if it is relation or property
-        if hasattr(prop, 'direction') or is_association_proxy(prop):
+        if is_relationship(prop) or is_association_proxy(prop):
             property_is_association_proxy = is_association_proxy(prop)
             if property_is_association_proxy:
                 if not hasattr(prop.remote_attr, 'prop'):

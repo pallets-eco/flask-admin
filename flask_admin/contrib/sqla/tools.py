@@ -224,7 +224,8 @@ def is_hybrid_property(model, attr_name):
 
 
 def is_relationship(attr):
-    return hasattr(attr, 'property') and hasattr(attr.property, 'direction')
+    return (hasattr(attr, 'property') and hasattr(attr.property, 'direction')  # sqla<2.0.0
+            or (hasattr(attr, '_is_relationship') and attr._is_relationship))  # sqla>=2.0.0
 
 
 def is_association_proxy(attr):
