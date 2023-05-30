@@ -180,5 +180,5 @@ except OSError:
 # Create DB
 first_time_setup()
 
-    # Start app
-    app.run(debug=True)
+# Start app
+app.run(debug=True)
