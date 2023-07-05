@@ -1,3 +1,4 @@
+# enables redirection of imports by intercepting import statements matching a given prefix and dynamically loading the corresponding module with a modified path 
 # -*- coding: utf-8 -*-
 """
     flask_admin._backwards
@@ -62,7 +63,6 @@ class ObsoleteAttr(object):
 
     def __set__(self, obj, value):
         setattr(obj, self.cache, value)
-
 
 class ImportRedirect(object):
     def __init__(self, prefix, target):
