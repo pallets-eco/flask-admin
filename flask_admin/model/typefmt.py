@@ -35,10 +35,11 @@ def bool_formatter(view, value, name):
         :param value:
             Value to check
     """
+    bi = 'bi-check-circle' if value else 'bi-x-circle'
     glyph = 'ok-circle' if value else 'minus-sign'
     fa = 'fa-check-circle' if value else 'fa-minus-circle'
     label = f'{name}: {"true" if value else "false"}'
-    return Markup('<span class="fa %s glyphicon glyphicon-%s icon-%s" title="%s"></span>' % (fa, glyph, glyph, label))
+    return Markup('<span class="bi %s fa %s glyphicon glyphicon-%s icon-%s" title="%s"></span>' % (bi, fa, glyph, glyph, label))
 
 
 def list_formatter(view, values, name):

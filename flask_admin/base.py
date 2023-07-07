@@ -494,7 +494,7 @@ class Admin(object):
                 Override base HTML template for all static views. Defaults to `admin/base.html`.
             :param template_mode:
                 Base template path. Defaults to `bootstrap2`. If you want to use
-                Bootstrap 3 or 4 integration, change it to `bootstrap3` or `bootstrap4`.
+                Bootstrap 4 or 5 integration, change it to `bootstrap4` or `bootstrap5`.
             :param category_icon_classes:
                 A dict of category names as keys and html classes as values to be added to menu category icons.
                 Example: {'Favorites': 'glyphicon glyphicon-star'}
