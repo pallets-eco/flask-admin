@@ -39,7 +39,10 @@ def bool_formatter(view, value, name):
     glyph = 'ok-circle' if value else 'minus-sign'
     fa = 'fa-check-circle' if value else 'fa-minus-circle'
     label = f'{name}: {"true" if value else "false"}'
-    return Markup('<span class="bi %s fa %s glyphicon glyphicon-%s icon-%s" title="%s"></span>' % (bi, fa, glyph, glyph, label))
+    return Markup(
+        '<span class="bi %s fa %s glyphicon glyphicon-%s icon-%s" title="%s"></span>' % (
+            bi, fa, glyph, glyph, label)
+    )
 
 
 def list_formatter(view, values, name):
