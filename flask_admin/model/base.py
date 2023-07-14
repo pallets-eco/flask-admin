@@ -2081,7 +2081,7 @@ class BaseModelView(BaseView, ActionsMixin):
         )
 
     @expose('/new/', methods=('GET', 'POST'))
-    def create_view(self):
+    def create_view(self, **kwargs):
         """
             Create model view
         """
