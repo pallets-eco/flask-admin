@@ -27,7 +27,7 @@
             {% else -%}
           <li class="dropdown{% if class_name %} {{ class_name }}{% endif %}">
         {%- endif %}
-      <a class="dropdown-toggle {% if is_main_nav %}nav-link{% else %}dropdown-item{% endif %}" data-toggle="dropdown" href="javascript:void(0)">
+      <a class="dropdown-toggle {% if is_main_nav %}nav-link{% else %}dropdown-item{% endif %}" data-toggle="dropdown">
         {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}
         {{ menu_icon(item) }}{{ item.name }}
         {%- if 'dropdown-submenu' in class_name -%}

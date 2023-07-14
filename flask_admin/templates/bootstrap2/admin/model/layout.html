@@ -1,11 +1,11 @@
 {% macro filter_options(btn_class='dropdown-toggle') %}
-    <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
+    <a class="{{ btn_class }}" data-toggle="dropdown">
         {{ _gettext('Add Filter') }}<b class="caret"></b>
     </a>
     <ul class="dropdown-menu field-filters">
         {% for k in filter_groups %}
         <li>
-            <a href="javascript:void(0)" class="filter">{{ k }}</a>
+            <a class="filter">{{ k }}</a>
         </li>
         {% endfor %}
     </ul>
@@ -30,7 +30,7 @@ nonce="{{ csp_nonce() }}"
 {% macro export_options(btn_class='dropdown-toggle') %}
     {% if admin_view.export_types|length > 1 %}
     <li class="dropdown">
-        <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
+        <a class="{{ btn_class }}" data-toggle="dropdown">
             {{ _gettext('Export') }}<b class="caret"></b>
         </a>
         <ul class="dropdown-menu field-filters">
@@ -110,7 +110,7 @@ nonce="{{ csp_nonce() }}"
 {% endmacro %}
 
 {% macro page_size_form(generator, btn_class='dropdown-toggle') %}
-    <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
+    <a class="{{ btn_class }}" data-toggle="dropdown">
         {{ page_size }} {{ _gettext('items') }}<b class="caret"></b>
     </a>
     <ul class="dropdown-menu">

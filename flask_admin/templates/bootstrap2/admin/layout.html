@@ -26,7 +26,7 @@
         {% else -%}
         <li class="dropdown{% if class_name %} {{class_name}}{% endif %}">
         {%- endif %}
-          <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
+          <a class="dropdown-toggle" data-toggle="dropdown">
             {% if item.class_name %}<i class="{{ item.class_name }}"></i> {% endif %}
             {{ menu_icon(item) }}{{ item.name }}
             {%- if 'dropdown-submenu' not in class_name -%}<b class="caret"></b>{%- endif -%}
@@ -87,7 +87,7 @@
         {% else %}
         <div class="alert">
         {% endif %}
-          <a href="javascript:void(0)" class="close" data-dismiss="alert">x</a>
+          <a class="close" data-dismiss="alert">x</a>
           {{ m }}
         </div>
       {% endfor %}

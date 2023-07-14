@@ -27,7 +27,7 @@
     </li>
     {% else %}
     <li class="page-item disabled">
-        <a class="page-link" href="javascript:void(0)">&laquo;</a>
+        <a class="page-link">&laquo;</a>
     </li>
     {% endif %}
     {% if page > 0 %}
@@ -36,14 +36,14 @@
     </li>
     {% else %}
     <li class="page-item disabled">
-        <a class="page-link" href="javascript:void(0)">&lt;</a>
+        <a class="page-link">&lt;</a>
     </li>
     {% endif %}
 
     {% for p in range(min, max) %}
     {% if page == p %}
     <li class="page-item active">
-        <a class="page-link" href="javascript:void(0)">{{ p + 1 }}</a>
+        <a class="page-link">{{ p + 1 }}</a>
     </li>
     {% else %}
     <li class="page-item">
@@ -58,7 +58,7 @@
     </li>
     {% else %}
     <li class="page-item disabled">
-        <a class="page-link" href="javascript:void(0)">&gt;</a>
+        <a class="page-link">&gt;</a>
     </li>
     {% endif %}
     {% if max < pages %}
@@ -67,7 +67,7 @@
     </li>
     {% else %}
     <li class="page-item disabled">
-        <a class="page-link" href="javascript:void(0)">&raquo;</a>
+        <a class="page-link">&raquo;</a>
     </li>
     {% endif %}
 </ul>

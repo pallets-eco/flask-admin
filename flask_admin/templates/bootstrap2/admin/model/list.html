@@ -14,7 +14,7 @@
     {% block model_menu_bar %}
     <ul class="nav nav-tabs actions-nav">
         <li class="active">
-            <a href="javascript:void(0)">{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a>
+            <a>{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a>
         </li>
 
         {% if admin_view.can_create %}
@@ -104,7 +104,7 @@
                         {% if admin_view.column_descriptions.get(c) %}
                             <a class="fa fa-question-circle icon-question-sign"
                                title="{{ admin_view.column_descriptions[c] }}"
-                               href="javascript:void(0)" data-role="tooltip"
+ data-role="tooltip"
                             ></a>
                         {% endif %}
                     </th>
