@@ -18,6 +18,7 @@ from flask_admin.helpers import get_url
 from flask_admin._backwards import Markup
 from flask_admin._compat import string_types, urljoin
 
+import PIL
 
 try:
     from PIL import Image, ImageOps
@@ -464,10 +465,10 @@ class ImageUploadField(FileUploadField):
 
         if image.size[0] > width or image.size[1] > height:
             if force:
-                return ImageOps.fit(self.image, (width, height), Image.ANTIALIAS)
+                return ImageOps.fit(self.image, (width, height), PIL.Image.Resampling.LANCZOS)
             else:
                 thumb = self.image.copy()
-                thumb.thumbnail((width, height), Image.ANTIALIAS)
+                thumb.thumbnail((width, height), PIL.Image.Resampling.LANCZOS)
                 return thumb
 
         return image
