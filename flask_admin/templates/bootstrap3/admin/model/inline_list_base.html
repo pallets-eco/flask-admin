@@ -52,5 +52,11 @@ nonce="{{ csp_nonce() }}"
             return faForm.addInlineField(this, '{{ field.id }}');
         });
     }, false);
+    document.addEventListener('shown.bs.modal', function() {
+        var button = document.getElementById('{{ field.id }}-button');
+        button.addEventListener('click', function() {
+            return faForm.addInlineField(this, '{{ field.id }}');
+        });
+    }, false);
 </script>
 {% endmacro %}
