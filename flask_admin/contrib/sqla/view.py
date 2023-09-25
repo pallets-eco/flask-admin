@@ -624,10 +624,10 @@ class ModelView(BaseModelView):
         for searchable in self.column_searchable_list:
             if isinstance(searchable, InstrumentedAttribute):
                 placeholders.append(
-                    self.column_labels.get(searchable.key, searchable.key))
+                    str(self.column_labels.get(searchable.key, searchable.key)))
             else:
                 placeholders.append(
-                    self.column_labels.get(searchable, searchable))
+                    str(self.column_labels.get(searchable, searchable)))
 
         return u', '.join(placeholders)
 
