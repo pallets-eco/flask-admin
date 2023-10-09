@@ -1,0 +1,39 @@
+{% import 'admin/static.html' as admin_static with context %}
+
+{% macro dropdown(actions, btn_class='inline-block py-2 px-4 no-underline  inline-block w-0 h-0 ml-1 align border-b-0 border-t-1 border-r-1 border-l-1') -%}
+    <a class="{{ btn_class }}" data-toggle="dropdown" role="button" aria-haspopup="true"
+       aria-expanded="false">{{ _gettext('With selected') }}<b class="caret"></b></a>
+    <div class=" absolute left-0 z-50 float-left hidden list-reset	 py-2 mt-1 text-base bg-white border border-gray-300 rounded">
+        {% for p in actions %}
+            <a class="block w-full py-1 px-6 font-normal text-gray-900 whitespace-no-wrap border-0 modelactions" data-action="{{ p[0] }}">
+                {{ _gettext(p[1]) }}
+            </a>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% macro form(actions, url) %}
+    {% if actions %}
+        <form id="action_form" action="{{ url }}" method="POST" style="display: none">
+            {% if action_form.csrf_token %}
+                {{ action_form.csrf_token }}
+            {% elif csrf_token %}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            {% endif %}
+            {{ action_form.url(value=return_url) }}
+            {{ action_form.action() }}
+        </form>
+    {% endif %}
+{% endmacro %}
+
+{% macro script(message, actions, actions_confirmation) %}
+    {% if actions %}
+        <div id="actions-confirmation-data" style="display:none;">{{ actions_confirmation|tojson|safe }}</div>
+        <div id="message-data" style="display:none;">{{ message|tojson|safe }}</div>
+        <script 
+{% if csp_nonce is defined %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ admin_static.url(filename='admin/js/actions.js', v='1.0.0') }}"></script>
+    {% endif %}
+{% endmacro %}

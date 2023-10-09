@@ -1,0 +1,56 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block body %}
+  {% block navlinks %}
+  <ul class="flex flex-wrap list-none pl-0 mb-0 border border-t-0 border-r-0 border-l-0 border-b-1 border-gray-200">
+    <li class="">
+        <a class="inline-block py-2 px-4 no-underline" href="{{ return_url }}">{{ _gettext('List') }}</a>
+    </li>
+    {%- if admin_view.can_create -%}
+    <li class="">
+        <a class="inline-block py-2 px-4 no-underline" href="{{ get_url('.create_view', url=return_url) }}">{{ _gettext('Create') }}</a>
+    </li>
+    {%- endif -%}
+    {%- if admin_view.can_edit -%}
+    <li class="">
+        <a class="inline-block py-2 px-4 no-underline" href="{{ get_url('.edit_view', id=request.args.get('id'), url=return_url) }}">{{ _gettext('Edit') }}</a>
+    </li>
+    {%- endif -%}
+    <li class="">
+        <a class="inline-block py-2 px-4 no-underline active opacity-75">{{ _gettext('Details') }}</a>
+    </li>
+  </ul>
+  {% endblock %}
+
+  {% block details_search %}
+    <div class="flex items-center fa_filter_container lg:w-1/2 pr-4 pl-4">
+      <label for="fa_filter">{{ _gettext('Filter') }}</label>
+      <input id="fa_filter" type="text" class="ml-3 block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded">
+    </div>
+  {% endblock %}
+
+  {% block details_table %}
+    <table class="w-full max-w-full mb-4 bg-transparent table-hover table-bordered searchable">
+    {% for c, name in details_columns %}
+      <tr>
+        <td>
+          <b>{{ name }}</b>
+        </td>
+        <td>
+        {{ get_value(model, c) }}
+        </td>
+      </tr>
+    {% endfor %}
+    </table>
+  {% endblock %}
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  <script 
+{% if csp_nonce is defined %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
+{% endblock %}

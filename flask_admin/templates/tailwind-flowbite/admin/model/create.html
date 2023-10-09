@@ -1,0 +1,30 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+{% from 'admin/lib.html' import extra with context %} {# backward compatible #}
+
+{% block head %}
+  {{ super() }}
+  {{ lib.form_css() }}
+{% endblock %}
+
+{% block body %}
+  {% block navlinks %}
+  <ul class="flex flex-wrap list-none pl-0 mb-0 border border-t-0 border-r-0 border-l-0 border-b-1 border-gray-200">
+    <li class="-mb-px">
+        <a href="{{ return_url }}" class="inline-block py-2 px-4 no-underline border border-b-0 mx-1 rounded rounded-t">{{ _gettext('List') }}</a>
+    </li>
+    <li class="-mb-px">
+        <a class="inline-block py-2 px-4 no-underline border border-b-0 mx-1 rounded rounded-t active">{{ _gettext('Create') }}</a>
+    </li>
+  </ul>
+  {% endblock %}
+
+  {% block create_form %}
+    {{ lib.render_form(form, return_url, extra(), form_opts) }}
+  {% endblock %}
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  {{ lib.form_js() }}
+{% endblock %}

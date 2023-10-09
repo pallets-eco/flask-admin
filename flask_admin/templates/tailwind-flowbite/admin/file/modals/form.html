@@ -1,0 +1,23 @@
+{% import 'admin/static.html' as admin_static with context %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block body %}
+  {# content added to modal-content #}
+  <div class="p-4 border-b border-gray-200">
+    {% block header %}<h3>{{ header_text }}</h3>{% endblock %}
+    <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="p-4">
+    {% block fa_form %}
+      {{ lib.render_form(form, dir_url, action=request.url, is_modal=True) }}
+    {% endblock %}
+  </div>
+{% endblock %}
+
+{% block tail %}
+  <script 
+{% if csp_nonce is defined %}
+    nonce="{{ csp_nonce() }}"
+{% endif %}
+ src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
+{% endblock %}
