@@ -208,7 +208,7 @@ class ModelView(BaseModelView):
         columns = dict()
 
         for n, f in self._get_model_fields():
-            if self.column_display_pk or type(f) != PrimaryKeyField:
+            if self.column_display_pk or not isinstance(f, PrimaryKeyField):
                 columns[n] = f
 
         return columns

@@ -343,7 +343,7 @@ class ModelView(BaseModelView):
 
         for n, f in self._get_model_fields():
             if type(f) in SORTABLE_FIELDS:
-                if self.column_display_pk or type(f) != mongoengine.ObjectIdField:
+                if self.column_display_pk or not isinstance(f, mongoengine.ObjectIdField):
                     columns[n] = f
 
         return columns
@@ -467,7 +467,7 @@ class ModelView(BaseModelView):
         criteria = None
 
         for field in self._search_fields:
-            if type(field) == mongoengine.ReferenceField:
+            if isinstance(field, mongoengine.ReferenceField):
                 import re
                 regex = re.compile('.*%s.*' % term)
             else:
