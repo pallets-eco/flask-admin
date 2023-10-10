@@ -21,6 +21,7 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 from flask_admin._compat import filter_list, string_types
 from flask_admin.tools import iterencode, iterdecode, escape  # noqa: F401
 
+from sqlalchemy.orm import Mapper
 
 def parse_like_term(term):
     if term.startswith('^'):
@@ -217,6 +218,8 @@ def is_hybrid_property(model, attr_name):
                 last_model = model._decl_class_registry[last_model.arg]
             elif isinstance(last_model, (types.FunctionType, types.MethodType)):
                 last_model = last_model()
+            elif isinstance(last_model, Mapper):
+                last_model = last_model.class_
         last_name = names[-1]
         return last_name in get_hybrid_properties(last_model)
     else:
