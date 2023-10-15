@@ -2,11 +2,7 @@ import itertools
 
 from wtforms.validators import ValidationError
 from wtforms.fields import FieldList, FormField, SelectFieldBase
-
-try:
-    from wtforms.fields import _unset_value as unset_value
-except ImportError:
-    from wtforms.utils import unset_value
+from wtforms.utils import unset_value
 
 from flask_admin._compat import iteritems
 from .widgets import (InlineFieldListWidget, InlineFormWidget,

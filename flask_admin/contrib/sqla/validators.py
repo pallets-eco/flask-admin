@@ -1,10 +1,7 @@
 from sqlalchemy.orm.exc import NoResultFound
 
 from wtforms import ValidationError
-try:
-    from wtforms.validators import InputRequired
-except ImportError:
-    from wtforms.validators import Required as InputRequired
+from wtforms.validators import InputRequired
 
 from flask_admin._compat import filter_list
 

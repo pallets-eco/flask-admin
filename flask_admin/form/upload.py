@@ -5,12 +5,8 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
 from wtforms import ValidationError, fields, __version__ as wtforms_version
+from wtforms.utils import unset_value
 from wtforms.widgets import html_params
-
-try:
-    from wtforms.fields.core import _unset_value as unset_value
-except ImportError:
-    from wtforms.utils import unset_value
 
 from flask_admin.babel import gettext
 from flask_admin.helpers import get_url

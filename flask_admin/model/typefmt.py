@@ -1,11 +1,8 @@
+from enum import Enum
 import json
 
 from markupsafe import Markup
 from flask_admin._compat import text_type
-try:
-    from enum import Enum
-except ImportError:
-    Enum = None
 
 
 def null_formatter(view, value, name):
@@ -91,7 +88,6 @@ DETAIL_FORMATTERS = {
     dict: dict_formatter,
 }
 
-if Enum is not None:
-    BASE_FORMATTERS[Enum] = enum_formatter
-    EXPORT_FORMATTERS[Enum] = enum_formatter
-    DETAIL_FORMATTERS[Enum] = enum_formatter
+BASE_FORMATTERS[Enum] = enum_formatter
+EXPORT_FORMATTERS[Enum] = enum_formatter
+DETAIL_FORMATTERS[Enum] = enum_formatter

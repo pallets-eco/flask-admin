@@ -1,9 +1,6 @@
 from flask import Flask
 
-try:
-    from werkzeug.middleware.dispatcher import DispatcherMiddleware
-except ImportError:
-    from werkzeug.wsgi import DispatcherMiddleware
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from werkzeug.test import Client
 
 from wtforms import fields
