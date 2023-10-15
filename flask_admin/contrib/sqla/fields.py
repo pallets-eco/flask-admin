@@ -213,13 +213,13 @@ class KeyValue(object):
 class InlineHstoreList(InlineFieldList):
     """ Version of InlineFieldList for use with Postgres HSTORE columns """
 
-    def process(self, formdata, data=unset_value):
+    def process(self, formdata, data=unset_value, extra_filters=None):
         """ SQLAlchemy returns a dict for HSTORE columns, but WTForms cannot
             process a dict. This overrides `process` to convert the dict
             returned by SQLAlchemy to a list of classes before processing. """
         if isinstance(data, dict):
             data = [KeyValue(k, v) for k, v in iteritems(data)]
-        super(InlineHstoreList, self).process(formdata, data)
+        super(InlineHstoreList, self).process(formdata, data, extra_filters)
 
     def populate_obj(self, obj, name):
         """ Combines each FormField key/value into a dictionary for storage """
