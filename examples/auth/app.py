@@ -2,8 +2,8 @@ import os
 from flask import Flask, url_for, redirect, render_template, request, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import Security, SQLAlchemyUserDatastore, \
-    UserMixin, RoleMixin, login_required, current_user
-from flask_security.utils import encrypt_password
+    UserMixin, RoleMixin, current_user
+from flask_security.utils import hash_password
 import flask_admin
 from flask_admin.contrib import sqla
 from flask_admin import helpers as admin_helpers
@@ -42,6 +42,7 @@ class User(db.Model, UserMixin):
     confirmed_at = db.Column(db.DateTime())
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
+    fs_uniquifier = db.Column(db.String(64), unique=True, nullable=False)
 
     def __str__(self):
         return self.email
@@ -121,8 +122,8 @@ def build_sample_db():
 
         test_user = user_datastore.create_user(
             first_name='Admin',
-            email='admin',
-            password=encrypt_password('admin'),
+            email='admin@example.com',
+            password=hash_password('admin'),
             roles=[user_role, super_user_role]
         )
 
@@ -144,7 +145,7 @@ def build_sample_db():
                 first_name=first_names[i],
                 last_name=last_names[i],
                 email=tmp_email,
-                password=encrypt_password(tmp_pass),
+                password=hash_password(tmp_pass),
                 roles=[user_role, ]
             )
         db.session.commit()
