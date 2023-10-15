@@ -1,8 +1,10 @@
 from re import sub, compile
+from urllib.parse import urljoin, urlparse
+
 from flask import g, request, url_for, flash
 from wtforms.validators import DataRequired, InputRequired
 
-from flask_admin._compat import iteritems, pass_context, urljoin, urlparse
+from flask_admin._compat import iteritems, pass_context
 
 from ._compat import string_types
 
