@@ -21,20 +21,6 @@ from flask_admin._compat import string_types, urljoin
 
 try:
     from PIL import Image, ImageOps
-
-    # to support pillow < 9.1.0
-    if not hasattr(Image, 'Resampling'):
-        from enum import IntEnum
-
-        class Resampling(IntEnum):
-            NEAREST = 0
-            BOX = 4
-            BILINEAR = 2
-            HAMMING = 5
-            BICUBIC = 3
-            LANCZOS = 1
-
-        Image.Resampling = Resampling
 except ImportError:
     Image = None
     ImageOps = None
