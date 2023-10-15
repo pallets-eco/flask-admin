@@ -13,6 +13,7 @@
           width: 'resolve',
           minimumInputLength: $el.attr('data-minimum-input-length'),
           placeholder: 'data-placeholder',
+          separator: $el.attr('data-separator'),
           ajax: {
             url: $el.attr('data-url'),
             data: function(term, page) {
