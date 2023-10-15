@@ -106,7 +106,7 @@ class NestedRule(BaseRule):
         result = []
 
         for r in self.rules:
-            result.append(r(form, form_opts, field_args))
+            result.append(str(r(form, form_opts, field_args)))
 
         return Markup(self.separator.join(result))
 
