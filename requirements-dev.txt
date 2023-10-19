@@ -19,8 +19,6 @@ geoalchemy2
 psycopg2
 pytest
 pytest-cov
-coveralls
-pylint
 sqlalchemy-citext
 sqlalchemy-utils>=0.36.6
 azure-storage-blob
