@@ -2,9 +2,9 @@ Flask==1.1.1
 werkzeug==0.16.1
 sqlalchemy==1.4.18
 MarkupSafe==1.1.0
-jinja2==2.10.1
+jinja2==2.11.3
 Flask-SQLAlchemy==2.5.0
-peewee==3.7.0
+peewee==3.8.0
 wtf-peewee==3.0.0
 mongoengine==0.20.0
 pymongo==3.7.0
@@ -13,7 +13,7 @@ pillow==9.1.0
 flask-babelex==0.9.3
 shapely==1.5.9
 geoalchemy2==0.6.3
-psycopg2==2.8.4
+psycopg2==2.8.6
 sqlalchemy-citext==1.5-0
 sqlalchemy-utils==0.37.0
 azure-storage-blob==1.4.0
