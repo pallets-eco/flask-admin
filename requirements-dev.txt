@@ -25,3 +25,4 @@ wtforms==2.3.3
 itsdangerous<2.1.0
 # flask-babelex
 Babel<=2.9.1
+pytz
