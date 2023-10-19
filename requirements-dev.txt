@@ -1,4 +1,3 @@
-flake8
 Flask<2.0.0
 werkzeug<2.0.0
 sqlalchemy<2.0
@@ -15,8 +14,6 @@ flask-babelex
 shapely==1.5.9
 geoalchemy2
 psycopg2
-pytest
-pytest-cov
 sqlalchemy-citext
 sqlalchemy-utils>=0.36.6
 azure-storage-blob
