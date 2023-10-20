@@ -6,7 +6,7 @@ try:
     from flask_sqlalchemy.model import Model
 except ImportError:
     from flask_sqlalchemy import Model
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 
 def test_multiple_pk():
