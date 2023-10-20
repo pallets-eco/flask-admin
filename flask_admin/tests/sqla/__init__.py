@@ -3,13 +3,14 @@ from flask_admin import Admin
 from flask_sqlalchemy import SQLAlchemy
 
 
-def setup():
+def setup(*args, config={}):
     app = Flask(__name__)
     app.config['SECRET_KEY'] = '1'
     app.config['CSRF_ENABLED'] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'
     app.config['SQLALCHEMY_ECHO'] = True
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config.update(config)
 
     db = SQLAlchemy()
     db.init_app(app)
