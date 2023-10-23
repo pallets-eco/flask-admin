@@ -247,7 +247,7 @@ class InlineModelConverterBase(object):
 
 class FieldPlaceholder(object):
     """
-        Field placeholder for model convertors.
+        Field placeholder for model converters.
     """
     def __init__(self, field):
         self.field = field
