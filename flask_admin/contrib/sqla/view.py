@@ -370,7 +370,7 @@ class ModelView(BaseModelView):
         if model is None:
             model = self.model
 
-        return model._sa_class_manager.mapper.iterate_properties
+        return model._sa_class_manager.mapper.attrs
 
     def _apply_path_joins(self, query, joins, path, inner_join=True):
         """
