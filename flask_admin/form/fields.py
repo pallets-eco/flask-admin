@@ -119,13 +119,13 @@ class Select2Field(fields.SelectField):
 
     def iter_choices(self):
         if self.allow_blank:
-            yield (u'__None', self.blank_text, self.data is None)
+            yield (u'__None', self.blank_text, self.data is None, {})
 
         for choice in self.choices:
             if isinstance(choice, tuple):
-                yield (choice[0], choice[1], self.coerce(choice[0]) == self.data)
+                yield (choice[0], choice[1], self.coerce(choice[0]) == self.data, {})
             else:
-                yield (choice.value, choice.name, self.coerce(choice.value) == self.data)
+                yield (choice.value, choice.name, self.coerce(choice.value) == self.data, {})
 
     def process_data(self, value):
         if value is None:

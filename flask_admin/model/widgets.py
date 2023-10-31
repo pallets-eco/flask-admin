@@ -158,7 +158,7 @@ class XEditableWidget(object):
 
             choices = []
             selected_ids = []
-            for value, label, selected in field.iter_choices():
+            for value, label, selected, render_kw in field.iter_choices():
                 try:
                     label = text_type(label)
                 except TypeError:

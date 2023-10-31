@@ -20,7 +20,7 @@ class CheckboxListInput:
 
     def __call__(self, field, **kwargs):
         items = []
-        for val, label, selected in field.iter_choices():
+        for val, label, selected, render_kw in field.iter_choices():
             args = {
                 'id': val,
                 'name': field.name,

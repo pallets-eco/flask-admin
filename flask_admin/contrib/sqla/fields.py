@@ -95,10 +95,10 @@ class QuerySelectField(SelectFieldBase):
 
     def iter_choices(self):
         if self.allow_blank:
-            yield (u'__None', self.blank_text, self.data is None)
+            yield (u'__None', self.blank_text, self.data is None, {})
 
         for pk, obj in self._get_object_list():
-            yield (pk, self.get_label(obj), obj == self.data)
+            yield (pk, self.get_label(obj), obj == self.data, {})
 
     def process_formdata(self, valuelist):
         if valuelist:

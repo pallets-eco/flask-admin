@@ -27,4 +27,4 @@ azure-storage-blob
 arrow<0.14.0
 colour
 email-validator
-wtforms==2.3.3
+wtforms
