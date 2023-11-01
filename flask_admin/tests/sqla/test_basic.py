@@ -236,8 +236,8 @@ def test_model():
         model = db.session.query(Model1).first()
         assert model.test1 == u'test1large'
         assert model.test2 == u'test2'
-        assert model.test3 == u''
-        assert model.test4 == u''
+        assert model.test3 in ('', None)  # WTForms 2, WTForms 3
+        assert model.test4 in ('', None)  # WTForms 2, WTForms 3
         assert model.email_field == u'test@test.com'
         assert model.choice_field == u'choice-1'
         assert model.enum_field == u'model1_v1'
@@ -286,8 +286,8 @@ def test_model():
         model = db.session.query(Model1).first()
         assert model.test1 == 'test1small'
         assert model.test2 == 'test2large'
-        assert model.test3 == ''
-        assert model.test4 == ''
+        assert model.test3 in ('', None)  # WTForms 2, WTForms 3
+        assert model.test4 in ('', None)  # WTForms 2, WTForms 3
         assert model.email_field == u'test2@test.com'
         assert model.choice_field is None
         assert model.enum_field is None
