@@ -7,7 +7,10 @@ from flask_admin.form.fields import Select2Field, DateTimeField
 from flask_admin._compat import as_unicode
 from flask_admin._compat import iteritems
 from flask_admin.contrib.sqla import ModelView, filters, tools
-from flask_babelex import Babel
+try:
+    from flask_babelex import Babel
+except ImportError:
+    Babel = None
 
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import cast
@@ -2224,6 +2227,7 @@ def test_extra_field_order():
         assert pos2 > pos1
 
 
+@pytest.mark.skipif(Babel is None, reason="flask_babelex not installed")
 def test_modelview_localization():
     def test_locale(locale):
         try:
@@ -2258,6 +2262,7 @@ def test_modelview_localization():
         test_locale(locale)
 
 
+@pytest.mark.skipif(Babel is None, reason="flask_babelex not installed")
 def test_modelview_named_filter_localization():
     app, db, admin = setup()
 

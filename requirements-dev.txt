@@ -10,7 +10,6 @@ mongoengine
 pymongo
 flask-mongoengine
 pillow
-flask-babelex
 shapely
 geoalchemy2
 psycopg2
@@ -23,6 +22,3 @@ email-validator
 wtforms
 # flask
 itsdangerous
-# flask-babelex
-Babel<=2.9.1
-pytz

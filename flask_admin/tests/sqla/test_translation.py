@@ -1,5 +1,9 @@
 from flask_admin.babel import lazy_gettext
-from flask_babelex import Babel
+try:
+    from flask_babelex import Babel
+except ImportError:
+    import pytest
+    pytest.skip("flask_babelex not installed", allow_module_level=True)
 
 from . import setup
 from .test_basic import CustomModelView, create_models
