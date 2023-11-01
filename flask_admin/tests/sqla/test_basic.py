@@ -22,6 +22,9 @@ import uuid
 import enum
 import arrow
 
+import importlib.metadata
+WERKZEUG_NEW_URL_SAFE_CHARS = tuple(map(int, importlib.metadata.version("werkzeug").split("."))) > (2, 3)
+
 
 class CustomModelView(ModelView):
     def __init__(self, model, session,
@@ -2463,7 +2466,10 @@ def test_safe_redirect():
             expected = 'http://localhost' + expected
 
         assert rv.location.startswith(expected)
-        assert 'url=http%3A%2F%2Flocalhost%2Fadmin%2Fmodel2view%2F' in rv.location
+        if WERKZEUG_NEW_URL_SAFE_CHARS:
+            assert 'url=http://localhost/admin/model2view/' in rv.location
+        else:
+            assert 'url=http%3A%2F%2Flocalhost%2Fadmin%2Fmodel2view%2F' in rv.location
         assert 'id=1' in rv.location
 
         rv = client.post('/admin/model1/new/?url=http://google.com/evil/',
@@ -2472,7 +2478,10 @@ def test_safe_redirect():
 
         assert rv.status_code == 302
         assert rv.location.startswith(expected)
-        assert 'url=%2Fadmin%2Fmodel1%2F' in rv.location
+        if WERKZEUG_NEW_URL_SAFE_CHARS:
+            assert 'url=/admin/model1/' in rv.location
+        else:
+            assert 'url=%2Fadmin%2Fmodel1%2F' in rv.location
         assert 'id=2' in rv.location
 
 
