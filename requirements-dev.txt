@@ -20,3 +20,5 @@ email-validator
 wtforms
 # flask
 itsdangerous
+# sqlalchemy-utils
+Babel

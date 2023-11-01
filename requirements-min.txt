@@ -23,6 +23,7 @@ email-validator==1.1.2
 wtforms==2.2
 # flask
 itsdangerous==2.0.1
-# flask-babelex
+# flask-babelex, sqlalchemy-utils
 Babel==2.9.1
+# flask-babelex
 pytz
