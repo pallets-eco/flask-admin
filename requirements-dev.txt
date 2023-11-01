@@ -6,9 +6,7 @@ jinja2
 Flask-SQLAlchemy
 peewee
 wtf-peewee
-mongoengine
 pymongo
-flask-mongoengine
 pillow
 shapely
 geoalchemy2
