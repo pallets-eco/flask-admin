@@ -5,7 +5,7 @@ MarkupSafe
 jinja2
 Flask-SQLAlchemy
 peewee
-wtf-peewee
+wtf-peewee!=3.0.5
 pymongo
 pillow
 shapely
