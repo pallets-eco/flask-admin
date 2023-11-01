@@ -48,7 +48,7 @@ setup(
     version=grep('__version__'),
     url='https://github.com/flask-admin/flask-admin/',
     license='BSD',
-    python_requires='>=3.6',
+    python_requires='>=3.8',
     author=grep('__author__'),
     author_email=grep('__email__'),
     description='Simple and extensible admin interface framework for Flask',
@@ -81,12 +81,11 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ],
     test_suite='flask_admin.tests'
 )
