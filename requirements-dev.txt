@@ -1,28 +1,28 @@
-Flask<2.0.0
-werkzeug<2.0.0
-sqlalchemy<2.0
-MarkupSafe<2.1.0
-jinja2<=3.0.0
-Flask-SQLAlchemy<3.0.0
+Flask
+werkzeug
+sqlalchemy
+MarkupSafe
+jinja2
+Flask-SQLAlchemy
 peewee
 wtf-peewee
-mongoengine<=0.21.0
-pymongo>=3.7.0
-flask-mongoengine==0.8.2
-pillow>=3.3.2
+mongoengine
+pymongo
+flask-mongoengine
+pillow
 flask-babelex
-shapely==1.5.9
+shapely
 geoalchemy2
 psycopg2
 sqlalchemy-citext
-sqlalchemy-utils>=0.36.6
+sqlalchemy-utils
 azure-storage-blob<12
-arrow<0.14.0
+arrow
 colour
 email-validator
-wtforms==2.3.3
-# flask < 2
-itsdangerous<2.1.0
+wtforms
+# flask
+itsdangerous
 # flask-babelex
 Babel<=2.9.1
 pytz
