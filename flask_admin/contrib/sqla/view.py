@@ -1,10 +1,11 @@
 import logging
 import warnings
 import inspect
+from collections import defaultdict
 
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.base import manager_of_class, instance_state
-from sqlalchemy.orm import joinedload, aliased
+from sqlalchemy.orm import joinedload, aliased, load_only
 from sqlalchemy.sql.expression import desc
 from sqlalchemy import Boolean, Table, func, or_
 from sqlalchemy.exc import IntegrityError
@@ -1029,6 +1030,22 @@ class ModelView(BaseModelView):
 
         return query
 
+    def _get_select_related_field_map(self):
+        related_field_map = defaultdict(list)
+        column_field_path = [j[0].split('.') for j in self.get_list_columns()]
+
+        for related_field in self._auto_joins:
+            related_path = related_field.split('.')
+            for column_path in column_field_path:
+                if column_path[:-1] == related_path:
+                    related_field_map[related_field].append(column_path[-1])
+
+        for column_path in column_field_path:
+            if len(column_path) == 1:
+                related_field_map['.'].append(column_path[0])
+
+        return related_field_map
+
     def get_list(self, page, sort_column, sort_desc, search, filters,
                  execute=True, page_size=None):
         """
@@ -1085,9 +1102,11 @@ class ModelView(BaseModelView):
         # Calculate number of rows if necessary
         count = count_query.scalar() if count_query else None
 
+        related_field_map = self._get_select_related_field_map()
+        query = query.options(load_only(*related_field_map['.']))
         # Auto join
         for j in self._auto_joins:
-            query = query.options(joinedload(j))
+            query = query.options(joinedload(j).load_only(*related_field_map[j]))
 
         # Sorting
         query, joins = self._apply_sorting(query, joins, sort_column, sort_desc)
