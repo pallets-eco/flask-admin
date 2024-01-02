@@ -1,8 +1,9 @@
 import itertools
 
 from wtforms.validators import ValidationError
-from wtforms.fields import FieldList, FormField, SelectFieldBase
+from wtforms.fields import FieldList, FormField, SelectFieldBase, TextAreaField
 from wtforms.utils import unset_value
+from wtforms.widgets import Input
 
 from flask_admin._compat import iteritems
 from .widgets import (InlineFieldListWidget, InlineFormWidget,

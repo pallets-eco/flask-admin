@@ -158,3 +158,4 @@ export NVM_DIR="$HOME/.nvm"
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
+
