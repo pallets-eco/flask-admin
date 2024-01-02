@@ -1,18 +1,21 @@
 version: '3.7'
 services:
+
   redis:
     image: "redis:6.0-rc1-alpine"
     restart: unless-stopped
+    networks:
+      - timescale_dev_db_network
 
   flask_admin_dev:
-    volumes:
-      # Mount the root folder that contains .git and all my files
-      - ..:/home/user/workspace:cached
     build:
-      # context: where should docker-compose look for the Dockerfile?
+      # context: where should docker compose look for the Dockerfile?
       # i.e. either a path to a directory containing a Dockerfile, or a url to a git repository
       context: ..
       dockerfile: Dockerfile.dev
+      args:
+        secret=id: secret_envs,src=.env
+        INSTALL_PYTHON_VERSION: 3.8.15-slim-buster
     env_file:
       - ../.env
     environment:
@@ -21,9 +24,51 @@ services:
       BUILDKIT_INLINE_CACHE: 1
       FLASK_CONFIG: development
       FLASK_ENV: development
-    user: user
-    # Forwards port 0.0.0.0:5005 from the Docker host (e.g. Windows desktop) to the dev environment container's port 5000
+      # Just for database testing
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      OAUTHLIB_INSECURE_TRANSPORT: 1
+      # For Google changing scopes
+      # Indicates that it's OK for Google to return different OAuth scopes than requested
+      OAUTHLIB_RELAX_TOKEN_SCOPE: 1
+    # Forwards port 0.0.0.0:5002 from the Docker host (e.g. Windows desktop) to the dev environment container's port 5005
+    volumes:
+      # Mount the root folder that contains .git
+      # - ..:/home/user/workspace:cached
+      # - ..:/home/user/workspace
+      - ..:/workspace:cached
+      # # Windows home folder:
+      # - C:\Users\seanm\:/c_users_sean
+      # [Optional] For reusing Git SSH keys.
+      # - ~/.ssh:/root/.ssh-local:ro
     ports:
-      - 0.0.0.0:5005:5005
+      # Dev server running in VS Code uses 5005,
+      # and the site can be accessed from 5002 outside the container
+      - 0.0.0.0:5002:5005
+      # - 0.0.0.0:5005:5005
+      # - 0.0.0.0:85:85
+      # # npm start
+      # - 0.0.0.0:3001:3000
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
+    # command: /bin/sh -c "while sleep 1000; do :; done"
+    # links:
+    #   - container-2
+    networks:
+      - myijack-network
+      - timescale_dev_db_network
+
+networks:
+  myijack-network:
+    # driver: bridge
+    external:
+      name: myijack-network
+
+  # Just for development unit tests,
+  # so we don't use the main AWS RDS production database
+  timescale_dev_db_network:
+    external:
+      name: timescale_dev_db_network
+
+# volumes:
+#   timescale_dev_volume:
