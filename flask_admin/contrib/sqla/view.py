@@ -624,10 +624,10 @@ class ModelView(BaseModelView):
         for searchable in self.column_searchable_list:
             if isinstance(searchable, InstrumentedAttribute):
                 placeholders.append(
-                    self.column_labels.get(searchable.key, searchable.key))
+                    str(self.column_labels.get(searchable.key, searchable.key)))
             else:
                 placeholders.append(
-                    self.column_labels.get(searchable, searchable))
+                    str(self.column_labels.get(searchable, searchable)))
 
         return u', '.join(placeholders)
 
@@ -1116,7 +1116,7 @@ class ModelView(BaseModelView):
             :param id:
                 Model id
         """
-        return self.session.query(self.model).get(tools.iterdecode(id))
+        return self.session.get(self.model, tools.iterdecode(id))
 
     # Error handler
     def handle_view_exception(self, exc):

@@ -124,7 +124,7 @@ Using Flask-Security
 --------------------
 
 If you want a more polished solution, you could
-use `Flask-Security <https://pythonhosted.org/Flask-Security/>`_,
+use `Flask-Security <https://flask-security-too.readthedocs.io/>`_,
 which is a higher-level library. It comes with lots of built-in views for doing
 common things like user registration, login, email address confirmation, password resets, etc.
 

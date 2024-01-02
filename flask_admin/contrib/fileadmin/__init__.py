@@ -6,13 +6,14 @@ import platform
 import re
 import shutil
 from operator import itemgetter
+from urllib.parse import urljoin, quote
 
 from flask import flash, redirect, abort, request, send_file
 from werkzeug.utils import secure_filename
 from wtforms import fields, validators
 
 from flask_admin import form, helpers
-from flask_admin._compat import urljoin, as_unicode, quote
+from flask_admin._compat import as_unicode
 from flask_admin.base import BaseView, expose
 from flask_admin.actions import action, ActionsMixin
 from flask_admin.babel import gettext, lazy_gettext

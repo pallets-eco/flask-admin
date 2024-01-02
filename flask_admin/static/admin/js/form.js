@@ -13,6 +13,7 @@
           width: 'resolve',
           minimumInputLength: $el.attr('data-minimum-input-length'),
           placeholder: 'data-placeholder',
+          separator: $el.attr('data-separator'),
           ajax: {
             url: $el.attr('data-url'),
             data: function(term, page) {
@@ -157,20 +158,16 @@
         }
 
         // set up tiles
-        if($el.data('tile-layer-url')){
-          var attribution = $el.data('tile-layer-attribution') || ''
-          L.tileLayer('//'+$el.data('tile-layer-url'), {
-            attribution: attribution,
-            maxZoom: 18
-          }).addTo(map)
-        } else {
-          var mapboxUrl = 'https://api.mapbox.com/styles/v1/mapbox/'+window.MAPBOX_MAP_ID+'/tiles/{z}/{x}/{y}?access_token='+window.MAPBOX_ACCESS_TOKEN
-          L.tileLayer(mapboxUrl, {
-            attribution: 'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="//mapbox.com">Mapbox</a>',
-            maxZoom: 18
-          }).addTo(map);
-        }
-
+        var mapboxHostnameAndPath = $el.data('tile-layer-url') || 'api.mapbox.com/styles/v1/mapbox/'+window.MAPBOX_MAP_ID+'/tiles/{z}/{x}/{y}?access_token={accessToken}';
+        var attribution = $el.data('tile-layer-attribution') || 'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="//mapbox.com">Mapbox</a>';
+        L.tileLayer('//' + mapboxHostnameAndPath, {
+          // Attributes from https://docs.mapbox.com/help/troubleshooting/migrate-legacy-static-tiles-api/
+          attribution: attribution,
+          maxZoom: 18,
+          tileSize: 512,
+          zoomOffset: -1,
+          accessToken: window.MAPBOX_ACCESS_TOKEN
+        }).addTo(map);
 
         // everything below here is to set up editing, so if we're not editable,
         // we can just return early.
