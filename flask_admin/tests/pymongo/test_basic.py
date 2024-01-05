@@ -78,4 +78,4 @@ def test_model():
     url = '/admin/testview/delete/?id=%s' % model['_id']
     rv = client.post(url)
     assert rv.status_code == 302
-    assert db.test.count() == 0
+    assert db.test.estimated_document_count() == 0

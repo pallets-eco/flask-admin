@@ -2,23 +2,20 @@ import io
 import base64
 import os
 import os.path as op
+from urllib.parse import urljoin
 
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
 from wtforms import ValidationError, fields, __version__ as wtforms_version
+from wtforms.utils import unset_value
 from wtforms.widgets import html_params
-
-try:
-    from wtforms.fields.core import _unset_value as unset_value
-except ImportError:
-    from wtforms.utils import unset_value
 
 from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
 
 from flask_admin._backwards import Markup
-from flask_admin._compat import string_types, urljoin
+from flask_admin._compat import string_types
 
 
 try:
@@ -466,10 +463,10 @@ class ImageUploadField(FileUploadField):
 
         if image.size[0] > width or image.size[1] > height:
             if force:
-                return ImageOps.fit(self.image, (width, height), Image.ANTIALIAS)
+                return ImageOps.fit(self.image, (width, height), Image.Resampling.LANCZOS)
             else:
                 thumb = self.image.copy()
-                thumb.thumbnail((width, height), Image.ANTIALIAS)
+                thumb.thumbnail((width, height), Image.Resampling.LANCZOS)
                 return thumb
 
         return image

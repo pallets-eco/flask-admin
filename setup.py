@@ -1,7 +1,6 @@
 # Fix for older setuptools
 import re
 import os
-import sys
 
 from setuptools import setup, find_packages
 
@@ -20,6 +19,7 @@ def desc():
         return info + '\n\n' + read('doc/changelog.rst')
     except IOError:
         return info
+
 
 # grep flask_admin/__init__.py since python 3.x cannot import it before using 2to3
 file_text = read(fpath('flask_admin/__init__.py'))
@@ -61,7 +61,7 @@ setup(
     install_requires=install_requires,
     tests_require=[
         'pytest',
-        'pillow>=3.3.2',
+        'pillow>=9.1.0',
         'mongoengine',
         'pymongo',
         'wtf-peewee',
@@ -86,6 +86,7 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
     ],
     test_suite='flask_admin.tests'
 )

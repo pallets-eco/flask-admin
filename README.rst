@@ -52,7 +52,7 @@ To run the examples in your local environment::
   2. Create and activate a virtual environment::
 
         virtualenv env -p python3
-        source env/bin/activate
+        source env/Scripts/activate
 
   3. Install requirements::
 

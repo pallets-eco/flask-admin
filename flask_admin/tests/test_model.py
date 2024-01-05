@@ -1,11 +1,6 @@
-import wtforms
-
 from flask import Flask
 
-try:
-    from werkzeug.middleware.dispatcher import DispatcherMiddleware
-except ImportError:
-    from werkzeug.wsgi import DispatcherMiddleware
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from werkzeug.test import Client
 
 from wtforms import fields
@@ -14,14 +9,6 @@ from flask_admin import Admin, form
 from flask_admin._compat import iteritems, itervalues
 from flask_admin.model import base, filters
 from flask_admin.model.template import macro
-
-
-def wtforms2_and_up(func):
-    """Decorator for skipping test if wtforms <2
-    """
-    if int(wtforms.__version__[0]) < 2:
-        func.__test__ = False
-    return func
 
 
 class Model(object):
@@ -353,7 +340,6 @@ def test_form():
     pass
 
 
-@wtforms2_and_up
 def test_csrf():
     class SecureModelView(MockModelView):
         form_base_class = form.SecureForm
@@ -652,7 +638,7 @@ def test_export_csv():
         ",6\r\n" == data
 
     # test column_formatters_export and column_formatters_export
-    type_formatters = {type(None): lambda view, value: "null"}
+    type_formatters = {type(None): lambda view, value, name: "null"}
 
     view = MockModelView(
         Model, view_data, can_export=True, column_list=['col1', 'col2'],

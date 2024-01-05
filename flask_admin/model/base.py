@@ -4,6 +4,8 @@ import csv
 import mimetypes
 import time
 from math import ceil
+import inspect
+from collections import OrderedDict
 
 from werkzeug.utils import secure_filename
 
@@ -27,7 +29,7 @@ from flask_admin.helpers import (get_form_data, validate_form_on_submit,
                                  get_redirect_target, flash_errors)
 from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
-from flask_admin._compat import (iteritems, itervalues, OrderedDict,
+from flask_admin._compat import (iteritems, itervalues,
                                  as_unicode, csv_encode, text_type, pass_context)
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
@@ -963,8 +965,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Return list of the model field names. Must be implemented in
             the child class.
 
-            Expected return format is list of tuples with field name and
-            display text. For example::
+            Expected return format is list of strings of the field names. For example::
 
                 ['name', 'first_name', 'last_name']
         """
@@ -1495,7 +1496,7 @@ class BaseModelView(BaseView, ActionsMixin):
     def get_list(self, page, sort_field, sort_desc, search, filters,
                  page_size=None):
         """
-            Return a paginated and sorted list of models from the data source.
+            Return a tuple of a count of results and a paginated and sorted list of models from the data source.
 
             Must be implemented in the child class.
 
@@ -1846,7 +1847,18 @@ class BaseModelView(BaseView, ActionsMixin):
                 type_fmt = formatter
                 break
         if type_fmt is not None:
-            value = type_fmt(self, value)
+            try:
+                value = type_fmt(self, value, name)
+            except TypeError:
+                spec = inspect.getfullargspec(type_fmt)
+
+                if len(spec.args) == 2:
+                    warnings.warn(f'Please update your type formatter {type_fmt} to '
+                                  'include additional `name` parameter.')
+                else:
+                    raise
+
+                value = type_fmt(self, value)
 
         return value
 

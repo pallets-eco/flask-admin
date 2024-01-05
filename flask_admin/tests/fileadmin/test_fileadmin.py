@@ -1,3 +1,4 @@
+from io import StringIO
 import os
 import os.path as op
 import unittest
@@ -7,11 +8,6 @@ from flask_admin import Admin
 from flask import Flask
 
 from . import setup
-
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
 
 
 class Base:

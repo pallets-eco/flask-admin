@@ -1,4 +1,6 @@
-from flask_admin._compat import pass_context, string_types, reduce
+from functools import reduce
+
+from flask_admin._compat import pass_context, string_types
 from flask_admin.babel import gettext
 
 

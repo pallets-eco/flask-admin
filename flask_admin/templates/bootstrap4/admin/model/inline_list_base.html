@@ -3,7 +3,7 @@
     {# existing inline form fields #}
     <div class="inline-field-list">
         {% for subfield in field %}
-        <div id="{{ subfield.id }}" class="inline-field card card-body bg-light">
+        <div id="{{ subfield.id }}" class="inline-field card card-body bg-light mb-3">
             {%- if not check or check(subfield) %}
             <legend>
                 <small>
@@ -28,7 +28,7 @@
     {# template for new inline form fields #}
     <div class="inline-field-template hide">
         {% filter forceescape %}
-        <div class="inline-field card card-body bg-light">
+        <div class="inline-field card card-body bg-light mb-3">
             <legend>
                 <small>{{ _gettext('New') }} {{ field.label.text }}</small>
                 <div class="pull-right">

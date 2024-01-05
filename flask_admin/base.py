@@ -365,7 +365,10 @@ class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
             :param kwargs:
                 Arguments
         """
-        return fn(self, *args, **kwargs)
+        try:
+            return fn(self, *args, **kwargs)
+        except TypeError:
+            return fn(cls=self, **kwargs)
 
     def inaccessible_callback(self, name, **kwargs):
         """
