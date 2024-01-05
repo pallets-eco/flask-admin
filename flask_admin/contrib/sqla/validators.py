@@ -19,7 +19,7 @@ class Unique(object):
     :param message:
         The error message.
     """
-    field_flags = ('unique', )
+    field_flags = {'unique': True}
 
     def __init__(self, db_session, model, column, message=None):
         self.db_session = db_session
