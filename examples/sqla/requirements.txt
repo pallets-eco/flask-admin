@@ -1,7 +1,8 @@
 Flask
 Flask-Admin
-Flask-BabelEx
+Flask-Babel
 Flask-SQLAlchemy
+markupsafe
 tablib
 enum34; python_version < '3.0'
 sqlalchemy_utils
