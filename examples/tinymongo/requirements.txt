@@ -1,4 +1,4 @@
 Flask
 Flask-Admin
-pymongo==2.5.2
+pymongo==4.6.3
 git+https://github.com/schapman1974/tinymongo.git#egg=tinymongo
