@@ -288,7 +288,7 @@ class FilterConverter(filters.BaseFilterConverter):
     def conv_float(self, column, name):
         return [f(column, name) for f in self.float_filters]
 
-    @filters.convert('DateTimeField', 'ComplexDateTimeField')
+    @filters.convert('DateField', 'DateTimeField', 'ComplexDateTimeField')
     def conv_datetime(self, column, name):
         return [f(column, name) for f in self.datetime_filters]
 
