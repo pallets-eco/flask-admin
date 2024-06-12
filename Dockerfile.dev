@@ -1,7 +1,7 @@
 # FROM python:3.8-slim-buster
 # FROM python:3.11
 # FROM python:3.11-slim-bullseye
-FROM python:3.8.15-slim-buster
+FROM python:3.11.8-slim-bookworm
 # FROM node:7.8.0-alpine
 # FROM node:17.0-bullseye-slim
 # FROM node:17.0-buster-slim

@@ -15,7 +15,7 @@ services:
       dockerfile: Dockerfile.dev
       args:
         secret=id: secret_envs,src=.env
-        INSTALL_PYTHON_VERSION: 3.8.15-slim-buster
+        INSTALL_PYTHON_VERSION: 3.11.8-slim-bookworm
     env_file:
       - ../.env
     environment:
