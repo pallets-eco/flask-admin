@@ -1,11 +1,19 @@
 # Flask-Admin
 
 The project was recently moved into its own organization. Please update
-your references to *git@github.com:flask-admin/flask-admin.git*.
+your references to `git@github.com:pallets-eco/flask-admin.git`.
 
-[![image](https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.svg)](https://crowdin.com/project/flask-admin)
+[![image](https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.svg)](https://crowdin.com/project/flask-admin) [![image](https://github.com/pallets-eco/flask-admin/actions/workflows/test.yaml/badge.svg)](https://github.com/pallets-eco/flask-admin/actions/workflows/test.yaml)
 
-[![image](https://github.com/flask-admin/flask-admin/actions/workflows/test.yaml/badge.svg)](https://github.com/flask-admin/flask-admin/actions/workflows/test.yaml)
+## Pallets Community Ecosystem
+
+> [!IMPORTANT]\
+> This project is part of the Pallets Community Ecosystem. Pallets is the open
+> source organization that maintains Flask; Pallets-Eco enables community
+> maintenance of related projects. If you are interested in helping maintain
+> this project, please reach out on [the Pallets Discord server][discord].
+
+[discord]: https://discord.gg/pallets
 
 ## Introduction
 
@@ -45,7 +53,7 @@ To run the examples in your local environment:
 
     1. Clone the repository::
 
-          git clone https://github.com/flask-admin/flask-admin.git
+          git clone https://github.com/pallets-eco/flask-admin.git
           cd flask-admin
 
     2. Create and activate a virtual environment::
@@ -87,7 +95,7 @@ To install Flask-Admin, simply:
 Or alternatively, you can download the repository and install manually
 by doing:
 
-    git clone git@github.com:flask-admin/flask-admin.git
+    git clone git@github.com:pallets-eco/flask-admin.git
     cd flask-admin
     python setup.py install
 

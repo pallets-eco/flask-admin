@@ -14,7 +14,7 @@ def read(fname):
 
 
 def desc():
-    info = read('README.rst')
+    info = read('README.md')
     try:
         return info + '\n\n' + read('doc/changelog.rst')
     except IOError:
@@ -53,6 +53,7 @@ setup(
     author_email=grep('__email__'),
     description='Simple and extensible admin interface framework for Flask',
     long_description=desc(),
+    long_description_content_type='text/markdown',
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
