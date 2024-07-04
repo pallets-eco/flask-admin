@@ -1,0 +1,84 @@
+[project]
+name = "Flask-DebugToolbar"
+version = "0.16.0.dev"
+description = "A toolbar overlay for debugging Flask applications."
+readme = "README.md"
+license = { file = "LICENSE.txt" }
+author = [{ name = "Michael van Tellingen" }]
+maintainers = [{ name = "Pallets Ecosystem", email = "contact@palletsprojects.com" }]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: Flask",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Typing :: Typed",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "flask>=2.3.0",
+]
+
+[project.urls]
+Documentation = "https://flask-debugtoolbar.readthedocs.io"
+Changes = "https://github.com/pallets-eco/flask-debugtoolbar/releases/"
+Source = "https://github.com/pallets-eco/flask-debugtoolbar/"
+Chat = "https://discord.gg/pallets"
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "flask_debugtoolbar"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = [
+    "error",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["flask_debugtoolbar", "tests"]
+
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
+[tool.mypy]
+python_version = "3.8"
+files = ["src/flask_debugtoolbar", "tests"]
+show_error_codes = true
+pretty = true
+strict = true
+
+[[tool.mypy.overrides]]
+module = [
+    "sqlparse.*"
+]
+ignore_missing_imports = true
+
+[tool.pyright]
+pythonVersion = "3.8"
+include = ["src/flask_debugtoolbar", "tests"]
+typeCheckingMode = "basic"
+
+[tool.ruff]
+src = ["src"]
+fix = true
+show-fixes = true
+output-format = "full"
+
+[tool.ruff.lint]
+select = [
+    "B",  # flake8-bugbear
+    "E",  # pycodestyle error
+    "F",  # pyflakes
+    "I",  # isort
+    "UP",  # pyupgrade
+    "W",  # pycodestyle warning
+]
+ignore-init-module-imports = true
+
+[tool.ruff.lint.isort]
+force-single-line = true
+order-by-type = false
