@@ -1,10 +1,10 @@
 ---
 name: Bug report
-about: Report a bug in Flask-DebugToolbar (not other projects which depend on Flask-DebugToolbar)
+about: Report a bug in Flask-Admin (not other projects which depend on Flask-Admin)
 ---
 
 <!--
-This issue tracker is a tool to address bugs in Flask-DebugToolbar itself.
+This issue tracker is a tool to address bugs in Flask-Admin itself.
 Please use GitHub Discussions or the Pallets Discord for questions about your
 own code.
 
@@ -25,5 +25,5 @@ Describe the expected behavior that should have happened but didn't.
 Environment:
 
 - Python version:
-- Flask-DebugToolbar version:
 - Flask version:
+- Flask-Admin version:

@@ -1,27 +1,36 @@
 [project]
-name = "Flask-DebugToolbar"
-version = "0.16.0.dev"
-description = "A toolbar overlay for debugging Flask applications."
+name = "Flask-Admin"
+version = "1.6.1"
+description = "Simple and extensible admin interface framework for Flask"
 readme = "README.md"
 license = { file = "LICENSE.txt" }
-author = [{ name = "Michael van Tellingen" }]
+author = [{ name = "Flask-Admin team" }]
 maintainers = [{ name = "Pallets Ecosystem", email = "contact@palletsprojects.com" }]
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Framework :: Flask",
-    "License :: OSI Approved :: BSD License",
-    "Programming Language :: Python",
-    "Typing :: Typed",
+    'Development Status :: 4 - Beta',
+    'Environment :: Web Environment',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: BSD License',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.6"
 dependencies = [
-    "flask>=2.3.0",
+    "flask>=0.7",
+    "wtforms"
 ]
 
 [project.urls]
-Documentation = "https://flask-debugtoolbar.readthedocs.io"
-Changes = "https://github.com/pallets-eco/flask-debugtoolbar/releases/"
-Source = "https://github.com/pallets-eco/flask-debugtoolbar/"
+Documentation = "https://flask-admin.readthedocs.io"
+Changes = "https://github.com/pallets-eco/flask-admin/releases/"
+Source = "https://github.com/pallets-eco/flask-admin/"
 Chat = "https://discord.gg/pallets"
 
 [build-system]
@@ -29,7 +38,7 @@ requires = ["flit_core<4"]
 build-backend = "flit_core.buildapi"
 
 [tool.flit.module]
-name = "flask_debugtoolbar"
+name = "flask_admin"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -39,14 +48,14 @@ filterwarnings = [
 
 [tool.coverage.run]
 branch = true
-source = ["flask_debugtoolbar", "tests"]
+source = ["flask_admin", "tests"]
 
 [tool.coverage.paths]
-source = ["src", "*/site-packages"]
+source = ["flask_admin", "*/site-packages"]
 
 [tool.mypy]
-python_version = "3.8"
-files = ["src/flask_debugtoolbar", "tests"]
+python_version = "3.6"
+files = ["flask_admin", "tests"]
 show_error_codes = true
 pretty = true
 strict = true
@@ -58,12 +67,12 @@ module = [
 ignore_missing_imports = true
 
 [tool.pyright]
-pythonVersion = "3.8"
-include = ["src/flask_debugtoolbar", "tests"]
+pythonVersion = "3.6"
+include = ["flask_admin", "tests"]
 typeCheckingMode = "basic"
 
 [tool.ruff]
-src = ["src"]
+src = ["flask_admin"]
 fix = true
 show-fixes = true
 output-format = "full"

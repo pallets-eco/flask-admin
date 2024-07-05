@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Questions on Discussions
-    url: https://github.com/pallets-eco/flask-debugtoolbar/discussions/
+    url: https://github.com/pallets-eco/flask-admin/discussions/
     about: Ask questions about your own code on the Discussions tab.
   - name: Questions on Chat
     url: https://discord.gg/pallets

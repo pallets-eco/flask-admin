@@ -10,12 +10,7 @@ repos:
     rev: v4.6.0
     hooks:
       - id: check-merge-conflict
-        exclude: "(codemirror|jquery)"
       - id: debug-statements
-        exclude: "(codemirror|jquery)"
       - id: fix-byte-order-marker
-        exclude: "(codemirror|jquery)"
       - id: trailing-whitespace
-        exclude: "(codemirror|jquery)"
       - id: end-of-file-fixer
-        exclude: "(codemirror|jquery)"
