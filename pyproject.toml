@@ -44,6 +44,11 @@ name = "flask_admin"
 testpaths = ["tests"]
 filterwarnings = [
     "error",
+    # TODO: remove the ignored deprecation warning when support for WTForms 3 has been added.
+    "ignore:Flags should be stored in dicts and not in tuples. The next version of WTForms will abandon support for flags in tuples.:DeprecationWarning",
+    "ignore:'HTMLString' will be removed in WTForms 3.0. Use 'markupsafe.Markup' instead.:DeprecationWarning",
+    # TODO: remove when we drop Python 3.7 support
+    "ignore:pkg_resources is deprecated as an API:DeprecationWarning",
 ]
 
 [tool.coverage.run]
@@ -55,7 +60,7 @@ source = ["flask_admin", "*/site-packages"]
 
 [tool.mypy]
 python_version = "3.6"
-files = ["flask_admin", "tests"]
+files = ["flask_admin"]
 show_error_codes = true
 pretty = true
 strict = true

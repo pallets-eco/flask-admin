@@ -1,3 +1,5 @@
+import pytest
+
 from flask_admin._compat import as_unicode
 
 import peewee
@@ -174,6 +176,7 @@ def test_model():
     assert Model1.select().count() == 0
 
 
+# @pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_column_editable_list():
     app, db, admin = setup()
 

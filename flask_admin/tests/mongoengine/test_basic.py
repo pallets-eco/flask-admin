@@ -1,3 +1,4 @@
+import pytest
 from wtforms import fields, validators
 
 from flask_admin import form

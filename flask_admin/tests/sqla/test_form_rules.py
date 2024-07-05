@@ -1,9 +1,12 @@
+import pytest
+
 from . import setup
 from .test_basic import CustomModelView, create_models
 
 from flask_admin.form import rules
 
 
+@pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
 def test_form_rules():
     app, db, admin = setup()
 
@@ -30,6 +33,7 @@ def test_form_rules():
         assert pos3 == -1
 
 
+@pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
 def test_rule_macro():
     app, db, admin = setup()
 
@@ -53,6 +57,7 @@ def test_rule_macro():
         assert 'Hello another_test' in data
 
 
+@pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
 def test_rule_container():
     app, db, admin = setup()
 
@@ -80,6 +85,7 @@ def test_rule_container():
         assert pos1 < pos2 < pos3
 
 
+@pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
 def test_rule_header():
     app, db, admin = setup()
     with app.app_context():
@@ -99,6 +105,7 @@ def test_rule_header():
         assert '<h3>hello</h3>' in data
 
 
+@pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
 def test_rule_field_set():
     app, db, admin = setup()
     with app.app_context():
@@ -125,6 +132,7 @@ def test_rule_field_set():
         assert pos3 == -1
 
 
+@pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
 def test_rule_inlinefieldlist():
     app, db, admin = setup()
     with app.app_context():

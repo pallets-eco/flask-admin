@@ -1,5 +1,5 @@
 flake8
-werkzeug<2.0.0
+werkzeug
 sqlalchemy<2.0
 itsdangerous<2.1.0
 MarkupSafe<2.1.0

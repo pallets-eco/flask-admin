@@ -105,8 +105,7 @@ Test are run with *pytest*. If you are not familiar with this package
 you can get some more info from [their website](https://pytest.org/).
 
 To run the tests, from the project directory, simply:
-
-    pip install -r requirements-dev.txt
+    pip install --use-pep517 -r requirements/dev.txt
     pytest
 
 You should see output similar to:
