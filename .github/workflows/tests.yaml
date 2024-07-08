@@ -50,7 +50,7 @@ jobs:
         ports:
           - 10000:10000
     steps:
-      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
         with:
           python-version: ${{ matrix.python }}
@@ -62,7 +62,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgeos-c1v5
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up PostgreSQL hstore module
         env:
           PGPASSWORD: postgres
@@ -77,7 +77,7 @@ jobs:
       matrix:
         tox: ['docs', 'typing']
     steps:
-      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
         with:
           python-version: '3.x'
