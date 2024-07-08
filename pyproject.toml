@@ -1,0 +1,98 @@
+[project]
+name = "Flask-Admin"
+version = "1.6.1"
+description = "Simple and extensible admin interface framework for Flask"
+readme = "README.md"
+license = { file = "LICENSE.txt" }
+author = [{ name = "Flask-Admin team" }]
+maintainers = [{ name = "Pallets Ecosystem", email = "contact@palletsprojects.com" }]
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Environment :: Web Environment',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: BSD License',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+]
+requires-python = ">=3.6"
+dependencies = [
+    "flask>=0.7",
+    "wtforms"
+]
+
+[project.urls]
+Documentation = "https://flask-admin.readthedocs.io"
+Changes = "https://github.com/pallets-eco/flask-admin/releases/"
+Source = "https://github.com/pallets-eco/flask-admin/"
+Chat = "https://discord.gg/pallets"
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "flask_admin"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = [
+    "error",
+    # TODO: remove the ignored deprecation warning when support for WTForms 3 has been added.
+    "ignore:Flags should be stored in dicts and not in tuples. The next version of WTForms will abandon support for flags in tuples.:DeprecationWarning",
+    "ignore:'HTMLString' will be removed in WTForms 3.0. Use 'markupsafe.Markup' instead.:DeprecationWarning",
+    # TODO: remove when we drop Python 3.7 support
+    "ignore:pkg_resources is deprecated as an API:DeprecationWarning",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["flask_admin", "tests"]
+
+[tool.coverage.paths]
+source = ["flask_admin", "*/site-packages"]
+
+[tool.mypy]
+python_version = "3.6"
+files = ["flask_admin"]
+show_error_codes = true
+pretty = true
+strict = true
+
+[[tool.mypy.overrides]]
+module = [
+    "sqlparse.*"
+]
+ignore_missing_imports = true
+
+[tool.pyright]
+pythonVersion = "3.6"
+include = ["flask_admin", "tests"]
+typeCheckingMode = "basic"
+
+[tool.ruff]
+src = ["flask_admin"]
+fix = true
+show-fixes = true
+output-format = "full"
+
+[tool.ruff.lint]
+select = [
+    "B",  # flake8-bugbear
+    "E",  # pycodestyle error
+    "F",  # pyflakes
+    "I",  # isort
+    "UP",  # pyupgrade
+    "W",  # pycodestyle warning
+]
+ignore-init-module-imports = true
+
+[tool.ruff.lint.isort]
+force-single-line = true
+order-by-type = false

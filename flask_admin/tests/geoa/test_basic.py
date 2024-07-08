@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 import json
 import re
 
+import pytest
 
 from flask_admin.contrib.geoa import ModelView
 from flask_admin.contrib.geoa.fields import GeoJSONField
@@ -26,6 +27,7 @@ def create_models(db):
     return GeoModel
 
 
+@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_model():
     app, db, admin = setup()
     GeoModel = create_models(db)

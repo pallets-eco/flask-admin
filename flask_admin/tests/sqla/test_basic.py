@@ -155,6 +155,7 @@ def fill_db(db, Model1, Model2):
     db.session.commit()
 
 
+@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_model():
     app, db, admin = setup()
 
@@ -485,6 +486,7 @@ def test_extra_args_filter():
         assert '<input type="hidden" name="foo" value="bar">' in data
 
 
+@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_complex_searchable_list():
     app, db, admin = setup()
 
@@ -521,6 +523,7 @@ def test_complex_searchable_list():
         assert 'model1-test2-val' not in data
 
 
+@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_complex_searchable_list_missing_children():
     app, db, admin = setup()
 
@@ -542,6 +545,7 @@ def test_complex_searchable_list_missing_children():
         assert 'magic string' in data
 
 
+@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_column_editable_list():
     app, db, admin = setup()
 
@@ -705,6 +709,7 @@ def test_editable_list_special_pks():
         assert 'change-success-1' in data
 
 
+@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_column_filters():
     app, db, admin = setup()
 
@@ -1698,6 +1703,7 @@ def test_hybrid_property_nested():
         assert 'Jim Smith' in data
 
 
+@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_url_args():
     app, db, admin = setup()
 

@@ -217,6 +217,8 @@ def test_baseview_urls():
     assert len(view._urls) == 2
 
 
+#
+@pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
 def test_add_views():
     app = Flask(__name__)
     admin = base.Admin(app)
@@ -426,6 +428,7 @@ def test_root_mount():
     # test static files when url='/'
     with app.test_request_context('/'):
         rv = client.get(url_for('admin.static', filename='bootstrap/bootstrap2/css/bootstrap.css'))
+        rv.close()
     assert rv.status_code == 200
 
 

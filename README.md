@@ -97,7 +97,7 @@ by doing:
 
     git clone git@github.com:pallets-eco/flask-admin.git
     cd flask-admin
-    python setup.py install
+    pip install .
 
 ## Tests
 
@@ -105,8 +105,7 @@ Test are run with *pytest*. If you are not familiar with this package
 you can get some more info from [their website](https://pytest.org/).
 
 To run the tests, from the project directory, simply:
-
-    pip install -r requirements-dev.txt
+    pip install --use-pep517 -r requirements/dev.txt
     pytest
 
 You should see output similar to:
@@ -117,8 +116,11 @@ You should see output similar to:
 
     OK
 
-For all the tests to pass successfully, you\'ll need Postgres & MongoDB
-to be running locally. For Postgres:
+*NOTE*: For all the tests to pass successfully, you\'ll need Postgres (with
+the postgis and hstore extension) & MongoDB to be running locally. You'll
+also need libgeos available.
+
+For Postgres:
 
     > psql postgres
     CREATE DATABASE flask_admin_test;
@@ -130,8 +132,10 @@ to be running locally. For Postgres:
 
 If you\'re using Homebrew on MacOS, you might need this:
 
-    # install postgis
+    # install postgis and geos
     > brew install postgis
+    > brew install geos
+    > export DYLD_LIBRARY_PATH=/opt/homebrew/opt/geos/lib/
 
     # set up postgresql user
     > createuser -s postgresql
