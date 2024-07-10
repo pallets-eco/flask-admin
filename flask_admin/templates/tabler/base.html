@@ -1,0 +1,159 @@
+{% import "admin/layout.html" as layout with context -%}
+{% import "admin/static.html" as admin_static with context %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}{% if admin_view.category %}{{ admin_view.category }} - {% endif %}{{ admin_view.name }} - {{ admin_view.admin.name }}{% endblock %}</title>
+        {% block head_meta %}
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="description" content="">
+            <meta name="author" content="">
+        {% endblock head_meta %}
+        {% block head_css %}
+            <link href="{{ admin_static.tabler_url(filename='vendor/tabler/css/tabler.min.css') }}"
+                  rel="stylesheet">
+            <link href="{{ admin_static.tabler_url(filename='vendor/fontawesome/css/fontawesome.min.css') }}"
+                  rel="stylesheet">
+            <link href="{{ admin_static.tabler_url(filename='vendor/fontawesome/css/solid.min.css') }}"
+                  rel="stylesheet">
+            {% if admin_view.extra_css %}
+                {% for css_url in admin_view.extra_css %}<link href="{{ css_url }}" rel="stylesheet">{% endfor %}
+            {% endif %}
+            <style>
+                .hide {
+                    display: none;
+                }
+            </style>
+        {% endblock head_css %}
+        {% block head %}
+        {% endblock head %}
+        {% block head_tail %}
+        {% endblock head_tail %}
+    </head>
+    <body>
+        {% block page_body %}
+            <div class="page">
+                {% block sidebar %}
+                    <aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark">
+                        <div class="container-fluid">
+                            {% block sidebar_header %}
+                                <button class="navbar-toggler"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#sidebar-menu"
+                                    aria-expanded="true"
+                                    aria-controls="sidebar-menu"
+                                    aria-label="_gettext("Toggle navigation")"">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                                <h1 class="navbar-brand navbar-brand-autodark">
+                                    <a class="brand-link" href="{{ admin_view.admin.url }}">
+                                        <h3>{{ admin_view.admin.name }}</h3>
+                                    </a>
+                                </h1>
+                            {% endblock sidebar_header %}
+                            <div class="navbar-collapse collapse show" id="sidebar-menu">
+                                {% block sidebar_body %}
+                                    <ul class="navbar-nav pt-lg-3">
+                                        {% block main_menu %}
+                                            {{ layout.menu() }}
+                                        {% endblock main_menu %}
+                                        {% block menu_links %}
+                                            {{ layout.menu_links() }}
+                                        {% endblock menu_links %}
+                                    </ul>
+                                {% endblock sidebar_body %}
+                                {% block sidebar_footer %}
+                                {% endblock sidebar_footer %}
+                            </div>
+                        </div>
+                    </aside>
+                {% endblock sidebar %}
+                {% block navbar %}
+                    <header class="navbar navbar-expand-md d-none d-lg-flex d-print-none">
+                        <div class="container-fluid">
+                            <button class="navbar-toggler"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#navbar-menu"
+                                    aria-controls="navbar-menu"
+                                    aria-expanded="false"
+                                    aria-label="{{ _gettext("Toggle navigation") }}">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+                            <div class="navbar-nav flex-row order-md-last">
+                                <div class="d-none d-md-flex">
+                                    {% block theme_switcher %}
+                                        <a href="?theme=dark"
+                                           class="nav-link px-0 hide-theme-dark"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="bottom"
+                                           aria-label="{{ _gettext("Enable dark mode") }}"
+                                           data-bs-original-title="{{ _gettext("Enable dark mode") }}">
+                                            <i class="fa-solid fa-moon"></i>
+                                        </a>
+                                        <a href="?theme=light"
+                                           class="nav-link px-0 hide-theme-light"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="bottom"
+                                           aria-label="{{ _gettext("Enable light mode") }}"
+                                           data-bs-original-title="{{ _gettext("Enable light mode") }}">
+                                            <i class="fa-solid fa-sun"></i>
+                                        </a>
+                                    {% endblock theme_switcher %}
+                                    {% block navbar_control %}
+                                    {% endblock navbar_control %}
+                                    {% block access_control %}
+                                    {% endblock access_control %}
+                                </div>
+                            </div>
+                            <div class="collapse navbar-collapse" id="navbar-menu"></div>
+                        </div>
+                    </header>
+                {% endblock navbar %}
+                <div class="page-wrapper">
+                    <div class="container-fluid">
+                        <div class="page-header d-print-none">
+                            {% block header %}
+                            {% endblock header %}
+                        </div>
+                    </div>
+                    <div class="page-body flex-grow-1">
+                        <div class="container-fluid">
+                            <div class="row row-deck row-cards" id="body">
+                                {% block messages %}
+                                    {{ layout.messages() }}
+                                {% endblock messages %}
+                                {# store the jinja2 context for form_rules rendering logic #}
+                                {% set render_ctx = h.resolve_ctx() %}
+                                {% block body %}
+                                {% endblock body %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endblock page_body %}
+        {% block tail_js %}
+            <script src="{{ admin_static.tabler_url(filename='vendor/tabler/js/tabler.min.js') }}"
+                    type="text/javascript"></script>
+            <script src="{{ admin_static.tabler_url(filename='vendor/tabler/js/demo-theme.js') }}"
+                    type="text/javascript"></script>
+            <script src="{{ admin_static.url(filename='vendor/jquery.min.js', v='3.5.1') }}"
+                    type="text/javascript"></script>
+            <script src="{{ admin_static.url(filename='vendor/select2/select2.min.js', v='4.2.1') }}"
+                    type="text/javascript"></script>
+            <script src="{{ admin_static.url(filename='vendor/moment.min.js', v='2.9.4') }}"
+                    type="text/javascript"></script>
+            <script src="{{ admin_static.url(filename='admin/js/helpers.js', v='1.0.0') }}"
+                    type="text/javascript"></script>
+            {% if admin_view.extra_js %}
+                {% for js_url in admin_view.extra_js %}<script src="{{ js_url }}" type="text/javascript"></script>{% endfor %}
+            {% endif %}
+        {% endblock tail_js %}
+        {% block tail %}
+        {% endblock tail %}
+    </body>
+</html>

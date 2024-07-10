@@ -1,0 +1,38 @@
+{% extends "admin/master.html" %}
+{% import "admin/lib.html" as lib with context %}
+{% import "admin/static.html" as admin_static with context %}
+{% block head %}
+    {{ super() }}
+    <link href="{{ admin_static.url(filename='admin/css/bootstrap4/rediscli.css', v='1.0.0') }}"
+          rel="stylesheet">
+{% endblock head %}
+{% block header %}
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">{{ admin_view.category if admin_view.category else _gettext("Admin") }}</div>
+            <h2 class="page-title">{{ admin_view.name }}</h2>
+        </div>
+    </div>
+{% endblock header %}
+{% block body %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ admin_view.name }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="console">
+                <div class="console-container"></div>
+                <div class="console-line mb-4">
+                    <form action="#">
+                        <input type="text">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
+{% block tail %}
+    {{ super() }}
+    <div id="execute-view-data" style="display:none;">{{ admin_view.get_url(".execute_view") |tojson|safe }}</div>
+    <script src="{{ admin_static.url(filename='admin/js/rediscli.js', v='1.0.0') }}"></script>
+{% endblock tail %}
