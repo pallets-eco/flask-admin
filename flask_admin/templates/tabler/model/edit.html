@@ -1,0 +1,73 @@
+{% extends "admin/master.html" %}
+{% import "admin/lib.html" as lib with context %}
+{% from 'admin/lib.html' import extra with context %} {# backward compatible #}
+{% block head %}
+    {{ super() }}
+    {{ lib.form_css() }}
+{% endblock head %}
+{% block header %}
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">{{ admin_view.category if admin_view.category else _gettext("Admin") }}</div>
+            <h2 class="page-title">{{ admin_view.name }}</h2>
+        </div>
+    </div>
+{% endblock header %}
+{% block body %}
+    <div class="card">
+        <div class="card-header">
+            {% block navlinks %}
+                <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
+                    <li class="nav-item">
+                        <a href="{{ return_url }}" class="nav-link">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <i class="fa fa-list"></i>
+                            </span>
+                            {{ _gettext("List") }}
+                        </a>
+                    </li>
+                    {% if admin_view.can_create %}
+                        <li class="nav-item">
+                            <a href="{{ get_url('.create_view', url=return_url) }}"
+                               title="{{ _gettext("Create New Record") }}"
+                               class="nav-link">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                    <i class="fa fa-plus"></i>
+                                </span>
+                                {{ _gettext("Create") }}
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a href="javascript:void(0)" class="nav-link active disabled">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <i class="fa fa-edit"></i>
+                            </span>
+                            {{ _gettext("Edit") }}
+                        </a>
+                    </li>
+                    {% if admin_view.can_view_details %}
+                        <li class="nav-item">
+                            <a href="{{ get_url('.details_view', id=request.args.get('id') , url=return_url) }}"
+                               class="nav-link">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                    <i class="fa fa-edit"></i>
+                                </span>
+                                {{ _gettext("Details") }}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            {% endblock navlinks %}
+        </div>
+        <div class="card-body">
+            {% block edit_form %}
+                {{ lib.render_form(form, return_url, extra() , form_opts) }}
+            {% endblock edit_form %}
+        </div>
+    </div>
+{% endblock body %}
+{% block tail %}
+    {{ super() }}
+    {{ lib.form_js() }}
+{% endblock tail %}
