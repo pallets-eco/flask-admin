@@ -262,13 +262,14 @@ class InlineModelConverter(InlineModelConverterBase):
         child_form = info.get_form()
 
         if child_form is None:
-            child_form = model_form(info.model,
+            child_form = get_form(info.model,
                                     base_class=form.BaseForm,
                                     only=info.form_columns,
                                     exclude=exclude,
                                     field_args=info.form_args,
                                     allow_pk=True,
-                                    converter=converter)
+                                    converter=converter,
+                                    extra_fields=info.form_extra_fields)
 
         try:
             prop_name = reverse_field.related_name
