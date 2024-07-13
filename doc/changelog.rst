@@ -1,6 +1,20 @@
 Changelog
 =========
 
+1.6.1
+-----
+
+* SQLAlchemy 2.x support
+* General updates and bug fixes
+* Dropped WTForms 1 support
+
+1.6.0
+-----
+
+* Dropped Python 2 support
+* WTForms 3.0 support
+* Various fixes
+
 1.5.8
 -----
 

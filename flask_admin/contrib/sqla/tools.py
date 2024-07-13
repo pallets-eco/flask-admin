@@ -8,7 +8,12 @@ except ImportError:
     # If 1.4/2.0 module import fails, fall back to <1.3.x architecture.
     from sqlalchemy.ext.declarative.clsregistry import _class_resolver
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
+try:
+    # Attempt ASSOCATION_PROXY import from pre-2.0 release
+    from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
+except ImportError:
+    from sqlalchemy.ext.associationproxy import AssociationProxyExtensionType
+    ASSOCIATION_PROXY = AssociationProxyExtensionType.ASSOCIATION_PROXY
 from sqlalchemy.sql.operators import eq
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute

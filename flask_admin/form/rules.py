@@ -1,4 +1,4 @@
-from jinja2 import Markup
+from markupsafe import Markup
 
 from flask_admin._compat import string_types
 from flask_admin import helpers
@@ -106,7 +106,7 @@ class NestedRule(BaseRule):
         result = []
 
         for r in self.rules:
-            result.append(r(form, form_opts, field_args))
+            result.append(str(r(form, form_opts, field_args)))
 
         return Markup(self.separator.join(result))
 

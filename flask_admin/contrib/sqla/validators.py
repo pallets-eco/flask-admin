@@ -1,10 +1,9 @@
 from sqlalchemy.orm.exc import NoResultFound
 
 from wtforms import ValidationError
-try:
-    from wtforms.validators import InputRequired
-except ImportError:
-    from wtforms.validators import Required as InputRequired
+from wtforms.validators import InputRequired
+
+from flask_admin._compat import filter_list
 
 
 class Unique(object):
@@ -55,7 +54,8 @@ class ItemsRequired(InputRequired):
         self.min = min
 
     def __call__(self, form, field):
-        if len(field.data) < self.min:
+        items = filter_list(lambda e: not field.should_delete(e), field.entries)
+        if len(items) < self.min:
             if self.message is None:
                 message = field.ngettext(
                     u"At least %(num)d item is required",

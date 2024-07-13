@@ -3,13 +3,11 @@
 """
 import operator
 
-from wtforms.fields import SelectFieldBase, StringField
-from wtforms.validators import ValidationError
+from sqlalchemy.orm.util import identity_key
 
-try:
-    from wtforms.fields import _unset_value as unset_value
-except ImportError:
-    from wtforms.utils import unset_value
+from wtforms.fields import SelectFieldBase, StringField
+from wtforms.utils import unset_value
+from wtforms.validators import ValidationError
 
 from .tools import get_primary_key
 from flask_admin._compat import text_type, string_types, iteritems
@@ -17,12 +15,6 @@ from flask_admin.contrib.sqla.widgets import CheckboxListInput
 from flask_admin.form import FormOpts, BaseForm, Select2Widget
 from flask_admin.model.fields import InlineFieldList, InlineModelFormField
 from flask_admin.babel import lazy_gettext
-
-try:
-    from sqlalchemy.orm.util import identity_key
-    has_identity_key = True
-except ImportError:
-    has_identity_key = False
 
 
 class QuerySelectField(SelectFieldBase):
@@ -64,8 +56,6 @@ class QuerySelectField(SelectFieldBase):
         self.query_factory = query_factory
 
         if get_pk is None:
-            if not has_identity_key:
-                raise Exception(u'The sqlalchemy identity_key function could not be imported.')
             self.get_pk = get_pk_from_identity
         else:
             self.get_pk = get_pk
@@ -223,13 +213,13 @@ class KeyValue(object):
 class InlineHstoreList(InlineFieldList):
     """ Version of InlineFieldList for use with Postgres HSTORE columns """
 
-    def process(self, formdata, data=unset_value):
+    def process(self, formdata, data=unset_value, extra_filters=None):
         """ SQLAlchemy returns a dict for HSTORE columns, but WTForms cannot
             process a dict. This overrides `process` to convert the dict
             returned by SQLAlchemy to a list of classes before processing. """
         if isinstance(data, dict):
             data = [KeyValue(k, v) for k, v in iteritems(data)]
-        super(InlineHstoreList, self).process(formdata, data)
+        super(InlineHstoreList, self).process(formdata, data, extra_filters)
 
     def populate_obj(self, obj, name):
         """ Combines each FormField key/value into a dictionary for storage """
@@ -317,6 +307,64 @@ class InlineModelFormList(InlineFieldList):
             field.populate_obj(model, None)
 
             self.inline_view._on_model_change(field, model, is_created)
+
+
+class InlineModelOneToOneField(InlineModelFormField):
+    def __init__(self, form, session, model, prop, inline_view, **kwargs):
+        self.form = form
+        self.session = session
+        self.model = model
+        self.prop = prop
+        self.inline_view = inline_view
+
+        self._pk = get_primary_key(model)
+
+        # Generate inline form field
+        form_opts = FormOpts(
+            widget_args=getattr(inline_view, 'form_widget_args', None),
+            form_rules=inline_view._form_rules
+        )
+        super().__init__(form, self._pk, form_opts=form_opts, **kwargs)
+
+    @staticmethod
+    def _looks_empty(field):
+        """
+        Check while installed fields is not null
+        """
+        if field is None:
+            return True
+
+        if isinstance(field, str) and not field:
+            return True
+
+        return False
+
+    def populate_obj(self, model, field_name):
+        inline_model = getattr(model, field_name, None)
+        is_created = False
+        form_is_empty = True
+
+        if not inline_model:
+            is_created = True
+            inline_model = self.model()
+
+        # iterate all inline form fields and fill model
+        for name, field in iteritems(self.form._fields):
+            if name != self._pk:
+                field.populate_obj(inline_model, name)
+
+            if form_is_empty and not self._looks_empty(field.data):
+                form_is_empty = False
+
+        # don't create inline model if perhaps one field was not filled
+        if form_is_empty:
+            return
+
+        # set for our model updated inline model
+        setattr(model, field_name, inline_model)
+
+        # save results
+        self.inline_view.on_model_change(self.form, model, is_created)
 
 
 def get_pk_from_identity(obj):

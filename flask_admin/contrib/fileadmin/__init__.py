@@ -6,13 +6,14 @@ import platform
 import re
 import shutil
 from operator import itemgetter
+from urllib.parse import urljoin, quote
 
 from flask import flash, redirect, abort, request, send_file
 from werkzeug.utils import secure_filename
 from wtforms import fields, validators
 
 from flask_admin import form, helpers
-from flask_admin._compat import urljoin, as_unicode, quote
+from flask_admin._compat import as_unicode
 from flask_admin.base import BaseView, expose
 from flask_admin.actions import action, ActionsMixin
 from flask_admin.babel import gettext, lazy_gettext
@@ -388,7 +389,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         class EditForm(self.form_base_class):
             content = fields.TextAreaField(lazy_gettext('Content'),
-                                           (validators.required(),))
+                                           (validators.InputRequired(),))
 
         return EditForm
 
@@ -410,7 +411,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                 Validates if provided name is valid for *nix and Windows systems.
             """
             name = fields.StringField(lazy_gettext('Name'),
-                                      validators=[validators.Required(),
+                                      validators=[validators.InputRequired(),
                                                   validate_name])
             path = fields.HiddenField()
 
@@ -423,7 +424,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             Override to implement customized behavior.
         """
         class DeleteForm(self.form_base_class):
-            path = fields.HiddenField(validators=[validators.Required()])
+            path = fields.HiddenField(validators=[validators.InputRequired()])
 
         return DeleteForm
 

@@ -247,6 +247,21 @@ class ModelView(BaseModelView):
             class MyModel1View(Base):
                 inline_models = (Model2,)
                 column_labels = {'models': 'Hello'}
+
+        By default used ManyToMany relationship for inline models.
+        You may configure inline model for OneToOne relationship.
+        To achieve this, you need to install special ``inline_converter``
+        for your model::
+
+            from flask_admin.contrib.sqla.form import \
+                InlineOneToOneModelConverter
+
+            class MyInlineModelForm(InlineFormAdmin):
+                form_columns = ('title', 'date')
+                inline_converter = InlineOneToOneModelConverter
+
+            class MyModelView(ModelView):
+                inline_models = (MyInlineModelForm(MyInlineModel),)
     """
 
     column_type_formatters = DEFAULT_FORMATTERS
@@ -609,10 +624,10 @@ class ModelView(BaseModelView):
         for searchable in self.column_searchable_list:
             if isinstance(searchable, InstrumentedAttribute):
                 placeholders.append(
-                    self.column_labels.get(searchable.key, searchable.key))
+                    str(self.column_labels.get(searchable.key, searchable.key)))
             else:
                 placeholders.append(
-                    self.column_labels.get(searchable, searchable))
+                    str(self.column_labels.get(searchable, searchable)))
 
         return u', '.join(placeholders)
 
@@ -782,13 +797,19 @@ class ModelView(BaseModelView):
             :param form_class:
                 Form class
         """
-        inline_converter = self.inline_model_form_converter(self.session,
-                                                            self,
-                                                            self.model_form_converter)
+        default_converter = self.inline_model_form_converter(
+            self.session, self, self.model_form_converter)
 
         for m in self.inline_models:
-            form_class = inline_converter.contribute(self.model, form_class, m)
+            if not hasattr(m, 'inline_converter'):
+                form_class = default_converter.contribute(
+                    self.model, form_class, m)
+                continue
 
+            custom_converter = m.inline_converter(
+                self.session, self, self.model_form_converter)
+            form_class = custom_converter.contribute(
+                self.model, form_class, m)
         return form_class
 
     def scaffold_auto_joins(self):
@@ -978,7 +999,7 @@ class ModelView(BaseModelView):
             try:
                 query = flt.apply(query, clean_value, alias)
             except TypeError:
-                spec = inspect.getargspec(flt.apply)
+                spec = inspect.getfullargspec(flt.apply)
 
                 if len(spec.args) == 3:
                     warnings.warn('Please update your custom filter %s to '
@@ -1095,7 +1116,7 @@ class ModelView(BaseModelView):
             :param id:
                 Model id
         """
-        return self.session.query(self.model).get(tools.iterdecode(id))
+        return self.session.get(self.model, tools.iterdecode(id))
 
     # Error handler
     def handle_view_exception(self, exc):

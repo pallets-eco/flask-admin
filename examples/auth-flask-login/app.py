@@ -56,8 +56,8 @@ class User(db.Model):
 
 # Define login and registration forms (for flask-login)
 class LoginForm(form.Form):
-    login = fields.StringField(validators=[validators.required()])
-    password = fields.PasswordField(validators=[validators.required()])
+    login = fields.StringField(validators=[validators.InputRequired()])
+    password = fields.PasswordField(validators=[validators.InputRequired()])
 
     def validate_login(self, field):
         user = self.get_user()
@@ -76,9 +76,9 @@ class LoginForm(form.Form):
 
 
 class RegistrationForm(form.Form):
-    login = fields.StringField(validators=[validators.required()])
+    login = fields.StringField(validators=[validators.InputRequired()])
     email = fields.StringField()
-    password = fields.PasswordField(validators=[validators.required()])
+    password = fields.PasswordField(validators=[validators.InputRequired()])
 
     def validate_login(self, field):
         if db.session.query(User).filter_by(login=self.login.data).count() > 0:
@@ -164,7 +164,7 @@ def index():
 init_login()
 
 # Create admin
-admin = admin.Admin(app, 'Example: Auth', index_view=MyAdminIndexView(), base_template='my_master.html')
+admin = admin.Admin(app, 'Example: Auth', index_view=MyAdminIndexView(), base_template='my_master.html', template_mode='bootstrap4')
 
 # Add view
 admin.add_view(MyModelView(User, db.session))
@@ -214,7 +214,8 @@ if __name__ == '__main__':
     app_dir = os.path.realpath(os.path.dirname(__file__))
     database_path = os.path.join(app_dir, app.config['DATABASE_FILE'])
     if not os.path.exists(database_path):
-        build_sample_db()
+        with app.app_context():
+            build_sample_db()
 
     # Start app
     app.run(debug=True)

@@ -21,7 +21,7 @@ The first step is to initialize an empty admin interface for your Flask app::
     # set optional bootswatch theme
     app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
-    admin = Admin(app, name='microblog', template_mode='bootstrap3')
+    admin = Admin(app, name='microblog', template_mode='bootstrap4')
     # Add administrative views here
 
     app.run()
@@ -31,7 +31,7 @@ you could use the :meth:`~flask_admin.base.Admin.init_app` method.
 
 If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
 you should see an empty page with a navigation bar on top. Customize the look by
-specifying a Bootswatch theme that suits your needs (see http://bootswatch.com/3/ for available swatches).
+specifying a Bootswatch theme that suits your needs (see http://bootswatch.com/4/ for available swatches).
 
 Adding Model Views
 ------------------
@@ -44,7 +44,7 @@ is the SQLAlchemy backend, which you can use as follows::
 
     # Flask and Flask-SQLAlchemy initialization here
 
-    admin = Admin(app, name='microblog', template_mode='bootstrap3')
+    admin = Admin(app, name='microblog', template_mode='bootstrap4')
     admin.add_view(ModelView(User, db.session))
     admin.add_view(ModelView(Post, db.session))
 
@@ -124,7 +124,7 @@ Using Flask-Security
 --------------------
 
 If you want a more polished solution, you could
-use `Flask-Security <https://pythonhosted.org/Flask-Security/>`_,
+use `Flask-Security <https://flask-security-too.readthedocs.io/>`_,
 which is a higher-level library. It comes with lots of built-in views for doing
 common things like user registration, login, email address confirmation, password resets, etc.
 

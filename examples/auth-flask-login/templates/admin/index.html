@@ -16,8 +16,8 @@
         <form method="POST" action="">
             {{ form.hidden_tag() if form.hidden_tag }}
             {% for f in form if f.type != 'CSRFTokenField' %}
-            <div>
-            {{ f.label }}
+            <div class="form-group">
+            {{ f.label }}<br>
             {{ f }}
             {% if f.errors %}
             <ul>
@@ -28,7 +28,7 @@
             {% endif %}
             </div>
             {% endfor %}
-            <button class="btn" type="submit">Submit</button>
+            <button class="btn btn-primary" type="submit">Submit</button>
         </form>
         {{ link | safe }}
         {% endif %}

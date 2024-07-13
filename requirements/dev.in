@@ -1,0 +1,5 @@
+-r docs.txt
+-r tests.in
+-r typing.txt
+pre-commit
+tox

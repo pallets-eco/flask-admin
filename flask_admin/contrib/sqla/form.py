@@ -15,7 +15,8 @@ from flask_admin._compat import iteritems, text_type
 
 from .validators import Unique, valid_currency, valid_color, TimeZoneValidator
 from .fields import (QuerySelectField, QuerySelectMultipleField,
-                     InlineModelFormList, InlineHstoreList, HstoreForm)
+                     InlineModelFormList, InlineHstoreList, HstoreForm,
+                     InlineModelOneToOneField)
 from flask_admin.model.fields import InlineFormField
 from .tools import (has_multiple_pks, filter_foreign_columns,
                     get_field_with_path, is_association_proxy, is_relationship)
@@ -282,7 +283,7 @@ class AdminModelConverter(ModelConverterBase):
     @converts('sqlalchemy.sql.sqltypes.Enum')
     def convert_enum(self, column, field_args, **extra):
         available_choices = [(f, f) for f in column.type.enums]
-        accepted_values = [key for key, val in available_choices]
+        accepted_values = [choice[0] for choice in available_choices]
 
         if column.nullable:
             field_args['allow_blank'] = column.nullable
@@ -304,7 +305,7 @@ class AdminModelConverter(ModelConverterBase):
             available_choices = [(f.value, f.name) for f in column.type.choices]
         else:
             available_choices = column.type.choices
-        accepted_values = [key for key, val in available_choices]
+        accepted_values = [choice[0] if isinstance(choice, tuple) else choice.value for choice in available_choices]
 
         if column.nullable:
             field_args['allow_blank'] = column.nullable
@@ -345,7 +346,11 @@ class AdminModelConverter(ModelConverterBase):
         return form.DateTimeField(**field_args)
 
     @converts('sqlalchemy_utils.types.email.EmailType')
-    def convert_email(self, field_args, **extra):
+    def convert_email(self, field_args, column=None, **extra):
+        if column.nullable:
+            filters = field_args.get('filters', [])
+            filters.append(lambda x: x or None)
+            field_args['filters'] = filters
         field_args['validators'].append(validators.Email())
         return fields.StringField(**field_args)
 
@@ -631,6 +636,12 @@ class InlineModelConverter(InlineModelConverterBase):
                     loader = create_ajax_loader(info.model, self.session, new_name, name, opts)
                 else:
                     loader = opts
+                    # If we're changing the name in self.view._form_ajax_refs,
+                    # we must also change loader.name property. Otherwise
+                    # when the widget tries to set the 'data-url' property in the <input> tag,
+                    # it won't be able to find the loader since it'll be using the "field.loader.name"
+                    # of the previously-configured loader.
+                    setattr(loader, "name", new_name)
 
                 result[name] = loader
                 self.view._form_ajax_refs[new_name] = loader
@@ -648,7 +659,7 @@ class InlineModelConverter(InlineModelConverterBase):
             :param info:
                 The InlineFormAdmin instance
             :return:
-                A tuple of forward property key and reverse property key
+                A dict of forward property key and reverse property key
         """
         mapper = model._sa_class_manager.mapper
 
@@ -656,33 +667,37 @@ class InlineModelConverter(InlineModelConverterBase):
         # Use the base mapper to support inheritance
         target_mapper = info.model._sa_class_manager.mapper.base_mapper
 
-        reverse_prop = None
-
+        reverse_props = []
+        forward_reverse_props_keys = dict()
         for prop in target_mapper.iterate_properties:
             if hasattr(prop, 'direction') and prop.direction.name in ('MANYTOONE', 'MANYTOMANY'):
                 if issubclass(model, prop.mapper.class_):
-                    reverse_prop = prop
-                    break
-        else:
+                    # store props in reverse_props list
+                    reverse_props.append(prop)
+
+        if not reverse_props:
             raise Exception('Cannot find reverse relation for model %s' % info.model)
 
-        # Find forward property
-        forward_prop = None
+        for reverse_prop in reverse_props:
+            # Find forward property
 
-        if prop.direction.name == 'MANYTOONE':
-            candidate = 'ONETOMANY'
-        else:
-            candidate = 'MANYTOMANY'
+            if reverse_prop.direction.name == 'MANYTOONE':
+                candidate = 'ONETOMANY'
+            else:
+                candidate = 'MANYTOMANY'
 
-        for prop in mapper.iterate_properties:
-            if hasattr(prop, 'direction') and prop.direction.name == candidate:
-                if prop.mapper.class_ == target_mapper.class_:
-                    forward_prop = prop
-                    break
-        else:
-            raise Exception('Cannot find forward relation for model %s' % info.model)
+            for prop in mapper.iterate_properties:
+                if hasattr(prop, 'direction') and prop.direction.name == candidate:
+                    # check if prop is not handled yet
+                    # issubclass is more useful than equal comparator in the case of inheritance
+                    if prop.key not in forward_reverse_props_keys.keys() and issubclass(target_mapper.class_,
+                                                                                        prop.mapper.class_):
+                        forward_reverse_props_keys[prop.key] = reverse_prop.key
+                        break
+            else:
+                raise Exception('Cannot find forward relation for model %s' % info.model)
 
-        return forward_prop.key, reverse_prop.key
+        return forward_reverse_props_keys
 
     def contribute(self, model, form_class, inline_model):
         """
@@ -711,10 +726,121 @@ class InlineModelConverter(InlineModelConverterBase):
 
         info = self.get_info(inline_model)
 
-        forward_prop_key, reverse_prop_key = self._calculate_mapping_key_pair(model, info)
+        forward_reverse_props_keys = self._calculate_mapping_key_pair(model, info)
+
+        for forward_prop_key, reverse_prop_key in forward_reverse_props_keys.items():
+            # Remove reverse property from the list
+            ignore = [reverse_prop_key]
+
+            if info.form_excluded_columns:
+                exclude = ignore + list(info.form_excluded_columns)
+            else:
+                exclude = ignore
+
+            # Create converter
+            converter = self.model_converter(self.session, info)
+
+            # Create form
+            child_form = info.get_form()
+
+            if child_form is None:
+                child_form = get_form(info.model,
+                                      converter,
+                                      base_class=info.form_base_class or form.BaseForm,
+                                      only=info.form_columns,
+                                      exclude=exclude,
+                                      field_args=info.form_args,
+                                      hidden_pk=True,
+                                      extra_fields=info.form_extra_fields)
+
+            # Post-process form
+            child_form = info.postprocess_form(child_form)
+
+            kwargs = dict()
+
+            label = self.get_label(info, forward_prop_key)
+            if label:
+                kwargs['label'] = label
+
+            if self.view.form_args:
+                field_args = self.view.form_args.get(forward_prop_key, {})
+                kwargs.update(**field_args)
+
+            # Contribute field
+            setattr(form_class,
+                    forward_prop_key,
+                    self.inline_field_list_type(child_form,
+                                                self.session,
+                                                info.model,
+                                                reverse_prop_key,
+                                                info,
+                                                **kwargs))
+
+        return form_class
+
+
+class InlineOneToOneModelConverter(InlineModelConverter):
+    inline_field_list_type = InlineModelOneToOneField
+
+    def _calculate_mapping_key_pair(self, model, info):
+
+        mapper = info.model._sa_class_manager.mapper.base_mapper
+        target_mapper = model._sa_class_manager.mapper
+
+        inline_relationship = dict()
+
+        for forward_prop in mapper.iterate_properties:
+            if not hasattr(forward_prop, 'direction'):
+                continue
+
+            if forward_prop.direction.name != 'MANYTOONE':
+                continue
+
+            if forward_prop.mapper.class_ != target_mapper.class_:
+                continue
+
+            # in case when model has few relationships to target model or
+            # has just installed references manually. This is more quick
+            # solution rather than rotate yet another one loop
+            ref = getattr(forward_prop, 'backref')
+
+            if not ref:
+                ref = getattr(forward_prop, 'back_populates')
+
+            if ref:
+                inline_relationship[ref] = forward_prop.key
+                continue
+
+            # here we suppose that model has only one relationship
+            # to target model and prop has not any reference
+            for backward_prop in target_mapper.iterate_properties:
+                if not hasattr(backward_prop, 'direction'):
+                    continue
+
+                if backward_prop.direction.name != 'ONETOMANY':
+                    continue
+
+                if issubclass(model, backward_prop.mapper.class_):
+                    inline_relationship[backward_prop.key] = forward_prop.key
+                    break
+            else:
+                raise Exception(
+                    'Cannot find reverse relation for model %s' % info.model)
+            break
+
+        if not inline_relationship:
+            raise Exception(
+                'Cannot find forward relation for model %s' % info.model)
+
+        return inline_relationship
+
+    def contribute(self, model, form_class, inline_model):
+        info = self.get_info(inline_model)
+
+        inline_relationships = self._calculate_mapping_key_pair(model, info)
 
         # Remove reverse property from the list
-        ignore = [reverse_prop_key]
+        ignore = [value for value in inline_relationships.values()]
 
         if info.form_excluded_columns:
             exclude = ignore + list(info.form_excluded_columns)
@@ -742,22 +868,15 @@ class InlineModelConverter(InlineModelConverterBase):
 
         kwargs = dict()
 
-        label = self.get_label(info, forward_prop_key)
-        if label:
-            kwargs['label'] = label
-
-        if self.view.form_args:
-            field_args = self.view.form_args.get(forward_prop_key, {})
-            kwargs.update(**field_args)
-
         # Contribute field
-        setattr(form_class,
-                forward_prop_key,
-                self.inline_field_list_type(child_form,
-                                            self.session,
-                                            info.model,
-                                            reverse_prop_key,
-                                            info,
-                                            **kwargs))
+        for key in inline_relationships.keys():
+            setattr(form_class, key, self.inline_field_list_type(
+                child_form,
+                self.session,
+                info.model,
+                inline_relationships[key],
+                info,
+                **kwargs
+            ))
 
         return form_class

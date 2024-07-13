@@ -2,11 +2,7 @@ import itertools
 
 from wtforms.validators import ValidationError
 from wtforms.fields import FieldList, FormField, SelectFieldBase
-
-try:
-    from wtforms.fields import _unset_value as unset_value
-except ImportError:
-    from wtforms.utils import unset_value
+from wtforms.utils import unset_value
 
 from flask_admin._compat import iteritems
 from .widgets import (InlineFieldListWidget, InlineFormWidget,
@@ -40,8 +36,9 @@ class InlineFieldList(FieldList):
     def display_row_controls(self, field):
         return True
 
-    def process(self, formdata, data=unset_value):
-        res = super(InlineFieldList, self).process(formdata, data)
+    def process(self, formdata, data=unset_value, extra_filters=None):
+        res = super(InlineFieldList, self).process(
+            formdata, data)
 
         # Postprocess - contribute flag
         if formdata:

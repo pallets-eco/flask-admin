@@ -1,22 +1,19 @@
 import os
 import os.path as op
+from urllib.parse import urljoin
 
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
-from wtforms import ValidationError, fields
+from wtforms import ValidationError, fields, __version__ as wtforms_version
+from wtforms.utils import unset_value
 from wtforms.widgets import html_params
-
-try:
-    from wtforms.fields.core import _unset_value as unset_value
-except ImportError:
-    from wtforms.utils import unset_value
 
 from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
 
 from flask_admin._backwards import Markup
-from flask_admin._compat import string_types, urljoin
+from flask_admin._compat import string_types
 
 
 try:
@@ -186,6 +183,9 @@ class FileUploadField(fields.StringField):
 
         self._should_delete = False
 
+        if int(wtforms_version[0]) < 3:
+            kwargs.pop('extra_filters', None)
+
         super(FileUploadField, self).__init__(label, validators, **kwargs)
 
     def is_file_allowed(self, filename):
@@ -216,13 +216,16 @@ class FileUploadField(fields.StringField):
         if not self._allow_overwrite and os.path.exists(self._get_path(self.data.filename)):
             raise ValidationError(gettext('File "%s" already exists.' % self.data.filename))
 
-    def process(self, formdata, data=unset_value):
+    def process(self, formdata, data=unset_value, extra_filters=None):
         if formdata:
             marker = '_%s-delete' % self.name
             if marker in formdata:
                 self._should_delete = True
 
-        return super(FileUploadField, self).process(formdata, data)
+        if int(wtforms_version[0]) < 3:
+            return super(FileUploadField, self).process(formdata, data)
+        else:
+            return super(FileUploadField, self).process(formdata, data, extra_filters)  # noqa
 
     def process_formdata(self, valuelist):
         if self._should_delete:
@@ -458,10 +461,10 @@ class ImageUploadField(FileUploadField):
 
         if image.size[0] > width or image.size[1] > height:
             if force:
-                return ImageOps.fit(self.image, (width, height), Image.ANTIALIAS)
+                return ImageOps.fit(self.image, (width, height), Image.Resampling.LANCZOS)
             else:
                 thumb = self.image.copy()
-                thumb.thumbnail((width, height), Image.ANTIALIAS)
+                thumb.thumbnail((width, height), Image.Resampling.LANCZOS)
                 return thumb
 
         return image

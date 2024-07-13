@@ -7,7 +7,7 @@ from redis import Redis
 from wtforms import fields, widgets
 
 from sqlalchemy.event import listens_for
-from jinja2 import Markup
+from markupsafe import Markup
 
 from flask_admin import Admin, form
 from flask_admin.form import rules
@@ -66,6 +66,7 @@ class User(db.Model):
     city = db.Column(db.Unicode(128))
     country = db.Column(db.Unicode(128))
     notes = db.Column(db.UnicodeText)
+    is_admin = db.Column(db.Boolean, default=False)
 
 
 class Page(db.Model):
@@ -170,7 +171,7 @@ class UserView(sqla.ModelView):
     """
     form_create_rules = [
         # Header and four fields. Email field will go above phone field.
-        rules.FieldSet(('first_name', 'last_name', 'email', 'phone'), 'Personal'),
+        rules.FieldSet(('first_name', 'last_name', 'email', 'phone', 'is_admin'), 'Personal'),
         # Separate header and few fields
         rules.Header('Location'),
         rules.Field('city'),
@@ -185,6 +186,10 @@ class UserView(sqla.ModelView):
 
     create_template = 'create_user.html'
     edit_template = 'edit_user.html'
+
+    column_descriptions = {
+        "is_admin": "Is this an admin user?",
+    }
 
 
 # Flask views
@@ -289,7 +294,8 @@ if __name__ == '__main__':
     app_dir = op.realpath(os.path.dirname(__file__))
     database_path = op.join(app_dir, app.config['DATABASE_FILE'])
     if not os.path.exists(database_path):
-        build_sample_db()
-
+        with app.app_context():
+            build_sample_db()
+        
     # Start app
     app.run(debug=True)

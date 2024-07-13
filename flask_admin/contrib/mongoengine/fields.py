@@ -3,11 +3,7 @@ from mongoengine.base import get_document
 from werkzeug.datastructures import FileStorage
 
 from wtforms import fields
-
-try:
-    from wtforms.fields.core import _unset_value as unset_value
-except ImportError:
-    from wtforms.utils import unset_value
+from wtforms.utils import unset_value
 
 from . import widgets
 from flask_admin.model.fields import InlineFormField
@@ -57,13 +53,13 @@ class MongoFileField(fields.FileField):
 
         self._should_delete = False
 
-    def process(self, formdata, data=unset_value):
+    def process(self, formdata, data=unset_value, extra_filters=None):
         if formdata:
             marker = '_%s-delete' % self.name
             if marker in formdata:
                 self._should_delete = True
 
-        return super(MongoFileField, self).process(formdata, data)
+        return super(MongoFileField, self).process(formdata, data, extra_filters)
 
     def populate_obj(self, obj, name):
         field = getattr(obj, name, None)

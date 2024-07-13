@@ -34,7 +34,7 @@
             <input type="hidden" name="sort" value="{{ sort_column }}">
         {% endif %}
         {% if sort_desc %}
-            <input type="hidden" name="desc" value="{{ sort_desc }}">
+            <input type="hidden" name="desc" value="1">
         {% endif %}
         {% if search %}
             <input type="hidden" name="search" value="{{ search }}">
@@ -62,11 +62,14 @@
         {% if page_size != default_page_size %}
             <input type="hidden" name="page_size" value="{{ page_size }}">
         {% endif %}
+        {% for arg_name, arg_value in extra_args.items() %}
+        <input type="hidden" name="{{ arg_name }}" value="{{ arg_value }}">
+        {% endfor %}
         {% if sort_column is not none %}
             <input type="hidden" name="sort" value="{{ sort_column }}">
         {% endif %}
         {% if sort_desc %}
-            <input type="hidden" name="desc" value="{{ sort_desc }}">
+            <input type="hidden" name="desc" value="1">
         {% endif %}
         {% if search %}
             <div class="form-inline input-group">
