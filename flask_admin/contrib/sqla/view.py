@@ -999,7 +999,7 @@ class ModelView(BaseModelView):
             try:
                 query = flt.apply(query, clean_value, alias)
             except TypeError:
-                spec = inspect.getargspec(flt.apply)
+                spec = inspect.getfullargspec(flt.apply)
 
                 if len(spec.args) == 3:
                     warnings.warn('Please update your custom filter %s to '
