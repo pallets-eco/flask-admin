@@ -96,7 +96,29 @@ warn_return_any = false
 
 [[tool.mypy.overrides]]
 module = [
-    "sqlparse.*"
+    "arrow",
+    "azure.*",
+    "bson.*",
+    "citext",
+    "colour",
+    "flask_babel",
+    "flask_babelex",
+    "flask_mongoengine.*",
+    "flask_wtf",
+    "google.appengine.ext",
+    "gridfs",
+    "marker",
+    "mongoengine.*",
+    "playhouse.*",
+    "pymongo",
+    "shapely.*",  # types-shapely requires python 3.8+
+    "sqlalchemy.*",
+    "sqlalchemy_enum34",
+    "sqlalchemy_utils",
+    "tablib",
+    "wtforms.*",
+    "wtforms_appengine.*",
+    "wtfpeewee.*",
 ]
 ignore_missing_imports = true
 

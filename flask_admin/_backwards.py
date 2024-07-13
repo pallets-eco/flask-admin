@@ -9,7 +9,7 @@ import sys
 import warnings
 
 try:
-    from wtforms.widgets import HTMLString as Markup
+    from wtforms.widgets import HTMLString as Markup  # type: ignore[attr-defined]
 except ImportError:
     # WTForms 2.3.0
     from markupsafe import Markup  # noqa: F401

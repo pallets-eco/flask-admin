@@ -4,7 +4,7 @@ from peewee import (CharField, DateTimeField, DateField, TimeField,
                     PrimaryKeyField, ForeignKeyField)
 
 try:
-    from peewee import BaseModel
+    from peewee import BaseModel  # type: ignore[attr-defined]
 except ImportError:
     from peewee import ModelBase as BaseModel
 

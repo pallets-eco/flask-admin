@@ -33,4 +33,4 @@ def geom_formatter(view, value):
 
 
 DEFAULT_FORMATTERS = BASE_FORMATTERS.copy()
-DEFAULT_FORMATTERS[WKBElement] = geom_formatter
+DEFAULT_FORMATTERS[WKBElement] = geom_formatter  # type: ignore[assignment]

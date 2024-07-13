@@ -1,4 +1,4 @@
-from wtforms.widgets.core import escape
+from wtforms.widgets.core import escape  # type: ignore[attr-defined]
 
 from flask_admin._backwards import Markup
 
