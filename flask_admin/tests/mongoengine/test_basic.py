@@ -28,6 +28,7 @@ def create_models(db):
         test2 = db.StringField(max_length=20)
         test3 = db.StringField()
         test4 = db.StringField()
+        date_field = db.DateField()
         datetime_field = db.DateTimeField()
 
         def __str__(self):
@@ -89,6 +90,7 @@ def test_model():
     assert 'test2' in view._sortable_columns
     assert 'test3' in view._sortable_columns
     assert 'test4' in view._sortable_columns
+    assert 'date_field' in view._sortable_columns
 
     assert view._create_form_class is not None
     assert view._edit_form_class is not None
