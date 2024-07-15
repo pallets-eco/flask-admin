@@ -8,7 +8,7 @@ from flask_admin.model.typefmt import BASE_FORMATTERS, list_formatter
 from . import helpers
 
 
-def grid_formatter(view, value):
+def grid_formatter(view, value, name):
     if not value.grid_id:
         return ''
 
@@ -26,7 +26,7 @@ def grid_formatter(view, value):
         })
 
 
-def grid_image_formatter(view, value):
+def grid_image_formatter(view, value, name):
     if not value.grid_id:
         return ''
 

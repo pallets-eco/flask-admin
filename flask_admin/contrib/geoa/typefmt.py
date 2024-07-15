@@ -6,7 +6,7 @@ from geoalchemy2.elements import WKBElement
 from sqlalchemy import func
 
 
-def geom_formatter(view, value):
+def geom_formatter(view, value, name):
     kwargs = {
         "data-role": "leaflet",
         "disabled": "disabled",
