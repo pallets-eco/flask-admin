@@ -21,27 +21,27 @@ Flask-Admin is a batteries-included, simple-to-use
 [Flask](http://flask.pocoo.org/) extension that lets you add admin
 interfaces to Flask applications. It is inspired by the *django-admin*
 package, but implemented in such a way that the developer has total
-control of the look, feel and functionality of the resulting
+control over the look, feel, functionality and user experience of the resulting
 application.
 
 Out-of-the-box, Flask-Admin plays nicely with various ORM\'s, including
 
--   [SQLAlchemy](http://www.sqlalchemy.org/),
--   [MongoEngine](http://mongoengine.org/),
--   [pymongo](http://api.mongodb.org/python/current/) and
--   [Peewee](https://github.com/coleifer/peewee).
+-   [SQLAlchemy](http://www.sqlalchemy.org/)
+-   [MongoEngine](http://mongoengine.org/)
+-   [pymongo](http://api.mongodb.org/python/current/)
+-   and [Peewee](https://github.com/coleifer/peewee).
 
-It also boasts a simple file management interface and a [redis
+It also boasts a simple file management interface and a [Redis
 client](http://redis.io/) console.
 
-The biggest feature of Flask-Admin is flexibility. It aims to provide a
-set of simple tools that can be used for building admin interfaces of
-any complexity. So, to start off with you can create a very simple
+The biggest feature of Flask-Admin is its flexibility. It aims to provide a
+set of simple tools that can be used to build admin interfaces of
+any complexity. To start off, you can create a very simple
 application in no time, with auto-generated CRUD-views for each of your
-models. But then you can go further and customize those views & forms as
+models. Then you can further customize those views and forms as
 the need arises.
 
-Flask-Admin is an active project, well-tested and production ready.
+Flask-Admin is an active project, well-tested and production-ready.
 
 ## Examples
 
@@ -50,24 +50,25 @@ add your own, or improve on the existing examples, and submit a
 *pull-request*.
 
 To run the examples in your local environment:
+1. Clone the repository:
 
-    1. Clone the repository::
+        git clone https://github.com/pallets-eco/flask-admin.git
+        cd flask-admin
 
-          git clone https://github.com/pallets-eco/flask-admin.git
-          cd flask-admin
+2. Create and activate a virtual environment:
+        
+        virtualenv env -p python3
+        source env/Scripts/activate
 
-    2. Create and activate a virtual environment::
+3. Install requirements:
 
-          virtualenv env -p python3
-          source env/Scripts/activate
+        pip install -r examples/sqla/requirements.txt
 
-    3. Install requirements::
+4. Run the application:
 
-          pip install -r examples/sqla/requirements.txt
+        python examples/sqla/run_server.py
 
-    4. Run the application::
-
-          python examples/sqla/run_server.py
+5. Check the Flask app running on <http://localhost:5000>.
 
 ## Documentation
 
@@ -75,16 +76,15 @@ Flask-Admin is extensively documented, you can find all of the
 documentation at <https://flask-admin.readthedocs.io/en/latest/>.
 
 The docs are auto-generated from the *.rst* files in the */doc* folder.
-So if you come across any errors, or if you think of anything else that
-should be included, then please make the changes and submit them as a
-*pull-request*.
+if you come across any errors or if you think of anything else that
+should be included, feel free to make the changes and submit a *pull-request*.
 
 To build the docs in your local environment, from the project directory:
 
     tox -e docs-html
 
 And if you want to preview any *.rst* snippets that you may want to
-contribute, go to <http://rst.ninjs.org/>.
+contribute, please go to <http://rst.ninjs.org/>.
 
 ## Installation
 
@@ -101,10 +101,10 @@ by doing:
 
 ## Tests
 
-Test are run with *pytest*. If you are not familiar with this package
-you can get some more info from [their website](https://pytest.org/).
+Tests are run with *pytest*. If you are not familiar with this package, you can find out more on [their website](https://pytest.org/).
 
-To run the tests, from the project directory, simply:
+To run the tests, from the project directory, simply run:
+
     pip install --use-pep517 -r requirements/dev.txt
     pytest
 
@@ -116,7 +116,7 @@ You should see output similar to:
 
     OK
 
-*NOTE*: For all the tests to pass successfully, you\'ll need Postgres (with
+**NOTE!** For all the tests to pass successfully, you\'ll need Postgres (with
 the postgis and hstore extension) & MongoDB to be running locally. You'll
 also need libgeos available.
 
