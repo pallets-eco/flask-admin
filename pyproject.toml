@@ -65,9 +65,60 @@ show_error_codes = true
 pretty = true
 strict = true
 
+# Start off with these
+warn_unused_configs = false
+warn_redundant_casts = false
+warn_unused_ignores = false
+
+# Getting these passing should be easy
+strict_equality = false
+strict_concatenate = false
+
+# Strongly recommend enabling this one as soon as you can
+check_untyped_defs = false
+
+# These shouldn't be too much additional work, but may be tricky to
+# get passing if you use a lot of untyped libraries
+disallow_subclassing_any = false
+disallow_untyped_decorators = false
+disallow_any_generics = false
+
+# These next few are various gradations of forcing use of type annotations
+disallow_untyped_calls = false
+disallow_incomplete_defs = false
+disallow_untyped_defs = false
+
+# This one isn't too hard to get passing, but return on investment is lower
+no_implicit_reexport = false
+
+# This one can be tricky to get passing if you use a lot of untyped libraries
+warn_return_any = false
+
 [[tool.mypy.overrides]]
 module = [
-    "sqlparse.*"
+    "arrow",
+    "azure.*",
+    "bson.*",
+    "citext",
+    "colour",
+    "flask_babel",
+    "flask_babelex",
+    "flask_mongoengine.*",
+    "flask_wtf",
+    "google.appengine.ext",
+    "gridfs",
+    "marker",
+    "mongoengine.*",
+    "playhouse.*",
+    "pymongo",
+    "shapely.*",  # types-shapely requires python 3.8+
+    "sqlalchemy.*",
+    "sqlalchemy_enum34",
+    "sqlalchemy_utils",
+    "tablib",
+    "wtforms.*",
+    "wtforms_appengine.*",
+    "wtfpeewee.*",
 ]
 ignore_missing_imports = true
 

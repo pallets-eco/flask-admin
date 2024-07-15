@@ -49,7 +49,7 @@ else:
 
     wtforms_domain = Domain(messages_path(), domain='wtforms')
 
-    class Translations(object):
+    class Translations(object):  # type: ignore[no-redef]
         ''' Fixes WTForms translation support and uses wtforms translations '''
         def gettext(self, string):
             t = wtforms_domain.get_translations()

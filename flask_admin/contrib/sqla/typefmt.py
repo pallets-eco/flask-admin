@@ -47,13 +47,13 @@ DEFAULT_FORMATTERS.update({
 })
 try:
     from sqlalchemy_utils import Choice
-    DEFAULT_FORMATTERS[Choice] = choice_formatter
+    DEFAULT_FORMATTERS[Choice] = choice_formatter  # type: ignore[assignment]
 except ImportError:
     pass
 
 try:
     from arrow import Arrow
-    DEFAULT_FORMATTERS[Arrow] = arrow_formatter
-    EXPORT_FORMATTERS[Arrow] = arrow_export_formatter
+    DEFAULT_FORMATTERS[Arrow] = arrow_formatter  # type: ignore[assignment]
+    EXPORT_FORMATTERS[Arrow] = arrow_export_formatter  # type: ignore[assignment]
 except ImportError:
     pass

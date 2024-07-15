@@ -1,4 +1,8 @@
 import time
+from types import ModuleType
+from typing import Optional
+
+s3: Optional[ModuleType]
 
 try:
     from boto import s3

@@ -135,7 +135,6 @@ If you\'re using Homebrew on MacOS, you might need this:
     # install postgis and geos
     > brew install postgis
     > brew install geos
-    > export DYLD_LIBRARY_PATH=/opt/homebrew/opt/geos/lib/
 
     # set up postgresql user
     > createuser -s postgresql
