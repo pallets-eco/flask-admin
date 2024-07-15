@@ -1,3 +1,4 @@
+import sys
 import warnings
 from datetime import datetime
 import os
@@ -5,6 +6,7 @@ import os.path as op
 import platform
 import re
 import shutil
+from functools import partial
 from operator import itemgetter
 from urllib.parse import urljoin, quote
 
@@ -17,6 +19,13 @@ from flask_admin._compat import as_unicode
 from flask_admin.base import BaseView, expose
 from flask_admin.actions import action, ActionsMixin
 from flask_admin.babel import gettext, lazy_gettext
+
+
+if sys.version_info >= (3, 11):
+    from datetime import UTC
+    utc_fromtimestamp = partial(datetime.fromtimestamp, tz=UTC)
+else:
+    utc_fromtimestamp = datetime.utcfromtimestamp
 
 
 class LocalFileStorage(object):
@@ -857,7 +866,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             items.sort(key=itemgetter(2), reverse=True)
             if not self._on_windows:
                 # Sort by modified date
-                items.sort(key=lambda x: (x[0], x[1], x[2], x[3], datetime.utcfromtimestamp(x[4])), reverse=True)
+                items.sort(key=lambda x: (x[0], x[1], x[2], x[3], utc_fromtimestamp(x[4])), reverse=True)
         else:
             items.sort(key=itemgetter(column_index), reverse=sort_desc)
 

@@ -9,6 +9,4 @@ types-boto
 types-peewee
 types-Flask
 types-WTForms
-
-# Requires Python 3.8+
-# types-shapely
+types-shapely

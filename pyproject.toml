@@ -14,12 +14,11 @@ classifiers = [
     'Operating System :: OS Independent',
     'Programming Language :: Python',
     'Topic :: Software Development :: Libraries :: Python Modules',
-    'Programming Language :: Python :: 3.6',
-    'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
 ]
 requires-python = ">=3.6"
 dependencies = [
@@ -47,8 +46,19 @@ filterwarnings = [
     # TODO: remove the ignored deprecation warning when support for WTForms 3 has been added.
     "ignore:Flags should be stored in dicts and not in tuples. The next version of WTForms will abandon support for flags in tuples.:DeprecationWarning",
     "ignore:'HTMLString' will be removed in WTForms 3.0. Use 'markupsafe.Markup' instead.:DeprecationWarning",
-    # TODO: remove when we drop Python 3.7 support
-    "ignore:pkg_resources is deprecated as an API:DeprecationWarning",
+
+    # flask-mongoengine is responsible for the below deprecation warning, and hasn't been updated recently
+    "default:No uuidRepresentation is specified:DeprecationWarning",
+
+    # Werkzeug is responsible for the below deprecation warning; remove when they have updated their code.
+    "default:ast\\.Str is deprecated and will be removed in Python 3\\.14:DeprecationWarning",
+    "default:Attribute s is deprecated and will be removed in Python 3\\.14:DeprecationWarning",
+
+    # Flask is responsible for the below deprecation warning; remove when they have updated their code.
+    "default:'pkgutil\\.get_loader' is deprecated and slated for removal in Python 3\\.14:DeprecationWarning",
+    "default:'pkgutil\\.find_loader' is deprecated and slated for removal in Python 3\\.14:DeprecationWarning",
+
+    "default:datetime\\.datetime\\.utcnow\\(\\) is deprecated and scheduled for removal in a future version:DeprecationWarning"
 ]
 
 [tool.coverage.run]
@@ -59,7 +69,7 @@ source = ["flask_admin", "tests"]
 source = ["flask_admin", "*/site-packages"]
 
 [tool.mypy]
-python_version = "3.6"
+python_version = "3.8"
 files = ["flask_admin"]
 show_error_codes = true
 pretty = true
@@ -111,7 +121,6 @@ module = [
     "mongoengine.*",
     "playhouse.*",
     "pymongo",
-    "shapely.*",  # types-shapely requires python 3.8+
     "sqlalchemy.*",
     "sqlalchemy_enum34",
     "sqlalchemy_utils",
@@ -123,7 +132,7 @@ module = [
 ignore_missing_imports = true
 
 [tool.pyright]
-pythonVersion = "3.6"
+pythonVersion = "3.8"
 include = ["flask_admin", "tests"]
 typeCheckingMode = "basic"
 
