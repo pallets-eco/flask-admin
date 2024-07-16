@@ -75,11 +75,7 @@ To run the examples in your local environment:
 4. Run the application:
 
     ```bash
-    # Windows:
     python examples/sqla/run_server.py
-
-    # Linux:
-    python3 examples/sqla/run_server.py
     ```
 5. Check the Flask app running on <http://localhost:5000>.
 
