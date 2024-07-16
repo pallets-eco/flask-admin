@@ -140,6 +140,10 @@ geoalchemy2==0.15.2
     # via
     #   -r tests.in
     #   -r typing.txt
+greenlet==3.0.3
+    # via
+    #   -r typing.txt
+    #   sqlalchemy
 identify==2.5.24
     # via pre-commit
 idna==3.7
@@ -432,7 +436,7 @@ typing-extensions==4.7.1
     #   astroid
     #   mypy
     #   pylint
-urllib3==2.0.7
+urllib3==2.2.2
     # via
     #   -r docs.txt
     #   -r typing.txt
