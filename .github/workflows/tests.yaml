@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        python: ['3.8', '3.9', '3.10', '3.11', '3.12']
         wtforms: ['2']
     services:
       # Label used to access the service container
@@ -75,13 +75,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # tox: ['docs', 'typing']
-        tox: ['docs']  # disable typing tests until we have typed the project correctly
+        tox: ['docs', 'typing']
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # v5.1.1
         with:
-          python-version: '3.x'
+          python-version: 3.11
           cache: pip
           cache-dependency-path: requirements*/*.txt
       - name: cache mypy

@@ -1,6 +1,7 @@
 import logging
 import warnings
 import inspect
+from typing import Optional, Dict, List, Tuple, cast as t_cast
 
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.base import manager_of_class, instance_state
@@ -72,16 +73,19 @@ class ModelView(BaseModelView):
         Please refer to the `subqueryload` on list of possible values.
     """
 
-    column_display_all_relations = ObsoleteAttr('column_display_all_relations',
-                                                'list_display_all_relations',
-                                                False)
+    column_display_all_relations = ObsoleteAttr(
+        'column_display_all_relations',
+        'list_display_all_relations',
+        False
+    )
     """
         Controls if list view should display all relations, not only many-to-one.
     """
 
-    column_searchable_list = ObsoleteAttr('column_searchable_list',
-                                          'searchable_columns',
-                                          None)
+    column_searchable_list = t_cast(
+        None,
+        ObsoleteAttr('column_searchable_list', 'searchable_columns', None),
+    )
     """
         Collection of the searchable columns.
 
@@ -264,9 +268,9 @@ class ModelView(BaseModelView):
                 inline_models = (MyInlineModelForm(MyInlineModel),)
     """
 
-    column_type_formatters = DEFAULT_FORMATTERS
+    column_type_formatters = DEFAULT_FORMATTERS  # type: ignore[assignment]
 
-    form_choices = None
+    form_choices: Optional[Dict[str, List[Tuple[str, str]]]] = None
     """
         Map choices to form fields
 

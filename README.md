@@ -143,6 +143,7 @@ psql postgres
 > CREATE EXTENSION hstore;
 ```
 If you\'re using Homebrew on MacOS, you might need this:
+
 ```bash
 # Install postgis and geos
 brew install postgis
@@ -153,6 +154,7 @@ export DYLD_LIBRARY_PATH=/opt/homebrew/opt/geos/lib/
 createuser -s postgresql
 brew services restart postgresql
 ```
+
 You can also run the tests on multiple environments using *tox*.
 
 ## 3rd Party Stuff

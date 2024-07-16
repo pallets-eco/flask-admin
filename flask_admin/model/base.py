@@ -3,6 +3,8 @@ import re
 import csv
 import mimetypes
 import time
+from typing import Optional, cast, Type
+
 from math import ceil
 import inspect
 from collections import OrderedDict
@@ -11,10 +13,14 @@ from werkzeug.utils import secure_filename
 
 from flask import (current_app, request, redirect, flash, abort, json,
                    Response, get_flashed_messages, stream_with_context)
+
+from .._types import T_COLUMN_LIST, T_FORMATTERS
+
 try:
     import tablib
 except ImportError:
     tablib = None
+from wtforms.form import Form
 from wtforms.fields import HiddenField
 from wtforms.fields.core import UnboundField
 from wtforms.validators import ValidationError, InputRequired
@@ -169,7 +175,10 @@ class BaseModelView(BaseView, ActionsMixin):
     """Setting this to true will display the details_view as a modal dialog."""
 
     # Customizations
-    column_list = ObsoleteAttr('column_list', 'list_columns', None)
+    column_list: Optional[T_COLUMN_LIST] = cast(
+        None,
+        ObsoleteAttr('column_list', 'list_columns', None)
+    )
     """
         Collection of the model field names for the list view.
         If set to `None`, will get them from the model.
@@ -189,8 +198,9 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_list = ('<relationship>.<related column name>',)
     """
 
-    column_exclude_list = ObsoleteAttr('column_exclude_list',
-                                       'excluded_list_columns', None)
+    column_exclude_list: Optional[T_COLUMN_LIST] = cast(
+        None,
+        ObsoleteAttr('column_exclude_list', 'excluded_list_columns', None))
     """
         Collection of excluded list column names.
 
@@ -274,7 +284,10 @@ class BaseModelView(BaseView, ActionsMixin):
         that macros are not supported.
     """
 
-    column_type_formatters = ObsoleteAttr('column_type_formatters', 'list_type_formatters', None)
+    column_type_formatters: Optional[T_FORMATTERS] = cast(
+        None,
+        ObsoleteAttr('column_type_formatters', 'list_type_formatters', None)
+    )
     """
         Dictionary of value type formatters to be used in the list view.
 
@@ -365,9 +378,10 @@ class BaseModelView(BaseView, ActionsMixin):
                 )
     """
 
-    column_sortable_list = ObsoleteAttr('column_sortable_list',
-                                        'sortable_columns',
-                                        None)
+    column_sortable_list: Optional[T_COLUMN_LIST] = cast(
+        None,
+        ObsoleteAttr('column_sortable_list', 'sortable_columns', None),
+    )
     """
         Collection of the sortable columns for the list view.
         If set to `None`, will get them from the model.
@@ -418,9 +432,10 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_default_sort = [('name', True), ('last_name', True)]
     """
 
-    column_searchable_list = ObsoleteAttr('column_searchable_list',
-                                          'searchable_columns',
-                                          None)
+    column_searchable_list: Optional[T_COLUMN_LIST] = cast(
+        None,
+        ObsoleteAttr('column_searchable_list', 'searchable_columns', None),
+    )
     """
         A collection of the searchable columns. It is assumed that only
         text-only fields are searchable, but it is up to the model
@@ -522,7 +537,7 @@ class BaseModelView(BaseView, ActionsMixin):
         If enabled, model interface would not run count query and will only show prev/next pager buttons.
     """
 
-    form = None
+    form: Optional[Type[Form]] = None
     """
         Form class. Override if you want to use custom form for your model.
         Will completely disable form scaffolding functionality.
