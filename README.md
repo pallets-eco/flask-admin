@@ -160,7 +160,7 @@ Flask-Admin is built with the help of
 [Bootswatch](http://bootswatch.com/).
 
 If you want to localize your application, install the
-[Flask-BabelEx](https://pypi.python.org/pypi/Flask-BabelEx) package.
+[Flask-Babel](https://pypi.python.org/pypi/Flask-Babel) package.
 
 You can help improve Flask-Admin\'s translations through Crowdin:
 <https://crowdin.com/project/flask-admin>

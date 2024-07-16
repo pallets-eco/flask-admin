@@ -1,5 +1,5 @@
 from flask_admin.babel import lazy_gettext
-from flask_babelex import Babel
+from flask_babel import Babel
 
 from . import setup
 from .test_basic import CustomModelView, create_models

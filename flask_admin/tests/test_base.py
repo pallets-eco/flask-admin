@@ -207,6 +207,7 @@ def test_baseview_registration():
     assert view.blueprint.static_url_path == '/static/my/test'
 
 
+@pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
 def test_baseview_urls():
     app = Flask(__name__)
     admin = base.Admin(app)

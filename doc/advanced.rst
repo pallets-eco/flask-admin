@@ -31,7 +31,7 @@ To add custom JavaScript or CSS in your *ModelView* use *extra_js* or *extra_css
         extra_js = ['https://example.com/custom.js']
         extra_css = ['https://example.com/custom.css']
 
-Localization With Flask-Babelex
+Localization With Flask-Babel
 -------------------------------
 
 ****
@@ -39,27 +39,25 @@ Localization With Flask-Babelex
 Flask-Admin comes with translations for several languages.
 Enabling localization is simple:
 
-#. Install `Flask-BabelEx <http://github.com/mrjoes/flask-babelex/>`_ to do the heavy
-   lifting. It's a fork of the
-   `Flask-Babel <http://github.com/mitshuhiko/flask-babel/>`_ package::
+#. Install `Flask-Babel <https://github.com/python-babel/flask-babel/>`_ to do the heavy
+   lifting.
 
-        pip install flask-babelex
-
-#. Initialize Flask-BabelEx by creating instance of `Babel` class::
-
-        from flask import Flask
-        from flask_babelex import Babel
-
-        app = Flask(__name__)
-        babel = Babel(app)
+        pip install flask-babel
 
 #. Create a locale selector function::
 
-        @babel.localeselector
         def get_locale():
             if request.args.get('lang'):
                 session['lang'] = request.args.get('lang')
             return session.get('lang', 'en')
+
+#. Initialize Flask-Babel by creating instance of `Babel` class::
+
+        from flask import Flask
+        from flask_babel import Babel
+
+        app = Flask(__name__)
+        babel = Babel(app, locale_selector=get_locale)
 
 Now, you could try a French version of the application at: `http://localhost:5000/admin/?lang=fr <http://localhost:5000/admin/?lang=fr>`_.
 
@@ -67,7 +65,7 @@ Go ahead and add your own logic to the locale selector function. The application
 a user profile, cookie, session, etc. It can also use the `Accept-Language`
 header to make the selection automatically.
 
-If the built-in translations are not enough, look at the `Flask-BabelEx documentation <https://pythonhosted.org/Flask-BabelEx/>`_
+If the built-in translations are not enough, look at the `Flask-Babel documentation <https://pythonhosted.org/Flask-Babel/>`_
 to see how you can add your own.
 
 .. _file-admin:

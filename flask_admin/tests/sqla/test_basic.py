@@ -7,7 +7,7 @@ from flask_admin.form.fields import Select2Field, DateTimeField
 from flask_admin._compat import as_unicode
 from flask_admin._compat import iteritems
 from flask_admin.contrib.sqla import ModelView, filters, tools
-from flask_babelex import Babel
+from flask_babel import Babel
 
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import cast

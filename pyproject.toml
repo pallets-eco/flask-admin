@@ -112,7 +112,6 @@ module = [
     "citext",
     "colour",
     "flask_babel",
-    "flask_babelex",
     "flask_mongoengine.*",
     "flask_wtf",
     "google.appengine.ext",

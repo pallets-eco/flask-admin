@@ -34,7 +34,7 @@ babel==2.9.1
     #   -r docs.txt
     #   -r tests.in
     #   -r typing.txt
-    #   flask-babelex
+    #   flask-babel
     #   sphinx
 cachetools==5.3.3
     # via tox
@@ -116,11 +116,11 @@ flake8==3.9.2
 flask==2.1.3
     # via
     #   -r typing.txt
-    #   flask-babelex
+    #   flask-babel
     #   flask-mongoengine
     #   flask-sqlalchemy
     #   flask-wtf
-flask-babelex==0.9.4
+flask-babel==2.0.0
     # via
     #   -r tests.in
     #   -r typing.txt
@@ -178,7 +178,7 @@ jinja2==3.0.0
     #   -r tests.in
     #   -r typing.txt
     #   flask
-    #   flask-babelex
+    #   flask-babel
     #   sphinx
 lazy-object-proxy==1.9.0
     # via
@@ -304,6 +304,7 @@ pytz==2024.1
     #   -r docs.txt
     #   -r typing.txt
     #   babel
+    #   flask-babel
 pyyaml==6.0.1
     # via pre-commit
 requests==2.31.0
@@ -326,10 +327,6 @@ snowballstemmer==2.2.0
     # via
     #   -r docs.txt
     #   sphinx
-speaklater==1.3
-    # via
-    #   -r typing.txt
-    #   flask-babelex
 sphinx==5.3.0
     # via
     #   -r docs.txt
