@@ -3,6 +3,7 @@ import json
 
 from markupsafe import Markup
 from flask_admin._compat import text_type
+from flask_admin._types import T_FORMATTERS
 
 
 def null_formatter(view, value, name):
@@ -38,7 +39,7 @@ def bool_formatter(view, value, name):
     return Markup('<span class="fa %s glyphicon glyphicon-%s icon-%s" title="%s"></span>' % (fa, glyph, glyph, label))
 
 
-def list_formatter(view, values, name):
+def list_formatter(view, values, name) -> str:
     """
         Return string with comma separated values
 
@@ -48,7 +49,7 @@ def list_formatter(view, values, name):
     return u', '.join(text_type(v) for v in values)
 
 
-def enum_formatter(view, value, name):
+def enum_formatter(view, value, name) -> str:
     """
         Return the name of the enumerated member.
 
@@ -58,7 +59,7 @@ def enum_formatter(view, value, name):
     return value.name
 
 
-def dict_formatter(view, value, name):
+def dict_formatter(view, value, name) -> str:
     """
         Removes unicode entities when displaying dict as string. Also unescapes
         non-ASCII characters stored in the JSON.
@@ -69,20 +70,20 @@ def dict_formatter(view, value, name):
     return json.dumps(value, ensure_ascii=False)
 
 
-BASE_FORMATTERS = {
+BASE_FORMATTERS: T_FORMATTERS = {
     type(None): empty_formatter,
     bool: bool_formatter,
     list: list_formatter,
     dict: dict_formatter,
 }
 
-EXPORT_FORMATTERS = {
+EXPORT_FORMATTERS: T_FORMATTERS = {
     type(None): empty_formatter,
     list: list_formatter,
     dict: dict_formatter,
 }
 
-DETAIL_FORMATTERS = {
+DETAIL_FORMATTERS: T_FORMATTERS = {
     type(None): empty_formatter,
     list: list_formatter,
     dict: dict_formatter,

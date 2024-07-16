@@ -1,3 +1,5 @@
+from typing import Union
+
 from markupsafe import Markup, escape
 
 from mongoengine.base import BaseList
@@ -8,7 +10,7 @@ from flask_admin.model.typefmt import BASE_FORMATTERS, list_formatter
 from . import helpers
 
 
-def grid_formatter(view, value, name):
+def grid_formatter(view, value, name) -> Union[str, Markup]:
     if not value.grid_id:
         return ''
 
@@ -26,7 +28,7 @@ def grid_formatter(view, value, name):
         })
 
 
-def grid_image_formatter(view, value, name):
+def grid_image_formatter(view, value, name) -> Union[str, Markup]:
     if not value.grid_id:
         return ''
 

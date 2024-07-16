@@ -1,6 +1,7 @@
-from typing import Union, Sequence, Dict, Callable
+from typing import Union, Sequence, Dict, Callable, Any
 
 import sqlalchemy
 
 T_COLUMN_LIST = Sequence[Union[str, sqlalchemy.Column]]
-T_FORMATTERS = Dict[type, Callable]  # todo: Make this tighter
+T_FORMATTER = Callable[[Any, Any, Any], Any]
+T_FORMATTERS = Dict[type, T_FORMATTER]
