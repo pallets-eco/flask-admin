@@ -85,7 +85,7 @@ Flask-Admin is extensively documented, you can find all of the
 documentation at <https://flask-admin.readthedocs.io/en/latest/>.
 
 The docs are auto-generated from the *.rst* files in the */doc* folder.
-if you come across any errors or if you think of anything else that
+If you come across any errors or if you think of anything else that
 should be included, feel free to make the changes and submit a *pull-request*.
 
 To build the docs in your local environment, from the project directory:
@@ -144,7 +144,6 @@ If you\'re using Homebrew on MacOS, you might need this:
 # Install postgis and geos
 brew install postgis
 brew install geos
-export DYLD_LIBRARY_PATH=/opt/homebrew/opt/geos/lib/
 
 # Set up a PostgreSQL user
 createuser -s postgresql
