@@ -51,23 +51,36 @@ add your own, or improve on the existing examples, and submit a
 
 To run the examples in your local environment:
 1. Clone the repository:
-
-        git clone https://github.com/pallets-eco/flask-admin.git
-        cd flask-admin
-
+   
+    ```bash
+    git clone https://github.com/pallets-eco/flask-admin.git
+    cd flask-admin
+    ```
 2. Create and activate a virtual environment:
-        
-        virtualenv env -p python3
-        source env/Scripts/activate
 
+    ```bash
+    # Windows:
+    python -m venv .venv
+    .venv\Scripts\activate
+    
+    # Linux:
+    python3 -m venv .venv
+    source .venv/bin/activate
+    ```
 3. Install requirements:
 
-        pip install -r examples/sqla/requirements.txt
-
+    ```bash
+    pip install -r examples/sqla/requirements.txt
+    ```
 4. Run the application:
 
-        python examples/sqla/run_server.py
+    ```bash
+    # Windows:
+    python examples/sqla/run_server.py
 
+    # Linux:
+    python3 examples/sqla/run_server.py
+    ```
 5. Check the Flask app running on <http://localhost:5000>.
 
 ## Documentation
@@ -118,29 +131,28 @@ You should see output similar to:
 
 **NOTE!** For all the tests to pass successfully, you\'ll need Postgres (with
 the postgis and hstore extension) & MongoDB to be running locally. You'll
-also need libgeos available.
+also need *libgeos* available.
 
 For Postgres:
-
-    > psql postgres
-    CREATE DATABASE flask_admin_test;
-    \q
-
-    > psql flask_admin_test
-    CREATE EXTENSION postgis;
-    CREATE EXTENSION hstore;
-
+```bash
+psql postgres
+> CREATE DATABASE flask_admin_test;
+> # Connect to database "flask_admin_test":
+> \c flask_admin_test;
+> CREATE EXTENSION postgis;
+> CREATE EXTENSION hstore;
+```
 If you\'re using Homebrew on MacOS, you might need this:
+```bash
+# Install postgis and geos
+brew install postgis
+brew install geos
+export DYLD_LIBRARY_PATH=/opt/homebrew/opt/geos/lib/
 
-    # install postgis and geos
-    > brew install postgis
-    > brew install geos
-    > export DYLD_LIBRARY_PATH=/opt/homebrew/opt/geos/lib/
-
-    # set up postgresql user
-    > createuser -s postgresql
-    > brew services restart postgresql
-
+# Set up a PostgreSQL user
+createuser -s postgresql
+brew services restart postgresql
+```
 You can also run the tests on multiple environments using *tox*.
 
 ## 3rd Party Stuff
