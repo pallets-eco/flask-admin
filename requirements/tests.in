@@ -22,7 +22,7 @@ coveralls
 pylint
 sqlalchemy-citext
 sqlalchemy-utils>=0.36.6
-azure-storage-blob<=3
+azure-storage-blob<=12.13.0
 arrow<0.14.0
 colour
 email-validator

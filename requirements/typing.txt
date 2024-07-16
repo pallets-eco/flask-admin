@@ -8,20 +8,20 @@ arrow==0.13.2
     # via -r tests.in
 astroid==2.15.8
     # via pylint
-azure-common==1.1.28
+azure-core==1.30.2
     # via
     #   azure-storage-blob
-    #   azure-storage-common
-azure-storage-blob==2.1.0
+    #   msrest
+azure-storage-blob==12.13.0
     # via -r tests.in
-azure-storage-common==2.1.0
-    # via azure-storage-blob
 babel==2.9.1
     # via
     #   -r tests.in
     #   flask-babelex
 certifi==2024.7.4
-    # via requests
+    # via
+    #   msrest
+    #   requests
 cffi==1.15.1
     # via cryptography
 charset-normalizer==3.3.2
@@ -37,7 +37,7 @@ coverage[toml]==6.5.0
 coveralls==3.3.1
     # via -r tests.in
 cryptography==42.0.8
-    # via azure-storage-common
+    # via azure-storage-blob
 dill==0.3.7
     # via pylint
 dnspython==2.3.0
@@ -66,6 +66,8 @@ flask-wtf==1.1.1
     # via flask-mongoengine
 geoalchemy2==0.15.2
     # via -r tests.in
+greenlet==3.0.3
+    # via sqlalchemy
 idna==3.7
     # via
     #   email-validator
@@ -74,6 +76,8 @@ importlib-metadata==6.7.0
     # via flask
 iniconfig==2.0.0
     # via pytest
+isodate==0.6.1
+    # via msrest
 isort==5.11.5
     # via pylint
 itsdangerous==2.0.1
@@ -102,6 +106,8 @@ mongoengine==0.21.0
     # via
     #   -r tests.in
     #   flask-mongoengine
+msrest==0.7.1
+    # via azure-storage-blob
 mypy==1.4.1
     # via -r typing.in
 mypy-extensions==1.0.0
@@ -112,6 +118,8 @@ numpy==1.24.4
     # via
     #   shapely
     #   types-shapely
+oauthlib==3.2.2
+    # via requests-oauthlib
 packaging==24.0
     # via
     #   geoalchemy2
@@ -150,20 +158,24 @@ pytest==7.4.4
 pytest-cov==4.1.0
     # via -r tests.in
 python-dateutil==2.9.0.post0
-    # via
-    #   arrow
-    #   azure-storage-common
+    # via arrow
 pytz==2024.1
     # via babel
 requests==2.31.0
     # via
-    #   azure-storage-common
+    #   azure-core
     #   coveralls
+    #   msrest
+    #   requests-oauthlib
+requests-oauthlib==2.0.0
+    # via msrest
 shapely==2.0.5
     # via -r tests.in
 six==1.16.0
     # via
+    #   azure-core
     #   flask-mongoengine
+    #   isodate
     #   python-dateutil
 speaklater==1.3
     # via flask-babelex
@@ -213,6 +225,7 @@ types-wtforms==3.1.0.2
 typing-extensions==4.7.1
     # via
     #   astroid
+    #   azure-core
     #   mypy
     #   pylint
 urllib3==2.0.7
