@@ -17,6 +17,8 @@ import uuid
 import enum
 import arrow
 
+from flask_admin.tests import flask_babel_test_decorator
+
 
 class CustomModelView(ModelView):
     def __init__(self, model, session,
@@ -2181,6 +2183,7 @@ def test_extra_field_order(app, db, admin):
         ('zh_TW', '首頁'),
     )
 )
+@flask_babel_test_decorator
 def test_modelview_localization(request, app, locale, expect_text):
     # We need to configure the default Babel locale _before_ the `babel` fixture is
     # initialised, so we have to use `request.getfixturevalue` to pull the fixture
@@ -2210,6 +2213,7 @@ def test_modelview_localization(request, app, locale, expect_text):
         assert rv.status_code == 200
 
 
+@flask_babel_test_decorator
 def test_modelview_named_filter_localization(request, app):
     # We need to configure the default Babel locale _before_ the `babel` fixture is
     # initialised, so we have to use `request.getfixturevalue` to pull the fixture

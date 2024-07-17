@@ -41,6 +41,9 @@ name = "flask_admin"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "flask_babel: requires Flask-Babel to be installed"
+]
 filterwarnings = [
     "error",
     # TODO: remove the ignored deprecation warning when support for WTForms 3 has been added.

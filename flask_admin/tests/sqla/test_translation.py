@@ -1,8 +1,10 @@
 from flask_admin.babel import lazy_gettext
 
 from .test_basic import CustomModelView, create_models
+from .. import flask_babel_test_decorator
 
 
+@flask_babel_test_decorator
 def test_column_label_translation(request, app):
     # We need to configure the default Babel locale _before_ the `babel` fixture is
     # initialised, so we have to use `request.getfixturevalue` to pull the fixture
