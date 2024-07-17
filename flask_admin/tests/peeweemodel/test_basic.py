@@ -10,8 +10,6 @@ from flask_admin import form
 from flask_admin._compat import iteritems
 from flask_admin.contrib.peewee import ModelView
 
-from . import setup
-
 from datetime import datetime, time, date
 
 
@@ -104,8 +102,7 @@ def fill_db(Model1, Model2):
     Model1('datetime_obj2', datetime_field=datetime(2013, 3, 2, 0, 8, 0)).save()
 
 
-def test_model():
-    app, db, admin = setup()
+def test_model(app, db, admin):
     Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1)
@@ -177,9 +174,7 @@ def test_model():
 
 
 # @pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
-def test_column_editable_list():
-    app, db, admin = setup()
-
+def test_column_editable_list(app, db, admin):
     Model1, Model2 = create_models(db)
 
     # wtf-peewee doesn't automatically add length validators for max_length
@@ -252,9 +247,7 @@ def test_column_editable_list():
     assert 'test1_val_3' in data
 
 
-def test_details_view():
-    app, db, admin = setup()
-
+def test_details_view(app, db, admin):
     Model1, Model2 = create_models(db)
 
     view_no_details = CustomModelView(Model1)
@@ -305,9 +298,7 @@ def test_details_view():
     assert '5000' not in data
 
 
-def test_column_filters():
-    app, db, admin = setup()
-
+def test_column_filters(app, db, admin):
     Model1, Model2 = create_models(db)
 
     fill_db(Model1, Model2)
@@ -855,8 +846,7 @@ def test_column_filters():
     assert 'timeonly_obj2' in data
 
 
-def test_default_sort():
-    app, db, admin = setup()
+def test_default_sort(app, db, admin):
     M1, _ = create_models(db)
 
     M1('c', 1).save()
@@ -887,9 +877,7 @@ def test_default_sort():
     assert data[2].test1 == 'a'
 
 
-def test_extra_fields():
-    app, db, admin = setup()
-
+def test_extra_fields(app, db, admin):
     Model1, _ = create_models(db)
 
     view = CustomModelView(
@@ -913,9 +901,7 @@ def test_extra_fields():
     assert pos2 < pos1
 
 
-def test_custom_form_base():
-    app, db, admin = setup()
-
+def test_custom_form_base(app, db, admin):
     class TestForm(form.BaseForm):
         pass
 
@@ -933,9 +919,7 @@ def test_custom_form_base():
     assert isinstance(create_form, TestForm)
 
 
-def test_form_args():
-    app, db, admin = setup()
-
+def test_form_args(app, db, admin):
     class BaseModel(peewee.Model):
         class Meta:
             database = db
@@ -959,9 +943,7 @@ def test_form_args():
     assert len(edit_form.test.validators) == 2
 
 
-def test_ajax_fk():
-    app, db, admin = setup()
-
+def test_ajax_fk(app, db, admin):
     class BaseModel(peewee.Model):
         class Meta:
             database = db
@@ -1038,9 +1020,7 @@ def test_ajax_fk():
     assert mdl.model1.test1 == u'first'
 
 
-def test_export_csv():
-    app, db, admin = setup()
-
+def test_export_csv(app, db, admin):
     Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1, can_export=True,
