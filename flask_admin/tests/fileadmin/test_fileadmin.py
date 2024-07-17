@@ -1,17 +1,14 @@
 from io import StringIO
 import os
 import os.path as op
-import unittest
 
 from flask_admin.contrib import fileadmin
 from flask_admin import Admin
 from flask import Flask
 
-from . import setup
-
 
 class Base:
-    class FileAdminTests(unittest.TestCase):
+    class FileAdminTests:
         _test_files_root = op.join(op.dirname(__file__), 'files')
 
         def fileadmin_class(self):
@@ -197,7 +194,7 @@ class Base:
             assert 'fa_modal_window' not in data
 
 
-class LocalFileAdminTests(Base.FileAdminTests):
+class TestLocalFileAdmin(Base.FileAdminTests):
     def fileadmin_class(self):
         return fileadmin.FileAdmin
 
