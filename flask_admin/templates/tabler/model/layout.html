@@ -46,7 +46,9 @@
 {% macro filter_form() %}
     <form id="filter_form" method="get" action="{{ return_url }}">
         {% if sort_column is not none %}<input type="hidden" name="sort" value="{{ sort_column }}">{% endif %}
-        {% if sort_desc %}<input type="hidden" name="desc" value="{{ sort_desc }}">{% endif %}
+        {% if sort_desc %}
+            <input type="hidden" name="desc" value="1">
+        {% endif %}
         {% if search %}<input type="hidden" name="search" value="{{ search }}">{% endif %}
         {% if page_size != default_page_size %}<input type="hidden" name="page_size" value="{{ page_size }}">{% endif %}
         <table class="table table-responsive table-bordered table-hover filters">
@@ -73,7 +75,9 @@
             <input type="hidden" name="{{ arg_name }}" value="{{ arg_value }}">
         {% endfor %}
         {% if sort_column is not none %}<input type="hidden" name="sort" value="{{ sort_column }}">{% endif %}
-        {% if sort_desc %}<input type="hidden" name="desc" value="{{ sort_desc }}">{% endif %}
+        {% if sort_desc %}
+            <input type="hidden" name="desc" value="1">
+        {% endif %}
         <div class="input-group">
             <input class="form-control {{ input_class }}"
                    size="30"
