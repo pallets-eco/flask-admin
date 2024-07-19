@@ -6,12 +6,8 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.fields import InlineModelFormList
 from flask_admin.contrib.sqla.validators import ItemsRequired
 
-from . import setup
 
-
-def test_inline_form():
-    app, db, admin = setup()
-
+def test_inline_form(app, db, admin):
     with app.app_context():
         client = app.test_client()
 
@@ -110,9 +106,7 @@ def test_inline_form():
         assert UserInfo.query.count() == 0
 
 
-def test_inline_form_required():
-    app, db, admin = setup()
-
+def test_inline_form_required(app, db, admin):
     with app.app_context():
         client = app.test_client()
 
@@ -171,9 +165,7 @@ def test_inline_form_required():
         assert UserEmail.query.count() == 1
 
 
-def test_inline_form_ajax_fk():
-    app, db, admin = setup()
-
+def test_inline_form_ajax_fk(app, db, admin):
     with app.app_context():
         # Set up models and database
         class User(db.Model):
@@ -228,9 +220,7 @@ def test_inline_form_ajax_fk():
         assert 'userinfo-tag' in view._form_ajax_refs
 
 
-def test_inline_form_self():
-    app, db, admin = setup()
-
+def test_inline_form_self(app, db, admin):
     with app.app_context():
         class Tree(db.Model):
             id = db.Column(db.Integer, primary_key=True)
@@ -250,8 +240,7 @@ def test_inline_form_self():
         assert form.parent.data == parent
 
 
-def test_inline_form_base_class():
-    app, db, admin = setup()
+def test_inline_form_base_class(app, db, admin):
     client = app.test_client()
 
     with app.app_context():

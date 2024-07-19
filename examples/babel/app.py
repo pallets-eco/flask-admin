@@ -2,7 +2,7 @@ from flask import Flask, request, session
 from flask_sqlalchemy import SQLAlchemy
 
 import flask_admin as admin
-from flask_babelex import Babel
+from flask_babel import Babel
 
 from flask_admin.contrib import sqla
 
@@ -17,11 +17,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sample_db.sqlite'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
-# Initialize babel
-babel = Babel(app)
 
-
-@babel.localeselector
 def get_locale():
     override = request.args.get('lang')
 
@@ -29,6 +25,9 @@ def get_locale():
         session['lang'] = override
 
     return session.get('lang', 'en')
+
+# Initialize babel
+babel = Babel(app, locale_selector=get_locale)
 
 
 # Create models

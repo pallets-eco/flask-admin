@@ -109,18 +109,7 @@ class MockModelView(base.BaseModelView):
         return True
 
 
-def setup():
-    app = Flask(__name__)
-    app.config['CSRF_ENABLED'] = False
-    app.secret_key = '1'
-    admin = Admin(app)
-
-    return app, admin
-
-
-def test_mockview():
-    app, admin = setup()
-
+def test_mockview(app, admin):
     view = MockModelView(Model)
     admin.add_view(view)
 
@@ -205,9 +194,7 @@ def test_mockview():
     assert model.col1 == 'another test!'
 
 
-def test_permissions():
-    app, admin = setup()
-
+def test_permissions(app, admin):
     view = MockModelView(Model)
     admin.add_view(view)
 
@@ -226,9 +213,7 @@ def test_permissions():
     assert rv.status_code == 302
 
 
-def test_templates():
-    app, admin = setup()
-
+def test_templates(app, admin):
     view = MockModelView(Model)
     admin.add_view(view)
 
@@ -248,9 +233,7 @@ def test_templates():
     assert rv.data == b'Success!'
 
 
-def test_list_columns():
-    app, admin = setup()
-
+def test_list_columns(app, admin):
     view = MockModelView(Model,
                          column_list=['col1', 'col3'],
                          column_labels=dict(col1='Column1'))
@@ -267,9 +250,7 @@ def test_list_columns():
     assert 'Col2' not in data
 
 
-def test_exclude_columns():
-    app, admin = setup()
-
+def test_exclude_columns(app, admin):
     view = MockModelView(Model, column_exclude_list=['col2'])
     admin.add_view(view)
 
@@ -283,18 +264,14 @@ def test_exclude_columns():
     assert 'Col2' not in data
 
 
-def test_sortable_columns():
-    app, admin = setup()
-
+def test_sortable_columns(app, admin):
     view = MockModelView(Model, column_sortable_list=['col1', ('col2', 'test1')])
     admin.add_view(view)
 
     assert view._sortable_columns == dict(col1='col1', col2='test1')
 
 
-def test_column_searchable_list():
-    app, admin = setup()
-
+def test_column_searchable_list(app, admin):
     view = MockModelView(Model, column_searchable_list=['col1', 'col2'])
     admin.add_view(view)
 
@@ -303,9 +280,7 @@ def test_column_searchable_list():
     # TODO: Make calls with search
 
 
-def test_column_filters():
-    app, admin = setup()
-
+def test_column_filters(app, admin):
     view = MockModelView(Model, column_filters=['col1', 'col2'])
     admin.add_view(view)
 
@@ -319,9 +294,7 @@ def test_column_filters():
     # TODO: Make calls with filters
 
 
-def test_filter_list_callable():
-    app, admin = setup()
-
+def test_filter_list_callable(app, admin):
     flt = SimpleFilter('test', options=lambda: [('1', 'Test 1'), ('2', 'Test 2')])
 
     view = MockModelView(Model, column_filters=[flt])
@@ -340,7 +313,7 @@ def test_form():
     pass
 
 
-def test_csrf():
+def test_csrf(app, admin):
     class SecureModelView(MockModelView):
         form_base_class = form.SecureForm
 
@@ -351,8 +324,6 @@ def test_csrf():
         data = data.split('name="csrf_token" type="hidden" value="')[1]
         token = data.split('"')[0]
         return token
-
-    app, admin = setup()
 
     view = SecureModelView(Model, endpoint='secure')
     admin.add_view(view)
@@ -437,9 +408,7 @@ def test_csrf():
     assert u'Failed to perform action.' in rv.data.decode('utf-8')
 
 
-def test_custom_form():
-    app, admin = setup()
-
+def test_custom_form(app, admin):
     class TestForm(form.BaseForm):
         pass
 
@@ -452,25 +421,19 @@ def test_custom_form():
     assert not hasattr(view._create_form_class, 'col1')
 
 
-def test_modal_edit():
-    # bootstrap 2 - test edit_modal
-    app_bs2 = Flask(__name__)
-    admin_bs2 = Admin(app_bs2, template_mode="bootstrap2")
+def test_modal_edit_bs2(app, babel):
+    admin_bs2 = Admin(app, template_mode="bootstrap2")
 
-    edit_modal_on = MockModelView(Model, edit_modal=True,
-                                  endpoint="edit_modal_on")
-    edit_modal_off = MockModelView(Model, edit_modal=False,
-                                   endpoint="edit_modal_off")
-    create_modal_on = MockModelView(Model, create_modal=True,
-                                    endpoint="create_modal_on")
-    create_modal_off = MockModelView(Model, create_modal=False,
-                                     endpoint="create_modal_off")
+    edit_modal_on = MockModelView(Model, edit_modal=True, endpoint="edit_modal_on")
+    edit_modal_off = MockModelView(Model, edit_modal=False, endpoint="edit_modal_off")
+    create_modal_on = MockModelView(Model, create_modal=True, endpoint="create_modal_on")
+    create_modal_off = MockModelView(Model, create_modal=False, endpoint="create_modal_off")
     admin_bs2.add_view(edit_modal_on)
     admin_bs2.add_view(edit_modal_off)
     admin_bs2.add_view(create_modal_on)
     admin_bs2.add_view(create_modal_off)
 
-    client_bs2 = app_bs2.test_client()
+    client_bs2 = app.test_client()
 
     # bootstrap 2 - ensure modal window is added when edit_modal is enabled
     rv = client_bs2.get('/admin/edit_modal_on/')
@@ -496,16 +459,20 @@ def test_modal_edit():
     data = rv.data.decode('utf-8')
     assert 'fa_modal_window' not in data
 
-    # bootstrap 3
-    app_bs3 = Flask(__name__)
-    admin_bs3 = Admin(app_bs3, template_mode="bootstrap3")
 
+def test_modal_edit_bs3(app, babel):
+    admin_bs3 = Admin(app, template_mode="bootstrap3")
+
+    edit_modal_on = MockModelView(Model, edit_modal=True, endpoint="edit_modal_on")
+    edit_modal_off = MockModelView(Model, edit_modal=False, endpoint="edit_modal_off")
+    create_modal_on = MockModelView(Model, create_modal=True, endpoint="create_modal_on")
+    create_modal_off = MockModelView(Model, create_modal=False, endpoint="create_modal_off")
     admin_bs3.add_view(edit_modal_on)
     admin_bs3.add_view(edit_modal_off)
     admin_bs3.add_view(create_modal_on)
     admin_bs3.add_view(create_modal_off)
 
-    client_bs3 = app_bs3.test_client()
+    client_bs3 = app.test_client()
 
     # bootstrap 3 - ensure modal window is added when edit_modal is enabled
     rv = client_bs3.get('/admin/edit_modal_on/')
@@ -540,8 +507,7 @@ def check_class_name():
     assert view.name == 'Dummy View'
 
 
-def test_export_csv():
-    app, admin = setup()
+def test_export_csv(app, admin):
     client = app.test_client()
 
     # test redirect when csv export is disabled
@@ -740,8 +706,7 @@ def test_export_csv():
     assert rv.status_code == 500
 
 
-def test_list_row_actions():
-    app, admin = setup()
+def test_list_row_actions(app, admin):
     client = app.test_client()
 
     from flask_admin.model import template
