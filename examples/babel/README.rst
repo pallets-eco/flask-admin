@@ -1,4 +1,4 @@
-This example show how to translate Flask-Admin into different language using customized version of the `Flask-Babel <https://github.com/mrjoes/flask-babelex>`
+This example show how to translate Flask-Admin into different language using customized version of the `Flask-Babel <https://github.com/python-babel/flask-babel>`
 
 To run this example:
 
@@ -19,5 +19,3 @@ To run this example:
 4. Run the application::
 
      python examples/babel/app.py
-
-

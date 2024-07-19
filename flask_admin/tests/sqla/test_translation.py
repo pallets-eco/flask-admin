@@ -1,18 +1,21 @@
 from flask_admin.babel import lazy_gettext
-from flask_babelex import Babel
 
-from . import setup
 from .test_basic import CustomModelView, create_models
+from .. import flask_babel_test_decorator
 
 
-def test_column_label_translation():
-    app, db, admin = setup()
+@flask_babel_test_decorator
+def test_column_label_translation(request, app):
+    # We need to configure the default Babel locale _before_ the `babel` fixture is
+    # initialised, so we have to use `request.getfixturevalue` to pull the fixture
+    # within the test function rather than the test signature. The `admin` fixture
+    # pulls in the `babel` fixture, which will then use the configuration here.
+    app.config['BABEL_DEFAULT_LOCALE'] = 'es'
+    db = request.getfixturevalue('db')
+    admin = request.getfixturevalue('admin')
 
     with app.app_context():
         Model1, _ = create_models(db)
-
-        app.config['BABEL_DEFAULT_LOCALE'] = 'es'
-        Babel(app)
 
         label = lazy_gettext('Name')
 

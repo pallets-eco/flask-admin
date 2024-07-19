@@ -780,7 +780,7 @@ class InlineModelConverter(InlineModelConverterBase):
 
 
 class InlineOneToOneModelConverter(InlineModelConverter):
-    inline_field_list_type = InlineModelOneToOneField
+    inline_field_list_type = InlineModelOneToOneField  # type: ignore[assignment]
 
     def _calculate_mapping_key_pair(self, model, info):
 

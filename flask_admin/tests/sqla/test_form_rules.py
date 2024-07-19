@@ -1,15 +1,12 @@
 import pytest
 
-from . import setup
 from .test_basic import CustomModelView, create_models
 
 from flask_admin.form import rules
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_form_rules():
-    app, db, admin = setup()
-
+def test_form_rules(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
@@ -34,9 +31,7 @@ def test_form_rules():
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_macro():
-    app, db, admin = setup()
-
+def test_rule_macro(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
@@ -58,9 +53,7 @@ def test_rule_macro():
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_container():
-    app, db, admin = setup()
-
+def test_rule_container(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
@@ -86,8 +79,7 @@ def test_rule_container():
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_header():
-    app, db, admin = setup()
+def test_rule_header(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
@@ -106,8 +98,7 @@ def test_rule_header():
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_field_set():
-    app, db, admin = setup()
+def test_rule_field_set(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
@@ -133,8 +124,7 @@ def test_rule_field_set():
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_inlinefieldlist():
-    app, db, admin = setup()
+def test_rule_inlinefieldlist(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
         db.create_all()
@@ -150,8 +140,7 @@ def test_rule_inlinefieldlist():
         assert rv.status_code == 200
 
 
-def test_inline_model_rules():
-    app, db, admin = setup()
+def test_inline_model_rules(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
         db.create_all()

@@ -31,6 +31,7 @@ SORTABLE_FIELDS = set((
     mongoengine.IntField,
     mongoengine.FloatField,
     mongoengine.BooleanField,
+    mongoengine.DateField,
     mongoengine.DateTimeField,
     mongoengine.ComplexDateTimeField,
     mongoengine.ObjectIdField,

@@ -5,7 +5,7 @@ from functools import wraps
 
 from flask import Blueprint, current_app, render_template, abort, g, url_for
 from flask_admin import babel
-from flask_admin._compat import with_metaclass, as_unicode
+from flask_admin._compat import as_unicode
 from flask_admin import helpers as h
 
 # For compatibility reasons import MenuLink
@@ -106,7 +106,7 @@ class BaseViewClass(object):
     pass
 
 
-class BaseView(with_metaclass(AdminViewMeta, BaseViewClass)):
+class BaseView(BaseViewClass, metaclass=AdminViewMeta):
     """
         Base administrative view.
 

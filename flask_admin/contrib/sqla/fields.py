@@ -193,7 +193,7 @@ class CheckboxListField(QuerySelectMultipleField):
                 'languages': CheckboxListField,
             }
     """
-    widget = CheckboxListInput()
+    widget = CheckboxListInput()  # type: ignore[assignment]
 
 
 class HstoreForm(BaseForm):

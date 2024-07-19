@@ -14,12 +14,11 @@ classifiers = [
     'Operating System :: OS Independent',
     'Programming Language :: Python',
     'Topic :: Software Development :: Libraries :: Python Modules',
-    'Programming Language :: Python :: 3.6',
-    'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
 ]
 requires-python = ">=3.6"
 dependencies = [
@@ -42,13 +41,27 @@ name = "flask_admin"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "flask_babel: requires Flask-Babel to be installed"
+]
 filterwarnings = [
     "error",
     # TODO: remove the ignored deprecation warning when support for WTForms 3 has been added.
     "ignore:Flags should be stored in dicts and not in tuples. The next version of WTForms will abandon support for flags in tuples.:DeprecationWarning",
     "ignore:'HTMLString' will be removed in WTForms 3.0. Use 'markupsafe.Markup' instead.:DeprecationWarning",
-    # TODO: remove when we drop Python 3.7 support
-    "ignore:pkg_resources is deprecated as an API:DeprecationWarning",
+
+    # flask-mongoengine is responsible for the below deprecation warning, and hasn't been updated recently
+    "default:No uuidRepresentation is specified:DeprecationWarning",
+
+    # Werkzeug is responsible for the below deprecation warning; remove when they have updated their code.
+    "default:ast\\.Str is deprecated and will be removed in Python 3\\.14:DeprecationWarning",
+    "default:Attribute s is deprecated and will be removed in Python 3\\.14:DeprecationWarning",
+
+    # Flask is responsible for the below deprecation warning; remove when they have updated their code.
+    "default:'pkgutil\\.get_loader' is deprecated and slated for removal in Python 3\\.14:DeprecationWarning",
+    "default:'pkgutil\\.find_loader' is deprecated and slated for removal in Python 3\\.14:DeprecationWarning",
+
+    "default:datetime\\.datetime\\.utcnow\\(\\) is deprecated and scheduled for removal in a future version:DeprecationWarning"
 ]
 
 [tool.coverage.run]
@@ -59,20 +72,69 @@ source = ["flask_admin", "tests"]
 source = ["flask_admin", "*/site-packages"]
 
 [tool.mypy]
-python_version = "3.6"
+python_version = "3.8"
 files = ["flask_admin"]
 show_error_codes = true
 pretty = true
 strict = true
 
+# Start off with these
+warn_unused_configs = false
+warn_redundant_casts = false
+warn_unused_ignores = false
+
+# Getting these passing should be easy
+strict_equality = false
+strict_concatenate = false
+
+# Strongly recommend enabling this one as soon as you can
+check_untyped_defs = false
+
+# These shouldn't be too much additional work, but may be tricky to
+# get passing if you use a lot of untyped libraries
+disallow_subclassing_any = false
+disallow_untyped_decorators = false
+disallow_any_generics = false
+
+# These next few are various gradations of forcing use of type annotations
+disallow_untyped_calls = false
+disallow_incomplete_defs = false
+disallow_untyped_defs = false
+
+# This one isn't too hard to get passing, but return on investment is lower
+no_implicit_reexport = false
+
+# This one can be tricky to get passing if you use a lot of untyped libraries
+warn_return_any = false
+
 [[tool.mypy.overrides]]
 module = [
-    "sqlparse.*"
+    "arrow",
+    "azure.*",
+    "bson.*",
+    "citext",
+    "colour",
+    "flask_babel",
+    "flask_mongoengine.*",
+    "flask_wtf",
+    "google.appengine.ext",
+    "gridfs",
+    "marker",
+    "mongoengine.*",
+    "playhouse.*",
+    "pymongo",
+    "sqlalchemy.*",
+    "sqlalchemy_enum34",
+    "sqlalchemy_utils",
+    "tablib",
+    "wtforms.*",
+    "wtforms_appengine.*",
+    "wtfpeewee.*",
 ]
 ignore_missing_imports = true
 
 [tool.pyright]
-pythonVersion = "3.6"
+pythonVersion = "3.8"
 include = ["flask_admin", "tests"]
 typeCheckingMode = "basic"
 

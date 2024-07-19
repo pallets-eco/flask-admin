@@ -14,11 +14,11 @@ To run this example:
 
 3. Install requirements::
 
-    pip install -r 'examples/bootstrap4/requirements.txt'
+    pip install -r examples/bootstrap4/requirements.txt
 
 4. Run the application::
 
-    python examples/custom-layout/app.py
+    python examples/bootstrap4/app.py
 
 The first time you run this example, a sample sqlite database gets populated automatically. To suppress this behaviour,
 comment the following lines in app.py:::

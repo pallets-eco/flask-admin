@@ -1,6 +1,6 @@
 from flask import Flask, request, session
 from flask_sqlalchemy import SQLAlchemy
-from flask_babelex import Babel
+from flask_babel import Babel
 
 
 app = Flask(__name__)

@@ -1,11 +1,8 @@
-import pytest
 from wtforms import fields, validators
 
 from flask_admin import form
 from flask_admin._compat import as_unicode
 from flask_admin.contrib.mongoengine import ModelView
-
-from . import setup
 
 from datetime import datetime
 
@@ -28,6 +25,7 @@ def create_models(db):
         test2 = db.StringField(max_length=20)
         test3 = db.StringField()
         test4 = db.StringField()
+        date_field = db.DateField()
         datetime_field = db.DateTimeField()
 
         def __str__(self):
@@ -71,9 +69,7 @@ def fill_db(Model1, Model2):
            datetime_field=datetime(2013, 3, 2, 0, 8, 0)).save()
 
 
-def test_model():
-    app, db, admin = setup()
-
+def test_model(app, db, admin):
     Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1)
@@ -89,6 +85,7 @@ def test_model():
     assert 'test2' in view._sortable_columns
     assert 'test3' in view._sortable_columns
     assert 'test4' in view._sortable_columns
+    assert 'date_field' in view._sortable_columns
 
     assert view._create_form_class is not None
     assert view._edit_form_class is not None
@@ -144,9 +141,7 @@ def test_model():
     assert Model1.objects.count() == 0
 
 
-def test_column_editable_list():
-    app, db, admin = setup()
-
+def test_column_editable_list(app, db, admin):
     Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1,
@@ -218,9 +213,7 @@ def test_column_editable_list():
     assert 'test1_val_1' in data
 
 
-def test_details_view():
-    app, db, admin = setup()
-
+def test_details_view(app, db, admin):
     Model1, Model2 = create_models(db)
 
     view_no_details = CustomModelView(Model1)
@@ -275,9 +268,7 @@ def test_details_view():
     assert 'Int Field' not in data
 
 
-def test_column_filters():
-    app, db, admin = setup()
-
+def test_column_filters(app, db, admin):
     Model1, Model2 = create_models(db)
 
     # fill DB with values
@@ -682,8 +673,7 @@ def test_column_filters():
     assert 'datetime_obj2' in data
 
 
-def test_default_sort():
-    app, db, admin = setup()
+def test_default_sort(app, db, admin):
     M1, _ = create_models(db)
 
     M1(test1='c', test2='x').save()
@@ -714,9 +704,7 @@ def test_default_sort():
     assert data[2].test1 == 'a'
 
 
-def test_extra_fields():
-    app, db, admin = setup()
-
+def test_extra_fields(app, db, admin):
     Model1, _ = create_models(db)
 
     view = CustomModelView(
@@ -740,9 +728,7 @@ def test_extra_fields():
     assert pos2 < pos1
 
 
-def test_extra_field_order():
-    app, db, admin = setup()
-
+def test_extra_field_order(app, db, admin):
     Model1, _ = create_models(db)
 
     view = CustomModelView(
@@ -766,9 +752,7 @@ def test_extra_field_order():
     assert pos2 < pos1
 
 
-def test_custom_form_base():
-    app, db, admin = setup()
-
+def test_custom_form_base(app, db, admin):
     class TestForm(form.BaseForm):
         pass
 
@@ -786,9 +770,7 @@ def test_custom_form_base():
     assert isinstance(create_form, TestForm)
 
 
-def test_subdocument_config():
-    app, db, admin = setup()
-
+def test_subdocument_config(app, db, admin):
     class Comment(db.EmbeddedDocument):
         name = db.StringField(max_length=20, required=True)
         value = db.StringField(max_length=20)
@@ -828,9 +810,7 @@ def test_subdocument_config():
     assert 'value' not in dir(form.subdoc.form)
 
 
-def test_subdocument_class_config():
-    app, db, admin = setup()
-
+def test_subdocument_class_config(app, db, admin):
     from flask_admin.contrib.mongoengine import EmbeddedForm
 
     class Comment(db.EmbeddedDocument):
@@ -857,9 +837,7 @@ def test_subdocument_class_config():
     assert 'value' not in dir(form.subdoc.form)
 
 
-def test_nested_subdocument_config():
-    app, db, admin = setup()
-
+def test_nested_subdocument_config(app, db, admin):
     # Check recursive
     class Comment(db.EmbeddedDocument):
         name = db.StringField(max_length=20, required=True)
@@ -891,9 +869,7 @@ def test_nested_subdocument_config():
     assert 'value' not in dir(form.nested.form.comment.form)
 
 
-def test_nested_list_subdocument():
-    app, db, admin = setup()
-
+def test_nested_list_subdocument(app, db, admin):
     class Comment(db.EmbeddedDocument):
         name = db.StringField(max_length=20, required=True)
         value = db.StringField(max_length=20)
@@ -924,9 +900,7 @@ def test_nested_list_subdocument():
     assert 'value' not in dir(inline_form)
 
 
-def test_nested_sortedlist_subdocument():
-    app, db, admin = setup()
-
+def test_nested_sortedlist_subdocument(app, db, admin):
     class Comment(db.EmbeddedDocument):
         name = db.StringField(max_length=20, required=True)
         value = db.StringField(max_length=20)
@@ -956,9 +930,7 @@ def test_nested_sortedlist_subdocument():
     assert 'value' not in dir(inline_form)
 
 
-def test_sortedlist_subdocument_validation():
-    app, db, admin = setup()
-
+def test_sortedlist_subdocument_validation(app, db, admin):
     class Comment(db.EmbeddedDocument):
         name = db.StringField(max_length=20, required=True)
         value = db.StringField(max_length=20)
@@ -981,9 +953,7 @@ def test_sortedlist_subdocument_validation():
     assert b'This field is required' in rv.data
 
 
-def test_list_subdocument_validation():
-    app, db, admin = setup()
-
+def test_list_subdocument_validation(app, db, admin):
     class Comment(db.EmbeddedDocument):
         name = db.StringField(max_length=20, required=True)
         value = db.StringField(max_length=20)
@@ -1006,9 +976,7 @@ def test_list_subdocument_validation():
     assert b'This field is required' in rv.data
 
 
-def test_ajax_fk():
-    app, db, admin = setup()
-
+def test_ajax_fk(app, db, admin):
     Model1, Model2 = create_models(db)
 
     view = CustomModelView(
@@ -1069,9 +1037,7 @@ def test_ajax_fk():
     assert mdl.model1.test1 == u'first'
 
 
-def test_nested_ajax_refs():
-    app, db, admin = setup()
-
+def test_nested_ajax_refs(app, db, admin):
     # Check recursive
     class Comment(db.Document):
         name = db.StringField(max_length=20, required=True)
@@ -1103,9 +1069,7 @@ def test_nested_ajax_refs():
     assert 'nested-comment' in view1._form_ajax_refs
 
 
-def test_form_flat_choices():
-    app, db, admin = setup()
-
+def test_form_flat_choices(app, db, admin):
     class Model(db.Document):
         name = db.StringField(max_length=20, choices=('a', 'b', 'c'))
 
@@ -1116,9 +1080,7 @@ def test_form_flat_choices():
     assert form.name.choices == [('a', 'a'), ('b', 'b'), ('c', 'c')]
 
 
-def test_form_args():
-    app, db, admin = setup()
-
+def test_form_args(app, db, admin):
     class Model(db.Document):
         test = db.StringField(required=True)
 
@@ -1135,9 +1097,7 @@ def test_form_args():
     assert len(edit_form.test.validators) == 2
 
 
-def test_form_args_embeddeddoc():
-    app, db, admin = setup()
-
+def test_form_args_embeddeddoc(app, db, admin):
     class Info(db.EmbeddedDocument):
         name = db.StringField()
         age = db.StringField()
@@ -1160,8 +1120,7 @@ def test_form_args_embeddeddoc():
     assert form.info.label.text == 'Information'
 
 
-def test_simple_list_pager():
-    app, db, admin = setup()
+def test_simple_list_pager(app, db, admin):
     Model1, _ = create_models(db)
 
     class TestModelView(CustomModelView):
@@ -1177,8 +1136,7 @@ def test_simple_list_pager():
     assert count is None
 
 
-def test_export_csv():
-    app, db, admin = setup()
+def test_export_csv(app, db, admin):
     Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1, can_export=True,

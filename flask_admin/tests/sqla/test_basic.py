@@ -7,17 +7,17 @@ from flask_admin.form.fields import Select2Field, DateTimeField
 from flask_admin._compat import as_unicode
 from flask_admin._compat import iteritems
 from flask_admin.contrib.sqla import ModelView, filters, tools
-from flask_babelex import Babel
 
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import cast
 from sqlalchemy_utils import EmailType, ChoiceType, UUIDType, URLType, CurrencyType, ColorType, ArrowType, IPAddressType
-from . import setup
 
 from datetime import datetime, time, date
 import uuid
 import enum
 import arrow
+
+from flask_admin.tests import flask_babel_test_decorator
 
 
 class CustomModelView(ModelView):
@@ -156,9 +156,7 @@ def fill_db(db, Model1, Model2):
 
 
 @pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
-def test_model():
-    app, db, admin = setup()
-
+def test_model(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
@@ -309,9 +307,7 @@ def test_model():
 
 
 @pytest.mark.xfail(raises=Exception)
-def test_no_pk():
-    app, db, admin = setup()
-
+def test_no_pk(app, db, admin):
     class Model(db.Model):
         test = db.Column(db.Integer)
 
@@ -319,9 +315,7 @@ def test_no_pk():
     admin.add_view(view)
 
 
-def test_list_columns():
-    app, db, admin = setup()
-
+def test_list_columns(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
@@ -356,9 +350,7 @@ def test_list_columns():
         assert 'Test2' not in data
 
 
-def test_complex_list_columns():
-    app, db, admin = setup()
-
+def test_complex_list_columns(app, db, admin):
     with app.app_context():
         M1, M2 = create_models(db)
 
@@ -381,9 +373,7 @@ def test_complex_list_columns():
         assert 'model1_val1' in data
 
 
-def test_exclude_columns():
-    app, db, admin = setup()
-
+def test_exclude_columns(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
@@ -408,9 +398,7 @@ def test_exclude_columns():
         assert 'Test2' not in data
 
 
-def test_column_searchable_list():
-    app, db, admin = setup()
-
+def test_column_searchable_list(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
@@ -443,9 +431,7 @@ def test_column_searchable_list():
         assert 'model2-test' in data
 
 
-def test_extra_args_search():
-    app, db, admin = setup()
-
+def test_extra_args_search(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
@@ -465,9 +451,7 @@ def test_extra_args_search():
         assert '<input type="hidden" name="foo" value="bar">' in data
 
 
-def test_extra_args_filter():
-    app, db, admin = setup()
-
+def test_extra_args_filter(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
@@ -487,9 +471,7 @@ def test_extra_args_filter():
 
 
 @pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
-def test_complex_searchable_list():
-    app, db, admin = setup()
-
+def test_complex_searchable_list(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
@@ -524,9 +506,7 @@ def test_complex_searchable_list():
 
 
 @pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
-def test_complex_searchable_list_missing_children():
-    app, db, admin = setup()
-
+def test_complex_searchable_list_missing_children(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
@@ -546,9 +526,7 @@ def test_complex_searchable_list_missing_children():
 
 
 @pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
-def test_column_editable_list():
-    app, db, admin = setup()
-
+def test_column_editable_list(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
@@ -617,9 +595,7 @@ def test_column_editable_list():
         assert 'test1_val_3' in data
 
 
-def test_details_view():
-    app, db, admin = setup()
-
+def test_details_view(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
@@ -670,11 +646,9 @@ def test_details_view():
         assert 'test1_val_1' not in data
 
 
-def test_editable_list_special_pks():
+def test_editable_list_special_pks(app, db, admin):
     ''' Tests editable list view + a primary key with special characters
     '''
-    app, db, admin = setup()
-
     with app.app_context():
         class Model1(db.Model):
             def __init__(self, id=None, val1=None):
@@ -710,9 +684,7 @@ def test_editable_list_special_pks():
 
 
 @pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
-def test_column_filters():
-    app, db, admin = setup()
-
+def test_column_filters(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
@@ -1571,9 +1543,7 @@ def test_column_filters():
         assert 'test1_val_2' not in data
 
 
-def test_column_filters_sqla_obj():
-    app, db, admin = setup()
-
+def test_column_filters_sqla_obj(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
@@ -1586,9 +1556,7 @@ def test_column_filters_sqla_obj():
         assert len(view._filters) == 7
 
 
-def test_hybrid_property():
-    app, db, admin = setup()
-
+def test_hybrid_property(app, db, admin):
     with app.app_context():
         class Model1(db.Model):
             id = db.Column(db.Integer, primary_key=True)
@@ -1655,9 +1623,7 @@ def test_hybrid_property():
         assert 'test_row_1' not in data
 
 
-def test_hybrid_property_nested():
-    app, db, admin = setup()
-
+def test_hybrid_property_nested(app, db, admin):
     with app.app_context():
 
         class Model1(db.Model):
@@ -1704,9 +1670,7 @@ def test_hybrid_property_nested():
 
 
 @pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
-def test_url_args():
-    app, db, admin = setup()
-
+def test_url_args(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
@@ -1763,9 +1727,7 @@ def test_url_args():
         assert 'data2' in data
 
 
-def test_non_int_pk():
-    app, db, admin = setup()
-
+def test_non_int_pk(app, db, admin):
     with app.app_context():
 
         class Model(db.Model):
@@ -1797,9 +1759,7 @@ def test_non_int_pk():
         assert 'test2' in data
 
 
-def test_form_columns():
-    app, db, admin = setup()
-
+def test_form_columns(app, db, admin):
     with app.app_context():
 
         class Model(db.Model):
@@ -1863,9 +1823,7 @@ def test_form_columns():
 
 
 @pytest.mark.xfail(raises=Exception)
-def test_complex_form_columns():
-    app, db, admin = setup()
-
+def test_complex_form_columns(app, db, admin):
     with app.app_context():
         M1, M2 = create_models(db)
 
@@ -1874,9 +1832,7 @@ def test_complex_form_columns():
         view.create_form()
 
 
-def test_form_args():
-    app, db, admin = setup()
-
+def test_form_args(app, db, admin):
     with app.app_context():
         class Model(db.Model):
             id = db.Column(db.String, primary_key=True)
@@ -1897,9 +1853,7 @@ def test_form_args():
         assert len(edit_form.test.validators) == 2
 
 
-def test_form_override():
-    app, db, admin = setup()
-
+def test_form_override(app, db, admin):
     with app.app_context():
         class Model(db.Model):
             id = db.Column(db.String, primary_key=True)
@@ -1916,9 +1870,7 @@ def test_form_override():
         assert view2._create_form_class.test.field_class == fields.FileField
 
 
-def test_form_onetoone():
-    app, db, admin = setup()
-
+def test_form_onetoone(app, db, admin):
     with app.app_context():
         class Model1(db.Model):
             id = db.Column(db.Integer, primary_key=True)
@@ -1955,9 +1907,7 @@ def test_relations():
     pass
 
 
-def test_on_model_change_delete():
-    app, db, admin = setup()
-
+def test_on_model_change_delete(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
 
@@ -1990,9 +1940,7 @@ def test_on_model_change_delete():
         assert view.deleted
 
 
-def test_multiple_delete():
-    app, db, admin = setup()
-
+def test_multiple_delete(app, db, admin):
     with app.app_context():
         M1, _ = create_models(db)
 
@@ -2010,9 +1958,7 @@ def test_multiple_delete():
         assert M1.query.count() == 0
 
 
-def test_default_sort():
-    app, db, admin = setup()
-
+def test_default_sort(app, db, admin):
     with app.app_context():
         M1, _ = create_models(db)
 
@@ -2068,9 +2014,7 @@ def test_default_sort():
         assert data[2].test1 == 'a'
 
 
-def test_complex_sort():
-    app, db, admin = setup()
-
+def test_complex_sort(app, db, admin):
     with app.app_context():
         M1, M2 = create_models(db)
 
@@ -2121,9 +2065,7 @@ def test_complex_sort():
 
 
 @pytest.mark.xfail(raises=Exception)
-def test_complex_sort_exception():
-    app, db, admin = setup()
-
+def test_complex_sort_exception(app, db, admin):
     with app.app_context():
         M1, M2 = create_models(db)
 
@@ -2140,9 +2082,7 @@ def test_complex_sort_exception():
         assert data[1].model1.test1 == 'b'
 
 
-def test_default_complex_sort():
-    app, db, admin = setup()
-
+def test_default_complex_sort(app, db, admin):
     with app.app_context():
         M1, M2 = create_models(db)
 
@@ -2177,8 +2117,7 @@ def test_default_complex_sort():
         assert data[1].model1.test1 == 'b'
 
 
-def test_extra_fields():
-    app, db, admin = setup()
+def test_extra_fields(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
 
@@ -2203,9 +2142,7 @@ def test_extra_fields():
         assert pos2 < pos1
 
 
-def test_extra_field_order():
-    app, db, admin = setup()
-
+def test_extra_field_order(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
 
@@ -2230,45 +2167,61 @@ def test_extra_field_order():
         assert pos2 > pos1
 
 
-def test_modelview_localization():
-    def test_locale(locale):
-        try:
-            app, db, admin = setup()
+@pytest.mark.parametrize(
+    'locale, expect_text',
+    (
+        ('en', 'Home'),
+        ('cs', 'Domů'),
+        ('de', 'Start'),
+        ('es', 'Inicio'),
+        ('fa', 'خانه'),
+        ('fr', 'Accueil'),
+        ('pt', 'Início'),
+        ('ru', 'Главная'),
+        ('pa', 'ਹੋਮ'),
+        ('zh_CN', '首页'),
+        ('zh_TW', '首頁'),
+    )
+)
+@flask_babel_test_decorator
+def test_modelview_localization(request, app, locale, expect_text):
+    # We need to configure the default Babel locale _before_ the `babel` fixture is
+    # initialised, so we have to use `request.getfixturevalue` to pull the fixture
+    # within the test function rather than the test signature. The `admin` fixture
+    # pulls in the `babel` fixture, which will then use the configuration here.
+    app.config['BABEL_DEFAULT_LOCALE'] = locale
+    db = request.getfixturevalue('db')
+    admin = request.getfixturevalue('admin')
 
-            app.config['BABEL_DEFAULT_LOCALE'] = locale
-            Babel(app)
+    with app.app_context():
+        Model1, _ = create_models(db)
 
-            with app.app_context():
-                Model1, _ = create_models(db)
+        view = CustomModelView(
+            Model1, db.session,
+            column_filters=['test1', 'bool_field', 'date_field', 'datetime_field', 'time_field']
+        )
 
-                view = CustomModelView(
-                    Model1, db.session,
-                    column_filters=['test1', 'bool_field', 'date_field', 'datetime_field', 'time_field']
-                )
+        admin.add_view(view)
 
-                admin.add_view(view)
+        client = app.test_client()
 
-                client = app.test_client()
+        rv = client.get('/admin/model1/')
+        assert expect_text in rv.text
+        assert rv.status_code == 200
 
-                rv = client.get('/admin/model1/')
-                assert rv.status_code == 200
-
-                rv = client.get('/admin/model1/new/')
-                assert rv.status_code == 200
-        except:
-            print("Error on the following locale:", locale)
-            raise
-
-    locales = ['en', 'cs', 'de', 'es', 'fa', 'fr', 'pt', 'ru', 'zh_CN', 'zh_TW']
-    for locale in locales:
-        test_locale(locale)
+        rv = client.get('/admin/model1/new/')
+        assert rv.status_code == 200
 
 
-def test_modelview_named_filter_localization():
-    app, db, admin = setup()
-
+@flask_babel_test_decorator
+def test_modelview_named_filter_localization(request, app):
+    # We need to configure the default Babel locale _before_ the `babel` fixture is
+    # initialised, so we have to use `request.getfixturevalue` to pull the fixture
+    # within the test function rather than the test signature. The `admin` fixture
+    # pulls in the `babel` fixture, which will then use the configuration here.
     app.config['BABEL_DEFAULT_LOCALE'] = 'de'
-    Babel(app)
+    db = request.getfixturevalue('db')
+    _ = request.getfixturevalue('admin')
 
     with app.app_context():
         Model1, _ = create_models(db)
@@ -2286,9 +2239,7 @@ def test_modelview_named_filter_localization():
         assert 'test1_equals' == flt_name
 
 
-def test_custom_form_base():
-    app, db, admin = setup()
-
+def test_custom_form_base(app, db, admin):
     with app.app_context():
         class TestForm(form.BaseForm):
             pass
@@ -2307,9 +2258,7 @@ def test_custom_form_base():
         assert isinstance(create_form, TestForm)
 
 
-def test_ajax_fk():
-    app, db, admin = setup()
-
+def test_ajax_fk(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
@@ -2372,9 +2321,7 @@ def test_ajax_fk():
         assert mdl.model1.test1 == u'first'
 
 
-def test_ajax_fk_multi():
-    app, db, admin = setup()
-
+def test_ajax_fk_multi(app, db, admin):
     with app.app_context():
         class Model1(db.Model):
             __tablename__ = 'model1'
@@ -2439,9 +2386,7 @@ def test_ajax_fk_multi():
         assert len(mdl.model1) == 1
 
 
-def test_safe_redirect():
-    app, db, admin = setup()
-
+def test_safe_redirect(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
 
@@ -2477,8 +2422,7 @@ def test_safe_redirect():
         assert 'id=2' in rv.location
 
 
-def test_simple_list_pager():
-    app, db, admin = setup()
+def test_simple_list_pager(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
 
@@ -2495,8 +2439,7 @@ def test_simple_list_pager():
         assert count is None
 
 
-def test_unlimited_page_size():
-    app, db, admin = setup()
+def test_unlimited_page_size(app, db, admin):
     with app.app_context():
         M1, _ = create_models(db)
 
@@ -2518,8 +2461,7 @@ def test_unlimited_page_size():
         assert len(data) == 21
 
 
-def test_advanced_joins():
-    app, db, admin = setup()
+def test_advanced_joins(app, db, admin):
     with app.app_context():
         class Model1(db.Model):
             id = db.Column(db.Integer, primary_key=True)
@@ -2593,8 +2535,7 @@ def test_advanced_joins():
         assert alias is None
 
 
-def test_multipath_joins():
-    app, db, admin = setup()
+def test_multipath_joins(app, db, admin):
     with app.app_context():
         class Model1(db.Model):
             id = db.Column(db.Integer, primary_key=True)
@@ -2624,8 +2565,7 @@ def test_multipath_joins():
 
 # TODO: Why this fails?
 @pytest.mark.xfail(raises=Exception)
-def test_different_bind_joins():
-    app, db, admin = setup()
+def test_different_bind_joins(app, db, admin):
     app.config['SQLALCHEMY_BINDS'] = {
         'other': 'sqlite:///'
     }
@@ -2653,8 +2593,7 @@ def test_different_bind_joins():
         assert rv.status_code == 200
 
 
-def test_model_default():
-    app, db, admin = setup()
+def test_model_default(app, db, admin):
     with app.app_context():
         _, Model2 = create_models(db)
 
@@ -2669,9 +2608,7 @@ def test_model_default():
         assert b'This field is required' not in rv.data
 
 
-def test_export_csv():
-    app, db, admin = setup()
-
+def test_export_csv(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
