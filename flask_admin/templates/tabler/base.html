@@ -12,11 +12,11 @@
             <meta name="author" content="">
         {% endblock head_meta %}
         {% block head_css %}
-            <link href="{{ admin_static.tabler_url(filename='vendor/tabler/css/tabler.min.css') }}"
+            <link href="{{ admin_static.get_url(filename='vendor/tabler/css/tabler.min.css') }}"
                   rel="stylesheet">
-            <link href="{{ admin_static.tabler_url(filename='vendor/fontawesome/css/fontawesome.min.css') }}"
+            <link href="{{ admin_static.get_url(filename='vendor/fontawesome/css/fontawesome.min.css') }}"
                   rel="stylesheet">
-            <link href="{{ admin_static.tabler_url(filename='vendor/fontawesome/css/solid.min.css') }}"
+            <link href="{{ admin_static.get_url(filename='vendor/fontawesome/css/solid.min.css') }}"
                   rel="stylesheet">
             {% if admin_view.extra_css %}
                 {% for css_url in admin_view.extra_css %}<link href="{{ css_url }}" rel="stylesheet">{% endfor %}
@@ -137,9 +137,9 @@
             </div>
         {% endblock page_body %}
         {% block tail_js %}
-            <script src="{{ admin_static.tabler_url(filename='vendor/tabler/js/tabler.min.js') }}"
+            <script src="{{ admin_static.get_url(filename='vendor/tabler/js/tabler.min.js') }}"
                     type="text/javascript"></script>
-            <script src="{{ admin_static.tabler_url(filename='vendor/tabler/js/demo-theme.js') }}"
+            <script src="{{ admin_static.get_url(filename='vendor/tabler/js/demo-theme.js') }}"
                     type="text/javascript"></script>
             <script src="{{ admin_static.url(filename='vendor/jquery.min.js', v='3.5.1') }}"
                     type="text/javascript"></script>
