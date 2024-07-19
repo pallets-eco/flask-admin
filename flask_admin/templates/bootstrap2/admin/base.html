@@ -12,7 +12,7 @@
         <meta name="author" content="">
     {% endblock %}
     {% block head_css %}
-        <link href="{{ admin_static.url(filename='bootstrap/bootstrap2/swatch/{swatch}/bootstrap.min.css'.format(swatch=config.get('FLASK_ADMIN_SWATCH', 'default')), v='2.3.2') }}" rel="stylesheet">
+        <link href="{{ admin_static.url(filename='bootstrap/bootstrap2/swatch/{swatch}/bootstrap.min.css'.format(swatch=admin_view.admin.bootswatch_theme), v='2.3.2') }}" rel="stylesheet">
         <link href="{{ admin_static.url(filename='bootstrap/bootstrap2/css/bootstrap-responsive.css', v='2.3.2') }}" rel="stylesheet">
         <link href="{{ admin_static.url(filename='admin/css/bootstrap2/admin.css', v='1.1.1') }}" rel="stylesheet">
         {% if admin_view.extra_css %}

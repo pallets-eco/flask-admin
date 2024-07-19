@@ -1,0 +1,22 @@
+{% extends 'master.html' %}
+
+{% block body %}
+
+<h2>This is a {{ admin_view.admin.name }} with the theme <b>"{{ admin_view.admin.bootswatch_theme }}"</b></h2>
+<br>
+<div class="container">
+    <ul>
+        <li>
+            <a href="{{ url_for('basicadmin.index') }}">
+                Go to BasicAdmin - {{ basic_admin_bootswatch_theme }}
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('superadmin.index') }}">
+                Go to SuperAdmin - {{ super_admin_bootswatch_theme}}
+            </a>
+        </li>
+    </ul>
+</div>
+
+{% endblock %}

@@ -467,6 +467,7 @@ class Admin(object):
                  static_url_path=None,
                  base_template=None,
                  template_mode=None,
+                 bootswatch_theme=None,
                  category_icon_classes=None):
         """
             Constructor.
@@ -495,6 +496,9 @@ class Admin(object):
             :param template_mode:
                 Base template path. Defaults to `bootstrap2`. If you want to use
                 Bootstrap 3 or 4 integration, change it to `bootstrap3` or `bootstrap4`.
+            :param bootswatch_theme:
+                Bootswatch theme to use. Defaults to `cerulean`. If you want to use
+                different theme, change it to the corresponding Bootswatch theme name.
             :param category_icon_classes:
                 A dict of category names as keys and html classes as values to be added to menu category icons.
                 Example: {'Favorites': 'glyphicon glyphicon-star'}
@@ -519,6 +523,7 @@ class Admin(object):
         self.subdomain = subdomain
         self.base_template = base_template or 'admin/base.html'
         self.template_mode = template_mode or 'bootstrap2'
+        self.bootswatch_theme = bootswatch_theme or 'cerulean'
         self.category_icon_classes = category_icon_classes or dict()
 
         # Add index view
