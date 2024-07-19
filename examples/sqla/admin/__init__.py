@@ -16,6 +16,9 @@ def get_locale():
 
     return session.get('lang', 'en')
 
+# Initialize babel
+babel = Babel(app, locale_selector=get_locale)
+
 
 # Initialize babel
 babel = Babel(app, locale_selector=get_locale)

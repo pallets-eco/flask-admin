@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from wtforms import form, fields, validators
 import flask_admin as admin
 import flask_login as login
+
+from flask_admin.theme import Bootstrap4Theme
 from flask_admin.contrib import sqla
 from flask_admin import helpers, expose
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -164,7 +166,7 @@ def index():
 init_login()
 
 # Create admin
-admin = admin.Admin(app, 'Example: Auth', index_view=MyAdminIndexView(), base_template='my_master.html', template_mode='bootstrap4')
+admin = admin.Admin(app, 'Example: Auth', index_view=MyAdminIndexView(), base_template='my_master.html', theme=Bootstrap4Theme())
 
 # Add view
 admin.add_view(MyModelView(User, db.session))

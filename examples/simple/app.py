@@ -4,6 +4,9 @@ import flask_admin as admin
 
 
 # Create custom admin view
+from flask_admin.theme import Bootstrap4Theme
+
+
 class MyAdminView(admin.BaseView):
     @admin.expose('/')
     def index(self):
@@ -30,7 +33,7 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 # Create admin interface
-admin = admin.Admin(name="Example: Simple Views", template_mode='bootstrap4')
+admin = admin.Admin(name="Example: Simple Views", theme=Bootstrap4Theme())
 admin.add_view(MyAdminView(name="view1", category='Test'))
 admin.add_view(AnotherAdminView(name="view2", category='Test'))
 admin.init_app(app)

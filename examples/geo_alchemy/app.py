@@ -3,6 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 import flask_admin as admin
 from geoalchemy2.types import Geometry
+
+from flask_admin.theme import Bootstrap4Theme
 from flask_admin.contrib.geoa import ModelView
 
 
@@ -54,7 +56,7 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 # Create admin
-admin = admin.Admin(app, name='Example: GeoAlchemy', template_mode='bootstrap4')
+admin = admin.Admin(app, name='Example: GeoAlchemy', theme=Bootstrap4Theme())
 
 # Add views
 admin.add_view(ModelView(Point, db.session, category='Points'))

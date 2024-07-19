@@ -7,6 +7,7 @@ from wtforms import fields
 
 from flask_admin import Admin, form
 from flask_admin._compat import iteritems, itervalues
+from flask_admin.theme import Bootstrap2Theme, Bootstrap3Theme
 from flask_admin.model import base, filters
 from flask_admin.model.template import macro
 
@@ -422,7 +423,7 @@ def test_custom_form(app, admin):
 
 
 def test_modal_edit_bs2(app, babel):
-    admin_bs2 = Admin(app, template_mode="bootstrap2")
+    admin_bs2 = Admin(app, theme=Bootstrap2Theme())
 
     edit_modal_on = MockModelView(Model, edit_modal=True, endpoint="edit_modal_on")
     edit_modal_off = MockModelView(Model, edit_modal=False, endpoint="edit_modal_off")
@@ -461,7 +462,7 @@ def test_modal_edit_bs2(app, babel):
 
 
 def test_modal_edit_bs3(app, babel):
-    admin_bs3 = Admin(app, template_mode="bootstrap3")
+    admin_bs3 = Admin(app, theme=Bootstrap3Theme())
 
     edit_modal_on = MockModelView(Model, edit_modal=True, endpoint="edit_modal_on")
     edit_modal_off = MockModelView(Model, edit_modal=False, endpoint="edit_modal_off")

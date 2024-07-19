@@ -12,9 +12,9 @@
         <meta name="author" content="">
     {% endblock %}
     {% block head_css %}
-        <link href="{{ admin_static.url(filename='bootstrap/bootstrap4/swatch/{swatch}/bootstrap.min.css'.format(swatch=config.get('FLASK_ADMIN_SWATCH', 'default')), v='4.2.1') }}"
+        <link href="{{ admin_static.url(filename='bootstrap/bootstrap4/swatch/{swatch}/bootstrap.min.css'.format(swatch=theme.swatch), v='4.2.1') }}"
               rel="stylesheet">
-        {% if config.get('FLASK_ADMIN_SWATCH', 'default') == 'default' %}
+        {% if theme.swatch == 'default' %}
         <link href="{{ admin_static.url(filename='bootstrap/bootstrap4/css/bootstrap.min.css', v='4.2.1') }}" rel="stylesheet">
         {% endif %}
         <link href="{{ admin_static.url(filename='admin/css/bootstrap4/admin.css', v='1.1.1') }}" rel="stylesheet">
@@ -37,7 +37,7 @@
   </head>
 <body>
 {% block page_body %}
-    <div class="container{% if config.get('FLASK_ADMIN_FLUID_LAYOUT', False) %}-fluid{% endif %}">
+    <div class="container{% if theme.fluid %}-fluid{% endif %}">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-2" role="navigation">
             <!-- Brand and toggle get grouped for better mobile display -->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#admin-navbar-collapse"

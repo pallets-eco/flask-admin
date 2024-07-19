@@ -5,6 +5,7 @@ import warnings
 from functools import wraps
 
 from flask import current_app, render_template, abort, g, url_for, request
+from flask import Blueprint, current_app, render_template, abort, g, url_for
 from flask_admin import babel
 from flask_admin._compat import as_unicode
 from flask_admin import helpers as h
@@ -13,6 +14,7 @@ from flask_admin import helpers as h
 from flask_admin.blueprints import _BlueprintWithHostSupport as Blueprint
 from flask_admin.consts import ADMIN_ROUTES_HOST_VARIABLE
 from flask_admin.menu import MenuCategory, MenuView, MenuLink, SubMenuCategory  # noqa: F401
+from flask_admin.theme import Theme, Bootstrap2Theme
 
 
 def expose(url='/', methods=('GET',)):
@@ -268,7 +270,7 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
         self.blueprint = Blueprint(self.endpoint, __name__,
                                    url_prefix=self.url,
                                    subdomain=self.admin.subdomain,
-                                   template_folder=op.join('templates', self.admin.template_mode),
+                                   template_folder=op.join('templates', self.admin.theme.folder),
                                    static_folder=self.static_folder,
                                    static_url_path=self.static_url_path)
         self.blueprint.attach_url_defaults_and_value_preprocessor(
@@ -308,6 +310,7 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
 
         # Expose config info
         kwargs['config'] = current_app.config
+        kwargs['theme'] = self.admin.theme
 
         # Contribute extra arguments
         kwargs.update(self._template_args)
@@ -473,7 +476,7 @@ class Admin(object):
                  endpoint=None,
                  static_url_path=None,
                  base_template=None,
-                 template_mode=None,
+                 theme: t.Optional[Theme] = None,
                  category_icon_classes=None,
                  host=None):
         """
@@ -500,9 +503,9 @@ class Admin(object):
                 all its views. Can be overridden in view configuration.
             :param base_template:
                 Override base HTML template for all static views. Defaults to `admin/base.html`.
-            :param template_mode:
-                Base template path. Defaults to `bootstrap2`. If you want to use
-                Bootstrap 3 or 4 integration, change it to `bootstrap3` or `bootstrap4`.
+            :param theme:
+                Base theme. Defaults to `Bootstrap2Theme()`. If you want to use
+                Bootstrap 3 or 4 integration, change it to `Bootstrap3Theme()` or `Bootstrap4Theme()`.
             :param category_icon_classes:
                 A dict of category names as keys and html classes as values to be added to menu category icons.
                 Example: {'Favorites': 'glyphicon glyphicon-star'}
@@ -513,10 +516,10 @@ class Admin(object):
 
         self.translations_path = translations_path
 
-        self._views = []
-        self._menu = []
-        self._menu_categories = dict()
-        self._menu_links = []
+        self._views = []  # type: ignore[var-annotated]
+        self._menu = []  # type: ignore[var-annotated]
+        self._menu_categories = dict()  # type: ignore[var-annotated]
+        self._menu_links = []  # type: ignore[var-annotated]
 
         if name is None:
             name = 'Admin'
@@ -529,7 +532,7 @@ class Admin(object):
         self.subdomain = subdomain
         self.host = host
         self.base_template = base_template or 'admin/base.html'
-        self.template_mode = template_mode or 'bootstrap2'
+        self.theme = theme or Bootstrap2Theme()
         self.category_icon_classes = category_icon_classes or dict()
 
         self._validate_admin_host_and_subdomain()

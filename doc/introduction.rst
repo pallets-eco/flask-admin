@@ -18,15 +18,12 @@ The first step is to initialize an empty admin interface for your Flask app::
 
     app = Flask(__name__)
 
-    # set optional bootswatch theme
-    app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
-
-    admin = Admin(app, name='microblog', template_mode='bootstrap4')
+    admin = Admin(app, name='microblog', theme=Bootstrap4Theme(swatch='cerulean'))
     # Add administrative views here
 
     app.run()
 
-Here, both the *name* and *template_mode* parameters are optional. Alternatively,
+Here, both the *name* and *theme* parameters are optional. Alternatively,
 you could use the :meth:`~flask_admin.base.Admin.init_app` method.
 
 If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
@@ -44,7 +41,7 @@ is the SQLAlchemy backend, which you can use as follows::
 
     # Flask and Flask-SQLAlchemy initialization here
 
-    admin = Admin(app, name='microblog', template_mode='bootstrap4')
+    admin = Admin(app, name='microblog', theme=Bootstrap4Theme())
     admin.add_view(ModelView(User, db.session))
     admin.add_view(ModelView(Post, db.session))
 

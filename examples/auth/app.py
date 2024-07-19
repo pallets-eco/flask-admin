@@ -5,6 +5,7 @@ from flask_security import Security, SQLAlchemyUserDatastore, \
     UserMixin, RoleMixin, current_user
 from flask_security.utils import hash_password
 import flask_admin
+from flask_admin.theme import Bootstrap4Theme
 from flask_admin.contrib import sqla
 from flask_admin import helpers as admin_helpers
 
@@ -83,7 +84,7 @@ admin = flask_admin.Admin(
     app,
     'Example: Auth',
     base_template='my_master.html',
-    template_mode='bootstrap4',
+    theme=Bootstrap4Theme(),
 )
 
 # Add model views
