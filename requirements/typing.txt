@@ -66,6 +66,8 @@ flask-wtf==1.1.1
     # via flask-mongoengine
 geoalchemy2==0.15.2
     # via -r tests.in
+greenlet==3.0.3
+    # via sqlalchemy
 idna==3.7
     # via
     #   email-validator
@@ -120,7 +122,7 @@ peewee==3.17.6
     # via
     #   -r tests.in
     #   wtf-peewee
-pillow==9.5.0
+pillow==10.3.0
     # via -r tests.in
 platformdirs==4.0.0
     # via pylint
