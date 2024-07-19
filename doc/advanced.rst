@@ -68,6 +68,55 @@ header to make the selection automatically.
 If the built-in translations are not enough, look at the `Flask-Babel documentation <https://pythonhosted.org/Flask-Babel/>`_
 to see how you can add your own.
 
+Using with Flask in `host_matching` mode
+----------------------------------------
+
+****
+
+If Flask is configured with `host_matching` enabled, then all routes registered on the app need to know which host(s) they should be served for.
+
+This requires some additional explicit configuration for Flask-Admin by passing the `host` argument to `Admin()` calls.
+
+#. With your Flask app initialised::
+
+        from flask import Flask
+        app = Flask(__name__, host='my.domain.com', static_host='static.domain.com')
+
+
+Serving Flask-Admin on a single, explicit host
+**********************************************
+Construct your Admin instance(s) and pass the desired `host` for the admin instance::
+
+        class AdminView(admin.BaseView):
+            @admin.expose('/')
+            def index(self):
+                return self.render('template.html')
+
+        admin1 = admin.Admin(app, url='/admin', host='admin.domain.com')
+        admin1.add_view(AdminView())
+
+Flask's `url_for` calls will work without any additional configuration/information::
+
+        url_for('admin.index', _external=True) == 'http://admin.domain.com/admin')
+
+
+Serving Flask-Admin on all hosts
+********************************
+Pass a wildcard to the `host` parameter to serve the admin instance on all hosts::
+
+        class AdminView(admin.BaseView):
+            @admin.expose('/')
+            def index(self):
+                return self.render('template.html')
+
+        admin1 = admin.Admin(app, url='/admin', host='*')
+        admin1.add_view(AdminView())
+
+If you need to generate URLs for a wildcard admin instance, you will need to pass `admin_routes_host` to the `url_for` call::
+
+        url_for('admin.index', admin_routes_host='admin.domain.com', _external=True) == 'http://admin.domain.com/admin')
+        url_for('admin.index', admin_routes_host='admin2.domain.com', _external=True) == 'http://admin2.domain.com/admin')
+
 .. _file-admin:
 
 Managing Files & Folders
