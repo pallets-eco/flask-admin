@@ -8,7 +8,7 @@ __all__ = ['Select2Widget', 'DatePickerWidget', 'DateTimePickerWidget', 'RenderT
 
 def _is_bootstrap3():
     view = h.get_current_view()
-    return view and view.admin.template_mode == 'bootstrap3'
+    return view and view.admin.theme.folder == 'bootstrap3'
 
 
 class Select2Widget(widgets.Select):

@@ -12,8 +12,8 @@
         <meta name="author" content="">
     {% endblock %}
     {% block head_css %}
-        <link href="{{ admin_static.url(filename='bootstrap/bootstrap3/swatch/{swatch}/bootstrap.min.css'.format(swatch=config.get('FLASK_ADMIN_SWATCH', 'default')), v='3.3.5') }}" rel="stylesheet">
-        {%if config.get('FLASK_ADMIN_SWATCH', 'default') == 'default' %}
+        <link href="{{ admin_static.url(filename='bootstrap/bootstrap3/swatch/{swatch}/bootstrap.min.css'.format(swatch=theme.swatch), v='3.3.5') }}" rel="stylesheet">
+        {%if theme.swatch == 'default' %}
         <link href="{{ admin_static.url(filename='bootstrap/bootstrap3/css/bootstrap-theme.min.css', v='3.3.5') }}" rel="stylesheet">
         {%endif%}
         <link href="{{ admin_static.url(filename='admin/css/bootstrap3/admin.css', v='1.1.1') }}" rel="stylesheet">
@@ -36,7 +36,7 @@
   </head>
   <body>
     {% block page_body %}
-    <div class="container{%if config.get('FLASK_ADMIN_FLUID_LAYOUT', False) %}-fluid{% endif %}">
+    <div class="container{%if theme.fluid %}-fluid{% endif %}">
       <nav class="navbar navbar-default" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">

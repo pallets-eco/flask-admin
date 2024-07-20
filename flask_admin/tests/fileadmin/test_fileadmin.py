@@ -2,9 +2,9 @@ from io import StringIO
 import os
 import os.path as op
 
+from flask_admin.theme import Bootstrap2Theme, Bootstrap3Theme
 from flask_admin.contrib import fileadmin
 from flask_admin import Admin
-from flask import Flask
 
 
 class Base:
@@ -128,7 +128,7 @@ class Base:
             assert 'path=dummy.txt' in rv.data.decode('utf-8')
 
         def test_modal_edit_bs2(self, app, babel):
-            admin_bs2 = Admin(app, template_mode="bootstrap2")
+            admin_bs2 = Admin(app, theme=Bootstrap2Theme())
 
             fileadmin_class = self.fileadmin_class()
             fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
@@ -168,7 +168,7 @@ class Base:
             assert 'fa_modal_window' not in data
 
         def test_modal_edit_bs3(self, app, babel):
-            admin_bs3 = Admin(app, template_mode="bootstrap3")
+            admin_bs3 = Admin(app, theme=Bootstrap3Theme())
 
             fileadmin_class = self.fileadmin_class()
             fileadmin_args, fileadmin_kwargs = self.fileadmin_args()

@@ -5,6 +5,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 import flask_admin as admin
+from flask_admin.theme import Bootstrap4Theme
 from flask_admin.contrib.sqla import ModelView
 
 
@@ -13,7 +14,6 @@ app = Flask(__name__)
 
 # Create dummy secrey key so we can use sessions
 app.config['SECRET_KEY'] = '123456790'
-app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
 
 # Create in-memory database
 app.config['DATABASE_FILE'] = 'sample_db.sqlite'
@@ -61,10 +61,8 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
-# app.config['FLASK_ADMIN_SWATCH'] = 'Minty'
-
 # Create admin with custom base template
-admin = admin.Admin(app, 'Example: Bootstrap4', template_mode='bootstrap4')
+admin = admin.Admin(app, 'Example: Bootstrap4', theme=Bootstrap4Theme(swatch='flatly'))
 
 # Add views
 admin.add_view(UserAdmin(User, db.session, category='Menu'))
