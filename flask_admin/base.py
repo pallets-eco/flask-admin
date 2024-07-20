@@ -297,7 +297,7 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
         """
         # Store self as admin_view
         kwargs['admin_view'] = self
-        kwargs['admin_base_template'] = self.admin.base_template
+        kwargs['admin_base_template'] = self.admin.theme.base_template
 
         # Provide i18n support even if flask-babel is not installed
         # or enabled.
@@ -475,7 +475,6 @@ class Admin(object):
                  translations_path=None,
                  endpoint=None,
                  static_url_path=None,
-                 base_template=None,
                  theme: t.Optional[Theme] = None,
                  category_icon_classes=None,
                  host=None):
@@ -501,8 +500,6 @@ class Admin(object):
             :param static_url_path:
                 Static URL Path. If provided, this specifies the default path to the static url directory for
                 all its views. Can be overridden in view configuration.
-            :param base_template:
-                Override base HTML template for all static views. Defaults to `admin/base.html`.
             :param theme:
                 Base theme. Defaults to `Bootstrap2Theme()`. If you want to use
                 Bootstrap 3 or 4 integration, change it to `Bootstrap3Theme()` or `Bootstrap4Theme()`.
@@ -531,7 +528,6 @@ class Admin(object):
         self.static_url_path = static_url_path
         self.subdomain = subdomain
         self.host = host
-        self.base_template = base_template or 'admin/base.html'
         self.theme = theme or Bootstrap2Theme()
         self.category_icon_classes = category_icon_classes or dict()
 

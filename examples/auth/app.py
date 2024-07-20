@@ -83,8 +83,7 @@ def index():
 admin = flask_admin.Admin(
     app,
     'Example: Auth',
-    base_template='my_master.html',
-    theme=Bootstrap4Theme(),
+    theme=Bootstrap4Theme(base_template='my_master.html'),
 )
 
 # Add model views
@@ -96,7 +95,7 @@ admin.add_view(MyModelView(User, db.session))
 @security.context_processor
 def security_context_processor():
     return dict(
-        admin_base_template=admin.base_template,
+        admin_base_template=admin.theme.base_template,
         admin_view=admin.index_view,
         h=admin_helpers,
         get_url=url_for

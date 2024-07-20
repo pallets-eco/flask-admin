@@ -166,7 +166,7 @@ def index():
 init_login()
 
 # Create admin
-admin = admin.Admin(app, 'Example: Auth', index_view=MyAdminIndexView(), base_template='my_master.html', theme=Bootstrap4Theme())
+admin = admin.Admin(app, 'Example: Auth', index_view=MyAdminIndexView(), theme=Bootstrap4Theme(base_template='my_master.html'))
 
 # Add view
 admin.add_view(MyModelView(User, db.session))

@@ -139,7 +139,7 @@ Defining a `security_context_processor` function will take care of this for you:
 
     def security_context_processor():
         return dict(
-            admin_base_template=admin.base_template,
+            admin_base_template=admin.theme.base_template,
             admin_view=admin.index_view,
             h=admin_helpers,
         )
@@ -408,9 +408,9 @@ Now, to make your view classes use this template, set the appropriate class prop
         # details_modal_template = 'microblog_details_modal.html'
 
 If you want to use your own base template, then pass the name of the template to
-the admin constructor during initialization::
+the admin theme during initialization::
 
-    admin = Admin(app, base_template='microblog_master.html')
+    admin = Admin(app, Bootstrap4Theme(base_template='microblog_master.html'))
 
 Overriding the Built-in Templates
 --------------------------------
