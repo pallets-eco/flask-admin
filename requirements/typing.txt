@@ -16,7 +16,7 @@ azure-storage-blob==2.1.0
     # via -r tests.in
 azure-storage-common==2.1.0
     # via azure-storage-blob
-babel==2.9.1
+babel==2.15.0
     # via
     #   -r tests.in
     #   flask-babel
@@ -56,7 +56,7 @@ flask==2.1.3
     #   flask-mongoengine
     #   flask-sqlalchemy
     #   flask-wtf
-flask-babel==2.0.0
+flask-babel==4.0.0
     # via -r tests.in
 flask-mongoengine==0.8.2
     # via -r tests.in
@@ -81,7 +81,7 @@ itsdangerous==2.0.1
     #   -r tests.in
     #   flask
     #   flask-wtf
-jinja2==3.0.0
+jinja2==3.1.4
     # via
     #   -r tests.in
     #   flask
