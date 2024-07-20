@@ -95,7 +95,7 @@ class InlineModelFormList(InlineFieldList):
 
             self.inline_view._on_model_change(field, model, is_created)
 
-            model.save()
+            model.save(force_insert=True)
 
             # Recurse, to save multi-level nested inlines
             for f in itervalues(field.form._fields):
