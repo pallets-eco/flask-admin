@@ -15,9 +15,10 @@ def app():
 
 @pytest.fixture
 def babel(app):
+    babel = None
     try:
         from flask_babel import Babel
-        _ = Babel(app)
+        babel = Babel(app)
     except ImportError:
         pass
 
