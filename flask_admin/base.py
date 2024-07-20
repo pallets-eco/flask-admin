@@ -1,14 +1,17 @@
 import os.path as op
+import typing as t
 import warnings
 
 from functools import wraps
 
-from flask import Blueprint, current_app, render_template, abort, g, url_for
+from flask import current_app, render_template, abort, g, url_for, request
 from flask_admin import babel
 from flask_admin._compat import as_unicode
 from flask_admin import helpers as h
 
 # For compatibility reasons import MenuLink
+from flask_admin.blueprints import _BlueprintWithHostSupport as Blueprint
+from flask_admin.consts import ADMIN_ROUTES_HOST_VARIABLE
 from flask_admin.menu import MenuCategory, MenuView, MenuLink, SubMenuCategory  # noqa: F401
 
 
@@ -268,6 +271,10 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
                                    template_folder=op.join('templates', self.admin.template_mode),
                                    static_folder=self.static_folder,
                                    static_url_path=self.static_url_path)
+        self.blueprint.attach_url_defaults_and_value_preprocessor(
+            app=self.admin.app,
+            host=self.admin.host
+        )
 
         for url, name, methods in self._urls:
             self.blueprint.add_url_rule(url,
@@ -467,7 +474,8 @@ class Admin(object):
                  static_url_path=None,
                  base_template=None,
                  template_mode=None,
-                 category_icon_classes=None):
+                 category_icon_classes=None,
+                 host=None):
         """
             Constructor.
 
@@ -498,6 +506,8 @@ class Admin(object):
             :param category_icon_classes:
                 A dict of category names as keys and html classes as values to be added to menu category icons.
                 Example: {'Favorites': 'glyphicon glyphicon-star'}
+            :param host:
+                The host to register all admin views on. Mutually exclusive with `subdomain`
         """
         self.app = app
 
@@ -517,9 +527,12 @@ class Admin(object):
         self.url = url or self.index_view.url
         self.static_url_path = static_url_path
         self.subdomain = subdomain
+        self.host = host
         self.base_template = base_template or 'admin/base.html'
         self.template_mode = template_mode or 'bootstrap2'
         self.category_icon_classes = category_icon_classes or dict()
+
+        self._validate_admin_host_and_subdomain()
 
         # Add index view
         self._set_admin_index_view(index_view=index_view, endpoint=endpoint, url=url)
@@ -527,6 +540,28 @@ class Admin(object):
         # Register with application
         if app is not None:
             self._init_extension()
+
+    def _validate_admin_host_and_subdomain(self):
+        if self.subdomain is not None and self.host is not None:
+            raise ValueError("`subdomain` and `host` are mutually-exclusive")
+
+        if self.host is None:
+            return
+
+        if self.app and not self.app.url_map.host_matching:
+            raise ValueError(
+                "`host` should only be set if your Flask app is using `host_matching`."
+            )
+
+        if self.host.strip() in {"*", ADMIN_ROUTES_HOST_VARIABLE}:
+            self.host = ADMIN_ROUTES_HOST_VARIABLE
+
+        elif "<" in self.host and ">" in self.host:
+            raise ValueError(
+                "`host` must either be a host name with no variables, to serve all "
+                "Flask-Admin routes from a single host, or `*` to match the current "
+                "request's host."
+            )
 
     def add_view(self, view):
         """
@@ -540,7 +575,10 @@ class Admin(object):
 
         # If app was provided in constructor, register view with Flask app
         if self.app is not None:
-            self.app.register_blueprint(view.create_blueprint(self))
+            self.app.register_blueprint(
+                view.create_blueprint(self),
+                host=self.host,
+            )
 
         self._add_view_to_menu(view)
 
@@ -708,6 +746,7 @@ class Admin(object):
                 Flask application instance
         """
         self.app = app
+        self._validate_admin_host_and_subdomain()
 
         self._init_extension()
 
@@ -721,7 +760,10 @@ class Admin(object):
 
         # Register views
         for view in self._views:
-            app.register_blueprint(view.create_blueprint(self))
+            app.register_blueprint(
+                view.create_blueprint(self),
+                host=self.host
+            )
 
     def _init_extension(self):
         if not hasattr(self.app, 'extensions'):

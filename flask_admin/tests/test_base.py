@@ -10,7 +10,7 @@ from flask_admin import base
 
 @pytest.fixture
 def app():
-    # Overrides the `app` fixture in `flask_admin/tests/conftest.py` so that the `sqla`
+    # Overrides the `app` fixture in `flask_admin/tests/conftest.py` so that the `tests`
     # directory/import path is configured as the root path for Flask. This will
     # cause the `templates` directory here to be used for template resolution.
     app = Flask(__name__)
