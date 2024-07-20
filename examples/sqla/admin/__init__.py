@@ -7,11 +7,7 @@ app = Flask(__name__)
 app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 
-# Initialize babel
-babel = Babel(app)
 
-
-@babel.localeselector
 def get_locale():
     override = request.args.get('lang')
 
@@ -19,6 +15,10 @@ def get_locale():
         session['lang'] = override
 
     return session.get('lang', 'en')
+
+
+# Initialize babel
+babel = Babel(app, locale_selector=get_locale)
 
 
 import admin.main
