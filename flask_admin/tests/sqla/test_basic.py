@@ -235,8 +235,8 @@ def test_model(app, db, admin):
         model = db.session.query(Model1).first()
         assert model.test1 == u'test1large'
         assert model.test2 == u'test2'
-        assert model.test3 == u''
-        assert model.test4 == u''
+        assert model.test3 == None
+        assert model.test4 == None
         assert model.email_field == u'test@test.com'
         assert model.choice_field == u'choice-1'
         assert model.enum_field == u'model1_v1'
@@ -285,8 +285,8 @@ def test_model(app, db, admin):
         model = db.session.query(Model1).first()
         assert model.test1 == 'test1small'
         assert model.test2 == 'test2large'
-        assert model.test3 == ''
-        assert model.test4 == ''
+        assert model.test3 == None
+        assert model.test4 == None
         assert model.email_field == u'test2@test.com'
         assert model.choice_field is None
         assert model.enum_field is None
@@ -2639,3 +2639,82 @@ def test_export_csv(app, db, admin):
         data = rv.data.decode('utf-8')
         assert rv.status_code == 200
         assert len(data.splitlines()) > 21
+
+
+STRING_CONSTANT = "Anyway, here's Wonderwall"
+
+
+def test_string_null_behavior(app, db, admin):
+    with app.app_context():
+        class StringTestModel(db.Model):
+            id = db.Column(db.Integer, primary_key=True)
+            test_no = db.Column(db.Integer, nullable=False)
+            string_field = db.Column(db.String)
+            string_field_nonull = db.Column(db.String, nullable=False)
+            string_field_nonull_default = db.Column(db.String, nullable=False, default='')
+            text_field = db.Column(db.Text)
+            text_field_nonull = db.Column(db.Text, nullable=False)
+            text_field_nonull_default = db.Column(db.Text, nullable=False, default='')
+
+        db.create_all()
+
+        view = CustomModelView(StringTestModel, db.session)
+        admin.add_view(view)
+
+        client = app.test_client()
+
+        valid_params = {
+            "test_no": 1,
+            "string_field_nonull": STRING_CONSTANT,
+            "text_field_nonull": STRING_CONSTANT,
+        }
+        rv = client.post('/admin/stringtestmodel/new/',
+                         data=valid_params)
+        assert rv.status_code == 302
+
+        # Assert on defaults
+        valid_inst = db.session.query(StringTestModel).filter(StringTestModel.test_no == 1).one()
+        assert valid_inst.string_field is None
+        assert valid_inst.string_field_nonull == STRING_CONSTANT
+        assert valid_inst.string_field_nonull_default == ''
+        assert valid_inst.text_field is None
+        assert valid_inst.text_field_nonull == STRING_CONSTANT
+        assert valid_inst.text_field_nonull_default == ''
+
+        # Assert that nulls are caught on the non-null fields
+        invalid_string_field = {
+            "test_no": 2,
+            "string_field_nonull": None,
+            "text_field_nonull": STRING_CONSTANT,
+        }
+        rv = client.post('/admin/stringtestmodel/new/',
+                         data=invalid_string_field)
+        assert rv.status_code == 200
+        assert b'This field is required.' in rv.data
+        assert db.session.query(StringTestModel).filter(StringTestModel.test_no == 2).all() == []
+
+        invalid_text_field = {
+            "test_no": 3,
+            "string_field_nonull": STRING_CONSTANT,
+            "text_field_nonull": None,
+        }
+        rv = client.post('/admin/stringtestmodel/new/',
+                         data=invalid_text_field)
+        assert rv.status_code == 200
+        assert b'This field is required.' in rv.data
+        assert db.session.query(StringTestModel).filter(StringTestModel.test_no == 3).all() == []
+
+        # Assert that empty strings are converted to None on nullable fields.
+        empty_strings = {
+            "test_no": 4,
+            "string_field": "",
+            "text_field": "",
+            "string_field_nonull": STRING_CONSTANT,
+            "text_field_nonull": STRING_CONSTANT,
+        }
+        rv = client.post('/admin/stringtestmodel/new/',
+                         data=empty_strings)
+        assert rv.status_code == 302
+        empty_string_inst = db.session.query(StringTestModel).filter(StringTestModel.test_no == 4).one()
+        assert empty_string_inst.string_field is None
+        assert empty_string_inst.text_field is None
