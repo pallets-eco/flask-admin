@@ -707,6 +707,31 @@ def test_export_csv(app, admin):
     assert rv.status_code == 500
 
 
+def test_export_tablib(app, admin):
+    client = app.test_client()
+
+    # basic test of tsv export with a few records using tablib
+    view_data = {
+        1: Model(1, "col1_1", "col2_1"),
+        2: Model(2, "col1_2", "col2_2"),
+        3: Model(3, "col1_3", "col2_3"),
+    }
+
+    view = MockModelView(Model, view_data, can_export=True,
+                         column_list=['col1', 'col2'],
+                         export_types=['tsv'])
+    admin.add_view(view)
+
+    rv = client.get('/admin/model/export/tsv/')
+    data = rv.data.decode('utf-8')
+    assert rv.mimetype == 'text/tab-separated-values'
+    assert rv.status_code == 200
+    assert "Col1\tCol2\r\n" + \
+        "col1_1\tcol2_1\r\n" + \
+        "col1_2\tcol2_2\r\n" + \
+        "col1_3\tcol2_3\r\n" == data
+
+
 def test_list_row_actions(app, admin):
     client = app.test_client()
 
