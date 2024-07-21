@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 
 import flask_admin as admin
@@ -10,6 +11,7 @@ from flask_admin.contrib.geoa import ModelView
 
 # Create application
 app = Flask(__name__)
+babel = Babel(app)
 app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 

@@ -6,7 +6,7 @@ SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://flask_admin_geo:flask_admin_geo
 SQLALCHEMY_ECHO = True
 
 # credentials for loading map tiles from mapbox
-MAPBOX_MAP_ID = '...'
+MAPBOX_MAP_ID = 'light-v10'  # example map id
 MAPBOX_ACCESS_TOKEN = '...'
 
 # when the creating new shapes, use this default map center
