@@ -60,13 +60,17 @@ def index():
 # Create admin
 admin = admin.Admin(app, name='Example: GeoAlchemy', theme=Bootstrap4Theme())
 
+
+class ModalModelView(ModelView):
+    edit_modal = True
+
 # Add views
-admin.add_view(ModelView(Point, db.session, category='Points'))
-admin.add_view(ModelView(MultiPoint, db.session, category='Points'))
-admin.add_view(ModelView(Polygon, db.session, category='Polygons'))
-admin.add_view(ModelView(MultiPolygon, db.session, category='Polygons'))
-admin.add_view(ModelView(LineString, db.session, category='Lines'))
-admin.add_view(ModelView(MultiLineString, db.session, category='Lines'))
+admin.add_view(ModalModelView(Point, db.session, category='Points'))
+admin.add_view(ModalModelView(MultiPoint, db.session, category='Points'))
+admin.add_view(ModalModelView(Polygon, db.session, category='Polygons'))
+admin.add_view(ModalModelView(MultiPolygon, db.session, category='Polygons'))
+admin.add_view(ModalModelView(LineString, db.session, category='Lines'))
+admin.add_view(ModalModelView(MultiLineString, db.session, category='Lines'))
 
 if __name__ == '__main__':
 
