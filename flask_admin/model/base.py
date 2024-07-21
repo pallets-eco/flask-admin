@@ -773,7 +773,7 @@ class BaseModelView(BaseView, ActionsMixin):
         A list of available export filetypes. `csv` only is default, but any
         filetypes supported by tablib can be used.
 
-        Check tablib for https://github.com/kennethreitz/tablib/blob/master/README.rst
+        Check tablib for https://tablib.readthedocs.io/en/stable/formats.html
         for supported types.
     """
 
