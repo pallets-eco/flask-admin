@@ -20,5 +20,5 @@
 {% endblock %}
 
 {% block tail %}
-  <script src="{{ admin_static.url(filename='admin/js/bs3_modal.js', v='1.0.0') }}"></script>
+  <script>window.faForm.applyGlobalStyles(document.getElementsByClassName('modal-content'));</script>
 {% endblock %}
