@@ -67,13 +67,14 @@ class LocationImage(db.Model):
 
 
 # Register after_delete handler which will delete image file after model gets deleted
-@event.listens_for(LocationImage, 'after_delete')
+@event.listens_for(Location, 'after_delete')
 def _handle_image_delete(mapper, conn, target):
-    try:
-        if target.path:
-            os.remove(op.join(base_path, target.path))
-    except:
-        pass
+    for location_image in target.images:
+        try:
+            if location_image.path:
+                os.remove(op.join(base_path, location_image.path))
+        except:
+            pass
 
 
 # This widget uses custom template for inline field list
