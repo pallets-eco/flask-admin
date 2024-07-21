@@ -1,6 +1,5 @@
 import os
 import os.path as op
-from pathlib import Path
 
 from werkzeug.utils import secure_filename
 from sqlalchemy import event
@@ -68,13 +67,14 @@ class LocationImage(db.Model):
 
 
 # Register after_delete handler which will delete image file after model gets deleted
-@event.listens_for(LocationImage, 'after_delete')
+@event.listens_for(Location, 'after_delete')
 def _handle_image_delete(mapper, conn, target):
-    try:
-        if target.path:
-            os.remove(op.join(base_path, target.path))
-    except:
-        pass
+    for location_image in target.images:
+        try:
+            if location_image.path:
+                os.remove(op.join(base_path, location_image.path))
+        except:
+            pass
 
 
 # This widget uses custom template for inline field list
@@ -116,13 +116,13 @@ class LocationImageInlineModelForm(InlineFormAdmin):
     }
 
     def __init__(self):
-        return super(LocationImageInlineModelForm, self).__init__(LocationImage)
+        super(LocationImageInlineModelForm, self).__init__(LocationImage)
 
     def postprocess_form(self, form_class):
         form_class.upload = fields.FileField('Image')
         return form_class
 
-    def on_model_change(self, form, model):
+    def on_model_change(self, form, model, is_created):
         file_data = request.files.get(form.upload.name)
 
         if file_data:
@@ -137,7 +137,7 @@ class LocationAdmin(ModelView):
     inline_models = (LocationImageInlineModelForm(),)
 
     def __init__(self):
-        super(LocationAdmin, self).__init__(Location, db.session, name='Locations')
+        super().__init__(Location, db.session, name='Locations')
 
 
 # Simple page to show images
@@ -149,36 +149,33 @@ def index():
 
 def first_time_setup():
     """Run this to setup the database for the first time"""
+    with app.app_context():
+        # Create DB
+        db.drop_all()
+        db.create_all()
+
+        # Add some image types for the form_ajax_refs inside the inline_model
+        image_types = ("JPEG", "PNG", "GIF")
+        for image_type in image_types:
+            model = ImageType(name=image_type)
+            db.session.add(model)
+
+        db.session.commit()
+
+
+if __name__ == '__main__':
+    # Create upload directory
+    try:
+        os.mkdir(base_path)
+    except OSError:
+        pass
+
     # Create DB
-    db.drop_all()
-    db.create_all()
-
-    # Add some image types for the form_ajax_refs inside the inline_model
-    image_types = ("JPEG", "PNG", "GIF")
-    for image_type in image_types:
-        model = ImageType(name=image_type)
-        db.session.add(model)
-
-    db.session.commit()
-
-    return
-
-
-# if __name__ == '__main__':
-# Create upload directory
-try:
-    os.mkdir(base_path)
-except OSError:
-    pass
+    first_time_setup()
 
     # Create admin
     admin = admin.Admin(app, name='Example: Inline Models')
-
-    # Add views
     admin.add_view(LocationAdmin())
 
-# Create DB
-first_time_setup()
-
-# Start app
-app.run(debug=True)
+    # Start app
+    app.run(debug=True)
