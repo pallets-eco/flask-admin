@@ -280,13 +280,19 @@ To have map data display correctly, you'll have to sign up for an account at htt
 and include some credentials in your application's config::
 
     app = Flask(__name__)
-    app.config['MAPBOX_MAP_ID'] = "example.abc123"
-    app.config['MAPBOX_ACCESS_TOKEN'] = "pk.def456"
-
+    app.config['FLASK_ADMIN_MAPBOX_MAP_ID'] = "example.abc123"
+    app.config['FLASK_ADMIN_MAPBOX_ACCESS_TOKEN'] = "pk.def456"
+    app.config['FLASK_ADMIN_DEFAULT_CENTER_LAT'] = -33.918861  # Replace with your own value
+    app.config['FLASK_ADMIN_DEFAULT_CENTER_LONG'] = 18.423300  # Replace with your own value
 
 Leaflet supports loading map tiles from any arbitrary map tile provider, but
 at the moment, Flask-Admin only supports Mapbox. If you want to use other
 providers, make a pull request!
+
+If you want to include a search box on map widgets for looking up locations, you need the following additional configuration::
+
+    app.config['FLASK_ADMIN_MAPBOX_SEARCH'] = True
+    app.config['FLASK_ADMIN_GOOGLE_MAPS_API_KEY'] = 'secret'
 
 Limitations
 ***********

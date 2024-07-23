@@ -1550,7 +1550,7 @@ class BaseModelView(BaseView, ActionsMixin):
             flash(as_unicode(exc), 'error')
             return True
 
-        if current_app.config.get('ADMIN_RAISE_ON_VIEW_EXCEPTION'):
+        if current_app.config.get('FLASK_ADMIN_RAISE_ON_VIEW_EXCEPTION'):
             raise
 
         if self._debug:
