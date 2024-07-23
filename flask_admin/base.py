@@ -501,8 +501,7 @@ class Admin(object):
                 Static URL Path. If provided, this specifies the default path to the static url directory for
                 all its views. Can be overridden in view configuration.
             :param theme:
-                Base theme. Defaults to `Bootstrap4Theme()`. If you want to use
-                Bootstrap 3 or 4 integration, change it to `Bootstrap3Theme()` or `Bootstrap4Theme()`.
+                Base theme. Defaults to `Bootstrap4Theme()`.
             :param category_icon_classes:
                 A dict of category names as keys and html classes as values to be added to menu category icons.
                 Example: {'Favorites': 'glyphicon glyphicon-star'}
