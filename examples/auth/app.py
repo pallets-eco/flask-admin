@@ -8,14 +8,12 @@ import flask_admin
 from flask_admin.theme import Bootstrap4Theme
 from flask_admin.contrib import sqla
 from flask_admin import helpers as admin_helpers
-from flask_babel import Babel
 
 
 # Create Flask application
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
-babel = Babel(app)
 
 
 # Define models
