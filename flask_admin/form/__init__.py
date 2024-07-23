@@ -14,15 +14,16 @@ from .upload import *  # noqa: F403,F401
 
 
 class BaseForm(form.Form):
-    _translations = Translations()
+    class Meta:
+        _translations = Translations()
+
+        def get_translations(self, form):
+            return self._translations
 
     def __init__(self, formdata=None, obj=None, prefix=u'', **kwargs):
         self._obj = obj
 
         super(BaseForm, self).__init__(formdata=formdata, obj=obj, prefix=prefix, **kwargs)
-
-    def _get_translations(self):
-        return self._translations
 
 
 class FormOpts(object):
