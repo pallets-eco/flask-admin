@@ -74,12 +74,12 @@
        * Process Leaflet (map) widget
        */
       function processLeafletWidget($el, name) {
-        if (!window.MAPBOX_MAP_ID) {
-          console.error("You must set MAPBOX_MAP_ID in your Flask settings to use the map widget");
+        if (!window.FLASK_ADMIN_MAPS) {
+          console.error("You must set FLASK_ADMIN_MAPS in your Flask settings to use the map widget");
           return false;
         }
-        if (!window.DEFAULT_CENTER_LAT || !window.DEFAULT_CENTER_LONG) {
-          console.error("You must set DEFAULT_CENTER_LAT and DEFAULT_CENTER_LONG in your Flask settings to use the map widget");
+        if (!window.FLASK_ADMIN_DEFAULT_CENTER_LAT || !window.FLASK_ADMIN_DEFAULT_CENTER_LONG) {
+          console.error("You must set FLASK_ADMIN_DEFAULT_CENTER_LAT and FLASK_ADMIN_DEFAULT_CENTER_LONG in your Flask settings to use the map widget");
           return false;
         }
 
@@ -154,11 +154,11 @@
           }
         } else {
           // use the default map center
-          map.setView([window.DEFAULT_CENTER_LAT, window.DEFAULT_CENTER_LONG], 12);
+          map.setView([window.FLASK_ADMIN_DEFAULT_CENTER_LAT, window.FLASK_ADMIN_DEFAULT_CENTER_LONG], 12);
         }
 
         // set up tiles
-        var mapboxHostnameAndPath = $el.data('tile-layer-url') || 'api.mapbox.com/styles/v1/mapbox/'+window.MAPBOX_MAP_ID+'/tiles/{z}/{x}/{y}?access_token={accessToken}';
+        var mapboxHostnameAndPath = $el.data('tile-layer-url') || 'api.mapbox.com/styles/v1/mapbox/'+window.FLASK_ADMIN_MAPBOX_MAP_ID+'/tiles/{z}/{x}/{y}?access_token={accessToken}';
         var attribution = $el.data('tile-layer-attribution') || 'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="//mapbox.com">Mapbox</a>';
         L.tileLayer('//' + mapboxHostnameAndPath, {
           // Attributes from https://docs.mapbox.com/help/troubleshooting/migrate-legacy-static-tiles-api/
@@ -166,7 +166,7 @@
           maxZoom: 18,
           tileSize: 512,
           zoomOffset: -1,
-          accessToken: window.MAPBOX_ACCESS_TOKEN
+          accessToken: window.FLASK_ADMIN_MAPBOX_ACCESS_TOKEN
         }).addTo(map);
 
         // everything below here is to set up editing, so if we're not editable,
@@ -201,7 +201,7 @@
         }
         var drawControl = new L.Control.Draw(drawOptions);
         map.addControl(drawControl);
-        if (window.MAPBOX_SEARCH) {
+        if (window.FLASK_ADMIN_MAPS_SEARCH) {
           var circle = L.circleMarker([0, 0]);
           var $autocompleteEl = $('<input style="position: absolute; z-index: 9999; display: block; margin: -42px 0 0 10px; width: 50%">');
           var $form = $($el.get(0).form);

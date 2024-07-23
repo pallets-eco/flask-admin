@@ -273,20 +273,39 @@ Some of the Geometry field types that are available include:
 Have a look at https://github.com/flask-admin/flask-admin/tree/master/examples/geo_alchemy
 to get started.
 
-Loading Tiles From Mapbox
-*************************
+Display map widgets
+*******************
 
-To have map data display correctly, you'll have to sign up for an account at https://www.mapbox.com/
-and include some credentials in your application's config::
+Flask-Admin uses `Leaflet <https://leafletjs.com/>`_ to display map widgets for
+geographical data. By default, this uses `MapBox <https://www.mapbox.com>`_.
+
+To have MapBox data display correctly, you'll have to sign up for an account and include
+some credentials in your application's config::
 
     app = Flask(__name__)
-    app.config['MAPBOX_MAP_ID'] = "example.abc123"
-    app.config['MAPBOX_ACCESS_TOKEN'] = "pk.def456"
+    app.config['FLASK_ADMIN_MAPS'] = True
 
+    # Required: configure the default centre position for blank maps
+    app.config['FLASK_ADMIN_DEFAULT_CENTER_LAT'] = -33.918861
+    app.config['FLASK_ADMIN_DEFAULT_CENTER_LONG'] = 18.423300
 
-Leaflet supports loading map tiles from any arbitrary map tile provider, but
-at the moment, Flask-Admin only supports Mapbox. If you want to use other
-providers, make a pull request!
+    # Required if using the default Mapbox integration
+    app.config['FLASK_ADMIN_MAPBOX_MAP_ID'] = "example.abc123"
+    app.config['FLASK_ADMIN_MAPBOX_ACCESS_TOKEN'] = "pk.def456"
+
+If you want to use a map provider other than MapBox (eg OpenStreetMaps), you can override
+the tile layer URLs and tile attribution attributes::
+
+    class CityView(ModelView):
+        tile_layer_url = '{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+        tile_layer_attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+
+If you want to include a search box on map widgets for looking up locations, you need the following additional configuration::
+
+    app.config['FLASK_ADMIN_MAPS_SEARCH'] = True
+    app.config['FLASK_ADMIN_GOOGLE_MAPS_API_KEY'] = 'secret'
+
+Flask-Admin currently only supports Google Maps for map search.
 
 Limitations
 ***********
@@ -605,3 +624,34 @@ While the wrapped function should accept only one parameter - `ids`::
                     raise
 
                 flash(gettext('Failed to approve users. %(error)s', error=str(ex)), 'error')
+
+
+Raise exceptions instead of flash error messages
+------------------------------------------------
+
+****
+
+By default, Flask-Admin will capture most exceptions related to reading/writing models
+and display a flash message instead of raising an exception. If your Flask app is running
+in debug mode (ie under local development), exceptions will not be suppressed.
+
+The flash message behaviour can be overridden with some Flask configuration.::
+
+    app = Flask(__name__)
+    app.config['FLASK_ADMIN_RAISE_ON_VIEW_EXCEPTION'] = True
+    app.config['FLASK_ADMIN_RAISE_ON_INTEGRITY_ERROR'] = True
+
+
+FLASK_ADMIN_RAISE_ON_VIEW_EXCEPTION
+***********************************
+Instead of turning exceptions on model create/update/delete actions into flash messages,
+raise the exception as normal. You should expect the view to return a 500 to the user,
+unless you add specific handling to prevent this.
+
+FLASK_ADMIN_RAISE_ON_INTEGRITY_ERROR
+************************************
+This targets SQLAlchemy specifically.
+
+Unlike the previous setting, this will specifically only affect the behaviour of
+IntegrityErrors. These usually come from violations on constraints in the database,
+for example trying to insert a row with a primary key that already exists.

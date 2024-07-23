@@ -61,16 +61,21 @@ def index():
 admin = admin.Admin(app, name='Example: GeoAlchemy', theme=Bootstrap4Theme())
 
 
-class ModalModelView(ModelView):
+class LeafletModelView(ModelView):
     edit_modal = True
 
+
+class OSMModelView(ModelView):
+    tile_layer_url = '{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    tile_layer_attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+
 # Add views
-admin.add_view(ModalModelView(Point, db.session, category='Points'))
-admin.add_view(ModalModelView(MultiPoint, db.session, category='Points'))
-admin.add_view(ModalModelView(Polygon, db.session, category='Polygons'))
-admin.add_view(ModalModelView(MultiPolygon, db.session, category='Polygons'))
-admin.add_view(ModalModelView(LineString, db.session, category='Lines'))
-admin.add_view(ModalModelView(MultiLineString, db.session, category='Lines'))
+admin.add_view(LeafletModelView(Point, db.session, category='Points'))
+admin.add_view(OSMModelView(MultiPoint, db.session, category='Points'))
+admin.add_view(LeafletModelView(Polygon, db.session, category='Polygons'))
+admin.add_view(OSMModelView(MultiPolygon, db.session, category='Polygons'))
+admin.add_view(LeafletModelView(LineString, db.session, category='Lines'))
+admin.add_view(OSMModelView(MultiLineString, db.session, category='Lines'))
 
 if __name__ == '__main__':
 
