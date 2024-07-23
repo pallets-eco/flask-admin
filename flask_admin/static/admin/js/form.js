@@ -74,8 +74,8 @@
        * Process Leaflet (map) widget
        */
       function processLeafletWidget($el, name) {
-        if (!window.FLASK_ADMIN_MAPBOX_MAP_ID) {
-          console.error("You must set FLASK_ADMIN_MAPBOX_MAP_ID in your Flask settings to use the map widget");
+        if (!window.FLASK_ADMIN_MAPS) {
+          console.error("You must set FLASK_ADMIN_MAPS in your Flask settings to use the map widget");
           return false;
         }
         if (!window.FLASK_ADMIN_DEFAULT_CENTER_LAT || !window.FLASK_ADMIN_DEFAULT_CENTER_LONG) {
@@ -201,7 +201,7 @@
         }
         var drawControl = new L.Control.Draw(drawOptions);
         map.addControl(drawControl);
-        if (window.FLASK_ADMIN_MAPBOX_SEARCH) {
+        if (window.FLASK_ADMIN_MAPS_SEARCH) {
           var circle = L.circleMarker([0, 0]);
           var $autocompleteEl = $('<input style="position: absolute; z-index: 9999; display: block; margin: -42px 0 0 10px; width: 50%">');
           var $form = $($el.get(0).form);

@@ -273,26 +273,39 @@ Some of the Geometry field types that are available include:
 Have a look at https://github.com/flask-admin/flask-admin/tree/master/examples/geo_alchemy
 to get started.
 
-Loading Tiles From Mapbox
-*************************
+Display map widgets
+*******************
 
-To have map data display correctly, you'll have to sign up for an account at https://www.mapbox.com/
-and include some credentials in your application's config::
+Flask-Admin uses `Leaflet <https://leafletjs.com/>`_ to display map widgets for
+geographical data. By default, this uses `MapBox <https://www.mapbox.com>`_.
+
+To have MapBox data display correctly, you'll have to sign up for an account and include
+some credentials in your application's config::
 
     app = Flask(__name__)
+    app.config['FLASK_ADMIN_MAPS'] = True
+
+    # Required: configure the default centre position for blank maps
+    app.config['FLASK_ADMIN_DEFAULT_CENTER_LAT'] = -33.918861
+    app.config['FLASK_ADMIN_DEFAULT_CENTER_LONG'] = 18.423300
+
+    # Required if using the default Mapbox integration
     app.config['FLASK_ADMIN_MAPBOX_MAP_ID'] = "example.abc123"
     app.config['FLASK_ADMIN_MAPBOX_ACCESS_TOKEN'] = "pk.def456"
-    app.config['FLASK_ADMIN_DEFAULT_CENTER_LAT'] = -33.918861  # Replace with your own value
-    app.config['FLASK_ADMIN_DEFAULT_CENTER_LONG'] = 18.423300  # Replace with your own value
 
-Leaflet supports loading map tiles from any arbitrary map tile provider, but
-at the moment, Flask-Admin only supports Mapbox. If you want to use other
-providers, make a pull request!
+If you want to use a map provider other than MapBox (eg OpenStreetMaps), you can override
+the tile layer URLs and tile attribution attributes::
+
+    class CityView(ModelView):
+        tile_layer_url = '{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+        tile_layer_attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 
 If you want to include a search box on map widgets for looking up locations, you need the following additional configuration::
 
-    app.config['FLASK_ADMIN_MAPBOX_SEARCH'] = True
+    app.config['FLASK_ADMIN_MAPS_SEARCH'] = True
     app.config['FLASK_ADMIN_GOOGLE_MAPS_API_KEY'] = 'secret'
+
+Flask-Admin currently only supports Google Maps for map search.
 
 Limitations
 ***********
