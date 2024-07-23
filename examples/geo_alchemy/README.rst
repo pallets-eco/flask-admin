@@ -34,6 +34,10 @@ To run this example:
 
     python examples/geo_alchemy/app.py
 
-6. You will notice that the maps are not rendered. To see them, you will have
+6. You will notice that the maps are not rendered. By default, Flask-Admin expects
+an integration with `Mapbox <https://www.mapbox.com/>`_. To see them, you will have
 to register for a free account at `Mapbox <https://www.mapbox.com/>`_ and set
-the *MAPBOX_MAP_ID* and *MAPBOX_ACCESS_TOKEN* config variables accordingly.
+the *FLASK_ADMIN_MAPBOX_MAP_ID* and *FLASK_ADMIN_MAPBOX_ACCESS_TOKEN* config
+variables accordingly.
+
+However, some of the maps are overridden to use Open Street Maps
