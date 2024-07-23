@@ -272,8 +272,9 @@ def test_inline_form_base_class(app, db, admin):
                 return 'success!'
 
         class StubBaseForm(form.BaseForm):
-            def _get_translations(self):
-                return StubTranslation()
+            class Meta:
+                def get_translations(self, form):
+                    return StubTranslation()
 
         # Set up Admin
         class UserModelView(ModelView):
