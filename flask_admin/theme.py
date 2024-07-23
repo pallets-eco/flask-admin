@@ -11,12 +11,11 @@ class Theme:
 
 @dataclass
 class BootstrapTheme(Theme):
-    folder: typing.Literal['bootstrap2', 'bootstrap3', 'bootstrap4']
+    folder: typing.Literal['bootstrap3', 'bootstrap4']
     base_template: str = 'admin/base.html'
     swatch: str = 'default'
     fluid: bool = False
 
 
-Bootstrap2Theme = partial(BootstrapTheme, folder='bootstrap2')
 Bootstrap3Theme = partial(BootstrapTheme, folder='bootstrap3')
 Bootstrap4Theme = partial(BootstrapTheme, folder='bootstrap4')

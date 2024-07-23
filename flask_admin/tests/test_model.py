@@ -7,7 +7,7 @@ from wtforms import fields
 
 from flask_admin import Admin, form
 from flask_admin._compat import iteritems, itervalues
-from flask_admin.theme import Bootstrap2Theme, Bootstrap3Theme, Bootstrap4Theme
+from flask_admin.theme import Bootstrap3Theme, Bootstrap4Theme
 from flask_admin.model import base, filters
 from flask_admin.model.template import macro
 
@@ -420,45 +420,6 @@ def test_custom_form(app, admin):
     assert view._edit_form_class == TestForm
 
     assert not hasattr(view._create_form_class, 'col1')
-
-
-def test_modal_edit_bs2(app, babel):
-    admin_bs2 = Admin(app, theme=Bootstrap2Theme())
-
-    edit_modal_on = MockModelView(Model, edit_modal=True, endpoint="edit_modal_on")
-    edit_modal_off = MockModelView(Model, edit_modal=False, endpoint="edit_modal_off")
-    create_modal_on = MockModelView(Model, create_modal=True, endpoint="create_modal_on")
-    create_modal_off = MockModelView(Model, create_modal=False, endpoint="create_modal_off")
-    admin_bs2.add_view(edit_modal_on)
-    admin_bs2.add_view(edit_modal_off)
-    admin_bs2.add_view(create_modal_on)
-    admin_bs2.add_view(create_modal_off)
-
-    client_bs2 = app.test_client()
-
-    # bootstrap 2 - ensure modal window is added when edit_modal is enabled
-    rv = client_bs2.get('/admin/edit_modal_on/')
-    assert rv.status_code == 200
-    data = rv.data.decode('utf-8')
-    assert 'fa_modal_window' in data
-
-    # bootstrap 2 - test edit modal disabled
-    rv = client_bs2.get('/admin/edit_modal_off/')
-    assert rv.status_code == 200
-    data = rv.data.decode('utf-8')
-    assert 'fa_modal_window' not in data
-
-    # bootstrap 2 - ensure modal window is added when create_modal is enabled
-    rv = client_bs2.get('/admin/create_modal_on/')
-    assert rv.status_code == 200
-    data = rv.data.decode('utf-8')
-    assert 'fa_modal_window' in data
-
-    # bootstrap 2 - test create modal disabled
-    rv = client_bs2.get('/admin/create_modal_off/')
-    assert rv.status_code == 200
-    data = rv.data.decode('utf-8')
-    assert 'fa_modal_window' not in data
 
 
 def test_modal_edit_bs3(app, babel):
