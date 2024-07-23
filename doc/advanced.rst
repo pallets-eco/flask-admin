@@ -611,3 +611,34 @@ While the wrapped function should accept only one parameter - `ids`::
                     raise
 
                 flash(gettext('Failed to approve users. %(error)s', error=str(ex)), 'error')
+
+
+Raise exceptions instead of flash error messages
+------------------------------------------------
+
+****
+
+By default, Flask-Admin will capture most exceptions related to reading/writing models
+and display a flash message instead of raising an exception. If your Flask app is running
+in debug mode (ie under local development), exceptions will not be suppressed.
+
+The flash message behaviour can be overridden with some Flask configuration.::
+
+    app = Flask(__name__)
+    app.config['FLASK_ADMIN_RAISE_ON_VIEW_EXCEPTION'] = True
+    app.config['FLASK_ADMIN_RAISE_ON_INTEGRITY_ERROR'] = True
+
+
+FLASK_ADMIN_RAISE_ON_VIEW_EXCEPTION
+***********************************
+Instead of turning exceptions on model create/update/delete actions into flash messages,
+raise the exception as normal. You should expect the view to return a 500 to the user,
+unless you add specific handling to prevent this.
+
+FLASK_ADMIN_RAISE_ON_INTEGRITY_ERROR
+************************************
+This targets SQLAlchemy specifically.
+
+Unlike the previous setting, this will specifically only affect the behaviour of
+IntegrityErrors. These usually come from violations on constraints in the database,
+for example trying to insert a row with a primary key that already exists.
