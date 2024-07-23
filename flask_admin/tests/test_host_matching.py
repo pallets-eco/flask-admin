@@ -131,7 +131,7 @@ def test_mounting_on_host(app, babel, initialise_using_init_app):
 
     # Check that static assets are embedded with the expected (relative) URLs
     assert (
-        b'<link href="/static/admin/bootstrap/bootstrap2/swatch'
+        b'<link href="/static/admin/bootstrap/bootstrap4/swatch'
         b'/default/bootstrap.min.css?v=2.3.2" rel="stylesheet">'
         in rv.data
     )
@@ -146,7 +146,7 @@ def test_mounting_on_host(app, babel, initialise_using_init_app):
         rv = client.get(
             url_for(
                 'admin.static',
-                filename='bootstrap/bootstrap2/css/bootstrap.min.css',
+                filename='bootstrap/bootstrap4/css/bootstrap.min.css',
             )
         )
         rv.close()
@@ -155,7 +155,7 @@ def test_mounting_on_host(app, babel, initialise_using_init_app):
         rv = client.get(
             url_for(
                 'admin.static',
-                filename='bootstrap/bootstrap2/css/bootstrap.min.css',
+                filename='bootstrap/bootstrap4/css/bootstrap.min.css',
             ),
             headers={"Host": "admin.test.localhost"}
         )
@@ -185,7 +185,7 @@ def test_mounting_on_wildcard_host(app, babel, initialise_using_init_app):
 
         # Check that static assets are embedded with the expected (relative) URLs
         assert (
-            b'<link href="/static/admin/bootstrap/bootstrap2/swatch'
+            b'<link href="/static/admin/bootstrap/bootstrap4/swatch'
             b'/default/bootstrap.min.css?v=2.3.2" '
             b'rel="stylesheet">'
             in rv.data
@@ -201,7 +201,7 @@ def test_mounting_on_wildcard_host(app, babel, initialise_using_init_app):
             rv = client.get(
                 url_for(
                     'admin.static',
-                    filename='bootstrap/bootstrap2/css/bootstrap.min.css',
+                    filename='bootstrap/bootstrap4/css/bootstrap.min.css',
                     headers=host_header,
                 ),
             )
