@@ -132,7 +132,7 @@ def test_mounting_on_host(app, babel, initialise_using_init_app):
     # Check that static assets are embedded with the expected (relative) URLs
     assert (
         b'<link href="/static/admin/bootstrap/bootstrap4/swatch'
-        b'/default/bootstrap.min.css?v=2.3.2" rel="stylesheet">'
+        b'/default/bootstrap.min.css?v=4.2.1"'
         in rv.data
     )
     assert (
@@ -186,8 +186,7 @@ def test_mounting_on_wildcard_host(app, babel, initialise_using_init_app):
         # Check that static assets are embedded with the expected (relative) URLs
         assert (
             b'<link href="/static/admin/bootstrap/bootstrap4/swatch'
-            b'/default/bootstrap.min.css?v=2.3.2" '
-            b'rel="stylesheet">'
+            b'/default/bootstrap.min.css?v=4.2.1"'
             in rv.data
         )
         assert (
