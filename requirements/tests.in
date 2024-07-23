@@ -27,3 +27,4 @@ arrow<0.14.0
 colour
 email-validator
 wtforms
+tablib
