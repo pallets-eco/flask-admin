@@ -134,7 +134,7 @@ can use it by adding a FileAdmin view to your app::
 
     # Flask setup here
 
-    admin = Admin(app, name='microblog', theme=Bootstrap2Theme())
+    admin = Admin(app, name='microblog', theme=Bootstrap4Theme())
 
     path = op.join(op.dirname(__file__), 'static')
     admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
@@ -173,7 +173,7 @@ instance running on the same machine as your app, you can::
 
     # Flask setup here
 
-    admin = Admin(app, name='microblog', theme=Bootstrap2Theme())
+    admin = Admin(app, name='microblog', theme=Bootstrap4Theme())
 
     admin.add_view(rediscli.RedisCli(Redis()))
 

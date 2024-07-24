@@ -6,11 +6,6 @@ from flask_admin import helpers as h
 __all__ = ['Select2Widget', 'DatePickerWidget', 'DateTimePickerWidget', 'RenderTemplateWidget', 'Select2TagsWidget', ]
 
 
-def _is_bootstrap3():
-    view = h.get_current_view()
-    return view and view.admin.theme.folder == 'bootstrap3'
-
-
 class Select2Widget(widgets.Select):
     """
         `Select2 <https://github.com/ivaynberg/select2>`_ styled select widget.

@@ -2,7 +2,7 @@ from io import StringIO
 import os
 import os.path as op
 
-from flask_admin.theme import Bootstrap2Theme, Bootstrap3Theme
+from flask_admin.theme import Bootstrap4Theme
 from flask_admin.contrib import fileadmin
 from flask_admin import Admin
 
@@ -127,8 +127,8 @@ class Base:
             assert 'path=dummy_renamed_dir' not in rv.data.decode('utf-8')
             assert 'path=dummy.txt' in rv.data.decode('utf-8')
 
-        def test_modal_edit_bs2(self, app, babel):
-            admin_bs2 = Admin(app, theme=Bootstrap2Theme())
+        def test_modal_edit_bs4(self, app, babel):
+            admin_bs4 = Admin(app, theme=Bootstrap4Theme())
 
             fileadmin_class = self.fileadmin_class()
             fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
@@ -149,60 +149,20 @@ class Base:
             off_view_kwargs.setdefault('endpoint', 'edit_modal_off')
             edit_modal_off = EditModalOff(*fileadmin_args, **off_view_kwargs)
 
-            admin_bs2.add_view(edit_modal_on)
-            admin_bs2.add_view(edit_modal_off)
+            admin_bs4.add_view(edit_modal_on)
+            admin_bs4.add_view(edit_modal_off)
 
-            client_bs2 = app.test_client()
-
-            # bootstrap 2 - ensure modal window is added when edit_modal is
-            # enabled
-            rv = client_bs2.get('/admin/edit_modal_on/')
-            assert rv.status_code == 200
-            data = rv.data.decode('utf-8')
-            assert 'fa_modal_window' in data
-
-            # bootstrap 2 - test edit modal disabled
-            rv = client_bs2.get('/admin/edit_modal_off/')
-            assert rv.status_code == 200
-            data = rv.data.decode('utf-8')
-            assert 'fa_modal_window' not in data
-
-        def test_modal_edit_bs3(self, app, babel):
-            admin_bs3 = Admin(app, theme=Bootstrap3Theme())
-
-            fileadmin_class = self.fileadmin_class()
-            fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
-
-            class EditModalOn(fileadmin_class):
-                edit_modal = True
-                editable_extensions = ('txt',)
-
-            class EditModalOff(fileadmin_class):
-                edit_modal = False
-                editable_extensions = ('txt',)
-
-            on_view_kwargs = dict(fileadmin_kwargs)
-            on_view_kwargs.setdefault('endpoint', 'edit_modal_on')
-            edit_modal_on = EditModalOn(*fileadmin_args, **on_view_kwargs)
-
-            off_view_kwargs = dict(fileadmin_kwargs)
-            off_view_kwargs.setdefault('endpoint', 'edit_modal_off')
-            edit_modal_off = EditModalOff(*fileadmin_args, **off_view_kwargs)
-
-            admin_bs3.add_view(edit_modal_on)
-            admin_bs3.add_view(edit_modal_off)
-
-            client_bs3 = app.test_client()
+            client_bs4 = app.test_client()
 
             # bootstrap 3 - ensure modal window is added when edit_modal is
             # enabled
-            rv = client_bs3.get('/admin/edit_modal_on/')
+            rv = client_bs4.get('/admin/edit_modal_on/')
             assert rv.status_code == 200
             data = rv.data.decode('utf-8')
             assert 'fa_modal_window' in data
 
             # bootstrap 3 - test modal disabled
-            rv = client_bs3.get('/admin/edit_modal_off/')
+            rv = client_bs4.get('/admin/edit_modal_off/')
             assert rv.status_code == 200
             data = rv.data.decode('utf-8')
             assert 'fa_modal_window' not in data
