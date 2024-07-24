@@ -1507,6 +1507,14 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return None
 
+    def get_safe_page_size(self, page_size):
+        safe_page_size = self.page_size
+
+        if self.can_set_page_size and page_size in {20, 50, 100}:
+            safe_page_size = page_size
+
+        return safe_page_size
+
     # Database-related API
     def get_list(self, page, sort_field, sort_desc, search, filters,
                  page_size=None):
@@ -1806,8 +1814,7 @@ class BaseModelView(BaseView, ActionsMixin):
         kwargs = dict(page=page, sort=view_args.sort, desc=desc, search=view_args.search)
         kwargs.update(view_args.extra_args)
 
-        if view_args.page_size:
-            kwargs['page_size'] = view_args.page_size
+        kwargs['page_size'] = self.get_safe_page_size(view_args.page_size)
 
         kwargs.update(self._get_filters(view_args.filters))
 
@@ -1989,7 +1996,7 @@ class BaseModelView(BaseView, ActionsMixin):
             sort_column = sort_column[0]
 
         # Get page size
-        page_size = view_args.page_size or self.page_size
+        page_size = self.get_safe_page_size(view_args.page_size)
 
         # Get count and data
         count, data = self.get_list(view_args.page, sort_column, view_args.sort_desc,
