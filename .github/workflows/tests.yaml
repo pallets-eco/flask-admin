@@ -25,6 +25,8 @@ jobs:
         include:
           - python: '3.12'
             tox: 'py312-noflaskbabel'
+          - python: '3.12'
+            tox: 'py312-flaskmongoengine'
     services:
       # Label used to access the service container
       postgres:
