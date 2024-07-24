@@ -69,7 +69,11 @@ all = [
     "Flask-Admin[db-sqlalchemy]",
     "Flask-Admin[db-sqlalchemy-with-utils]",
     "Flask-Admin[db-geoalchemy]",
-    "Flask-Admin[db-mongoengine]",
+
+# FIXME: disabling db-mongoengine as flask-mongoengine is now out-of-date and is
+#        incompatible with newer versions of flask that we want to test.
+#    "Flask-Admin[db-mongoengine]",
+
     "Flask-Admin[db-pymongo]",
     "Flask-Admin[db-peewee]",
     "Flask-Admin[db-appengine]",
