@@ -7,9 +7,7 @@
 alabaster==0.7.13
     # via sphinx
 babel==2.15.0
-    # via
-    #   -c tests.in
-    #   sphinx
+    # via sphinx
 certifi==2024.7.4
     # via requests
 charset-normalizer==3.3.2
@@ -26,7 +24,7 @@ jinja2==3.1.4
     # via
     #   -c tests.in
     #   sphinx
-markupsafe==2.0.1
+markupsafe==2.1.5
     # via
     #   -c tests.in
     #   jinja2

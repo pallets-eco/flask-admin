@@ -1,4 +1,4 @@
-Flask
-Flask-Admin
-Flask-SQLAlchemy
+# Install Flask-Admin with required extras from the root of the repository
+../..[db-sqlalchemy]
+
 Flask-Login>=0.3.0

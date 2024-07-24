@@ -1,5 +1,1 @@
-Flask
-Flask-Admin
-peewee
-wtf-peewee
-sqlalchemy
+../..[db-peewee]

@@ -32,10 +32,13 @@ azure-storage-common==2.1.0
 babel==2.15.0
     # via
     #   -r docs.txt
-    #   -r tests.in
     #   -r typing.txt
     #   flask-babel
     #   sphinx
+blinker==1.8.2
+    # via
+    #   -r typing.txt
+    #   flask
 cachetools==5.3.3
     # via tox
 certifi==2024.7.4
@@ -113,8 +116,9 @@ flake8==3.9.2
     # via
     #   -r tests.in
     #   -r typing.txt
-flask==2.1.3
+flask==3.0.3
     # via
+    #   -r tests.in
     #   -r typing.txt
     #   flask-babel
     #   flask-mongoengine
@@ -128,7 +132,7 @@ flask-mongoengine==0.8.2
     # via
     #   -r tests.in
     #   -r typing.txt
-flask-sqlalchemy==2.5.1
+flask-sqlalchemy==3.0.5
     # via
     #   -r tests.in
     #   -r typing.txt
@@ -166,7 +170,7 @@ isort==5.11.5
     # via
     #   -r typing.txt
     #   pylint
-itsdangerous==2.0.1
+itsdangerous==2.2.0
     # via
     #   -r tests.in
     #   -r typing.txt
@@ -184,13 +188,14 @@ lazy-object-proxy==1.9.0
     # via
     #   -r typing.txt
     #   astroid
-markupsafe==2.0.1
+markupsafe==2.1.5
     # via
     #   -r docs.txt
     #   -r tests.in
     #   -r typing.txt
     #   jinja2
     #   types-wtforms
+    #   werkzeug
     #   wtforms
 mccabe==0.6.1
     # via
@@ -438,7 +443,7 @@ virtualenv==20.26.3
     # via
     #   pre-commit
     #   tox
-werkzeug==2.1.2
+werkzeug==3.0.3
     # via
     #   -r tests.in
     #   -r typing.txt
