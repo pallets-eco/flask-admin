@@ -4,7 +4,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 import flask_admin as admin
-from flask_admin.theme import Bootstrap3Theme
+from flask_admin.theme import Bootstrap4Theme
 from flask_admin.contrib.sqla import ModelView
 
 
@@ -59,7 +59,7 @@ def index():
 
 
 # Create admin with custom base template
-admin = admin.Admin(app, 'Example: Layout-BS3', theme=Bootstrap3Theme(base_template='layout.html'))
+admin = admin.Admin(app, 'Example: Layout-BS4', theme=Bootstrap4Theme(base_template='layout.html'))
 
 # Add views
 admin.add_view(UserAdmin(User, db.session))

@@ -14,7 +14,7 @@ from flask_admin import helpers as h
 from flask_admin.blueprints import _BlueprintWithHostSupport as Blueprint
 from flask_admin.consts import ADMIN_ROUTES_HOST_VARIABLE
 from flask_admin.menu import MenuCategory, MenuView, MenuLink, SubMenuCategory  # noqa: F401
-from flask_admin.theme import Theme, Bootstrap2Theme
+from flask_admin.theme import Theme, Bootstrap4Theme
 
 
 def expose(url='/', methods=('GET',)):
@@ -501,8 +501,7 @@ class Admin(object):
                 Static URL Path. If provided, this specifies the default path to the static url directory for
                 all its views. Can be overridden in view configuration.
             :param theme:
-                Base theme. Defaults to `Bootstrap2Theme()`. If you want to use
-                Bootstrap 3 or 4 integration, change it to `Bootstrap3Theme()` or `Bootstrap4Theme()`.
+                Base theme. Defaults to `Bootstrap4Theme()`.
             :param category_icon_classes:
                 A dict of category names as keys and html classes as values to be added to menu category icons.
                 Example: {'Favorites': 'glyphicon glyphicon-star'}
@@ -528,7 +527,7 @@ class Admin(object):
         self.static_url_path = static_url_path
         self.subdomain = subdomain
         self.host = host
-        self.theme = theme or Bootstrap2Theme()
+        self.theme = theme or Bootstrap4Theme()
         self.category_icon_classes = category_icon_classes or dict()
 
         self._validate_admin_host_and_subdomain()

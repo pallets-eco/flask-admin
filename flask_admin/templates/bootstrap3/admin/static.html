@@ -1,3 +1,0 @@
-{% macro url() -%}
-    {{ get_url('{admin_endpoint}.static'.format(admin_endpoint=admin_view.admin.endpoint), *varargs, **kwargs) }}
-{%- endmacro %}
