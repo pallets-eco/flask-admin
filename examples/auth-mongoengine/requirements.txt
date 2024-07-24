@@ -1,4 +1,4 @@
-Flask
-Flask-Admin
-flask-mongoengine
+# Install Flask-Admin with required extras from the root of the repository
+../..[db-mongoengine]
+
 Flask-Login>=0.3.0

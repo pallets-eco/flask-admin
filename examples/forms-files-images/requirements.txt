@@ -1,5 +1,2 @@
-Flask
-Flask-Admin
-Flask-SQLAlchemy
-pillow
-redis
+# Install Flask-Admin with required extras from the root of the repository
+../..[db-sqlalchemy,images,rediscli]

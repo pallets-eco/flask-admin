@@ -1,3 +1,1 @@
-Flask
-Flask-Admin
-pymongo
+../..[db-pymongo]
