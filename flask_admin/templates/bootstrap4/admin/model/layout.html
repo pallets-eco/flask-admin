@@ -97,13 +97,13 @@
     </form>
 {% endmacro %}
 
-{% macro page_size_form(generator, btn_class='nav-link dropdown-toggle') %}
+{% macro page_size_form(generator, page_size_options, btn_class='nav-link dropdown-toggle') %}
     <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
         {{ page_size }} {{ _gettext('items') }}<b class="caret"></b>
     </a>
     <div class="dropdown-menu">
-      <a class="dropdown-item{% if page_size == 20 %} active{% endif %}" href="{{ generator(20) }}">20 {{ _gettext('items') }}</a>
-      <a class="dropdown-item{% if page_size == 50 %} active{% endif %}" href="{{ generator(50) }}">50 {{ _gettext('items') }}</a>
-      <a class="dropdown-item{% if page_size == 100 %} active{% endif %}" href="{{ generator(100) }}">100 {{ _gettext('items') }}</a>
+      {% for option in page_size_options %}
+      <a class="dropdown-item{% if page_size == option %} active{% endif %}" href="{{ generator(option) }}">{{ _ngettext('{} item'.format(option), '{} items'.format(option), option) }}</a>
+      {% endfor %}
     </div>
 {% endmacro %}

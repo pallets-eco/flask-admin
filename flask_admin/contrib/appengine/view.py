@@ -86,7 +86,7 @@ class NdbModelView(BaseModelView):
                 order_field = -order_field
             q = q.order(order_field)
 
-        if not page_size:
+        if page_size is None:
             page_size = self.page_size
 
         results = q.fetch(page_size, offset=page * page_size)

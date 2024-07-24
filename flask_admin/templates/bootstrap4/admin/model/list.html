@@ -41,7 +41,7 @@
 
         {% if can_set_page_size %}
         <li class="nav-item dropdown">
-            {{ model_layout.page_size_form(page_size_url) }}
+            {{ model_layout.page_size_form(page_size_url, admin_view.page_size_options) }}
         </li>
         {% endif %}
 
@@ -190,7 +190,7 @@
     {{ lib.form_js() }}
     <script src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
     <script src="{{ admin_static.url(filename='admin/js/bs4_filters.js', v='1.0.0') }}"></script>
-    
+
 
     {{ actionlib.script(_gettext('Please select at least one record.'),
                         actions,

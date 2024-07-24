@@ -61,6 +61,9 @@ def is_numberic_validator(form, field):
 
 class UserAdmin(sqla.ModelView):
 
+    can_set_page_size = True
+    page_size = 5
+    page_size_options = (5,10,15)
     can_view_details = True  # show a modal dialog with records details
     action_disallowed_list = ['delete', ]
 

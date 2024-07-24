@@ -2439,6 +2439,79 @@ def test_simple_list_pager(app, db, admin):
         assert count is None
 
 
+def test_customising_page_size(app, db, admin):
+    with app.app_context():
+        M1, _ = create_models(db)
+
+        db.session.add_all(
+            [M1(str(f'instance-{x+1:03d}')) for x in range(101)]
+        )
+
+        view1 = CustomModelView(M1, db.session, endpoint='view1', page_size=20, can_set_page_size=False)
+        admin.add_view(view1)
+
+        view2 = CustomModelView(M1, db.session, endpoint='view2', page_size=5, can_set_page_size=False)
+        admin.add_view(view2)
+
+        view3 = CustomModelView(M1, db.session, endpoint='view3', page_size=20, can_set_page_size=True)
+        admin.add_view(view3)
+
+        view4 = CustomModelView(M1, db.session, endpoint='view4', page_size=5, page_size_options=(5, 10, 15), can_set_page_size=True)
+        admin.add_view(view4)
+
+        client = app.test_client()
+
+        rv = client.get('/admin/view1/')
+        assert 'instance-020' in rv.text
+        assert 'instance-021' not in rv.text
+
+        # `can_set_page_size=False`, so only the default of 20 is available.
+        rv = client.get('/admin/view1/?page_size=50')
+        assert 'instance-020' in rv.text
+        assert 'instance-021' not in rv.text
+
+        # Check view2, which has `page_size=5` to change the default page size
+        rv = client.get('/admin/view2/')
+        assert 'instance-005' in rv.text
+        assert 'instance-006' not in rv.text
+
+        # Check view3, which has `can_set_page_size=True`
+        rv = client.get('/admin/view3/')
+        assert 'instance-020' in rv.text
+        assert 'instance-021' not in rv.text
+
+        rv = client.get('/admin/view3/?page_size=50')
+        assert 'instance-050' in rv.text
+        assert 'instance-051' not in rv.text
+
+        rv = client.get('/admin/view3/?page_size=100')
+        assert 'instance-100' in rv.text
+        assert 'instance-101' not in rv.text
+
+        # Invalid page sizes are reset to the default
+        rv = client.get('/admin/view3/?page_size=1')
+        assert 'instance-020' in rv.text
+        assert 'instance-021' not in rv.text
+
+        # Check view4, which has custom `page_size_options`
+        rv = client.get('/admin/view4/')
+        assert 'instance-005' in rv.text
+        assert 'instance-006' not in rv.text
+
+        # Invalid page sizes are reset to the default
+        rv = client.get('/admin/view4/?page_size=1')
+        assert 'instance-005' in rv.text
+        assert 'instance-006' not in rv.text
+
+        rv = client.get('/admin/view4/?page_size=10')
+        assert 'instance-010' in rv.text
+        assert 'instance-011' not in rv.text
+
+        rv = client.get('/admin/view4/?page_size=15')
+        assert 'instance-015' in rv.text
+        assert 'instance-016' not in rv.text
+
+
 def test_unlimited_page_size(app, db, admin):
     with app.app_context():
         M1, _ = create_models(db)
