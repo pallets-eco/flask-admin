@@ -15,20 +15,16 @@ on:
       - '*.rst'
 jobs:
   tests:
-    name: ${{ matrix.tox == 'normal' && format('py{0}-flask{1}-wtforms{2}', matrix.python, matrix.flask, matrix.wtforms) || matrix.tox }}
+    name: ${{ matrix.tox == 'normal' && format('py{0}', matrix.python) || matrix.tox }}
     runs-on: ${{ matrix.os || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix:
         python: ['3.8', '3.9', '3.10', '3.11', '3.12']
-        flask: ['2']
-        wtforms: ['2']
         tox: ['normal']
         include:
           - python: '3.12'
-            flask: '2'
-            wtforms: '2'
-            tox: 'py312-flask2-wtforms2-no-flask-babel'
+            tox: 'py312-noflaskbabel'
     services:
       # Label used to access the service container
       postgres:
@@ -75,7 +71,7 @@ jobs:
           PGPASSWORD: postgres
         run: psql -U postgres -h localhost -c 'CREATE EXTENSION hstore;' flask_admin_test
       - run: pip install tox
-      - run: tox run -e ${{ matrix.tox == 'normal' && format('py{0}-flask{1}-wtforms{2}', matrix.python, matrix.flask, matrix.wtforms) || matrix.tox }}
+      - run: tox run -e ${{ matrix.tox == 'normal' && format('py{0}', matrix.python) || matrix.tox }}
   not_tests:
     name: ${{ matrix.tox }}
     runs-on: ubuntu-latest
