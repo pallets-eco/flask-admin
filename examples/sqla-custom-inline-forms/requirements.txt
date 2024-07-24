@@ -1,4 +1,1 @@
-Flask
-Flask-Admin
-Flask-SQLAlchemy
-WTForms
+../..[db-sqlalchemy]

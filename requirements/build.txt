@@ -4,15 +4,15 @@
 #
 #    pip-compile build.in
 #
-build==1.1.1
+build==1.2.1
     # via -r build.in
-importlib-metadata==6.7.0
+importlib-metadata==8.1.0
     # via build
-packaging==24.0
+packaging==24.1
     # via build
 pyproject-hooks==1.1.0
     # via build
 tomli==2.0.1
     # via build
-zipp==3.15.0
+zipp==3.19.2
     # via importlib-metadata

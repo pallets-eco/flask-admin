@@ -148,6 +148,10 @@ def test_column_editable_list(app, db, admin):
                            column_editable_list=['test1', 'datetime_field'])
     admin.add_view(view)
 
+    # Test in-line editing for relations
+    view = CustomModelView(Model2, column_editable_list=['model1'])
+    admin.add_view(view)
+
     fill_db(Model1, Model2)
 
     client = app.test_client()
@@ -194,10 +198,6 @@ def test_column_editable_list(app, db, admin):
     })
     data = rv.data.decode('utf-8')
     assert 'problematic-input' not in data
-
-    # Test in-line editing for relations
-    view = CustomModelView(Model2, column_editable_list=['model1'])
-    admin.add_view(view)
 
     obj3 = Model2.objects.get(string_field='string_field_val_1')
     rv = client.post('/admin/model2/ajax/update/', data={

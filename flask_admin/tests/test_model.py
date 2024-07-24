@@ -1,3 +1,5 @@
+import copy
+
 from flask import Flask
 
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
@@ -515,9 +517,6 @@ def test_export_csv(app, admin):
     view = MockModelView(Model, column_list=['col1', 'col2'], endpoint="test")
     admin.add_view(view)
 
-    rv = client.get('/admin/test/export/csv/')
-    assert rv.status_code == 302
-
     # basic test of csv export with a few records
     view_data = {
         1: Model(1, "col1_1", "col2_1"),
@@ -525,9 +524,109 @@ def test_export_csv(app, admin):
         3: Model(3, "col1_3", "col2_3"),
     }
 
-    view = MockModelView(Model, view_data, can_export=True,
+    view2 = MockModelView(Model, view_data, can_export=True,
                          column_list=['col1', 'col2'])
-    admin.add_view(view)
+    admin.add_view(view2)
+
+    # test explicit use of column_export_list
+    view3 = MockModelView(Model, view_data, can_export=True,
+                         column_list=['col1', 'col2'],
+                         column_export_list=['id', 'col1', 'col2'],
+                         endpoint='exportinclusion')
+    admin.add_view(view3)
+
+    # test explicit use of column_export_exclude_list
+    view4 = MockModelView(Model, view_data, can_export=True,
+                         column_list=['col1', 'col2'],
+                         column_export_exclude_list=['col2'],
+                         endpoint='exportexclusion')
+    admin.add_view(view4)
+
+    # test utf8 characters in csv export
+    view_data_v2 = {**view_data, 4: Model(1, u'\u2013ut8_1\u2013', u'\u2013utf8_2\u2013')}
+    view5 = MockModelView(Model, view_data_v2, can_export=True,
+                         column_list=['col1', 'col2'], endpoint="utf8")
+    admin.add_view(view5)
+
+    # test None type, integer type, column_labels, and column_formatters
+    view_data_v3 = {
+        1: Model(1, "col1_1", 1),
+        2: Model(2, "col1_2", 2),
+        3: Model(3, None, 3),
+    }
+
+    view6 = MockModelView(
+        Model, view_data_v3, can_export=True, column_list=['col1', 'col2'],
+        column_labels={'col1': 'Str Field', 'col2': 'Int Field'},
+        column_formatters=dict(col2=lambda v, c, m, p: m.col2 * 2),
+        endpoint="types_and_formatters"
+    )
+    admin.add_view(view6)
+
+    # test column_formatters_export and column_formatters_export
+    type_formatters = {type(None): lambda view, value, name: "null"}
+
+    view7 = MockModelView(
+        Model, view_data_v3, can_export=True, column_list=['col1', 'col2'],
+        column_formatters_export=dict(col2=lambda v, c, m, p: m.col2 * 3),
+        column_formatters=dict(col2=lambda v, c, m, p: m.col2 * 2),  # overridden
+        column_type_formatters_export=type_formatters,
+        endpoint="export_types_and_formatters"
+    )
+    admin.add_view(view7)
+
+    # Macros are not implemented for csv export yet and will throw an error
+    view8 = MockModelView(
+        Model, can_export=True, column_list=['col1', 'col2'],
+        column_formatters=dict(col1=macro('render_macro')),
+        endpoint="macro_exception"
+    )
+    admin.add_view(view8)
+
+    # We should be able to specify column_formatters_export
+    # and not get an exception if a column_formatter is using a macro
+    def export_formatter(v, c, m, p):
+        return m.col1 if m else ''
+
+    view9 = MockModelView(
+        Model, view_data_v3, can_export=True, column_list=['col1', 'col2'],
+        column_formatters=dict(col1=macro('render_macro')),
+        column_formatters_export=dict(col1=export_formatter),
+        endpoint="macro_exception_formatter_override"
+    )
+    admin.add_view(view9)
+
+    # We should not get an exception if a column_formatter is
+    # using a macro but it is on the column_export_exclude_list
+    view10 = MockModelView(
+        Model, view_data_v3, can_export=True, column_list=['col1', 'col2'],
+        column_formatters=dict(col1=macro('render_macro')),
+        column_export_exclude_list=['col1'],
+        endpoint="macro_exception_exclude_override"
+    )
+    admin.add_view(view10)
+
+    # When we use column_export_list to hide the macro field
+    # we should not get an exception
+    view11 = MockModelView(
+        Model, view_data_v3, can_export=True, column_list=['col1', 'col2'],
+        column_formatters=dict(col1=macro('render_macro')),
+        column_export_list=['col2'],
+        endpoint="macro_exception_list_override"
+    )
+    admin.add_view(view11)
+
+    # If they define a macro on the column_formatters_export list
+    # then raise an exception
+    view12 = MockModelView(
+        Model, view_data_v3, can_export=True, column_list=['col1', 'col2'],
+        column_formatters=dict(col1=macro('render_macro')),
+        endpoint="macro_exception_macro_override"
+    )
+    admin.add_view(view12)
+
+    rv = client.get('/admin/test/export/csv/')
+    assert rv.status_code == 302
 
     rv = client.get('/admin/model/export/csv/')
     data = rv.data.decode('utf-8')
@@ -538,13 +637,6 @@ def test_export_csv(app, admin):
         "col1_2,col2_2\r\n" + \
         "col1_3,col2_3\r\n" == data
 
-    # test explicit use of column_export_list
-    view = MockModelView(Model, view_data, can_export=True,
-                         column_list=['col1', 'col2'],
-                         column_export_list=['id', 'col1', 'col2'],
-                         endpoint='exportinclusion')
-    admin.add_view(view)
-
     rv = client.get('/admin/exportinclusion/export/csv/')
     data = rv.data.decode('utf-8')
     assert rv.mimetype == 'text/csv'
@@ -553,13 +645,6 @@ def test_export_csv(app, admin):
         "1,col1_1,col2_1\r\n" + \
         "2,col1_2,col2_2\r\n" + \
         "3,col1_3,col2_3\r\n" == data
-
-    # test explicit use of column_export_exclude_list
-    view = MockModelView(Model, view_data, can_export=True,
-                         column_list=['col1', 'col2'],
-                         column_export_exclude_list=['col2'],
-                         endpoint='exportexclusion')
-    admin.add_view(view)
 
     rv = client.get('/admin/exportexclusion/export/csv/')
     data = rv.data.decode('utf-8')
@@ -570,31 +655,10 @@ def test_export_csv(app, admin):
         "col1_2\r\n" + \
         "col1_3\r\n" == data
 
-    # test utf8 characters in csv export
-    view_data[4] = Model(1, u'\u2013ut8_1\u2013', u'\u2013utf8_2\u2013')
-    view = MockModelView(Model, view_data, can_export=True,
-                         column_list=['col1', 'col2'], endpoint="utf8")
-    admin.add_view(view)
-
     rv = client.get('/admin/utf8/export/csv/')
     data = rv.data.decode('utf-8')
     assert rv.status_code == 200
     assert u'\u2013ut8_1\u2013,\u2013utf8_2\u2013\r\n' in data
-
-    # test None type, integer type, column_labels, and column_formatters
-    view_data = {
-        1: Model(1, "col1_1", 1),
-        2: Model(2, "col1_2", 2),
-        3: Model(3, None, 3),
-    }
-
-    view = MockModelView(
-        Model, view_data, can_export=True, column_list=['col1', 'col2'],
-        column_labels={'col1': 'Str Field', 'col2': 'Int Field'},
-        column_formatters=dict(col2=lambda v, c, m, p: m.col2 * 2),
-        endpoint="types_and_formatters"
-    )
-    admin.add_view(view)
 
     rv = client.get('/admin/types_and_formatters/export/csv/')
     data = rv.data.decode('utf-8')
@@ -604,18 +668,6 @@ def test_export_csv(app, admin):
         "col1_2,4\r\n" + \
         ",6\r\n" == data
 
-    # test column_formatters_export and column_formatters_export
-    type_formatters = {type(None): lambda view, value, name: "null"}
-
-    view = MockModelView(
-        Model, view_data, can_export=True, column_list=['col1', 'col2'],
-        column_formatters_export=dict(col2=lambda v, c, m, p: m.col2 * 3),
-        column_formatters=dict(col2=lambda v, c, m, p: m.col2 * 2),  # overridden
-        column_type_formatters_export=type_formatters,
-        endpoint="export_types_and_formatters"
-    )
-    admin.add_view(view)
-
     rv = client.get('/admin/export_types_and_formatters/export/csv/')
     data = rv.data.decode('utf-8')
     assert rv.status_code == 200
@@ -624,30 +676,9 @@ def test_export_csv(app, admin):
         "col1_2,6\r\n" + \
         "null,9\r\n" == data
 
-    # Macros are not implemented for csv export yet and will throw an error
-    view = MockModelView(
-        Model, can_export=True, column_list=['col1', 'col2'],
-        column_formatters=dict(col1=macro('render_macro')),
-        endpoint="macro_exception"
-    )
-    admin.add_view(view)
-
     rv = client.get('/admin/macro_exception/export/csv/')
     data = rv.data.decode('utf-8')
     assert rv.status_code == 500
-
-    # We should be able to specify column_formatters_export
-    # and not get an exception if a column_formatter is using a macro
-    def export_formatter(v, c, m, p):
-        return m.col1 if m else ''
-
-    view = MockModelView(
-        Model, view_data, can_export=True, column_list=['col1', 'col2'],
-        column_formatters=dict(col1=macro('render_macro')),
-        column_formatters_export=dict(col1=export_formatter),
-        endpoint="macro_exception_formatter_override"
-    )
-    admin.add_view(view)
 
     rv = client.get('/admin/macro_exception_formatter_override/export/csv/')
     data = rv.data.decode('utf-8')
@@ -657,16 +688,6 @@ def test_export_csv(app, admin):
         "col1_2,2\r\n" + \
         ",3\r\n" == data
 
-    # We should not get an exception if a column_formatter is
-    # using a macro but it is on the column_export_exclude_list
-    view = MockModelView(
-        Model, view_data, can_export=True, column_list=['col1', 'col2'],
-        column_formatters=dict(col1=macro('render_macro')),
-        column_export_exclude_list=['col1'],
-        endpoint="macro_exception_exclude_override"
-    )
-    admin.add_view(view)
-
     rv = client.get('/admin/macro_exception_exclude_override/export/csv/')
     data = rv.data.decode('utf-8')
     assert rv.status_code == 200
@@ -675,16 +696,6 @@ def test_export_csv(app, admin):
         "2\r\n" + \
         "3\r\n" == data
 
-    # When we use column_export_list to hide the macro field
-    # we should not get an exception
-    view = MockModelView(
-        Model, view_data, can_export=True, column_list=['col1', 'col2'],
-        column_formatters=dict(col1=macro('render_macro')),
-        column_export_list=['col2'],
-        endpoint="macro_exception_list_override"
-    )
-    admin.add_view(view)
-
     rv = client.get('/admin/macro_exception_list_override/export/csv/')
     data = rv.data.decode('utf-8')
     assert rv.status_code == 200
@@ -692,15 +703,6 @@ def test_export_csv(app, admin):
         "1\r\n" + \
         "2\r\n" + \
         "3\r\n" == data
-
-    # If they define a macro on the column_formatters_export list
-    # then raise an exception
-    view = MockModelView(
-        Model, view_data, can_export=True, column_list=['col1', 'col2'],
-        column_formatters=dict(col1=macro('render_macro')),
-        endpoint="macro_exception_macro_override"
-    )
-    admin.add_view(view)
 
     rv = client.get('/admin/macro_exception_macro_override/export/csv/')
     data = rv.data.decode('utf-8')
@@ -745,9 +747,6 @@ def test_list_row_actions(app, admin):
     assert isinstance(actions[0], template.EditRowAction)
     assert isinstance(actions[1], template.DeleteRowAction)
 
-    rv = client.get('/admin/test/')
-    assert rv.status_code == 200
-
     # Test default actions
     view = MockModelView(Model, endpoint='test1', can_edit=False, can_delete=False, can_view_details=True)
     admin.add_view(view)
@@ -755,9 +754,6 @@ def test_list_row_actions(app, admin):
     actions = view.get_list_row_actions()
     assert len(actions) == 1
     assert isinstance(actions[0], template.ViewRowAction)
-
-    rv = client.get('/admin/test1/')
-    assert rv.status_code == 200
 
     # Test popups
     view = MockModelView(Model, endpoint='test2',
@@ -770,9 +766,6 @@ def test_list_row_actions(app, admin):
     assert isinstance(actions[0], template.ViewPopupRowAction)
     assert isinstance(actions[1], template.EditPopupRowAction)
     assert isinstance(actions[2], template.DeleteRowAction)
-
-    rv = client.get('/admin/test2/')
-    assert rv.status_code == 200
 
     # Test custom views
     view = MockModelView(Model, endpoint='test3',
@@ -787,6 +780,15 @@ def test_list_row_actions(app, admin):
     assert isinstance(actions[1], template.DeleteRowAction)
     assert isinstance(actions[2], template.LinkRowAction)
     assert isinstance(actions[3], template.EndpointLinkRowAction)
+
+    rv = client.get('/admin/test/')
+    assert rv.status_code == 200
+
+    rv = client.get('/admin/test1/')
+    assert rv.status_code == 200
+
+    rv = client.get('/admin/test2/')
+    assert rv.status_code == 200
 
     rv = client.get('/admin/test3/')
     assert rv.status_code == 200

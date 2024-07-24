@@ -1,6 +1,3 @@
-Flask
-Flask-Admin
-Flask-MongoEngine
+../..[db-mongoengine,images]
+
 Flask-Login>=0.3.0
-Pillow
-sqlalchemy
