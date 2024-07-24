@@ -6,7 +6,39 @@ Introduction To Flask-Admin
 Getting Started
 ===============
 
-****
+Installing Flask-Admin
+----------------------
+
+Flask-Admin provides an easy-to-use layer on top of a number of databases and file stores.
+Whether you use SQLAlchemy, peewee, AWS S3, or something else that Flask-Admin supports,
+we don't install those things out-of-the-box. This reduces the risk of compatibility issues
+and means that you don't download/install anything you don't need.
+
+Depending on what you use, you should install Flask-Admin with your required extras selected.
+
+Flask-Admin has these optional extras you can select:
+
+=========================== ================================================
+Extra name                  What functionality does this add to Flask-Admin?
+=========================== ================================================
+sqlalchemy                  SQLAlchemy, for accessing many database engines
+sqlalchemy-with-utils       As above, with some additional utilities for different data types
+geoalchemy                  As with SQLAlchemy, but adding support for geographic data and maps
+mongoengine                 Supports the Flask-Mongoengine library
+pymongo                     Supports the PyMongo library
+peewee                      Supports the peewee library
+appengine                   Supports Google's appengine library
+s3                          Supports file admin using AWS S3
+azure-blob-storage          Supports file admin using Azure blob store
+images                      Allows working with image data
+export                      Supports downloading data in a variety of formats (eg TSV, JSON, etc)
+rediscli                    Allows Flask-Admin to display a CLI for Redis
+translation                 Supports translating Flask-Admin into a number of languages
+=========================== ================================================
+
+Once you've chosen the extras you need, install Flask-Admin by specifying them like so::
+
+    pip install flask-admin[sqlalchemy,s3,images,export,translation]
 
 Initialization
 --------------
@@ -72,8 +104,6 @@ So, now you can add any content to the index page, while maintaining a consisten
 
 Authorization & Permissions
 ===========================
-
-****
 
 When setting up an admin interface for your application, one of the first problems
 you'll want to solve is how to keep unwanted users out. With Flask-Admin there
@@ -309,8 +339,6 @@ And to add arbitrary hyperlinks to the menu::
 
 Adding Your Own Views
 =====================
-
-****
 
 For situations where your requirements are really specific and you struggle to meet
 them with the built-in :class:`~flask_admin.model.ModelView` class, Flask-Admin makes it easy for you to
