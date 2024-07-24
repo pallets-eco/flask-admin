@@ -1,4 +1,4 @@
-from io import StringIO
+from io import BytesIO
 import os
 import os.path as op
 
@@ -71,7 +71,7 @@ class Base:
             assert rv.status_code == 200
 
             rv = client.post('/admin/myfileadmin/upload/',
-                             data=dict(upload=(StringIO(""), 'dummy.txt')))
+                             data=dict(upload=(BytesIO(b""), 'dummy.txt')))
             assert rv.status_code == 302
 
             rv = client.get('/admin/myfileadmin/')

@@ -1,6 +1,7 @@
 from admin import app, db
 from admin.models import AVAILABLE_USER_TYPES, User, Post, Tag, Tree
-from flask import Markup, send_file
+from flask import send_file
+from markupsafe import Markup
 
 from wtforms import validators
 

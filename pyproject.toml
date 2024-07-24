@@ -116,7 +116,13 @@ filterwarnings = [
     "default:'pkgutil\\.get_loader' is deprecated and slated for removal in Python 3\\.14:DeprecationWarning",
     "default:'pkgutil\\.find_loader' is deprecated and slated for removal in Python 3\\.14:DeprecationWarning",
 
-    "default:datetime\\.datetime\\.utcnow\\(\\) is deprecated and scheduled for removal in a future version:DeprecationWarning"
+    "default:datetime\\.datetime\\.utcnow\\(\\) is deprecated and scheduled for removal in a future version:DeprecationWarning",
+
+    # `flask.testing` accesses this attribute; remove when they have updated their code.
+    "default:The '__version__' attribute is deprecated and will be removed in Werkzeug 3\\.1\\.:DeprecationWarning",
+
+    # TODO: Remove when we've added SQLAlchemy 2.0 compatibility
+    "default:Deprecated API features detected!:DeprecationWarning:flask_admin.tests.sqla.test_basic:99",
 ]
 
 [tool.coverage.run]

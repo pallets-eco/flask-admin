@@ -533,6 +533,7 @@ def test_column_editable_list(app, db, admin):
         view = CustomModelView(Model1, db.session,
                                column_editable_list=['test1', 'enum_field'])
         admin.add_view(view)
+
         # Test in-line editing for relations
         view = CustomModelView(Model2, db.session, column_editable_list=['model1'])
         admin.add_view(view)
@@ -2409,7 +2410,7 @@ def test_safe_redirect(app, db, admin):
             expected = 'http://localhost' + expected
 
         assert rv.location.startswith(expected)
-        assert 'url=http%3A%2F%2Flocalhost%2Fadmin%2Fmodel2view%2F' in rv.location
+        assert 'url=http://localhost/admin/model2view/' in rv.location
         assert 'id=1' in rv.location
 
         rv = client.post('/admin/model1/new/?url=http://google.com/evil/',
@@ -2418,7 +2419,7 @@ def test_safe_redirect(app, db, admin):
 
         assert rv.status_code == 302
         assert rv.location.startswith(expected)
-        assert 'url=%2Fadmin%2Fmodel1%2F' in rv.location
+        assert 'url=/admin/model1/' in rv.location
         assert 'id=2' in rv.location
 
 
