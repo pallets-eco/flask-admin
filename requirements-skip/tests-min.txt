@@ -18,6 +18,8 @@ azure-storage-common==2.1.0
     # via azure-storage-blob
 babel==2.15.0
     # via flask-babel
+beautifulsoup4==4.12.3
+    # via -r tests-min.in
 certifi==2024.7.4
     # via requests
 cffi==1.16.0
@@ -142,6 +144,8 @@ six==1.16.0
     # via
     #   python-dateutil
     #   sqlalchemy-utils
+soupsieve==2.5
+    # via beautifulsoup4
 sqlalchemy==1.4.18
     # via
     #   -r tests-min.in

@@ -136,7 +136,7 @@ def test_mounting_on_host(app, babel, initialise_using_init_app):
         in rv.data
     )
     assert (
-        b'<script src="/static/admin/vendor'
+        b'<script  src="/static/admin/vendor'
         b'/jquery.min.js?v=3.5.1" type="text/javascript">'
         in rv.data
     )
@@ -190,7 +190,7 @@ def test_mounting_on_wildcard_host(app, babel, initialise_using_init_app):
             in rv.data
         )
         assert (
-            b'<script src="/static/admin/vendor'
+            b'<script  src="/static/admin/vendor'
             b'/jquery.min.js?v=3.5.1" type="text/javascript">'
             in rv.data
         )

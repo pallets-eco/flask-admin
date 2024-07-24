@@ -17,6 +17,10 @@ babel==2.15.0
     # via
     #   -r docs.txt
     #   sphinx
+beautifulsoup4==4.12.3
+    # via
+    #   -r tests.in
+    #   -r typing.txt
 cachetools==5.4.0
     # via tox
 certifi==2024.7.4
@@ -213,6 +217,10 @@ snowballstemmer==2.2.0
     # via
     #   -r docs.txt
     #   sphinx
+soupsieve==2.5
+    # via
+    #   -r typing.txt
+    #   beautifulsoup4
 sphinx==7.1.2
     # via
     #   -r docs.txt
@@ -261,6 +269,8 @@ tomlkit==0.13.0
     #   pylint
 tox==4.16.0
     # via -r dev.in
+types-beautifulsoup4==4.12.0.20240511
+    # via -r typing.txt
 types-boto==2.49.18.20240205
     # via -r typing.txt
 types-click==7.1.8
@@ -271,6 +281,10 @@ types-flask==1.1.6
     # via -r typing.txt
 types-flask-sqlalchemy==2.5.9.4
     # via -r typing.txt
+types-html5lib==1.1.11.20240228
+    # via
+    #   -r typing.txt
+    #   types-beautifulsoup4
 types-jinja2==2.11.9
     # via
     #   -r typing.txt

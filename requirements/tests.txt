@@ -6,6 +6,8 @@
 #
 astroid==3.2.4
     # via pylint
+beautifulsoup4==4.12.3
+    # via -r tests.in
 certifi==2024.7.4
     # via requests
 charset-normalizer==3.3.2
@@ -56,6 +58,8 @@ pytest-cov==5.0.0
     # via -r tests.in
 requests==2.32.3
     # via coveralls
+soupsieve==2.5
+    # via beautifulsoup4
 tomli==2.0.1
     # via
     #   coverage
