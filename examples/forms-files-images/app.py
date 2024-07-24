@@ -25,6 +25,7 @@ app.config['SECRET_KEY'] = '123456790'
 app.config['DATABASE_FILE'] = 'sample_db.sqlite'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.config['DATABASE_FILE']
 app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # Create directory for file fields to use
@@ -61,7 +62,9 @@ class User(db.Model):
     email = db.Column(db.Unicode(128))
     phone = db.Column(db.Unicode(32))
     city = db.Column(db.Unicode(128))
+    state = db.Column(db.Unicode(128))
     country = db.Column(db.Unicode(128))
+    continent = db.Column(db.Unicode(128))
     notes = db.Column(db.UnicodeText)
     is_admin = db.Column(db.Boolean, default=False)
 
@@ -173,9 +176,26 @@ class UserView(sqla.ModelView):
         rules.Header('Location'),
         rules.Field('city'),
         # String is resolved to form field, so there's no need to explicitly use `rules.Field`
-        'country',
+        'state',
+        rules.Row('country', 'continent'),
         # Show macro that's included in the templates
-        rules.Container('rule_demo.wrap', rules.Field('notes'))
+        rules.Container('rule_demo.wrap', rules.Field('notes')),
+        # Bootstrap container with embedded row and columns
+        rules.BSContainer(
+            rules=[
+                rules.BSRow(
+                    rules=[
+                        rules.BSCol(
+                            rules=["email"],
+                            classes="col-xs-6"
+                        ),
+                        "phone"
+                    ],
+                    classes="justify-content-center"
+                )
+            ],
+            classes="container-fluid"
+        )
     ]
 
     # Use same rule set for edit page
@@ -295,4 +315,4 @@ if __name__ == '__main__':
             build_sample_db()
 
     # Start app
-    app.run(debug=True)
+    app.run(debug=False)

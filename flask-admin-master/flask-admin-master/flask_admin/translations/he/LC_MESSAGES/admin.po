@@ -1,0 +1,665 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: flask-admin\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-02-07 00:17-0600\n"
+"PO-Revision-Date: 2017-02-07 01:19-0500\n"
+"Last-Translator: mrjoes <serge.koval@gmail.com>\n"
+"Language-Team: Hebrew\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.1.1\n"
+"Plural-Forms: nplurals=4; plural=n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: flask-admin\n"
+"X-Crowdin-Language: he\n"
+"X-Crowdin-File: admin.pot\n"
+"Language: he_IL\n"
+
+#: ../flask_admin/base.py:440
+msgid "Home"
+msgstr "הבית"
+
+#: ../flask_admin/contrib/rediscli.py:127
+msgid "Cli: Invalid command."
+msgstr "Cli: פקודה לא חוקית."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:352
+msgid "File to upload"
+msgstr "קובץ לטעינה"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:360
+msgid "File required."
+msgstr "קובץ הדרוש."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:365
+msgid "Invalid file type."
+msgstr "סוג קובץ לא חוקי."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:376
+msgid "Content"
+msgstr "תוכן"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:390
+msgid "Invalid name"
+msgstr "שם לא חוקי"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:398
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:106
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:112
+#: ../flask_admin/tests/sqla/test_translation.py:17
+msgid "Name"
+msgstr "שם"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:757
+#, python-format
+msgid "File \"%(name)s\" already exists."
+msgstr "קובץ \"%(name)s\" כבר קיים."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:802
+#: ../flask_admin/contrib/fileadmin/__init__.py:885
+#: ../flask_admin/contrib/fileadmin/__init__.py:947
+#: ../flask_admin/contrib/fileadmin/__init__.py:1000
+#: ../flask_admin/contrib/fileadmin/__init__.py:1047
+#: ../flask_admin/contrib/fileadmin/__init__.py:1099
+#: ../flask_admin/model/base.py:2168
+msgid "Permission denied."
+msgstr ". נדחית."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:881
+msgid "File uploading is disabled."
+msgstr "העלאת קובץ אינו זמין."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:892
+#, python-format
+msgid "Successfully saved file: %(name)s"
+msgstr "הקובץ שנשמר בהצלחה: %(name)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:896
+#, python-format
+msgid "Failed to save file: %(error)s"
+msgstr "שמירת הקובץ נכשלה: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:904
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:148
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:150
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:148
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:150
+msgid "Upload File"
+msgstr "העלאת קובץ"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:943
+msgid "Directory creation is disabled."
+msgstr "מדריך יצירה אינו זמין."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:956
+#, python-format
+msgid "Successfully created directory: %(directory)s"
+msgstr "מדריך שנוצרו בהצלחה: %(directory)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:960
+#, python-format
+msgid "Failed to create directory: %(error)s"
+msgstr "יצירת ספריה נכשלה: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:970
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:159
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:161
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:159
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:161
+msgid "Create Directory"
+msgstr "ליצור ספריה"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:996
+msgid "Deletion is disabled."
+msgstr "מחיקה אינה זמינה."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1005
+msgid "Directory deletion is disabled."
+msgstr "מדריך המחיקה אינה זמינה."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1011
+#, python-format
+msgid "Directory \"%(path)s\" was successfully deleted."
+msgstr "מדריך \"%(path)s\" נמחק בהצלחה."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1013
+#, python-format
+msgid "Failed to delete directory: %(error)s"
+msgstr "מחיקת ספריה נכשלה: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1019
+#: ../flask_admin/contrib/fileadmin/__init__.py:1176
+#, python-format
+msgid "File \"%(name)s\" was successfully deleted."
+msgstr "קובץ \"%(name)s\" נמחק בהצלחה."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1021
+#: ../flask_admin/contrib/fileadmin/__init__.py:1178
+#, python-format
+msgid "Failed to delete file: %(name)s"
+msgstr "מחיקת הקובץ נכשלה: %(name)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1043
+msgid "Renaming is disabled."
+msgstr "שינוי שם אינו זמין."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1051
+msgid "Path does not exist."
+msgstr "הנתיב אינו קיים."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1061
+#, python-format
+msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
+msgstr "בהצלחה ששמם \"%(src)s\" ל \"%(dst)s\""
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1064
+#, python-format
+msgid "Failed to rename: %(error)s"
+msgstr "לא ניתן לשנות שם: %(error)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1078
+#, python-format
+msgid "Rename %(name)s"
+msgstr "שינוי שם %(name)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1115
+#, python-format
+msgid "Error saving changes to %(name)s."
+msgstr "שגיאה בעת שמירת שינויים %(name)s."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1119
+#, python-format
+msgid "Changes to %(name)s saved successfully."
+msgstr "שינויים %(name)s שנשמרו בהצלחה."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1128
+#, python-format
+msgid "Error reading %(name)s."
+msgstr "שגיאה בקריאה %(name)s."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1131
+#: ../flask_admin/contrib/fileadmin/__init__.py:1140
+#, python-format
+msgid "Unexpected error while reading from %(name)s"
+msgstr "שגיאה לא צפויה במהלך הקריאה מתוך %(name)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1137
+#, python-format
+msgid "Cannot edit %(name)s."
+msgstr "לא ניתן לערוך %(name)s."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1155
+#, python-format
+msgid "Editing %(path)s"
+msgstr "עריכת %(path)s"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1163
+#: ../flask_admin/contrib/mongoengine/view.py:658
+#: ../flask_admin/contrib/peewee/view.py:487
+#: ../flask_admin/contrib/pymongo/view.py:384
+#: ../flask_admin/contrib/sqla/view.py:1149
+msgid "Delete"
+msgstr "מחק"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1164
+msgid "Are you sure you want to delete these files?"
+msgstr "האם אתה בטוח שברצונך למחוק את הקבצים הללו?"
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1167
+msgid "File deletion is disabled."
+msgstr "מחיקת קבצים אינו זמין."
+
+#: ../flask_admin/contrib/fileadmin/__init__.py:1180
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:17
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:22
+msgid "Edit"
+msgstr "עריכה"
+
+#: ../flask_admin/contrib/fileadmin/s3.py:153
+msgid "Cannot operate on non empty directories"
+msgstr ""
+
+#: ../flask_admin/contrib/mongoengine/filters.py:39
+#: ../flask_admin/contrib/peewee/filters.py:35
+#: ../flask_admin/contrib/pymongo/filters.py:38
+#: ../flask_admin/contrib/sqla/filters.py:41
+msgid "equals"
+msgstr "שווה ל-"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:48
+#: ../flask_admin/contrib/peewee/filters.py:43
+#: ../flask_admin/contrib/pymongo/filters.py:47
+#: ../flask_admin/contrib/sqla/filters.py:49
+msgid "not equal"
+msgstr "לא שווה"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:58
+#: ../flask_admin/contrib/peewee/filters.py:52
+#: ../flask_admin/contrib/pymongo/filters.py:57
+#: ../flask_admin/contrib/sqla/filters.py:58
+msgid "contains"
+msgstr "מכיל"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:68
+#: ../flask_admin/contrib/peewee/filters.py:61
+#: ../flask_admin/contrib/pymongo/filters.py:67
+#: ../flask_admin/contrib/sqla/filters.py:67
+msgid "not contains"
+msgstr "לא מכיל"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:77
+#: ../flask_admin/contrib/peewee/filters.py:69
+#: ../flask_admin/contrib/pymongo/filters.py:80
+#: ../flask_admin/contrib/sqla/filters.py:75
+msgid "greater than"
+msgstr "גדול מ-"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:86
+#: ../flask_admin/contrib/peewee/filters.py:77
+#: ../flask_admin/contrib/pymongo/filters.py:93
+#: ../flask_admin/contrib/sqla/filters.py:83
+msgid "smaller than"
+msgstr "קטן יותר"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:98
+#: ../flask_admin/contrib/peewee/filters.py:88
+#: ../flask_admin/contrib/sqla/filters.py:94
+msgid "empty"
+msgstr "ריק"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:113
+#: ../flask_admin/contrib/peewee/filters.py:102
+#: ../flask_admin/contrib/sqla/filters.py:108
+msgid "in list"
+msgstr "ברשימה"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:122
+#: ../flask_admin/contrib/peewee/filters.py:111
+#: ../flask_admin/contrib/sqla/filters.py:118
+msgid "not in list"
+msgstr "לא ברשימה"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:222
+#: ../flask_admin/contrib/peewee/filters.py:207
+#: ../flask_admin/contrib/peewee/filters.py:244
+#: ../flask_admin/contrib/peewee/filters.py:281
+#: ../flask_admin/contrib/sqla/filters.py:213
+#: ../flask_admin/contrib/sqla/filters.py:250
+#: ../flask_admin/contrib/sqla/filters.py:287
+msgid "not between"
+msgstr "לא בין"
+
+#: ../flask_admin/contrib/mongoengine/filters.py:247
+msgid "ObjectId equals"
+msgstr ""
+
+#: ../flask_admin/contrib/mongoengine/view.py:551
+#, python-format
+msgid "Failed to get model. %(error)s"
+msgstr "מודל נכשלה. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:570
+#: ../flask_admin/contrib/peewee/view.py:435
+#: ../flask_admin/contrib/pymongo/view.py:316
+#: ../flask_admin/contrib/sqla/view.py:1078
+#, python-format
+msgid "Failed to create record. %(error)s"
+msgstr "יצירת רשומה נכשלה. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:596
+#: ../flask_admin/contrib/peewee/view.py:454
+#: ../flask_admin/contrib/pymongo/view.py:341
+#: ../flask_admin/contrib/sqla/view.py:1104 ../flask_admin/model/base.py:2305
+#: ../flask_admin/model/base.py:2313 ../flask_admin/model/base.py:2315
+#, python-format
+msgid "Failed to update record. %(error)s"
+msgstr "יצירת רשומה נכשלה. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:619
+#: ../flask_admin/contrib/peewee/view.py:469
+#: ../flask_admin/contrib/pymongo/view.py:366
+#: ../flask_admin/contrib/sqla/view.py:1129
+#, python-format
+msgid "Failed to delete record. %(error)s"
+msgstr "לא ניתן למחוק רשומה. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:659
+#: ../flask_admin/contrib/peewee/view.py:488
+#: ../flask_admin/contrib/pymongo/view.py:385
+#: ../flask_admin/contrib/sqla/view.py:1150
+msgid "Are you sure you want to delete selected records?"
+msgstr "האם אתה בטוח שברצונך למחוק את הרשומות שנבחרו?"
+
+#: ../flask_admin/contrib/mongoengine/view.py:668
+#: ../flask_admin/contrib/peewee/view.py:505
+#: ../flask_admin/contrib/pymongo/view.py:395
+#: ../flask_admin/contrib/sqla/view.py:1166 ../flask_admin/model/base.py:2118
+#, python-format
+msgid "Record was successfully deleted."
+msgid_plural "%(count)s records were successfully deleted."
+msgstr[0] "שיא נמחק בהצלחה."
+msgstr[1] "%(count)s רשומות נמחקו בהצלחה."
+msgstr[2] "%(count)s רשומות נמחקו בהצלחה."
+msgstr[3] "%(count)s רשומות נמחקו בהצלחה."
+
+#: ../flask_admin/contrib/mongoengine/view.py:674
+#: ../flask_admin/contrib/peewee/view.py:511
+#: ../flask_admin/contrib/pymongo/view.py:400
+#: ../flask_admin/contrib/sqla/view.py:1174
+#, python-format
+msgid "Failed to delete records. %(error)s"
+msgstr "לא ניתן למחוק רשומה. %(error)s"
+
+#: ../flask_admin/contrib/sqla/fields.py:126
+#: ../flask_admin/contrib/sqla/fields.py:176
+#: ../flask_admin/contrib/sqla/fields.py:181 ../flask_admin/model/fields.py:173
+#: ../flask_admin/model/fields.py:222
+msgid "Not a valid choice"
+msgstr "לא אפשרו"
+
+#: ../flask_admin/contrib/sqla/fields.py:186
+msgid "Key"
+msgstr ""
+
+#: ../flask_admin/contrib/sqla/fields.py:187
+msgid "Value"
+msgstr ""
+
+#: ../flask_admin/contrib/sqla/validators.py:42
+msgid "Already exists."
+msgstr "כבר קיים."
+
+#: ../flask_admin/contrib/sqla/validators.py:60
+#, python-format
+msgid "At least %(num)d item is required"
+msgid_plural "At least %(num)d items are required"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+
+#: ../flask_admin/contrib/sqla/view.py:1057
+#, python-format
+msgid "Integrity error. %(message)s"
+msgstr "שגיאה שלמות. %(message)s"
+
+#: ../flask_admin/form/fields.py:98
+msgid "Invalid time format"
+msgstr "תבנית השעה לא חוקי"
+
+#: ../flask_admin/form/fields.py:144
+msgid "Invalid Choice: could not coerce"
+msgstr "בחירה לא חוקית: לא יכול לאלץ"
+
+#: ../flask_admin/form/fields.py:208
+msgid "Invalid JSON"
+msgstr "JSON לא חוקי"
+
+#: ../flask_admin/form/upload.py:207
+msgid "Invalid file extension"
+msgstr "סיומת קובץ לא חוקי"
+
+#: ../flask_admin/form/upload.py:214 ../flask_admin/form/upload.py:281
+#, python-format
+msgid "File \"%s\" already exists."
+msgstr "קובץ \"%s\" כבר קיים."
+
+#: ../flask_admin/model/base.py:1649
+msgid "There are no items in the table."
+msgstr "לא קיימים פריטים בטבלה."
+
+#: ../flask_admin/model/base.py:1673
+#, python-format
+msgid "Invalid Filter Value: %(value)s"
+msgstr "ערך לא חוקי מסנן: %(value)s"
+
+#: ../flask_admin/model/base.py:1984
+msgid "Record was successfully created."
+msgstr "הרשומה נוצרה בהצלחה."
+
+#: ../flask_admin/model/base.py:2028 ../flask_admin/model/base.py:2080
+#: ../flask_admin/model/base.py:2113 ../flask_admin/model/base.py:2297
+msgid "Record does not exist."
+msgstr "רשומה אינה קיימת."
+
+#: ../flask_admin/model/base.py:2037 ../flask_admin/model/base.py:2301
+msgid "Record was successfully saved."
+msgstr "הרשומה נשמרה בהצלחה."
+
+#: ../flask_admin/model/base.py:2222
+msgid "Tablib dependency not installed."
+msgstr ""
+
+#: ../flask_admin/model/base.py:2249
+#, python-format
+msgid "Export type \"%(type)s not supported."
+msgstr ""
+
+#: ../flask_admin/model/filters.py:103 ../flask_admin/model/widgets.py:111
+msgid "Yes"
+msgstr "כן"
+
+#: ../flask_admin/model/filters.py:104 ../flask_admin/model/widgets.py:110
+msgid "No"
+msgstr "לא"
+
+#: ../flask_admin/model/filters.py:172 ../flask_admin/model/filters.py:212
+#: ../flask_admin/model/filters.py:257
+msgid "between"
+msgstr "לא"
+
+#: ../flask_admin/model/template.py:81 ../flask_admin/model/template.py:88
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:37
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:8
+msgid "View Record"
+msgstr "רשומת התצוגה"
+
+#: ../flask_admin/model/template.py:95 ../flask_admin/model/template.py:102
+#: ../flask_admin/model/template.py:109
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/edit.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/edit.html:11
+msgid "Edit Record"
+msgstr "לערוך רשומה"
+
+#: ../flask_admin/model/widgets.py:61
+msgid "Please select model"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/actions.html:4
+#: ../flask_admin/templates/bootstrap3/admin/actions.html:4
+msgid "With selected"
+msgstr "עם נבחרת"
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:200
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:190
+msgid "Save"
+msgstr "שמור"
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:205
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:195
+msgid "Cancel"
+msgstr "ביטול"
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:256
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:247
+msgid "Save and Add Another"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:259
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:250
+msgid "Save and Continue Editing"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:9
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:9
+msgid "Root"
+msgstr "שורש"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:40
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:49
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:90
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:99
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:40
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:49
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:89
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:98
+#, python-format
+msgid "Sort by %(name)s"
+msgstr "מיין לפי %(name)s"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:74
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:77
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:74
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:77
+msgid "Rename File"
+msgstr "שינוי שם של קובץ"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:88
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:88
+#, python-format
+msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
+msgstr "האם אתה בטוח שברצונך למחוק את \\'%(name)s\\' באופן רקורסיבי?"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:97
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:97
+#, python-format
+msgid "Are you sure you want to delete \\'%(name)s\\'?"
+msgstr "האם אתה בטוח שברצונך למחוק את \\'%(name)s\\'?"
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:125
+msgid "Size"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/file/list.html:185
+#: ../flask_admin/templates/bootstrap3/admin/file/list.html:185
+msgid "Please select at least one file."
+msgstr "נא בחר קובץ אחד לפחות."
+
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:14
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:8
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:14
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:14
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:8
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:14
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:17
+msgid "List"
+msgstr "הרשימה"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/create.html:17
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:12
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:18
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:25
+#: ../flask_admin/templates/bootstrap3/admin/model/create.html:17
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:12
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:18
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:25
+msgid "Create"
+msgstr "צור"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:21
+#: ../flask_admin/templates/bootstrap2/admin/model/edit.html:26
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:21
+#: ../flask_admin/templates/bootstrap3/admin/model/edit.html:26
+msgid "Details"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/model/details.html:29
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/details.html:8
+#: ../flask_admin/templates/bootstrap3/admin/model/details.html:28
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/details.html:15
+msgid "Filter"
+msgstr "מסנן"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:13
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:14
+msgid "Delete?"
+msgstr "מחק?"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:30
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:33
+msgid "New"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/model/inline_list_base.html:40
+#: ../flask_admin/templates/bootstrap3/admin/model/inline_list_base.html:43
+msgid "Add"
+msgstr "להוסיף"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:3
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:3
+msgid "Add Filter"
+msgstr "להוסיף מסנן"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:18
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:23
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:30
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:18
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:30
+msgid "Export"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:38
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:38
+msgid "Apply"
+msgstr "החל"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:40
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:40
+msgid "Reset Filters"
+msgstr "איפוס מסננים"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:59
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:66
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:59
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:64
+msgid "Search"
+msgstr "חיפוש"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:74
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:77
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:78
+#: ../flask_admin/templates/bootstrap2/admin/model/layout.html:79
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:72
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:75
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:76
+#: ../flask_admin/templates/bootstrap3/admin/model/layout.html:77
+msgid "items"
+msgstr ""
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:25
+#: ../flask_admin/templates/bootstrap2/admin/model/modals/create.html:22
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:23
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:25
+#: ../flask_admin/templates/bootstrap3/admin/model/modals/create.html:10
+msgid "Create New Record"
+msgstr "יצירת רשומה חדשה"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:77
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:76
+msgid "Select all records"
+msgstr "בחר כל הרשומות"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:120
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:119
+msgid "Select record"
+msgstr "בחר רשומה"
+
+#: ../flask_admin/templates/bootstrap2/admin/model/list.html:185
+#: ../flask_admin/templates/bootstrap3/admin/model/list.html:186
+msgid "Please select at least one record."
+msgstr "נא בחר רשומה אחת לפחות."
+
+#: ../flask_admin/templates/bootstrap2/admin/model/row_actions.html:34
+#: ../flask_admin/templates/bootstrap3/admin/model/row_actions.html:34
+msgid "Are you sure you want to delete this record?"
+msgstr "האם אתה בטוח שברצונך למחוק רשומה זו?"
+

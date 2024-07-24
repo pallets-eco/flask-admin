@@ -1,0 +1,22 @@
+{% extends 'admin/master.html' %}
+{% from "security/_macros.html" import render_field, render_field_with_errors, render_checkbox_field %}
+{% include "security/_messages.html" %}
+{% block body %}
+{{ super() }}
+<div class="row-fluid">
+    <div class="col-sm-8 col-sm-offset-2">
+        <h1>Login</h1>
+        <div class="well">
+            <form action="{{ url_for_security('login') }}" method="POST" name="login_user_form">
+                {{ login_user_form.hidden_tag() }}
+                {{ render_field_with_errors(login_user_form.email) }}
+                {{ render_field_with_errors(login_user_form.password) }}
+                {{ render_checkbox_field(login_user_form.remember) }}
+                {{ render_field(login_user_form.next) }}
+                {{ render_field(login_user_form.submit, class="btn btn-primary") }}
+            </form>
+            <p>Not yet signed up? Please <a href="{{ url_for('security.register') }}">register for an account</a>.</p>
+        </div>
+    </div>
+</div>
+{% endblock body %}

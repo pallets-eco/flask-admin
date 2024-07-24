@@ -1,0 +1,13 @@
+{% import 'admin/model/inline_list_base.html' as base with context %}
+
+{% macro render_field(field) %}
+  {% set model = field.object_data %}
+  {% if model and model.image %}
+    {{ field.form.id }}
+    <img src="data:image;base64,{{ model.image | b64encode }}" style="max-width: 300px;">
+  {% else %}
+    {{ field }}
+  {% endif %}
+{% endmacro %}
+
+{{ base.render_inline_fields(field, template, render_field) }}

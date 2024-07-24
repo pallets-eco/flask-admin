@@ -1,0 +1,803 @@
+# Introduction To Flask-Admin
+# http://flask-admin.readthedocs.io/en/latest/introduction/
+#
+# Copyright (C) 2012-2015, Serge S. Koval
+# This file is distributed under the same license as the flask-admin
+# package.
+# 1dot75cm <sensor.wen@gmail.com>, 2016.
+msgid ""
+msgstr ""
+"Project-Id-Version: flask-admin 1.4.2\n"
+"Report-Msgid-Bugs-To: https://github.com/sixu05202004/Flask-extensions-"
+"docs\n"
+"POT-Creation-Date: 2017-02-07 00:18-0600\n"
+"PO-Revision-Date: 2016-11-25 03:00+0800\n"
+"Last-Translator: 1dot75cm <sensor.wen@gmail.com>\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.1.1\n"
+
+#: ../../doc/introduction.rst:4
+msgid "Introduction To Flask-Admin"
+msgstr "介绍 Flask-Admin"
+
+#: ../../doc/introduction.rst:7
+msgid "Getting Started"
+msgstr "快速入门"
+
+#: ../../doc/introduction.rst:12
+msgid "Initialization"
+msgstr "初始化"
+
+#: ../../doc/introduction.rst:14
+msgid ""
+"The first step is to initialize an empty admin interface for your Flask "
+"app::"
+msgstr "首先为 Flask app 初始化空的 admin 接口::"
+
+#: ../../doc/introduction.rst:26
+msgid ""
+"Here, both the *name* and *template_mode* parameters are optional. "
+"Alternatively, you could use the :meth:`~flask_admin.base.Admin.init_app`"
+" method."
+msgstr ""
+"这里的 *name* 和 *template_mode* 参数可选。另外，可以用 "
+":meth:`~flask_admin.base.Admin.init_app` 方法初始化。"
+
+#: ../../doc/introduction.rst:29
+msgid ""
+"If you start this application and navigate to "
+"`http://localhost:5000/admin/ <http://localhost:5000/admin/>`_, you "
+"should see an empty page with a navigation bar on top."
+msgstr ""
+"如果启动应用并导航至 `http://localhost:5000/admin/ "
+"<http://localhost:5000/admin/>`_, 你会看到一个包含导航栏的空页面。"
+
+#: ../../doc/introduction.rst:33
+msgid "Adding Model Views"
+msgstr "添加模型视图"
+
+#: ../../doc/introduction.rst:35
+msgid ""
+"Model views allow you to add a dedicated set of admin pages for managing "
+"any model in your database. Do this by creating instances of the "
+"*ModelView* class, which you can import from one of Flask-Admin's built-"
+"in ORM backends. An example is the SQLAlchemy backend, which you can use "
+"as follows::"
+msgstr ""
+"模型视图允许您添加一组专用的管理页面来管理数据库中的任何模型。通过创建 *ModelView* 类的实例来执行此操作，您可以从 Flask-"
+"Admin 的内置 ORM 后端导入。SQLAlchemy 后端示例如下::"
+
+#: ../../doc/introduction.rst:47
+msgid ""
+"Straight out of the box, this gives you a set of fully featured *CRUD* "
+"views for your model:"
+msgstr "直接开箱即用，这为您的模型提供了一组全功能的 *CRUD* 视图:"
+
+#: ../../doc/introduction.rst:49
+msgid ""
+"A `list` view, with support for searching, sorting, filtering, and "
+"deleting records."
+msgstr "`list` view：支持搜索，排序，过滤，删除记录。"
+
+#: ../../doc/introduction.rst:50
+msgid "A `create` view for adding new records."
+msgstr "`create` view：添加新记录。"
+
+#: ../../doc/introduction.rst:51
+msgid "An `edit` view for updating existing records."
+msgstr "`edit` view：更新已存在的记录。"
+
+#: ../../doc/introduction.rst:52
+msgid "An optional, read-only `details` view."
+msgstr "可选的，只读 `details` view。"
+
+#: ../../doc/introduction.rst:54
+msgid ""
+"There are many options available for customizing the display and "
+"functionality of these built-in views. For more details on that, see :ref"
+":`customizing-builtin-views`. For more details on the other ORM backends "
+"that are available, see :ref:`database-backends`."
+msgstr ""
+"内置视图有许多选项可用于定制外观和功能。更多信息，请参考 :ref:`customizing-builtin-views`。更多其他 ORM "
+"后端的详细信息，请参考 :ref:`database-backends`。"
+
+#: ../../doc/introduction.rst:59
+msgid "Adding Content to the Index Page"
+msgstr "添加内容至索引页"
+
+#: ../../doc/introduction.rst:60
+msgid ""
+"The first thing you'll notice when you visit "
+"`http://localhost:5000/admin/ <http://localhost:5000/admin/>`_ is that "
+"it's just an empty page with a navigation menu. To add some content to "
+"this page, save the following text as `admin/index.html` in your "
+"project's `templates` directory::"
+msgstr ""
+"当您访问 `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_ "
+"页面时，你会看到一个仅有导航条的空页面。添加内容至该页面，请将以下内容保存至您项目 `templates` 目录下的 "
+"`admin/index.html` 文件::"
+
+#: ../../doc/introduction.rst:69
+msgid ""
+"This will override the default index template, but still give you the "
+"built-in navigation menu. So, now you can add any content to the index "
+"page, while maintaining a consistent user experience."
+msgstr "这将覆盖默认 index 模板，但仍给您内置的导航菜单。因此，现在您可以向 index 页面添加任何内容，同时保持一致的用户体验。"
+
+#: ../../doc/introduction.rst:73
+msgid "Authorization & Permissions"
+msgstr "认证 & 权限"
+
+#: ../../doc/introduction.rst:77
+msgid ""
+"When setting up an admin interface for your application, one of the first"
+" problems you'll want to solve is how to keep unwanted users out. With "
+"Flask-Admin there are a few different ways of approaching this."
+msgstr "当为您的应用设置管理接口时，首先考虑的问题是，如何对用户进行访问控制。Flask-Admin 有以下几种方式对用户进行访问控制。"
+
+#: ../../doc/introduction.rst:82
+msgid "HTTP Basic Auth"
+msgstr "HTTP Basic Auth"
+
+#: ../../doc/introduction.rst:83
+msgid ""
+"The simplest form of authentication is HTTP Basic Auth. It doesn't "
+"interfere with your database models, and it doesn't require you to write "
+"any new view logic or template code. So it's great for when you're "
+"deploying something that's still under development, before you want the "
+"whole world to see it."
+msgstr ""
+"最简单的身份验证形式是 HTTP "
+"基本认证。它不干扰您的数据库模型，它不需要您写任何新的视图逻辑或模板代码。所以当你在部署一些仍在开发中的东西前，使用基本认证是很好的选择。"
+
+#: ../../doc/introduction.rst:88
+msgid ""
+"Have a look at `Flask-BasicAuth <https://flask-"
+"basicauth.readthedocs.io/>`_ to see just how easy it is to put your whole"
+" application behind HTTP Basic Auth."
+msgstr ""
+"`Flask-BasicAuth <https://flask-basicauth.readthedocs.io/>`_ 可以轻易的为应用添加 "
+"HTTP 基本验证。"
+
+#: ../../doc/introduction.rst:91
+msgid ""
+"Unfortunately, there is no easy way of applying HTTP Basic Auth just to "
+"your admin interface."
+msgstr "不幸的是，没有简单的方法将 HTTP 基本认证应用于您的管理界面。"
+
+#: ../../doc/introduction.rst:95
+msgid "Rolling Your Own"
+msgstr "自定义认证"
+
+#: ../../doc/introduction.rst:96
+msgid ""
+"For a more flexible solution, Flask-Admin lets you define access control "
+"rules on each of your admin view classes by simply overriding the "
+"`is_accessible` method. How you implement the logic is up to you, but if "
+"you were to use a low-level library like `Flask-Login <https://flask-"
+"login.readthedocs.io/>`_, then restricting access could be as simple as::"
+msgstr ""
+"对于更灵活的解决方案，Flask-Admin 允许您通过覆盖 `is_accessible` 方法来为每个 admin "
+"视图类定义访问控制规则。如何实现逻辑取决于你，如果你正在使用类似 `Flask-Login <https://flask-"
+"login.readthedocs.io/>`_ 的低级库，限制访问的规则如下::"
+
+#: ../../doc/introduction.rst:111
+msgid ""
+"In the navigation menu, components that are not accessible to a "
+"particular user will not be displayed for that user. For an example of "
+"using Flask-Login with Flask-Admin, have a look at https://github.com"
+"/flask-admin/Flask-Admin/tree/master/examples/auth-flask-login."
+msgstr ""
+"在导航菜单中，不会显示该用户无法访问的组件。有关使用 Flask-Login 与 Flask-Admin 的示例，请参考 "
+"https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth-"
+"flask-login。"
+
+#: ../../doc/introduction.rst:115
+msgid ""
+"The main drawback is that you still need to implement all of the relevant"
+" login, registration, and account management views yourself."
+msgstr "主要缺点是你仍然需要自己实现所有的登录，注册和帐户管理视图。"
+
+#: ../../doc/introduction.rst:120
+msgid "Using Flask-Security"
+msgstr "使用 Flask-Security"
+
+#: ../../doc/introduction.rst:122
+msgid ""
+"If you want a more polished solution, you could use `Flask-Security "
+"<https://pythonhosted.org/Flask-Security/>`_, which is a higher-level "
+"library. It comes with lots of built-in views for doing common things "
+"like user registration, login, email address confirmation, password "
+"resets, etc."
+msgstr ""
+"如果你需要一个更优秀的解决方案，可以使用 `Flask-Security <https://pythonhosted.org/Flask-"
+"Security/>`_，这是一个更高级的库。它有很多内置视图，用于完成用户管理相关的常见操作，如用户注册，登录，电子邮件地址确认，密码重置等。"
+
+#: ../../doc/introduction.rst:127
+msgid ""
+"The only complicated bit is making the built-in Flask-Security views "
+"integrate smoothly with the Flask-Admin templates to create a consistent "
+"user experience. To do this, you will need to override the built-in "
+"Flask-Security templates and have them extend the Flask-Admin base "
+"template by adding the following to the top of each file::"
+msgstr ""
+"唯一复杂的是使内置的 Flask-Security 视图与 Flask-Admin 模板平滑地集成，以创建一致的用户体验。为此，您需要覆盖内置的 "
+"Flask-Security 模板，并通过在每个文件的顶部添加以下内容来扩展 Flask-Admin base 模板::"
+
+#: ../../doc/introduction.rst:135
+msgid ""
+"Now, you'll need to manually pass in some context variables for the "
+"Flask-Admin templates to render correctly when they're being called from "
+"the Flask-Security views. Defining a `security_context_processor` "
+"function will take care of this for you::"
+msgstr ""
+"现在，当需要从 Flask-Security 视图调用 Flask-Admin 模板时，您需要手动向 Flask-Admin "
+"模板传递一些上下文变量，以便正确显示它们。定义 `security_context_processor` 函数处理模板变量::"
+
+#: ../../doc/introduction.rst:146
+msgid ""
+"For a working example of using Flask-Security with Flask-Admin, have a "
+"look at https://github.com/flask-admin/Flask-"
+"Admin/tree/master/examples/auth."
+msgstr ""
+"有关使用 Flask-Security 和 Flask-Admin 集成的示例，请查看 https://github.com/flask-"
+"admin/Flask-Admin/tree/master/examples/auth。"
+
+#: ../../doc/introduction.rst:149
+msgid ""
+"The example only uses the built-in `register` and `login` views, but you "
+"could follow the same approach for including the other views, like "
+"`forgot_password`, `send_confirmation`, etc."
+msgstr ""
+"该示例仅使用内置的 `register` 和 `login` 视图，但您可以按照相同的方法来包括其他视图，如 `forgot_password`,"
+" `send_confirmation` 等。"
+
+#: ../../doc/introduction.rst:155
+msgid "Customizing Built-in Views"
+msgstr "自定义内置视图"
+
+#: ../../doc/introduction.rst:159
+msgid ""
+"The built-in `ModelView` class is great for getting started quickly. But,"
+" you'll want to configure its functionality to suit your particular "
+"models. This is done by setting values for the configuration attributes "
+"that are made available in the `ModelView` class."
+msgstr "内置的 `ModelView` 类非常适合快速入门。另外，您可以通过配置 `ModelView` 类的属性值，来满足您的模型的特殊需求。"
+
+#: ../../doc/introduction.rst:163
+msgid ""
+"To specify some global configuration parameters, you can subclass "
+"`ModelView` and use that subclass when adding your models to the "
+"interface::"
+msgstr "要指定全局配置参数，可以继承 `ModelView` 类，并在添加模型时使用子类::"
+
+#: ../../doc/introduction.rst:177
+msgid ""
+"Or, in much the same way, you can specify options for a single model at a"
+" time::"
+msgstr "或者，您也可以为单个模型指定选项::"
+
+#: ../../doc/introduction.rst:190
+msgid "`ModelView` Configuration Attributes"
+msgstr "`ModelView` 配置属性"
+
+#: ../../doc/introduction.rst:192
+msgid ""
+"For a complete list of the attributes that are defined, have a look at "
+"the API documentation for :meth:`~flask_admin.model.BaseModelView`. Here "
+"are some of the most commonly used attributes:"
+msgstr ""
+"有关定义属性的完整列表，请查看 :meth:`~flask_admin.model.BaseModelView` API "
+"文档。这里列出了一些最常用的属性:"
+
+#: ../../doc/introduction.rst:196
+msgid ""
+"To **disable some of the CRUD operations**, set any of these boolean "
+"parameters::"
+msgstr "要 **禁用某些 CRUD 操作**，请设置以下布尔参数::"
+
+#: ../../doc/introduction.rst:202
+msgid ""
+"If your model has too much data to display in the list view, you can "
+"**add a read-only details view** by setting::"
+msgstr "如果您的模型在列表视图中显示的数据过多，可以设置以下内容来 **添加只读的详细视图**::"
+
+#: ../../doc/introduction.rst:207
+msgid ""
+"**Removing columns** from the list view is easy, just pass a list of "
+"column names for the *column_excludes_list* parameter::"
+msgstr "从列表视图中 **删除列**，只需要向 *column_excludes_list* 参数传递列名列表即可::"
+
+#: ../../doc/introduction.rst:212
+msgid ""
+"To **make columns searchable**, or to use them for filtering, specify a "
+"list of column names::"
+msgstr "要 **使列可搜索** 或用于 **过滤**，请指定列名列表::"
+
+#: ../../doc/introduction.rst:217
+msgid ""
+"For a faster editing experience, enable **inline editing** in the list "
+"view::"
+msgstr "要获得更快的编辑体验，请在列表视图中启用 **行内编辑**::"
+
+#: ../../doc/introduction.rst:221
+msgid ""
+"Or, have the add & edit forms display inside a **modal window** on the "
+"list page, instead of the dedicated *create* & *edit* pages::"
+msgstr "或者，在列表页面上的 **模态窗口** 内显示 add & edit 表单，代替专门的 *create* & *edit* 页面::"
+
+#: ../../doc/introduction.rst:227
+msgid ""
+"You can restrict the possible values for a text-field by specifying a "
+"list of **select choices**::"
+msgstr "您可以通过指定 **选择选项** 的列表，来限制文本字段的可选值::"
+
+#: ../../doc/introduction.rst:239
+msgid "To **remove fields** from the create and edit forms::"
+msgstr "从创建和编辑表单 **删除字段**::"
+
+#: ../../doc/introduction.rst:243
+msgid "To specify **WTForms field arguments**::"
+msgstr "指定 **WTForms 字段参数**::"
+
+#: ../../doc/introduction.rst:252
+msgid ""
+"Or, to specify arguments to the **WTForms widgets** used to render those "
+"fields::"
+msgstr "或，指定用于渲染这些字段的 **WTForms widgets** 的参数::"
+
+#: ../../doc/introduction.rst:261
+msgid ""
+"When your forms contain foreign keys, have those **related models loaded "
+"via ajax**, using::"
+msgstr "当您的表单包含外键时，使用以下参数将 **相关模型通过 ajax 导入**::"
+
+#: ../../doc/introduction.rst:270
+msgid "To filter the results that are loaded via ajax, you can use::"
+msgstr ""
+
+#: ../../doc/introduction.rst:277
+msgid "To **manage related models inline**::"
+msgstr "**行内管理相关模型**::"
+
+#: ../../doc/introduction.rst:281
+msgid ""
+"These inline forms can be customized. Have a look at the API "
+"documentation for "
+":meth:`~flask_admin.contrib.sqla.ModelView.inline_models`."
+msgstr ""
+"行内表单可以自定义。详情参考 :meth:`~flask_admin.contrib.sqla.ModelView.inline_models` "
+"API 文档。"
+
+#: ../../doc/introduction.rst:284
+msgid "To **enable csv export** of the model view::"
+msgstr "启用模型视图的 **CSV 导出功能**::"
+
+#: ../../doc/introduction.rst:288
+msgid ""
+"This will add a button to the model view that exports records, truncating"
+" at :attr:`~flask_admin.model.BaseModelView.export_max_rows`."
+msgstr ""
+"这将向模型视图添加一个导出记录的按钮，使用 "
+":attr:`~flask_admin.model.BaseModelView.export_max_rows` 控制导出行数。"
+
+#: ../../doc/introduction.rst:291
+msgid "Adding Your Own Views"
+msgstr "添加你自己的视图"
+
+#: ../../doc/introduction.rst:295
+msgid ""
+"For situations where your requirements are really specific and you "
+"struggle to meet them with the built-in "
+":class:`~flask_admin.model.ModelView` class, Flask-Admin makes it easy "
+"for you to take full control and add your own views to the interface."
+msgstr ""
+"如果内置的 :class:`~flask_admin.model.ModelView` 类不能满足您的需求， Flask-Admin "
+"可以使您轻松地进行控制并向界面添加自己的视图。"
+
+#: ../../doc/introduction.rst:300
+msgid "Standalone Views"
+msgstr "独立视图"
+
+#: ../../doc/introduction.rst:301
+msgid ""
+"A set of standalone views (not tied to any particular model) can be added"
+" by extending the :class:`~flask_admin.base.BaseView` class and defining "
+"your own view methods. For example, to add a page that displays some "
+"analytics data from a 3rd-party API::"
+msgstr ""
+"可以通过扩展 :class:`~flask_admin.base.BaseView` "
+"类并定义自己的视图方法来添加一组独立视图（不与任何特定模型绑定）。例如，要添加来自第三方 API 的某些分析数据的页面::"
+
+#: ../../doc/introduction.rst:314
+msgid ""
+"This will add a link to the navbar for your view. Notice that it is "
+"served at '/', the root URL. This is a restriction on standalone views: "
+"at the very minimum, each view class needs at least one method to serve a"
+" view at its root."
+msgstr "这将为您的视图添加一个导航栏链接。注意，它在 '/' 根 URL。这是对独立视图的限制：每个视图类需要至少一个方法来在其根目录中提供视图。"
+
+#: ../../doc/introduction.rst:318
+msgid ""
+"The `analytics_index.html` template for the example above, could look "
+"something like::"
+msgstr "上述示例的 `analytics_index.html` 模板可能如下所示："
+
+#: ../../doc/introduction.rst:325
+msgid ""
+"By extending the *admin/master.html* template, you can maintain a "
+"consistent user experience, even while having tight control over your "
+"page's content."
+msgstr "通过扩展 *admin/master.html* 模板，即使在严格控制页面内容的情况下，您仍然可以保持一致的用户体验。"
+
+#: ../../doc/introduction.rst:329
+msgid "Overriding the Built-in Views"
+msgstr "覆盖内置视图"
+
+#: ../../doc/introduction.rst:330
+msgid ""
+"There may be some scenarios where you want most of the built-in ModelView"
+" functionality, but you want to replace one of the default `create`, "
+"`edit`, or `list` views. For this you could override only the view in "
+"question, and all the links to it will still function as you would "
+"expect::"
+msgstr ""
+"在某些情况下，您需要使用大多数内置的 ModelView 功能，但需要替换默认的 `create`, `edit` 或 `list` "
+"视图。为此，您只需要覆盖指定视图，视图的所有链接仍然会正常工作::"
+
+#: ../../doc/introduction.rst:348
+msgid "Working With the Built-in Templates"
+msgstr "使用内置模板"
+
+#: ../../doc/introduction.rst:352
+msgid ""
+"Flask-Admin uses the `Jinja2 <http://jinja.pocoo.org/docs/>`_ templating "
+"engine."
+msgstr "Flask-Admin 使用 `Jinja2 <http://jinja.pocoo.org/docs/>`_ 模板引擎。"
+
+#: ../../doc/introduction.rst:357
+msgid "Extending the Built-in Templates"
+msgstr "扩展内置模板"
+
+#: ../../doc/introduction.rst:359
+msgid ""
+"Rather than overriding the built-in templates completely, it's best to "
+"extend them. This will make it simpler for you to upgrade to new Flask-"
+"Admin versions in future."
+msgstr "扩展内置模板，而不是完全覆盖它们。使您可以更容易的升级到新版 Flake-Admin。"
+
+#: ../../doc/introduction.rst:362
+msgid ""
+"Internally, the Flask-Admin templates are derived from the "
+"`admin/master.html` template. The three most interesting templates for "
+"you to extend are probably:"
+msgstr "在内部，Flask-Admin 模板派生自 `admin/master.html` 模板。你需要扩展的三个有趣的模板可能是:"
+
+#: ../../doc/introduction.rst:365
+msgid "`admin/model/list.html`"
+msgstr "`admin/model/list.html`"
+
+#: ../../doc/introduction.rst:366
+msgid "`admin/model/create.html`"
+msgstr "`admin/model/create.html`"
+
+#: ../../doc/introduction.rst:367
+msgid "`admin/model/edit.html`"
+msgstr "`admin/model/edit.html`"
+
+#: ../../doc/introduction.rst:369
+msgid ""
+"To extend the default *edit* template with your own functionality, create"
+" a template in `templates/microblog_edit.html` to look something like::"
+msgstr "要使用自定义功能扩展默认 *edit* 模板，请在 `templates/microblog_edit.html` 中创建模板，如下所示::"
+
+#: ../../doc/introduction.rst:379
+msgid ""
+"Now, to make your view classes use this template, set the appropriate "
+"class property::"
+msgstr "现在，确保您的视图类使用该模板，设置相应的类属性::"
+
+#: ../../doc/introduction.rst:386
+msgid ""
+"If you want to use your own base template, then pass the name of the "
+"template to the admin constructor during initialization::"
+msgstr "如果要使用自己的 base 模板，则在初始化时将模板名传递给 admin 构造函数::"
+
+#: ../../doc/introduction.rst:392
+msgid "Overriding the Built-in Templates"
+msgstr "覆盖内置模板"
+
+#: ../../doc/introduction.rst:394
+msgid ""
+"To take full control over the style and layout of the admin interface, "
+"you can override all of the built-in templates. Just keep in mind that "
+"the templates will change slightly from one version of Flask-Admin to the"
+" next, so once you start overriding them, you need to take care when "
+"upgrading your package version."
+msgstr ""
+"要完全控制管理界面的样式和布局，您可以覆盖所有内置模板。请记住，新版本的 Flask-Admin "
+"模板会稍有变化，所以一旦开始覆盖内置模板，升级软件包时可能会出错。"
+
+#: ../../doc/introduction.rst:399
+msgid ""
+"To override any of the built-in templates, simply copy them from the "
+"Flask-Admin source into your project's `templates/admin/` directory. As "
+"long as the filenames stay the same, the templates in your project "
+"directory should automatically take precedence over the built-in ones."
+msgstr ""
+"要覆盖任何内置模板，只需将它们从 Flask-Admin 复制到项目的 `templates/admin/` "
+"目录。只要文件名保持不变，项目目录中的模板将自动优先于内置模板。"
+
+#: ../../doc/introduction.rst:405
+msgid "Available Template Blocks"
+msgstr "可用模板块"
+
+#: ../../doc/introduction.rst:407
+msgid ""
+"Flask-Admin defines one *base* template at `admin/master.html` that all "
+"other admin templates are derived from. This template is a proxy which "
+"points to `admin/base.html`, which defines the following blocks:"
+msgstr ""
+"Flask-Admin 在 `admin/master.html` 定义了一个 *base* "
+"模板，所有其他管理模板都派生自该模板。此模板是一个指向 `admin/base.html` 的代理，它定义了以下块:"
+
+#: ../../doc/introduction.rst:412 ../../doc/introduction.rst:432
+msgid "Block Name"
+msgstr "块名称"
+
+#: ../../doc/introduction.rst:412 ../../doc/introduction.rst:432
+#: ../../doc/introduction.rst:453
+msgid "Description"
+msgstr "描述"
+
+#: ../../doc/introduction.rst:414
+msgid "head_meta"
+msgstr "head_meta"
+
+#: ../../doc/introduction.rst:414
+msgid "Page metadata in the header"
+msgstr "header 中的页面元数据"
+
+#: ../../doc/introduction.rst:415
+msgid "title"
+msgstr "title"
+
+#: ../../doc/introduction.rst:415
+msgid "Page title"
+msgstr "页面标题"
+
+#: ../../doc/introduction.rst:416
+msgid "head_css"
+msgstr "head_css"
+
+#: ../../doc/introduction.rst:416
+msgid "Various CSS includes in the header"
+msgstr "header 中的各种 CSS"
+
+#: ../../doc/introduction.rst:417
+msgid "head"
+msgstr "head"
+
+#: ../../doc/introduction.rst:417
+msgid "Empty block in HTML head, in case you want to put something  there"
+msgstr "空的 HTML head 元素，可自定义信息"
+
+#: ../../doc/introduction.rst:418
+msgid "page_body"
+msgstr "page_body"
+
+#: ../../doc/introduction.rst:418
+msgid "Page layout"
+msgstr "页面布局"
+
+#: ../../doc/introduction.rst:419
+msgid "brand"
+msgstr "brand"
+
+#: ../../doc/introduction.rst:419
+msgid "Logo in the menu bar"
+msgstr "菜单栏 Logo"
+
+#: ../../doc/introduction.rst:420
+msgid "main_menu"
+msgstr "main_menu"
+
+#: ../../doc/introduction.rst:420
+msgid "Main menu"
+msgstr "主菜单"
+
+#: ../../doc/introduction.rst:421
+msgid "menu_links"
+msgstr "menu_links"
+
+#: ../../doc/introduction.rst:421
+msgid "Links menu"
+msgstr "菜单链接"
+
+#: ../../doc/introduction.rst:422
+msgid "access_control"
+msgstr "access_control"
+
+#: ../../doc/introduction.rst:422
+msgid "Section to the right of the menu (can be used to add login/logout buttons)"
+msgstr "菜单右侧部分 (可用于添加登录/注销按钮)"
+
+#: ../../doc/introduction.rst:423
+msgid "messages"
+msgstr "messages"
+
+#: ../../doc/introduction.rst:423
+msgid "Alerts and various messages"
+msgstr "警告和各种消息"
+
+#: ../../doc/introduction.rst:424
+msgid "body"
+msgstr "body"
+
+#: ../../doc/introduction.rst:424
+msgid "Content (that's where your view will be displayed)"
+msgstr "内容 (您的视图内容)"
+
+#: ../../doc/introduction.rst:425
+msgid "tail"
+msgstr "tail"
+
+#: ../../doc/introduction.rst:425
+msgid "Empty area below content"
+msgstr "空的底部内容"
+
+#: ../../doc/introduction.rst:428
+msgid ""
+"In addition to all of the blocks that are inherited from "
+"`admin/master.html`, the `admin/model/list.html` template also contains "
+"the following blocks:"
+msgstr "除了从 `admin/master.html` 继承的所有块之外，`admin/model/list.html` 模板还包含以下块:"
+
+#: ../../doc/introduction.rst:434
+msgid "model_menu_bar"
+msgstr "model_menu_bar"
+
+#: ../../doc/introduction.rst:434
+msgid "Menu bar"
+msgstr "菜单栏"
+
+#: ../../doc/introduction.rst:435
+msgid "model_list_table"
+msgstr "model_list_table"
+
+#: ../../doc/introduction.rst:435
+msgid "Table container"
+msgstr "表格容器"
+
+#: ../../doc/introduction.rst:436
+msgid "list_header"
+msgstr "list_header"
+
+#: ../../doc/introduction.rst:436
+msgid "Table header row"
+msgstr "表格头部"
+
+#: ../../doc/introduction.rst:437
+msgid "list_row_actions_header"
+msgstr "list_row_actions_header"
+
+#: ../../doc/introduction.rst:437
+msgid "Actions header"
+msgstr "操作表头"
+
+#: ../../doc/introduction.rst:438
+msgid "list_row"
+msgstr "list_row"
+
+#: ../../doc/introduction.rst:438
+msgid "Single row"
+msgstr "单行"
+
+#: ../../doc/introduction.rst:439
+msgid "list_row_actions"
+msgstr "list_row_actions"
+
+#: ../../doc/introduction.rst:439
+msgid "Row action cell with edit/remove/etc buttons"
+msgstr "单元格的编辑/删除等动作按钮"
+
+#: ../../doc/introduction.rst:440
+msgid "empty_list_message"
+msgstr "empty_list_message"
+
+#: ../../doc/introduction.rst:440
+msgid "Message that will be displayed if there are no models found"
+msgstr "如果未找到模型，将显示该消息"
+
+#: ../../doc/introduction.rst:443
+msgid ""
+"Have a look at the `layout` example at https://github.com/flask-admin"
+"/flask-admin/tree/master/examples/layout to see how you can take full "
+"stylistic control over the admin interface."
+msgstr ""
+"请查看 https://github.com/flask-admin/flask-"
+"admin/tree/master/examples/layout 上的 *布局* 示例，了解如何对管理界面进行全面的风格控制。"
+
+#: ../../doc/introduction.rst:447
+msgid "Environment Variables"
+msgstr "环境变量"
+
+#: ../../doc/introduction.rst:449
+msgid ""
+"While working in any of the templates that extend `admin/master.html`, "
+"you have access to a small number of environment variables:"
+msgstr "当在任何扩展 `admin/master.html` 的模板中工作时，您可以访问少量的环境变量:"
+
+#: ../../doc/introduction.rst:453
+msgid "Variable Name"
+msgstr "变量名"
+
+#: ../../doc/introduction.rst:455
+msgid "admin_view"
+msgstr "admin_view"
+
+#: ../../doc/introduction.rst:455
+msgid "Current administrative view"
+msgstr "当前管理视图"
+
+#: ../../doc/introduction.rst:456
+msgid "admin_base_template"
+msgstr "admin_base_template"
+
+#: ../../doc/introduction.rst:456
+msgid "Base template name"
+msgstr "Base 模板名"
+
+#: ../../doc/introduction.rst:457
+msgid "_gettext"
+msgstr "_gettext"
+
+#: ../../doc/introduction.rst:457
+msgid "Babel gettext"
+msgstr "Babel gettext"
+
+#: ../../doc/introduction.rst:458
+msgid "_ngettext"
+msgstr "_ngettext"
+
+#: ../../doc/introduction.rst:458
+msgid "Babel ngettext"
+msgstr "Babel ngettext"
+
+#: ../../doc/introduction.rst:459
+msgid "h"
+msgstr "h"
+
+#: ../../doc/introduction.rst:459
+msgid "Helpers from :mod:`~flask_admin.helpers` module"
+msgstr ":mod:`~flask_admin.helpers` 模块帮助类"
+
+#: ../../doc/introduction.rst:463
+msgid "Generating URLs"
+msgstr "生成 URL"
+
+#: ../../doc/introduction.rst:465
+msgid "To generate the URL for a specific view, use *url_for* with a dot prefix::"
+msgstr "生成指定视图的 URL，请使用带点前缀的 *url_for*::"
+
+#: ../../doc/introduction.rst:476
+msgid "A specific record can also be referenced with::"
+msgstr "一个指定记录的 URL 可以参考示例::"
+
+#: ../../doc/introduction.rst:481
+msgid ""
+"When referencing ModelView instances, use the lowercase name of the model"
+" as the prefix when calling *url_for*. Other views can be referenced by "
+"specifying a unique endpoint for each, and using that as the prefix. So, "
+"you could use::"
+msgstr ""
+"当引用 ModelView 实例时，在调用 *url_for* "
+"时使用模型的小写名称作为前缀。可以通过为每个视图指定唯一的端点，并将其用作前缀来引用其他视图。所以，可以这样引用::"
+
+#: ../../doc/introduction.rst:487
+msgid "If your view endpoint was defined like::"
+msgstr "您的视图端点定义如下::"
+

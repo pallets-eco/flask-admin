@@ -1,0 +1,7 @@
+include LICENSE
+include README.rst
+recursive-include flask_admin/static *
+recursive-include flask_admin/templates *
+recursive-include flask_admin/translations *
+recursive-include flask_admin/tests *
+recursive-exclude flask_admin *.pyc

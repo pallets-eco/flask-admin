@@ -221,3 +221,11 @@ class AjaxSelectMultipleField(AjaxSelectField):
     def pre_validate(self, form):
         if self._invalid_formdata:
             raise ValidationError(self.gettext(u'Not a valid choice'))
+
+
+class ColorField(TextAreaField):
+    """
+        Create a special ColorInput field for selecting a
+        HEX color in the edit menu. For the ModelTypeView in particular.
+    """
+    widget = Input(input_type="color")

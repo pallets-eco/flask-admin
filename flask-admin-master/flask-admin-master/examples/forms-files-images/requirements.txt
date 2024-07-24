@@ -1,0 +1,5 @@
+Flask
+Flask-Admin
+Flask-SQLAlchemy
+pillow
+redis

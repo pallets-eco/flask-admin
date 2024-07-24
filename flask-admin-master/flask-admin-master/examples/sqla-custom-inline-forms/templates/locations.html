@@ -1,0 +1,12 @@
+<html>
+  <body>
+    {% for loc in locations %}
+    <h2>{{ loc.name }}</h2>
+      {% for img in loc.images %}
+      <img src="{{ url_for('static', filename=img.path) }}" alt="{{ img.alt }}" style="max-width: 300px"></img>
+      {% endfor %}
+    <hr/>
+    {% endfor %}
+    <a href="/admin">Open admin to upload some images.</a>
+  </body>
+</html>

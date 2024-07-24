@@ -1,0 +1,13 @@
+{% extends 'admin/model/create.html' %}
+
+{% block tail %}
+    {{ super() }}
+    <script src="https://cdn.ckeditor.com/ckeditor5/11.1.1/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('.ckeditor'))
+            .catch(error => {
+                console.error( error );
+            });
+    </script>
+{% endblock %}
