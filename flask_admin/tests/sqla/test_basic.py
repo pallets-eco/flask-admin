@@ -2456,6 +2456,9 @@ def test_customising_page_size(app, db, admin):
         view3 = CustomModelView(M1, db.session, endpoint='view3', page_size=20, can_set_page_size=True)
         admin.add_view(view3)
 
+        view4 = CustomModelView(M1, db.session, endpoint='view4', page_size=5, page_size_options=(5, 10, 15), can_set_page_size=True)
+        admin.add_view(view4)
+
         client = app.test_client()
 
         rv = client.get('/admin/view1/')
@@ -2489,6 +2492,24 @@ def test_customising_page_size(app, db, admin):
         rv = client.get('/admin/view3/?page_size=1')
         assert 'instance-020' in rv.text
         assert 'instance-021' not in rv.text
+
+        # Check view4, which has custom `page_size_options`
+        rv = client.get('/admin/view4/')
+        assert 'instance-005' in rv.text
+        assert 'instance-006' not in rv.text
+
+        # Invalid page sizes are reset to the default
+        rv = client.get('/admin/view4/?page_size=1')
+        assert 'instance-005' in rv.text
+        assert 'instance-006' not in rv.text
+
+        rv = client.get('/admin/view4/?page_size=10')
+        assert 'instance-010' in rv.text
+        assert 'instance-011' not in rv.text
+
+        rv = client.get('/admin/view4/?page_size=15')
+        assert 'instance-015' in rv.text
+        assert 'instance-016' not in rv.text
 
 
 def test_unlimited_page_size(app, db, admin):

@@ -788,6 +788,11 @@ class BaseModelView(BaseView, ActionsMixin):
         Allows to select page size via dropdown list
     """
 
+    page_size_options: tuple = (20, 50, 100)
+    """
+        Sets the page size options available, if `can_set_page_size` is True
+    """
+
     def __init__(self, model,
                  name=None, category=None, endpoint=None, url=None, static_folder=None,
                  menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
@@ -832,6 +837,12 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # Scaffolding
         self._refresh_cache()
+
+        if self.can_set_page_size and self.page_size not in self.page_size_options:
+            warnings.warn(
+                f"{self.page_size=} is not in {self.page_size_options=}",
+                UserWarning
+            )
 
     # Endpoint
     def _get_endpoint(self, endpoint):
@@ -1510,7 +1521,7 @@ class BaseModelView(BaseView, ActionsMixin):
     def get_safe_page_size(self, page_size):
         safe_page_size = self.page_size
 
-        if self.can_set_page_size and page_size in {20, 50, 100}:
+        if self.can_set_page_size and page_size in self.page_size_options:
             safe_page_size = page_size
 
         return safe_page_size
