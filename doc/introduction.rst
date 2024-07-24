@@ -467,17 +467,18 @@ empty_list_message      Message that will be displayed if there are no models fo
 Have a look at the `layout` example at https://github.com/flask-admin/flask-admin/tree/master/examples/custom-layout
 to see how you can take full stylistic control over the admin interface.
 
-Environment Variables
----------------------
+Template Context Variables
+--------------------------
 
 While working in any of the templates that extend `admin/master.html`, you have access to a small number of
-environment variables:
+context variables:
 
 ==================== ================================
 Variable Name        Description
 ==================== ================================
 admin_view           Current administrative view
 admin_base_template  Base template name
+theme                The Theme configuration passed into Flask-Admin at instantiation
 _gettext             Babel gettext
 _ngettext            Babel ngettext
 h                    Helpers from :mod:`~flask_admin.helpers` module
