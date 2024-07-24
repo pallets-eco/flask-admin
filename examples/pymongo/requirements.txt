@@ -1,1 +1,1 @@
-../..[db-pymongo]
+../..[pymongo]

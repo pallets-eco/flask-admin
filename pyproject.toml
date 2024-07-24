@@ -27,58 +27,58 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-db-sqlalchemy = [
+sqlalchemy = [
     "flask-sqlalchemy>=3",
     "sqlalchemy>=1.4,<2",
 ]
-db-sqlalchemy-with-utils = [
-    "Flask-Admin[db-sqlalchemy]",
+sqlalchemy-with-utils = [
+    "Flask-Admin[sqlalchemy]",
     "sqlalchemy_utils>=0.36.6",
     "sqlalchemy-citext",
     "colour",
     "email_validator",
     "arrow<0.14.0",
 ]
-db-geoalchemy = [
-    "Flask-Admin[db-sqlalchemy]",
+geoalchemy = [
+    "Flask-Admin[sqlalchemy]",
     "geoalchemy2",
     "shapely>=2",
 ]
-db-mongoengine = [  # TODO: seems out-of-date/unmaintained; replace or deprecate?
-    "Flask-Admin[db-sqlalchemy]",
+mongoengine = [  # TODO: seems out-of-date/unmaintained; replace or deprecate?
+    "Flask-Admin[sqlalchemy]",
     "flask-mongoengine<1",
     "Flask<2.3.0",  # flask-mongoengine tries to access `flask.json`
 ]
-db-pymongo = ["pymongo>=3.7.0"]
-db-peewee = [
+pymongo = ["pymongo>=3.7.0"]
+peewee = [
     "peewee>3",
     "wtf-peewee>3"
 ]
-db-appengine = [
-    "Flask-Admin[db-sqlalchemy]",
+appengine = [
+    "Flask-Admin[sqlalchemy]",
     "appengine-python-standard",
     "wtforms-appengine"
 ]
-files-s3 = ["boto"]  # TODO: migrate to boto3
-files-azure = ["azure-storage-blob<=3"]  # TODO: update to v12+
+s3 = ["boto"]  # TODO: migrate to boto3
+azure-blob-storage = ["azure-storage-blob<=3"]  # TODO: update to v12+
 images = ["pillow>=3.3.2"]
 export = ["tablib"]
 rediscli = ["redis"]
 translation = ["flask-babel>=3"]
 all = [
-    "Flask-Admin[db-sqlalchemy]",
-    "Flask-Admin[db-sqlalchemy-with-utils]",
-    "Flask-Admin[db-geoalchemy]",
+    "Flask-Admin[sqlalchemy]",
+    "Flask-Admin[sqlalchemy-with-utils]",
+    "Flask-Admin[geoalchemy]",
 
-# FIXME: disabling db-mongoengine as flask-mongoengine is now out-of-date and is
+# FIXME: disabling mongoengine as flask-mongoengine is now out-of-date and is
 #        incompatible with newer versions of flask that we want to test.
-#    "Flask-Admin[db-mongoengine]",
+#    "Flask-Admin[mongoengine]",
 
-    "Flask-Admin[db-pymongo]",
-    "Flask-Admin[db-peewee]",
-    "Flask-Admin[db-appengine]",
-    "Flask-Admin[files-s3]",
-    "Flask-Admin[files-azure]",
+    "Flask-Admin[pymongo]",
+    "Flask-Admin[peewee]",
+    "Flask-Admin[appengine]",
+    "Flask-Admin[s3]",
+    "Flask-Admin[azure-blob-storage]",
     "Flask-Admin[images]",
     "Flask-Admin[export]",
     "Flask-Admin[rediscli]",

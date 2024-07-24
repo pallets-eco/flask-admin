@@ -1,2 +1,2 @@
 # Install Flask-Admin with required extras from the root of the repository
-../..[db-sqlalchemy,translation]
+../..[sqlalchemy,translation]
