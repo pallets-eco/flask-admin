@@ -49,9 +49,11 @@ class AzureStorage(object):
         """
 
         if not BlockBlobService:
-            raise ValueError('Could not import Azure Blob Storage SDK. '
-                             'You can install the SDK using '
-                             'pip install azure-storage-blob')
+            raise ValueError(
+                'Could not import `azure.storage.blob`. '
+                'Enable `azure-blob-storage` integration '
+                'by installing `flask-admin[azure-blob-storage]`'
+            )
 
         self._container_name = container_name
         self._connection_string = connection_string

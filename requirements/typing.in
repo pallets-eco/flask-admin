@@ -1,3 +1,4 @@
+-c tests-constraints.txt
 -r tests.in
 
 mypy

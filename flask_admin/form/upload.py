@@ -387,7 +387,10 @@ class ImageUploadField(FileUploadField):
         """
         # Check if PIL is installed
         if Image is None:
-            raise ImportError('PIL library was not found')
+            raise Exception(
+                'Could not import `PIL`. '
+                'Enable `images` integration by installing `flask-admin[images]`'
+            )
 
         self.max_size = max_size
         self.thumbnail_fn = thumbgen or thumbgen_filename

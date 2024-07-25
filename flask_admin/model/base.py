@@ -2374,8 +2374,10 @@ class BaseModelView(BaseView, ActionsMixin):
             Exports a variety of formats using the tablib library.
         """
         if tablib is None:
-            flash(gettext('Tablib dependency not installed.'), 'error')
-            return redirect(return_url)
+            raise Exception(
+                'Could not import `tablib`. '
+                'Enable `export` integration by installing `flask-admin[export]`'
+            )
 
         filename = self.get_export_name(export_type)
 

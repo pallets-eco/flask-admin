@@ -1,4 +1,5 @@
--c tests.in
+-c tests-constraints.txt
+-r tests.in
 
 pallets-sphinx-themes
 sphinx

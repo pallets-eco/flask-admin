@@ -20,10 +20,69 @@ classifiers = [
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
 ]
-requires-python = ">=3.6"
+requires-python = ">=3.8"
 dependencies = [
-    "flask>=0.7",
-    "wtforms"
+    "flask>=2.0,<3",
+    "wtforms>=2,<3",
+]
+
+[project.optional-dependencies]
+sqlalchemy = [
+    "flask-sqlalchemy>=3",
+    "sqlalchemy>=1.4,<2",
+]
+sqlalchemy-with-utils = [
+    "Flask-Admin[sqlalchemy]",
+    "sqlalchemy_utils>=0.36.6",
+    "sqlalchemy-citext",
+    "colour",
+    "email_validator",
+    "arrow<0.14.0",
+]
+geoalchemy = [
+    "Flask-Admin[sqlalchemy]",
+    "geoalchemy2",
+    "shapely>=2",
+]
+mongoengine = [  # TODO: seems out-of-date/unmaintained; replace or deprecate?
+    "Flask-Admin[sqlalchemy]",
+    "flask-mongoengine<1",
+    "Flask<2.3.0",  # flask-mongoengine tries to access `flask.json`
+]
+pymongo = ["pymongo>=3.7.0"]
+peewee = [
+    "peewee>3",
+    "wtf-peewee>3"
+]
+appengine = [
+    "Flask-Admin[sqlalchemy]",
+    "appengine-python-standard",
+    "wtforms-appengine"
+]
+s3 = ["boto"]  # TODO: migrate to boto3
+azure-blob-storage = ["azure-storage-blob<=3"]  # TODO: update to v12+
+images = ["pillow>=3.3.2"]
+export = ["tablib"]
+rediscli = ["redis"]
+translation = ["flask-babel>=3"]
+all = [
+    "Flask-Admin[sqlalchemy]",
+    "Flask-Admin[sqlalchemy-with-utils]",
+    "Flask-Admin[geoalchemy]",
+
+# FIXME: disabling mongoengine as flask-mongoengine is now out-of-date and is
+#        incompatible with newer versions of flask that we want to test.
+#    "Flask-Admin[mongoengine]",
+
+    "Flask-Admin[pymongo]",
+    "Flask-Admin[peewee]",
+    "Flask-Admin[appengine]",
+    "Flask-Admin[s3]",
+    "Flask-Admin[azure-blob-storage]",
+    "Flask-Admin[images]",
+    "Flask-Admin[export]",
+    "Flask-Admin[rediscli]",
+    "Flask-Admin[translation]",
 ]
 
 [project.urls]
@@ -61,7 +120,13 @@ filterwarnings = [
     "default:'pkgutil\\.get_loader' is deprecated and slated for removal in Python 3\\.14:DeprecationWarning",
     "default:'pkgutil\\.find_loader' is deprecated and slated for removal in Python 3\\.14:DeprecationWarning",
 
-    "default:datetime\\.datetime\\.utcnow\\(\\) is deprecated and scheduled for removal in a future version:DeprecationWarning"
+    "default:datetime\\.datetime\\.utcnow\\(\\) is deprecated and scheduled for removal in a future version:DeprecationWarning",
+
+    # `flask.testing` accesses this attribute; remove when they have updated their code.
+    "default:The '__version__' attribute is deprecated and will be removed in Werkzeug 3\\.1\\.:DeprecationWarning",
+
+    # TODO: Remove when we've added SQLAlchemy 2.0 compatibility
+    "default:Deprecated API features detected!:DeprecationWarning:flask_admin.tests.sqla.test_basic:99",
 ]
 
 [tool.coverage.run]

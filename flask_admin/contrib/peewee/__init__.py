@@ -3,6 +3,9 @@ try:
     import peewee
     import wtfpeewee
 except ImportError:
-    raise Exception('Please install peewee and wtf-peewee packages in order to use peewee integration')
+    raise Exception(
+        'Could not import `peewee` or `wtfpeewee`. '
+        'Enable `peewee` integration by installing `flask-admin[peewee]`'
+    )
 
 from .view import ModelView
