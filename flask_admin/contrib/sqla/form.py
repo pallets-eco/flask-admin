@@ -515,7 +515,7 @@ def get_form(model, converter,
     mapper = model._sa_class_manager.mapper
     field_args = field_args or {}
 
-    properties = ((p.key, p) for p in mapper.iterate_properties)
+    properties = ((p.key, p) for p in mapper.attrs)
 
     if only:
         def find(name):
