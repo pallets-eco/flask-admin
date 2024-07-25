@@ -186,7 +186,7 @@ pyproject-api==1.7.1
     # via tox
 pyright==1.1.373
     # via -r typing.txt
-pytest==8.3.1
+pytest==8.3.2
     # via
     #   -r docs.txt
     #   -r tests.in
@@ -302,7 +302,7 @@ typing-extensions==4.12.2
     #   astroid
     #   mypy
     #   pylint
-urllib3==1.26.19
+urllib3==2.2.2
     # via
     #   -r docs.txt
     #   -r typing.txt

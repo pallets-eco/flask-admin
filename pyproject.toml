@@ -54,11 +54,6 @@ peewee = [
     "peewee>3",
     "wtf-peewee>3"
 ]
-appengine = [
-    "Flask-Admin[sqlalchemy]",
-    "appengine-python-standard",
-    "wtforms-appengine"
-]
 s3 = ["boto"]  # TODO: migrate to boto3
 azure-blob-storage = ["azure-storage-blob<=3"]  # TODO: update to v12+
 images = ["pillow>=3.3.2"]
@@ -76,7 +71,6 @@ all = [
 
     "Flask-Admin[pymongo]",
     "Flask-Admin[peewee]",
-    "Flask-Admin[appengine]",
     "Flask-Admin[s3]",
     "Flask-Admin[azure-blob-storage]",
     "Flask-Admin[images]",
@@ -182,7 +176,6 @@ module = [
     "flask_babel",
     "flask_mongoengine.*",
     "flask_wtf",
-    "google.appengine.ext",
     "gridfs",
     "marker",
     "mongoengine.*",
@@ -193,7 +186,6 @@ module = [
     "sqlalchemy_utils",
     "tablib",
     "wtforms.*",
-    "wtforms_appengine.*",
     "wtfpeewee.*",
 ]
 ignore_missing_imports = true

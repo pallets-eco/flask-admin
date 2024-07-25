@@ -60,7 +60,7 @@ pylint==3.2.6
     # via -r tests.in
 pyright==1.1.373
     # via -r typing.in
-pytest==8.3.1
+pytest==8.3.2
     # via
     #   -r tests.in
     #   -r typing.in
@@ -106,7 +106,5 @@ typing-extensions==4.12.2
     #   astroid
     #   mypy
     #   pylint
-urllib3==1.26.19
-    # via
-    #   -c tests-constraints.txt
-    #   requests
+urllib3==2.2.2
+    # via requests
