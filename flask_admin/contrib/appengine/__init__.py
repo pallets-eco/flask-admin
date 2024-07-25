@@ -2,6 +2,9 @@
 try:
     import wtforms_appengine
 except ImportError:
-    raise Exception('Please install wtforms_appengine in order to use appengine backend')
+    raise Exception(
+        'Could not import `wtforms-appengine`. '
+        'Enable `appengine` integration by installing `flask-admin[appengine]`'
+    )
 
 from .view import ModelView

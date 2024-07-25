@@ -34,6 +34,7 @@ images                      Allows working with image data
 export                      Supports downloading data in a variety of formats (eg TSV, JSON, etc)
 rediscli                    Allows Flask-Admin to display a CLI for Redis
 translation                 Supports translating Flask-Admin into a number of languages
+all                         Installs support for all features
 =========================== ================================================
 
 Once you've chosen the extras you need, install Flask-Admin by specifying them like so::
