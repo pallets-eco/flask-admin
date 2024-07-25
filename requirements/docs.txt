@@ -6,36 +6,81 @@
 #
 alabaster==0.7.13
     # via sphinx
+astroid==3.2.4
+    # via pylint
 babel==2.15.0
     # via sphinx
 certifi==2024.7.4
     # via requests
 charset-normalizer==3.3.2
     # via requests
+coverage[toml]==7.6.0
+    # via
+    #   coveralls
+    #   pytest-cov
+coveralls==4.0.1
+    # via -r tests.in
+dill==0.3.8
+    # via pylint
+docopt==0.6.2
+    # via coveralls
 docutils==0.20.1
     # via sphinx
+exceptiongroup==1.2.2
+    # via pytest
+flake8==7.1.0
+    # via -r tests.in
 idna==3.7
     # via requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==8.1.0
+importlib-metadata==8.2.0
     # via sphinx
+iniconfig==2.0.0
+    # via pytest
+isort==5.13.2
+    # via pylint
 jinja2==3.1.4
     # via sphinx
 markupsafe==2.1.5
     # via jinja2
+mccabe==0.7.0
+    # via
+    #   flake8
+    #   pylint
 packaging==24.1
     # via
     #   pallets-sphinx-themes
+    #   pytest
     #   sphinx
 pallets-sphinx-themes==2.1.3
     # via -r docs.in
+platformdirs==4.2.2
+    # via pylint
+pluggy==1.5.0
+    # via pytest
+psycopg2==2.9.9
+    # via -r tests.in
+pycodestyle==2.12.0
+    # via flake8
+pyflakes==3.2.0
+    # via flake8
 pygments==2.18.0
     # via sphinx
+pylint==3.2.6
+    # via -r tests.in
+pytest==8.3.1
+    # via
+    #   -r tests.in
+    #   pytest-cov
+pytest-cov==5.0.0
+    # via -r tests.in
 pytz==2024.1
     # via babel
 requests==2.32.3
-    # via sphinx
+    # via
+    #   coveralls
+    #   sphinx
 snowballstemmer==2.2.0
     # via sphinx
 sphinx==7.1.2
@@ -57,7 +102,20 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-urllib3==2.2.2
-    # via requests
+tomli==2.0.1
+    # via
+    #   coverage
+    #   pylint
+    #   pytest
+tomlkit==0.13.0
+    # via pylint
+typing-extensions==4.12.2
+    # via
+    #   astroid
+    #   pylint
+urllib3==1.26.19
+    # via
+    #   -c tests-constraints.txt
+    #   requests
 zipp==3.19.2
     # via importlib-metadata

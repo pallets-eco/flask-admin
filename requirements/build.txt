@@ -6,7 +6,7 @@
 #
 build==1.2.1
     # via -r build.in
-importlib-metadata==8.1.0
+importlib-metadata==8.2.0
     # via build
 packaging==24.1
     # via build
