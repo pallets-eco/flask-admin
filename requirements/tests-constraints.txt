@@ -1,1 +1,0 @@
-urllib3<2  # remove when appengine-python-standard supports urllib3>=2

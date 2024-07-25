@@ -27,7 +27,6 @@ geoalchemy                  As with SQLAlchemy, but adding support for geographi
 mongoengine                 Supports the Flask-Mongoengine library
 pymongo                     Supports the PyMongo library
 peewee                      Supports the peewee library
-appengine                   Supports Google's appengine library
 s3                          Supports file admin using AWS S3
 azure-blob-storage          Supports file admin using Azure blob store
 images                      Allows working with image data
