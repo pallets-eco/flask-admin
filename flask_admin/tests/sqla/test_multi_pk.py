@@ -1,7 +1,7 @@
 from .test_basic import CustomModelView
 
 from flask_sqlalchemy.model import Model
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 
 def test_multiple_pk(app, db, admin):
