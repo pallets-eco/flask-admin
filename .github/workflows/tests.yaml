@@ -26,8 +26,6 @@ jobs:
           - python: '3.8'
             tox: 'py38-min'
           - python: '3.12'
-            tox: 'py312-min'
-          - python: '3.12'
             tox: 'py312-noflaskbabel'
           - python: '3.12'
             tox: 'py312-flaskmongoengine'
