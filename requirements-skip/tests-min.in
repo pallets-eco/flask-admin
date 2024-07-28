@@ -34,7 +34,7 @@ azure-storage-blob==2.1.0
 
 pillow==10.0.0
 
-flask-babel==3.0.0
+flask-babel==3.0.1
 
 tablib==3.0.0
 

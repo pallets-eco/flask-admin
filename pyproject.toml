@@ -59,7 +59,7 @@ azure-blob-storage = ["azure-storage-blob<=3"]  # TODO: update to v12+
 images = ["pillow>=10.0.0"]
 export = ["tablib>=3.0.0"]
 rediscli = ["redis>=4.0.0"]
-translation = ["flask-babel>=3"]
+translation = ["flask-babel>=3.0.1"]
 all = [
     "Flask-Admin[sqlalchemy]",
     "Flask-Admin[sqlalchemy-with-utils]",
