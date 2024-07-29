@@ -30,7 +30,7 @@ pymongo==3.7.0
 peewee==3.14.0
 wtf-peewee==3.0.4
 
-azure-storage-blob==2.1.0
+azure-storage-blob==12.13.0
 
 pillow==10.0.0
 
