@@ -33,15 +33,15 @@ sqlalchemy = [
 ]
 sqlalchemy-with-utils = [
     "Flask-Admin[sqlalchemy]",
-    "sqlalchemy_utils>=0.36.6",
-    "sqlalchemy-citext",
-    "colour",
-    "email_validator",
-    "arrow<0.14.0",
+    "sqlalchemy_utils>=0.38.0",
+    "sqlalchemy-citext>=1.8.0",
+    "colour>=0.1.5",
+    "email_validator>=2",
+    "arrow>=0.13.0",
 ]
 geoalchemy = [
     "Flask-Admin[sqlalchemy]",
-    "geoalchemy2",
+    "geoalchemy2>=0.14.0",
     "shapely>=2",
 ]
 mongoengine = [  # TODO: seems out-of-date/unmaintained; replace or deprecate?
@@ -51,15 +51,15 @@ mongoengine = [  # TODO: seems out-of-date/unmaintained; replace or deprecate?
 ]
 pymongo = ["pymongo>=3.7.0"]
 peewee = [
-    "peewee>3",
-    "wtf-peewee>3"
+    "peewee>=3.14.0",
+    "wtf-peewee>=3.0.4"
 ]
 s3 = ["boto"]  # TODO: migrate to boto3
 azure-blob-storage = ["azure-storage-blob<=3"]  # TODO: update to v12+
-images = ["pillow>=3.3.2"]
-export = ["tablib"]
-rediscli = ["redis"]
-translation = ["flask-babel>=3"]
+images = ["pillow>=10.0.0"]
+export = ["tablib>=3.0.0"]
+rediscli = ["redis>=4.0.0"]
+translation = ["flask-babel>=3.0.1"]
 all = [
     "Flask-Admin[sqlalchemy]",
     "Flask-Admin[sqlalchemy-with-utils]",
