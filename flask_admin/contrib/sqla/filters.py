@@ -207,7 +207,6 @@ class DateBetweenFilter(BaseSQLAFilter, filters.BaseDateBetweenFilter):
 class DateNotBetweenFilter(DateBetweenFilter):
     def apply(self, query, value, alias=None):
         start, end = value
-        # ~between() isn't possible until sqlalchemy 1.0.0
         return query.filter(not_(self.get_column(alias).between(start, end)))
 
     def operation(self):

@@ -1,5 +1,6 @@
 from .test_basic import CustomModelView
 
+from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import HSTORE, JSON
 from citext import CIText
 
@@ -80,7 +81,8 @@ def test_citext(app, postgres_db, postgres_admin):
             id = postgres_db.Column(postgres_db.Integer, primary_key=True, autoincrement=True)
             citext_test = postgres_db.Column(CIText)
 
-        postgres_db.engine.execute('CREATE EXTENSION IF NOT EXISTS citext')
+        with postgres_db.engine.begin() as connection:
+            connection.execute(text('CREATE EXTENSION IF NOT EXISTS citext'))
         postgres_db.create_all()
 
         view = CustomModelView(CITextModel, postgres_db.session)

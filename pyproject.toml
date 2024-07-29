@@ -29,7 +29,7 @@ dependencies = [
 [project.optional-dependencies]
 sqlalchemy = [
     "flask-sqlalchemy>=3",
-    "sqlalchemy>=1.4,<2",
+    "sqlalchemy>=1.4",
 ]
 sqlalchemy-with-utils = [
     "Flask-Admin[sqlalchemy]",
@@ -118,9 +118,6 @@ filterwarnings = [
 
     # `flask.testing` accesses this attribute; remove when they have updated their code.
     "default:The '__version__' attribute is deprecated and will be removed in Werkzeug 3\\.1\\.:DeprecationWarning",
-
-    # TODO: Remove when we've added SQLAlchemy 2.0 compatibility
-    "default:Deprecated API features detected!:DeprecationWarning:flask_admin.tests.sqla.test_basic:99",
 ]
 
 [tool.coverage.run]
