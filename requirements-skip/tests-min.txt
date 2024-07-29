@@ -168,7 +168,7 @@ typing-extensions==4.12.2
     #   pylint
 urllib3==2.2.2
     # via requests
-werkzeug==2.3.8
+werkzeug==3.0.3
     # via
     #   -r tests-min.in
     #   flask

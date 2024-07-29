@@ -11,7 +11,7 @@ psycopg2
 # --------------------------------------
 
 flask==2.2.0
-werkzeug==2.3.8
+werkzeug==3.0.3
 wtforms==2.3.0
 sqlalchemy==1.4.18
 sqlalchemy_utils==0.38.0
