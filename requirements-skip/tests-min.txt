@@ -98,7 +98,7 @@ peewee==3.14.0
     # via
     #   -r tests-min.in
     #   wtf-peewee
-pillow==10.0.0
+pillow==10.3.0
     # via -r tests-min.in
 platformdirs==4.2.2
     # via pylint
