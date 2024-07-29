@@ -50,7 +50,7 @@ exceptiongroup==1.2.2
     # via pytest
 flake8==7.1.0
     # via -r tests-min.in
-flask==2.2.0
+flask==2.2.5
     # via
     #   -r tests-min.in
     #   flask-babel

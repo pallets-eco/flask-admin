@@ -10,7 +10,7 @@ psycopg2
 # Flask-Admin minimum supported versions
 # --------------------------------------
 
-flask==2.2.0
+flask==2.2.5
 werkzeug==2.3.8
 wtforms==2.3.0
 sqlalchemy==1.4.18
