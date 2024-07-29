@@ -25,7 +25,7 @@ arrow==0.13.0
 geoalchemy2==0.14.0
 shapely==2
 
-pymongo==3.7.0
+pymongo==4.6.3
 
 peewee==3.14.0
 wtf-peewee==3.0.4

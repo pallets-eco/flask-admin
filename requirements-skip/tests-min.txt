@@ -41,7 +41,9 @@ deprecated==1.2.14
 dill==0.3.8
     # via pylint
 dnspython==2.6.1
-    # via email-validator
+    # via
+    #   email-validator
+    #   pymongo
 docopt==0.6.2
     # via coveralls
 email-validator==2.0.0
@@ -114,7 +116,7 @@ pyflakes==3.2.0
     # via flake8
 pylint==3.2.6
     # via -r tests-min.in
-pymongo==3.7.0
+pymongo==4.6.3
     # via -r tests-min.in
 pytest==8.3.2
     # via
