@@ -2637,12 +2637,11 @@ def test_multipath_joins(app, db, admin):
         assert rv.status_code == 200
 
 
-# TODO: Why this fails?
-@pytest.mark.xfail(raises=Exception)
-def test_different_bind_joins(app, db, admin):
-    app.config['SQLALCHEMY_BINDS'] = {
-        'other': 'sqlite:///'
-    }
+def test_different_bind_joins(request, app):
+    app.config['SQLALCHEMY_BINDS'] = {'other': 'sqlite:///'}
+
+    db = request.getfixturevalue('db')
+    admin = request.getfixturevalue('admin')
 
     with app.app_context():
         class Model1(db.Model):
