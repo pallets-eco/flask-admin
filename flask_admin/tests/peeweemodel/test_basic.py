@@ -173,7 +173,6 @@ def test_model(app, db, admin):
     assert Model1.select().count() == 0
 
 
-# @pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_column_editable_list(app, db, admin):
     Model1, Model2 = create_models(db)
 

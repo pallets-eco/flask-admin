@@ -157,7 +157,6 @@ def fill_db(db, Model1, Model2):
 
 @pytest.mark.filterwarnings(
     "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this will be mandatory in wtforms 3.2:DeprecationWarning",
-    "ignore:Please update your type formatter:UserWarning",
 )
 def test_model(app, db, admin):
     with app.app_context():
@@ -473,7 +472,6 @@ def test_extra_args_filter(app, db, admin):
         assert '<input type="hidden" name="foo" value="bar">' in data
 
 
-@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_complex_searchable_list(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
@@ -508,7 +506,6 @@ def test_complex_searchable_list(app, db, admin):
         assert 'model1-test2-val' not in data
 
 
-@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_complex_searchable_list_missing_children(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
@@ -528,7 +525,6 @@ def test_complex_searchable_list_missing_children(app, db, admin):
         assert 'magic string' in data
 
 
-@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_column_editable_list(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
@@ -687,7 +683,6 @@ def test_editable_list_special_pks(app, db, admin):
         assert 'change-success-1' in data
 
 
-@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_column_filters(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
@@ -1673,7 +1668,6 @@ def test_hybrid_property_nested(app, db, admin):
         assert 'Jim Smith' in data
 
 
-@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_url_args(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)

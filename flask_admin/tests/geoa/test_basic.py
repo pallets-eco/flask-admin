@@ -25,7 +25,6 @@ def create_models(db):
     return GeoModel
 
 
-@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_model(app, db, admin):
     GeoModel = create_models(db)
     with app.app_context():
