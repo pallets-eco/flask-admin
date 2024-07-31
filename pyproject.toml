@@ -47,7 +47,9 @@ geoalchemy = [
 mongoengine = [  # TODO: seems out-of-date/unmaintained; replace or deprecate?
     "Flask-Admin[sqlalchemy]",
     "flask-mongoengine<1",
-    "Flask<2.3.0",  # flask-mongoengine tries to access `flask.json`
+    "Flask<2.3.0",  # flask-mongoengine tries to access `flask.json`,
+    "sqlalchemy>=1.4,<2",
+    "wtforms>=2,<3",
 ]
 pymongo = ["pymongo>=3.7.0"]
 peewee = [
