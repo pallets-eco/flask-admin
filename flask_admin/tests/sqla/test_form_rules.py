@@ -123,7 +123,10 @@ def test_rule_field_set(app, db, admin):
         assert pos3 == -1
 
 
-@pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
+@pytest.mark.filterwarnings(
+    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this will be mandatory in wtforms 3.2:DeprecationWarning",
+    "ignore:Please update your type formatter:UserWarning",
+)
 def test_rule_inlinefieldlist(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
@@ -140,6 +143,9 @@ def test_rule_inlinefieldlist(app, db, admin):
         assert rv.status_code == 200
 
 
+@pytest.mark.filterwarnings(
+    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this will be mandatory in wtforms 3.2:DeprecationWarning",
+)
 def test_inline_model_rules(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
