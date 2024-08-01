@@ -27,7 +27,6 @@ application.
 Out-of-the-box, Flask-Admin plays nicely with various ORM\'s, including
 
 -   [SQLAlchemy](http://www.sqlalchemy.org/)
--   [MongoEngine](http://mongoengine.org/)
 -   [pymongo](http://api.mongodb.org/python/current/)
 -   and [Peewee](https://github.com/coleifer/peewee).
 
@@ -51,7 +50,7 @@ add your own, or improve on the existing examples, and submit a
 
 To run the examples in your local environment:
 1. Clone the repository:
-   
+
     ```bash
     git clone https://github.com/pallets-eco/flask-admin.git
     cd flask-admin
@@ -62,7 +61,7 @@ To run the examples in your local environment:
     # Windows:
     python -m venv .venv
     .venv\Scripts\activate
-    
+
     # Linux:
     python3 -m venv .venv
     source .venv/bin/activate
