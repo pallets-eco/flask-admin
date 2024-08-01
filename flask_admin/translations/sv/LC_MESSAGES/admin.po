@@ -196,7 +196,6 @@ msgid "Editing %(path)s"
 msgstr "Redigera %(path)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1163
-#: ../flask_admin/contrib/mongoengine/view.py:658
 #: ../flask_admin/contrib/peewee/view.py:487
 #: ../flask_admin/contrib/pymongo/view.py:384
 #: ../flask_admin/contrib/sqla/view.py:1149
@@ -223,67 +222,57 @@ msgstr "Ändra"
 msgid "Cannot operate on non empty directories"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/filters.py:39
 #: ../flask_admin/contrib/peewee/filters.py:35
 #: ../flask_admin/contrib/pymongo/filters.py:38
 #: ../flask_admin/contrib/sqla/filters.py:41
 msgid "equals"
 msgstr "motsvarar"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:48
 #: ../flask_admin/contrib/peewee/filters.py:43
 #: ../flask_admin/contrib/pymongo/filters.py:47
 #: ../flask_admin/contrib/sqla/filters.py:49
 msgid "not equal"
 msgstr "inte jämnlikt"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:58
 #: ../flask_admin/contrib/peewee/filters.py:52
 #: ../flask_admin/contrib/pymongo/filters.py:57
 #: ../flask_admin/contrib/sqla/filters.py:58
 msgid "contains"
 msgstr "innehåller"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:68
 #: ../flask_admin/contrib/peewee/filters.py:61
 #: ../flask_admin/contrib/pymongo/filters.py:67
 #: ../flask_admin/contrib/sqla/filters.py:67
 msgid "not contains"
 msgstr "innehåller inte"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:77
 #: ../flask_admin/contrib/peewee/filters.py:69
 #: ../flask_admin/contrib/pymongo/filters.py:80
 #: ../flask_admin/contrib/sqla/filters.py:75
 msgid "greater than"
 msgstr "större än"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:86
 #: ../flask_admin/contrib/peewee/filters.py:77
 #: ../flask_admin/contrib/pymongo/filters.py:93
 #: ../flask_admin/contrib/sqla/filters.py:83
 msgid "smaller than"
 msgstr "mindre än"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:98
 #: ../flask_admin/contrib/peewee/filters.py:88
 #: ../flask_admin/contrib/sqla/filters.py:94
 msgid "empty"
 msgstr "tom"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:113
 #: ../flask_admin/contrib/peewee/filters.py:102
 #: ../flask_admin/contrib/sqla/filters.py:108
 msgid "in list"
 msgstr "i listan"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:122
 #: ../flask_admin/contrib/peewee/filters.py:111
 #: ../flask_admin/contrib/sqla/filters.py:118
 msgid "not in list"
 msgstr "inte i listan"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:222
 #: ../flask_admin/contrib/peewee/filters.py:207
 #: ../flask_admin/contrib/peewee/filters.py:244
 #: ../flask_admin/contrib/peewee/filters.py:281
@@ -293,16 +282,13 @@ msgstr "inte i listan"
 msgid "not between"
 msgstr "inte mellan"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:247
 msgid "ObjectId equals"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/view.py:551
 #, python-format
 msgid "Failed to get model. %(error)s"
 msgstr "Det gick inte att få modell. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:570
 #: ../flask_admin/contrib/peewee/view.py:435
 #: ../flask_admin/contrib/pymongo/view.py:316
 #: ../flask_admin/contrib/sqla/view.py:1078
@@ -310,7 +296,6 @@ msgstr "Det gick inte att få modell. %(error)s"
 msgid "Failed to create record. %(error)s"
 msgstr "Det gick inte att skapa post. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:596
 #: ../flask_admin/contrib/peewee/view.py:454
 #: ../flask_admin/contrib/pymongo/view.py:341
 #: ../flask_admin/contrib/sqla/view.py:1104 ../flask_admin/model/base.py:2305
@@ -319,7 +304,6 @@ msgstr "Det gick inte att skapa post. %(error)s"
 msgid "Failed to update record. %(error)s"
 msgstr "Det gick inte att skapa post. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:619
 #: ../flask_admin/contrib/peewee/view.py:469
 #: ../flask_admin/contrib/pymongo/view.py:366
 #: ../flask_admin/contrib/sqla/view.py:1129
@@ -327,14 +311,12 @@ msgstr "Det gick inte att skapa post. %(error)s"
 msgid "Failed to delete record. %(error)s"
 msgstr "Det gick inte att ta bort posten. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:659
 #: ../flask_admin/contrib/peewee/view.py:488
 #: ../flask_admin/contrib/pymongo/view.py:385
 #: ../flask_admin/contrib/sqla/view.py:1150
 msgid "Are you sure you want to delete selected records?"
 msgstr "Är du säker du vill ta bort markerade poster?"
 
-#: ../flask_admin/contrib/mongoengine/view.py:668
 #: ../flask_admin/contrib/peewee/view.py:505
 #: ../flask_admin/contrib/pymongo/view.py:395
 #: ../flask_admin/contrib/sqla/view.py:1166 ../flask_admin/model/base.py:2118
@@ -344,7 +326,6 @@ msgid_plural "%(count)s records were successfully deleted."
 msgstr[0] "Posten har tagits bort."
 msgstr[1] "%(count)s poster togs framgångsrikt bort."
 
-#: ../flask_admin/contrib/mongoengine/view.py:674
 #: ../flask_admin/contrib/peewee/view.py:511
 #: ../flask_admin/contrib/pymongo/view.py:400
 #: ../flask_admin/contrib/sqla/view.py:1174
@@ -658,4 +639,3 @@ msgstr "Välj minst en post."
 #: ../flask_admin/templates/bootstrap3/admin/model/row_actions.html:34
 msgid "Are you sure you want to delete this record?"
 msgstr "Är du säker du vill ta bort denna post?"
-
