@@ -5,6 +5,7 @@ pytest
 pytest-cov
 
 psycopg2
+beautifulsoup4
 
 # --------------------------------------
 # Flask-Admin minimum supported versions

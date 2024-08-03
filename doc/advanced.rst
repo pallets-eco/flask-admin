@@ -20,6 +20,39 @@ SecureForm class in your *ModelView* subclass by specifying the *form_base_class
 SecureForm requires WTForms 2 or greater. It uses the WTForms SessionCSRF class
 to generate and validate the tokens for you when the forms are submitted.
 
+CSP support
+-----------
+
+****
+
+To support `CSP <https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html>`_
+in Flask-Admin, you can pass a `csp_nonce_generator` function through to Flask-Admin on
+initialisation. This function should return a CSP nonce that will be attached to all
+`<script>` and `<style>` resources. You are responsible for making sure that your Flask
+responses include an appropriate 'Content-Security-Policy` header that also includes the
+same nonce value.
+
+We recommend using `Flask-Talisman <https://pypi.org/project/flask-talisman/>`_. Here's an example
+of how to configure Flask-Admin to inject CSP nonce values::
+
+    app = Flask(__name__)
+
+    talisman = Talisman(
+        app,
+        content_security_policy={
+            "default-src": "'self'",
+        },
+        content_security_policy_nonce_in=["script-src", "style-src"]
+    )
+    csp_nonce_generator = app.jinja_env.globals["csp_nonce"]  # this is talisman's generator function
+
+    admin = admin.Admin(app, name="Example", theme=Bootstrap4Theme(), csp_nonce_generator=csp_nonce_generator)
+
+If you decide to use a content security policy, you should pay close attention to the policy you set to
+make sure it is appropriate for your project's security needs.
+
+If you create any of your own templates for Flask-Admin pages, you will need to inject the CSP nonces yourself as appropriate.
+
 Adding Custom Javascript and CSS
 --------------------------------
 

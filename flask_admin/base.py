@@ -6,6 +6,8 @@ from functools import wraps
 
 from flask import current_app, render_template, abort, g, url_for, request
 from flask import Blueprint, current_app, render_template, abort, g, url_for
+from markupsafe import Markup
+
 from flask_admin import babel
 from flask_admin._compat import as_unicode
 from flask_admin import helpers as h
@@ -298,6 +300,9 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
         # Store self as admin_view
         kwargs['admin_view'] = self
         kwargs['admin_base_template'] = self.admin.theme.base_template
+        kwargs['admin_csp_nonce_attribute'] = (
+            Markup(f'nonce="{self.admin.csp_nonce_generator()}"') if self.admin.csp_nonce_generator else ''
+        )
 
         # Provide i18n support even if flask-babel is not installed
         # or enabled.
@@ -477,7 +482,8 @@ class Admin(object):
                  static_url_path=None,
                  theme: t.Optional[Theme] = None,
                  category_icon_classes=None,
-                 host=None):
+                 host=None,
+                 csp_nonce_generator: t.Optional[t.Callable] = None):
         """
             Constructor.
 
@@ -507,6 +513,8 @@ class Admin(object):
                 Example: {'Favorites': 'glyphicon glyphicon-star'}
             :param host:
                 The host to register all admin views on. Mutually exclusive with `subdomain`
+            :param csp_nonce_generator:
+                A callable that returns a nonce to inject into Flask-Admin JS, CSS, etc.
         """
         self.app = app
 
@@ -531,6 +539,8 @@ class Admin(object):
         self.category_icon_classes = category_icon_classes or dict()
 
         self._validate_admin_host_and_subdomain()
+
+        self.csp_nonce_generator = csp_nonce_generator
 
         # Add index view
         self._set_admin_index_view(index_view=index_view, endpoint=endpoint, url=url)
