@@ -42,7 +42,7 @@ def create_models(db):
         def __init__(self, test1=None, test2=None, test3=None, test4=None,
                      bool_field=False, date_field=None, time_field=None,
                      datetime_field=None, email_field=None,
-                     choice_field=None, enum_field=None):
+                     choice_field=None, enum_field=None, enum_type_field=None):
             self.test1 = test1
             self.test2 = test2
             self.test3 = test3
@@ -54,6 +54,7 @@ def create_models(db):
             self.email_field = email_field
             self.choice_field = choice_field
             self.enum_field = enum_field
+            self.enum_type_field = enum_type_field
 
         class EnumChoices(enum.Enum):
             first = 1
@@ -70,6 +71,7 @@ def create_models(db):
         datetime_field = db.Column(db.DateTime)
         email_field = db.Column(EmailType)
         enum_field = db.Column(db.Enum('model1_v1', 'model1_v2'), nullable=True)
+        enum_type_field = db.Column(db.Enum(EnumChoices), nullable=True)
         choice_field = db.Column(db.String, nullable=True)
         sqla_utils_choice = db.Column(ChoiceType([
             ('choice-1', u'First choice'),
@@ -143,6 +145,9 @@ def fill_db(db, Model1, Model2):
     enum_obj1 = Model1('enum_obj1', enum_field="model1_v1")
     enum_obj2 = Model1('enum_obj2', enum_field="model1_v2")
 
+    enum_type_obj1 = Model1('enum_type_obj1', enum_type_field=Model1.EnumChoices.first)
+    enum_type_obj2 = Model1('enum_type_obj2', enum_type_field=Model1.EnumChoices.second)
+
     empty_obj = Model1(test2="empty_obj")
 
     db.session.add_all([
@@ -150,7 +155,7 @@ def fill_db(db, Model1, Model2):
         model2_obj1, model2_obj2, model2_obj3, model2_obj4, model2_obj5,
         date_obj1, timeonly_obj1, datetime_obj1,
         date_obj2, timeonly_obj2, datetime_obj2,
-        enum_obj1, enum_obj2, empty_obj
+        enum_obj1, enum_obj2, enum_type_obj1, enum_type_obj2, empty_obj
     ])
     db.session.commit()
 
@@ -379,8 +384,8 @@ def test_exclude_columns(app, db, admin):
 
         view = CustomModelView(
             Model1, db.session,
-            column_exclude_list=['test2', 'test4', 'enum_field', 'date_field', 'time_field', 'datetime_field',
-                                 'sqla_utils_choice', 'sqla_utils_enum', 'sqla_utils_arrow', 'sqla_utils_uuid',
+            column_exclude_list=['test2', 'test4', 'enum_field', 'enum_type_field', 'date_field', 'datetime_field',
+                                 'time_field', 'sqla_utils_choice', 'sqla_utils_enum', 'sqla_utils_arrow', 'sqla_utils_uuid',
                                  'sqla_utils_url', 'sqla_utils_ip_address', 'sqla_utils_currency', 'sqla_utils_color']
         )
         admin.add_view(view)
@@ -755,6 +760,11 @@ def test_column_filters(app, db, admin):
                                  ], endpoint='_relation_test')
         admin.add_view(view13)
 
+        view14 = CustomModelView(Model1, db.session,
+                                 column_filters=['enum_type_field'],
+                                 endpoint="_enumtypefield")
+        admin.add_view(view14)
+
         # Test views
         assert \
             [(f['index'], f['operation']) for f in view1._filter_groups[u'Test1']] == \
@@ -883,35 +893,45 @@ def test_column_filters(app, db, admin):
             ]
 
         assert \
+            [(f['index'], f['operation']) for f in view2._filter_groups[u'Model1 / Enum Type Field']] == \
+            [
+                (63, u'equals'),
+                (64, u'not equal'),
+                (65, u'empty'),
+                (66, u'in list'),
+                (67, u'not in list'),
+            ]
+
+        assert \
             [(f['index'], f['operation']) for f in view2._filter_groups[u'Model1 / Choice Field']] == \
             [
-                (63, u'contains'),
-                (64, u'not contains'),
-                (65, u'equals'),
-                (66, u'not equal'),
-                (67, u'empty'),
-                (68, u'in list'),
-                (69, u'not in list'),
+                (68, u'contains'),
+                (69, u'not contains'),
+                (70, u'equals'),
+                (71, u'not equal'),
+                (72, u'empty'),
+                (73, u'in list'),
+                (74, u'not in list'),
             ]
 
         assert \
             [(f['index'], f['operation']) for f in view2._filter_groups[u'Model1 / Sqla Utils Choice']] == \
-            [
-                (70, u'equals'),
-                (71, u'not equal'),
-                (72, u'contains'),
-                (73, u'not contains'),
-                (74, u'empty'),
-            ]
-
-        assert \
-            [(f['index'], f['operation']) for f in view2._filter_groups[u'Model1 / Sqla Utils Enum']] == \
             [
                 (75, u'equals'),
                 (76, u'not equal'),
                 (77, u'contains'),
                 (78, u'not contains'),
                 (79, u'empty'),
+            ]
+
+        assert \
+            [(f['index'], f['operation']) for f in view2._filter_groups[u'Model1 / Sqla Utils Enum']] == \
+            [
+                (80, u'equals'),
+                (81, u'not equal'),
+                (82, u'contains'),
+                (83, u'not contains'),
+                (84, u'empty'),
             ]
 
         # Test filter with a dot
@@ -1535,6 +1555,53 @@ def test_column_filters(app, db, admin):
         assert 'test1_val_1' in data
         assert 'enum_obj1' not in data
         assert 'enum_obj2' not in data
+
+        # Test enum type filter
+        # enum type - equals
+        rv = client.get('/admin/_enumtypefield/?flt0_0=first')
+        assert rv.status_code == 200
+        data = rv.data.decode('utf-8')
+        assert 'enum_type_obj1' in data
+        assert 'enum_type_obj2' not in data
+
+        # enum - not equal
+        rv = client.get('/admin/_enumtypefield/?flt0_1=first')
+        assert rv.status_code == 200
+        data = rv.data.decode('utf-8')
+        assert 'enum_type_obj1' not in data
+        assert 'enum_type_obj2' in data
+
+        # enum - empty
+        rv = client.get('/admin/_enumtypefield/?flt0_2=1')
+        assert rv.status_code == 200
+        data = rv.data.decode('utf-8')
+        assert 'test1_val_1' in data
+        assert 'enum_type_obj1' not in data
+        assert 'enum_type_obj2' not in data
+
+        # enum - not empty
+        rv = client.get('/admin/_enumtypefield/?flt0_2=0')
+        assert rv.status_code == 200
+        data = rv.data.decode('utf-8')
+        assert 'test1_val_1' not in data
+        assert 'enum_type_obj1' in data
+        assert 'enum_type_obj2' in data
+
+        # enum - in list
+        rv = client.get('/admin/_enumtypefield/?flt0_3=first%2Csecond')
+        assert rv.status_code == 200
+        data = rv.data.decode('utf-8')
+        assert 'test1_val_1' not in data
+        assert 'enum_type_obj1' in data
+        assert 'enum_type_obj2' in data
+
+        # enum - not in list
+        rv = client.get('/admin/_enumtypefield/?flt0_4=first%2Csecond')
+        assert rv.status_code == 200
+        data = rv.data.decode('utf-8')
+        assert 'test1_val_1' in data
+        assert 'enum_type_obj1' not in data
+        assert 'enum_type_obj2' not in data
 
         # Test single custom filter on relation
         rv = client.get('/admin/_relation_test/?flt1_0=test1_val_1')

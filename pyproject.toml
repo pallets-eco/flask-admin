@@ -179,7 +179,6 @@ module = [
     "playhouse.*",
     "pymongo",
     "sqlalchemy.*",
-    "sqlalchemy_enum34",
     "sqlalchemy_utils",
     "tablib",
     "wtforms.*",
