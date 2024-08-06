@@ -1,6 +1,28 @@
 Changelog
 =========
 
+2.0.0a0
+-------
+
+Breaking changes:
+* Added support for Python 3.12
+* Dropped support for Python 3.7
+* Flask-BabelEx is no longer supported; the package is no longer maintained and Flask-Babel is recommended/active instead.
+* Flask-Mongoengine is no longer supported due to that package being unmaintained.
+* Bootstrap2 and Bootstrap3 themes are no longer available.
+* All Flask-Admin config has been namespaced under `FLASK_ADMIN_`.
+  * `FLASK_ADMIN_SWATCH` has been removed; see `theme` parameter below.
+* `Admin()` now takes a `theme` parameter that encapsulates all of the configuration options for theming the admin instance. This replaces the `template_mode` parameter.
+
+New features:
+* Flask-Admin now supports the `host_matching` mode of Flask apps. See documentation for how to configure this where needed.
+* Flask-Admin is now compatible with SQLAlchemy v2+, Flask v3+, WTForms v3+, and Pillow v10+.
+* Flask-Admin now declares its dependencies and supported dependency versions more cleanly, including using pip extras. If you use Flask-Admin with SQLAlchemy, for example, you should use `pip install flask-admin[sqlalchemy]` or list `flask-admin[sqlalchemy]` in your requirements.txt or pyproject.toml files.
+* Apps using content security policies to restrict the assets that can be loaded can now whitelist Flask-Admin's assets by passing a `csp_nonce_generator` function to the Admin instance. See examples or documentation for how to configure this where needed.
+* `page_size_options` can now be configured on Admin models, to restrict the page sizes that users can select. These are now enforced properly and cannot be bypassed by URL hacking.
+
+And various smaller bug fixes and documentation updates.
+
 1.6.1
 -----
 
