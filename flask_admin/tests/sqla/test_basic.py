@@ -160,7 +160,9 @@ def fill_db(db, Model1, Model2):
     db.session.commit()
 
 
-@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
+@pytest.mark.filterwarnings(
+    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this will be mandatory in wtforms 3.2:DeprecationWarning",
+)
 def test_model(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
@@ -475,7 +477,6 @@ def test_extra_args_filter(app, db, admin):
         assert '<input type="hidden" name="foo" value="bar">' in data
 
 
-@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_complex_searchable_list(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
@@ -510,7 +511,6 @@ def test_complex_searchable_list(app, db, admin):
         assert 'model1-test2-val' not in data
 
 
-@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_complex_searchable_list_missing_children(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
@@ -530,7 +530,6 @@ def test_complex_searchable_list_missing_children(app, db, admin):
         assert 'magic string' in data
 
 
-@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_column_editable_list(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
@@ -689,7 +688,6 @@ def test_editable_list_special_pks(app, db, admin):
         assert 'change-success-1' in data
 
 
-@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_column_filters(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
@@ -1737,7 +1735,6 @@ def test_hybrid_property_nested(app, db, admin):
         assert 'Jim Smith' in data
 
 
-@pytest.mark.filterwarnings("ignore:Please update your type formatter:UserWarning")
 def test_url_args(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
@@ -2185,6 +2182,9 @@ def test_default_complex_sort(app, db, admin):
         assert data[1].model1.test1 == 'b'
 
 
+@pytest.mark.filterwarnings(
+    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this will be mandatory in wtforms 3.2:DeprecationWarning",
+)
 def test_extra_fields(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
@@ -2250,6 +2250,9 @@ def test_extra_field_order(app, db, admin):
         ('zh_CN', '首页'),
         ('zh_TW', '首頁'),
     )
+)
+@pytest.mark.filterwarnings(
+    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this will be mandatory in wtforms 3.2:DeprecationWarning",
 )
 @flask_babel_test_decorator
 def test_modelview_localization(request, app, locale, expect_text):

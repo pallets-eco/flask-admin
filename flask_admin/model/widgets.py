@@ -158,7 +158,11 @@ class XEditableWidget(object):
 
             choices = []
             selected_ids = []
-            for value, label, selected in field.iter_choices():
+            for field_choices in field.iter_choices():
+                if len(field_choices) == 3:  # wtforms <3.1, >=3.1.1, <3.2
+                    value, label, selected = field_choices
+                else:
+                    value, label, selected, _ = field_choices
                 try:
                     label = text_type(label)
                 except TypeError:
