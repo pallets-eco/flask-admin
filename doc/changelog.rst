@@ -11,9 +11,35 @@ Breaking changes:
 * Flask-BabelEx is no longer supported; the package is no longer maintained and Flask-Babel is recommended/active instead.
 * Flask-Mongoengine is no longer supported due to that package being unmaintained.
 * Bootstrap2 and Bootstrap3 themes are no longer available.
-* All Flask-Admin config has been namespaced under `FLASK_ADMIN_`.
-    * `FLASK_ADMIN_SWATCH` has been removed; see `theme` parameter below.
 * `Admin()` now takes a `theme` parameter that encapsulates all of the configuration options for theming the admin instance. This replaces the `template_mode` parameter.
+* All remaining Flask-Admin config has been namespaced under `FLASK_ADMIN_`.
+
+.. list-table:: Title
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Config variable name
+     - What's changed
+   * - FLASK_ADMIN_SWATCH
+     - Removed; use `Theme(swatch=...)` instead
+   * - FLASK_ADMIN_FLUID_LAYOUT
+     - Removed; use `Theme(fluid=...)` instead
+   * - MAPBOX_MAP_ID
+     - Renamed to FLASK_ADMIN_MAPBOX_MAP_ID
+   * - MAPBOX_SEARCH
+     - Renamed to FLASK_ADMIN_MAPBOX_SEARCH
+   * - MAPBOX_ACCESS_TOKEN
+     - Renamed to FLASK_ADMIN_MAPBOX_ACCESS_TOKEN
+   * - GOOGLE_MAPS_API_KEY
+     - Renamed to FLASK_ADMIN_GOOGLE_MAPS_API_KEY
+   * - DEFAULT_CENTER_LAT
+     - Renamed to FLASK_ADMIN_DEFAULT_CENTER_LAT
+   * - DEFAULT_CENTER_LONG
+     - Renamed to FLASK_ADMIN_DEFAULT_CENTER_LONG
+   * - ADMIN_RAISE_ON_INTEGRITY_ERROR
+     - Renamed to FLASK_ADMIN_RAISE_ON_INTEGRITY_ERROR
+   * - ADMIN_RAISE_ON_VIEW_EXCEPTION
+     - Renamed to FLASK_ADMIN_RAISE_ON_VIEW_EXCEPTION
 
 New features:
 
