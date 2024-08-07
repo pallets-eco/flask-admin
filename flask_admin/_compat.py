@@ -37,10 +37,3 @@ def as_unicode(s):
 def csv_encode(s):
     ''' Returns unicode string expected by Python 3's csv module '''
     return as_unicode(s)
-
-
-try:
-    # jinja2 3.0.0
-    from jinja2 import pass_context  # type: ignore[attr-defined]
-except ImportError:
-    from jinja2 import contextfunction as pass_context

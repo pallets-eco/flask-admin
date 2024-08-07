@@ -1,6 +1,8 @@
 from functools import reduce
 
-from flask_admin._compat import pass_context, string_types
+from jinja2 import pass_context  # type: ignore[attr-defined]
+
+from flask_admin._compat import string_types
 from flask_admin.babel import gettext
 
 
