@@ -11,7 +11,7 @@
                     <div class="pull-right">
                         {% if subfield.get_pk and subfield.get_pk() %}
                         <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
-                        <label for="del-{{ subfield.id }}" style="display: inline">{{ _gettext('Delete?') }}</label>
+                        <label for="del-{{ subfield.id }}" class="d-inline">{{ _gettext('Delete?') }}</label>
                         {% else %}
                         <a href="javascript:void(0)" value="{{ _gettext('Are you sure you want to delete this record?') }}" class="inline-remove-field"><i class="fa fa-times glyphicon glyphicon-remove"></i></a>
                         {% endif %}
@@ -26,7 +26,7 @@
     </div>
 
     {# template for new inline form fields #}
-    <div class="inline-field-template hide">
+    <div class="inline-field-template d-none">
         {% filter forceescape %}
         <div class="inline-field card card-body bg-light mb-3">
             <legend>
