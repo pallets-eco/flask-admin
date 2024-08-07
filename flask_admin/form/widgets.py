@@ -24,7 +24,7 @@ class Select2Widget(widgets.Select):
 
 
 class Select2TagsWidget(widgets.TextInput):
-    """`Select2 <http://ivaynberg.github.com/select2/#tags>`_ styled text widget.
+    """`Select2Tags <http://ivaynberg.github.com/select2/#tags>`_ styled text widget.
     You must include select2.js, form-x.x.x.js and select2 stylesheet for it to work.
     """
     def __call__(self, field, **kwargs):

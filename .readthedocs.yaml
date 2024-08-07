@@ -7,7 +7,7 @@ python:
   install:
     - requirements: requirements/docs.txt
     - method: pip
-      path: .
+      path: .[all]
 sphinx:
   builder: dirhtml
   fail_on_warning: true

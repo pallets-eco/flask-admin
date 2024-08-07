@@ -182,9 +182,7 @@ approach for including the other views, like `forgot_password`, `send_confirmati
 .. _customizing-builtin-views:
 
 Customizing Built-in Views
-=========================
-
-****
+==========================
 
 When inheriting from `ModelView`, values can be specified for numerous
 configuration parameters. Use these to customize the views to suit your
@@ -373,7 +371,7 @@ By extending the *admin/master.html* template, you can maintain a consistent use
 even while having tight control over your page's content.
 
 Overriding the Built-in Views
-----------------------------
+-----------------------------
 There may be some scenarios where you want most of the built-in ModelView
 functionality, but you want to replace one of the default `create`, `edit`, or `list` views.
 For this you could override only the view in question, and all the links to it will still function as you would expect::
@@ -392,16 +390,14 @@ For this you could override only the view in question, and all the links to it w
         return self.render('create_user.html')
 
 Working With the Built-in Templates
-==================================
-
-****
+===================================
 
 Flask-Admin uses the `Jinja2 <http://jinja.pocoo.org/docs/>`_ templating engine.
 
 .. _extending-builtin-templates:
 
 Extending the Built-in Templates
--------------------------------
+--------------------------------
 
 Rather than overriding the built-in templates completely, it's best to extend them. This
 will make it simpler for you to upgrade to new Flask-Admin versions in future.
@@ -440,7 +436,7 @@ the admin theme during initialization::
     admin = Admin(app, Bootstrap4Theme(base_template='microblog_master.html'))
 
 Overriding the Built-in Templates
---------------------------------
+---------------------------------
 
 To take full control over the style and layout of the admin interface, you can override
 all of the built-in templates. Just keep in mind that the templates will change slightly
