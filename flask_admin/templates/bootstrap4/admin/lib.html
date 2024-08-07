@@ -120,9 +120,9 @@
   {% set prepend = kwargs.pop('prepend', None) %}
   {% set append = kwargs.pop('append', None) %}
   <div class="form-group {{ kwargs.get('column_class', '') }}">
-    <label for="{{ field.id }}" class="control-label" {% if field.widget.input_type == 'checkbox' %}style="display: block; margin-bottom: 0"{% endif %}>{{ field.label.text }}
+    <label for="{{ field.id }}" class="control-label {% if field.widget.input_type == 'checkbox' %}d-block mb-0{% endif %}">{{ field.label.text }}
         {% if h.is_required_form_field(field) %}
-          <strong style="color: red">&#42;</strong>
+          <strong class="text-danger"">&#42;</strong>
         {%- else -%}
           &nbsp;
         {%- endif %}
@@ -151,14 +151,14 @@
       {%- endif -%}
       {% if direct_error %}
         <div class="invalid-feedback">
-          <ul class="form-text text-muted" {% if field.widget.input_type == 'checkbox' %}style="margin-top: 0"{% endif %}>
+          <ul class="form-text text-muted {% if field.widget.input_type == 'checkbox' %}mt-0{% endif %}">
           {% for e in field.errors if e is string %}
             <li>{{ e }}</li>
           {% endfor %}
           </ul>
         </div>
       {% elif field.description %}
-        <small class="form-text text-muted" {% if field.widget.input_type == 'checkbox' %}style="margin-top: 0"{% endif %}>
+        <small class="form-text text-muted {% if field.widget.input_type == 'checkbox' %}mt-0{% endif %}">
             {{ field.description|safe }}
         </small>
       {% endif %}
