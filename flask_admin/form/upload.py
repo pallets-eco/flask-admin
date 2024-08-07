@@ -4,6 +4,8 @@ from types import ModuleType
 from typing import Optional
 from urllib.parse import urljoin
 
+from markupsafe import Markup
+
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
@@ -14,7 +16,6 @@ from wtforms.widgets import html_params
 from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
 
-from flask_admin._backwards import Markup
 from flask_admin._compat import string_types
 
 Image: Optional[ModuleType]
