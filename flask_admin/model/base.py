@@ -9,6 +9,7 @@ from math import ceil
 import inspect
 from collections import OrderedDict
 
+from jinja2 import pass_context  # type: ignore[attr-defined]
 from werkzeug.utils import secure_filename
 
 from flask import (current_app, request, redirect, flash, abort, json,
@@ -36,7 +37,7 @@ from flask_admin.helpers import (get_form_data, validate_form_on_submit,
 from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
 from flask_admin._compat import (iteritems, itervalues,
-                                 as_unicode, csv_encode, text_type, pass_context)
+                                 as_unicode, csv_encode, text_type)
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
 

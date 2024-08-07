@@ -1,6 +1,5 @@
+from markupsafe import Markup
 from wtforms.widgets.core import escape  # type: ignore[attr-defined]
-
-from flask_admin._backwards import Markup
 
 
 class CheckboxListInput:

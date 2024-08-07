@@ -1,8 +1,7 @@
 from flask import json
-from markupsafe import escape
+from markupsafe import escape, Markup
 from wtforms.widgets import html_params
 
-from flask_admin._backwards import Markup
 from flask_admin._compat import as_unicode, text_type
 from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
