@@ -39,14 +39,10 @@ in the `examples` directory.
 Support
 -------
 
-****
-
 Python 3.6 or higher.
 
 Indices And Tables
 ------------------
-
-****
 
 * :ref:`genindex`
 * :ref:`modindex`

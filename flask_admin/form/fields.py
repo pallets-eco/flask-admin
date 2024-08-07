@@ -154,7 +154,7 @@ class Select2Field(fields.SelectField):
 
 
 class Select2TagsField(fields.StringField):
-    """`Select2 <http://ivaynberg.github.com/select2/#tags>`_ styled text field.
+    """`Select2Tags <http://ivaynberg.github.com/select2/#tags>`_ styled text field.
     You must include select2.js, form-x.x.x.js and select2 stylesheet for it to work.
     """
     widget = admin_widgets.Select2TagsWidget()
