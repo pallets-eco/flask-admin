@@ -74,7 +74,7 @@ class TweetView(ModelView):
 
         # Grab user names
         query = {'_id': {'$in': [x['user_id'] for x in data]}}
-        users = db.user.find(query, fields=('name',))
+        users = db.user.find(query, projection=('name',))
 
         # Contribute user names to the models
         users_map = dict((x['_id'], x['name']) for x in users)
@@ -86,7 +86,7 @@ class TweetView(ModelView):
 
     # Contribute list of user choices to the forms
     def _feed_user_choices(self, form):
-        users = db.user.find(fields=('name',))
+        users = db.user.find(projection=('name',))
         form.user_id.choices = [(str(x['_id']), x['name']) for x in users]
         return form
 
@@ -99,7 +99,7 @@ class TweetView(ModelView):
         return self._feed_user_choices(form)
 
     # Correct user_id reference before saving
-    def on_model_change(self, form, model):
+    def on_model_change(self, form, model, is_created):
         user_id = model.get('user_id')
         model['user_id'] = ObjectId(user_id)
 
