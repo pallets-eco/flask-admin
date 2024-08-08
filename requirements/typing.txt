@@ -38,7 +38,7 @@ mccabe==0.7.0
     # via
     #   flake8
     #   pylint
-mypy==1.11.0
+mypy==1.11.1
     # via -r typing.in
 mypy-extensions==1.0.0
     # via mypy
@@ -60,7 +60,7 @@ pyflakes==3.2.0
     # via flake8
 pylint==3.2.6
     # via -r tests.in
-pyright==1.1.373
+pyright==1.1.374
     # via -r typing.in
 pytest==8.3.2
     # via

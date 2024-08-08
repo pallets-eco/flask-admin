@@ -121,7 +121,7 @@ mccabe==0.7.0
     #   -r typing.txt
     #   flake8
     #   pylint
-mypy==1.11.0
+mypy==1.11.1
     # via -r typing.txt
 mypy-extensions==1.0.0
     # via
@@ -188,7 +188,7 @@ pylint==3.2.6
     #   -r typing.txt
 pyproject-api==1.7.1
     # via tox
-pyright==1.1.373
+pyright==1.1.374
     # via -r typing.txt
 pytest==8.3.2
     # via
