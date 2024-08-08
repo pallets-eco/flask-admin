@@ -51,6 +51,8 @@ New features:
 
 And various smaller bug fixes and documentation updates.
 
+For the full changelog, see https://github.com/pallets-eco/flask-admin/releases/tag/v2.0.0a0
+
 1.6.1
 -----
 
