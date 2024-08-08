@@ -1,1 +1,3 @@
 ../..[pymongo]
+
+pymongo>=4,<5

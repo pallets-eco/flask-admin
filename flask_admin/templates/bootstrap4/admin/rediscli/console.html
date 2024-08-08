@@ -22,6 +22,6 @@
 {% block tail %}
   {{ super() }}
 
-  <div id="execute-view-data" style="display:none;">{{ admin_view.get_url('.execute_view')|tojson|safe }}</div>
+  <div id="execute-view-data" class="d-none">{{ admin_view.get_url('.execute_view')|tojson|safe }}</div>
   <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/rediscli.js', v='1.0.0') }}"></script>
 {% endblock %}

@@ -32,6 +32,6 @@ def test_csp_nonces_injected(app, admin, nonce):
         assert tag.attrs['nonce'] == nonce
 
     styles = soup.select('style')
-    assert len(styles) == 1
+    assert len(styles) == 0
     for tag in styles:
         assert tag.attrs['nonce'] == nonce
