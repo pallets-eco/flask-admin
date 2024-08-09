@@ -2045,7 +2045,7 @@ class BaseModelView(BaseView, ActionsMixin):
             if not s:
                 s = self.page_size
 
-            return self._get_list_url(view_args.clone(page_size=s))
+            return self._get_list_url(view_args.clone(page=None, page_size=s))
 
         # Actions
         actions, actions_confirmation = self.get_actions_list()
@@ -2196,7 +2196,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     return redirect(self.get_save_return_url(model, is_created=False))
 
         if request.method == 'GET' or form.errors:
-            self.on_form_prefill(form, id)
+            self.on_form_prefill(form, model)
 
         form_opts = FormOpts(widget_args=self.form_widget_args,
                              form_rules=self._form_edit_rules)
@@ -2353,6 +2353,7 @@ class BaseModelView(BaseView, ActionsMixin):
         def generate():
             # Append the column titles at the beginning
             titles = [csv_encode(c[1]) for c in self._export_columns]
+            titles[0] = codecs.BOM_UTF8.decode("utf8") + codecs.BOM_UTF8.decode() + titles[0]
             yield writer.writerow(titles)
 
             for row in data:
