@@ -1,29 +1,58 @@
+# Backup and Swap Files
 *.swp
 *.swo
-*.pyc
 *.*~
-*.rdb
-*.egg-info
-pyenv
 #*#
-build
-source/_static*
-source/_templates*
-flask_admin/tests/tmp
-dist/*
-make.bat
-venv
-*.sublime-*
-.coverage
+
+# Bytecode and Compiled Files
+*.pyc
 __pycache__
+
+# Databases
+*.rdb
+*.sqlite
+
+# Distribution and Build
+build/
+dist/*
+*.egg
+.eggs
+*.egg-info
+*.tox
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Editor and IDE Configurations
+*.sublime-*
+.idea/
+*.swo
+*.swp
+*.swo
+*.swp
+.DS_Store
+*.sublime-*
+
+# Flask Admin Specific
+flask_admin/tests/tmp
+
+# Example Files
 examples/sqla-inline/static
 examples/file/files
 examples/forms/files
-.DS_Store
-.idea/
-*.sqlite
-env
-*.egg
-.eggs
-.tox/
-.env
+
+# Documentation and Static Resources
+source/_static*
+source/_templates*
+
+# Coverage and Testing
+.coverage
+
+# Shell and Batch Files
+make.bat
