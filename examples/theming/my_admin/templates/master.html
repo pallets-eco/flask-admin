@@ -1,0 +1,49 @@
+{% extends 'admin/base.html' %}
+
+{% block head %}
+{{ super() }}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+{% endblock %}
+
+{% block access_control %}
+<ul class="nav navbar-nav navbar-right">
+    <li>
+        <a class="nav-link" href="javascript:void(0)">
+            <b>Swatch:</b> {{ admin_view.admin.theme.swatch.title() }}
+        </a>
+    </li>
+    <hr class="mr-5">
+    <li class="dropdown">
+        <div class="dropdown">
+            <a class="dropdown-toggle nav-link" data-toggle="dropdown" id="dropdownMenuLink" href="javascript:void(0)"
+                role="button" aria-expanded="false">
+                <i class="fa fa-rotate"></i>
+                Change theme
+                <i class="glyphicon glyphicon-chevron-down small"></i>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                {% for swatch_theme in config['SWATCH_THEMES'] %}
+                {% if swatch_theme.lower() == admin_view.admin.theme.swatch.lower() %}
+                <span class="dropdown-item disabled">
+                    {{ swatch_theme.title() }} (current)
+                </span>
+                {% else %}
+                <a href="{{ url_for('{}.change_theme_swatch'.format(admin_view.admin.endpoint), swatch_name=swatch_theme, redirect=request.url) }}"
+                    class="dropdown-item">
+                    {{ swatch_theme.title() }}
+                </a>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </li>
+</ul>
+{% endblock %}
+
+{% block tail %}
+<br><br><br><br>
+{% endblock %}
