@@ -52,11 +52,11 @@ MY_DEFAULT_FORMATTERS.update({
 
 class TimezoneAwareModelView(ModelView):
     column_type_formatters = MY_DEFAULT_FORMATTERS
-    extra_js = ['/timezone.js']
+    extra_js = ['/static/js/timezone.js']
 
     def on_model_change(self, form, model, is_created):
         """
-
+        Save datetime fields after converting from session['timezone'] to UTC.
         """
         user_timezone = session["timezone"]
 
@@ -75,8 +75,13 @@ class TimezoneAwareModelView(ModelView):
 
 
 # inherit TimeZoneAwareModelView to make any admin page timezone-aware
-class BlogModelView(TimezoneAwareModelView):
+class TimezoneAwareBlogModelView(TimezoneAwareModelView):
     # any additional code here
+    pass
+
+
+# compare with regular ModelView to display data as saved on db
+class BlogModelView(ModelView):
     pass
 
 
@@ -84,11 +89,6 @@ class BlogModelView(TimezoneAwareModelView):
 @app.route('/')
 def index():
     return '<a href="/admin/article">Click me to get to Admin!</a>'
-
-
-@app.route('/timezone.js/')
-def timezone_js():
-    return send_from_directory('static/js', 'timezone.js')
 
 
 @app.route('/set_timezone', methods=['POST'])
@@ -113,7 +113,11 @@ with app.app_context():
                            last_edit=datetime(2024, 8, 8, 9, 0, 0)))
     db.session.commit()
     admin = Admin(app, name='microblog')
-    admin.add_view(BlogModelView(Article, db.session))
+    admin.add_view(
+        BlogModelView(Article, db.session, name="Article", endpoint="article"))
+    admin.add_view(
+        TimezoneAwareBlogModelView(Article, db.session, name="TimezoneAware Article",
+                                   endpoint="timezoneaware_article"))
 
 if __name__ == '__main__':
     app.run(debug=True)
