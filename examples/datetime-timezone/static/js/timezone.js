@@ -7,22 +7,6 @@ fetch('/set_timezone', {
   body: JSON.stringify(Intl.DateTimeFormat().resolvedOptions().timeZone)
 })
 
-// Helper function to pad single digits with leading zero
-function pad(num) {
-  return num.toString().padStart(2, '0');
-}
-
-// format datetime to "%Y-%m-%d %H:%M:%S"
-function formatDate(date) {
-  const year = date.getFullYear();
-  const month = pad(date.getMonth() + 1); // Months are zero-based
-  const day = pad(date.getDate());
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-  const seconds = pad(date.getSeconds());
-
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
 
 // convert all datetime fields to client timezone
 function localizeDateTimes() {
@@ -41,7 +25,7 @@ function localizeDateTimes() {
       localizedTime = new Date(element.textContent.trim() + "Z");
     }
 
-    const formattedTime = formatDate(localizedTime);
+    const formattedTime = moment(localizedTime).format('YYYY-MM-DD HH:mm:ss');
 
     if (isInput) {
       element.setAttribute("value", formattedTime);
