@@ -76,19 +76,22 @@ class TimezoneAwareModelView(ModelView):
 
 # inherit TimeZoneAwareModelView to make any admin page timezone-aware
 class TimezoneAwareBlogModelView(TimezoneAwareModelView):
-    # any additional code here
-    pass
+    column_labels = {
+        "last_edit": "Last Edit (local time)",
+    }
 
 
 # compare with regular ModelView to display data as saved on db
 class BlogModelView(ModelView):
-    pass
+    column_labels = {
+        "last_edit": "Last Edit (UTC)",
+    }
 
 
 # Flask views
 @app.route('/')
 def index():
-    return '<a href="/admin/article">Click me to get to Admin!</a>'
+    return '<a href="/admin/timezone_aware_article">Click me to get to Admin!</a>'
 
 
 @app.route('/set_timezone', methods=['POST'])
@@ -116,8 +119,8 @@ with app.app_context():
     admin.add_view(
         BlogModelView(Article, db.session, name="Article", endpoint="article"))
     admin.add_view(
-        TimezoneAwareBlogModelView(Article, db.session, name="TimezoneAware Article",
-                                   endpoint="timezoneaware_article"))
+        TimezoneAwareBlogModelView(Article, db.session, name="Timezone Aware Article",
+                                   endpoint="timezone_aware_article"))
 
 if __name__ == '__main__':
     app.run(debug=True)
