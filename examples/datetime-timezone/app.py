@@ -1,8 +1,8 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from flask import send_from_directory, Flask, request, session, jsonify
-from flask_sqlalchemy_lite import SQLAlchemy
+from flask import Flask, request, session, jsonify
+from flask_sqlalchemy import SQLAlchemy
 from markupsafe import Markup
 from sqlalchemy import DateTime, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -17,19 +17,19 @@ class Base(DeclarativeBase):
     pass
 
 
-class Article(Base):
-    __tablename__ = "article"
+# app
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///default.sqlite"
+# Create dummy secret key so we can use sessions
+app.config['SECRET_KEY'] = '123456789'
+db = SQLAlchemy(model_class=Base)
+db.init_app(app)
+
+
+class Article(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     text: Mapped[str] = mapped_column(String(30))
     last_edit: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-
-
-# app
-app = Flask(__name__)
-app.config["SQLALCHEMY_ENGINES"] = {"default": "sqlite:///default.sqlite"}
-# Create dummy secret key so we can use sessions
-app.config['SECRET_KEY'] = '123456789'
-db = SQLAlchemy(app)
 
 
 # admin

@@ -1,2 +1,2 @@
 Flask-Admin
-flask-sqlalchemy-lite
+flask-sqlalchemy
