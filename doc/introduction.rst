@@ -59,7 +59,7 @@ you could use the :meth:`~flask_admin.base.Admin.init_app` method.
 
 If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
 you should see an empty page with a navigation bar on top. Customize the look by
-specifying a Bootswatch theme that suits your needs (see http://bootswatch.com/4/ for available swatches).
+specifying one of the included Bootswatch themes (see https://bootswatch.com/4/ for a preview of the swatches).
 
 Adding Model Views
 ------------------
