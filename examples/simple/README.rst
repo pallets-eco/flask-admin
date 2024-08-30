@@ -3,10 +3,10 @@ The views do not have to be associated to any of your models, and you can fill t
 
 To run this example:
 
-1. Clone the repository::
+1. Clone the repository and navigate to this example::
 
     git clone https://github.com/flask-admin/flask-admin.git
-    cd flask-admin
+    cd flask-admin/examples/simple
 
 2. Create and activate a virtual environment::
 
@@ -15,8 +15,8 @@ To run this example:
 
 3. Install requirements::
 
-    pip install -r 'examples/simple/requirements.txt'
+    pip install -r requirements.txt
 
 4. Run the application::
 
-    python examples/simple/app.py
+    python app.py
