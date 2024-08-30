@@ -2,10 +2,10 @@ SQLAlchemy model backend integration examples.
 
 To run this example:
 
-1. Clone the repository::
+1. Clone the repository and navigate to this example::
 
     git clone https://github.com/flask-admin/flask-admin.git
-    cd flask-admin
+    cd flask-admin/examples/geo_alchemy
 
 2. Create and activate a virtual environment::
 
@@ -14,7 +14,7 @@ To run this example:
 
 3. Install requirements::
 
-    pip install -r 'examples/geo_alchemy/requirements.txt'
+    pip install -r requirements.txt
 
 4. Setup the database::
 
@@ -32,7 +32,7 @@ To run this example:
 
 5. Run the application::
 
-    python examples/geo_alchemy/app.py
+    python app.py
 
 6. You will notice that the maps are not rendered. By default, Flask-Admin expects
 an integration with `Mapbox <https://www.mapbox.com/>`_. To see them, you will have
