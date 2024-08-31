@@ -11,7 +11,7 @@ To run this example:
 
 1. Clone the repository and navigate to this example::
 
-    git clone https://github.com/flask-admin/flask-admin.git
+    git clone https://github.com/pallets-eco/flask-admin.git
     cd flask-admin/examples/forms-files-images
 
 2. Create and activate a virtual environment::

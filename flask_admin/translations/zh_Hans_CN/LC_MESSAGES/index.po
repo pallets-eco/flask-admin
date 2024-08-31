@@ -70,11 +70,11 @@ msgid ""
 "**What does it look like?** At http://examples.flask-admin.org/ you can "
 "see some examples of Flask-Admin in action, or browse through the "
 "`examples/` directory in the `GitHub repository <https://github.com"
-"/flask-admin/flask-admin>`_."
+"/pallets-eco/flask-admin>`_."
 msgstr ""
 "**它是什么样子的？** 在 http://examples.flask-admin.org/，你可以看到 "
 "Flask-Admin 的一些示例，也可以直接浏览 `GitHub 存储库 <https://github.com"
-"/flask-admin/flask-admin>`_ 中的 `examples/` 目录。"
+"/pallets-eco/flask-admin>`_ 中的 `examples/` 目录。"
 
 #: ../../index.rst:40
 msgid "Support"

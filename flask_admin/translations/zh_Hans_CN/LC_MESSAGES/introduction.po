@@ -189,10 +189,10 @@ msgid ""
 "In the navigation menu, components that are not accessible to a "
 "particular user will not be displayed for that user. For an example of "
 "using Flask-Login with Flask-Admin, have a look at https://github.com"
-"/flask-admin/Flask-Admin/tree/master/examples/auth-flask-login."
+"/pallets-eco/flask-admin/tree/master/examples/auth-flask-login."
 msgstr ""
 "在导航菜单中，不会显示该用户无法访问的组件。有关使用 Flask-Login 与 Flask-Admin 的示例，请参考 "
-"https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth-"
+"https://github.com/pallets-eco/flask-admin/tree/master/examples/auth-"
 "flask-login。"
 
 #: ../../doc/introduction.rst:115
@@ -240,11 +240,11 @@ msgstr ""
 #: ../../doc/introduction.rst:146
 msgid ""
 "For a working example of using Flask-Security with Flask-Admin, have a "
-"look at https://github.com/flask-admin/Flask-"
-"Admin/tree/master/examples/auth."
+"look at https://github.com/pallets-eco/flask-"
+"admin/tree/master/examples/auth."
 msgstr ""
-"有关使用 Flask-Security 和 Flask-Admin 集成的示例，请查看 https://github.com/flask-"
-"admin/Flask-Admin/tree/master/examples/auth。"
+"有关使用 Flask-Security 和 Flask-Admin 集成的示例，请查看 https://github.com/pallets-"
+"eco/flask-admin/tree/master/examples/auth。"
 
 #: ../../doc/introduction.rst:149
 msgid ""
@@ -714,11 +714,11 @@ msgstr "如果未找到模型，将显示该消息"
 
 #: ../../doc/introduction.rst:443
 msgid ""
-"Have a look at the `layout` example at https://github.com/flask-admin"
+"Have a look at the `layout` example at https://github.com/pallets-eco"
 "/flask-admin/tree/master/examples/layout to see how you can take full "
 "stylistic control over the admin interface."
 msgstr ""
-"请查看 https://github.com/flask-admin/flask-"
+"请查看 https://github.com/pallets-eco/flask-"
 "admin/tree/master/examples/layout 上的 *布局* 示例，了解如何对管理界面进行全面的风格控制。"
 
 #: ../../doc/introduction.rst:447

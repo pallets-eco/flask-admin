@@ -23,7 +23,7 @@ because they let you group together all of the usual
 *Create, Read, Update, Delete* (CRUD) view logic into a single, self-contained
 class for each of your models.
 
-**What does it look like?** Clone the `GitHub repository <https://github.com/flask-admin/flask-admin>`_
+**What does it look like?** Clone the `GitHub repository <https://github.com/pallets-eco/flask-admin>`_
 and run the provided examples locally to get a feel for Flask-Admin. There are several to choose from
 in the `examples` directory.
 

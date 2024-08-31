@@ -140,7 +140,7 @@ could be as simple as::
 
 In the navigation menu, components that are not accessible to a particular user will not be displayed
 for that user. For an example of using Flask-Login with Flask-Admin, have a look
-at https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth-flask-login.
+at https://github.com/pallets-eco/flask-admin/tree/master/examples/auth-flask-login.
 
 The main drawback is that you still need to implement all of the relevant login,
 registration, and account management views yourself.
@@ -174,7 +174,7 @@ Defining a `security_context_processor` function will take care of this for you:
         )
 
 For a working example of using Flask-Security with Flask-Admin, have a look at
-https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth.
+https://github.com/pallets-eco/flask-admin/tree/master/examples/auth.
 
 The example only uses the built-in `register` and `login` views, but you could follow the same
 approach for including the other views, like `forgot_password`, `send_confirmation`, etc.
@@ -487,7 +487,7 @@ list_row_actions        Row action cell with edit/remove/etc buttons
 empty_list_message      Message that will be displayed if there are no models found
 ======================= ============================================
 
-Have a look at the `layout` example at https://github.com/flask-admin/flask-admin/tree/master/examples/custom-layout
+Have a look at the `layout` example at https://github.com/pallets-eco/flask-admin/tree/master/examples/custom-layout
 to see how you can take full stylistic control over the admin interface.
 
 Template Context Variables

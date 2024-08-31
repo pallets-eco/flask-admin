@@ -195,10 +195,10 @@ msgstr ""
 
 #: ../../doc/advanced.rst:166
 msgid ""
-"Have a look at the example at https://github.com/flask-admin/Flask-"
-"Admin/tree/master/examples/forms."
+"Have a look at the example at https://github.com/pallets-eco/flask-"
+"admin/tree/master/examples/forms."
 msgstr ""
-"请查看 https://github.com/flask-admin/Flask-Admin/tree/master/examples/forms"
+"请查看 https://github.com/pallets-eco/flask-admin/tree/master/examples/forms"
 " 示例。"
 
 #: ../../doc/advanced.rst:169
@@ -295,10 +295,10 @@ msgstr ""
 
 #: ../../doc/advanced.rst:212
 msgid ""
-"Have a look at https://github.com/flask-admin/flask-"
+"Have a look at https://github.com/pallets-eco/flask-"
 "admin/tree/master/examples/geo_alchemy to get started."
 msgstr ""
-"请查看 https://github.com/flask-admin/flask-"
+"请查看 https://github.com/pallets-eco/flask-"
 "admin/tree/master/examples/geo_alchemy 示例以开始使用。"
 
 #: ../../doc/advanced.rst:216
@@ -612,11 +612,11 @@ msgstr ""
 msgid ""
 "`MongoEngine <http://mongoengine.org/>`_ is a python wrapper for MongoDB."
 " For an example of using MongoEngine with Flask-Admin, see "
-"https://github.com/flask-admin/flask-"
+"https://github.com/pallets-eco/flask-"
 "admin/tree/master/examples/mongoengine."
 msgstr ""
 "`MongoEngine <http://mongoengine.org/>`_ 是 MongoDB 的 Python 封装。在 Flask-"
-"Admin 中使用 MongoEngine 的示例，请参阅 https://github.com/flask-admin/flask-"
+"Admin 中使用 MongoEngine 的示例，请参阅 https://github.com/pallets-eco/flask-"
 "admin/tree/master/examples/mongoengine。"
 
 #: ../../doc/advanced.rst:371 ../../doc/advanced.rst:392
@@ -698,11 +698,11 @@ msgstr "不支持多对多模型关系：在 Peewee 中没有内置的方式来�
 #: ../../doc/advanced.rst:405
 msgid ""
 "For more, check the :class:`~flask_admin.contrib.peewee` API "
-"documentation. Or look at the Peewee example at https://github.com/flask-"
-"admin/flask-admin/tree/master/examples/peewee."
+"documentation. Or look at the Peewee example at https://github.com/pallets-"
+"eco/flask-admin/tree/master/examples/peewee."
 msgstr ""
 "更多信息，请参阅 :class:`~flask_admin.contrib.peewee` API 文档。或查看 Peewee 使用示例 "
-"https://github.com/flask-admin/flask-admin/tree/master/examples/peewee。"
+"https://github.com/pallets-eco/flask-admin/tree/master/examples/peewee。"
 
 #: ../../doc/advanced.rst:409
 msgid "PyMongo"
@@ -737,11 +737,11 @@ msgstr "除此之外，您还可以添加可排序的列，过滤器，文本搜
 #: ../../doc/advanced.rst:435
 msgid ""
 "For more, check the :class:`~flask_admin.contrib.pymongoe` API "
-"documentation. Or look at the Peewee example at https://github.com/flask-"
-"admin/flask-admin/tree/master/examples/pymongo."
+"documentation. Or look at the Peewee example at https://github.com/pallets-"
+"eco/flask-admin/tree/master/examples/pymongo."
 msgstr ""
 "更多信息，请参阅 :class:`~flask_admin.contrib.pymongoe` API 文档。或查看 PyMongo 使用示例 "
-"https://github.com/flask-admin/flask-admin/tree/master/examples/pymongo。"
+"https://github.com/pallets-eco/flask-admin/tree/master/examples/pymongo。"
 
 #: ../../doc/advanced.rst:439
 msgid "Migrating From Django"
