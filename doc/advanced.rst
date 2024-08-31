@@ -241,7 +241,7 @@ Image handling also requires you to have `Pillow <https://pypi.python.org/pypi/P
 installed if you need to do any processing on the image files.
 
 Have a look at the example at
-https://github.com/flask-admin/Flask-Admin/tree/master/examples/forms-files-images.
+https://github.com/pallets-eco/flask-admin/tree/master/examples/forms-files-images.
 
 If you just want to manage static files in a directory, without tying them to a database model, then
 use the :ref:`File-Admin<file-admin>` plug-in.

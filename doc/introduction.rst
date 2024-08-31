@@ -140,7 +140,7 @@ could be as simple as::
 
 In the navigation menu, components that are not accessible to a particular user will not be displayed
 for that user. For an example of using Flask-Login with Flask-Admin, have a look
-at https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth-flask-login.
+at https://github.com/pallets-eco/flask-admin/tree/master/examples/auth-flask-login.
 
 The main drawback is that you still need to implement all of the relevant login,
 registration, and account management views yourself.
@@ -174,7 +174,7 @@ Defining a `security_context_processor` function will take care of this for you:
         )
 
 For a working example of using Flask-Security with Flask-Admin, have a look at
-https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth.
+https://github.com/pallets-eco/flask-admin/tree/master/examples/auth.
 
 The example only uses the built-in `register` and `login` views, but you could follow the same
 approach for including the other views, like `forgot_password`, `send_confirmation`, etc.
