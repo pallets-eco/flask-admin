@@ -702,7 +702,7 @@ msgid ""
 "admin/flask-admin/tree/master/examples/peewee."
 msgstr ""
 "更多信息，请参阅 :class:`~flask_admin.contrib.peewee` API 文档。或查看 Peewee 使用示例 "
-"https://github.com/flask-admin/flask-admin/tree/master/examples/peewee。"
+"https://github.com/pallets-eco/flask-admin/tree/master/examples/peewee。"
 
 #: ../../doc/advanced.rst:409
 msgid "PyMongo"
@@ -741,7 +741,7 @@ msgid ""
 "admin/flask-admin/tree/master/examples/pymongo."
 msgstr ""
 "更多信息，请参阅 :class:`~flask_admin.contrib.pymongoe` API 文档。或查看 PyMongo 使用示例 "
-"https://github.com/flask-admin/flask-admin/tree/master/examples/pymongo。"
+"https://github.com/pallets-eco/flask-admin/tree/master/examples/pymongo。"
 
 #: ../../doc/advanced.rst:439
 msgid "Migrating From Django"

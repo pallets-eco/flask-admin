@@ -283,7 +283,7 @@ from the GeoAlchemy backend, rather than the usual SQLAlchemy backend::
 Some of the Geometry field types that are available include:
 "POINT", "MULTIPOINT", "POLYGON", "MULTIPOLYGON", "LINESTRING" and "MULTILINESTRING".
 
-Have a look at https://github.com/flask-admin/flask-admin/tree/master/examples/geo_alchemy
+Have a look at https://github.com/pallets-eco/flask-admin/tree/master/examples/geo_alchemy
 to get started.
 
 Display map widgets
@@ -462,7 +462,7 @@ Known issues:
  - Many-to-Many model relations are not supported: there's no built-in way to express M2M relation in Peewee
 
 For more, check the :class:`~flask_admin.contrib.peewee` API documentation. Or look at
-the Peewee example at https://github.com/flask-admin/flask-admin/tree/master/examples/peewee.
+the Peewee example at https://github.com/pallets-eco/flask-admin/tree/master/examples/peewee.
 
 PyMongo
 *******
@@ -492,7 +492,7 @@ This is minimal PyMongo view::
 On top of that you can add sortable columns, filters, text search, etc.
 
 For more, check the :class:`~flask_admin.contrib.pymongo` API documentation. Or look at
-the pymongo example at https://github.com/flask-admin/flask-admin/tree/master/examples/pymongo.
+the pymongo example at https://github.com/pallets-eco/flask-admin/tree/master/examples/pymongo.
 
 Migrating From Django
 ---------------------
