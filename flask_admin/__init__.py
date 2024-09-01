@@ -1,4 +1,4 @@
-__version__ = '1.6.1'
+__version__ = '2.0.0a0'
 __author__ = 'Flask-Admin team'
 __email__ = 'contact@palletsproject.com'
 
