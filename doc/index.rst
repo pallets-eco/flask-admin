@@ -39,7 +39,7 @@ in the `examples` directory.
 Support
 -------
 
-Python 3.6 or higher.
+Python 3.8 or higher.
 
 Indices And Tables
 ------------------
