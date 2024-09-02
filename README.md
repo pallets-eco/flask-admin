@@ -91,9 +91,6 @@ To build the docs in your local environment, from the project directory:
 
     tox -e docs-html
 
-And if you want to preview any *.rst* snippets that you may want to
-contribute, please go to <http://rst.ninjs.org/>.
-
 ## Installation
 
 To install Flask-Admin, simply:
