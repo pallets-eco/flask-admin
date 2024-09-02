@@ -3,7 +3,7 @@
 The project was recently moved into its own organization. Please update
 your references to `https://github.com/pallets-eco/flask-admin.git`.
 
-[![image](https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.svg)](https://crowdin.com/project/flask-admin) [![image](https://github.com/pallets-eco/flask-admin/actions/workflows/test.yaml/badge.svg)](https://github.com/pallets-eco/flask-admin/actions/workflows/test.yaml)
+[![image](https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.svg)](https://crowdin.com/project/flask-admin) [![image](https://github.com/pallets-eco/flask-admin/actions/workflows/tests.yaml/badge.svg?branch=master)](https://github.com/pallets-eco/flask-admin/actions/workflows/test.yaml)
 
 ## Pallets Community Ecosystem
 
@@ -18,7 +18,7 @@ your references to `https://github.com/pallets-eco/flask-admin.git`.
 ## Introduction
 
 Flask-Admin is a batteries-included, simple-to-use
-[Flask](http://flask.pocoo.org/) extension that lets you add admin
+[Flask](https://flask.palletsprojects.com/) extension that lets you add admin
 interfaces to Flask applications. It is inspired by the *django-admin*
 package, but implemented in such a way that the developer has total
 control over the look, feel, functionality and user experience of the resulting
@@ -26,12 +26,12 @@ application.
 
 Out-of-the-box, Flask-Admin plays nicely with various ORM\'s, including
 
--   [SQLAlchemy](http://www.sqlalchemy.org/)
--   [pymongo](http://api.mongodb.org/python/current/)
+-   [SQLAlchemy](https://www.sqlalchemy.org/)
+-   [pymongo](https://pymongo.readthedocs.io/)
 -   and [Peewee](https://github.com/coleifer/peewee).
 
 It also boasts a simple file management interface and a [Redis
-client](http://redis.io/) console.
+client](https://redis.io/) console.
 
 The biggest feature of Flask-Admin is its flexibility. It aims to provide a
 set of simple tools that can be used to build admin interfaces of
@@ -151,9 +151,9 @@ You can also run the tests on multiple environments using *tox*.
 ## 3rd Party Stuff
 
 Flask-Admin is built with the help of
-[Bootstrap](http://getbootstrap.com/),
+[Bootstrap](https://getbootstrap.com/),
 [Select2](https://github.com/ivaynberg/select2) and
-[Bootswatch](http://bootswatch.com/).
+[Bootswatch](https://bootswatch.com/).
 
 If you want to localize your application, install the
 [Flask-Babel](https://pypi.python.org/pypi/Flask-Babel) package.

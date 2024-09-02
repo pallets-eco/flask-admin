@@ -1,7 +1,7 @@
 Example of how to use (and filter on) an association proxy with the SQLAlchemy backend.
 
 For information about association proxies and how to use them, please visit:
-http://docs.sqlalchemy.org/en/latest/orm/extensions/associationproxy.html
+https://docs.sqlalchemy.org/en/latest/orm/extensions/associationproxy.html
 
 To run this example:
 

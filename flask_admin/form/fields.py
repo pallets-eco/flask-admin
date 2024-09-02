@@ -11,7 +11,7 @@ from . import widgets as admin_widgets
 
 """
 An understanding of WTForms's Custom Widgets is helpful for understanding this code:
-http://wtforms.simplecodes.com/docs/0.6.2/widgets.html#custom-widgets
+https://wtforms.readthedocs.io/widgets/#custom-widgets
 """
 
 __all__ = ['DateTimeField', 'TimeField', 'Select2Field', 'Select2TagsField',

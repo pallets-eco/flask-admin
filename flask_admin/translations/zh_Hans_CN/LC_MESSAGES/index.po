@@ -1,5 +1,5 @@
 # Flask-Admin
-# http://flask-admin.readthedocs.io/en/latest/
+# https://flask-admin.readthedocs.io/en/latest/
 #
 # Copyright (C) 2012-2015, Serge S. Koval
 # This file is distributed under the same license as the flask-admin
@@ -25,12 +25,12 @@ msgstr "Flask-Admin"
 
 #: ../../index.rst:6
 msgid ""
-"**Why Flask?** As a micro-framework, `Flask <http://flask.pocoo.org/>`_ "
+"**Why Flask?** As a micro-framework, `Flask <https://flask.palletsprojects.com/>`_ "
 "lets you build web services with very little overhead. It offers freedom "
 "for you, the designer, to implement your project in a way that suits your"
 " particular application."
 msgstr ""
-"**为什么选择 Flask？** 作为一个微框架，`Flask <http://flask.pocoo.org/>`_ "
+"**为什么选择 Flask？** 作为一个微框架，`Flask <https://flask.palletsprojects.com/>`_ "
 "允许您以非常少的开销构建 Web 服务。它为您的设计提供了自由，使您能够以适合特定应用程序"
 "的方式实现您的项目。"
 
