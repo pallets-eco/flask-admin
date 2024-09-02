@@ -1,7 +1,7 @@
 # Flask-Admin
 
 The project was recently moved into its own organization. Please update
-your references to `git@github.com:pallets-eco/flask-admin.git`.
+your references to `https://github.com/pallets-eco/flask-admin.git`.
 
 [![image](https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.svg)](https://crowdin.com/project/flask-admin) [![image](https://github.com/pallets-eco/flask-admin/actions/workflows/test.yaml/badge.svg)](https://github.com/pallets-eco/flask-admin/actions/workflows/test.yaml)
 
@@ -100,7 +100,7 @@ To install Flask-Admin, simply:
 Or alternatively, you can download the repository and install manually
 by doing:
 
-    git clone git@github.com:pallets-eco/flask-admin.git
+    git clone https://github.com/pallets-eco/flask-admin.git
     cd flask-admin
     pip install .
 
