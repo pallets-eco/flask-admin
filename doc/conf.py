@@ -43,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'flask-admin'
-copyright = u'2012-2019, Flask-Admin Team'
+copyright = u'2012-2024, Flask-Admin Team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
