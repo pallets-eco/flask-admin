@@ -90,7 +90,7 @@ Go ahead and add your own logic to the locale selector function. The application
 a user profile, cookie, session, etc. It can also use the `Accept-Language`
 header to make the selection automatically.
 
-If the built-in translations are not enough, look at the `Flask-Babel documentation <https://pythonhosted.org/Flask-Babel/>`_
+If the built-in translations are not enough, look at the `Flask-Babel documentation <https://python-babel.github.io/flask-babel/>`_
 to see how you can add your own.
 
 Using with Flask in `host_matching` mode
