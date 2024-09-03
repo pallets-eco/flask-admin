@@ -1,5 +1,5 @@
 # Introduction To Flask-Admin
-# http://flask-admin.readthedocs.io/en/latest/introduction/
+# https://flask-admin.readthedocs.io/en/latest/introduction/
 #
 # Copyright (C) 2012-2015, Serge S. Koval
 # This file is distributed under the same license as the flask-admin
@@ -454,9 +454,9 @@ msgstr "使用内置模板"
 
 #: ../../doc/introduction.rst:352
 msgid ""
-"Flask-Admin uses the `Jinja2 <http://jinja.pocoo.org/docs/>`_ templating "
+"Flask-Admin uses the `Jinja2 <https://jinja.palletsprojects.com/>`_ templating "
 "engine."
-msgstr "Flask-Admin 使用 `Jinja2 <http://jinja.pocoo.org/docs/>`_ 模板引擎。"
+msgstr "Flask-Admin 使用 `Jinja2 <https://jinja.palletsprojects.com/>`_ 模板引擎。"
 
 #: ../../doc/introduction.rst:357
 msgid "Extending the Built-in Templates"

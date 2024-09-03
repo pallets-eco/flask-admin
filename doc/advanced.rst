@@ -207,7 +207,7 @@ file / image uploads that need to be tied to a field in your model.
 WYSIWIG Text Fields
 *******************
 To handle complicated text content, you can use
-`CKEditor <http://ckeditor.com/>`_ by subclassing some of the built-in WTForms
+`CKEditor <https://ckeditor.com/>`_ by subclassing some of the built-in WTForms
 classes as follows::
 
     from wtforms import TextAreaField
@@ -260,9 +260,9 @@ Some notable features include:
    with map data from `Mapbox <https://www.mapbox.com>`_.
  - Geographic information, including points, lines and polygons, can be edited
    interactively using `Leaflet.Draw <https://github.com/Leaflet/Leaflet.draw>`_.
- - Graceful fallback: `GeoJSON <http://geojson.org/>`_ data can be edited in a ``<textarea>``, if the
+ - Graceful fallback: `GeoJSON <https://geojson.org/>`_ data can be edited in a ``<textarea>``, if the
    user has turned off Javascript.
- - Works with a `Geometry <https://geoalchemy-2.readthedocs.io/en/latest/types.html#geoalchemy2.types.Geometry>`_ SQL field that is integrated with `Shapely <http://toblerity.org/shapely/>`_ objects.
+ - Works with a `Geometry <https://geoalchemy-2.readthedocs.io/en/latest/types.html#geoalchemy2.types.Geometry>`_ SQL field that is integrated with `Shapely <https://shapely.readthedocs.io/>`_ objects.
 
 To get started, define some fields on your model using GeoAlchemy's *Geometry*
 field. Next, add model views to your interface using the ModelView class
@@ -455,7 +455,7 @@ Features:
  - Inline editing of related models;
 
 In order to use peewee integration, you need to install two additional Python
-packages: `peewee <http://docs.peewee-orm.com/>`_ and `wtf-peewee <https://github.com/coleifer/wtf-peewee/>`_.
+packages: `peewee <https://docs.peewee-orm.com/>`_ and `wtf-peewee <https://github.com/coleifer/wtf-peewee/>`_.
 
 Known issues:
 
@@ -517,7 +517,7 @@ applications out there on the web.
 
 Flask-Admin follows this same design philosophy. So even though it provides you with several tools for getting up &
 running quickly, it will be up to you, as a developer, to tell Flask-Admin what should be displayed and how. Even
-though it is easy to get started with a simple `CRUD <http://en.wikipedia.org/wiki/Create,_read,_update_and_delete>`_
+though it is easy to get started with a simple `CRUD <https://en.wikipedia.org/wiki/Create,_read,_update_and_delete>`_
 interface for each model in your application, Flask-Admin doesn't fix you to this approach, and you are free to
 define other ways of interacting with some, or all, of your models.
 

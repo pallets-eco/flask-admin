@@ -13,7 +13,7 @@ class LeafletWidget(TextArea):
     data_role = 'leaflet'
 
     """
-        `Leaflet <http://leafletjs.com/>`_ styled map widget. Inherits from
+        `Leaflet <https://leafletjs.com>`_ styled map widget. Inherits from
         `TextArea` so that geographic data can be stored via the <textarea>
         (and edited there if the user's browser does not have Javascript).
 

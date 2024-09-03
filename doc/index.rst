@@ -3,7 +3,7 @@
 Flask-Admin
 ###########
 
-**Why Flask?** As a micro-framework, `Flask <http://flask.pocoo.org/>`_ lets you build web services with very little overhead.
+**Why Flask?** As a micro-framework, `Flask <https://flask.palletsprojects.com/>`_ lets you build web services with very little overhead.
 It offers freedom for you, the designer, to implement your project in a way that suits your
 particular application.
 
@@ -39,7 +39,7 @@ in the `examples` directory.
 Support
 -------
 
-Python 3.6 or higher.
+Python 3.8 or higher.
 
 Indices And Tables
 ------------------

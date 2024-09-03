@@ -392,7 +392,7 @@ For this you could override only the view in question, and all the links to it w
 Working With the Built-in Templates
 ===================================
 
-Flask-Admin uses the `Jinja2 <http://jinja.pocoo.org/docs/>`_ templating engine.
+Flask-Admin uses the `Jinja2 <https://jinja.palletsprojects.com/>`_ templating engine.
 
 .. _extending-builtin-templates:
 
