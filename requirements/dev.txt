@@ -121,7 +121,7 @@ mccabe==0.7.0
     #   -r typing.txt
     #   flake8
     #   pylint
-mypy==1.11.0
+mypy==1.11.2
     # via -r typing.txt
 mypy-extensions==1.0.0
     # via
@@ -188,7 +188,7 @@ pylint==3.2.6
     #   -r typing.txt
 pyproject-api==1.7.1
     # via tox
-pyright==1.1.373
+pyright==1.1.378
     # via -r typing.txt
 pytest==8.3.2
     # via
@@ -267,11 +267,11 @@ tomlkit==0.13.0
     #   -r docs.txt
     #   -r typing.txt
     #   pylint
-tox==4.16.0
+tox==4.18.0
     # via -r dev.in
 types-beautifulsoup4==4.12.0.20240511
     # via -r typing.txt
-types-boto==2.49.18.20240205
+types-boto==2.49.18.20240806
     # via -r typing.txt
 types-click==7.1.8
     # via
@@ -293,11 +293,11 @@ types-markupsafe==1.1.10
     # via
     #   -r typing.txt
     #   types-jinja2
-types-peewee==3.17.6.20240722
+types-peewee==3.17.6.20240813
     # via -r typing.txt
-types-pillow==10.2.0.20240520
+types-pillow==10.2.0.20240822
     # via -r typing.txt
-types-shapely==2.0.0.20240714
+types-shapely==2.0.0.20240820
     # via -r typing.txt
 types-sqlalchemy==1.4.53.38
     # via
