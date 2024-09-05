@@ -13,20 +13,20 @@ astroid==3.2.4
     #   -r docs.txt
     #   -r typing.txt
     #   pylint
-babel==2.15.0
+babel==2.16.0
     # via
     #   -r docs.txt
     #   sphinx
 beautifulsoup4==4.12.3
     # via
+    #   -r docs.txt
     #   -r tests.in
     #   -r typing.txt
-cachetools==5.4.0
+cachetools==5.5.0
     # via tox
-certifi==2024.7.4
+certifi==2024.8.30
     # via
     #   -r docs.txt
-    #   -r typing.txt
     #   requests
 cfgv==3.4.0
     # via pre-commit
@@ -35,21 +35,14 @@ chardet==5.2.0
 charset-normalizer==3.3.2
     # via
     #   -r docs.txt
-    #   -r typing.txt
     #   requests
 colorama==0.4.6
     # via tox
-coverage[toml]==7.6.0
+coverage[toml]==7.6.1
     # via
     #   -r docs.txt
     #   -r typing.txt
-    #   coveralls
     #   pytest-cov
-coveralls==4.0.1
-    # via
-    #   -r docs.txt
-    #   -r tests.in
-    #   -r typing.txt
 dill==0.3.8
     # via
     #   -r docs.txt
@@ -57,11 +50,6 @@ dill==0.3.8
     #   pylint
 distlib==0.3.8
     # via virtualenv
-docopt==0.6.2
-    # via
-    #   -r docs.txt
-    #   -r typing.txt
-    #   coveralls
 docutils==0.20.1
     # via
     #   -r docs.txt
@@ -75,23 +63,22 @@ filelock==3.15.4
     # via
     #   tox
     #   virtualenv
-flake8==7.1.0
+flake8==7.1.1
     # via
     #   -r docs.txt
     #   -r tests.in
     #   -r typing.txt
 identify==2.6.0
     # via pre-commit
-idna==3.7
+idna==3.8
     # via
     #   -r docs.txt
-    #   -r typing.txt
     #   requests
 imagesize==1.4.1
     # via
     #   -r docs.txt
     #   sphinx
-importlib-metadata==8.2.0
+importlib-metadata==8.4.0
     # via
     #   -r docs.txt
     #   sphinx
@@ -167,7 +154,7 @@ psycopg2==2.9.9
     #   -r docs.txt
     #   -r tests.in
     #   -r typing.txt
-pycodestyle==2.12.0
+pycodestyle==2.12.1
     # via
     #   -r docs.txt
     #   -r typing.txt
@@ -181,14 +168,14 @@ pygments==2.18.0
     # via
     #   -r docs.txt
     #   sphinx
-pylint==3.2.6
+pylint==3.2.7
     # via
     #   -r docs.txt
     #   -r tests.in
     #   -r typing.txt
 pyproject-api==1.7.1
     # via tox
-pyright==1.1.378
+pyright==1.1.379
     # via -r typing.txt
 pytest==8.3.2
     # via
@@ -205,20 +192,19 @@ pytz==2024.1
     # via
     #   -r docs.txt
     #   babel
-pyyaml==6.0.1
+pyyaml==6.0.2
     # via pre-commit
 requests==2.32.3
     # via
     #   -r docs.txt
-    #   -r typing.txt
-    #   coveralls
     #   sphinx
 snowballstemmer==2.2.0
     # via
     #   -r docs.txt
     #   sphinx
-soupsieve==2.5
+soupsieve==2.6
     # via
+    #   -r docs.txt
     #   -r typing.txt
     #   beautifulsoup4
 sphinx==7.1.2
@@ -262,7 +248,7 @@ tomli==2.0.1
     #   pyproject-api
     #   pytest
     #   tox
-tomlkit==0.13.0
+tomlkit==0.13.2
     # via
     #   -r docs.txt
     #   -r typing.txt
@@ -281,7 +267,7 @@ types-flask==1.1.6
     # via -r typing.txt
 types-flask-sqlalchemy==2.5.9.4
     # via -r typing.txt
-types-html5lib==1.1.11.20240228
+types-html5lib==1.1.11.20240806
     # via
     #   -r typing.txt
     #   types-beautifulsoup4
@@ -319,13 +305,12 @@ typing-extensions==4.12.2
 urllib3==2.2.2
     # via
     #   -r docs.txt
-    #   -r typing.txt
     #   requests
 virtualenv==20.26.3
     # via
     #   pre-commit
     #   tox
-zipp==3.19.2
+zipp==3.20.1
     # via
     #   -r docs.txt
     #   importlib-metadata
