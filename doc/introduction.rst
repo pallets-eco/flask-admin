@@ -59,7 +59,7 @@ you could use the :meth:`~flask_admin.base.Admin.init_app` method.
 
 If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
 you should see an empty page with a navigation bar on top. Customize the look by
-specifying a Bootswatch theme that suits your needs (see http://bootswatch.com/4/ for available swatches).
+specifying one of the included Bootswatch themes (see https://bootswatch.com/4/ for a preview of the swatches).
 
 Adding Model Views
 ------------------
@@ -140,7 +140,7 @@ could be as simple as::
 
 In the navigation menu, components that are not accessible to a particular user will not be displayed
 for that user. For an example of using Flask-Login with Flask-Admin, have a look
-at https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth-flask-login.
+at https://github.com/pallets-eco/flask-admin/tree/master/examples/auth-flask-login.
 
 The main drawback is that you still need to implement all of the relevant login,
 registration, and account management views yourself.
@@ -174,7 +174,7 @@ Defining a `security_context_processor` function will take care of this for you:
         )
 
 For a working example of using Flask-Security with Flask-Admin, have a look at
-https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth.
+https://github.com/pallets-eco/flask-admin/tree/master/examples/auth.
 
 The example only uses the built-in `register` and `login` views, but you could follow the same
 approach for including the other views, like `forgot_password`, `send_confirmation`, etc.
@@ -392,7 +392,7 @@ For this you could override only the view in question, and all the links to it w
 Working With the Built-in Templates
 ===================================
 
-Flask-Admin uses the `Jinja2 <http://jinja.pocoo.org/docs/>`_ templating engine.
+Flask-Admin uses the `Jinja2 <https://jinja.palletsprojects.com/>`_ templating engine.
 
 .. _extending-builtin-templates:
 
@@ -487,7 +487,7 @@ list_row_actions        Row action cell with edit/remove/etc buttons
 empty_list_message      Message that will be displayed if there are no models found
 ======================= ============================================
 
-Have a look at the `layout` example at https://github.com/flask-admin/flask-admin/tree/master/examples/custom-layout
+Have a look at the `layout` example at https://github.com/pallets-eco/flask-admin/tree/master/examples/custom-layout
 to see how you can take full stylistic control over the admin interface.
 
 Template Context Variables

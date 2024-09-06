@@ -1,5 +1,5 @@
 # Advanced Functionality
-# http://flask-admin.readthedocs.io/en/latest/advanced/
+# https://flask-admin.readthedocs.io/en/latest/advanced/
 #
 # Copyright (C) 2012-2015, Serge S. Koval
 # This file is distributed under the same license as the flask-admin
@@ -169,10 +169,10 @@ msgstr "WYSIWIG 文本字段"
 #: ../../doc/advanced.rst:132
 msgid ""
 "To handle complicated text content, you can use `CKEditor "
-"<http://ckeditor.com/>`_ by subclassing some of the built-in WTForms "
+"<https://ckeditor.com/>`_ by subclassing some of the built-in WTForms "
 "classes as follows::"
 msgstr ""
-"要处理复杂的文本内容，可以通过子类化一些内置的 WTForms 类来集成 `CKEditor <http://ckeditor.com/>`_ "
+"要处理复杂的文本内容，可以通过子类化一些内置的 WTForms 类来集成 `CKEditor <https://ckeditor.com/>`_ "
 "编辑器，示例如下::"
 
 #: ../../doc/advanced.rst:158
@@ -195,10 +195,10 @@ msgstr ""
 
 #: ../../doc/advanced.rst:166
 msgid ""
-"Have a look at the example at https://github.com/flask-admin/Flask-"
-"Admin/tree/master/examples/forms."
+"Have a look at the example at https://github.com/pallets-eco/flask-"
+"admin/tree/master/examples/forms."
 msgstr ""
-"请查看 https://github.com/flask-admin/Flask-Admin/tree/master/examples/forms"
+"请查看 https://github.com/pallets-eco/flask-admin/tree/master/examples/forms"
 " 示例。"
 
 #: ../../doc/advanced.rst:169
@@ -239,11 +239,11 @@ msgstr "一些显著的功能包括:"
 
 #: ../../doc/advanced.rst:186
 msgid ""
-"Maps are displayed using the amazing `Leaflet <http://leafletjs.com/>`_ "
+"Maps are displayed using the amazing `Leaflet <https://leafletjs.com/>`_ "
 "Javascript library, with map data from `Mapbox "
 "<https://www.mapbox.com/>`_."
 msgstr ""
-"使用惊人的 `Leaflet <http://leafletjs.com/>`_ Javascript 库显示地图，地图数据来自 `Mapbox "
+"使用惊人的 `Leaflet <https://leafletjs.com/>`_ Javascript 库显示地图，地图数据来自 `Mapbox "
 "<https://www.mapbox.com/>`_。"
 
 #: ../../doc/advanced.rst:188
@@ -257,20 +257,20 @@ msgstr ""
 
 #: ../../doc/advanced.rst:190
 msgid ""
-"Graceful fallback: `GeoJSON <http://geojson.org/>`_ data can be edited in"
+"Graceful fallback: `GeoJSON <https://geojson.org/>`_ data can be edited in"
 " a ``<textarea>``, if the user has turned off Javascript."
 msgstr ""
 "后备支持：如果用户已关闭 Javascript，则可以在 ``<textarea>`` 中编辑 `GeoJSON "
-"<http://geojson.org/>`_ 数据。"
+"<https://geojson.org/>`_ 数据。"
 
 #: ../../doc/advanced.rst:192
 msgid ""
 "Works with a `Geometry "
 "<https://geoalchemy-2.readthedocs.io/en/latest/types.html#geoalchemy2.types.Geometry>`_"
 " SQL field that is integrated with `Shapely "
-"<http://toblerity.org/shapely/>`_ objects."
+"<https://shapely.readthedocs.io/>`_ objects."
 msgstr ""
-"使用与 `Shapely <http://toblerity.org/shapely/>`_ 对象集成的 `Geometry "
+"使用与 `Shapely <https://shapely.readthedocs.io/>`_ 对象集成的 `Geometry "
 "<https://geoalchemy-2.readthedocs.io/en/latest/types.html#geoalchemy2.types.Geometry>`_"
 " SQL 字段。"
 
@@ -295,10 +295,10 @@ msgstr ""
 
 #: ../../doc/advanced.rst:212
 msgid ""
-"Have a look at https://github.com/flask-admin/flask-"
+"Have a look at https://github.com/pallets-eco/flask-"
 "admin/tree/master/examples/geo_alchemy to get started."
 msgstr ""
-"请查看 https://github.com/flask-admin/flask-"
+"请查看 https://github.com/pallets-eco/flask-"
 "admin/tree/master/examples/geo_alchemy 示例以开始使用。"
 
 #: ../../doc/advanced.rst:216
@@ -612,11 +612,11 @@ msgstr ""
 msgid ""
 "`MongoEngine <http://mongoengine.org/>`_ is a python wrapper for MongoDB."
 " For an example of using MongoEngine with Flask-Admin, see "
-"https://github.com/flask-admin/flask-"
+"https://github.com/pallets-eco/flask-"
 "admin/tree/master/examples/mongoengine."
 msgstr ""
 "`MongoEngine <http://mongoengine.org/>`_ 是 MongoDB 的 Python 封装。在 Flask-"
-"Admin 中使用 MongoEngine 的示例，请参阅 https://github.com/flask-admin/flask-"
+"Admin 中使用 MongoEngine 的示例，请参阅 https://github.com/pallets-eco/flask-"
 "admin/tree/master/examples/mongoengine。"
 
 #: ../../doc/advanced.rst:371 ../../doc/advanced.rst:392
@@ -683,10 +683,10 @@ msgstr "相关模型的行内编辑"
 #: ../../doc/advanced.rst:398
 msgid ""
 "In order to use peewee integration, you need to install two additional "
-"Python packages: `peewee <http://docs.peewee-orm.com/>`_ and `wtf-peewee "
+"Python packages: `peewee <https://docs.peewee-orm.com/>`_ and `wtf-peewee "
 "<https://github.com/coleifer/wtf-peewee/>`_."
 msgstr ""
-"为了使用 peewee，您需要安装 2 个 Python 包：`peewee <http://docs.peewee-orm.com/>`_ 和 "
+"为了使用 peewee，您需要安装 2 个 Python 包：`peewee <https://docs.peewee-orm.com/>`_ 和 "
 "`wtf-peewee <https://github.com/coleifer/wtf-peewee/>`_。"
 
 #: ../../doc/advanced.rst:403
@@ -698,11 +698,11 @@ msgstr "不支持多对多模型关系：在 Peewee 中没有内置的方式来�
 #: ../../doc/advanced.rst:405
 msgid ""
 "For more, check the :class:`~flask_admin.contrib.peewee` API "
-"documentation. Or look at the Peewee example at https://github.com/flask-"
-"admin/flask-admin/tree/master/examples/peewee."
+"documentation. Or look at the Peewee example at https://github.com/pallets-"
+"eco/flask-admin/tree/master/examples/peewee."
 msgstr ""
 "更多信息，请参阅 :class:`~flask_admin.contrib.peewee` API 文档。或查看 Peewee 使用示例 "
-"https://github.com/flask-admin/flask-admin/tree/master/examples/peewee。"
+"https://github.com/pallets-eco/flask-admin/tree/master/examples/peewee。"
 
 #: ../../doc/advanced.rst:409
 msgid "PyMongo"
@@ -737,11 +737,11 @@ msgstr "除此之外，您还可以添加可排序的列，过滤器，文本搜
 #: ../../doc/advanced.rst:435
 msgid ""
 "For more, check the :class:`~flask_admin.contrib.pymongoe` API "
-"documentation. Or look at the Peewee example at https://github.com/flask-"
-"admin/flask-admin/tree/master/examples/pymongo."
+"documentation. Or look at the Peewee example at https://github.com/pallets-"
+"eco/flask-admin/tree/master/examples/pymongo."
 msgstr ""
 "更多信息，请参阅 :class:`~flask_admin.contrib.pymongoe` API 文档。或查看 PyMongo 使用示例 "
-"https://github.com/flask-admin/flask-admin/tree/master/examples/pymongo。"
+"https://github.com/pallets-eco/flask-admin/tree/master/examples/pymongo。"
 
 #: ../../doc/advanced.rst:439
 msgid "Migrating From Django"
@@ -794,14 +794,14 @@ msgid ""
 "provides you with several tools for getting up & running quickly, it will"
 " be up to you, as a developer, to tell Flask-Admin what should be "
 "displayed and how. Even though it is easy to get started with a simple "
-"`CRUD <http://en.wikipedia.org/wiki/Create,_read,_update_and_delete>`_ "
+"`CRUD <https://en.wikipedia.org/wiki/Create,_read,_update_and_delete>`_ "
 "interface for each model in your application, Flask-Admin doesn't fix you"
 " to this approach, and you are free to define other ways of interacting "
 "with some, or all, of your models."
 msgstr ""
 "Flask-Admin 遵循同样的设计理念。因此，即使它为您提供了几种快速启动和运行的工具，作为开发人员，还是应该由您告诉 Flask-Admin"
 " 应该显示什么以及如何显示。即使可以很容易的为应用程序的每个模型构建一个简单的 `CRUD "
-"<http://en.wikipedia.org/wiki/Create,_read,_update_and_delete>`_ 接口"
+"<https://en.wikipedia.org/wiki/Create,_read,_update_and_delete>`_ 接口"
 "，Flask-Admin 也不能完全解决所有问题，您可以灵活的定义与模块的交互方法，来实现所有功能。"
 
 #: ../../doc/advanced.rst:467

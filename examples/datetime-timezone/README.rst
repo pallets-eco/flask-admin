@@ -6,10 +6,10 @@ client's timezone and save datetime inputs in the correct timezone.
 
 To run this example:
 
-1. Clone the repository::
+1. Clone the repository and navigate to this example::
 
     git clone https://github.com/pallets-eco/flask-admin.git
-    cd flask-admin
+    cd flask-admin/examples/datetime-timezone
 
 2. Create and activate a virtual environment::
 
@@ -18,8 +18,8 @@ To run this example:
 
 3. Install requirements::
 
-    pip install -r 'examples/datetime-timezone/requirements.txt'
+    pip install -r requirements.txt
 
 4. Run the application::
 
-    python examples/datetime-timezone/app.py
+    python app.py
