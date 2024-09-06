@@ -8,26 +8,14 @@ astroid==3.2.4
     # via pylint
 beautifulsoup4==4.12.3
     # via -r tests.in
-certifi==2024.7.4
-    # via requests
-charset-normalizer==3.3.2
-    # via requests
-coverage[toml]==7.6.0
-    # via
-    #   coveralls
-    #   pytest-cov
-coveralls==4.0.1
-    # via -r tests.in
+coverage[toml]==7.6.1
+    # via pytest-cov
 dill==0.3.8
     # via pylint
-docopt==0.6.2
-    # via coveralls
 exceptiongroup==1.2.2
     # via pytest
-flake8==7.1.0
+flake8==7.1.1
     # via -r tests.in
-idna==3.7
-    # via requests
 iniconfig==2.0.0
     # via pytest
 isort==5.13.2
@@ -54,13 +42,13 @@ pluggy==1.5.0
     # via pytest
 psycopg2==2.9.9
     # via -r tests.in
-pycodestyle==2.12.0
+pycodestyle==2.12.1
     # via flake8
 pyflakes==3.2.0
     # via flake8
-pylint==3.2.6
+pylint==3.2.7
     # via -r tests.in
-pyright==1.1.378
+pyright==1.1.379
     # via -r typing.in
 pytest==8.3.2
     # via
@@ -69,9 +57,7 @@ pytest==8.3.2
     #   pytest-cov
 pytest-cov==5.0.0
     # via -r tests.in
-requests==2.32.3
-    # via coveralls
-soupsieve==2.5
+soupsieve==2.6
     # via beautifulsoup4
 tomli==2.0.1
     # via
@@ -79,7 +65,7 @@ tomli==2.0.1
     #   mypy
     #   pylint
     #   pytest
-tomlkit==0.13.0
+tomlkit==0.13.2
     # via pylint
 types-beautifulsoup4==4.12.0.20240511
     # via -r typing.in
@@ -91,7 +77,7 @@ types-flask==1.1.6
     # via -r typing.in
 types-flask-sqlalchemy==2.5.9.4
     # via -r typing.in
-types-html5lib==1.1.11.20240228
+types-html5lib==1.1.11.20240806
     # via types-beautifulsoup4
 types-jinja2==2.11.9
     # via types-flask
@@ -114,5 +100,3 @@ typing-extensions==4.12.2
     #   astroid
     #   mypy
     #   pylint
-urllib3==2.2.2
-    # via requests

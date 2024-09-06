@@ -1,4 +1,3 @@
-coveralls
 flake8
 pylint
 pytest
