@@ -26,15 +26,16 @@ else:
         def __init__(self):
             super(CustomDomain, self).__init__(translations.__path__[0], domain='admin')
 
-        def get_translations_path(self, ctx):
+        @property
+        def translation_directories(self):
             view = get_current_view()
 
             if view is not None:
                 dirname = view.admin.translations_path
                 if dirname is not None:
-                    return dirname
+                    return [dirname] + super().translation_directories
 
-            return super(CustomDomain, self).get_translations_path(ctx)
+            return super().translation_directories
 
     domain = CustomDomain()
 
