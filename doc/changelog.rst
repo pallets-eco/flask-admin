@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.0.0a1
+-------
+
+Fixes:
+
+* The `Apply` button for filters will show/hide correctly again
+
 2.0.0a0
 -------
 
