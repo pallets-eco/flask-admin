@@ -23,7 +23,6 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
         $(this).closest('tr').remove();
         if($('.filters tr').length == 0) {
             $('button', $root).addClass('d-none');
-            $('a[class=btn]', $root).hide();
             $('.filters tbody').remove();
         } else {
             $('button', $root).removeClass('d-none');
