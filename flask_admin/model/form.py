@@ -134,7 +134,39 @@ class InlineBaseFormAdmin(object):
 
             self.on_model_change(form, model)
 
+            
+class CustomInlineModelForm(InlineFormAdmin):
+    """
+    This class is used to precise the form of inlined model using his model_view form
+    """
+    model_view = None
 
+    def __init__(self, model_view, **kwargs):
+        self.model_view = model_view
+        super(CustomInlineModelForm, self).__init__(self.model_view.model, **kwargs)
+
+    # override get_form method in order to use the Customized form of the inlined model
+    def get_form(self):
+        inline_converter = self.model_view.inline_model_form_converter(self.model_view.session,
+                                                                       self.model_view,
+                                                                       self.model_view.model_form_converter)
+
+        converter = inline_converter.model_converter(self.model_view.session, self.model_view)
+        from flask_admin.contrib.sqla.form import get_form
+
+        form_class = get_form(self.model,
+                              converter,
+                              base_class=self.model_view.unified_form or BaseForm,
+                              only=self.model_view.form_columns,
+                              exclude=self.model_view.form_excluded_columns,
+                              field_args=self.model_view.form_args,
+                              hidden_pk=True,
+                              extra_fields=self.model_view.form_extra_fields)
+        if self.model_view.inline_models:
+            form_class = self.model_view.scaffold_inline_form_models(form_class)
+        return form_class
+            
+        
 class InlineFormAdmin(InlineBaseFormAdmin):
     """
         Settings for inline form administration. Used by relational backends (SQLAlchemy, Peewee), where model
