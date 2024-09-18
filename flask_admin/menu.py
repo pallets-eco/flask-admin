@@ -140,7 +140,15 @@ class MenuLink(BaseMenu):
         self.endpoint = endpoint
 
     def get_url(self):
-        return self.url or url_for(self.endpoint)
+        if callable(self.url):
+            return self.url()
+        if self.url:
+            return self.url
+        if self.endpoint:
+            return url_for(self.endpoint)
+
+    def is_visible(self):
+        return bool(self.get_url())
 
 
 class SubMenuCategory(MenuCategory):
