@@ -1,7 +1,14 @@
+from flask import current_app, has_app_context
+
 try:
     from flask_babel import Domain
 
-except ImportError:
+    if has_app_context():
+        current_app().extensions['babel']
+    else:
+        raise KeyError
+
+except (KeyError, ImportError):
     def gettext(string, **variables):
         return string % variables
 
