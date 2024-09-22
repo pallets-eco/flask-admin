@@ -466,6 +466,11 @@ msgstr "Abbrechen"
 msgid "Save and Add Another"
 msgstr "Speichern und neuer Eintrag"
 
+#: ../flask_admin/templates/bootstrap2/admin/lib.html:263
+#: ../flask_admin/templates/bootstrap3/admin/lib.html:254
+msgid "Save and Add Another (Freeze Fields)"
+msgstr "Speichern und neuer Eintrag (Felder einfrieren)"
+
 #: ../flask_admin/templates/bootstrap2/admin/lib.html:259
 #: ../flask_admin/templates/bootstrap3/admin/lib.html:250
 msgid "Save and Continue Editing"

@@ -1,0 +1,318 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2012-2024, Flask-Admin Team
+# This file is distributed under the same license as the flask-admin
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: flask-admin 2.0.0a0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-09-22 16:17+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: be\n"
+"Language-Team: be <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: ../../doc/adding_a_new_model_backend.rst:4
+msgid "Adding A Model Backend"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:6
+msgid ""
+"Flask-Admin makes a few assumptions about the database models that it "
+"works with. If you want to implement your own database backend, and still"
+" have Flask-Admin's model views work as expected, then you should take "
+"note of the following:"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:9
+msgid ""
+"Each model must have one field which acts as a `primary key` to uniquely "
+"identify instances of that model. However, there are no restriction on "
+"the data type or the field name of the `primary key` field."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:11
+msgid "Models must make their data accessible as python properties."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:13
+msgid ""
+"If that is the case, then you can implement your own database backend by "
+"extending the `BaseModelView` class, and implementing the set of "
+"scaffolding methods listed below."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:17
+msgid "Extending BaseModelView"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:19
+msgid ""
+"Start off by defining a new class, which derives from from "
+":class:`~flask_admin.model.BaseModelView`::"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:24
+msgid ""
+"This class inherits BaseModelView's `__init__` method, which accepts a "
+"model class as first argument. The model class is stored as the attribute"
+" ``self.model`` so that other methods may access it."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:27
+msgid "Now, implement the following scaffolding methods for the new class:"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:29
+msgid ":meth:`~flask_admin.model.BaseModelView.get_pk_value`"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:31
+msgid ""
+"This method returns a primary key value from the model instance. In the "
+"SQLAlchemy backend, it gets the primary key from the model using "
+":meth:`~flask_admin.contrib.sqla.ModelView.scaffold_pk`, caches it and "
+"then returns the value from the model whenever requested."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:36
+#: ../../doc/adding_a_new_model_backend.rst:85
+#: ../../doc/adding_a_new_model_backend.rst:155
+#: ../../doc/adding_a_new_model_backend.rst:191
+msgid "For example::"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:42
+msgid ":meth:`~flask_admin.model.BaseModelView.scaffold_list_columns`"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:44
+msgid "Returns a list of columns to be displayed in a list view. For example::"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:57
+msgid ":meth:`~flask_admin.model.BaseModelView.scaffold_sortable_columns`"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:59
+msgid ""
+"Returns a dictionary of sortable columns. The keys in the dictionary "
+"should correspond to the model's field names. The values should be those "
+"variables that will be used for sorting."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:62
+msgid ""
+"For example, in the SQLAlchemy backend it is possible to sort by a "
+"foreign key field. So, if there is a field named `user`, which is a "
+"foreign key for the `Users` table, and the `Users` table also has a name "
+"field, then the key will be `user` and value will be `Users.name`."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:66
+msgid ""
+"If your backend does not support sorting, return `None` or an empty "
+"dictionary."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:69
+msgid ":meth:`~flask_admin.model.BaseModelView.init_search`"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:71
+msgid ""
+"Initialize search functionality. If your backend supports full-text "
+"search, do initializations and return `True`. If your backend does not "
+"support full-text search, return `False`."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:76
+msgid ""
+"For example, SQLAlchemy backend reads value of the "
+"`self.searchable_columns` and verifies if all fields are of text type, if"
+" they're local to the current model (if not, it will add a join, etc) and"
+" caches this information for future use."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:81
+msgid ":meth:`~flask_admin.model.BaseModelView.scaffold_form`"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:83
+msgid "Generate `WTForms` form class from the model."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:95
+msgid ":meth:`~flask_admin.model.BaseModelView.get_list`"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:97
+msgid ""
+"This method should return list of model instances with paging, sorting, "
+"etc applied."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:100
+msgid "For SQLAlchemy backend it looks like:"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:102
+msgid ""
+"If search was enabled and provided search value is not empty, generate "
+"LIKE statements for each field from `self.searchable_columns`"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:105
+msgid "If filter values were passed, call `apply` method with values::"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:111
+msgid "Execute query to get total number of rows in the database (count)"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:114
+msgid ""
+"If `sort_column` was passed, will do something like (with some extra FK "
+"logic which is omitted in this example)::"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:121
+msgid "Apply paging"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:123
+msgid "Return count, list as a tuple"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:125
+msgid ":meth:`~flask_admin.model.BaseModelView.get_one`"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:127
+msgid "Return a model instance by its primary key."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:129
+msgid ":meth:`~flask_admin.model.BaseModelView.create_model`"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:131
+msgid "Create a new instance of the model from the `Form` object."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:133
+msgid ":meth:`~flask_admin.model.BaseModelView.update_model`"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:135
+msgid "Update the model instance with data from the form."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:137
+msgid ":meth:`~flask_admin.model.BaseModelView.delete_model`"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:139
+msgid "Delete the specified model instance from the data store."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:141
+msgid ":meth:`~flask_admin.model.BaseModelView.is_valid_filter`"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:143
+msgid "Verify whether the given object is a valid filter."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:145
+msgid ":meth:`~flask_admin.model.BaseModelView.scaffold_filters`"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:147
+msgid "Return a list of filter objects for one model field."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:149
+msgid ""
+"This method will be called once for each entry in the "
+"`self.column_filters` setting."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:152
+msgid ""
+"If your backend does not know how to generate filters for the provided "
+"field, it should return `None`."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:165
+msgid "Implementing filters"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:167
+msgid ""
+"Each model backend should have its own set of filter implementations. It "
+"is not possible to use the filters from SQLAlchemy models in a non-"
+"SQLAlchemy backend. This also means that different backends might have "
+"different set of available filters."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:171
+msgid ""
+"The filter is a class derived from "
+":class:`~flask_admin.model.filters.BaseFilter` which implements at least "
+"two methods:"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:173
+msgid ":meth:`~flask_admin.model.filters.BaseFilter.apply`"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:174
+msgid ":meth:`~flask_admin.model.filters.BaseFilter.operation`"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:176
+msgid ""
+"`apply` method accepts two parameters: `query` object and a value from "
+"the client. Here you can add filtering logic for the filter type."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:179
+msgid "Lets take SQLAlchemy model backend as an example:"
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:181
+msgid ""
+"All SQLAlchemy filters derive from "
+":class:`~flask_admin.contrib.sqla.filters.BaseSQLAFilter` class."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:183
+msgid ""
+"Each filter implements one simple filter SQL operation (like, not like, "
+"greater, etc) and accepts a column as input parameter."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:186
+msgid ""
+"Whenever model view wants to apply a filter to a query object, it will "
+"call `apply` method in a filter class with a query and value. Filter will"
+" then apply real filter operation."
+msgstr ""
+
+#: ../../doc/adding_a_new_model_backend.rst:217
+msgid ""
+"Feel free ask questions if you have problems adding a new model backend. "
+"Also, if you get stuck, try taking a look at the SQLAlchemy model backend"
+" and use it as a reference."
+msgstr ""
+

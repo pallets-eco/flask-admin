@@ -10,14 +10,14 @@ msgstr ""
 "Project-Id-Version: flask-admin 1.4.2\n"
 "Report-Msgid-Bugs-To: https://github.com/sixu05202004/Flask-extensions-"
 "docs\n"
-"POT-Creation-Date: 2017-02-07 00:18-0600\n"
+"POT-Creation-Date: 2024-09-22 16:17+0200\n"
 "PO-Revision-Date: 2016-11-27 03:00+0800\n"
 "Last-Translator: 1dot75cm <sensor.wen@gmail.com>\n"
 "Language-Team: zh_CN <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.1.1\n"
+"Generated-By: Babel 2.16.0\n"
 
 #: ../../doc/advanced.rst:4
 msgid "Advanced Functionality"
@@ -44,31 +44,81 @@ msgid ""
 msgstr "SecureForm 需要 WTForms 2+。当表单提交时，它使用 WTForms SessionCSRF 类来生成和验证令牌。"
 
 #: ../../doc/advanced.rst:22
+msgid "CSP support"
+msgstr ""
+
+#: ../../doc/advanced.rst:24
+msgid ""
+"To support `CSP "
+"<https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html>`_"
+" in Flask-Admin, you can pass a `csp_nonce_generator` function through to"
+" Flask-Admin on initialisation. This function should return a CSP nonce "
+"that will be attached to all `<script>` and `<style>` resources. You are "
+"responsible for making sure that your Flask responses include an "
+"appropriate 'Content-Security-Policy` header that also includes the same "
+"nonce value."
+msgstr ""
+
+#: ../../doc/advanced.rst:31
+msgid ""
+"We recommend using `Flask-Talisman <https://pypi.org/project/flask-"
+"talisman/>`_. Here's an example of how to configure Flask-Admin to inject"
+" CSP nonce values::"
+msgstr ""
+
+#: ../../doc/advanced.rst:47
+msgid ""
+"If you decide to use a content security policy, you should pay close "
+"attention to the policy you set to make sure it is appropriate for your "
+"project's security needs."
+msgstr ""
+
+#: ../../doc/advanced.rst:50
+msgid ""
+"If you create any of your own templates for Flask-Admin pages, you will "
+"need to inject the CSP nonces yourself as appropriate."
+msgstr ""
+
+#: ../../doc/advanced.rst:53
+msgid "Adding Custom Javascript and CSS"
+msgstr ""
+
+#: ../../doc/advanced.rst:55
+msgid ""
+"To add custom JavaScript or CSS in your *ModelView* use *extra_js* or "
+"*extra_css* parameters::"
+msgstr ""
+
+#: ../../doc/advanced.rst:62
 msgid "Localization With Flask-Babel"
 msgstr "使用 Flask-Babel 本地化"
 
-#: ../../doc/advanced.rst:26
+#: ../../doc/advanced.rst:64
 msgid ""
 "Flask-Admin comes with translations for several languages. Enabling "
 "localization is simple:"
 msgstr "Flask-Admin 提供多种语言的翻译。启用本地化非常简单:"
 
-#: ../../doc/advanced.rst:29
+#: ../../doc/advanced.rst:67
+#, fuzzy
 msgid ""
-"Install `Flask-Babel <https://github.com/python-babel/flask-babel>`_ to do "
-"the heavy lifting."
+"Install `Flask-Babel <https://github.com/python-babel/flask-babel/>`_ to "
+"do the heavy lifting."
+msgstr "安装 `Flask-Babel <https://github.com/python-babel/flask-babel>`_ 扩展"
+
+#: ../../doc/advanced.rst:70
+msgid "pip install flask-babel"
 msgstr ""
-"安装 `Flask-Babel <https://github.com/python-babel/flask-babel>`_ 扩展"
 
-#: ../../doc/advanced.rst:35
-msgid "Initialize Flask-Babel by creating instance of `Babel` class::"
-msgstr "通过创建 `Babel` 类实例，初始化 Flask-Babel 扩展::"
-
-#: ../../doc/advanced.rst:43
+#: ../../doc/advanced.rst:72
 msgid "Create a locale selector function::"
 msgstr "创建区域选择器函数::"
 
-#: ../../doc/advanced.rst:51
+#: ../../doc/advanced.rst:79
+msgid "Initialize Flask-Babel by creating instance of `Babel` class::"
+msgstr "通过创建 `Babel` 类实例，初始化 Flask-Babel 扩展::"
+
+#: ../../doc/advanced.rst:87
 msgid ""
 "Now, you could try a French version of the application at: "
 "`http://localhost:5000/admin/?lang=fr "
@@ -77,7 +127,7 @@ msgstr ""
 "现在，您能够访问法语版本的管理界面: `http://localhost:5000/admin/?lang=fr "
 "<http://localhost:5000/admin/?lang=fr>`_。"
 
-#: ../../doc/advanced.rst:53
+#: ../../doc/advanced.rst:89
 msgid ""
 "Go ahead and add your own logic to the locale selector function. The "
 "application can store locale in a user profile, cookie, session, etc. It "
@@ -87,20 +137,74 @@ msgstr ""
 "继续，添加您的区域设置到语言选择器函数。应用程序可以将区域设置存储在用户 profile, cookie, session 中。它还可以使用 "
 "`Accept-Language` 头来自动选择语言。"
 
-#: ../../doc/advanced.rst:57
+#: ../../doc/advanced.rst:93
+#, fuzzy
 msgid ""
 "If the built-in translations are not enough, look at the `Flask-Babel "
-"documentation <https://pythonhosted.org/Flask-Babel/>`_ to see how you "
-"can add your own."
+"documentation <https://python-babel.github.io/flask-babel/>`_ to see how "
+"you can add your own."
 msgstr ""
-"如果内置的翻译不够，请查看 `Flask-Babel 文档 <https://pythonhosted.org/Flask-"
-"Babel/>`_ 了解如何添加翻译。"
+"如果内置的翻译不够，请查看 `Flask-Babel 文档 <https://pythonhosted.org/Flask-Babel/>`_ "
+"了解如何添加翻译。"
 
-#: ../../doc/advanced.rst:63
+#: ../../doc/advanced.rst:97
+msgid "Using with Flask in `host_matching` mode"
+msgstr ""
+
+#: ../../doc/advanced.rst:99
+msgid ""
+"If Flask is configured with `host_matching` enabled, then all routes "
+"registered on the app need to know which host(s) they should be served "
+"for."
+msgstr ""
+
+#: ../../doc/advanced.rst:101
+msgid ""
+"This requires some additional explicit configuration for Flask-Admin by "
+"passing the `host` argument to `Admin()` calls."
+msgstr ""
+
+#: ../../doc/advanced.rst:103
+msgid "With your Flask app initialised::"
+msgstr ""
+
+#: ../../doc/advanced.rst:110
+msgid "Serving Flask-Admin on a single, explicit host"
+msgstr ""
+
+#: ../../doc/advanced.rst:111
+msgid ""
+"Construct your Admin instance(s) and pass the desired `host` for the "
+"admin instance::"
+msgstr ""
+
+#: ../../doc/advanced.rst:121
+msgid ""
+"Flask's `url_for` calls will work without any additional "
+"configuration/information::"
+msgstr ""
+
+#: ../../doc/advanced.rst:127
+msgid "Serving Flask-Admin on all hosts"
+msgstr ""
+
+#: ../../doc/advanced.rst:128
+msgid ""
+"Pass a wildcard to the `host` parameter to serve the admin instance on "
+"all hosts::"
+msgstr ""
+
+#: ../../doc/advanced.rst:138
+msgid ""
+"If you need to generate URLs for a wildcard admin instance, you will need"
+" to pass `admin_routes_host` to the `url_for` call::"
+msgstr ""
+
+#: ../../doc/advanced.rst:146
 msgid "Managing Files & Folders"
 msgstr "管理文件 & 目录"
 
-#: ../../doc/advanced.rst:67
+#: ../../doc/advanced.rst:148
 msgid ""
 "To manage static files instead of database records, Flask-Admin comes "
 "with the FileAdmin plug-in. It gives you the ability to upload, delete, "
@@ -109,13 +213,13 @@ msgstr ""
 "为了管理静态文件而不是数据库记录，Flask-Admin 附带了 FileAdmin "
 "插件。它使您能够上传，删除，重命名文件。您可以通过向应用程序添加 FileAdmin 视图来使用该功能::"
 
-#: ../../doc/advanced.rst:83
+#: ../../doc/advanced.rst:164
 msgid ""
 "FileAdmin also has out-of-the-box support for managing files located on a"
 " Amazon Simple Storage Service bucket. To add it to your app::"
 msgstr "FileAdmin 还具有管理 Amazon Simple Storage 服务的文件的开箱支持。将该功能添加到应用程序::"
 
-#: ../../doc/advanced.rst:93
+#: ../../doc/advanced.rst:174
 msgid ""
 "You can disable uploads, disable file deletion, restrict file uploads to "
 "certain types, etc. Check :mod:`flask_admin.contrib.fileadmin` in the API"
@@ -124,11 +228,11 @@ msgstr ""
 "您可以配置禁用上传，禁用文件删除，限制上传文件的类型等功能。详细信息，请参阅 "
 ":mod:`flask_admin.contrib.fileadmin` API 文档。"
 
-#: ../../doc/advanced.rst:97
+#: ../../doc/advanced.rst:178
 msgid "Adding new file backends"
 msgstr "添加新文件后端"
 
-#: ../../doc/advanced.rst:99
+#: ../../doc/advanced.rst:180
 msgid ""
 "You can also implement your own storage backend by creating a class that "
 "implements the same methods defined in the `LocalFileStorage` class. "
@@ -138,21 +242,21 @@ msgstr ""
 "您还可以通过继承 `LocalFileStorage` 类并重写其中的方法来实现自己的存储后端。有关方法的详细信息，请参阅 "
 ":mod:`flask_admin.contrib.fileadmin` API 文档。"
 
-#: ../../doc/advanced.rst:104
+#: ../../doc/advanced.rst:185
 msgid "Adding A Redis Console"
 msgstr "添加 Redis 控制台"
 
-#: ../../doc/advanced.rst:108
+#: ../../doc/advanced.rst:187
 msgid ""
 "Another plug-in that's available is the Redis Console. If you have a "
 "Redis instance running on the same machine as your app, you can::"
 msgstr "另一个可用的插件是 Redis 控制台。如果您的 Redis 实例与应用程序在同一个节点上运行，您可以::"
 
-#: ../../doc/advanced.rst:122
+#: ../../doc/advanced.rst:201
 msgid "Replacing Individual Form Fields"
 msgstr "替换单个表单域"
 
-#: ../../doc/advanced.rst:126
+#: ../../doc/advanced.rst:203
 msgid ""
 "The `form_overrides` attribute allows you to replace individual fields "
 "within a form. A common use-case for this would be to add a *What-You-"
@@ -162,11 +266,11 @@ msgstr ""
 "`form_overrides` 属性允许您替换表单中的单个字段。一个常见的用例是添加一个 What-You-See-Is-What-You-"
 "Get (WYSIWIG, 所见即所得) 编辑器，或处理需要绑定到模型中的文件/图像上传字段。"
 
-#: ../../doc/advanced.rst:131
+#: ../../doc/advanced.rst:208
 msgid "WYSIWIG Text Fields"
 msgstr "WYSIWIG 文本字段"
 
-#: ../../doc/advanced.rst:132
+#: ../../doc/advanced.rst:209
 msgid ""
 "To handle complicated text content, you can use `CKEditor "
 "<https://ckeditor.com/>`_ by subclassing some of the built-in WTForms "
@@ -175,11 +279,11 @@ msgstr ""
 "要处理复杂的文本内容，可以通过子类化一些内置的 WTForms 类来集成 `CKEditor <https://ckeditor.com/>`_ "
 "编辑器，示例如下::"
 
-#: ../../doc/advanced.rst:158
+#: ../../doc/advanced.rst:235
 msgid "File & Image Fields"
 msgstr "文件 & 图片字段"
 
-#: ../../doc/advanced.rst:160
+#: ../../doc/advanced.rst:237
 msgid ""
 "Flask-Admin comes with a built-in "
 ":meth:`~flask_admin.form.upload.FileUploadField` and "
@@ -193,35 +297,27 @@ msgstr ""
 ":meth:`~flask_admin.form.upload.ImageUploadField`。要使用它们，您需要指定一个上传目录，并将它们添加到表单中。如果您需要对图像文件进行处理，则需要安装"
 " `Pillow <https://pypi.python.org/pypi/Pillow/>`_。"
 
-#: ../../doc/advanced.rst:166
+#: ../../doc/advanced.rst:243
+#, fuzzy
 msgid ""
 "Have a look at the example at https://github.com/pallets-eco/flask-"
-"admin/tree/master/examples/forms."
+"admin/tree/master/examples/forms-files-images."
 msgstr ""
 "请查看 https://github.com/pallets-eco/flask-admin/tree/master/examples/forms"
 " 示例。"
 
-#: ../../doc/advanced.rst:169
-msgid ""
-"If you are using the MongoEngine backend, Flask-Admin supports GridFS-"
-"backed image and file uploads through WTForms fields. Documentation can "
-"be found at :mod:`flask_admin.contrib.mongoengine.fields`."
-msgstr ""
-"如果您使用 MongoEngine 后端，Flask-Admin 支持通过 WTForms 字段上传的文件/图片，保存在 GridFS "
-"后端中。详细信息，请参阅 :mod:`flask_admin.contrib.mongoengine.fields` 文档。"
-
-#: ../../doc/advanced.rst:171
+#: ../../doc/advanced.rst:246
 msgid ""
 "If you just want to manage static files in a directory, without tying "
 "them to a database model, then use the :ref:`File-Admin<file-admin>` "
 "plug-in."
 msgstr "如果您只想管理目录中的静态文件，而不是将其绑定到数据库模型，则使用 :ref:`File-Admin<file-admin>` 插件。"
 
-#: ../../doc/advanced.rst:175
+#: ../../doc/advanced.rst:250
 msgid "Managing Geographical Models"
 msgstr "管理地理模型"
 
-#: ../../doc/advanced.rst:179
+#: ../../doc/advanced.rst:252
 msgid ""
 "If you want to store spatial information in a GIS database, Flask-Admin "
 "has you covered. The GeoAlchemy backend extends the SQLAlchemy backend "
@@ -233,20 +329,21 @@ msgstr ""
 "`GeoAlchemy <https://geoalchemy-2.readthedocs.io/>`_ 扩展了 SQLAlchemy "
 ")，为您的管理页面提供一个漂亮且功能强大的基于地图的编辑器。"
 
-#: ../../doc/advanced.rst:184
+#: ../../doc/advanced.rst:257
 msgid "Some notable features include:"
 msgstr "一些显著的功能包括:"
 
-#: ../../doc/advanced.rst:186
+#: ../../doc/advanced.rst:259
+#, fuzzy
 msgid ""
 "Maps are displayed using the amazing `Leaflet <https://leafletjs.com/>`_ "
 "Javascript library, with map data from `Mapbox "
-"<https://www.mapbox.com/>`_."
+"<https://www.mapbox.com>`_."
 msgstr ""
-"使用惊人的 `Leaflet <https://leafletjs.com/>`_ Javascript 库显示地图，地图数据来自 `Mapbox "
-"<https://www.mapbox.com/>`_。"
+"使用惊人的 `Leaflet <https://leafletjs.com/>`_ Javascript 库显示地图，地图数据来自 `Mapbox"
+" <https://www.mapbox.com/>`_。"
 
-#: ../../doc/advanced.rst:188
+#: ../../doc/advanced.rst:261
 msgid ""
 "Geographic information, including points, lines and polygons, can be "
 "edited interactively using `Leaflet.Draw "
@@ -255,15 +352,15 @@ msgstr ""
 "地理信息，包括点，线和多边形，可以使用 `Leaflet.Draw "
 "<https://github.com/Leaflet/Leaflet.draw>`_ 交互式编辑。"
 
-#: ../../doc/advanced.rst:190
+#: ../../doc/advanced.rst:263
 msgid ""
-"Graceful fallback: `GeoJSON <https://geojson.org/>`_ data can be edited in"
-" a ``<textarea>``, if the user has turned off Javascript."
+"Graceful fallback: `GeoJSON <https://geojson.org/>`_ data can be edited "
+"in a ``<textarea>``, if the user has turned off Javascript."
 msgstr ""
 "后备支持：如果用户已关闭 Javascript，则可以在 ``<textarea>`` 中编辑 `GeoJSON "
 "<https://geojson.org/>`_ 数据。"
 
-#: ../../doc/advanced.rst:192
+#: ../../doc/advanced.rst:265
 msgid ""
 "Works with a `Geometry "
 "<https://geoalchemy-2.readthedocs.io/en/latest/types.html#geoalchemy2.types.Geometry>`_"
@@ -274,7 +371,7 @@ msgstr ""
 "<https://geoalchemy-2.readthedocs.io/en/latest/types.html#geoalchemy2.types.Geometry>`_"
 " SQL 字段。"
 
-#: ../../doc/advanced.rst:194
+#: ../../doc/advanced.rst:267
 msgid ""
 "To get started, define some fields on your model using GeoAlchemy's "
 "*Geometry* field. Next, add model views to your interface using the "
@@ -284,7 +381,7 @@ msgstr ""
 "要开始使用，请使用 GeoAlchemy 的 *Geometry* 字段在模型上定义一些字段。接下来，使用来自 GeoAlchemy 后端的 "
 "ModelView 类，而不是通常的 SQLAlchemy 后端，将模型视图添加到您的接口::"
 
-#: ../../doc/advanced.rst:209
+#: ../../doc/advanced.rst:283
 msgid ""
 "Some of the Geometry field types that are available include: \"POINT\", "
 "\"MULTIPOINT\", \"POLYGON\", \"MULTIPOLYGON\", \"LINESTRING\" and "
@@ -293,7 +390,7 @@ msgstr ""
 "可用的 Geometry 字段类型包括: \"POINT\", \"MULTIPOINT\", \"POLYGON\", "
 "\"MULTIPOLYGON\", \"LINESTRING\" 和 \"MULTILINESTRING\"。"
 
-#: ../../doc/advanced.rst:212
+#: ../../doc/advanced.rst:286
 msgid ""
 "Have a look at https://github.com/pallets-eco/flask-"
 "admin/tree/master/examples/geo_alchemy to get started."
@@ -301,31 +398,48 @@ msgstr ""
 "请查看 https://github.com/pallets-eco/flask-"
 "admin/tree/master/examples/geo_alchemy 示例以开始使用。"
 
-#: ../../doc/advanced.rst:216
-msgid "Loading Tiles From Mapbox"
-msgstr "从 Mapbox 加载地图"
+#: ../../doc/advanced.rst:290
+msgid "Display map widgets"
+msgstr ""
 
-#: ../../doc/advanced.rst:218
+#: ../../doc/advanced.rst:292
+#, fuzzy
 msgid ""
-"To have map data display correctly, you'll have to sign up for an account"
-" at https://www.mapbox.com/ and include some credentials in your "
-"application's config::"
+"Flask-Admin uses `Leaflet <https://leafletjs.com/>`_ to display map "
+"widgets for geographical data. By default, this uses `MapBox "
+"<https://www.mapbox.com>`_."
+msgstr ""
+"使用惊人的 `Leaflet <https://leafletjs.com/>`_ Javascript 库显示地图，地图数据来自 `Mapbox"
+" <https://www.mapbox.com/>`_。"
+
+#: ../../doc/advanced.rst:295
+#, fuzzy
+msgid ""
+"To have MapBox data display correctly, you'll have to sign up for an "
+"account and include some credentials in your application's config::"
 msgstr "要正确显示地图数据，您必须在 https://www.mapbox.com/ 注册帐户，并在应用程序的配置中包含一些凭据::"
 
-#: ../../doc/advanced.rst:226
+#: ../../doc/advanced.rst:309
 msgid ""
-"Leaflet supports loading map tiles from any arbitrary map tile provider, "
-"but at the moment, Flask-Admin only supports Mapbox. If you want to use "
-"other providers, make a pull request!"
+"If you want to use a map provider other than MapBox (eg OpenStreetMaps), "
+"you can override the tile layer URLs and tile attribution attributes::"
 msgstr ""
-"Leaflet 支持从任意地图图块 provider 程序加载地图图块，但目前 Flask-Admin 仅支持 "
-"Mapbox。如果你想使用其他地图源，请提交 pull request！"
 
-#: ../../doc/advanced.rst:231
+#: ../../doc/advanced.rst:316
+msgid ""
+"If you want to include a search box on map widgets for looking up "
+"locations, you need the following additional configuration::"
+msgstr ""
+
+#: ../../doc/advanced.rst:321
+msgid "Flask-Admin currently only supports Google Maps for map search."
+msgstr ""
+
+#: ../../doc/advanced.rst:324
 msgid "Limitations"
 msgstr "限制"
 
-#: ../../doc/advanced.rst:233
+#: ../../doc/advanced.rst:326
 msgid ""
 "There's currently no way to sort, filter, or search on geometric fields "
 "in the admin. It's not clear that there's a good way to do so. If you "
@@ -334,11 +448,11 @@ msgstr ""
 "目前没有办法对 admin 中的 geometric 字段进行排序，过滤或搜索。不知道有没有好方法解决该问题。如果您有任何想法或建议，请提出 "
 "pull request！"
 
-#: ../../doc/advanced.rst:238
+#: ../../doc/advanced.rst:331
 msgid "Customising Builtin Forms Via Rendering Rules"
 msgstr "通过渲染规则定制内置表单"
 
-#: ../../doc/advanced.rst:242
+#: ../../doc/advanced.rst:333
 msgid ""
 "Before version 1.0.7, all model backends were rendering the *create* and "
 "*edit* forms using a special Jinja2 macro, which was looping over the "
@@ -348,14 +462,14 @@ msgstr ""
 "在 1.0.7 版本前，所有模型后端都使用特殊的 Jinja2 宏来渲染 `create` 和 `edit` 表单，该宏在 WTForms "
 "表单对象的字段上循环，并逐个显示它们。这很好，但是很难定制。"
 
-#: ../../doc/advanced.rst:246
+#: ../../doc/advanced.rst:337
 msgid ""
 "Starting from version 1.0.7, Flask-Admin supports form rendering rules, "
 "to give you fine grained control of how the forms for your modules should"
 " be displayed."
 msgstr "从 1.0.7 版本开始，Flask-Admin 支持表单渲染规则，以便您对模块中的表单如何显示进行细粒度的控制。"
 
-#: ../../doc/advanced.rst:249
+#: ../../doc/advanced.rst:340
 msgid ""
 "The basic idea is pretty simple: the customizable rendering rules replace"
 " a static macro, so you can tell Flask-Admin how each form should be "
@@ -366,26 +480,26 @@ msgstr ""
 "基本思想很简单：可自定义的渲染规则替换了静态宏，所以你可以告诉 Flask-Admin "
 "如何渲染每个表单。作为一个扩展，渲染规则还可以做更多事：你可以使用它们来输出 HTML，调用 Jinja2 宏，渲染字段等。"
 
-#: ../../doc/advanced.rst:253
+#: ../../doc/advanced.rst:344
 msgid ""
 "Essentially, form rendering rules separate the form rendering from the "
 "form definition. For example, it no longer matters in which sequence your"
 " form fields are defined."
 msgstr "基本上，表单渲染规则将表单渲染与表单定义分开。明显的改善是，您的表单字段定义的顺序不再重要。"
 
-#: ../../doc/advanced.rst:256
+#: ../../doc/advanced.rst:347
 msgid ""
 "To start using the form rendering rules, put a list of form field names "
 "into the `form_create_rules` property one of your admin views::"
 msgstr "要开始使用表单渲染规则，请在管理视图中，将表单字段名列表放入 `form_create_rules` 属性中::"
 
-#: ../../doc/advanced.rst:262
+#: ../../doc/advanced.rst:353
 msgid ""
 "In this example, only three fields will be rendered and `email` field "
 "will be above other two fields."
 msgstr "在此示例中，将仅渲染三个字段，并且 `email` 字段将高于其他两个字段。"
 
-#: ../../doc/advanced.rst:264
+#: ../../doc/advanced.rst:355
 msgid ""
 "Whenever Flask-Admin sees a string value in `form_create_rules`, it "
 "automatically assumes that it is a form field reference and creates a "
@@ -394,7 +508,7 @@ msgstr ""
 "每当 Flask-Admin 在 `form_create_rules` 中查看字符串值时，它会假定值是一个表单字段引用，并为该字段创建一个 "
 ":class:`flask_admin.form.rules.Field` 类实例。"
 
-#: ../../doc/advanced.rst:267
+#: ../../doc/advanced.rst:358
 msgid ""
 "Let's say we want to display some text between the `email` and "
 "`first_name` fields. This can be accomplished by using the "
@@ -403,101 +517,101 @@ msgstr ""
 "假设我们要在 `email` 和 `first_name` 字段之间显示一些文本。可以通过使用 "
 ":class:`flask_admin.form.rules.Text` 类来实现::"
 
-#: ../../doc/advanced.rst:276
+#: ../../doc/advanced.rst:367
 msgid "Built-in Rules"
 msgstr "内置规则"
 
-#: ../../doc/advanced.rst:278
+#: ../../doc/advanced.rst:369
 msgid ""
 "Flask-Admin comes with few built-in rules that can be found in the "
 ":mod:`flask_admin.form.rules` module:"
 msgstr "Flask-Admin 有一些内置规则，可以在 :mod:`flask_admin.form.rules` 模块中找到:"
 
-#: ../../doc/advanced.rst:281
+#: ../../doc/advanced.rst:372
 msgid "Form Rendering Rule"
 msgstr "表单渲染规则"
 
-#: ../../doc/advanced.rst:281
+#: ../../doc/advanced.rst:372
 msgid "Description"
 msgstr "描述"
 
-#: ../../doc/advanced.rst:283
+#: ../../doc/advanced.rst:374
 msgid ":class:`flask_admin.form.rules.BaseRule`"
 msgstr ":class:`flask_admin.form.rules.BaseRule`"
 
-#: ../../doc/advanced.rst:283
+#: ../../doc/advanced.rst:374
 msgid "All rules derive from this class"
 msgstr "所有规则都派生自该类"
 
-#: ../../doc/advanced.rst:284
+#: ../../doc/advanced.rst:375
 msgid ":class:`flask_admin.form.rules.NestedRule`"
 msgstr ":class:`flask_admin.form.rules.NestedRule`"
 
-#: ../../doc/advanced.rst:284
+#: ../../doc/advanced.rst:375
 msgid "Allows rule nesting, useful for HTML containers"
 msgstr "允许规则嵌套，适用于 HTML 容器"
 
-#: ../../doc/advanced.rst:285
+#: ../../doc/advanced.rst:376
 msgid ":class:`flask_admin.form.rules.Text`"
 msgstr ":class:`flask_admin.form.rules.Text`"
 
-#: ../../doc/advanced.rst:285
+#: ../../doc/advanced.rst:376
 msgid "Simple text rendering rule"
 msgstr "简单的文本渲染规则"
 
-#: ../../doc/advanced.rst:286
+#: ../../doc/advanced.rst:377
 msgid ":class:`flask_admin.form.rules.HTML`"
 msgstr ":class:`flask_admin.form.rules.HTML`"
 
-#: ../../doc/advanced.rst:286
+#: ../../doc/advanced.rst:377
 msgid "Same as `Text` rule, but does not escape the text"
 msgstr "与 `Text` 规则相同，但不转义文本"
 
-#: ../../doc/advanced.rst:287
+#: ../../doc/advanced.rst:378
 msgid ":class:`flask_admin.form.rules.Macro`"
 msgstr ":class:`flask_admin.form.rules.Macro`"
 
-#: ../../doc/advanced.rst:287
+#: ../../doc/advanced.rst:378
 msgid "Calls macro from current Jinja2 context"
 msgstr "从当前 Jinja2 上下文调用宏"
 
-#: ../../doc/advanced.rst:288
+#: ../../doc/advanced.rst:379
 msgid ":class:`flask_admin.form.rules.Container`"
 msgstr ":class:`flask_admin.form.rules.Container`"
 
-#: ../../doc/advanced.rst:288
+#: ../../doc/advanced.rst:379
 msgid "Wraps child rules into container rendered by macro"
 msgstr "将子规则包含到由宏渲染的容器中"
 
-#: ../../doc/advanced.rst:289
+#: ../../doc/advanced.rst:380
 msgid ":class:`flask_admin.form.rules.Field`"
 msgstr ":class:`flask_admin.form.rules.Field`"
 
-#: ../../doc/advanced.rst:289
+#: ../../doc/advanced.rst:380
 msgid "Renders single form field"
 msgstr "渲染单个表单字段"
 
-#: ../../doc/advanced.rst:290
+#: ../../doc/advanced.rst:381
 msgid ":class:`flask_admin.form.rules.Header`"
 msgstr ":class:`flask_admin.form.rules.Header`"
 
-#: ../../doc/advanced.rst:290
+#: ../../doc/advanced.rst:381
 msgid "Renders form header"
 msgstr "渲染表单标头"
 
-#: ../../doc/advanced.rst:291
+#: ../../doc/advanced.rst:382
 msgid ":class:`flask_admin.form.rules.FieldSet`"
 msgstr ":class:`flask_admin.form.rules.FieldSet`"
 
-#: ../../doc/advanced.rst:291
+#: ../../doc/advanced.rst:382
 msgid "Renders form header and child rules"
 msgstr "渲染表单标头和主体规则"
 
-#: ../../doc/advanced.rst:297
+#: ../../doc/advanced.rst:388
 msgid "Using Different Database Backends"
 msgstr "使用不同的数据库后端"
 
-#: ../../doc/advanced.rst:301
+#: ../../doc/advanced.rst:390
 msgid ""
 "Other than SQLAlchemy... There are five different backends for you to "
 "choose from, depending on which database you would like to use for your "
@@ -507,7 +621,7 @@ msgstr ""
 "除了 SQLAlchemy... 有五个不同的后端供您选择，具体取决于您的应用程序使用的数据库。如果您需要实现自己的数据库后端，请查看 :ref"
 ":`adding-model-backend`。"
 
-#: ../../doc/advanced.rst:305
+#: ../../doc/advanced.rst:394
 msgid ""
 "If you don't know where to start, but you're familiar with relational "
 "databases, then you should probably look at using `SQLAlchemy`_. It is a "
@@ -521,35 +635,35 @@ msgstr ""
 "MySQL, Oracle 和 MS-SQL 等数据库。如果您有很多数据，并且数据模型之间有很多关系，应该使用 "
 "SQLAlchemy。如果要跟踪空间数据 (如纬度/经度点)，则应使用 `GeoAlchemy`_。"
 
-#: ../../doc/advanced.rst:312
+#: ../../doc/advanced.rst:401
 msgid "SQLAlchemy"
 msgstr "SQLAlchemy"
 
-#: ../../doc/advanced.rst:314
+#: ../../doc/advanced.rst:403
 msgid "Notable features:"
 msgstr "特点:"
 
-#: ../../doc/advanced.rst:316
+#: ../../doc/advanced.rst:405
 msgid "SQLAlchemy 0.6+ support"
 msgstr "SQLAlchemy 0.6+ 支持"
 
-#: ../../doc/advanced.rst:317
+#: ../../doc/advanced.rst:406
 msgid "Paging, sorting, filters"
 msgstr "分页, 排序, 过滤"
 
-#: ../../doc/advanced.rst:318
+#: ../../doc/advanced.rst:407
 msgid "Proper model relationship handling"
 msgstr "正确的模型关系处理"
 
-#: ../../doc/advanced.rst:319
+#: ../../doc/advanced.rst:408
 msgid "Inline editing of related models"
 msgstr "相关模型的行内编辑"
 
-#: ../../doc/advanced.rst:321
+#: ../../doc/advanced.rst:410
 msgid "**Multiple Primary Keys**"
 msgstr "**多主键**"
 
-#: ../../doc/advanced.rst:323
+#: ../../doc/advanced.rst:412
 msgid ""
 "Flask-Admin has limited support for models with multiple primary keys. It"
 " only covers specific case when all but one primary keys are foreign keys"
@@ -557,30 +671,30 @@ msgid ""
 "convention."
 msgstr "Flask-Admin 对多主键模型的支持有限。它只支持一个主键是另一个模型的外键的特殊情况。例如，遵循此惯例的模型继承。"
 
-#: ../../doc/advanced.rst:327
+#: ../../doc/advanced.rst:416
 msgid "Let's Model a car with its tyres::"
 msgstr "让我们看看汽车及其轮胎的模型::"
 
-#: ../../doc/advanced.rst:344
+#: ../../doc/advanced.rst:433
 msgid ""
 "A specific tyre is identified by using the two primary key columns of the"
 " ``Tyre`` class, of which the ``car_id`` key is itself a foreign key to "
 "the class ``Car``."
 msgstr "通过使用 ``Tire`` 类的两个主键列来识别特定轮胎，其中 ``car_id`` 键本身是 ``Car`` 类的外键。"
 
-#: ../../doc/advanced.rst:347
+#: ../../doc/advanced.rst:436
 msgid ""
 "To be able to CRUD the ``Tyre`` class, you need to enumerate columns when"
 " defining the AdminView::"
 msgstr "为了能够对 ``Tire`` 类执行 CRUD，你需要在定义 AdminView 时枚举列::"
 
-#: ../../doc/advanced.rst:352
+#: ../../doc/advanced.rst:441
 msgid ""
 "The ``form_columns`` needs to be explicit, as per default only one "
 "primary key is displayed."
 msgstr "``form_columns`` 需要显式指定，默认情况下只显示一个主键。"
 
-#: ../../doc/advanced.rst:354
+#: ../../doc/advanced.rst:443
 msgid ""
 "When having multiple primary keys, **no** validation for uniqueness "
 "*prior* to saving of the object will be done. Saving a model that "
@@ -594,160 +708,99 @@ msgstr ""
 "Error。在这种情况下，``Flask-Admin`` 显示正确的错误消息，您可以更改表单中的数据。当应用程序以 ``debug=True`` "
 "启动时， ``werkzeug`` 调试器将捕获异常并显示栈跟踪信息。"
 
-#: ../../doc/advanced.rst:360
-msgid "MongoEngine"
-msgstr "MongoEngine"
-
-#: ../../doc/advanced.rst:362
-msgid ""
-"If you're looking for something simpler than SQLAlchemy, and your data "
-"models are reasonably self-contained, then `MongoDB "
-"<https://www.mongodb.org/>`_, a popular *NoSQL* database, could be a "
-"better option."
-msgstr ""
-"如果你需要比 SQLAlchemy 更简单的东西，你的数据模型是合理的自包含类型，那么 `MongoDB "
-"<https://www.mongodb.org/>`_ 这个流行的 *NoSQL* 数据库，或许是一个更好的选择。"
-
-#: ../../doc/advanced.rst:366
-msgid ""
-"`MongoEngine <http://mongoengine.org/>`_ is a python wrapper for MongoDB."
-" For an example of using MongoEngine with Flask-Admin, see "
-"https://github.com/pallets-eco/flask-"
-"admin/tree/master/examples/mongoengine."
-msgstr ""
-"`MongoEngine <http://mongoengine.org/>`_ 是 MongoDB 的 Python 封装。在 Flask-"
-"Admin 中使用 MongoEngine 的示例，请参阅 https://github.com/pallets-eco/flask-"
-"admin/tree/master/examples/mongoengine。"
-
-#: ../../doc/advanced.rst:371 ../../doc/advanced.rst:392
-msgid "Features:"
-msgstr "特性:"
-
-#: ../../doc/advanced.rst:373
-msgid "MongoEngine 0.7+ support"
-msgstr "MongoEngine 0.7+ 支持"
-
-#: ../../doc/advanced.rst:374
-msgid "Paging, sorting, filters, etc"
-msgstr "分页，排序，过滤等"
-
-#: ../../doc/advanced.rst:375
-msgid "Supports complex document structure (lists, subdocuments and so on)"
-msgstr "支持复杂的文档结构 (列表，子文档等等)"
-
-#: ../../doc/advanced.rst:376
-msgid "GridFS support for file and image uploads"
-msgstr "GridFS 支持存储上传的文件/图片"
-
-#: ../../doc/advanced.rst:378
-msgid ""
-"In order to use MongoEngine integration, install the `Flask-MongoEngine "
-"<https://flask-mongoengine.readthedocs.io>`_ package. Flask-Admin uses "
-"form scaffolding from it."
-msgstr ""
-"为了集成 MongoEngine，需要安装 `Flask-MongoEngine <https://flask-"
-"mongoengine.readthedocs.io>`_ 包。Flask-Admin 使用其中的表单脚手架。"
-
-#: ../../doc/advanced.rst:382 ../../doc/advanced.rst:401
-msgid "Known issues:"
-msgstr "已知问题:"
-
-#: ../../doc/advanced.rst:384
-msgid ""
-"Search functionality can't split query into multiple terms due to "
-"MongoEngine query language limitations"
-msgstr "由于 MongoEngine 查询语言的限制，搜索功能不能将查询拆分为多个条件"
-
-#: ../../doc/advanced.rst:387
-msgid ""
-"For more, check the :class:`~flask_admin.contrib.mongoengine` API "
-"documentation."
-msgstr "更多信息，请参阅 :class:`~flask_admin.contrib.mongoengine` API 文档。"
-
-#: ../../doc/advanced.rst:390
+#: ../../doc/advanced.rst:449
 msgid "Peewee"
 msgstr "Peewee"
 
-#: ../../doc/advanced.rst:394
+#: ../../doc/advanced.rst:451
+msgid "Features:"
+msgstr "特性:"
+
+#: ../../doc/advanced.rst:453
 msgid "Peewee 2.x+ support;"
 msgstr "Peewee 2.x+ 支持"
 
-#: ../../doc/advanced.rst:395
+#: ../../doc/advanced.rst:454
 msgid "Paging, sorting, filters, etc;"
 msgstr "分页，排序，过滤等"
 
-#: ../../doc/advanced.rst:396
+#: ../../doc/advanced.rst:455
 msgid "Inline editing of related models;"
 msgstr "相关模型的行内编辑"
 
-#: ../../doc/advanced.rst:398
+#: ../../doc/advanced.rst:457
 msgid ""
 "In order to use peewee integration, you need to install two additional "
-"Python packages: `peewee <https://docs.peewee-orm.com/>`_ and `wtf-peewee "
-"<https://github.com/coleifer/wtf-peewee/>`_."
+"Python packages: `peewee <https://docs.peewee-orm.com/>`_ and `wtf-peewee"
+" <https://github.com/coleifer/wtf-peewee/>`_."
 msgstr ""
-"为了使用 peewee，您需要安装 2 个 Python 包：`peewee <https://docs.peewee-orm.com/>`_ 和 "
-"`wtf-peewee <https://github.com/coleifer/wtf-peewee/>`_。"
+"为了使用 peewee，您需要安装 2 个 Python 包：`peewee <https://docs.peewee-orm.com/>`_ 和"
+" `wtf-peewee <https://github.com/coleifer/wtf-peewee/>`_。"
 
-#: ../../doc/advanced.rst:403
+#: ../../doc/advanced.rst:460
+msgid "Known issues:"
+msgstr "已知问题:"
+
+#: ../../doc/advanced.rst:462
 msgid ""
 "Many-to-Many model relations are not supported: there's no built-in way "
 "to express M2M relation in Peewee"
 msgstr "不支持多对多模型关系：在 Peewee 中没有内置的方式来表达 M2M 关系"
 
-#: ../../doc/advanced.rst:405
+#: ../../doc/advanced.rst:464
 msgid ""
 "For more, check the :class:`~flask_admin.contrib.peewee` API "
-"documentation. Or look at the Peewee example at https://github.com/pallets-"
-"eco/flask-admin/tree/master/examples/peewee."
+"documentation. Or look at the Peewee example at https://github.com"
+"/pallets-eco/flask-admin/tree/master/examples/peewee."
 msgstr ""
 "更多信息，请参阅 :class:`~flask_admin.contrib.peewee` API 文档。或查看 Peewee 使用示例 "
 "https://github.com/pallets-eco/flask-admin/tree/master/examples/peewee。"
 
-#: ../../doc/advanced.rst:409
+#: ../../doc/advanced.rst:468
 msgid "PyMongo"
 msgstr "PyMongo"
 
-#: ../../doc/advanced.rst:411
+#: ../../doc/advanced.rst:470
 msgid "The bare minimum you have to provide for Flask-Admin to work with PyMongo:"
 msgstr "Flask-Admin 使用 PyMongo 的最小要求:"
 
-#: ../../doc/advanced.rst:413
+#: ../../doc/advanced.rst:472
 msgid "A list of columns by setting `column_list` property"
 msgstr "设置 `column_list` 属性，值为字段列表"
 
-#: ../../doc/advanced.rst:414
+#: ../../doc/advanced.rst:473
 msgid "Provide form to use by setting `form` property"
 msgstr "设置 `form` 属性，值为要使用的表单"
 
-#: ../../doc/advanced.rst:415
+#: ../../doc/advanced.rst:474
 msgid ""
 "When instantiating :class:`flask_admin.contrib.pymongo.ModelView` class, "
 "you have to provide PyMongo collection object"
 msgstr "当实例化 :class:`flask_admin.contrib.pymongo.ModelView` 类时，你必须提供 PyMongo 集合对象"
 
-#: ../../doc/advanced.rst:417
+#: ../../doc/advanced.rst:476
 msgid "This is minimal PyMongo view::"
 msgstr "最简单的 PyMongo 视图:"
 
-#: ../../doc/advanced.rst:433
+#: ../../doc/advanced.rst:492
 msgid "On top of that you can add sortable columns, filters, text search, etc."
 msgstr "除此之外，您还可以添加可排序的列，过滤器，文本搜索等。"
 
-#: ../../doc/advanced.rst:435
+#: ../../doc/advanced.rst:494
+#, fuzzy
 msgid ""
-"For more, check the :class:`~flask_admin.contrib.pymongoe` API "
-"documentation. Or look at the Peewee example at https://github.com/pallets-"
-"eco/flask-admin/tree/master/examples/pymongo."
+"For more, check the :class:`~flask_admin.contrib.pymongo` API "
+"documentation. Or look at the pymongo example at https://github.com"
+"/pallets-eco/flask-admin/tree/master/examples/pymongo."
 msgstr ""
 "更多信息，请参阅 :class:`~flask_admin.contrib.pymongoe` API 文档。或查看 PyMongo 使用示例 "
 "https://github.com/pallets-eco/flask-admin/tree/master/examples/pymongo。"
 
-#: ../../doc/advanced.rst:439
+#: ../../doc/advanced.rst:498
 msgid "Migrating From Django"
 msgstr "从 Django 迁移"
 
-#: ../../doc/advanced.rst:443
+#: ../../doc/advanced.rst:500
 msgid ""
 "If you are used to `Django <https://www.djangoproject.com/>`_ and the "
 "*django-admin* package, you will find Flask-Admin to work slightly "
@@ -756,11 +809,11 @@ msgstr ""
 "如果你习惯了 `Django <https://www.djangoproject.com/>`_ 和 *django-admin* 包，你会发现"
 " Flask-Admin 的工作方式与你期望的略有不同。"
 
-#: ../../doc/advanced.rst:447
+#: ../../doc/advanced.rst:504
 msgid "Design Philosophy"
 msgstr "设计哲学"
 
-#: ../../doc/advanced.rst:449
+#: ../../doc/advanced.rst:506
 msgid ""
 "In general, Django and *django-admin* strives to make life easier by "
 "implementing sensible defaults. So a developer will be able to get an "
@@ -772,7 +825,7 @@ msgstr ""
 "一般来说，Django 和 *django-admin* "
 "有合理的默认值。因此，开发人员能够立即获得应用程序，但它必须符合大多数默认值。如果需要定制，需要深刻的理解后端的处理逻辑，这会相当耗时。"
 
-#: ../../doc/advanced.rst:454
+#: ../../doc/advanced.rst:511
 msgid ""
 "The design philosophy behind Flask is slightly different. It embraces the"
 " diversity that one tends to find in web applications by not forcing "
@@ -788,7 +841,7 @@ msgstr ""
 "使您可以很容易构建应用程序，几乎替您解决了所有问题；Flask 旨在使您控制构建整个应用程序。它需要学习更多内容，一旦您了解了 "
 "Flask，您就可以开发任何类型的 Web 应用程序。"
 
-#: ../../doc/advanced.rst:461
+#: ../../doc/advanced.rst:518
 msgid ""
 "Flask-Admin follows this same design philosophy. So even though it "
 "provides you with several tools for getting up & running quickly, it will"
@@ -804,127 +857,128 @@ msgstr ""
 "<https://en.wikipedia.org/wiki/Create,_read,_update_and_delete>`_ 接口"
 "，Flask-Admin 也不能完全解决所有问题，您可以灵活的定义与模块的交互方法，来实现所有功能。"
 
-#: ../../doc/advanced.rst:467
+#: ../../doc/advanced.rst:524
+#, fuzzy
 msgid ""
-"Due to Flask-Admin supporting more than one ORM (SQLAlchemy, MongoEngine,"
-" Peewee, raw pymongo), the developer is even free to mix different model "
-"types into one application by instantiating appropriate CRUD classes."
+"Due to Flask-Admin supporting more than one ORM (SQLAlchemy, Peewee, raw "
+"pymongo), the developer is even free to mix different model types into "
+"one application by instantiating appropriate CRUD classes."
 msgstr ""
 "由于 Flask-Admin 支持多种 ORM (SQLAlchemy, MongoEngine, Peewee, raw "
 "pymongo)，开发人员甚至可以通过实例化相应的 CRUD 类，将不同的模型类型混合到一个应用程序中。"
 
-#: ../../doc/advanced.rst:470
+#: ../../doc/advanced.rst:527
 msgid ""
 "Here is a list of some of the configuration properties that are made "
 "available by Flask-Admin and the SQLAlchemy backend. You can also see "
 "which *django-admin* properties they correspond to:"
 msgstr "以下是 Flask-Admin 和 SQLAlchemy 后端提供的一些配置属性的列表。您还可以查看它们对应的 *django-admin* 属性:"
 
-#: ../../doc/advanced.rst:474
+#: ../../doc/advanced.rst:531
 msgid "Django"
 msgstr "Django"
 
-#: ../../doc/advanced.rst:474
+#: ../../doc/advanced.rst:531
 msgid "Flask-Admin"
 msgstr "Flask-Admin"
 
-#: ../../doc/advanced.rst:476
+#: ../../doc/advanced.rst:533
 msgid "actions"
 msgstr "actions"
 
-#: ../../doc/advanced.rst:476
+#: ../../doc/advanced.rst:533
 msgid ":attr:`~flask_admin.actions`"
 msgstr ":attr:`~flask_admin.actions`"
 
-#: ../../doc/advanced.rst:477
+#: ../../doc/advanced.rst:534
 msgid "exclude"
 msgstr "exclude"
 
-#: ../../doc/advanced.rst:477
+#: ../../doc/advanced.rst:534
 msgid ":attr:`~flask_admin.model.BaseModelView.form_excluded_columns`"
 msgstr ":attr:`~flask_admin.model.BaseModelView.form_excluded_columns`"
 
-#: ../../doc/advanced.rst:478
+#: ../../doc/advanced.rst:535
 msgid "fields"
 msgstr "fields"
 
-#: ../../doc/advanced.rst:478
+#: ../../doc/advanced.rst:535
 msgid ":attr:`~flask_admin.model.BaseModelView.form_columns`"
 msgstr ":attr:`~flask_admin.model.BaseModelView.form_columns`"
 
-#: ../../doc/advanced.rst:479
+#: ../../doc/advanced.rst:536
 msgid "form"
 msgstr "form"
 
-#: ../../doc/advanced.rst:479
+#: ../../doc/advanced.rst:536
 msgid ":attr:`~flask_admin.model.BaseModelView.form`"
 msgstr ":attr:`~flask_admin.model.BaseModelView.form`"
 
-#: ../../doc/advanced.rst:480
+#: ../../doc/advanced.rst:537
 msgid "formfield_overrides"
 msgstr "formfield_overrides"
 
-#: ../../doc/advanced.rst:480
+#: ../../doc/advanced.rst:537
 msgid ":attr:`~flask_admin.model.BaseModelView.form_args`"
 msgstr ":attr:`~flask_admin.model.BaseModelView.form_args`"
 
-#: ../../doc/advanced.rst:481
+#: ../../doc/advanced.rst:538
 msgid "inlines"
 msgstr "inlines"
 
-#: ../../doc/advanced.rst:481
+#: ../../doc/advanced.rst:538
 msgid ":attr:`~flask_admin.contrib.sqla.ModelView.inline_models`"
 msgstr ":attr:`~flask_admin.contrib.sqla.ModelView.inline_models`"
 
-#: ../../doc/advanced.rst:482
+#: ../../doc/advanced.rst:539
 msgid "list_display"
 msgstr "list_display"
 
-#: ../../doc/advanced.rst:482
+#: ../../doc/advanced.rst:539
 msgid ":attr:`~flask_admin.model.BaseModelView.column_list`"
 msgstr ":attr:`~flask_admin.model.BaseModelView.column_list`"
 
-#: ../../doc/advanced.rst:483
+#: ../../doc/advanced.rst:540
 msgid "list_filter"
 msgstr "list_filter"
 
-#: ../../doc/advanced.rst:483
+#: ../../doc/advanced.rst:540
 msgid ":attr:`~flask_admin.contrib.sqla.ModelView.column_filters`"
 msgstr ":attr:`~flask_admin.contrib.sqla.ModelView.column_filters`"
 
-#: ../../doc/advanced.rst:484
+#: ../../doc/advanced.rst:541
 msgid "list_per_page"
 msgstr "list_per_page"
 
-#: ../../doc/advanced.rst:484
+#: ../../doc/advanced.rst:541
 msgid ":attr:`~flask_admin.model.BaseModelView.page_size`"
 msgstr ":attr:`~flask_admin.model.BaseModelView.page_size`"
 
-#: ../../doc/advanced.rst:485
+#: ../../doc/advanced.rst:542
 msgid "search_fields"
 msgstr "search_fields"
 
-#: ../../doc/advanced.rst:485
+#: ../../doc/advanced.rst:542
 msgid ":attr:`~flask_admin.model.BaseModelView.column_searchable_list`"
 msgstr ":attr:`~flask_admin.model.BaseModelView.column_searchable_list`"
 
-#: ../../doc/advanced.rst:486
+#: ../../doc/advanced.rst:543
 msgid "add_form_template"
 msgstr "add_form_template"
 
-#: ../../doc/advanced.rst:486
+#: ../../doc/advanced.rst:543
 msgid ":attr:`~flask_admin.model.BaseModelView.create_template`"
 msgstr ":attr:`~flask_admin.model.BaseModelView.create_template`"
 
-#: ../../doc/advanced.rst:487
+#: ../../doc/advanced.rst:544
 msgid "change_form_template"
 msgstr "change_form_template"
 
-#: ../../doc/advanced.rst:487
+#: ../../doc/advanced.rst:544
 msgid ":attr:`~flask_admin.model.BaseModelView.change_form_template`"
 msgstr ":attr:`~flask_admin.model.BaseModelView.change_form_template`"
 
-#: ../../doc/advanced.rst:490
+#: ../../doc/advanced.rst:547
 msgid ""
 "You might want to check :class:`~flask_admin.model.BaseModelView` for "
 "basic model configuration options (reused by all model backends) and "
@@ -935,11 +989,11 @@ msgstr ""
 "您可能需要查看 :class:`~flask_admin.model.BaseModelView` 的基本模型配置选项 (由所有模型后端重用) "
 "和特定的后端文档，例如 :class:`~flask_admin.contrib.sqla.ModelView`。了解更多的模型配置选项。"
 
-#: ../../doc/advanced.rst:496
+#: ../../doc/advanced.rst:553
 msgid "Overriding the Form Scaffolding"
 msgstr "覆盖表单脚手架"
 
-#: ../../doc/advanced.rst:500
+#: ../../doc/advanced.rst:555
 msgid ""
 "If you don't want to the use the built-in Flask-Admin form scaffolding "
 "logic, you are free to roll your own by simply overriding "
@@ -953,7 +1007,7 @@ msgstr ""
 "Alchemy <https://github.com/kvesteri/wtforms-alchemy>`_，您可以将您的表单生成代码放入您的 "
 "`ModelView` 类中的 `scaffold_form` 方法。"
 
-#: ../../doc/advanced.rst:505
+#: ../../doc/advanced.rst:560
 msgid ""
 "For SQLAlchemy, if the `synonym_property` does not return a SQLAlchemy "
 "field, then Flask-Admin won't be able to figure out what to do with it, "
@@ -963,18 +1017,18 @@ msgstr ""
 "对于 SQLAlchemy，如果 `synonym_property` 不返回 SQLAlchemy 字段，那么 Flask-Admin "
 "将不知道该如何生成表单字段。在这种情况下，您需要手动提供自己的字段::"
 
-#: ../../doc/advanced.rst:515
+#: ../../doc/advanced.rst:570
 msgid "Customizing Batch Actions"
 msgstr "自定义批处理操作"
 
-#: ../../doc/advanced.rst:519
+#: ../../doc/advanced.rst:572
 msgid ""
 "If you want to add other batch actions to the list view, besides the "
 "default delete action, then you can define a function that implements the"
 " desired logic and wrap it with the `@action` decorator."
 msgstr "如果要向列表视图添加其他批处理操作，除了默认的删除操作，您可以定义一个实现所需逻辑的函数，并使用 `@action` 装饰器将其包装。"
 
-#: ../../doc/advanced.rst:522
+#: ../../doc/advanced.rst:575
 msgid ""
 "The `action` decorator takes three parameters: `name`, `text` and "
 "`confirmation`. While the wrapped function should accept only one "
@@ -982,6 +1036,52 @@ msgid ""
 msgstr ""
 "`action` 装饰器需要三个参数: `name`, `text` 和 `confirmation`。而被包装的函数只接受一个 `ids` "
 "参数::"
+
+#: ../../doc/advanced.rst:603
+msgid "Raise exceptions instead of flash error messages"
+msgstr ""
+
+#: ../../doc/advanced.rst:605
+msgid ""
+"By default, Flask-Admin will capture most exceptions related to "
+"reading/writing models and display a flash message instead of raising an "
+"exception. If your Flask app is running in debug mode (ie under local "
+"development), exceptions will not be suppressed."
+msgstr ""
+
+#: ../../doc/advanced.rst:609
+msgid ""
+"The flash message behaviour can be overridden with some Flask "
+"configuration.::"
+msgstr ""
+
+#: ../../doc/advanced.rst:617
+msgid "FLASK_ADMIN_RAISE_ON_VIEW_EXCEPTION"
+msgstr ""
+
+#: ../../doc/advanced.rst:618
+msgid ""
+"Instead of turning exceptions on model create/update/delete actions into "
+"flash messages, raise the exception as normal. You should expect the view"
+" to return a 500 to the user, unless you add specific handling to prevent"
+" this."
+msgstr ""
+
+#: ../../doc/advanced.rst:623
+msgid "FLASK_ADMIN_RAISE_ON_INTEGRITY_ERROR"
+msgstr ""
+
+#: ../../doc/advanced.rst:624
+msgid "This targets SQLAlchemy specifically."
+msgstr ""
+
+#: ../../doc/advanced.rst:626
+msgid ""
+"Unlike the previous setting, this will specifically only affect the "
+"behaviour of IntegrityErrors. These usually come from violations on "
+"constraints in the database, for example trying to insert a row with a "
+"primary key that already exists."
+msgstr ""
 
 #~ msgid ""
 #~ "For this to work, you would also"
@@ -994,3 +1094,92 @@ msgstr ""
 #~ "为了使其工作，还需要创建一个模板，通过在 `create` 和 `edit` 页面包含必要的"
 #~ " CKEditor javascript 来扩展默认功能。将其保存在 "
 #~ "`templates/ckeditor.html` 中::"
+
+#~ msgid ""
+#~ "If you are using the MongoEngine "
+#~ "backend, Flask-Admin supports GridFS-"
+#~ "backed image and file uploads through"
+#~ " WTForms fields. Documentation can be "
+#~ "found at :mod:`flask_admin.contrib.mongoengine.fields`."
+#~ msgstr ""
+#~ "如果您使用 MongoEngine 后端，Flask-Admin 支持通过 "
+#~ "WTForms 字段上传的文件/图片，保存在 GridFS 后端中。详细信息，请参阅 "
+#~ ":mod:`flask_admin.contrib.mongoengine.fields` 文档。"
+
+#~ msgid "Loading Tiles From Mapbox"
+#~ msgstr "从 Mapbox 加载地图"
+
+#~ msgid ""
+#~ "Leaflet supports loading map tiles from"
+#~ " any arbitrary map tile provider, but"
+#~ " at the moment, Flask-Admin only "
+#~ "supports Mapbox. If you want to "
+#~ "use other providers, make a pull "
+#~ "request!"
+#~ msgstr ""
+#~ "Leaflet 支持从任意地图图块 provider 程序加载地图图块，但目前 "
+#~ "Flask-Admin 仅支持 Mapbox。如果你想使用其他地图源，请提交 pull "
+#~ "request！"
+
+#~ msgid "MongoEngine"
+#~ msgstr "MongoEngine"
+
+#~ msgid ""
+#~ "If you're looking for something simpler"
+#~ " than SQLAlchemy, and your data "
+#~ "models are reasonably self-contained, "
+#~ "then `MongoDB <https://www.mongodb.org/>`_, a "
+#~ "popular *NoSQL* database, could be a "
+#~ "better option."
+#~ msgstr ""
+#~ "如果你需要比 SQLAlchemy 更简单的东西，你的数据模型是合理的自包含类型，那么 `MongoDB"
+#~ " <https://www.mongodb.org/>`_ 这个流行的 *NoSQL* "
+#~ "数据库，或许是一个更好的选择。"
+
+#~ msgid ""
+#~ "`MongoEngine <http://mongoengine.org/>`_ is a "
+#~ "python wrapper for MongoDB. For an "
+#~ "example of using MongoEngine with "
+#~ "Flask-Admin, see https://github.com/pallets-eco"
+#~ "/flask-admin/tree/master/examples/mongoengine."
+#~ msgstr ""
+#~ "`MongoEngine <http://mongoengine.org/>`_ 是 MongoDB"
+#~ " 的 Python 封装。在 Flask-Admin 中使用 "
+#~ "MongoEngine 的示例，请参阅 https://github.com/pallets-eco"
+#~ "/flask-admin/tree/master/examples/mongoengine。"
+
+#~ msgid "MongoEngine 0.7+ support"
+#~ msgstr "MongoEngine 0.7+ 支持"
+
+#~ msgid "Paging, sorting, filters, etc"
+#~ msgstr "分页，排序，过滤等"
+
+#~ msgid "Supports complex document structure (lists, subdocuments and so on)"
+#~ msgstr "支持复杂的文档结构 (列表，子文档等等)"
+
+#~ msgid "GridFS support for file and image uploads"
+#~ msgstr "GridFS 支持存储上传的文件/图片"
+
+#~ msgid ""
+#~ "In order to use MongoEngine integration,"
+#~ " install the `Flask-MongoEngine <https"
+#~ "://flask-mongoengine.readthedocs.io>`_ package. "
+#~ "Flask-Admin uses form scaffolding from "
+#~ "it."
+#~ msgstr ""
+#~ "为了集成 MongoEngine，需要安装 `Flask-MongoEngine "
+#~ "<https://flask-mongoengine.readthedocs.io>`_ 包。Flask-"
+#~ "Admin 使用其中的表单脚手架。"
+
+#~ msgid ""
+#~ "Search functionality can't split query "
+#~ "into multiple terms due to MongoEngine"
+#~ " query language limitations"
+#~ msgstr "由于 MongoEngine 查询语言的限制，搜索功能不能将查询拆分为多个条件"
+
+#~ msgid ""
+#~ "For more, check the "
+#~ ":class:`~flask_admin.contrib.mongoengine` API "
+#~ "documentation."
+#~ msgstr "更多信息，请参阅 :class:`~flask_admin.contrib.mongoengine` API 文档。"
+
