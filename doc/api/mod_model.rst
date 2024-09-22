@@ -17,7 +17,7 @@
                           form_widget_args, form_extra_fields,
                           form_ajax_refs, form_create_rules,
                           form_edit_rules,
-                          allow_frozen_fields, exclude_frozen_fields
+                          allow_frozen_fields, excluded_frozen_fields,
                           page_size, can_set_page_size
 
         .. autoattribute:: can_create
@@ -57,7 +57,7 @@
         .. autoattribute:: form_edit_rules
 
         .. autoattribute:: allow_frozen_fields
-        .. autoattribute:: exclude_frozen_fields
+        .. autoattribute:: excluded_frozen_fields
 
         .. autoattribute:: action_disallowed_list
 
