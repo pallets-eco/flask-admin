@@ -435,7 +435,7 @@ msgstr "Редактировать запись"
 #: ../flask_admin/model/template.py:111
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr ""
+msgstr "Удалить запись"
 
 #: ../flask_admin/model/widgets.py:62
 msgid "Please select model"
@@ -599,4 +599,3 @@ msgstr "Выберите по крайней мере одну запись."
 
 #~ msgid "Size"
 #~ msgstr "Размер"
-

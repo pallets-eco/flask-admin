@@ -432,7 +432,7 @@ msgstr "Eintrag bearbeiten"
 #: ../flask_admin/model/template.py:111
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr ""
+msgstr "Datenzatz löschen"
 
 #: ../flask_admin/model/widgets.py:62
 msgid "Please select model"
@@ -596,4 +596,3 @@ msgstr "Bitte wählen Sie mindestens einen Eintrag aus."
 
 #~ msgid "Size"
 #~ msgstr "Größe"
-

@@ -432,7 +432,7 @@ msgstr "Modifier enregistrement"
 #: ../flask_admin/model/template.py:111
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr ""
+msgstr "Supprimer l'enregistrement"
 
 #: ../flask_admin/model/widgets.py:62
 msgid "Please select model"
@@ -596,4 +596,3 @@ msgstr "Veuillez choisir au moins un modèle."
 
 #~ msgid "Size"
 #~ msgstr ""
-
