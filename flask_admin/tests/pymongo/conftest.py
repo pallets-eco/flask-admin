@@ -9,6 +9,7 @@ def db():
     client = MongoClient()
     db = client.tests
     yield db
+    client.close()
 
 
 @pytest.fixture
