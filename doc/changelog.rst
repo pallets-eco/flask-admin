@@ -7,6 +7,7 @@ Changelog
 Fixes:
 
 * The `Apply` button for filters will show/hide correctly again
+* Fix `translations_path` attribute when Flask-Admin is used with Flask-Babel
 
 2.0.0a0
 -------
