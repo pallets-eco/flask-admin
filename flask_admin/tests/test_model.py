@@ -181,7 +181,7 @@ def test_mockview(app, admin):
     dispatched_client = Client(dispatched_app)
 
     rv = dispatched_client.post(
-        '/dispatched/admin/model/edit/?id=3',
+        '/dispatched/admin/model/edit/?id=3&url=/dispatched/admin/model/?flt0_filter%3Dvalue',
         data=dict(col1='another test!', col2='test@', col3='test#', _continue_editing='True'))
 
     # werkzeug 2.1.0+ always returns a `TestResponse` instance (backward-compat as tuple is removed)
@@ -192,7 +192,7 @@ def test_mockview(app, admin):
         headers = rv.headers
 
     assert status == '302 FOUND'
-    assert headers['Location'].endswith('/dispatched/admin/model/edit/?id=3')
+    assert headers['Location'].endswith('/dispatched/admin/model/edit/?id=3&url=/dispatched/admin/model/?flt0_filter%3Dvalue')
     model = view.updated_models.pop()
     assert model.col1 == 'another test!'
 
