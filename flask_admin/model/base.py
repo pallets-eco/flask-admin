@@ -2298,7 +2298,9 @@ class BaseModelView(BaseView, ActionsMixin):
                     return redirect(self.get_url(".create_view", url=return_url))
                 elif "_continue_editing" in request.form:
                     return redirect(
-                        self.get_url(".edit_view", id=self.get_pk_value(model))
+                        self.get_url(
+                            ".edit_view", id=self.get_pk_value(model), url=return_url
+                        )
                     )
                 else:
                     # save button
