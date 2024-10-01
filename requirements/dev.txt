@@ -175,9 +175,9 @@ pylint==3.2.7
     #   -r typing.txt
 pyproject-api==1.7.1
     # via tox
-pyright==1.1.379
+pyright==1.1.382.post1
     # via -r typing.txt
-pytest==8.3.2
+pytest==8.3.3
     # via
     #   -r docs.txt
     #   -r tests.in
@@ -253,9 +253,9 @@ tomlkit==0.13.2
     #   -r docs.txt
     #   -r typing.txt
     #   pylint
-tox==4.18.0
+tox==4.20.0
     # via -r dev.in
-types-beautifulsoup4==4.12.0.20240511
+types-beautifulsoup4==4.12.0.20240907
     # via -r typing.txt
 types-boto==2.49.18.20240806
     # via -r typing.txt
@@ -302,6 +302,7 @@ typing-extensions==4.12.2
     #   astroid
     #   mypy
     #   pylint
+    #   pyright
 urllib3==2.2.2
     # via
     #   -r docs.txt
