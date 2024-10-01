@@ -48,9 +48,9 @@ pyflakes==3.2.0
     # via flake8
 pylint==3.2.7
     # via -r tests.in
-pyright==1.1.379
+pyright==1.1.382.post1
     # via -r typing.in
-pytest==8.3.2
+pytest==8.3.3
     # via
     #   -r tests.in
     #   -r typing.in
@@ -67,7 +67,7 @@ tomli==2.0.1
     #   pytest
 tomlkit==0.13.2
     # via pylint
-types-beautifulsoup4==4.12.0.20240511
+types-beautifulsoup4==4.12.0.20240907
     # via -r typing.in
 types-boto==2.49.18.20240806
     # via -r typing.in
@@ -100,3 +100,4 @@ typing-extensions==4.12.2
     #   astroid
     #   mypy
     #   pylint
+    #   pyright
