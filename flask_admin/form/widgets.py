@@ -90,6 +90,7 @@ class RenderTemplateWidget(object):
             '_gettext': gettext,
             '_ngettext': ngettext,
             'h': h,
+            'theme': current_app.config['theme'],
         })
 
         template = current_app.jinja_env.get_template(self.template)

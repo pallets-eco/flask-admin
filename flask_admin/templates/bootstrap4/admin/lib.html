@@ -119,16 +119,16 @@
   {% set direct_error = h.is_field_error(field.errors) %}
   {% set prepend = kwargs.pop('prepend', None) %}
   {% set append = kwargs.pop('append', None) %}
-  <div class="form-group {{ kwargs.get('column_class', '') }}">
-    <label for="{{ field.id }}" class="control-label {% if field.widget.input_type == 'checkbox' %}d-block mb-0{% endif %}">{{ field.label.text }}
+  <div class="form-group {% if theme.horizontal %}row {% endif %}{{ kwargs.get('column_class', '') }}">
+    <label for="{{ field.id }}" class="col-form-label {% if theme.horizontal %}col-sm-2  {% endif %}{% if field.widget.input_type == 'checkbox' %}d-block mb-0{% endif %}">{{ field.label.text }}
         {% if h.is_required_form_field(field) %}
-          <strong class="text-danger"">&#42;</strong>
+          <strong class="text-danger">&#42;</strong>
         {%- else -%}
           &nbsp;
         {%- endif %}
     </label>
-    {% if prepend or append %}
-    <div class="input-group">
+    {% if prepend or append or theme.horizontal %}
+    <div class="{% if prepend or append %}input-group {% endif %}{% if theme.horizontal %}col-sm-10{% endif %}">
       {%- if prepend -%}
       <div class="input-group-prepend">
         {{ prepend }}
@@ -162,7 +162,7 @@
             {{ field.description|safe }}
         </small>
       {% endif %}
-    {% if prepend or append %}
+    {% if prepend or append or theme.horizontal %}
     </div>
     {% endif %}
     {% if caller %}
