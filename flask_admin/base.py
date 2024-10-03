@@ -548,6 +548,8 @@ class Admin(object):
         # Register with application
         if app is not None:
             self._init_extension()
+            # Make theme available via current_app
+            app.config['theme'] = self.theme
 
     def _validate_admin_host_and_subdomain(self):
         if self.subdomain is not None and self.host is not None:
