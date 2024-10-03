@@ -4,8 +4,7 @@ import warnings
 
 from functools import wraps
 
-from flask import current_app, render_template, abort, g, url_for, request
-from flask import Blueprint, current_app, render_template, abort, g, url_for
+from flask import current_app, render_template, abort, g, url_for
 from markupsafe import Markup
 
 from flask_admin import babel
