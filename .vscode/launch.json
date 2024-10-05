@@ -1,0 +1,130 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    // Regular Python file debugger to run the current file
+    {
+      "name": "Python Run Current File",
+      "type": "python",
+      "request": "launch",
+      // Run whichever file is open (perfect for running different examples)
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "jinja": true,
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "/home/user/workspace"
+      }
+      // "stopOnEntry": true,
+    },
+    // Debug with Flask
+    {
+      "name": "flask run --no-debugger --no-reload",
+      "type": "python",
+      "request": "launch",
+      // "program": "${file}",
+      // "console": "integratedTerminal", 
+      "module": "flask",
+      "env": {
+        // "FLASK_APP": "examples/sqla-images-postgres-x-editable-ajax/app:app",
+        "FLASK_APP": "${file}:app",
+        "FLASK_ENV": "development",
+        "FLASK_DEBUG": "0"
+      },
+      "args": [
+        "run",
+        "--no-debugger",
+        "--no-reload",
+        // "--with-threads"
+        // "--without-threads"
+      ],
+      "jinja": true,
+      "justMyCode": false,
+      // "stopOnEntry": true,
+    },
+    // Pytest all files
+    {
+      "name": "Pytest All Files",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal",
+      "args": [
+        "/home/user/workspace/flask_admin/tests/",
+        "-v",
+        // "--lf",
+        "--durations=0",
+        // // Debugger doesn't always stop on breakpoints with coverage enabled
+        // "--no-cov",
+      ],
+      "jinja": true,
+      "justMyCode": false,
+      // "stopOnEntry": true,
+    },
+    // Pytest all files last-failed
+    {
+      "name": "Pytest All Files Last-Failed",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal",
+      "args": [
+        "/home/user/workspace/flask_admin/tests/",
+        "-v",
+        "--lf",
+        "--durations=0",
+        // // Debugger doesn't always stop on breakpoints with coverage enabled
+        // "--no-cov",
+      ],
+      "jinja": true,
+      "justMyCode": false,
+      // "stopOnEntry": true,
+    },
+    // Pytest run the current file only
+    {
+      "name": "Pytest Current File",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal",
+      "args": [
+        "${file}",
+        "-v",
+        // "--lf",
+        "--durations=0",
+        // // Debugger doesn't always stop on breakpoints with coverage enabled
+        // "--no-cov",
+      ],
+      "jinja": true,
+      "justMyCode": false,
+      // "stopOnEntry": true,
+      "env": {
+        "_PYTEST_RAISE": "1"
+      },
+    },
+    // Pytest run the current file only, with only the last-failed tests
+    {
+      "name": "Pytest Current File Last-Failed",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal",
+      "args": [
+        "${file}",
+        "-v",
+        "--lf",
+        "--durations=0",
+        // // Debugger doesn't always stop on breakpoints with coverage enabled
+        // "--no-cov",
+      ],
+      "jinja": true,
+      "justMyCode": false,
+      // "stopOnEntry": true,
+      "env": {
+        "_PYTEST_RAISE": "1"
+      },
+    },
+  ]
+}
