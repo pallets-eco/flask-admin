@@ -1,11 +1,11 @@
-This example show how to translate Flask-Admin into different language using customized version of the `Flask-Babel <https://github.com/mrjoes/flask-babelex>`
+This example show how to translate Flask-Admin into different language using customized version of the `Flask-Babel <https://github.com/python-babel/flask-babel>`
 
 To run this example:
 
-1. Clone the repository::
+1. Clone the repository and navigate to this example::
 
-     git clone https://github.com/flask-admin/flask-admin.git
-     cd flask-admin
+     git clone https://github.com/pallets-eco/flask-admin.git
+     cd flask-admin/examples/babel
 
 2. Create and activate a virtual environment::
 
@@ -14,10 +14,8 @@ To run this example:
 
 3. Install requirements::
 
-     pip install -r 'examples/babel/requirements.txt'
+     pip install -r requirements.txt
 
 4. Run the application::
 
-     python examples/babel/app.py
-
-
+     python app.py

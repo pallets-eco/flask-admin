@@ -1,0 +1,103 @@
+name: Tests
+on:
+  push:
+    branches:
+      - master
+      - '*.x'
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '*.rst'
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '*.rst'
+  schedule:
+    - cron: '0 3 * * 1'
+jobs:
+  tests:
+    name: ${{ matrix.tox == 'normal' && format('py{0}', matrix.python) || matrix.tox }}
+    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        tox: ['normal']
+        include:
+          - python: '3.8'
+            tox: 'py38-min'
+          - python: '3.12'
+            tox: 'py312-noflaskbabel'
+          - python: '3.8'
+            tox: 'py38-sqlalchemy1'
+          - python: '3.12'
+            tox: 'py312-sqlalchemy1'
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgis/postgis:16-3.4  # postgres with postgis installed
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: flask_admin_test
+        ports:
+          - 5432:5432
+          # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      mongo:
+        image: mongo:5.0.14-focal
+        ports:
+          - 27017:27017
+      azurite:
+        image: arafato/azurite:2.6.5
+        env:
+          executable: blob
+        ports:
+          - 10000:10000
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # v5.2.0
+        with:
+          python-version: ${{ matrix.python }}
+          allow-prereleases: true
+          cache: pip
+          cache-dependency-path: requirements*/*.txt
+      - name: Install Ubuntu packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgeos-c1v5
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Set up PostgreSQL hstore module
+        env:
+          PGPASSWORD: postgres
+        run: psql -U postgres -h localhost -c 'CREATE EXTENSION hstore;' flask_admin_test
+      - run: pip install tox
+      - run: tox run -e ${{ matrix.tox == 'normal' && format('py{0}', matrix.python) || matrix.tox }}
+  not_tests:
+    name: ${{ matrix.tox }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        tox: ['docs', 'typing']
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # v5.2.0
+        with:
+          python-version: 3.11
+          cache: pip
+          cache-dependency-path: requirements*/*.txt
+      - name: cache mypy
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        with:
+          path: ./.mypy_cache
+          key: mypy|${{ hashFiles('pyproject.toml') }}
+      - run: pip install tox
+      - run: tox run -e ${{ matrix.tox }}

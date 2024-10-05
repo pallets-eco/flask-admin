@@ -1,4 +1,2 @@
-Flask
-Flask-Admin
-Flask-SQLAlchemy
-Flask-BabelEx
+# Install Flask-Admin with required extras from the root of the repository
+../..[sqlalchemy,translation]

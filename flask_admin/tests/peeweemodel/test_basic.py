@@ -1,3 +1,5 @@
+import pytest
+
 from flask_admin._compat import as_unicode
 
 import peewee
@@ -7,8 +9,6 @@ from wtforms import fields, validators
 from flask_admin import form
 from flask_admin._compat import iteritems
 from flask_admin.contrib.peewee import ModelView
-
-from . import setup
 
 from datetime import datetime, time, date
 
@@ -102,8 +102,7 @@ def fill_db(Model1, Model2):
     Model1('datetime_obj2', datetime_field=datetime(2013, 3, 2, 0, 8, 0)).save()
 
 
-def test_model():
-    app, db, admin = setup()
+def test_model(app, db, admin):
     Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1)
@@ -174,15 +173,17 @@ def test_model():
     assert Model1.select().count() == 0
 
 
-def test_column_editable_list():
-    app, db, admin = setup()
-
+def test_column_editable_list(app, db, admin):
     Model1, Model2 = create_models(db)
 
     # wtf-peewee doesn't automatically add length validators for max_length
     form_args = {'test1': {'validators': [validators.Length(max=20)]}}
     view = CustomModelView(Model1, column_editable_list=['test1'],
                            form_args=form_args)
+    admin.add_view(view)
+
+    # Test in-line editing for relations
+    view = CustomModelView(Model2, column_editable_list=['model1'])
     admin.add_view(view)
 
     fill_db(Model1, Model2)
@@ -232,10 +233,6 @@ def test_column_editable_list():
     data = rv.data.decode('utf-8')
     assert 'problematic-input' not in data
 
-    # Test in-line editing for relations
-    view = CustomModelView(Model2, column_editable_list=['model1'])
-    admin.add_view(view)
-
     rv = client.post('/admin/model2/ajax/update/', data={
         'list_form_pk': '1',
         'model1': '3',
@@ -249,9 +246,7 @@ def test_column_editable_list():
     assert 'test1_val_3' in data
 
 
-def test_details_view():
-    app, db, admin = setup()
-
+def test_details_view(app, db, admin):
     Model1, Model2 = create_models(db)
 
     view_no_details = CustomModelView(Model1)
@@ -302,9 +297,7 @@ def test_details_view():
     assert '5000' not in data
 
 
-def test_column_filters():
-    app, db, admin = setup()
-
+def test_column_filters(app, db, admin):
     Model1, Model2 = create_models(db)
 
     fill_db(Model1, Model2)
@@ -312,6 +305,26 @@ def test_column_filters():
     # Test string filter
     view = CustomModelView(Model1, column_filters=['test1'])
     admin.add_view(view)
+
+    # Test int filter
+    view2 = CustomModelView(Model2, column_filters=['int_field'])
+    admin.add_view(view2)
+
+    # Test boolean filter
+    view3 = CustomModelView(Model2, column_filters=['bool_field'],
+                           endpoint="_bools")
+    admin.add_view(view3)
+
+    # Test float filter
+    view4 = CustomModelView(Model2, column_filters=['float_field'],
+                           endpoint="_float")
+    admin.add_view(view4)
+
+    # Test date, time, and datetime filters
+    view5 = CustomModelView(Model1,
+                           column_filters=['date_field', 'datetime_field', 'timeonly_field'],
+                           endpoint="_datetime")
+    admin.add_view(view5)
 
     assert len(view._filters) == 7
 
@@ -392,12 +405,8 @@ def test_column_filters():
     assert 'test1_val_3' in data
     assert 'test1_val_4' in data
 
-    # Test int filter
-    view = CustomModelView(Model2, column_filters=['int_field'])
-    admin.add_view(view)
-
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Int Field']] == \
+        [(f['index'], f['operation']) for f in view2._filter_groups[u'Int Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -498,13 +507,8 @@ def test_column_filters():
     assert 'char_field_val_3' not in data
     assert 'char_field_val_4' not in data
 
-    # Test boolean filter
-    view = CustomModelView(Model2, column_filters=['bool_field'],
-                           endpoint="_bools")
-    admin.add_view(view)
-
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Bool Field']] == \
+        [(f['index'], f['operation']) for f in view3._filter_groups[u'Bool Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -542,13 +546,8 @@ def test_column_filters():
     assert 'char_field_val_2' not in data
     assert 'char_field_val_3' not in data
 
-    # Test float filter
-    view = CustomModelView(Model2, column_filters=['float_field'],
-                           endpoint="_float")
-    admin.add_view(view)
-
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Float Field']] == \
+        [(f['index'], f['operation']) for f in view4._filter_groups[u'Float Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -635,14 +634,8 @@ def test_column_filters():
     assert 'char_field_val_3' not in data
     assert 'char_field_val_4' not in data
 
-    # Test date, time, and datetime filters
-    view = CustomModelView(Model1,
-                           column_filters=['date_field', 'datetime_field', 'timeonly_field'],
-                           endpoint="_datetime")
-    admin.add_view(view)
-
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Date Field']] == \
+        [(f['index'], f['operation']) for f in view5._filter_groups[u'Date Field']] == \
         [
             (0, 'equals'),
             (1, 'not equal'),
@@ -654,7 +647,7 @@ def test_column_filters():
         ]
 
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Datetime Field']] == \
+        [(f['index'], f['operation']) for f in view5._filter_groups[u'Datetime Field']] == \
         [
             (7, 'equals'),
             (8, 'not equal'),
@@ -666,7 +659,7 @@ def test_column_filters():
         ]
 
     assert \
-        [(f['index'], f['operation']) for f in view._filter_groups[u'Timeonly Field']] == \
+        [(f['index'], f['operation']) for f in view5._filter_groups[u'Timeonly Field']] == \
         [
             (14, 'equals'),
             (15, 'not equal'),
@@ -852,8 +845,7 @@ def test_column_filters():
     assert 'timeonly_obj2' in data
 
 
-def test_default_sort():
-    app, db, admin = setup()
+def test_default_sort(app, db, admin):
     M1, _ = create_models(db)
 
     M1('c', 1).save()
@@ -884,9 +876,7 @@ def test_default_sort():
     assert data[2].test1 == 'a'
 
 
-def test_extra_fields():
-    app, db, admin = setup()
-
+def test_extra_fields(app, db, admin):
     Model1, _ = create_models(db)
 
     view = CustomModelView(
@@ -910,9 +900,7 @@ def test_extra_fields():
     assert pos2 < pos1
 
 
-def test_custom_form_base():
-    app, db, admin = setup()
-
+def test_custom_form_base(app, db, admin):
     class TestForm(form.BaseForm):
         pass
 
@@ -930,9 +918,7 @@ def test_custom_form_base():
     assert isinstance(create_form, TestForm)
 
 
-def test_form_args():
-    app, db, admin = setup()
-
+def test_form_args(app, db, admin):
     class BaseModel(peewee.Model):
         class Meta:
             database = db
@@ -956,9 +942,7 @@ def test_form_args():
     assert len(edit_form.test.validators) == 2
 
 
-def test_ajax_fk():
-    app, db, admin = setup()
-
+def test_ajax_fk(app, db, admin):
     class BaseModel(peewee.Model):
         class Meta:
             database = db
@@ -1035,15 +1019,91 @@ def test_ajax_fk():
     assert mdl.model1.test1 == u'first'
 
 
-def test_export_csv():
-    app, db, admin = setup()
+def test_customising_page_size(app, db, admin):
+    with app.app_context():
+        M1, _ = create_models(db)
 
+        instances = [M1(f'instance-{x+1:03d}') for x in range(101)]
+        for instance in instances:
+            instance.save()
+
+        view1 = CustomModelView(M1, endpoint='view1', page_size=20, can_set_page_size=False)
+        admin.add_view(view1)
+
+        view2 = CustomModelView(M1, db, endpoint='view2', page_size=5, can_set_page_size=False)
+        admin.add_view(view2)
+
+        view3 = CustomModelView(M1, db, endpoint='view3', page_size=20, can_set_page_size=True)
+        admin.add_view(view3)
+
+        view4 = CustomModelView(M1, db, endpoint='view4', page_size=5, page_size_options=(5, 10, 15), can_set_page_size=True)
+        admin.add_view(view4)
+
+        client = app.test_client()
+
+        rv = client.get('/admin/view1/')
+        assert 'instance-020' in rv.text
+        assert 'instance-021' not in rv.text
+
+        # `can_set_page_size=False`, so only the default of 20 is available.
+        rv = client.get('/admin/view1/?page_size=50')
+        assert 'instance-020' in rv.text
+        assert 'instance-021' not in rv.text
+
+        # Check view2, which has `page_size=5` to change the default page size
+        rv = client.get('/admin/view2/')
+        assert 'instance-005' in rv.text
+        assert 'instance-006' not in rv.text
+
+        # Check view3, which has `can_set_page_size=True`
+        rv = client.get('/admin/view3/')
+        assert 'instance-020' in rv.text
+        assert 'instance-021' not in rv.text
+
+        rv = client.get('/admin/view3/?page_size=50')
+        assert 'instance-050' in rv.text
+        assert 'instance-051' not in rv.text
+
+        rv = client.get('/admin/view3/?page_size=100')
+        assert 'instance-100' in rv.text
+        assert 'instance-101' not in rv.text
+
+        # Invalid page sizes are reset to the default
+        rv = client.get('/admin/view3/?page_size=1')
+        assert 'instance-020' in rv.text
+        assert 'instance-021' not in rv.text
+
+        # Check view4, which has custom `page_size_options`
+        rv = client.get('/admin/view4/')
+        assert 'instance-005' in rv.text
+        assert 'instance-006' not in rv.text
+
+        # Invalid page sizes are reset to the default
+        rv = client.get('/admin/view4/?page_size=1')
+        assert 'instance-005' in rv.text
+        assert 'instance-006' not in rv.text
+
+        rv = client.get('/admin/view4/?page_size=10')
+        assert 'instance-010' in rv.text
+        assert 'instance-011' not in rv.text
+
+        rv = client.get('/admin/view4/?page_size=15')
+        assert 'instance-015' in rv.text
+        assert 'instance-016' not in rv.text
+
+
+def test_export_csv(app, db, admin):
     Model1, Model2 = create_models(db)
 
     view = CustomModelView(Model1, can_export=True,
                            column_list=['test1', 'test2'], export_max_rows=2,
                            endpoint='row_limit_2')
     admin.add_view(view)
+
+    view2 = CustomModelView(Model1, can_export=True,
+                           column_list=['test1', 'test2'],
+                           endpoint='no_row_limit')
+    admin.add_view(view2)
 
     for x in range(5):
         fill_db(Model1, Model2)
@@ -1057,11 +1117,6 @@ def test_export_csv():
     assert "Test1,Test2\r\n" + \
         "test1_val_1,test2_val_1\r\n" + \
         "test1_val_2,test2_val_2\r\n" == data
-
-    view = CustomModelView(Model1, can_export=True,
-                           column_list=['test1', 'test2'],
-                           endpoint='no_row_limit')
-    admin.add_view(view)
 
     # test row limit without export_max_rows
     rv = client.get('/admin/no_row_limit/export/csv/')

@@ -1,17 +1,14 @@
-from io import StringIO
+from io import BytesIO
 import os
 import os.path as op
-import unittest
 
+from flask_admin.theme import Bootstrap4Theme
 from flask_admin.contrib import fileadmin
 from flask_admin import Admin
-from flask import Flask
-
-from . import setup
 
 
 class Base:
-    class FileAdminTests(unittest.TestCase):
+    class FileAdminTests:
         _test_files_root = op.join(op.dirname(__file__), 'files')
 
         def fileadmin_class(self):
@@ -20,11 +17,9 @@ class Base:
         def fileadmin_args(self):
             raise NotImplementedError
 
-        def test_file_admin(self):
+        def test_file_admin(self, app, admin):
             fileadmin_class = self.fileadmin_class()
             fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
-
-            app, admin = setup()
 
             class MyFileAdmin(fileadmin_class):
                 editable_extensions = ('txt',)
@@ -76,7 +71,7 @@ class Base:
             assert rv.status_code == 200
 
             rv = client.post('/admin/myfileadmin/upload/',
-                             data=dict(upload=(StringIO(""), 'dummy.txt')))
+                             data=dict(upload=(BytesIO(b""), 'dummy.txt')))
             assert rv.status_code == 302
 
             rv = client.get('/admin/myfileadmin/')
@@ -132,10 +127,8 @@ class Base:
             assert 'path=dummy_renamed_dir' not in rv.data.decode('utf-8')
             assert 'path=dummy.txt' in rv.data.decode('utf-8')
 
-        def test_modal_edit(self):
-            # bootstrap 2 - test edit_modal
-            app_bs2 = Flask(__name__)
-            admin_bs2 = Admin(app_bs2, template_mode="bootstrap2")
+        def test_modal_edit_bs4(self, app, babel):
+            admin_bs4 = Admin(app, theme=Bootstrap4Theme())
 
             fileadmin_class = self.fileadmin_class()
             fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
@@ -156,58 +149,35 @@ class Base:
             off_view_kwargs.setdefault('endpoint', 'edit_modal_off')
             edit_modal_off = EditModalOff(*fileadmin_args, **off_view_kwargs)
 
-            admin_bs2.add_view(edit_modal_on)
-            admin_bs2.add_view(edit_modal_off)
+            admin_bs4.add_view(edit_modal_on)
+            admin_bs4.add_view(edit_modal_off)
 
-            client_bs2 = app_bs2.test_client()
-
-            # bootstrap 2 - ensure modal window is added when edit_modal is
-            # enabled
-            rv = client_bs2.get('/admin/edit_modal_on/')
-            assert rv.status_code == 200
-            data = rv.data.decode('utf-8')
-            assert 'fa_modal_window' in data
-
-            # bootstrap 2 - test edit modal disabled
-            rv = client_bs2.get('/admin/edit_modal_off/')
-            assert rv.status_code == 200
-            data = rv.data.decode('utf-8')
-            assert 'fa_modal_window' not in data
-
-            # bootstrap 3
-            app_bs3 = Flask(__name__)
-            admin_bs3 = Admin(app_bs3, template_mode="bootstrap3")
-
-            admin_bs3.add_view(edit_modal_on)
-            admin_bs3.add_view(edit_modal_off)
-
-            client_bs3 = app_bs3.test_client()
+            client_bs4 = app.test_client()
 
             # bootstrap 3 - ensure modal window is added when edit_modal is
             # enabled
-            rv = client_bs3.get('/admin/edit_modal_on/')
+            rv = client_bs4.get('/admin/edit_modal_on/')
             assert rv.status_code == 200
             data = rv.data.decode('utf-8')
             assert 'fa_modal_window' in data
 
             # bootstrap 3 - test modal disabled
-            rv = client_bs3.get('/admin/edit_modal_off/')
+            rv = client_bs4.get('/admin/edit_modal_off/')
             assert rv.status_code == 200
             data = rv.data.decode('utf-8')
             assert 'fa_modal_window' not in data
 
 
-class LocalFileAdminTests(Base.FileAdminTests):
+class TestLocalFileAdmin(Base.FileAdminTests):
     def fileadmin_class(self):
         return fileadmin.FileAdmin
 
     def fileadmin_args(self):
         return (self._test_files_root, '/files'), {}
 
-    def test_fileadmin_sort_bogus_url_param(self):
+    def test_fileadmin_sort_bogus_url_param(self, app, admin):
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
-        app, admin = setup()
 
         class MyFileAdmin(fileadmin_class):
             editable_extensions = ('txt',)

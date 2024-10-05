@@ -1,22 +1,20 @@
-from . import setup_postgres
 from .test_basic import CustomModelView
 
+from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import HSTORE, JSON
 from citext import CIText
 
 
-def test_hstore():
-    app, db, admin = setup_postgres()
-
+def test_hstore(app, postgres_db, postgres_admin):
     with app.app_context():
-        class Model(db.Model):
-            id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-            hstore_test = db.Column(HSTORE)
+        class Model(postgres_db.Model):
+            id = postgres_db.Column(postgres_db.Integer, primary_key=True, autoincrement=True)
+            hstore_test = postgres_db.Column(HSTORE)
 
-        db.create_all()
+        postgres_db.create_all()
 
-        view = CustomModelView(Model, db.session)
-        admin.add_view(view)
+        view = CustomModelView(Model, postgres_db.session)
+        postgres_admin.add_view(view)
 
         client = app.test_client()
 
@@ -42,18 +40,16 @@ def test_hstore():
         assert 'test_val2' in data
 
 
-def test_json():
-    app, db, admin = setup_postgres()
-
+def test_json(app, postgres_db, postgres_admin):
     with app.app_context():
-        class JSONModel(db.Model):
-            id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-            json_test = db.Column(JSON)
+        class JSONModel(postgres_db.Model):
+            id = postgres_db.Column(postgres_db.Integer, primary_key=True, autoincrement=True)
+            json_test = postgres_db.Column(JSON)
 
-        db.create_all()
+        postgres_db.create_all()
 
-        view = CustomModelView(JSONModel, db.session)
-        admin.add_view(view)
+        view = CustomModelView(JSONModel, postgres_db.session)
+        postgres_admin.add_view(view)
 
         client = app.test_client()
 
@@ -79,18 +75,18 @@ def test_json():
                 '{&#34;test_key1&#34;: &#34;test_value1&#34;}<' in data)
 
 
-def test_citext():
-    app, db, admin = setup_postgres()
+def test_citext(app, postgres_db, postgres_admin):
     with app.app_context():
-        class CITextModel(db.Model):
-            id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-            citext_test = db.Column(CIText)
+        class CITextModel(postgres_db.Model):
+            id = postgres_db.Column(postgres_db.Integer, primary_key=True, autoincrement=True)
+            citext_test = postgres_db.Column(CIText)
 
-        db.engine.execute('CREATE EXTENSION IF NOT EXISTS citext')
-        db.create_all()
+        with postgres_db.engine.begin() as connection:
+            connection.execute(text('CREATE EXTENSION IF NOT EXISTS citext'))
+        postgres_db.create_all()
 
-        view = CustomModelView(CITextModel, db.session)
-        admin.add_view(view)
+        view = CustomModelView(CITextModel, postgres_db.session)
+        postgres_admin.add_view(view)
 
         client = app.test_client()
 

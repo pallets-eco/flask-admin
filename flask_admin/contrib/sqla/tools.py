@@ -1,20 +1,16 @@
 import types
 
 from sqlalchemy import tuple_, or_, and_, inspect
-try:
-    # Attempt _class_resolver import from SQLALchemy 1.4/2.0 module architecture.
-    from sqlalchemy.orm.clsregistry import _class_resolver
-except ImportError:
-    # If 1.4/2.0 module import fails, fall back to <1.3.x architecture.
-    from sqlalchemy.ext.declarative.clsregistry import _class_resolver
+from sqlalchemy.orm.clsregistry import _class_resolver
 from sqlalchemy.ext.hybrid import hybrid_property
 try:
-    # Attempt ASSOCATION_PROXY import from pre-2.0 release
-    from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
-except ImportError:
-    from sqlalchemy.ext.associationproxy import AssociationProxyExtensionType
+    # SQLAlchemy 2.0
+    from sqlalchemy.ext.associationproxy import AssociationProxyExtensionType  # type: ignore[attr-defined]
     ASSOCIATION_PROXY = AssociationProxyExtensionType.ASSOCIATION_PROXY
-from sqlalchemy.sql.operators import eq
+except ImportError:
+    from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
+
+from sqlalchemy.sql.operators import eq  # type: ignore[attr-defined]
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 

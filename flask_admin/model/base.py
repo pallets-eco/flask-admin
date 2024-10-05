@@ -3,18 +3,25 @@ import re
 import csv
 import mimetypes
 import time
+from typing import Optional, cast, Type
+
 from math import ceil
 import inspect
 from collections import OrderedDict
 
+from jinja2 import pass_context  # type: ignore[attr-defined]
 from werkzeug.utils import secure_filename
 
 from flask import (current_app, request, redirect, flash, abort, json,
                    Response, get_flashed_messages, stream_with_context)
+
+from .._types import T_COLUMN_LIST, T_FORMATTERS
+
 try:
     import tablib
 except ImportError:
     tablib = None
+from wtforms.form import Form
 from wtforms.fields import HiddenField
 from wtforms.fields.core import UnboundField
 from wtforms.validators import ValidationError, InputRequired
@@ -30,7 +37,7 @@ from flask_admin.helpers import (get_form_data, validate_form_on_submit,
 from flask_admin.tools import rec_getattr
 from flask_admin._backwards import ObsoleteAttr
 from flask_admin._compat import (iteritems, itervalues,
-                                 as_unicode, csv_encode, text_type, pass_context)
+                                 as_unicode, csv_encode, text_type)
 from .helpers import prettify_name, get_mdict_item_or_list
 from .ajax import AjaxModelLoader
 
@@ -169,7 +176,10 @@ class BaseModelView(BaseView, ActionsMixin):
     """Setting this to true will display the details_view as a modal dialog."""
 
     # Customizations
-    column_list = ObsoleteAttr('column_list', 'list_columns', None)
+    column_list: Optional[T_COLUMN_LIST] = cast(
+        None,
+        ObsoleteAttr('column_list', 'list_columns', None)
+    )
     """
         Collection of the model field names for the list view.
         If set to `None`, will get them from the model.
@@ -189,8 +199,9 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_list = ('<relationship>.<related column name>',)
     """
 
-    column_exclude_list = ObsoleteAttr('column_exclude_list',
-                                       'excluded_list_columns', None)
+    column_exclude_list: Optional[T_COLUMN_LIST] = cast(
+        None,
+        ObsoleteAttr('column_exclude_list', 'excluded_list_columns', None))
     """
         Collection of excluded list column names.
 
@@ -274,7 +285,10 @@ class BaseModelView(BaseView, ActionsMixin):
         that macros are not supported.
     """
 
-    column_type_formatters = ObsoleteAttr('column_type_formatters', 'list_type_formatters', None)
+    column_type_formatters: Optional[T_FORMATTERS] = cast(
+        None,
+        ObsoleteAttr('column_type_formatters', 'list_type_formatters', None)
+    )
     """
         Dictionary of value type formatters to be used in the list view.
 
@@ -365,9 +379,10 @@ class BaseModelView(BaseView, ActionsMixin):
                 )
     """
 
-    column_sortable_list = ObsoleteAttr('column_sortable_list',
-                                        'sortable_columns',
-                                        None)
+    column_sortable_list: Optional[T_COLUMN_LIST] = cast(
+        None,
+        ObsoleteAttr('column_sortable_list', 'sortable_columns', None),
+    )
     """
         Collection of the sortable columns for the list view.
         If set to `None`, will get them from the model.
@@ -418,9 +433,10 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_default_sort = [('name', True), ('last_name', True)]
     """
 
-    column_searchable_list = ObsoleteAttr('column_searchable_list',
-                                          'searchable_columns',
-                                          None)
+    column_searchable_list: Optional[T_COLUMN_LIST] = cast(
+        None,
+        ObsoleteAttr('column_searchable_list', 'searchable_columns', None),
+    )
     """
         A collection of the searchable columns. It is assumed that only
         text-only fields are searchable, but it is up to the model
@@ -522,7 +538,7 @@ class BaseModelView(BaseView, ActionsMixin):
         If enabled, model interface would not run count query and will only show prev/next pager buttons.
     """
 
-    form = None
+    form: Optional[Type[Form]] = None
     """
         Form class. Override if you want to use custom form for your model.
         Will completely disable form scaffolding functionality.
@@ -758,7 +774,7 @@ class BaseModelView(BaseView, ActionsMixin):
         A list of available export filetypes. `csv` only is default, but any
         filetypes supported by tablib can be used.
 
-        Check tablib for https://github.com/kennethreitz/tablib/blob/master/README.rst
+        Check tablib for https://tablib.readthedocs.io/en/stable/formats.html
         for supported types.
     """
 
@@ -771,6 +787,11 @@ class BaseModelView(BaseView, ActionsMixin):
     can_set_page_size = False
     """
         Allows to select page size via dropdown list
+    """
+
+    page_size_options: tuple = (20, 50, 100)
+    """
+        Sets the page size options available, if `can_set_page_size` is True
     """
 
     def __init__(self, model,
@@ -817,6 +838,12 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # Scaffolding
         self._refresh_cache()
+
+        if self.can_set_page_size and self.page_size not in self.page_size_options:
+            warnings.warn(
+                f"{self.page_size=} is not in {self.page_size_options=}",
+                UserWarning
+            )
 
     # Endpoint
     def _get_endpoint(self, endpoint):
@@ -1492,6 +1519,14 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return None
 
+    def get_safe_page_size(self, page_size):
+        safe_page_size = self.page_size
+
+        if self.can_set_page_size and page_size in self.page_size_options:
+            safe_page_size = page_size
+
+        return safe_page_size
+
     # Database-related API
     def get_list(self, page, sort_field, sort_desc, search, filters,
                  page_size=None):
@@ -1535,7 +1570,7 @@ class BaseModelView(BaseView, ActionsMixin):
             flash(as_unicode(exc), 'error')
             return True
 
-        if current_app.config.get('ADMIN_RAISE_ON_VIEW_EXCEPTION'):
+        if current_app.config.get('FLASK_ADMIN_RAISE_ON_VIEW_EXCEPTION'):
             raise
 
         if self._debug:
@@ -1791,8 +1826,7 @@ class BaseModelView(BaseView, ActionsMixin):
         kwargs = dict(page=page, sort=view_args.sort, desc=desc, search=view_args.search)
         kwargs.update(view_args.extra_args)
 
-        if view_args.page_size:
-            kwargs['page_size'] = view_args.page_size
+        kwargs['page_size'] = self.get_safe_page_size(view_args.page_size)
 
         kwargs.update(self._get_filters(view_args.filters))
 
@@ -1974,7 +2008,7 @@ class BaseModelView(BaseView, ActionsMixin):
             sort_column = sort_column[0]
 
         # Get page size
-        page_size = view_args.page_size or self.page_size
+        page_size = self.get_safe_page_size(view_args.page_size)
 
         # Get count and data
         count, data = self.get_list(view_args.page, sort_column, view_args.sort_desc,
@@ -2365,8 +2399,10 @@ class BaseModelView(BaseView, ActionsMixin):
             Exports a variety of formats using the tablib library.
         """
         if tablib is None:
-            flash(gettext('Tablib dependency not installed.'), 'error')
-            return redirect(return_url)
+            raise Exception(
+                'Could not import `tablib`. '
+                'Enable `export` integration by installing `flask-admin[export]`'
+            )
 
         filename = self.get_export_name(export_type)
 

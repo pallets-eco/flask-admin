@@ -13,7 +13,7 @@
 
 {% macro form(actions, url) %}
     {% if actions %}
-        <form id="action_form" action="{{ url }}" method="POST" style="display: none">
+        <form id="action_form" action="{{ url }}" method="POST" class="d-none">
             {% if action_form.csrf_token %}
                 {{ action_form.csrf_token }}
             {% elif csrf_token %}
@@ -27,8 +27,8 @@
 
 {% macro script(message, actions, actions_confirmation) %}
     {% if actions %}
-        <div id="actions-confirmation-data" style="display:none;">{{ actions_confirmation|tojson|safe }}</div>
-        <div id="message-data" style="display:none;">{{ message|tojson|safe }}</div>
-        <script src="{{ admin_static.url(filename='admin/js/actions.js', v='1.0.0') }}"></script>
+        <div id="actions-confirmation-data" class="d-none">{{ actions_confirmation|tojson|safe }}</div>
+        <div id="message-data" class="d-none">{{ message|tojson|safe }}</div>
+        <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/actions.js', v='1.0.0') }}"></script>
     {% endif %}
 {% endmacro %}
