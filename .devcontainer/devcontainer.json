@@ -7,7 +7,7 @@
   // Use either the Dockerfile or docker-compose.yml to create the Docker container
   // "dockerFile": "Dockerfile",
   // "cacheFrom": "ghcr.io/example/example-devcontainer"
-  "dockerComposeFile": "docker-compose.dev.yml",
+  "dockerComposeFile": "../docker-compose.dev.yml",
   // Required if using dockerComposeFile. The name of the service VS Code should connect to once running.
   // The 'service' property is the name of the service for the container that VS Code should
   // use. Update this value and .devcontainer/docker-compose.yml to the real service name.

@@ -5,19 +5,18 @@ services:
     image: "redis:6.0-rc1-alpine"
     restart: unless-stopped
     networks:
-      - timescale_dev_db_network
+      - flask_admin_dev
 
   flask_admin_dev:
     build:
       # context: where should docker compose look for the Dockerfile?
       # i.e. either a path to a directory containing a Dockerfile, or a url to a git repository
-      context: ..
+      context: .
       dockerfile: Dockerfile.dev
       args:
         secret=id: secret_envs,src=.env
         INSTALL_PYTHON_VERSION: 3.11.8-slim-bookworm
-    env_file:
-      - ../.env
+    env_file: .env
     environment:
       DOCKER_BUILDKIT: 1
       COMPOSE_DOCKER_CLI_BUILD: 1
@@ -36,7 +35,7 @@ services:
       # Mount the root folder that contains .git
       # - ..:/home/user/workspace:cached
       # - ..:/home/user/workspace
-      - ..:/workspace:cached
+      - .:/workspace:cached
       # # Windows home folder:
       # - C:\Users\seanm\:/c_users_sean
       # [Optional] For reusing Git SSH keys.
@@ -55,20 +54,13 @@ services:
     # links:
     #   - container-2
     networks:
-      - myijack-network
-      - timescale_dev_db_network
+      - flask_admin_dev
 
 networks:
-  myijack-network:
-    # driver: bridge
-    external:
-      name: myijack-network
 
   # Just for development unit tests,
   # so we don't use the main AWS RDS production database
-  timescale_dev_db_network:
-    external:
-      name: timescale_dev_db_network
+  flask_admin_dev:
 
 # volumes:
 #   timescale_dev_volume:
