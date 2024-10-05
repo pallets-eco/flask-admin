@@ -41,7 +41,7 @@
 
         {% if can_set_page_size %}
         <li class="nav-item dropdown">
-            {{ model_layout.page_size_form(page_size_url) }}
+            {{ model_layout.page_size_form(page_size_url, admin_view.page_size_options) }}
         </li>
         {% endif %}
 
@@ -184,13 +184,13 @@
     {{ super() }}
 
     {% if filter_groups %}
-      <div id="filter-groups-data" style="display:none;">{{ filter_groups|tojson|safe }}</div>
-      <div id="active-filters-data" style="display:none;">{{ active_filters|tojson|safe }}</div>
+      <div id="filter-groups-data" class="d-none">{{ filter_groups|tojson|safe }}</div>
+      <div id="active-filters-data" class="d-none">{{ active_filters|tojson|safe }}</div>
     {% endif %}
     {{ lib.form_js() }}
-    <script src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
-    <script src="{{ admin_static.url(filename='admin/js/bs4_filters.js', v='1.0.0') }}"></script>
-    
+    <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
+    <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/bs4_filters.js', v='1.0.0') }}"></script>
+
 
     {{ actionlib.script(_gettext('Please select at least one record.'),
                         actions,

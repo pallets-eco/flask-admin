@@ -4,7 +4,7 @@ from peewee import (CharField, DateTimeField, DateField, TimeField,
                     PrimaryKeyField, ForeignKeyField)
 
 try:
-    from peewee import BaseModel
+    from peewee import BaseModel  # type: ignore[attr-defined]
 except ImportError:
     from peewee import ModelBase as BaseModel
 
@@ -57,10 +57,10 @@ class InlineModelFormList(InlineFieldList):
         in in .contribute() below
 
         For reference, .process() introduced in:
-        https://github.com/flask-admin/flask-admin/commit/2845e4b28cb40b25e2bf544b327f6202dc7e5709
+        https://github.com/pallets-eco/flask-admin/commit/2845e4b28cb40b25e2bf544b327f6202dc7e5709
 
         Fixed, brokenly I think, in:
-        https://github.com/flask-admin/flask-admin/commit/4383eef3ce7eb01878f086928f8773adb9de79f8#diff-f87e7cd76fb9bc48c8681b24f238fb13R30
+        https://github.com/pallets-eco/flask-admin/commit/4383eef3ce7eb01878f086928f8773adb9de79f8#diff-f87e7cd76fb9bc48c8681b24f238fb13R30
     """
 
     def populate_obj(self, obj, name):

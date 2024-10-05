@@ -1,0 +1,7 @@
+flake8
+pylint
+pytest
+pytest-cov
+
+psycopg2
+beautifulsoup4

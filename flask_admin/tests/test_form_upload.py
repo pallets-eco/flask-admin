@@ -4,6 +4,7 @@ import os.path as op
 from io import BytesIO
 
 from flask import Flask, url_for
+
 from flask_admin import form, helpers
 
 
@@ -26,9 +27,7 @@ def safe_delete(path, name):
         pass
 
 
-def test_upload_field():
-    app = Flask(__name__)
-
+def test_upload_field(app, babel):
     path = _create_temp()
 
     def _remove_testfiles():

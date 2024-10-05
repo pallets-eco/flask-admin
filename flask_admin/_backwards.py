@@ -8,12 +8,6 @@
 import sys
 import warnings
 
-try:
-    from wtforms.widgets import HTMLString as Markup
-except ImportError:
-    # WTForms 2.3.0
-    from markupsafe import Markup  # noqa: F401
-
 
 def get_property(obj, name, old_name, default=None):
     """

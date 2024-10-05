@@ -1,8 +1,5 @@
 try:
-    try:
-        from flask_babelex import Domain
-    except ImportError:
-        from flask_babel import Domain
+    from flask_babel import Domain
 
 except ImportError:
     def gettext(string, **variables):
@@ -29,15 +26,16 @@ else:
         def __init__(self):
             super(CustomDomain, self).__init__(translations.__path__[0], domain='admin')
 
-        def get_translations_path(self, ctx):
+        @property
+        def translation_directories(self):
             view = get_current_view()
 
             if view is not None:
                 dirname = view.admin.translations_path
                 if dirname is not None:
-                    return dirname
+                    return [dirname] + super().translation_directories
 
-            return super(CustomDomain, self).get_translations_path(ctx)
+            return super().translation_directories
 
     domain = CustomDomain()
 
@@ -49,7 +47,7 @@ else:
 
     wtforms_domain = Domain(messages_path(), domain='wtforms')
 
-    class Translations(object):
+    class Translations(object):  # type: ignore[no-redef]
         ''' Fixes WTForms translation support and uses wtforms translations '''
         def gettext(self, string):
             t = wtforms_domain.get_translations()

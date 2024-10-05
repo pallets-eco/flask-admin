@@ -2,8 +2,6 @@ from wtforms import form, fields
 
 from flask_admin.contrib.pymongo import ModelView
 
-from . import setup
-
 
 class TestForm(form.Form):
     __test__ = False
@@ -19,9 +17,7 @@ class TestView(ModelView):
     form = TestForm
 
 
-def test_model():
-    app, db, admin = setup()
-
+def test_model(app, db, admin):
     view = TestView(db.test, 'Test')
     admin.add_view(view)
 

@@ -1,14 +1,11 @@
-from . import setup
 from .test_basic import CustomModelView
 
-from flask_sqlalchemy import Model
-from sqlalchemy.ext.declarative import declarative_base
+from flask_sqlalchemy.model import Model
+from sqlalchemy.orm import declarative_base
 
 
-def test_multiple_pk():
+def test_multiple_pk(app, db, admin):
     # Test multiple primary keys - mix int and string together
-    app, db, admin = setup()
-
     with app.app_context():
         class Model(db.Model):
             id = db.Column(db.Integer, primary_key=True)
@@ -44,10 +41,8 @@ def test_multiple_pk():
         assert rv.status_code == 302
 
 
-def test_joined_inheritance():
+def test_joined_inheritance(app, db, admin):
     # Test multiple primary keys - mix int and string together
-    app, db, admin = setup()
-
     with app.app_context():
         class Parent(db.Model):
             id = db.Column(db.Integer, primary_key=True)
@@ -84,10 +79,8 @@ def test_joined_inheritance():
         assert 'bar' in data
 
 
-def test_single_table_inheritance():
+def test_single_table_inheritance(app, db, admin):
     # Test multiple primary keys - mix int and string together
-    app, db, admin = setup()
-
     with app.app_context():
         CustomModel = declarative_base(cls=Model, name='Model')
 
@@ -125,10 +118,8 @@ def test_single_table_inheritance():
         assert 'bar' in data
 
 
-def test_concrete_table_inheritance():
+def test_concrete_table_inheritance(app, db, admin):
     # Test multiple primary keys - mix int and string together
-    app, db, admin = setup()
-
     with app.app_context():
         class Parent(db.Model):
             id = db.Column(db.Integer, primary_key=True)
@@ -161,10 +152,8 @@ def test_concrete_table_inheritance():
         assert 'bar' in data
 
 
-def test_concrete_multipk_inheritance():
+def test_concrete_multipk_inheritance(app, db, admin):
     # Test multiple primary keys - mix int and string together
-    app, db, admin = setup()
-
     with app.app_context():
         class Parent(db.Model):
             id = db.Column(db.Integer, primary_key=True)

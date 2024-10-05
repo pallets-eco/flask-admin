@@ -10,16 +10,13 @@ from sqlalchemy.event import listens_for
 from markupsafe import Markup
 
 from flask_admin import Admin, form
+from flask_admin.theme import Bootstrap4Theme
 from flask_admin.form import rules
 from flask_admin.contrib import sqla, rediscli
 
 
 # Create application
 app = Flask(__name__, static_folder='files')
-
-# set optional bootswatch theme
-# see http://bootswatch.com/3/ for available swatches
-app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
 # Create dummy secrey key so we can use sessions
 app.config['SECRET_KEY'] = '123456790'
@@ -218,7 +215,7 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 # Create admin
-admin = Admin(app, 'Example: Forms', template_mode='bootstrap4')
+admin = Admin(app, 'Example: Forms', theme=Bootstrap4Theme(swatch='cerulean'))
 
 # Add views
 admin.add_view(FileView(File, db.session))
@@ -316,6 +313,6 @@ if __name__ == '__main__':
     if not os.path.exists(database_path):
         with app.app_context():
             build_sample_db()
-        
+
     # Start app
     app.run(debug=False)

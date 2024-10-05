@@ -4,6 +4,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import relationship, backref
 
 import flask_admin as admin
+from flask_admin.theme import Bootstrap4Theme
 from flask_admin.contrib import sqla
 
 # Create application
@@ -87,7 +88,7 @@ class KeywordAdmin(sqla.ModelView):
 
 
 # Create admin
-admin = admin.Admin(app, name='Example: SQLAlchemy Association Proxy', template_mode='bootstrap4')
+admin = admin.Admin(app, name='Example: SQLAlchemy Association Proxy', theme=Bootstrap4Theme())
 admin.add_view(UserAdmin(User, db.session))
 admin.add_view(KeywordAdmin(Keyword, db.session))
 

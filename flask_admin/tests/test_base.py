@@ -8,6 +8,18 @@ from flask.views import MethodView
 from flask_admin import base
 
 
+@pytest.fixture
+def app():
+    # Overrides the `app` fixture in `flask_admin/tests/conftest.py` so that the `tests`
+    # directory/import path is configured as the root path for Flask. This will
+    # cause the `templates` directory here to be used for template resolution.
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = '1'
+    app.config['WTF_CSRF_ENABLED'] = False
+
+    yield app
+
+
 class MockView(base.BaseView):
     # Various properties
     allow_call = True
@@ -117,10 +129,9 @@ def test_custom_index_view():
     assert admin._views[0] == view
 
 
-def test_custom_index_view_in_init_app():
+def test_custom_index_view_in_init_app(app, babel):
     view = base.AdminIndexView(name='a', category='b', endpoint='c',
                                url='/d', template='e')
-    app = Flask(__name__)
     admin = base.Admin()
     admin.init_app(app, index_view=view)
 
@@ -136,16 +147,12 @@ def test_custom_index_view_in_init_app():
     assert admin._views[0] == view
 
 
-def test_base_registration():
-    app = Flask(__name__)
-    admin = base.Admin(app)
-
+def test_base_registration(app, admin):
     assert admin.app == app
     assert admin.index_view.blueprint is not None
 
 
-def test_admin_customizations():
-    app = Flask(__name__)
+def test_admin_customizations(app, babel):
     admin = base.Admin(app, name='Test', url='/foobar', static_url_path='/static/my/admin')
     assert admin.name == 'Test'
     assert admin.url == '/foobar'
@@ -157,7 +164,7 @@ def test_admin_customizations():
 
     # test custom static_url_path
     with app.test_request_context('/'):
-        rv = client.get(url_for('admin.static', filename='bootstrap/bootstrap2/css/bootstrap.css'))
+        rv = client.get(url_for('admin.static', filename='bootstrap/bootstrap4/css/bootstrap.min.css'))
     assert rv.status_code == 200
 
 
@@ -179,7 +186,7 @@ def test_baseview_registration():
     # Verify generated blueprint properties
     assert bp.name == view.endpoint
     assert bp.url_prefix == view.url
-    assert bp.template_folder == os.path.join('templates', 'bootstrap2')
+    assert bp.template_folder == os.path.join('templates', 'bootstrap4')
     assert bp.static_folder == view.static_folder
 
     # Verify customizations
@@ -207,29 +214,22 @@ def test_baseview_registration():
     assert view.blueprint.static_url_path == '/static/my/test'
 
 
-def test_baseview_urls():
-    app = Flask(__name__)
-    admin = base.Admin(app)
-
+@pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
+def test_baseview_urls(admin):
     view = MockView()
     admin.add_view(view)
 
     assert len(view._urls) == 2
 
 
-def test_add_views():
-    app = Flask(__name__)
-    admin = base.Admin(app)
-
+@pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
+def test_add_views(admin):
     admin.add_views(MockView(endpoint='test1'), MockView(endpoint='test2'))
 
     assert len(admin.menu()) == 3
 
 
-def test_add_category():
-    app = Flask(__name__)
-    admin = base.Admin(app)
-
+def test_add_category(admin):
     admin.add_category('Category1', 'class-name', 'icon-type', 'icon-value')
     admin.add_view(MockView(name='Test 1', endpoint='test1', category='Category1'))
     admin.add_view(MockView(name='Test 2', endpoint='test2', category='Category2'))
@@ -254,15 +254,11 @@ def test_add_category():
 
 
 @pytest.mark.xfail(raises=Exception)
-def test_no_default():
-    app = Flask(__name__)
-    admin = base.Admin(app)
+def test_no_default(admin):
     admin.add_view(base.BaseView())
 
 
-def test_call():
-    app = Flask(__name__)
-    admin = base.Admin(app)
+def test_call(app, admin):
     view = MockView()
     admin.add_view(view)
     client = app.test_client()
@@ -282,9 +278,7 @@ def test_call():
     assert rv.data == b'Failure!'
 
 
-def test_permissions():
-    app = Flask(__name__)
-    admin = base.Admin(app)
+def test_permissions(app, admin):
     view = MockView()
     admin.add_view(view)
     client = app.test_client()
@@ -295,9 +289,7 @@ def test_permissions():
     assert rv.status_code == 403
 
 
-def test_inaccessible_callback():
-    app = Flask(__name__)
-    admin = base.Admin(app)
+def test_inaccessible_callback(app, admin):
     view = MockView()
     admin.add_view(view)
     client = app.test_client()
@@ -309,10 +301,7 @@ def test_inaccessible_callback():
     assert rv.status_code == 418
 
 
-def get_visibility():
-    app = Flask(__name__)
-    admin = base.Admin(app)
-
+def get_visibility(app, admin):
     view = MockView(name='TestMenuItem')
     view.visible = False
 
@@ -324,9 +313,7 @@ def get_visibility():
     assert 'TestMenuItem' not in rv.data.decode('utf-8')
 
 
-def test_submenu():
-    app = Flask(__name__)
-    admin = base.Admin(app)
+def test_submenu(admin):
     admin.add_view(MockView(name='Test 1', category='Test', endpoint='test1'))
 
     # Second view is not normally accessible
@@ -351,11 +338,8 @@ def test_submenu():
     assert children[0].is_accessible()
 
 
-def test_delayed_init():
-    app = Flask(__name__)
-    admin = base.Admin()
+def test_delayed_init(app, admin):
     admin.add_view(MockView())
-    admin.init_app(app)
 
     client = app.test_client()
 
@@ -363,10 +347,7 @@ def test_delayed_init():
     assert rv.data == b'Success!'
 
 
-def test_multi_instances_init():
-    app = Flask(__name__)
-    _ = base.Admin(app)
-
+def test_multi_instances_init(app, admin):
     class ManageIndex(base.AdminIndexView):
         pass
 
@@ -374,16 +355,11 @@ def test_multi_instances_init():
 
 
 @pytest.mark.xfail(raises=Exception)
-def test_double_init():
-    app = Flask(__name__)
-    admin = base.Admin(app)
+def test_double_init(app, admin):
     admin.init_app(app)
 
 
-def test_nested_flask_views():
-    app = Flask(__name__)
-    admin = base.Admin(app)
-
+def test_nested_flask_views(app, admin):
     view = MockMethodView()
     admin.add_view(view)
 
@@ -414,8 +390,7 @@ def test_nested_flask_views():
     assert rv.data == b'GET - API3'
 
 
-def test_root_mount():
-    app = Flask(__name__)
+def test_root_mount(app, babel):
     admin = base.Admin(app, url='/')
     admin.add_view(MockView())
 
@@ -425,13 +400,12 @@ def test_root_mount():
 
     # test static files when url='/'
     with app.test_request_context('/'):
-        rv = client.get(url_for('admin.static', filename='bootstrap/bootstrap2/css/bootstrap.css'))
+        rv = client.get(url_for('admin.static', filename='bootstrap/bootstrap4/css/bootstrap.min.css'))
+        rv.close()
     assert rv.status_code == 200
 
 
-def test_menu_links():
-    app = Flask(__name__)
-    admin = base.Admin(app)
+def test_menu_links(app, admin):
     admin.add_link(base.MenuLink('TestMenuLink1', endpoint='.index'))
     admin.add_link(base.MenuLink('TestMenuLink2', url='http://python.org/'))
 
@@ -443,9 +417,7 @@ def test_menu_links():
     assert 'TestMenuLink2' in data
 
 
-def test_add_links():
-    app = Flask(__name__)
-    admin = base.Admin(app)
+def test_add_links(app, admin):
     admin.add_links(base.MenuLink('TestMenuLink1', endpoint='.index'),
                     base.MenuLink('TestMenuLink2', url='http://python.org/'))
 

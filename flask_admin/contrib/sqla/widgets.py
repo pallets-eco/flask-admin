@@ -1,6 +1,5 @@
-from wtforms.widgets.core import escape
-
-from flask_admin._backwards import Markup
+from markupsafe import Markup
+from wtforms.widgets.core import escape  # type: ignore[attr-defined]
 
 
 class CheckboxListInput:
@@ -20,9 +19,13 @@ class CheckboxListInput:
 
     def __call__(self, field, **kwargs):
         items = []
-        for val, label, selected in field.iter_choices():
+        for field_choices in field.iter_choices():
+            if len(field_choices) == 3:  # wtforms <3.1, >=3.1.1, <3.2
+                value, label, selected = field_choices
+            else:
+                value, label, selected, _ = field_choices
             args = {
-                'id': val,
+                'id': value,
                 'name': field.name,
                 'label': escape(label),
                 'selected': ' checked' if selected else '',

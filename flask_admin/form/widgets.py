@@ -6,11 +6,6 @@ from flask_admin import helpers as h
 __all__ = ['Select2Widget', 'DatePickerWidget', 'DateTimePickerWidget', 'RenderTemplateWidget', 'Select2TagsWidget', ]
 
 
-def _is_bootstrap3():
-    view = h.get_current_view()
-    return view and view.admin.template_mode == 'bootstrap3'
-
-
 class Select2Widget(widgets.Select):
     """
         `Select2 <https://github.com/ivaynberg/select2>`_ styled select widget.
@@ -29,7 +24,7 @@ class Select2Widget(widgets.Select):
 
 
 class Select2TagsWidget(widgets.TextInput):
-    """`Select2 <http://ivaynberg.github.com/select2/#tags>`_ styled text widget.
+    """`Select2Tags <http://ivaynberg.github.com/select2/#tags>`_ styled text widget.
     You must include select2.js, form-x.x.x.js and select2 stylesheet for it to work.
     """
     def __call__(self, field, **kwargs):

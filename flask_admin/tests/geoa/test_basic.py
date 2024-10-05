@@ -2,13 +2,12 @@ from __future__ import unicode_literals
 import json
 import re
 
+import pytest
 
 from flask_admin.contrib.geoa import ModelView
 from flask_admin.contrib.geoa.fields import GeoJSONField
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
-
-from . import setup
 
 
 def create_models(db):
@@ -26,8 +25,7 @@ def create_models(db):
     return GeoModel
 
 
-def test_model():
-    app, db, admin = setup()
+def test_model(app, db, admin):
     GeoModel = create_models(db)
     with app.app_context():
         db.create_all()
@@ -126,8 +124,7 @@ def test_model():
     assert db.session.query(GeoModel).count() == 0
 
 
-def test_none():
-    app, db, admin = setup()
+def test_none(app, db, admin):
     GeoModel = create_models(db)
     with app.app_context():
         db.create_all()

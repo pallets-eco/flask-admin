@@ -1,12 +1,12 @@
-from . import setup
+import pytest
+
 from .test_basic import CustomModelView, create_models
 
 from flask_admin.form import rules
 
 
-def test_form_rules():
-    app, db, admin = setup()
-
+@pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
+def test_form_rules(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
@@ -30,9 +30,8 @@ def test_form_rules():
         assert pos3 == -1
 
 
-def test_rule_macro():
-    app, db, admin = setup()
-
+@pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
+def test_rule_macro(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
@@ -53,9 +52,8 @@ def test_rule_macro():
         assert 'Hello another_test' in data
 
 
-def test_rule_container():
-    app, db, admin = setup()
-
+@pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
+def test_rule_container(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
@@ -80,8 +78,8 @@ def test_rule_container():
         assert pos1 < pos2 < pos3
 
 
-def test_rule_header():
-    app, db, admin = setup()
+@pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
+def test_rule_header(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
@@ -99,8 +97,8 @@ def test_rule_header():
         assert '<h3>hello</h3>' in data
 
 
-def test_rule_field_set():
-    app, db, admin = setup()
+@pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
+def test_rule_field_set(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
@@ -125,8 +123,11 @@ def test_rule_field_set():
         assert pos3 == -1
 
 
-def test_rule_inlinefieldlist():
-    app, db, admin = setup()
+@pytest.mark.filterwarnings(
+    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this will be mandatory in wtforms 3.2:DeprecationWarning",
+    "ignore:Fields missing from ruleset.*:UserWarning",
+)
+def test_rule_inlinefieldlist(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
         db.create_all()
@@ -142,8 +143,10 @@ def test_rule_inlinefieldlist():
         assert rv.status_code == 200
 
 
-def test_inline_model_rules():
-    app, db, admin = setup()
+@pytest.mark.filterwarnings(
+    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this will be mandatory in wtforms 3.2:DeprecationWarning",
+)
+def test_inline_model_rules(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
         db.create_all()

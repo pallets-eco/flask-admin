@@ -1,4 +1,8 @@
 import time
+from types import ModuleType
+from typing import Optional
+
+s3: Optional[ModuleType]
 
 try:
     from boto import s3
@@ -52,8 +56,10 @@ class S3Storage(object):
         """
 
         if not s3:
-            raise ValueError('Could not import boto. You can install boto by '
-                             'using pip install boto')
+            raise ValueError(
+                'Could not import `boto`. '
+                'Enable `s3` integration by installing `flask-admin[s3]`'
+            )
 
         connection = s3.connect_to_region(
             region,

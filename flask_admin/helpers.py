@@ -1,10 +1,13 @@
 from re import sub, compile
+from typing import Callable, Optional
 from urllib.parse import urljoin, urlparse
 
 from flask import g, request, url_for, flash
+from jinja2 import pass_context  # type: ignore[attr-defined]
+from markupsafe import Markup
 from wtforms.validators import DataRequired, InputRequired
 
-from flask_admin._compat import iteritems, pass_context
+from flask_admin._compat import iteritems
 
 from ._compat import string_types
 

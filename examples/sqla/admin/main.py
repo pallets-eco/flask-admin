@@ -1,11 +1,13 @@
 from admin import app, db
 from admin.models import AVAILABLE_USER_TYPES, User, Post, Tag, Tree
-from flask import Markup, send_file
+from flask import send_file
+from markupsafe import Markup
 
 from wtforms import validators
 
 import flask_admin as admin
 from flask_admin.base import MenuLink
+from flask_admin.theme import BootstrapTheme, Bootstrap4Theme
 from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import filters
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter, FilterEqual
@@ -60,6 +62,9 @@ def is_numberic_validator(form, field):
 
 class UserAdmin(sqla.ModelView):
 
+    can_set_page_size = True
+    page_size = 5
+    page_size_options = (5,10,15)
     can_view_details = True  # show a modal dialog with records details
     action_disallowed_list = ['delete', ]
 
@@ -242,7 +247,7 @@ class TreeView(sqla.ModelView):
 
 
 # Create admin
-admin = admin.Admin(app, name='Example: SQLAlchemy', template_mode='bootstrap4')
+admin = admin.Admin(app, name='Example: SQLAlchemy', theme=Bootstrap4Theme(swatch='default'))
 
 # Add views
 admin.add_view(UserAdmin(User, db.session))

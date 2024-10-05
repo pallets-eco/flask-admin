@@ -1,0 +1,13 @@
+-r tests.in
+
+mypy
+pyright
+pytest
+types-Flask-SQLAlchemy
+types-Pillow
+types-beautifulsoup4
+types-boto
+types-peewee
+types-Flask
+types-WTForms
+types-shapely

@@ -1,0 +1,200 @@
+[project]
+name = "Flask-Admin"
+version = "2.0.0a0"
+description = "Simple and extensible admin interface framework for Flask"
+readme = "README.md"
+license = { file = "LICENSE.txt" }
+author = [{ name = "Flask-Admin team" }]
+maintainers = [{ name = "Pallets Ecosystem", email = "contact@palletsprojects.com" }]
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Environment :: Web Environment',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: BSD License',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+]
+requires-python = ">=3.8"
+dependencies = [
+    "flask>=2.0",
+    "jinja2>=3.0",
+    "markupsafe>=2.0",
+    "werkzeug>=2.0",
+    "wtforms>=2.3",
+]
+
+[project.optional-dependencies]
+sqlalchemy = [
+    "flask-sqlalchemy>=3",
+    "sqlalchemy>=1.4",
+]
+sqlalchemy-with-utils = [
+    "Flask-Admin[sqlalchemy]",
+    "sqlalchemy_utils>=0.38.0",
+    "sqlalchemy-citext>=1.8.0",
+    "colour>=0.1.5",
+    "email_validator>=2",
+    "arrow>=0.13.0",
+]
+geoalchemy = [
+    "Flask-Admin[sqlalchemy]",
+    "geoalchemy2>=0.14.0",
+    "shapely>=2",
+]
+pymongo = ["pymongo>=3.7.0"]
+peewee = [
+    "peewee>=3.14.0",
+    "wtf-peewee>=3.0.4"
+]
+s3 = ["boto"]  # TODO: migrate to boto3
+azure-blob-storage = ["azure-storage-blob<=3"]  # TODO: update to v12+
+images = ["pillow>=10.0.0"]
+export = ["tablib>=3.0.0"]
+rediscli = ["redis>=4.0.0"]
+translation = ["flask-babel>=3.0.1"]
+all = [
+    "Flask-Admin[sqlalchemy]",
+    "Flask-Admin[sqlalchemy-with-utils]",
+    "Flask-Admin[geoalchemy]",
+    "Flask-Admin[pymongo]",
+    "Flask-Admin[peewee]",
+    "Flask-Admin[s3]",
+    "Flask-Admin[azure-blob-storage]",
+    "Flask-Admin[images]",
+    "Flask-Admin[export]",
+    "Flask-Admin[rediscli]",
+    "Flask-Admin[translation]",
+]
+
+[project.urls]
+Documentation = "https://flask-admin.readthedocs.io"
+Changes = "https://github.com/pallets-eco/flask-admin/releases/"
+Source = "https://github.com/pallets-eco/flask-admin/"
+Chat = "https://discord.gg/pallets"
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "flask_admin"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "flask_babel: requires Flask-Babel to be installed"
+]
+filterwarnings = [
+    "error",
+    # TODO: remove the ignored deprecation warning when support for WTForms 3 has been added.
+    "ignore:Flags should be stored in dicts and not in tuples. The next version of WTForms will abandon support for flags in tuples.:DeprecationWarning",
+
+    # Werkzeug is responsible for the below deprecation warning; remove when they have updated their code.
+    "default:ast\\.Str is deprecated and will be removed in Python 3\\.14:DeprecationWarning",
+    "default:Attribute s is deprecated and will be removed in Python 3\\.14:DeprecationWarning",
+
+    # Flask is responsible for the below deprecation warning; remove when they have updated their code.
+    "default:'pkgutil\\.get_loader' is deprecated and slated for removal in Python 3\\.14:DeprecationWarning",
+    "default:'pkgutil\\.find_loader' is deprecated and slated for removal in Python 3\\.14:DeprecationWarning",
+
+    "default:datetime\\.datetime\\.utcnow\\(\\) is deprecated and scheduled for removal in a future version:DeprecationWarning",
+
+    # `flask.testing` accesses this attribute; remove when they have updated their code.
+    "default:The '__version__' attribute is deprecated and will be removed in Werkzeug 3\\.1\\.:DeprecationWarning",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["flask_admin", "tests"]
+
+[tool.coverage.paths]
+source = ["flask_admin", "*/site-packages"]
+
+[tool.mypy]
+python_version = "3.8"
+files = ["flask_admin"]
+show_error_codes = true
+pretty = true
+strict = true
+
+# Start off with these
+warn_unused_configs = false
+warn_redundant_casts = false
+warn_unused_ignores = false
+
+# Getting these passing should be easy
+strict_equality = false
+strict_concatenate = false
+
+# Strongly recommend enabling this one as soon as you can
+check_untyped_defs = false
+
+# These shouldn't be too much additional work, but may be tricky to
+# get passing if you use a lot of untyped libraries
+disallow_subclassing_any = false
+disallow_untyped_decorators = false
+disallow_any_generics = false
+
+# These next few are various gradations of forcing use of type annotations
+disallow_untyped_calls = false
+disallow_incomplete_defs = false
+disallow_untyped_defs = false
+
+# This one isn't too hard to get passing, but return on investment is lower
+no_implicit_reexport = false
+
+# This one can be tricky to get passing if you use a lot of untyped libraries
+warn_return_any = false
+
+[[tool.mypy.overrides]]
+module = [
+    "arrow",
+    "azure.*",
+    "bson.*",
+    "citext",
+    "colour",
+    "flask_babel",
+    "flask_wtf",
+    "gridfs",
+    "marker",
+    "playhouse.*",
+    "pymongo",
+    "sqlalchemy.*",
+    "sqlalchemy_utils",
+    "tablib",
+    "wtforms.*",
+    "wtfpeewee.*",
+]
+ignore_missing_imports = true
+
+[tool.pyright]
+pythonVersion = "3.8"
+include = ["flask_admin", "tests"]
+typeCheckingMode = "basic"
+
+[tool.ruff]
+src = ["flask_admin"]
+fix = true
+show-fixes = true
+output-format = "full"
+
+[tool.ruff.lint]
+select = [
+    "B",  # flake8-bugbear
+    "E",  # pycodestyle error
+    "F",  # pyflakes
+    "I",  # isort
+    "UP",  # pyupgrade
+    "W",  # pycodestyle warning
+]
+ignore-init-module-imports = true
+
+[tool.ruff.lint.isort]
+force-single-line = true
+order-by-type = false

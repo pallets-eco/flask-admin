@@ -1,6 +1,66 @@
 Changelog
 =========
 
+2.0.0a1
+-------
+
+Fixes:
+
+* The `Apply` button for filters will show/hide correctly again
+* Fix `translations_path` attribute when Flask-Admin is used with Flask-Babel
+
+2.0.0a0
+-------
+
+Breaking changes:
+
+* Added support for Python 3.12
+* Dropped support for Python 3.7
+* Flask-BabelEx is no longer supported; the package is no longer maintained and Flask-Babel is recommended/active instead.
+* Flask-Mongoengine is no longer supported due to that package being unmaintained.
+* Bootstrap2 and Bootstrap3 themes are no longer available.
+* `Admin()` now takes a `theme` parameter that encapsulates all of the configuration options for theming the admin instance. This replaces the `template_mode` parameter.
+* All remaining Flask-Admin config has been namespaced under `FLASK_ADMIN_`.
+
+.. list-table:: Title
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Config variable name
+     - What's changed
+   * - FLASK_ADMIN_SWATCH
+     - Removed; use `Theme(swatch=...)` instead
+   * - FLASK_ADMIN_FLUID_LAYOUT
+     - Removed; use `Theme(fluid=...)` instead
+   * - MAPBOX_MAP_ID
+     - Renamed to FLASK_ADMIN_MAPBOX_MAP_ID
+   * - MAPBOX_SEARCH
+     - Renamed to FLASK_ADMIN_MAPBOX_SEARCH
+   * - MAPBOX_ACCESS_TOKEN
+     - Renamed to FLASK_ADMIN_MAPBOX_ACCESS_TOKEN
+   * - GOOGLE_MAPS_API_KEY
+     - Renamed to FLASK_ADMIN_GOOGLE_MAPS_API_KEY
+   * - DEFAULT_CENTER_LAT
+     - Renamed to FLASK_ADMIN_DEFAULT_CENTER_LAT
+   * - DEFAULT_CENTER_LONG
+     - Renamed to FLASK_ADMIN_DEFAULT_CENTER_LONG
+   * - ADMIN_RAISE_ON_INTEGRITY_ERROR
+     - Renamed to FLASK_ADMIN_RAISE_ON_INTEGRITY_ERROR
+   * - ADMIN_RAISE_ON_VIEW_EXCEPTION
+     - Renamed to FLASK_ADMIN_RAISE_ON_VIEW_EXCEPTION
+
+New features:
+
+* Flask-Admin now supports the `host_matching` mode of Flask apps. See documentation for how to configure this where needed.
+* Flask-Admin is now compatible with SQLAlchemy v2+, Flask v3+, WTForms v3+, and Pillow v10+.
+* Flask-Admin now declares its dependencies and supported dependency versions more cleanly, including using pip extras. If you use Flask-Admin with SQLAlchemy, for example, you should use `pip install flask-admin[sqlalchemy]` or list `flask-admin[sqlalchemy]` in your requirements.txt or pyproject.toml files.
+* Apps using content security policies to restrict the assets that can be loaded can now whitelist Flask-Admin's assets by passing a `csp_nonce_generator` function to the Admin instance. See examples or documentation for how to configure this where needed.
+* `page_size_options` can now be configured on Admin models, to restrict the page sizes that users can select. These are now enforced properly and cannot be bypassed by URL hacking.
+
+And various smaller bug fixes and documentation updates.
+
+For the full changelog, see https://github.com/pallets-eco/flask-admin/releases/tag/v2.0.0a0
+
 1.6.1
 -----
 
