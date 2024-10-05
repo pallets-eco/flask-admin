@@ -1,0 +1,11 @@
+<html>
+  <body>
+    <h2>Thumbnails from "images" table</h2>
+    {% for thumbnail in thumbnails %}
+      {{ thumbnail }}
+    <hr/>
+    {% endfor %}
+    <br>
+    <a href="/admin">Open admin to upload some images.</a>
+  </body>
+</html>

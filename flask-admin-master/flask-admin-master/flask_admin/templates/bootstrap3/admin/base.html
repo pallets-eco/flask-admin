@@ -1,0 +1,98 @@
+{% import 'admin/layout.html' as layout with context -%}
+{% import 'admin/static.html' as admin_static with context %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}{% if admin_view.category %}{{ admin_view.category }} - {% endif %}{{ admin_view.name }} - {{ admin_view.admin.name }}{% endblock %}</title>
+    {% block head_meta %}
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+    {% endblock %}
+    {% block head_css %}
+        <link href="{{ admin_static.url(filename='bootstrap/bootstrap3/swatch/{swatch}/bootstrap.min.css'.format(swatch=config.get('FLASK_ADMIN_SWATCH', 'default')), v='3.3.5') }}" rel="stylesheet">
+        {%if config.get('FLASK_ADMIN_SWATCH', 'default') == 'default' %}
+        <link href="{{ admin_static.url(filename='bootstrap/bootstrap3/css/bootstrap-theme.min.css', v='3.3.5') }}" rel="stylesheet">
+        {%endif%}
+        <link href="{{ admin_static.url(filename='admin/css/bootstrap3/admin.css', v='1.1.1') }}" rel="stylesheet">
+	<link href="{{ admin_static.url(filename='admin/css/bootstrap3/submenu.css') }}" rel="stylesheet">
+        {% if admin_view.extra_css %}
+          {% for css_url in admin_view.extra_css %}
+            <link href="{{ css_url }}" rel="stylesheet">
+          {% endfor %}
+        {% endif %}
+        <style>
+        body {
+            padding-top: 4px;
+        }
+        </style>
+    {% endblock %}
+    {% block head %}
+    {% endblock %}
+    {% block head_tail %}
+    {% endblock %}
+  </head>
+  <body>
+    {% block page_body %}
+    <div class="container{%if config.get('FLASK_ADMIN_FLUID_LAYOUT', False) %}-fluid{% endif %}">
+      <nav class="navbar navbar-default" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#admin-navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          {% block brand %}
+          <a class="navbar-brand" href="{{ admin_view.admin.url }}">{{ admin_view.admin.name }}</a>
+          {% endblock %}
+        </div>
+        <!-- navbar content -->
+        <div class="collapse navbar-collapse" id="admin-navbar-collapse">
+          {% block main_menu %}
+          <ul class="nav navbar-nav">
+            {{ layout.menu() }}
+          </ul>
+          {% endblock %}
+
+          {% block menu_links %}
+          <ul class="nav navbar-nav navbar-right">
+            {{ layout.menu_links() }}
+          </ul>
+          {% endblock %}
+          {% block access_control %}
+          {% endblock %}
+        </div>
+      </nav>
+
+      {% block messages %}
+      {{ layout.messages() }}
+      {% endblock %}
+
+      {# store the jinja2 context for form_rules rendering logic #}
+      {% set render_ctx = h.resolve_ctx() %}
+
+      {% block body %}{% endblock %}
+    </div>
+    {% endblock %}
+
+    {% block tail_js %}
+    <script src="{{ admin_static.url(filename='vendor/jquery.min.js', v='3.5.1') }}" type="text/javascript"></script>
+    <script src="{{ admin_static.url(filename='bootstrap/bootstrap3/js/bootstrap.min.js', v='3.3.5') }}" type="text/javascript"></script>
+    <script src="{{ admin_static.url(filename='vendor/moment.min.js', v='2.22.2') }}" type="text/javascript"></script>
+    <script src="{{ admin_static.url(filename='vendor/select2/select2.min.js', v='3.5.2') }}" type="text/javascript"></script>
+    <script src="{{ admin_static.url(filename='admin/js/helpers.js', v='1.0.0') }}" type="text/javascript"></script>
+    {% if admin_view.extra_js %}
+      {% for js_url in admin_view.extra_js %}
+        <script src="{{ js_url }}" type="text/javascript"></script>
+      {% endfor %}
+    {% endif %}
+    {% endblock %}
+
+    {% block tail %}
+    {% endblock %}
+  </body>
+</html>

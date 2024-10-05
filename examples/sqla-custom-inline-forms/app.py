@@ -1,6 +1,6 @@
 import os
 import os.path as op
-
+from pathlib import Path
 from werkzeug.utils import secure_filename
 from sqlalchemy import event
 
@@ -10,6 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 from wtforms import fields
 
 import flask_admin as admin
+from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from flask_admin.form import RenderTemplateWidget
 from flask_admin.model.form import InlineFormAdmin
@@ -54,6 +55,22 @@ class ImageType(db.Model):
         return self.name
 
 
+class ImageType(db.Model):
+    """
+    Just so the LocationImage can have another foreign key,
+    so we can test the "form_ajax_refs" inside the "inline_models"
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+
+    def __repr__(self) -> str:
+        """
+        Represent this model as a string
+        (e.g. in the Image Type list dropdown when creating an inline model)
+        """
+        return self.name
+
+
 class LocationImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     alt = db.Column(db.Unicode(128))
@@ -61,6 +78,9 @@ class LocationImage(db.Model):
 
     location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     location = db.relation(Location, backref='images')
+
+    image_type_id = db.Column(db.Integer, db.ForeignKey(ImageType.id))
+    image_type = db.relation(ImageType, backref='images')
 
     image_type_id = db.Column(db.Integer, db.ForeignKey(ImageType.id))
     image_type = db.relation(ImageType, backref='images')
@@ -88,6 +108,8 @@ class CustomInlineModelFormList(InlineModelFormList):
     widget = CustomInlineFieldListWidget()
 
     def display_row_controls(self, field):
+        """Whether to display the edit/delete/duplicate controls"""
+        # return field.get_pk() is not None
         return False
 
 
@@ -98,9 +120,23 @@ class CustomInlineModelConverter(InlineModelConverter):
 
 # Customized inline form handler
 class LocationImageInlineModelForm(InlineFormAdmin):
+class LocationImageInlineModelForm(InlineFormAdmin):
     form_excluded_columns = ('path',)
 
     form_label = 'Image'
+
+    # Setup AJAX lazy-loading for the ImageType inside the inline model
+    form_ajax_refs = {
+        "image_type": QueryAjaxModelLoader(
+            name="image_type",
+            session=db.session,
+            model=ImageType,
+            fields=("name",),
+            order_by="name",
+            placeholder="Please use an AJAX query to select an image type for the image",
+            minimum_input_length=0,
+        )
+    }
 
     # Setup AJAX lazy-loading for the ImageType inside the inline model
     form_ajax_refs = {
@@ -134,6 +170,7 @@ class LocationImageInlineModelForm(InlineFormAdmin):
 class LocationAdmin(ModelView):
     inline_model_form_converter = CustomInlineModelConverter
 
+    inline_models = (LocationImageInlineModelForm(),)
     inline_models = (LocationImageInlineModelForm(),)
 
     def __init__(self):
@@ -171,11 +208,61 @@ if __name__ == '__main__':
         pass
 
     # Create DB
-    first_time_setup()
+    db.drop_all()
+    db.create_all()
 
-    # Create admin
-    admin = admin.Admin(app, name='Example: Inline Models')
-    admin.add_view(LocationAdmin())
+    # Add some image types for the form_ajax_refs inside the inline_model
+    image_types = ("JPEG", "PNG", "GIF")
+    for image_type in image_types:
+        model = ImageType(name=image_type)
+        db.session.add(model)
 
-    # Start app
-    app.run(debug=True)
+    db.session.commit()
+
+    return
+
+
+# if __name__ == '__main__':
+# Create upload directory
+try:
+    os.mkdir(base_path)
+except OSError:
+    pass
+def first_time_setup():
+    """Run this to setup the database for the first time"""
+    # Create DB
+    db.drop_all()
+    db.create_all()
+
+    # Add some image types for the form_ajax_refs inside the inline_model
+    image_types = ("JPEG", "PNG", "GIF")
+    for image_type in image_types:
+        model = ImageType(name=image_type)
+        db.session.add(model)
+
+    db.session.commit()
+
+    return
+
+
+# if __name__ == '__main__':
+# Create upload directory
+try:
+    os.mkdir(base_path)
+except OSError:
+    pass
+
+# Create admin
+admin = admin.Admin(app, name='Example: Inline Models')
+
+# Add views
+admin.add_view(LocationAdmin())
+
+# Create DB
+first_time_setup()
+# Create DB
+first_time_setup()
+
+# Start app
+app.run(debug=True)
+print("Started")

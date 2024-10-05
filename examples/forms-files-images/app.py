@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from redis import Redis
 from wtforms import fields, widgets
 
+from sqlalchemy.orm import relationship
 from sqlalchemy.event import listens_for
 from markupsafe import Markup
 
@@ -25,6 +26,7 @@ app.config['SECRET_KEY'] = '123456790'
 app.config['DATABASE_FILE'] = 'sample_db.sqlite'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.config['DATABASE_FILE']
 app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # Create directory for file fields to use
@@ -54,6 +56,24 @@ class Image(db.Model):
         return self.name
 
 
+# many-to-many relationship between User and Address
+user_address_rel = db.Table(
+    "user_address_rel",
+    db.Column(
+        "user_id",
+        db.Integer,
+        db.ForeignKey("user.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    db.Column(
+        "address_id",
+        db.Integer,
+        db.ForeignKey("address.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+)
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.Unicode(64))
@@ -61,9 +81,36 @@ class User(db.Model):
     email = db.Column(db.Unicode(128))
     phone = db.Column(db.Unicode(32))
     city = db.Column(db.Unicode(128))
+    state = db.Column(db.Unicode(128))
     country = db.Column(db.Unicode(128))
+    continent = db.Column(db.Unicode(128))
     notes = db.Column(db.UnicodeText)
     is_admin = db.Column(db.Boolean, default=False)
+
+    # many-to-many relationship
+    addresses = relationship(
+        "Address",
+        secondary=user_address_rel,
+        back_populates="users",
+        cascade="all, delete",
+        passive_deletes=True,
+    )
+
+
+class Address(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    street = db.Column(db.Unicode(128))
+    city = db.Column(db.Unicode(128))
+    country = db.Column(db.Unicode(128))
+
+    # many-to-many relationship
+    users = relationship(
+        "User",
+        secondary=user_address_rel,
+        back_populates="addresses",
+        cascade="all, delete",
+        passive_deletes=True,
+    )
 
 
 class Page(db.Model):
@@ -166,16 +213,38 @@ class UserView(sqla.ModelView):
     """
     This class demonstrates the use of 'rules' for controlling the rendering of forms.
     """
+    can_view_details = True
+
     form_create_rules = [
         # Header and four fields. Email field will go above phone field.
-        rules.FieldSet(('first_name', 'last_name', 'email', 'phone', 'is_admin'), 'Personal'),
+        rules.FieldSet(('first_name', 'last_name', 'email', 'phone', ), 'Personal'),
+        rules.Field('is_admin'),
         # Separate header and few fields
         rules.Header('Location'),
-        rules.Field('city'),
         # String is resolved to form field, so there's no need to explicitly use `rules.Field`
-        'country',
+        rules.Row('city', 'state'),
+        # many-to-many field (multi-select)
+        'addresses',
+        rules.Row('country', 'continent'),
         # Show macro that's included in the templates
-        rules.Container('rule_demo.wrap', rules.Field('notes'))
+        # rules.Container('rule_demo.wrap', rules.Field('notes')),
+        rules.Field('notes'),
+        # Bootstrap container with embedded row and columns
+        rules.BSContainer(
+            rules=[
+                rules.BSRow(
+                    rules=[
+                        rules.BSCol(
+                            rules=["email"],
+                            classes="col-xs-6"
+                        ),
+                        "phone"
+                    ],
+                    classes="justify-content-center"
+                )
+            ],
+            classes="container-fluid"
+        )
     ]
 
     # Use same rule set for edit page
@@ -188,6 +257,28 @@ class UserView(sqla.ModelView):
         "is_admin": "Is this an admin user?",
     }
 
+    column_list = [
+        'first_name', 'last_name', 'email', 'phone', 'is_admin',
+        'city', 'state', 'country', 'continent', 'addresses', 'notes'
+    ]
+
+    form_columns = column_list
+    column_editable_list = form_columns
+    
+    # ensure the many-to-many "addresses" is in the details list
+    column_details_list = column_list
+
+    inline_models = [
+        (
+            Address,
+            # Note, the primary key "id" MUST be included in this list to avoid errors!
+            # {"form_columns": ["street", "city"]}
+            {"form_columns": ["street", "city", "id"]}
+        )
+    ]
+
+class AddressView(sqla.ModelView):
+    """Address records view"""
 
 # Flask views
 @app.route('/')
@@ -203,6 +294,7 @@ admin.add_view(ImageView(Image, db.session))
 admin.add_view(UserView(User, db.session))
 admin.add_view(PageView(Page, db.session))
 admin.add_view(rediscli.RedisCli(Redis()))
+admin.add_view(sqla.ModelView(Address, db.session))
 
 
 def build_sample_db():
@@ -278,6 +370,12 @@ def build_sample_db():
         file.path = "example_" + str(i) + ".pdf"
         db.session.add(file)
 
+        address = Address()
+        address.street = "Example street " + str(i)
+        address.city = "Example city " + str(i)
+        address.country = "Example country " + str(i)
+        db.session.add(address)
+
     sample_text = "<h2>This is a test</h2>" + \
     "<p>Create HTML content in a text area field with the help of <i>WTForms</i> and <i>CKEditor</i>.</p>"
     db.session.add(Page(name="Test Page", text=sample_text))
@@ -295,4 +393,4 @@ if __name__ == '__main__':
             build_sample_db()
 
     # Start app
-    app.run(debug=True)
+    app.run(debug=False)

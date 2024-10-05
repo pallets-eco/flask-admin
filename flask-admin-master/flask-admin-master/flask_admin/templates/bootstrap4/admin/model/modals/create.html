@@ -1,0 +1,36 @@
+{% import 'admin/static.html' as admin_static with context%}
+{% import 'admin/lib.html' as lib with context %}
+
+{# store the jinja2 context for form_rules rendering logic #}
+{% set render_ctx = h.resolve_ctx() %}
+
+{% block body %}
+
+  <div class="modal-header">
+    {% block header_text %}<h5 class="modal-title">{{ _gettext('Create New Record') }}</h5>{% endblock %}
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% call lib.form_tag(action=url_for('.create_view', url=return_url)) %}
+  <div class="modal-body">
+        {{ lib.render_form_fields(form, form_opts=form_opts) }}
+  </div>
+  <div class="modal-footer">
+        {{ lib.render_form_buttons(return_url, extra=None, is_modal=True) }}
+  </div>
+  {% endcall %}
+
+    {# "save and add" button is removed from modal (it won't function properly) #}
+    {# % block create_form %}
+      {{ lib.render_form(form, return_url, extra=None, form_opts=form_opts,
+                         action=url_for('.create_view', url=return_url),
+                         is_modal=True) }}
+    {% endblock % #}
+
+
+{% endblock %}
+
+{% block tail %}
+  <script src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
+{% endblock %}

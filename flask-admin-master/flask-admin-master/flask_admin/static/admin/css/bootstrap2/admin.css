@@ -1,0 +1,165 @@
+/* List View - fix trash icon inside table column */
+.model-list form.icon {
+    display: inline;
+}
+
+.model-list form.icon button {
+    border: none;
+    background: transparent;
+    text-decoration: none;
+    padding: 0;
+    line-height: normal;
+}
+
+/* List View - link icons - prevent underline */
+.model-list a.icon {
+    text-decoration: none;
+}
+
+/* List View - fix checkbox column width */
+.list-checkbox-column {
+    width: 14px;
+}
+
+/* List View - prevent word wrap on buttons column, to keep it on one line */
+.list-buttons-column {
+    white-space: nowrap;
+}
+
+/* List View - fix gap between actions and table */
+.model-list  {
+    position: static;
+    margin-top: -1px;
+    z-index: 999;
+}
+
+.actions-nav  {
+margin-bottom: 0;
+margin-left: 4px;
+margin-right: 4px;
+}
+
+#filter_form  {
+    margin-bottom: 0;
+}
+
+/* List View Search Form - fix gap between form and table */
+.actions-nav form.search-form {
+    margin: -1px 0 0 0;
+}
+
+/* Filters */
+table.filters {
+    border-collapse: collapse;
+    border-spacing: 4px;
+}
+
+/* prevents gap between table and actions while there are no filters set */
+table.filters:not(:empty) {
+    margin: 12px 0px 20px 0px;
+}
+
+/* spacing between filter X button, operation, and value field */
+/* uses tables instead of form classes for bootstrap2-3 compatibility */
+table.filters tr td {
+    padding-right: 5px;
+    padding-bottom: 3px;
+}
+
+/* match filter operation drop-down height with bootstrap input */
+.filters .filter-op > a {
+    height: 28px;
+    line-height: 28px;
+}
+
+/* Image thumbnails */
+.image-thumbnail img {
+    max-width: 100px;
+    max-height: 100px;
+}
+
+/* Forms */
+.admin-form .control-label {
+    width: 100px;
+    text-align: left;
+    margin-left: 4px;
+}
+
+/* add spacing between labels and form fields */
+.admin-form .controls {
+    margin-left: 110px;
+}
+
+@media only screen and (max-width: 800px) {
+
+    /* Force table to not be like tables anymore */
+    #no-more-tables table,
+    #no-more-tables thead,
+    #no-more-tables tbody,
+    #no-more-tables th,
+    #no-more-tables td,
+    #no-more-tables tr {
+        display: block;
+    }
+
+    /* Hide table headers (but not display: none;, for accessibility) */
+    #no-more-tables thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    #no-more-tables tr { border: 1px solid #ccc; }
+
+    #no-more-tables td {
+        /* Behave  like a "row" */
+        border: none;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: 50%;
+        white-space: normal;
+        text-align:left;
+    }
+
+    #no-more-tables td:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align:left;
+        font-weight: bold;
+    }
+
+    /*
+    Label the data
+    */
+    #no-more-tables td:before { content: attr(data-title); }
+}
+
+.editable-input .select2-container {
+    min-width: 220px;
+}
+
+[placeholder]{
+    text-overflow:ellipsis;
+}
+
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    text-overflow:ellipsis;
+}
+
+::-moz-placeholder { /* Firefox 19+ */
+    text-overflow:ellipsis;
+}
+
+:-ms-input-placeholder { /* IE 10+ */
+    text-overflow:ellipsis;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+    text-overflow:ellipsis;
+}

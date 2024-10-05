@@ -1,3 +1,5 @@
+import io
+import base64
 import os
 import os.path as op
 from types import ModuleType
@@ -23,13 +25,14 @@ ImageOps: Optional[ModuleType]
 
 
 try:
-    from PIL import Image, ImageOps
+    from PIL import Image, ImageOps, UnidentifiedImageError
 except ImportError:
     Image = None
     ImageOps = None
+    UnidentifiedImageError = None
 
 __all__ = ['FileUploadInput', 'FileUploadField',
-           'ImageUploadInput', 'ImageUploadField',
+           'ImageUploadInput', 'ImageUploadField', 'ImageUploadFieldDB',
            'namegen_filename', 'thumbgen_filename']
 
 
@@ -243,6 +246,11 @@ class FileUploadField(fields.StringField):
                     break
 
     def populate_obj(self, obj, name):
+        """
+            Save the binary data from the uploaded image, to the database.
+
+            The binary data has already been opened to self.image in pre_validate()
+        """
         field = getattr(obj, name, None)
         if field:
             # If field should be deleted, clean it up
@@ -495,6 +503,237 @@ class ImageUploadField(FileUploadField):
             return filename, 'JPEG'
 
         return filename, image.format
+
+
+class ImageUploadFieldDB(FileUploadField):
+    """
+        Upload an image to a SQL database as a "large binary" object,
+        rather than saving to a file as in the "ImageUploadField" base class.
+
+        Does image validation, thumbnail generation, updating and deleting images.
+
+        Requires PIL (or Pillow) to be installed.
+    """
+
+    widget = ImageUploadInput()
+
+    keep_image_formats = ("PNG",)
+    """
+        If field detects that uploaded image is not in this list, it will save image
+        as PNG.
+    """
+
+    def __init__(
+        self,
+        label=None,
+        validators=None,
+        base_path=None,
+        relative_path=None,
+        namegen=None,
+        allowed_extensions=None,
+        max_size=None,
+        # thumbgen=None,
+        # thumbnail_size=None,
+        permission=0o666,
+        url_relative_path=None,
+        endpoint="static",
+        **kwargs,
+    ):
+        """
+            Constructor.
+
+            :param label:
+                Display label
+            :param validators:
+                Validators
+            :param base_path:
+                Absolute path to the directory which will store files
+            :param relative_path:
+                Relative path from the directory. Will be prepended to the file name for uploaded files.
+                Flask-Admin uses `urlparse.urljoin` to generate resulting filename, so make sure you have
+                trailing slash.
+            :param namegen:
+                Function that will generate filename from the model and uploaded file object.
+                Please note, that model is "dirty" model object, before it was committed to database.
+
+                For example::
+
+                    import os.path as op
+
+                    def prefix_name(obj, file_data):
+                        parts = op.splitext(file_data.filename)
+                        return secure_filename('file-%s%s' % parts)
+
+                    class MyForm(BaseForm):
+                        upload = FileUploadField('File', namegen=prefix_name)
+
+            :param allowed_extensions:
+                List of allowed extensions. If not provided, then gif, jpg, jpeg, png and tiff will be allowed.
+            :param max_size:
+                Tuple of (width, height, force) or None. If provided, Flask-Admin will
+                resize image to the desired size.
+
+                Width and height is in pixels. If `force` is set to `True`, will try to fit image into dimensions and
+                keep aspect ratio, otherwise will just resize to target size.
+            :param thumbgen:
+                Thumbnail filename generation function. All thumbnails will be saved as JPEG files,
+                so there's no need to keep original file extension.
+
+                For example::
+
+                    import os.path as op
+
+                    def thumb_name(filename):
+                        name, _ = op.splitext(filename)
+                        return secure_filename('%s-thumb.jpg' % name)
+
+                    class MyForm(BaseForm):
+                        upload = ImageUploadField('File', thumbgen=thumb_name)
+
+            :param thumbnail_size:
+                Tuple or (width, height, force) values. If not provided, thumbnail won't be created.
+
+                Width and height is in pixels. If `force` is set to `True`, will try to fit image into dimensions and
+                keep aspect ratio, otherwise will just resize to target size.
+            :param url_relative_path:
+                Relative path from the root of the static directory URL. Only gets used when generating
+                preview image URLs.
+
+                For example, your model might store just file names (`relative_path` set to `None`), but
+                `base_path` is pointing to subdirectory.
+            :param endpoint:
+                Static endpoint for images. Used by widget to display previews. Defaults to 'static'.
+        """
+        # Check if PIL is installed
+        if Image is None:
+            raise ImportError("PIL library was not found")
+
+        self.max_size = max_size
+        # self.thumbnail_fn = thumbgen or thumbgen_filename
+        # self.thumbnail_size = thumbnail_size
+        self.endpoint = endpoint
+        self.image = None
+        self.url_relative_path = url_relative_path
+
+        if not allowed_extensions:
+            # WEBP format doesn't display in Outlook
+            allowed_extensions = ("gif", "jpg", "jpeg", "png", "tiff")
+
+        super().__init__(
+            label,
+            validators,
+            base_path=base_path,
+            relative_path=relative_path,
+            namegen=namegen,
+            allowed_extensions=allowed_extensions,
+            permission=permission,
+            **kwargs,
+        )
+
+    def get_image(self):
+        """Open the image as a PIL image"""
+        # if self._is_uploaded_file(self.data):
+        try:
+            self.image = Image.open(self.data)
+        except Exception as e:
+            raise ValidationError("Invalid image: %s" % e)
+
+    def pre_validate(self, form):
+        super().pre_validate(form)
+
+        if self._is_uploaded_file(self.data):
+            try:
+                self.image = Image.open(self.data)
+            except Exception as e:
+                raise ValidationError("Invalid image: %s" % e)
+
+    @staticmethod
+    def image_to_bytes(image: Image, format: str) -> bytes:
+        """Convert Pillow image to bytes (e.g. for database)"""
+        # Get stream of binary data
+        stream = io.BytesIO()
+        # Save the image to the stream
+        image.save(stream, format=format)
+        # Get the binary bytes from the stream
+        image_bytes: bytes = stream.getvalue()
+        return image_bytes
+
+    @staticmethod
+    def binary_to_image(binary) -> Image:
+        """Convert binary data (e.g. from database) to Pillow image"""
+        if not binary:
+            return None
+        stream = io.BytesIO(binary)
+        try:
+            image = Image.open(stream)
+        except UnidentifiedImageError:
+            return None
+        return image
+
+    def populate_obj(self, obj, name):
+        """
+        Get the binary data from the uploaded image,
+        which has already been opened in pre_validate()
+        """
+        if self.image is None:
+            self.get_image()
+
+        # Resize first?
+        if self.max_size:
+            (width, height, force) = self.max_size
+            image = self.resize(self.image, width, height, force)
+        else:
+            image = self.image
+
+        image_bytes = self.image_to_bytes(image, image.format)
+
+        # Set the object's data to the image_bytes
+        setattr(obj, name, image_bytes)
+        # Also set the format
+        if hasattr(obj, "format"):
+            setattr(obj, "format", image.format)
+
+    @staticmethod
+    def resize(image: Image, width: int, height: int, force: bool) -> Image:
+        """Resize image file"""
+        if not image:
+            return None
+
+        if image.size[0] > width or image.size[1] > height:
+            if force:
+                return ImageOps.fit(image, (width, height), Image.ANTIALIAS)
+            else:
+                thumb = image.copy()
+                thumb.thumbnail((width, height), Image.ANTIALIAS)
+                return thumb
+
+        return image
+
+    @classmethod
+    def display_thumbnail(cls, view, context, model, name):
+        """
+            Open and display a thumbnail image in Flask Admin list view
+        """
+        try:
+            binary = getattr(model, name)
+            image = cls.binary_to_image(binary)
+        except Exception:
+            return "No preview available"
+
+        if not image:
+            return "No preview available"
+
+        thumb = cls.resize(image, width=200, height=200, force=True)
+        image_bytes = cls.image_to_bytes(thumb, format=image.format)
+
+        if hasattr(model, "format"):
+            format = str(model.format).lower()
+        else:
+            # Default to JPEG
+            format = "jpeg"
+        data_uri = base64.b64encode(image_bytes).decode("utf-8")
+        img_tag = Markup(f'<img src="data:image/{format};base64,{data_uri}">')
+        return img_tag
 
 
 # Helpers

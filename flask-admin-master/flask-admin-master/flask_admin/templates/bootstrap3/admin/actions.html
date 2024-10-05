@@ -1,0 +1,34 @@
+{% import 'admin/static.html' as admin_static with context %}
+
+{% macro dropdown(actions, btn_class='btn dropdown-toggle') -%}
+    <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">{{ _gettext('With selected') }}<b class="caret"></b></a>
+    <ul class="dropdown-menu">
+        {% for p in actions %}
+        <li>
+            <a href="javascript:void(0)" onclick="return modelActions.execute('{{ p[0] }}');">{{ _gettext(p[1]) }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+{% endmacro %}
+
+{% macro form(actions, url) %}
+    {% if actions %}
+    <form id="action_form" action="{{ url }}" method="POST" style="display: none">
+        {% if action_form.csrf_token %}
+        {{ action_form.csrf_token }}
+        {% elif csrf_token %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        {% endif %}
+        {{ action_form.url(value=return_url) }}
+        {{ action_form.action() }}
+    </form>
+    {% endif %}
+{% endmacro %}
+
+{% macro script(message, actions, actions_confirmation) %}
+    {% if actions %}
+        <div id="actions-confirmation-data" style="display:none;">{{ actions_confirmation|tojson|safe }}</div>
+        <div id="message-data" style="display:none;">{{ message|tojson|safe }}</div>
+        <script src="{{ admin_static.url(filename='admin/js/actions.js', v='1.0.0') }}"></script>
+    {% endif %}
+{% endmacro %}

@@ -1,0 +1,6 @@
+Flask
+Flask-Admin
+Flask-SQLAlchemy
+shapely
+geoalchemy2
+psycopg2
