@@ -9,8 +9,8 @@ from sqlalchemy.orm.clsregistry import _class_resolver
 
 try:
     # SQLAlchemy 2.0
-    from sqlalchemy.ext.associationproxy import (
-        AssociationProxyExtensionType,  # type: ignore[attr-defined]
+    from sqlalchemy.ext.associationproxy import (  # type: ignore[attr-defined]
+        AssociationProxyExtensionType,
     )
 
     ASSOCIATION_PROXY = AssociationProxyExtensionType.ASSOCIATION_PROXY
