@@ -174,8 +174,10 @@ class Select2Field(fields.SelectField):
             else:
                 try:
                     self.data = self.coerce(valuelist[0])
-                except ValueError:
-                    raise ValueError(self.gettext("Invalid Choice: could not coerce"))
+                except ValueError as err:
+                    raise ValueError(
+                        self.gettext("Invalid Choice: could not coerce")
+                    ) from err
 
     def pre_validate(self, form):
         if self.allow_blank and self.data is None:
@@ -260,5 +262,5 @@ class JSONField(fields.TextAreaField):
 
             try:
                 self.data = json.loads(valuelist[0])
-            except ValueError:
-                raise ValueError(self.gettext("Invalid JSON"))
+            except ValueError as err:
+                raise ValueError(self.gettext("Invalid JSON")) from err

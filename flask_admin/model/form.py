@@ -142,7 +142,7 @@ class InlineBaseFormAdmin:
                 "%s.on_model_change() now accepts third "
                 + "parameter is_created. Please update your code"
             ) % self.model
-            warnings.warn(msg)
+            warnings.warn(msg, stacklevel=1)
 
             self.on_model_change(form, model)
 

@@ -95,9 +95,9 @@ def get_dict_attr(obj, attr, default=None):
     :param default:
         Default value if attribute was not found
     """
-    for obj in [obj] + obj.__class__.mro():
-        if attr in obj.__dict__:
-            return obj.__dict__[attr]
+    for o in [obj] + obj.__class__.mro():
+        if attr in o.__dict__:
+            return o.__dict__[attr]
 
     return default
 

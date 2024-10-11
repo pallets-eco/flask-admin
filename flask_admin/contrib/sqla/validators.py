@@ -75,10 +75,10 @@ def valid_currency(form, field):
 
     try:
         Currency(field.data)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError) as err:
         raise ValidationError(
             field.gettext("Not a valid ISO currency code (e.g. USD, EUR, CNY).")
-        )
+        ) from err
 
 
 def valid_color(form, field):
@@ -86,10 +86,10 @@ def valid_color(form, field):
 
     try:
         Color(field.data)
-    except ValueError:
+    except ValueError as err:
         raise ValidationError(
             field.gettext('Not a valid color (e.g. "red", "#f00", "#ff0000").')
-        )
+        ) from err
 
 
 class TimeZoneValidator:
@@ -103,6 +103,6 @@ class TimeZoneValidator:
     def __call__(self, form, field):
         try:
             self.coerce_function(str(field.data))
-        except Exception:
+        except Exception as err:
             msg = 'Not a valid timezone (e.g. "America/New_York", "Africa/Johannesburg", "Asia/Singapore").'
-            raise ValidationError(field.gettext(msg))
+            raise ValidationError(field.gettext(msg)) from err

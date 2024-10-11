@@ -2,6 +2,12 @@ import time
 from types import ModuleType
 from typing import Optional
 
+from flask import redirect
+
+from flask_admin.babel import gettext
+
+from . import BaseFileAdmin
+
 s3: Optional[ModuleType]
 
 try:
@@ -10,12 +16,6 @@ try:
     from boto.s3.prefix import Prefix
 except ImportError:
     s3 = None
-
-from flask import redirect
-
-from flask_admin.babel import gettext
-
-from . import BaseFileAdmin
 
 
 class S3Storage:

@@ -186,7 +186,8 @@ class AdminModelConverter(ModelConverterBase):
                     return None
                 elif len(columns) > 1:
                     warnings.warn(
-                        f"Can not convert multiple-column properties ({model}.{prop.key})"
+                        f"Can not convert multiple-column properties ({model}.{prop.key})",
+                        stacklevel=1,
                     )
                     return None
 

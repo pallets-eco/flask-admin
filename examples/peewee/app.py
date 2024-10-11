@@ -83,11 +83,8 @@ if __name__ == "__main__":
     admin.add_view(UserAdmin(User))
     admin.add_view(PostAdmin(Post))
 
-    try:
-        User.create_table()
-        UserInfo.create_table()
-        Post.create_table()
-    except:
-        pass
+    User.create_table()
+    UserInfo.create_table()
+    Post.create_table()
 
     app.run(debug=True)

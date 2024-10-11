@@ -477,7 +477,8 @@ class ModelView(BaseModelView):
                         continue
                     elif len(filtered) > 1:
                         warnings.warn(
-                            f"Can not convert multiple-column properties ({self.model}.{p.key})"
+                            f"Can not convert multiple-column properties ({self.model}.{p.key})",
+                            stacklevel=1,
                         )
                         continue
 
@@ -1059,7 +1060,8 @@ class ModelView(BaseModelView):
                 if len(spec.args) == 3:
                     warnings.warn(
                         f"Please update your custom filter {repr(flt)} to "
-                        "include additional `alias` parameter."
+                        "include additional `alias` parameter.",
+                        stacklevel=1,
                     )
                 else:
                     raise

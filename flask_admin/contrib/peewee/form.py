@@ -32,7 +32,7 @@ try:
     from playhouse.postgres_ext import JSONField
 
     pg_ext = True
-except:
+except ImportError:
     pg_ext = False
 
 

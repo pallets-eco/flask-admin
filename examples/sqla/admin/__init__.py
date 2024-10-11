@@ -26,4 +26,4 @@ babel = Babel(app, locale_selector=get_locale)
 babel = Babel(app, locale_selector=get_locale)
 
 
-import admin.main
+import admin.main  # noqa: F401, E402

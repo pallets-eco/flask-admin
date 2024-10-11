@@ -452,7 +452,7 @@ class ImageUploadField(FileUploadField):
             try:
                 self.image = Image.open(self.data)
             except Exception as e:
-                raise ValidationError(f"Invalid image: {e}")
+                raise ValidationError(f"Invalid image: {e}") from e
 
     # Deletion
     def _delete_file(self, filename):

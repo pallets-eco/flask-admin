@@ -3,7 +3,8 @@ def setup():
 
     warnings.warn(
         "Flask-Admin peewee integration module was renamed as "
-        "flask_admin.contrib.peewee, please use it instead."
+        "flask_admin.contrib.peewee, please use it instead.",
+        stacklevel=1,
     )
 
     from flask_admin._backwards import import_redirect
@@ -14,4 +15,4 @@ def setup():
 setup()
 del setup
 
-from ..peewee.view import ModelView  # noqa: F401
+from ..peewee.view import ModelView  # noqa: F401, E402

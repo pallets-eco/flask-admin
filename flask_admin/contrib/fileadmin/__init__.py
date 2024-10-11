@@ -846,7 +846,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
     @expose("/old_index")
     @expose("/old_b/<path:path>")
     def index(self, path=None):
-        warnings.warn("deprecated: use index_view instead.", DeprecationWarning)
+        warnings.warn(
+            "deprecated: use index_view instead.", DeprecationWarning, stacklevel=1
+        )
         return redirect(self.get_url(".index_view", path=path))
 
     @expose("/")
@@ -1259,7 +1261,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             except OSError:
                 flash(gettext("Error reading %(name)s.", name=path), "error")
                 error = True
-            except:
+            except:  # noqa: E722
                 flash(
                     gettext("Unexpected error while reading from %(name)s", name=path),
                     "error",
@@ -1271,7 +1273,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                 except UnicodeDecodeError:
                     flash(gettext("Cannot edit %(name)s.", name=path), "error")
                     error = True
-                except:
+                except:  # noqa: E722
                     flash(
                         gettext(
                             "Unexpected error while reading from %(name)s", name=path

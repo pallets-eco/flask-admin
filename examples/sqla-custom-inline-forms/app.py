@@ -73,7 +73,7 @@ def _handle_image_delete(mapper, conn, target):
         try:
             if location_image.path:
                 os.remove(op.join(base_path, location_image.path))
-        except:
+        except:  # noqa: E722
             pass
 
 

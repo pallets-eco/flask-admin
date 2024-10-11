@@ -186,10 +186,10 @@ class Macro(BaseRule):
 
         try:
             field = context.resolve(parts[0])
-        except AttributeError:
+        except AttributeError as err:
             raise Exception(
                 "Your template is missing " '"{% set render_ctx = h.resolve_ctx() %}"'
-            )
+            ) from err
 
         if not field:
             return None
@@ -559,8 +559,8 @@ class RuleSet:
             else:
                 try:
                     result.append(r.configure(self, parent))
-                except AttributeError:
-                    raise TypeError(f'Could not convert "{repr(r)}" to rule')
+                except AttributeError as err:
+                    raise TypeError(f'Could not convert "{repr(r)}" to rule') from err
 
         return result
 

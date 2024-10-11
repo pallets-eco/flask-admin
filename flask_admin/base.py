@@ -4,7 +4,6 @@ import warnings
 from functools import wraps
 
 from flask import abort
-from flask import Blueprint
 from flask import current_app
 from flask import g
 from flask import render_template
@@ -769,7 +768,8 @@ class Admin:
 
     def _add_menu_item(self, menu_item, target_category):
         warnings.warn(
-            "Admin._add_menu_item is obsolete - use Admin.add_menu_item instead."
+            "Admin._add_menu_item is obsolete - use Admin.add_menu_item instead.",
+            stacklevel=1,
         )
         return self.add_menu_item(menu_item, target_category)
 

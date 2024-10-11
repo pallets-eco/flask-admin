@@ -24,7 +24,7 @@ def _create_temp():
 def safe_delete(path, name):
     try:
         os.remove(op.join(path, name))
-    except:
+    except OSError:
         pass
 
 
