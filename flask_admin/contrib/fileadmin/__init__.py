@@ -253,7 +253,8 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
     form_base_class = form.BaseForm
     """
-        Base form class. Will be used to create the upload, rename, edit, and delete form.
+        Base form class. Will be used to create the upload, rename, edit, and delete
+        form.
 
         Allows enabling CSRF validation and useful if you want to have custom
         constructor or override some fields.
@@ -334,7 +335,8 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             Verify if path exists. If set to `True` and path does not exist
             will raise an exception.
         :param storage:
-            The storage backend that the `BaseFileAdmin` will use to operate on the files.
+            The storage backend that the `BaseFileAdmin` will use to operate on the
+            files.
         """
         self.base_url = base_url
         self.storage = storage

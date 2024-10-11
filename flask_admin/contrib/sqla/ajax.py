@@ -35,7 +35,8 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         if not self.fields:
             raise ValueError(
-                f"AJAX loading requires `fields` to be specified for {model}.{self.name}"
+                f"AJAX loading requires `fields` to be specified for"
+                f" {model}.{self.name}"
             )
 
         self._cached_fields = self._process_fields()

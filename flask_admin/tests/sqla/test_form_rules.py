@@ -140,7 +140,8 @@ def test_rule_field_set(app, db, admin):
 
 
 @pytest.mark.filterwarnings(
-    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this will be mandatory in wtforms 3.2:DeprecationWarning",
+    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this "
+    "will be mandatory in wtforms 3.2:DeprecationWarning",
     "ignore:Fields missing from ruleset.*:UserWarning",
 )
 def test_rule_inlinefieldlist(app, db, admin):
@@ -163,7 +164,8 @@ def test_rule_inlinefieldlist(app, db, admin):
 
 
 @pytest.mark.filterwarnings(
-    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this will be mandatory in wtforms 3.2:DeprecationWarning",
+    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this "
+    "will be mandatory in wtforms 3.2:DeprecationWarning",
 )
 def test_inline_model_rules(app, db, admin):
     with app.app_context():

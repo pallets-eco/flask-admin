@@ -214,7 +214,8 @@ def fill_db(db, Model1, Model2):
 
 
 @pytest.mark.filterwarnings(
-    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this will be mandatory in wtforms 3.2:DeprecationWarning",
+    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this "
+    "will be mandatory in wtforms 3.2:DeprecationWarning",
 )
 def test_model(app, db, admin):
     with app.app_context():
@@ -550,7 +551,8 @@ def test_extra_args_search(app, db, admin):
 
         client = app.test_client()
 
-        # check that extra args in the url are propagated as hidden fields in the search form
+        # check that extra args in the url are propagated as hidden fields in the
+        # search form
         rv = client.get("/admin/model1/?search=model1&foo=bar")
         data = rv.data.decode("utf-8")
         assert '<input type="hidden" name="foo" value="bar">' in data
@@ -1572,7 +1574,8 @@ def test_column_filters(app, db, admin):
 
         # datetime - between
         rv = client.get(
-            "/admin/_datetime/?flt0_11=2014-04-02+00%3A00%3A00+to+2014-11-20+23%3A59%3A59"
+            "/admin/_datetime"
+            "/?flt0_11=2014-04-02+00%3A00%3A00+to+2014-11-20+23%3A59%3A59"
         )
         assert rv.status_code == 200
         data = rv.data.decode("utf-8")
@@ -1581,7 +1584,8 @@ def test_column_filters(app, db, admin):
 
         # datetime - not between
         rv = client.get(
-            "/admin/_datetime/?flt0_12=2014-04-02+00%3A00%3A00+to+2014-11-20+23%3A59%3A59"
+            "/admin/_datetime"
+            "/?flt0_12=2014-04-02+00%3A00%3A00+to+2014-11-20+23%3A59%3A59"
         )
         assert rv.status_code == 200
         data = rv.data.decode("utf-8")
@@ -2389,7 +2393,8 @@ def test_default_complex_sort(app, db, admin):
 
 
 @pytest.mark.filterwarnings(
-    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this will be mandatory in wtforms 3.2:DeprecationWarning",
+    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this "
+    "will be mandatory in wtforms 3.2:DeprecationWarning",
 )
 def test_extra_fields(app, db, admin):
     with app.app_context():
@@ -2456,7 +2461,8 @@ def test_extra_field_order(app, db, admin):
     ),
 )
 @pytest.mark.filterwarnings(
-    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this will be mandatory in wtforms 3.2:DeprecationWarning",
+    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this "
+    "will be mandatory in wtforms 3.2:DeprecationWarning",
 )
 @flask_babel_test_decorator
 def test_modelview_localization(request, app, locale, expect_text):
@@ -2691,7 +2697,8 @@ def test_safe_redirect(app, db, admin):
         # werkzeug 2.1.0+ now returns *relative* redirect/location by default.
         expected = "/admin/model1/edit/"
 
-        # handle old werkzeug (or if relative location is disabled via `autocorrect_location_header=True`)
+        # handle old werkzeug (or if relative location is disabled via
+        # `autocorrect_location_header=True`)
         if (
             not hasattr(rv, "autocorrect_location_header")
             or rv.autocorrect_location_header

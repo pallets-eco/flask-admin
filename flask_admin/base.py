@@ -93,8 +93,8 @@ class AdminViewMeta(type):
     """
     View metaclass.
 
-    Does some precalculations (like getting list of view methods from the class) to avoid
-    calculating them for each view class instance.
+    Does some precalculations (like getting list of view methods from the class) to
+    avoid calculating them for each view class instance.
     """
 
     def __init__(cls, classname, bases, fields):
@@ -127,7 +127,8 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
     """
     Base administrative view.
 
-    Derive from this class to implement your administrative interface piece. For example::
+    Derive from this class to implement your administrative interface piece. For
+    example::
 
         from flask_admin import BaseView, expose
         class MyView(BaseView):
@@ -135,9 +136,14 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
             def index(self):
                 return 'Hello World!'
 
-    Icons can be added to the menu by using `menu_icon_type` and `menu_icon_value`. For example::
+    Icons can be added to the menu by using `menu_icon_type` and `menu_icon_value`. For
+    example::
 
-        admin.add_view(MyView(name='My View', menu_icon_type='glyph', menu_icon_value='glyphicon-home'))
+        admin.add_view(
+            MyView(
+                name='My View', menu_icon_type='glyph', menu_icon_value='glyphicon-home'
+            )
+        )
     """
 
     @property
@@ -189,19 +195,21 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
         :param name:
             Name of this view. If not provided, will default to the class name.
         :param category:
-            View category. If not provided, this view will be shown as a top-level menu item. Otherwise, it will
-            be in a submenu.
+            View category. If not provided, this view will be shown as a top-level menu
+            item. Otherwise, it will be in a submenu.
         :param endpoint:
-            Base endpoint name for the view. For example, if there's a view method called "index" and
-            endpoint is set to "myadmin", you can use `url_for('myadmin.index')` to get the URL to the
-            view method. Defaults to the class name in lower case.
+            Base endpoint name for the view. For example, if there's a view method
+            called "index" and endpoint is set to "myadmin", you can use
+            `url_for('myadmin.index')` to get the URL to the view method. Defaults to
+            the class name in lower case.
         :param url:
-            Base URL. If provided, affects how URLs are generated. For example, if the url parameter
-            is "test", the resulting URL will look like "/admin/test/". If not provided, will
-            use endpoint as a base url. However, if URL starts with '/', absolute path is assumed
-            and '/admin/' prefix won't be applied.
+            Base URL. If provided, affects how URLs are generated. For example, if the
+            url parameter is "test", the resulting URL will look like "/admin/test/".
+            If not provided, will use endpoint as a base url. However, if URL starts
+            with '/', absolute path is assumed and '/admin/' prefix won't be applied.
         :param static_url_path:
-            Static URL Path. If provided, this specifies the path to the static url directory.
+            Static URL Path. If provided, this specifies the path to the static url
+            directory.
         :param menu_class_name:
             Optional class name for the menu item.
         :param menu_icon_type:
@@ -209,7 +217,8 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
 
              - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
              - `flask_admin.consts.ICON_TYPE_FONT_AWESOME` - Font Awesome icon
-             - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+             - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static
+                directory
              - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
         :param menu_icon_value:
             Icon glyph name or URL, depending on `menu_icon_type` setting
@@ -233,13 +242,14 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
         # Default view
         if self._default_view is None:
             raise Exception(
-                f"Attempted to instantiate admin view {self.__class__.__name__} without default view"
+                f"Attempted to instantiate admin view {self.__class__.__name__} "
+                "without default view"
             )
 
     def _get_endpoint(self, endpoint):
         """
-        Generate Flask endpoint name. By default converts class name to lower case if endpoint is
-        not explicitly provided.
+        Generate Flask endpoint name. By default converts class name to lower case if
+        endpoint is not explicitly provided.
         """
         if endpoint:
             return endpoint
@@ -361,7 +371,8 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
 
         By default, item is visible in menu.
 
-        Please note that item should be both visible and accessible to be displayed in menu.
+        Please note that item should be both visible and accessible to be displayed in
+        menu.
         """
         return True
 
@@ -369,8 +380,8 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
         """
         Override this method to add permission checks.
 
-        Flask-Admin does not make any assumptions about the authentication system used in your application, so it is
-        up to you to implement it.
+        Flask-Admin does not make any assumptions about the authentication system used
+        in your application, so it is up to you to implement it.
 
         By default, it will allow access for everyone.
         """
@@ -527,7 +538,8 @@ class Admin:
         :param app:
             Flask application object
         :param name:
-            Application name. Will be displayed in the main menu and as a page title. Defaults to "Admin"
+            Application name. Will be displayed in the main menu and as a page title.
+            Defaults to "Admin"
         :param url:
             Base URL
         :param subdomain:
@@ -535,19 +547,20 @@ class Admin:
         :param index_view:
             Home page view to use. Defaults to `AdminIndexView`.
         :param translations_path:
-            Location of the translation message catalogs. By default will use the translations
-            shipped with Flask-Admin.
+            Location of the translation message catalogs. By default will use the
+            translations shipped with Flask-Admin.
         :param endpoint:
-            Base endpoint name for index view. If you use multiple instances of the `Admin` class with
-            a single Flask application, you have to set a unique endpoint name for each instance.
+            Base endpoint name for index view. If you use multiple instances of the
+            `Admin` class with a single Flask application, you have to set a unique
+            endpoint name for each instance.
         :param static_url_path:
-            Static URL Path. If provided, this specifies the default path to the static url directory for
-            all its views. Can be overridden in view configuration.
+            Static URL Path. If provided, this specifies the default path to the static
+            url directory for all its views. Can be overridden in view configuration.
         :param theme:
             Base theme. Defaults to `Bootstrap4Theme()`.
         :param category_icon_classes:
-            A dict of category names as keys and html classes as values to be added to menu category icons.
-            Example: {'Favorites': 'glyphicon glyphicon-star'}
+            A dict of category names as keys and html classes as values to be added to
+            menu category icons. Example: {'Favorites': 'glyphicon glyphicon-star'}
         :param host:
             The host to register all admin views on. Mutually exclusive with `subdomain`
         :param csp_nonce_generator:
@@ -636,8 +649,9 @@ class Admin:
          :param url:
              Base URL
         :param endpoint:
-             Base endpoint name for index view. If you use multiple instances of the `Admin` class with
-             a single Flask application, you have to set a unique endpoint name for each instance.
+             Base endpoint name for index view. If you use multiple instances of the
+             `Admin` class with a single Flask application, you have to set a unique
+             endpoint name for each instance.
         """
         self.index_view = index_view or AdminIndexView(endpoint=endpoint, url=url)
         self.endpoint = endpoint or self.index_view.endpoint

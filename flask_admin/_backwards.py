@@ -51,7 +51,10 @@ class ObsoleteAttr:
         # Check if there's old attribute
         if hasattr(obj, self.old_name):
             warnings.warn(
-                f"Property {self.old_name} is obsolete, please use {self.new_name} instead",
+                (
+                    f"Property {self.old_name} is obsolete, please use {self.new_name} "
+                    f"instead"
+                ),
                 stacklevel=2,
             )
             return getattr(obj, self.old_name)

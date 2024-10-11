@@ -34,8 +34,8 @@ def get_current_view():
 def get_url(endpoint, **kwargs):
     """
     Alternative to Flask `url_for`.
-    If there's current administrative view, will call its `get_url`. If there's none - will
-    use generic `url_for`.
+    If there's current administrative view, will call its `get_url`. If there's
+    none - will use generic `url_for`.
 
     :param endpoint:
         Endpoint name

@@ -16,10 +16,10 @@ def geom_formatter(view, value, name) -> str:
         "data-geometry-type": to_shape(value).geom_type,
         "data-zoom": 15,
     }
-    # html_params will serialize None as a string literal "None" so only put tile-layer-url
-    # and tile-layer-attribution in kwargs when they have a meaningful value.
-    # flask_admin/static/admin/js/form.js uses its default values when these are not passed
-    # as textarea attributes.
+    # html_params will serialize None as a string literal "None" so only put
+    # tile-layer-url and tile-layer-attribution in kwargs when they have a meaningful
+    # value. flask_admin/static/admin/js/form.js uses its default values when these
+    # are not passed as textarea attributes.
     if view.tile_layer_url:
         kwargs["data-tile-layer-url"] = view.tile_layer_url
     if view.tile_layer_attribution:

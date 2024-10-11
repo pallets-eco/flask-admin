@@ -71,8 +71,8 @@ class ModelView(BaseModelView):
         "column_select_related", "list_select_related", None
     )
     """
-        List of parameters for SQLAlchemy `subqueryload`. Overrides `column_auto_select_related`
-        property.
+        List of parameters for SQLAlchemy `subqueryload`. Overrides
+        `column_auto_select_related` property.
 
         For example::
 
@@ -113,8 +113,8 @@ class ModelView(BaseModelView):
 
         The following search rules apply:
 
-        - If you enter ``ZZZ`` in the UI search field, it will generate ``ILIKE '%ZZZ%'``
-          statement against searchable columns.
+        - If you enter ``ZZZ`` in the UI search field, it will generate
+          ``ILIKE '%ZZZ%'`` statement against searchable columns.
 
         - If you enter multiple words, each word will be searched separately, but
           only rows that contain all words will be displayed. For example, searching
@@ -122,10 +122,12 @@ class ModelView(BaseModelView):
           more columns.
 
         - If you prefix your search term with ``^``, it will find all rows
-          that start with ``^``. So, if you entered ``^ZZZ`` then ``ILIKE 'ZZZ%'`` will be used.
+          that start with ``^``. So, if you entered ``^ZZZ`` then ``ILIKE 'ZZZ%'`` will
+          be used.
 
         - If you prefix your search term with ``=``, it will perform an exact match.
-          For example, if you entered ``=ZZZ``, the statement ``ILIKE 'ZZZ'`` will be used.
+          For example, if you entered ``=ZZZ``, the statement ``ILIKE 'ZZZ'`` will be
+          used.
     """
 
     column_filters = None
@@ -173,7 +175,8 @@ class ModelView(BaseModelView):
 
     model_form_converter = form.AdminModelConverter
     """
-        Model form conversion class. Use this to implement custom field conversion logic.
+        Model form conversion class. Use this to implement custom field conversion
+        logic.
 
         For example::
 
@@ -187,8 +190,8 @@ class ModelView(BaseModelView):
 
     inline_model_form_converter = form.InlineModelConverter
     """
-        Inline model conversion class. If you need some kind of post-processing for inline
-        forms, you can customize behavior by doing something like this::
+        Inline model conversion class. If you need some kind of post-processing for
+        inline forms, you can customize behavior by doing something like this::
 
             class MyInlineModelConverter(InlineModelConverter):
                 def post_process(self, form_class, info):
@@ -349,7 +352,8 @@ class ModelView(BaseModelView):
 
              - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
              - `flask_admin.consts.ICON_TYPE_FONT_AWESOME` - Font Awesome icon
-             - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+             - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static
+                directory
              - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
         :param menu_icon_value:
             Icon glyph name or URL, depending on `menu_icon_type` setting
@@ -408,7 +412,8 @@ class ModelView(BaseModelView):
         :param query:
             Query to add joins to
         :param joins:
-            List of current joins. Used to avoid joining on same relationship more than once
+            List of current joins. Used to avoid joining on same relationship more
+            than once
         :param path:
             Path to be joined
         :param fn:
@@ -477,7 +482,10 @@ class ModelView(BaseModelView):
                         continue
                     elif len(filtered) > 1:
                         warnings.warn(
-                            f"Can not convert multiple-column properties ({self.model}.{p.key})",
+                            (
+                                f"Can not convert multiple-column "
+                                f"properties ({self.model}.{p.key})"
+                            ),
                             stacklevel=1,
                         )
                         continue
@@ -607,8 +615,8 @@ class ModelView(BaseModelView):
                         column_name = text_type(c)
             except AttributeError:
                 # TODO: See ticket #1299 - allow virtual columns. Probably figure out
-                # better way to handle it. For now just assume if column was not found - it
-                # is virtual and there's column formatter for it.
+                # better way to handle it. For now just assume if column was not found
+                # - it is virtual and there's column formatter for it.
                 column_name = text_type(c)
 
             visible_name = self.get_column_name(column_name)
@@ -695,7 +703,10 @@ class ModelView(BaseModelView):
                     if column.foreign_keys or column.primary_key:
                         continue
 
-                    visible_name = f"{self.get_column_name(attr.prop.target.name)} / {self.get_column_name(p.key)}"
+                    visible_name = (
+                        f"{self.get_column_name(attr.prop.target.name)}"
+                        f" / {self.get_column_name(p.key)}"
+                    )
 
                     type_name = type(column.type).__name__
                     flt = self.filter_converter.convert(type_name, column, visible_name)
@@ -740,9 +751,16 @@ class ModelView(BaseModelView):
                 and name not in self.column_labels
             ):
                 if joined_column_name:
-                    visible_name = f"{joined_column_name} / {self.get_column_name(column.table.name)} / {self.get_column_name(column.name)}"
+                    visible_name = (
+                        f"{joined_column_name}"
+                        f" / {self.get_column_name(column.table.name)}"
+                        f" / {self.get_column_name(column.name)}"
+                    )
                 else:
-                    visible_name = f"{self.get_column_name(column.table.name)} / {self.get_column_name(column.name)}"
+                    visible_name = (
+                        f"{self.get_column_name(column.table.name)}"
+                        f" / {self.get_column_name(column.name)}"
+                    )
             else:
                 if not isinstance(name, string_types):
                     visible_name = self.get_column_name(name.property.key)
@@ -903,11 +921,14 @@ class ModelView(BaseModelView):
 
             class MyView(ModelView):
                 def get_query(self):
-                    return super(MyView, self).get_query().filter(User.username == current_user.username)
+                    return super(MyView, self).get_query().filter(
+                        User.username == current_user.username
+                    )
 
 
-        If you override this method, don't forget to also override `get_count_query`, for displaying the correct
-        item count in the list view, and `get_one`, which is used when retrieving records for the edit view.
+        If you override this method, don't forget to also override `get_count_query`,
+        for displaying the correct item count in the list view, and `get_one`, which is
+        used when retrieving records for the edit view.
         """
         return self.session.query(self.model)
 

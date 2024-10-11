@@ -77,7 +77,8 @@ class ModelView(BaseModelView):
 
     model_form_converter = CustomModelConverter
     """
-        Model form conversion class. Use this to implement custom field conversion logic.
+        Model form conversion class. Use this to implement custom field conversion
+        logic.
 
         For example::
 
@@ -91,8 +92,8 @@ class ModelView(BaseModelView):
 
     inline_model_form_converter = InlineModelConverter
     """
-        Inline model conversion class. If you need some kind of post-processing for inline
-        forms, you can customize behavior by doing something like this::
+        Inline model conversion class. If you need some kind of post-processing for
+        inline forms, you can customize behavior by doing something like this::
 
             class MyInlineModelConverter(AdminModelConverter):
                 def post_process(self, form_class, info):
@@ -246,7 +247,8 @@ class ModelView(BaseModelView):
                 # Check type
                 if not isinstance(p, (CharField, TextField)):
                     raise Exception(
-                        f'Can only search on text columns. Failed to setup search for "{p}"'
+                        f"Can only search on text columns. "
+                        f'Failed to setup search for "{p}"'
                     )
 
                 self._search_fields.append(p)
@@ -270,7 +272,10 @@ class ModelView(BaseModelView):
             model_class = attr.model
 
         if model_class != self.model:
-            visible_name = f"{self.get_column_name(model_class.__name__)} / {self.get_column_name(attr.name)}"
+            visible_name = (
+                f"{self.get_column_name(model_class.__name__)}"
+                f" / {self.get_column_name(attr.name)}"
+            )
         else:
             if not isinstance(name, string_types):
                 visible_name = self.get_column_name(attr.name)

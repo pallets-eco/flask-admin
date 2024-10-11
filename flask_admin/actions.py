@@ -33,7 +33,8 @@ class ActionsMixin:
     Actions mixin.
 
     In some cases, you might work with more than one "entity" (model, file, etc) in
-    your admin view and will want to perform actions on a group of entities simultaneously.
+    your admin view and will want to perform actions on a group of entities
+    simultaneously.
 
     In this case, you can add this functionality by doing this:
     1. Add this mixin to your administrative view class

@@ -38,7 +38,8 @@ def bool_formatter(view, value, name):
     fa = "fa-check-circle" if value else "fa-minus-circle"
     label = f'{name}: {"true" if value else "false"}'
     return Markup(
-        f'<span class="fa {fa} glyphicon glyphicon-{glyph} icon-{glyph}" title="{label}"></span>'
+        f'<span class="fa {fa} glyphicon glyphicon-{glyph} '
+        f'icon-{glyph}" title="{label}"></span>'
     )
 
 

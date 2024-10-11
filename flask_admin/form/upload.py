@@ -141,8 +141,8 @@ class FileUploadField(fields.StringField):
     """
     Customizable file-upload field.
 
-    Saves file to configured path, handles updates and deletions. Inherits from `StringField`,
-    resulting filename will be stored as string.
+    Saves file to configured path, handles updates and deletions. Inherits from
+    `StringField`, resulting filename will be stored as string.
     """
 
     widget = FileUploadInput()
@@ -169,12 +169,13 @@ class FileUploadField(fields.StringField):
         :param base_path:
             Absolute path to the directory which will store files
         :param relative_path:
-            Relative path from the directory. Will be prepended to the file name for uploaded files.
-            Flask-Admin uses `urlparse.urljoin` to generate resulting filename, so make sure you have
-            trailing slash.
+            Relative path from the directory. Will be prepended to the file name for
+            uploaded files. Flask-Admin uses `urlparse.urljoin` to generate resulting
+            filename, so make sure you have trailing slash.
         :param namegen:
-            Function that will generate filename from the model and uploaded file object.
-            Please note, that model is "dirty" model object, before it was committed to database.
+            Function that will generate filename from the model and uploaded file
+            object. Please note, that model is "dirty" model object, before it was
+            committed to database.
 
             For example::
 
@@ -362,12 +363,13 @@ class ImageUploadField(FileUploadField):
         :param base_path:
             Absolute path to the directory which will store files
         :param relative_path:
-            Relative path from the directory. Will be prepended to the file name for uploaded files.
-            Flask-Admin uses `urlparse.urljoin` to generate resulting filename, so make sure you have
-            trailing slash.
+            Relative path from the directory. Will be prepended to the file name for
+            uploaded files. Flask-Admin uses `urlparse.urljoin` to generate resulting
+            filename, so make sure you have trailing slash.
         :param namegen:
-            Function that will generate filename from the model and uploaded file object.
-            Please note, that model is "dirty" model object, before it was committed to database.
+            Function that will generate filename from the model and uploaded file
+            object. Please note, that model is "dirty" model object, before it was
+            committed to database.
 
             For example::
 
@@ -381,16 +383,18 @@ class ImageUploadField(FileUploadField):
                     upload = FileUploadField('File', namegen=prefix_name)
 
         :param allowed_extensions:
-            List of allowed extensions. If not provided, then gif, jpg, jpeg, png and tiff will be allowed.
+            List of allowed extensions. If not provided, then gif, jpg, jpeg, png and
+            tiff will be allowed.
         :param max_size:
             Tuple of (width, height, force) or None. If provided, Flask-Admin will
             resize image to the desired size.
 
-            Width and height is in pixels. If `force` is set to `True`, will try to fit image into dimensions and
-            keep aspect ratio, otherwise will just resize to target size.
+            Width and height is in pixels. If `force` is set to `True`, will try to fit
+            image into dimensions and keep aspect ratio, otherwise will just resize to
+            target size.
         :param thumbgen:
-            Thumbnail filename generation function. All thumbnails will be saved as JPEG files,
-            so there's no need to keep original file extension.
+            Thumbnail filename generation function. All thumbnails will be saved as
+            JPEG files, so there's no need to keep original file extension.
 
             For example::
 
@@ -404,18 +408,21 @@ class ImageUploadField(FileUploadField):
                     upload = ImageUploadField('File', thumbgen=thumb_name)
 
         :param thumbnail_size:
-            Tuple or (width, height, force) values. If not provided, thumbnail won't be created.
+            Tuple or (width, height, force) values. If not provided, thumbnail won't be
+            created.
 
-            Width and height is in pixels. If `force` is set to `True`, will try to fit image into dimensions and
-            keep aspect ratio, otherwise will just resize to target size.
+            Width and height is in pixels. If `force` is set to `True`, will try to fit
+            image into dimensions and keep aspect ratio, otherwise will just resize to
+            target size.
         :param url_relative_path:
-            Relative path from the root of the static directory URL. Only gets used when generating
-            preview image URLs.
+            Relative path from the root of the static directory URL. Only gets used
+            when generating preview image URLs.
 
-            For example, your model might store just file names (`relative_path` set to `None`), but
-            `base_path` is pointing to subdirectory.
+            For example, your model might store just file names (`relative_path` set
+            to `None`), but `base_path` is pointing to subdirectory.
         :param endpoint:
-            Static endpoint for images. Used by widget to display previews. Defaults to 'static'.
+            Static endpoint for images. Used by widget to display previews. Defaults
+            to 'static'.
         """
         # Check if PIL is installed
         if Image is None:

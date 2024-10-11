@@ -56,7 +56,8 @@ class BaseFilter:
         :param value:
             Value to validate
         """
-        # useful for filters with date conversions, see if conversion in clean() raises ValueError
+        # useful for filters with date conversions, see if conversion in clean()
+        # raises ValueError
         try:
             self.clean(value)
             return True
@@ -204,7 +205,8 @@ class BaseDateTimeFilter(BaseFilter):
         super().__init__(name, options, data_type="datetimepicker")
 
     def clean(self, value):
-        # datetime filters will not work in SQLite + SQLAlchemy if value not converted to datetime
+        # datetime filters will not work in SQLite + SQLAlchemy if value not converted
+        # to datetime
         return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
 
 
@@ -246,7 +248,8 @@ class BaseTimeFilter(BaseFilter):
         super().__init__(name, options, data_type="timepicker")
 
     def clean(self, value):
-        # time filters will not work in SQLite + SQLAlchemy if value not converted to time
+        # time filters will not work in SQLite + SQLAlchemy if value not converted
+        # to time
         timetuple = time.strptime(value, "%H:%M:%S")
         return datetime.time(timetuple.tm_hour, timetuple.tm_min, timetuple.tm_sec)
 

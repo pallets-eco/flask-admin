@@ -98,7 +98,8 @@ class InlineBaseFormAdmin:
     def get_form(self):
         """
         If you want to use completely custom form for inline field, you can override
-        Flask-Admin form generation logic by overriding this method and returning your form.
+        Flask-Admin form generation logic by overriding this method and returning your
+        form.
         """
         return None
 
@@ -149,7 +150,8 @@ class InlineBaseFormAdmin:
 
 class InlineFormAdmin(InlineBaseFormAdmin):
     """
-    Settings for inline form administration. Used by relational backends (SQLAlchemy, Peewee), where model
+    Settings for inline form administration. Used by relational backends (SQLAlchemy,
+    Peewee), where model
     class can not be inherited from the parent model definition.
     """
 

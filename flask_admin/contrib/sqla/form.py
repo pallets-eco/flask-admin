@@ -171,7 +171,8 @@ class AdminModelConverter(ModelConverterBase):
             if property_is_association_proxy:
                 if not hasattr(prop.remote_attr, "prop"):
                     raise Exception(
-                        "Association proxy referencing another association proxy is not supported."
+                        "Association proxy referencing another association proxy is "
+                        "not supported."
                     )
                 prop = prop.remote_attr.prop
             return self._convert_relation(
@@ -186,7 +187,10 @@ class AdminModelConverter(ModelConverterBase):
                     return None
                 elif len(columns) > 1:
                     warnings.warn(
-                        f"Can not convert multiple-column properties ({model}.{prop.key})",
+                        (
+                            f"Can not convert multiple-column properties"
+                            f" ({model}.{prop.key})"
+                        ),
                         stacklevel=1,
                     )
                     return None
@@ -198,7 +202,8 @@ class AdminModelConverter(ModelConverterBase):
 
             form_columns = getattr(self.view, "form_columns", None) or ()
 
-            # Do not display foreign keys - use relations, except when explicitly instructed
+            # Do not display foreign keys - use relations, except when explicitly
+            # instructed
             if column.foreign_keys and prop.key not in form_columns:
                 return None
 
@@ -691,9 +696,9 @@ class InlineModelConverter(InlineModelConverterBase):
                     loader = opts
                     # If we're changing the name in self.view._form_ajax_refs,
                     # we must also change loader.name property. Otherwise
-                    # when the widget tries to set the 'data-url' property in the <input> tag,
-                    # it won't be able to find the loader since it'll be using the "field.loader.name"
-                    # of the previously-configured loader.
+                    # when the widget tries to set the 'data-url' property in the
+                    # <input> tag, it won't be able to find the loader since it'll be
+                    # using the "field.loader.name" of the previously-configured loader.
                     loader.name = new_name
 
                 result[name] = loader
@@ -745,7 +750,8 @@ class InlineModelConverter(InlineModelConverterBase):
             for prop in mapper.iterate_properties:
                 if hasattr(prop, "direction") and prop.direction.name == candidate:
                     # check if prop is not handled yet
-                    # issubclass is more useful than equal comparator in the case of inheritance
+                    # issubclass is more useful than equal comparator in the case
+                    # of inheritance
                     if prop.key not in forward_reverse_props_keys.keys() and issubclass(
                         target_mapper.class_, prop.mapper.class_
                     ):

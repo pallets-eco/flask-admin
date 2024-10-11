@@ -139,19 +139,24 @@ class BaseModelView(BaseView, ActionsMixin):
     """
     Base model view.
 
-    This view does not make any assumptions on how models are stored or managed, but expects the following:
+    This view does not make any assumptions on how models are stored or managed, but
+    expects the following:
 
         1. The provided model is an object
         2. The model contains properties
-        3. Each model contains an attribute which uniquely identifies it (i.e. a primary key for a database model)
-        4. It is possible to retrieve a list of sorted models with pagination applied from a data source
+        3. Each model contains an attribute which uniquely identifies it (i.e. a
+            primary key for a database model)
+        4. It is possible to retrieve a list of sorted models with pagination applied
+            from a data source
         5. You can get one model by its identifier from the data source
 
     Essentially, if you want to support a new data store, all you have to do is:
 
         1. Derive from the `BaseModelView` class
-        2. Implement various data-related methods (`get_list`, `get_one`, `create_model`, etc)
-        3. Implement automatic form generation from the model representation (`scaffold_form`)
+        2. Implement various data-related methods (`get_list`, `get_one`,
+            `create_model`, etc)
+        3. Implement automatic form generation from the model representation
+            (`scaffold_form`)
     """
 
     # Permissions
@@ -449,8 +454,8 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(BaseModelView):
                 column_default_sort = 'user'
 
-        You can use tuple to control ascending descending order. In following example, items
-        will be sorted in descending order::
+        You can use tuple to control ascending descending order. In following example,
+        items will be sorted in descending order::
 
             class MyModelView(BaseModelView):
                 column_default_sort = ('user', True)
@@ -505,7 +510,8 @@ class BaseModelView(BaseView, ActionsMixin):
     """
         Collection of the column filters.
 
-        Can contain either field names or instances of :class:`~flask_admin.model.filters.BaseFilter` classes.
+        Can contain either field names or instances of
+        :class:`~flask_admin.model.filters.BaseFilter` classes.
 
         Example::
 
@@ -543,7 +549,8 @@ class BaseModelView(BaseView, ActionsMixin):
 
     column_extra_row_actions = None
     """
-        List of row actions (instances of :class:`~flask_admin.model.template.BaseListRowAction`).
+        List of row actions
+        (instances of :class:`~flask_admin.model.template.BaseListRowAction`).
 
         Flask-Admin will generate standard per-row actions (edit, delete, etc)
         and will append custom actions from this list right after them.
@@ -554,15 +561,20 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 column_extra_row_actions = [
-                    LinkRowAction('glyphicon glyphicon-off', 'http://direct.link/?id={row_id}'),
-                    EndpointLinkRowAction('glyphicon glyphicon-test', 'my_view.index_view')
+                    LinkRowAction(
+                        'glyphicon glyphicon-off', 'http://direct.link/?id={row_id}'
+                    ),
+                    EndpointLinkRowAction(
+                        'glyphicon glyphicon-test', 'my_view.index_view'
+                    )
                 ]
     """
 
     simple_list_pager = False
     """
         Enable or disable simple list pager.
-        If enabled, model interface would not run count query and will only show prev/next pager buttons.
+        If enabled, model interface would not run count query and will only show
+        prev/next pager buttons.
     """
 
     form: Optional[Type[Form]] = None
@@ -581,7 +593,8 @@ class BaseModelView(BaseView, ActionsMixin):
 
     form_base_class = BaseForm
     """
-        Base form class. Will be used by form scaffolding function when creating model form.
+        Base form class. Will be used by form scaffolding function when creating model
+        form.
 
         Useful if you want to have custom constructor or override some fields.
 
@@ -670,12 +683,14 @@ class BaseModelView(BaseView, ActionsMixin):
                     }
                 }
 
-        Changing the format of a DateTimeField will require changes to both form_widget_args and form_args.
+        Changing the format of a DateTimeField will require changes to both
+        form_widget_args and form_args.
 
         Example::
 
             form_args = dict(
-                start=dict(format='%Y-%m-%d %I:%M %p') # changes how the input is parsed by strptime (12 hour time)
+                # changes how the input is parsed by strptime (12 hour time)
+                start=dict(format='%Y-%m-%d %I:%M %p')
             )
             form_widget_args = dict(
                 start={
@@ -696,7 +711,8 @@ class BaseModelView(BaseView, ActionsMixin):
                     'password': PasswordField('Password')
                 }
 
-        You can control order of form fields using ``form_columns`` property. For example::
+        You can control order of form fields using ``form_columns`` property.
+        For example::
 
             class MyModelView(BaseModelView):
                 form_columns = ('name', 'email', 'password', 'secret')
@@ -705,15 +721,17 @@ class BaseModelView(BaseView, ActionsMixin):
                     'password': PasswordField('Password')
                 }
 
-        In this case, password field will be put between email and secret fields that are autogenerated.
+        In this case, password field will be put between email and secret fields that
+        are autogenerated.
     """
 
     form_ajax_refs = None
     """
         Use AJAX for foreign key model loading.
 
-        Should contain dictionary, where key is field name and value is either a dictionary which
-        configures AJAX lookups or backend-specific `AjaxModelLoader` class instance.
+        Should contain dictionary, where key is field name and value is either a
+        dictionary which configures AJAX lookups or backend-specific `AjaxModelLoader`
+        class instance.
 
         For example, it can look like::
 
@@ -731,20 +749,22 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 form_ajax_refs = {
-                    'user': QueryAjaxModelLoader('user', db.session, User, fields=['email'], page_size=10)
+                    'user': QueryAjaxModelLoader(
+                        'user', db.session, User, fields=['email'], page_size=10
+                    )
                 }
 
-        If you need custom loading functionality, you can implement your custom loading behavior
-        in your `AjaxModelLoader` class.
+        If you need custom loading functionality, you can implement your custom loading
+        behavior in your `AjaxModelLoader` class.
     """
 
     form_rules = None
     """
         List of rendering rules for model creation form.
 
-        This property changed default form rendering behavior and makes possible to rearrange order
-        of rendered fields, add some text between fields, group them, etc. If not set, will use
-        default Flask-Admin form rendering logic.
+        This property changed default form rendering behavior and makes possible to
+        rearrange order of rendered fields, add some text between fields, group them,
+        etc. If not set, will use default Flask-Admin form rendering logic.
 
         Here's simple example which illustrates how to use::
 
@@ -753,7 +773,9 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(ModelView):
                 form_rules = [
                     # Define field set with header text and four fields
-                    rules.FieldSet(('first_name', 'last_name', 'email', 'phone'), 'User'),
+                    rules.FieldSet(
+                        ('first_name', 'last_name', 'email', 'phone'), 'User'
+                    ),
                     # ... and it is just shortcut for:
                     rules.Header('User'),
                     rules.Field('first_name'),
@@ -853,7 +875,8 @@ class BaseModelView(BaseView, ActionsMixin):
 
              - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
              - `flask_admin.consts.ICON_TYPE_FONT_AWESOME` - Font Awesome icon
-             - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+             - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask
+                static directory
              - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
         :param menu_icon_value:
             Icon glyph name or URL, depending on `menu_icon_type` setting
@@ -1584,7 +1607,8 @@ class BaseModelView(BaseView, ActionsMixin):
     # Database-related API
     def get_list(self, page, sort_field, sort_desc, search, filters, page_size=None):
         """
-        Return a tuple of a count of results and a paginated and sorted list of models from the data source.
+        Return a tuple of a count of results and a paginated and sorted list of models
+        from the data source.
 
         Must be implemented in the child class.
 

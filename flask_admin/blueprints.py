@@ -10,7 +10,9 @@ from flask_admin.consts import ADMIN_ROUTES_HOST_VARIABLE_NAME
 
 
 class _BlueprintSetupStateWithHostSupport(FlaskBlueprintSetupState):
-    """Adds the ability to set a hostname on all routes when registering the blueprint."""
+    """Adds the ability to set a hostname on all routes when registering the
+    blueprint.
+    """
 
     def __init__(self, blueprint, app, options, first_registration):
         super().__init__(blueprint, app, options, first_registration)

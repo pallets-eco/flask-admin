@@ -179,7 +179,8 @@ def test_mockview(app, admin):
     # Attempt to delete model
     rv = client.post("/admin/model/delete/?id=3")
     assert rv.status_code == 302
-    # werkzeug 2.1.0+ returns *relative* location header by default, so just check the end
+    # werkzeug 2.1.0+ returns *relative* location header by default, so just check the
+    # end
     assert rv.headers["location"].endswith("/admin/model/")
 
     # Create a dispatched application to test that edit view's "save and
@@ -195,7 +196,8 @@ def test_mockview(app, admin):
         ),
     )
 
-    # werkzeug 2.1.0+ always returns a `TestResponse` instance (backward-compat as tuple is removed)
+    # werkzeug 2.1.0+ always returns a `TestResponse` instance (backward-compat as
+    # tuple is removed)
     if isinstance(rv, tuple):
         app_iter, status, headers = rv
     else:

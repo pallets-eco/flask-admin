@@ -60,12 +60,17 @@ def test_model(app, db, admin):
         data={
             "name": "test1",
             "point": '{"type": "Point", "coordinates": [125.8, 10.0]}',
-            "line": '{"type": "LineString", "coordinates": [[50.2345, 94.2], [50.21, 94.87]]}',
+            "line": (
+                '{"type": "LineString", '
+                '"coordinates": [[50.2345, 94.2], [50.21, 94.87]]}'
+            ),
             "polygon": (
                 '{"type": "Polygon", "coordinates": [[[100.0, 0.0], [101.0, 0.0],'
                 " [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]}"
             ),
-            "multi": '{"type": "MultiPoint", "coordinates": [[100.0, 0.0], [101.0, 1.0]]}',
+            "multi": (
+                '{"type": "MultiPoint", "coordinates": [[100.0, 0.0], [101.0, 1.0]]}'
+            ),
         },
     )
     assert rv.status_code == 302
@@ -110,7 +115,10 @@ def test_model(app, db, admin):
     data = rv.data.decode("utf-8")
     assert (
         r'{"type":"MultiPoint","coordinates":[[100,0],[101,1]]}</textarea>' in data
-        or r"{&#34;type&#34;:&#34;MultiPoint&#34;,&#34;coordinates&#34;:[[100,0],[101,1]]}"
+        or (
+            r"{&#34;type&#34;:&#34;MultiPoint&#34"
+            r";,&#34;coordinates&#34;:[[100,0],[101,1]]}"
+        )
         in data
     )
 

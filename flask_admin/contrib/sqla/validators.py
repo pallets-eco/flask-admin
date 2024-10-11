@@ -104,5 +104,8 @@ class TimeZoneValidator:
         try:
             self.coerce_function(str(field.data))
         except Exception as err:
-            msg = 'Not a valid timezone (e.g. "America/New_York", "Africa/Johannesburg", "Asia/Singapore").'
+            msg = (
+                'Not a valid timezone (e.g. "America/New_York", '
+                '"Africa/Johannesburg", "Asia/Singapore").'
+            )
             raise ValidationError(field.gettext(msg)) from err

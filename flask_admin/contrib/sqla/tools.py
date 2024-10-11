@@ -51,8 +51,8 @@ def filter_foreign_columns(base_table, columns):
 
 def get_primary_key(model):
     """
-    Return primary key name from a model. If the primary key consists of multiple columns,
-    return the corresponding tuple
+    Return primary key name from a model. If the primary key consists of multiple
+    columns, return the corresponding tuple
 
     :param model:
         Model class
@@ -78,16 +78,20 @@ def has_multiple_pks(model):
 
 
 def tuple_operator_in(model_pk, ids):
-    """The tuple_ Operator only works on certain engines like MySQL or Postgresql. It does not work with sqlite.
+    """The tuple_ Operator only works on certain engines like MySQL or Postgresql. It
+    does not work with sqlite.
 
-    The function returns an or_ - operator, that containes and_ - operators for every single tuple in ids.
+    The function returns an or_ - operator, that containes and_ - operators for every
+    single tuple in ids.
 
     Example::
 
       model_pk =  [ColumnA, ColumnB]
       ids = ((1,2), (1,3))
 
-      tuple_operator(model_pk, ids) -> or_( and_( ColumnA == 1, ColumnB == 2), and_( ColumnA == 1, ColumnB == 3) )
+      tuple_operator(model_pk, ids)
+      ->
+      or_( and_( ColumnA == 1, ColumnB == 2), and_( ColumnA == 1, ColumnB == 3) )
 
     The returning operator can be used within a filter(), as it is just an or_ operator
     """
@@ -194,7 +198,8 @@ def get_field_with_path(model, name, return_remote_proxy_attr=True):
 
             column = columns[0]
 
-            # TODO: Use SQLAlchemy "path-finder" to find exact join path to the target property
+            # TODO: Use SQLAlchemy "path-finder" to find exact join path to the
+            #  target property
             if need_join(model, column.table):
                 path.append(column.table)
 
