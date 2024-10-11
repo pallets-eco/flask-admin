@@ -45,7 +45,7 @@ class AdminModelConverter(ModelConverterBase):
     """
 
     def __init__(self, session, view):
-        super(AdminModelConverter, self).__init__()
+        super().__init__()
 
         self.session = session
         self.view = view
@@ -186,8 +186,7 @@ class AdminModelConverter(ModelConverterBase):
                     return None
                 elif len(columns) > 1:
                     warnings.warn(
-                        "Can not convert multiple-column properties (%s.%s)"
-                        % (model, prop.key)
+                        f"Can not convert multiple-column properties ({model}.{prop.key})"
                     )
                     return None
 
@@ -588,7 +587,7 @@ def get_form(
             if column is not None and hasattr(column, "property"):
                 return relation_name, column.property
 
-            raise ValueError("Invalid model property name %s.%s" % (model, name))
+            raise ValueError(f"Invalid model property name {model}.{name}")
 
         # Filter properties while maintaining property order in 'only' list
         properties = (find(x) for x in only)
@@ -642,12 +641,12 @@ class InlineModelConverter(InlineModelConverterBase):
             Model converter class. Will be automatically instantiated with
             appropriate `InlineFormAdmin` instance.
         """
-        super(InlineModelConverter, self).__init__(view)
+        super().__init__(view)
         self.session = session
         self.model_converter = model_converter
 
     def get_info(self, p):
-        info = super(InlineModelConverter, self).get_info(p)
+        info = super().get_info(p)
 
         # Special case for model instances
         if info is None:
@@ -657,7 +656,7 @@ class InlineModelConverter(InlineModelConverterBase):
                 model = getattr(p, "model", None)
 
                 if model is None:
-                    raise Exception("Unknown inline model admin: %s" % repr(p))
+                    raise Exception(f"Unknown inline model admin: {repr(p)}")
 
                 attrs = dict()
                 for attr in dir(p):
@@ -680,7 +679,7 @@ class InlineModelConverter(InlineModelConverterBase):
 
         if refs:
             for name, opts in iteritems(refs):
-                new_name = "%s-%s" % (info.model.__name__.lower(), name)
+                new_name = f"{info.model.__name__.lower()}-{name}"
 
                 loader = None
                 if isinstance(opts, dict):
@@ -732,7 +731,7 @@ class InlineModelConverter(InlineModelConverterBase):
                     reverse_props.append(prop)
 
         if not reverse_props:
-            raise Exception("Cannot find reverse relation for model %s" % info.model)
+            raise Exception(f"Cannot find reverse relation for model {info.model}")
 
         for reverse_prop in reverse_props:
             # Find forward property
@@ -752,9 +751,7 @@ class InlineModelConverter(InlineModelConverterBase):
                         forward_reverse_props_keys[prop.key] = reverse_prop.key
                         break
             else:
-                raise Exception(
-                    "Cannot find forward relation for model %s" % info.model
-                )
+                raise Exception(f"Cannot find forward relation for model {info.model}")
 
         return forward_reverse_props_keys
 
@@ -888,13 +885,11 @@ class InlineOneToOneModelConverter(InlineModelConverter):
                     inline_relationship[backward_prop.key] = forward_prop.key
                     break
             else:
-                raise Exception(
-                    "Cannot find reverse relation for model %s" % info.model
-                )
+                raise Exception(f"Cannot find reverse relation for model {info.model}")
             break
 
         if not inline_relationship:
-            raise Exception("Cannot find forward relation for model %s" % info.model)
+            raise Exception(f"Cannot find forward relation for model {info.model}")
 
         return inline_relationship
 

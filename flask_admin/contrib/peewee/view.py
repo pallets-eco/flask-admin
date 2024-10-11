@@ -184,7 +184,7 @@ class ModelView(BaseModelView):
     ):
         self._search_fields = []
 
-        super(ModelView, self).__init__(
+        super().__init__(
             model,
             name,
             category,
@@ -260,7 +260,7 @@ class ModelView(BaseModelView):
             attr = name
 
         if attr is None:
-            raise Exception("Failed to find field for filter: %s" % name)
+            raise Exception(f"Failed to find field for filter: {name}")
 
         # Check if field is in different model
         model_class = None
@@ -270,10 +270,7 @@ class ModelView(BaseModelView):
             model_class = attr.model
 
         if model_class != self.model:
-            visible_name = "%s / %s" % (
-                self.get_column_name(model_class.__name__),
-                self.get_column_name(attr.name),
-            )
+            visible_name = f"{self.get_column_name(model_class.__name__)} / {self.get_column_name(attr.name)}"
         else:
             if not isinstance(name, string_types):
                 visible_name = self.get_column_name(attr.name)
@@ -447,7 +444,7 @@ class ModelView(BaseModelView):
 
         # Filters
         if self._filters:
-            for flt, flt_name, value in filters:
+            for flt, _flt_name, value in filters:
                 f = self._filters[flt]
 
                 query = self._handle_join(query, f.column, joins)
@@ -557,7 +554,7 @@ class ModelView(BaseModelView):
         if name == "delete" and not self.can_delete:
             return False
 
-        return super(ModelView, self).is_action_allowed(name)
+        return super().is_action_allowed(name)
 
     @action(
         "delete",

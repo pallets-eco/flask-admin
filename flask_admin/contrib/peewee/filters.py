@@ -22,7 +22,7 @@ class BasePeeweeFilter(filters.BaseFilter):
         :param data_type:
             Client data type
         """
-        super(BasePeeweeFilter, self).__init__(name, options, data_type)
+        super().__init__(name, options, data_type)
 
         self.column = column
 
@@ -91,9 +91,7 @@ class FilterEmpty(BasePeeweeFilter, filters.BaseBooleanFilter):
 
 class FilterInList(BasePeeweeFilter):
     def __init__(self, column, name, options=None, data_type=None):
-        super(FilterInList, self).__init__(
-            column, name, options, data_type="select2-tags"
-        )
+        super().__init__(column, name, options, data_type="select2-tags")
 
     def clean(self, value):
         return [v.strip() for v in value.split(",") if v.strip()]
@@ -191,9 +189,7 @@ class DateSmallerFilter(FilterSmaller, filters.BaseDateFilter):
 
 class DateBetweenFilter(BasePeeweeFilter, filters.BaseDateBetweenFilter):
     def __init__(self, column, name, options=None, data_type=None):
-        super(DateBetweenFilter, self).__init__(
-            column, name, options, data_type="daterangepicker"
-        )
+        super().__init__(column, name, options, data_type="daterangepicker")
 
     def apply(self, query, value):
         start, end = value
@@ -227,9 +223,7 @@ class DateTimeSmallerFilter(FilterSmaller, filters.BaseDateTimeFilter):
 
 class DateTimeBetweenFilter(BasePeeweeFilter, filters.BaseDateTimeBetweenFilter):
     def __init__(self, column, name, options=None, data_type=None):
-        super(DateTimeBetweenFilter, self).__init__(
-            column, name, options, data_type="datetimerangepicker"
-        )
+        super().__init__(column, name, options, data_type="datetimerangepicker")
 
     def apply(self, query, value):
         start, end = value
@@ -263,9 +257,7 @@ class TimeSmallerFilter(FilterSmaller, filters.BaseTimeFilter):
 
 class TimeBetweenFilter(BasePeeweeFilter, filters.BaseTimeBetweenFilter):
     def __init__(self, column, name, options=None, data_type=None):
-        super(TimeBetweenFilter, self).__init__(
-            column, name, options, data_type="timerangepicker"
-        )
+        super().__init__(column, name, options, data_type="timerangepicker")
 
     def apply(self, query, value):
         start, end = value

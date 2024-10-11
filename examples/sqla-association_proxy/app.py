@@ -70,7 +70,7 @@ class Keyword(db.Model):
         self.keyword = keyword
 
     def __repr__(self):
-        return "Keyword(%s)" % repr(self.keyword)
+        return f"Keyword({repr(self.keyword)})"
 
 
 class UserAdmin(sqla.ModelView):

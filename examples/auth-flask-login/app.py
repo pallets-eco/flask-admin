@@ -117,7 +117,7 @@ class MyAdminIndexView(admin.AdminIndexView):
     def index(self):
         if not login.current_user.is_authenticated:
             return redirect(url_for(".login_view"))
-        return super(MyAdminIndexView, self).index()
+        return super().index()
 
     @expose("/login/", methods=("GET", "POST"))
     def login_view(self):
@@ -136,7 +136,7 @@ class MyAdminIndexView(admin.AdminIndexView):
         )
         self._template_args["form"] = form
         self._template_args["link"] = link
-        return super(MyAdminIndexView, self).index()
+        return super().index()
 
     @expose("/register/", methods=("GET", "POST"))
     def register_view(self):
@@ -161,7 +161,7 @@ class MyAdminIndexView(admin.AdminIndexView):
         )
         self._template_args["form"] = form
         self._template_args["link"] = link
-        return super(MyAdminIndexView, self).index()
+        return super().index()
 
     @expose("/logout/")
     def logout_view(self):

@@ -19,7 +19,7 @@ class CustomModelView(ModelView):
         for k, v in iteritems(kwargs):
             setattr(self, k, v)
 
-        super(CustomModelView, self).__init__(model, name, category, endpoint, url)
+        super().__init__(model, name, category, endpoint, url)
 
 
 def create_models(db):
@@ -39,7 +39,7 @@ def create_models(db):
             datetime_field=None,
             **kwargs,
         ):
-            super(Model1, self).__init__(**kwargs)
+            super().__init__(**kwargs)
 
             self.test1 = test1
             self.test2 = test2
@@ -71,7 +71,7 @@ def create_models(db):
             bool_field=0,
             **kwargs,
         ):
-            super(Model2, self).__init__(**kwargs)
+            super().__init__(**kwargs)
 
             self.char_field = char_field
             self.int_field = int_field
@@ -163,7 +163,7 @@ def test_model(app, db, admin):
     assert rv.status_code == 200
     assert b"test1large" in rv.data
 
-    url = "/admin/model1/edit/?id=%s" % model.id
+    url = f"/admin/model1/edit/?id={model.id}"
     rv = client.get(url)
     assert rv.status_code == 200
 
@@ -176,7 +176,7 @@ def test_model(app, db, admin):
     assert model.test3 is None or model.test3 == ""
     assert model.test4 is None or model.test4 == ""
 
-    url = "/admin/model1/delete/?id=%s" % model.id
+    url = f"/admin/model1/delete/?id={model.id}"
     rv = client.post(url)
     assert rv.status_code == 302
     assert Model1.select().count() == 0
@@ -1017,10 +1017,11 @@ def test_ajax_fk(app, db, admin):
         assert 'value=""' not in form.model1()
 
         form.model1.data = model
-        assert 'data-json="[%s, &quot;first&quot;]"' % as_unicode(
-            model.id
-        ) in form.model1() or 'data-json="[%s, &#34;first&#34;]"' % as_unicode(model.id)
-        assert 'value="%s"' % as_unicode(model.id) in form.model1()
+        assert (
+            f'data-json="[{as_unicode(model.id)}, &quot;first&quot;]"' in form.model1()
+            or f'data-json="[{as_unicode(model.id)}, &#34;first&#34;]"'
+        )
+        assert f'value="{as_unicode(model.id)}"' in form.model1()
 
     # Check querying
     client = app.test_client()
@@ -1141,7 +1142,7 @@ def test_export_csv(app, db, admin):
     )
     admin.add_view(view2)
 
-    for x in range(5):
+    for _x in range(5):
         fill_db(Model1, Model2)
 
     client = app.test_client()

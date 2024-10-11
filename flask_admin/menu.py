@@ -87,7 +87,7 @@ class MenuView(BaseMenu):
     """
 
     def __init__(self, name, view=None, cache=True):
-        super(MenuView, self).__init__(
+        super().__init__(
             name,
             class_name=view.menu_class_name,
             icon_type=view.menu_icon_type,
@@ -107,9 +107,7 @@ class MenuView(BaseMenu):
         if self._cached_url:
             return self._cached_url
 
-        url = self._view.get_url(
-            "%s.%s" % (self._view.endpoint, self._view._default_view)
-        )
+        url = self._view.get_url(f"{self._view.endpoint}.{self._view._default_view}")
 
         if self._cache:
             self._cached_url = url
@@ -120,7 +118,7 @@ class MenuView(BaseMenu):
         if view == self._view:
             return True
 
-        return super(MenuView, self).is_active(view)
+        return super().is_active(view)
 
     def is_visible(self):
         if self._view is None:
@@ -151,7 +149,7 @@ class MenuLink(BaseMenu):
         icon_value=None,
         target=None,
     ):
-        super(MenuLink, self).__init__(name, class_name, icon_type, icon_value, target)
+        super().__init__(name, class_name, icon_type, icon_value, target)
 
         self.category = category
 
@@ -164,5 +162,5 @@ class MenuLink(BaseMenu):
 
 class SubMenuCategory(MenuCategory):
     def __init__(self, *args, **kwargs):
-        super(SubMenuCategory, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.class_name += " dropdown-submenu dropright"

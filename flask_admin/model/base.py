@@ -862,9 +862,9 @@ class BaseModelView(BaseView, ActionsMixin):
 
         # If name not provided, it is model name
         if name is None:
-            name = "%s" % self._prettify_class_name(model.__name__)
+            name = f"{self._prettify_class_name(model.__name__)}"
 
-        super(BaseModelView, self).__init__(
+        super().__init__(
             name,
             category,
             endpoint,
@@ -889,7 +889,7 @@ class BaseModelView(BaseView, ActionsMixin):
     # Endpoint
     def _get_endpoint(self, endpoint):
         if endpoint:
-            return super(BaseModelView, self)._get_endpoint(endpoint)
+            return super()._get_endpoint(endpoint)
 
         return self.model.__name__.lower()
 
@@ -1235,7 +1235,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     if flt:
                         collection.extend(flt)
                     else:
-                        raise Exception("Unsupported filter type %s" % n)
+                        raise Exception(f"Unsupported filter type {n}")
             return collection
         else:
             return None
@@ -1261,7 +1261,7 @@ class BaseModelView(BaseView, ActionsMixin):
             except AttributeError:
                 pass
 
-            name = ("%s %s" % (flt.name, as_unicode(operation))).lower()
+            name = (f"{flt.name} {as_unicode(operation)}").lower()
             name = filter_char_re.sub("", name)
             name = filter_compact_re.sub("_", name)
             return name
@@ -1505,7 +1505,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         if missing_fields:
             self._show_missing_fields_warning(
-                "Fields missing from ruleset: %s" % (",".join(missing_fields))
+                "Fields missing from ruleset: {}".format(",".join(missing_fields))
             )
         if remove_missing:
             self._remove_fields_from_form_class(missing_fields, form_class)
@@ -1514,7 +1514,7 @@ class BaseModelView(BaseView, ActionsMixin):
         missing_fields = self._get_ruleset_missing_fields(ruleset=ruleset, form=form)
         if missing_fields:
             self._show_missing_fields_warning(
-                "Fields missing from ruleset: %s" % (",".join(missing_fields))
+                "Fields missing from ruleset: {}".format(",".join(missing_fields))
             )
         if remove_missing:
             self._remove_fields_from_form_instance(missing_fields, form)
@@ -2030,7 +2030,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         :return: The exported csv file name.
         """
-        filename = "%s_%s.%s" % (
+        filename = "{}_{}.{}".format(
             self.name,
             time.strftime("%Y-%m-%d_%H-%M-%S"),
             export_type,
@@ -2053,8 +2053,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     result[name] = options
                 else:
                     raise ValueError(
-                        "%s.form_ajax_refs can not handle %s types"
-                        % (self, type(options))
+                        f"{self}.form_ajax_refs can not handle {type(options)} types"
                     )
 
         return result
@@ -2387,7 +2386,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 raise NotImplementedError(
                     "Macros are not implemented in export. Exclude column in"
                     " column_formatters_export, column_export_list, or "
-                    " column_export_exclude_list. Column: %s" % (col,)
+                    f" column_export_exclude_list. Column: {col}"
                 )
 
         # Grab parameters from URL
@@ -2459,7 +2458,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         filename = self.get_export_name(export_type="csv")
 
-        disposition = "attachment;filename=%s" % (secure_filename(filename),)
+        disposition = f"attachment;filename={secure_filename(filename)}"
 
         return Response(
             stream_with_context(generate()),
@@ -2479,13 +2478,13 @@ class BaseModelView(BaseView, ActionsMixin):
 
         filename = self.get_export_name(export_type)
 
-        disposition = "attachment;filename=%s" % (secure_filename(filename),)
+        disposition = f"attachment;filename={secure_filename(filename)}"
 
         mimetype, encoding = mimetypes.guess_type(filename)
         if not mimetype:
             mimetype = "application/octet-stream"
         if encoding:
-            mimetype = "%s; charset=%s" % (mimetype, encoding)
+            mimetype = f"{mimetype}; charset={encoding}"
 
         ds = tablib.Dataset(headers=[csv_encode(c[1]) for c in self._export_columns])
 

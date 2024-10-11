@@ -68,7 +68,7 @@ class QuerySelectField(SelectFieldBase):
         blank_text="",
         **kwargs,
     ):
-        super(QuerySelectField, self).__init__(label, validators, **kwargs)
+        super().__init__(label, validators, **kwargs)
         self.query_factory = query_factory
 
         if get_pk is None:
@@ -126,7 +126,7 @@ class QuerySelectField(SelectFieldBase):
 
     def pre_validate(self, form):
         if not self.allow_blank or self.data is not None:
-            for pk, obj in self._get_object_list():
+            for _pk, obj in self._get_object_list():
                 if self.data == obj:
                     break
             else:
@@ -148,9 +148,7 @@ class QuerySelectMultipleField(QuerySelectField):
     def __init__(self, label=None, validators=None, default=None, **kwargs):
         if default is None:
             default = []
-        super(QuerySelectMultipleField, self).__init__(
-            label, validators, default=default, **kwargs
-        )
+        super().__init__(label, validators, default=default, **kwargs)
         self._invalid_formdata = False
 
     def _get_data(self):
@@ -241,7 +239,7 @@ class InlineHstoreList(InlineFieldList):
         returned by SQLAlchemy to a list of classes before processing."""
         if isinstance(data, dict):
             data = [KeyValue(k, v) for k, v in iteritems(data)]
-        super(InlineHstoreList, self).process(formdata, data, extra_filters)
+        super().process(formdata, data, extra_filters)
 
     def populate_obj(self, obj, name):
         """Combines each FormField key/value into a dictionary for storage"""
@@ -299,7 +297,7 @@ class InlineModelFormList(InlineFieldList):
 
         form_field = self.form_field_type(form, self._pk, form_opts=form_opts)
 
-        super(InlineModelFormList, self).__init__(form_field, **kwargs)
+        super().__init__(form_field, **kwargs)
 
     def display_row_controls(self, field):
         return field.get_pk() is not None

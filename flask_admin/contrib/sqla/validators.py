@@ -52,7 +52,7 @@ class ItemsRequired(InputRequired):
     """
 
     def __init__(self, min=1, message=None):
-        super(ItemsRequired, self).__init__(message=message)
+        super().__init__(message=message)
         self.min = min
 
     def __call__(self, form, field):

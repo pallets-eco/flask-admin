@@ -33,7 +33,7 @@ class BaseRule:
         """
         return []
 
-    def __call__(self, form, form_opts=None, field_args={}):
+    def __call__(self, form, form_opts=None, field_args=None):
         """
         Render rule.
 
@@ -52,7 +52,7 @@ class NestedRule(BaseRule):
     Nested rule. Can contain child rules and render them.
     """
 
-    def __init__(self, rules=[], separator=""):
+    def __init__(self, rules=None, separator=""):
         """
         Constructor.
 
@@ -61,7 +61,9 @@ class NestedRule(BaseRule):
         :param separator:
             Default separator between rules when rendering them.
         """
-        super(NestedRule, self).__init__()
+        if rules is None:
+            rules = []
+        super().__init__()
         self.rules = list(rules)
         self.separator = separator
 
@@ -75,7 +77,7 @@ class NestedRule(BaseRule):
             Parent rule (if any)
         """
         self.rules = rule_set.configure_rules(self.rules, self)
-        return super(NestedRule, self).configure(rule_set, parent)
+        return super().configure(rule_set, parent)
 
     @property
     def visible_fields(self):
@@ -94,7 +96,7 @@ class NestedRule(BaseRule):
         """
         return self.rules
 
-    def __call__(self, form, form_opts=None, field_args={}):
+    def __call__(self, form, form_opts=None, field_args=None):
         """
         Render all children.
 
@@ -105,6 +107,8 @@ class NestedRule(BaseRule):
         :param field_args:
             Optional arguments that should be passed to template or the field
         """
+        if field_args is None:
+            field_args = {}
         result = []
 
         for r in self.rules:
@@ -127,12 +131,14 @@ class Text(BaseRule):
         :param escape:
             Should text be escaped or not. Default is `True`.
         """
-        super(Text, self).__init__()
+        super().__init__()
 
         self.text = text
         self.escape = escape
 
-    def __call__(self, form, form_opts=None, field_args={}):
+    def __call__(self, form, form_opts=None, field_args=None):
+        if field_args is None:
+            field_args = {}
         if self.escape:
             return self.text
 
@@ -145,7 +151,7 @@ class HTML(Text):
     """
 
     def __init__(self, html):
-        super(HTML, self).__init__(html, escape=False)
+        super().__init__(html, escape=False)
 
 
 class Macro(BaseRule):
@@ -162,7 +168,7 @@ class Macro(BaseRule):
         :param kwargs:
             Default macro parameters
         """
-        super(Macro, self).__init__()
+        super().__init__()
 
         self.macro_name = macro_name
         self.default_args = kwargs
@@ -196,7 +202,7 @@ class Macro(BaseRule):
 
         return field
 
-    def __call__(self, form, form_opts=None, field_args={}):
+    def __call__(self, form, form_opts=None, field_args=None):
         """
         Render macro rule.
 
@@ -207,13 +213,13 @@ class Macro(BaseRule):
         :param field_args:
             Optional arguments that should be passed to the macro
         """
+        if field_args is None:
+            field_args = {}
         context = helpers.get_render_ctx()
         macro = self._resolve(context, self.macro_name)
 
         if not macro:
-            raise ValueError(
-                "Cannot find macro %s in current context." % self.macro_name
-            )
+            raise ValueError(f"Cannot find macro {self.macro_name} in current context.")
 
         opts = dict(self.default_args)
         opts.update(field_args)
@@ -236,7 +242,7 @@ class Container(Macro):
         :param kwargs:
             Container macro arguments
         """
-        super(Container, self).__init__(macro_name, **kwargs)
+        super().__init__(macro_name, **kwargs)
         self.child_rule = child_rule
 
     def configure(self, rule_set, parent):
@@ -249,13 +255,13 @@ class Container(Macro):
             Parent rule (if any)
         """
         self.child_rule.configure(rule_set, self)
-        return super(Container, self).configure(rule_set, parent)
+        return super().configure(rule_set, parent)
 
     @property
     def visible_fields(self):
         return self.child_rule.visible_fields
 
-    def __call__(self, form, form_opts=None, field_args={}):
+    def __call__(self, form, form_opts=None, field_args=None):
         """
         Render container.
 
@@ -266,6 +272,8 @@ class Container(Macro):
         :param field_args:
             Optional arguments that should be passed to template or the field
         """
+        if field_args is None:
+            field_args = {}
         context = helpers.get_render_ctx()
 
         def caller(**kwargs):
@@ -274,7 +282,7 @@ class Container(Macro):
         args = dict(field_args)
         args["caller"] = caller
 
-        return super(Container, self).__call__(form, form_opts, args)
+        return super().__call__(form, form_opts, args)
 
 
 class Field(Macro):
@@ -291,14 +299,14 @@ class Field(Macro):
         :param render_field:
             Macro that will be used to render the field.
         """
-        super(Field, self).__init__(render_field)
+        super().__init__(render_field)
         self.field_name = field_name
 
     @property
     def visible_fields(self):
         return [self.field_name]
 
-    def __call__(self, form, form_opts=None, field_args={}):
+    def __call__(self, form, form_opts=None, field_args=None):
         """
         Render field.
 
@@ -309,10 +317,12 @@ class Field(Macro):
         :param field_args:
             Optional arguments that should be passed to template or the field
         """
+        if field_args is None:
+            field_args = {}
         field = getattr(form, self.field_name, None)
 
         if field is None:
-            raise ValueError("Form %s does not have field %s" % (form, self.field_name))
+            raise ValueError(f"Form {form} does not have field {self.field_name}")
 
         opts = {}
 
@@ -323,7 +333,7 @@ class Field(Macro):
 
         params = {"form": form, "field": field, "kwargs": opts}
 
-        return super(Field, self).__call__(form, form_opts, params)
+        return super().__call__(form, form_opts, params)
 
 
 class Header(Macro):
@@ -340,7 +350,7 @@ class Header(Macro):
         :param header_macro:
             Header rendering macro
         """
-        super(Header, self).__init__(header_macro, text=text)
+        super().__init__(header_macro, text=text)
 
 
 class FieldSet(NestedRule):
@@ -364,15 +374,17 @@ class FieldSet(NestedRule):
         else:
             rule_set = list(rules)
 
-        super(FieldSet, self).__init__(rule_set, separator=separator)
+        super().__init__(rule_set, separator=separator)
 
 
 class Row(NestedRule):
     def __init__(self, *columns, **kw):
-        super(Row, self).__init__()
+        super().__init__()
         self.rules = columns
 
-    def __call__(self, form, form_opts=None, field_args={}):
+    def __call__(self, form, form_opts=None, field_args=None):
+        if field_args is None:
+            field_args = {}
         cols = []
         for col in self.rules:
             if col.visible_fields:
@@ -380,7 +392,7 @@ class Row(NestedRule):
                 w_args.setdefault("column_class", "col")
             cols.append(col(form, form_opts, field_args))
 
-        return Markup('<div class="form-row">%s</div>' % "".join(cols))
+        return Markup('<div class="form-row">{}</div>'.format("".join(cols)))
 
 
 class Group(Macro):
@@ -389,7 +401,7 @@ class Group(Macro):
         Bootstrap Input group.
         """
         render_field = kwargs.get("render_field", "lib.render_field")
-        super(Group, self).__init__(render_field)
+        super().__init__(render_field)
         self.field_name = field_name
         self._addons = []
 
@@ -429,7 +441,7 @@ class Group(Macro):
                 fields.append(cnf["name"])
         return fields
 
-    def __call__(self, form, form_opts=None, field_args={}):
+    def __call__(self, form, form_opts=None, field_args=None):
         """
         Render field.
 
@@ -440,10 +452,12 @@ class Group(Macro):
         :param field_args:
             Optional arguments that should be passed to template or the field
         """
+        if field_args is None:
+            field_args = {}
         field = getattr(form, self.field_name, None)
 
         if field is None:
-            raise ValueError("Form %s does not have field %s" % (form, self.field_name))
+            raise ValueError(f"Form {form} does not have field {self.field_name}")
 
         if form_opts:
             widget_args = form_opts.widget_args
@@ -467,7 +481,7 @@ class Group(Macro):
                         w_args.setdefault("class", "form-control")
                     ctn = fld(**w_args)
             elif typ == "text":
-                ctn = '<span class="input-group-text">%s</span>' % cnf["text"]
+                ctn = '<span class="input-group-text">{}</span>'.format(cnf["text"])
             elif typ == "html":
                 ctn = cnf["html"]
 
@@ -488,7 +502,7 @@ class Group(Macro):
 
         params = {"form": form, "field": field, "kwargs": opts}
 
-        return super(Group, self).__call__(form, form_opts, params)
+        return super().__call__(form, form_opts, params)
 
 
 class RuleSet:
@@ -546,7 +560,7 @@ class RuleSet:
                 try:
                     result.append(r.configure(self, parent))
                 except AttributeError:
-                    raise TypeError('Could not convert "%s" to rule' % repr(r))
+                    raise TypeError(f'Could not convert "{repr(r)}" to rule')
 
         return result
 
@@ -554,5 +568,4 @@ class RuleSet:
         """
         Iterate through registered rules.
         """
-        for r in self.rules:
-            yield r
+        yield from self.rules

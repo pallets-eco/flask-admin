@@ -4,11 +4,11 @@ def get_primary_key(model):
 
 def parse_like_term(term):
     if term.startswith("^"):
-        stmt = "%s%%" % term[1:]
+        stmt = f"{term[1:]}%"
     elif term.startswith("="):
         stmt = term[1:]
     else:
-        stmt = "%%%s%%" % term
+        stmt = f"%{term}%"
 
     return stmt
 

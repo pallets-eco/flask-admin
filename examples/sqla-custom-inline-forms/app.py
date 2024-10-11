@@ -80,7 +80,7 @@ def _handle_image_delete(mapper, conn, target):
 # This widget uses custom template for inline field list
 class CustomInlineFieldListWidget(RenderTemplateWidget):
     def __init__(self):
-        super(CustomInlineFieldListWidget, self).__init__("field_list.html")
+        super().__init__("field_list.html")
 
 
 # This InlineModelFormList will use our custom widget and hide row controls
@@ -116,7 +116,7 @@ class LocationImageInlineModelForm(InlineFormAdmin):
     }
 
     def __init__(self):
-        super(LocationImageInlineModelForm, self).__init__(LocationImage)
+        super().__init__(LocationImage)
 
     def postprocess_form(self, form_class):
         form_class.upload = fields.FileField("Image")

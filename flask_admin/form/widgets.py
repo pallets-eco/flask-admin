@@ -29,7 +29,7 @@ class Select2Widget(widgets.Select):
         if allow_blank and not self.multiple:
             kwargs["data-allow-blank"] = "1"
 
-        return super(Select2Widget, self).__call__(field, **kwargs)
+        return super().__call__(field, **kwargs)
 
 
 class Select2TagsWidget(widgets.TextInput):
@@ -43,7 +43,7 @@ class Select2TagsWidget(widgets.TextInput):
             "data-allow-duplicate-tags",
             "true" if getattr(field, "allow_duplicates", False) else "false",
         )
-        return super(Select2TagsWidget, self).__call__(field, **kwargs)
+        return super().__call__(field, **kwargs)
 
 
 class DatePickerWidget(widgets.TextInput):
@@ -58,7 +58,7 @@ class DatePickerWidget(widgets.TextInput):
         kwargs.setdefault("data-date-format", "YYYY-MM-DD")
 
         self.date_format = kwargs["data-date-format"]
-        return super(DatePickerWidget, self).__call__(field, **kwargs)
+        return super().__call__(field, **kwargs)
 
 
 class DateTimePickerWidget(widgets.TextInput):
@@ -71,7 +71,7 @@ class DateTimePickerWidget(widgets.TextInput):
     def __call__(self, field, **kwargs):
         kwargs.setdefault("data-role", "datetimepicker")
         kwargs.setdefault("data-date-format", "YYYY-MM-DD HH:mm:ss")
-        return super(DateTimePickerWidget, self).__call__(field, **kwargs)
+        return super().__call__(field, **kwargs)
 
 
 class TimePickerWidget(widgets.TextInput):
@@ -84,7 +84,7 @@ class TimePickerWidget(widgets.TextInput):
     def __call__(self, field, **kwargs):
         kwargs.setdefault("data-role", "timepicker")
         kwargs.setdefault("data-date-format", "HH:mm:ss")
-        return super(TimePickerWidget, self).__call__(field, **kwargs)
+        return super().__call__(field, **kwargs)
 
 
 class RenderTemplateWidget:

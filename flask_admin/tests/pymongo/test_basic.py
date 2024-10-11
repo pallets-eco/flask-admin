@@ -59,7 +59,7 @@ def test_model(app, db, admin):
     assert rv.status_code == 200
     assert "test1large" in rv.data.decode("utf-8")
 
-    url = "/admin/testview/edit/?id=%s" % model["_id"]
+    url = "/admin/testview/edit/?id={}".format(model["_id"])
     rv = client.get(url)
     assert rv.status_code == 200
 
@@ -72,7 +72,7 @@ def test_model(app, db, admin):
     assert model["test1"] == "test1small"
     assert model["test2"] == "test2large"
 
-    url = "/admin/testview/delete/?id=%s" % model["_id"]
+    url = "/admin/testview/delete/?id={}".format(model["_id"])
     rv = client.post(url)
     assert rv.status_code == 302
     assert db.test.estimated_document_count() == 0

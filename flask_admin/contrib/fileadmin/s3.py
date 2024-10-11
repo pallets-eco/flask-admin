@@ -221,4 +221,4 @@ class S3FileAdmin(BaseFileAdmin):
         storage = S3Storage(
             bucket_name, region, aws_access_key_id, aws_secret_access_key
         )
-        super(S3FileAdmin, self).__init__(*args, storage=storage, **kwargs)
+        super().__init__(*args, storage=storage, **kwargs)

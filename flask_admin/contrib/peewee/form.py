@@ -53,9 +53,7 @@ class InlineModelFormList(InlineFieldList):
         self.inline_view = inline_view
 
         self._pk = get_primary_key(model)
-        super(InlineModelFormList, self).__init__(
-            self.form_field_type(form, self._pk), **kwargs
-        )
+        super().__init__(self.form_field_type(form, self._pk), **kwargs)
 
     def display_row_controls(self, field):
         return field.get_pk() is not None
@@ -119,7 +117,7 @@ class InlineModelFormList(InlineFieldList):
 
 class CustomModelConverter(ModelConverter):
     def __init__(self, view, additional=None):
-        super(CustomModelConverter, self).__init__(additional)
+        super().__init__(additional)
         self.view = view
 
         # @todo: This really should be done within wtfpeewee
@@ -145,9 +143,7 @@ class CustomModelConverter(ModelConverter):
 
             return field.name, AjaxSelectField(loader, **kwargs)
 
-        return super(CustomModelConverter, self).handle_foreign_key(
-            model, field, **kwargs
-        )
+        return super().handle_foreign_key(model, field, **kwargs)
 
     def handle_pk(self, model, field, **kwargs):
         kwargs["validators"] = []
@@ -212,7 +208,7 @@ class InlineModelConverter(InlineModelConverterBase):
     """
 
     def get_info(self, p):
-        info = super(InlineModelConverter, self).get_info(p)
+        info = super().get_info(p)
 
         if info is None:
             if isinstance(p, BaseModel):
@@ -220,7 +216,7 @@ class InlineModelConverter(InlineModelConverterBase):
             else:
                 model = getattr(p, "model", None)
                 if model is None:
-                    raise Exception("Unknown inline model admin: %s" % repr(p))
+                    raise Exception(f"Unknown inline model admin: {repr(p)}")
 
                 attrs = dict()
 
@@ -242,7 +238,7 @@ class InlineModelConverter(InlineModelConverterBase):
 
         if refs:
             for name, opts in iteritems(refs):
-                new_name = "%s.%s" % (info.model.__name__.lower(), name)
+                new_name = f"{info.model.__name__.lower()}.{name}"
 
                 loader = None
                 if isinstance(opts, (list, tuple)):
@@ -269,7 +265,7 @@ class InlineModelConverter(InlineModelConverterBase):
                     reverse_field = field
                     break
         else:
-            raise Exception("Cannot find reverse relation for model %s" % info.model)
+            raise Exception(f"Cannot find reverse relation for model {info.model}")
 
         # Remove reverse property from the list
         ignore = [reverse_field.name]

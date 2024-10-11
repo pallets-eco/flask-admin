@@ -30,11 +30,11 @@ from flask_admin.tools import iterencode  # noqa: F401
 
 def parse_like_term(term):
     if term.startswith("^"):
-        stmt = "%s%%" % term[1:]
+        stmt = f"{term[1:]}%"
     elif term.startswith("="):
         stmt = term[1:]
     else:
-        stmt = "%%%s%%" % term
+        stmt = f"%{term}%"
 
     return stmt
 
@@ -138,7 +138,7 @@ def get_columns_for_field(field):
         or not hasattr(field.property, "columns")
         or not field.property.columns
     ):
-        raise Exception("Invalid field %s: does not contains any columns." % field)
+        raise Exception(f"Invalid field {field}: does not contains any columns.")
 
     return field.property.columns
 
@@ -190,7 +190,7 @@ def get_field_with_path(model, name, return_remote_proxy_attr=True):
             columns = get_columns_for_field(attr)
 
             if len(columns) > 1:
-                raise Exception("Can only handle one column for %s" % name)
+                raise Exception(f"Can only handle one column for {name}")
 
             column = columns[0]
 

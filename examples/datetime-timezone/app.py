@@ -78,7 +78,7 @@ class TimezoneAwareModelView(ModelView):
                 # Assign the UTC time to the model
                 setattr(model, field_name, utc_time)
 
-        super(TimezoneAwareModelView, self).on_model_change(form, model, is_created)
+        super().on_model_change(form, model, is_created)
 
 
 # inherit TimeZoneAwareModelView to make any admin page timezone-aware

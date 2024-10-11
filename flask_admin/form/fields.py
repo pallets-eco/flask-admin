@@ -45,9 +45,7 @@ class DateTimeField(fields.DateTimeField):
         :param kwargs:
             Any additional parameters
         """
-        super(DateTimeField, self).__init__(
-            label, validators, format or "%Y-%m-%d %H:%M:%S", **kwargs
-        )
+        super().__init__(label, validators, format or "%Y-%m-%d %H:%M:%S", **kwargs)
 
 
 class TimeField(fields.Field):
@@ -81,7 +79,7 @@ class TimeField(fields.Field):
         :param kwargs:
             Any additional parameters
         """
-        super(TimeField, self).__init__(label, validators, **kwargs)
+        super().__init__(label, validators, **kwargs)
 
         self.formats = formats or (
             "%H:%M:%S",
@@ -142,7 +140,7 @@ class Select2Field(fields.SelectField):
         blank_text=None,
         **kwargs,
     ):
-        super(Select2Field, self).__init__(label, validators, coerce, choices, **kwargs)
+        super().__init__(label, validators, coerce, choices, **kwargs)
         self.allow_blank = allow_blank
         self.blank_text = blank_text or " "
 
@@ -183,7 +181,7 @@ class Select2Field(fields.SelectField):
         if self.allow_blank and self.data is None:
             return
 
-        super(Select2Field, self).pre_validate(form)
+        super().pre_validate(form)
 
 
 class Select2TagsField(fields.StringField):
@@ -216,7 +214,7 @@ class Select2TagsField(fields.StringField):
         self.allow_duplicates = allow_duplicates
         self.coerce = coerce
 
-        super(Select2TagsField, self).__init__(label, validators, **kwargs)
+        super().__init__(label, validators, **kwargs)
 
     def process_formdata(self, valuelist):
         if valuelist:

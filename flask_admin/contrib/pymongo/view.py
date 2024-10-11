@@ -106,9 +106,9 @@ class ModelView(BaseModelView):
             name = self._prettify_name(coll.name)
 
         if endpoint is None:
-            endpoint = ("%sview" % coll.name).lower()
+            endpoint = (f"{coll.name}view").lower()
 
-        super(ModelView, self).__init__(
+        super().__init__(
             None,
             name,
             category,
@@ -259,7 +259,7 @@ class ModelView(BaseModelView):
         if self._filters:
             data = []
 
-            for flt, flt_name, value in filters:
+            for flt, _flt_name, value in filters:
                 f = self._filters[flt]
                 data = f.apply(data, f.clean(value))
 
@@ -403,7 +403,7 @@ class ModelView(BaseModelView):
         if name == "delete" and not self.can_delete:
             return False
 
-        return super(ModelView, self).is_action_allowed(name)
+        return super().is_action_allowed(name)
 
     @action(
         "delete",

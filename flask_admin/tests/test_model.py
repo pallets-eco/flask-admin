@@ -51,7 +51,7 @@ class MockModelView(base.BaseModelView):
         for k, v in iteritems(kwargs):
             setattr(self, k, v)
 
-        super(MockModelView, self).__init__(model, name, category, endpoint, url)
+        super().__init__(model, name, category, endpoint, url)
 
         self.created_models = []
         self.updated_models = []

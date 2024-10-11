@@ -155,7 +155,7 @@ class UserAdmin(sqla.ModelView):
 
     # setup edit forms so that only posts created by this user can be selected as 'featured'
     def edit_form(self, obj):
-        return self._filtered_posts(super(UserAdmin, self).edit_form(obj))
+        return self._filtered_posts(super().edit_form(obj))
 
     def _filtered_posts(self, form):
         form.featured_post.query_factory = lambda: Post.query.filter(
@@ -239,7 +239,7 @@ class PostAdmin(sqla.ModelView):
 
     def __init__(self, session):
         # Just call parent class with predefined model.
-        super(PostAdmin, self).__init__(Post, session)
+        super().__init__(Post, session)
 
 
 class TreeView(sqla.ModelView):
@@ -261,7 +261,7 @@ class TreeView(sqla.ModelView):
 
     # override the 'render' method to pass your own parameters to the template
     def render(self, template, **kwargs):
-        return super(TreeView, self).render(template, foo="bar", **kwargs)
+        return super().render(template, foo="bar", **kwargs)
 
 
 # Create admin

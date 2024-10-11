@@ -63,7 +63,7 @@ class RedisCli(BaseView):
         :param url:
             Base URL. If not provided, will use endpoint as a URL.
         """
-        super(RedisCli, self).__init__(name, category, endpoint, url)
+        super().__init__(name, category, endpoint, url)
 
         self.redis = redis
 
@@ -129,7 +129,7 @@ class RedisCli(BaseView):
         :param msg:
             Message to format
         """
-        return Markup('<div class="error">%s</div>' % msg)
+        return Markup(f'<div class="error">{msg}</div>')
 
     def _result(self, result):
         """
@@ -188,7 +188,7 @@ class RedisCli(BaseView):
 
             return self._execute_command(parts[0], parts[1:])
         except CommandError as err:
-            return self._error("Cli: %s" % err)
+            return self._error(f"Cli: {err}")
         except Exception as ex:
             log.exception(ex)
-            return self._error("Cli: %s" % ex)
+            return self._error(f"Cli: {ex}")

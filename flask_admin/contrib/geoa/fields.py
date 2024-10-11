@@ -22,7 +22,7 @@ class GeoJSONField(JSONField):
         self.widget = LeafletWidget(
             tile_layer_url=tile_layer_url, tile_layer_attribution=tile_layer_attribution
         )
-        super(GeoJSONField, self).__init__(label, validators, **kwargs)
+        super().__init__(label, validators, **kwargs)
         self.web_srid = 4326
         self.srid = srid
         if self.srid == -1:
@@ -46,7 +46,7 @@ class GeoJSONField(JSONField):
             return ""
 
     def process_formdata(self, valuelist):
-        super(GeoJSONField, self).process_formdata(valuelist)
+        super().process_formdata(valuelist)
         if str(self.data) == "":
             self.data = None
         if self.data is not None:

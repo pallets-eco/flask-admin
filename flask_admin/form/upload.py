@@ -79,7 +79,7 @@ class FileUploadInput:
                     type="text", readonly="readonly", value=value, name=field.name
                 ),
                 "file": html_params(type="file", value=value, **kwargs),
-                "marker": "_%s-delete" % field.name,
+                "marker": f"_{field.name}-delete",
             }
         )
 
@@ -111,7 +111,7 @@ class ImageUploadInput:
         args = {
             "text": html_params(type="hidden", value=field.data, name=field.name),
             "file": html_params(type="file", **kwargs),
-            "marker": "_%s-delete" % field.name,
+            "marker": f"_{field.name}-delete",
         }
 
         if field.data and isinstance(field.data, string_types):
@@ -208,7 +208,7 @@ class FileUploadField(fields.StringField):
         if int(wtforms_version[0]) < 3:
             kwargs.pop("extra_filters", None)
 
-        super(FileUploadField, self).__init__(label, validators, **kwargs)
+        super().__init__(label, validators, **kwargs)
 
     def is_file_allowed(self, filename):
         """
@@ -241,17 +241,17 @@ class FileUploadField(fields.StringField):
             self._get_path(self.data.filename)
         ):
             raise ValidationError(
-                gettext('File "%s" already exists.' % self.data.filename)
+                gettext(f'File "{self.data.filename}" already exists.')
             )
 
     def process(self, formdata, data=unset_value, extra_filters=None):
         if formdata:
-            marker = "_%s-delete" % self.name
+            marker = f"_{self.name}-delete"
             if marker in formdata:
                 self._should_delete = True
 
         if int(wtforms_version[0]) < 3:
-            return super(FileUploadField, self).process(formdata, data)
+            return super().process(formdata, data)
         else:
             return super(FileUploadField, self).process(formdata, data, extra_filters)  # noqa
 
@@ -312,7 +312,7 @@ class FileUploadField(fields.StringField):
             os.makedirs(os.path.dirname(path), self.permission | 0o111)
 
         if (self._allow_overwrite is False) and os.path.exists(path):
-            raise ValueError(gettext('File "%s" already exists.' % path))
+            raise ValueError(gettext(f'File "{path}" already exists.'))
 
         data.save(path)
 
@@ -434,7 +434,7 @@ class ImageUploadField(FileUploadField):
         if not allowed_extensions:
             allowed_extensions = ("gif", "jpg", "jpeg", "png", "tiff")
 
-        super(ImageUploadField, self).__init__(
+        super().__init__(
             label,
             validators,
             base_path=base_path,
@@ -446,17 +446,17 @@ class ImageUploadField(FileUploadField):
         )
 
     def pre_validate(self, form):
-        super(ImageUploadField, self).pre_validate(form)
+        super().pre_validate(form)
 
         if self._is_uploaded_file(self.data):
             try:
                 self.image = Image.open(self.data)
             except Exception as e:
-                raise ValidationError("Invalid image: %s" % e)
+                raise ValidationError(f"Invalid image: {e}")
 
     # Deletion
     def _delete_file(self, filename):
-        super(ImageUploadField, self)._delete_file(filename)
+        super()._delete_file(filename)
 
         self._delete_thumbnail(filename)
 
@@ -527,7 +527,7 @@ class ImageUploadField(FileUploadField):
     def _get_save_format(self, filename, image):
         if image.format not in self.keep_image_formats:
             name, ext = op.splitext(filename)
-            filename = "%s.jpg" % name
+            filename = f"{name}.jpg"
             return filename, "JPEG"
 
         return filename, image.format
@@ -546,4 +546,4 @@ def thumbgen_filename(filename):
     Generate thumbnail name from filename.
     """
     name, ext = op.splitext(filename)
-    return "%s_thumb%s" % (name, ext)
+    return f"{name}_thumb{ext}"

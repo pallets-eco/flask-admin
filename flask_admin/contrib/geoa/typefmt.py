@@ -32,7 +32,7 @@ def geom_formatter(view, value, name) -> str:
     geojson = (
         view.session.query(view.model).with_entities(func.ST_AsGeoJSON(value)).scalar()
     )
-    return Markup("<textarea %s>%s</textarea>" % (params, geojson))
+    return Markup(f"<textarea {params}>{geojson}</textarea>")
 
 
 DEFAULT_FORMATTERS = BASE_FORMATTERS.copy()

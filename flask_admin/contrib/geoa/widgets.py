@@ -85,4 +85,4 @@ class LeafletWidget(TextArea):
             kwargs["data-max-bounds-ne-lat"] = maxx
             kwargs["data-max-bounds-ne-lng"] = maxy
 
-        return super(LeafletWidget, self).__call__(field, **kwargs)
+        return super().__call__(field, **kwargs)

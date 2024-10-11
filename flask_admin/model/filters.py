@@ -102,7 +102,7 @@ class BaseBooleanFilter(BaseFilter):
     """
 
     def __init__(self, name, options=None, data_type=None):
-        super(BaseBooleanFilter, self).__init__(
+        super().__init__(
             name, (("1", lazy_gettext("Yes")), ("0", lazy_gettext("No"))), data_type
         )
 
@@ -158,7 +158,7 @@ class BaseDateFilter(BaseFilter):
     """
 
     def __init__(self, name, options=None, data_type=None):
-        super(BaseDateFilter, self).__init__(name, options, data_type="datepicker")
+        super().__init__(name, options, data_type="datepicker")
 
     def clean(self, value):
         return datetime.datetime.strptime(value, "%Y-%m-%d").date()
@@ -201,9 +201,7 @@ class BaseDateTimeFilter(BaseFilter):
     """
 
     def __init__(self, name, options=None, data_type=None):
-        super(BaseDateTimeFilter, self).__init__(
-            name, options, data_type="datetimepicker"
-        )
+        super().__init__(name, options, data_type="datetimepicker")
 
     def clean(self, value):
         # datetime filters will not work in SQLite + SQLAlchemy if value not converted to datetime
@@ -245,7 +243,7 @@ class BaseTimeFilter(BaseFilter):
     """
 
     def __init__(self, name, options=None, data_type=None):
-        super(BaseTimeFilter, self).__init__(name, options, data_type="timepicker")
+        super().__init__(name, options, data_type="timepicker")
 
     def clean(self, value):
         # time filters will not work in SQLite + SQLAlchemy if value not converted to time
@@ -289,7 +287,7 @@ class BaseUuidFilter(BaseFilter):
     """
 
     def __init__(self, name, options=None, data_type=None):
-        super(BaseUuidFilter, self).__init__(name, options, data_type="uuid")
+        super().__init__(name, options, data_type="uuid")
 
     def clean(self, value):
         value = uuid.UUID(value)

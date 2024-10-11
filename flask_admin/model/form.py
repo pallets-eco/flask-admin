@@ -162,7 +162,7 @@ class InlineFormAdmin(InlineBaseFormAdmin):
         """
         self.model = model
 
-        super(InlineFormAdmin, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
 
 class ModelConverterBase:
@@ -188,7 +188,7 @@ class ModelConverterBase:
 
         # Search by module + name
         for col_type in types:
-            type_string = "%s.%s" % (col_type.__module__, col_type.__name__)
+            type_string = f"{col_type.__module__}.{col_type.__name__}"
 
             if type_string in self.converters:
                 return self.converters[type_string]

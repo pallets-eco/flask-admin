@@ -25,7 +25,7 @@ def get_property(obj, name, old_name, default=None):
     """
     if hasattr(obj, old_name):
         warnings.warn(
-            "Property %s is obsolete, please use %s instead" % (old_name, name),
+            f"Property {old_name} is obsolete, please use {name} instead",
             stacklevel=2,
         )
         return getattr(obj, old_name)
@@ -51,8 +51,7 @@ class ObsoleteAttr:
         # Check if there's old attribute
         if hasattr(obj, self.old_name):
             warnings.warn(
-                "Property %s is obsolete, please use %s instead"
-                % (self.old_name, self.new_name),
+                f"Property {self.old_name} is obsolete, please use {self.new_name} instead",
                 stacklevel=2,
             )
             return getattr(obj, self.old_name)

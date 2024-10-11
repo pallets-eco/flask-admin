@@ -180,7 +180,7 @@ class AzureStorage:
             expiry=now + self._send_file_validity,
             start=now - self._send_file_lookback,
         )
-        return redirect("%s?%s" % (url, sas))
+        return redirect(f"{url}?{sas}")
 
     def read_file(self, path):
         path = self._ensure_blob_path(path)
@@ -268,4 +268,4 @@ class AzureFileAdmin(BaseFileAdmin):
 
     def __init__(self, container_name, connection_string, *args, **kwargs):
         storage = AzureStorage(container_name, connection_string)
-        super(AzureFileAdmin, self).__init__(*args, storage=storage, **kwargs)
+        super().__init__(*args, storage=storage, **kwargs)

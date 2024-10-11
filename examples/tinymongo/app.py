@@ -90,7 +90,7 @@ class TweetView(ModelView):
     form = TweetForm
 
     def get_list(self, *args, **kwargs):
-        count, data = super(TweetView, self).get_list(*args, **kwargs)
+        count, data = super().get_list(*args, **kwargs)
 
         # Contribute user_name to the models
         for item in data:
@@ -105,11 +105,11 @@ class TweetView(ModelView):
         return form
 
     def create_form(self):
-        form = super(TweetView, self).create_form()
+        form = super().create_form()
         return self._feed_user_choices(form)
 
     def edit_form(self, obj):
-        form = super(TweetView, self).edit_form(obj)
+        form = super().edit_form(obj)
         return self._feed_user_choices(form)
 
     # Correct user_id reference before saving

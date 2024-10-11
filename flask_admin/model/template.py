@@ -28,7 +28,7 @@ class BaseListRowAction:
 
 class LinkRowAction(BaseListRowAction):
     def __init__(self, icon_class, url, title=None):
-        super(LinkRowAction, self).__init__(title=title)
+        super().__init__(title=title)
 
         self.url = url
         self.icon_class = icon_class
@@ -46,7 +46,7 @@ class LinkRowAction(BaseListRowAction):
 
 class EndpointLinkRowAction(BaseListRowAction):
     def __init__(self, icon_class, endpoint, title=None, id_arg="id", url_args=None):
-        super(EndpointLinkRowAction, self).__init__(title=title)
+        super().__init__(title=title)
 
         self.icon_class = icon_class
         self.endpoint = endpoint
@@ -67,7 +67,7 @@ class EndpointLinkRowAction(BaseListRowAction):
 
 class TemplateLinkRowAction(BaseListRowAction):
     def __init__(self, template_name, title=None):
-        super(TemplateLinkRowAction, self).__init__(title=title)
+        super().__init__(title=title)
 
         self.template_name = template_name
 
@@ -78,37 +78,27 @@ class TemplateLinkRowAction(BaseListRowAction):
 
 class ViewRowAction(TemplateLinkRowAction):
     def __init__(self):
-        super(ViewRowAction, self).__init__(
-            "row_actions.view_row", gettext("View Record")
-        )
+        super().__init__("row_actions.view_row", gettext("View Record"))
 
 
 class ViewPopupRowAction(TemplateLinkRowAction):
     def __init__(self):
-        super(ViewPopupRowAction, self).__init__(
-            "row_actions.view_row_popup", gettext("View Record")
-        )
+        super().__init__("row_actions.view_row_popup", gettext("View Record"))
 
 
 class EditRowAction(TemplateLinkRowAction):
     def __init__(self):
-        super(EditRowAction, self).__init__(
-            "row_actions.edit_row", gettext("Edit Record")
-        )
+        super().__init__("row_actions.edit_row", gettext("Edit Record"))
 
 
 class EditPopupRowAction(TemplateLinkRowAction):
     def __init__(self):
-        super(EditPopupRowAction, self).__init__(
-            "row_actions.edit_row_popup", gettext("Edit Record")
-        )
+        super().__init__("row_actions.edit_row_popup", gettext("Edit Record"))
 
 
 class DeleteRowAction(TemplateLinkRowAction):
     def __init__(self):
-        super(DeleteRowAction, self).__init__(
-            "row_actions.delete_row", gettext("Delete Record")
-        )
+        super().__init__("row_actions.delete_row", gettext("Delete Record"))
 
 
 # Macro helper

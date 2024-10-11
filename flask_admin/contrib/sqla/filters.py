@@ -26,7 +26,7 @@ class BaseSQLAFilter(filters.BaseFilter):
         :param data_type:
             Client data type
         """
-        super(BaseSQLAFilter, self).__init__(name, options, data_type)
+        super().__init__(name, options, data_type)
 
         self.column = column
 
@@ -34,7 +34,7 @@ class BaseSQLAFilter(filters.BaseFilter):
         return self.column if alias is None else getattr(alias, self.column.key)
 
     def apply(self, query, value, alias=None):
-        return super(BaseSQLAFilter, self).apply(query, value)
+        return super().apply(query, value)
 
 
 # Common filters
@@ -101,9 +101,7 @@ class FilterEmpty(BaseSQLAFilter, filters.BaseBooleanFilter):
 
 class FilterInList(BaseSQLAFilter):
     def __init__(self, column, name, options=None, data_type=None):
-        super(FilterInList, self).__init__(
-            column, name, options, data_type="select2-tags"
-        )
+        super().__init__(column, name, options, data_type="select2-tags")
 
     def clean(self, value):
         return [v.strip() for v in value.split(",") if v.strip()]
@@ -200,9 +198,7 @@ class DateSmallerFilter(FilterSmaller, filters.BaseDateFilter):
 
 class DateBetweenFilter(BaseSQLAFilter, filters.BaseDateBetweenFilter):
     def __init__(self, column, name, options=None, data_type=None):
-        super(DateBetweenFilter, self).__init__(
-            column, name, options, data_type="daterangepicker"
-        )
+        super().__init__(column, name, options, data_type="daterangepicker")
 
     def apply(self, query, value, alias=None):
         start, end = value
@@ -236,9 +232,7 @@ class DateTimeSmallerFilter(FilterSmaller, filters.BaseDateTimeFilter):
 
 class DateTimeBetweenFilter(BaseSQLAFilter, filters.BaseDateTimeBetweenFilter):
     def __init__(self, column, name, options=None, data_type=None):
-        super(DateTimeBetweenFilter, self).__init__(
-            column, name, options, data_type="datetimerangepicker"
-        )
+        super().__init__(column, name, options, data_type="datetimerangepicker")
 
     def apply(self, query, value, alias=None):
         start, end = value
@@ -272,9 +266,7 @@ class TimeSmallerFilter(FilterSmaller, filters.BaseTimeFilter):
 
 class TimeBetweenFilter(BaseSQLAFilter, filters.BaseTimeBetweenFilter):
     def __init__(self, column, name, options=None, data_type=None):
-        super(TimeBetweenFilter, self).__init__(
-            column, name, options, data_type="timerangepicker"
-        )
+        super().__init__(column, name, options, data_type="timerangepicker")
 
     def apply(self, query, value, alias=None):
         start, end = value
@@ -293,38 +285,38 @@ class TimeNotBetweenFilter(TimeBetweenFilter):
 class EnumEqualFilter(FilterEqual):
     def __init__(self, column, name, options=None, **kwargs):
         self.enum_class = column.type.enum_class
-        super(EnumEqualFilter, self).__init__(column, name, options, **kwargs)
+        super().__init__(column, name, options, **kwargs)
 
     def clean(self, value):
         if self.enum_class is None:
-            return super(EnumEqualFilter, self).clean(value)
+            return super().clean(value)
         return self.enum_class[value]
 
 
 class EnumFilterNotEqual(FilterNotEqual):
     def __init__(self, column, name, options=None, **kwargs):
         self.enum_class = column.type.enum_class
-        super(EnumFilterNotEqual, self).__init__(column, name, options, **kwargs)
+        super().__init__(column, name, options, **kwargs)
 
     def clean(self, value):
         if self.enum_class is None:
-            return super(EnumFilterNotEqual, self).clean(value)
+            return super().clean(value)
         return self.enum_class[value]
 
 
 class EnumFilterEmpty(FilterEmpty):
     def __init__(self, column, name, options=None, **kwargs):
         self.enum_class = column.type.enum_class
-        super(EnumFilterEmpty, self).__init__(column, name, options, **kwargs)
+        super().__init__(column, name, options, **kwargs)
 
 
 class EnumFilterInList(FilterInList):
     def __init__(self, column, name, options=None, **kwargs):
         self.enum_class = column.type.enum_class
-        super(EnumFilterInList, self).__init__(column, name, options, **kwargs)
+        super().__init__(column, name, options, **kwargs)
 
     def clean(self, value):
-        values = super(EnumFilterInList, self).clean(value)
+        values = super().clean(value)
         if self.enum_class is not None:
             values = [self.enum_class[val] for val in values]
         return values
@@ -333,10 +325,10 @@ class EnumFilterInList(FilterInList):
 class EnumFilterNotInList(FilterNotInList):
     def __init__(self, column, name, options=None, **kwargs):
         self.enum_class = column.type.enum_class
-        super(EnumFilterNotInList, self).__init__(column, name, options, **kwargs)
+        super().__init__(column, name, options, **kwargs)
 
     def clean(self, value):
-        values = super(EnumFilterNotInList, self).clean(value)
+        values = super().clean(value)
         if self.enum_class is not None:
             values = [self.enum_class[val] for val in values]
         return values
@@ -344,7 +336,7 @@ class EnumFilterNotInList(FilterNotInList):
 
 class ChoiceTypeEqualFilter(FilterEqual):
     def __init__(self, column, name, options=None, **kwargs):
-        super(ChoiceTypeEqualFilter, self).__init__(column, name, options, **kwargs)
+        super().__init__(column, name, options, **kwargs)
 
     def apply(self, query, user_query, alias=None):
         column = self.get_column(alias)
@@ -368,7 +360,7 @@ class ChoiceTypeEqualFilter(FilterEqual):
 
 class ChoiceTypeNotEqualFilter(FilterNotEqual):
     def __init__(self, column, name, options=None, **kwargs):
-        super(ChoiceTypeNotEqualFilter, self).__init__(column, name, options, **kwargs)
+        super().__init__(column, name, options, **kwargs)
 
     def apply(self, query, user_query, alias=None):
         column = self.get_column(alias)
@@ -393,7 +385,7 @@ class ChoiceTypeNotEqualFilter(FilterNotEqual):
 
 class ChoiceTypeLikeFilter(FilterLike):
     def __init__(self, column, name, options=None, **kwargs):
-        super(ChoiceTypeLikeFilter, self).__init__(column, name, options, **kwargs)
+        super().__init__(column, name, options, **kwargs)
 
     def apply(self, query, user_query, alias=None):
         column = self.get_column(alias)
@@ -416,7 +408,7 @@ class ChoiceTypeLikeFilter(FilterLike):
 
 class ChoiceTypeNotLikeFilter(FilterNotLike):
     def __init__(self, column, name, options=None, **kwargs):
-        super(ChoiceTypeNotLikeFilter, self).__init__(column, name, options, **kwargs)
+        super().__init__(column, name, options, **kwargs)
 
     def apply(self, query, user_query, alias=None):
         column = self.get_column(alias)

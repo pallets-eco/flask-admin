@@ -365,7 +365,7 @@ class ModelView(BaseModelView):
         if self.form_choices is None:
             self.form_choices = {}
 
-        super(ModelView, self).__init__(
+        super().__init__(
             model,
             name,
             category,
@@ -383,7 +383,7 @@ class ModelView(BaseModelView):
         self._primary_key = self.scaffold_pk()
 
         if self._primary_key is None:
-            raise Exception("Model %s does not have primary key." % self.model.__name__)
+            raise Exception(f"Model {self.model.__name__} does not have primary key.")
 
         # Configuration
         if not self.column_select_related_list:
@@ -477,8 +477,7 @@ class ModelView(BaseModelView):
                         continue
                     elif len(filtered) > 1:
                         warnings.warn(
-                            "Can not convert multiple-column properties (%s.%s)"
-                            % (self.model, p.key)
+                            f"Can not convert multiple-column properties ({self.model}.{p.key})"
                         )
                         continue
 
@@ -633,7 +632,7 @@ class ModelView(BaseModelView):
                 attr, joins = tools.get_field_with_path(self.model, name)
 
                 if not attr:
-                    raise Exception("Failed to find field for search field: %s" % name)
+                    raise Exception(f"Failed to find field for search field: {name}")
 
                 if tools.is_hybrid_property(self.model, name):
                     column = attr
@@ -681,7 +680,7 @@ class ModelView(BaseModelView):
         attr, joins = tools.get_field_with_path(self.model, name)
 
         if attr is None:
-            raise Exception("Failed to find field for filter: %s" % name)
+            raise Exception(f"Failed to find field for filter: {name}")
 
         # Figure out filters for related column
         if is_relationship(attr):
@@ -695,10 +694,7 @@ class ModelView(BaseModelView):
                     if column.foreign_keys or column.primary_key:
                         continue
 
-                    visible_name = "%s / %s" % (
-                        self.get_column_name(attr.prop.target.name),
-                        self.get_column_name(p.key),
-                    )
+                    visible_name = f"{self.get_column_name(attr.prop.target.name)} / {self.get_column_name(p.key)}"
 
                     type_name = type(column.type).__name__
                     flt = self.filter_converter.convert(type_name, column, visible_name)
@@ -725,7 +721,7 @@ class ModelView(BaseModelView):
 
                 if len(columns) > 1:
                     raise Exception(
-                        "Can not filter more than on one column for %s" % name
+                        f"Can not filter more than on one column for {name}"
                     )
 
                 column = columns[0]
@@ -743,16 +739,9 @@ class ModelView(BaseModelView):
                 and name not in self.column_labels
             ):
                 if joined_column_name:
-                    visible_name = "%s / %s / %s" % (
-                        joined_column_name,
-                        self.get_column_name(column.table.name),
-                        self.get_column_name(column.name),
-                    )
+                    visible_name = f"{joined_column_name} / {self.get_column_name(column.table.name)} / {self.get_column_name(column.name)}"
                 else:
-                    visible_name = "%s / %s" % (
-                        self.get_column_name(column.table.name),
-                        self.get_column_name(column.name),
-                    )
+                    visible_name = f"{self.get_column_name(column.table.name)} / {self.get_column_name(column.name)}"
             else:
                 if not isinstance(name, string_types):
                     visible_name = self.get_column_name(name.property.key)
@@ -892,7 +881,7 @@ class ModelView(BaseModelView):
 
         joined = []
 
-        for prop, name in self._list_columns:
+        for prop, _name in self._list_columns:
             if prop in relations:
                 joined.append(getattr(self.model, prop))
 
@@ -963,7 +952,7 @@ class ModelView(BaseModelView):
         return query, joins
 
     def _get_default_order(self):
-        order = super(ModelView, self)._get_default_order()
+        order = super()._get_default_order()
         for field, direction in order or []:
             attr, joins = tools.get_field_with_path(self.model, field)
             yield attr, joins, direction
@@ -1038,7 +1027,7 @@ class ModelView(BaseModelView):
         return query, count_query, joins, count_joins
 
     def _apply_filters(self, query, count_query, joins, count_joins, filters):
-        for idx, flt_name, value in filters:
+        for idx, _flt_name, value in filters:
             flt = self._filters[idx]
 
             alias = None
@@ -1069,8 +1058,8 @@ class ModelView(BaseModelView):
 
                 if len(spec.args) == 3:
                     warnings.warn(
-                        "Please update your custom filter %s to "
-                        "include additional `alias` parameter." % repr(flt)
+                        f"Please update your custom filter {repr(flt)} to "
+                        "include additional `alias` parameter."
                     )
                 else:
                     raise
@@ -1205,7 +1194,7 @@ class ModelView(BaseModelView):
                 )
             return True
 
-        return super(ModelView, self).handle_view_exception(exc)
+        return super().handle_view_exception(exc)
 
     def build_new_instance(self):
         """
@@ -1315,7 +1304,7 @@ class ModelView(BaseModelView):
         if name == "delete" and not self.can_delete:
             return False
 
-        return super(ModelView, self).is_action_allowed(name)
+        return super().is_action_allowed(name)
 
     @action(
         "delete",

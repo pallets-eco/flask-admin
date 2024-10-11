@@ -44,9 +44,7 @@ class CustomModelView(ModelView):
         for k, v in iteritems(kwargs):
             setattr(self, k, v)
 
-        super(CustomModelView, self).__init__(
-            model, session, name, category, endpoint, url
-        )
+        super().__init__(model, session, name, category, endpoint, url)
 
     form_choices = {"choice_field": [("choice-1", "One"), ("choice-2", "Two")]}
 
@@ -305,8 +303,8 @@ def test_model(app, db, admin):
         model = db.session.query(Model1).first()
         assert model.test1 == "test1large"
         assert model.test2 == "test2"
-        assert model.test3 == None
-        assert model.test4 == None
+        assert model.test3 is None
+        assert model.test4 is None
         assert model.email_field == "test@test.com"
         assert model.choice_field == "choice-1"
         assert model.enum_field == "model1_v1"
@@ -325,7 +323,7 @@ def test_model(app, db, admin):
         assert "test1large" in rv.data.decode("utf-8")
 
         # check that we can retrieve an edit view
-        url = "/admin/model1/edit/?id=%s" % model.id
+        url = f"/admin/model1/edit/?id={model.id}"
         rv = client.get(url)
         assert rv.status_code == 200
 
@@ -358,8 +356,8 @@ def test_model(app, db, admin):
         model = db.session.query(Model1).first()
         assert model.test1 == "test1small"
         assert model.test2 == "test2large"
-        assert model.test3 == None
-        assert model.test4 == None
+        assert model.test3 is None
+        assert model.test4 is None
         assert model.email_field == "test2@test.com"
         assert model.choice_field is None
         assert model.enum_field is None
@@ -373,7 +371,7 @@ def test_model(app, db, admin):
         assert model.sqla_utils_color is None
 
         # check that the model can be deleted
-        url = "/admin/model1/delete/?id=%s" % model.id
+        url = f"/admin/model1/delete/?id={model.id}"
         rv = client.post(url)
         assert rv.status_code == 302
         assert db.session.query(Model1).count() == 0
@@ -2179,13 +2177,13 @@ def test_on_model_change_delete(app, db, admin):
         model = db.session.query(Model1).first()
         assert model.test1 == "TEST1LARGE"
 
-        url = "/admin/model1/edit/?id=%s" % model.id
+        url = f"/admin/model1/edit/?id={model.id}"
         client.post(url, data=dict(test1="test1small", test2="test2large"))
 
         model = db.session.query(Model1).first()
         assert model.test1 == "TEST1SMALL"
 
-        url = "/admin/model1/delete/?id=%s" % model.id
+        url = f"/admin/model1/delete/?id={model.id}"
         client.post(url)
         assert view.deleted
 
@@ -2582,8 +2580,8 @@ def test_ajax_fk(app, db, admin):
 
             form.model1.data = model
             assert (
-                'data-json="[%s, &quot;first&quot;]"' % model.id in form.model1()
-                or 'data-json="[%s, &#34;first&#34;]"' % model.id in form.model1()
+                f'data-json="[{model.id}, &quot;first&quot;]"' in form.model1()
+                or f'data-json="[{model.id}, &#34;first&#34;]"' in form.model1()
             )
             assert 'value="1"' in form.model1()
 
@@ -2591,7 +2589,7 @@ def test_ajax_fk(app, db, admin):
         client = app.test_client()
 
         req = client.get("/admin/view/ajax/lookup/?name=model1&query=foo")
-        assert req.data.decode("utf-8") == '[[%s, "foo"]]' % model2.id
+        assert req.data.decode("utf-8") == f'[[{model2.id}, "foo"]]'
 
         # Check submitting
         req = client.post("/admin/view/new/", data={"model1": as_unicode(model.id)})
@@ -2727,7 +2725,7 @@ def test_simple_list_pager(app, db, admin):
             simple_list_pager = True
 
             def get_count_query(self):
-                assert False
+                raise AssertionError()
 
         view = TestModelView(Model1, db.session)
         admin.add_view(view)
@@ -3016,7 +3014,7 @@ def test_export_csv(app, db, admin):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
-        for x in range(5):
+        for _x in range(5):
             fill_db(db, Model1, Model2)
 
         view1 = CustomModelView(

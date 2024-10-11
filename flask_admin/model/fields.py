@@ -17,7 +17,7 @@ class InlineFieldList(FieldList):
     widget = InlineFieldListWidget()
 
     def __init__(self, *args, **kwargs):
-        super(InlineFieldList, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def __call__(self, **kwargs):
         # Create template
@@ -40,12 +40,12 @@ class InlineFieldList(FieldList):
         return True
 
     def process(self, formdata, data=unset_value, extra_filters=None):
-        res = super(InlineFieldList, self).process(formdata, data)
+        res = super().process(formdata, data)
 
         # Postprocess - contribute flag
         if formdata:
             for f in self.entries:
-                key = "del-%s" % f.id
+                key = f"del-{f.id}"
                 f._should_delete = key in formdata
 
         return res
@@ -113,7 +113,7 @@ class InlineModelFormField(FormField):
     widget = InlineFormWidget()
 
     def __init__(self, form_class, pk, form_opts=None, **kwargs):
-        super(InlineModelFormField, self).__init__(form_class, **kwargs)
+        super().__init__(form_class, **kwargs)
 
         self._pk = pk
         self.form_opts = form_opts
@@ -148,7 +148,7 @@ class AjaxSelectField(SelectFieldBase):
         blank_text="",
         **kwargs,
     ):
-        super(AjaxSelectField, self).__init__(label, validators, **kwargs)
+        super().__init__(label, validators, **kwargs)
         self.loader = loader
 
         self.allow_blank = allow_blank
@@ -197,9 +197,7 @@ class AjaxSelectMultipleField(AjaxSelectField):
         if default is None:
             default = []
 
-        super(AjaxSelectMultipleField, self).__init__(
-            loader, label, validators, default=default, **kwargs
-        )
+        super().__init__(loader, label, validators, default=default, **kwargs)
         self._invalid_formdata = False
 
     def _get_data(self):

@@ -234,8 +234,7 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
         # Default view
         if self._default_view is None:
             raise Exception(
-                "Attempted to instantiate admin view %s without default view"
-                % self.__class__.__name__
+                f"Attempted to instantiate admin view {self.__class__.__name__} without default view"
             )
 
     def _get_endpoint(self, endpoint):
@@ -254,15 +253,15 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
         """
         if url is None:
             if admin.url != "/":
-                url = "%s/%s" % (admin.url, self.endpoint)
+                url = f"{admin.url}/{self.endpoint}"
             else:
                 if self == admin.index_view:
                     url = "/"
                 else:
-                    url = "/%s" % self.endpoint
+                    url = f"/{self.endpoint}"
         else:
             if not url.startswith("/"):
-                url = "%s/%s" % (admin.url, url)
+                url = f"{admin.url}/{url}"
 
         return url
 
@@ -486,7 +485,7 @@ class AdminIndexView(BaseView):
         menu_icon_type=None,
         menu_icon_value=None,
     ):
-        super(AdminIndexView, self).__init__(
+        super().__init__(
             name or babel.lazy_gettext("Home"),
             category,
             endpoint or "admin",

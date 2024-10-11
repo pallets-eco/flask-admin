@@ -52,8 +52,7 @@ class LocalFileStorage:
 
         if not self.path_exists(self.base_path):
             raise OSError(
-                'FileAdmin path "%s" does not exist or is not accessible'
-                % self.base_path
+                f'FileAdmin path "{self.base_path}" does not exist or is not accessible'
             )
 
     def get_base_path(self):
@@ -352,7 +351,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         if self.editable_extensions and not isinstance(self.editable_extensions, set):
             self.editable_extensions = set(self.editable_extensions)
 
-        super(BaseFileAdmin, self).__init__(
+        super().__init__(
             name,
             category,
             endpoint,
@@ -403,7 +402,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             upload = fields.FileField(lazy_gettext("File to upload"))
 
             def __init__(self, *args, **kwargs):
-                super(UploadForm, self).__init__(*args, **kwargs)
+                super().__init__(*args, **kwargs)
                 self.admin = kwargs["admin"]
 
             def validate_upload(self, field):
@@ -1359,4 +1358,4 @@ class FileAdmin(BaseFileAdmin):
 
     def __init__(self, base_path, *args, **kwargs):
         storage = LocalFileStorage(base_path)
-        super(FileAdmin, self).__init__(*args, storage=storage, **kwargs)
+        super().__init__(*args, storage=storage, **kwargs)

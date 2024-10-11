@@ -24,9 +24,7 @@ class BaseForm(form.Form):
     def __init__(self, formdata=None, obj=None, prefix="", **kwargs):
         self._obj = obj
 
-        super(BaseForm, self).__init__(
-            formdata=formdata, obj=obj, prefix=prefix, **kwargs
-        )
+        super().__init__(formdata=formdata, obj=obj, prefix=prefix, **kwargs)
 
 
 class FormOpts:
@@ -46,8 +44,7 @@ def recreate_field(unbound):
     """
     if not isinstance(unbound, UnboundField):
         raise ValueError(
-            "recreate_field expects UnboundField instance, %s was passed."
-            % type(unbound)
+            f"recreate_field expects UnboundField instance, {type(unbound)} was passed."
         )
 
     return unbound.field_class(*unbound.args, **unbound.kwargs)

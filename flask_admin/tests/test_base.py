@@ -38,19 +38,19 @@ class MockView(base.BaseView):
 
     def _handle_view(self, name, **kwargs):
         if self.allow_call:
-            return super(MockView, self)._handle_view(name, **kwargs)
+            return super()._handle_view(name, **kwargs)
         else:
             return "Failure!"
 
     def is_accessible(self):
         if self.allow_access:
-            return super(MockView, self).is_accessible()
+            return super().is_accessible()
 
         return False
 
     def is_visible(self):
         if self.visible:
-            return super(MockView, self).is_visible()
+            return super().is_visible()
 
         return False
 
@@ -453,7 +453,7 @@ def check_class_name():
 def check_endpoint():
     class CustomView(MockView):
         def _get_endpoint(self, endpoint):
-            return "admin." + super(CustomView, self)._get_endpoint(endpoint)
+            return "admin." + super()._get_endpoint(endpoint)
 
     view = CustomView()
     assert view.endpoint == "admin.customview"

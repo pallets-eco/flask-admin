@@ -110,7 +110,7 @@ class CKTextAreaWidget(widgets.TextArea):
         # add WYSIWYG class to existing classes
         existing_classes = kwargs.pop("class", "") or kwargs.pop("class_", "")
         kwargs["class"] = "{} {}".format(existing_classes, "ckeditor")
-        return super(CKTextAreaWidget, self).__call__(field, **kwargs)
+        return super().__call__(field, **kwargs)
 
 
 class CKTextAreaField(fields.TextAreaField):
@@ -140,8 +140,9 @@ class ImageView(sqla.ModelView):
             return ""
 
         return Markup(
-            '<img src="%s">'
-            % url_for("static", filename=form.thumbgen_filename(model.path))
+            '<img src="{}">'.format(
+                url_for("static", filename=form.thumbgen_filename(model.path))
+            )
         )
 
     column_formatters = {"path": _list_thumbnail}

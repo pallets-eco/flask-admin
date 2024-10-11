@@ -12,18 +12,16 @@ from flask_admin.helpers import get_url
 
 class InlineFieldListWidget(RenderTemplateWidget):
     def __init__(self):
-        super(InlineFieldListWidget, self).__init__(
-            "admin/model/inline_field_list.html"
-        )
+        super().__init__("admin/model/inline_field_list.html")
 
 
 class InlineFormWidget(RenderTemplateWidget):
     def __init__(self):
-        super(InlineFormWidget, self).__init__("admin/model/inline_form.html")
+        super().__init__("admin/model/inline_form.html")
 
     def __call__(self, field, **kwargs):
         kwargs.setdefault("form_opts", getattr(field, "form_opts", None))
-        return super(InlineFormWidget, self).__call__(field, **kwargs)
+        return super().__call__(field, **kwargs)
 
 
 class AjaxSelect2Widget:
@@ -73,7 +71,7 @@ class AjaxSelect2Widget:
 
         kwargs.setdefault("data-separator", ",")
 
-        return Markup("<input %s>" % html_params(name=field.name, **kwargs))
+        return Markup(f"<input {html_params(name=field.name, **kwargs)}>")
 
 
 class XEditableWidget:
@@ -103,7 +101,7 @@ class XEditableWidget:
 
         kwargs = self.get_kwargs(field, kwargs)
 
-        return Markup("<a %s>%s</a>" % (html_params(**kwargs), escape(display_value)))
+        return Markup(f"<a {html_params(**kwargs)}>{escape(display_value)}</a>")
 
     def get_kwargs(self, field, kwargs):
         """
@@ -193,6 +191,6 @@ class XEditableWidget:
             else:
                 kwargs["data-value"] = text_type(selected_ids[0])
         else:
-            raise Exception("Unsupported field type: %s" % (type(field),))
+            raise Exception(f"Unsupported field type: {type(field)}")
 
         return kwargs
