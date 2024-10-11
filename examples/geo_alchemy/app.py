@@ -63,7 +63,10 @@ class LeafletModelView(ModelView):
 
 class OSMModelView(ModelView):
     tile_layer_url = "{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-    tile_layer_attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    tile_layer_attribution = (
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> '
+        "contributors"
+    )
 
 
 # Add views

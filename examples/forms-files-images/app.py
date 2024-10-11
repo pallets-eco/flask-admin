@@ -169,7 +169,8 @@ class UserView(sqla.ModelView):
         # Separate header and few fields
         rules.Header("Location"),
         rules.Field("city"),
-        # String is resolved to form field, so there's no need to explicitly use `rules.Field`
+        # String is resolved to form field, so there's no need to explicitly use
+        # `rules.Field`
         "country",
         # Show macro that's included in the templates
         rules.Container("rule_demo.wrap", rules.Field("notes")),
@@ -322,7 +323,8 @@ def build_sample_db():
 
     sample_text = (
         "<h2>This is a test</h2>"
-        + "<p>Create HTML content in a text area field with the help of <i>WTForms</i> and <i>CKEditor</i>.</p>"
+        "<p>Create HTML content in a text area field with the help of "
+        "<i>WTForms</i> and <i>CKEditor</i>.</p>"
     )
     db.session.add(Page(name="Test Page", text=sample_text))
 

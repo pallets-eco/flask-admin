@@ -30,7 +30,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
 
-    # Association proxy of "user_keywords" collection to "keyword" attribute - a list of keywords objects.
+    # Association proxy of "user_keywords" collection to "keyword" attribute - a list
+    # of keywords objects.
     keywords = association_proxy("user_keywords", "keyword")
     # Association proxy to association proxy - a list of keywords strings.
     keywords_values = association_proxy("user_keywords", "keyword_value")

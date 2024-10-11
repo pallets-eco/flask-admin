@@ -33,7 +33,9 @@ def index():
 <p><a href="/admin/?lang=ru">Click me to get to Admin! (Russian)</a></p>
 <p><a href="/admin/?lang=pa">Click me to get to Admin! (Punjabi)</a></p>
 <p><a href="/admin/?lang=zh_CN">Click me to get to Admin! (Chinese - Simplified)</a></p>
-<p><a href="/admin/?lang=zh_TW">Click me to get to Admin! (Chinese - Traditional)</a></p>
+<p>
+  <a href="/admin/?lang=zh_TW">Click me to get to Admin! (Chinese - Traditional)</a>
+</p>
 """
     return tmp
 
@@ -137,8 +139,8 @@ class UserAdmin(sqla.ModelView):
         ("first_name", False),
     ]  # sort on multiple columns
 
-    # custom filter: each filter in the list is a filter operation (equals, not equals, etc)
-    # filters with the same name will appear as operations under the same filter
+    # custom filter: each filter in the list is a filter operation (equals, not equals,
+    # etc) filters with the same name will appear as operations under the same filter
     column_filters = [
         "first_name",
         FilterEqual(column=User.last_name, name="Last Name"),
@@ -153,7 +155,8 @@ class UserAdmin(sqla.ModelView):
     ]
     column_formatters = {"phone_number": phone_number_formatter}
 
-    # setup edit forms so that only posts created by this user can be selected as 'featured'
+    # setup edit forms so that only posts created by this user can be selected as
+    # 'featured'
     def edit_form(self, obj):
         return self._filtered_posts(super().edit_form(obj))
 

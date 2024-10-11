@@ -34,7 +34,8 @@ class EnumChoices(enum.Enum):
 class User(db.Model):
     id = db.Column(UUIDType(binary=False), default=uuid.uuid4, primary_key=True)
 
-    # use a regular string field, for which we can specify a list of available choices later on
+    # use a regular string field, for which we can specify a list of available choices
+    # later on
     type = db.Column(db.String(100))
 
     # fixed choices can be handled in a number of different ways:
@@ -64,7 +65,10 @@ class User(db.Model):
     def phone_number(self):
         if self.dialling_code and self.local_phone_number:
             number = str(self.local_phone_number)
-            return f"+{self.dialling_code} ({number[0]}) {number[1:3]} {number[3:6]} {number[6::]}"
+            return (
+                f"+{self.dialling_code} ({number[0]}) {number[1:3]} "
+                f"{number[3:6]} {number[6::]}"
+            )
         return
 
     @phone_number.expression

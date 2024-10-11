@@ -110,7 +110,9 @@ class LocationImageInlineModelForm(InlineFormAdmin):
             model=ImageType,
             fields=("name",),
             order_by="name",
-            placeholder="Please use an AJAX query to select an image type for the image",
+            placeholder=(
+                "Please use an AJAX query to select an image type for the image"
+            ),
             minimum_input_length=0,
         )
     }

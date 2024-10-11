@@ -22,7 +22,10 @@ app = Flask(__name__, template_folder="templates")
 # Flask views
 @app.route("/")
 def index():
-    return '<a href="/admin1">Click me to get to Admin 1</a><br/><a href="/admin2">Click me to get to Admin 2</a>'
+    return (
+        '<a href="/admin1">Click me to get to Admin 1</a><br/><a href="/admin2">'
+        "Click me to get to Admin 2</a>"
+    )
 
 
 if __name__ == "__main__":
