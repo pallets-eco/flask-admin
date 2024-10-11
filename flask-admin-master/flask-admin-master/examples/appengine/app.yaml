@@ -1,0 +1,8 @@
+runtime: python27
+threadsafe: true
+api_version: 1
+module: default
+
+handlers:
+- url: /admin.*
+  script: app.app

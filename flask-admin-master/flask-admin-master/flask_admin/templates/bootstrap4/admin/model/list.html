@@ -1,0 +1,198 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+{% import 'admin/static.html' as admin_static with context%}
+{% import 'admin/model/layout.html' as model_layout with context %}
+{% import 'admin/actions.html' as actionlib with context %}
+{% import 'admin/model/row_actions.html' as row_actions with context %}
+
+{% block head %}
+    {{ super() }}
+    {{ lib.form_css() }}
+{% endblock %}
+
+{% block body %}
+    {% block model_menu_bar %}
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a href="javascript:void(0)" class="nav-link active">{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a>
+        </li>
+
+        {% if admin_view.can_create %}
+        <li class="nav-item">
+          {%- if admin_view.create_modal -%}
+            {{ lib.add_modal_button(url=get_url('.create_view', url=return_url, modal=True), btn_class='nav-link', title=_gettext('Create New Record'), content=_gettext('Create')) }}
+          {% else %}
+            <a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create New Record') }}" class="nav-link">{{ _gettext('Create') }}</a>
+          {%- endif -%}
+        </li>
+        {% endif %}
+
+        {% if admin_view.can_export %}
+            {{ model_layout.export_options() }}
+        {% endif %}
+
+        {% block model_menu_bar_before_filters %}{% endblock %}
+
+        {% if filters %}
+        <li class="nav-item dropdown">
+            {{ model_layout.filter_options() }}
+        </li>
+        {% endif %}
+
+        {% if can_set_page_size %}
+        <li class="nav-item dropdown">
+            {{ model_layout.page_size_form(page_size_url) }}
+        </li>
+        {% endif %}
+
+        {% if actions %}
+        <li class="nav-item dropdown">
+            {{ actionlib.dropdown(actions) }}
+        </li>
+        {% endif %}
+
+        {% if search_supported %}
+        <li class="nav-item ml-2">
+            {{ model_layout.search_form() }}
+        </li>
+        {% endif %}
+        {% block model_menu_bar_after_filters %}{% endblock %}
+    </ul>
+    {% endblock %}
+
+    {% if filters %}
+        {{ model_layout.filter_form() }}
+        <div class="clearfix"></div>
+    {% endif %}
+
+    {% block model_list_table %}
+    <div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover model-list">
+        <thead>
+            <tr>
+                {% block list_header scoped %}
+                    {% if actions %}
+                    <th class="list-checkbox-column">
+                        <input type="checkbox" name="rowtoggle" class="action-rowtoggle" title="{{ _gettext('Select all records') }}" />
+                    </th>
+                    {% endif %}
+                    {% block list_row_actions_header %}
+                        {% if admin_view.column_display_actions %}
+                        <th class="">&nbsp;</th>
+                        {% endif %}
+                    {% endblock %}
+                    {% for c, name in list_columns %}
+                    {% set column = loop.index0 %}
+                    <th class="column-header col-{{c}}">
+                        {% if admin_view.is_sortable(c) %}
+                            {% if sort_column == column %}
+                                <a href="{{ sort_url(column, True) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">
+                                    {{ name }}
+                                    {% if sort_desc %}
+                                        <span class="fa fa-chevron-up glyphicon glyphicon-chevron-up"></span>
+                                    {% else %}
+                                        <span class="fa fa-chevron-down glyphicon glyphicon-chevron-down"></span>
+                                    {% endif %}
+                                </a>
+                            {% else %}
+                                <a href="{{ sort_url(column) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">{{ name }}</a>
+                            {% endif %}
+                        {% else %}
+                            {{ name }}
+                        {% endif %}
+                        {% if admin_view.column_descriptions.get(c) %}
+                            <a class="fa fa-question-circle glyphicon glyphicon-question-sign"
+                               title="{{ admin_view.column_descriptions[c] }}"
+                               href="javascript:void(0)" data-role="tooltip"
+                            ></a>
+                        {% endif %}
+                    </th>
+                    {% endfor %}
+                {% endblock %}
+            </tr>
+        </thead>
+        {% for row in data %}
+        <tr>
+            {% block list_row scoped %}
+                {% if actions %}
+                <td>
+                    <input type="checkbox" name="rowid" class="action-checkbox" value="{{ get_pk_value(row) }}" title="{{ _gettext('Select record') }}" />
+                </td>
+                {% endif %}
+                {% block list_row_actions_column scoped %}
+                    {% if admin_view.column_display_actions %}
+                    <td class="list-buttons-column">
+                        {% block list_row_actions scoped %}
+                          {% for action in list_row_actions %}
+                          {{ action.render_ctx(get_pk_value(row), row) }}
+                          {% endfor %}
+                        {% endblock %}
+                    </td>
+                    {%- endif -%}
+                {% endblock %}
+
+                {% for c, name in list_columns %}
+                    <td class="col-{{c}}">
+                    {% if admin_view.is_editable(c) %}
+                        {% set form = list_forms[get_pk_value(row)] %}
+                        {% if form.csrf_token %}
+                        {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c), csrf=form.csrf_token._value()) }}
+                        {% elif csrf_token %}
+                        {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c), csrf=csrf_token()) }}
+                        {% else %}
+                        {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c)) }}
+                        {% endif %}
+                    {% else %}
+                    {{ get_value(row, c) }}
+                    {% endif %}
+                    </td>
+                {% endfor %}
+            {% endblock %}
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="999">
+                {% block empty_list_message %}
+                <div class="text-center">
+                    {{ admin_view.get_empty_list_message() }}
+                </div>
+                {% endblock %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+    {% block list_pager %}
+    {% if num_pages is not none %}
+    {{ lib.pager(page, num_pages, pager_url) }}
+    {% else %}
+    {{ lib.simple_pager(page, data|length == page_size, pager_url) }}
+    {% endif %}
+    {% endblock %}
+    {% endblock %}
+
+    {% block actions %}
+    {{ actionlib.form(actions, get_url('.action_view')) }}
+    {% endblock %}
+
+    {%- if admin_view.edit_modal or admin_view.create_modal or admin_view.details_modal -%}
+        {{ lib.add_modal_window() }}
+    {%- endif -%}
+{% endblock %}
+
+{% block tail %}
+    {{ super() }}
+
+    {% if filter_groups %}
+      <div id="filter-groups-data" style="display:none;">{{ filter_groups|tojson|safe }}</div>
+      <div id="active-filters-data" style="display:none;">{{ active_filters|tojson|safe }}</div>
+    {% endif %}
+    {{ lib.form_js() }}
+    <script src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
+    <script src="{{ admin_static.url(filename='admin/js/bs4_filters.js', v='1.0.0') }}"></script>
+    
+
+    {{ actionlib.script(_gettext('Please select at least one record.'),
+                        actions,
+                        actions_confirmation) }}
+{% endblock %}

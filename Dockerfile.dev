@@ -1,0 +1,122 @@
+# FROM python:3.8-slim-buster
+# FROM python:3.11
+# FROM python:3.11-slim-bullseye
+FROM python:3.11.8-slim-bookworm
+# FROM node:7.8.0-alpine
+# FROM node:17.0-bullseye-slim
+# FROM node:17.0-buster-slim
+# FROM nikolaik/python-nodejs:python3.8-nodejs17-slim
+# FROM nikolaik/python-nodejs:python3.8-nodejs14-slim
+
+# Use Docker BuildKit for better caching and faster builds
+ARG DOCKER_BUILDKIT=1
+ARG BUILDKIT_INLINE_CACHE=1
+# Enable BuildKit for Docker-Compose
+ARG COMPOSE_DOCKER_CLI_BUILD=1
+
+# # curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE
+# # ARG CHROMEDRIVER_VERSION=99.0.4844.51
+# ARG CHROMEDRIVER_VERSION=98.0.4758.102
+
+# Configure apt and install packages
+# I had to add --insecure since curl didn't work...
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends apt-utils dialog curl iputils-ping unzip dos2unix gcc 2>&1 && \
+    # Install AWS CLI
+    curl --insecure "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    # Verify git, process tools, lsb-release (common in install instructions for CLIs) installed
+    apt-get install -y --no-install-recommends sudo git redis-server libpq-dev sass \
+    procps iproute2 lsb-release gnupg apt-transport-https \
+    g++ protobuf-compiler libprotobuf-dev && \
+    # Clean up
+    apt-get autoremove -y && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/*
+
+# # Install Google Chrome (google-chrome) for Selenium WebDriver integration testing
+# RUN curl --insecure https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+#     sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' && \
+#     apt-get update && \
+#     apt-get install -y --no-install-recommends google-chrome-stable && \
+#     # Clean up
+#     apt-get autoremove -y && \
+#     apt-get clean -y && \
+#     rm -rf /var/lib/apt/lists/*
+
+# # Install Chromedriver (see CHROMEDRIVER_VERSION arg above) for Selenium
+# RUN curl --insecure http://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip -o /tmp/chromedriver.zip && \
+#     unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+
+# # Set display port to avoid crash in Selenium WebDriver integration testing
+# ENV DISPLAY=:99
+
+# # Add a new non-root user
+# ARG USER_UID_NEW=1000
+# ARG USER_GID_NEW=$USER_UID_NEW
+# ARG USERNAME_NEW=user
+
+# RUN groupadd --system --gid $USER_GID_NEW $USERNAME_NEW && \
+#     useradd --system --uid $USER_UID_NEW --gid $USER_GID_NEW --home /home/$USERNAME_NEW -m $USERNAME_NEW
+
+# RUN echo $USERNAME_NEW ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME_NEW && \
+#     chmod 0440 /etc/sudoers.d/$USERNAME_NEW
+
+# WORKDIR /home/user/workspace
+WORKDIR /workspace
+
+# Install NodeJS, yarn, NPM, and Poetry with the root user
+ENV POETRY_HOME=/usr/local
+# ENV POETRY_HOME=/home/user/workspace
+# ENV PATH="/home/user/workspace/bin:$PATH"
+# RUN curl -sS https://deb.nodesource.com/setup_16.x | bash - && \
+RUN curl -fsSL https://deb.nodesource.com/setup_19.x | bash - && \
+    # Install nodejs and yarn
+    apt-get update && \
+    apt-get install -yqqf nodejs && \
+    # Install the latest version of npm (7)
+    # npm install --global npm@^7 && \
+    npm install --global npm@^9 && \
+    # Ensure pip is the latest version
+    pip install --upgrade pip && \
+    # Install Poetry
+    # curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python - && \
+    curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python && \
+    cd /usr/local/bin && \
+    ln -s /opt/poetry/bin/poetry && \
+    poetry config virtualenvs.create false && \
+    # Clean up
+    apt-get autoremove -y && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/*
+
+# BEFORE installing packages with Poetry (so "user" has permissions in future),
+# set the user so nobody can run as root on the Docker host (security)
+# USER $USER_UID_OLD
+# USER $USER_UID_NEW
+# ARG TEST=testing
+
+# ENV PATH="/home/user/workspace:$PATH"
+COPY poetry.lock pyproject.toml ./
+RUN \
+    # in-project .venv makes it very slow since it's sharing files with Windows/WSL...
+    # poetry config virtualenvs.in-project true
+    # These settings get put into the ~/.config./pyconfig/config.toml file
+    poetry config virtualenvs.create false && \
+    poetry config repositories.ijack_private https://pypi.myijack.com
+    # The following username/password setup doesn't seem to work for some reason...
+    # poetry config http-basic.ijack_private $PYPI_USERNAME_PRIVATE $PYPI_PASSWORD_PRIVATE
+    # && echo "Running poetry install..." && \
+    # poetry install --no-interaction --no-ansi
+
+ENV HOST 0.0.0.0
+EXPOSE 3000
+
+# Copy my preferred .bashrc to /root/ so that it's automatically "sourced" when the container starts
+COPY .bashrc /root/
+# COPY .bashrc /home/user/workspace
+
+# NODE stuff
+# ENV PATH="/home/user/workspace/node_modules/.bin:$PATH"
+ENV PATH="/workspace/node_modules/.bin:$PATH"

@@ -1,0 +1,15 @@
+<html>
+    <body>
+        <div>
+            {% if user and user.is_authenticated %}
+                Hello {{ user.login }}! <a href="{{ url_for('logout_view') }}">Logout</a>
+            {% else %}
+                Welcome anonymous user!
+                <a href="{{ url_for('login_view') }}">Login</a>&nbsp;<a href="{{ url_for('register_view') }}">Register</a>
+            {% endif %}
+        </div>
+        <div>
+            <a href="{{ url_for('admin.index') }}">Go to admin!</a>
+        </div>
+    </body>
+</html>

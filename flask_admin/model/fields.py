@@ -1,8 +1,9 @@
 import itertools
 
 from wtforms.validators import ValidationError
-from wtforms.fields import FieldList, FormField, SelectFieldBase
+from wtforms.fields import FieldList, FormField, SelectFieldBase, TextAreaField
 from wtforms.utils import unset_value
+from wtforms.widgets import Input
 
 from flask_admin._compat import iteritems
 from .widgets import (InlineFieldListWidget, InlineFormWidget,
@@ -115,11 +116,20 @@ class InlineModelFormField(FormField):
         self.form_opts = form_opts
 
     def get_pk(self):
+        """Get the primary key value from the form"""
+        try:
+            if isinstance(self._pk, (tuple, list)):
+                return tuple(getattr(self.form, pk).data for pk in self._pk)
 
-        if isinstance(self._pk, (tuple, list)):
-            return tuple(getattr(self.form, pk).data for pk in self._pk)
+            return getattr(self.form, self._pk).data
+        except AttributeError:
+            if self._pk not in self.form:
+                raise AttributeError(
+                    'Primary key field "%s" is required in inline_models "form_columns". Available form fields: %s'
+                    % (self._pk, self.form._fields.keys())
+                )
+            raise
 
-        return getattr(self.form, self._pk).data
 
     def populate_obj(self, obj, name):
         for name, field in iteritems(self.form._fields):
@@ -221,3 +231,11 @@ class AjaxSelectMultipleField(AjaxSelectField):
     def pre_validate(self, form):
         if self._invalid_formdata:
             raise ValidationError(self.gettext(u'Not a valid choice'))
+
+
+class ColorField(TextAreaField):
+    """
+        Create a special ColorInput field for selecting a
+        HEX color in the edit menu. For the ModelTypeView in particular.
+    """
+    widget = Input(input_type="color")

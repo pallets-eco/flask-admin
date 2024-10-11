@@ -1,0 +1,12 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+    Hello World from MethodTest!<br/>
+	<form method="POST" action="{{ url_for('.API_v1') }}">
+	  <input type="submit" value="API v1 via POST">
+	  <a href="{{ url_for('.API_v1') }}">v1 via GET</a>
+	</form>
+	<form method="POST" action="{{ url_for('.API_v2') }}">
+	  <input type="submit" value="API v2 via POST">
+	  <a href="{{ url_for('.API_v2') }}">v2 via GET</a>
+	</form>
+{% endblock %}
