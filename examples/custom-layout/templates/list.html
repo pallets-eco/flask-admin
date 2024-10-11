@@ -8,19 +8,19 @@
       <a href="{{ url_for('.create_view', url=return_url) }}" class="btn btn-primary pull-right">{{ _gettext('Create') }}</a>
     </div>
     {% endif %}
-    
+
     {% if filter_groups %}
     <div class="btn-group btn-menu">
       {{ model_layout.filter_options(btn_class='btn dropdown-toggle btn-title') }}
     </div>
     {% endif %}
-    
+
     {% if actions %}
     <div class="btn-group btn-menu">
       {{ actionlib.dropdown(actions, btn_class='btn dropdown-toggle btn-title') }}
     </div>
     {% endif %}
-    
+
     {% if search_supported %}
     <div class="search-form btn-menu">
       {{ model_layout.search_form(input_class='span2 btn-title') }}

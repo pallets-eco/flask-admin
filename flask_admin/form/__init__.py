@@ -1,6 +1,7 @@
 from os import urandom
 
-from flask import session, current_app
+from flask import current_app
+from flask import session
 from wtforms import form
 from wtforms.csrf.session import SessionCSRF
 from wtforms.fields.core import UnboundField
@@ -9,8 +10,8 @@ from flask_admin._compat import text_type
 from flask_admin.babel import Translations
 
 from .fields import *  # noqa: F403,F401
-from .widgets import *  # noqa: F403,F401
 from .upload import *  # noqa: F403,F401
+from .widgets import *  # noqa: F403,F401
 
 
 class BaseForm(form.Form):
@@ -20,14 +21,14 @@ class BaseForm(form.Form):
         def get_translations(self, form):
             return self._translations
 
-    def __init__(self, formdata=None, obj=None, prefix=u'', **kwargs):
+    def __init__(self, formdata=None, obj=None, prefix="", **kwargs):
         self._obj = obj
 
-        super(BaseForm, self).__init__(formdata=formdata, obj=obj, prefix=prefix, **kwargs)
+        super().__init__(formdata=formdata, obj=obj, prefix=prefix, **kwargs)
 
 
-class FormOpts(object):
-    __slots__ = ['widget_args', 'form_rules']
+class FormOpts:
+    __slots__ = ["widget_args", "form_rules"]
 
     def __init__(self, widget_args=None, form_rules=None):
         self.widget_args = widget_args or {}
@@ -36,23 +37,26 @@ class FormOpts(object):
 
 def recreate_field(unbound):
     """
-        Create new instance of the unbound field, resetting wtforms creation counter.
+    Create new instance of the unbound field, resetting wtforms creation counter.
 
-        :param unbound:
-            UnboundField instance
+    :param unbound:
+        UnboundField instance
     """
     if not isinstance(unbound, UnboundField):
-        raise ValueError('recreate_field expects UnboundField instance, %s was passed.' % type(unbound))
+        raise ValueError(
+            f"recreate_field expects UnboundField instance, {type(unbound)} was passed."
+        )
 
     return unbound.field_class(*unbound.args, **unbound.kwargs)
 
 
 class SecureForm(BaseForm):
     """
-        BaseForm with CSRF token generation and validation support.
+    BaseForm with CSRF token generation and validation support.
 
-        Requires WTForms 2+
+    Requires WTForms 2+
     """
+
     class Meta:
         csrf = True
         csrf_class = SessionCSRF
@@ -62,7 +66,7 @@ class SecureForm(BaseForm):
         def csrf_secret(self):
             secret = current_app.secret_key or self._csrf_secret
             if isinstance(secret, text_type):
-                secret = secret.encode('utf-8')
+                secret = secret.encode("utf-8")
             return secret
 
         @property

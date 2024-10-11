@@ -1,37 +1,50 @@
-from sqlalchemy import or_, and_, cast, text
+from sqlalchemy import and_
+from sqlalchemy import cast
+from sqlalchemy import or_
+from sqlalchemy import text
 from sqlalchemy.types import String
 
-from flask_admin._compat import as_unicode, string_types
-from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
+from flask_admin._compat import as_unicode
+from flask_admin._compat import string_types
+from flask_admin.model.ajax import AjaxModelLoader
+from flask_admin.model.ajax import DEFAULT_PAGE_SIZE
 
-from .tools import get_primary_key, has_multiple_pks, is_relationship, is_association_proxy
+from .tools import get_primary_key
+from .tools import has_multiple_pks
+from .tools import is_association_proxy
+from .tools import is_relationship
 
 
 class QueryAjaxModelLoader(AjaxModelLoader):
     def __init__(self, name, session, model, **options):
         """
-            Constructor.
+        Constructor.
 
-            :param fields:
-                Fields to run query against
-            :param filters:
-                Additional filters to apply to the loader
+        :param fields:
+            Fields to run query against
+        :param filters:
+            Additional filters to apply to the loader
         """
-        super(QueryAjaxModelLoader, self).__init__(name, options)
+        super().__init__(name, options)
 
         self.session = session
         self.model = model
-        self.fields = options.get('fields')
-        self.order_by = options.get('order_by')
-        self.filters = options.get('filters')
+        self.fields = options.get("fields")
+        self.order_by = options.get("order_by")
+        self.filters = options.get("filters")
 
         if not self.fields:
-            raise ValueError('AJAX loading requires `fields` to be specified for %s.%s' % (model, self.name))
+            raise ValueError(
+                f"AJAX loading requires `fields` to be specified for"
+                f" {model}.{self.name}"
+            )
 
         self._cached_fields = self._process_fields()
 
         if has_multiple_pks(model):
-            raise NotImplementedError('Flask-Admin does not support multi-pk AJAX model loading.')
+            raise NotImplementedError(
+                "Flask-Admin does not support multi-pk AJAX model loading."
+            )
 
         self.pk = get_primary_key(model)
 
@@ -43,7 +56,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
                 attr = getattr(self.model, field, None)
 
                 if not attr:
-                    raise ValueError('%s.%s does not exist.' % (self.model, field))
+                    raise ValueError(f"{self.model}.{field} does not exist.")
 
                 remote_fields.append(attr)
             else:
@@ -70,12 +83,19 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         query = self.get_query()
 
         # no type casting to string if a ColumnAssociationProxyInstance is given
-        filters = (field.ilike(u'%%%s%%' % term) if is_association_proxy(field)
-                   else cast(field, String).ilike(u'%%%s%%' % term) for field in self._cached_fields)
+        filters = (
+            field.ilike(f"%{term}%")
+            if is_association_proxy(field)
+            else cast(field, String).ilike(f"%{term}%")
+            for field in self._cached_fields
+        )
         query = query.filter(or_(*filters))
 
         if self.filters:
-            filters = [text("%s.%s" % (self.model.__tablename__.lower(), value)) for value in self.filters]
+            filters = [
+                text(f"{self.model.__tablename__.lower()}.{value}")
+                for value in self.filters
+            ]
             query = query.filter(and_(*filters))
 
         if self.order_by:
@@ -88,10 +108,10 @@ def create_ajax_loader(model, session, name, field_name, options):
     attr = getattr(model, field_name, None)
 
     if attr is None:
-        raise ValueError('Model %s does not have field %s.' % (model, field_name))
+        raise ValueError(f"Model {model} does not have field {field_name}.")
 
     if not is_relationship(attr) and not is_association_proxy(attr):
-        raise ValueError('%s.%s is not a relation.' % (model, field_name))
+        raise ValueError(f"{model}.{field_name} is not a relation.")
 
     if is_association_proxy(attr):
         attr = attr.remote_attr

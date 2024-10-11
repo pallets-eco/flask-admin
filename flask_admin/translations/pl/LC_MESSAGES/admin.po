@@ -599,4 +599,3 @@ msgstr "Wybierz co najmniej jeden rekord."
 
 #~ msgid "Size"
 #~ msgstr ""
-

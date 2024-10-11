@@ -594,4 +594,3 @@ msgstr "Vui lòng chọn ít nhất một kỷ lục."
 
 #~ msgid "Size"
 #~ msgstr ""
-

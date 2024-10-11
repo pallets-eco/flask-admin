@@ -2,7 +2,8 @@ from unittest import mock
 
 import pytest
 
-from flask_admin import babel, translations
+from flask_admin import babel
+from flask_admin import translations
 
 from . import flask_babel_test_decorator
 

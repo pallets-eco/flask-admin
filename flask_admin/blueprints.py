@@ -1,15 +1,18 @@
 import typing as t
 
-from flask import request, Flask
+from flask import Flask
+from flask import request
 from flask.blueprints import Blueprint as FlaskBlueprint
 from flask.blueprints import BlueprintSetupState as FlaskBlueprintSetupState
 
-from flask_admin.consts import ADMIN_ROUTES_HOST_VARIABLE_NAME, \
-    ADMIN_ROUTES_HOST_VARIABLE
+from flask_admin.consts import ADMIN_ROUTES_HOST_VARIABLE
+from flask_admin.consts import ADMIN_ROUTES_HOST_VARIABLE_NAME
 
 
 class _BlueprintSetupStateWithHostSupport(FlaskBlueprintSetupState):
-    """Adds the ability to set a hostname on all routes when registering the blueprint."""
+    """Adds the ability to set a hostname on all routes when registering the
+    blueprint.
+    """
 
     def __init__(self, blueprint, app, options, first_registration):
         super().__init__(blueprint, app, options, first_registration)

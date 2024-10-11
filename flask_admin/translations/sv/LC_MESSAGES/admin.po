@@ -596,4 +596,3 @@ msgstr "Välj minst en post."
 
 #~ msgid "Size"
 #~ msgstr ""
-

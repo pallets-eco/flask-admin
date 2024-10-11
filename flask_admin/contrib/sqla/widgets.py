@@ -8,13 +8,14 @@ class CheckboxListInput:
 
     Appears as the list of checkboxes.
     """
+
     template = (
         '<div class="checkbox">'
-        ' <label>'
+        " <label>"
         '  <input id="%(id)s" name="%(name)s" value="%(id)s" '
         'type="checkbox"%(selected)s>%(label)s'
-        ' </label>'
-        '</div>'
+        " </label>"
+        "</div>"
     )
 
     def __call__(self, field, **kwargs):
@@ -25,10 +26,10 @@ class CheckboxListInput:
             else:
                 value, label, selected, _ = field_choices
             args = {
-                'id': value,
-                'name': field.name,
-                'label': escape(label),
-                'selected': ' checked' if selected else '',
+                "id": value,
+                "name": field.name,
+                "label": escape(label),
+                "selected": " checked" if selected else "",
             }
             items.append(self.template % args)
-        return Markup(''.join(items))
+        return Markup("".join(items))

@@ -13,4 +13,6 @@ repos:
       - id: debug-statements
       - id: fix-byte-order-marker
       - id: trailing-whitespace
+        exclude: ^flask_admin/static/
       - id: end-of-file-fixer
+        exclude: ^flask_admin/static/

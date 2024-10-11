@@ -601,4 +601,3 @@ msgstr "נא בחר רשומה אחת לפחות."
 
 #~ msgid "Size"
 #~ msgstr ""
-

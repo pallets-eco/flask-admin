@@ -2,18 +2,20 @@ try:
     from flask_babel import Domain
 
 except ImportError:
+
     def gettext(string, **variables):
         return string % variables
 
     def ngettext(singular, plural, num, **variables):
-        variables.setdefault('num', num)
+        variables.setdefault("num", num)
         return (singular if num == 1 else plural) % variables
 
     def lazy_gettext(string, **variables):
         return gettext(string, **variables)
 
-    class Translations(object):
-        ''' dummy Translations class for WTForms, no translation support '''
+    class Translations:
+        """dummy Translations class for WTForms, no translation support"""
+
         def gettext(self, string):
             return string
 
@@ -24,7 +26,7 @@ else:
 
     class CustomDomain(Domain):
         def __init__(self):
-            super(CustomDomain, self).__init__(translations.__path__[0], domain='admin')
+            super().__init__(translations.__path__[0], domain="admin")
 
         @property
         def translation_directories(self):
@@ -45,10 +47,11 @@ else:
 
     from wtforms.i18n import messages_path
 
-    wtforms_domain = Domain(messages_path(), domain='wtforms')
+    wtforms_domain = Domain(messages_path(), domain="wtforms")
 
-    class Translations(object):  # type: ignore[no-redef]
-        ''' Fixes WTForms translation support and uses wtforms translations '''
+    class Translations:  # type: ignore[no-redef]
+        """Fixes WTForms translation support and uses wtforms translations"""
+
         def gettext(self, string):
             t = wtforms_domain.get_translations()
             return t.ugettext(string)

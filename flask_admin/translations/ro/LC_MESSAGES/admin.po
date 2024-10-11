@@ -599,4 +599,3 @@ msgstr "Vă rugăm să selectaţi cel puţin o înregistrare."
 
 #~ msgid "Size"
 #~ msgstr ""
-

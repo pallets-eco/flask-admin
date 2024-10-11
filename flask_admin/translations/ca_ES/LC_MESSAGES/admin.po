@@ -596,4 +596,3 @@ msgstr "Seleccionar almenys un registre."
 
 #~ msgid "Size"
 #~ msgstr ""
-

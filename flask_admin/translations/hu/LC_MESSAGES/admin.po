@@ -596,4 +596,3 @@ msgstr "Jelöljön ki legalább egy bejegyzést."
 
 #~ msgid "Size"
 #~ msgstr ""
-

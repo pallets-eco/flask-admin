@@ -1,35 +1,34 @@
 import os
 import os.path as op
 
-from werkzeug.utils import secure_filename
-from sqlalchemy import event
-
-from flask import Flask, request, render_template
-from flask_sqlalchemy import SQLAlchemy
-
-from wtforms import fields
-
 import flask_admin as admin
+from flask import Flask
+from flask import render_template
+from flask import request
+from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
+from flask_admin.contrib.sqla.fields import InlineModelFormList
+from flask_admin.contrib.sqla.form import InlineModelConverter
 from flask_admin.form import RenderTemplateWidget
 from flask_admin.model.form import InlineFormAdmin
-from flask_admin.contrib.sqla import ModelView
-from flask_admin.contrib.sqla.form import InlineModelConverter
-from flask_admin.contrib.sqla.fields import InlineModelFormList
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import event
+from werkzeug.utils import secure_filename
+from wtforms import fields
 
 # Create application
 app = Flask(__name__)
 
 # Create dummy secret key so we can use sessions
-app.config['SECRET_KEY'] = '123456790'
+app.config["SECRET_KEY"] = "123456790"
 
 # Create in-memory database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.sqlite'
-app.config['SQLALCHEMY_ECHO'] = True
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.sqlite"
+app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
 
 # Figure out base upload path
-base_path = op.join(op.dirname(__file__), 'static')
+base_path = op.join(op.dirname(__file__), "static")
 
 
 # Create models
@@ -43,6 +42,7 @@ class ImageType(db.Model):
     Just so the LocationImage can have another foreign key,
     so we can test the "form_ajax_refs" inside the "inline_models"
     """
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
 
@@ -60,27 +60,27 @@ class LocationImage(db.Model):
     path = db.Column(db.String(64))
 
     location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    location = db.relation(Location, backref='images')
+    location = db.relation(Location, backref="images")
 
     image_type_id = db.Column(db.Integer, db.ForeignKey(ImageType.id))
-    image_type = db.relation(ImageType, backref='images')
+    image_type = db.relation(ImageType, backref="images")
 
 
 # Register after_delete handler which will delete image file after model gets deleted
-@event.listens_for(Location, 'after_delete')
+@event.listens_for(Location, "after_delete")
 def _handle_image_delete(mapper, conn, target):
     for location_image in target.images:
         try:
             if location_image.path:
                 os.remove(op.join(base_path, location_image.path))
-        except:
+        except:  # noqa: E722
             pass
 
 
 # This widget uses custom template for inline field list
 class CustomInlineFieldListWidget(RenderTemplateWidget):
     def __init__(self):
-        super(CustomInlineFieldListWidget, self).__init__('field_list.html')
+        super().__init__("field_list.html")
 
 
 # This InlineModelFormList will use our custom widget and hide row controls
@@ -98,9 +98,9 @@ class CustomInlineModelConverter(InlineModelConverter):
 
 # Customized inline form handler
 class LocationImageInlineModelForm(InlineFormAdmin):
-    form_excluded_columns = ('path',)
+    form_excluded_columns = ("path",)
 
-    form_label = 'Image'
+    form_label = "Image"
 
     # Setup AJAX lazy-loading for the ImageType inside the inline model
     form_ajax_refs = {
@@ -110,16 +110,18 @@ class LocationImageInlineModelForm(InlineFormAdmin):
             model=ImageType,
             fields=("name",),
             order_by="name",
-            placeholder="Please use an AJAX query to select an image type for the image",
+            placeholder=(
+                "Please use an AJAX query to select an image type for the image"
+            ),
             minimum_input_length=0,
         )
     }
 
     def __init__(self):
-        super(LocationImageInlineModelForm, self).__init__(LocationImage)
+        super().__init__(LocationImage)
 
     def postprocess_form(self, form_class):
-        form_class.upload = fields.FileField('Image')
+        form_class.upload = fields.FileField("Image")
         return form_class
 
     def on_model_change(self, form, model, is_created):
@@ -137,14 +139,14 @@ class LocationAdmin(ModelView):
     inline_models = (LocationImageInlineModelForm(),)
 
     def __init__(self):
-        super().__init__(Location, db.session, name='Locations')
+        super().__init__(Location, db.session, name="Locations")
 
 
 # Simple page to show images
-@app.route('/')
+@app.route("/")
 def index():
     locations = db.session.query(Location).all()
-    return render_template('locations.html', locations=locations)
+    return render_template("locations.html", locations=locations)
 
 
 def first_time_setup():
@@ -163,7 +165,7 @@ def first_time_setup():
         db.session.commit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Create upload directory
     try:
         os.mkdir(base_path)
@@ -174,7 +176,7 @@ if __name__ == '__main__':
     first_time_setup()
 
     # Create admin
-    admin = admin.Admin(app, name='Example: Inline Models')
+    admin = admin.Admin(app, name="Example: Inline Models")
     admin.add_view(LocationAdmin())
 
     # Start app

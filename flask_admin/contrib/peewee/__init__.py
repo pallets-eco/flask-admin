@@ -4,8 +4,8 @@ try:
     import wtfpeewee
 except ImportError:
     raise Exception(
-        'Could not import `peewee` or `wtfpeewee`. '
-        'Enable `peewee` integration by installing `flask-admin[peewee]`'
+        "Could not import `peewee` or `wtfpeewee`. "
+        "Enable `peewee` integration by installing `flask-admin[peewee]`"
     )
 
 from .view import ModelView

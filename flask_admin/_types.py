@@ -1,4 +1,9 @@
-from typing import Union, Sequence, Dict, Callable, Any, TYPE_CHECKING
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import Sequence
+from typing import TYPE_CHECKING
+from typing import Union
 
 if TYPE_CHECKING:
     import sqlalchemy  # noqa

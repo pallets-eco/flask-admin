@@ -588,4 +588,3 @@ msgstr ""
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr ""
-

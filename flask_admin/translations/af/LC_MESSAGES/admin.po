@@ -596,4 +596,3 @@ msgstr "Kies ten minste een rekord."
 
 #~ msgid "Size"
 #~ msgstr ""
-

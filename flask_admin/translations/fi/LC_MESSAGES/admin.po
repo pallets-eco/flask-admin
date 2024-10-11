@@ -596,4 +596,3 @@ msgstr "Valitse vähintään yksi tietue."
 
 #~ msgid "Size"
 #~ msgstr ""
-
