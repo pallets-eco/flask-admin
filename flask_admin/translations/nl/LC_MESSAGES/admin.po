@@ -596,4 +596,3 @@ msgstr "Selecteer ten minste één record."
 
 #~ msgid "Size"
 #~ msgstr ""
-

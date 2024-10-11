@@ -599,4 +599,3 @@ msgstr "請至少選擇一筆資料。"
 
 #~ msgid "Size"
 #~ msgstr ""
-

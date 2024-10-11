@@ -1,51 +1,61 @@
 import types
 
-from sqlalchemy import tuple_, or_, and_, inspect
-from sqlalchemy.orm.clsregistry import _class_resolver
+from sqlalchemy import and_
+from sqlalchemy import inspect
+from sqlalchemy import or_
+from sqlalchemy import tuple_
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm.clsregistry import _class_resolver
+
 try:
     # SQLAlchemy 2.0
-    from sqlalchemy.ext.associationproxy import AssociationProxyExtensionType  # type: ignore[attr-defined]
+    from sqlalchemy.ext.associationproxy import (
+        AssociationProxyExtensionType,  # type: ignore[attr-defined]
+    )
+
     ASSOCIATION_PROXY = AssociationProxyExtensionType.ASSOCIATION_PROXY
 except ImportError:
     from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
 
-from sqlalchemy.sql.operators import eq  # type: ignore[attr-defined]
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.sql.operators import eq  # type: ignore[attr-defined]
 
-from flask_admin._compat import filter_list, string_types
-from flask_admin.tools import iterencode, iterdecode, escape  # noqa: F401
+from flask_admin._compat import filter_list
+from flask_admin._compat import string_types
+from flask_admin.tools import escape  # noqa: F401
+from flask_admin.tools import iterdecode  # noqa: F401
+from flask_admin.tools import iterencode  # noqa: F401
 
 
 def parse_like_term(term):
-    if term.startswith('^'):
-        stmt = '%s%%' % term[1:]
-    elif term.startswith('='):
+    if term.startswith("^"):
+        stmt = "%s%%" % term[1:]
+    elif term.startswith("="):
         stmt = term[1:]
     else:
-        stmt = '%%%s%%' % term
+        stmt = "%%%s%%" % term
 
     return stmt
 
 
 def filter_foreign_columns(base_table, columns):
     """
-        Return list of columns that belong to passed table.
+    Return list of columns that belong to passed table.
 
-        :param base_table: Table to check against
-        :param columns: List of columns to filter
+    :param base_table: Table to check against
+    :param columns: List of columns to filter
     """
     return filter_list(lambda c: c.table == base_table, columns)
 
 
 def get_primary_key(model):
     """
-        Return primary key name from a model. If the primary key consists of multiple columns,
-        return the corresponding tuple
+    Return primary key name from a model. If the primary key consists of multiple columns,
+    return the corresponding tuple
 
-        :param model:
-            Model class
+    :param model:
+        Model class
     """
     mapper = model._sa_class_manager.mapper
     pks = [mapper.get_property_by_column(c).key for c in mapper.primary_key]
@@ -59,10 +69,10 @@ def get_primary_key(model):
 
 def has_multiple_pks(model):
     """
-        Return True, if the model has more than one primary key
+    Return True, if the model has more than one primary key
     """
-    if not hasattr(model, '_sa_class_manager'):
-        raise TypeError('model must be a sqlalchemy mapped model')
+    if not hasattr(model, "_sa_class_manager"):
+        raise TypeError("model must be a sqlalchemy mapped model")
 
     return len(model._sa_class_manager.mapper.primary_key) > 1
 
@@ -95,10 +105,10 @@ def tuple_operator_in(model_pk, ids):
 
 def get_query_for_ids(modelquery, model, ids):
     """
-        Return a query object filtered by primary key values passed in `ids` argument.
+    Return a query object filtered by primary key values passed in `ids` argument.
 
-        Unfortunately, it is not possible to use `in_` filter if model has more than one
-        primary key.
+    Unfortunately, it is not possible to use `in_` filter if model has more than one
+    primary key.
     """
     if has_multiple_pks(model):
         # Decode keys to tuples
@@ -122,27 +132,29 @@ def get_query_for_ids(modelquery, model, ids):
 
 
 def get_columns_for_field(field):
-    if (not field or
-            not hasattr(field, 'property') or
-            not hasattr(field.property, 'columns') or
-            not field.property.columns):
-        raise Exception('Invalid field %s: does not contains any columns.' % field)
+    if (
+        not field
+        or not hasattr(field, "property")
+        or not hasattr(field.property, "columns")
+        or not field.property.columns
+    ):
+        raise Exception("Invalid field %s: does not contains any columns." % field)
 
     return field.property.columns
 
 
 def need_join(model, table):
     """
-        Check if join to a table is necessary.
+    Check if join to a table is necessary.
     """
     return table not in model._sa_class_manager.mapper.tables
 
 
 def get_field_with_path(model, name, return_remote_proxy_attr=True):
     """
-        Resolve property by name and figure out its join path.
+    Resolve property by name and figure out its join path.
 
-        Join path might contain both properties and tables.
+    Join path might contain both properties and tables.
     """
     path = []
 
@@ -152,7 +164,7 @@ def get_field_with_path(model, name, return_remote_proxy_attr=True):
         current_model = model
 
         value = None
-        for attribute in name.split('.'):
+        for attribute in name.split("."):
             value = getattr(current_model, attribute)
 
             if is_association_proxy(value):
@@ -178,7 +190,7 @@ def get_field_with_path(model, name, return_remote_proxy_attr=True):
             columns = get_columns_for_field(attr)
 
             if len(columns) > 1:
-                raise Exception('Can only handle one column for %s' % name)
+                raise Exception("Can only handle one column for %s" % name)
 
             column = columns[0]
 
@@ -200,7 +212,7 @@ def get_hybrid_properties(model):
 
 def is_hybrid_property(model, attr_name):
     if isinstance(attr_name, string_types):
-        names = attr_name.split('.')
+        names = attr_name.split(".")
         last_model = model
         for i in range(len(names) - 1):
             attr = getattr(last_model, names[i])
@@ -220,10 +232,10 @@ def is_hybrid_property(model, attr_name):
 
 
 def is_relationship(attr):
-    return hasattr(attr, 'property') and hasattr(attr.property, 'direction')
+    return hasattr(attr, "property") and hasattr(attr.property, "direction")
 
 
 def is_association_proxy(attr):
-    if hasattr(attr, 'parent'):
+    if hasattr(attr, "parent"):
         attr = attr.parent
-    return hasattr(attr, 'extension_type') and attr.extension_type == ASSOCIATION_PROXY
+    return hasattr(attr, "extension_type") and attr.extension_type == ASSOCIATION_PROXY

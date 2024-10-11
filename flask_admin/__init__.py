@@ -1,6 +1,10 @@
-__version__ = '2.0.0a0'
-__author__ = 'Flask-Admin team'
-__email__ = 'contact@palletsproject.com'
+__version__ = "2.0.0a0"
+__author__ = "Flask-Admin team"
+__email__ = "contact@palletsproject.com"
 
 
-from .base import expose, expose_plugview, Admin, BaseView, AdminIndexView  # noqa: F401
+from .base import Admin  # noqa: F401
+from .base import AdminIndexView  # noqa: F401
+from .base import BaseView  # noqa: F401
+from .base import expose  # noqa: F401
+from .base import expose_plugview  # noqa: F401

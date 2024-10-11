@@ -594,4 +594,3 @@ msgstr "최소한 하나 이상의 레코드를 선택하십시오."
 
 #~ msgid "Size"
 #~ msgstr ""
-

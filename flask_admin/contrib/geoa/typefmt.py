@@ -1,9 +1,10 @@
-from flask_admin.contrib.sqla.typefmt import DEFAULT_FORMATTERS as BASE_FORMATTERS
-from markupsafe import Markup
-from wtforms.widgets import html_params
-from geoalchemy2.shape import to_shape
 from geoalchemy2.elements import WKBElement
+from geoalchemy2.shape import to_shape
+from markupsafe import Markup
 from sqlalchemy import func
+from wtforms.widgets import html_params
+
+from flask_admin.contrib.sqla.typefmt import DEFAULT_FORMATTERS as BASE_FORMATTERS
 
 
 def geom_formatter(view, value, name) -> str:
@@ -28,8 +29,10 @@ def geom_formatter(view, value, name) -> str:
     if value.srid == -1:
         value.srid = 4326
 
-    geojson = view.session.query(view.model).with_entities(func.ST_AsGeoJSON(value)).scalar()
-    return Markup('<textarea %s>%s</textarea>' % (params, geojson))
+    geojson = (
+        view.session.query(view.model).with_entities(func.ST_AsGeoJSON(value)).scalar()
+    )
+    return Markup("<textarea %s>%s</textarea>" % (params, geojson))
 
 
 DEFAULT_FORMATTERS = BASE_FORMATTERS.copy()

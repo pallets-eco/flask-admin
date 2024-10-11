@@ -800,4 +800,3 @@ msgstr ""
 #: ../../doc/introduction.rst:487
 msgid "If your view endpoint was defined like::"
 msgstr "您的视图端点定义如下::"
-

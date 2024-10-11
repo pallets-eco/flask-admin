@@ -595,4 +595,3 @@ msgstr "Molimo odaberite najmanje jedan zapis."
 
 #~ msgid "Size"
 #~ msgstr ""
-

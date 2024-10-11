@@ -1,24 +1,24 @@
-from functools import reduce
 import sys
 import traceback
+from functools import reduce
 
 # Python 3 compatibility
 from ._compat import as_unicode
 
-CHAR_ESCAPE = u'.'
-CHAR_SEPARATOR = u','
+CHAR_ESCAPE = "."
+CHAR_SEPARATOR = ","
 
 
 def import_module(name, required=True):
     """
-        Import module by name
+    Import module by name
 
-        :param name:
-            Module name
-        :param required:
-            If set to `True` and module was not found - will throw exception.
-            If set to `False` and module was not found - will return None.
-            Default is `True`.
+    :param name:
+        Module name
+    :param required:
+        If set to `True` and module was not found - will throw exception.
+        If set to `False` and module was not found - will return None.
+        Default is `True`.
     """
     try:
         __import__(name, globals(), locals(), [])
@@ -31,19 +31,19 @@ def import_module(name, required=True):
 
 def import_attribute(name):
     """
-        Import attribute using string reference.
+    Import attribute using string reference.
 
-        :param name:
-            String reference.
+    :param name:
+        String reference.
 
-        Raises ImportError or AttributeError if module or attribute do not exist.
+    Raises ImportError or AttributeError if module or attribute do not exist.
 
-        Example::
+    Example::
 
-            import_attribute('a.b.c.foo')
+        import_attribute('a.b.c.foo')
 
     """
-    path, attr = name.rsplit('.', 1)
+    path, attr = name.rsplit(".", 1)
     module = __import__(path, globals(), locals(), [attr])
 
     return getattr(module, attr)
@@ -51,13 +51,13 @@ def import_attribute(name):
 
 def module_not_found(additional_depth=0):
     """
-        Checks if ImportError was raised because module does not exist or
-        something inside it raised ImportError
+    Checks if ImportError was raised because module does not exist or
+    something inside it raised ImportError
 
-        :param additional_depth:
-            supply int of depth of your call if you're not doing
-            import on the same level of code - f.e., if you call function, which is
-            doing import, you should pass 1 for single additional level of depth
+    :param additional_depth:
+        supply int of depth of your call if you're not doing
+        import on the same level of code - f.e., if you call function, which is
+        doing import, you should pass 1 for single additional level of depth
     """
     tb = sys.exc_info()[2]
     if len(traceback.extract_tb(tb)) > (1 + additional_depth):
@@ -67,33 +67,33 @@ def module_not_found(additional_depth=0):
 
 def rec_getattr(obj, attr, default=None):
     """
-        Recursive getattr.
+    Recursive getattr.
 
-        :param attr:
-            Dot delimited attribute name
-        :param default:
-            Default value
+    :param attr:
+        Dot delimited attribute name
+    :param default:
+        Default value
 
-        Example::
+    Example::
 
-            rec_getattr(obj, 'a.b.c')
+        rec_getattr(obj, 'a.b.c')
     """
     try:
-        return reduce(getattr, attr.split('.'), obj)
+        return reduce(getattr, attr.split("."), obj)
     except AttributeError:
         return default
 
 
 def get_dict_attr(obj, attr, default=None):
     """
-        Get attribute of the object without triggering its __getattr__.
+    Get attribute of the object without triggering its __getattr__.
 
-        :param obj:
-            Object
-        :param attr:
-            Attribute name
-        :param default:
-            Default value if attribute was not found
+    :param obj:
+        Object
+    :param attr:
+        Attribute name
+    :param default:
+        Default value if attribute was not found
     """
     for obj in [obj] + obj.__class__.mro():
         if attr in obj.__dict__:
@@ -103,34 +103,38 @@ def get_dict_attr(obj, attr, default=None):
 
 
 def escape(value):
-    return (as_unicode(value)
-            .replace(CHAR_ESCAPE, CHAR_ESCAPE + CHAR_ESCAPE)
-            .replace(CHAR_SEPARATOR, CHAR_ESCAPE + CHAR_SEPARATOR))
+    return (
+        as_unicode(value)
+        .replace(CHAR_ESCAPE, CHAR_ESCAPE + CHAR_ESCAPE)
+        .replace(CHAR_SEPARATOR, CHAR_ESCAPE + CHAR_SEPARATOR)
+    )
 
 
 def iterencode(iter):
     """
-        Encode enumerable as compact string representation.
+    Encode enumerable as compact string representation.
 
-        :param iter:
-            Enumerable
+    :param iter:
+        Enumerable
     """
-    return ','.join(as_unicode(v)
-                    .replace(CHAR_ESCAPE, CHAR_ESCAPE + CHAR_ESCAPE)
-                    .replace(CHAR_SEPARATOR, CHAR_ESCAPE + CHAR_SEPARATOR)
-                    for v in iter)
+    return ",".join(
+        as_unicode(v)
+        .replace(CHAR_ESCAPE, CHAR_ESCAPE + CHAR_ESCAPE)
+        .replace(CHAR_SEPARATOR, CHAR_ESCAPE + CHAR_SEPARATOR)
+        for v in iter
+    )
 
 
 def iterdecode(value):
     """
-        Decode enumerable from string presentation as a tuple
+    Decode enumerable from string presentation as a tuple
     """
 
     if not value:
         return tuple()
 
     result = []
-    accumulator = u''
+    accumulator = ""
 
     escaped = False
 
@@ -141,7 +145,7 @@ def iterdecode(value):
                 continue
             elif c == CHAR_SEPARATOR:
                 result.append(accumulator)
-                accumulator = u''
+                accumulator = ""
                 continue
         else:
             escaped = False

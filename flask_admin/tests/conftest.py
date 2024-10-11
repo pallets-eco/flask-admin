@@ -4,11 +4,11 @@ from flask import Flask
 from flask_admin import Admin
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = '1'
-    app.config['WTF_CSRF_ENABLED'] = False
+    app.config["SECRET_KEY"] = "1"
+    app.config["WTF_CSRF_ENABLED"] = False
 
     yield app
 
@@ -18,6 +18,7 @@ def babel(app):
     babel = None
     try:
         from flask_babel import Babel
+
         babel = Babel(app)
     except ImportError:
         pass

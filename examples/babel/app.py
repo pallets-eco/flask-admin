@@ -1,30 +1,31 @@
-from flask import Flask, request, session
-from flask_sqlalchemy import SQLAlchemy
-
 import flask_admin as admin
-from flask_babel import Babel
-
+from flask import Flask
+from flask import request
+from flask import session
 from flask_admin.contrib import sqla
+from flask_babel import Babel
+from flask_sqlalchemy import SQLAlchemy
 
 # Create application
 app = Flask(__name__)
 
 # Create dummy secrey key so we can use sessions
-app.config['SECRET_KEY'] = '12345678'
+app.config["SECRET_KEY"] = "12345678"
 
 # Create in-memory database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sample_db.sqlite'
-app.config['SQLALCHEMY_ECHO'] = True
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sample_db.sqlite"
+app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
 
 
 def get_locale():
-    override = request.args.get('lang')
+    override = request.args.get("lang")
 
     if override:
-        session['lang'] = override
+        session["lang"] = override
 
-    return session.get('lang', 'en')
+    return session.get("lang", "en")
+
 
 # Initialize babel
 babel = Babel(app, locale_selector=get_locale)
@@ -48,16 +49,16 @@ class Post(db.Model):
     date = db.Column(db.DateTime)
 
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
-    user = db.relationship(User, backref='posts')
+    user = db.relationship(User, backref="posts")
 
     def __unicode__(self):
         return self.title
 
 
 # Flask views
-@app.route('/')
+@app.route("/")
 def index():
-    tmp = u"""
+    tmp = """
 <p><a href="/admin/?lang=en">Click me to get to Admin! (English)</a></p>
 <p><a href="/admin/?lang=cs">Click me to get to Admin! (Czech)</a></p>
 <p><a href="/admin/?lang=de">Click me to get to Admin! (German)</a></p>
@@ -72,11 +73,12 @@ def index():
 """
     return tmp
 
-if __name__ == '__main__':
-    # Create admin
-    admin = admin.Admin(app, 'Example: Babel')
 
-    #admin.locale_selector(get_locale)
+if __name__ == "__main__":
+    # Create admin
+    admin = admin.Admin(app, "Example: Babel")
+
+    # admin.locale_selector(get_locale)
 
     # Add views
     admin.add_view(sqla.ModelView(User, db.session))

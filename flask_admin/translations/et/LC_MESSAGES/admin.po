@@ -596,4 +596,3 @@ msgstr "Palun valige vähemalt üks kirje."
 
 #~ msgid "Size"
 #~ msgstr ""
-

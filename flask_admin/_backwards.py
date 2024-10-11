@@ -1,41 +1,43 @@
-# -*- coding: utf-8 -*-
 """
-    flask_admin._backwards
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+flask_admin._backwards
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Backward compatibility helpers.
+Backward compatibility helpers.
 """
+
 import sys
 import warnings
 
 
 def get_property(obj, name, old_name, default=None):
     """
-        Check if old property name exists and if it does - show warning message
-        and return value.
+    Check if old property name exists and if it does - show warning message
+    and return value.
 
-        Otherwise, return new property value
+    Otherwise, return new property value
 
-        :param name:
-            New property name
-        :param old_name:
-            Old property name
-        :param default:
-            Default value
+    :param name:
+        New property name
+    :param old_name:
+        Old property name
+    :param default:
+        Default value
     """
     if hasattr(obj, old_name):
-        warnings.warn('Property %s is obsolete, please use %s instead' %
-                      (old_name, name), stacklevel=2)
+        warnings.warn(
+            "Property %s is obsolete, please use %s instead" % (old_name, name),
+            stacklevel=2,
+        )
         return getattr(obj, old_name)
 
     return getattr(obj, name, default)
 
 
-class ObsoleteAttr(object):
+class ObsoleteAttr:
     def __init__(self, new_name, old_name, default):
         self.new_name = new_name
         self.old_name = old_name
-        self.cache = '_cache_' + new_name
+        self.cache = "_cache_" + new_name
         self.default = default
 
     def __get__(self, obj, objtype=None):
@@ -48,8 +50,11 @@ class ObsoleteAttr(object):
 
         # Check if there's old attribute
         if hasattr(obj, self.old_name):
-            warnings.warn('Property %s is obsolete, please use %s instead' %
-                          (self.old_name, self.new_name), stacklevel=2)
+            warnings.warn(
+                "Property %s is obsolete, please use %s instead"
+                % (self.old_name, self.new_name),
+                stacklevel=2,
+            )
             return getattr(obj, self.old_name)
 
         # Return default otherwise
@@ -59,7 +64,7 @@ class ObsoleteAttr(object):
         setattr(obj, self.cache, value)
 
 
-class ImportRedirect(object):
+class ImportRedirect:
     def __init__(self, prefix, target):
         self.prefix = prefix
         self.target = target
@@ -72,7 +77,7 @@ class ImportRedirect(object):
         if fullname in sys.modules:
             return sys.modules[fullname]
 
-        path = self.target + fullname[len(self.prefix):]
+        path = self.target + fullname[len(self.prefix) :]
         __import__(path)
 
         module = sys.modules[fullname] = sys.modules[path]

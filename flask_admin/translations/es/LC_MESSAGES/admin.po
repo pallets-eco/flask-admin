@@ -596,4 +596,3 @@ msgstr "Por favor, seleccione al menos un elemento."
 
 #~ msgid "Size"
 #~ msgstr "Tamaño"
-

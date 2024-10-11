@@ -1,20 +1,30 @@
 import logging
 
 from flask import flash
+from peewee import CharField
+from peewee import Field
+from peewee import ForeignKeyField
+from peewee import JOIN
+from peewee import PrimaryKeyField
+from peewee import TextField
 
 from flask_admin._compat import string_types
-from flask_admin.babel import gettext, ngettext, lazy_gettext
+from flask_admin.actions import action
+from flask_admin.babel import gettext
+from flask_admin.babel import lazy_gettext
+from flask_admin.babel import ngettext
+from flask_admin.contrib.peewee import filters
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
 
-from peewee import JOIN, PrimaryKeyField, ForeignKeyField, Field, CharField, TextField
-
-from flask_admin.actions import action
-from flask_admin.contrib.peewee import filters
-
-from .form import get_form, CustomModelConverter, InlineModelConverter, save_inline
-from .tools import get_meta_fields, get_primary_key, parse_like_term
 from .ajax import create_ajax_loader
+from .form import CustomModelConverter
+from .form import get_form
+from .form import InlineModelConverter
+from .form import save_inline
+from .tools import get_meta_fields
+from .tools import get_primary_key
+from .tools import parse_like_term
 
 # Set up logger
 log = logging.getLogger("flask-admin.peewee")
@@ -160,15 +170,31 @@ class ModelView(BaseModelView):
                 column_labels = {'model_ones': 'Hello'}
     """
 
-    def __init__(self, model, name=None,
-                 category=None, endpoint=None, url=None, static_folder=None,
-                 menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
+    def __init__(
+        self,
+        model,
+        name=None,
+        category=None,
+        endpoint=None,
+        url=None,
+        static_folder=None,
+        menu_class_name=None,
+        menu_icon_type=None,
+        menu_icon_value=None,
+    ):
         self._search_fields = []
 
-        super(ModelView, self).__init__(model, name, category, endpoint, url, static_folder,
-                                        menu_class_name=menu_class_name,
-                                        menu_icon_type=menu_icon_type,
-                                        menu_icon_value=menu_icon_value)
+        super(ModelView, self).__init__(
+            model,
+            name,
+            category,
+            endpoint,
+            url,
+            static_folder,
+            menu_class_name=menu_class_name,
+            menu_icon_type=menu_icon_type,
+            menu_icon_value=menu_icon_value,
+        )
 
         self._primary_key = self.scaffold_pk()
 
@@ -176,18 +202,19 @@ class ModelView(BaseModelView):
         if model is None:
             model = self.model
 
-        return (
-            (field.name, field)
-            for field in get_meta_fields(model))
+        return ((field.name, field) for field in get_meta_fields(model))
 
     def scaffold_pk(self):
         return get_primary_key(self.model)
 
     def get_pk_value(self, model):
         if self.model._meta.composite_key:
-            return tuple([
-                getattr(model, field_name)
-                for field_name in self.model._meta.primary_key.field_names])
+            return tuple(
+                [
+                    getattr(model, field_name)
+                    for field_name in self.model._meta.primary_key.field_names
+                ]
+            )
         return getattr(model, self._primary_key)
 
     def scaffold_list_columns(self):
@@ -218,7 +245,9 @@ class ModelView(BaseModelView):
 
                 # Check type
                 if not isinstance(p, (CharField, TextField)):
-                    raise Exception(f'Can only search on text columns. Failed to setup search for "{p}"')
+                    raise Exception(
+                        f'Can only search on text columns. Failed to setup search for "{p}"'
+                    )
 
                 self._search_fields.append(p)
 
@@ -231,7 +260,7 @@ class ModelView(BaseModelView):
             attr = name
 
         if attr is None:
-            raise Exception('Failed to find field for filter: %s' % name)
+            raise Exception("Failed to find field for filter: %s" % name)
 
         # Check if field is in different model
         model_class = None
@@ -241,8 +270,10 @@ class ModelView(BaseModelView):
             model_class = attr.model
 
         if model_class != self.model:
-            visible_name = '%s / %s' % (self.get_column_name(model_class.__name__),
-                                        self.get_column_name(attr.name))
+            visible_name = "%s / %s" % (
+                self.get_column_name(model_class.__name__),
+                self.get_column_name(attr.name),
+            )
         else:
             if not isinstance(name, string_types):
                 visible_name = self.get_column_name(attr.name)
@@ -250,9 +281,7 @@ class ModelView(BaseModelView):
                 visible_name = self.get_column_name(name)
 
         type_name = type(attr).__name__
-        flt = self.filter_converter.convert(type_name,
-                                            attr,
-                                            visible_name)
+        flt = self.filter_converter.convert(type_name, attr, visible_name)
 
         return flt
 
@@ -260,17 +289,20 @@ class ModelView(BaseModelView):
         return isinstance(filter, filters.BasePeeweeFilter)
 
     def scaffold_form(self):
-        form_class = get_form(self.model, self.model_form_converter(self),
-                              base_class=self.form_base_class,
-                              only=self.form_columns,
-                              exclude=self.form_excluded_columns,
-                              field_args=self.form_args,
-                              # Allow child to specify pk, so inline_models
-                              # can be ModelViews. But don't auto-generate
-                              # pk field if form_columns is empty -- allow
-                              # default behaviour in that case.
-                              allow_pk=bool(self.form_columns),
-                              extra_fields=self.form_extra_fields)
+        form_class = get_form(
+            self.model,
+            self.model_form_converter(self),
+            base_class=self.form_base_class,
+            only=self.form_columns,
+            exclude=self.form_excluded_columns,
+            field_args=self.form_args,
+            # Allow child to specify pk, so inline_models
+            # can be ModelViews. But don't auto-generate
+            # pk field if form_columns is empty -- allow
+            # default behaviour in that case.
+            allow_pk=bool(self.form_columns),
+            extra_fields=self.form_extra_fields,
+        )
 
         if self.inline_models:
             form_class = self.scaffold_inline_form_models(form_class)
@@ -279,32 +311,33 @@ class ModelView(BaseModelView):
 
     def scaffold_list_form(self, widget=None, validators=None):
         """
-            Create form for the `index_view` using only the columns from
-            `self.column_editable_list`.
+        Create form for the `index_view` using only the columns from
+        `self.column_editable_list`.
 
-            :param widget:
-                WTForms widget class. Defaults to `XEditableWidget`.
-            :param validators:
-                `form_args` dict with only validators
-                {'name': {'validators': [required()]}}
+        :param widget:
+            WTForms widget class. Defaults to `XEditableWidget`.
+        :param validators:
+            `form_args` dict with only validators
+            {'name': {'validators': [required()]}}
         """
-        form_class = get_form(self.model, self.model_form_converter(self),
-                              base_class=self.form_base_class,
-                              only=self.column_editable_list,
-                              field_args=validators)
+        form_class = get_form(
+            self.model,
+            self.model_form_converter(self),
+            base_class=self.form_base_class,
+            only=self.column_editable_list,
+            field_args=validators,
+        )
 
-        return create_editable_list_form(self.form_base_class, form_class,
-                                         widget)
+        return create_editable_list_form(self.form_base_class, form_class, widget)
 
     def scaffold_inline_form_models(self, form_class):
         converter = self.model_form_converter(self)
         inline_converter = self.inline_model_form_converter(self)
 
         for m in self.inline_models:
-            form_class = inline_converter.contribute(converter,
-                                                     self.model,
-                                                     form_class,
-                                                     m)
+            form_class = inline_converter.contribute(
+                converter, self.model, form_class, m
+            )
 
         return form_class
 
@@ -330,7 +363,8 @@ class ModelView(BaseModelView):
         clauses = []
         for sort_field, sort_desc in order:
             query, joins, clause = self._sort_clause(
-                query, joins, sort_field, sort_desc)
+                query, joins, sort_field, sort_desc
+            )
             clauses.append(clause)
         query = query.order_by(*clauses)
         return query, joins
@@ -353,27 +387,35 @@ class ModelView(BaseModelView):
     def get_query(self):
         return self.model.select()
 
-    def get_list(self, page, sort_column, sort_desc, search, filters,
-                 execute=True, page_size=None):
+    def get_list(
+        self,
+        page,
+        sort_column,
+        sort_desc,
+        search,
+        filters,
+        execute=True,
+        page_size=None,
+    ):
         """
-            Return records from the database.
+        Return records from the database.
 
-            :param page:
-                Page number
-            :param sort_column:
-                Sort column name
-            :param sort_desc:
-                Descending or ascending sort
-            :param search:
-                Search query
-            :param filters:
-                List of filter tuples
-            :param execute:
-                Execute query immediately? Default is `True`
-            :param page_size:
-                Number of results. Defaults to ModelView's page_size. Can be
-                overriden to change the page_size limit. Removing the page_size
-                limit requires setting page_size to 0 or False.
+        :param page:
+            Page number
+        :param sort_column:
+            Sort column name
+        :param sort_desc:
+            Descending or ascending sort
+        :param search:
+            Search query
+        :param filters:
+            List of filter tuples
+        :param execute:
+            Execute query immediately? Default is `True`
+        :param page_size:
+            Number of results. Defaults to ModelView's page_size. Can be
+            overriden to change the page_size limit. Removing the page_size
+            limit requires setting page_size to 0 or False.
         """
 
         query = self.get_query()
@@ -382,7 +424,7 @@ class ModelView(BaseModelView):
 
         # Search
         if self._search_supported and search:
-            values = search.split(' ')
+            values = search.split(" ")
 
             for value in values:
                 if not value:
@@ -394,7 +436,7 @@ class ModelView(BaseModelView):
                 for field in self._search_fields:
                     query = self._handle_join(query, field, joins)
 
-                    q = field ** term
+                    q = field**term
 
                     if stmt is None:
                         stmt = q
@@ -441,7 +483,9 @@ class ModelView(BaseModelView):
 
     def get_one(self, id):
         if self.model._meta.composite_key:
-            return self.model.get(**dict(zip(self.model._meta.primary_key.field_names, id)))
+            return self.model.get(
+                **dict(zip(self.model._meta.primary_key.field_names, id))
+            )
         return self.model.get(**{self._primary_key: id})
 
     def create_model(self, form):
@@ -455,8 +499,11 @@ class ModelView(BaseModelView):
             save_inline(form, model)
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                flash(gettext('Failed to create record. %(error)s', error=str(ex)), 'error')
-                log.exception('Failed to create record.')
+                flash(
+                    gettext("Failed to create record. %(error)s", error=str(ex)),
+                    "error",
+                )
+                log.exception("Failed to create record.")
 
             return False
         else:
@@ -474,8 +521,11 @@ class ModelView(BaseModelView):
             save_inline(form, model)
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                flash(gettext('Failed to update record. %(error)s', error=str(ex)), 'error')
-                log.exception('Failed to update record.')
+                flash(
+                    gettext("Failed to update record. %(error)s", error=str(ex)),
+                    "error",
+                )
+                log.exception("Failed to update record.")
 
             return False
         else:
@@ -489,8 +539,11 @@ class ModelView(BaseModelView):
             model.delete_instance(recursive=True)
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                flash(gettext('Failed to delete record. %(error)s', error=str(ex)), 'error')
-                log.exception('Failed to delete record.')
+                flash(
+                    gettext("Failed to delete record. %(error)s", error=str(ex)),
+                    "error",
+                )
+                log.exception("Failed to delete record.")
 
             return False
         else:
@@ -501,14 +554,16 @@ class ModelView(BaseModelView):
     # Default model actions
     def is_action_allowed(self, name):
         # Check delete action permission
-        if name == 'delete' and not self.can_delete:
+        if name == "delete" and not self.can_delete:
             return False
 
         return super(ModelView, self).is_action_allowed(name)
 
-    @action('delete',
-            lazy_gettext('Delete'),
-            lazy_gettext('Are you sure you want to delete selected records?'))
+    @action(
+        "delete",
+        lazy_gettext("Delete"),
+        lazy_gettext("Are you sure you want to delete selected records?"),
+    )
     def action_delete(self, ids):
         try:
             model_pk = getattr(self.model, self._primary_key)
@@ -525,10 +580,18 @@ class ModelView(BaseModelView):
                     m.delete_instance(recursive=True)
                     count += 1
 
-            flash(ngettext('Record was successfully deleted.',
-                           '%(count)s records were successfully deleted.',
-                           count,
-                           count=count), 'success')
+            flash(
+                ngettext(
+                    "Record was successfully deleted.",
+                    "%(count)s records were successfully deleted.",
+                    count,
+                    count=count,
+                ),
+                "success",
+            )
         except Exception as ex:
             if not self.handle_view_exception(ex):
-                flash(gettext('Failed to delete records. %(error)s', error=str(ex)), 'error')
+                flash(
+                    gettext("Failed to delete records. %(error)s", error=str(ex)),
+                    "error",
+                )
