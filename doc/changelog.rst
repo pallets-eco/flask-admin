@@ -8,6 +8,8 @@ Fixes:
 
 * The `Apply` button for filters will show/hide correctly again
 * Fix `translations_path` attribute when Flask-Admin is used with Flask-Babel
+* Some translation updates.
+* Date fields no longer override `widget` if set in `form_args`
 
 2.0.0a0
 -------
