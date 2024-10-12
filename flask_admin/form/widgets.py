@@ -108,6 +108,7 @@ class RenderTemplateWidget:
                 "_gettext": gettext,
                 "_ngettext": ngettext,
                 "h": h,
+                "theme": current_app.config["theme"],
             }
         )
 
