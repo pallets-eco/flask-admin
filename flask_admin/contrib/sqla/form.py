@@ -366,7 +366,7 @@ class AdminModelConverter(ModelConverterBase):
 
     @converts("Date")
     def convert_date(self, field_args, **extra):
-        field_args["widget"] = form.DatePickerWidget()
+        field_args.setdefault("widget", form.DatePickerWidget())
         return fields.DateField(**field_args)
 
     @converts("DateTime")  # includes TIMESTAMP
