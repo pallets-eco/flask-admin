@@ -95,6 +95,11 @@ add_module_names = False
 # modindex_common_prefix = []
 
 
+# -- sphinx.ext.autodoc Configuration ------------------------------------------
+
+autoclass_content = "both"
+
+
 # -- Options for HTML output ---------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
