@@ -10,6 +10,7 @@ Fixes:
 * Fix `translations_path` attribute when Flask-Admin is used with Flask-Babel
 * Some translation updates.
 * Date fields no longer override `widget` if set in `form_args`
+* “Save and Continue Editing” button no longer discards the “return URL” (allowing to retain filters when switching back to the list)
 
 2.0.0a0
 -------
