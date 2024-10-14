@@ -2,7 +2,7 @@
 
 {% macro dropdown(actions, btn_class='nav-link dropdown-toggle') -%}
     <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)" role="button" aria-haspopup="true"
-       aria-expanded="false">{{ _gettext('With selected') }}<b class="caret"></b></a>
+       aria-expanded="false">{{ _gettext('With selected') }}</a>
     <div class="dropdown-menu">
         {% for p in actions %}
             <a class="dropdown-item" href="javascript:void(0)"
