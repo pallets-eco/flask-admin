@@ -15,6 +15,7 @@ class BootstrapTheme(Theme):
     base_template: str = "admin/base.html"
     swatch: str = "default"
     fluid: bool = False
+    horizontal: bool = False
 
 
 Bootstrap4Theme = partial(BootstrapTheme, folder="bootstrap4")
