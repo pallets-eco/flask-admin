@@ -30,7 +30,7 @@ platformdirs==4.2.2
     # via pylint
 pluggy==1.5.0
     # via pytest
-psycopg2==2.9.9
+psycopg2==2.9.10
     # via -r tests.in
 pycodestyle==2.12.1
     # via flake8
