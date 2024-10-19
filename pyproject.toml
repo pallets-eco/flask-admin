@@ -79,11 +79,11 @@ Source = "https://github.com/pallets-eco/flask-admin/"
 Chat = "https://discord.gg/pallets"
 
 [build-system]
-requires = ["flit_core<4"]
-build-backend = "flit_core.buildapi"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.flit.module]
-name = "flask_admin"
+[tool.hatch.build.targets.wheel]
+exclude = ["flask_admin/tests"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
