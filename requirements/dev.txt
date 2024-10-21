@@ -149,7 +149,7 @@ pluggy==1.5.0
     #   tox
 pre-commit==3.5.0
     # via -r dev.in
-psycopg2==2.9.9
+psycopg2==2.9.10
     # via
     #   -r docs.txt
     #   -r tests.in
