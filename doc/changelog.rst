@@ -6,6 +6,7 @@ Changelog
 
 Fixes:
 
+* Fixes compatibility with WTForms 3.2+.
 * The `Apply` button for filters will show/hide correctly again
 * Fix `translations_path` attribute when Flask-Admin is used with Flask-Babel
 * Some translation updates.

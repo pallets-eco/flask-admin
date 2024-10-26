@@ -10,6 +10,7 @@ from wtforms.fields import StringField
 from wtforms.utils import unset_value
 from wtforms.validators import ValidationError
 
+from flask_admin._compat import _iter_choices_wtforms_compat
 from flask_admin._compat import iteritems
 from flask_admin._compat import string_types
 from flask_admin._compat import text_type
@@ -111,10 +112,14 @@ class QuerySelectField(SelectFieldBase):
 
     def iter_choices(self):
         if self.allow_blank:
-            yield ("__None", self.blank_text, self.data is None)
+            yield _iter_choices_wtforms_compat(
+                "__None", self.blank_text, self.data is None
+            )
 
         for pk, obj in self._get_object_list():
-            yield (pk, self.get_label(obj), obj == self.data)
+            yield _iter_choices_wtforms_compat(
+                pk, self.get_label(obj), obj == self.data
+            )
 
     def process_formdata(self, valuelist):
         if valuelist:
@@ -174,7 +179,9 @@ class QuerySelectMultipleField(QuerySelectField):
 
     def iter_choices(self):
         for pk, obj in self._get_object_list():
-            yield (pk, self.get_label(obj), obj in self.data)
+            yield _iter_choices_wtforms_compat(
+                pk, self.get_label(obj), obj in self.data
+            )
 
     def process_formdata(self, valuelist):
         self._formdata = set(valuelist)

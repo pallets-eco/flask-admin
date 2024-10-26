@@ -5,6 +5,7 @@ import time
 
 from wtforms import fields
 
+from flask_admin._compat import _iter_choices_wtforms_compat
 from flask_admin._compat import as_unicode
 from flask_admin._compat import text_type
 from flask_admin.babel import gettext
@@ -146,13 +147,17 @@ class Select2Field(fields.SelectField):
 
     def iter_choices(self):
         if self.allow_blank:
-            yield ("__None", self.blank_text, self.data is None)
+            yield _iter_choices_wtforms_compat(
+                "__None", self.blank_text, self.data is None
+            )
 
         for choice in self.choices:
             if isinstance(choice, tuple):
-                yield (choice[0], choice[1], self.coerce(choice[0]) == self.data)
+                yield _iter_choices_wtforms_compat(
+                    choice[0], choice[1], self.coerce(choice[0]) == self.data
+                )
             else:
-                yield (
+                yield _iter_choices_wtforms_compat(
                     choice.value,
                     choice.name,
                     self.coerce(choice.value) == self.data,
