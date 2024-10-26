@@ -2,6 +2,8 @@ flake8
 pylint
 pytest
 pytest-cov
+moto
+botocore>=1.35
 
 psycopg2
 beautifulsoup4

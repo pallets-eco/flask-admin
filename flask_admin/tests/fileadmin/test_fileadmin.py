@@ -37,22 +37,6 @@ class Base:
             assert rv.status_code == 200
             assert "path=dummy.txt" in rv.data.decode("utf-8")
 
-            # edit
-            rv = client.get("/admin/myfileadmin/edit/?path=dummy.txt")
-            assert rv.status_code == 200
-            assert "dummy.txt" in rv.data.decode("utf-8")
-
-            rv = client.post(
-                "/admin/myfileadmin/edit/?path=dummy.txt",
-                data=dict(content="new_string"),
-            )
-            assert rv.status_code == 302
-
-            rv = client.get("/admin/myfileadmin/edit/?path=dummy.txt")
-            assert rv.status_code == 200
-            assert "dummy.txt" in rv.data.decode("utf-8")
-            assert "new_string" in rv.data.decode("utf-8")
-
             # rename
             rv = client.get("/admin/myfileadmin/rename/?path=dummy.txt")
             assert rv.status_code == 200
@@ -133,6 +117,37 @@ class Base:
             assert rv.status_code == 200
             assert "path=dummy_renamed_dir" not in rv.data.decode("utf-8")
             assert "path=dummy.txt" in rv.data.decode("utf-8")
+
+        def test_file_admin_edit(self, app, admin):
+            fileadmin_class = self.fileadmin_class()
+            fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+
+            class MyFileAdmin(fileadmin_class):
+                editable_extensions = ("txt",)
+
+            view_kwargs = dict(fileadmin_kwargs)
+            view_kwargs.setdefault("name", "Files")
+            view = MyFileAdmin(*fileadmin_args, **view_kwargs)
+
+            admin.add_view(view)
+
+            client = app.test_client()
+
+            # edit
+            rv = client.get("/admin/myfileadmin/edit/?path=dummy.txt")
+            assert rv.status_code == 200
+            assert "dummy.txt" in rv.data.decode("utf-8")
+
+            rv = client.post(
+                "/admin/myfileadmin/edit/?path=dummy.txt",
+                data=dict(content="new_string"),
+            )
+            assert rv.status_code == 302
+
+            rv = client.get("/admin/myfileadmin/edit/?path=dummy.txt")
+            assert rv.status_code == 200
+            assert "dummy.txt" in rv.data.decode("utf-8")
+            assert "new_string" in rv.data.decode("utf-8")
 
         def test_modal_edit_bs4(self, app, babel):
             admin_bs4 = Admin(app, theme=Bootstrap4Theme())

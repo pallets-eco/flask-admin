@@ -20,6 +20,15 @@ babel==2.16.0
     # via flask-babel
 beautifulsoup4==4.12.3
     # via -r tests-min.in
+boto3==1.33.0
+    # via
+    #   -r tests-min.in
+    #   moto
+botocore==1.33.13
+    # via
+    #   boto3
+    #   moto
+    #   s3transfer
 certifi==2024.8.30
     # via requests
 cffi==1.17.1
@@ -33,7 +42,9 @@ colour==0.1.5
 coverage[toml]==7.6.1
     # via pytest-cov
 cryptography==43.0.1
-    # via azure-storage-common
+    # via
+    #   azure-storage-common
+    #   moto
 deprecated==1.2.14
     # via redis
 dill==0.3.8
@@ -75,6 +86,11 @@ jinja2==3.1.4
     # via
     #   flask
     #   flask-babel
+    #   moto
+jmespath==1.0.1
+    # via
+    #   boto3
+    #   botocore
 markupsafe==2.1.5
     # via
     #   jinja2
@@ -84,6 +100,8 @@ mccabe==0.7.0
     # via
     #   flake8
     #   pylint
+moto==5.0.18
+    # via -r tests-min.in
 numpy==1.24.4
     # via shapely
 packaging==24.1
@@ -122,14 +140,25 @@ python-dateutil==2.9.0.post0
     # via
     #   arrow
     #   azure-storage-common
+    #   botocore
+    #   moto
 pytz==2022.7.1
     # via
     #   babel
     #   flask-babel
+pyyaml==6.0.2
+    # via responses
 redis==4.0.0
     # via -r tests-min.in
 requests==2.32.3
-    # via azure-storage-common
+    # via
+    #   azure-storage-common
+    #   moto
+    #   responses
+responses==0.25.3
+    # via moto
+s3transfer==0.8.2
+    # via boto3
 shapely==2.0.0
     # via -r tests-min.in
 six==1.16.0
@@ -162,12 +191,16 @@ typing-extensions==4.12.2
     # via
     #   astroid
     #   pylint
-urllib3==2.2.2
-    # via requests
+urllib3==1.26.20
+    # via
+    #   botocore
+    #   requests
+    #   responses
 werkzeug==2.3.8
     # via
     #   -r tests-min.in
     #   flask
+    #   moto
 wrapt==1.16.0
     # via deprecated
 wtf-peewee==3.0.4
@@ -176,5 +209,7 @@ wtforms==2.3.0
     # via
     #   -r tests-min.in
     #   wtf-peewee
+xmltodict==0.14.2
+    # via moto
 zipp==3.20.1
     # via importlib-metadata

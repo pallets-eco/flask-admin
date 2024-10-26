@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.0.0a2
+-------
+
+Breaking changes:
+
+* Use of the `boto` library has been replaced by `boto3`. S3FileAdmin and S3Storage now accept an `s3_client` parameter taking a `boto3.client('s3')` instance rather than `aws_access_key_id`, `aws_secret_access_key`, and `region` parameters.
+
 2.0.0a1
 -------
 
