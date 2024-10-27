@@ -8,8 +8,8 @@ from markupsafe import Markup
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from wtforms import __version__ as wtforms_version  # type: ignore[attr-defined]
-from wtforms import fields  # type: ignore[attr-defined]
-from wtforms import ValidationError  # type: ignore[attr-defined]
+from wtforms import fields
+from wtforms import ValidationError
 from wtforms.utils import unset_value
 from wtforms.widgets import html_params
 
