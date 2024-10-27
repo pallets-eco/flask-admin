@@ -196,7 +196,7 @@ urllib3==1.26.20
     #   botocore
     #   requests
     #   responses
-werkzeug==2.3.8
+werkzeug==3.0.6
     # via
     #   -r tests-min.in
     #   flask
