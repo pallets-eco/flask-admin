@@ -4,7 +4,7 @@
 #
 #    pip-compile build.in
 #
-build==1.2.1
+build==1.2.2.post1
     # via -r build.in
 importlib-metadata==8.4.0
     # via build

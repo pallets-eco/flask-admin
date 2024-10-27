@@ -14,6 +14,7 @@ boto3-stubs==1.35.49
     # via types-boto3
 botocore==1.35.49
     # via
+    #   -r tests.in
     #   boto3
     #   moto
     #   s3transfer
@@ -58,7 +59,7 @@ mccabe==0.7.0
     #   pylint
 moto==5.0.18
     # via -r tests.in
-mypy==1.11.2
+mypy==1.13.0
     # via -r typing.in
 mypy-extensions==1.0.0
     # via mypy
@@ -72,7 +73,7 @@ platformdirs==4.2.2
     # via pylint
 pluggy==1.5.0
     # via pytest
-psycopg2==2.9.9
+psycopg2==2.9.10
     # via -r tests.in
 pycodestyle==2.12.1
     # via flake8
@@ -82,9 +83,9 @@ pyflakes==3.2.0
     # via flake8
 pylint==3.2.7
     # via -r tests.in
-pyright==1.1.379
+pyright==1.1.386
     # via -r typing.in
-pytest==8.3.2
+pytest==8.3.3
     # via
     #   -r tests.in
     #   -r typing.in
@@ -119,7 +120,7 @@ tomlkit==0.13.2
     # via pylint
 types-awscrt==0.23.0
     # via botocore-stubs
-types-beautifulsoup4==4.12.0.20240511
+types-beautifulsoup4==4.12.0.20241020
     # via -r typing.in
 types-boto3==1.0.2
     # via -r typing.in
@@ -135,7 +136,7 @@ types-jinja2==2.11.9
     # via types-flask
 types-markupsafe==1.1.10
     # via types-jinja2
-types-peewee==3.17.6.20240813
+types-peewee==3.17.7.20241017
     # via -r typing.in
 types-pillow==10.2.0.20240822
     # via -r typing.in
@@ -147,7 +148,7 @@ types-sqlalchemy==1.4.53.38
     # via types-flask-sqlalchemy
 types-werkzeug==1.0.9
     # via types-flask
-types-wtforms==3.1.0.20240425
+types-wtforms==3.2.1.20241025
     # via -r typing.in
 typing-extensions==4.12.2
     # via
@@ -156,6 +157,7 @@ typing-extensions==4.12.2
     #   botocore-stubs
     #   mypy
     #   pylint
+    #   pyright
 urllib3==1.26.20
     # via
     #   botocore
