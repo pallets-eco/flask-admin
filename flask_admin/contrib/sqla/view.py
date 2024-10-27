@@ -938,7 +938,8 @@ class ModelView(BaseModelView):
 
         See commit ``#45a2723`` for details.
         """
-        return self.session.query(func.count("*")).select_from(self.model)
+        return self.session.query(func.count()).select_from(self.model)
+
 
     def _order_by(self, query, joins, sort_joins, sort_field, sort_desc):
         """
