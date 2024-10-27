@@ -8,7 +8,6 @@ from collections import OrderedDict
 from math import ceil
 from typing import cast
 from typing import Optional
-from typing import Type
 
 from flask import abort
 from flask import current_app
@@ -577,7 +576,7 @@ class BaseModelView(BaseView, ActionsMixin):
         prev/next pager buttons.
     """
 
-    form: Optional[Type[Form]] = None
+    form: Optional[type[Form]] = None
     """
         Form class. Override if you want to use custom form for your model.
         Will completely disable form scaffolding functionality.

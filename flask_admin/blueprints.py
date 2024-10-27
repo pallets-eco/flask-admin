@@ -38,7 +38,7 @@ class _BlueprintWithHostSupport(FlaskBlueprint):
         # endpoints.
         @self.url_defaults
         def inject_admin_routes_host_if_required(
-            endpoint: str, values: t.Dict[str, t.Any]
+            endpoint: str, values: dict[str, t.Any]
         ) -> None:
             if app.url_map.is_endpoint_expecting(
                 endpoint, ADMIN_ROUTES_HOST_VARIABLE_NAME
@@ -50,7 +50,7 @@ class _BlueprintWithHostSupport(FlaskBlueprint):
         # required by any of them.
         @self.url_value_preprocessor
         def strip_admin_routes_host_from_static_endpoint(
-            endpoint: t.Optional[str], values: t.Optional[t.Dict[str, t.Any]]
+            endpoint: t.Optional[str], values: t.Optional[dict[str, t.Any]]
         ) -> None:
             if (
                 endpoint
