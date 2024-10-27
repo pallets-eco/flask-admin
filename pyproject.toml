@@ -122,15 +122,6 @@ show_error_codes = true
 pretty = true
 strict = true
 
-# Start off with these
-warn_unused_configs = false
-warn_redundant_casts = false
-warn_unused_ignores = false
-
-# Getting these passing should be easy
-strict_equality = false
-strict_concatenate = false
-
 # Strongly recommend enabling this one as soon as you can
 check_untyped_defs = false
 

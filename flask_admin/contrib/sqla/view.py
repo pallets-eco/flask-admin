@@ -280,7 +280,7 @@ class ModelView(BaseModelView):
                 inline_models = (MyInlineModelForm(MyInlineModel),)
     """
 
-    column_type_formatters = DEFAULT_FORMATTERS  # type: ignore[assignment]
+    column_type_formatters = DEFAULT_FORMATTERS
 
     form_choices: Optional[dict[str, list[tuple[str, str]]]] = None
     """
