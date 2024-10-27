@@ -8,22 +8,51 @@ astroid==3.2.4
     # via pylint
 beautifulsoup4==4.12.3
     # via -r tests.in
+boto3==1.35.49
+    # via moto
+botocore==1.35.49
+    # via
+    #   boto3
+    #   moto
+    #   s3transfer
+certifi==2024.8.30
+    # via requests
+cffi==1.17.1
+    # via cryptography
+charset-normalizer==3.4.0
+    # via requests
 coverage[toml]==7.6.1
     # via pytest-cov
+cryptography==43.0.3
+    # via moto
 dill==0.3.8
     # via pylint
 exceptiongroup==1.2.2
     # via pytest
 flake8==7.1.1
     # via -r tests.in
+idna==3.10
+    # via requests
 iniconfig==2.0.0
     # via pytest
 isort==5.13.2
     # via pylint
+jinja2==3.1.4
+    # via moto
+jmespath==1.0.1
+    # via
+    #   boto3
+    #   botocore
+markupsafe==2.1.5
+    # via
+    #   jinja2
+    #   werkzeug
 mccabe==0.7.0
     # via
     #   flake8
     #   pylint
+moto==5.0.18
+    # via -r tests.in
 packaging==24.1
     # via pytest
 platformdirs==4.2.2
@@ -34,6 +63,8 @@ psycopg2==2.9.9
     # via -r tests.in
 pycodestyle==2.12.1
     # via flake8
+pycparser==2.22
+    # via cffi
 pyflakes==3.2.0
     # via flake8
 pylint==3.2.7
@@ -44,6 +75,22 @@ pytest==8.3.2
     #   pytest-cov
 pytest-cov==5.0.0
     # via -r tests.in
+python-dateutil==2.9.0.post0
+    # via
+    #   botocore
+    #   moto
+pyyaml==6.0.2
+    # via responses
+requests==2.32.3
+    # via
+    #   moto
+    #   responses
+responses==0.25.3
+    # via moto
+s3transfer==0.10.3
+    # via boto3
+six==1.16.0
+    # via python-dateutil
 soupsieve==2.6
     # via beautifulsoup4
 tomli==2.0.1
@@ -57,3 +104,12 @@ typing-extensions==4.12.2
     # via
     #   astroid
     #   pylint
+urllib3==1.26.20
+    # via
+    #   botocore
+    #   requests
+    #   responses
+werkzeug==3.0.6
+    # via moto
+xmltodict==0.14.2
+    # via moto

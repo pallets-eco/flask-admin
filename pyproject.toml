@@ -52,7 +52,7 @@ peewee = [
     "peewee>=3.14.0",
     "wtf-peewee>=3.0.4"
 ]
-s3 = ["boto"]  # TODO: migrate to boto3
+s3 = ["boto3>=1.33"]
 azure-blob-storage = ["azure-storage-blob<=3"]  # TODO: update to v12+
 images = ["pillow>=10.0.0"]
 export = ["tablib>=3.0.0"]

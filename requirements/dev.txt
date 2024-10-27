@@ -22,19 +22,47 @@ beautifulsoup4==4.12.3
     #   -r docs.txt
     #   -r tests.in
     #   -r typing.txt
+boto3==1.35.49
+    # via
+    #   -r docs.txt
+    #   -r typing.txt
+    #   moto
+boto3-stubs==1.35.49
+    # via
+    #   -r typing.txt
+    #   types-boto3
+botocore==1.35.49
+    # via
+    #   -r docs.txt
+    #   -r tests.in
+    #   -r typing.txt
+    #   boto3
+    #   moto
+    #   s3transfer
+botocore-stubs==1.35.49
+    # via
+    #   -r typing.txt
+    #   boto3-stubs
 cachetools==5.5.0
     # via tox
 certifi==2024.8.30
     # via
     #   -r docs.txt
+    #   -r typing.txt
     #   requests
+cffi==1.17.1
+    # via
+    #   -r docs.txt
+    #   -r typing.txt
+    #   cryptography
 cfgv==3.4.0
     # via pre-commit
 chardet==5.2.0
     # via tox
-charset-normalizer==3.3.2
+charset-normalizer==3.4.0
     # via
     #   -r docs.txt
+    #   -r typing.txt
     #   requests
 colorama==0.4.6
     # via tox
@@ -43,6 +71,11 @@ coverage[toml]==7.6.1
     #   -r docs.txt
     #   -r typing.txt
     #   pytest-cov
+cryptography==43.0.3
+    # via
+    #   -r docs.txt
+    #   -r typing.txt
+    #   moto
 dill==0.3.8
     # via
     #   -r docs.txt
@@ -70,9 +103,10 @@ flake8==7.1.1
     #   -r typing.txt
 identify==2.6.0
     # via pre-commit
-idna==3.8
+idna==3.10
     # via
     #   -r docs.txt
+    #   -r typing.txt
     #   requests
 imagesize==1.4.1
     # via
@@ -95,19 +129,33 @@ isort==5.13.2
 jinja2==3.1.4
     # via
     #   -r docs.txt
+    #   -r typing.txt
+    #   moto
     #   sphinx
+jmespath==1.0.1
+    # via
+    #   -r docs.txt
+    #   -r typing.txt
+    #   boto3
+    #   botocore
 markupsafe==2.1.5
     # via
     #   -r docs.txt
     #   -r typing.txt
     #   jinja2
     #   types-wtforms
+    #   werkzeug
 mccabe==0.7.0
     # via
     #   -r docs.txt
     #   -r typing.txt
     #   flake8
     #   pylint
+moto==5.0.18
+    # via
+    #   -r docs.txt
+    #   -r tests.in
+    #   -r typing.txt
 mypy==1.11.2
     # via -r typing.txt
 mypy-extensions==1.0.0
@@ -159,6 +207,11 @@ pycodestyle==2.12.1
     #   -r docs.txt
     #   -r typing.txt
     #   flake8
+pycparser==2.22
+    # via
+    #   -r docs.txt
+    #   -r typing.txt
+    #   cffi
 pyflakes==3.2.0
     # via
     #   -r docs.txt
@@ -188,16 +241,44 @@ pytest-cov==5.0.0
     #   -r docs.txt
     #   -r tests.in
     #   -r typing.txt
+python-dateutil==2.9.0.post0
+    # via
+    #   -r docs.txt
+    #   -r typing.txt
+    #   botocore
+    #   moto
 pytz==2024.1
     # via
     #   -r docs.txt
     #   babel
 pyyaml==6.0.2
-    # via pre-commit
+    # via
+    #   -r docs.txt
+    #   -r typing.txt
+    #   pre-commit
+    #   responses
 requests==2.32.3
     # via
     #   -r docs.txt
+    #   -r typing.txt
+    #   moto
+    #   responses
     #   sphinx
+responses==0.25.3
+    # via
+    #   -r docs.txt
+    #   -r typing.txt
+    #   moto
+s3transfer==0.10.3
+    # via
+    #   -r docs.txt
+    #   -r typing.txt
+    #   boto3
+six==1.16.0
+    # via
+    #   -r docs.txt
+    #   -r typing.txt
+    #   python-dateutil
 snowballstemmer==2.2.0
     # via
     #   -r docs.txt
@@ -255,9 +336,13 @@ tomlkit==0.13.2
     #   pylint
 tox==4.18.0
     # via -r dev.in
+types-awscrt==0.23.0
+    # via
+    #   -r typing.txt
+    #   botocore-stubs
 types-beautifulsoup4==4.12.0.20240511
     # via -r typing.txt
-types-boto==2.49.18.20240806
+types-boto3==1.0.2
     # via -r typing.txt
 types-click==7.1.8
     # via
@@ -283,6 +368,10 @@ types-peewee==3.17.6.20240813
     # via -r typing.txt
 types-pillow==10.2.0.20240822
     # via -r typing.txt
+types-s3transfer==0.10.3
+    # via
+    #   -r typing.txt
+    #   boto3-stubs
 types-shapely==2.0.0.20240820
     # via -r typing.txt
 types-sqlalchemy==1.4.53.38
@@ -300,16 +389,31 @@ typing-extensions==4.12.2
     #   -r docs.txt
     #   -r typing.txt
     #   astroid
+    #   boto3-stubs
+    #   botocore-stubs
     #   mypy
     #   pylint
-urllib3==2.2.2
+urllib3==1.26.20
     # via
     #   -r docs.txt
+    #   -r typing.txt
+    #   botocore
     #   requests
+    #   responses
 virtualenv==20.26.3
     # via
     #   pre-commit
     #   tox
+werkzeug==3.0.6
+    # via
+    #   -r docs.txt
+    #   -r typing.txt
+    #   moto
+xmltodict==0.14.2
+    # via
+    #   -r docs.txt
+    #   -r typing.txt
+    #   moto
 zipp==3.20.1
     # via
     #   -r docs.txt
