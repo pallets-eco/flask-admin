@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 from markupsafe import Markup
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
-from wtforms import __version__ as wtforms_version  # type: ignore[attr-defined]
+from wtforms import __version__ as wtforms_version
 from wtforms import fields
 from wtforms import ValidationError
 from wtforms.utils import unset_value
