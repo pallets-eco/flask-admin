@@ -1,9 +1,10 @@
+import decimal
+
+from bson import ObjectId
 from mongoengine import ReferenceField, ListField
 from mongoengine.base import BaseDocument, DocumentMetaclass, get_document
 
 from wtforms import fields, validators
-from flask_mongoengine.wtf import orm, fields as mongo_fields
-
 from flask_admin import form
 from flask_admin.model.form import FieldPlaceholder
 from flask_admin.model.fields import InlineFieldList, AjaxSelectField, AjaxSelectMultipleField
@@ -14,7 +15,7 @@ from .fields import ModelFormField, MongoFileField, MongoImageField
 from .subdoc import EmbeddedForm
 
 
-class CustomModelConverter(orm.ModelConverter):
+class CustomModelConverter:
     """
         Customized MongoEngine form conversion class.
 
@@ -23,9 +24,29 @@ class CustomModelConverter(orm.ModelConverter):
     """
 
     def __init__(self, view):
-        super(CustomModelConverter, self).__init__()
-
         self.view = view
+        self.converters = {
+            'StringField': self.conv_String,
+            'URLField': self.conv_URL,
+            'EmailField': self.conv_Email,
+            'IntField': self.conv_Int,
+            'FloatField': self.conv_Float,
+            'DecimalField': self.conv_Decimal,
+            'BooleanField': self.conv_Boolean,
+            'DateField': self.conv_Date,
+            'BinaryField': self.conv_Binary,
+            'DictField': self.conv_Dict,
+            'SortedListField': self.conv_SortedList,
+            'GeoPointField': self.conv_GeoLocation,
+            'ObjectIdField': self.conv_ObjectId,
+            'GenericReferenceField': self.conv_GenericReference,
+            'DateTimeField': self.conv_DateTime,
+            'ListField': self.conv_List,
+            'EmbeddedDocumentField': self.conv_EmbeddedDocument,
+            'ReferenceField': self.conv_Reference,
+            'FileField': self.conv_File,
+            'ImageField': self.conv_image,
+        }
 
     def _get_field_override(self, name):
         form_overrides = getattr(self.view, 'form_overrides', None)
@@ -105,12 +126,93 @@ class CustomModelConverter(orm.ModelConverter):
         if ftype in self.converters:
             return self.converters[ftype](model, field, kwargs)
 
-    @orm.converts('DateTimeField')
+    @classmethod
+    def _string_common(cls, model, field, kwargs):
+        if field.max_length or field.min_length:
+            kwargs["validators"].append(
+                validators.Length(
+                    max=field.max_length or -1, min=field.min_length or -1
+                )
+            )
+
+    @classmethod
+    def _number_common(cls, model, field, kwargs):
+        if field.max_value or field.min_value:
+            kwargs["validators"].append(
+                validators.NumberRange(max=field.max_value, min=field.min_value)
+            )
+
+    # Converters
+    def conv_String(self, model, field, kwargs):
+        if field.regex:
+            kwargs["validators"].append(validators.Regexp(regex=field.regex))
+        self._string_common(model, field, kwargs)
+        password_field = kwargs.pop("password", False)
+        textarea_field = kwargs.pop("textarea", False) or not field.max_length
+        if password_field:
+            return fields.PasswordField(**kwargs)
+        if textarea_field:
+            return fields.TextAreaField(**kwargs)
+        return fields.StringField(**kwargs)
+
+    def conv_URL(self, model, field, kwargs):
+        kwargs["validators"].append(validators.URL())
+        self._string_common(model, field, kwargs)
+        return fields.StringField(**kwargs)
+
+    def conv_Email(self, model, field, kwargs):
+        kwargs["validators"].append(validators.Email())
+        self._string_common(model, field, kwargs)
+        return fields.StringField(**kwargs)
+
+    def conv_Int(self, model, field, kwargs):
+        self._number_common(model, field, kwargs)
+        return fields.IntegerField(**kwargs)
+
+    def conv_Float(self, model, field, kwargs):
+        self._number_common(model, field, kwargs)
+        return fields.FloatField(**kwargs)
+
+    def conv_Decimal(self, model, field, kwargs):
+        self._number_common(model, field, kwargs)
+        kwargs["places"] = getattr(field, "precision", None)
+        return fields.DecimalField(**kwargs)
+
+    def conv_Boolean(self, model, field, kwargs):
+        return fields.BooleanField(**kwargs)
+
+    def conv_Date(self, model, field, kwargs):
+        return fields.DateField(**kwargs)
+
+    def conv_Binary(self, model, field, kwargs):
+        # TODO: may be set file field that will save file`s data to MongoDB
+        if field.max_bytes:
+            kwargs["validators"].append(validators.Length(max=field.max_bytes))
+        return fields.FileField(**kwargs)
+
+    def conv_Dict(self, model, field, kwargs):
+        return fields.TextAreaField(**kwargs)
+
+    def conv_SortedList(self, model, field, kwargs):
+        # TODO: sort functionality, may be need sortable widget
+        return self.conv_List(model, field, kwargs)
+
+    def conv_GeoLocation(self, model, field, kwargs):
+        # TODO: create geo field and widget (also GoogleMaps)
+        return
+
+    def conv_ObjectId(self, model, field, kwargs):
+        return
+
+    def conv_GenericReference(self, model, field, kwargs):
+        return
+
+    # Existing converters
+
     def conv_DateTime(self, model, field, kwargs):
         kwargs['widget'] = form.DateTimePickerWidget()
-        return orm.ModelConverter.conv_DateTime(self, model, field, kwargs)
+        return fields.DateTimeField(**kwargs)
 
-    @orm.converts('ListField')
     def conv_List(self, model, field, kwargs):
         if field.field is None:
             raise ValueError('ListField "%s" must have field specified for model %s' % (field.name, model))
@@ -125,7 +227,7 @@ class CustomModelConverter(orm.ModelConverter):
 
             # TODO: Support AJAX multi-select
             doc_type = field.field.document_type
-            return mongo_fields.ModelSelectMultipleField(model=doc_type, **kwargs)
+            return fields.SelectMultipleField(**kwargs)
 
         # Create converter
         view = self._get_subdocument_config(field.name)
@@ -138,7 +240,6 @@ class CustomModelConverter(orm.ModelConverter):
         unbound_field = converter.convert(model, field.field, {})
         return InlineFieldList(unbound_field, min_entries=0, **kwargs)
 
-    @orm.converts('EmbeddedDocumentField')
     def conv_EmbeddedDocument(self, model, field, kwargs):
         # FormField does not support validators
         kwargs['validators'] = []
@@ -162,7 +263,6 @@ class CustomModelConverter(orm.ModelConverter):
 
         return ModelFormField(field.document_type_obj, view, form_class, form_opts=form_opts, **kwargs)
 
-    @orm.converts('ReferenceField')
     def conv_Reference(self, model, field, kwargs):
         kwargs['allow_blank'] = not field.required
 
@@ -172,15 +272,23 @@ class CustomModelConverter(orm.ModelConverter):
 
         kwargs['widget'] = form.Select2Widget()
 
-        return orm.ModelConverter.conv_Reference(self, model, field, kwargs)
+        return fields.SelectField(**kwargs)
 
-    @orm.converts('FileField')
     def conv_File(self, model, field, kwargs):
         return MongoFileField(**kwargs)
 
-    @orm.converts('ImageField')
     def conv_image(self, model, field, kwargs):
         return MongoImageField(**kwargs)
+
+    def coerce(self, field_type):
+        coercions = {
+            'IntField': int,
+            'BooleanField': bool,
+            'FloatField': float,
+            'DecimalField': decimal.Decimal,
+            'ObjectIdField': ObjectId,
+        }
+        return coercions.get(field_type, str)
 
 
 def get_form(model, converter,
