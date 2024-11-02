@@ -1,5 +1,5 @@
 import flask_admin as admin
-from flask import send_file
+from flask import redirect, url_for
 from flask_admin.babel import gettext
 from flask_admin.base import MenuLink
 from flask_admin.contrib import sqla
@@ -42,7 +42,7 @@ def index():
 
 @app.route("/favicon.ico")
 def favicon():
-    return send_file("static/favicon.ico")
+    return redirect(url_for("static", filename="/favicon.ico"))
 
 
 # Custom filter class
