@@ -633,7 +633,6 @@ Adding a favicon to flask-admin is easy: just save a .ico file and add a /favico
 route to your flask app.
 
     from flask import redirect, url_for
-
     @app.route("/favicon.ico")
     def favicon():
         return redirect(url_for("static", filename="favicon.ico"))
