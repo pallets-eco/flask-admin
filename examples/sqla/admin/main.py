@@ -1,22 +1,16 @@
 import flask_admin as admin
-from flask import send_file
+from flask import redirect, url_for
 from flask_admin.babel import gettext
 from flask_admin.base import MenuLink
 from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import filters
-from flask_admin.contrib.sqla.filters import BaseSQLAFilter
-from flask_admin.contrib.sqla.filters import FilterEqual
+from flask_admin.contrib.sqla.filters import BaseSQLAFilter, FilterEqual
 from flask_admin.theme import Bootstrap4Theme
 from markupsafe import Markup
 from wtforms import validators
 
-from admin import app
-from admin import db
-from admin.models import AVAILABLE_USER_TYPES
-from admin.models import Post
-from admin.models import Tag
-from admin.models import Tree
-from admin.models import User
+from admin import app, db
+from admin.models import AVAILABLE_USER_TYPES, Post, Tag, Tree, User
 
 
 # Flask views
@@ -42,7 +36,7 @@ def index():
 
 @app.route("/favicon.ico")
 def favicon():
-    return send_file("static/favicon.ico")
+    return redirect(url_for("static", filename="/favicon.ico"))
 
 
 # Custom filter class
