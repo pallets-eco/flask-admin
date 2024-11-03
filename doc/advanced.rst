@@ -634,7 +634,6 @@ route to your flask app.
 
     from flask import redirect, url_for
 
-    
     @app.route("/favicon.ico")
     def favicon():
         return redirect(url_for("static", filename="favicon.ico"))
