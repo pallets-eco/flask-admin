@@ -3,6 +3,7 @@ from flask import redirect, url_for
 from flask_admin.babel import gettext
 from flask_admin.base import MenuLink
 from flask_admin.contrib import sqla
+from flask_admin.contrib.sqla import filters
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter, FilterEqual
 from flask_admin.theme import Bootstrap4Theme
 from markupsafe import Markup
