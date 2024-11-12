@@ -20,6 +20,6 @@ Ensure each step in the contributing guide is complete, especially the following
 - Add tests that demonstrate the correct behavior of the change. Tests
   should fail without the change.
 - Add or update relevant docs, in the docs folder and in code.
-- Add an entry in CHANGES.rst summarizing the change and linking to the issue.
+- Add an entry in changelog.rst summarizing the change and linking to the issue.
 - Add `.. versionchanged::` entries in any relevant code docs.
 -->
