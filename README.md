@@ -98,7 +98,9 @@ should be included, feel free to make the changes and submit a *pull-request*.
 
 To build the docs in your local environment, from the project directory:
 
-    tox -e docs-html
+```bash
+tox -e docs
+```
 
 ## Installation
 
