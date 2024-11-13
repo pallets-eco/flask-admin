@@ -104,14 +104,24 @@ To build the docs in your local environment, from the project directory:
 
 To install Flask-Admin, simply:
 
-    pip install flask-admin
+```shell
+pip install flask-admin
+```
 
 Or alternatively, you can download the repository and install manually
 by doing:
 
-    git clone https://github.com/pallets-eco/flask-admin.git
-    cd flask-admin
-    pip install .
+```shell
+git clone https://github.com/pallets-eco/flask-admin.git
+cd flask-admin
+pip install .
+```
+
+If you are contributing a bug fix or a new feature, you can install the app in editable mode:
+
+```shell
+pip install -e .
+```
 
 ## Tests
 
