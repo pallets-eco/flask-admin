@@ -1,6 +1,8 @@
 import os
 import os.path as op
 
+from jinja2 import StrictUndefined
+
 from admin import app
 from admin.data import build_sample_db
 
@@ -13,4 +15,5 @@ if not os.path.exists(database_path):
 
 if __name__ == "__main__":
     # Start app
+    app.jinja_env.undefined = StrictUndefined
     app.run(debug=True)

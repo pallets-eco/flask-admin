@@ -146,6 +146,10 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
         )
     """
 
+    extra_css: list[str] = []
+
+    extra_js: list[str] = []
+
     @property
     def _template_args(self):
         """
