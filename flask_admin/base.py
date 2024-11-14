@@ -147,8 +147,10 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
     """
 
     extra_css: list[str] = []
+    """Extra CSS files to include in the page"""
 
     extra_js: list[str] = []
+    """Extra JavaScript files to include in the page"""
 
     @property
     def _template_args(self):

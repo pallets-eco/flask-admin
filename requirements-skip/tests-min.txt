@@ -102,8 +102,6 @@ mccabe==0.7.0
     #   pylint
 moto==5.0.18
     # via -r tests-min.in
-numpy==1.24.4
-    # via shapely
 packaging==24.1
     # via
     #   geoalchemy2

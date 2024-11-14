@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.0.0a3
+-------
+
+Fixes:
+
+* Jinja templates can now be loaded in StrictUndefined mode.
+
 2.0.0a2
 -------
 
