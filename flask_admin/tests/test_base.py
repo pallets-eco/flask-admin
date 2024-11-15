@@ -22,6 +22,7 @@ def app():
     app.jinja_env.undefined = StrictUndefined
     yield app
 
+
 class MockView(base.BaseView):
     # Various properties
     allow_call = True
@@ -443,6 +444,7 @@ def test_add_links(app, admin):
     data = rv.data.decode("utf-8")
     assert "TestMenuLink1" in data
     assert "TestMenuLink2" in data
+
 
 def check_class_name():
     view = MockView()
