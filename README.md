@@ -98,7 +98,7 @@ should be included, feel free to make the changes and submit a *pull-request*.
 
 To build the docs in your local environment, from the project directory:
 
-    tox -e docs
+    tox -e docs-html
 
 ## Installation
 
@@ -112,11 +112,6 @@ by doing:
     git clone https://github.com/pallets-eco/flask-admin.git
     cd flask-admin
     pip install .
-
-If you are contributing a bug fix or a new feature, you can install the app in editable mode:
-
-
-    pip install -e .
 
 ## Tests
 
