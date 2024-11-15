@@ -167,6 +167,10 @@ nodeenv==1.9.1
     #   -r typing.txt
     #   pre-commit
     #   pyright
+numpy==1.24.4
+    # via
+    #   -r typing.txt
+    #   types-shapely
 packaging==24.1
     # via
     #   -r docs.txt

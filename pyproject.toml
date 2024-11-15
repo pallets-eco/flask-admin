@@ -85,7 +85,7 @@ build-backend = "flit_core.buildapi"
 name = "flask_admin"
 
 [tool.pytest.ini_options]
-testpaths = ["flask_admin/tests"]
+testpaths = ["tests"]
 markers = [
     "flask_babel: requires Flask-Babel to be installed"
 ]
