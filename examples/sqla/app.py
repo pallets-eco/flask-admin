@@ -1,10 +1,9 @@
 import os
 import os.path as op
 
-from jinja2 import StrictUndefined
-
 from admin import app
 from admin.data import build_sample_db
+from jinja2 import StrictUndefined
 
 # Build a sample db on the fly, if one does not exist yet.
 app_dir = op.join(op.realpath(os.path.dirname(__file__)), "admin")
