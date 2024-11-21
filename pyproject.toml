@@ -52,7 +52,7 @@ peewee = [
     "wtf-peewee>=3.0.4"
 ]
 s3 = ["boto3>=1.33"]
-azure-blob-storage = ["azure-storage-blob<=3"]  # TODO: update to v12+
+azure-blob-storage = ["azure-storage-blob>=12.0.0"]
 images = ["pillow>=10.0.0"]
 export = ["tablib>=3.0.0"]
 rediscli = ["redis>=4.0.0"]
@@ -85,7 +85,7 @@ build-backend = "flit_core.buildapi"
 name = "flask_admin"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["flask_admin/tests"]
 markers = [
     "flask_babel: requires Flask-Babel to be installed"
 ]

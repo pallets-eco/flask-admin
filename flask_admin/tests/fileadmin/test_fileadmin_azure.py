@@ -1,5 +1,4 @@
-import os.path as op
-from os import getenv
+import os
 from unittest import SkipTest
 from uuid import uuid4
 
@@ -11,11 +10,11 @@ from .test_fileadmin import Base
 
 
 class TestAzureFileAdmin(Base.FileAdminTests):
-    _test_storage = getenv("AZURE_STORAGE_CONNECTION_STRING")
+    _test_storage = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
 
     @pytest.fixture(autouse=True)
     def setup_and_teardown(self):
-        if not azure.BlockBlobService:
+        if not azure.BlobServiceClient:
             raise SkipTest("AzureFileAdmin dependencies not installed")
 
         self._container_name = f"fileadmin-tests-{uuid4()}"
@@ -23,14 +22,17 @@ class TestAzureFileAdmin(Base.FileAdminTests):
         if not self._test_storage or not self._container_name:
             raise SkipTest("AzureFileAdmin test credentials not set")
 
-        client = azure.BlockBlobService(connection_string=self._test_storage)
+        client = azure.BlobServiceClient.from_connection_string(self._test_storage)
         client.create_container(self._container_name)
-        dummy = op.join(self._test_files_root, "dummy.txt")
-        client.create_blob_from_path(self._container_name, "dummy.txt", dummy)
+        file_name = "dummy.txt"
+        file_path = os.path.join(self._test_files_root, file_name)
+        blob_client = client.get_blob_client(self._container_name, file_name)
+        with open(file_path, "rb") as file:
+            blob_client.upload_blob(file)
 
         yield
 
-        client = azure.BlockBlobService(connection_string=self._test_storage)
+        client = azure.BlobServiceClient.from_connection_string(self._test_storage)
         client.delete_container(self._container_name)
 
     def fileadmin_class(self):

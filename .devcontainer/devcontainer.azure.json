@@ -1,0 +1,14 @@
+// For format details, see https://aka.ms/devcontainer.json.
+{
+	"name": "Python + Azurite (Blob Storage Emulator)",
+	"dockerComposeFile": "docker-compose.yaml",
+	"service": "app",
+	"workspaceFolder": "/workspace",
+	"forwardPorts": [10000, 10001],
+	"portsAttributes": {
+		"10000": {"label": "Azurite Blob Storage Emulator", "onAutoForward": "silent"},
+        "10001": {"label": "Azurite Blob Storage Emulator HTTPS", "onAutoForward": "silent"}
+	},
+	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	"remoteUser": "vscode"
+}
