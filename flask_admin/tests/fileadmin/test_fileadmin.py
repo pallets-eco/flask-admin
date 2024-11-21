@@ -135,7 +135,7 @@ class Base:
 
             # edit
             rv = client.get("/admin/myfileadmin/edit/?path=dummy.txt")
-            assert rv.status_code == 200
+            assert rv.status_code == 200 # 302ing here
             assert "dummy.txt" in rv.data.decode("utf-8")
 
             rv = client.post(

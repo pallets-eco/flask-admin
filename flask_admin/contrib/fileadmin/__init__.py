@@ -1219,6 +1219,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         path = request.args.getlist("path")
         if not path:
+            print("path is empty")
             return redirect(self.get_url(".index_view"))
 
         if len(path) > 1:
@@ -1287,6 +1288,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     form.content.data = content
 
             if error:
+                print(error)
                 return redirect(next_url)
 
         if self.edit_modal and request.args.get("modal"):
