@@ -245,7 +245,6 @@ class AzureStorage:
             raise ValueError("No path provided")
         blob = self.separator.join([path, directory, self._fakedir])
         blob = blob.lstrip(self.separator)
-        # TODO: is this the right way to create a directory?
         self._container_client.upload_blob(blob, b"")
 
     def _copy_blob(self, src, dst):
