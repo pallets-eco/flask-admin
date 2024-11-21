@@ -122,7 +122,7 @@ pip install .
 If you are contributing a bug fix or a new feature, you can install the app in editable mode:
 
 ```shell
-pip install -e .
+pip install -e ".[all]"
 ```
 
 ## Tests
