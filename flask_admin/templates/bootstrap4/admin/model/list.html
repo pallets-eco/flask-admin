@@ -135,9 +135,9 @@
                     <td class="col-{{c}}">
                     {% if admin_view.is_editable(c) %}
                         {% set form = list_forms[get_pk_value(row)] %}
-                        {% if form.csrf_token %}
+                        {% if form.csrf_token is defined and form.csrf_token %}
                         {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c), csrf=form.csrf_token._value()) }}
-                        {% elif csrf_token %}
+                        {% elif csrf_token is defined and csrf_token %}
                         {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c), csrf=csrf_token()) }}
                         {% else %}
                         {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c)) }}

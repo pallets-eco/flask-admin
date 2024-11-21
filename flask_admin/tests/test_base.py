@@ -6,6 +6,7 @@ from flask import Flask
 from flask import request
 from flask import url_for
 from flask.views import MethodView
+from jinja2 import StrictUndefined
 
 from flask_admin import base
 
@@ -18,7 +19,7 @@ def app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False
-
+    app.jinja_env.undefined = StrictUndefined
     yield app
 
 

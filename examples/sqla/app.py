@@ -3,6 +3,7 @@ import os.path as op
 
 from admin import app
 from admin.data import build_sample_db
+from jinja2 import StrictUndefined
 
 # Build a sample db on the fly, if one does not exist yet.
 app_dir = op.join(op.realpath(os.path.dirname(__file__)), "admin")
@@ -13,4 +14,5 @@ if not os.path.exists(database_path):
 
 if __name__ == "__main__":
     # Start app
+    app.jinja_env.undefined = StrictUndefined
     app.run(debug=True)
