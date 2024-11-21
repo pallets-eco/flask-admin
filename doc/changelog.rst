@@ -4,6 +4,8 @@ Changelog
 2.0.0a2
 -------
 
+* Azure Blob Storage SDK has been upgraded from the legacy version (v2) to the latest version (v12). All functionality remains the same, but the dependency is now `azure-storage-blob>=12.0.0`.
+
 Breaking changes:
 
 * Removed support for Python 3.8.
