@@ -9,7 +9,7 @@ services:
         IMAGE: python:3.12
 
     volumes:
-      - ..:/workspace:cached
+      - ../..:/workspace:cached
 
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
