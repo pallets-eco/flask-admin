@@ -1260,6 +1260,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             helpers.flash_errors(form, message="Failed to edit file. %(error)s")
 
             try:
+                print("reading file", full_path)
                 content = self.storage.read_file(full_path)
             except OSError:
                 flash(gettext("Error reading %(name)s.", name=path), "error")

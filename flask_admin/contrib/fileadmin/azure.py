@@ -211,7 +211,10 @@ class AzureStorage:
         path = self._ensure_blob_path(path)
         if path is None:
             raise ValueError("No path provided")
-        blob = self._container_client.get_blob_client(path).download_blob()
+        try:
+            blob = self._container_client.get_blob_client(path).download_blob()
+        except Exception as e:
+            print(f"Error reading file: {path}", e)
         return blob.readall()
 
     def write_file(self, path, content):
