@@ -106,7 +106,7 @@ moto==5.0.18
     # via -r tests-min.in
 msrest==0.7.1
     # via azure-storage-blob
-numpy==2.0.2
+numpy==1.24.4
     # via shapely
 oauthlib==3.2.2
     # via requests-oauthlib
