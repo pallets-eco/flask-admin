@@ -8,8 +8,12 @@ try:
     from azure.storage.blob import BlobSasPermissions
     from azure.storage.blob import BlobServiceClient
     from azure.storage.blob import generate_blob_sas
-except ImportError:
-    BlobServiceClient = None
+except ImportError as e:
+    raise Exception(
+        "Could not import `azure.storage.blob`. "
+        "Enable `azure-blob-storage` integration "
+        "by installing `flask-admin[azure-blob-storage]`"
+    ) from e
 
 from flask import redirect
 
@@ -49,26 +53,12 @@ class AzureStorage:
         :param connection_string:
             Azure Blob Storage Connection String
         """
-
-        if not BlobServiceClient:
-            raise ValueError(
-                "Could not import `azure.storage.blob`. "
-                "Enable `azure-blob-storage` integration "
-                "by installing `flask-admin[azure-blob-storage]`"
-            )
-
         self._container_name = container_name
         self._connection_string = connection_string
         self.__client = None
 
     @property
     def _client(self):
-        if BlobServiceClient is None:
-            raise ValueError(
-                "Could not import `azure.storage.blob`. "
-                "Enable `azure-blob-storage` integration "
-                "by installing `flask-admin[azure-blob-storage]`"
-            )
         if not self.__client:
             self.__client = BlobServiceClient.from_connection_string(
                 self._connection_string

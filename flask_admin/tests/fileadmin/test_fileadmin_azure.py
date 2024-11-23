@@ -4,7 +4,10 @@ from uuid import uuid4
 
 import pytest
 
-from flask_admin.contrib.fileadmin import azure
+try:
+    from flask_admin.contrib.fileadmin import azure
+except ImportError:
+    azure = None
 
 from .test_fileadmin import Base
 
@@ -14,7 +17,7 @@ class TestAzureFileAdmin(Base.FileAdminTests):
 
     @pytest.fixture(autouse=True)
     def setup_and_teardown(self):
-        if not azure.BlobServiceClient:
+        if azure is None:
             raise SkipTest("AzureFileAdmin dependencies not installed")
 
         self._container_name = f"fileadmin-tests-{uuid4()}"
