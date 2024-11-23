@@ -13,10 +13,10 @@ services:
 
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
-    
+
     # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
     network_mode: service:storage
-    
+
   storage:
     container_name: azurite
     image: mcr.microsoft.com/azure-storage/azurite:latest

@@ -3,8 +3,11 @@ from datetime import datetime
 from datetime import timedelta
 
 try:
-    from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions, BlobProperties
     from azure.core.exceptions import ResourceExistsError
+    from azure.storage.blob import BlobProperties
+    from azure.storage.blob import BlobSasPermissions
+    from azure.storage.blob import BlobServiceClient
+    from azure.storage.blob import generate_blob_sas
 except ImportError:
     BlobServiceClient = None
 
@@ -185,7 +188,9 @@ class AzureStorage:
 
         now = datetime.utcnow()
 
-        blob_client = self._client.get_blob_client(container=self._container_name, blob=file_path)
+        blob_client = self._client.get_blob_client(
+            container=self._container_name, blob=file_path
+        )
         url = blob_client.url
         account_name = self._connection_string.split(";")[1].split("=")[1]
 
@@ -193,7 +198,7 @@ class AzureStorage:
         delegation_key_expiry_time = delegation_key_start_time + timedelta(days=1)
         user_delegation_key = self._client.get_user_delegation_key(
             key_start_time=delegation_key_start_time,
-            key_expiry_time=delegation_key_expiry_time
+            key_expiry_time=delegation_key_expiry_time,
         )
         sas = generate_blob_sas(
             account_name=account_name,
@@ -211,10 +216,7 @@ class AzureStorage:
         path = self._ensure_blob_path(path)
         if path is None:
             raise ValueError("No path provided")
-        try:
-            blob = self._container_client.get_blob_client(path).download_blob()
-        except Exception as e:
-            print(f"Error reading file: {path}", e)
+        blob = self._container_client.get_blob_client(path).download_blob()
         return blob.readall()
 
     def write_file(self, path, content):
@@ -231,7 +233,7 @@ class AzureStorage:
 
     def delete_tree(self, directory):
         directory = self._ensure_blob_path(directory)
-        
+
         for blob in self._container_client.list_blobs(directory):
             self._container_client.delete_blob(blob.name)
 

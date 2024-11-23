@@ -1219,7 +1219,6 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         path = request.args.getlist("path")
         if not path:
-            print("path is empty")
             return redirect(self.get_url(".index_view"))
 
         if len(path) > 1:
@@ -1260,7 +1259,6 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             helpers.flash_errors(form, message="Failed to edit file. %(error)s")
 
             try:
-                print("reading file", full_path)
                 content = self.storage.read_file(full_path)
             except OSError:
                 flash(gettext("Error reading %(name)s.", name=path), "error")
@@ -1289,7 +1287,6 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     form.content.data = content
 
             if error:
-                print(error)
                 return redirect(next_url)
 
         if self.edit_modal and request.args.get("modal"):
