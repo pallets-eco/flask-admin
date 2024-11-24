@@ -8,6 +8,7 @@ Fixes:
 
 * Jinja templates can now be loaded in StrictUndefined mode.
 * Remove an implicit dependency on `packaging`
+* Remove `sqlalchemy-citext1 from the optional dependencies. CITEXT supported by SQLAlchemy since 2.0.19.
 
 2.0.0a2
 -------

@@ -36,7 +36,6 @@ sqlalchemy = [
 sqlalchemy-with-utils = [
     "Flask-Admin[sqlalchemy]",
     "sqlalchemy_utils>=0.38.0",
-    "sqlalchemy-citext>=1.8.0",
     "colour>=0.1.5",
     "email_validator>=2",
     "arrow>=0.13.0",
