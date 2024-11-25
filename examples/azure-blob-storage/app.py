@@ -8,9 +8,11 @@ from flask_babel import Babel
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
 
+
 @app.route("/")
 def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
+
 
 admin = Admin(app)
 babel = Babel(app)
