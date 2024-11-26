@@ -42,15 +42,15 @@ class AzureStorage:
     _send_file_validity = timedelta(hours=1)
     separator = "/"
 
-    def __init__(self, blob_service_client, container_name):
+    def __init__(self, blob_service_client: BlobServiceClient, container_name: str):
         """
         Constructor
 
+        :param blob_service_client:
+            BlobServiceClient for the Azure Blob Storage account
+
         :param container_name:
             Name of the container that the files are on.
-
-        :param connection_string:
-            Azure Blob Storage Connection String
         """
         self._client = blob_service_client
         self._container_name = container_name
@@ -258,8 +258,8 @@ class AzureFileAdmin(BaseFileAdmin):
 
     def __init__(
         self,
-        blob_service_client: BlobServiceClient,
-        container_name: str,
+        blob_service_client,
+        container_name,
         *args,
         **kwargs,
     ):
