@@ -4,10 +4,9 @@ Changelog
 2.0.0a2
 -------
 
-* Azure Blob Storage SDK has been upgraded from the legacy version (v2) to the latest version (v12). All functionality remains the same, but the dependency is now `azure-storage-blob>=12.0.0`.
-
 Breaking changes:
 
+* Azure Blob Storage SDK has been upgraded from the legacy version (v2) to the latest version (v12). AzureFileAdmin now accept `blob_service_client` rather than `connection_string` to give more flexibility with connection types.
 * Removed support for Python 3.8.
 * Use of the `boto` library has been replaced by `boto3`. S3FileAdmin and S3Storage now accept an `s3_client` parameter taking a `boto3.client('s3')` instance rather than `aws_access_key_id`, `aws_secret_access_key`, and `region` parameters.
 
