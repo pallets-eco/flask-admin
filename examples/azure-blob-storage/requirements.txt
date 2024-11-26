@@ -1,1 +1,2 @@
 ../..[azure-blob-storage]
+azure-identity

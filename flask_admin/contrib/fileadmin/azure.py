@@ -1,3 +1,4 @@
+import io
 import os.path as op
 from datetime import datetime
 from datetime import timedelta
@@ -5,9 +6,7 @@ from datetime import timedelta
 try:
     from azure.core.exceptions import ResourceExistsError
     from azure.storage.blob import BlobProperties
-    from azure.storage.blob import BlobSasPermissions
     from azure.storage.blob import BlobServiceClient
-    from azure.storage.blob import generate_blob_sas
 except ImportError as e:
     raise Exception(
         "Could not import `azure.storage.blob`. "
@@ -15,7 +14,7 @@ except ImportError as e:
         "by installing `flask-admin[azure-blob-storage]`"
     ) from e
 
-from flask import redirect
+import flask
 
 from . import BaseFileAdmin
 
@@ -43,7 +42,7 @@ class AzureStorage:
     _send_file_validity = timedelta(hours=1)
     separator = "/"
 
-    def __init__(self, container_name, connection_string):
+    def __init__(self, blob_service_client, container_name):
         """
         Constructor
 
@@ -53,21 +52,12 @@ class AzureStorage:
         :param connection_string:
             Azure Blob Storage Connection String
         """
+        self._client = blob_service_client
         self._container_name = container_name
-        self._connection_string = connection_string
-        self.__client = None
-
-    @property
-    def _client(self):
-        if not self.__client:
-            self.__client = BlobServiceClient.from_connection_string(
-                self._connection_string
-            )
-            try:
-                self.__client.create_container(self._container_name)
-            except ResourceExistsError:
-                pass
-        return self.__client
+        try:
+            self._client.create_container(self._container_name)
+        except ResourceExistsError:
+            pass
 
     @property
     def _container_client(self):
@@ -169,38 +159,19 @@ class AzureStorage:
         return breadcrumbs
 
     def send_file(self, file_path):
-        file_path = self._ensure_blob_path(file_path)
-        if file_path is None:
-            raise ValueError()
-        container_client = self._client.get_container_client(self._container_name)
-        if len(list(container_client.list_blobs(file_path))) != 1:
-            raise ValueError()
-
-        now = datetime.utcnow()
-
-        blob_client = self._client.get_blob_client(
-            container=self._container_name, blob=file_path
+        path = self._ensure_blob_path(file_path)
+        if path is None:
+            raise ValueError("No path provided")
+        blob = self._container_client.get_blob_client(path).download_blob()
+        if not blob.properties or not blob.properties.has_key("content_settings"):
+            raise ValueError("Blob has no properties")
+        mime_type = blob.properties["content_settings"]["content_type"]
+        blob_file = io.BytesIO()
+        blob.readinto(blob_file)
+        blob_file.seek(0)
+        return flask.send_file(
+            blob_file, mimetype=mime_type, as_attachment=False, download_name=path
         )
-        url = blob_client.url
-        account_name = self._connection_string.split(";")[1].split("=")[1]
-
-        delegation_key_start_time = now
-        delegation_key_expiry_time = delegation_key_start_time + timedelta(days=1)
-        user_delegation_key = self._client.get_user_delegation_key(
-            key_start_time=delegation_key_start_time,
-            key_expiry_time=delegation_key_expiry_time,
-        )
-        sas = generate_blob_sas(
-            account_name=account_name,
-            container_name=self._container_name,
-            blob_name=file_path,
-            user_delegation_key=user_delegation_key,
-            permission=BlobSasPermissions(read=True),
-            expiry=now + self._send_file_validity,
-            start=now - self._send_file_lookback,
-        )
-
-        return redirect(f"{url}?{sas}")
 
     def read_file(self, path):
         path = self._ensure_blob_path(path)
@@ -243,9 +214,9 @@ class AzureStorage:
         self._container_client.upload_blob(blob, b"")
 
     def _copy_blob(self, src, dst):
-        src_client = self._container_client.get_blob_client(src)
-        dst_blob = self._container_client.get_blob_client(dst)
-        dst_blob.start_copy_from_url(src_client.url, requires_sync=True)
+        src_blob_client = self._container_client.get_blob_client(src)
+        dst_blob_client = self._container_client.get_blob_client(dst)
+        dst_blob_client.start_copy_from_url(src_blob_client.url, requires_sync=True)
 
     def _rename_file(self, src, dst):
         self._copy_blob(src, dst)
@@ -276,15 +247,21 @@ class AzureFileAdmin(BaseFileAdmin):
             Azure Blob Storage Connection String
 
     Sample usage::
-
+        from azure.storage.blob import BlobServiceClient
         from flask_admin import Admin
         from flask_admin.contrib.fileadmin.azure import AzureFileAdmin
 
         admin = Admin()
-
-        admin.add_view(AzureFileAdmin('files_container', 'my-connection-string')
+        client = BlobServiceClient.from_connection_string("my-connection-string")
+        admin.add_view(AzureFileAdmin(client, 'files_container')
     """
 
-    def __init__(self, container_name, connection_string, *args, **kwargs):
-        storage = AzureStorage(container_name, connection_string)
+    def __init__(
+        self,
+        blob_service_client: BlobServiceClient,
+        container_name: str,
+        *args,
+        **kwargs,
+    ):
+        storage = AzureStorage(blob_service_client, container_name)
         super().__init__(*args, storage=storage, **kwargs)
