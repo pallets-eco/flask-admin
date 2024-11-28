@@ -170,6 +170,7 @@ Defining a `security_context_processor` function will take care of this for you:
         return dict(
             admin_base_template=admin.theme.base_template,
             admin_view=admin.index_view,
+            theme=admin.theme,
             h=admin_helpers,
         )
 
