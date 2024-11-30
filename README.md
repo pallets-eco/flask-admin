@@ -130,11 +130,13 @@ You should see output similar to:
 
     OK
 
-**NOTE!** For all the tests to pass successfully, you\'ll need Postgres (with
-the postgis and hstore extension) & MongoDB to be running locally. You'll
-also need *libgeos* available.
+**NOTE!** For all the tests to pass successfully, you\'ll need several services running locally:
+Postgres (with the postgis and hstore extension), MongoDB, and Azurite.
+You'll also need *libgeos* available.
+See tests.yaml for Docker configuration and follow service-specific setup below.
 
-For Postgres:
+## Setting up local Postgres for tests
+
 ```bash
 psql postgres
 > CREATE DATABASE flask_admin_test;
@@ -143,6 +145,7 @@ psql postgres
 > CREATE EXTENSION postgis;
 > CREATE EXTENSION hstore;
 ```
+
 If you\'re using Homebrew on MacOS, you might need this:
 
 ```bash
@@ -153,6 +156,16 @@ brew install geos
 # Set up a PostgreSQL user
 createuser -s postgresql
 brew services restart postgresql
+```
+
+## Setting up Azure Blob Storage emulator for tests
+
+1. Run the [Azurite emulator](https://learn.microsoft.com/azure/storage/common/storage-use-azurite?tabs=visual-studio%2Cblob-storage)
+
+2. Set the connection string for the emulator:
+
+```bash
+export AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
 ```
 
 You can also run the tests on multiple environments using *tox*.
