@@ -10,7 +10,7 @@ beautifulsoup4==4.12.3
     # via -r tests.in
 boto3==1.35.49
     # via moto
-botocore==1.35.49
+botocore==1.35.71
     # via
     #   -r tests.in
     #   boto3
@@ -52,7 +52,7 @@ mccabe==0.7.0
     # via
     #   flake8
     #   pylint
-moto==5.0.18
+moto==5.0.21
     # via -r tests.in
 packaging==24.1
     # via pytest
