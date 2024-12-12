@@ -87,7 +87,7 @@ class AzureStorage:
 
         path_parts = path.split(self.separator) if path else []
         num_path_parts = len(path_parts)
-        
+
         files = []
         directories = []
 
@@ -116,7 +116,7 @@ class AzureStorage:
                 size = 0
                 last_modified = self._get_blob_last_modified(blob)
                 directories.append((name, rel_path, is_dir, size, last_modified))
-        
+
         return directories + files
 
     def is_dir(self, path):
