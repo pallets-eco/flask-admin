@@ -87,8 +87,9 @@ class AzureStorage:
 
         path_parts = path.split(self.separator) if path else []
         num_path_parts = len(path_parts)
-        folders = set()
+        
         files = []
+        directories = []
 
         container_client = self._client.get_container_client(self._container_name)
 
@@ -107,19 +108,16 @@ class AzureStorage:
                 files.append((name, rel_path, is_dir, size, last_modified))
             else:
                 next_level_folder = blob_path_parts[: num_path_parts + 1]
-                folder_name = self.separator.join(next_level_folder)
-                folders.add(folder_name)
-
-        folders.discard(directory)
-        for folder in folders:
-            name = folder.split(self.separator)[-1]
-            rel_path = folder
-            is_dir = True
-            size = 0
-            last_modified = 0
-            files.append((name, rel_path, is_dir, size, last_modified))
-
-        return files
+                rel_path = self.separator.join(next_level_folder)
+                name = rel_path.split(self.separator)[-1]
+                if directory and rel_path == directory:
+                    continue
+                is_dir = True
+                size = 0
+                last_modified = self._get_blob_last_modified(blob)
+                directories.append((name, rel_path, is_dir, size, last_modified))
+        
+        return directories + files
 
     def is_dir(self, path):
         path = self._ensure_blob_path(path)
@@ -170,7 +168,7 @@ class AzureStorage:
         blob.readinto(blob_file)
         blob_file.seek(0)
         return flask.send_file(
-            blob_file, mimetype=mime_type, as_attachment=False, download_name=path
+            blob_file, mimetype=mime_type, as_attachment=True, download_name=path
         )
 
     def read_file(self, path):
