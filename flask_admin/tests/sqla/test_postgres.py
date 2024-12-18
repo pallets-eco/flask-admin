@@ -1,4 +1,8 @@
-from citext import CIText
+try:
+    from citext import CIText as CITEXT
+except ImportError:
+    # SQLAlchemy >= 2.0.7, although there is an issue until 2.0.19
+    from sqlalchemy.dialects.postgresql import CITEXT  # type: ignore[attr-defined]
 from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import HSTORE
 from sqlalchemy.dialects.postgresql import JSON
@@ -94,7 +98,7 @@ def test_citext(app, postgres_db, postgres_admin):
             id = postgres_db.Column(
                 postgres_db.Integer, primary_key=True, autoincrement=True
             )
-            citext_test = postgres_db.Column(CIText)
+            citext_test = postgres_db.Column(CITEXT)
 
         with postgres_db.engine.begin() as connection:
             connection.execute(text("CREATE EXTENSION IF NOT EXISTS citext"))
