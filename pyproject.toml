@@ -1,6 +1,6 @@
 [project]
 name = "Flask-Admin"
-version = "1.6.1"
+version = "2.0.0a2"
 description = "Simple and extensible admin interface framework for Flask"
 readme = "README.md"
 license = { file = "LICENSE.txt" }
@@ -14,13 +14,12 @@ classifiers = [
     'Operating System :: OS Independent',
     'Programming Language :: Python',
     'Topic :: Software Development :: Libraries :: Python Modules',
-    'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     "flask>=2.0",
     "jinja2>=3.0",
@@ -52,7 +51,7 @@ peewee = [
     "peewee>=3.14.0",
     "wtf-peewee>=3.0.4"
 ]
-s3 = ["boto"]  # TODO: migrate to boto3
+s3 = ["boto3>=1.33"]
 azure-blob-storage = ["azure-storage-blob<=3"]  # TODO: update to v12+
 images = ["pillow>=10.0.0"]
 export = ["tablib>=3.0.0"]
@@ -117,20 +116,11 @@ source = ["flask_admin", "tests"]
 source = ["flask_admin", "*/site-packages"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 files = ["flask_admin"]
 show_error_codes = true
 pretty = true
 strict = true
-
-# Start off with these
-warn_unused_configs = false
-warn_redundant_casts = false
-warn_unused_ignores = false
-
-# Getting these passing should be easy
-strict_equality = false
-strict_concatenate = false
 
 # Strongly recommend enabling this one as soon as you can
 check_untyped_defs = false
@@ -174,7 +164,7 @@ module = [
 ignore_missing_imports = true
 
 [tool.pyright]
-pythonVersion = "3.8"
+pythonVersion = "3.9"
 include = ["flask_admin", "tests"]
 typeCheckingMode = "basic"
 

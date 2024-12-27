@@ -90,7 +90,7 @@ Go ahead and add your own logic to the locale selector function. The application
 a user profile, cookie, session, etc. It can also use the `Accept-Language`
 header to make the selection automatically.
 
-If the built-in translations are not enough, look at the `Flask-Babel documentation <https://pythonhosted.org/Flask-Babel/>`_
+If the built-in translations are not enough, look at the `Flask-Babel documentation <https://python-babel.github.io/flask-babel/>`_
 to see how you can add your own.
 
 Using with Flask in `host_matching` mode
@@ -162,14 +162,14 @@ can use it by adding a FileAdmin view to your app::
 
 
 FileAdmin also has out-of-the-box support for managing files located on a Amazon Simple Storage Service
-bucket. To add it to your app::
+bucket using a `boto3 client <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html#boto3.session.Session.client>`_. To add it to your app::
 
     from flask_admin import Admin
     from flask_admin.contrib.fileadmin.s3 import S3FileAdmin
 
     admin = Admin()
 
-    admin.add_view(S3FileAdmin('files_bucket', 'us-east-1', 'key_id', 'secret_key')
+    admin.add_view(S3FileAdmin(boto3.client('s3'), 'files_bucket'))
 
 You can disable uploads, disable file deletion, restrict file uploads to certain types, etc.
 Check :mod:`flask_admin.contrib.fileadmin` in the API documentation for more details.
@@ -207,7 +207,7 @@ file / image uploads that need to be tied to a field in your model.
 WYSIWIG Text Fields
 *******************
 To handle complicated text content, you can use
-`CKEditor <http://ckeditor.com/>`_ by subclassing some of the built-in WTForms
+`CKEditor <https://ckeditor.com/>`_ by subclassing some of the built-in WTForms
 classes as follows::
 
     from wtforms import TextAreaField
@@ -241,7 +241,7 @@ Image handling also requires you to have `Pillow <https://pypi.python.org/pypi/P
 installed if you need to do any processing on the image files.
 
 Have a look at the example at
-https://github.com/flask-admin/Flask-Admin/tree/master/examples/forms-files-images.
+https://github.com/pallets-eco/flask-admin/tree/master/examples/forms-files-images.
 
 If you just want to manage static files in a directory, without tying them to a database model, then
 use the :ref:`File-Admin<file-admin>` plug-in.
@@ -260,9 +260,9 @@ Some notable features include:
    with map data from `Mapbox <https://www.mapbox.com>`_.
  - Geographic information, including points, lines and polygons, can be edited
    interactively using `Leaflet.Draw <https://github.com/Leaflet/Leaflet.draw>`_.
- - Graceful fallback: `GeoJSON <http://geojson.org/>`_ data can be edited in a ``<textarea>``, if the
+ - Graceful fallback: `GeoJSON <https://geojson.org/>`_ data can be edited in a ``<textarea>``, if the
    user has turned off Javascript.
- - Works with a `Geometry <https://geoalchemy-2.readthedocs.io/en/latest/types.html#geoalchemy2.types.Geometry>`_ SQL field that is integrated with `Shapely <http://toblerity.org/shapely/>`_ objects.
+ - Works with a `Geometry <https://geoalchemy-2.readthedocs.io/en/latest/types.html#geoalchemy2.types.Geometry>`_ SQL field that is integrated with `Shapely <https://shapely.readthedocs.io/>`_ objects.
 
 To get started, define some fields on your model using GeoAlchemy's *Geometry*
 field. Next, add model views to your interface using the ModelView class
@@ -283,7 +283,7 @@ from the GeoAlchemy backend, rather than the usual SQLAlchemy backend::
 Some of the Geometry field types that are available include:
 "POINT", "MULTIPOINT", "POLYGON", "MULTIPOLYGON", "LINESTRING" and "MULTILINESTRING".
 
-Have a look at https://github.com/flask-admin/flask-admin/tree/master/examples/geo_alchemy
+Have a look at https://github.com/pallets-eco/flask-admin/tree/master/examples/geo_alchemy
 to get started.
 
 Display map widgets
@@ -455,14 +455,14 @@ Features:
  - Inline editing of related models;
 
 In order to use peewee integration, you need to install two additional Python
-packages: `peewee <http://docs.peewee-orm.com/>`_ and `wtf-peewee <https://github.com/coleifer/wtf-peewee/>`_.
+packages: `peewee <https://docs.peewee-orm.com/>`_ and `wtf-peewee <https://github.com/coleifer/wtf-peewee/>`_.
 
 Known issues:
 
  - Many-to-Many model relations are not supported: there's no built-in way to express M2M relation in Peewee
 
 For more, check the :class:`~flask_admin.contrib.peewee` API documentation. Or look at
-the Peewee example at https://github.com/flask-admin/flask-admin/tree/master/examples/peewee.
+the Peewee example at https://github.com/pallets-eco/flask-admin/tree/master/examples/peewee.
 
 PyMongo
 *******
@@ -492,7 +492,7 @@ This is minimal PyMongo view::
 On top of that you can add sortable columns, filters, text search, etc.
 
 For more, check the :class:`~flask_admin.contrib.pymongo` API documentation. Or look at
-the pymongo example at https://github.com/flask-admin/flask-admin/tree/master/examples/pymongo.
+the pymongo example at https://github.com/pallets-eco/flask-admin/tree/master/examples/pymongo.
 
 Migrating From Django
 ---------------------
@@ -517,7 +517,7 @@ applications out there on the web.
 
 Flask-Admin follows this same design philosophy. So even though it provides you with several tools for getting up &
 running quickly, it will be up to you, as a developer, to tell Flask-Admin what should be displayed and how. Even
-though it is easy to get started with a simple `CRUD <http://en.wikipedia.org/wiki/Create,_read,_update_and_delete>`_
+though it is easy to get started with a simple `CRUD <https://en.wikipedia.org/wiki/Create,_read,_update_and_delete>`_
 interface for each model in your application, Flask-Admin doesn't fix you to this approach, and you are free to
 define other ways of interacting with some, or all, of your models.
 
@@ -626,3 +626,13 @@ This targets SQLAlchemy specifically.
 Unlike the previous setting, this will specifically only affect the behaviour of
 IntegrityErrors. These usually come from violations on constraints in the database,
 for example trying to insert a row with a primary key that already exists.
+
+Adding a favicon to the admin page
+************************************
+Adding a favicon to flask-admin is easy: just save a .ico file and add a /favicon.ico
+route to your flask app.
+
+    from flask import redirect, url_for
+    @app.route("/favicon.ico")
+    def favicon():
+        return redirect(url_for("static", filename="favicon.ico"))

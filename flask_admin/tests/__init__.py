@@ -11,7 +11,7 @@ def flask_babel_test_decorator(fn):
     fn = pytest.mark.flask_babel(fn)
 
     try:
-        import flask_babel
+        import flask_babel  # noqa: F401
     except ImportError:
         return pytest.mark.xfail(
             reason="flask-babel is not installed; translations unavailable"

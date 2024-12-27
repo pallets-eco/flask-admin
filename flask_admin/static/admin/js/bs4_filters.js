@@ -22,11 +22,10 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
     function removeFilter() {
         $(this).closest('tr').remove();
         if($('.filters tr').length == 0) {
-            $('button', $root).hide();
-            $('a[class=btn]', $root).hide();
+            $('button', $root).addClass('d-none');
             $('.filters tbody').remove();
         } else {
-            $('button', $root).show();
+            $('button', $root).removeClass('d-none');
         }
 
         return false;
@@ -42,7 +41,7 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
         var $field = createFilterInput($inputContainer, null, selectedFilter);
         styleFilterInput(selectedFilter, $field);
 
-        $('button', $root).show();
+        $('button', $root).removeClass('d-none');
     }
 
     // generate HTML for filter input - allows changing filter input type to one with options or tags
@@ -68,6 +67,11 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
             $field.val(filterValue);
         }
         inputContainer.replaceWith($('<td/>').append($field));
+
+        // show "Apply Filter" button when filter input is changed
+        $field.on('input change', function() {
+            $('button', $root).removeClass('d-none');
+        });
 
         return $field;
     }
@@ -153,7 +157,7 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
 
         addFilter(name, filterGroups[name], false, null);
 
-        $('button', $root).show();
+        $('button', $root).removeClass('d-none');
     });
 
     // on page load - add active filters
@@ -166,7 +170,7 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
 
     // show "Apply Filter" button when filter input is changed
     $('.filter-val', $root).on('input change', function() {
-        $('button', $root).show();
+        $('button', $root).removeClass('d-none');
     });
 
     $('.remove-filter', $root).click(removeFilter);

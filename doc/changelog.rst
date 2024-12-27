@@ -1,6 +1,26 @@
 Changelog
 =========
 
+2.0.0a2
+-------
+
+Breaking changes:
+
+* Removed support for Python 3.8.
+* Use of the `boto` library has been replaced by `boto3`. S3FileAdmin and S3Storage now accept an `s3_client` parameter taking a `boto3.client('s3')` instance rather than `aws_access_key_id`, `aws_secret_access_key`, and `region` parameters.
+
+2.0.0a1
+-------
+
+Fixes:
+
+* Fixes compatibility with WTForms 3.2+.
+* The `Apply` button for filters will show/hide correctly again
+* Fix `translations_path` attribute when Flask-Admin is used with Flask-Babel
+* Some translation updates.
+* Date fields no longer override `widget` if set in `form_args`
+* “Save and Continue Editing” button no longer discards the “return URL” (allowing to retain filters when switching back to the list)
+
 2.0.0a0
 -------
 

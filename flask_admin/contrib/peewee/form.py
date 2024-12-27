@@ -1,32 +1,44 @@
+from peewee import CharField
+from peewee import DateField
+from peewee import DateTimeField
+from peewee import ForeignKeyField
+from peewee import PrimaryKeyField
+from peewee import TimeField
 from wtforms import fields
-
-from peewee import (CharField, DateTimeField, DateField, TimeField,
-                    PrimaryKeyField, ForeignKeyField)
 
 try:
     from peewee import BaseModel  # type: ignore[attr-defined]
 except ImportError:
     from peewee import ModelBase as BaseModel
 
-from wtfpeewee.orm import ModelConverter, model_form
+from wtfpeewee.orm import model_form
+from wtfpeewee.orm import ModelConverter
 
 from flask_admin import form
-from flask_admin._compat import iteritems, itervalues
-from flask_admin.model.form import InlineFormAdmin, InlineModelConverterBase
-from flask_admin.model.fields import InlineModelFormField, InlineFieldList, AjaxSelectField
+from flask_admin._compat import iteritems
+from flask_admin._compat import itervalues
+from flask_admin.model.fields import AjaxSelectField
+from flask_admin.model.fields import InlineFieldList
+from flask_admin.model.fields import InlineModelFormField
+from flask_admin.model.form import InlineFormAdmin
+from flask_admin.model.form import InlineModelConverterBase
 
-from .tools import get_primary_key, get_meta_fields
 from .ajax import create_ajax_loader
+from .tools import get_meta_fields
+from .tools import get_primary_key
+
 try:
-    from playhouse.postgres_ext import JSONField, BinaryJSONField
+    from playhouse.postgres_ext import BinaryJSONField
+    from playhouse.postgres_ext import JSONField
+
     pg_ext = True
-except:
+except ImportError:
     pg_ext = False
 
 
 class InlineModelFormList(InlineFieldList):
     """
-        Customized inline model form list field.
+    Customized inline model form list field.
     """
 
     form_field_type = InlineModelFormField
@@ -41,7 +53,7 @@ class InlineModelFormList(InlineFieldList):
         self.inline_view = inline_view
 
         self._pk = get_primary_key(model)
-        super(InlineModelFormList, self).__init__(self.form_field_type(form, self._pk), **kwargs)
+        super().__init__(self.form_field_type(form, self._pk), **kwargs)
 
     def display_row_controls(self, field):
         return field.get_pk() is not None
@@ -57,10 +69,10 @@ class InlineModelFormList(InlineFieldList):
         in in .contribute() below
 
         For reference, .process() introduced in:
-        https://github.com/flask-admin/flask-admin/commit/2845e4b28cb40b25e2bf544b327f6202dc7e5709
+        https://github.com/pallets-eco/flask-admin/commit/2845e4b28cb40b25e2bf544b327f6202dc7e5709
 
         Fixed, brokenly I think, in:
-        https://github.com/flask-admin/flask-admin/commit/4383eef3ce7eb01878f086928f8773adb9de79f8#diff-f87e7cd76fb9bc48c8681b24f238fb13R30
+        https://github.com/pallets-eco/flask-admin/commit/4383eef3ce7eb01878f086928f8773adb9de79f8#diff-f87e7cd76fb9bc48c8681b24f238fb13R30
     """
 
     def populate_obj(self, obj, name):
@@ -99,13 +111,13 @@ class InlineModelFormList(InlineFieldList):
 
             # Recurse, to save multi-level nested inlines
             for f in itervalues(field.form._fields):
-                if f.type == 'InlineModelFormList':
+                if f.type == "InlineModelFormList":
                     f.save_related(model)
 
 
 class CustomModelConverter(ModelConverter):
     def __init__(self, view, additional=None):
-        super(CustomModelConverter, self).__init__(additional)
+        super().__init__(additional)
         self.view = view
 
         # @todo: This really should be done within wtfpeewee
@@ -120,29 +132,29 @@ class CustomModelConverter(ModelConverter):
             self.converters[JSONField] = self.handle_json
             self.converters[BinaryJSONField] = self.handle_json
 
-        self.overrides = getattr(self.view, 'form_overrides', None) or {}
+        self.overrides = getattr(self.view, "form_overrides", None) or {}
 
     def handle_foreign_key(self, model, field, **kwargs):
-        loader = getattr(self.view, '_form_ajax_refs', {}).get(field.name)
+        loader = getattr(self.view, "_form_ajax_refs", {}).get(field.name)
 
         if loader:
             if field.null:
-                kwargs['allow_blank'] = True
+                kwargs["allow_blank"] = True
 
             return field.name, AjaxSelectField(loader, **kwargs)
 
-        return super(CustomModelConverter, self).handle_foreign_key(model, field, **kwargs)
+        return super().handle_foreign_key(model, field, **kwargs)
 
     def handle_pk(self, model, field, **kwargs):
-        kwargs['validators'] = []
+        kwargs["validators"] = []
         return field.name, fields.HiddenField(**kwargs)
 
     def handle_date(self, model, field, **kwargs):
-        kwargs['widget'] = form.DatePickerWidget()
+        kwargs["widget"] = form.DatePickerWidget()
         return field.name, fields.DateField(**kwargs)
 
     def handle_datetime(self, model, field, **kwargs):
-        kwargs['widget'] = form.DateTimePickerWidget()
+        kwargs["widget"] = form.DateTimePickerWidget()
         return field.name, fields.DateTimeField(**kwargs)
 
     def handle_time(self, model, field, **kwargs):
@@ -152,23 +164,28 @@ class CustomModelConverter(ModelConverter):
         return field.name, form.JSONField(**kwargs)
 
 
-def get_form(model, converter,
-             base_class=form.BaseForm,
-             only=None,
-             exclude=None,
-             field_args=None,
-             allow_pk=False,
-             extra_fields=None):
+def get_form(
+    model,
+    converter,
+    base_class=form.BaseForm,
+    only=None,
+    exclude=None,
+    field_args=None,
+    allow_pk=False,
+    extra_fields=None,
+):
     """
-        Create form from peewee model and contribute extra fields, if necessary
+    Create form from peewee model and contribute extra fields, if necessary
     """
-    result = model_form(model,
-                        base_class=base_class,
-                        only=only,
-                        exclude=exclude,
-                        field_args=field_args,
-                        allow_pk=allow_pk,
-                        converter=converter)
+    result = model_form(
+        model,
+        base_class=base_class,
+        only=only,
+        exclude=exclude,
+        field_args=field_args,
+        allow_pk=allow_pk,
+        converter=converter,
+    )
 
     if extra_fields:
         for name, field in iteritems(extra_fields):
@@ -179,7 +196,7 @@ def get_form(model, converter,
 
 class InlineModelConverter(InlineModelConverterBase):
     """
-        Inline model form helper.
+    Inline model form helper.
     """
 
     inline_field_list_type = InlineModelFormList
@@ -191,20 +208,20 @@ class InlineModelConverter(InlineModelConverterBase):
     """
 
     def get_info(self, p):
-        info = super(InlineModelConverter, self).get_info(p)
+        info = super().get_info(p)
 
         if info is None:
             if isinstance(p, BaseModel):
                 info = InlineFormAdmin(p)
             else:
-                model = getattr(p, 'model', None)
+                model = getattr(p, "model", None)
                 if model is None:
-                    raise Exception('Unknown inline model admin: %s' % repr(p))
+                    raise Exception(f"Unknown inline model admin: {repr(p)}")
 
                 attrs = dict()
 
                 for attr in dir(p):
-                    if not attr.startswith('_') and attr != 'model':
+                    if not attr.startswith("_") and attr != "model":
                         attrs[attr] = getattr(p, attr)
 
                 info = InlineFormAdmin(model, **attrs)
@@ -215,13 +232,13 @@ class InlineModelConverter(InlineModelConverterBase):
         return info
 
     def process_ajax_refs(self, info):
-        refs = getattr(info, 'form_ajax_refs', None)
+        refs = getattr(info, "form_ajax_refs", None)
 
         result = {}
 
         if refs:
             for name, opts in iteritems(refs):
-                new_name = '%s.%s' % (info.model.__name__.lower(), name)
+                new_name = f"{info.model.__name__.lower()}.{name}"
 
                 loader = None
                 if isinstance(opts, (list, tuple)):
@@ -248,7 +265,7 @@ class InlineModelConverter(InlineModelConverterBase):
                     reverse_field = field
                     break
         else:
-            raise Exception('Cannot find reverse relation for model %s' % info.model)
+            raise Exception(f"Cannot find reverse relation for model {info.model}")
 
         # Remove reverse property from the list
         ignore = [reverse_field.name]
@@ -262,13 +279,15 @@ class InlineModelConverter(InlineModelConverterBase):
         child_form = info.get_form()
 
         if child_form is None:
-            child_form = model_form(info.model,
-                                    base_class=form.BaseForm,
-                                    only=info.form_columns,
-                                    exclude=exclude,
-                                    field_args=info.form_args,
-                                    allow_pk=True,
-                                    converter=converter)
+            child_form = model_form(
+                info.model,
+                base_class=form.BaseForm,
+                only=info.form_columns,
+                exclude=exclude,
+                field_args=info.form_args,
+                allow_pk=True,
+                converter=converter,
+            )
 
         try:
             prop_name = reverse_field.related_name
@@ -277,18 +296,22 @@ class InlineModelConverter(InlineModelConverterBase):
 
         label = self.get_label(info, prop_name)
 
-        setattr(form_class,
-                prop_name,
-                self.inline_field_list_type(child_form,
-                                            info.model,
-                                            reverse_field.name,
-                                            info,
-                                            label=label or info.model.__name__))
+        setattr(
+            form_class,
+            prop_name,
+            self.inline_field_list_type(
+                child_form,
+                info.model,
+                reverse_field.name,
+                info,
+                label=label or info.model.__name__,
+            ),
+        )
 
         return form_class
 
 
 def save_inline(form, model):
     for f in itervalues(form._fields):
-        if f.type == 'InlineModelFormList':
+        if f.type == "InlineModelFormList":
             f.save_related(model)

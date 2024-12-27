@@ -10,10 +10,10 @@ def lng(pt):
 
 
 class LeafletWidget(TextArea):
-    data_role = 'leaflet'
+    data_role = "leaflet"
 
     """
-        `Leaflet <http://leafletjs.com/>`_ styled map widget. Inherits from
+        `Leaflet <https://leafletjs.com>`_ styled map widget. Inherits from
         `TextArea` so that geographic data can be stored via the <textarea>
         (and edited there if the user's browser does not have Javascript).
 
@@ -21,10 +21,19 @@ class LeafletWidget(TextArea):
         work. You also need leaflet.draw.js (and its stylesheet) for it to be
         editable.
     """
+
     def __init__(
-            self, width='auto', height=350, center=None,
-            zoom=None, min_zoom=None, max_zoom=None, max_bounds=None,
-            tile_layer_url=None, tile_layer_attribution=None):
+        self,
+        width="auto",
+        height=350,
+        center=None,
+        zoom=None,
+        min_zoom=None,
+        max_zoom=None,
+        max_bounds=None,
+        tile_layer_url=None,
+        tile_layer_attribution=None,
+    ):
         self.width = width
         self.height = height
         self.center = center
@@ -36,15 +45,15 @@ class LeafletWidget(TextArea):
         self.tile_layer_attribution = tile_layer_attribution
 
     def __call__(self, field, **kwargs):
-        kwargs.setdefault('data-role', self.data_role)
+        kwargs.setdefault("data-role", self.data_role)
         gtype = getattr(field, "geometry_type", "GEOMETRY")
-        kwargs.setdefault('data-geometry-type', gtype)
+        kwargs.setdefault("data-geometry-type", gtype)
 
         # set optional values from constructor
         if self.tile_layer_url:
-            kwargs['data-tile-layer-url'] = self.tile_layer_url
+            kwargs["data-tile-layer-url"] = self.tile_layer_url
         if self.tile_layer_attribution:
-            kwargs['data-tile-layer-attribution'] = self.tile_layer_attribution
+            kwargs["data-tile-layer-attribution"] = self.tile_layer_attribution
         if "data-width" not in kwargs:
             kwargs["data-width"] = self.width
         if "data-height" not in kwargs:
@@ -59,7 +68,7 @@ class LeafletWidget(TextArea):
         if self.max_zoom:
             kwargs["data-max-zoom"] = self.max_zoom
         if self.max_bounds:
-            if getattr(self.max_bounds, "bounds"):
+            if self.max_bounds.bounds:
                 # this is a Shapely geometric object
                 minx, miny, maxx, maxy = self.max_bounds.bounds
             elif len(self.max_bounds) == 4:
@@ -76,4 +85,4 @@ class LeafletWidget(TextArea):
             kwargs["data-max-bounds-ne-lat"] = maxx
             kwargs["data-max-bounds-ne-lng"] = maxy
 
-        return super(LeafletWidget, self).__call__(field, **kwargs)
+        return super().__call__(field, **kwargs)

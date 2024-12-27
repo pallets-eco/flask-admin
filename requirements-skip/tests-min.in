@@ -1,8 +1,8 @@
-coveralls
 flake8
 pylint
 pytest
 pytest-cov
+moto
 
 psycopg2
 beautifulsoup4
@@ -25,6 +25,8 @@ arrow==0.13.0
 
 geoalchemy2==0.14.0
 shapely==2
+
+boto3==1.33.0
 
 pymongo==3.7.0
 

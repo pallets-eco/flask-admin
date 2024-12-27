@@ -16,13 +16,22 @@ azure-storage-blob==2.1.0
     # via -r tests-min.in
 azure-storage-common==2.1.0
     # via azure-storage-blob
-babel==2.15.0
+babel==2.16.0
     # via flask-babel
 beautifulsoup4==4.12.3
     # via -r tests-min.in
-certifi==2024.7.4
+boto3==1.33.0
+    # via
+    #   -r tests-min.in
+    #   moto
+botocore==1.33.13
+    # via
+    #   boto3
+    #   moto
+    #   s3transfer
+certifi==2024.8.30
     # via requests
-cffi==1.16.0
+cffi==1.17.1
     # via cryptography
 charset-normalizer==3.3.2
     # via requests
@@ -30,27 +39,23 @@ click==8.1.7
     # via flask
 colour==0.1.5
     # via -r tests-min.in
-coverage[toml]==7.6.0
+coverage[toml]==7.6.1
+    # via pytest-cov
+cryptography==43.0.1
     # via
-    #   coveralls
-    #   pytest-cov
-coveralls==4.0.1
-    # via -r tests-min.in
-cryptography==43.0.0
-    # via azure-storage-common
+    #   azure-storage-common
+    #   moto
 deprecated==1.2.14
     # via redis
 dill==0.3.8
     # via pylint
 dnspython==2.6.1
     # via email-validator
-docopt==0.6.2
-    # via coveralls
 email-validator==2.0.0
     # via -r tests-min.in
 exceptiongroup==1.2.2
     # via pytest
-flake8==7.1.0
+flake8==7.1.1
     # via -r tests-min.in
 flask==2.2.0
     # via
@@ -65,11 +70,11 @@ geoalchemy2==0.14.0
     # via -r tests-min.in
 greenlet==3.0.3
     # via sqlalchemy
-idna==3.7
+idna==3.8
     # via
     #   email-validator
     #   requests
-importlib-metadata==8.2.0
+importlib-metadata==8.4.0
     # via flask
 iniconfig==2.0.0
     # via pytest
@@ -81,6 +86,11 @@ jinja2==3.1.4
     # via
     #   flask
     #   flask-babel
+    #   moto
+jmespath==1.0.1
+    # via
+    #   boto3
+    #   botocore
 markupsafe==2.1.5
     # via
     #   jinja2
@@ -90,6 +100,8 @@ mccabe==0.7.0
     # via
     #   flake8
     #   pylint
+moto==5.0.18
+    # via -r tests-min.in
 numpy==1.24.4
     # via shapely
 packaging==24.1
@@ -108,13 +120,13 @@ pluggy==1.5.0
     # via pytest
 psycopg2==2.9.9
     # via -r tests-min.in
-pycodestyle==2.12.0
+pycodestyle==2.12.1
     # via flake8
 pycparser==2.22
     # via cffi
 pyflakes==3.2.0
     # via flake8
-pylint==3.2.6
+pylint==3.2.7
     # via -r tests-min.in
 pymongo==3.7.0
     # via -r tests-min.in
@@ -128,23 +140,32 @@ python-dateutil==2.9.0.post0
     # via
     #   arrow
     #   azure-storage-common
+    #   botocore
+    #   moto
 pytz==2022.7.1
     # via
     #   babel
     #   flask-babel
+pyyaml==6.0.2
+    # via responses
 redis==4.0.0
     # via -r tests-min.in
 requests==2.32.3
     # via
     #   azure-storage-common
-    #   coveralls
+    #   moto
+    #   responses
+responses==0.25.3
+    # via moto
+s3transfer==0.8.2
+    # via boto3
 shapely==2.0.0
     # via -r tests-min.in
 six==1.16.0
     # via
     #   python-dateutil
     #   sqlalchemy-utils
-soupsieve==2.5
+soupsieve==2.6
     # via beautifulsoup4
 sqlalchemy==1.4.18
     # via
@@ -164,18 +185,22 @@ tomli==2.0.1
     #   coverage
     #   pylint
     #   pytest
-tomlkit==0.13.0
+tomlkit==0.13.2
     # via pylint
 typing-extensions==4.12.2
     # via
     #   astroid
     #   pylint
-urllib3==2.2.2
-    # via requests
+urllib3==1.26.20
+    # via
+    #   botocore
+    #   requests
+    #   responses
 werkzeug==2.3.8
     # via
     #   -r tests-min.in
     #   flask
+    #   moto
 wrapt==1.16.0
     # via deprecated
 wtf-peewee==3.0.4
@@ -184,5 +209,7 @@ wtforms==2.3.0
     # via
     #   -r tests-min.in
     #   wtf-peewee
-zipp==3.19.2
+xmltodict==0.14.2
+    # via moto
+zipp==3.20.1
     # via importlib-metadata

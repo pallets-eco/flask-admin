@@ -2,10 +2,10 @@ This example shows how to configure Flask-Admin when you're using Flask's `host_
 
 To run this example:
 
-1. Clone the repository::
+1. Clone the repository and navigate to this example::
 
-    git clone https://github.com/flask-admin/flask-admin.git
-    cd flask-admin
+    git clone https://github.com/pallets-eco/flask-admin.git
+    cd flask-admin/examples/host-matching
 
 2. Create and activate a virtual environment::
 
@@ -14,8 +14,8 @@ To run this example:
 
 3. Install requirements::
 
-    pip install -r 'examples/host-matching/requirements.txt'
+    pip install -r requirements.txt
 
 4. Run the application::
 
-    python examples/host-matching/app.py
+    python app.py

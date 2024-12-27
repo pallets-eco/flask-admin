@@ -1,20 +1,28 @@
 """
-    Useful form fields for use with SQLAlchemy ORM.
+Useful form fields for use with SQLAlchemy ORM.
 """
+
 import operator
 
 from sqlalchemy.orm.util import identity_key
-
-from wtforms.fields import SelectFieldBase, StringField
+from wtforms.fields import SelectFieldBase
+from wtforms.fields import StringField
 from wtforms.utils import unset_value
 from wtforms.validators import ValidationError
 
-from .tools import get_primary_key
-from flask_admin._compat import text_type, string_types, iteritems
-from flask_admin.contrib.sqla.widgets import CheckboxListInput
-from flask_admin.form import FormOpts, BaseForm, Select2Widget
-from flask_admin.model.fields import InlineFieldList, InlineModelFormField
+from flask_admin._compat import _iter_choices_wtforms_compat
+from flask_admin._compat import iteritems
+from flask_admin._compat import string_types
+from flask_admin._compat import text_type
 from flask_admin.babel import lazy_gettext
+from flask_admin.contrib.sqla.widgets import CheckboxListInput
+from flask_admin.form import BaseForm
+from flask_admin.form import FormOpts
+from flask_admin.form import Select2Widget
+from flask_admin.model.fields import InlineFieldList
+from flask_admin.model.fields import InlineModelFormField
+
+from .tools import get_primary_key
 
 
 class QuerySelectField(SelectFieldBase):
@@ -47,12 +55,21 @@ class QuerySelectField(SelectFieldBase):
     being `None`. The label for this blank choice can be set by specifying the
     `blank_text` parameter.
     """
+
     widget = Select2Widget()
 
-    def __init__(self, label=None, validators=None, query_factory=None,
-                 get_pk=None, get_label=None, allow_blank=False,
-                 blank_text=u'', **kwargs):
-        super(QuerySelectField, self).__init__(label, validators, **kwargs)
+    def __init__(
+        self,
+        label=None,
+        validators=None,
+        query_factory=None,
+        get_pk=None,
+        get_label=None,
+        allow_blank=False,
+        blank_text="",
+        **kwargs,
+    ):
+        super().__init__(label, validators, **kwargs)
         self.query_factory = query_factory
 
         if get_pk is None:
@@ -95,14 +112,18 @@ class QuerySelectField(SelectFieldBase):
 
     def iter_choices(self):
         if self.allow_blank:
-            yield (u'__None', self.blank_text, self.data is None)
+            yield _iter_choices_wtforms_compat(
+                "__None", self.blank_text, self.data is None
+            )
 
         for pk, obj in self._get_object_list():
-            yield (pk, self.get_label(obj), obj == self.data)
+            yield _iter_choices_wtforms_compat(
+                pk, self.get_label(obj), obj == self.data
+            )
 
     def process_formdata(self, valuelist):
         if valuelist:
-            if self.allow_blank and valuelist[0] == u'__None':
+            if self.allow_blank and valuelist[0] == "__None":
                 self.data = None
             else:
                 self._data = None
@@ -110,11 +131,11 @@ class QuerySelectField(SelectFieldBase):
 
     def pre_validate(self, form):
         if not self.allow_blank or self.data is not None:
-            for pk, obj in self._get_object_list():
+            for _pk, obj in self._get_object_list():
                 if self.data == obj:
                     break
             else:
-                raise ValidationError(self.gettext(u'Not a valid choice'))
+                raise ValidationError(self.gettext("Not a valid choice"))
 
 
 class QuerySelectMultipleField(QuerySelectField):
@@ -126,12 +147,13 @@ class QuerySelectMultipleField(QuerySelectField):
     If any of the items in the data list or submitted form data cannot be
     found in the query, this will result in a validation error.
     """
+
     widget = Select2Widget(multiple=True)
 
     def __init__(self, label=None, validators=None, default=None, **kwargs):
         if default is None:
             default = []
-        super(QuerySelectMultipleField, self).__init__(label, validators, default=default, **kwargs)
+        super().__init__(label, validators, default=default, **kwargs)
         self._invalid_formdata = False
 
     def _get_data(self):
@@ -157,19 +179,21 @@ class QuerySelectMultipleField(QuerySelectField):
 
     def iter_choices(self):
         for pk, obj in self._get_object_list():
-            yield (pk, self.get_label(obj), obj in self.data)
+            yield _iter_choices_wtforms_compat(
+                pk, self.get_label(obj), obj in self.data
+            )
 
     def process_formdata(self, valuelist):
         self._formdata = set(valuelist)
 
     def pre_validate(self, form):
         if self._invalid_formdata:
-            raise ValidationError(self.gettext(u'Not a valid choice'))
+            raise ValidationError(self.gettext("Not a valid choice"))
         elif self.data:
             obj_list = list(x[1] for x in self._get_object_list())
             for v in self.data:
                 if v not in obj_list:
-                    raise ValidationError(self.gettext(u'Not a valid choice'))
+                    raise ValidationError(self.gettext("Not a valid choice"))
 
 
 class CheckboxListField(QuerySelectMultipleField):
@@ -193,44 +217,47 @@ class CheckboxListField(QuerySelectMultipleField):
                 'languages': CheckboxListField,
             }
     """
+
     widget = CheckboxListInput()  # type: ignore[assignment]
 
 
 class HstoreForm(BaseForm):
-    """ Form used in InlineFormField/InlineHstoreList for HSTORE columns """
-    key = StringField(lazy_gettext('Key'))
-    value = StringField(lazy_gettext('Value'))
+    """Form used in InlineFormField/InlineHstoreList for HSTORE columns"""
+
+    key = StringField(lazy_gettext("Key"))
+    value = StringField(lazy_gettext("Value"))
 
 
-class KeyValue(object):
-    """ Used by InlineHstoreList to simulate a key and a value field instead of
-        the single HSTORE column. """
+class KeyValue:
+    """Used by InlineHstoreList to simulate a key and a value field instead of
+    the single HSTORE column."""
+
     def __init__(self, key=None, value=None):
         self.key = key
         self.value = value
 
 
 class InlineHstoreList(InlineFieldList):
-    """ Version of InlineFieldList for use with Postgres HSTORE columns """
+    """Version of InlineFieldList for use with Postgres HSTORE columns"""
 
     def process(self, formdata, data=unset_value, extra_filters=None):
-        """ SQLAlchemy returns a dict for HSTORE columns, but WTForms cannot
-            process a dict. This overrides `process` to convert the dict
-            returned by SQLAlchemy to a list of classes before processing. """
+        """SQLAlchemy returns a dict for HSTORE columns, but WTForms cannot
+        process a dict. This overrides `process` to convert the dict
+        returned by SQLAlchemy to a list of classes before processing."""
         if isinstance(data, dict):
             data = [KeyValue(k, v) for k, v in iteritems(data)]
-        super(InlineHstoreList, self).process(formdata, data, extra_filters)
+        super().process(formdata, data, extra_filters)
 
     def populate_obj(self, obj, name):
-        """ Combines each FormField key/value into a dictionary for storage """
-        _fake = type(str('_fake'), (object, ), {})
+        """Combines each FormField key/value into a dictionary for storage"""
+        _fake = type("_fake", (object,), {})
 
         output = {}
         for form_field in self.entries:
             if not self.should_delete(form_field):
                 fake_obj = _fake()
                 fake_obj.data = KeyValue()
-                form_field.populate_obj(fake_obj, 'data')
+                form_field.populate_obj(fake_obj, "data")
                 output[fake_obj.data.key] = fake_obj.data.value
 
         setattr(obj, name, output)
@@ -238,7 +265,7 @@ class InlineHstoreList(InlineFieldList):
 
 class InlineModelFormList(InlineFieldList):
     """
-        Customized inline model form list field.
+    Customized inline model form list field.
     """
 
     form_field_type = InlineModelFormField
@@ -248,18 +275,18 @@ class InlineModelFormList(InlineFieldList):
 
     def __init__(self, form, session, model, prop, inline_view, **kwargs):
         """
-            Default constructor.
+        Default constructor.
 
-            :param form:
-                Form for the related model
-            :param session:
-                SQLAlchemy session
-            :param model:
-                Related model
-            :param prop:
-                Related property name
-            :param inline_view:
-                Inline view
+        :param form:
+            Form for the related model
+        :param session:
+            SQLAlchemy session
+        :param model:
+            Related model
+        :param prop:
+            Related property name
+        :param inline_view:
+            Inline view
         """
         self.form = form
         self.session = session
@@ -270,12 +297,14 @@ class InlineModelFormList(InlineFieldList):
         self._pk = get_primary_key(model)
 
         # Generate inline form field
-        form_opts = FormOpts(widget_args=getattr(inline_view, 'form_widget_args', None),
-                             form_rules=inline_view._form_rules)
+        form_opts = FormOpts(
+            widget_args=getattr(inline_view, "form_widget_args", None),
+            form_rules=inline_view._form_rules,
+        )
 
         form_field = self.form_field_type(form, self._pk, form_opts=form_opts)
 
-        super(InlineModelFormList, self).__init__(form_field, **kwargs)
+        super().__init__(form_field, **kwargs)
 
     def display_row_controls(self, field):
         return field.get_pk() is not None
@@ -321,8 +350,8 @@ class InlineModelOneToOneField(InlineModelFormField):
 
         # Generate inline form field
         form_opts = FormOpts(
-            widget_args=getattr(inline_view, 'form_widget_args', None),
-            form_rules=inline_view._form_rules
+            widget_args=getattr(inline_view, "form_widget_args", None),
+            form_rules=inline_view._form_rules,
         )
         super().__init__(form, self._pk, form_opts=form_opts, **kwargs)
 
@@ -370,7 +399,7 @@ class InlineModelOneToOneField(InlineModelFormField):
 def get_pk_from_identity(obj):
     # TODO: Remove me
     key = identity_key(instance=obj)[1]
-    return u':'.join(text_type(x) for x in key)
+    return ":".join(text_type(x) for x in key)
 
 
 def get_obj_pk(obj, pk):

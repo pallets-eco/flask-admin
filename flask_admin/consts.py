@@ -1,11 +1,11 @@
 # bootstrap glyph icon
-ICON_TYPE_GLYPH = 'glyph'
+ICON_TYPE_GLYPH = "glyph"
 # font awesome glyph icon
-ICON_TYPE_FONT_AWESOME = 'fa'
+ICON_TYPE_FONT_AWESOME = "fa"
 # image relative to Flask static folder
-ICON_TYPE_IMAGE = 'image'
+ICON_TYPE_IMAGE = "image"
 # external image
-ICON_TYPE_IMAGE_URL = 'image-url'
+ICON_TYPE_IMAGE_URL = "image-url"
 
 
 ADMIN_ROUTES_HOST_VARIABLE = "<admin_routes_host>"

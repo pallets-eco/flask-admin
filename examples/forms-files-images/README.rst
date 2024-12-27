@@ -9,10 +9,10 @@ This example shows how you can::
 
 To run this example:
 
-1. Clone the repository::
+1. Clone the repository and navigate to this example::
 
-    git clone https://github.com/flask-admin/flask-admin.git
-    cd flask-admin
+    git clone https://github.com/pallets-eco/flask-admin.git
+    cd flask-admin/examples/forms-files-images
 
 2. Create and activate a virtual environment::
 
@@ -21,11 +21,11 @@ To run this example:
 
 3. Install requirements::
 
-    pip install -r 'examples/forms-files-images/requirements.txt'
+    pip install -r requirements.txt
 
 4. Run the application::
 
-    python examples/forms-files-images/app.py
+    python app.py
 
 The first time you run this example, a sample sqlite database gets populated automatically. To suppress this behaviour,
 comment the following lines in app.py:::

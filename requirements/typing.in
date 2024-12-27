@@ -6,7 +6,7 @@ pytest
 types-Flask-SQLAlchemy
 types-Pillow
 types-beautifulsoup4
-types-boto
+types-boto3
 types-peewee
 types-Flask
 types-WTForms
