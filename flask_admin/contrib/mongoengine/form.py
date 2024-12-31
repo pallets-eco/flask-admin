@@ -3,6 +3,7 @@ import decimal
 from bson import ObjectId
 from mongoengine import ReferenceField, ListField
 from mongoengine.base import BaseDocument, DocumentMetaclass, get_document
+from mongoengine.queryset import DoesNotExist
 
 from wtforms import fields, validators
 from flask_admin import form
@@ -13,6 +14,170 @@ from flask_admin._compat import iteritems
 
 from .fields import ModelFormField, MongoFileField, MongoImageField
 from .subdoc import EmbeddedForm
+
+
+class QuerySetSelectField(fields.SelectFieldBase):
+    """
+    Given a QuerySet either at initialization or inside a view, will display a
+    select drop-down field of choices. The `data` property actually will
+    store/keep an ORM model instance, not the ID. Submitting a choice which is
+    not in the queryset will result in a validation error.
+
+    Specifying `label_attr` in the constructor will use that property of the
+    model instance for display in the list, else the model object's `__str__`
+    or `__unicode__` will be used.
+
+    If `allow_blank` is set to `True`, then a blank choice will be added to the
+    top of the list. Selecting this choice will result in the `data` property
+    being `None`.  The label for the blank choice can be set by specifying the
+    `blank_text` parameter.
+    """
+
+    widget = form.Select2Widget()
+
+    def __init__(
+        self,
+        label="",
+        validators=None,
+        queryset=None,
+        label_attr="",
+        allow_blank=False,
+        blank_text="---",
+        label_modifier=None,
+        **kwargs,
+    ):
+        """Init docstring placeholder."""
+
+        super(QuerySetSelectField, self).__init__(label, validators, **kwargs)
+        self.label_attr = label_attr
+        self.allow_blank = allow_blank
+        self.blank_text = blank_text
+        self.label_modifier = label_modifier
+        self.queryset = queryset
+
+    def iter_choices(self):
+        """
+        Provides data for choice widget rendering. Must return a sequence or
+        iterable of (value, label, selected) tuples.
+        """
+        if self.allow_blank:
+            yield "__None", self.blank_text, self.data is None
+
+        if self.queryset is None:
+            return
+
+        self.queryset.rewind()
+        for obj in self.queryset:
+            label = (
+                self.label_modifier(obj)
+                if self.label_modifier
+                else (self.label_attr and getattr(obj, self.label_attr) or obj)
+            )
+
+            if isinstance(self.data, list):
+                selected = obj in self.data
+            else:
+                selected = self._is_selected(obj)
+            yield obj.id, label, selected
+
+    def process_formdata(self, valuelist):
+        """
+        Process data received over the wire from a form.
+
+        This will be called during form construction with data supplied
+        through the `formdata` argument.
+
+        :param valuelist: A list of strings to process.
+        """
+        if not valuelist or valuelist[0] == "__None" or self.queryset is None:
+            self.data = None
+            return
+
+        try:
+            obj = self.queryset.get(pk=valuelist[0])
+            self.data = obj
+        except DoesNotExist:
+            self.data = None
+
+    def pre_validate(self, form):
+        """
+        Field-level validation. Runs before any other validators.
+
+        :param form: The form the field belongs to.
+        """
+        if (not self.allow_blank or self.data is not None) and not self.data:
+            raise validators.ValidationError(self.gettext("Not a valid choice"))
+
+    def _is_selected(self, item):
+        return item == self.data
+
+
+class QuerySetSelectMultipleField(QuerySetSelectField):
+    """Same as :class:`QuerySetSelectField` but with multiselect options."""
+
+    widget = form.Select2Widget(multiple=True)
+
+    def __init__(
+        self,
+        label="",
+        validators=None,
+        queryset=None,
+        label_attr="",
+        allow_blank=False,
+        blank_text="---",
+        **kwargs,
+    ):
+
+        super(QuerySetSelectMultipleField, self).__init__(
+            label, validators, queryset, label_attr, allow_blank, blank_text, **kwargs
+        )
+
+    def process_formdata(self, valuelist):
+        """
+        Process data received over the wire from a form.
+
+        This will be called during form construction with data supplied
+        through the `formdata` argument.
+
+        :param valuelist: A list of strings to process.
+        """
+
+        if not valuelist or valuelist[0] == "__None" or not self.queryset:
+            self.data = None
+            return
+
+        self.queryset.rewind()
+        self.data = list(self.queryset(pk__in=valuelist))
+        if not len(self.data):
+            self.data = None
+
+    def _is_selected(self, item):
+        return item in self.data if self.data else False
+
+
+class ModelSelectField(QuerySetSelectField):
+    """
+    Like a QuerySetSelectField, except takes a model class instead of a
+    queryset and lists everything in it.
+    """
+
+    def __init__(self, label="", validators=None, model=None, **kwargs):
+        queryset = kwargs.pop("queryset", model.objects)
+        super(ModelSelectField, self).__init__(
+            label, validators, queryset=queryset, **kwargs
+        )
+
+
+class ModelSelectMultipleField(QuerySetSelectMultipleField):
+    """
+    Allows multiple select
+    """
+
+    def __init__(self, label="", validators=None, model=None, **kwargs):
+        queryset = kwargs.pop("queryset", model.objects)
+        super(ModelSelectMultipleField, self).__init__(
+            label, validators, queryset=queryset, **kwargs
+        )
 
 
 class CustomModelConverter:
@@ -222,12 +387,7 @@ class CustomModelConverter:
             if loader:
                 return AjaxSelectMultipleField(loader, **kwargs)
 
-            kwargs['widget'] = form.Select2Widget(multiple=True)
-            kwargs.setdefault('validators', []).append(validators.Optional())
-
-            # TODO: Support AJAX multi-select
-            doc_type = field.field.document_type
-            return fields.SelectMultipleField(**kwargs)
+            return ModelSelectMultipleField(model=field.field.document_type, **kwargs)
 
         # Create converter
         view = self._get_subdocument_config(field.name)
@@ -270,9 +430,7 @@ class CustomModelConverter:
         if loader:
             return AjaxSelectField(loader, **kwargs)
 
-        kwargs['widget'] = form.Select2Widget()
-
-        return fields.SelectField(**kwargs)
+        return ModelSelectField(model=field.document_type, **kwargs)
 
     def conv_File(self, model, field, kwargs):
         return MongoFileField(**kwargs)
