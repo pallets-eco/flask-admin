@@ -1,6 +1,6 @@
 # Flask-Admin
 
-Flask-Admin is now part of Pallets-Eco, an open source organization managed by the 
+Flask-Admin is now part of Pallets-Eco, an open source organization managed by the
 Pallets team to facilitate community maintenance of Flask extensions. Please update
 your references to `https://github.com/pallets-eco/flask-admin.git`.
 
