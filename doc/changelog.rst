@@ -4,6 +4,10 @@ Changelog
 2.0.0a3
 -------
 
+Breaking changes:
+
+* Azure Blob Storage SDK has been upgraded from the legacy version (v2) to the latest version (v12). AzureFileAdmin now accept `blob_service_client` rather than `connection_string` to give more flexibility with connection types.
+
 Fixes:
 
 * Jinja templates can now be loaded in StrictUndefined mode.
