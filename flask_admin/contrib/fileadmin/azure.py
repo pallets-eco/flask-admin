@@ -215,11 +215,11 @@ class AzureStorage:
     def _copy_blob(self, src, dst):
         src_blob_client = self._container_client.get_blob_client(src)
         dst_blob_client = self._container_client.get_blob_client(dst)
-        copy_result = dst_blob_client.start_copy_from_url(src_blob_client.url, requires_sync=False)
+        copy_result = dst_blob_client.start_copy_from_url(src_blob_client.url)
         if copy_result.get("copy_status") == "success":
             return
 
-        for i in range(10):
+        for _ in range(10):
             props = dst_blob_client.get_blob_properties()
             status = props.copy.status
             if status == "success":
