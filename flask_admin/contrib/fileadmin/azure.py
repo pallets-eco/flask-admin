@@ -271,6 +271,10 @@ class AzureFileAdmin(BaseFileAdmin):
         admin.add_view(AzureFileAdmin(client, 'files_container')
     """
 
+
+
+
+
     def __init__(
         self,
         blob_service_client,
