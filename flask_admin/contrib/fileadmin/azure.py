@@ -1,4 +1,5 @@
 import io
+import time
 import os.path as op
 from datetime import datetime
 from datetime import timedelta
@@ -214,7 +215,23 @@ class AzureStorage:
     def _copy_blob(self, src, dst):
         src_blob_client = self._container_client.get_blob_client(src)
         dst_blob_client = self._container_client.get_blob_client(dst)
-        dst_blob_client.start_copy_from_url(src_blob_client.url, requires_sync=True)
+        copy_result = dst_blob_client.start_copy_from_url(src_blob_client.url, requires_sync=False)
+        if copy_result.get("copy_status") == "success":
+            return
+
+        for i in range(10):
+            props = dst_blob_client.get_blob_properties()
+            status = props.copy.status
+            if status == "success":
+                return
+            time.sleep(10)
+
+        if status != "success":
+            props = dst_blob_client.get_blob_properties()
+            copy_id = props.copy.id
+            if copy_id is not None:
+                dst_blob_client.abort_copy(copy_id)
+            raise Exception(f"Copy operation failed: {status}")
 
     def _rename_file(self, src, dst):
         self._copy_blob(src, dst)
