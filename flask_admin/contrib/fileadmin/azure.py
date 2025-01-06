@@ -1,6 +1,6 @@
 import io
-import time
 import os.path as op
+import time
 from datetime import datetime
 from datetime import timedelta
 
@@ -270,10 +270,6 @@ class AzureFileAdmin(BaseFileAdmin):
         client = BlobServiceClient.from_connection_string("my-connection-string")
         admin.add_view(AzureFileAdmin(client, 'files_container')
     """
-
-
-
-
 
     def __init__(
         self,
