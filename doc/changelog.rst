@@ -12,6 +12,7 @@ Fixes:
 
 * Jinja templates can now be loaded in StrictUndefined mode.
 * Remove an implicit dependency on `packaging`
+* Fixed an error caused by the fallback implementation of `gettext()` (when used in templates)
 
 2.0.0a2
 -------
