@@ -402,7 +402,7 @@ urllib3==1.26.20
     #   botocore
     #   requests
     #   responses
-virtualenv==20.26.3
+virtualenv==20.26.6
     # via
     #   pre-commit
     #   tox
