@@ -121,6 +121,30 @@ under development, before you want the whole world to see it.
 Have a look at `Flask-BasicAuth <https://flask-basicauth.readthedocs.io/>`_ to see just how
 easy it is to put your whole application behind HTTP Basic Auth.
 
+Below is an example of integrated Flask-Basicauth::
+
+    from flask_admin import Admin, AdminIndexView, expose
+    from flask_admin.contrib.sqla import ModelView
+    from flask_basicauth import BasicAuth
+
+    basic_auth = BasicAuth(app)
+
+    class MicroBlogAdminIndexView(AdminIndexView):
+        @expose('/')
+        @basic_auth.required
+        def index(self):
+            return super().index()
+
+    class MicroBlogModelView(ModelView):
+        def is_accessible(self):
+            return basic_auth.authenticate()
+
+        def inaccessible_callback(self, name, **kwargs):
+            return basic_auth.challenge()
+
+    admin = Admin(app, name='microblog', theme=Bootstrap4Theme(), index_view=MicroBlogAdminIndexView())
+    admin.add_view(MicroBlogModelView(Post, db.session))
+
 Rolling Your Own
 ----------------
 For a more flexible solution, Flask-Admin lets you define access control rules
