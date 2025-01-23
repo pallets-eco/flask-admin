@@ -378,6 +378,7 @@ functionality, but you want to replace one of the default `create`, `edit`, or `
 For this you could override only the view in question, and all the links to it will still function as you would expect::
 
     from flask_admin.contrib.sqla import ModelView
+    from flask_admin import expose
 
     # Flask and Flask-SQLAlchemy initialization here
 
@@ -514,6 +515,7 @@ Generating URLs
 To generate the URL for a specific view, use *url_for* with a dot prefix::
 
     from flask import url_for
+    from flask_admin import expose
 
     class MyView(BaseView):
         @expose('/')
