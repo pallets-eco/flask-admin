@@ -131,7 +131,7 @@ You should see output similar to:
 
     OK
 
-**NOTE!** For all the tests to pass successfully, you\'ll need several services running locally:
+**NOTE!** For all the tests to pass successfully, you'll need several services running locally:
 Postgres (with the postgis and hstore extension), MongoDB, and Azurite.
 You'll also need *libgeos* available.
 See tests.yaml for Docker configuration and follow service-specific setup below.
