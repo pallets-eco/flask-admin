@@ -227,7 +227,7 @@ class AzureStorage:
             status = props.copy.status
             if status == "success":
                 return
-            time.sleep(10)
+            time.sleep(1)
 
         if status != "success":
             props = dst_blob_client.get_blob_properties()
