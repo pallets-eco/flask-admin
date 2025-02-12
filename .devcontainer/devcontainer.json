@@ -1,0 +1,8 @@
+// For format details, see https://aka.ms/devcontainer.json
+{
+    "name": "flask-admin (Python 3.12)",
+    "image": "mcr.microsoft.com/devcontainers/python:3.12-bullseye",
+
+    // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+    "remoteUser": "vscode"
+}
