@@ -14,7 +14,7 @@ beautifulsoup4==4.12.3
     # via -r tests.in
 boto3==1.35.49
     # via moto
-botocore==1.35.49
+botocore==1.35.71
     # via
     #   -r tests.in
     #   boto3
@@ -48,7 +48,7 @@ iniconfig==2.0.0
     # via pytest
 isort==5.13.2
     # via pylint
-jinja2==3.1.4
+jinja2==3.1.5
     # via
     #   moto
     #   sphinx
@@ -64,7 +64,7 @@ mccabe==0.7.0
     # via
     #   flake8
     #   pylint
-moto==5.0.18
+moto==5.0.21
     # via -r tests.in
 packaging==24.1
     # via
@@ -99,6 +99,8 @@ python-dateutil==2.9.0.post0
     # via
     #   botocore
     #   moto
+pytz==2024.2
+    # via babel
 pyyaml==6.0.2
     # via responses
 requests==2.32.3

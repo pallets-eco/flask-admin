@@ -27,11 +27,7 @@ boto3==1.35.49
     #   -r docs.txt
     #   -r typing.txt
     #   moto
-boto3-stubs==1.35.49
-    # via
-    #   -r typing.txt
-    #   types-boto3
-botocore==1.35.49
+botocore==1.35.71
     # via
     #   -r docs.txt
     #   -r tests.in
@@ -42,7 +38,7 @@ botocore==1.35.49
 botocore-stubs==1.35.49
     # via
     #   -r typing.txt
-    #   boto3-stubs
+    #   types-boto3
 cachetools==5.5.0
     # via tox
 certifi==2024.8.30
@@ -126,7 +122,7 @@ isort==5.13.2
     #   -r docs.txt
     #   -r typing.txt
     #   pylint
-jinja2==3.1.4
+jinja2==3.1.5
     # via
     #   -r docs.txt
     #   -r typing.txt
@@ -151,7 +147,7 @@ mccabe==0.7.0
     #   -r typing.txt
     #   flake8
     #   pylint
-moto==5.0.18
+moto==5.0.21
     # via
     #   -r docs.txt
     #   -r tests.in
@@ -228,7 +224,7 @@ pylint==3.2.7
     #   -r typing.txt
 pyproject-api==1.7.1
     # via tox
-pyright==1.1.386
+pyright==1.1.389
     # via -r typing.txt
 pytest==8.3.3
     # via
@@ -247,6 +243,10 @@ python-dateutil==2.9.0.post0
     #   -r typing.txt
     #   botocore
     #   moto
+pytz==2024.2
+    # via
+    #   -r docs.txt
+    #   babel
 pyyaml==6.0.2
     # via
     #   -r docs.txt
@@ -343,7 +343,7 @@ types-awscrt==0.23.0
     #   botocore-stubs
 types-beautifulsoup4==4.12.0.20241020
     # via -r typing.txt
-types-boto3==1.0.2
+types-boto3==1.35.71.post1
     # via -r typing.txt
 types-click==7.1.8
     # via
@@ -365,15 +365,15 @@ types-markupsafe==1.1.10
     # via
     #   -r typing.txt
     #   types-jinja2
-types-peewee==3.17.7.20241017
+types-peewee==3.17.8.20241117
     # via -r typing.txt
 types-pillow==10.2.0.20240822
     # via -r typing.txt
 types-s3transfer==0.10.3
     # via
     #   -r typing.txt
-    #   boto3-stubs
-types-shapely==2.0.0.20240820
+    #   types-boto3
+types-shapely==2.0.0.20241112
     # via -r typing.txt
 types-sqlalchemy==1.4.53.38
     # via
@@ -390,10 +390,11 @@ typing-extensions==4.12.2
     #   -r docs.txt
     #   -r typing.txt
     #   astroid
-    #   boto3-stubs
+    #   botocore-stubs
     #   mypy
     #   pylint
     #   pyright
+    #   types-boto3
 urllib3==1.26.20
     # via
     #   -r docs.txt

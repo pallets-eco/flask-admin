@@ -26,9 +26,9 @@
 <form class="icon" method="POST" action="{{ get_url('.delete_view') }}">
   {{ delete_form.id(value=get_pk_value(row)) }}
   {{ delete_form.url(value=return_url) }}
-  {% if delete_form.csrf_token %}
+  {% if delete_form.csrf_token is defined and delete_form.csrf_token %}
   {{ delete_form.csrf_token }}
-  {% elif csrf_token %}
+  {% elif csrf_token is defined and csrf_token %}
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   {% endif %}
   <button onclick="return faHelpers.safeConfirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="{{ _gettext('Delete Record') }}">

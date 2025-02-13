@@ -46,12 +46,11 @@ def _iter_choices_wtforms_compat(val, label, selected):
 
     https://wtforms.readthedocs.io/en/3.2.x/changes/#version-3-2-0
     """
-    from packaging.version import Version
     import wtforms
 
-    wtforms_version = Version(wtforms.__version__)
+    wtforms_version = tuple(int(part) for part in wtforms.__version__.split(".")[:2])
 
-    if wtforms_version >= Version("3.2.0"):
+    if wtforms_version >= (3, 2):
         return val, label, selected, {}
 
     return val, label, selected

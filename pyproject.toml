@@ -1,6 +1,6 @@
 [project]
 name = "Flask-Admin"
-version = "2.0.0a2"
+version = "2.0.0a3"
 description = "Simple and extensible admin interface framework for Flask"
 readme = "README.md"
 license = { file = "LICENSE.txt" }
@@ -85,7 +85,7 @@ build-backend = "flit_core.buildapi"
 name = "flask_admin"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["flask_admin/tests"]
 markers = [
     "flask_babel: requires Flask-Babel to be installed"
 ]
