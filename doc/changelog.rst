@@ -1,12 +1,14 @@
 Changelog
 =========
 
-2.0.0a3
+2.0.0a4
 -------
-
 Breaking changes:
 
 * Azure Blob Storage SDK has been upgraded from the legacy version (v2) to the latest version (v12). AzureFileAdmin now accept `blob_service_client` rather than `connection_string` to give more flexibility with connection types.
+
+2.0.0a3
+-------
 
 Fixes:
 
