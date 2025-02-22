@@ -24,6 +24,7 @@ Extra name                  What functionality does this add to Flask-Admin?
 sqlalchemy                  SQLAlchemy, for accessing many database engines
 sqlalchemy-with-utils       As above, with some additional utilities for different data types
 geoalchemy                  As with SQLAlchemy, but adding support for geographic data and maps
+mongoengine                 Supports the Flask-Mongoengine library
 pymongo                     Supports the PyMongo library
 peewee                      Supports the peewee library
 s3                          Supports file admin using AWS S3

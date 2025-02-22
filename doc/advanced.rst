@@ -243,6 +243,8 @@ installed if you need to do any processing on the image files.
 Have a look at the example at
 https://github.com/pallets-eco/flask-admin/tree/master/examples/forms-files-images.
 
+If you are using the MongoEngine backend, Flask-Admin supports GridFS-backed image and file uploads through WTForms fields. Documentation can be found at :mod:`flask_admin.contrib.mongoengine.fields`.
+
 If you just want to manage static files in a directory, without tying them to a database model, then
 use the :ref:`File-Admin<file-admin>` plug-in.
 
@@ -445,6 +447,32 @@ a model that violates a unique-constraint leads to an Sqlalchemy-Integrity-Error
 a proper error message and you can change the data in the form. When the application has been started with ``debug=True``
 the ``werkzeug`` debugger will catch the exception and will display the stacktrace.
 
+MongoEngine
+***********
+
+If you're looking for something simpler than SQLAlchemy, and your data models
+are reasonably self-contained, then `MongoDB <https://www.mongodb.org/>`_, a popular *NoSQL* database,
+could be a better option.
+
+`MongoEngine <http://mongoengine.org/>`_ is a python wrapper for MongoDB.
+For an example of using MongoEngine with Flask-Admin, see
+https://github.com/flask-admin/flask-admin/tree/master/examples/mongoengine.
+
+
+Features:
+
+ - MongoEngine 0.7+ support
+ - Paging, sorting, filters, etc
+ - Supports complex document structure (lists, subdocuments and so on)
+ - GridFS support for file and image uploads
+
+Known issues:
+
+ - Search functionality can't split query into multiple terms due to
+   MongoEngine query language limitations
+
+For more, check the :class:`~flask_admin.contrib.mongoengine` API documentation.
+
 Peewee
 ******
 
@@ -521,7 +549,7 @@ though it is easy to get started with a simple `CRUD <https://en.wikipedia.org/w
 interface for each model in your application, Flask-Admin doesn't fix you to this approach, and you are free to
 define other ways of interacting with some, or all, of your models.
 
-Due to Flask-Admin supporting more than one ORM (SQLAlchemy, Peewee, raw pymongo), the developer is even
+Due to Flask-Admin supporting more than one ORM (SQLAlchemy, MongoEngine, Peewee, raw pymongo), the developer is even
 free to mix different model types into one application by instantiating appropriate CRUD classes.
 
 Here is a list of some of the configuration properties that are made available by Flask-Admin and the
