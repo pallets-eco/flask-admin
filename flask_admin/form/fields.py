@@ -193,6 +193,7 @@ class Select2Field(fields.SelectField):
 
 class Select2TagsField(fields.StringField):
     """`Select2Tags <http://ivaynberg.github.com/select2/#tags>`_ styled text field.
+
     You must include select2.js, form-x.x.x.js and select2 stylesheet for it to work.
     """
 
@@ -214,7 +215,7 @@ class Select2TagsField(fields.StringField):
 
         :param save_as_list:
             If `True` then populate ``obj`` using list else string
-        :param allow_duplicates
+        :param allow_duplicates:
             If `True` then duplicate tags are allowed in the field.
         """
         self.save_as_list = save_as_list
