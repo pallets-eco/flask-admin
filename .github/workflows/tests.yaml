@@ -55,7 +55,7 @@ jobs:
         ports:
           - 27017:27017
       azurite:
-        image: arafato/azurite:2.6.5
+        image: mcr.microsoft.com/azure-storage/azurite:latest
         env:
           executable: blob
         ports:
