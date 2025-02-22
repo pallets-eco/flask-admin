@@ -41,7 +41,7 @@ colour==0.1.5
     # via -r tests-min.in
 coverage[toml]==7.6.1
     # via pytest-cov
-cryptography==43.0.1
+cryptography==44.0.1
     # via
     #   azure-storage-blob
     #   moto
