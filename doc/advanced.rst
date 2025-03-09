@@ -630,7 +630,7 @@ for example trying to insert a row with a primary key that already exists.
 Adding a favicon to the admin page
 ************************************
 Adding a favicon to flask-admin is easy: just save a .ico file and add a /favicon.ico
-route to your flask app.
+route to your flask app.::
 
     from flask import redirect, url_for
     @app.route("/favicon.ico")

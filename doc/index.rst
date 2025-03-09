@@ -47,3 +47,9 @@ Indices And Tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+.. toctree::
+   :hidden:
+
+   api/i18n
