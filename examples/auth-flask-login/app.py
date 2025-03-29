@@ -11,6 +11,7 @@ from flask_admin import expose
 from flask_admin import helpers
 from flask_admin.contrib import sqla
 from flask_admin.theme import Bootstrap4Theme
+from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
@@ -188,6 +189,8 @@ admin = admin.Admin(
 
 # Add view
 admin.add_view(MyModelView(User, db.session))
+
+babel = Babel(app)
 
 
 def build_sample_db():
