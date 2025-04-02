@@ -1,4 +1,5 @@
 # Install Flask-Admin with required extras from the root of the repository
-../..[sqlalchemy-with-utils]
+../..[sqlalchemy-with-utils,translation]
 
+setuptools
 flask-security-too

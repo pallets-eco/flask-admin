@@ -10,6 +10,7 @@ from flask import url_for
 from flask_admin import helpers as admin_helpers
 from flask_admin.contrib import sqla
 from flask_admin.theme import Bootstrap4Theme
+from flask_babel import Babel
 from flask_security import current_user
 from flask_security import RoleMixin
 from flask_security import Security
@@ -102,6 +103,8 @@ admin = flask_admin.Admin(
 # Add model views
 admin.add_view(MyModelView(Role, db.session))
 admin.add_view(MyModelView(User, db.session))
+
+babel = Babel(app)
 
 
 # define a context processor for merging flask-admin's template context into the
