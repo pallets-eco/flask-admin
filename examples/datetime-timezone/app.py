@@ -8,6 +8,7 @@ from flask import session
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.model import typefmt
+from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import Markup
 from sqlalchemy import DateTime
@@ -135,6 +136,8 @@ with app.app_context():
             endpoint="timezone_aware_article",
         )
     )
+
+    babel = Babel(app)
 
 if __name__ == "__main__":
     app.run(debug=True)
