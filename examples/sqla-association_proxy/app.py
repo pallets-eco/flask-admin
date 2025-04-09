@@ -2,6 +2,7 @@ import flask_admin as admin
 from flask import Flask
 from flask_admin.contrib import sqla
 from flask_admin.theme import Bootstrap4Theme
+from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import backref
@@ -17,6 +18,8 @@ app.config["SECRET_KEY"] = "123456790"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
+
+babel = Babel(app)
 
 
 # Flask views
