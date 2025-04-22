@@ -4,7 +4,7 @@ from markupsafe import escape
 
 from mongoengine.fields import GridFSProxy, ImageGridFsProxy
 
-from flask_admin._backwards import Markup
+from markupsafe import Markup
 from flask_admin.helpers import get_url
 from . import helpers
 
