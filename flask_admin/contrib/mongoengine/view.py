@@ -162,7 +162,8 @@ class ModelView(BaseModelView):
     """
         Subdocument configuration options.
 
-        This field accepts dictionary, where key is field name and value is either dictionary or instance of the
+        This field accepts dictionary, where key is field name and value is
+        either dictionary or instance of the
         `flask_admin.contrib.mongoengine.EmbeddedForm`.
 
         Consider following example::
@@ -182,7 +183,8 @@ class ModelView(BaseModelView):
                     }
                 }
 
-        In this example, `Post` model has child `Comment` subdocument. When generating form for `Comment` embedded
+        In this example, `Post` model has child `Comment` subdocument.
+        When generating form for `Comment` embedded
         document, Flask-Admin will only create `name` field.
 
         It is also possible to use class-based embedded document configuration::
@@ -269,7 +271,8 @@ class ModelView(BaseModelView):
 
              - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
              - `flask_admin.consts.ICON_TYPE_FONT_AWESOME` - Font Awesome icon
-             - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static directory
+             - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to
+                                                      Flask static directory
              - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
 
         :param menu_icon_value:
@@ -549,7 +552,7 @@ class ModelView(BaseModelView):
 
         # Filters
         if self._filters:
-            for flt, flt_name, value in filters:
+            for flt, _flt_name, value in filters:
                 f = self._filters[flt]
                 query = f.apply(query, f.clean(value))
 
@@ -568,7 +571,7 @@ class ModelView(BaseModelView):
             order = self._get_default_order()
 
             if order:
-                keys = ["%s%s" % ("-" if desc else "", col) for (col, desc) in order]
+                keys = [f"{'-' if desc else ''}{col}" for col, desc in order]
                 query = query.order_by(*keys)
 
         # Pagination

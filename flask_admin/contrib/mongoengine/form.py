@@ -135,7 +135,7 @@ class QuerySetSelectMultipleField(QuerySetSelectField):
         blank_text="---",
         **kwargs,
     ):
-        super(QuerySetSelectMultipleField, self).__init__(
+        super().__init__(
             label, validators, queryset, label_attr, allow_blank, blank_text, **kwargs
         )
 
@@ -170,9 +170,7 @@ class ModelSelectField(QuerySetSelectField):
 
     def __init__(self, label="", validators=None, model=None, **kwargs):
         queryset = kwargs.pop("queryset", model.objects)
-        super(ModelSelectField, self).__init__(
-            label, validators, queryset=queryset, **kwargs
-        )
+        super().__init__(label, validators, queryset=queryset, **kwargs)
 
 
 class ModelSelectMultipleField(QuerySetSelectMultipleField):
@@ -182,9 +180,7 @@ class ModelSelectMultipleField(QuerySetSelectMultipleField):
 
     def __init__(self, label="", validators=None, model=None, **kwargs):
         queryset = kwargs.pop("queryset", model.objects)
-        super(ModelSelectMultipleField, self).__init__(
-            label, validators, queryset=queryset, **kwargs
-        )
+        super().__init__(label, validators, queryset=queryset, **kwargs)
 
 
 class CustomModelConverter:

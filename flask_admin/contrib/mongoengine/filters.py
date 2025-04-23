@@ -102,9 +102,7 @@ class FilterEmpty(BaseMongoEngineFilter, filters.BaseBooleanFilter):
 
 class FilterInList(BaseMongoEngineFilter):
     def __init__(self, column, name, options=None, data_type=None):
-        super().__init__(
-            column, name, options, data_type="select2-tags"
-        )
+        super().__init__(column, name, options, data_type="select2-tags")
 
     def clean(self, value):
         return [v.strip() for v in value.split(",") if v.strip()]
@@ -205,9 +203,7 @@ class DateTimeSmallerFilter(FilterSmaller, filters.BaseDateTimeFilter):
 
 class DateTimeBetweenFilter(BaseMongoEngineFilter, filters.BaseDateTimeBetweenFilter):
     def __init__(self, column, name, options=None, data_type=None):
-        super().__init__(
-            column, name, options, data_type="datetimerangepicker"
-        )
+        super().__init__(column, name, options, data_type="datetimerangepicker")
 
     def apply(self, query, value):
         start, end = value

@@ -32,13 +32,11 @@ class MongoFileInput:
                 "name": escape(data.name),
                 "content_type": escape(data.content_type),
                 "size": data.length // 1024,
-                "marker": "_%s-delete" % field.name,
+                "marker": f"_{field.name}-delete",
             }
 
-        return Markup(
-            "%s<input %s>"
-            % (placeholder, html_params(name=field.name, type="file", **kwargs))
-        )
+        params = html_params(name=field.name, type="file", **kwargs)
+        return Markup(f"{placeholder}<input {params}>")
 
 
 class MongoImageInput:
@@ -60,10 +58,8 @@ class MongoImageInput:
             args = helpers.make_thumb_args(field.data)
             placeholder = self.template % {
                 "thumb": get_url(".api_file_view", **args),
-                "marker": "_%s-delete" % field.name,
+                "marker": f"_{field.name}-delete",
             }
 
-        return Markup(
-            "%s<input %s>"
-            % (placeholder, html_params(name=field.name, type="file", **kwargs))
-        )
+        params = html_params(name=field.name, type="file", **kwargs)
+        return Markup(f"{placeholder}<input {params}>")
