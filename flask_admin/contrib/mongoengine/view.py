@@ -277,7 +277,7 @@ class ModelView(BaseModelView):
         """
         self._search_fields = []
 
-        super(ModelView, self).__init__(
+        super().__init__(
             model,
             name,
             category,
@@ -302,7 +302,7 @@ class ModelView(BaseModelView):
         self._form_subdocuments = convert_subdocuments(self.form_subdocuments)
 
         # Cache other properties
-        super(ModelView, self)._refresh_cache()
+        super()._refresh_cache()
 
     def _process_ajax_references(self):
         """
@@ -313,7 +313,7 @@ class ModelView(BaseModelView):
         and will precompute AJAX references for them ensuring that
         subdocuments can also use AJAX to populate their ReferenceFields.
         """
-        references = super(ModelView, self)._process_ajax_references()
+        references = super()._process_ajax_references()
         return process_ajax_references(references, self)
 
     def _get_model_fields(self, model=None):
@@ -395,7 +395,7 @@ class ModelView(BaseModelView):
                 if field_type not in self.allowed_search_types:
                     raise Exception(
                         "Can only search on text columns. "
-                        + 'Failed to setup search for "%s"' % p
+                        + f'Failed to setup search for "{p}"'
                     )
 
                 self._search_fields.append(p)
@@ -415,7 +415,7 @@ class ModelView(BaseModelView):
             attr = name
 
         if attr is None:
-            raise Exception("Failed to find field for filter: %s" % name)
+            raise Exception(f"Failed to find field for filter: {name}")
 
         # Find name
         visible_name = None
@@ -502,10 +502,10 @@ class ModelView(BaseModelView):
             if type(field) == mongoengine.ReferenceField:
                 import re
 
-                regex = re.compile(".*%s.*" % term)
+                regex = re.compile(".*{term}.*")
             else:
                 regex = term
-            flt = {"%s__%s" % (field.name, op): regex}
+            flt = {f"{field.name}__{op}": regex}
             q = mongoengine.Q(**flt)
 
             if criteria is None:
@@ -562,7 +562,8 @@ class ModelView(BaseModelView):
 
         # Sorting
         if sort_column:
-            query = query.order_by("%s%s" % ("-" if sort_desc else "", sort_column))
+            sort_op = "-" if sort_desc else ""
+            query = query.order_by(f"{sort_op}{sort_column}")
         else:
             order = self._get_default_order()
 
@@ -712,7 +713,7 @@ class ModelView(BaseModelView):
         if name == "delete" and not self.can_delete:
             return False
 
-        return super(ModelView, self).is_action_allowed(name)
+        return super().is_action_allowed(name)
 
     @action(
         "delete",

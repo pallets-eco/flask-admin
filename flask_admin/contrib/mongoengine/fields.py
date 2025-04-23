@@ -25,7 +25,7 @@ class ModelFormField(InlineFormField):
     """
 
     def __init__(self, model, view, form_class, form_opts=None, **kwargs):
-        super(ModelFormField, self).__init__(form_class, **kwargs)
+        super().__init__(form_class, **kwargs)
 
         self.model = model
         if isinstance(self.model, str):
@@ -54,17 +54,17 @@ class MongoFileField(fields.FileField):
     widget = widgets.MongoFileInput()
 
     def __init__(self, label=None, validators=None, **kwargs):
-        super(MongoFileField, self).__init__(label, validators, **kwargs)
+        super().__init__(label, validators, **kwargs)
 
         self._should_delete = False
 
     def process(self, formdata, data=unset_value):
         if formdata:
-            marker = "_%s-delete" % self.name
+            marker = f"_{self.name}-delete"
             if marker in formdata:
                 self._should_delete = True
 
-        return super(MongoFileField, self).process(formdata, data)
+        return super().process(formdata, data)
 
     def populate_obj(self, obj, name):
         field = getattr(obj, name, None)

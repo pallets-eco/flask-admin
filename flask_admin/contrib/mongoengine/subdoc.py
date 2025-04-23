@@ -4,7 +4,7 @@ from flask_admin.model.form import InlineBaseFormAdmin
 
 class EmbeddedForm(InlineBaseFormAdmin):
     def __init__(self, **kwargs):
-        super(EmbeddedForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self._form_subdocuments = convert_subdocuments(
             getattr(self, "form_subdocuments", {})
@@ -22,8 +22,7 @@ def convert_subdocuments(values):
         else:
             raise ValueError(
                 "Invalid subdocument type: expecting dict or "
-                "instance of flask_admin.contrib.mongoengine.EmbeddedForm, got %s"
-                % type(p)
+                f"instance of flask_admin.contrib.mongoengine.EmbeddedForm, got {p}"
             )
 
     return result
