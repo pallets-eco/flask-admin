@@ -1,7 +1,5 @@
 from mongoengine.base import get_document
-
 from werkzeug.datastructures import FileStorage
-
 from wtforms import fields
 
 try:
@@ -9,8 +7,9 @@ try:
 except ImportError:
     from wtforms.utils import unset_value
 
-from . import widgets
 from flask_admin.model.fields import InlineFormField
+
+from . import widgets
 
 
 def is_empty(file_object):
@@ -22,8 +21,9 @@ def is_empty(file_object):
 
 class ModelFormField(InlineFormField):
     """
-        Customized ModelFormField for MongoEngine EmbeddedDocuments.
+    Customized ModelFormField for MongoEngine EmbeddedDocuments.
     """
+
     def __init__(self, model, view, form_class, form_opts=None, **kwargs):
         super(ModelFormField, self).__init__(form_class, **kwargs)
 
@@ -48,8 +48,9 @@ class ModelFormField(InlineFormField):
 
 class MongoFileField(fields.FileField):
     """
-        GridFS file field.
+    GridFS file field.
     """
+
     widget = widgets.MongoFileInput()
 
     def __init__(self, label=None, validators=None, **kwargs):
@@ -59,7 +60,7 @@ class MongoFileField(fields.FileField):
 
     def process(self, formdata, data=unset_value):
         if formdata:
-            marker = '_%s-delete' % self.name
+            marker = "_%s-delete" % self.name
             if marker in formdata:
                 self._should_delete = True
 
@@ -79,14 +80,16 @@ class MongoFileField(fields.FileField):
                 else:
                     func = field.replace
 
-                func(self.data.stream,
-                     filename=self.data.filename,
-                     content_type=self.data.content_type)
+                func(
+                    self.data.stream,
+                    filename=self.data.filename,
+                    content_type=self.data.content_type,
+                )
 
 
 class MongoImageField(MongoFileField):
     """
-        GridFS image field.
+    GridFS image field.
     """
 
     widget = widgets.MongoImageInput()
