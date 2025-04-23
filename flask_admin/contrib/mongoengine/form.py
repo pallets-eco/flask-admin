@@ -1,18 +1,26 @@
 import decimal
 
 from bson import ObjectId
-from mongoengine import ReferenceField, ListField
-from mongoengine.base import BaseDocument, DocumentMetaclass, get_document
+from mongoengine import ListField
+from mongoengine import ReferenceField
+from mongoengine.base import BaseDocument
+from mongoengine.base import DocumentMetaclass
+from mongoengine.base import get_document
 from mongoengine.queryset import DoesNotExist
+from wtforms import fields
+from wtforms import validators
 
-from wtforms import fields, validators
 from flask_admin import form
-from flask_admin.model.form import FieldPlaceholder
-from flask_admin.model.fields import InlineFieldList, AjaxSelectField, AjaxSelectMultipleField
-from flask_admin.form.validators import FieldListInputRequired
 from flask_admin._compat import iteritems
+from flask_admin.form.validators import FieldListInputRequired
+from flask_admin.model.fields import AjaxSelectField
+from flask_admin.model.fields import AjaxSelectMultipleField
+from flask_admin.model.fields import InlineFieldList
+from flask_admin.model.form import FieldPlaceholder
 
-from .fields import ModelFormField, MongoFileField, MongoImageField
+from .fields import ModelFormField
+from .fields import MongoFileField
+from .fields import MongoImageField
 from .subdoc import EmbeddedForm
 
 
@@ -127,7 +135,6 @@ class QuerySetSelectMultipleField(QuerySetSelectField):
         blank_text="---",
         **kwargs,
     ):
-
         super(QuerySetSelectMultipleField, self).__init__(
             label, validators, queryset, label_attr, allow_blank, blank_text, **kwargs
         )
@@ -182,39 +189,39 @@ class ModelSelectMultipleField(QuerySetSelectMultipleField):
 
 class CustomModelConverter:
     """
-        Customized MongoEngine form conversion class.
+    Customized MongoEngine form conversion class.
 
-        Injects various Flask-Admin widgets and handles lists with
-        customized InlineFieldList field.
+    Injects various Flask-Admin widgets and handles lists with
+    customized InlineFieldList field.
     """
 
     def __init__(self, view):
         self.view = view
         self.converters = {
-            'StringField': self.conv_String,
-            'URLField': self.conv_URL,
-            'EmailField': self.conv_Email,
-            'IntField': self.conv_Int,
-            'FloatField': self.conv_Float,
-            'DecimalField': self.conv_Decimal,
-            'BooleanField': self.conv_Boolean,
-            'DateField': self.conv_Date,
-            'BinaryField': self.conv_Binary,
-            'DictField': self.conv_Dict,
-            'SortedListField': self.conv_SortedList,
-            'GeoPointField': self.conv_GeoLocation,
-            'ObjectIdField': self.conv_ObjectId,
-            'GenericReferenceField': self.conv_GenericReference,
-            'DateTimeField': self.conv_DateTime,
-            'ListField': self.conv_List,
-            'EmbeddedDocumentField': self.conv_EmbeddedDocument,
-            'ReferenceField': self.conv_Reference,
-            'FileField': self.conv_File,
-            'ImageField': self.conv_image,
+            "StringField": self.conv_String,
+            "URLField": self.conv_URL,
+            "EmailField": self.conv_Email,
+            "IntField": self.conv_Int,
+            "FloatField": self.conv_Float,
+            "DecimalField": self.conv_Decimal,
+            "BooleanField": self.conv_Boolean,
+            "DateField": self.conv_Date,
+            "BinaryField": self.conv_Binary,
+            "DictField": self.conv_Dict,
+            "SortedListField": self.conv_SortedList,
+            "GeoPointField": self.conv_GeoLocation,
+            "ObjectIdField": self.conv_ObjectId,
+            "GenericReferenceField": self.conv_GenericReference,
+            "DateTimeField": self.conv_DateTime,
+            "ListField": self.conv_List,
+            "EmbeddedDocumentField": self.conv_EmbeddedDocument,
+            "ReferenceField": self.conv_Reference,
+            "FileField": self.conv_File,
+            "ImageField": self.conv_image,
         }
 
     def _get_field_override(self, name):
-        form_overrides = getattr(self.view, 'form_overrides', None)
+        form_overrides = getattr(self.view, "form_overrides", None)
 
         if form_overrides:
             return form_overrides.get(name)
@@ -222,7 +229,7 @@ class CustomModelConverter:
         return None
 
     def _get_subdocument_config(self, name):
-        config = getattr(self.view, '_form_subdocuments', {})
+        config = getattr(self.view, "_form_subdocuments", {})
 
         p = config.get(name)
         if not p:
@@ -246,42 +253,42 @@ class CustomModelConverter:
             return form.recreate_field(field.field)
 
         kwargs = {
-            'label': getattr(field, 'verbose_name', None),
-            'description': getattr(field, 'help_text', ''),
-            'validators': [],
-            'filters': [],
-            'default': field.default
+            "label": getattr(field, "verbose_name", None),
+            "description": getattr(field, "help_text", ""),
+            "validators": [],
+            "filters": [],
+            "default": field.default,
         }
 
         if field_args:
             kwargs.update(field_args)
 
-        if kwargs['validators']:
+        if kwargs["validators"]:
             # Create a copy of the list since we will be modifying it.
-            kwargs['validators'] = list(kwargs['validators'])
+            kwargs["validators"] = list(kwargs["validators"])
 
         if field.required:
             if isinstance(field, ListField):
-                kwargs['validators'].append(FieldListInputRequired())
+                kwargs["validators"].append(FieldListInputRequired())
             else:
-                kwargs['validators'].append(validators.InputRequired())
+                kwargs["validators"].append(validators.InputRequired())
         elif not isinstance(field, ListField):
-            kwargs['validators'].append(validators.Optional())
+            kwargs["validators"].append(validators.Optional())
 
         ftype = type(field).__name__
 
         if field.choices:
-            kwargs['choices'] = list(self._convert_choices(field.choices))
+            kwargs["choices"] = list(self._convert_choices(field.choices))
 
             if ftype in self.converters:
                 kwargs["coerce"] = self.coerce(ftype)
-            if kwargs.pop('multiple', False):
+            if kwargs.pop("multiple", False):
                 return fields.SelectMultipleField(**kwargs)
             return fields.SelectField(**kwargs)
 
         ftype = type(field).__name__
 
-        if hasattr(field, 'to_form_field'):
+        if hasattr(field, "to_form_field"):
             return field.to_form_field(model, kwargs)
 
         override = self._get_field_override(field.name)
@@ -375,15 +382,18 @@ class CustomModelConverter:
     # Existing converters
 
     def conv_DateTime(self, model, field, kwargs):
-        kwargs['widget'] = form.DateTimePickerWidget()
+        kwargs["widget"] = form.DateTimePickerWidget()
         return fields.DateTimeField(**kwargs)
 
     def conv_List(self, model, field, kwargs):
         if field.field is None:
-            raise ValueError('ListField "%s" must have field specified for model %s' % (field.name, model))
+            raise ValueError(
+                'ListField "%s" must have field specified for model %s'
+                % (field.name, model)
+            )
 
         if isinstance(field.field, ReferenceField):
-            loader = getattr(self.view, '_form_ajax_refs', {}).get(field.name)
+            loader = getattr(self.view, "_form_ajax_refs", {}).get(field.name)
             if loader:
                 return AjaxSelectMultipleField(loader, **kwargs)
 
@@ -394,7 +404,7 @@ class CustomModelConverter:
         converter = self.clone_converter(view)
 
         if field.field.choices:
-            kwargs['multiple'] = True
+            kwargs["multiple"] = True
             return converter.convert(model, field.field, kwargs)
 
         unbound_field = converter.convert(model, field.field, {})
@@ -402,31 +412,38 @@ class CustomModelConverter:
 
     def conv_EmbeddedDocument(self, model, field, kwargs):
         # FormField does not support validators
-        kwargs['validators'] = []
+        kwargs["validators"] = []
 
         view = self._get_subdocument_config(field.name)
 
-        form_opts = form.FormOpts(widget_args=getattr(view, 'form_widget_args', None),
-                                  form_rules=view._form_rules)
+        form_opts = form.FormOpts(
+            widget_args=getattr(view, "form_widget_args", None),
+            form_rules=view._form_rules,
+        )
 
         form_class = view.get_form()
         if form_class is None:
             converter = self.clone_converter(view)
-            form_class = get_form(field.document_type_obj, converter,
-                                  base_class=view.form_base_class or form.BaseForm,
-                                  only=view.form_columns,
-                                  exclude=view.form_excluded_columns,
-                                  field_args=view.form_args,
-                                  extra_fields=view.form_extra_fields)
+            form_class = get_form(
+                field.document_type_obj,
+                converter,
+                base_class=view.form_base_class or form.BaseForm,
+                only=view.form_columns,
+                exclude=view.form_excluded_columns,
+                field_args=view.form_args,
+                extra_fields=view.form_extra_fields,
+            )
 
             form_class = view.postprocess_form(form_class)
 
-        return ModelFormField(field.document_type_obj, view, form_class, form_opts=form_opts, **kwargs)
+        return ModelFormField(
+            field.document_type_obj, view, form_class, form_opts=form_opts, **kwargs
+        )
 
     def conv_Reference(self, model, field, kwargs):
-        kwargs['allow_blank'] = not field.required
+        kwargs["allow_blank"] = not field.required
 
-        loader = getattr(self.view, '_form_ajax_refs', {}).get(field.name)
+        loader = getattr(self.view, "_form_ajax_refs", {}).get(field.name)
         if loader:
             return AjaxSelectField(loader, **kwargs)
 
@@ -440,21 +457,24 @@ class CustomModelConverter:
 
     def coerce(self, field_type):
         coercions = {
-            'IntField': int,
-            'BooleanField': bool,
-            'FloatField': float,
-            'DecimalField': decimal.Decimal,
-            'ObjectIdField': ObjectId,
+            "IntField": int,
+            "BooleanField": bool,
+            "FloatField": float,
+            "DecimalField": decimal.Decimal,
+            "ObjectIdField": ObjectId,
         }
         return coercions.get(field_type, str)
 
 
-def get_form(model, converter,
-             base_class=form.BaseForm,
-             only=None,
-             exclude=None,
-             field_args=None,
-             extra_fields=None):
+def get_form(
+    model,
+    converter,
+    base_class=form.BaseForm,
+    only=None,
+    exclude=None,
+    field_args=None,
+    extra_fields=None,
+):
     """
     Create a wtforms Form for a given mongoengine Document schema::
 
@@ -484,13 +504,15 @@ def get_form(model, converter,
         model = get_document(model)
 
     if not isinstance(model, (BaseDocument, DocumentMetaclass)):
-        raise TypeError('Model must be a mongoengine Document schema')
+        raise TypeError("Model must be a mongoengine Document schema")
 
     field_args = field_args or {}
 
     # Find properties
-    properties = sorted(((k, v) for k, v in iteritems(model._fields)),
-                        key=lambda v: v[1].creation_counter)
+    properties = sorted(
+        ((k, v) for k, v in iteritems(model._fields)),
+        key=lambda v: v[1].creation_counter,
+    )
 
     if only:
         props = dict(properties)
@@ -503,7 +525,7 @@ def get_form(model, converter,
             if p is not None:
                 return p
 
-            raise ValueError('Invalid model property name %s.%s' % (model, name))
+            raise ValueError("Invalid model property name %s.%s" % (model, name))
 
         properties = ((p, find(p)) for p in only)
     elif exclude:
@@ -521,5 +543,5 @@ def get_form(model, converter,
         for name, field in iteritems(extra_fields):
             field_dict[name] = form.recreate_field(field)
 
-    field_dict['model_class'] = model
-    return type(model.__name__ + 'Form', (base_class,), field_dict)
+    field_dict["model_class"] = model
+    return type(model.__name__ + "Form", (base_class,), field_dict)

@@ -6,7 +6,9 @@ class EmbeddedForm(InlineBaseFormAdmin):
     def __init__(self, **kwargs):
         super(EmbeddedForm, self).__init__(**kwargs)
 
-        self._form_subdocuments = convert_subdocuments(getattr(self, 'form_subdocuments', {}))
+        self._form_subdocuments = convert_subdocuments(
+            getattr(self, "form_subdocuments", {})
+        )
 
 
 def convert_subdocuments(values):
@@ -18,7 +20,10 @@ def convert_subdocuments(values):
         elif isinstance(p, EmbeddedForm):
             result[name] = p
         else:
-            raise ValueError('Invalid subdocument type: expecting dict or '
-                             'instance of flask_admin.contrib.mongoengine.EmbeddedForm, got %s' % type(p))
+            raise ValueError(
+                "Invalid subdocument type: expecting dict or "
+                "instance of flask_admin.contrib.mongoengine.EmbeddedForm, got %s"
+                % type(p)
+            )
 
     return result
