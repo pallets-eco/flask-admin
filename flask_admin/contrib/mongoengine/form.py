@@ -56,7 +56,7 @@ class QuerySetSelectField(fields.SelectFieldBase):
     ):
         """Init docstring placeholder."""
 
-        super(QuerySetSelectField, self).__init__(label, validators, **kwargs)
+        super().__init__(label, validators, **kwargs)
         self.label_attr = label_attr
         self.allow_blank = allow_blank
         self.blank_text = blank_text
@@ -388,8 +388,7 @@ class CustomModelConverter:
     def conv_List(self, model, field, kwargs):
         if field.field is None:
             raise ValueError(
-                'ListField "%s" must have field specified for model %s'
-                % (field.name, model)
+                f'ListField "{field.name}" must have field specified for model {model}'
             )
 
         if isinstance(field.field, ReferenceField):
@@ -525,7 +524,7 @@ def get_form(
             if p is not None:
                 return p
 
-            raise ValueError("Invalid model property name %s.%s" % (model, name))
+            raise ValueError(f"Invalid model property name {model}.{name}")
 
         properties = ((p, find(p)) for p in only)
     elif exclude:
