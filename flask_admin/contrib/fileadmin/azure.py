@@ -1,6 +1,7 @@
 import io
 import os.path as op
 import time
+import typing as t
 from datetime import datetime
 from datetime import timedelta
 
@@ -8,6 +9,7 @@ try:
     from azure.core.exceptions import ResourceExistsError
     from azure.storage.blob import BlobProperties
     from azure.storage.blob import BlobServiceClient
+    from azure.storage.blob import ContainerClient
 except ImportError as e:
     raise Exception(
         "Could not import `azure.storage.blob`. "
@@ -61,29 +63,31 @@ class AzureStorage:
             pass
 
     @property
-    def _container_client(self):
+    def _container_client(self) -> ContainerClient:
         return self._client.get_container_client(self._container_name)
 
     @classmethod
-    def _get_blob_last_modified(cls, blob: BlobProperties):
+    def _get_blob_last_modified(cls, blob: BlobProperties) -> float:
         last_modified = blob.last_modified
         tzinfo = last_modified.tzinfo
         epoch = last_modified - datetime(1970, 1, 1, tzinfo=tzinfo)
         return epoch.total_seconds()
 
     @classmethod
-    def _ensure_blob_path(cls, path):
+    def _ensure_blob_path(cls, path: t.Optional[str]) -> t.Optional[str]:
         if path is None:
             return None
 
         path_parts = path.split(op.sep)
         return cls.separator.join(path_parts).lstrip(cls.separator)
 
-    def get_files(self, path, directory):
+    def get_files(
+        self, path: str, directory: t.Optional[str]
+    ) -> list[tuple[str, str, bool, int, float]]:
         if directory and path != directory:
             path = op.join(path, directory)
 
-        path = self._ensure_blob_path(path)
+        path = self._ensure_blob_path(path)  # type: ignore[assignment]
         directory = self._ensure_blob_path(directory)
 
         path_parts = path.split(self.separator) if path else []
@@ -112,7 +116,7 @@ class AzureStorage:
                 folder = self.separator.join(next_level_folder)
                 folders.add(folder)
 
-        folders.discard(directory)
+        folders.discard(directory)  # type: ignore[arg-type]
         for folder in folders:
             name = folder.split(self.separator)[-1]
             rel_path = folder
@@ -123,7 +127,7 @@ class AzureStorage:
 
         return files
 
-    def is_dir(self, path):
+    def is_dir(self, path: t.Optional[str]) -> bool:
         path = self._ensure_blob_path(path)
 
         blobs = self._container_client.list_blobs(name_starts_with=path)
@@ -132,7 +136,7 @@ class AzureStorage:
                 return True
         return False
 
-    def path_exists(self, path):
+    def path_exists(self, path: t.Optional[str]) -> bool:
         path = self._ensure_blob_path(path)
 
         if path == self.get_base_path():
@@ -146,10 +150,10 @@ class AzureStorage:
             return True
         return False
 
-    def get_base_path(self):
+    def get_base_path(self) -> str:
         return ""
 
-    def get_breadcrumbs(self, path):
+    def get_breadcrumbs(self, path: t.Optional[str]) -> list[tuple[str, str]]:
         path = self._ensure_blob_path(path)
 
         accumulator = []
@@ -160,7 +164,7 @@ class AzureStorage:
                 breadcrumbs.append((folder, self.separator.join(accumulator)))
         return breadcrumbs
 
-    def send_file(self, file_path):
+    def send_file(self, file_path: str) -> flask.Response:
         path = self._ensure_blob_path(file_path)
         if path is None:
             raise ValueError("No path provided")
@@ -172,41 +176,44 @@ class AzureStorage:
         blob.readinto(blob_file)
         blob_file.seek(0)
         return flask.send_file(
-            blob_file, mimetype=mime_type, as_attachment=True, download_name=path
+            blob_file,
+            mimetype=mime_type,
+            as_attachment=True,
+            download_name=path,  # type: ignore[call-arg]
         )
 
-    def read_file(self, path):
+    def read_file(self, path: t.Optional[str]) -> bytes:
         path = self._ensure_blob_path(path)
         if path is None:
             raise ValueError("No path provided")
         blob = self._container_client.get_blob_client(path).download_blob()
         return blob.readall()
 
-    def write_file(self, path, content):
+    def write_file(self, path: t.Optional[str], content: t.Any) -> None:
         path = self._ensure_blob_path(path)
         if path is None:
             raise ValueError("No path provided")
         self._container_client.upload_blob(path, content, overwrite=True)
 
-    def save_file(self, path, file_data):
+    def save_file(self, path: t.Optional[str], file_data: t.Any) -> None:
         path = self._ensure_blob_path(path)
         if path is None:
             raise ValueError("No path provided")
         self._container_client.upload_blob(path, file_data.stream)
 
-    def delete_tree(self, directory):
+    def delete_tree(self, directory: t.Optional[str]) -> None:
         directory = self._ensure_blob_path(directory)
 
         for blob in self._container_client.list_blobs(directory):
             self._container_client.delete_blob(blob.name)
 
-    def delete_file(self, file_path):
+    def delete_file(self, file_path: t.Optional[str]) -> None:
         file_path = self._ensure_blob_path(file_path)
         if file_path is None:
             raise ValueError("No path provided")
         self._container_client.delete_blob(file_path)
 
-    def make_dir(self, path, directory):
+    def make_dir(self, path: t.Optional[str], directory: t.Optional[str]) -> None:
         path = self._ensure_blob_path(path)
         directory = self._ensure_blob_path(directory)
         if path is None or directory is None:
@@ -215,7 +222,7 @@ class AzureStorage:
         blob = blob.lstrip(self.separator)
         self._container_client.upload_blob(blob, b"")
 
-    def _copy_blob(self, src, dst):
+    def _copy_blob(self, src: str, dst: str) -> None:
         src_blob_client = self._container_client.get_blob_client(src)
         dst_blob_client = self._container_client.get_blob_client(dst)
         copy_result = dst_blob_client.start_copy_from_url(src_blob_client.url)
@@ -236,17 +243,21 @@ class AzureStorage:
                 dst_blob_client.abort_copy(copy_id)
             raise Exception(f"Copy operation failed: {status}")
 
-    def _rename_file(self, src, dst):
+    def _rename_file(self, src: str, dst: str) -> None:
         self._copy_blob(src, dst)
         self.delete_file(src)
 
-    def _rename_directory(self, src, dst):
+    def _rename_directory(self, src: str, dst: str) -> None:
         for blob in self._container_client.list_blobs(src):
             self._rename_file(blob.name, blob.name.replace(src, dst, 1))
 
-    def rename_path(self, src, dst):
-        src = self._ensure_blob_path(src)
-        dst = self._ensure_blob_path(dst)
+    def rename_path(
+        self,
+        src: str,
+        dst: str,
+    ) -> None:
+        src = t.cast(str, self._ensure_blob_path(src))
+        dst = t.cast(str, self._ensure_blob_path(dst))
 
         if self.is_dir(src):
             self._rename_directory(src, dst)
@@ -276,10 +287,10 @@ class AzureFileAdmin(BaseFileAdmin):
 
     def __init__(
         self,
-        blob_service_client,
-        container_name,
-        *args,
-        **kwargs,
-    ):
+        blob_service_client: BlobServiceClient,
+        container_name: str,
+        *args: t.Any,
+        **kwargs: t.Any,
+    ) -> None:
         storage = AzureStorage(blob_service_client, container_name)
-        super().__init__(*args, storage=storage, **kwargs)
+        super().__init__(*args, storage=storage, **kwargs)  # type: ignore[misc, arg-type]

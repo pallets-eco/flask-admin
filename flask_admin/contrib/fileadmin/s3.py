@@ -1,24 +1,32 @@
 import functools
+import typing as t
 
+from botocore.client import BaseClient
 from botocore.exceptions import ClientError
 from flask import redirect
+from werkzeug import Response
 
 from flask_admin.babel import gettext
 
+from ..._types import T_RESPONSE
 from . import BaseFileAdmin
 
 
-def _strip_leading_slash_from(arg_name):
+def _strip_leading_slash_from(
+    arg_name: str,
+) -> t.Callable[[t.Any], t.Callable[[tuple[t.Any, ...], dict[str, t.Any]], t.Any]]:
     """Strips leading slashes from the specified argument of the decorated function.
 
     This is used to clean S3 object/key names because the base FileAdmin layers passes
     paths with leading slashes, but S3 doesn't want and doesn't handle this.
     """
 
-    def decorator(func):
+    def decorator(
+        func: t.Callable,
+    ) -> t.Callable[[tuple[t.Any, ...], dict[str, t.Any]], t.Any]:
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            args = list(args)
+        def wrapper(*args: t.Any, **kwargs: t.Any) -> t.Any:
+            args: list = list(args)  # type: ignore[no-redef]
             arg_names = func.__code__.co_varnames[: func.__code__.co_argcount]
 
             if arg_name in arg_names:
@@ -26,7 +34,7 @@ def _strip_leading_slash_from(arg_name):
 
                 # Positional argument found
                 if index < len(args):
-                    args[index] = args[index].lstrip("/")
+                    args[index] = args[index].lstrip("/")  # type: ignore[index]
 
                 # Keyword argument found
                 elif arg_name in kwargs:
@@ -55,7 +63,7 @@ class S3Storage:
         fileadmin_view = MyS3Admin(storage=S3Storage(...))
     """
 
-    def __init__(self, s3_client, bucket_name):
+    def __init__(self, s3_client: BaseClient, bucket_name: str) -> None:
         """
         Constructor
 
@@ -74,13 +82,13 @@ class S3Storage:
         self.separator = "/"
 
     @_strip_leading_slash_from("path")
-    def get_files(self, path, directory):
-        def _strip_path(name, path):
+    def get_files(self, path: str, directory: str) -> list:
+        def _strip_path(name: str, path: str) -> str:
             if name.startswith(path):
                 return name.replace(path, "", 1)
             return name
 
-        def _remove_trailing_slash(name):
+        def _remove_trailing_slash(name: str) -> str:
             return name[:-1]
 
         files = []
@@ -113,7 +121,7 @@ class S3Storage:
 
         return directories + files
 
-    def _get_bucket_list_prefix(self, path):
+    def _get_bucket_list_prefix(self, path: str) -> str:
         parts = path.split(self.separator)
         if len(parts) == 1:
             search = ""
@@ -121,7 +129,7 @@ class S3Storage:
             search = self.separator.join(parts[:-1]) + self.separator
         return search
 
-    def _get_path_keys(self, path):
+    def _get_path_keys(self, path: str) -> set[str]:
         prefix = self._get_bucket_list_prefix(path)
         try:
             path_keys = set()
@@ -144,22 +152,22 @@ class S3Storage:
             raise ValueError(f"Failed to get path keys: {e}") from e
 
     @_strip_leading_slash_from("path")
-    def is_dir(self, path):
+    def is_dir(self, path: str) -> bool:
         keys = self._get_path_keys(path)
         return path + self.separator in keys
 
     @_strip_leading_slash_from("path")
-    def path_exists(self, path):
+    def path_exists(self, path: str) -> bool:
         if path == "":
             return True
         keys = self._get_path_keys(path)
         return path in keys or (path + self.separator) in keys
 
-    def get_base_path(self):
+    def get_base_path(self) -> str:
         return ""
 
     @_strip_leading_slash_from("path")
-    def get_breadcrumbs(self, path):
+    def get_breadcrumbs(self, path: str) -> list[tuple[str, str]]:
         accumulator = []
         breadcrumbs = []
         for n in path.split(self.separator):
@@ -168,9 +176,9 @@ class S3Storage:
         return breadcrumbs
 
     @_strip_leading_slash_from("file_path")
-    def send_file(self, file_path):
+    def send_file(self, file_path: str) -> Response:
         try:
-            response = self.s3_client.generate_presigned_url(
+            response = self.s3_client.generate_presigned_url(  # type: ignore[attr-defined]
                 "get_object",
                 Params={"Bucket": self.bucket_name, "Key": file_path},
                 ExpiresIn=3600,
@@ -180,9 +188,9 @@ class S3Storage:
             raise ValueError(f"Failed to generate presigned URL: {e}") from e
 
     @_strip_leading_slash_from("path")
-    def save_file(self, path, file_data):
+    def save_file(self, path: str, file_data: t.Any) -> None:
         try:
-            self.s3_client.upload_fileobj(
+            self.s3_client.upload_fileobj(  # type: ignore[attr-defined]
                 file_data.stream,
                 self.bucket_name,
                 path,
@@ -192,67 +200,75 @@ class S3Storage:
             raise ValueError(f"Failed to upload file: {e}") from e
 
     @_strip_leading_slash_from("directory")
-    def delete_tree(self, directory):
+    def delete_tree(self, directory: str) -> None:
         self._check_empty_directory(directory)
-        self.delete_file(directory + self.separator)
+        self.delete_file(directory + self.separator)  # type: ignore[misc, arg-type]
 
     @_strip_leading_slash_from("file_path")
-    def delete_file(self, file_path):
+    def delete_file(self, file_path: str) -> None:
         try:
-            self.s3_client.delete_object(Bucket=self.bucket_name, Key=file_path)
+            self.s3_client.delete_object(  # type: ignore[attr-defined]
+                Bucket=self.bucket_name, Key=file_path
+            )
         except ClientError as e:
             raise ValueError(f"Failed to delete file: {e}") from e
 
     @_strip_leading_slash_from("path")
     @_strip_leading_slash_from("directory")
-    def make_dir(self, path, directory):
+    def make_dir(self, path: str, directory: str) -> None:
         if path:
             dir_path = self.separator.join([path, (directory + self.separator)])
         else:
             dir_path = directory + self.separator
 
         try:
-            self.s3_client.put_object(Bucket=self.bucket_name, Key=dir_path, Body="")
+            self.s3_client.put_object(  # type: ignore[attr-defined]
+                Bucket=self.bucket_name, Key=dir_path, Body=""
+            )
         except ClientError as e:
             raise ValueError(f"Failed to create directory: {e}") from e
 
-    def _check_empty_directory(self, path):
+    def _check_empty_directory(self, path: str) -> bool:
         if not self._is_directory_empty(path):
             raise ValueError(gettext("Cannot operate on non empty directories"))
         return True
 
     @_strip_leading_slash_from("src")
     @_strip_leading_slash_from("dst")
-    def rename_path(self, src, dst):
-        if self.is_dir(src):
+    def rename_path(self, src: str, dst: str) -> None:
+        if self.is_dir(src):  # type: ignore[misc, arg-type]
             self._check_empty_directory(src)
             src += self.separator
             dst += self.separator
         try:
             copy_source = {"Bucket": self.bucket_name, "Key": src}
-            self.s3_client.copy_object(
+            self.s3_client.copy_object(  # type: ignore[attr-defined]
                 CopySource=copy_source, Bucket=self.bucket_name, Key=dst
             )
-            self.delete_file(src)
+            self.delete_file(src)  # type: ignore[misc, arg-type]
         except ClientError as e:
             raise ValueError(f"Failed to rename path: {e}") from e
 
-    def _is_directory_empty(self, path):
+    def _is_directory_empty(self, path: str) -> bool:
         keys = self._get_path_keys(path + self.separator)
         return len(keys) == 0
 
     @_strip_leading_slash_from("path")
-    def read_file(self, path):
+    def read_file(self, path: str) -> T_RESPONSE:
         try:
-            response = self.s3_client.get_object(Bucket=self.bucket_name, Key=path)
+            response = self.s3_client.get_object(  # type: ignore[attr-defined]
+                Bucket=self.bucket_name, Key=path
+            )
             return response["Body"].read().decode("utf-8")
         except ClientError as e:
             raise ValueError(f"Failed to read file: {e}") from e
 
     @_strip_leading_slash_from("path")
-    def write_file(self, path, content):
+    def write_file(self, path: str, content: str) -> None:
         try:
-            self.s3_client.put_object(Bucket=self.bucket_name, Key=path, Body=content)
+            self.s3_client.put_object(  # type: ignore[attr-defined]
+                Bucket=self.bucket_name, Key=path, Body=content
+            )
         except ClientError as e:
             raise ValueError(f"Failed to write file: {e}") from e
 
@@ -282,10 +298,10 @@ class S3FileAdmin(BaseFileAdmin):
 
     def __init__(
         self,
-        s3_client,
-        bucket_name,
-        *args,
-        **kwargs,
-    ):
+        s3_client: BaseClient,
+        bucket_name: str,
+        *args: t.Any,
+        **kwargs: t.Any,
+    ) -> None:
         storage = S3Storage(s3_client, bucket_name)
-        super().__init__(*args, storage=storage, **kwargs)
+        super().__init__(*args, storage=storage, **kwargs)  # type: ignore[misc, arg-type]

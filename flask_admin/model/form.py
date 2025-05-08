@@ -1,6 +1,10 @@
 import inspect
+import typing as t
 import warnings
+from typing import Callable
 
+from wtforms import Field
+from wtforms import Form
 from wtforms.fields import HiddenField
 from wtforms.fields.core import UnboundField
 from wtforms.validators import InputRequired
@@ -9,18 +13,29 @@ from flask_admin._compat import iteritems
 from flask_admin.form import BaseForm
 from flask_admin.form import rules
 
+from .._types import T_MODEL_VIEW
+from .._types import T_ORM_MODEL
+from .._types import T_SQLALCHEMY_COLUMN
 from .widgets import XEditableWidget
 
 
-def converts(*args):
-    def _inner(func):
-        func._converter_for = frozenset(args)
+def converts(*args: t.Any) -> Callable[[t.Any], t.Any]:
+    def _inner(func: t.Callable[[t.Any], t.Any]) -> t.Callable[[t.Any], t.Any]:
+        func._converter_for = frozenset(args)  # type: ignore[attr-defined]
         return func
 
     return _inner
 
 
-def create_editable_list_form(form_base_class, form_class, widget=None):
+class BaseListForm(BaseForm):
+    list_form_pk = HiddenField(validators=[InputRequired()])
+
+
+def create_editable_list_form(
+    form_base_class: type[Form],
+    form_class: type[Form],
+    widget: t.Optional[t.Callable] = None,
+) -> type[BaseListForm]:
     """
     Create a form class with all the fields wrapped in a FieldList.
 
@@ -39,11 +54,11 @@ def create_editable_list_form(form_base_class, form_class, widget=None):
     if widget is None:
         widget = XEditableWidget()
 
-    class ListForm(form_base_class):
-        list_form_pk = HiddenField(validators=[InputRequired()])
+    class ListForm(BaseListForm, form_base_class):  # type: ignore[misc, valid-type]
+        pass
 
     # iterate FormMeta to get unbound fields, replace widget, copy to ListForm
-    for name, obj in iteritems(form_class.__dict__):
+    for name, obj in form_class.__dict__.items():
         if isinstance(obj, UnboundField):
             obj.kwargs["widget"] = widget
             setattr(ListForm, name, obj)
@@ -73,7 +88,7 @@ class InlineBaseFormAdmin:
         "form_extra_fields",
     ]
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: t.Any) -> None:
         """
         Constructor
 
@@ -89,13 +104,13 @@ class InlineBaseFormAdmin:
 
         # Convert form rules
         form_rules = getattr(self, "form_rules", None)
-
+        self._form_rules: t.Optional[rules.RuleSet]
         if form_rules:
             self._form_rules = rules.RuleSet(self, form_rules)
         else:
             self._form_rules = None
 
-    def get_form(self):
+    def get_form(self) -> t.Optional[T_MODEL_VIEW]:
         """
         If you want to use completely custom form for inline field, you can override
         Flask-Admin form generation logic by overriding this method and returning your
@@ -103,7 +118,7 @@ class InlineBaseFormAdmin:
         """
         return None
 
-    def postprocess_form(self, form_class):
+    def postprocess_form(self, form_class: BaseForm) -> BaseForm:
         """
         Post process form. Use this to contribute fields.
 
@@ -119,7 +134,9 @@ class InlineBaseFormAdmin:
         """
         return form_class
 
-    def on_model_change(self, form, model, is_created):
+    def on_model_change(
+        self, form: Form, model: T_MODEL_VIEW, is_created: bool
+    ) -> None:
         """
         Called when inline model is about to be saved.
 
@@ -132,7 +149,9 @@ class InlineBaseFormAdmin:
         """
         pass
 
-    def _on_model_change(self, form, model, is_created):
+    def _on_model_change(
+        self, form: Form, model: T_MODEL_VIEW, is_created: bool
+    ) -> None:
         """
         Compatibility helper.
         """
@@ -142,10 +161,10 @@ class InlineBaseFormAdmin:
             msg = (
                 "%s.on_model_change() now accepts third "
                 + "parameter is_created. Please update your code"
-            ) % self.model
+            ) % self.model  # type: ignore[attr-defined]
             warnings.warn(msg, stacklevel=1)
 
-            self.on_model_change(form, model)
+            self.on_model_change(form, model)  # type: ignore[call-arg]
 
 
 class InlineFormAdmin(InlineBaseFormAdmin):
@@ -155,7 +174,9 @@ class InlineFormAdmin(InlineBaseFormAdmin):
     class can not be inherited from the parent model definition.
     """
 
-    def __init__(self, model, **kwargs):
+    def __init__(
+        self, model: t.Union[T_ORM_MODEL, "InlineBaseFormAdmin"], **kwargs: t.Any
+    ) -> None:
         """
         Constructor
 
@@ -168,7 +189,9 @@ class InlineFormAdmin(InlineBaseFormAdmin):
 
 
 class ModelConverterBase:
-    def __init__(self, converters=None, use_mro=True):
+    def __init__(
+        self, converters: t.Optional[dict] = None, use_mro: bool = True
+    ) -> None:
         self.use_mro = use_mro
 
         if not converters:
@@ -182,7 +205,8 @@ class ModelConverterBase:
 
         self.converters = converters
 
-    def get_converter(self, column):
+    def get_converter(self, column: T_SQLALCHEMY_COLUMN) -> t.Optional[t.Callable]:
+        types: t.Union[list[type], tuple[type, ...]]
         if self.use_mro:
             types = inspect.getmro(type(column.type))
         else:
@@ -203,15 +227,20 @@ class ModelConverterBase:
         return None
 
     def get_form(
-        self, model, base_class=BaseForm, only=None, exclude=None, field_args=None
-    ):
+        self,
+        model: T_MODEL_VIEW,
+        base_class: type[BaseForm] = BaseForm,
+        only: t.Any = None,
+        exclude: t.Any = None,
+        field_args: t.Any = None,
+    ) -> t.Any:
         raise NotImplementedError()
 
 
 class InlineModelConverterBase:
     form_admin_class = InlineFormAdmin
 
-    def __init__(self, view):
+    def __init__(self, view: T_MODEL_VIEW) -> None:
         """
         Base constructor
 
@@ -220,7 +249,7 @@ class InlineModelConverterBase:
         """
         self.view = view
 
-    def get_label(self, info, name):
+    def get_label(self, info: T_MODEL_VIEW, name: str) -> t.Optional[str]:
         """
         Get inline model field label
 
@@ -240,7 +269,12 @@ class InlineModelConverterBase:
 
         return None
 
-    def get_info(self, p):
+    def get_info(
+        self,
+        p: t.Union[
+            tuple[T_ORM_MODEL, dict[str, t.Any]], InlineFormAdmin, type[T_ORM_MODEL]
+        ],
+    ) -> t.Optional[InlineFormAdmin]:
         """
         Figure out InlineFormAdmin information.
 
@@ -265,5 +299,5 @@ class FieldPlaceholder:
     Field placeholder for model convertors.
     """
 
-    def __init__(self, field):
+    def __init__(self, field: Field) -> None:
         self.field = field

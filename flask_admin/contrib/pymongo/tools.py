@@ -1,7 +1,7 @@
 import re
 
 
-def parse_like_term(term):
+def parse_like_term(term: str) -> str:
     """
     Parse search term into (operation, term) tuple
 

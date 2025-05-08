@@ -1,3 +1,5 @@
+import typing as t
+
 DEFAULT_PAGE_SIZE = 10
 
 
@@ -6,7 +8,7 @@ class AjaxModelLoader:
     Ajax related model loader. Override this to implement custom loading behavior.
     """
 
-    def __init__(self, name, options):
+    def __init__(self, name: str, options: dict) -> None:
         """
         Constructor.
 
@@ -16,13 +18,13 @@ class AjaxModelLoader:
         self.name = name
         self.options = options
 
-    def format(self, model):
+    def format(self, model: t.Union[None, str, bytes]) -> t.Optional[tuple[t.Any, str]]:
         """
         Return (id, name) tuple from the model.
         """
         raise NotImplementedError()
 
-    def get_one(self, pk):
+    def get_one(self, pk: t.Any) -> t.Any:
         """
         Find model by its primary key.
 
@@ -31,7 +33,9 @@ class AjaxModelLoader:
         """
         raise NotImplementedError()
 
-    def get_list(self, query, offset=0, limit=DEFAULT_PAGE_SIZE):
+    def get_list(
+        self, query: str, offset: int = 0, limit: int = DEFAULT_PAGE_SIZE
+    ) -> list:
         """
         Return models that match `query`.
 

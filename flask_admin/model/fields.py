@@ -1,12 +1,19 @@
 import itertools
+import typing as t
 
+from markupsafe import Markup
+from wtforms import Field
 from wtforms.fields import FieldList
 from wtforms.fields import FormField
 from wtforms.fields import SelectFieldBase
+from wtforms.form import BaseForm
 from wtforms.utils import unset_value
+from wtforms.utils import UnsetValue
 from wtforms.validators import ValidationError
 
 from flask_admin._compat import iteritems
+from flask_admin._types import T_AJAX_MODEL_LOADER
+from flask_admin._types import T_VALIDATOR
 
 from .widgets import AjaxSelect2Widget
 from .widgets import InlineFieldListWidget
@@ -16,16 +23,23 @@ from .widgets import InlineFormWidget
 class InlineFieldList(FieldList):
     widget = InlineFieldListWidget()
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
 
-    def __call__(self, **kwargs):
+    def __call__(self, **kwargs: t.Any) -> Markup:
         # Create template
         meta = getattr(self, "meta", None)
         if meta:
-            template = self.unbound_field.bind(form=None, name="", _meta=meta)
+            template = self.unbound_field.bind(
+                form=None,  # type: ignore[arg-type]
+                name="",
+                _meta=meta,
+            )
         else:
-            template = self.unbound_field.bind(form=None, name="")
+            template = self.unbound_field.bind(
+                form=None,  # type: ignore[arg-type]
+                name="",
+            )
         # Small hack to remove separator from FormField
         if isinstance(template, FormField):
             template.separator = ""
@@ -36,11 +50,19 @@ class InlineFieldList(FieldList):
             self, template=template, check=self.display_row_controls, **kwargs
         )
 
-    def display_row_controls(self, field):
+    def display_row_controls(self, field: "InlineModelFormField") -> bool:
         return True
 
-    def process(self, formdata, data=unset_value, extra_filters=None):
-        res = super().process(formdata, data)
+    def process(
+        self,
+        formdata: t.Optional[dict],  # type: ignore[override]
+        data: t.Union[UnsetValue, list[t.Any]] = unset_value,
+        extra_filters: t.Any = None,
+    ) -> None:
+        res = super().process(
+            formdata,  # type: ignore[arg-type]
+            data,
+        )
 
         # Postprocess - contribute flag
         if formdata:
@@ -50,7 +72,11 @@ class InlineFieldList(FieldList):
 
         return res
 
-    def validate(self, form, extra_validators=tuple()):
+    def validate(
+        self,
+        form: BaseForm,
+        extra_validators: tuple = tuple(),  # type: ignore[override]
+    ) -> bool:
         """
         Validate this FieldList.
 
@@ -58,7 +84,7 @@ class InlineFieldList(FieldList):
         that FieldList validates all its enclosed fields first before running any
         of its own validators.
         """
-        self.errors = []
+        self.errors: list = []
 
         # Run validators on all entries within
         for subfield in self.entries:
@@ -66,17 +92,17 @@ class InlineFieldList(FieldList):
                 self.errors.append(subfield.errors)
 
         chain = itertools.chain(self.validators, extra_validators)
-        self._run_validation_chain(form, chain)
+        self._run_validation_chain(form, chain)  # type: ignore[attr-defined]
 
         return len(self.errors) == 0
 
-    def should_delete(self, field):
+    def should_delete(self, field: Field) -> bool:
         return getattr(field, "_should_delete", False)
 
-    def populate_obj(self, obj, name):
+    def populate_obj(self, obj: t.Any, name: str) -> None:
         values = getattr(obj, name, None)
         try:
-            ivalues = iter(values)
+            ivalues = iter(values)  # type: ignore[arg-type]
         except TypeError:
             ivalues = iter([])
 
@@ -112,19 +138,25 @@ class InlineModelFormField(FormField):
 
     widget = InlineFormWidget()
 
-    def __init__(self, form_class, pk, form_opts=None, **kwargs):
+    def __init__(
+        self,
+        form_class: type[BaseForm],
+        pk: str,
+        form_opts: t.Any = None,
+        **kwargs: t.Any,
+    ) -> None:
         super().__init__(form_class, **kwargs)
 
         self._pk = pk
         self.form_opts = form_opts
 
-    def get_pk(self):
+    def get_pk(self) -> t.Union[tuple[t.Any, ...], t.Any]:
         if isinstance(self._pk, (tuple, list)):
             return tuple(getattr(self.form, pk).data for pk in self._pk)
 
         return getattr(self.form, self._pk).data
 
-    def populate_obj(self, obj, name):
+    def populate_obj(self, obj: t.Any, name: str) -> None:
         for name, field in iteritems(self.form._fields):
             if name != self._pk:
                 field.populate_obj(obj, name)
@@ -135,26 +167,30 @@ class AjaxSelectField(SelectFieldBase):
     Ajax Model Select Field
     """
 
-    widget = AjaxSelect2Widget()
+    widget = AjaxSelect2Widget()  # type: ignore[assignment]
 
     separator = ","
 
     def __init__(
         self,
-        loader,
-        label=None,
-        validators=None,
-        allow_blank=False,
-        blank_text="",
-        **kwargs,
-    ):
-        super().__init__(label, validators, **kwargs)
+        loader: T_AJAX_MODEL_LOADER,
+        label: t.Optional[str] = None,
+        validators: t.Optional[t.Sequence[T_VALIDATOR]] = None,
+        allow_blank: bool = False,
+        blank_text: str = "",
+        **kwargs: t.Any,
+    ) -> None:
+        super().__init__(
+            label,
+            validators,  # type:ignore[arg-type]
+            **kwargs,
+        )
         self.loader = loader
 
         self.allow_blank = allow_blank
         self.blank_text = blank_text
 
-    def _get_data(self):
+    def _get_data(self) -> t.Any:
         if self._formdata:
             model = self.loader.get_one(self._formdata)
 
@@ -163,17 +199,19 @@ class AjaxSelectField(SelectFieldBase):
 
         return self._data
 
-    def _set_data(self, data):
+    def _set_data(self, data: t.Any) -> None:
         self._data = data
-        self._formdata = None
+        self._formdata: t.Optional[str] = None
 
     data = property(_get_data, _set_data)
 
-    def _format_item(self, item):
-        value = self.loader.format(self.data)
+    def _format_item(self, item: t.Any) -> tuple[str, str, bool]:
+        value = t.cast(tuple[t.Any, str], self.loader.format(self.data))
         return (value[0], value[1], True)
 
-    def process_formdata(self, valuelist):
+    def process_formdata(
+        self, valuelist: t.Optional[t.Sequence[t.Optional[str]]]
+    ) -> None:
         if valuelist:
             if self.allow_blank and valuelist[0] == "__None":
                 self.data = None
@@ -181,7 +219,7 @@ class AjaxSelectField(SelectFieldBase):
                 self._data = None
                 self._formdata = valuelist[0]
 
-    def pre_validate(self, form):
+    def pre_validate(self, form: BaseForm) -> None:
         if not self.allow_blank and self.data is None:
             raise ValidationError(self.gettext("Not a valid choice"))
 
@@ -191,16 +229,23 @@ class AjaxSelectMultipleField(AjaxSelectField):
     Ajax-enabled model multi-select field.
     """
 
-    widget = AjaxSelect2Widget(multiple=True)
+    widget = AjaxSelect2Widget(multiple=True)  # type: ignore[assignment]
 
-    def __init__(self, loader, label=None, validators=None, default=None, **kwargs):
+    def __init__(
+        self,
+        loader: T_AJAX_MODEL_LOADER,
+        label: t.Optional[str] = None,
+        validators: t.Optional[t.Sequence[T_VALIDATOR]] = None,
+        default: t.Any = None,
+        **kwargs: t.Any,
+    ) -> None:
         if default is None:
             default = []
 
         super().__init__(loader, label, validators, default=default, **kwargs)
         self._invalid_formdata = False
 
-    def _get_data(self):
+    def _get_data(self) -> t.Any:
         formdata = self._formdata
         if formdata:
             data = []
@@ -218,19 +263,22 @@ class AjaxSelectMultipleField(AjaxSelectField):
 
         return self._data
 
-    def _set_data(self, data):
+    def _set_data(self, data: t.Any) -> None:
         self._data = data
-        self._formdata = None
+        self._formdata = None  # type: ignore[assignment]
 
     data = property(_get_data, _set_data)
 
-    def process_formdata(self, valuelist):
-        self._formdata = set()
+    def process_formdata(
+        self,
+        valuelist: t.Sequence[str],  # type: ignore[override]
+    ) -> None:
+        self._formdata: set = set()  # type: ignore[assignment]
 
         for field in valuelist:
             for n in field.split(self.separator):
                 self._formdata.add(n)
 
-    def pre_validate(self, form):
+    def pre_validate(self, form: BaseForm) -> None:
         if self._invalid_formdata:
             raise ValidationError(self.gettext("Not a valid choice"))

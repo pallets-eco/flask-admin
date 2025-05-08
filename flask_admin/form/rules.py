@@ -1,7 +1,17 @@
+import typing as t
+from collections.abc import Generator
+
+from jinja2.runtime import Context
 from markupsafe import Markup
+from wtforms import Field as WTField
+from wtforms import Form
 
 from flask_admin import helpers
 from flask_admin._compat import string_types
+from flask_admin._types import T_FORM_OPTS
+from flask_admin._types import T_INLINE_BASE_FORM_ADMIN
+from flask_admin._types import T_MODEL_VIEW
+from flask_admin._types import T_TRANSLATABLE
 
 
 class BaseRule:
@@ -9,11 +19,13 @@ class BaseRule:
     Base form rule. All form formatting rules should derive from `BaseRule`.
     """
 
-    def __init__(self):
-        self.parent = None
-        self.rule_set = None
+    def __init__(self) -> None:
+        self.parent: t.Optional[BaseRule] = None
+        self.rule_set: t.Optional[RuleSet] = None
 
-    def configure(self, rule_set, parent):
+    def configure(
+        self, rule_set: "RuleSet", parent: t.Optional["BaseRule"]
+    ) -> "BaseRule":
         """
         Configure rule and assign to rule set.
 
@@ -27,13 +39,18 @@ class BaseRule:
         return self
 
     @property
-    def visible_fields(self):
+    def visible_fields(self) -> list[str]:
         """
         A list of visible fields for the given rule.
         """
         return []
 
-    def __call__(self, form, form_opts=None, field_args=None):
+    def __call__(
+        self,
+        form: Form,
+        form_opts: t.Optional[T_FORM_OPTS] = None,
+        field_args: t.Any = None,
+    ) -> str:
         """
         Render rule.
 
@@ -52,7 +69,11 @@ class NestedRule(BaseRule):
     Nested rule. Can contain child rules and render them.
     """
 
-    def __init__(self, rules=None, separator=""):
+    def __init__(
+        self,
+        rules: t.Optional[t.Sequence[t.Union[str, "Header"]]] = None,
+        separator: str = "",
+    ) -> None:
         """
         Constructor.
 
@@ -64,10 +85,10 @@ class NestedRule(BaseRule):
         if rules is None:
             rules = []
         super().__init__()
-        self.rules = list(rules)
+        self.rules: list[t.Union[str, Header, BaseRule]] = list(rules)
         self.separator = separator
 
-    def configure(self, rule_set, parent):
+    def configure(self, rule_set: "RuleSet", parent: t.Optional[BaseRule]) -> BaseRule:
         """
         Configure rule.
 
@@ -76,27 +97,32 @@ class NestedRule(BaseRule):
         :param parent:
             Parent rule (if any)
         """
-        self.rules = rule_set.configure_rules(self.rules, self)
+        self.rules = rule_set.configure_rules(self.rules, self)  # type: ignore
         return super().configure(rule_set, parent)
 
     @property
-    def visible_fields(self):
+    def visible_fields(self) -> list[str]:
         """
         Return visible fields for all child rules.
         """
         visible_fields = []
         for rule in self.rules:
-            for field in rule.visible_fields:
+            for field in rule.visible_fields:  # type:ignore[union-attr]
                 visible_fields.append(field)
         return visible_fields
 
-    def __iter__(self):
+    def __iter__(self) -> t.Iterable[t.Union[BaseRule, str, "Header"]]:
         """
         Return rules.
         """
         return self.rules
 
-    def __call__(self, form, form_opts=None, field_args=None):
+    def __call__(
+        self,
+        form: Form,
+        form_opts: t.Optional[T_FORM_OPTS] = None,
+        field_args: t.Any = None,
+    ) -> str:
         """
         Render all children.
 
@@ -112,7 +138,13 @@ class NestedRule(BaseRule):
         result = []
 
         for r in self.rules:
-            result.append(str(r(form, form_opts, field_args)))
+            result.append(
+                str(
+                    r(  # type:ignore[operator]
+                        form, form_opts, field_args
+                    )
+                )
+            )
 
         return Markup(self.separator.join(result))
 
@@ -122,7 +154,7 @@ class Text(BaseRule):
     Render text (or HTML snippet) from string.
     """
 
-    def __init__(self, text, escape=True):
+    def __init__(self, text: str, escape: bool = True) -> None:
         """
         Constructor.
 
@@ -136,7 +168,12 @@ class Text(BaseRule):
         self.text = text
         self.escape = escape
 
-    def __call__(self, form, form_opts=None, field_args=None):
+    def __call__(
+        self,
+        form: Form,
+        form_opts: t.Optional[T_FORM_OPTS] = None,
+        field_args: t.Any = None,
+    ) -> str:
         if field_args is None:
             field_args = {}
         if self.escape:
@@ -150,7 +187,7 @@ class HTML(Text):
     Shortcut for `Text` rule with `escape` set to `False`.
     """
 
-    def __init__(self, html):
+    def __init__(self, html: str) -> None:
         super().__init__(html, escape=False)
 
 
@@ -159,7 +196,7 @@ class Macro(BaseRule):
     Render macro by its name from current Jinja2 context.
     """
 
-    def __init__(self, macro_name, **kwargs):
+    def __init__(self, macro_name: str, **kwargs: t.Any) -> None:
         """
         Constructor.
 
@@ -173,7 +210,7 @@ class Macro(BaseRule):
         self.macro_name = macro_name
         self.default_args = kwargs
 
-    def _resolve(self, context, name):
+    def _resolve(self, context: Context, name: str) -> t.Optional[WTField]:
         """
         Resolve macro in a Jinja2 context
 
@@ -188,7 +225,7 @@ class Macro(BaseRule):
             field = context.resolve(parts[0])
         except AttributeError as err:
             raise Exception(
-                "Your template is missing " '"{% set render_ctx = h.resolve_ctx() %}"'
+                'Your template is missing "{% set render_ctx = h.resolve_ctx() %}"'
             ) from err
 
         if not field:
@@ -202,7 +239,12 @@ class Macro(BaseRule):
 
         return field
 
-    def __call__(self, form, form_opts=None, field_args=None):
+    def __call__(
+        self,
+        form: Form,
+        form_opts: t.Optional[T_FORM_OPTS] = None,
+        field_args: t.Any = None,
+    ) -> str:
         """
         Render macro rule.
 
@@ -216,7 +258,7 @@ class Macro(BaseRule):
         if field_args is None:
             field_args = {}
         context = helpers.get_render_ctx()
-        macro = self._resolve(context, self.macro_name)
+        macro = self._resolve(context, self.macro_name)  # type:ignore[arg-type]
 
         if not macro:
             raise ValueError(f"Cannot find macro {self.macro_name} in current context.")
@@ -231,7 +273,7 @@ class Container(Macro):
     Render container around child rule.
     """
 
-    def __init__(self, macro_name, child_rule, **kwargs):
+    def __init__(self, macro_name: str, child_rule: BaseRule, **kwargs: t.Any) -> None:
         """
         Constructor.
 
@@ -245,7 +287,7 @@ class Container(Macro):
         super().__init__(macro_name, **kwargs)
         self.child_rule = child_rule
 
-    def configure(self, rule_set, parent):
+    def configure(self, rule_set: "RuleSet", parent: t.Optional[BaseRule]) -> BaseRule:
         """
         Configure rule.
 
@@ -258,10 +300,15 @@ class Container(Macro):
         return super().configure(rule_set, parent)
 
     @property
-    def visible_fields(self):
+    def visible_fields(self) -> list[str]:
         return self.child_rule.visible_fields
 
-    def __call__(self, form, form_opts=None, field_args=None):
+    def __call__(
+        self,
+        form: Form,
+        form_opts: t.Optional[T_FORM_OPTS] = None,
+        field_args: t.Any = None,
+    ) -> str:
         """
         Render container.
 
@@ -276,8 +323,10 @@ class Container(Macro):
             field_args = {}
         context = helpers.get_render_ctx()
 
-        def caller(**kwargs):
-            return context.call(self.child_rule, form, form_opts, kwargs)
+        def caller(**kwargs: t.Any) -> None:
+            return context.call(  # type:ignore[union-attr]
+                self.child_rule, form, form_opts, kwargs
+            )
 
         args = dict(field_args)
         args["caller"] = caller
@@ -290,7 +339,7 @@ class Field(Macro):
     Form field rule.
     """
 
-    def __init__(self, field_name, render_field="lib.render_field"):
+    def __init__(self, field_name: str, render_field: str = "lib.render_field") -> None:
         """
         Constructor.
 
@@ -303,10 +352,15 @@ class Field(Macro):
         self.field_name = field_name
 
     @property
-    def visible_fields(self):
+    def visible_fields(self) -> list[str]:
         return [self.field_name]
 
-    def __call__(self, form, form_opts=None, field_args=None):
+    def __call__(
+        self,
+        form: Form,
+        form_opts: t.Optional[T_FORM_OPTS] = None,
+        field_args: t.Any = None,
+    ) -> str:
         """
         Render field.
 
@@ -341,7 +395,7 @@ class Header(Macro):
     Render header text.
     """
 
-    def __init__(self, text, header_macro="lib.render_header"):
+    def __init__(self, text: str, header_macro: str = "lib.render_header") -> None:
         """
         Constructor.
 
@@ -358,7 +412,12 @@ class FieldSet(NestedRule):
     Field set with header.
     """
 
-    def __init__(self, rules, header=None, separator=""):
+    def __init__(
+        self,
+        rules: t.Sequence[str],
+        header: t.Optional[T_TRANSLATABLE] = None,
+        separator: str = "",
+    ) -> None:
         """
         Constructor.
 
@@ -378,25 +437,43 @@ class FieldSet(NestedRule):
 
 
 class Row(NestedRule):
-    def __init__(self, *columns, **kw):
+    def __init__(self, *columns: BaseRule, **kw: t.Any) -> None:
         super().__init__()
-        self.rules = columns
+        self.rules: list[t.Union[str, Header, BaseRule]] = columns  # type:ignore[assignment]
 
-    def __call__(self, form, form_opts=None, field_args=None):
+    def __call__(
+        self,
+        form: Form,
+        form_opts: t.Optional[T_FORM_OPTS] = None,
+        field_args: t.Any = None,
+    ) -> str:
         if field_args is None:
             field_args = {}
         cols = []
         for col in self.rules:
-            if col.visible_fields:
-                w_args = form_opts.widget_args.setdefault(col.visible_fields[0], {})
+            if col.visible_fields:  # type:ignore[union-attr]
+                w_args = form_opts.widget_args.setdefault(  # type:ignore[union-attr]
+                    col.visible_fields[0],  # type:ignore[union-attr]
+                    {},
+                )
                 w_args.setdefault("column_class", "col")
-            cols.append(col(form, form_opts, field_args))
+            cols.append(
+                col(  # type: ignore[operator]
+                    form, form_opts, field_args
+                )
+            )
 
         return Markup('<div class="form-row">{}</div>'.format("".join(cols)))
 
 
 class Group(Macro):
-    def __init__(self, field_name, prepend=None, append=None, **kwargs):
+    def __init__(
+        self,
+        field_name: str,
+        prepend: t.Union[str, tuple[str], list[str], None] = None,
+        append: t.Union[str, tuple[str], list[str], None] = None,
+        **kwargs: t.Any,
+    ) -> None:
         """
         Bootstrap Input group.
         """
@@ -434,14 +511,19 @@ class Group(Macro):
         print(self._addons)
 
     @property
-    def visible_fields(self):
+    def visible_fields(self) -> list[str]:
         fields = [self.field_name]
         for cnf in self._addons:
             if cnf["type"] == "field":
                 fields.append(cnf["name"])
         return fields
 
-    def __call__(self, form, form_opts=None, field_args=None):
+    def __call__(
+        self,
+        form: Form,
+        form_opts: t.Optional[T_FORM_OPTS] = None,
+        field_args: t.Any = None,
+    ) -> str:
         """
         Render field.
 
@@ -468,7 +550,7 @@ class Group(Macro):
         prepend = []
         append = []
         for cnf in self._addons:
-            ctn = None
+            ctn: t.Optional[str] = None
             typ = cnf["type"]
             if typ == "field":
                 name = cnf["name"]
@@ -510,7 +592,11 @@ class RuleSet:
     Rule set.
     """
 
-    def __init__(self, view, rules):
+    def __init__(
+        self,
+        view: t.Union[T_MODEL_VIEW, T_INLINE_BASE_FORM_ADMIN],
+        rules: t.Sequence[t.Union[BaseRule, FieldSet]],
+    ) -> None:
         """
         Constructor.
 
@@ -523,14 +609,14 @@ class RuleSet:
         self.rules = self.configure_rules(rules)
 
     @property
-    def visible_fields(self):
+    def visible_fields(self) -> list[str]:
         visible_fields = []
         for rule in self.rules:
             for field in rule.visible_fields:
                 visible_fields.append(field)
         return visible_fields
 
-    def convert_string(self, value):
+    def convert_string(self, value: str) -> BaseRule:
         """
         Convert string to rule.
 
@@ -538,7 +624,11 @@ class RuleSet:
         """
         return Field(value)
 
-    def configure_rules(self, rules, parent=None):
+    def configure_rules(
+        self,
+        rules: t.Sequence[t.Union[str, tuple, list, BaseRule, FieldSet]],
+        parent: t.Optional[BaseRule] = None,
+    ) -> list[BaseRule]:
         """
         Configure all rules recursively - bind them to current RuleSet and
         convert string references to `Field` rules.
@@ -564,7 +654,7 @@ class RuleSet:
 
         return result
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[BaseRule, None, None]:
         """
         Iterate through registered rules.
         """

@@ -1,34 +1,40 @@
+import typing as t
+
 from flask import json
 from markupsafe import escape
 from markupsafe import Markup
+from wtforms import Field
+from wtforms import SelectField
 from wtforms.widgets import html_params
 
 from flask_admin._compat import as_unicode
 from flask_admin._compat import text_type
+from flask_admin._types import T_AJAX_SELECT_FIELD
 from flask_admin.babel import gettext
 from flask_admin.form import RenderTemplateWidget
+from flask_admin.form import Select2Field
 from flask_admin.helpers import get_url
 
 
 class InlineFieldListWidget(RenderTemplateWidget):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("admin/model/inline_field_list.html")
 
 
 class InlineFormWidget(RenderTemplateWidget):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("admin/model/inline_form.html")
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: Field, **kwargs: t.Any) -> Markup:
         kwargs.setdefault("form_opts", getattr(field, "form_opts", None))
         return super().__call__(field, **kwargs)
 
 
 class AjaxSelect2Widget:
-    def __init__(self, multiple=False):
+    def __init__(self, multiple: bool = False) -> None:
         self.multiple = multiple
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: T_AJAX_SELECT_FIELD, **kwargs: t.Any) -> str:
         kwargs.setdefault("data-role", "select2-ajax")
         kwargs.setdefault("data-url", get_url(".ajax_lookup", name=field.loader.name))
 
@@ -46,7 +52,7 @@ class AjaxSelect2Widget:
             for value in field.data:
                 data = field.loader.format(value)
                 result.append(data)
-                ids.append(as_unicode(data[0]))
+                ids.append(as_unicode(data[0]))  # type: ignore[index]
 
             separator = getattr(field, "separator", ",")
 
@@ -82,7 +88,7 @@ class XEditableWidget:
     field inside of the FieldList (StringField, IntegerField, etc).
     """
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: Field, **kwargs: t.Any) -> str:
         display_value = kwargs.pop("display_value", "")
         kwargs.setdefault("data-value", display_value)
 
@@ -103,7 +109,7 @@ class XEditableWidget:
 
         return Markup(f"<a {html_params(**kwargs)}>{escape(display_value)}</a>")
 
-    def get_kwargs(self, field, kwargs):
+    def get_kwargs(self, field: Field, kwargs: dict[str, str]) -> dict[str, str]:
         """
         Return extra kwargs based on the field type.
         """
@@ -124,8 +130,11 @@ class XEditableWidget:
             )
             kwargs["data-role"] = "x-editable-boolean"
         elif field.type in ["Select2Field", "SelectField"]:
+            field = t.cast(t.Union[Select2Field, SelectField], field)
             kwargs["data-type"] = "select2"
-            choices = [{"value": x, "text": y} for x, y in field.choices]
+            choices = [  # type:ignore[misc]
+                {"value": x, "text": y} for x, y in field.choices
+            ]
 
             # prepend a blank field to choices if allow_blank = True
             if getattr(field, "allow_blank", False):
@@ -160,6 +169,7 @@ class XEditableWidget:
             "QuerySelectMultipleField",
             "KeyPropertyField",
         ]:
+            field = t.cast(SelectField, field)
             # QuerySelectField and ModelSelectField are for relations
             kwargs["data-type"] = "select2"
 
@@ -167,6 +177,7 @@ class XEditableWidget:
             selected_ids = []
             for field_choices in field.iter_choices():
                 if len(field_choices) == 3:  # wtforms <3.1, >=3.1.1, <3.2
+                    field_choices = t.cast(tuple[t.Any, t.Any, bool], field_choices)
                     value, label, selected = field_choices
                 else:
                     value, label, selected, _ = field_choices

@@ -1,6 +1,11 @@
+import typing as t
+
 from flask_admin.babel import lazy_gettext
 from flask_admin.model import filters
 
+from ..._types import T_LAZY_STRING
+from ..._types import T_OPTIONS
+from ..._types import T_WIDGET_TYPE
 from .tools import parse_like_term
 
 
@@ -9,7 +14,13 @@ class BasePeeweeFilter(filters.BaseFilter):
     Base Peewee filter.
     """
 
-    def __init__(self, column, name, options=None, data_type=None):
+    def __init__(
+        self,
+        column: t.Any,
+        name: str,
+        options: T_OPTIONS = None,
+        data_type: T_WIDGET_TYPE = None,
+    ):
         """
         Constructor.
 
@@ -29,97 +40,103 @@ class BasePeeweeFilter(filters.BaseFilter):
 
 # Common filters
 class FilterEqual(BasePeeweeFilter):
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         return query.filter(self.column == value)
 
-    def operation(self):
+    def operation(self) -> T_LAZY_STRING:
         return lazy_gettext("equals")
 
 
 class FilterNotEqual(BasePeeweeFilter):
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         return query.filter(self.column != value)
 
-    def operation(self):
+    def operation(self) -> T_LAZY_STRING:
         return lazy_gettext("not equal")
 
 
 class FilterLike(BasePeeweeFilter):
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         term = parse_like_term(value)
         return query.filter(self.column**term)
 
-    def operation(self):
+    def operation(self) -> T_LAZY_STRING:
         return lazy_gettext("contains")
 
 
 class FilterNotLike(BasePeeweeFilter):
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         term = parse_like_term(value)
         return query.filter(~(self.column**term))
 
-    def operation(self):
+    def operation(self) -> T_LAZY_STRING:
         return lazy_gettext("not contains")
 
 
 class FilterGreater(BasePeeweeFilter):
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         return query.filter(self.column > value)
 
-    def operation(self):
+    def operation(self) -> T_LAZY_STRING:
         return lazy_gettext("greater than")
 
 
 class FilterSmaller(BasePeeweeFilter):
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         return query.filter(self.column < value)
 
-    def operation(self):
+    def operation(self) -> T_LAZY_STRING:
         return lazy_gettext("smaller than")
 
 
 class FilterEmpty(BasePeeweeFilter, filters.BaseBooleanFilter):
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         if value == "1":
             return query.filter(self.column >> None)
         else:
             return query.filter(~(self.column >> None))
 
-    def operation(self):
+    def operation(self) -> T_LAZY_STRING:
         return lazy_gettext("empty")
 
 
 class FilterInList(BasePeeweeFilter):
-    def __init__(self, column, name, options=None, data_type=None):
+    def __init__(
+        self,
+        column: t.Any,
+        name: str,
+        options: T_OPTIONS = None,
+        data_type: T_WIDGET_TYPE = None,
+    ) -> None:
         super().__init__(column, name, options, data_type="select2-tags")
 
-    def clean(self, value):
+    def clean(self, value: str) -> list[str]:
         return [v.strip() for v in value.split(",") if v.strip()]
 
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         return query.filter(self.column << (value or [None]))
 
-    def operation(self):
+    def operation(self) -> T_LAZY_STRING:
         return lazy_gettext("in list")
 
 
 class FilterNotInList(FilterInList):
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         # NOT IN can exclude NULL values, so "or_ == None" needed to be added
         return query.filter(~(self.column << (value or [None])) | (self.column >> None))
 
-    def operation(self):
+    def operation(self) -> T_LAZY_STRING:
         return lazy_gettext("not in list")
 
 
 # Customized type filters
 class BooleanEqualFilter(FilterEqual, filters.BaseBooleanFilter):
-    def clean(self, value):
+    def clean(self, value: t.Any) -> int:
         return int(value)
 
 
 class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
-    def clean(self, value):
+    def clean(self, value: t.Any) -> int:
         return int(value)
 
 
@@ -139,11 +156,11 @@ class IntSmallerFilter(FilterSmaller, filters.BaseIntFilter):
     pass
 
 
-class IntInListFilter(filters.BaseIntListFilter, FilterInList):
+class IntInListFilter(filters.BaseIntListFilter, FilterInList):  # type: ignore[misc]
     pass
 
 
-class IntNotInListFilter(filters.BaseIntListFilter, FilterNotInList):
+class IntNotInListFilter(filters.BaseIntListFilter, FilterNotInList):  # type: ignore[misc]
     pass
 
 
@@ -163,11 +180,11 @@ class FloatSmallerFilter(FilterSmaller, filters.BaseFloatFilter):
     pass
 
 
-class FloatInListFilter(filters.BaseFloatListFilter, FilterInList):
+class FloatInListFilter(filters.BaseFloatListFilter, FilterInList):  # type: ignore[misc]
     pass
 
 
-class FloatNotInListFilter(filters.BaseFloatListFilter, FilterNotInList):
+class FloatNotInListFilter(filters.BaseFloatListFilter, FilterNotInList):  # type: ignore[misc]
     pass
 
 
@@ -188,20 +205,26 @@ class DateSmallerFilter(FilterSmaller, filters.BaseDateFilter):
 
 
 class DateBetweenFilter(BasePeeweeFilter, filters.BaseDateBetweenFilter):
-    def __init__(self, column, name, options=None, data_type=None):
+    def __init__(
+        self,
+        column: t.Any,
+        name: str,
+        options: T_OPTIONS = None,
+        data_type: T_WIDGET_TYPE = None,
+    ) -> None:
         super().__init__(column, name, options, data_type="daterangepicker")
 
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         start, end = value
         return query.filter(self.column.between(start, end))
 
 
 class DateNotBetweenFilter(DateBetweenFilter):
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         start, end = value
         return query.filter(~(self.column.between(start, end)))
 
-    def operation(self):
+    def operation(self) -> T_LAZY_STRING:
         return lazy_gettext("not between")
 
 
@@ -222,20 +245,26 @@ class DateTimeSmallerFilter(FilterSmaller, filters.BaseDateTimeFilter):
 
 
 class DateTimeBetweenFilter(BasePeeweeFilter, filters.BaseDateTimeBetweenFilter):
-    def __init__(self, column, name, options=None, data_type=None):
+    def __init__(
+        self,
+        column: t.Any,
+        name: str,
+        options: T_OPTIONS = None,
+        data_type: T_WIDGET_TYPE = None,
+    ):
         super().__init__(column, name, options, data_type="datetimerangepicker")
 
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         start, end = value
         return query.filter(self.column.between(start, end))
 
 
 class DateTimeNotBetweenFilter(DateTimeBetweenFilter):
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         start, end = value
         return query.filter(~(self.column.between(start, end)))
 
-    def operation(self):
+    def operation(self) -> T_LAZY_STRING:
         return lazy_gettext("not between")
 
 
@@ -256,20 +285,26 @@ class TimeSmallerFilter(FilterSmaller, filters.BaseTimeFilter):
 
 
 class TimeBetweenFilter(BasePeeweeFilter, filters.BaseTimeBetweenFilter):
-    def __init__(self, column, name, options=None, data_type=None):
+    def __init__(
+        self,
+        column: t.Any,
+        name: str,
+        options: T_OPTIONS = None,
+        data_type: T_WIDGET_TYPE = None,
+    ):
         super().__init__(column, name, options, data_type="timerangepicker")
 
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         start, end = value
         return query.filter(self.column.between(start, end))
 
 
 class TimeNotBetweenFilter(TimeBetweenFilter):
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         start, end = value
         return query.filter(~(self.column.between(start, end)))
 
-    def operation(self):
+    def operation(self) -> T_LAZY_STRING:
         return lazy_gettext("not between")
 
 
@@ -331,7 +366,7 @@ class FilterConverter(filters.BaseFilterConverter):
         FilterEmpty,
     )
 
-    def convert(self, type_name, column, name):
+    def convert(self, type_name: str, column: str, name: str) -> t.Any:
         filter_name = type_name.lower()
 
         if filter_name in self.converters:
@@ -340,29 +375,29 @@ class FilterConverter(filters.BaseFilterConverter):
         return None
 
     @filters.convert("CharField", "TextField")
-    def conv_string(self, column, name):
+    def conv_string(self, column: t.Any, name: str) -> list[BasePeeweeFilter]:
         return [f(column, name) for f in self.strings]
 
     @filters.convert("BooleanField")
-    def conv_bool(self, column, name):
+    def conv_bool(self, column: t.Any, name: str) -> list[BasePeeweeFilter]:
         return [f(column, name) for f in self.bool_filters]
 
     @filters.convert("IntegerField", "BigIntegerField", "PrimaryKeyField")
-    def conv_int(self, column, name):
+    def conv_int(self, column: t.Any, name: str) -> list[BasePeeweeFilter]:
         return [f(column, name) for f in self.int_filters]
 
     @filters.convert("DecimalField", "FloatField", "DoubleField")
-    def conv_float(self, column, name):
+    def conv_float(self, column: t.Any, name: str) -> list[BasePeeweeFilter]:
         return [f(column, name) for f in self.float_filters]
 
     @filters.convert("DateField")
-    def conv_date(self, column, name):
+    def conv_date(self, column: t.Any, name: str) -> list[BasePeeweeFilter]:
         return [f(column, name) for f in self.date_filters]
 
     @filters.convert("DateTimeField")
-    def conv_datetime(self, column, name):
+    def conv_datetime(self, column: t.Any, name: str) -> list[BasePeeweeFilter]:
         return [f(column, name) for f in self.datetime_filters]
 
     @filters.convert("TimeField")
-    def conv_time(self, column, name):
+    def conv_time(self, column: t.Any, name: str) -> list[BasePeeweeFilter]:
         return [f(column, name) for f in self.time_filters]
