@@ -1,32 +1,36 @@
 import os
 import os.path as op
-from types import ModuleType
-from typing import Optional
+import typing as t
+from typing import TYPE_CHECKING
 from urllib.parse import urljoin
 
 from markupsafe import Markup
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from wtforms import __version__ as wtforms_version
+from wtforms import Field
 from wtforms import fields
 from wtforms import ValidationError
+from wtforms.form import BaseForm
 from wtforms.utils import unset_value
+from wtforms.utils import UnsetValue
 from wtforms.widgets import html_params
 
 from flask_admin._compat import string_types
+from flask_admin._types import T_VALIDATOR
 from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
-
-Image: Optional[ModuleType]
-ImageOps: Optional[ModuleType]
-
 
 try:
     from PIL import Image
     from PIL import ImageOps
 except ImportError:
-    Image = None
-    ImageOps = None
+    Image = None  # type:ignore[assignment]
+    ImageOps = None  # type:ignore[assignment]
+
+if TYPE_CHECKING:
+    from PIL import Image
+    from PIL import ImageOps
 
 __all__ = [
     "FileUploadInput",
@@ -58,7 +62,7 @@ class FileUploadInput:
         "<input %(file)s>"
     )
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: Field, **kwargs: str) -> Markup:
         kwargs.setdefault("id", field.id)
         kwargs.setdefault("name", field.name)
 
@@ -104,7 +108,7 @@ class ImageUploadInput:
         "<input %(file)s>"
     )
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: "ImageUploadField", **kwargs: str) -> Markup:
         kwargs.setdefault("id", field.id)
         kwargs.setdefault("name", field.name)
 
@@ -124,16 +128,16 @@ class ImageUploadInput:
 
         return Markup(template % args)
 
-    def get_url(self, field):
+    def get_url(self, field: "ImageUploadField") -> str:
         if field.thumbnail_size:
-            filename = field.thumbnail_fn(field.data)
+            filename = field.thumbnail_fn(field.data)  # type:ignore[arg-type]
         else:
-            filename = field.data
+            filename = field.data  # type:ignore[assignment]
 
         if field.url_relative_path:
             filename = urljoin(field.url_relative_path, filename)
 
-        return get_url(field.endpoint, filename=filename)
+        return get_url(field.endpoint, filename=filename)  # type:ignore[arg-type]
 
 
 # Fields
@@ -149,16 +153,16 @@ class FileUploadField(fields.StringField):
 
     def __init__(
         self,
-        label=None,
-        validators=None,
-        base_path=None,
-        relative_path=None,
-        namegen=None,
-        allowed_extensions=None,
-        permission=0o666,
-        allow_overwrite=True,
-        **kwargs,
-    ):
+        label: t.Optional[str] = None,
+        validators: t.Optional[list[T_VALIDATOR]] = None,
+        base_path: t.Optional[str] = None,
+        relative_path: t.Optional[str] = None,
+        namegen: t.Optional[t.Callable[[t.Any, FileStorage], str]] = None,
+        allowed_extensions: t.Optional[t.Sequence[str]] = None,
+        permission: int = 0o666,
+        allow_overwrite: bool = True,
+        **kwargs: t.Any,
+    ) -> None:
         """
         Constructor.
 
@@ -209,9 +213,13 @@ class FileUploadField(fields.StringField):
         if int(wtforms_version[0]) < 3:
             kwargs.pop("extra_filters", None)
 
-        super().__init__(label, validators, **kwargs)
+        super().__init__(
+            label,
+            validators,
+            **kwargs,
+        )
 
-    def is_file_allowed(self, filename):
+    def is_file_allowed(self, filename: str) -> bool:
         """
         Check if file extension is allowed.
 
@@ -225,12 +233,14 @@ class FileUploadField(fields.StringField):
             lambda x: x.lower(), self.allowed_extensions
         )
 
-    def _is_uploaded_file(self, data):
+    def _is_uploaded_file(
+        self, data: t.Union[FileStorage, None, str]
+    ) -> t.Union[FileStorage, None, bool, str]:
         return data and isinstance(data, FileStorage) and data.filename
 
-    def pre_validate(self, form):
+    def pre_validate(self, form: BaseForm) -> None:
         if self._is_uploaded_file(self.data) and not self.is_file_allowed(
-            self.data.filename
+            self.data.filename  # type:ignore[union-attr]
         ):
             raise ValidationError(gettext("Invalid file extension"))
 
@@ -239,33 +249,46 @@ class FileUploadField(fields.StringField):
             return
 
         if not self._allow_overwrite and os.path.exists(
-            self._get_path(self.data.filename)
+            self._get_path(
+                self.data.filename  # type:ignore[union-attr]
+            )
         ):
             raise ValidationError(
-                gettext(f'File "{self.data.filename}" already exists.')
+                gettext(
+                    f'File "{self.data.filename}" already exists.'  # type:ignore[union-attr]
+                )
             )
 
-    def process(self, formdata, data=unset_value, extra_filters=None):
+    def process(
+        self,
+        formdata: dict,  # type:ignore[override]
+        data: UnsetValue = unset_value,
+        extra_filters: t.Optional[t.Sequence] = None,
+    ) -> None:
         if formdata:
             marker = f"_{self.name}-delete"
             if marker in formdata:
                 self._should_delete = True
 
         if int(wtforms_version[0]) < 3:
-            return super().process(formdata, data)
+            return super().process(formdata, data)  # type:ignore[arg-type]
         else:
-            return super(FileUploadField, self).process(formdata, data, extra_filters)  # noqa
+            return super(FileUploadField, self).process(  # noqa
+                formdata,  # type: ignore[arg-type]
+                data,
+                extra_filters,
+            )
 
-    def process_formdata(self, valuelist):
+    def process_formdata(self, valuelist: list[t.Union[str, FileStorage]]) -> None:
         if self._should_delete:
             self.data = None
         elif valuelist:
             for data in valuelist:
                 if self._is_uploaded_file(data):
-                    self.data = data
+                    self.data = data  # type:ignore[assignment]
                     break
 
-    def populate_obj(self, obj, name):
+    def populate_obj(self, obj: t.Any, name: str) -> None:
         field = getattr(obj, name, None)
         if field:
             # If field should be deleted, clean it up
@@ -278,14 +301,14 @@ class FileUploadField(fields.StringField):
             if field:
                 self._delete_file(field)
 
-            filename = self.generate_name(obj, self.data)
-            filename = self._save_file(self.data, filename)
+            filename = self.generate_name(obj, self.data)  # type:ignore[arg-type]
+            filename = self._save_file(self.data, filename)  # type:ignore[arg-type]
             # update filename of FileStorage to our validated name
-            self.data.filename = filename
+            self.data.filename = filename  # type: ignore[union-attr]
 
             setattr(obj, name, filename)
 
-    def generate_name(self, obj, file_data):
+    def generate_name(self, obj: t.Any, file_data: FileStorage) -> str:
         filename = self.namegen(obj, file_data)
 
         if not self.relative_path:
@@ -293,7 +316,7 @@ class FileUploadField(fields.StringField):
 
         return urljoin(self.relative_path, filename)
 
-    def _get_path(self, filename):
+    def _get_path(self, filename: str) -> str:
         if not self.base_path:
             raise ValueError("FileUploadField field requires base_path to be set.")
 
@@ -301,13 +324,13 @@ class FileUploadField(fields.StringField):
             return op.join(self.base_path(), filename)
         return op.join(self.base_path, filename)
 
-    def _delete_file(self, filename):
+    def _delete_file(self, filename: str) -> None:
         path = self._get_path(filename)
 
         if op.exists(path):
             os.remove(path)
 
-    def _save_file(self, data, filename):
+    def _save_file(self, data: FileStorage, filename: str) -> str:
         path = self._get_path(filename)
         if not op.exists(op.dirname(path)):
             os.makedirs(os.path.dirname(path), self.permission | 0o111)
@@ -339,20 +362,20 @@ class ImageUploadField(FileUploadField):
 
     def __init__(
         self,
-        label=None,
-        validators=None,
-        base_path=None,
-        relative_path=None,
-        namegen=None,
-        allowed_extensions=None,
-        max_size=None,
-        thumbgen=None,
-        thumbnail_size=None,
-        permission=0o666,
-        url_relative_path=None,
-        endpoint="static",
-        **kwargs,
-    ):
+        label: t.Optional[str] = None,
+        validators: t.Optional[list[T_VALIDATOR]] = None,
+        base_path: t.Optional[str] = None,
+        relative_path: t.Optional[str] = None,
+        namegen: t.Optional[t.Callable[[t.Any, FileStorage], str]] = None,
+        allowed_extensions: t.Optional[t.Sequence[str]] = None,
+        max_size: t.Optional[tuple[int, int, bool]] = None,
+        thumbgen: t.Optional[t.Callable[[str], str]] = None,
+        thumbnail_size: t.Optional[tuple[int, int, bool]] = None,
+        permission: int = 0o666,
+        url_relative_path: t.Optional[str] = None,
+        endpoint: t.Optional[str] = "static",
+        **kwargs: t.Any,
+    ) -> None:
         """
         Constructor.
 
@@ -435,7 +458,7 @@ class ImageUploadField(FileUploadField):
         self.thumbnail_fn = thumbgen or thumbgen_filename
         self.thumbnail_size = thumbnail_size
         self.endpoint = endpoint
-        self.image = None
+        self.image: t.Optional[Image.Image] = None
         self.url_relative_path = url_relative_path
 
         if not allowed_extensions:
@@ -452,36 +475,39 @@ class ImageUploadField(FileUploadField):
             **kwargs,
         )
 
-    def pre_validate(self, form):
+    def pre_validate(self, form: BaseForm) -> None:
         super().pre_validate(form)
 
         if self._is_uploaded_file(self.data):
             try:
-                self.image = Image.open(self.data)
+                self.image = Image.open(self.data)  # type:ignore[arg-type]
             except Exception as e:
                 raise ValidationError(f"Invalid image: {e}") from e
 
     # Deletion
-    def _delete_file(self, filename):
+    def _delete_file(self, filename: str) -> None:
         super()._delete_file(filename)
 
         self._delete_thumbnail(filename)
 
-    def _delete_thumbnail(self, filename):
+    def _delete_thumbnail(self, filename: str) -> None:
         path = self._get_path(self.thumbnail_fn(filename))
 
         if op.exists(path):
             os.remove(path)
 
     # Saving
-    def _save_file(self, data, filename):
+    def _save_file(self, data: FileStorage, filename: str) -> str:
         path = self._get_path(filename)
 
         if not op.exists(op.dirname(path)):
             os.makedirs(os.path.dirname(path), self.permission | 0o111)
 
         # Figure out format
-        filename, format = self._get_save_format(filename, self.image)
+        filename, format = self._get_save_format(
+            filename,
+            self.image,  # type:ignore[arg-type]
+        )
 
         if self.image and (self.image.format != format or self.max_size):
             if self.max_size:
@@ -498,7 +524,7 @@ class ImageUploadField(FileUploadField):
 
         return filename
 
-    def _save_thumbnail(self, data, filename, format):
+    def _save_thumbnail(self, data: FileStorage, filename: str, format: str) -> None:
         if self.image and self.thumbnail_size:
             path = self._get_path(self.thumbnail_fn(filename))
 
@@ -506,22 +532,24 @@ class ImageUploadField(FileUploadField):
                 self._resize(self.image, self.thumbnail_size), path, format
             )
 
-    def _resize(self, image, size):
+    def _resize(self, image: Image.Image, size: tuple[int, int, bool]) -> Image.Image:
         (width, height, force) = size
 
         if image.size[0] > width or image.size[1] > height:
             if force:
                 return ImageOps.fit(
-                    self.image, (width, height), Image.Resampling.LANCZOS
+                    self.image,  # type: ignore[arg-type]
+                    (width, height),
+                    Image.Resampling.LANCZOS,
                 )
             else:
-                thumb = self.image.copy()
+                thumb = self.image.copy()  # type: ignore[union-attr]
                 thumb.thumbnail((width, height), Image.Resampling.LANCZOS)
                 return thumb
 
         return image
 
-    def _save_image(self, image, path, format="JPEG"):
+    def _save_image(self, image: Image.Image, path: str, format: str = "JPEG") -> None:
         # New Pillow versions require RGB format for JPEGs
         if format == "JPEG" and image.mode != "RGB":
             image = image.convert("RGB")
@@ -531,7 +559,7 @@ class ImageUploadField(FileUploadField):
         with open(path, "wb") as fp:
             image.save(fp, format)
 
-    def _get_save_format(self, filename, image):
+    def _get_save_format(self, filename: str, image: Image.Image) -> tuple[str, str]:
         if image.format not in self.keep_image_formats:
             name, ext = op.splitext(filename)
             filename = f"{name}.jpg"
@@ -541,14 +569,14 @@ class ImageUploadField(FileUploadField):
 
 
 # Helpers
-def namegen_filename(obj, file_data):
+def namegen_filename(obj: t.Any, file_data: FileStorage) -> str:
     """
     Generate secure filename for uploaded file.
     """
-    return secure_filename(file_data.filename)
+    return secure_filename(file_data.filename)  # type:ignore[arg-type]
 
 
-def thumbgen_filename(filename):
+def thumbgen_filename(filename: str) -> str:
     """
     Generate thumbnail name from filename.
     """

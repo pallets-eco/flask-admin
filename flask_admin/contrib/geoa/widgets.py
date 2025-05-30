@@ -1,11 +1,15 @@
+import typing as t
+
+from markupsafe import Markup
+from wtforms import StringField
 from wtforms.widgets import TextArea
 
 
-def lat(pt):
+def lat(pt: t.Any) -> t.Any:
     return getattr(pt, "lat", getattr(pt, "x", pt[0]))
 
 
-def lng(pt):
+def lng(pt: t.Any) -> t.Any:
     return getattr(pt, "lng", getattr(pt, "y", pt[1]))
 
 
@@ -24,16 +28,16 @@ class LeafletWidget(TextArea):
 
     def __init__(
         self,
-        width="auto",
-        height=350,
-        center=None,
-        zoom=None,
-        min_zoom=None,
-        max_zoom=None,
-        max_bounds=None,
-        tile_layer_url=None,
-        tile_layer_attribution=None,
-    ):
+        width: str = "auto",
+        height: int = 350,
+        center: t.Any = None,
+        zoom: t.Any = None,
+        min_zoom: t.Any = None,
+        max_zoom: t.Any = None,
+        max_bounds: t.Any = None,
+        tile_layer_url: t.Any = None,
+        tile_layer_attribution: t.Any = None,
+    ) -> None:
         self.width = width
         self.height = height
         self.center = center
@@ -44,7 +48,7 @@ class LeafletWidget(TextArea):
         self.tile_layer_url = tile_layer_url
         self.tile_layer_attribution = tile_layer_attribution
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: StringField, **kwargs: t.Any) -> Markup:
         kwargs.setdefault("data-role", self.data_role)
         gtype = getattr(field, "geometry_type", "GEOMETRY")
         kwargs.setdefault("data-geometry-type", gtype)

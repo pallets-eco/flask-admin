@@ -1,3 +1,5 @@
+import typing as t
+
 from sqlalchemy import and_
 from sqlalchemy import cast
 from sqlalchemy import or_
@@ -9,6 +11,9 @@ from flask_admin._compat import string_types
 from flask_admin.model.ajax import AjaxModelLoader
 from flask_admin.model.ajax import DEFAULT_PAGE_SIZE
 
+from ..._types import T_SQLALCHEMY_MODEL
+from ..._types import T_SQLALCHEMY_QUERY
+from ..._types import T_SQLALCHEMY_SESSION
 from .tools import get_primary_key
 from .tools import has_multiple_pks
 from .tools import is_association_proxy
@@ -16,7 +21,13 @@ from .tools import is_relationship
 
 
 class QueryAjaxModelLoader(AjaxModelLoader):
-    def __init__(self, name, session, model, **options):
+    def __init__(
+        self,
+        name: str,
+        session: T_SQLALCHEMY_SESSION,
+        model: type[T_SQLALCHEMY_MODEL],
+        **options: t.Any,
+    ) -> None:
         """
         Constructor.
 
@@ -46,12 +57,12 @@ class QueryAjaxModelLoader(AjaxModelLoader):
                 "Flask-Admin does not support multi-pk AJAX model loading."
             )
 
-        self.pk = get_primary_key(model)
+        self.pk: str = t.cast(str, get_primary_key(model))
 
-    def _process_fields(self):
+    def _process_fields(self) -> list:
         remote_fields = []
 
-        for field in self.fields:
+        for field in self.fields:  # type: ignore[union-attr]
             if isinstance(field, string_types):
                 attr = getattr(self.model, field, None)
 
@@ -65,25 +76,27 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
-    def format(self, model):
+    def format(self, model: t.Union[None, str, bytes]) -> t.Optional[tuple[t.Any, str]]:
         if not model:
             return None
 
         return getattr(model, self.pk), as_unicode(model)
 
-    def get_query(self):
+    def get_query(self) -> T_SQLALCHEMY_QUERY:
         return self.session.query(self.model)
 
-    def get_one(self, pk):
+    def get_one(self, pk: t.Any) -> t.Any:
         # prevent autoflush from occuring during populate_obj
-        with self.session.no_autoflush:
+        with self.session.no_autoflush:  # type: ignore[attr-defined]
             return self.session.get(self.model, pk)
 
-    def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
+    def get_list(
+        self, term: str, offset: int = 0, limit: int = DEFAULT_PAGE_SIZE
+    ) -> t.Any:
         query = self.get_query()
 
         # no type casting to string if a ColumnAssociationProxyInstance is given
-        filters = (
+        filters: t.Any = (
             field.ilike(f"%{term}%")
             if is_association_proxy(field)
             else cast(field, String).ilike(f"%{term}%")
@@ -93,7 +106,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         if self.filters:
             filters = [
-                text(f"{self.model.__tablename__.lower()}.{value}")
+                text(f"{self.model.__tablename__.lower()}.{value}")  # type: ignore[attr-defined]
                 for value in self.filters
             ]
             query = query.filter(and_(*filters))
@@ -104,7 +117,13 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         return query.offset(offset).limit(limit).all()
 
 
-def create_ajax_loader(model, session, name, field_name, options):
+def create_ajax_loader(
+    model: t.Any,
+    session: T_SQLALCHEMY_SESSION,
+    name: str,
+    field_name: str,
+    options: dict[str, t.Any],
+) -> QueryAjaxModelLoader:
     attr = getattr(model, field_name, None)
 
     if attr is None:

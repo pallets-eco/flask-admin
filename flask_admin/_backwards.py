@@ -6,10 +6,12 @@ Backward compatibility helpers.
 """
 
 import sys
+import typing as t
 import warnings
+from types import ModuleType
 
 
-def get_property(obj, name, old_name, default=None):
+def get_property(obj: t.Any, name: str, old_name: str, default: t.Any = None) -> t.Any:
     """
     Check if old property name exists and if it does - show warning message
     and return value.
@@ -34,13 +36,13 @@ def get_property(obj, name, old_name, default=None):
 
 
 class ObsoleteAttr:
-    def __init__(self, new_name, old_name, default):
+    def __init__(self, new_name: str, old_name: str, default: t.Any):
         self.new_name = new_name
         self.old_name = old_name
         self.cache = "_cache_" + new_name
         self.default = default
 
-    def __get__(self, obj, objtype=None):
+    def __get__(self, obj: t.Any, objtype: t.Optional[type] = None) -> "ObsoleteAttr":
         if obj is None:
             return self
 
@@ -62,20 +64,23 @@ class ObsoleteAttr:
         # Return default otherwise
         return self.default
 
-    def __set__(self, obj, value):
+    def __set__(self, obj: t.Any, value: t.Any) -> None:
         setattr(obj, self.cache, value)
 
 
 class ImportRedirect:
-    def __init__(self, prefix, target):
+    def __init__(self, prefix: str, target: str):
         self.prefix = prefix
         self.target = target
 
-    def find_module(self, fullname, path=None):
+    def find_module(
+        self, fullname: str, path: t.Optional[str] = None
+    ) -> t.Optional["ImportRedirect"]:
         if fullname.startswith(self.prefix):
             return self
+        return None
 
-    def load_module(self, fullname):
+    def load_module(self, fullname: str) -> ModuleType:
         if fullname in sys.modules:
             return sys.modules[fullname]
 
@@ -86,5 +91,5 @@ class ImportRedirect:
         return module
 
 
-def import_redirect(old, new):
-    sys.meta_path.append(ImportRedirect(old, new))
+def import_redirect(old: str, new: str) -> None:
+    sys.meta_path.append(ImportRedirect(old, new))  # type: ignore[arg-type]

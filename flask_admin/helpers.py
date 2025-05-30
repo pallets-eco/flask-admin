@@ -1,3 +1,4 @@
+import typing as t
 from re import compile
 from re import sub
 from urllib.parse import urljoin
@@ -8,30 +9,36 @@ from flask import g
 from flask import request
 from flask import url_for
 from jinja2 import pass_context  # type: ignore[attr-defined]
+from jinja2.runtime import Context
+from werkzeug.datastructures import ImmutableMultiDict
+from wtforms.fields.core import Field
+from wtforms.form import BaseForm
+from wtforms.form import Form
 from wtforms.validators import DataRequired
 from wtforms.validators import InputRequired
 
 from flask_admin._compat import iteritems
 
 from ._compat import string_types
+from ._types import T_MODEL_VIEW
 
 VALID_SCHEMES = ["http", "https"]
 _substitute_whitespace = compile(r"[\s\x00-\x08\x0B\x0C\x0E-\x19]+").sub
 _fix_multiple_slashes = compile(r"(^([^/]+:)?//)/*").sub
 
 
-def set_current_view(view):
+def set_current_view(view: T_MODEL_VIEW) -> None:
     g._admin_view = view
 
 
-def get_current_view():
+def get_current_view() -> t.Optional[t.Any]:
     """
     Get current administrative view.
     """
     return getattr(g, "_admin_view", None)
 
 
-def get_url(endpoint, **kwargs):
+def get_url(endpoint: str, **kwargs: t.Any) -> str:
     """
     Alternative to Flask `url_for`.
     If there's current administrative view, will call its `get_url`. If there's
@@ -50,7 +57,7 @@ def get_url(endpoint, **kwargs):
     return view.get_url(endpoint, **kwargs)
 
 
-def is_required_form_field(field):
+def is_required_form_field(field: Field) -> bool:
     """
     Check if form field has `DataRequired`, `InputRequired`, or
     `FieldListInputRequired` validators.
@@ -66,21 +73,21 @@ def is_required_form_field(field):
     return False
 
 
-def is_form_submitted():
+def is_form_submitted() -> bool:
     """
     Check if current method is PUT or POST
     """
-    return request and request.method in ("PUT", "POST")
+    return bool(request and request.method in ("PUT", "POST"))
 
 
-def validate_form_on_submit(form):
+def validate_form_on_submit(form: Form) -> bool:
     """
     If current method is PUT or POST, validate form and return validation status.
     """
     return is_form_submitted() and form.validate()
 
 
-def get_form_data():
+def get_form_data() -> t.Optional[ImmutableMultiDict]:
     """
     If current method is PUT or POST, return concatenated `request.form` with
     `request.files` or `None` otherwise.
@@ -95,7 +102,7 @@ def get_form_data():
     return None
 
 
-def is_field_error(errors):
+def is_field_error(errors: t.Union[list, tuple, None]) -> bool:
     """
     Check if wtforms field has error without checking its children.
 
@@ -110,7 +117,7 @@ def is_field_error(errors):
     return False
 
 
-def flash_errors(form, message):
+def flash_errors(form: BaseForm, message: str) -> None:
     from flask_admin.babel import gettext
 
     for field_name, errors in iteritems(form.errors):
@@ -119,21 +126,21 @@ def flash_errors(form, message):
 
 
 @pass_context
-def resolve_ctx(context):
+def resolve_ctx(context: Context) -> None:
     """
     Resolve current Jinja2 context and store it for general consumption.
     """
     g._admin_render_ctx = context
 
 
-def get_render_ctx():
+def get_render_ctx() -> t.Optional[Context]:
     """
     Get view template context.
     """
     return getattr(g, "_admin_render_ctx", None)
 
 
-def prettify_class_name(name):
+def prettify_class_name(name: str) -> str:
     """
     Split words in PascalCase string into separate words.
 
@@ -143,7 +150,7 @@ def prettify_class_name(name):
     return sub(r"(?<=.)([A-Z])", r" \1", name)
 
 
-def is_safe_url(target):
+def is_safe_url(target: str) -> bool:
     # prevent urls like "\\www.google.com"
     # some browser will change \\ to // (eg: Chrome)
     # refs https://stackoverflow.com/questions/10438008
@@ -166,8 +173,9 @@ def is_safe_url(target):
     return ref_url.netloc == test_url.netloc
 
 
-def get_redirect_target(param_name="url"):
+def get_redirect_target(param_name: str = "url") -> t.Optional[str]:
     target = request.values.get(param_name)
 
     if target and is_safe_url(target):
         return target
+    return None

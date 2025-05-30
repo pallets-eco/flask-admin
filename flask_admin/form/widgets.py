@@ -1,4 +1,9 @@
+import typing as t
+
 from flask import current_app
+from markupsafe import Markup
+from wtforms import Field
+from wtforms import SelectFieldBase
 from wtforms import widgets
 
 from flask_admin import helpers as h
@@ -22,7 +27,7 @@ class Select2Widget(widgets.Select):
     work.
     """
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: SelectFieldBase, **kwargs: t.Any) -> Markup:
         kwargs.setdefault("data-role", "select2")
 
         allow_blank = getattr(field, "allow_blank", False)
@@ -37,7 +42,7 @@ class Select2TagsWidget(widgets.TextInput):
     You must include select2.js, form-x.x.x.js and select2 stylesheet for it to work.
     """
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: Field, **kwargs: t.Any) -> Markup:
         kwargs.setdefault("data-role", "select2-tags")
         kwargs.setdefault(
             "data-allow-duplicate-tags",
@@ -53,7 +58,7 @@ class DatePickerWidget(widgets.TextInput):
     You must include bootstrap-datepicker.js and form-x.x.x.js for styling to work.
     """
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: Field, **kwargs: t.Any) -> Markup:
         kwargs.setdefault("data-role", "datepicker")
         kwargs.setdefault("data-date-format", "YYYY-MM-DD")
 
@@ -68,7 +73,7 @@ class DateTimePickerWidget(widgets.TextInput):
     You must include bootstrap-datepicker.js and form-x.x.x.js for styling to work.
     """
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: Field, **kwargs: t.Any) -> Markup:
         kwargs.setdefault("data-role", "datetimepicker")
         kwargs.setdefault("data-date-format", "YYYY-MM-DD HH:mm:ss")
         return super().__call__(field, **kwargs)
@@ -81,7 +86,7 @@ class TimePickerWidget(widgets.TextInput):
     You must include bootstrap-datepicker.js and form-x.x.x.js for styling to work.
     """
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: Field, **kwargs: t.Any) -> Markup:
         kwargs.setdefault("data-role", "timepicker")
         kwargs.setdefault("data-date-format", "HH:mm:ss")
         return super().__call__(field, **kwargs)
@@ -92,7 +97,7 @@ class RenderTemplateWidget:
     WTForms widget that renders Jinja2 template
     """
 
-    def __init__(self, template):
+    def __init__(self, template: str) -> None:
         """
         Constructor
 
@@ -101,7 +106,7 @@ class RenderTemplateWidget:
         """
         self.template = template
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: Field, **kwargs: t.Any) -> Markup:
         kwargs.update(
             {
                 "field": field,

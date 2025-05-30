@@ -1,23 +1,27 @@
+import typing as t
 from functools import reduce
 
 from jinja2 import pass_context  # type: ignore[attr-defined]
+from jinja2.runtime import Context
 
 from flask_admin._compat import string_types
+from flask_admin._types import T_COLUMN
+from flask_admin._types import T_MODEL_VIEW
 from flask_admin.babel import gettext
 
 
 class BaseListRowAction:
-    def __init__(self, title=None):
+    def __init__(self, title: t.Optional[str] = None) -> None:
         self.title = title
 
-    def render(self, context, row_id, row):
+    def render(self, context: Context, row_id: str, row: t.Any) -> t.Any:
         raise NotImplementedError()
 
     @pass_context
-    def render_ctx(self, context, row_id, row):
+    def render_ctx(self, context: Context, row_id: str, row: t.Any) -> t.Any:
         return self.render(context, row_id, row)
 
-    def _resolve_symbol(self, context, symbol):
+    def _resolve_symbol(self, context: Context, symbol: str) -> t.Any:
         if "." in symbol:
             parts = symbol.split(".")
             m = context.resolve(parts[0])
@@ -27,13 +31,15 @@ class BaseListRowAction:
 
 
 class LinkRowAction(BaseListRowAction):
-    def __init__(self, icon_class, url, title=None):
+    def __init__(
+        self, icon_class: str, url: str, title: t.Optional[str] = None
+    ) -> None:
         super().__init__(title=title)
 
         self.url = url
         self.icon_class = icon_class
 
-    def render(self, context, row_id, row):
+    def render(self, context: Context, row_id: str, row: t.Any) -> t.Any:
         m = self._resolve_symbol(context, "row_actions.link")
 
         if isinstance(self.url, string_types):
@@ -45,7 +51,14 @@ class LinkRowAction(BaseListRowAction):
 
 
 class EndpointLinkRowAction(BaseListRowAction):
-    def __init__(self, icon_class, endpoint, title=None, id_arg="id", url_args=None):
+    def __init__(
+        self,
+        icon_class: str,
+        endpoint: str,
+        title: t.Optional[str] = None,
+        id_arg: str = "id",
+        url_args: t.Optional[dict[str, t.Any]] = None,
+    ) -> None:
         super().__init__(title=title)
 
         self.icon_class = icon_class
@@ -53,7 +66,7 @@ class EndpointLinkRowAction(BaseListRowAction):
         self.id_arg = id_arg
         self.url_args = url_args
 
-    def render(self, context, row_id, row):
+    def render(self, context: Context, row_id: str, row: t.Any) -> t.Any:
         m = self._resolve_symbol(context, "row_actions.link")
         get_url = self._resolve_symbol(context, "get_url")
 
@@ -66,43 +79,43 @@ class EndpointLinkRowAction(BaseListRowAction):
 
 
 class TemplateLinkRowAction(BaseListRowAction):
-    def __init__(self, template_name, title=None):
+    def __init__(self, template_name: str, title: t.Optional[str] = None) -> None:
         super().__init__(title=title)
 
         self.template_name = template_name
 
-    def render(self, context, row_id, row):
+    def render(self, context: Context, row_id: str, row: t.Any) -> t.Any:
         m = self._resolve_symbol(context, self.template_name)
         return m(self, row_id, row)
 
 
 class ViewRowAction(TemplateLinkRowAction):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("row_actions.view_row", gettext("View Record"))
 
 
 class ViewPopupRowAction(TemplateLinkRowAction):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("row_actions.view_row_popup", gettext("View Record"))
 
 
 class EditRowAction(TemplateLinkRowAction):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("row_actions.edit_row", gettext("Edit Record"))
 
 
 class EditPopupRowAction(TemplateLinkRowAction):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("row_actions.edit_row_popup", gettext("Edit Record"))
 
 
 class DeleteRowAction(TemplateLinkRowAction):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("row_actions.delete_row", gettext("Delete Record"))
 
 
 # Macro helper
-def macro(name):
+def macro(name: object) -> t.Callable[[t.Any, Context, T_MODEL_VIEW, T_COLUMN], t.Any]:
     """
     Jinja2 macro list column formatter.
 
@@ -110,7 +123,9 @@ def macro(name):
         Macro name in the current template
     """
 
-    def inner(view, context, model, column):
+    def inner(
+        view: t.Any, context: Context, model: T_MODEL_VIEW, column: T_COLUMN
+    ) -> t.Any:
         m = context.resolve(name)
 
         if not m:
