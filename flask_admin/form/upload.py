@@ -1,7 +1,6 @@
 import os
 import os.path as op
 import typing as t
-from typing import TYPE_CHECKING
 from urllib.parse import urljoin
 
 from markupsafe import Markup
@@ -17,6 +16,7 @@ from wtforms.utils import UnsetValue
 from wtforms.widgets import html_params
 
 from flask_admin._compat import string_types
+from flask_admin._types import T_PIL_IMAGE
 from flask_admin._types import T_VALIDATOR
 from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
@@ -27,10 +27,6 @@ try:
 except ImportError:
     Image = None  # type:ignore[assignment]
     ImageOps = None  # type:ignore[assignment]
-
-if TYPE_CHECKING:
-    from PIL import Image
-    from PIL import ImageOps
 
 __all__ = [
     "FileUploadInput",
@@ -458,7 +454,7 @@ class ImageUploadField(FileUploadField):
         self.thumbnail_fn = thumbgen or thumbgen_filename
         self.thumbnail_size = thumbnail_size
         self.endpoint = endpoint
-        self.image: t.Optional[Image.Image] = None
+        self.image: t.Optional[T_PIL_IMAGE] = None
         self.url_relative_path = url_relative_path
 
         if not allowed_extensions:
@@ -532,7 +528,7 @@ class ImageUploadField(FileUploadField):
                 self._resize(self.image, self.thumbnail_size), path, format
             )
 
-    def _resize(self, image: Image.Image, size: tuple[int, int, bool]) -> Image.Image:
+    def _resize(self, image: T_PIL_IMAGE, size: tuple[int, int, bool]) -> T_PIL_IMAGE:
         (width, height, force) = size
 
         if image.size[0] > width or image.size[1] > height:
@@ -549,7 +545,7 @@ class ImageUploadField(FileUploadField):
 
         return image
 
-    def _save_image(self, image: Image.Image, path: str, format: str = "JPEG") -> None:
+    def _save_image(self, image: T_PIL_IMAGE, path: str, format: str = "JPEG") -> None:
         # New Pillow versions require RGB format for JPEGs
         if format == "JPEG" and image.mode != "RGB":
             image = image.convert("RGB")
@@ -559,7 +555,7 @@ class ImageUploadField(FileUploadField):
         with open(path, "wb") as fp:
             image.save(fp, format)
 
-    def _get_save_format(self, filename: str, image: Image.Image) -> tuple[str, str]:
+    def _get_save_format(self, filename: str, image: T_PIL_IMAGE) -> tuple[str, str]:
         if image.format not in self.keep_image_formats:
             name, ext = op.splitext(filename)
             filename = f"{name}.jpg"
