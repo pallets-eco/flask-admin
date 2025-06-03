@@ -61,6 +61,7 @@ if t.TYPE_CHECKING:
     from flask_admin.contrib.sqla.ajax import (
         QueryAjaxModelLoader as T_SQLA_QUERY_AJAX_MODEL_LOADER,
     )  # noqa
+    from PIL.Image import Image as T_PIL_IMAGE
 else:
     T_VIEW = "flask_admin.base.BaseView"
     T_INPUT_REQUIRED = "InputRequired"
@@ -97,6 +98,7 @@ else:
     T_SQLA_QUERY_AJAX_MODEL_LOADER = (
         "flask_admin.contrib.sqla.ajax.QueryAjaxModelLoader"
     )
+    T_PIL_IMAGE = "PIL.Image.Image"
 
 T_COLUMN = t.Union[str, T_SQLALCHEMY_COLUMN]
 T_FILTER = tuple[int, T_COLUMN, str]
