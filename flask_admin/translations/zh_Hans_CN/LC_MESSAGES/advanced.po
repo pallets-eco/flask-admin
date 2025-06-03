@@ -639,15 +639,6 @@ msgstr "支持复杂的文档结构 (列表，子文档等等)"
 msgid "GridFS support for file and image uploads"
 msgstr "GridFS 支持存储上传的文件/图片"
 
-#: ../../doc/advanced.rst:378
-msgid ""
-"In order to use MongoEngine integration, install the `Flask-MongoEngine "
-"<https://flask-mongoengine.readthedocs.io>`_ package. Flask-Admin uses "
-"form scaffolding from it."
-msgstr ""
-"为了集成 MongoEngine，需要安装 `Flask-MongoEngine <https://flask-"
-"mongoengine.readthedocs.io>`_ 包。Flask-Admin 使用其中的表单脚手架。"
-
 #: ../../doc/advanced.rst:382 ../../doc/advanced.rst:401
 msgid "Known issues:"
 msgstr "已知问题:"

@@ -46,6 +46,10 @@ geoalchemy = [
     "geoalchemy2>=0.14.0",
     "shapely>=2",
 ]
+mongoengine = [
+    "Flask-Admin[sqlalchemy]",
+    "mongoengine>=0.29"
+]
 pymongo = ["pymongo>=3.7.0"]
 peewee = [
     "peewee>=3.14.0",
@@ -61,6 +65,11 @@ all = [
     "Flask-Admin[sqlalchemy]",
     "Flask-Admin[sqlalchemy-with-utils]",
     "Flask-Admin[geoalchemy]",
+
+# FIXME: disabling mongoengine as flask-mongoengine is now out-of-date and is
+#        incompatible with newer versions of flask that we want to test.
+#    "Flask-Admin[mongoengine]",
+
     "Flask-Admin[pymongo]",
     "Flask-Admin[peewee]",
     "Flask-Admin[s3]",
@@ -93,6 +102,9 @@ filterwarnings = [
     "error",
     # TODO: remove the ignored deprecation warning when support for WTForms 3 has been added.
     "ignore:Flags should be stored in dicts and not in tuples. The next version of WTForms will abandon support for flags in tuples.:DeprecationWarning",
+
+    # flask-mongoengine is responsible for the below deprecation warning, and hasn't been updated recently
+    "default:No uuidRepresentation is specified:DeprecationWarning",
 
     # Werkzeug is responsible for the below deprecation warning; remove when they have updated their code.
     "default:ast\\.Str is deprecated and will be removed in Python 3\\.14:DeprecationWarning",
@@ -150,9 +162,11 @@ module = [
     "citext",
     "colour",
     "flask_babel",
+    "flask_mongoengine.*",
     "flask_wtf",
     "gridfs",
     "marker",
+    "mongoengine.*",
     "playhouse.*",
     "pymongo",
     "sqlalchemy.*",
