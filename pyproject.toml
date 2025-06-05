@@ -297,6 +297,7 @@ base = ["env_run_base"]
 base_python = ["3.9"]
 commands = [
     ["uv", "pip", "install", "sqlalchemy>=1.4,<2"],
+    ["uv", "pip", "install", "flask-sqlalchemy<=3.0.5"],
     [
         "pytest", "-v", "--tb=short", "--basetemp={env_tmp_dir}",
         {replace = "posargs", default = [], extend = true},
@@ -309,6 +310,7 @@ base = ["env_run_base"]
 base_python = ["3.12"]
 commands = [
     ["uv", "pip", "install", "sqlalchemy>=1.4,<2"],
+    ["uv", "pip", "install", "flask-sqlalchemy<=3.0.5"],
     [
         "pytest", "-v", "--tb=short", "--basetemp={env_tmp_dir}",
         {replace = "posargs", default = [], extend = true},
