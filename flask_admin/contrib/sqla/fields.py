@@ -25,7 +25,7 @@ from flask_admin.form import Select2Widget
 from flask_admin.model.fields import InlineFieldList
 from flask_admin.model.fields import InlineModelFormField
 
-from ..._types import T_ITER_CHOICES
+from ..._types import T_ITER_CHOICES, T_ORM_MODEL
 from ..._types import T_SQLALCHEMY_MODEL
 from ..._types import T_SQLALCHEMY_SESSION
 from ..._types import T_VALIDATOR
@@ -380,7 +380,7 @@ class InlineModelOneToOneField(InlineModelFormField):
         self,
         form: type[form.BaseForm],
         session: T_SQLALCHEMY_SESSION,
-        model: type[T_SQLALCHEMY_MODEL],
+        model: type[T_ORM_MODEL],
         prop: str,
         inline_view: InlineBaseFormAdmin,
         **kwargs: t.Any,

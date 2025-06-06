@@ -2711,7 +2711,7 @@ class BaseModelView(BaseView, ActionsMixin):
             if record is None:
                 return gettext("Record does not exist."), 500
 
-            record = t.cast(T_ORM_MODEL, record)
+            record = record
             if self.update_model(form, record):
                 # Success
                 return gettext("Record was successfully saved.")

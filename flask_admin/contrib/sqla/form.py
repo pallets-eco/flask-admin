@@ -761,7 +761,7 @@ def get_form(
     # Contribute extra fields
     if not only and extra_fields:
         for name, field in iteritems(extra_fields):
-            field_dict[name] = form.recreate_field(field)  # type: ignore[arg-type]
+            field_dict[name] = form.recreate_field(field)
 
     return type(model.__name__ + "Form", (base_class,), field_dict)
 
@@ -805,7 +805,7 @@ class InlineModelConverter(InlineModelConverterBase):
         p: t.Union[
             tuple[T_ORM_MODEL, dict[str, t.Any]], InlineFormAdmin, type[T_ORM_MODEL]
         ],
-    ) -> t.Optional[InlineFormAdmin]:
+    ) -> InlineFormAdmin:
         info = super().get_info(p)
 
         # Special case for model instances
@@ -853,10 +853,10 @@ class InlineModelConverter(InlineModelConverterBase):
                     # when the widget tries to set the 'data-url' property in the
                     # <input> tag, it won't be able to find the loader since it'll be
                     # using the "field.loader.name" of the previously-configured loader.
-                    loader.name = new_name  # type: ignore[union-attr]
+                    loader.name = new_name
 
                 result[name] = loader
-                self.view._form_ajax_refs[new_name] = loader  # type: ignore[assignment]
+                self.view._form_ajax_refs[new_name] = loader
 
         return result
 
@@ -1115,12 +1115,12 @@ class InlineOneToOneModelConverter(InlineModelConverter):
             setattr(
                 form_class,
                 key,
-                self.inline_field_list_type(  # type: ignore[has-type]
+                self.inline_field_list_type(
                     child_form,
                     self.session,
                     info.model,
                     inline_relationships[key],
-                    info,
+                    info, # type: ignore[arg-type]
                     **kwargs,
                 ),
             )

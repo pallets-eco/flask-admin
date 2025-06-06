@@ -2,7 +2,7 @@ from io import BytesIO
 
 import boto3
 import pytest
-from moto import mock_aws
+from moto import mock_aws # type: ignore[import-not-found]
 
 from flask_admin.contrib.fileadmin.s3 import _strip_leading_slash_from
 from flask_admin.contrib.fileadmin.s3 import S3FileAdmin

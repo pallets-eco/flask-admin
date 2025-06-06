@@ -229,7 +229,7 @@ class AjaxSelectMultipleField(AjaxSelectField):
     Ajax-enabled model multi-select field.
     """
 
-    widget = AjaxSelect2Widget(multiple=True)  # type: ignore[assignment]
+    widget = AjaxSelect2Widget(multiple=True)
 
     def __init__(
         self,
