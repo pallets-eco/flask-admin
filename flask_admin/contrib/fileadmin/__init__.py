@@ -809,7 +809,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         return column in self.column_sortable_list
 
-    def column_label(self, column: str) -> str:
+    def column_label(self, column: str) -> T_TRANSLATABLE:
         """
         Gets the column's label.
         :param column: The column to query.

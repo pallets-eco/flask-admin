@@ -12,7 +12,8 @@ from sqlalchemy.orm.properties import ColumnProperty
 from sqlalchemy.sql.schema import Column
 from sqlalchemy.sql.schema import Table
 
-from flask_admin._types import T_SQLALCHEMY_MODEL, T_ORM_MODEL
+from flask_admin._types import T_ORM_MODEL
+from flask_admin._types import T_SQLALCHEMY_MODEL
 
 try:
     # SQLAlchemy 2.0
@@ -255,7 +256,7 @@ def is_hybrid_property(model: type[T_SQLALCHEMY_MODEL], attr_name: str) -> bool:
             if isinstance(last_model, string_types):
                 last_model = attr.property._clsregistry_resolve_name(last_model)()
             elif isinstance(last_model, _class_resolver):
-                last_model = model._decl_class_registry[last_model.arg] # type: ignore[attr-defined]
+                last_model = model._decl_class_registry[last_model.arg]  # type: ignore[attr-defined]
             elif isinstance(last_model, (types.FunctionType, types.MethodType)):
                 last_model = last_model()
         last_name = names[-1]

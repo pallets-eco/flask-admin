@@ -25,7 +25,8 @@ from flask_admin.form import Select2Widget
 from flask_admin.model.fields import InlineFieldList
 from flask_admin.model.fields import InlineModelFormField
 
-from ..._types import T_ITER_CHOICES, T_ORM_MODEL
+from ..._types import T_ITER_CHOICES
+from ..._types import T_ORM_MODEL
 from ..._types import T_SQLALCHEMY_MODEL
 from ..._types import T_SQLALCHEMY_SESSION
 from ..._types import T_VALIDATOR
