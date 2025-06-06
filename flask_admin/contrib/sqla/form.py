@@ -1120,7 +1120,7 @@ class InlineOneToOneModelConverter(InlineModelConverter):
                     self.session,
                     info.model,
                     inline_relationships[key],
-                    info, # type: ignore[arg-type]
+                    info,  # type: ignore[arg-type]
                     **kwargs,
                 ),
             )
