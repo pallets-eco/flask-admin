@@ -111,7 +111,8 @@ T_TRANSLATABLE = t.Union[str, T_LAZY_STRING]
 # Compatibility for 3-tuples and 4-tuples in iter_choices
 # https://wtforms.readthedocs.io/en/3.2.x/changes/#version-3-2-0
 T_ITER_CHOICES = t.Union[
-    tuple[t.Any, T_TRANSLATABLE, bool, dict[str, t.Any]], tuple[t.Any, T_TRANSLATABLE, bool]
+    tuple[t.Any, T_TRANSLATABLE, bool, dict[str, t.Any]],
+    tuple[t.Any, T_TRANSLATABLE, bool],
 ]
 T_OPTION = tuple[str, T_TRANSLATABLE]
 T_OPTION_LIST = t.Sequence[T_OPTION]

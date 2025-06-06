@@ -3,8 +3,8 @@ import typing as t
 from flask_admin.babel import lazy_gettext
 from flask_admin.model import filters
 
-from ..._types import T_TRANSLATABLE
 from ..._types import T_OPTIONS
+from ..._types import T_TRANSLATABLE
 from ..._types import T_WIDGET_TYPE
 from .tools import parse_like_term
 
