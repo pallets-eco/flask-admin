@@ -140,6 +140,19 @@ uv sync --extra all
 
 Tests are run with *pytest*. If you are not familiar with this package, you can find out more on [their website](https://pytest.org/).
 
+The tests rely on some external services running, including postgres, azurite and mongo. Currently, themost reliable way to run tests,
+without setting these services up manually on your machine, is to use the tests devcontainer docker compose configuration.
+
+```shell
+make test
+```
+
+Which is an alias for:
+
+```shell
+docker compose -f .devcontainer/tests/docker-compose.yaml run uv run pytest
+```
+
 In order for the full test suite to pass, you will need to have all of Flask-Admin's optional extras install. Run:
 
 ```shell
