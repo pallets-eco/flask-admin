@@ -151,3 +151,11 @@ doctest:
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
+
+.PHONY: test-in-docker
+test-in-docker:
+	docker compose -f .devcontainer/tests/docker-compose.yaml run --remove-orphans app uv run pytest
+
+.PHONY: tox-in-docker
+tox-in-docker:
+	docker compose -f .devcontainer/tests/docker-compose.yaml run --remove-orphans app uv run tox
