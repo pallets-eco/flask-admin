@@ -105,35 +105,50 @@ tox -e docs
 
 ## Installation
 
-To install Flask-Admin, simply:
+To install Flask-Admin using pip, simply:
 
 ```shell
 pip install flask-admin
 ```
 
-Or alternatively, you can download the repository and install manually
-by doing:
+
+## Contributing
+
+If you are a developer working on and maintaining Flask-Admin, checkout the repo by doing:
 
 ```shell
 git clone https://github.com/pallets-eco/flask-admin.git
 cd flask-admin
-pip install .
 ```
 
-If you are contributing a bug fix or a new feature, you can install the app in editable mode:
+Flask-Admin uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment. With
+the repository checked out, to install the minimum version of Python that Flask-Admin supports, create your
+virtual environment, and install the required dependencies, run:
 
 ```shell
-pip install -e ".[all]"
+uv sync
+```
+
+This will install Flask-Admin but without any of the optional extra dependencies, such as those for sqlalchemy
+or mongoengine support. To install all extras, run:
+
+```shell
+uv sync --extra all
 ```
 
 ## Tests
 
 Tests are run with *pytest*. If you are not familiar with this package, you can find out more on [their website](https://pytest.org/).
 
-To run the tests, from the project directory, simply run:
+In order for the full test suite to pass, you will need to have all of Flask-Admin's optional extras install. Run:
 
-    pip install --use-pep517 -r requirements/dev.txt
-    pytest
+```shell
+uv sync --extra all
+```
+
+Then, to run the tests, simply run this command from the project's directory:
+
+    uv run pytest
 
 You should see output similar to:
 

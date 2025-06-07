@@ -476,7 +476,7 @@ class ModelView(BaseModelView):
         Return the primary key name(s) from a model
         If model has single primary key, will return a string and tuple otherwise
         """
-        return tools.get_primary_key(self.model)  # type: ignore[arg-type]
+        return tools.get_primary_key(self.model)
 
     def get_pk_value(
         self,

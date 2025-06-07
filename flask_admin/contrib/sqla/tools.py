@@ -12,6 +12,7 @@ from sqlalchemy.orm.properties import ColumnProperty
 from sqlalchemy.sql.schema import Column
 from sqlalchemy.sql.schema import Table
 
+from flask_admin._types import T_ORM_MODEL
 from flask_admin._types import T_SQLALCHEMY_MODEL
 
 try:
@@ -56,7 +57,7 @@ def filter_foreign_columns(base_table: Table, columns: list) -> list:
 
 
 def get_primary_key(
-    model: type[T_SQLALCHEMY_MODEL],
+    model: type[T_ORM_MODEL],
 ) -> t.Union[tuple[t.Any, ...], t.Any]:
     """
     Return primary key name from a model. If the primary key consists of multiple
@@ -65,7 +66,7 @@ def get_primary_key(
     :param model:
         Model class
     """
-    mapper = model._sa_class_manager.mapper  # type: ignore[attr-defined]
+    mapper = model._sa_class_manager.mapper  # type: ignore[union-attr]
     pks = [mapper.get_property_by_column(c).key for c in mapper.primary_key]
     if len(pks) == 1:
         return pks[0]
@@ -150,7 +151,7 @@ def get_query_for_ids(
             model,
             get_primary_key(model),  # type: ignore[arg-type]
         )
-        query = modelquery.filter(model_pk.in_(ids))  # type: ignore[attr-defined]
+        query = modelquery.filter(model_pk.in_(ids))
 
     return query
 
@@ -207,7 +208,7 @@ def get_field_with_path(
             for relation_value in relation_values:
                 if is_relationship(relation_value):
                     current_model = relation_value.property.mapper.class_
-                    table = current_model.__table__  # type: ignore[attr-defined]
+                    table = current_model.__table__
                     if need_join(model, table):
                         path.append(relation_value)
 
@@ -255,7 +256,7 @@ def is_hybrid_property(model: type[T_SQLALCHEMY_MODEL], attr_name: str) -> bool:
             if isinstance(last_model, string_types):
                 last_model = attr.property._clsregistry_resolve_name(last_model)()
             elif isinstance(last_model, _class_resolver):
-                last_model = model._decl_class_registry[last_model.arg]
+                last_model = model._decl_class_registry[last_model.arg]  # type: ignore[attr-defined]
             elif isinstance(last_model, (types.FunctionType, types.MethodType)):
                 last_model = last_model()
         last_name = names[-1]

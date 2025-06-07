@@ -492,7 +492,7 @@ class ModelView(BaseModelView):
                 query = f.apply(query, f.clean(value))
 
         # Get count
-        count = query.count() if not self.simple_list_pager else None  # type: ignore[call-arg]
+        count = query.count() if not self.simple_list_pager else None
 
         # Apply sorting
         order: t.Optional[list[tuple[str, bool]]]
@@ -516,7 +516,7 @@ class ModelView(BaseModelView):
             query = query.offset(page * page_size)
 
         if execute:
-            query = list(query.execute())  # type: ignore[call-arg, assignment]
+            query = list(query.execute())  # type: ignore[assignment]
 
         return count, query
 

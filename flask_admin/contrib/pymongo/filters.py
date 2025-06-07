@@ -4,8 +4,8 @@ import typing as t
 from flask_admin.babel import lazy_gettext
 from flask_admin.model import filters
 
-from ..._types import T_LAZY_STRING
 from ..._types import T_OPTIONS
+from ..._types import T_TRANSLATABLE
 from ..._types import T_WIDGET_TYPE
 from .tools import parse_like_term
 
@@ -45,7 +45,7 @@ class FilterEqual(BasePyMongoFilter):
         query.append({self.column: value})
         return query
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("equals")
 
 
@@ -54,7 +54,7 @@ class FilterNotEqual(BasePyMongoFilter):
         query.append({self.column: {"$ne": value}})
         return query
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("not equal")
 
 
@@ -64,7 +64,7 @@ class FilterLike(BasePyMongoFilter):
         query.append({self.column: {"$regex": regex}})
         return query
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("contains")
 
 
@@ -74,7 +74,7 @@ class FilterNotLike(BasePyMongoFilter):
         query.append({self.column: {"$not": re.compile(regex)}})
         return query
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("not contains")
 
 
@@ -87,7 +87,7 @@ class FilterGreater(BasePyMongoFilter):
         query.append({self.column: {"$gt": value}})
         return query
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("greater than")
 
 
@@ -100,7 +100,7 @@ class FilterSmaller(BasePyMongoFilter):
         query.append({self.column: {"$lt": value}})
         return query
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("smaller than")
 
 

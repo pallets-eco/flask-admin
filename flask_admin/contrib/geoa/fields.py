@@ -37,9 +37,11 @@ class GeoJSONField(JSONField):
             return self.raw_data[0]
         if type(self.data) is geoalchemy2.elements.WKBElement:
             if self.srid == -1:
-                return self.session.scalar(func.ST_AsGeoJSON(self.data))
+                return self.session.scalar(  # pyright: ignore[reportOptionalMemberAccess]
+                    func.ST_AsGeoJSON(self.data)
+                )
             else:
-                return self.session.scalar(
+                return self.session.scalar(  # pyright: ignore[reportOptionalMemberAccess]
                     func.ST_AsGeoJSON(func.ST_Transform(self.data, self.web_srid))
                 )
         else:
@@ -50,7 +52,7 @@ class GeoJSONField(JSONField):
         if str(self.data) == "":
             self.data = None
         if self.data is not None:
-            web_shape = self.session.scalar(
+            web_shape = self.session.scalar(  # pyright: ignore[reportOptionalMemberAccess]
                 func.ST_AsText(
                     func.ST_Transform(
                         func.ST_GeomFromText(shape(self.data).wkt, self.web_srid),

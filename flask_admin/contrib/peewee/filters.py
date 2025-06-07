@@ -3,8 +3,8 @@ import typing as t
 from flask_admin.babel import lazy_gettext
 from flask_admin.model import filters
 
-from ..._types import T_LAZY_STRING
 from ..._types import T_OPTIONS
+from ..._types import T_TRANSLATABLE
 from ..._types import T_WIDGET_TYPE
 from .tools import parse_like_term
 
@@ -43,7 +43,7 @@ class FilterEqual(BasePeeweeFilter):
     def apply(self, query: t.Any, value: t.Any) -> t.Any:
         return query.filter(self.column == value)
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("equals")
 
 
@@ -51,7 +51,7 @@ class FilterNotEqual(BasePeeweeFilter):
     def apply(self, query: t.Any, value: t.Any) -> t.Any:
         return query.filter(self.column != value)
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("not equal")
 
 
@@ -60,7 +60,7 @@ class FilterLike(BasePeeweeFilter):
         term = parse_like_term(value)
         return query.filter(self.column**term)
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("contains")
 
 
@@ -69,7 +69,7 @@ class FilterNotLike(BasePeeweeFilter):
         term = parse_like_term(value)
         return query.filter(~(self.column**term))
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("not contains")
 
 
@@ -77,7 +77,7 @@ class FilterGreater(BasePeeweeFilter):
     def apply(self, query: t.Any, value: t.Any) -> t.Any:
         return query.filter(self.column > value)
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("greater than")
 
 
@@ -85,7 +85,7 @@ class FilterSmaller(BasePeeweeFilter):
     def apply(self, query: t.Any, value: t.Any) -> t.Any:
         return query.filter(self.column < value)
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("smaller than")
 
 
@@ -96,7 +96,7 @@ class FilterEmpty(BasePeeweeFilter, filters.BaseBooleanFilter):
         else:
             return query.filter(~(self.column >> None))
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("empty")
 
 
@@ -116,7 +116,7 @@ class FilterInList(BasePeeweeFilter):
     def apply(self, query: t.Any, value: t.Any) -> t.Any:
         return query.filter(self.column << (value or [None]))
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("in list")
 
 
@@ -125,7 +125,7 @@ class FilterNotInList(FilterInList):
         # NOT IN can exclude NULL values, so "or_ == None" needed to be added
         return query.filter(~(self.column << (value or [None])) | (self.column >> None))
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("not in list")
 
 
@@ -224,7 +224,7 @@ class DateNotBetweenFilter(DateBetweenFilter):
         start, end = value
         return query.filter(~(self.column.between(start, end)))
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("not between")
 
 
@@ -264,7 +264,7 @@ class DateTimeNotBetweenFilter(DateTimeBetweenFilter):
         start, end = value
         return query.filter(~(self.column.between(start, end)))
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("not between")
 
 
@@ -304,7 +304,7 @@ class TimeNotBetweenFilter(TimeBetweenFilter):
         start, end = value
         return query.filter(~(self.column.between(start, end)))
 
-    def operation(self) -> T_LAZY_STRING:
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("not between")
 
 

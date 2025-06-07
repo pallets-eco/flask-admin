@@ -103,16 +103,17 @@ else:
 T_COLUMN = t.Union[str, T_SQLALCHEMY_COLUMN]
 T_FILTER = tuple[int, T_COLUMN, str]
 T_COLUMN_LIST = t.Sequence[T_COLUMN]
-# Compatibility for 3-tuples and 4-tuples in iter_choices
-# https://wtforms.readthedocs.io/en/3.2.x/changes/#version-3-2-0
-T_ITER_CHOICES = t.Union[
-    tuple[t.Any, str, bool, dict[str, t.Any]], tuple[str, str, bool]
-]
 T_FORMATTER = t.Callable[[T_MODEL_VIEW, t.Optional[Context], t.Any, str], str]
 T_COLUMN_FORMATTERS = dict[str, T_FORMATTER]
 T_TYPE_FORMATTER = t.Callable[[T_MODEL_VIEW, t.Any, str], t.Union[str, Markup]]
 T_COLUMN_TYPE_FORMATTERS = dict[type, T_TYPE_FORMATTER]
 T_TRANSLATABLE = t.Union[str, T_LAZY_STRING]
+# Compatibility for 3-tuples and 4-tuples in iter_choices
+# https://wtforms.readthedocs.io/en/3.2.x/changes/#version-3-2-0
+T_ITER_CHOICES = t.Union[
+    tuple[t.Any, T_TRANSLATABLE, bool, dict[str, t.Any]],
+    tuple[t.Any, T_TRANSLATABLE, bool],
+]
 T_OPTION = tuple[str, T_TRANSLATABLE]
 T_OPTION_LIST = t.Sequence[T_OPTION]
 T_OPTIONS = t.Union[None, T_OPTION_LIST, t.Callable[[], T_OPTION_LIST]]
