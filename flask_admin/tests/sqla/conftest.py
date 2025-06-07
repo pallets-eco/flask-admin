@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -28,8 +30,9 @@ def db(app):
 
 @pytest.fixture
 def postgres_db(app):
-    app.config["SQLALCHEMY_DATABASE_URI"] = (
-        "postgresql://postgres:postgres@localhost/flask_admin_test"
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+        "SQLALCHEMY_DATABASE_URI",
+        "postgresql://postgres:postgres@localhost/flask_admin_test",
     )
     app.config["SQLALCHEMY_ECHO"] = True
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

@@ -111,7 +111,6 @@ To install Flask-Admin using pip, simply:
 pip install flask-admin
 ```
 
-
 ## Contributing
 
 If you are a developer working on and maintaining Flask-Admin, checkout the repo by doing:
@@ -140,63 +139,37 @@ uv sync --extra all
 
 Tests are run with *pytest*. If you are not familiar with this package, you can find out more on [their website](https://pytest.org/).
 
-In order for the full test suite to pass, you will need to have all of Flask-Admin's optional extras install. Run:
+### Running tests inside the devcontainer (eg when using VS Code)
+
+If you are developing with the devcontainer configuration, then you can run tests directly using either of the following commands.
+
+To just run the test suite with the default python installation, use:
 
 ```shell
-uv sync --extra all
+uv run pytest
 ```
 
-Then, to run the tests, simply run this command from the project's directory:
+To run the test suite against all supported python versions, and also run other checks performed by CI, use:
 
-    uv run pytest
-
-You should see output similar to:
-
-    .............................................
-    ----------------------------------------------------------------------
-    Ran 102 tests in 13.132s
-
-    OK
-
-**NOTE!** For all the tests to pass successfully, you'll need several services running locally:
-Postgres (with the postgis and hstore extension), MongoDB, and Azurite.
-You'll also need *libgeos* available.
-See tests.yaml for Docker configuration and follow service-specific setup below.
-
-## Setting up local Postgres for tests
-
-```bash
-psql postgres
-> CREATE DATABASE flask_admin_test;
-> # Connect to database "flask_admin_test":
-> \c flask_admin_test;
-> CREATE EXTENSION postgis;
-> CREATE EXTENSION hstore;
+```shell
+uv run tox
 ```
 
-If you\'re using Homebrew on MacOS, you might need this:
+### Running tests as a one-off via docker-compose run / `make test`
 
-```bash
-# Install postgis and geos
-brew install postgis
-brew install geos
+If you don't use devcontainers and simply want to run the basic test suite against the default python installation, you can use:
 
-# Set up a PostgreSQL user
-createuser -s postgresql
-brew services restart postgresql
+```shell
+make test-in-docker
 ```
 
-## Setting up Azure Blob Storage emulator for tests
+This will use the devcontainer docker-compose configuration to start up postgres, azurite and mongo.
 
-1. Run the [Azurite emulator](https://learn.microsoft.com/azure/storage/common/storage-use-azurite?tabs=visual-studio%2Cblob-storage)
+You can also run the full test suite including CI checks with:
 
-2. Set the connection string for the emulator:
-
-```bash
-export AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
+```shell
+make tox-in-docker
 ```
-
-You can also run the tests on multiple environments using *tox*.
 
 ## 3rd Party Stuff
 
