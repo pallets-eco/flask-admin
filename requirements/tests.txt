@@ -60,7 +60,7 @@ platformdirs==4.2.2
     # via pylint
 pluggy==1.5.0
     # via pytest
-psycopg2==2.9.10
+psycopg2-binary==2.9.10
     # via -r tests.in
 pycodestyle==2.12.1
     # via flake8
@@ -110,7 +110,7 @@ urllib3==1.26.20
     #   botocore
     #   requests
     #   responses
-werkzeug==3.0.6
+werkzeug>=3.1.0
     # via moto
 xmltodict==0.14.2
     # via moto
