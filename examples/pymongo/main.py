@@ -1,7 +1,7 @@
-import flask_admin as admin
 import pymongo
 from bson.objectid import ObjectId
 from flask import Flask
+from flask_admin import Admin
 from flask_admin.contrib.pymongo import filters
 from flask_admin.contrib.pymongo import ModelView
 from flask_admin.form import Select2Widget
@@ -13,7 +13,7 @@ from wtforms import form
 # Create application
 app = Flask(__name__)
 
-# Create dummy secrey key so we can use sessions
+# Create dummy secret key so we can use sessions
 app.config["SECRET_KEY"] = "123456790"
 
 # Create models
@@ -116,7 +116,7 @@ def index():
 
 if __name__ == "__main__":
     # Create admin
-    admin = admin.Admin(app, name="Example: PyMongo")
+    admin = Admin(app, name="Example: PyMongo")
 
     # Add views
     admin.add_view(UserView(db.user, "User"))

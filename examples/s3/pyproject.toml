@@ -1,0 +1,13 @@
+[project]
+name = "example-pymongo"
+version = "0.1.0"
+description = "PyMongo Example."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "flask-admin[s3]",
+    "testcontainers",
+]
+
+[tool.uv.sources]
+flask-admin = { path = "../../", editable = true }

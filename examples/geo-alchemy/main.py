@@ -1,5 +1,5 @@
-import flask_admin as admin
 from flask import Flask
+from flask_admin import Admin
 from flask_admin.contrib.geoa import ModelView
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
@@ -54,7 +54,7 @@ def index():
 
 
 # Create admin
-admin = admin.Admin(app, name="Example: GeoAlchemy", theme=Bootstrap4Theme())
+admin = Admin(app, name="Example: GeoAlchemy", theme=Bootstrap4Theme())
 
 
 class LeafletModelView(ModelView):

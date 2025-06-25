@@ -1,4 +1,4 @@
-# Create dummy secrey key so we can use sessions
+# Create dummy secret key so we can use sessions
 SECRET_KEY = "123456790"
 
 # database connection

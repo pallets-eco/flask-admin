@@ -1,0 +1,12 @@
+[project]
+name = "example-host-matching"
+version = "0.1.0"
+description = "Host Matching Example."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "flask-admin",
+]
+
+[tool.uv.sources]
+flask-admin = { path = "../../", editable = true }
