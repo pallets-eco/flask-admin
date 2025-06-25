@@ -29,6 +29,7 @@ services:
       POSTGRES_DB: flask_admin_test
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./init-hstore.sql:/docker-entrypoint-initdb.d/init-hstore.sql
 
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite:latest
