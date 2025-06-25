@@ -11,5 +11,3 @@ dependencies = [
 
 [tool.uv.sources]
 flask-admin = { path = "../../", editable = true }
-
-
