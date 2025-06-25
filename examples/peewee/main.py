@@ -1,8 +1,8 @@
 import uuid
 
-from flask_admin import Admin
 import peewee
 from flask import Flask
+from flask_admin import Admin
 from flask_admin.contrib.peewee import ModelView
 
 app = Flask(__name__)

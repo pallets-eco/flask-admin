@@ -37,11 +37,11 @@ def index(anyhost):
     admin_host = url_for("admin3.index", admin_routes_host="anything.localhost:5000")
     return (
         f'<a href="{url_for("admin.index")}">Click me to get to Admin 1</a>'
-        f'<br/>'
+        f"<br/>"
         f'<a href="{url_for("admin2.index")}">Click me to get to Admin 2</a>'
-        f'<br/>'
+        f"<br/>"
         f'<a href="{admin_host}">Click me to get to Admin 3 under '
-        f'`anything.localhost:5000`</a>'
+        f"`anything.localhost:5000`</a>"
     )
 
 
