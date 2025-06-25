@@ -1,6 +1,6 @@
-import flask_admin as admin
 from flask import redirect
 from flask import url_for
+from flask_admin import Admin
 from flask_admin.babel import gettext
 from flask_admin.base import MenuLink
 from flask_admin.contrib import sqla
@@ -13,7 +13,6 @@ from wtforms import validators
 
 from . import app
 from . import db
-
 from .models import AVAILABLE_USER_TYPES
 from .models import Post
 from .models import Tag
