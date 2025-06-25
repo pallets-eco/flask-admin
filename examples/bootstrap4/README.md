@@ -22,10 +22,11 @@ uv sync
 Run the application:
 
 ```bash
-uv run python main.py
+uv run main.py
 ```
 
-The first time you run this example, a sample sqlite database gets populated automatically. To suppress this behaviour, comment the following lines in app.py::
+The first time you run this example, a sample sqlite database gets populated automatically. To suppress this behaviour, comment the following lines in app.py:
+
 ```python
 if not os.path.exists(database_path):
     build_sample_db()
