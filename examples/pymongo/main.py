@@ -1,4 +1,3 @@
-import pymongo
 from bson.objectid import ObjectId
 from flask import Flask
 from flask_admin import Admin
@@ -7,21 +6,16 @@ from flask_admin.contrib.pymongo import ModelView
 from flask_admin.form import Select2Widget
 from flask_admin.model.fields import InlineFieldList
 from flask_admin.model.fields import InlineFormField
+from pymongo import MongoClient
+from testcontainers.mongodb import MongoDbContainer
 from wtforms import fields
 from wtforms import form
 
-# Create application
 app = Flask(__name__)
-
-# Create dummy secret key so we can use sessions
-app.config["SECRET_KEY"] = "123456790"
-
-# Create models
-conn = pymongo.MongoClient()
-db = conn.test
+app.config["SECRET_KEY"] = "secret"
+admin = Admin(app)
 
 
-# User admin
 class InnerForm(form.Form):
     name = fields.StringField("Name")
     test = fields.StringField("Test")
@@ -32,10 +26,8 @@ class UserForm(form.Form):
     email = fields.StringField("Email")
     password = fields.StringField("Password")
 
-    # Inner form
     inner = InlineFormField(InnerForm)
 
-    # Form list
     form_list = InlineFieldList(InlineFormField(InnerForm))
 
 
@@ -46,7 +38,6 @@ class UserView(ModelView):
     form = UserForm
 
 
-# Tweet view
 class TweetForm(form.Form):
     name = fields.StringField("Name")
     user_id = fields.SelectField("User", widget=Select2Widget())
@@ -108,19 +99,12 @@ class TweetView(ModelView):
         return model
 
 
-# Flask views
-@app.route("/")
-def index():
-    return '<a href="/admin/">Click me to get to Admin!</a>'
-
-
 if __name__ == "__main__":
-    # Create admin
-    admin = Admin(app, name="Example: PyMongo")
+    with MongoDbContainer("mongo:7.0.7") as mongo:
+        conn = MongoClient(mongo.get_connection_url())
+        db = conn.test
 
-    # Add views
-    admin.add_view(UserView(db.user, "User"))
-    admin.add_view(TweetView(db.tweet, "Tweets"))
+        admin.add_view(UserView(db.user, "User"))
+        admin.add_view(TweetView(db.tweet, "Tweets"))
 
-    # Start app
-    app.run(debug=True)
+        app.run(debug=True)
