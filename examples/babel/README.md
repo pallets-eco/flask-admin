@@ -13,14 +13,7 @@ cd flask-admin/examples/babel
 
 > This example uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment.
 
-To install the minimum version of Python this example supports, create your virtual environment, and install the required dependencies, run:
-
-```bash
-uv sync
-```
-
-Run the application:
+Run the example using `uv`, which will manage the environment and dependencies automatically:
 
 ```bash
 uv run main.py
-```
