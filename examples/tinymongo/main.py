@@ -32,11 +32,8 @@ class TinyMongoClient(tm.TinyMongoClient):
         return tinydb.storages.JSONStorage
 
 
-# Create application
 app = Flask(__name__)
-
-# Create dummy secret key so we can use sessions
-app.config["SECRET_KEY"] = "123456790"
+app.config["SECRET_KEY"] = "secret"
 
 # Create models in a JSON file located at
 DATA_FOLDER = "/tmp/flask_admin_test"

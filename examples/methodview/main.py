@@ -30,11 +30,9 @@ class ViewWithMethodViews(BaseView):
             return cls.render("test.html", request=request, name="API_v2")
 
 
-# Create flask app
 app = Flask(__name__, template_folder="templates")
 
 
-# Flask views
 @app.route("/")
 def index():
     return redirect("/admin")

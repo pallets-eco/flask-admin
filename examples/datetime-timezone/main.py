@@ -17,16 +17,13 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
 
-# model
 class Base(DeclarativeBase):
     pass
 
 
-# app
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
-# Create dummy secret key so we can use sessions
-app.config["SECRET_KEY"] = "123456789"
+app.config["SECRET_KEY"] = "secret"
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 

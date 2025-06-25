@@ -21,7 +21,6 @@ class AnotherAdminView(BaseView):
         return self.render("test.html")
 
 
-# Create flask app
 app = Flask(__name__, template_folder="templates")
 app.debug = True
 

@@ -17,11 +17,9 @@ class SecondView(BaseView):
         return self.render("second.html")
 
 
-# Create flask app
 app = Flask(__name__, template_folder="templates")
 
 
-# Flask views
 @app.route("/")
 def index():
     return (

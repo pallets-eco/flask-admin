@@ -18,7 +18,6 @@ from flask_security import UserMixin
 from flask_security.utils import hash_password
 from flask_sqlalchemy import SQLAlchemy
 
-# Create Flask application
 app = Flask(__name__)
 app.config.from_pyfile("config.py")
 db = SQLAlchemy(app)

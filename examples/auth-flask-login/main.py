@@ -19,11 +19,8 @@ from wtforms import fields
 from wtforms import form
 from wtforms import validators
 
-# Create Flask application
 app = Flask(__name__)
-
-# Create dummy secret key so we can use sessions
-app.config["SECRET_KEY"] = "123456790"
+app.config["SECRET_KEY"] = "secret"
 
 # Create in-memory database
 app.config["DATABASE_FILE"] = "db.sqlite"

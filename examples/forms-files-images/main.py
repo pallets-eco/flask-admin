@@ -13,20 +13,17 @@ from flask_sqlalchemy import SQLAlchemy
 from markupsafe import Markup
 from redis import Redis
 from sqlalchemy.event import listens_for
+from testcontainers.redis import RedisContainer
 from wtforms import fields
 from wtforms import widgets
 
-# Create application
 app = Flask(__name__, static_folder="files")
-
-# Create dummy secret key so we can use sessions
-app.config["SECRET_KEY"] = "123456790"
-
-# Create in-memory database
+app.config["SECRET_KEY"] = "secret"
 app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
+admin = Admin(app, "Example: Forms", theme=Bootstrap4Theme(swatch="cerulean"))
 
 # Create directory for file fields to use
 file_path = op.join(op.dirname(__file__), "files")
@@ -187,21 +184,9 @@ class UserView(sqla.ModelView):
     }
 
 
-# Flask views
 @app.route("/")
 def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
-
-
-# Create admin
-admin = Admin(app, "Example: Forms", theme=Bootstrap4Theme(swatch="cerulean"))
-
-# Add views
-admin.add_view(FileView(File, db.session))
-admin.add_view(ImageView(Image, db.session))
-admin.add_view(UserView(User, db.session))
-admin.add_view(PageView(Page, db.session))
-admin.add_view(rediscli.RedisCli(Redis()))
 
 
 def build_sample_db():
@@ -333,12 +318,27 @@ def build_sample_db():
 
 
 if __name__ == "__main__":
-    # Build a sample db on the fly, if one does not exist yet.
-    app_dir = op.realpath(os.path.dirname(__file__))
-    database_path = op.join(app_dir, app.config["DATABASE_FILE"])
-    if not os.path.exists(database_path):
-        with app.app_context():
-            build_sample_db()
+    with RedisContainer() as redis_container:
+        redis_client = redis_container.get_client()
 
-    # Start app
-    app.run(debug=True)
+        admin.add_view(FileView(File, db.session))
+        admin.add_view(ImageView(Image, db.session))
+        admin.add_view(UserView(User, db.session))
+        admin.add_view(PageView(Page, db.session))
+        admin.add_view(
+            rediscli.RedisCli(
+                Redis(
+                    host=redis_container.get_container_host_ip(),
+                    port=redis_container.get_exposed_port(redis_container.port),
+                    password=redis_container.password,
+                )
+            )
+        )
+        # Build a sample db on the fly, if one does not exist yet.
+        app_dir = op.realpath(os.path.dirname(__file__))
+        database_path = op.join(app_dir, app.config["DATABASE_FILE"])
+        if not os.path.exists(database_path):
+            with app.app_context():
+                build_sample_db()
+
+        app.run(debug=True)

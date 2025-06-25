@@ -6,7 +6,7 @@ from flask_admin import Admin
 from flask_admin.contrib.peewee import ModelView
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "123456790"
+app.config["SECRET_KEY"] = "secret"
 
 db = peewee.SqliteDatabase("db.sqlite", check_same_thread=False)
 

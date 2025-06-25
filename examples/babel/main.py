@@ -8,11 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 # Create application
 app = Flask(__name__)
-
-# Create dummy secret key so we can use sessions
-app.config["SECRET_KEY"] = "12345678"
-
-# Create in-memory database
+app.config["SECRET_KEY"] = "secret"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)

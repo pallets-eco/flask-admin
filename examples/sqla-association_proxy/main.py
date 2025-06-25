@@ -7,19 +7,13 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 
-# Create application
 app = Flask(__name__)
-
-# Create dummy secret key so we can use sessions
-app.config["SECRET_KEY"] = "123456790"
-
-# Create in-memory database
+app.config["SECRET_KEY"] = "secret"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
 
 
-# Flask views
 @app.route("/")
 def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'

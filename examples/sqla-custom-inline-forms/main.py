@@ -16,13 +16,8 @@ from sqlalchemy import event
 from werkzeug.utils import secure_filename
 from wtforms import fields
 
-# Create application
 app = Flask(__name__)
-
-# Create dummy secret key so we can use sessions
-app.config["SECRET_KEY"] = "123456790"
-
-# Create in-memory database
+app.config["SECRET_KEY"] = "secret"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
