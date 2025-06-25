@@ -13,16 +13,6 @@ git clone https://github.com/pallets-eco/flask-admin.git
 cd flask-admin/examples/azure-blob-storage
 ```
 
-Configure a connection to an Azure Blob storage account or local emulator.
-
-To connect to the Azurite Blob Storage Emulator, install Azurite and set the following environment variable:
-
-```shell
-export AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
-```
-
-To connect to an Azure Blob Storage account, set the `AZURE_STORAGE_ACCOUNT_URL`. If you set that, the example assumes you are using keyless authentication, so you will need to be logged in via the Azure CLI.
-
 > This example uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment.
 
 Run the example using `uv`, which will manage the environment and dependencies automatically:
