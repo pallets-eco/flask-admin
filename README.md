@@ -136,11 +136,13 @@ uv run pytest
 
 You should see output similar to:
 
-    .............................................
-    ----------------------------------------------------------------------
-    Ran 102 tests in 13.132s
+```shell
+.............................................
+----------------------------------------------------------------------
+Ran 102 tests in 13.132s
 
-    OK
+OK
+```
 
 **NOTE!** For all the tests to pass successfully, you'll need several services running locally:
 Postgres (with the postgis and hstore extension), MongoDB, and Azurite.
