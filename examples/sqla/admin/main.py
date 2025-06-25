@@ -11,13 +11,14 @@ from flask_admin.theme import Bootstrap4Theme
 from markupsafe import Markup
 from wtforms import validators
 
-from admin import app
-from admin import db
-from admin.models import AVAILABLE_USER_TYPES
-from admin.models import Post
-from admin.models import Tag
-from admin.models import Tree
-from admin.models import User
+from . import app
+from . import db
+
+from .models import AVAILABLE_USER_TYPES
+from .models import Post
+from .models import Tag
+from .models import Tree
+from .models import User
 
 
 # Flask views
@@ -269,9 +270,7 @@ class TreeView(sqla.ModelView):
 
 
 # Create admin
-admin = admin.Admin(
-    app, name="Example: SQLAlchemy", theme=Bootstrap4Theme(swatch="default")
-)
+admin = Admin(app, name="Example: SQLAlchemy", theme=Bootstrap4Theme(swatch="default"))
 
 # Add views
 admin.add_view(UserAdmin(User, db.session))

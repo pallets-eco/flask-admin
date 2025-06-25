@@ -4,30 +4,29 @@ Flask-Admin example for an Azure Blob Storage account.
 
 If you opened this repository in GitHub Codespaces or a Dev Container with the ["flask-admin tests" configuration](/.devcontainer/tests/devcontainer.json), you can jump straight to step 4.
 
-To run this example:
+## How to run this example
 
-1. Clone the repository and navigate to this example::
+Clone the repository and navigate to this example:
 
-    git clone https://github.com/pallets-eco/flask-admin.git
-    cd flask-admin/examples/azure-blob-storage
+```shell
+git clone https://github.com/pallets-eco/flask-admin.git
+cd flask-admin/examples/azure-blob-storage
+```
 
-2. Create and activate a virtual environment::
+Configure a connection to an Azure Blob storage account or local emulator.
 
-    python -m venv venv
-    source venv/bin/activate
+To connect to the Azurite Blob Storage Emulator, install Azurite and set the following environment variable:
 
-3. Configure a connection to an Azure Blob storage account or local emulator.
+```shell
+export AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
+```
 
-    To connect to the Azurite Blob Storage Emulator, install Azurite and set the following environment variable:
+To connect to an Azure Blob Storage account, set the `AZURE_STORAGE_ACCOUNT_URL`. If you set that, the example assumes you are using keyless authentication, so you will need to be logged in via the Azure CLI.
 
-    export AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
+> This example uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment.
 
-    To connect to an Azure Blob Storage account, set the `AZURE_STORAGE_ACCOUNT_URL`. If you set that, the example assumes you are using keyless authentication, so you will need to be logged in via the Azure CLI.
+Run the example using `uv`, which will manage the environment and dependencies automatically:
 
-4. Install requirements::
-
-    pip install -r requirements.txt
-
-5. Run the application::
-
-    python app.py
+```shell
+uv run main.py
+```

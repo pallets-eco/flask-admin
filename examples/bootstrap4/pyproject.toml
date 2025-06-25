@@ -5,8 +5,7 @@ description = "Bootstrap4 Customization Example."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "flask-admin[sqlalchemy]",
-    "sqlalchemy-utils>=0.41.2",
+    "flask-admin[sqlalchemy-with-utils]",
 ]
 
 [tool.uv.sources]

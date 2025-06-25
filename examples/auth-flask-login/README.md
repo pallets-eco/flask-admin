@@ -1,6 +1,6 @@
-# Bootstrap4 Customization Example
+# Auth with Flask-Login Example
 
-This example shows how you can customize the look & feel of the admin interface. This is done by overriding some of the built-in templates.
+This example shows how to integrate Flask-Login authentication with Flask-Admin using the SQLAlchemy backend.
 
 ## How to run this example
 
@@ -8,7 +8,7 @@ Clone the repository and navigate to this example:
 
 ```shell
 git clone https://github.com/pallets-eco/flask-admin.git
-cd flask-admin/examples/bootstrap4
+cd flask-admin/examples/auth-flask-login
 ```
 
 > This example uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment.

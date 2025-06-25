@@ -1,6 +1,6 @@
-# Flask-Babel Integration Example
+# CSP Nonce Example
 
-This example show how to translate Flask-Admin into different language using customized version of the `Flask-Babel <https://github.com/python-babel/flask-babel>`
+This example shows how to make Flask-Admin work with a Content-Security-Policy by injecting a nonce into HTML tags.
 
 ## How to run this example
 
@@ -8,7 +8,7 @@ Clone the repository and navigate to this example:
 
 ```shell
 git clone https://github.com/pallets-eco/flask-admin.git
-cd flask-admin/examples/babel
+cd flask-admin/examples/csp-nonce
 ```
 
 > This example uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment.

@@ -1,11 +1,11 @@
 [project]
-name = "example-peewee"
+name = "example-simple"
 version = "0.1.0"
-description = "Peewee Model Backend Integration Example"
+description = "Simple Flask-Admin Example."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "flask-admin[peewee,sqlalchemy]",
+    "flask-admin",
 ]
 
 [tool.uv.sources]

@@ -1,11 +1,12 @@
 [project]
-name = "example-peewee"
+name = "example-csp-nonce"
 version = "0.1.0"
-description = "Peewee Model Backend Integration Example"
+description = "CSP Nonce Example."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "flask-admin[peewee,sqlalchemy]",
+    "flask-admin",
+    "flask-talisman",
 ]
 
 [tool.uv.sources]

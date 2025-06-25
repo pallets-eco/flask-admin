@@ -1,6 +1,6 @@
-# Bootstrap4 Customization Example
+# Auth Example
 
-This example shows how you can customize the look & feel of the admin interface. This is done by overriding some of the built-in templates.
+This example shows how to integrate [Flask-Security](https://pythonhosted.org/Flask-Security/) with Flask-Admin using the SQLAlchemy backend. It only implements the 'login' & 'register' views, but you could follow the same approach for using all of Flask-Security's builtin views (e.g. 'forgot password', 'change password', 'reset password', 'send confirmation' and 'send login').
 
 ## How to run this example
 
@@ -8,7 +8,7 @@ Clone the repository and navigate to this example:
 
 ```shell
 git clone https://github.com/pallets-eco/flask-admin.git
-cd flask-admin/examples/bootstrap4
+cd flask-admin/examples/auth
 ```
 
 > This example uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment.

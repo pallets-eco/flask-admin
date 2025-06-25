@@ -1,6 +1,8 @@
-# Flask-Babel Integration Example
+# SQLAlchemy Association Proxy Example
 
-This example show how to translate Flask-Admin into different language using customized version of the `Flask-Babel <https://github.com/python-babel/flask-babel>`
+Example of how to use (and filter on) an association proxy with the SQLAlchemy backend.
+
+For information about association proxies and how to use them, please visit the [docs](https://docs.sqlalchemy.org/en/latest/orm/extensions/associationproxy.html)
 
 ## How to run this example
 
@@ -8,7 +10,7 @@ Clone the repository and navigate to this example:
 
 ```shell
 git clone https://github.com/pallets-eco/flask-admin.git
-cd flask-admin/examples/babel
+cd flask-admin/examples/sqla-association_proxy
 ```
 
 > This example uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment.

@@ -1,11 +1,12 @@
 [project]
-name = "example-peewee"
+name = "example-auth"
 version = "0.1.0"
-description = "Peewee Model Backend Integration Example"
+description = "Auth Example."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "flask-admin[peewee,sqlalchemy]",
+    "flask-admin[sqlalchemy-with-utils]",
+    "flask-security-too>=5.6.2",
 ]
 
 [tool.uv.sources]

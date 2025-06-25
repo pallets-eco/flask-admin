@@ -1,11 +1,12 @@
 [project]
-name = "example-peewee"
+name = "example-auth-flask-login"
 version = "0.1.0"
-description = "Peewee Model Backend Integration Example"
+description = "Auth with Flask-Login Example."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "flask-admin[peewee,sqlalchemy]",
+    "flask-admin[sqlalchemy]",
+    "flask-login>=0.3.0",
 ]
 
 [tool.uv.sources]

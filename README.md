@@ -14,8 +14,6 @@ your references to `https://github.com/pallets-eco/flask-admin.git`.
 > maintenance of related projects. If you are interested in helping maintain
 > this project, please reach out on [the Pallets Discord server][discord].
 
-[discord]: https://discord.gg/pallets
-
 ## Introduction
 
 Flask-Admin is a batteries-included, simple-to-use
@@ -27,12 +25,11 @@ application.
 
 Out-of-the-box, Flask-Admin plays nicely with various ORM\'s, including
 
--   [SQLAlchemy](https://www.sqlalchemy.org/)
--   [pymongo](https://pymongo.readthedocs.io/)
--   and [Peewee](https://github.com/coleifer/peewee).
+- [SQLAlchemy](https://www.sqlalchemy.org/)
+- [pymongo](https://pymongo.readthedocs.io/)
+- and [Peewee](https://github.com/coleifer/peewee).
 
-It also boasts a simple file management interface and a [Redis
-client](https://redis.io/) console.
+It also boasts a simple file management interface and a [Redis client](https://redis.io/) console.
 
 The biggest feature of Flask-Admin is its flexibility. It aims to provide a
 set of simple tools that can be used to build admin interfaces of
@@ -45,48 +42,34 @@ Flask-Admin is an active project, well-tested and production-ready.
 
 ## Examples
 
-Several usage examples are included in the */examples* folder. Please
-add your own, or improve on the existing examples, and submit a
-*pull-request*.
+Several usage examples are included in the */examples* folder. Please add your own, or improve on the existing examples, and submit a *pull-request*.
 
-To run the examples in your local environment:
-1. Clone the repository:
+### How to run this example
 
-    ```bash
-    git clone https://github.com/pallets-eco/flask-admin.git
-    cd flask-admin
-    ```
-2. Create and activate a virtual environment:
+Clone the repository and navigate to this example:
 
-    ```bash
-    # Windows:
-    python -m venv .venv
-    .venv\Scripts\activate
+```shell
+git clone https://github.com/pallets-eco/flask-admin.git
+cd flask-admin/examples/sqla
+```
 
-    # Linux:
-    python3 -m venv .venv
-    source .venv/bin/activate
-    ```
+> This example uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment.
 
-3. Navigate into the SQLAlchemy example folder:
+Run the example using `uv`, which will manage the environment and dependencies automatically:
 
-    ```bash
-    cd examples/sqla
-    ```
+```shell
+uv run main.py
+```
 
-4. Install requirements:
+Check the Flask app running on <http://localhost:5000>.
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+The first time you run this example, a sample sqlite database gets populated automatically. To suppress this behaviour, comment the following lines in main.py:
 
-5. Run the application:
-
-    ```bash
-    python app.py
-    ```
-
-6. Check the Flask app running on <http://localhost:5000>.
+```python
+if not os.path.exists(database_path):
+    with app.app_context():
+        build_sample_db()
+```
 
 ## Documentation
 
@@ -99,7 +82,7 @@ should be included, feel free to make the changes and submit a *pull-request*.
 
 To build the docs in your local environment, from the project directory:
 
-```bash
+```shell
 tox -e docs
 ```
 
@@ -110,7 +93,6 @@ To install Flask-Admin using pip, simply:
 ```shell
 pip install flask-admin
 ```
-
 
 ## Contributing
 
@@ -148,7 +130,9 @@ uv sync --extra all
 
 Then, to run the tests, simply run this command from the project's directory:
 
-    uv run pytest
+```shell
+uv run pytest
+```
 
 You should see output similar to:
 
@@ -165,7 +149,7 @@ See tests.yaml for Docker configuration and follow service-specific setup below.
 
 ## Setting up local Postgres for tests
 
-```bash
+```shell
 psql postgres
 > CREATE DATABASE flask_admin_test;
 > # Connect to database "flask_admin_test":
@@ -176,7 +160,7 @@ psql postgres
 
 If you\'re using Homebrew on MacOS, you might need this:
 
-```bash
+```shell
 # Install postgis and geos
 brew install postgis
 brew install geos
@@ -192,7 +176,7 @@ brew services restart postgresql
 
 2. Set the connection string for the emulator:
 
-```bash
+```shell
 export AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
 ```
 
@@ -210,3 +194,6 @@ If you want to localize your application, install the
 
 You can help improve Flask-Admin\'s translations through Crowdin:
 <https://crowdin.com/project/flask-admin>
+
+<!-- refs -->
+[discord]: https://discord.gg/pallets

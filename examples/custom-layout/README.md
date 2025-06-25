@@ -1,4 +1,4 @@
-# Bootstrap4 Customization Example
+# Custom Layout Example
 
 This example shows how you can customize the look & feel of the admin interface. This is done by overriding some of the built-in templates.
 
@@ -8,7 +8,7 @@ Clone the repository and navigate to this example:
 
 ```shell
 git clone https://github.com/pallets-eco/flask-admin.git
-cd flask-admin/examples/bootstrap4
+cd flask-admin/examples/custom-layout
 ```
 
 > This example uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment.
