@@ -2,8 +2,8 @@ import datetime
 import os
 import os.path as op
 
-import flask_admin as admin
 from flask import Flask
+from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
@@ -11,11 +11,11 @@ from flask_sqlalchemy import SQLAlchemy
 # Create application
 app = Flask(__name__)
 
-# Create dummy secrey key so we can use sessions
+# Create dummy secret key so we can use sessions
 app.config["SECRET_KEY"] = "123456790"
 
 # Create in-memory database
-app.config["DATABASE_FILE"] = "sample_db.sqlite"
+app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
@@ -61,7 +61,7 @@ def index():
 
 
 # Create admin with custom base template
-admin = admin.Admin(app, "Example: Bootstrap4", theme=Bootstrap4Theme(swatch="flatly"))
+admin = Admin(app, "Example: Bootstrap4", theme=Bootstrap4Theme(swatch="flatly"))
 
 # Add views
 admin.add_view(UserAdmin(User, db.session, category="Menu"))

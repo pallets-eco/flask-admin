@@ -6,28 +6,42 @@ Author:  Bruno Rocha <@rochacbruno>
 Based in PyMongo Example and TinyMongo
 """
 
-import flask_admin as admin
+import tinydb
+import tinymongo as tm
 from flask import Flask
-from flask_admin.contrib.pymongo import filters
+from flask_admin import Admin
 from flask_admin.contrib.pymongo import ModelView
+from flask_admin.contrib.pymongo.filters import BooleanEqualFilter
+from flask_admin.contrib.pymongo.filters import FilterEqual
+from flask_admin.contrib.pymongo.filters import FilterLike
+from flask_admin.contrib.pymongo.filters import FilterNotEqual
+from flask_admin.contrib.pymongo.filters import FilterNotLike
 from flask_admin.form import Select2Widget
 from flask_admin.model.fields import InlineFieldList
 from flask_admin.model.fields import InlineFormField
-from tinymongo import TinyMongoClient
-from wtforms import fields
+from wtforms import BooleanField
 from wtforms import form
+from wtforms import SelectField
+from wtforms import StringField
+
+
+# Taken from: [Error when loading database file · Issue #58 · schapman1974/tinymongo](https://github.com/schapman1974/tinymongo/issues/58)
+class TinyMongoClient(tm.TinyMongoClient):
+    @property
+    def _storage(self):
+        return tinydb.storages.JSONStorage
+
 
 # Create application
 app = Flask(__name__)
 
-# Create dummy secrey key so we can use sessions
+# Create dummy secret key so we can use sessions
 app.config["SECRET_KEY"] = "123456790"
 
-# Create models in a JSON file localted at
+# Create models in a JSON file located at
+DATA_FOLDER = "/tmp/flask_admin_test"
 
-DATAFOLDER = "/tmp/flask_admin_test"
-
-conn = TinyMongoClient(DATAFOLDER)
+conn = TinyMongoClient(DATA_FOLDER)
 db = conn.test
 
 # create some users for testing
@@ -37,15 +51,15 @@ db = conn.test
 
 # User admin
 class InnerForm(form.Form):
-    name = fields.StringField("Name")
-    test = fields.StringField("Test")
+    name = StringField("Name")
+    test = StringField("Test")
 
 
 class UserForm(form.Form):
-    foo = fields.StringField("foo")
-    name = fields.StringField("Name")
-    email = fields.StringField("Email")
-    password = fields.StringField("Password")
+    foo = StringField("foo")
+    name = StringField("Name")
+    email = StringField("Email")
+    password = StringField("Password")
 
     # Inner form
     inner = InlineFormField(InnerForm)
@@ -66,11 +80,11 @@ class UserView(ModelView):
 
 # Tweet view
 class TweetForm(form.Form):
-    name = fields.StringField("Name")
-    user_id = fields.SelectField("User", widget=Select2Widget())
-    text = fields.StringField("Text")
+    name = StringField("Name")
+    user_id = SelectField("User", widget=Select2Widget())
+    text = StringField("Text")
 
-    testie = fields.BooleanField("Test")
+    testie = BooleanField("Test")
 
 
 class TweetView(ModelView):
@@ -78,11 +92,11 @@ class TweetView(ModelView):
     column_sortable_list = ("name", "text")
 
     column_filters = (
-        filters.FilterEqual("name", "Name"),
-        filters.FilterNotEqual("name", "Name"),
-        filters.FilterLike("name", "Name"),
-        filters.FilterNotLike("name", "Name"),
-        filters.BooleanEqualFilter("testie", "Testie"),
+        FilterEqual("name", "Name"),
+        FilterNotEqual("name", "Name"),
+        FilterLike("name", "Name"),
+        FilterNotLike("name", "Name"),
+        BooleanEqualFilter("testie", "Testie"),
     )
 
     # column_searchable_list = ('name', 'text')
@@ -116,11 +130,9 @@ class TweetView(ModelView):
     def on_model_change(self, form, model):
         user_id = model.get("user_id")
         model["user_id"] = user_id
-
         return model
 
 
-# Flask views
 @app.route("/")
 def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
@@ -128,7 +140,7 @@ def index():
 
 if __name__ == "__main__":
     # Create admin
-    admin = admin.Admin(app, name="Example: TinyMongo - TinyDB")
+    admin = Admin(app, name="Example: TinyMongo - TinyDB")
 
     # Add views
     admin.add_view(UserView(db.user, "User"))

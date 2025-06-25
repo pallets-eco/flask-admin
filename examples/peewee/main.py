@@ -1,6 +1,6 @@
 import uuid
 
-import flask_admin as admin
+from flask_admin import Admin
 import peewee
 from flask import Flask
 from flask_admin.contrib.peewee import ModelView
@@ -8,7 +8,7 @@ from flask_admin.contrib.peewee import ModelView
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "123456790"
 
-db = peewee.SqliteDatabase("test.sqlite", check_same_thread=False)
+db = peewee.SqliteDatabase("db.sqlite", check_same_thread=False)
 
 
 class BaseModel(peewee.Model):
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
 
-    admin = admin.Admin(app, name="Example: Peewee")
+    admin = Admin(app, name="Example: Peewee")
 
     admin.add_view(UserAdmin(User))
     admin.add_view(PostAdmin(Post))

@@ -1,19 +1,19 @@
-import flask_admin as admin
 from flask import Flask
 from flask import request
 from flask import session
-from flask_admin.contrib import sqla
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 
 # Create application
 app = Flask(__name__)
 
-# Create dummy secrey key so we can use sessions
+# Create dummy secret key so we can use sessions
 app.config["SECRET_KEY"] = "12345678"
 
 # Create in-memory database
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sample_db.sqlite"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
 
@@ -78,13 +78,13 @@ def index():
 
 if __name__ == "__main__":
     # Create admin
-    admin = admin.Admin(app, "Example: Babel")
+    admin = Admin(app, "Example: Babel")
 
     # admin.locale_selector(get_locale)
 
     # Add views
-    admin.add_view(sqla.ModelView(User, db.session))
-    admin.add_view(sqla.ModelView(Post, db.session))
+    admin.add_view(ModelView(User, db.session))
+    admin.add_view(ModelView(Post, db.session))
 
     # Create DB
     with app.app_context():
