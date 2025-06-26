@@ -6,7 +6,21 @@ from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2.types import Geometry
 
 app = Flask(__name__)
-app.config.from_pyfile("config.py")
+app.config["SECRET_KEY"] = "secret"
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    "postgresql+psycopg2://flask_admin_geo:flask_admin_geo@localhost/flask_admin_geo"
+)
+app.config["SQLALCHEMY_ECHO"] = True
+# Credentials for loading map tiles from Mapbox
+app.config["FLASK_ADMIN_MAPS"] = True
+app.config["FLASK_ADMIN_MAPS_SEARCH"] = False
+app.config["FLASK_ADMIN_MAPBOX_MAP_ID"] = "light-v10"
+app.config["FLASK_ADMIN_MAPBOX_ACCESS_TOKEN"] = "..."
+# When creating new shapes, use this default map center
+app.config["FLASK_ADMIN_DEFAULT_CENTER_LAT"] = -33.918861
+app.config["FLASK_ADMIN_DEFAULT_CENTER_LONG"] = 18.423300
+# If you want to use Google Maps, set the API key here
+app.config["FLASK_ADMIN_GOOGLE_MAPS_API_KEY"] = "..."
 db = SQLAlchemy(app)
 admin = Admin(app, name="Example: GeoAlchemy", theme=Bootstrap4Theme())
 
