@@ -4,7 +4,6 @@ from flask_admin import BaseView
 from flask_admin import expose
 
 
-# Views
 class FirstView(BaseView):
     @expose("/")
     def index(self):
@@ -18,6 +17,8 @@ class SecondView(BaseView):
 
 
 app = Flask(__name__, template_folder="templates")
+admin1 = Admin(app, url="/admin1")
+admin2 = Admin(app, url="/admin2", endpoint="admin2")
 
 
 @app.route("/")
@@ -29,13 +30,6 @@ def index():
 
 
 if __name__ == "__main__":
-    # Create first administrative interface under /admin1
-    admin1 = Admin(app, url="/admin1")
     admin1.add_view(FirstView())
-
-    # Create second administrative interface under /admin2
-    admin2 = Admin(app, url="/admin2", endpoint="admin2")
     admin2.add_view(SecondView())
-
-    # Start app
     app.run(debug=True)

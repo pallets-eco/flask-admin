@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 import peewee
@@ -5,10 +6,19 @@ from flask import Flask
 from flask_admin import Admin
 from flask_admin.contrib.peewee import ModelView
 
+logging.basicConfig()
+logging.getLogger().setLevel(logging.DEBUG)
+
+
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
-
+admin = Admin(app, name="Example: Peewee")
 db = peewee.SqliteDatabase("db.sqlite", check_same_thread=False)
+
+
+@app.route("/")
+def index():
+    return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
 class BaseModel(peewee.Model):
@@ -67,19 +77,7 @@ class PostAdmin(ModelView):
     form_ajax_refs = {"user": {"fields": (User.username, "email")}}
 
 
-@app.route("/")
-def index():
-    return '<a href="/admin/">Click me to get to Admin!</a>'
-
-
 if __name__ == "__main__":
-    import logging
-
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.DEBUG)
-
-    admin = Admin(app, name="Example: Peewee")
-
     admin.add_view(UserAdmin(User))
     admin.add_view(PostAdmin(Post))
 

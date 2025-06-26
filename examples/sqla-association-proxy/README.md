@@ -10,7 +10,7 @@ Clone the repository and navigate to this example:
 
 ```shell
 git clone https://github.com/pallets-eco/flask-admin.git
-cd flask-admin/examples/sqla-association_proxy
+cd flask-admin/examples/sqla-association-proxy
 ```
 
 > This example uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment.

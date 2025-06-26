@@ -21,12 +21,12 @@ app.config["SECRET_KEY"] = "secret"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
+admin = Admin(app, name="Example: Custom Inline Forms")
 
 # Figure out base upload path
 base_path = op.join(op.dirname(__file__), "static")
 
 
-# Create models
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
@@ -147,7 +147,6 @@ def index():
 def first_time_setup():
     """Run this to setup the database for the first time"""
     with app.app_context():
-        # Create DB
         db.drop_all()
         db.create_all()
 
@@ -161,18 +160,13 @@ def first_time_setup():
 
 
 if __name__ == "__main__":
-    # Create upload directory
     try:
         os.mkdir(base_path)
     except OSError:
         pass
 
-    # Create DB
     first_time_setup()
 
-    # Create admin
-    admin = Admin(app, name="Example: Inline Models")
     admin.add_view(LocationAdmin())
 
-    # Start app
     app.run(debug=True)

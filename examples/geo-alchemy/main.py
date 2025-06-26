@@ -5,10 +5,15 @@ from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2.types import Geometry
 
-# Create application
 app = Flask(__name__)
 app.config.from_pyfile("config.py")
 db = SQLAlchemy(app)
+admin = Admin(app, name="Example: GeoAlchemy", theme=Bootstrap4Theme())
+
+
+@app.route("/")
+def index():
+    return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
 class Point(db.Model):
@@ -47,16 +52,6 @@ class MultiLineString(db.Model):
     point = db.Column(Geometry("MULTILINESTRING"))
 
 
-# Flask views
-@app.route("/")
-def index():
-    return '<a href="/admin/">Click me to get to Admin!</a>'
-
-
-# Create admin
-admin = Admin(app, name="Example: GeoAlchemy", theme=Bootstrap4Theme())
-
-
 class LeafletModelView(ModelView):
     edit_modal = True
 
@@ -69,17 +64,15 @@ class OSMModelView(ModelView):
     )
 
 
-# Add views
-admin.add_view(LeafletModelView(Point, db.session, category="Points"))
-admin.add_view(OSMModelView(MultiPoint, db.session, category="Points"))
-admin.add_view(LeafletModelView(Polygon, db.session, category="Polygons"))
-admin.add_view(OSMModelView(MultiPolygon, db.session, category="Polygons"))
-admin.add_view(LeafletModelView(LineString, db.session, category="Lines"))
-admin.add_view(OSMModelView(MultiLineString, db.session, category="Lines"))
-
 if __name__ == "__main__":
+    admin.add_view(LeafletModelView(Point, db.session, category="Points"))
+    admin.add_view(OSMModelView(MultiPoint, db.session, category="Points"))
+    admin.add_view(LeafletModelView(Polygon, db.session, category="Polygons"))
+    admin.add_view(OSMModelView(MultiPolygon, db.session, category="Polygons"))
+    admin.add_view(LeafletModelView(LineString, db.session, category="Lines"))
+    admin.add_view(OSMModelView(MultiLineString, db.session, category="Lines"))
+
     with app.app_context():
         db.create_all()
 
-    # Start app
     app.run(debug=True)

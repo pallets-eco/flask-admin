@@ -4,9 +4,9 @@ version = "0.1.0"
 description = "Peewee Model Backend Integration Example"
 readme = "README.md"
 requires-python = ">=3.9"
+# TODO @hasansezertasan: Remove SQLAlchemy dependency.
 dependencies = [
-    "flask-admin[peewee]",
-    "typing-extensions>=4.14.0",
+    "flask-admin[peewee,sqlalchemy]",
 ]
 
 [tool.uv.sources]

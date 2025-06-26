@@ -13,7 +13,7 @@ from wtforms import form
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
-admin = Admin(app)
+admin = Admin(app, name="Example: PyMongo")
 
 
 class InnerForm(form.Form):

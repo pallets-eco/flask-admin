@@ -13,9 +13,18 @@ app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
+admin = Admin(
+    app,
+    name="Example: Custom Layout - Bootstrap4",
+    theme=Bootstrap4Theme(base_template="layout.html"),
+)
 
 
-# Models
+@app.route("/")
+def index():
+    return '<a href="/admin/">Click me to get to Admin!</a>'
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
@@ -34,7 +43,6 @@ class Page(db.Model):
         return self.name
 
 
-# Customized admin interface
 class CustomView(ModelView):
     list_template = "list.html"
     create_template = "create.html"
@@ -44,22 +52,6 @@ class CustomView(ModelView):
 class UserAdmin(CustomView):
     column_searchable_list = ("name",)
     column_filters = ("name", "email")
-
-
-# Flask views
-@app.route("/")
-def index():
-    return '<a href="/admin/">Click me to get to Admin!</a>'
-
-
-# Create admin with custom base template
-admin = Admin(
-    app, "Example: Layout-BS4", theme=Bootstrap4Theme(base_template="layout.html")
-)
-
-# Add views
-admin.add_view(UserAdmin(User, db.session))
-admin.add_view(CustomView(Page, db.session))
 
 
 def build_sample_db():
@@ -194,12 +186,13 @@ def build_sample_db():
 
 
 if __name__ == "__main__":
-    # Build a sample db on the fly, if one does not exist yet.
+    admin.add_view(UserAdmin(User, db.session))
+    admin.add_view(CustomView(Page, db.session))
+
     app_dir = op.realpath(os.path.dirname(__file__))
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])
     if not os.path.exists(database_path):
         with app.app_context():
             build_sample_db()
 
-    # Start app
     app.run(debug=True)

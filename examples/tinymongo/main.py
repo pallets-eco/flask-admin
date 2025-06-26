@@ -34,19 +34,18 @@ class TinyMongoClient(tm.TinyMongoClient):
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
+admin = Admin(app, name="Example: TinyMongo - TinyDB")
 
 # Create models in a JSON file located at
-DATA_FOLDER = "/tmp/flask_admin_test"
-
-conn = TinyMongoClient(DATA_FOLDER)
+conn = TinyMongoClient("/tmp/flask_admin_test")
 db = conn.test
 
-# create some users for testing
-# for i in range(30):
-#     db.user.insert({'name': 'Mike %s' % i})
+
+@app.route("/")
+def index():
+    return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
-# User admin
 class InnerForm(form.Form):
     name = StringField("Name")
     test = StringField("Test")
@@ -57,11 +56,7 @@ class UserForm(form.Form):
     name = StringField("Name")
     email = StringField("Email")
     password = StringField("Password")
-
-    # Inner form
     inner = InlineFormField(InnerForm)
-
-    # Form list
     form_list = InlineFieldList(InlineFormField(InnerForm))
 
 
@@ -75,7 +70,6 @@ class UserView(ModelView):
     can_set_page_size = True
 
 
-# Tweet view
 class TweetForm(form.Form):
     name = StringField("Name")
     user_id = SelectField("User", widget=Select2Widget())
@@ -130,18 +124,13 @@ class TweetView(ModelView):
         return model
 
 
-@app.route("/")
-def index():
-    return '<a href="/admin/">Click me to get to Admin!</a>'
-
-
 if __name__ == "__main__":
-    # Create admin
-    admin = Admin(app, name="Example: TinyMongo - TinyDB")
-
-    # Add views
+    """
+    # Seed the database for convenience
+    for i in range(30):
+        db.user.insert({'name': 'Mike %s' % i})
+    """
+    # TODO @hasansezertasan: This example is not working...
     admin.add_view(UserView(db.user, "User"))
     admin.add_view(TweetView(db.tweet, "Tweets"))
-
-    # Start app
     app.run(debug=True)

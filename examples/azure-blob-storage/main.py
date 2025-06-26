@@ -7,11 +7,13 @@ from flask_admin.contrib.fileadmin.azure import AzureFileAdmin
 from flask_babel import Babel
 from testcontainers.azurite import AzuriteContainer
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig()
+logging.getLogger().setLevel(logging.DEBUG)
+
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
-admin = Admin(app)
+admin = Admin(app, name="Example: Azure Blob Storage File Admin")
 babel = Babel(app)
 
 

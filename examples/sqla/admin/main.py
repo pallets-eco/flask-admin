@@ -3,8 +3,8 @@ from flask import url_for
 from flask_admin import Admin
 from flask_admin.babel import gettext
 from flask_admin.base import MenuLink
-from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import filters
+from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter
 from flask_admin.contrib.sqla.filters import FilterEqual
 from flask_admin.theme import Bootstrap4Theme
@@ -20,7 +20,6 @@ from .models import Tree
 from .models import User
 
 
-# Flask views
 @app.route("/")
 def index():
     tmp = """
@@ -68,7 +67,7 @@ def is_numberic_validator(form, field):
         raise validators.ValidationError(gettext("Only numbers are allowed."))
 
 
-class UserAdmin(sqla.ModelView):
+class UserAdmin(ModelView):
     can_set_page_size = True
     page_size = 5
     page_size_options = (5, 10, 15)
@@ -169,7 +168,7 @@ class UserAdmin(sqla.ModelView):
 
 
 # Customized Post model admin
-class PostAdmin(sqla.ModelView):
+class PostAdmin(ModelView):
     column_display_pk = True
     column_list = [
         "id",
@@ -246,7 +245,7 @@ class PostAdmin(sqla.ModelView):
         super().__init__(Post, session)
 
 
-class TreeView(sqla.ModelView):
+class TreeView(ModelView):
     list_template = "tree_list.html"
     column_auto_select_related = True
     column_list = [
@@ -271,9 +270,8 @@ class TreeView(sqla.ModelView):
 # Create admin
 admin = Admin(app, name="Example: SQLAlchemy", theme=Bootstrap4Theme(swatch="default"))
 
-# Add views
 admin.add_view(UserAdmin(User, db.session))
-admin.add_view(sqla.ModelView(Tag, db.session))
+admin.add_view(ModelView(Tag, db.session))
 admin.add_view(PostAdmin(db.session))
 admin.add_view(TreeView(Tree, db.session, category="Other"))
 admin.add_sub_category(name="Links", parent_name="Other")

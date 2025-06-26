@@ -12,20 +12,34 @@ from flask_sqlalchemy import SQLAlchemy
 from markupsafe import Markup
 from sqlalchemy import DateTime
 from sqlalchemy import String
-from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
-
-
-class Base(DeclarativeBase):
-    pass
-
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 app.config["SECRET_KEY"] = "secret"
-db = SQLAlchemy(model_class=Base)
+db = SQLAlchemy()
 db.init_app(app)
+admin = Admin(app, name="Example: Datetime and Timezone")
+
+
+@app.route("/")
+def index():
+    return '<a href="/admin/timezone_aware_article">Click me to get to Admin!</a>'
+
+
+@app.route("/set_timezone", methods=["POST"])
+def set_timezone():
+    """
+    Save timezone to session so that datetime inputs can be correctly converted to UTC.
+    """
+    session.permanent = True
+    timezone = request.get_json()
+    if timezone:
+        session["timezone"] = timezone
+        return jsonify({"message": "Timezone set successfully"}), 200
+    else:
+        return jsonify({"error": "Invalid timezone"}), 400
 
 
 class Article(db.Model):
@@ -34,7 +48,6 @@ class Article(db.Model):
     last_edit: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
-# admin
 def date_format(view, value):
     """
     Ensure consistent date format and inject class for timezone.js parser.
@@ -92,46 +105,23 @@ class BlogModelView(ModelView):
     }
 
 
-# Flask views
-@app.route("/")
-def index():
-    return '<a href="/admin/timezone_aware_article">Click me to get to Admin!</a>'
-
-
-@app.route("/set_timezone", methods=["POST"])
-def set_timezone():
-    """
-    Save timezone to session so that datetime inputs can be correctly converted to UTC.
-    """
-    session.permanent = True
-    timezone = request.get_json()
-    if timezone:
-        session["timezone"] = timezone
-        return jsonify({"message": "Timezone set successfully"}), 200
-    else:
-        return jsonify({"error": "Invalid timezone"}), 400
-
-
-# create db on the fly
-with app.app_context():
-    Base.metadata.drop_all(db.engine)
-    Base.metadata.create_all(db.engine)
-    db.session.add(
-        Article(text="Written at 9:00 UTC", last_edit=datetime(2024, 8, 8, 9, 0, 0))
-    )
-    db.session.commit()
-    admin = Admin(app, name="microblog")
-    admin.add_view(
-        BlogModelView(Article, db.session, name="Article", endpoint="article")
-    )
-    admin.add_view(
-        TimezoneAwareBlogModelView(
-            Article,
-            db.session,
-            name="Timezone Aware Article",
-            endpoint="timezone_aware_article",
-        )
-    )
-
 if __name__ == "__main__":
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+        db.session.add(
+            Article(text="Written at 9:00 UTC", last_edit=datetime(2024, 8, 8, 9, 0, 0))
+        )
+        db.session.commit()
+        admin.add_view(
+            BlogModelView(Article, db.session, name="Article", endpoint="article")
+        )
+        admin.add_view(
+            TimezoneAwareBlogModelView(
+                Article,
+                db.session,
+                name="Timezone Aware Article",
+                endpoint="timezone_aware_article",
+            )
+        )
     app.run(debug=True)

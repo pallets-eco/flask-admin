@@ -6,12 +6,12 @@ from flask_admin.contrib.sqla import ModelView
 from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 
-# Create application
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
+admin = Admin(app, name="Example: Babel")
 
 
 def get_locale():
@@ -23,11 +23,9 @@ def get_locale():
     return session.get("lang", "en")
 
 
-# Initialize babel
 babel = Babel(app, locale_selector=get_locale)
 
 
-# Create models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
@@ -51,7 +49,6 @@ class Post(db.Model):
         return self.title
 
 
-# Flask views
 @app.route("/")
 def index():
     tmp = """
@@ -63,6 +60,7 @@ def index():
 <p><a href="/admin/?lang=fr">Click me to get to Admin! (French)</a></p>
 <p><a href="/admin/?lang=pt">Click me to get to Admin! (Portuguese)</a></p>
 <p><a href="/admin/?lang=ru">Click me to get to Admin! (Russian)</a></p>
+<p><a href="/admin/?lang=tr">Click me to get to Admin! (Turkish)</a></p>
 <p><a href="/admin/?lang=pa">Click me to get to Admin! (Punjabi)</a></p>
 <p><a href="/admin/?lang=zh_CN">Click me to get to Admin! (Chinese - Simplified)</a></p>
 <p>
@@ -73,18 +71,11 @@ def index():
 
 
 if __name__ == "__main__":
-    # Create admin
-    admin = Admin(app, "Example: Babel")
-
     # admin.locale_selector(get_locale)
-
-    # Add views
     admin.add_view(ModelView(User, db.session))
     admin.add_view(ModelView(Post, db.session))
 
-    # Create DB
     with app.app_context():
         db.create_all()
 
-    # Start app
     app.run(debug=True)

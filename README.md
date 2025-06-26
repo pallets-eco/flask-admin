@@ -63,14 +63,6 @@ uv run main.py
 
 Check the Flask app running on <http://localhost:5000>.
 
-The first time you run this example, a sample sqlite database gets populated automatically. To suppress this behaviour, comment the following lines in main.py:
-
-```python
-if not os.path.exists(database_path):
-    with app.app_context():
-        build_sample_db()
-```
-
 ## Documentation
 
 Flask-Admin is extensively documented, you can find all of the

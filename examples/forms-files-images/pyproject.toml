@@ -5,8 +5,7 @@ description = "Forms Files and Images Example."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "flask-admin[sqlalchemy-with-utils,images,rediscli]",
-    "testcontainers[redis]",
+    "flask-admin[sqlalchemy-with-utils,images]"
 ]
 
 [tool.uv.sources]

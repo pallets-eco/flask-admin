@@ -8,7 +8,7 @@ from flask import request
 from flask import url_for
 from flask_admin import Admin
 from flask_admin import helpers as admin_helpers
-from flask_admin.contrib import sqla
+from flask_admin.contrib.sqla import ModelView
 from flask_admin.theme import Bootstrap4Theme
 from flask_security import current_user
 from flask_security import RoleMixin
@@ -21,7 +21,11 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config.from_pyfile("config.py")
 db = SQLAlchemy(app)
-
+admin = Admin(
+    app,
+    name="Example: Auth",
+    theme=Bootstrap4Theme(base_template="my_master.html"),
+)
 
 # Define models
 roles_users = db.Table(
@@ -63,7 +67,7 @@ security = Security(app, user_datastore)
 
 
 # Create customized model view class
-class MyModelView(sqla.ModelView):
+class MyModelView(ModelView):
     def is_accessible(self):
         return (
             current_user.is_active
@@ -78,29 +82,14 @@ class MyModelView(sqla.ModelView):
         """
         if not self.is_accessible():
             if current_user.is_authenticated:
-                # permission denied
                 abort(403)
             else:
-                # login
                 return redirect(url_for("security.login", next=request.url))
 
 
-# Flask views
 @app.route("/")
 def index():
     return render_template("index.html")
-
-
-# Create admin
-admin = Admin(
-    app,
-    "Example: Auth",
-    theme=Bootstrap4Theme(base_template="my_master.html"),
-)
-
-# Add model views
-admin.add_view(MyModelView(Role, db.session))
-admin.add_view(MyModelView(User, db.session))
 
 
 # define a context processor for merging flask-admin's template context into the
@@ -217,12 +206,13 @@ def build_sample_db():
 
 
 if __name__ == "__main__":
-    # Build a sample db on the fly, if one does not exist yet.
+    admin.add_view(MyModelView(Role, db.session))
+    admin.add_view(MyModelView(User, db.session))
+
     app_dir = os.path.realpath(os.path.dirname(__file__))
     database_path = os.path.join(app_dir, app.config["DATABASE_FILE"])
     if not os.path.exists(database_path):
         with app.app_context():
             build_sample_db()
 
-    # Start app
     app.run(debug=True)

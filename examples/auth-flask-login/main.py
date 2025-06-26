@@ -10,7 +10,7 @@ from flask_admin import Admin
 from flask_admin import AdminIndexView
 from flask_admin import expose
 from flask_admin import helpers
-from flask_admin.contrib import sqla
+from flask_admin.contrib.sqla import ModelView
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash
@@ -27,6 +27,13 @@ app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
+login_manager = login.LoginManager()
+login_manager.init_app(app)
+
+
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 
 # Create user model.
@@ -92,19 +99,8 @@ class RegistrationForm(form.Form):
             raise validators.ValidationError("Duplicate username")
 
 
-# Initialize flask-login
-def init_login():
-    login_manager = login.LoginManager()
-    login_manager.init_app(app)
-
-    # Create user loader function
-    @login_manager.user_loader
-    def load_user(user_id):
-        return db.session.query(User).get(user_id)
-
-
 # Create customized model view class
-class MyModelView(sqla.ModelView):
+class MyModelView(ModelView):
     def is_accessible(self):
         return login.current_user.is_authenticated
 
@@ -165,27 +161,6 @@ class MyAdminIndexView(AdminIndexView):
     def logout_view(self):
         login.logout_user()
         return redirect(url_for(".index"))
-
-
-# Flask views
-@app.route("/")
-def index():
-    return render_template("index.html")
-
-
-# Initialize flask-login
-init_login()
-
-# Create admin
-admin = Admin(
-    app,
-    "Example: Auth",
-    index_view=MyAdminIndexView(),
-    theme=Bootstrap4Theme(base_template="my_master.html"),
-)
-
-# Add view
-admin.add_view(MyModelView(User, db.session))
 
 
 def build_sample_db():
@@ -276,12 +251,24 @@ def build_sample_db():
 
 
 if __name__ == "__main__":
-    # Build a sample db on the fly, if one does not exist yet.
+    admin = Admin(
+        app,
+        name="Example: Auth",
+        index_view=MyAdminIndexView(),
+        theme=Bootstrap4Theme(base_template="my_master.html"),
+    )
+
+    # Create user loader function
+    @login_manager.user_loader
+    def load_user(user_id):
+        return db.session.query(User).get(user_id)
+
+    admin.add_view(MyModelView(User, db.session))
+
     app_dir = os.path.realpath(os.path.dirname(__file__))
     database_path = os.path.join(app_dir, app.config["DATABASE_FILE"])
     if not os.path.exists(database_path):
         with app.app_context():
             build_sample_db()
 
-    # Start app
     app.run(debug=True)

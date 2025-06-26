@@ -5,15 +5,12 @@ from flask import Flask
 from flask import url_for
 from flask_admin import Admin
 from flask_admin import form
-from flask_admin.contrib import rediscli
-from flask_admin.contrib import sqla
+from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import rules
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import Markup
-from redis import Redis
 from sqlalchemy.event import listens_for
-from testcontainers.redis import RedisContainer
 from wtforms import fields
 from wtforms import widgets
 
@@ -23,7 +20,13 @@ app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
-admin = Admin(app, "Example: Forms", theme=Bootstrap4Theme(swatch="cerulean"))
+admin = Admin(app, name="Example: Forms", theme=Bootstrap4Theme(swatch="cerulean"))
+
+
+@app.route("/")
+def index():
+    return '<a href="/admin/">Click me to get to Admin!</a>'
+
 
 # Create directory for file fields to use
 file_path = op.join(op.dirname(__file__), "files")
@@ -33,7 +36,6 @@ except OSError:
     pass
 
 
-# Create models
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
@@ -115,13 +117,13 @@ class CKTextAreaField(fields.TextAreaField):
 
 
 # Administrative views
-class PageView(sqla.ModelView):
+class PageView(ModelView):
     form_overrides = {"text": CKTextAreaField}
     create_template = "create_page.html"
     edit_template = "edit_page.html"
 
 
-class FileView(sqla.ModelView):
+class FileView(ModelView):
     # Override form field to use Flask-Admin FileUploadField
     form_overrides = {"path": form.FileUploadField}
 
@@ -131,7 +133,7 @@ class FileView(sqla.ModelView):
     }
 
 
-class ImageView(sqla.ModelView):
+class ImageView(ModelView):
     def _list_thumbnail(view, context, model, name):
         if not model.path:
             return ""
@@ -153,7 +155,7 @@ class ImageView(sqla.ModelView):
     }
 
 
-class UserView(sqla.ModelView):
+class UserView(ModelView):
     """
     This class demonstrates the use of 'rules' for controlling the rendering of forms.
     """
@@ -182,11 +184,6 @@ class UserView(sqla.ModelView):
     column_descriptions = {
         "is_admin": "Is this an admin user?",
     }
-
-
-@app.route("/")
-def index():
-    return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
 def build_sample_db():
@@ -318,27 +315,15 @@ def build_sample_db():
 
 
 if __name__ == "__main__":
-    with RedisContainer() as redis_container:
-        redis_client = redis_container.get_client()
+    admin.add_view(FileView(File, db.session))
+    admin.add_view(ImageView(Image, db.session))
+    admin.add_view(UserView(User, db.session))
+    admin.add_view(PageView(Page, db.session))
 
-        admin.add_view(FileView(File, db.session))
-        admin.add_view(ImageView(Image, db.session))
-        admin.add_view(UserView(User, db.session))
-        admin.add_view(PageView(Page, db.session))
-        admin.add_view(
-            rediscli.RedisCli(
-                Redis(
-                    host=redis_container.get_container_host_ip(),
-                    port=redis_container.get_exposed_port(redis_container.port),
-                    password=redis_container.password,
-                )
-            )
-        )
-        # Build a sample db on the fly, if one does not exist yet.
-        app_dir = op.realpath(os.path.dirname(__file__))
-        database_path = op.join(app_dir, app.config["DATABASE_FILE"])
-        if not os.path.exists(database_path):
-            with app.app_context():
-                build_sample_db()
+    app_dir = op.realpath(os.path.dirname(__file__))
+    database_path = op.join(app_dir, app.config["DATABASE_FILE"])
+    if not os.path.exists(database_path):
+        with app.app_context():
+            build_sample_db()
 
-        app.run(debug=True)
+    app.run(debug=True)

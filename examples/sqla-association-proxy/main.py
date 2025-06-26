@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_admin import Admin
-from flask_admin.contrib import sqla
+from flask_admin.contrib.sqla import ModelView
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -12,6 +12,11 @@ app.config["SECRET_KEY"] = "secret"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
+admin = Admin(
+    app,
+    name="Example: SQLAlchemy Association Proxy",
+    theme=Bootstrap4Theme(),
+)
 
 
 @app.route("/")
@@ -40,12 +45,12 @@ class UserKeyword(db.Model):
     keyword_id = db.Column(db.Integer, db.ForeignKey("keyword.id"), primary_key=True)
     special_key = db.Column(db.String(50))
 
-    # bidirectional attribute/collection of "user"/"user_keywords"
+    # Bidirectional attribute/collection of "user"/"user_keywords"
     user = relationship(
         User, backref=backref("user_keywords", cascade="all, delete-orphan")
     )
 
-    # reference to the "Keyword" object
+    # Reference to the "Keyword" object
     keyword = relationship("Keyword")
     # Reference to the "keyword" column inside the "Keyword" object.
     keyword_value = association_proxy("keyword", "keyword")
@@ -68,7 +73,7 @@ class Keyword(db.Model):
         return f"Keyword({repr(self.keyword)})"
 
 
-class UserAdmin(sqla.ModelView):
+class UserAdmin(ModelView):
     """Flask-admin can not automatically find a association_proxy yet. You will
     need to manually define the column in list_view/filters/sorting/etc.
     Moreover, support for association proxies to association proxies
@@ -80,30 +85,22 @@ class UserAdmin(sqla.ModelView):
     form_columns = ("name", "keywords")
 
 
-class KeywordAdmin(sqla.ModelView):
+class KeywordAdmin(ModelView):
     column_list = ("id", "keyword")
 
 
-# Create admin
-admin = Admin(
-    app, name="Example: SQLAlchemy Association Proxy", theme=Bootstrap4Theme()
-)
-admin.add_view(UserAdmin(User, db.session))
-admin.add_view(KeywordAdmin(Keyword, db.session))
-
 if __name__ == "__main__":
-    # Create DB
+    admin.add_view(UserAdmin(User, db.session))
+    admin.add_view(KeywordAdmin(Keyword, db.session))
+
     with app.app_context():
         db.create_all()
+        user = User("log")
 
-    # Add sample data
-    user = User("log")
-    for kw in (Keyword("new_from_blammo"), Keyword("its_big")):
-        user.keywords.append(kw)
+        for kw in (Keyword("new_from_blammo"), Keyword("its_big")):
+            user.keywords.append(kw)
 
-    with app.app_context():
         db.session.add(user)
         db.session.commit()
 
-    # Start app
     app.run(debug=True)

@@ -14,9 +14,14 @@ app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
+admin = Admin(app, name="Example: Bootstrap4", theme=Bootstrap4Theme(swatch="flatly"))
 
 
-# Models
+@app.route("/")
+def index():
+    return '<a href="/admin/">Click me to get to Admin!</a>'
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
@@ -37,7 +42,6 @@ class Page(db.Model):
         return self.name
 
 
-# Customized admin interface
 class CustomView(ModelView):
     pass
 
@@ -47,20 +51,6 @@ class UserAdmin(CustomView):
     column_filters = ("name", "email")
     can_export = True
     export_types = ["csv", "xlsx"]
-
-
-# Flask views
-@app.route("/")
-def index():
-    return '<a href="/admin/">Click me to get to Admin!</a>'
-
-
-# Create admin with custom base template
-admin = Admin(app, "Example: Bootstrap4", theme=Bootstrap4Theme(swatch="flatly"))
-
-# Add views
-admin.add_view(UserAdmin(User, db.session, category="Menu"))
-admin.add_view(CustomView(Page, db.session, category="Menu"))
 
 
 def build_sample_db():
@@ -195,12 +185,13 @@ def build_sample_db():
 
 
 if __name__ == "__main__":
-    # Build a sample db on the fly, if one does not exist yet.
+    admin.add_view(UserAdmin(User, db.session, category="Menu"))
+    admin.add_view(CustomView(Page, db.session, category="Menu"))
+
     app_dir = op.realpath(os.path.dirname(__file__))
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])
     if not os.path.exists(database_path):
         with app.app_context():
             build_sample_db()
 
-    # Start app
     app.run(debug=True)

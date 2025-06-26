@@ -7,6 +7,14 @@ from flask_admin import BaseView
 from flask_admin import expose
 from flask_admin import expose_plugview
 
+app = Flask(__name__, template_folder="templates")
+admin = Admin(app, name="Example: MethodView")
+
+
+@app.route("/")
+def index():
+    return redirect("/admin")
+
 
 class ViewWithMethodViews(BaseView):
     @expose("/")
@@ -30,19 +38,7 @@ class ViewWithMethodViews(BaseView):
             return cls.render("test.html", request=request, name="API_v2")
 
 
-app = Flask(__name__, template_folder="templates")
-
-
-@app.route("/")
-def index():
-    return redirect("/admin")
-
-
 if __name__ == "__main__":
-    # Create admin interface
-    admin = Admin(name="Example: MethodView")
     admin.add_view(ViewWithMethodViews())
-    admin.init_app(app)
 
-    # Start app
     app.run(debug=True)

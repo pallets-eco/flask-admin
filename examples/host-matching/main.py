@@ -5,7 +5,6 @@ from flask_admin import BaseView
 from flask_admin import expose
 
 
-# Views
 class FirstView(BaseView):
     @expose("/")
     def index(self):
@@ -24,7 +23,6 @@ class ThirdViewAllHosts(BaseView):
         return self.render("third.html")
 
 
-# Create flask app
 app = Flask(
     __name__,
     template_folder="templates",
@@ -33,7 +31,6 @@ app = Flask(
 )
 
 
-# Flask views
 @app.route("/", host="<anyhost>")
 def index(anyhost):
     admin_host = url_for("admin3.index", admin_routes_host="anything.localhost:5000")
@@ -60,5 +57,4 @@ if __name__ == "__main__":
     admin3 = Admin(app, url="/admin3", endpoint="admin3", host="*")
     admin3.add_view(ThirdViewAllHosts())
 
-    # Start app
     app.run(debug=True)

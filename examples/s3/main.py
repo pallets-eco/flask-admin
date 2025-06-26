@@ -10,8 +10,9 @@ from testcontainers.localstack import LocalStackContainer
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
-admin = Admin(app)
+admin = Admin(app, name="Example: S3 File Admin")
 babel = Babel(app)
+
 
 if __name__ == "__main__":
     with LocalStackContainer(image="localstack/localstack:latest") as localstack:
