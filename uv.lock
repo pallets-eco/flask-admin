@@ -635,6 +635,7 @@ dependencies = [
     { name = "flask" },
     { name = "jinja2" },
     { name = "markupsafe" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
     { name = "werkzeug" },
     { name = "wtforms" },
 ]
@@ -782,6 +783,7 @@ requires-dist = [
     { name = "sqlalchemy-citext", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=1.8.0" },
     { name = "sqlalchemy-utils", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=0.38.0" },
     { name = "tablib", marker = "extra == 'export'", specifier = ">=3.0.0" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
     { name = "werkzeug", specifier = ">=2.0" },
     { name = "wtf-peewee", marker = "extra == 'peewee'", specifier = ">=3.0.4" },
     { name = "wtforms", specifier = ">=2.3" },
