@@ -29,4 +29,3 @@ env
 .tox/
 .env
 doc/_build
-examples/**/uv.lock
