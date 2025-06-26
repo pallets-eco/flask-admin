@@ -16,8 +16,8 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 app.config["SECRET_KEY"] = "secret"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 db = SQLAlchemy()
 db.init_app(app)
 admin = Admin(app, name="Example: Datetime and Timezone")

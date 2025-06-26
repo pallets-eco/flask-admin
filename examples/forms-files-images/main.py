@@ -116,7 +116,6 @@ class CKTextAreaField(fields.TextAreaField):
     widget = CKTextAreaWidget()
 
 
-# Administrative views
 class PageView(ModelView):
     form_overrides = {"text": CKTextAreaField}
     create_template = "create_page.html"

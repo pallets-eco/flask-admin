@@ -21,8 +21,6 @@ from wtforms import validators
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
-
-# Create in-memory database
 app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
 app.config["SQLALCHEMY_ECHO"] = True
@@ -36,7 +34,6 @@ def index():
     return render_template("index.html")
 
 
-# Create user model.
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100))

@@ -127,7 +127,6 @@ class LocationImageInlineModelForm(InlineFormAdmin):
             file_data.save(op.join(base_path, model.path))
 
 
-# Administrative class
 class LocationAdmin(ModelView):
     inline_model_form_converter = CustomInlineModelConverter
 
@@ -137,7 +136,6 @@ class LocationAdmin(ModelView):
         super().__init__(Location, db.session, name="Locations")
 
 
-# Simple page to show images
 @app.route("/")
 def index():
     locations = db.session.query(Location).all()

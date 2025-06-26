@@ -19,9 +19,7 @@ from flask_security.utils import hash_password
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-# Create dummy secret key so we can use sessions
-app.config["SECRET_KEY"] = "123456790"
-# Create in-memory database
+app.config["SECRET_KEY"] = "secret"
 app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
 app.config["SQLALCHEMY_ECHO"] = True
@@ -47,7 +45,7 @@ admin = Admin(
     theme=Bootstrap4Theme(base_template="my_master.html"),
 )
 
-# Define models
+
 roles_users = db.Table(
     "roles_users",
     db.Column("user_id", db.Integer(), db.ForeignKey("user.id")),

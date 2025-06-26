@@ -71,7 +71,7 @@ class UserAdmin(ModelView):
     can_set_page_size = True
     page_size = 5
     page_size_options = (5, 10, 15)
-    can_view_details = True  # show a modal dialog with records details
+    can_view_details = True
     action_disallowed_list = [
         "delete",
     ]
@@ -167,7 +167,6 @@ class UserAdmin(ModelView):
         return form
 
 
-# Customized Post model admin
 class PostAdmin(ModelView):
     column_display_pk = True
     column_list = [
@@ -267,7 +266,6 @@ class TreeView(ModelView):
         return super().render(template, foo="bar", **kwargs)
 
 
-# Create admin
 admin = Admin(app, name="Example: SQLAlchemy", theme=Bootstrap4Theme(swatch="default"))
 
 admin.add_view(UserAdmin(User, db.session))
