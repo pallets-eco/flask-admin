@@ -19,7 +19,6 @@ from flask import request
 from flask import stream_with_context
 from jinja2 import pass_context  # type: ignore[attr-defined]
 from jinja2.runtime import Context
-from sqlalchemy.orm import InstrumentedAttribute
 from typing_extensions import TypeGuard
 from werkzeug import Response
 from werkzeug.utils import secure_filename
@@ -30,6 +29,7 @@ from .._types import T_COLUMN_LIST
 from .._types import T_COLUMN_TYPE_FORMATTERS
 from .._types import T_FIELD_ARGS_VALIDATORS
 from .._types import T_FILTER
+from .._types import T_INSTRUMENTED_ATTRIBUTE
 from .._types import T_ORM_MODEL
 from .._types import T_QUERY_AJAX_MODEL_LOADER
 from .._types import T_RESPONSE
@@ -650,7 +650,9 @@ class BaseModelView(BaseView, ActionsMixin):
                 )
     """
 
-    form_columns: t.Optional[t.Collection[t.Union[str, InstrumentedAttribute]]] = None
+    form_columns: t.Optional[t.Collection[t.Union[str, T_INSTRUMENTED_ATTRIBUTE]]] = (
+        None
+    )
     """
         Collection of the model field names for the form. If set to `None` will
         get them from the model.
