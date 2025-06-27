@@ -7,7 +7,6 @@ from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy.orm import ColumnProperty
 from sqlalchemy.orm import InstrumentedAttribute
-from sqlalchemy_utils import ChoiceType
 from wtforms import Field
 from wtforms import fields
 from wtforms import Form
@@ -28,6 +27,7 @@ from flask_admin.model.form import InlineModelConverterBase
 from flask_admin.model.form import ModelConverterBase
 from flask_admin.model.helpers import prettify_name
 
+from ..._types import T_CHOICE_TYPE
 from ..._types import T_FIELD_ARGS_FILTERS
 from ..._types import T_FIELD_ARGS_LABEL
 from ..._types import T_FIELD_ARGS_PLACES
@@ -622,7 +622,7 @@ def avoid_empty_strings(value: t.Any) -> t.Any:
     return value if value else None
 
 
-def choice_type_coerce_factory(type_: ChoiceType) -> t.Callable[[t.Any], t.Any]:
+def choice_type_coerce_factory(type_: T_CHOICE_TYPE) -> t.Callable[[t.Any], t.Any]:
     """
     Return a function to coerce a ChoiceType column, for use by Select2Field.
     :param type_: ChoiceType object
