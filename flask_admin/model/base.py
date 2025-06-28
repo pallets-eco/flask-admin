@@ -20,7 +20,6 @@ from flask import request
 from flask import stream_with_context
 from jinja2 import pass_context  # type: ignore[attr-defined]
 from jinja2.runtime import Context
-from sqlalchemy.orm import InstrumentedAttribute
 from werkzeug import Response
 from werkzeug.utils import secure_filename
 
