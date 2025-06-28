@@ -9,7 +9,7 @@ git clone https://github.com/pallets-eco/flask-admin.git
 cd flask-admin/examples/geo-alchemy
 ```
 
-<!-- TODO: Let's automate the steps down below as part of main.py and the testcontainer we use so that manually nothing needs to happen? -->
+<!-- TODO @hasansezertasan: Let's automate the steps down below as part of main.py and the testcontainer we use so that manually nothing needs to happen? -->
 
 Open the PostgreSQL Interactive terminal by running `psql postgres` command and create a database and user for the example:
 
