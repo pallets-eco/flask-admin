@@ -30,6 +30,7 @@ from .._types import T_COLUMN_LIST
 from .._types import T_COLUMN_TYPE_FORMATTERS
 from .._types import T_FIELD_ARGS_VALIDATORS
 from .._types import T_FILTER
+from .._types import T_INSTRUMENTED_ATTRIBUTE
 from .._types import T_ORM_MODEL
 from .._types import T_QUERY_AJAX_MODEL_LOADER
 from .._types import T_RESPONSE
@@ -655,7 +656,9 @@ class BaseModelView(BaseView, ActionsMixin):
                 )
     """
 
-    form_columns: t.Optional[t.Collection[t.Union[str, InstrumentedAttribute]]] = None
+    form_columns: t.Optional[t.Collection[t.Union[str, T_INSTRUMENTED_ATTRIBUTE]]] = (
+        None
+    )
     """
         Collection of the model field names for the form. If set to `None` will
         get them from the model.
