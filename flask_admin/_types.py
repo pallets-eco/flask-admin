@@ -49,9 +49,12 @@ if t.TYPE_CHECKING:
     import sqlalchemy  # noqa
     from sqlalchemy import Column as T_SQLALCHEMY_COLUMN
     from sqlalchemy import Table as T_TABLE  # noqa
+    from sqlalchemy.orm import InstrumentedAttribute as T_INSTRUMENTED_ATTRIBUTE  # noqa
     from sqlalchemy.orm import scoped_session as T_SQLALCHEMY_SESSION  # noqa
     from sqlalchemy.orm.query import Query
     from sqlalchemy.sql.selectable import Select
+    from sqlalchemy_utils import Choice as T_CHOICE
+    from sqlalchemy_utils import ChoiceType as T_CHOICE_TYPE
 
     T_SQLALCHEMY_QUERY = t.Union[Query, Select]
     from redis import Redis as T_REDIS  # noqa
@@ -87,9 +90,13 @@ else:
     T_PEEWEE_MODEL = "peewee.BaseModel"
     T_MONGO_CLIENT = "pymongo.MongoClient"
     T_TABLE = "sqlalchemy.Table"
+    T_CHOICE_TYPE = "sqlalchemy_utils.ChoiceType"
+    T_CHOICE = "sqlalchemy_utils.Choice"
+
     T_SQLALCHEMY_QUERY = t.Union[
         "sqlalchemy.sql.selectable.Select", "sqlalchemy.orm.query.Query"
     ]
+    T_INSTRUMENTED_ATTRIBUTE = "sqlalchemy.orm.InstrumentedAttribute"
     T_SQLALCHEMY_SESSION = "sqlalchemy.orm.scoped_session"
     T_REDIS = "redis.Redis"
     T_PEEWEE_QUERY_AJAX_MODEL_LOADER = (
