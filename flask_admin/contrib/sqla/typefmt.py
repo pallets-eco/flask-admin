@@ -1,17 +1,15 @@
-import sqlalchemy_utils
 from sqlalchemy.ext.associationproxy import _AssociationList
 from sqlalchemy.orm.collections import InstrumentedList
 
 from flask_admin._types import T_ARROW
+from flask_admin._types import T_CHOICE
 from flask_admin._types import T_MODEL_VIEW
 from flask_admin.model.typefmt import BASE_FORMATTERS
 from flask_admin.model.typefmt import EXPORT_FORMATTERS
 from flask_admin.model.typefmt import list_formatter
 
 
-def choice_formatter(
-    view: T_MODEL_VIEW, choice: sqlalchemy_utils.Choice, name: str
-) -> str:
+def choice_formatter(view: T_MODEL_VIEW, choice: T_CHOICE, name: str) -> str:
     """
     Return label of selected choice
     see https://sqlalchemy-utils.readthedocs.io/
