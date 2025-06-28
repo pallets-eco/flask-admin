@@ -5,7 +5,7 @@ description = "PyMongo Example."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "flask-admin[sqlalchemy,pymongo]",
+    "flask-admin[pymongo]",
     "testcontainers[mongodb]"
 ]
 

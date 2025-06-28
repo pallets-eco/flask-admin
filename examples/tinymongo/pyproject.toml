@@ -5,7 +5,7 @@ description = "TinyMongo model backend integration example."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "flask-admin[pymongo, sqlalchemy]",
+    "flask-admin[sqlalchemy]",
     "tinymongo",
 ]
 
