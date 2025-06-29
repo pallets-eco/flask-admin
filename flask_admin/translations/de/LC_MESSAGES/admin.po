@@ -398,7 +398,7 @@ msgstr "Eintrag wurde erfolgreich gespeichert."
 
 #: ../flask_admin/model/base.py:2656
 #, python-format
-msgid "Export type \"%(type)s not supported."
+msgid "Export type \"%(type)s\" not supported."
 msgstr "Export-Typ \"%(type)s nicht unterstützt."
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
