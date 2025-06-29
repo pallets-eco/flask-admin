@@ -157,7 +157,7 @@ uv run tox
 
 ### Running tests as a one-off via docker-compose run / `make test`
 
-If you don't use devcontainers and simply want to run the basic test suite against the default python installation, you can use:
+If you don't use devcontainers then you can run the tests using docker (you will need to install and setup docker yourself). Then you can use:
 
 ```shell
 make test-in-docker
