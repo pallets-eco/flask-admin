@@ -73,8 +73,13 @@ all = [
 
 [dependency-groups]
 dev = [
+    "flask-admin[all]",
     "tox",
     "tox-uv",
+    {include-group = "pre-commit"},
+    {include-group = "docs"},
+    {include-group = "tests"},
+    {include-group = "typing"},
 ]
 pre-commit = [
     "pre-commit",
@@ -124,6 +129,9 @@ name = "flask_admin"
 
 [tool.uv]
 default-groups = ["dev", "pre-commit", "tests", "typing"]
+
+[tool.uv.sources]
+flask-admin = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["flask_admin/tests"]
