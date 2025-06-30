@@ -86,6 +86,7 @@ pre-commit = [
     "pre-commit-uv",
 ]
 docs = [
+    "flask-admin[all]",
     "pallets-sphinx-themes",
     "sphinx",
     "sphinx-intl>=2.3.1",
