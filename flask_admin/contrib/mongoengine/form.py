@@ -70,7 +70,8 @@ class QuerySetSelectField(fields.SelectFieldBase):
         iterable of (value, label, selected) tuples.
         """
         if self.allow_blank:
-            yield _iter_choices_wtforms_compat("__None", self.blank_text, self.data is None)
+            yield _iter_choices_wtforms_compat("__None", self.blank_text,
+                                               self.data is None)
 
         if self.queryset is None:
             return
