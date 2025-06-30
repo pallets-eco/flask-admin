@@ -12,6 +12,7 @@ from wtforms import validators
 
 from flask_admin import form
 from flask_admin._compat import iteritems
+from flask_admin._compat import _iter_choices_wtforms_compat
 from flask_admin.form.validators import FieldListInputRequired
 from flask_admin.model.fields import AjaxSelectField
 from flask_admin.model.fields import AjaxSelectMultipleField
@@ -69,7 +70,7 @@ class QuerySetSelectField(fields.SelectFieldBase):
         iterable of (value, label, selected) tuples.
         """
         if self.allow_blank:
-            yield "__None", self.blank_text, self.data is None
+            yield _iter_choices_wtforms_compat("__None", self.blank_text, self.data is None)
 
         if self.queryset is None:
             return
@@ -86,7 +87,7 @@ class QuerySetSelectField(fields.SelectFieldBase):
                 selected = obj in self.data
             else:
                 selected = self._is_selected(obj)
-            yield obj.id, label, selected
+            yield _iter_choices_wtforms_compat(obj.id, label, selected)
 
     def process_formdata(self, valuelist):
         """

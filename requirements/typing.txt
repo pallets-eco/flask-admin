@@ -165,3 +165,4 @@ werkzeug==3.0.6
     # via moto
 xmltodict==0.14.2
     # via moto
+mongoengine==0.29.1
