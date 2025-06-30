@@ -740,6 +740,7 @@ dev = [
     { name = "types-wtforms" },
 ]
 docs = [
+    { name = "flask-admin", extra = ["all"] },
     { name = "pallets-sphinx-themes" },
     { name = "sphinx", version = "7.4.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
@@ -847,6 +848,7 @@ dev = [
     { name = "types-wtforms" },
 ]
 docs = [
+    { name = "flask-admin", extras = ["all"], editable = "." },
     { name = "pallets-sphinx-themes" },
     { name = "sphinx" },
     { name = "sphinx-intl", specifier = ">=2.3.1" },
