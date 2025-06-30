@@ -1,12 +1,56 @@
 import datetime
-import random
+import os
+import os.path as op
 
-from admin import db
-from admin.models import AVAILABLE_USER_TYPES
-from admin.models import Post
-from admin.models import Tag
-from admin.models import Tree
-from admin.models import User
+from flask import Flask
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.theme import Bootstrap4Theme
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "secret"
+app.config["DATABASE_FILE"] = "db.sqlite"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
+app.config["SQLALCHEMY_ECHO"] = True
+db = SQLAlchemy(app)
+admin = Admin(app, name="Example: Bootstrap4", theme=Bootstrap4Theme(swatch="flatly"))
+
+
+@app.route("/")
+def index():
+    return '<a href="/admin/">Click me to get to Admin!</a>'
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode(64))
+    email = db.Column(db.Unicode(64))
+    active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.now)
+
+    def __unicode__(self):
+        return self.name
+
+
+class Page(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.Unicode(64))
+    content = db.Column(db.UnicodeText)
+
+    def __unicode__(self):
+        return self.name
+
+
+class CustomView(ModelView):
+    pass
+
+
+class UserAdmin(CustomView):
+    column_searchable_list = ("name",)
+    column_filters = ("name", "email")
+    can_export = True
+    export_types = ["csv", "xlsx"]
 
 
 def build_sample_db():
@@ -46,7 +90,7 @@ def build_sample_db():
     ]
     last_names = [
         "Brown",
-        "Brown",
+        "Smith",
         "Patel",
         "Jones",
         "Williams",
@@ -55,8 +99,8 @@ def build_sample_db():
         "Thomas",
         "Roberts",
         "Khan",
-        "Clarke",
-        "Clarke",
+        "Lewis",
+        "Jackson",
         "Clarke",
         "James",
         "Phillips",
@@ -72,54 +116,11 @@ def build_sample_db():
         "Alexander",
     ]
 
-    countries = [
-        ("ZA", "South Africa", 27, "ZAR", "Africa/Johannesburg"),
-        ("BF", "Burkina Faso", 226, "XOF", "Africa/Ouagadougou"),
-        ("US", "United States of America", 1, "USD", "America/New_York"),
-        ("BR", "Brazil", 55, "BRL", "America/Sao_Paulo"),
-        ("TZ", "Tanzania", 255, "TZS", "Africa/Dar_es_Salaam"),
-        ("DE", "Germany", 49, "EUR", "Europe/Berlin"),
-        ("CN", "China", 86, "CNY", "Asia/Shanghai"),
-    ]
-
-    user_list = []
     for i in range(len(first_names)):
         user = User()
-        country = random.choice(countries)
-        user.type = random.choice(AVAILABLE_USER_TYPES)[0]
-        user.first_name = first_names[i]
-        user.last_name = last_names[i]
+        user.name = first_names[i] + " " + last_names[i]
         user.email = first_names[i].lower() + "@example.com"
-
-        user.website = "https://www.example.com"
-        user.ip_address = "127.0.0.1"
-
-        user.coutry = country[1]
-        user.currency = country[3]
-        user.timezone = country[4]
-
-        user.dialling_code = country[2]
-        user.local_phone_number = "0" + "".join(random.choices("123456789", k=9))
-
-        user_list.append(user)
         db.session.add(user)
-
-    tag_list = []
-    for tmp in [
-        "YELLOW",
-        "WHITE",
-        "BLUE",
-        "GREEN",
-        "RED",
-        "BLACK",
-        "BROWN",
-        "PURPLE",
-        "ORANGE",
-    ]:
-        tag = Tag()
-        tag.name = tmp
-        tag_list.append(tag)
-        db.session.add(tag)
 
     sample_text = [
         {
@@ -160,43 +161,37 @@ def build_sample_db():
                 "blanditiis praesentium voluptatum deleniti atque corrupti quos "
                 "dolores et quas molestias excepturi sint occaecati cupiditate non "
                 "provident, similique sunt in culpa qui officia deserunt mollitia "
-                "animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis "
-                "est et expedita distinctio. Nam libero tempore, cum soluta nobis est "
-                "eligendi optio cumque nihil impedit quo minus id quod maxime placeat "
-                "facere possimus, omnis voluptas assumenda est, omnis dolor "
-                "repellendus. Temporibus autem quibusdam et aut officiis debitis aut "
-                "rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint "
-                "et molestiae non recusandae. Itaque earum rerum hic tenetur a "
+                "animi, id est laborum et dolorum fuga. Et harum quidem rerum "
+                "facilis est et expedita distinctio. Nam libero tempore, cum soluta "
+                "nobis est eligendi optio cumque nihil impedit quo minus id quod "
+                "maxime placeat facere possimus, omnis voluptas assumenda est, omnis "
+                "dolor repellendus. Temporibus autem quibusdam et aut officiis debitis "
+                "aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae "
+                "sint et molestiae non recusandae. Itaque earum rerum hic tenetur a "
                 "sapiente delectus, ut aut reiciendis voluptatibus maiores alias "
                 "consequatur aut perferendis doloribus asperiores repellat."
             ),
         },
     ]
 
-    for user in user_list:
-        entry = random.choice(sample_text)
-        post = Post()
-        post.user = user
-        post.title = "{}'s opinion on {}".format(user.first_name, entry["title"])
-        post.text = entry["content"]
-        post.background_color = random.choice(["#cccccc", "red", "lightblue", "#0f0"])
-        tmp = int(1000 * random.random())
-        post.date = datetime.datetime.now() - datetime.timedelta(days=tmp)
-        post.tags = random.sample(tag_list, 2)
-        db.session.add(post)
-
-    trunk = Tree(name="Trunk")
-    db.session.add(trunk)
-    for i in range(5):
-        branch = Tree()
-        branch.name = "Branch " + str(i + 1)
-        branch.parent = trunk
-        db.session.add(branch)
-        for j in range(5):
-            leaf = Tree()
-            leaf.name = "Leaf " + str(j + 1)
-            leaf.parent = branch
-            db.session.add(leaf)
+    for entry in sample_text:
+        page = Page()
+        page.title = entry["title"]
+        page.content = entry["content"]
+        db.session.add(page)
 
     db.session.commit()
     return
+
+
+if __name__ == "__main__":
+    admin.add_view(UserAdmin(User, db.session, category="Menu"))
+    admin.add_view(CustomView(Page, db.session, category="Menu"))
+
+    app_dir = op.realpath(os.path.dirname(__file__))
+    database_path = op.join(app_dir, app.config["DATABASE_FILE"])
+    if not os.path.exists(database_path):
+        with app.app_context():
+            build_sample_db()
+
+    app.run(debug=True)

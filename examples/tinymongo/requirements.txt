@@ -1,3 +1,0 @@
-../..[pymongo]
-
-git+https://github.com/schapman1974/tinymongo.git#egg=tinymongo

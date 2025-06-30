@@ -283,7 +283,7 @@ from the GeoAlchemy backend, rather than the usual SQLAlchemy backend::
 Some of the Geometry field types that are available include:
 "POINT", "MULTIPOINT", "POLYGON", "MULTIPOLYGON", "LINESTRING" and "MULTILINESTRING".
 
-Have a look at https://github.com/pallets-eco/flask-admin/tree/master/examples/geo_alchemy
+Have a look at https://github.com/pallets-eco/flask-admin/tree/master/examples/geo-alchemy
 to get started.
 
 Display map widgets

@@ -1,8 +1,6 @@
-# Azure Blob Storage Example
+# Flask-Babel Integration Example
 
-Flask-Admin example for an Azure Blob Storage account.
-
-If you opened this repository in GitHub Codespaces or a Dev Container with the ["flask-admin tests" configuration](/.devcontainer/tests/devcontainer.json), you can jump straight to step 4.
+This example show how to translate Flask-Admin into different language using customized version of the `Flask-Babel <https://github.com/python-babel/flask-babel>`
 
 ## How to run this example
 
@@ -10,7 +8,7 @@ Clone the repository and navigate to this example:
 
 ```shell
 git clone https://github.com/pallets-eco/flask-admin.git
-cd flask-admin/examples/azure-blob-storage
+cd flask-admin/examples/babel
 ```
 
 > This example uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment.

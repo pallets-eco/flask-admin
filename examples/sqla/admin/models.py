@@ -30,7 +30,6 @@ class EnumChoices(enum.Enum):
     second = 2
 
 
-# Create models
 class User(db.Model):
     id = db.Column(UUIDType(binary=False), default=uuid.uuid4, primary_key=True)
 
@@ -38,7 +37,7 @@ class User(db.Model):
     # later on
     type = db.Column(db.String(100))
 
-    # fixed choices can be handled in a number of different ways:
+    # Fixed choices can be handled in a number of different ways:
     enum_choice_field = db.Column(db.Enum(EnumChoices), nullable=True)
     sqla_utils_choice_field = db.Column(ChoiceType(AVAILABLE_USER_TYPES), nullable=True)
     sqla_utils_enum_choice_field = db.Column(
@@ -48,7 +47,7 @@ class User(db.Model):
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
 
-    # some sqlalchemy_utils data types (see https://sqlalchemy-utils.readthedocs.io/)
+    # Some sqlalchemy_utils data types (see https://sqlalchemy-utils.readthedocs.io/)
     email = db.Column(EmailType, unique=True, nullable=False)
     website = db.Column(URLType)
     ip_address = db.Column(IPAddressType)

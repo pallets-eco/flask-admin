@@ -2,22 +2,19 @@
 
 Flask-Admin example for an S3 bucket.
 
-To run this example:
+## How to run this example
 
-1. Clone the repository and navigate to this example::
+Clone the repository and navigate to this example:
 
-    git clone https://github.com/pallets-eco/flask-admin.git
-    cd flask-admin/examples/s3
+```shell
+git clone https://github.com/pallets-eco/flask-admin.git
+cd flask-admin/examples/s3
+```
 
-2. Create and activate a virtual environment::
+> This example uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment.
 
-    python -m venv venv
-    source venv/bin/activate
+Run the example using `uv`, which will manage the environment and dependencies automatically:
 
-3. Install requirements::
-
-    pip install -r requirements.txt
-
-4. Run the application::
-
-    python app.py
+```shell
+uv run main.py
+```

@@ -296,10 +296,10 @@ msgstr ""
 #: ../../doc/advanced.rst:212
 msgid ""
 "Have a look at https://github.com/pallets-eco/flask-"
-"admin/tree/master/examples/geo_alchemy to get started."
+"admin/tree/master/examples/geo-alchemy to get started."
 msgstr ""
 "请查看 https://github.com/pallets-eco/flask-"
-"admin/tree/master/examples/geo_alchemy 示例以开始使用。"
+"admin/tree/master/examples/geo-alchemy 示例以开始使用。"
 
 #: ../../doc/advanced.rst:216
 msgid "Loading Tiles From Mapbox"
