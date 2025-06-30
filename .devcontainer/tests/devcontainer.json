@@ -16,6 +16,6 @@
 		"ghcr.io/devcontainers/features/azure-cli:1": {}
 	},
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-	"remoteUser": "vscode",
-	"postAttachCommand": "pip install -e \".[all]\" && pip install --use-pep517 -r requirements/dev.txt && psql -U postgres -h localhost -c 'CREATE EXTENSION IF NOT EXISTS hstore;' flask_admin_test"
+	"remoteUser": "root",
+	"postAttachCommand": "uv sync --extra all && PGPASSWORD=postgres psql -U postgres -h postgres -c 'CREATE EXTENSION IF NOT EXISTS hstore;' flask_admin_test"
 }
