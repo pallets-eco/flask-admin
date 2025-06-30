@@ -398,7 +398,7 @@ msgstr "Η καρτέλα αποθηκεύτηκε με επιτυχία."
 
 #: ../flask_admin/model/base.py:2656
 #, python-format
-msgid "Export type \"%(type)s not supported."
+msgid "Export type \"%(type)s\" not supported."
 msgstr ""
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
