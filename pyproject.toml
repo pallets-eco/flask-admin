@@ -74,16 +74,23 @@ all = [
 
 [dependency-groups]
 dev = [
+    "flask-admin[all]",
     "tox",
     "tox-uv",
+    {include-group = "pre-commit"},
+    {include-group = "docs"},
+    {include-group = "tests"},
+    {include-group = "typing"},
 ]
 pre-commit = [
     "pre-commit",
     "pre-commit-uv",
 ]
 docs = [
+    "flask-admin[all]",
     "pallets-sphinx-themes",
     "sphinx",
+    "sphinx-intl>=2.3.1",
     "sphinxcontrib-log-cabinet",
 ]
 tests = [
@@ -93,7 +100,7 @@ tests = [
     "pytest-cov",
     "moto",
     "botocore>=1.35",
-    "psycopg2",
+    "psycopg2-binary",
     "beautifulsoup4",
 ]
 typing = [
@@ -125,6 +132,9 @@ name = "flask_admin"
 
 [tool.uv]
 default-groups = ["dev", "pre-commit", "tests", "typing"]
+
+[tool.uv.sources]
+flask-admin = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["flask_admin/tests"]
@@ -250,7 +260,8 @@ runner = "uv-venv-lock-runner"
 package = "wheel"
 wheel_build_env = ".pkg"
 extras = ["all"]
-setenv = { SQLALCHEMY_SILENCE_UBER_WARNING = "1", AZURE_STORAGE_CONNECTION_STRING = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;" }
+setenv = { SQLALCHEMY_SILENCE_UBER_WARNING = "1" }
+pass_env = ["AZURE_STORAGE_CONNECTION_STRING", "SQLALCHEMY_DATABASE_URI", "MONGOCLIENT_HOST"]
 constrain_package_deps = true
 use_frozen_constraints = true
 dependency_groups = ["tests"]

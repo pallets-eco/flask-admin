@@ -398,7 +398,7 @@ msgstr "Record is met succes opgeslagen."
 
 #: ../flask_admin/model/base.py:2656
 #, python-format
-msgid "Export type \"%(type)s not supported."
+msgid "Export type \"%(type)s\" not supported."
 msgstr "Exporteren naar type %(type)s wordt niet ondersteund."
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128

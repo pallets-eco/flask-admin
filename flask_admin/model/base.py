@@ -2660,7 +2660,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 response_data = getattr(ds, export_type)
         except (AttributeError, tablib.UnsupportedFormat):
             flash(
-                gettext('Export type "%(type)s not supported.', type=export_type),
+                gettext('Export type "%(type)s" is not supported.', type=export_type),
                 "error",
             )
             return redirect(return_url)
