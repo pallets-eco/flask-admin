@@ -1,3 +1,4 @@
+import sys
 import typing as t
 from enum import Enum
 from os import PathLike
@@ -7,12 +8,16 @@ import wtforms.widgets
 from flask import Response
 from jinja2.runtime import Context
 from markupsafe import Markup
-from typing_extensions import NotRequired
 from werkzeug.wrappers import Response as Wkzg_Response
 from wtforms import Field
 from wtforms.form import BaseForm
 from wtforms.utils import UnsetValue
 from wtforms.widgets import Input
+
+if sys.version_info >= (3, 11):
+    from typing import NotRequired
+else:
+    from typing_extensions import NotRequired
 
 if t.TYPE_CHECKING:
     from flask_admin.base import BaseView as T_VIEW  # noqa

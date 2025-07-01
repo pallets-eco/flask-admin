@@ -1,4 +1,5 @@
 import logging
+import sys
 import typing as t
 
 from flask import flash
@@ -10,7 +11,6 @@ from peewee import JOIN
 from peewee import ModelSelect
 from peewee import PrimaryKeyField
 from peewee import TextField
-from typing_extensions import TypeGuard
 from wtforms import Form
 
 from flask_admin._compat import string_types
@@ -37,6 +37,11 @@ from .form import save_inline
 from .tools import get_meta_fields
 from .tools import get_primary_key
 from .tools import parse_like_term
+
+if sys.version_info >= (3, 10):
+    from typing import TypeGuard
+else:
+    from typing_extensions import TypeGuard
 
 # Set up logger
 log = logging.getLogger("flask-admin.peewee")
