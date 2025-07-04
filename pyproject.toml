@@ -1,6 +1,6 @@
 [project]
 name = "Flask-Admin"
-version = "1.6.1"
+version = "2.0.0a4"
 description = "Simple and extensible admin interface framework for Flask"
 readme = "README.md"
 license = { file = "LICENSE.txt" }
@@ -14,16 +14,106 @@ classifiers = [
     'Operating System :: OS Independent',
     'Programming Language :: Python',
     'Topic :: Software Development :: Libraries :: Python Modules',
-    'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
 ]
-requires-python = ">=3.6"
+requires-python = ">=3.9"
 dependencies = [
-    "flask>=0.7",
-    "wtforms"
+    "flask>=2.0",
+    "jinja2>=3.0",
+    "markupsafe>=2.0",
+    "werkzeug>=2.0",
+    "wtforms>=2.3",
+]
+
+[project.optional-dependencies]
+sqlalchemy = [
+    "flask-sqlalchemy>=3",
+    "sqlalchemy>=1.4",
+]
+sqlalchemy-with-utils = [
+    "Flask-Admin[sqlalchemy]",
+    "sqlalchemy_utils>=0.38.0",
+    "sqlalchemy-citext>=1.8.0",
+    "colour>=0.1.5",
+    "email_validator>=2",
+    "arrow>=0.13.0",
+]
+geoalchemy = [
+    "Flask-Admin[sqlalchemy]",
+    "geoalchemy2>=0.14.0",
+    "shapely>=2",
+]
+pymongo = ["pymongo>=3.7.0"]
+peewee = [
+    "peewee>=3.14.0",
+    "wtf-peewee>=3.0.4"
+]
+s3 = ["boto3>=1.33"]
+azure-blob-storage = ["azure-storage-blob>=12.0.0"]
+images = ["pillow>=10.0.0"]
+export = ["tablib>=3.0.0"]
+rediscli = ["redis>=4.0.0"]
+translation = ["flask-babel>=3.0.1"]
+all = [
+    "Flask-Admin[sqlalchemy]",
+    "Flask-Admin[sqlalchemy-with-utils]",
+    "Flask-Admin[geoalchemy]",
+    "Flask-Admin[pymongo]",
+    "Flask-Admin[peewee]",
+    "Flask-Admin[s3]",
+    "Flask-Admin[azure-blob-storage]",
+    "Flask-Admin[images]",
+    "Flask-Admin[export]",
+    "Flask-Admin[rediscli]",
+    "Flask-Admin[translation]",
+]
+
+[dependency-groups]
+dev = [
+    "flask-admin[all]",
+    "tox",
+    "tox-uv",
+    {include-group = "pre-commit"},
+    {include-group = "docs"},
+    {include-group = "tests"},
+    {include-group = "typing"},
+]
+pre-commit = [
+    "pre-commit",
+    "pre-commit-uv",
+]
+docs = [
+    "flask-admin[all]",
+    "pallets-sphinx-themes",
+    "sphinx",
+    "sphinx-intl>=2.3.1",
+    "sphinxcontrib-log-cabinet",
+]
+tests = [
+    "flake8",
+    "pylint",
+    "pytest",
+    "pytest-cov",
+    "moto",
+    "botocore>=1.35",
+    "psycopg2-binary",
+    "beautifulsoup4",
+]
+typing = [
+    "mypy",
+    "pyright",
+    "pytest",
+    "types-Flask-SQLAlchemy",
+    "types-Pillow",
+    "types-beautifulsoup4",
+    "types-boto3",
+    "types-peewee",
+    "types-Flask",
+    "types-WTForms",
+    "types-shapely",
 ]
 
 [project.urls]
@@ -39,8 +129,14 @@ build-backend = "flit_core.buildapi"
 [tool.flit.module]
 name = "flask_admin"
 
+[tool.uv]
+default-groups = ["dev", "pre-commit", "tests", "typing"]
+
+[tool.uv.sources]
+flask-admin = { workspace = true }
+
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["flask_admin/tests"]
 markers = [
     "flask_babel: requires Flask-Babel to be installed"
 ]
@@ -48,10 +144,6 @@ filterwarnings = [
     "error",
     # TODO: remove the ignored deprecation warning when support for WTForms 3 has been added.
     "ignore:Flags should be stored in dicts and not in tuples. The next version of WTForms will abandon support for flags in tuples.:DeprecationWarning",
-    "ignore:'HTMLString' will be removed in WTForms 3.0. Use 'markupsafe.Markup' instead.:DeprecationWarning",
-
-    # flask-mongoengine is responsible for the below deprecation warning, and hasn't been updated recently
-    "default:No uuidRepresentation is specified:DeprecationWarning",
 
     # Werkzeug is responsible for the below deprecation warning; remove when they have updated their code.
     "default:ast\\.Str is deprecated and will be removed in Python 3\\.14:DeprecationWarning",
@@ -61,7 +153,10 @@ filterwarnings = [
     "default:'pkgutil\\.get_loader' is deprecated and slated for removal in Python 3\\.14:DeprecationWarning",
     "default:'pkgutil\\.find_loader' is deprecated and slated for removal in Python 3\\.14:DeprecationWarning",
 
-    "default:datetime\\.datetime\\.utcnow\\(\\) is deprecated and scheduled for removal in a future version:DeprecationWarning"
+    "default:datetime\\.datetime\\.utcnow\\(\\) is deprecated and scheduled for removal in a future version:DeprecationWarning",
+
+    # `flask.testing` accesses this attribute; remove when they have updated their code.
+    "default:The '__version__' attribute is deprecated and will be removed in Werkzeug 3\\.1\\.:DeprecationWarning",
 ]
 
 [tool.coverage.run]
@@ -72,20 +167,11 @@ source = ["flask_admin", "tests"]
 source = ["flask_admin", "*/site-packages"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 files = ["flask_admin"]
 show_error_codes = true
 pretty = true
 strict = true
-
-# Start off with these
-warn_unused_configs = false
-warn_redundant_casts = false
-warn_unused_ignores = false
-
-# Getting these passing should be easy
-strict_equality = false
-strict_concatenate = false
 
 # Strongly recommend enabling this one as soon as you can
 check_untyped_defs = false
@@ -115,28 +201,24 @@ module = [
     "citext",
     "colour",
     "flask_babel",
-    "flask_mongoengine.*",
     "flask_wtf",
-    "google.appengine.ext",
     "gridfs",
     "marker",
-    "mongoengine.*",
     "playhouse.*",
     "pymongo",
     "sqlalchemy.*",
-    "sqlalchemy_enum34",
     "sqlalchemy_utils",
     "tablib",
     "wtforms.*",
-    "wtforms_appengine.*",
     "wtfpeewee.*",
 ]
 ignore_missing_imports = true
 
-[tool.pyright]
-pythonVersion = "3.8"
-include = ["flask_admin", "tests"]
-typeCheckingMode = "basic"
+# TODO: reenable after pyright test pass
+#[tool.pyright]
+#pythonVersion = "3.9"
+#include = ["flask_admin", "tests"]
+#typeCheckingMode = "basic"
 
 [tool.ruff]
 src = ["flask_admin"]
@@ -158,3 +240,151 @@ ignore-init-module-imports = true
 [tool.ruff.lint.isort]
 force-single-line = true
 order-by-type = false
+
+[tool.tox]
+env_list = [
+    "py39", "py310", "py311", "py312",
+    "py39-sqlalchemy1", "py312-sqlalchemy1",
+    "py312-noflaskbabel",
+    "py39-min",
+    "style",
+    "typing",
+    "docs",
+]
+
+[tool.tox.env_run_base]
+description = "pytest on latest dependency versions"
+runner = "uv-venv-lock-runner"
+package = "wheel"
+wheel_build_env = ".pkg"
+extras = ["all"]
+setenv = { SQLALCHEMY_SILENCE_UBER_WARNING = "1" }
+pass_env = ["AZURE_STORAGE_CONNECTION_STRING", "SQLALCHEMY_DATABASE_URI", "MONGOCLIENT_HOST"]
+constrain_package_deps = true
+use_frozen_constraints = true
+dependency_groups = ["tests"]
+env_tmp_dir = "{toxworkdir}/tmp/{envname}"
+commands = [[
+    "pytest", "-v", "--tb=short", "--basetemp={env_tmp_dir}",
+    {replace = "posargs", default = [], extend = true},
+]]
+
+[tool.tox.env.tests-min]
+description = "pytest on minimum dependency versions"
+base_python = ["3.9"]
+commands = [
+    [
+        "uv", "pip", "install",
+        "flask==2.2.0",
+        "werkzeug==2.3.8",
+        "wtforms==2.3.0",
+        "sqlalchemy==1.4.18",
+        "sqlalchemy_utils==0.38.0",
+        "sqlalchemy-citext==1.8.0",
+        "flask-sqlalchemy==3.0.0",
+        "colour==0.1.5",
+        "email_validator==2.0.0",
+        "arrow==0.13.0",
+        "geoalchemy2==0.14.0",
+        "shapely==2",
+        "boto3==1.33.0",
+        "pymongo==3.7.0",
+        "peewee==3.14.0",
+        "wtf-peewee==3.0.4",
+        "azure-storage-blob==12.0.0",
+        "pillow==10.0.0",
+        "flask-babel==3.0.1",
+        "tablib==3.0.0",
+        "redis==4.0.0",
+    ],
+    [
+        "pytest", "-v", "--tb=short", "--basetemp={env_tmp_dir}",
+        {replace = "posargs", default = [], extend = true},
+    ],
+]
+
+[tool.tox.env.py39-sqlalchemy1]
+description = "pytest with SQLAlchemy 1.x on Python 3.9"
+base = ["env_run_base"]
+base_python = ["3.9"]
+commands = [
+    ["uv", "pip", "install", "sqlalchemy>=1.4,<2"],
+    ["uv", "pip", "install", "flask-sqlalchemy<=3.0.5"],
+    [
+        "pytest", "-v", "--tb=short", "--basetemp={env_tmp_dir}",
+        {replace = "posargs", default = [], extend = true},
+    ],
+]
+
+[tool.tox.env.py312-sqlalchemy1]
+description = "pytest with SQLAlchemy 1.x on Python 3.12"
+base = ["env_run_base"]
+base_python = ["3.12"]
+commands = [
+    ["uv", "pip", "install", "sqlalchemy>=1.4,<2"],
+    ["uv", "pip", "install", "flask-sqlalchemy<=3.0.5"],
+    [
+        "pytest", "-v", "--tb=short", "--basetemp={env_tmp_dir}",
+        {replace = "posargs", default = [], extend = true},
+    ],
+]
+
+[tool.tox.env.py312-noflaskbabel]
+description = "pytest without flask-babel"
+base = ["env_run_base"]
+commands = [
+    ["uv", "pip", "uninstall", "flask-babel"],
+    [
+        "pytest", "-v", "--tb=short", "--basetemp={env_tmp_dir}",
+        {replace = "posargs", default = [], extend = true},
+    ],
+]
+
+
+[tool.tox.env.style]
+description = "run all pre-commit hooks on all files"
+dependency_groups = ["pre-commit"]
+skip_install = true
+commands = [["pre-commit", "run", "--all-files"]]
+
+[tool.tox.env.typing]
+description = "run static type checkers"
+dependency_groups = ["typing"]
+commands = [
+    ["mypy", "--python-version", "3.9"],
+    ["mypy", "--python-version", "3.12"],
+    # TODO: reenable after pyright test pass
+    # ["pyright"],
+]
+
+[tool.tox.env.docs]
+description = "build docs"
+dependency_groups = ["docs"]
+commands = [["sphinx-build", "-E", "-W", "-b", "dirhtml", "doc", "doc/_build/dirhtml"]]
+
+# [tool.tox.env.docs-auto]
+# description = "continuously rebuild docs and start a local server"
+# dependency_groups = ["docs", "docs-auto"]
+# commands = [["sphinx-autobuild", "-W", "-b", "dirhtml", "--watch", "src", "docs", "docs/_build/dirhtml"]]
+
+# [tool.tox.env.update-actions]
+# description = "update GitHub Actions pins"
+# labels = ["update"]
+# dependency_groups = ["gha-update"]
+# skip_install = true
+# commands = [["gha-update"]]
+
+[tool.tox.env.update-pre_commit]
+description = "update pre-commit pins"
+labels = ["update"]
+dependency_groups = ["pre-commit"]
+skip_install = true
+commands = [["pre-commit", "autoupdate", "--freeze", "-j4"]]
+
+[tool.tox.env.update-requirements]
+description = "update uv lock"
+labels = ["update"]
+dependency_groups = []
+no_default_groups = true
+skip_install = true
+commands = [["uv", "lock", {replace = "posargs", default = ["-U"], extend = true}]]

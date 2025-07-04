@@ -1,15 +1,14 @@
 import uuid
 
+import flask_admin as admin
 import peewee
 from flask import Flask
-
-import flask_admin as admin
 from flask_admin.contrib.peewee import ModelView
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '123456790'
+app.config["SECRET_KEY"] = "123456790"
 
-db = peewee.SqliteDatabase('test.sqlite', check_same_thread=False)
+db = peewee.SqliteDatabase("test.sqlite", check_same_thread=False)
 
 
 class BaseModel(peewee.Model):
@@ -32,7 +31,7 @@ class UserInfo(BaseModel):
     user = peewee.ForeignKeyField(User)
 
     def __str__(self):
-        return f'{self.key} - {self.value}'
+        return f"{self.key} - {self.value}"
 
 
 class Post(BaseModel):
@@ -53,48 +52,39 @@ class UserAdmin(ModelView):
 
 class PostAdmin(ModelView):
     # Visible columns in the list view
-    column_exclude_list = ['text']
+    column_exclude_list = ["text"]
 
     # List of columns that can be sorted. For 'user' column, use User.email as
     # a column.
-    column_sortable_list = ('title', ('user', User.email), 'date')
+    column_sortable_list = ("title", ("user", User.email), "date")
 
     # Full text search
-    column_searchable_list = ('title', User.username)
+    column_searchable_list = ("title", User.username)
 
     # Column filters
-    column_filters = ('title',
-                      'date',
-                      User.username)
+    column_filters = ("title", "date", User.username)
 
-    form_ajax_refs = {
-        'user': {
-            'fields': (User.username, 'email')
-        }
-    }
+    form_ajax_refs = {"user": {"fields": (User.username, "email")}}
 
 
-@app.route('/')
+@app.route("/")
 def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import logging
 
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
 
-    admin = admin.Admin(app, name='Example: Peewee')
+    admin = admin.Admin(app, name="Example: Peewee")
 
     admin.add_view(UserAdmin(User))
     admin.add_view(PostAdmin(Post))
 
-    try:
-        User.create_table()
-        UserInfo.create_table()
-        Post.create_table()
-    except:
-        pass
+    User.create_table()
+    UserInfo.create_table()
+    Post.create_table()
 
     app.run(debug=True)

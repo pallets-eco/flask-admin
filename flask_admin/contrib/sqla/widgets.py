@@ -1,6 +1,8 @@
-from wtforms.widgets.core import escape  # type: ignore[attr-defined]
+import typing as t
 
-from flask_admin._backwards import Markup
+from markupsafe import Markup
+from wtforms import SelectFieldBase
+from wtforms.widgets.core import escape  # type: ignore[attr-defined]
 
 
 class CheckboxListInput:
@@ -9,23 +11,28 @@ class CheckboxListInput:
 
     Appears as the list of checkboxes.
     """
+
     template = (
         '<div class="checkbox">'
-        ' <label>'
+        " <label>"
         '  <input id="%(id)s" name="%(name)s" value="%(id)s" '
         'type="checkbox"%(selected)s>%(label)s'
-        ' </label>'
-        '</div>'
+        " </label>"
+        "</div>"
     )
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: SelectFieldBase, **kwargs: dict[str, t.Any]) -> str:
         items = []
-        for val, label, selected in field.iter_choices():
+        for field_choices in field.iter_choices():
+            if len(field_choices) == 3:  # wtforms <3.1, >=3.1.1, <3.2
+                value, label, selected = field_choices
+            else:
+                value, label, selected, _ = field_choices
             args = {
-                'id': val,
-                'name': field.name,
-                'label': escape(label),
-                'selected': ' checked' if selected else '',
+                "id": value,
+                "name": field.name,
+                "label": escape(label),
+                "selected": " checked" if selected else "",
             }
             items.append(self.template % args)
-        return Markup(''.join(items))
+        return Markup("".join(items))

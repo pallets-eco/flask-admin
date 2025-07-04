@@ -86,7 +86,9 @@
                         {% if name != '..' and admin_view.can_delete_dirs %}
                         <form class="icon" method="POST" action="{{ get_url('.delete') }}">
                             {{ delete_form.path(value=path) }}
+                            {% if delete_form.csrf_token is defined and delete_form.csrf_token %}
                             {{ delete_form.csrf_token }}
+                            {% endif %}
                             <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
                                 <i class="fa fa-times glyphicon glyphicon-remove"></i>
                             </button>
@@ -95,7 +97,9 @@
                     {% else %}
                     <form class="icon" method="POST" action="{{ get_url('.delete') }}">
                         {{ delete_form.path(value=path) }}
+                        {% if delete_form.csrf_token is defined and delete_form.csrf_token %}
                         {{ delete_form.csrf_token }}
+                        {% endif %}
                         <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
                             <i class="fa fa-trash glyphicon glyphicon-trash"></i>
                         </button>
@@ -187,5 +191,5 @@
     {{ actionslib.script(_gettext('Please select at least one file.'),
                          actions,
                          actions_confirmation) }}
-  <script src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
 {% endblock %}

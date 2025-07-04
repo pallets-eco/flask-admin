@@ -2,7 +2,7 @@
 
 {% macro dropdown(actions, btn_class='nav-link dropdown-toggle') -%}
     <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)" role="button" aria-haspopup="true"
-       aria-expanded="false">{{ _gettext('With selected') }}<b class="caret"></b></a>
+       aria-expanded="false">{{ _gettext('With selected') }}</a>
     <div class="dropdown-menu">
         {% for p in actions %}
             <a class="dropdown-item" href="javascript:void(0)"
@@ -13,13 +13,17 @@
 
 {% macro form(actions, url) %}
     {% if actions %}
-        <form id="action_form" action="{{ url }}" method="POST" style="display: none">
-            {% if action_form.csrf_token %}
+        <form id="action_form" action="{{ url }}" method="POST" class="d-none">
+            {% if action_form.csrf_token is defined and action_form.csrf_token %}
                 {{ action_form.csrf_token }}
-            {% elif csrf_token %}
+            {% elif csrf_token is defined and csrf_token %}
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             {% endif %}
-            {{ action_form.url(value=return_url) }}
+            {% if return_url is defined and return_url %}
+                {{ action_form.url(value=return_url) }}
+            {% else %}
+                {{ action_form.url() }}
+            {% endif %}
             {{ action_form.action() }}
         </form>
     {% endif %}
@@ -27,8 +31,8 @@
 
 {% macro script(message, actions, actions_confirmation) %}
     {% if actions %}
-        <div id="actions-confirmation-data" style="display:none;">{{ actions_confirmation|tojson|safe }}</div>
-        <div id="message-data" style="display:none;">{{ message|tojson|safe }}</div>
-        <script src="{{ admin_static.url(filename='admin/js/actions.js', v='1.0.0') }}"></script>
+        <div id="actions-confirmation-data" class="d-none">{{ actions_confirmation|tojson|safe }}</div>
+        <div id="message-data" class="d-none">{{ message|tojson|safe }}</div>
+        <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/actions.js', v='1.0.0') }}"></script>
     {% endif %}
 {% endmacro %}

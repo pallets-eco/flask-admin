@@ -1,24 +1,33 @@
 import os
-from flask import Flask, url_for, redirect, render_template, request
-from flask_sqlalchemy import SQLAlchemy
-from wtforms import form, fields, validators
+
 import flask_admin as admin
 import flask_login as login
+from flask import Flask
+from flask import redirect
+from flask import render_template
+from flask import request
+from flask import url_for
+from flask_admin import expose
+from flask_admin import helpers
 from flask_admin.contrib import sqla
-from flask_admin import helpers, expose
-from werkzeug.security import generate_password_hash, check_password_hash
-
+from flask_admin.theme import Bootstrap4Theme
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import check_password_hash
+from werkzeug.security import generate_password_hash
+from wtforms import fields
+from wtforms import form
+from wtforms import validators
 
 # Create Flask application
 app = Flask(__name__)
 
 # Create dummy secrey key so we can use sessions
-app.config['SECRET_KEY'] = '123456790'
+app.config["SECRET_KEY"] = "123456790"
 
 # Create in-memory database
-app.config['DATABASE_FILE'] = 'sample_db.sqlite'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.config['DATABASE_FILE']
-app.config['SQLALCHEMY_ECHO'] = True
+app.config["DATABASE_FILE"] = "sample_db.sqlite"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
+app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
 
 
@@ -63,13 +72,13 @@ class LoginForm(form.Form):
         user = self.get_user()
 
         if user is None:
-            raise validators.ValidationError('Invalid user')
+            raise validators.ValidationError("Invalid user")
 
         # we're comparing the plaintext pw with the the hash from the db
         if not check_password_hash(user.password, self.password.data):
-        # to compare plain text passwords use
-        # if user.password != self.password.data:
-            raise validators.ValidationError('Invalid password')
+            # to compare plain text passwords use
+            # if user.password != self.password.data:
+            raise validators.ValidationError("Invalid password")
 
     def get_user(self):
         return db.session.query(User).filter_by(login=self.login.data).first()
@@ -82,7 +91,7 @@ class RegistrationForm(form.Form):
 
     def validate_login(self, field):
         if db.session.query(User).filter_by(login=self.login.data).count() > 0:
-            raise validators.ValidationError('Duplicate username')
+            raise validators.ValidationError("Duplicate username")
 
 
 # Initialize flask-login
@@ -98,21 +107,19 @@ def init_login():
 
 # Create customized model view class
 class MyModelView(sqla.ModelView):
-
     def is_accessible(self):
         return login.current_user.is_authenticated
 
 
 # Create customized index view class that handles login & registration
 class MyAdminIndexView(admin.AdminIndexView):
-
-    @expose('/')
+    @expose("/")
     def index(self):
         if not login.current_user.is_authenticated:
-            return redirect(url_for('.login_view'))
-        return super(MyAdminIndexView, self).index()
+            return redirect(url_for(".login_view"))
+        return super().index()
 
-    @expose('/login/', methods=('GET', 'POST'))
+    @expose("/login/", methods=("GET", "POST"))
     def login_view(self):
         # handle user login
         form = LoginForm(request.form)
@@ -121,13 +128,17 @@ class MyAdminIndexView(admin.AdminIndexView):
             login.login_user(user)
 
         if login.current_user.is_authenticated:
-            return redirect(url_for('.index'))
-        link = '<p>Don\'t have an account? <a href="' + url_for('.register_view') + '">Click here to register.</a></p>'
-        self._template_args['form'] = form
-        self._template_args['link'] = link
-        return super(MyAdminIndexView, self).index()
+            return redirect(url_for(".index"))
+        link = (
+            "<p>Don't have an account? <a href=\""
+            + url_for(".register_view")
+            + '">Click here to register.</a></p>'
+        )
+        self._template_args["form"] = form
+        self._template_args["link"] = link
+        return super().index()
 
-    @expose('/register/', methods=('GET', 'POST'))
+    @expose("/register/", methods=("GET", "POST"))
     def register_view(self):
         form = RegistrationForm(request.form)
         if helpers.validate_form_on_submit(form):
@@ -142,29 +153,38 @@ class MyAdminIndexView(admin.AdminIndexView):
             db.session.commit()
 
             login.login_user(user)
-            return redirect(url_for('.index'))
-        link = '<p>Already have an account? <a href="' + url_for('.login_view') + '">Click here to log in.</a></p>'
-        self._template_args['form'] = form
-        self._template_args['link'] = link
-        return super(MyAdminIndexView, self).index()
+            return redirect(url_for(".index"))
+        link = (
+            '<p>Already have an account? <a href="'
+            + url_for(".login_view")
+            + '">Click here to log in.</a></p>'
+        )
+        self._template_args["form"] = form
+        self._template_args["link"] = link
+        return super().index()
 
-    @expose('/logout/')
+    @expose("/logout/")
     def logout_view(self):
         login.logout_user()
-        return redirect(url_for('.index'))
+        return redirect(url_for(".index"))
 
 
 # Flask views
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
 
 # Initialize flask-login
 init_login()
 
 # Create admin
-admin = admin.Admin(app, 'Example: Auth', index_view=MyAdminIndexView(), base_template='my_master.html', template_mode='bootstrap4')
+admin = admin.Admin(
+    app,
+    "Example: Auth",
+    index_view=MyAdminIndexView(),
+    theme=Bootstrap4Theme(base_template="my_master.html"),
+)
 
 # Add view
 admin.add_view(MyModelView(User, db.session))
@@ -175,8 +195,8 @@ def build_sample_db():
     Populate a small db with some example entries.
     """
 
-    import string
     import random
+    import string
 
     db.drop_all()
     db.create_all()
@@ -186,14 +206,58 @@ def build_sample_db():
     db.session.add(test_user)
 
     first_names = [
-        'Harry', 'Amelia', 'Oliver', 'Jack', 'Isabella', 'Charlie','Sophie', 'Mia',
-        'Jacob', 'Thomas', 'Emily', 'Lily', 'Ava', 'Isla', 'Alfie', 'Olivia', 'Jessica',
-        'Riley', 'William', 'James', 'Geoffrey', 'Lisa', 'Benjamin', 'Stacey', 'Lucy'
+        "Harry",
+        "Amelia",
+        "Oliver",
+        "Jack",
+        "Isabella",
+        "Charlie",
+        "Sophie",
+        "Mia",
+        "Jacob",
+        "Thomas",
+        "Emily",
+        "Lily",
+        "Ava",
+        "Isla",
+        "Alfie",
+        "Olivia",
+        "Jessica",
+        "Riley",
+        "William",
+        "James",
+        "Geoffrey",
+        "Lisa",
+        "Benjamin",
+        "Stacey",
+        "Lucy",
     ]
     last_names = [
-        'Brown', 'Smith', 'Patel', 'Jones', 'Williams', 'Johnson', 'Taylor', 'Thomas',
-        'Roberts', 'Khan', 'Lewis', 'Jackson', 'Clarke', 'James', 'Phillips', 'Wilson',
-        'Ali', 'Mason', 'Mitchell', 'Rose', 'Davis', 'Davies', 'Rodriguez', 'Cox', 'Alexander'
+        "Brown",
+        "Smith",
+        "Patel",
+        "Jones",
+        "Williams",
+        "Johnson",
+        "Taylor",
+        "Thomas",
+        "Roberts",
+        "Khan",
+        "Lewis",
+        "Jackson",
+        "Clarke",
+        "James",
+        "Phillips",
+        "Wilson",
+        "Ali",
+        "Mason",
+        "Mitchell",
+        "Rose",
+        "Davis",
+        "Davies",
+        "Rodriguez",
+        "Cox",
+        "Alexander",
     ]
 
     for i in range(len(first_names)):
@@ -202,17 +266,21 @@ def build_sample_db():
         user.last_name = last_names[i]
         user.login = user.first_name.lower()
         user.email = user.login + "@example.com"
-        user.password = generate_password_hash(''.join(random.choice(string.ascii_lowercase + string.digits) for i in range(10)))
+        user.password = generate_password_hash(
+            "".join(
+                random.choice(string.ascii_lowercase + string.digits) for i in range(10)
+            )
+        )
         db.session.add(user)
 
     db.session.commit()
     return
 
-if __name__ == '__main__':
 
+if __name__ == "__main__":
     # Build a sample db on the fly, if one does not exist yet.
     app_dir = os.path.realpath(os.path.dirname(__file__))
-    database_path = os.path.join(app_dir, app.config['DATABASE_FILE'])
+    database_path = os.path.join(app_dir, app.config["DATABASE_FILE"])
     if not os.path.exists(database_path):
         with app.app_context():
             build_sample_db()

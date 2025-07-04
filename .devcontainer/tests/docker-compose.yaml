@@ -1,0 +1,46 @@
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: .devcontainer/tests/Dockerfile
+      args:
+        IMAGE: python:3.12
+
+    volumes:
+      - ../..:/workspace
+      - /workspace/.venv
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+    environment:
+      AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;
+      SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@postgres/flask_admin_test
+      MONGOCLIENT_HOST: mongo
+    depends_on:
+      - postgres
+      - azurite
+      - mongo
+
+  postgres:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: flask_admin_test
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-hstore.sql:/docker-entrypoint-initdb.d/init-hstore.sql
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    restart: unless-stopped
+    volumes:
+      - azurite-data:/data
+
+  mongo:
+    image: mongo:5.0.14-focal
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  azurite-data:

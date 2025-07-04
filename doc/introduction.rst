@@ -6,7 +6,38 @@ Introduction To Flask-Admin
 Getting Started
 ===============
 
-****
+Installing Flask-Admin
+----------------------
+
+Flask-Admin provides an easy-to-use layer on top of a number of databases and file stores.
+Whether you use SQLAlchemy, peewee, AWS S3, or something else that Flask-Admin supports,
+we don't install those things out-of-the-box. This reduces the risk of compatibility issues
+and means that you don't download/install anything you don't need.
+
+Depending on what you use, you should install Flask-Admin with your required extras selected.
+
+Flask-Admin has these optional extras you can select:
+
+=========================== ================================================
+Extra name                  What functionality does this add to Flask-Admin?
+=========================== ================================================
+sqlalchemy                  SQLAlchemy, for accessing many database engines
+sqlalchemy-with-utils       As above, with some additional utilities for different data types
+geoalchemy                  As with SQLAlchemy, but adding support for geographic data and maps
+pymongo                     Supports the PyMongo library
+peewee                      Supports the peewee library
+s3                          Supports file admin using AWS S3
+azure-blob-storage          Supports file admin using Azure blob store
+images                      Allows working with image data
+export                      Supports downloading data in a variety of formats (eg TSV, JSON, etc)
+rediscli                    Allows Flask-Admin to display a CLI for Redis
+translation                 Supports translating Flask-Admin into a number of languages
+all                         Installs support for all features
+=========================== ================================================
+
+Once you've chosen the extras you need, install Flask-Admin by specifying them like so::
+
+    pip install flask-admin[sqlalchemy,s3,images,export,translation]
 
 Initialization
 --------------
@@ -18,20 +49,17 @@ The first step is to initialize an empty admin interface for your Flask app::
 
     app = Flask(__name__)
 
-    # set optional bootswatch theme
-    app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
-
-    admin = Admin(app, name='microblog', template_mode='bootstrap4')
+    admin = Admin(app, name='microblog', theme=Bootstrap4Theme(swatch='cerulean'))
     # Add administrative views here
 
     app.run()
 
-Here, both the *name* and *template_mode* parameters are optional. Alternatively,
+Here, both the *name* and *theme* parameters are optional. Alternatively,
 you could use the :meth:`~flask_admin.base.Admin.init_app` method.
 
 If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
 you should see an empty page with a navigation bar on top. Customize the look by
-specifying a Bootswatch theme that suits your needs (see http://bootswatch.com/4/ for available swatches).
+specifying one of the included Bootswatch themes (see https://bootswatch.com/4/ for a preview of the swatches).
 
 Adding Model Views
 ------------------
@@ -44,7 +72,7 @@ is the SQLAlchemy backend, which you can use as follows::
 
     # Flask and Flask-SQLAlchemy initialization here
 
-    admin = Admin(app, name='microblog', template_mode='bootstrap4')
+    admin = Admin(app, name='microblog', theme=Bootstrap4Theme())
     admin.add_view(ModelView(User, db.session))
     admin.add_view(ModelView(Post, db.session))
 
@@ -75,8 +103,6 @@ So, now you can add any content to the index page, while maintaining a consisten
 
 Authorization & Permissions
 ===========================
-
-****
 
 When setting up an admin interface for your application, one of the first problems
 you'll want to solve is how to keep unwanted users out. With Flask-Admin there
@@ -114,7 +140,7 @@ could be as simple as::
 
 In the navigation menu, components that are not accessible to a particular user will not be displayed
 for that user. For an example of using Flask-Login with Flask-Admin, have a look
-at https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth-flask-login.
+at https://github.com/pallets-eco/flask-admin/tree/master/examples/auth-flask-login.
 
 The main drawback is that you still need to implement all of the relevant login,
 registration, and account management views yourself.
@@ -142,13 +168,14 @@ Defining a `security_context_processor` function will take care of this for you:
 
     def security_context_processor():
         return dict(
-            admin_base_template=admin.base_template,
+            admin_base_template=admin.theme.base_template,
             admin_view=admin.index_view,
+            theme=admin.theme,
             h=admin_helpers,
         )
 
 For a working example of using Flask-Security with Flask-Admin, have a look at
-https://github.com/flask-admin/Flask-Admin/tree/master/examples/auth.
+https://github.com/pallets-eco/flask-admin/tree/master/examples/auth.
 
 The example only uses the built-in `register` and `login` views, but you could follow the same
 approach for including the other views, like `forgot_password`, `send_confirmation`, etc.
@@ -156,9 +183,7 @@ approach for including the other views, like `forgot_password`, `send_confirmati
 .. _customizing-builtin-views:
 
 Customizing Built-in Views
-=========================
-
-****
+==========================
 
 When inheriting from `ModelView`, values can be specified for numerous
 configuration parameters. Use these to customize the views to suit your
@@ -313,8 +338,6 @@ And to add arbitrary hyperlinks to the menu::
 Adding Your Own Views
 =====================
 
-****
-
 For situations where your requirements are really specific and you struggle to meet
 them with the built-in :class:`~flask_admin.model.ModelView` class, Flask-Admin makes it easy for you to
 take full control and add your own views to the interface.
@@ -349,12 +372,13 @@ By extending the *admin/master.html* template, you can maintain a consistent use
 even while having tight control over your page's content.
 
 Overriding the Built-in Views
-----------------------------
+-----------------------------
 There may be some scenarios where you want most of the built-in ModelView
 functionality, but you want to replace one of the default `create`, `edit`, or `list` views.
 For this you could override only the view in question, and all the links to it will still function as you would expect::
 
     from flask_admin.contrib.sqla import ModelView
+    from flask_admin import expose
 
     # Flask and Flask-SQLAlchemy initialization here
 
@@ -368,16 +392,14 @@ For this you could override only the view in question, and all the links to it w
         return self.render('create_user.html')
 
 Working With the Built-in Templates
-==================================
+===================================
 
-****
-
-Flask-Admin uses the `Jinja2 <http://jinja.pocoo.org/docs/>`_ templating engine.
+Flask-Admin uses the `Jinja2 <https://jinja.palletsprojects.com/>`_ templating engine.
 
 .. _extending-builtin-templates:
 
 Extending the Built-in Templates
--------------------------------
+--------------------------------
 
 Rather than overriding the built-in templates completely, it's best to extend them. This
 will make it simpler for you to upgrade to new Flask-Admin versions in future.
@@ -411,12 +433,12 @@ Now, to make your view classes use this template, set the appropriate class prop
         # details_modal_template = 'microblog_details_modal.html'
 
 If you want to use your own base template, then pass the name of the template to
-the admin constructor during initialization::
+the admin theme during initialization::
 
-    admin = Admin(app, base_template='microblog_master.html')
+    admin = Admin(app, Bootstrap4Theme(base_template='microblog_master.html'))
 
 Overriding the Built-in Templates
---------------------------------
+---------------------------------
 
 To take full control over the style and layout of the admin interface, you can override
 all of the built-in templates. Just keep in mind that the templates will change slightly
@@ -467,20 +489,21 @@ list_row_actions        Row action cell with edit/remove/etc buttons
 empty_list_message      Message that will be displayed if there are no models found
 ======================= ============================================
 
-Have a look at the `layout` example at https://github.com/flask-admin/flask-admin/tree/master/examples/custom-layout
+Have a look at the `layout` example at https://github.com/pallets-eco/flask-admin/tree/master/examples/custom-layout
 to see how you can take full stylistic control over the admin interface.
 
-Environment Variables
----------------------
+Template Context Variables
+--------------------------
 
 While working in any of the templates that extend `admin/master.html`, you have access to a small number of
-environment variables:
+context variables:
 
 ==================== ================================
 Variable Name        Description
 ==================== ================================
 admin_view           Current administrative view
 admin_base_template  Base template name
+theme                The Theme configuration passed into Flask-Admin at instantiation
 _gettext             Babel gettext
 _ngettext            Babel ngettext
 h                    Helpers from :mod:`~flask_admin.helpers` module
@@ -492,6 +515,7 @@ Generating URLs
 To generate the URL for a specific view, use *url_for* with a dot prefix::
 
     from flask import url_for
+    from flask_admin import expose
 
     class MyView(BaseView):
         @expose('/')

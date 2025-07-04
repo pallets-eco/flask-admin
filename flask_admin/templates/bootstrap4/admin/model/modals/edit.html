@@ -23,5 +23,8 @@
         {{ lib.render_form_buttons(return_url, extra=None, is_modal=True) }}
   </div>
   {% endcall %}
+{% endblock %}
 
+{% block tail %}
+  <script {{ admin_csp_nonce_attribute }}>window.faForm.applyGlobalStyles(document.getElementsByClassName('modal-content'));</script>
 {% endblock %}

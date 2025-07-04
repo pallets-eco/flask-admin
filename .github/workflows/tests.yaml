@@ -13,27 +13,31 @@ on:
       - 'docs/**'
       - '*.md'
       - '*.rst'
+  schedule:
+    - cron: '0 3 * * 1'
 jobs:
   tests:
-    name: ${{ matrix.tox == 'normal' && format('py{0}-flask{1}-wtforms{2}', matrix.python, matrix.flask, matrix.wtforms) || matrix.tox }}
+    name: ${{ matrix.tox == 'normal' && format('py{0}', matrix.python) || matrix.tox }}
     runs-on: ${{ matrix.os || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.8', '3.9', '3.10', '3.11', '3.12']
-        flask: ['2']
-        wtforms: ['2']
+        python: ['3.9', '3.10', '3.11', '3.12']
         tox: ['normal']
         include:
+          - python: '3.9'
+            tox: 'py39-min'
           - python: '3.12'
-            flask: '2'
-            wtforms: '2'
-            tox: 'py312-flask2-wtforms2-no-flask-babel'
+            tox: 'py312-noflaskbabel'
+          - python: '3.9'
+            tox: 'py39-sqlalchemy1'
+          - python: '3.12'
+            tox: 'py312-sqlalchemy1'
     services:
       # Label used to access the service container
       postgres:
         # Docker Hub image
-        image: postgis/postgis:12-master # postgres with postgis installed
+        image: postgis/postgis:16-3.4  # postgres with postgis installed
         # Provide the password for postgres
         env:
           POSTGRES_PASSWORD: postgres
@@ -51,19 +55,23 @@ jobs:
         ports:
           - 27017:27017
       azurite:
-        image: arafato/azurite:2.6.5
+        image: mcr.microsoft.com/azure-storage/azurite:latest
         env:
           executable: blob
         ports:
           - 10000:10000
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
-      - uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # v5.1.1
+      - uses: astral-sh/setup-uv@6b9c6063abd6010835644d4c2e1bef4cf5cd0fca # v6.0.1
+        with:
+          enable-cache: true
+          prune-cache: false
+          cache-dependency-glob: |
+            **/uv.lock
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
           python-version: ${{ matrix.python }}
           allow-prereleases: true
-          cache: pip
-          cache-dependency-path: requirements*/*.txt
       - name: Install Ubuntu packages
         run: |
           sudo apt-get update
@@ -74,26 +82,28 @@ jobs:
         env:
           PGPASSWORD: postgres
         run: psql -U postgres -h localhost -c 'CREATE EXTENSION hstore;' flask_admin_test
-      - run: pip install tox
-      - run: tox run -e ${{ matrix.tox == 'normal' && format('py{0}-flask{1}-wtforms{2}', matrix.python, matrix.flask, matrix.wtforms) || matrix.tox }}
+      - run: uv run --locked tox run -e ${{ matrix.tox == 'normal' && format('py{0}', matrix.python) || matrix.tox }}
   not_tests:
     name: ${{ matrix.tox }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        tox: ['docs', 'typing']
+        tox: ['docs', 'typing', 'style']
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
-      - uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # v5.1.1
+      - uses: astral-sh/setup-uv@6b9c6063abd6010835644d4c2e1bef4cf5cd0fca # v6.0.1
         with:
-          python-version: 3.11
-          cache: pip
-          cache-dependency-path: requirements*/*.txt
+          enable-cache: true
+          prune-cache: false
+          cache-dependency-glob: |
+            **/uv.lock
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version-file: pyproject.toml
       - name: cache mypy
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
           path: ./.mypy_cache
           key: mypy|${{ hashFiles('pyproject.toml') }}
-      - run: pip install tox
-      - run: tox run -e ${{ matrix.tox }}
+      - run: uv run --locked tox run -e ${{ matrix.tox }}

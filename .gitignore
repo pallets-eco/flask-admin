@@ -13,13 +13,13 @@ flask_admin/tests/tmp
 dist/*
 make.bat
 venv
+.venv
 *.sublime-*
 .coverage
 __pycache__
 examples/sqla-inline/static
 examples/file/files
 examples/forms/files
-examples/appengine/lib
 .DS_Store
 .idea/
 *.sqlite
@@ -28,3 +28,4 @@ env
 .eggs
 .tox/
 .env
+doc/_build

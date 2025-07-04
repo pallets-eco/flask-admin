@@ -30,3 +30,7 @@
 
 
 {% endblock %}
+
+{% block tail %}
+  <script {{ admin_csp_nonce_attribute }}>window.faForm.applyGlobalStyles(document.getElementsByClassName('modal-content'));</script>
+{% endblock %}

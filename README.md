@@ -1,9 +1,10 @@
 # Flask-Admin
 
-The project was recently moved into its own organization. Please update
-your references to `git@github.com:pallets-eco/flask-admin.git`.
+Flask-Admin is now part of Pallets-Eco, an open source organization managed by the
+Pallets team to facilitate community maintenance of Flask extensions. Please update
+your references to `https://github.com/pallets-eco/flask-admin.git`.
 
-[![image](https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.svg)](https://crowdin.com/project/flask-admin) [![image](https://github.com/pallets-eco/flask-admin/actions/workflows/test.yaml/badge.svg)](https://github.com/pallets-eco/flask-admin/actions/workflows/test.yaml)
+[![image](https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.svg)](https://crowdin.com/project/flask-admin) [![image](https://github.com/pallets-eco/flask-admin/actions/workflows/tests.yaml/badge.svg?branch=master)](https://github.com/pallets-eco/flask-admin/actions/workflows/test.yaml)
 
 ## Pallets Community Ecosystem
 
@@ -18,7 +19,7 @@ your references to `git@github.com:pallets-eco/flask-admin.git`.
 ## Introduction
 
 Flask-Admin is a batteries-included, simple-to-use
-[Flask](http://flask.pocoo.org/) extension that lets you add admin
+[Flask](https://flask.palletsprojects.com/) extension that lets you add admin
 interfaces to Flask applications. It is inspired by the *django-admin*
 package, but implemented in such a way that the developer has total
 control over the look, feel, functionality and user experience of the resulting
@@ -26,13 +27,12 @@ application.
 
 Out-of-the-box, Flask-Admin plays nicely with various ORM\'s, including
 
--   [SQLAlchemy](http://www.sqlalchemy.org/)
--   [MongoEngine](http://mongoengine.org/)
--   [pymongo](http://api.mongodb.org/python/current/)
+-   [SQLAlchemy](https://www.sqlalchemy.org/)
+-   [pymongo](https://pymongo.readthedocs.io/)
 -   and [Peewee](https://github.com/coleifer/peewee).
 
 It also boasts a simple file management interface and a [Redis
-client](http://redis.io/) console.
+client](https://redis.io/) console.
 
 The biggest feature of Flask-Admin is its flexibility. It aims to provide a
 set of simple tools that can be used to build admin interfaces of
@@ -51,7 +51,7 @@ add your own, or improve on the existing examples, and submit a
 
 To run the examples in your local environment:
 1. Clone the repository:
-   
+
     ```bash
     git clone https://github.com/pallets-eco/flask-admin.git
     cd flask-admin
@@ -62,22 +62,31 @@ To run the examples in your local environment:
     # Windows:
     python -m venv .venv
     .venv\Scripts\activate
-    
+
     # Linux:
     python3 -m venv .venv
     source .venv/bin/activate
     ```
-3. Install requirements:
+
+3. Navigate into the SQLAlchemy example folder:
 
     ```bash
-    pip install -r examples/sqla/requirements.txt
+    cd examples/sqla
     ```
-4. Run the application:
+
+4. Install requirements:
 
     ```bash
-    python examples/sqla/run_server.py
+    pip install -r requirements.txt
     ```
-5. Check the Flask app running on <http://localhost:5000>.
+
+5. Run the application:
+
+    ```bash
+    python app.py
+    ```
+
+6. Check the Flask app running on <http://localhost:5000>.
 
 ## Documentation
 
@@ -90,74 +99,84 @@ should be included, feel free to make the changes and submit a *pull-request*.
 
 To build the docs in your local environment, from the project directory:
 
-    tox -e docs-html
-
-And if you want to preview any *.rst* snippets that you may want to
-contribute, please go to <http://rst.ninjs.org/>.
+```bash
+tox -e docs
+```
 
 ## Installation
 
-To install Flask-Admin, simply:
+To install Flask-Admin using pip, simply:
 
-    pip install flask-admin
+```shell
+pip install flask-admin
+```
 
-Or alternatively, you can download the repository and install manually
-by doing:
+## Contributing
 
-    git clone git@github.com:pallets-eco/flask-admin.git
-    cd flask-admin
-    pip install .
+If you are a developer working on and maintaining Flask-Admin, checkout the repo by doing:
+
+```shell
+git clone https://github.com/pallets-eco/flask-admin.git
+cd flask-admin
+```
+
+Flask-Admin uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment. With
+the repository checked out, to install the minimum version of Python that Flask-Admin supports, create your
+virtual environment, and install the required dependencies, run:
+
+```shell
+uv sync
+```
+
+This will install Flask-Admin but without any of the optional extra dependencies, such as those for sqlalchemy
+or mongoengine support. To install all extras, run:
+
+```shell
+uv sync --extra all
+```
 
 ## Tests
 
 Tests are run with *pytest*. If you are not familiar with this package, you can find out more on [their website](https://pytest.org/).
 
-To run the tests, from the project directory, simply run:
+### Running tests inside the devcontainer (eg when using VS Code)
 
-    pip install --use-pep517 -r requirements/dev.txt
-    pytest
+If you are developing with the devcontainer configuration, then you can run tests directly using either of the following commands.
 
-You should see output similar to:
+To just run the test suite with the default python installation, use:
 
-    .............................................
-    ----------------------------------------------------------------------
-    Ran 102 tests in 13.132s
-
-    OK
-
-**NOTE!** For all the tests to pass successfully, you\'ll need Postgres (with
-the postgis and hstore extension) & MongoDB to be running locally. You'll
-also need *libgeos* available.
-
-For Postgres:
-```bash
-psql postgres
-> CREATE DATABASE flask_admin_test;
-> # Connect to database "flask_admin_test":
-> \c flask_admin_test;
-> CREATE EXTENSION postgis;
-> CREATE EXTENSION hstore;
-```
-If you\'re using Homebrew on MacOS, you might need this:
-
-```bash
-# Install postgis and geos
-brew install postgis
-brew install geos
-
-# Set up a PostgreSQL user
-createuser -s postgresql
-brew services restart postgresql
+```shell
+uv run pytest
 ```
 
-You can also run the tests on multiple environments using *tox*.
+To run the test suite against all supported python versions, and also run other checks performed by CI, use:
+
+```shell
+uv run tox
+```
+
+### Running tests as a one-off via docker-compose run / `make test`
+
+If you don't use devcontainers then you can run the tests using docker (you will need to install and setup docker yourself). Then you can use:
+
+```shell
+make test-in-docker
+```
+
+This will use the devcontainer docker-compose configuration to start up postgres, azurite and mongo.
+
+You can also run the full test suite including CI checks with:
+
+```shell
+make tox-in-docker
+```
 
 ## 3rd Party Stuff
 
 Flask-Admin is built with the help of
-[Bootstrap](http://getbootstrap.com/),
+[Bootstrap](https://getbootstrap.com/),
 [Select2](https://github.com/ivaynberg/select2) and
-[Bootswatch](http://bootswatch.com/).
+[Bootswatch](https://bootswatch.com/).
 
 If you want to localize your application, install the
 [Flask-Babel](https://pypi.python.org/pypi/Flask-Babel) package.

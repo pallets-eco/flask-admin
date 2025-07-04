@@ -120,9 +120,9 @@
   {% set prepend = kwargs.pop('prepend', None) %}
   {% set append = kwargs.pop('append', None) %}
   <div class="form-group {{ kwargs.get('column_class', '') }}">
-    <label for="{{ field.id }}" class="control-label" {% if field.widget.input_type == 'checkbox' %}style="display: block; margin-bottom: 0"{% endif %}>{{ field.label.text }}
+    <label for="{{ field.id }}" class="col-form-label {% if field.widget.input_type is defined and field.widget.input_type == 'checkbox' %}d-block mb-0{% endif %}">{{ field.label.text }}
         {% if h.is_required_form_field(field) %}
-          <strong style="color: red">&#42;</strong>
+          <strong class="text-danger">&#42;</strong>
         {%- else -%}
           &nbsp;
         {%- endif %}
@@ -135,9 +135,9 @@
       </div>
       {%- endif -%}
     {% endif %}
-      {% if field.widget.input_type == 'checkbox' %}
+      {% if field.widget.input_type is defined and field.widget.input_type == 'checkbox' %}
         {% set _class = kwargs.setdefault('class', '') %}
-      {% elif field.widget.input_type == 'file' %}
+      {% elif field.widget.input_type is defined and field.widget.input_type == 'file' %}
         {% set _class = kwargs.setdefault('class', 'form-control-file') %}
       {% else %}
         {% set _class = kwargs.setdefault('class', 'form-control') %}
@@ -151,14 +151,14 @@
       {%- endif -%}
       {% if direct_error %}
         <div class="invalid-feedback">
-          <ul class="form-text text-muted" {% if field.widget.input_type == 'checkbox' %}style="margin-top: 0"{% endif %}>
+          <ul class="form-text text-muted {% if field.widget.input_type == 'checkbox' %}mt-0{% endif %}">
           {% for e in field.errors if e is string %}
             <li>{{ e }}</li>
           {% endfor %}
           </ul>
         </div>
       {% elif field.description %}
-        <small class="form-text text-muted" {% if field.widget.input_type == 'checkbox' %}style="margin-top: 0"{% endif %}>
+        <small class="form-text text-muted {% if field.widget.input_type == 'checkbox' %}mt-0{% endif %}">
             {{ field.description|safe }}
         </small>
       {% endif %}
@@ -179,10 +179,10 @@
     {% if form.hidden_tag is defined %}
         {{ form.hidden_tag() }}
     {% else %}
-        {% if csrf_token %}
+        {% if csrf_token is defined and csrf_token %}
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         {% endif %}
-        {% for f in form if f.widget.input_type == 'hidden' %}
+        {% for f in form if f.widget.input_type is defined and f.widget.input_type == 'hidden' %}
             {{ f }}
         {% endfor %}
     {% endif %}
@@ -192,7 +192,7 @@
             {{ r(form, form_opts=form_opts) }}
         {% endfor %}
     {% else %}
-        {% for f in form if f.widget.input_type != 'hidden' %}
+        {% for f in form if f.widget.input_type is undefined or f.widget.input_type != 'hidden' %}
           {% if form_opts %}
             {% set kwargs = form_opts.widget_args.get(f.short_name, {}) %}
           {% else %}
@@ -228,7 +228,7 @@
         {% if extra %}
         {{ extra }}
         {% endif %}
-        {% if cancel_url %}
+        {% if cancel_url is defined and cancel_url %}
           <a href="{{ cancel_url }}" class="btn btn-danger" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
         {% endif %}
       </div>
@@ -247,41 +247,42 @@
   <link href="{{ admin_static.url(filename='vendor/select2/select2.css', v='4.2.1') }}" rel="stylesheet">
   <link href="{{ admin_static.url(filename='vendor/select2/select2-bootstrap4.css', v='1.4.6') }}" rel="stylesheet">
   <link href="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker-bs4.css', v='1.3.22') }}" rel="stylesheet">
-  {% if config.MAPBOX_MAP_ID %}
+  {% if config.FLASK_ADMIN_MAPS is defined and config.FLASK_ADMIN_MAPS %}
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css', v='1.0.2') }}" rel="stylesheet">
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css', v='0.4.6') }}" rel="stylesheet">
   {% endif %}
-  {% if editable_columns %}
+  {% if editable_columns is defined and editable_columns %}
   <link href="{{ admin_static.url(filename='vendor/x-editable/css/bootstrap4-editable.css', v='1.5.1.1') }}" rel="stylesheet">
   {% endif %}
 {% endmacro %}
 
 {% macro form_js() %}
-  {% if config.MAPBOX_MAP_ID %}
-  <script>
-  window.MAPBOX_MAP_ID = "{{ config.MAPBOX_MAP_ID }}";
-  {% if config.MAPBOX_ACCESS_TOKEN %}
-  window.MAPBOX_ACCESS_TOKEN = "{{ config.MAPBOX_ACCESS_TOKEN }}";
+  {% if config.FLASK_ADMIN_MAPS is defined and config.FLASK_ADMIN_MAPS %}
+  <script {{ admin_csp_nonce_attribute }}>
+  window.FLASK_ADMIN_MAPS = true;
+  window.FLASK_ADMIN_MAPBOX_MAP_ID = "{{ config.FLASK_ADMIN_MAPBOX_MAP_ID }}";
+  {% if config.FLASK_ADMIN_MAPBOX_ACCESS_TOKEN is defined and config.FLASK_ADMIN_MAPBOX_ACCESS_TOKEN %}
+  window.FLASK_ADMIN_MAPBOX_ACCESS_TOKEN = "{{ config.FLASK_ADMIN_MAPBOX_ACCESS_TOKEN }}";
   {% endif %}
-  {% if config.DEFAULT_CENTER_LAT and config.DEFAULT_CENTER_LONG %}
-  window.DEFAULT_CENTER_LAT = "{{ config.DEFAULT_CENTER_LAT }}";
-  window.DEFAULT_CENTER_LONG = "{{ config.DEFAULT_CENTER_LONG }}";
+  {% if config.FLASK_ADMIN_DEFAULT_CENTER_LAT is defined and config.FLASK_ADMIN_DEFAULT_CENTER_LONG %}
+  window.FLASK_ADMIN_DEFAULT_CENTER_LAT = "{{ config.FLASK_ADMIN_DEFAULT_CENTER_LAT }}";
+  window.FLASK_ADMIN_DEFAULT_CENTER_LONG = "{{ config.FLASK_ADMIN_DEFAULT_CENTER_LONG }}";
   {% endif %}
   </script>
-  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js', v='1.0.2') }}"></script>
-  <script src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js', v='0.4.6') }}"></script>
-  {% if config.MAPBOX_SEARCH %}
-  <script>
-  window.MAPBOX_SEARCH = "{{ config.MAPBOX_SEARCH }}";
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js', v='1.0.2') }}"></script>
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js', v='0.4.6') }}"></script>
+  {% if config.FLASK_ADMIN_MAPS_SEARCH is defined and config.FLASK_ADMIN_MAPS_SEARCH %}
+  <script {{ admin_csp_nonce_attribute }}>
+  window.FLASK_ADMIN_MAPS_SEARCH = "{{ config.FLASK_ADMIN_MAPS_SEARCH }}";
   </script>
-  <script src="https://maps.googleapis.com/maps/api/js?v=3&libraries=places&key={{ config.get('GOOGLE_MAPS_API_KEY') }}"></script>
+  <script {{ admin_csp_nonce_attribute }} src="https://maps.googleapis.com/maps/api/js?v=3&libraries=places&key={{ config.get('FLASK_ADMIN_GOOGLE_MAPS_API_KEY') }}"></script>
   {% endif %}
   {% endif %}
-  <script src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js', v='1.3.22') }}"></script>
-  {% if editable_columns %}
-  <script src="{{ admin_static.url(filename='vendor/x-editable/js/bootstrap4-editable.min.js', v='1.5.1.1') }}"></script>
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js', v='1.3.22') }}"></script>
+  {% if editable_columns is defined and editable_columns %}
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/x-editable/js/bootstrap4-editable.min.js', v='1.5.1.1') }}"></script>
   {% endif %}
-  <script src="{{ admin_static.url(filename='admin/js/form.js', v='1.0.1') }}"></script>
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/form.js', v='1.0.1') }}"></script>
 {% endmacro %}
 
 {% macro extra() %}

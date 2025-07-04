@@ -3,7 +3,7 @@
 Flask-Admin
 ###########
 
-**Why Flask?** As a micro-framework, `Flask <http://flask.pocoo.org/>`_ lets you build web services with very little overhead.
+**Why Flask?** As a micro-framework, `Flask <https://flask.palletsprojects.com/>`_ lets you build web services with very little overhead.
 It offers freedom for you, the designer, to implement your project in a way that suits your
 particular application.
 
@@ -23,7 +23,7 @@ because they let you group together all of the usual
 *Create, Read, Update, Delete* (CRUD) view logic into a single, self-contained
 class for each of your models.
 
-**What does it look like?** Clone the `GitHub repository <https://github.com/flask-admin/flask-admin>`_
+**What does it look like?** Clone the `GitHub repository <https://github.com/pallets-eco/flask-admin>`_
 and run the provided examples locally to get a feel for Flask-Admin. There are several to choose from
 in the `examples` directory.
 
@@ -39,15 +39,17 @@ in the `examples` directory.
 Support
 -------
 
-****
-
-Python 3.6 or higher.
+Python 3.9 or higher.
 
 Indices And Tables
 ------------------
 
-****
-
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+.. toctree::
+   :hidden:
+
+   api/i18n
