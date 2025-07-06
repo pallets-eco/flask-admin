@@ -251,7 +251,6 @@ env_list = [
     "style",
     "typing",
     "docs",
-    "bare",
 ]
 
 [tool.tox.env_run_base]
@@ -271,14 +270,6 @@ commands = [[
     {replace = "posargs", default = [], extend = true},
 ]]
 
-[tool.tox.env.bare]
-description = "pytest on minimum dependency versions"
-base_python = ["3.9"]
-commands = [
-    [
-        "pytest", "flask_admin/tests/test_base.py", "-v", "--tb=short", "--basetemp={env_tmp_dir}"
-    ],
-]
 
 [tool.tox.env.py39-min]
 description = "pytest on minimum dependency versions"
