@@ -1,4 +1,4 @@
-import mongoengine
+import mongoengine  # type: ignore
 
 from flask_admin._compat import as_unicode
 from flask_admin._compat import iteritems
