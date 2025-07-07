@@ -1,9 +1,11 @@
 import logging
 import shlex
+import typing as t
 
 from flask import request
 from markupsafe import Markup
 
+from flask_admin._types import T_REDIS
 from flask_admin.babel import gettext
 from flask_admin.base import BaseView
 from flask_admin.base import expose
@@ -46,7 +48,14 @@ class RedisCli(BaseView):
         List of excluded commands.
     """
 
-    def __init__(self, redis, name=None, category=None, endpoint=None, url=None):
+    def __init__(
+        self,
+        redis: T_REDIS,
+        name: t.Optional[str] = None,
+        category: t.Any = None,
+        endpoint: t.Optional[str] = None,
+        url: t.Optional[str] = None,
+    ) -> None:
         """
         Constructor.
 
@@ -67,12 +76,12 @@ class RedisCli(BaseView):
 
         self.redis = redis
 
-        self.commands = {}
+        self.commands: dict[str, t.Any] = {}
 
         self._inspect_commands()
         self._contribute_commands()
 
-    def _inspect_commands(self):
+    def _inspect_commands(self) -> None:
         """
         Inspect connection object and extract command names.
         """
@@ -86,13 +95,13 @@ class RedisCli(BaseView):
         for new, old in self.remapped_commands.items():
             self.commands[new] = self.commands[old]
 
-    def _contribute_commands(self):
+    def _contribute_commands(self) -> None:
         """
         Contribute custom commands.
         """
         self.commands["help"] = (self._cmd_help, "Help!")
 
-    def _execute_command(self, name, args):
+    def _execute_command(self, name: str, args: t.Any) -> str:
         """
         Execute single command.
 
@@ -113,7 +122,7 @@ class RedisCli(BaseView):
         handler, _ = self.commands[name]
         return self._result(handler(*args))
 
-    def _parse_cmd(self, cmd):
+    def _parse_cmd(self, cmd: str) -> tuple[str, ...]:
         """
         Parse command by using shlex module.
 
@@ -122,7 +131,7 @@ class RedisCli(BaseView):
         """
         return tuple(shlex.split(cmd))
 
-    def _error(self, msg):
+    def _error(self, msg: str) -> str:
         """
         Format error message as HTTP response.
 
@@ -131,7 +140,7 @@ class RedisCli(BaseView):
         """
         return Markup(f'<div class="error">{msg}</div>')
 
-    def _result(self, result):
+    def _result(self, result: t.Any) -> str:
         """
         Format result message as HTTP response.
 
@@ -145,7 +154,7 @@ class RedisCli(BaseView):
         )
 
     # Commands
-    def _cmd_help(self, *args):
+    def _cmd_help(self, *args: str) -> TextWrapper:
         """
         Help command implementation.
         """
@@ -166,14 +175,14 @@ class RedisCli(BaseView):
 
     # Views
     @expose("/")
-    def console_view(self):
+    def console_view(self) -> str:
         """
         Console view.
         """
         return self.render("admin/rediscli/console.html")
 
     @expose("/run/", methods=("POST",))
-    def execute_view(self):
+    def execute_view(self) -> str:
         """
         AJAX API.
         """

@@ -1,4 +1,7 @@
+import typing as t
+
 from markupsafe import Markup
+from wtforms import SelectFieldBase
 from wtforms.widgets.core import escape  # type: ignore[attr-defined]
 
 
@@ -18,7 +21,7 @@ class CheckboxListInput:
         "</div>"
     )
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: SelectFieldBase, **kwargs: dict[str, t.Any]) -> str:
         items = []
         for field_choices in field.iter_choices():
             if len(field_choices) == 3:  # wtforms <3.1, >=3.1.1, <3.2

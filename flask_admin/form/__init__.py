@@ -1,7 +1,9 @@
+import typing as t
 from os import urandom
 
 from flask import current_app
 from flask import session
+from wtforms import Field
 from wtforms import form
 from wtforms.csrf.session import SessionCSRF
 from wtforms.fields.core import UnboundField
@@ -18,24 +20,37 @@ class BaseForm(form.Form):
     class Meta:
         _translations = Translations()
 
-        def get_translations(self, form):
+        def get_translations(self, form: "BaseForm") -> Translations:
             return self._translations
 
-    def __init__(self, formdata=None, obj=None, prefix="", **kwargs):
+    def __init__(
+        self,
+        formdata: t.Optional[dict] = None,
+        obj: t.Any = None,
+        prefix: str = "",
+        **kwargs: t.Any,
+    ) -> None:
         self._obj = obj
 
-        super().__init__(formdata=formdata, obj=obj, prefix=prefix, **kwargs)
+        super().__init__(
+            formdata=formdata,  # type: ignore[arg-type]
+            obj=obj,
+            prefix=prefix,
+            **kwargs,
+        )
 
 
 class FormOpts:
     __slots__ = ["widget_args", "form_rules"]
 
-    def __init__(self, widget_args=None, form_rules=None):
+    def __init__(
+        self, widget_args: t.Optional[dict] = None, form_rules: t.Any = None
+    ) -> None:
         self.widget_args = widget_args or {}
         self.form_rules = form_rules
 
 
-def recreate_field(unbound):
+def recreate_field(unbound: t.Union[UnboundField, Field]) -> t.Any:
     """
     Create new instance of the unbound field, resetting wtforms creation counter.
 
@@ -63,12 +78,12 @@ class SecureForm(BaseForm):
         _csrf_secret = urandom(24)
 
         @property
-        def csrf_secret(self):
+        def csrf_secret(self) -> t.Union[bytes, str, None]:
             secret = current_app.secret_key or self._csrf_secret
             if isinstance(secret, text_type):
                 secret = secret.encode("utf-8")
             return secret
 
         @property
-        def csrf_context(self):
+        def csrf_context(self) -> session:
             return session

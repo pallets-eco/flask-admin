@@ -1,5 +1,0 @@
--r tests.in
-
-pallets-sphinx-themes
-sphinx
-sphinxcontrib-log-cabinet

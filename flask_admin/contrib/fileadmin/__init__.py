@@ -4,6 +4,7 @@ import platform
 import re
 import shutil
 import sys
+import typing as t
 import warnings
 from datetime import datetime
 from functools import partial
@@ -16,13 +17,18 @@ from flask import flash
 from flask import redirect
 from flask import request
 from flask import send_file
+from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
+from wtforms import Field
 from wtforms import fields
 from wtforms import validators
 
 from flask_admin import form
 from flask_admin import helpers
 from flask_admin._compat import as_unicode
+from flask_admin._types import T_PATH_LIKE
+from flask_admin._types import T_RESPONSE
+from flask_admin._types import T_TRANSLATABLE
 from flask_admin.actions import action
 from flask_admin.actions import ActionsMixin
 from flask_admin.babel import gettext
@@ -39,7 +45,7 @@ else:
 
 
 class LocalFileStorage:
-    def __init__(self, base_path):
+    def __init__(self, base_path: t.Union[str, bytes]) -> None:
         """
         Constructor.
 
@@ -55,20 +61,22 @@ class LocalFileStorage:
                 f'FileAdmin path "{self.base_path}" does not exist or is not accessible'
             )
 
-    def get_base_path(self):
+    def get_base_path(self) -> str:
         """
         Return base path. Override to customize behavior (per-user
         directories, etc)
         """
         return op.normpath(self.base_path)
 
-    def make_dir(self, path, directory):
+    def make_dir(self, path: str, directory: str) -> None:
         """
         Creates a directory `directory` under the `path`
         """
         os.mkdir(op.join(path, directory))
 
-    def get_files(self, path, directory):
+    def get_files(
+        self, path: str, directory: str
+    ) -> list[tuple[str, str, bool, int, float]]:
         """
         Gets a list of tuples representing the files in the `directory`
         under the `path`
@@ -93,57 +101,57 @@ class LocalFileStorage:
             items.append((f, rel_path, is_dir, size, last_modified))
         return items
 
-    def delete_tree(self, directory):
+    def delete_tree(self, directory: str) -> None:
         """
         Deletes the directory `directory` and all its files and subdirectories
         """
         shutil.rmtree(directory)
 
-    def delete_file(self, file_path):
+    def delete_file(self, file_path: T_PATH_LIKE) -> None:
         """
         Deletes the file located at `file_path`
         """
         os.remove(file_path)
 
-    def path_exists(self, path):
+    def path_exists(self, path: T_PATH_LIKE) -> bool:
         """
         Check if `path` exists
         """
         return op.exists(path)
 
-    def rename_path(self, src, dst):
+    def rename_path(self, src: T_PATH_LIKE, dst: T_PATH_LIKE) -> None:
         """
         Renames `src` to `dst`
         """
         os.rename(src, dst)
 
-    def is_dir(self, path):
+    def is_dir(self, path: T_PATH_LIKE) -> bool:
         """
         Check if `path` is a directory
         """
         return op.isdir(path)
 
-    def send_file(self, file_path):
+    def send_file(self, file_path: T_PATH_LIKE) -> T_RESPONSE:
         """
         Sends the file located at `file_path` to the user
         """
         return send_file(file_path)
 
-    def read_file(self, path):
+    def read_file(self, path: T_PATH_LIKE) -> bytes:
         """
         Reads the content of the file located at `file_path`.
         """
         with open(path, "rb") as f:
             return f.read()
 
-    def write_file(self, path, content):
+    def write_file(self, path: T_PATH_LIKE, content: str) -> int:
         """
         Writes `content` to the file located at `file_path`.
         """
         with open(path, "w") as f:
             return f.write(content)
 
-    def save_file(self, path, file_data):
+    def save_file(self, path: str, file_data: FileStorage) -> None:
         """
         Save uploaded file to the disk
 
@@ -196,7 +204,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                 allowed_extensions = ('swf', 'jpg', 'gif', 'png')
     """
 
-    editable_extensions: tuple = tuple()
+    editable_extensions: t.Collection[str] = tuple()
     """
         List of editable extensions, in lower case.
 
@@ -299,7 +307,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
     default_desc = 0
     """The default desc value."""
 
-    column_labels = dict((column, column.capitalize()) for column in column_list)
+    column_labels: dict[str, T_TRANSLATABLE] = dict(
+        (column, column.capitalize()) for column in column_list
+    )
     """A dict from column names to their labels."""
 
     date_format = "%Y-%m-%d %H:%M:%S"
@@ -307,17 +317,17 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
     def __init__(
         self,
-        base_url=None,
-        name=None,
-        category=None,
-        endpoint=None,
-        url=None,
-        verify_path=True,
-        menu_class_name=None,
-        menu_icon_type=None,
-        menu_icon_value=None,
-        storage=None,
-    ):
+        base_url: t.Optional[str] = None,
+        name: t.Optional[str] = None,
+        category: t.Optional[str] = None,
+        endpoint: t.Optional[str] = None,
+        url: t.Optional[str] = None,
+        verify_path: bool = True,
+        menu_class_name: t.Optional[str] = None,
+        menu_icon_type: t.Optional[str] = None,
+        menu_icon_value: t.Optional[str] = None,
+        storage: t.Optional[LocalFileStorage] = None,
+    ) -> None:
         """
         Constructor.
 
@@ -363,7 +373,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             menu_icon_value=menu_icon_value,
         )
 
-    def is_accessible_path(self, path):
+    def is_accessible_path(self, path: str) -> bool:
         """
         Verify if the provided path is accessible for the current user.
 
@@ -374,28 +384,28 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         return True
 
-    def get_base_path(self):
+    def get_base_path(self) -> str:
         """
         Return base path. Override to customize behavior (per-user
         directories, etc)
         """
-        return self.storage.get_base_path()
+        return self.storage.get_base_path()  # type: ignore[union-attr]
 
-    def get_base_url(self):
+    def get_base_url(self) -> t.Optional[str]:
         """
         Return base URL. Override to customize behavior (per-user
         directories, etc)
         """
         return self.base_url
 
-    def get_upload_form(self):
+    def get_upload_form(self) -> type[form.BaseForm]:
         """
         Upload form class for file upload view.
 
         Override to implement customized behavior.
         """
 
-        class UploadForm(self.form_base_class):
+        class UploadForm(self.form_base_class):  # type: ignore[name-defined]
             """
             File upload form. Works with FileAdmin instance to check if it
             is allowed to upload file with given extension.
@@ -403,11 +413,11 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
             upload = fields.FileField(lazy_gettext("File to upload"))
 
-            def __init__(self, *args, **kwargs):
+            def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
                 super().__init__(*args, **kwargs)
                 self.admin = kwargs["admin"]
 
-            def validate_upload(self, field):
+            def validate_upload(self, field: Field) -> None:
                 if not self.upload.data:
                     raise validators.ValidationError(gettext("File required."))
 
@@ -418,35 +428,35 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         return UploadForm
 
-    def get_edit_form(self):
+    def get_edit_form(self) -> type[form.BaseForm]:
         """
         Create form class for file editing view.
 
         Override to implement customized behavior.
         """
 
-        class EditForm(self.form_base_class):
+        class EditForm(self.form_base_class):  # type: ignore[name-defined]
             content = fields.TextAreaField(
                 lazy_gettext("Content"), (validators.InputRequired(),)
             )
 
         return EditForm
 
-    def get_name_form(self):
+    def get_name_form(self) -> type[form.BaseForm]:
         """
         Create form class for renaming and mkdir views.
 
         Override to implement customized behavior.
         """
 
-        def validate_name(self, field):
+        def validate_name(self: type[form.BaseForm], field: Field) -> None:
             regexp = re.compile(
                 r"^(?!^(PRN|AUX|CLOCK\$|NUL|CON|COM\d|LPT\d|\..*)(\..+)?$)[^\x00-\x1f\\?*:\";|/]+$"
             )
             if not regexp.match(field.data):
                 raise validators.ValidationError(gettext("Invalid name"))
 
-        class NameForm(self.form_base_class):
+        class NameForm(self.form_base_class):  # type: ignore[name-defined]
             """
             Form with a filename input field.
 
@@ -461,33 +471,33 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         return NameForm
 
-    def get_delete_form(self):
+    def get_delete_form(self) -> type[form.BaseForm]:
         """
         Create form class for model delete view.
 
         Override to implement customized behavior.
         """
 
-        class DeleteForm(self.form_base_class):
+        class DeleteForm(self.form_base_class):  # type: ignore[name-defined]
             path = fields.HiddenField(validators=[validators.InputRequired()])
 
         return DeleteForm
 
-    def get_action_form(self):
+    def get_action_form(self) -> type[form.BaseForm]:
         """
         Create form class for model action.
 
         Override to implement customized behavior.
         """
 
-        class ActionForm(self.form_base_class):
+        class ActionForm(self.form_base_class):  # type: ignore[name-defined]
             action = fields.HiddenField()
             url = fields.HiddenField()
             # rowid is retrieved using getlist, for backward compatibility
 
         return ActionForm
 
-    def upload_form(self):
+    def upload_form(self) -> form.BaseForm:
         """
         Instantiate file upload form and return it.
 
@@ -507,7 +517,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         else:
             return upload_form_class(admin=self)
 
-    def name_form(self):
+    def name_form(self) -> form.BaseForm:
         """
         Instantiate form used in rename and mkdir then return it.
 
@@ -521,7 +531,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         else:
             return name_form_class()
 
-    def edit_form(self):
+    def edit_form(self) -> form.BaseForm:
         """
         Instantiate file editing form and return it.
 
@@ -533,7 +543,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         else:
             return edit_form_class()
 
-    def delete_form(self):
+    def delete_form(self) -> form.BaseForm:
         """
         Instantiate file delete form and return it.
 
@@ -545,7 +555,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         else:
             return delete_form_class()
 
-    def action_form(self):
+    def action_form(self) -> form.BaseForm:
         """
         Instantiate action form and return it.
 
@@ -557,7 +567,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         else:
             return action_form_class()
 
-    def is_file_allowed(self, filename):
+    def is_file_allowed(self, filename: str) -> bool:
         """
         Verify if file can be uploaded.
 
@@ -576,7 +586,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         return True
 
-    def is_file_editable(self, filename):
+    def is_file_editable(self, filename: str) -> bool:
         """
         Determine if the file can be edited.
 
@@ -595,7 +605,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         return True
 
-    def is_in_folder(self, base_path, directory):
+    def is_in_folder(self, base_path: str, directory: T_PATH_LIKE) -> bool:
         """
         Verify that `directory` is in `base_path` folder
 
@@ -604,9 +614,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         :param directory:
             Directory path to check
         """
-        return op.normpath(directory).startswith(base_path)
+        return op.normpath(directory).startswith(base_path)  # type: ignore[arg-type]
 
-    def save_file(self, path, file_data):
+    def save_file(self, path: str, file_data: FileStorage) -> None:
         """
         Save uploaded file to the storage
 
@@ -615,9 +625,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         :param file_data:
             Werkzeug `FileStorage` object
         """
-        self.storage.save_file(path, file_data)
+        self.storage.save_file(path, file_data)  # type: ignore[union-attr]
 
-    def validate_form(self, form):
+    def validate_form(self, form: form.BaseForm) -> bool:
         """
         Validate the form on submit.
 
@@ -626,7 +636,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         return helpers.validate_form_on_submit(form)
 
-    def _get_dir_url(self, endpoint, path=None, **kwargs):
+    def _get_dir_url(
+        self, endpoint: str, path: t.Optional[str] = None, **kwargs: t.Any
+    ) -> str:
         """
         Return prettified URL
 
@@ -647,7 +659,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
             return self.get_url(endpoint, **kwargs)
 
-    def _get_file_url(self, path, **kwargs):
+    def _get_file_url(self, path: str, **kwargs: t.Any) -> str:
         """
         Return static file url
 
@@ -664,7 +676,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         return self.get_url(route, path=path, **kwargs)
 
-    def _normalize_path(self, path):
+    def _normalize_path(self, path: t.Optional[str]) -> tuple[str, str, str]:
         """
         Verify and normalize path.
 
@@ -688,12 +700,12 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             if not self.is_in_folder(base_path, directory):
                 abort(404)
 
-        if not self.storage.path_exists(directory):
+        if not self.storage.path_exists(directory):  # type: ignore[union-attr]
             abort(404)
 
         return base_path, directory, path
 
-    def is_action_allowed(self, name):
+    def is_action_allowed(self, name: str) -> bool:
         if name == "delete" and not self.can_delete:
             return False
         elif name == "edit" and len(self.editable_extensions) == 0:
@@ -701,7 +713,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         return True
 
-    def on_rename(self, full_path, dir_base, filename):
+    def on_rename(self, full_path: str, dir_base: T_PATH_LIKE, filename: str) -> None:
         """
         Perform some actions after a file or directory has been renamed.
 
@@ -711,7 +723,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         pass
 
-    def on_edit_file(self, full_path, path):
+    def on_edit_file(self, full_path: str, path: str) -> None:
         """
         Perform some actions after a file has been successfully changed.
 
@@ -721,7 +733,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         pass
 
-    def on_file_upload(self, directory, path, filename):
+    def on_file_upload(self, directory: T_PATH_LIKE, path: str, filename: str) -> None:
         """
         Perform some actions after a file has been successfully uploaded.
 
@@ -731,7 +743,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         pass
 
-    def on_mkdir(self, parent_dir, dir_name):
+    def on_mkdir(self, parent_dir: str, dir_name: str) -> None:
         """
         Perform some actions after a directory has successfully been created.
 
@@ -741,7 +753,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         pass
 
-    def before_directory_delete(self, full_path, dir_name):
+    def before_directory_delete(self, full_path: str, dir_name: str) -> None:
         """
         Perform some actions before a directory has successfully been deleted.
 
@@ -751,7 +763,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         pass
 
-    def before_file_delete(self, full_path, filename):
+    def before_file_delete(self, full_path: str, filename: str) -> None:
         """
         Perform some actions before a file has successfully been deleted.
 
@@ -761,7 +773,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         pass
 
-    def on_directory_delete(self, full_path, dir_name):
+    def on_directory_delete(self, full_path: str, dir_name: str) -> None:
         """
         Perform some actions after a directory has successfully been deleted.
 
@@ -771,7 +783,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         pass
 
-    def on_file_delete(self, full_path, filename):
+    def on_file_delete(self, full_path: str, filename: str) -> None:
         """
         Perform some actions after a file has successfully been deleted.
 
@@ -781,7 +793,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         pass
 
-    def is_column_visible(self, column):
+    def is_column_visible(self, column: str) -> bool:
         """
         Determines if the given column is visible.
         :param column: The column to query.
@@ -789,7 +801,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         return column in self.column_list
 
-    def is_column_sortable(self, column):
+    def is_column_sortable(self, column: str) -> bool:
         """
         Determines if the given column is sortable.
         :param column: The column to query.
@@ -797,7 +809,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         return column in self.column_sortable_list
 
-    def column_label(self, column):
+    def column_label(self, column: str) -> T_TRANSLATABLE:
         """
         Gets the column's label.
         :param column: The column to query.
@@ -805,7 +817,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         return self.column_labels[column]
 
-    def timestamp_format(self, timestamp):
+    def timestamp_format(self, timestamp: float) -> str:
         """
         Formats the timestamp to a date format.
         :param timestamp: The timestamp to format.
@@ -813,12 +825,12 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         return datetime.fromtimestamp(timestamp).strftime(self.date_format)
 
-    def _save_form_files(self, directory, path, form):
+    def _save_form_files(self, directory: str, path: str, form: t.Any) -> None:
         filename = self._separator.join(
             [directory, secure_filename(form.upload.data.filename)]
         )
 
-        if self.storage.path_exists(filename):
+        if self.storage.path_exists(filename):  # type: ignore[union-attr]
             secure_name = self._separator.join(
                 [path, secure_filename(form.upload.data.filename)]
             )
@@ -830,10 +842,10 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             self.on_file_upload(directory, path, filename)
 
     @property
-    def _separator(self):
-        return self.storage.separator
+    def _separator(self) -> str:
+        return self.storage.separator  # type: ignore[union-attr]
 
-    def _get_breadcrumbs(self, path):
+    def _get_breadcrumbs(self, path: str) -> list[tuple[str, str]]:
         """
         Returns a list of tuples with each tuple containing the folder and
         the tree up to that folder when traversing down the `path`
@@ -847,7 +859,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
     @expose("/old_index")
     @expose("/old_b/<path:path>")
-    def index(self, path=None):
+    def index(self, path: t.Optional[str] = None) -> T_RESPONSE:
         warnings.warn(
             "deprecated: use index_view instead.", DeprecationWarning, stacklevel=1
         )
@@ -855,7 +867,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
     @expose("/")
     @expose("/b/<path:path>")
-    def index_view(self, path=None):
+    def index_view(self, path: t.Optional[str] = None) -> t.Union[T_RESPONSE, str]:
         """
         Index view method
 
@@ -874,20 +886,22 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             return redirect(self._get_dir_url(".index_view"))
 
         # Get directory listing
-        items = []
+        items: list[tuple[str, t.Optional[str], bool, int, int]] = []
 
         # Parent directory
         if directory != base_path:
-            parent_path = op.normpath(self._separator.join([path, ".."]))
+            parent_path: t.Optional[str] = op.normpath(
+                self._separator.join([path, ".."])
+            )
             if parent_path == ".":
                 parent_path = None
 
             items.append(("..", parent_path, True, 0, 0))
 
-        for item in self.storage.get_files(path, directory):
+        for item in self.storage.get_files(path, directory):  # type: ignore[union-attr]
             file_name, rel_path, is_dir, size, last_modified = item
             if self.is_accessible_path(rel_path):
-                items.append(item)
+                items.append(item)  # type: ignore[arg-type]
 
         sort_column = (
             request.args.get("sort", None, type=str) or self.default_sort_column
@@ -917,7 +931,10 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     reverse=True,
                 )
         else:
-            items.sort(key=itemgetter(column_index), reverse=sort_desc)
+            items.sort(
+                key=itemgetter(column_index),  # type: ignore[call-overload]
+                reverse=sort_desc,
+            )
 
         # Generate breadcrumbs
         breadcrumbs = self._get_breadcrumbs(path)
@@ -929,7 +946,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         else:
             action_form = None
 
-        def sort_url(column, path, invert=False):
+        def sort_url(column: str, path: t.Optional[str], invert: bool = False) -> str:
             desc = None
 
             if not path:
@@ -959,7 +976,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
     @expose("/upload/", methods=("GET", "POST"))
     @expose("/upload/<path:path>", methods=("GET", "POST"))
-    def upload(self, path=None):
+    def upload(self, path: t.Optional[str] = None) -> t.Union[T_RESPONSE, str]:
         """
         Upload view method
 
@@ -984,13 +1001,19 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                 flash(
                     gettext(
                         "Successfully saved file: %(name)s",
-                        name=form.upload.data.filename,
+                        name=form.upload.data.filename,  # type: ignore[attr-defined]
                     ),
                     "success",
                 )
                 return redirect(self._get_dir_url(".index_view", path))
             except Exception as ex:
-                flash(gettext("Failed to save file: %(error)s", error=ex), "error")
+                flash(
+                    gettext(
+                        "Failed to save file: %(error)s",
+                        error=ex,  # type: ignore[arg-type]
+                    ),
+                    "error",
+                )
 
         if self.upload_modal and request.args.get("modal"):
             template = self.upload_modal_template
@@ -1005,7 +1028,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         )
 
     @expose("/download/<path:path>")
-    def download(self, path=None):
+    def download(self, path: t.Optional[str] = None) -> T_RESPONSE:
         """
         Download view method.
 
@@ -1023,11 +1046,11 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             base_url = urljoin(self.get_url(".index_view"), base_url)
             return redirect(urljoin(quote(base_url), quote(path)))
 
-        return self.storage.send_file(directory)
+        return self.storage.send_file(directory)  # type: ignore[union-attr]
 
     @expose("/mkdir/", methods=("GET", "POST"))
     @expose("/mkdir/<path:path>", methods=("GET", "POST"))
-    def mkdir(self, path=None):
+    def mkdir(self, path: t.Optional[str] = None) -> t.Union[T_RESPONSE, str]:
         """
         Directory creation view method
 
@@ -1051,19 +1074,29 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         if self.validate_form(form):
             try:
-                self.storage.make_dir(directory, form.name.data)
-                self.on_mkdir(directory, form.name.data)
+                self.storage.make_dir(  # type: ignore[union-attr]
+                    directory,
+                    form.name.data,  # type: ignore[attr-defined]
+                )
+                self.on_mkdir(
+                    directory,
+                    form.name.data,  # type: ignore[attr-defined]
+                )
                 flash(
                     gettext(
                         "Successfully created directory: %(directory)s",
-                        directory=form.name.data,
+                        directory=form.name.data,  # type: ignore[attr-defined]
                     ),
                     "success",
                 )
                 return redirect(dir_url)
             except Exception as ex:
                 flash(
-                    gettext("Failed to create directory: %(error)s", error=ex), "error"
+                    gettext(
+                        "Failed to create directory: %(error)s",
+                        error=ex,  # type: ignore[arg-type]
+                    ),
+                    "error",
                 )
         else:
             helpers.flash_errors(form, message="Failed to create directory: %(error)s")
@@ -1080,20 +1113,20 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             header_text=gettext("Create Directory"),
         )
 
-    def delete_file(self, file_path):
+    def delete_file(self, file_path: str) -> None:
         """
         Deletes the file located at `file_path`
         """
-        self.storage.delete_file(file_path)
+        self.storage.delete_file(file_path)  # type: ignore[union-attr]
 
     @expose("/delete/", methods=("POST",))
-    def delete(self):
+    def delete(self) -> T_RESPONSE:
         """
         Delete view method
         """
         form = self.delete_form()
 
-        path = form.path.data
+        path = form.path.data  # type: ignore[attr-defined]
         if path:
             return_url = self._get_dir_url(".index_view", op.dirname(path))
         else:
@@ -1111,13 +1144,13 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                 flash(gettext("Permission denied."), "error")
                 return redirect(self._get_dir_url(".index_view"))
 
-            if self.storage.is_dir(full_path):
+            if self.storage.is_dir(full_path):  # type: ignore[union-attr]
                 if not self.can_delete_dirs:
                     flash(gettext("Directory deletion is disabled."), "error")
                     return redirect(return_url)
                 try:
                     self.before_directory_delete(full_path, path)
-                    self.storage.delete_tree(full_path)
+                    self.storage.delete_tree(full_path)  # type: ignore[union-attr]
                     self.on_directory_delete(full_path, path)
                     flash(
                         gettext(
@@ -1127,7 +1160,10 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     )
                 except Exception as ex:
                     flash(
-                        gettext("Failed to delete directory: %(error)s", error=ex),
+                        gettext(
+                            "Failed to delete directory: %(error)s",
+                            error=ex,  # type: ignore[arg-type]
+                        ),
                         "error",
                     )
             else:
@@ -1140,20 +1176,26 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                         "success",
                     )
                 except Exception as ex:
-                    flash(gettext("Failed to delete file: %(name)s", name=ex), "error")
+                    flash(
+                        gettext(
+                            "Failed to delete file: %(name)s",
+                            name=ex,  # type: ignore[arg-type]
+                        ),
+                        "error",
+                    )
         else:
             helpers.flash_errors(form, message="Failed to delete file. %(error)s")
 
         return redirect(return_url)
 
     @expose("/rename/", methods=("GET", "POST"))
-    def rename(self):
+    def rename(self) -> t.Union[T_RESPONSE, str]:
         """
         Rename view method
         """
         form = self.name_form()
 
-        path = form.path.data
+        path = form.path.data  # type: ignore[attr-defined]
         if path:
             base_path, full_path, path = self._normalize_path(path)
 
@@ -1169,15 +1211,15 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             flash(gettext("Permission denied."), "error")
             return redirect(self._get_dir_url(".index_view"))
 
-        if not self.storage.path_exists(full_path):
+        if not self.storage.path_exists(full_path):  # type: ignore[union-attr]
             flash(gettext("Path does not exist."), "error")
             return redirect(return_url)
 
         if self.validate_form(form):
             try:
                 dir_base = op.dirname(full_path)
-                filename = secure_filename(form.name.data)
-                self.storage.rename_path(
+                filename = secure_filename(form.name.data)  # type: ignore[attr-defined]
+                self.storage.rename_path(  # type: ignore[union-attr]
                     full_path, self._separator.join([dir_base, filename])
                 )
                 self.on_rename(full_path, dir_base, filename)
@@ -1190,7 +1232,13 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     "success",
                 )
             except Exception as ex:
-                flash(gettext("Failed to rename: %(error)s", error=ex), "error")
+                flash(
+                    gettext(
+                        "Failed to rename: %(error)s",
+                        error=ex,  # type: ignore[arg-type]
+                    ),
+                    "error",
+                )
 
             return redirect(return_url)
         else:
@@ -1211,7 +1259,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         )
 
     @expose("/edit/", methods=("GET", "POST"))
-    def edit(self):
+    def edit(self) -> t.Union[T_RESPONSE, str]:
         """
         Edit view method
         """
@@ -1242,7 +1290,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             form.process(request.form, content="")
             if form.validate():
                 try:
-                    self.storage.write_file(full_path, request.form["content"])
+                    self.storage.write_file(  # type: ignore[union-attr]
+                        full_path, request.form["content"]
+                    )
                 except OSError:
                     flash(
                         gettext("Error saving changes to %(name)s.", name=path), "error"
@@ -1259,7 +1309,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             helpers.flash_errors(form, message="Failed to edit file. %(error)s")
 
             try:
-                content = self.storage.read_file(full_path)
+                content = self.storage.read_file(full_path)  # type: ignore[union-attr]
             except OSError:
                 flash(gettext("Error reading %(name)s.", name=path), "error")
                 error = True
@@ -1284,7 +1334,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     )
                     error = True
                 else:
-                    form.content.data = content
+                    form.content.data = content  # type: ignore[attr-defined]
 
             if error:
                 return redirect(next_url)
@@ -1304,7 +1354,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         )
 
     @expose("/action/", methods=("POST",))
-    def action_view(self):
+    def action_view(self) -> T_RESPONSE:
         return self.handle_action()
 
     # Actions
@@ -1313,7 +1363,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         lazy_gettext("Delete"),
         lazy_gettext("Are you sure you want to delete these files?"),
     )
-    def action_delete(self, items):
+    def action_delete(self, items: t.Iterable[str]) -> None:
         if not self.can_delete:
             flash(gettext("File deletion is disabled."), "error")
             return
@@ -1329,10 +1379,16 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                         "success",
                     )
                 except Exception as ex:
-                    flash(gettext("Failed to delete file: %(name)s", name=ex), "error")
+                    flash(
+                        gettext(
+                            "Failed to delete file: %(name)s",
+                            name=ex,  # type: ignore[arg-type]
+                        ),
+                        "error",
+                    )
 
     @action("edit", lazy_gettext("Edit"))
-    def action_edit(self, items):
+    def action_edit(self, items: t.Iterable[str]) -> T_RESPONSE:
         return redirect(self.get_url(".edit", path=items))
 
 
@@ -1360,6 +1416,8 @@ class FileAdmin(BaseFileAdmin):
         admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
     """
 
-    def __init__(self, base_path, *args, **kwargs):
+    def __init__(
+        self, base_path: t.Union[str, bytes], *args: t.Any, **kwargs: t.Any
+    ) -> None:
         storage = LocalFileStorage(base_path)
-        super().__init__(*args, storage=storage, **kwargs)
+        super().__init__(*args, storage=storage, **kwargs)  # type: ignore[misc]

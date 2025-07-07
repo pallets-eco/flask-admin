@@ -2,14 +2,20 @@ import datetime
 import json
 import re
 import time
+import typing as t
+from enum import Enum
 
 from wtforms import fields
+from wtforms.form import BaseForm
 
 from flask_admin._compat import _iter_choices_wtforms_compat
 from flask_admin._compat import as_unicode
 from flask_admin._compat import text_type
 from flask_admin.babel import gettext
 
+from .._types import T_ITER_CHOICES
+from .._types import T_TRANSLATABLE
+from .._types import T_VALIDATOR
 from . import widgets as admin_widgets
 
 """
@@ -33,7 +39,13 @@ class DateTimeField(fields.DateTimeField):
 
     widget = admin_widgets.DateTimePickerWidget()
 
-    def __init__(self, label=None, validators=None, format=None, **kwargs):
+    def __init__(
+        self,
+        label: t.Optional[T_TRANSLATABLE] = None,
+        validators: t.Optional[list[T_VALIDATOR]] = None,
+        format: t.Optional[str] = None,
+        **kwargs: t.Any,
+    ) -> None:
         """
         Constructor
 
@@ -59,13 +71,13 @@ class TimeField(fields.Field):
 
     def __init__(
         self,
-        label=None,
-        validators=None,
-        formats=None,
-        default_format=None,
-        widget_format=None,
-        **kwargs,
-    ):
+        label: t.Optional[T_TRANSLATABLE] = None,
+        validators: t.Optional[list[T_VALIDATOR]] = None,
+        formats: t.Optional[t.Iterable] = None,
+        default_format: t.Optional[str] = None,
+        widget_format: t.Any = None,
+        **kwargs: t.Any,
+    ) -> None:
         """
         Constructor
 
@@ -93,7 +105,7 @@ class TimeField(fields.Field):
 
         self.default_format = default_format or "%H:%M:%S"
 
-    def _value(self):
+    def _value(self) -> str:
         if self.raw_data:
             return " ".join(self.raw_data)
         elif self.data is not None:
@@ -101,7 +113,7 @@ class TimeField(fields.Field):
         else:
             return ""
 
-    def process_formdata(self, valuelist):
+    def process_formdata(self, valuelist: t.Iterable[str]) -> None:
         if valuelist:
             date_str = " ".join(valuelist)
 
@@ -133,19 +145,25 @@ class Select2Field(fields.SelectField):
 
     def __init__(
         self,
-        label=None,
-        validators=None,
-        coerce=text_type,
-        choices=None,
-        allow_blank=False,
-        blank_text=None,
-        **kwargs,
-    ):
-        super().__init__(label, validators, coerce, choices, **kwargs)
+        label: t.Optional[T_TRANSLATABLE] = None,
+        validators: t.Optional[list[T_VALIDATOR]] = None,
+        coerce: t.Callable[[t.Any], t.Any] = text_type,
+        choices: t.Union[tuple[str, ...], Enum, None] = None,
+        allow_blank: bool = False,
+        blank_text: t.Optional[T_TRANSLATABLE] = None,
+        **kwargs: t.Any,
+    ) -> None:
+        super().__init__(
+            label,
+            validators,
+            coerce,
+            choices,  # type: ignore[arg-type]
+            **kwargs,
+        )
         self.allow_blank = allow_blank
         self.blank_text = blank_text or " "
 
-    def iter_choices(self):
+    def iter_choices(self) -> t.Iterator[T_ITER_CHOICES]:  # type: ignore[override]
         if self.allow_blank:
             yield _iter_choices_wtforms_compat(
                 "__None", self.blank_text, self.data is None
@@ -158,12 +176,12 @@ class Select2Field(fields.SelectField):
                 )
             else:
                 yield _iter_choices_wtforms_compat(
-                    choice.value,
-                    choice.name,
-                    self.coerce(choice.value) == self.data,
+                    choice.value,  # type: ignore[attr-defined]
+                    choice.name,  # type: ignore[attr-defined]
+                    self.coerce(choice.value) == self.data,  # type: ignore[attr-defined]
                 )
 
-    def process_data(self, value):
+    def process_data(self, value: t.Any) -> None:
         if value is None:
             self.data = None
         else:
@@ -172,7 +190,7 @@ class Select2Field(fields.SelectField):
             except (ValueError, TypeError):
                 self.data = None
 
-    def process_formdata(self, valuelist):
+    def process_formdata(self, valuelist: t.Optional[t.Sequence[str]]) -> None:
         if valuelist:
             if valuelist[0] == "__None":
                 self.data = None
@@ -184,7 +202,7 @@ class Select2Field(fields.SelectField):
                         self.gettext("Invalid Choice: could not coerce")
                     ) from err
 
-    def pre_validate(self, form):
+    def pre_validate(self, form: BaseForm) -> None:
         if self.allow_blank and self.data is None:
             return
 
@@ -204,13 +222,13 @@ class Select2TagsField(fields.StringField):
 
     def __init__(
         self,
-        label=None,
-        validators=None,
-        save_as_list=False,
-        coerce=text_type,
-        allow_duplicates=False,
-        **kwargs,
-    ):
+        label: t.Optional[T_TRANSLATABLE] = None,
+        validators: t.Optional[list[T_VALIDATOR]] = None,
+        save_as_list: bool = False,
+        coerce: t.Callable[[t.Any], t.Any] = text_type,
+        allow_duplicates: bool = False,
+        **kwargs: t.Any,
+    ) -> None:
         """Initialization
 
         :param save_as_list:
@@ -224,7 +242,7 @@ class Select2TagsField(fields.StringField):
 
         super().__init__(label, validators, **kwargs)
 
-    def process_formdata(self, valuelist):
+    def process_formdata(self, valuelist: t.Optional[t.Sequence[str]] = None) -> None:
         if valuelist:
             entrylist = valuelist[0]
             if self.allow_duplicates and entrylist.endswith(" "):
@@ -233,13 +251,13 @@ class Select2TagsField(fields.StringField):
                 # restore the original IDs.
                 entrylist = re.sub(self._strip_regex, "\\1", entrylist)
             if self.save_as_list:
-                self.data = [
+                self.data = [  # type: ignore[assignment]
                     self.coerce(v.strip()) for v in entrylist.split(",") if v.strip()
                 ]
             else:
                 self.data = self.coerce(entrylist)
 
-    def _value(self):
+    def _value(self) -> str:
         if isinstance(self.data, (list, tuple)):
             return ",".join(as_unicode(v) for v in self.data)
         elif self.data:
@@ -249,7 +267,7 @@ class Select2TagsField(fields.StringField):
 
 
 class JSONField(fields.TextAreaField):
-    def _value(self):
+    def _value(self) -> str:
         if self.raw_data:
             return self.raw_data[0]
         elif self.data:
@@ -258,7 +276,7 @@ class JSONField(fields.TextAreaField):
         else:
             return "{}"
 
-    def process_formdata(self, valuelist):
+    def process_formdata(self, valuelist: t.Optional[t.Sequence[str]]) -> None:
         if valuelist:
             value = valuelist[0]
 

@@ -1,4 +1,4 @@
-def setup():
+def setup() -> None:
     import warnings
 
     warnings.warn(

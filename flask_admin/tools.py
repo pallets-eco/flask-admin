@@ -1,6 +1,8 @@
 import sys
 import traceback
+import typing as t
 from functools import reduce
+from types import ModuleType
 
 # Python 3 compatibility
 from ._compat import as_unicode
@@ -9,7 +11,7 @@ CHAR_ESCAPE = "."
 CHAR_SEPARATOR = ","
 
 
-def import_module(name, required=True):
+def import_module(name: str, required: bool = True) -> t.Optional[ModuleType]:
     """
     Import module by name
 
@@ -29,7 +31,7 @@ def import_module(name, required=True):
     return sys.modules[name]
 
 
-def import_attribute(name):
+def import_attribute(name: str) -> t.Any:
     """
     Import attribute using string reference.
 
@@ -49,7 +51,7 @@ def import_attribute(name):
     return getattr(module, attr)
 
 
-def module_not_found(additional_depth=0):
+def module_not_found(additional_depth: int = 0) -> bool:
     """
     Checks if ImportError was raised because module does not exist or
     something inside it raised ImportError
@@ -65,7 +67,7 @@ def module_not_found(additional_depth=0):
     return True
 
 
-def rec_getattr(obj, attr, default=None):
+def rec_getattr(obj: t.Any, attr: str, default: t.Any = None) -> t.Any:
     """
     Recursive getattr.
 
@@ -84,7 +86,7 @@ def rec_getattr(obj, attr, default=None):
         return default
 
 
-def get_dict_attr(obj, attr, default=None):
+def get_dict_attr(obj: t.Any, attr: str, default: t.Any = None) -> t.Optional[t.Any]:
     """
     Get attribute of the object without triggering its __getattr__.
 
@@ -102,7 +104,7 @@ def get_dict_attr(obj, attr, default=None):
     return default
 
 
-def escape(value):
+def escape(value: t.Union[str, bytes]) -> str:
     return (
         as_unicode(value)
         .replace(CHAR_ESCAPE, CHAR_ESCAPE + CHAR_ESCAPE)
@@ -110,7 +112,7 @@ def escape(value):
     )
 
 
-def iterencode(iter):
+def iterencode(iter: t.Iterable[t.Union[str, bytes]]) -> str:
     """
     Encode enumerable as compact string representation.
 
@@ -125,7 +127,7 @@ def iterencode(iter):
     )
 
 
-def iterdecode(value):
+def iterdecode(value: t.Iterable[str]) -> tuple[str, ...]:
     """
     Decode enumerable from string presentation as a tuple
     """

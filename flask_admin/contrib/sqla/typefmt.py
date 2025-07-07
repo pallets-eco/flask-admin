@@ -1,12 +1,15 @@
 from sqlalchemy.ext.associationproxy import _AssociationList
 from sqlalchemy.orm.collections import InstrumentedList
 
+from flask_admin._types import T_ARROW
+from flask_admin._types import T_CHOICE
+from flask_admin._types import T_MODEL_VIEW
 from flask_admin.model.typefmt import BASE_FORMATTERS
 from flask_admin.model.typefmt import EXPORT_FORMATTERS
 from flask_admin.model.typefmt import list_formatter
 
 
-def choice_formatter(view, choice, name) -> str:
+def choice_formatter(view: T_MODEL_VIEW, choice: T_CHOICE, name: str) -> str:
     """
     Return label of selected choice
     see https://sqlalchemy-utils.readthedocs.io/
@@ -17,7 +20,7 @@ def choice_formatter(view, choice, name) -> str:
     return choice.value
 
 
-def arrow_formatter(view, arrow_time, name) -> str:
+def arrow_formatter(view: T_MODEL_VIEW, arrow_time: T_ARROW, name: str) -> str:
     """
     Return human-friendly string of the time relative to now.
     see https://arrow.readthedocs.io/
@@ -28,7 +31,7 @@ def arrow_formatter(view, arrow_time, name) -> str:
     return arrow_time.humanize()
 
 
-def arrow_export_formatter(view, arrow_time, name) -> str:
+def arrow_export_formatter(view: T_MODEL_VIEW, arrow_time: T_ARROW, name: str) -> str:
     """
     Return string representation of Arrow object
     see https://arrow.readthedocs.io/

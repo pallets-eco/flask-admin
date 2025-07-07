@@ -99,77 +99,77 @@ should be included, feel free to make the changes and submit a *pull-request*.
 
 To build the docs in your local environment, from the project directory:
 
-    tox -e docs-html
+```bash
+tox -e docs
+```
 
 ## Installation
 
-To install Flask-Admin, simply:
+To install Flask-Admin using pip, simply:
 
-    pip install flask-admin
+```shell
+pip install flask-admin
+```
 
-Or alternatively, you can download the repository and install manually
-by doing:
+## Contributing
 
-    git clone https://github.com/pallets-eco/flask-admin.git
-    cd flask-admin
-    pip install .
+If you are a developer working on and maintaining Flask-Admin, checkout the repo by doing:
+
+```shell
+git clone https://github.com/pallets-eco/flask-admin.git
+cd flask-admin
+```
+
+Flask-Admin uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment. With
+the repository checked out, to install the minimum version of Python that Flask-Admin supports, create your
+virtual environment, and install the required dependencies, run:
+
+```shell
+uv sync
+```
+
+This will install Flask-Admin but without any of the optional extra dependencies, such as those for sqlalchemy
+or mongoengine support. To install all extras, run:
+
+```shell
+uv sync --extra all
+```
 
 ## Tests
 
 Tests are run with *pytest*. If you are not familiar with this package, you can find out more on [their website](https://pytest.org/).
 
-To run the tests, from the project directory, simply run:
+### Running tests inside the devcontainer (eg when using VS Code)
 
-    pip install --use-pep517 -r requirements/dev.txt
-    pytest
+If you are developing with the devcontainer configuration, then you can run tests directly using either of the following commands.
 
-You should see output similar to:
+To just run the test suite with the default python installation, use:
 
-    .............................................
-    ----------------------------------------------------------------------
-    Ran 102 tests in 13.132s
-
-    OK
-
-**NOTE!** For all the tests to pass successfully, you'll need several services running locally:
-Postgres (with the postgis and hstore extension), MongoDB, and Azurite.
-You'll also need *libgeos* available.
-See tests.yaml for Docker configuration and follow service-specific setup below.
-
-## Setting up local Postgres for tests
-
-```bash
-psql postgres
-> CREATE DATABASE flask_admin_test;
-> # Connect to database "flask_admin_test":
-> \c flask_admin_test;
-> CREATE EXTENSION postgis;
-> CREATE EXTENSION hstore;
+```shell
+uv run pytest
 ```
 
-If you\'re using Homebrew on MacOS, you might need this:
+To run the test suite against all supported python versions, and also run other checks performed by CI, use:
 
-```bash
-# Install postgis and geos
-brew install postgis
-brew install geos
-
-# Set up a PostgreSQL user
-createuser -s postgresql
-brew services restart postgresql
+```shell
+uv run tox
 ```
 
-## Setting up Azure Blob Storage emulator for tests
+### Running tests as a one-off via docker-compose run / `make test`
 
-1. Run the [Azurite emulator](https://learn.microsoft.com/azure/storage/common/storage-use-azurite?tabs=visual-studio%2Cblob-storage)
+If you don't use devcontainers then you can run the tests using docker (you will need to install and setup docker yourself). Then you can use:
 
-2. Set the connection string for the emulator:
-
-```bash
-export AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
+```shell
+make test-in-docker
 ```
 
-You can also run the tests on multiple environments using *tox*.
+This will use the devcontainer docker-compose configuration to start up postgres, azurite and mongo.
+
+You can also run the full test suite including CI checks with:
+
+```shell
+make tox-in-docker
+```
 
 ## 3rd Party Stuff
 
