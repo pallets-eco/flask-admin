@@ -206,6 +206,7 @@ module = [
     "gridfs",
     "marker",
     "playhouse.*",
+    "mongoengine.*",
     "pymongo",
     "sqlalchemy.*",
     "sqlalchemy_utils",
