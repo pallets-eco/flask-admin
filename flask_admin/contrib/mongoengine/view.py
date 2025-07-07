@@ -1,7 +1,7 @@
 import logging
 
 import gridfs
-import mongoengine  # type: ignore
+import mongoengine
 from bson.objectid import ObjectId
 from flask import abort
 from flask import flash

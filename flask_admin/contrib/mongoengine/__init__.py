@@ -1,6 +1,6 @@
 # flake8: noqa
 try:
-    import mongoengine  # type: ignore
+    import mongoengine
 except ImportError:
     raise Exception(
         "Could not import `mongoengine`. "

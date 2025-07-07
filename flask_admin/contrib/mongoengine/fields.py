@@ -88,4 +88,4 @@ class MongoImageField(MongoFileField):
     GridFS image field.
     """
 
-    widget = widgets.MongoImageInput()
+    widget = widgets.MongoImageInput() # type: ignore[assignment]
