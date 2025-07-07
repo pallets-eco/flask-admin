@@ -2,7 +2,10 @@
 try:
     import mongoengine
 except ImportError:
-    raise Exception("Please install mongoengine in order to use mongoengine backend")
+    raise Exception(
+        "Could not import `mongoengine`. "
+        "Enable `mongoengine` integration by installing `flask-admin[mongoengine]`"
+    )
 
 from .view import ModelView
 from .form import EmbeddedForm

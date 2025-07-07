@@ -47,6 +47,7 @@ geoalchemy = [
     "shapely>=2",
 ]
 pymongo = ["pymongo>=3.7.0"]
+mongoengine = ["mongoengine==0.29.0"]
 peewee = [
     "peewee>=3.14.0",
     "wtf-peewee>=3.0.4"
