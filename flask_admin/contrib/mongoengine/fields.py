@@ -1,7 +1,6 @@
 from mongoengine.base import get_document
 from werkzeug.datastructures import FileStorage
 from wtforms import fields
-
 from wtforms.utils import unset_value
 
 from flask_admin.model.fields import InlineFormField
