@@ -2,6 +2,7 @@ import csv
 import inspect
 import mimetypes
 import re
+import sys
 import time
 import typing as t
 import warnings
@@ -19,7 +20,6 @@ from flask import request
 from flask import stream_with_context
 from jinja2 import pass_context  # type: ignore[attr-defined]
 from jinja2.runtime import Context
-from typing_extensions import TypeGuard
 from werkzeug import Response
 from werkzeug.utils import secure_filename
 
@@ -75,6 +75,11 @@ from flask_admin.tools import rec_getattr
 from .ajax import AjaxModelLoader
 from .helpers import get_mdict_item_or_list
 from .helpers import prettify_name
+
+if sys.version_info >= (3, 10):
+    from typing import TypeGuard
+else:
+    from typing_extensions import TypeGuard
 
 # Used to generate filter query string name
 filter_char_re = re.compile("[^a-z0-9 ]")
@@ -2655,7 +2660,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 response_data = getattr(ds, export_type)
         except (AttributeError, tablib.UnsupportedFormat):
             flash(
-                gettext('Export type "%(type)s not supported.', type=export_type),
+                gettext('Export type "%(type)s" is not supported.', type=export_type),
                 "error",
             )
             return redirect(return_url)
