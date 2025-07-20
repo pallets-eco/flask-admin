@@ -26,6 +26,7 @@ dependencies = [
     "markupsafe>=2.0",
     "werkzeug>=2.0",
     "wtforms>=2.3",
+    "typing_extensions; python_version < '3.11'"
 ]
 
 [project.optional-dependencies]
@@ -46,7 +47,7 @@ geoalchemy = [
     "geoalchemy2>=0.14.0",
     "shapely>=2",
 ]
-pymongo = ["pymongo>=3.7.0"]
+pymongo = ["pymongo>=3.10.0"]
 mongoengine = ["mongoengine>=0.29.0"]
 peewee = [
     "peewee>=3.14.0",
@@ -150,6 +151,10 @@ filterwarnings = [
     # Werkzeug is responsible for the below deprecation warning; remove when they have updated their code.
     "default:ast\\.Str is deprecated and will be removed in Python 3\\.14:DeprecationWarning",
     "default:Attribute s is deprecated and will be removed in Python 3\\.14:DeprecationWarning",
+
+    # Werkzeug <3 with Flask>2.2. Remove when werkzeug min version is >= 3.0
+    "default:'werkzeug\\.urls\\.url_parse' is deprecated and will be removed in Werkzeug 3\\.0:DeprecationWarning",
+    "default:'werkzeug\\.urls\\.URL' is deprecated and will be removed in Werkzeug 3\\.0:DeprecationWarning",
 
     # Flask is responsible for the below deprecation warning; remove when they have updated their code.
     "default:'pkgutil\\.get_loader' is deprecated and slated for removal in Python 3\\.14:DeprecationWarning",
@@ -272,7 +277,8 @@ commands = [[
     {replace = "posargs", default = [], extend = true},
 ]]
 
-[tool.tox.env.tests-min]
+
+[tool.tox.env.py39-min]
 description = "pytest on minimum dependency versions"
 base_python = ["3.9"]
 commands = [
@@ -287,11 +293,12 @@ commands = [
         "flask-sqlalchemy==3.0.0",
         "colour==0.1.5",
         "email_validator==2.0.0",
-        "arrow==0.13.0",
+        "arrow==0.14.0",
+        "numpy<2.0", # old versions of shapely are built with numpy1.x
         "geoalchemy2==0.14.0",
         "shapely==2",
         "boto3==1.33.0",
-        "pymongo==3.7.0",
+        "pymongo==3.10.0",
         "mongoengine==0.29.0",
         "peewee==3.14.0",
         "wtf-peewee==3.0.4",
