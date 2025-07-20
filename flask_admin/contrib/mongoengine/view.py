@@ -1,4 +1,5 @@
 import logging
+import typing as t
 
 import gridfs
 import mongoengine
@@ -19,6 +20,7 @@ from flask_admin.babel import ngettext
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
 
+from ...model.filters import BaseFilter
 from .ajax import create_ajax_loader
 from .ajax import process_ajax_references
 from .filters import BaseMongoEngineFilter
@@ -57,7 +59,7 @@ class ModelView(BaseModelView):
     MongoEngine model scaffolding.
     """
 
-    column_filters = None
+    column_filters: t.Optional[t.Collection[t.Union[str, BaseFilter]]] = None
     """
         Collection of the column filters.
 
