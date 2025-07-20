@@ -104,14 +104,10 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "flask-admin", extra = ["sqlalchemy-with-utils"] },
-    { name = "typing-extensions" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "flask-admin", extras = ["sqlalchemy-with-utils"], editable = "../../" },
-    { name = "typing-extensions" },
-]
+requires-dist = [{ name = "flask-admin", extras = ["sqlalchemy-with-utils"], editable = "../../" }]
 
 [[package]]
 name = "flask"
@@ -140,6 +136,7 @@ dependencies = [
     { name = "flask" },
     { name = "jinja2" },
     { name = "markupsafe" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
     { name = "werkzeug" },
     { name = "wtforms" },
 ]
@@ -163,19 +160,19 @@ requires-dist = [
     { name = "colour", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=0.1.5" },
     { name = "email-validator", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=2" },
     { name = "flask", specifier = ">=2.0" },
-    { name = "flask-admin", extras = ["azure-blob-storage"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["export"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["geoalchemy"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["images"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["peewee"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["pymongo"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["rediscli"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["s3"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'geoalchemy'" },
-    { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'sqlalchemy-with-utils'" },
-    { name = "flask-admin", extras = ["sqlalchemy-with-utils"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["translation"], marker = "extra == 'all'" },
+    { name = "flask-admin", extras = ["azure-blob-storage"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["export"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["geoalchemy"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["images"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["peewee"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["pymongo"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["rediscli"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["s3"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'geoalchemy'", editable = "../../" },
+    { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'sqlalchemy-with-utils'", editable = "../../" },
+    { name = "flask-admin", extras = ["sqlalchemy-with-utils"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["translation"], marker = "extra == 'all'", editable = "../../" },
     { name = "flask-babel", marker = "extra == 'translation'", specifier = ">=3.0.1" },
     { name = "flask-sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=3" },
     { name = "geoalchemy2", marker = "extra == 'geoalchemy'", specifier = ">=0.14.0" },
@@ -183,13 +180,14 @@ requires-dist = [
     { name = "markupsafe", specifier = ">=2.0" },
     { name = "peewee", marker = "extra == 'peewee'", specifier = ">=3.14.0" },
     { name = "pillow", marker = "extra == 'images'", specifier = ">=10.0.0" },
-    { name = "pymongo", marker = "extra == 'pymongo'", specifier = ">=3.7.0" },
+    { name = "pymongo", marker = "extra == 'pymongo'", specifier = ">=3.10.0" },
     { name = "redis", marker = "extra == 'rediscli'", specifier = ">=4.0.0" },
     { name = "shapely", marker = "extra == 'geoalchemy'", specifier = ">=2" },
     { name = "sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=1.4" },
     { name = "sqlalchemy-citext", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=1.8.0" },
     { name = "sqlalchemy-utils", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=0.38.0" },
     { name = "tablib", marker = "extra == 'export'", specifier = ">=3.0.0" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
     { name = "werkzeug", specifier = ">=2.0" },
     { name = "wtf-peewee", marker = "extra == 'peewee'", specifier = ">=3.0.4" },
     { name = "wtforms", specifier = ">=2.3" },
@@ -198,12 +196,39 @@ provides-extras = ["sqlalchemy", "sqlalchemy-with-utils", "geoalchemy", "pymongo
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "beautifulsoup4" },
+    { name = "botocore", specifier = ">=1.35" },
+    { name = "flake8" },
+    { name = "flask-admin", extras = ["all"], editable = "../../" },
+    { name = "moto" },
+    { name = "mypy" },
+    { name = "pallets-sphinx-themes" },
+    { name = "pre-commit" },
+    { name = "pre-commit-uv" },
+    { name = "psycopg2-binary" },
+    { name = "pylint" },
+    { name = "pyright" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "sphinx" },
+    { name = "sphinx-intl", specifier = ">=2.3.1" },
+    { name = "sphinxcontrib-log-cabinet" },
     { name = "tox" },
     { name = "tox-uv" },
+    { name = "types-beautifulsoup4" },
+    { name = "types-boto3" },
+    { name = "types-flask" },
+    { name = "types-flask-sqlalchemy" },
+    { name = "types-peewee" },
+    { name = "types-pillow" },
+    { name = "types-shapely" },
+    { name = "types-wtforms" },
 ]
 docs = [
+    { name = "flask-admin", extras = ["all"], editable = "../../" },
     { name = "pallets-sphinx-themes" },
     { name = "sphinx" },
+    { name = "sphinx-intl", specifier = ">=2.3.1" },
     { name = "sphinxcontrib-log-cabinet" },
 ]
 pre-commit = [
@@ -215,7 +240,7 @@ tests = [
     { name = "botocore", specifier = ">=1.35" },
     { name = "flake8" },
     { name = "moto" },
-    { name = "psycopg2" },
+    { name = "psycopg2-binary" },
     { name = "pylint" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -322,7 +347,7 @@ name = "importlib-metadata"
 version = "8.7.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "zipp" },
+    { name = "zipp", marker = "python_full_version < '3.10'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/76/66/650a33bd90f786193e4de4b3ad86ea60b53c89b669a5c7be931fac31cdb0/importlib_metadata-8.7.0.tar.gz", hash = "sha256:d13b81ad223b890aa16c5471f2ac3056cf76c5f10f82d6f9292f0b415f389000", size = 56641, upload-time = "2025-04-27T15:29:01.736Z" }
 wheels = [

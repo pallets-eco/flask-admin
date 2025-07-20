@@ -7,8 +7,6 @@ requires-python = ">=3.9"
 dependencies = [
     "flask-admin",
     "flask-talisman",
-    # TODO @hasansezertasan: Remove `typing_extensions` when flask-admin properly handles typing-related imports.
-    "typing_extensions"
 ]
 
 [tool.uv.sources]
