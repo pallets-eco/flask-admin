@@ -44,16 +44,16 @@ Flask-Admin is an active project, well-tested and production-ready.
 
 Several usage examples are included in the */examples* folder. Please add your own, or improve on the existing examples, and submit a *pull-request*.
 
-### How to run SQLAlchemy example
+### How to run an example
 
-Clone the repository and navigate to SQLAlchemy example:
+Clone the repository and navigate to an example (for this example we are using SQLAlchemy Example):
 
 ```shell
 git clone https://github.com/pallets-eco/flask-admin.git
 cd flask-admin/examples/sqla
 ```
 
-> This example uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment.
+> All examples use [`uv`](https://docs.astral.sh/uv/) to manage their dependencies and the developer environment.
 
 Run the example using `uv`, which will manage the environment and dependencies automatically:
 
