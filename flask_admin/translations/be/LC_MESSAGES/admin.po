@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-06-03 07:06+0100\n"
+"POT-Creation-Date: 2025-07-20 20:51+0200\n"
 "PO-Revision-Date: 2017-02-13 09:18-0500\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language: be_BY\n"
@@ -13,7 +13,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.16.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #: ../flask_admin/base.py:516
 msgid "Home"
@@ -59,7 +59,7 @@ msgstr "Файл \"%(name)s\" ужо йснуе."
 #: ../flask_admin/contrib/fileadmin/__init__.py:1144
 #: ../flask_admin/contrib/fileadmin/__init__.py:1211
 #: ../flask_admin/contrib/fileadmin/__init__.py:1280
-#: ../flask_admin/model/base.py:2566
+#: ../flask_admin/model/base.py:2568
 msgid "Permission denied."
 msgstr "Бракуе дазволу."
 
@@ -67,12 +67,12 @@ msgstr "Бракуе дазволу."
 msgid "File uploading is disabled."
 msgstr "Ладаванне файлаў адключанае."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1002
+#: ../flask_admin/contrib/fileadmin/__init__.py:1003
 #, python-format
 msgid "Successfully saved file: %(name)s"
 msgstr "Файл паспяхова захаваны: %(name)s"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1011
+#: ../flask_admin/contrib/fileadmin/__init__.py:1012
 #, python-format
 msgid "Failed to save file: %(error)s"
 msgstr "Памылка захавання файлу: %(error)s"
@@ -87,12 +87,12 @@ msgstr "Заладаваць файл"
 msgid "Directory creation is disabled."
 msgstr "Стварэнне тэчак адключанае."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1086
+#: ../flask_admin/contrib/fileadmin/__init__.py:1087
 #, python-format
 msgid "Successfully created directory: %(directory)s"
 msgstr "Тэчка паспяхова створаная: %(directory)s"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1095
+#: ../flask_admin/contrib/fileadmin/__init__.py:1096
 #, python-format
 msgid "Failed to create directory: %(error)s"
 msgstr "Памылка стварэння тэчкі: %(error)s"
@@ -111,12 +111,12 @@ msgstr "Выдаленне адключанае."
 msgid "Directory deletion is disabled."
 msgstr "Выдаленне тэчак адключанае."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1156
+#: ../flask_admin/contrib/fileadmin/__init__.py:1157
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
 msgstr "Тэчка \"%(path)s\" паспяхова выдаленая."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1163
+#: ../flask_admin/contrib/fileadmin/__init__.py:1164
 #, python-format
 msgid "Failed to delete directory: %(error)s"
 msgstr "Памылка выдалення тэчкі: %(error)s"
@@ -127,8 +127,8 @@ msgstr "Памылка выдалення тэчкі: %(error)s"
 msgid "File \"%(name)s\" was successfully deleted."
 msgstr "Файл \"%(name)s\" паспяхова выдалены."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1180
-#: ../flask_admin/contrib/fileadmin/__init__.py:1383
+#: ../flask_admin/contrib/fileadmin/__init__.py:1181
+#: ../flask_admin/contrib/fileadmin/__init__.py:1384
 #, python-format
 msgid "Failed to delete file: %(name)s"
 msgstr "Памылка выдалення файлу: %(name)s"
@@ -141,12 +141,12 @@ msgstr "Перайменаванне адключанае."
 msgid "Path does not exist."
 msgstr "Шлях не йснуе."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1229
+#: ../flask_admin/contrib/fileadmin/__init__.py:1228
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
 msgstr "Паспяхова змененае імя з \"%(src)s\" у \"%(dst)s\""
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1236
+#: ../flask_admin/contrib/fileadmin/__init__.py:1237
 #, python-format
 msgid "Failed to rename: %(error)s"
 msgstr "Памылка перайменавання: %(error)s"
@@ -172,7 +172,7 @@ msgid "Error reading %(name)s."
 msgstr "Памылка чытання %(name)s."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1318
-#: ../flask_admin/contrib/fileadmin/__init__.py:1330
+#: ../flask_admin/contrib/fileadmin/__init__.py:1331
 #, python-format
 msgid "Unexpected error while reading from %(name)s"
 msgstr "Непрадугледжаная памылка падчас чытання з %(name)s"
@@ -188,9 +188,10 @@ msgid "Editing %(path)s"
 msgstr "Рэдагаванне %(path)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1363
+#: ../flask_admin/contrib/mongoengine/view.py:725
 #: ../flask_admin/contrib/peewee/view.py:603
 #: ../flask_admin/contrib/pymongo/view.py:411
-#: ../flask_admin/contrib/sqla/view.py:1438
+#: ../flask_admin/contrib/sqla/view.py:1437
 msgid "Delete"
 msgstr "Выдаліць"
 
@@ -212,57 +213,67 @@ msgstr "Рэдагаваць"
 msgid "Cannot operate on non empty directories"
 msgstr "Дзеянне з непустымі тэчкамі немагчымае"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:41
 #: ../flask_admin/contrib/peewee/filters.py:47
 #: ../flask_admin/contrib/pymongo/filters.py:49
 #: ../flask_admin/contrib/sqla/filters.py:62
 msgid "equals"
 msgstr "роўны"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:50
 #: ../flask_admin/contrib/peewee/filters.py:55
 #: ../flask_admin/contrib/pymongo/filters.py:58
 #: ../flask_admin/contrib/sqla/filters.py:72
 msgid "not equal"
 msgstr "няроўны"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:60
 #: ../flask_admin/contrib/peewee/filters.py:64
 #: ../flask_admin/contrib/pymongo/filters.py:68
 #: ../flask_admin/contrib/sqla/filters.py:83
 msgid "contains"
 msgstr "утрымлівае"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:70
 #: ../flask_admin/contrib/peewee/filters.py:73
 #: ../flask_admin/contrib/pymongo/filters.py:78
 #: ../flask_admin/contrib/sqla/filters.py:94
 msgid "not contains"
 msgstr "ня ўтрымлівае"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:79
 #: ../flask_admin/contrib/peewee/filters.py:81
 #: ../flask_admin/contrib/pymongo/filters.py:91
 #: ../flask_admin/contrib/sqla/filters.py:104
 msgid "greater than"
 msgstr "большы за"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:88
 #: ../flask_admin/contrib/peewee/filters.py:89
 #: ../flask_admin/contrib/pymongo/filters.py:104
 #: ../flask_admin/contrib/sqla/filters.py:114
 msgid "smaller than"
 msgstr "меншы за"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:100
 #: ../flask_admin/contrib/peewee/filters.py:100
 #: ../flask_admin/contrib/sqla/filters.py:127
 msgid "empty"
 msgstr "пусты"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:115
 #: ../flask_admin/contrib/peewee/filters.py:120
 #: ../flask_admin/contrib/sqla/filters.py:149
 msgid "in list"
 msgstr "у спісе"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:124
 #: ../flask_admin/contrib/peewee/filters.py:129
 #: ../flask_admin/contrib/sqla/filters.py:161
 msgid "not in list"
 msgstr "ня ў спісе"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:223
 #: ../flask_admin/contrib/peewee/filters.py:228
 #: ../flask_admin/contrib/peewee/filters.py:268
 #: ../flask_admin/contrib/peewee/filters.py:308
@@ -272,37 +283,59 @@ msgstr "ня ў спісе"
 msgid "not between"
 msgstr "не паміж"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:248
+msgid "ObjectId equals"
+msgstr ""
+
+#: ../flask_admin/contrib/mongoengine/form.py:120
+#: ../flask_admin/contrib/sqla/fields.py:151
+#: ../flask_admin/contrib/sqla/fields.py:210
+#: ../flask_admin/contrib/sqla/fields.py:215 ../flask_admin/model/fields.py:224
+#: ../flask_admin/model/fields.py:284
+msgid "Not a valid choice"
+msgstr "Няслушны выбар"
+
+#: ../flask_admin/contrib/mongoengine/view.py:605
+#, python-format
+msgid "Failed to get model. %(error)s"
+msgstr ""
+
+#: ../flask_admin/contrib/mongoengine/view.py:626
 #: ../flask_admin/contrib/peewee/view.py:542
 #: ../flask_admin/contrib/pymongo/view.py:345
-#: ../flask_admin/contrib/sqla/view.py:1356
+#: ../flask_admin/contrib/sqla/view.py:1355
 #, python-format
 msgid "Failed to create record. %(error)s"
 msgstr "Памылка стварэння запісу. %(error)s"
 
+#: ../flask_admin/contrib/mongoengine/view.py:655
 #: ../flask_admin/contrib/peewee/view.py:564
 #: ../flask_admin/contrib/pymongo/view.py:369
-#: ../flask_admin/contrib/sqla/view.py:1387 ../flask_admin/model/base.py:2721
-#: ../flask_admin/model/base.py:2728 ../flask_admin/model/base.py:2731
+#: ../flask_admin/contrib/sqla/view.py:1386 ../flask_admin/model/base.py:2723
+#: ../flask_admin/model/base.py:2730 ../flask_admin/model/base.py:2734
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr "Памылка аднаўлення запісу. %(error)s"
 
+#: ../flask_admin/contrib/mongoengine/view.py:681
 #: ../flask_admin/contrib/peewee/view.py:582
 #: ../flask_admin/contrib/pymongo/view.py:393
-#: ../flask_admin/contrib/sqla/view.py:1415
+#: ../flask_admin/contrib/sqla/view.py:1414
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr "Памылка выдалення запісу. %(error)s"
 
+#: ../flask_admin/contrib/mongoengine/view.py:726
 #: ../flask_admin/contrib/peewee/view.py:604
 #: ../flask_admin/contrib/pymongo/view.py:412
-#: ../flask_admin/contrib/sqla/view.py:1439
+#: ../flask_admin/contrib/sqla/view.py:1438
 msgid "Are you sure you want to delete selected records?"
 msgstr "Вы дакладна хочаце выдаліць пазначаныя запісы?"
 
-#: ../flask_admin/contrib/peewee/view.py:623
-#: ../flask_admin/contrib/pymongo/view.py:424
-#: ../flask_admin/contrib/sqla/view.py:1461 ../flask_admin/model/base.py:2500
+#: ../flask_admin/contrib/mongoengine/view.py:738
+#: ../flask_admin/contrib/peewee/view.py:624
+#: ../flask_admin/contrib/pymongo/view.py:425
+#: ../flask_admin/contrib/sqla/view.py:1461 ../flask_admin/model/base.py:2503
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
@@ -310,25 +343,19 @@ msgstr[0] "Запіс быў паспяхова выдалены."
 msgstr[1] "%(count)s запісы былі паспяхова выдаленыя."
 msgstr[2] "%(count)s запісаў было паспяхова выдалена."
 
+#: ../flask_admin/contrib/mongoengine/view.py:748
 #: ../flask_admin/contrib/peewee/view.py:634
 #: ../flask_admin/contrib/pymongo/view.py:434
-#: ../flask_admin/contrib/sqla/view.py:1474
+#: ../flask_admin/contrib/sqla/view.py:1473
 #, python-format
 msgid "Failed to delete records. %(error)s"
 msgstr "Памылка выдалення запісаў. %(error)s"
 
-#: ../flask_admin/contrib/sqla/fields.py:150
-#: ../flask_admin/contrib/sqla/fields.py:209
-#: ../flask_admin/contrib/sqla/fields.py:214 ../flask_admin/model/fields.py:224
-#: ../flask_admin/model/fields.py:284
-msgid "Not a valid choice"
-msgstr "Няслушны выбар"
-
-#: ../flask_admin/contrib/sqla/fields.py:245
+#: ../flask_admin/contrib/sqla/fields.py:246
 msgid "Key"
 msgstr "Ключ"
 
-#: ../flask_admin/contrib/sqla/fields.py:246
+#: ../flask_admin/contrib/sqla/fields.py:247
 msgid "Value"
 msgstr "Значэнне"
 
@@ -336,7 +363,7 @@ msgstr "Значэнне"
 msgid "Already exists."
 msgstr "Ужо йснуе."
 
-#: ../flask_admin/contrib/sqla/validators.py:80
+#: ../flask_admin/contrib/sqla/validators.py:81
 #, python-format
 msgid "At least %(num)d item is required"
 msgid_plural "At least %(num)d items are required"
@@ -352,7 +379,7 @@ msgstr ""
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
 msgstr ""
 
-#: ../flask_admin/contrib/sqla/view.py:1317
+#: ../flask_admin/contrib/sqla/view.py:1316
 #, python-format
 msgid "Integrity error. %(message)s"
 msgstr "Памылка цэласнасці. %(message)s"
@@ -369,7 +396,7 @@ msgstr "Хібны выбар: немагчыма пераўтварыць ты�
 msgid "Invalid JSON"
 msgstr "Хібны JSON"
 
-#: ../flask_admin/form/upload.py:245
+#: ../flask_admin/form/upload.py:241
 msgid "Invalid file extension"
 msgstr "Хібнае пашырэнне файла"
 
@@ -377,32 +404,32 @@ msgstr "Хібнае пашырэнне файла"
 msgid "This field requires at least one item."
 msgstr ""
 
-#: ../flask_admin/model/base.py:1924
+#: ../flask_admin/model/base.py:1926
 msgid "There are no items in the table."
 msgstr "Няма элементаў ў табліцы."
 
-#: ../flask_admin/model/base.py:1933
+#: ../flask_admin/model/base.py:1935
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
 msgstr "Хібнае значэнне цэдалю: %(value)s"
 
-#: ../flask_admin/model/base.py:2356
+#: ../flask_admin/model/base.py:2358
 msgid "Record was successfully created."
 msgstr "Запіс быў паспяхова створаны."
 
-#: ../flask_admin/model/base.py:2404 ../flask_admin/model/base.py:2459
-#: ../flask_admin/model/base.py:2493 ../flask_admin/model/base.py:2712
+#: ../flask_admin/model/base.py:2406 ../flask_admin/model/base.py:2461
+#: ../flask_admin/model/base.py:2495 ../flask_admin/model/base.py:2714
 msgid "Record does not exist."
 msgstr "Запіс не йснуе."
 
-#: ../flask_admin/model/base.py:2413 ../flask_admin/model/base.py:2717
+#: ../flask_admin/model/base.py:2415 ../flask_admin/model/base.py:2719
 msgid "Record was successfully saved."
 msgstr "Запіс быў паспяхова захаваны."
 
-#: ../flask_admin/model/base.py:2656
+#: ../flask_admin/model/base.py:2658
 #, python-format
-msgid "Export type \"%(type)s\" not supported."
-msgstr "Тып экспарта \"%(type)s\" не падтрымліваецца."
+msgid "Export type \"%(type)s\" is not supported."
+msgstr ""
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
 msgid "Yes"
@@ -597,3 +624,6 @@ msgstr "Выберыце, калі ласка, як найменш адзін з
 
 #~ msgid "File \"%s\" already exists."
 #~ msgstr "Файл \"%s\" ужо йснуе."
+
+#~ msgid "Export type \"%(type)s\" not supported."
+#~ msgstr "Тып экспарта \"%(type)s\" не падтрымліваецца."

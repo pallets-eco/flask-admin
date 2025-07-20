@@ -25,6 +25,7 @@ sqlalchemy                  SQLAlchemy, for accessing many database engines
 sqlalchemy-with-utils       As above, with some additional utilities for different data types
 geoalchemy                  As with SQLAlchemy, but adding support for geographic data and maps
 pymongo                     Supports the PyMongo library
+mongoengine                 Supports the MongoEngine library
 peewee                      Supports the peewee library
 s3                          Supports file admin using AWS S3
 azure-blob-storage          Supports file admin using Azure blob store
