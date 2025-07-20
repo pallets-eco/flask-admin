@@ -44,9 +44,9 @@ Flask-Admin is an active project, well-tested and production-ready.
 
 Several usage examples are included in the */examples* folder. Please add your own, or improve on the existing examples, and submit a *pull-request*.
 
-### How to run this example
+### How to run SQLAlchemy example
 
-Clone the repository and navigate to this example:
+Clone the repository and navigate to SQLAlchemy example:
 
 ```shell
 git clone https://github.com/pallets-eco/flask-admin.git
