@@ -338,8 +338,8 @@ msgstr "ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ |"
 #, python-format
 msgid "At least %(num)d item is required"
 msgid_plural "At least %(num)d items are required"
-msgstr[0] "لږ تر لږه %(num)d توکي اړین دي"
-msgstr[1] "لږ تر لږه %(num)d توکي اړین دي"
+msgstr[0] "ਘੱਟੋ-ਘੱਟ %(num)d ਆਈਟਮ ਦੀ ਲੋੜ ਹੈ।"
+msgstr[1] "ਘੱਟੋ-ਘੱਟ %(num)d ਆਈਟਮਾਂ ਦੀ ਲੋੜ ਹੈ।"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
