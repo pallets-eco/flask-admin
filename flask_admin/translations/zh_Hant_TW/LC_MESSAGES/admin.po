@@ -328,7 +328,7 @@ msgstr "選擇的值不正確"
 
 #: ../flask_admin/contrib/sqla/fields.py:245
 msgid "Key"
-msgstr "鑰匙"
+msgstr "鍵"
 
 #: ../flask_admin/contrib/sqla/fields.py:246
 msgid "Value"
