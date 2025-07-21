@@ -327,7 +327,7 @@ msgstr "Кључ"
 
 #: ../flask_admin/contrib/sqla/fields.py:246
 msgid "Value"
-msgstr "Валуе"
+msgstr "Вредност"
 
 #: ../flask_admin/contrib/sqla/validators.py:43
 msgid "Already exists."
