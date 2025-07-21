@@ -343,11 +343,11 @@ msgstr[1] "Mindestens %(num)d Elemente sind erforderlich"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr ""
+msgstr "Kein gültiger ISO-Währungscode (z. B. USD, EUR, CNY)."
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
-msgstr ""
+msgstr "Keine gültige Farbe (z. B. \"red\", \"#f00\", \"#ff0000\")."
 
 #: ../flask_admin/contrib/sqla/view.py:1317
 #, python-format
@@ -372,7 +372,7 @@ msgstr "Ungültiger Dateityp"
 
 #: ../flask_admin/form/validators.py:18
 msgid "This field requires at least one item."
-msgstr ""
+msgstr "Dieses Feld erfordert mindestens ein Element."
 
 #: ../flask_admin/model/base.py:1924
 msgid "There are no items in the table."

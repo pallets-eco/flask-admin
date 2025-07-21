@@ -346,11 +346,11 @@ msgstr[2] "По крайней мере %(num)d элементов требуе�
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr ""
+msgstr "Недействительный код валюты ISO (например, USD, EUR, CNY)."
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
-msgstr ""
+msgstr "Недопустимый цвет (например, \"red\", \"#f00\", \"#ff0000\")."
 
 #: ../flask_admin/contrib/sqla/view.py:1317
 #, python-format
@@ -375,7 +375,7 @@ msgstr "Недопустимое расширение"
 
 #: ../flask_admin/form/validators.py:18
 msgid "This field requires at least one item."
-msgstr ""
+msgstr "В этом поле необходимо указать хотя бы один элемент."
 
 #: ../flask_admin/model/base.py:1924
 msgid "There are no items in the table."

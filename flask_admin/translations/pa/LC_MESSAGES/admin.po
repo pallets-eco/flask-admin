@@ -4,8 +4,8 @@ msgstr ""
 "Project-Id-Version:  flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-06-03 07:06+0100\n"
-"PO-Revision-Date: 2017-02-07 01:19-0500\n"
-"Last-Translator: mrjoes <serge.koval@gmail.com>\n"
+"PO-Revision-Date: 2025-07-07 20:12-0500\n"
+"Last-Translator: ElLorans <lorenzo.cerreta@gmail.com>\n"
 "Language: pa_IN\n"
 "Language-Team: Punjabi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -209,7 +209,7 @@ msgstr "ਬਦਲੋ"
 
 #: ../flask_admin/contrib/fileadmin/s3.py:233
 msgid "Cannot operate on non empty directories"
-msgstr ""
+msgstr "ਗੈਰ-ਖਾਲੀ ਡਾਇਰੈਕਟਰੀਆਂ 'ਤੇ ਕੰਮ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ"
 
 #: ../flask_admin/contrib/peewee/filters.py:47
 #: ../flask_admin/contrib/pymongo/filters.py:49
@@ -324,11 +324,11 @@ msgstr "ਸਹੀ ਚੋਣ ਨਹੀਂ ਹੈ "
 
 #: ../flask_admin/contrib/sqla/fields.py:245
 msgid "Key"
-msgstr ""
+msgstr "ਕੁੰਜੀ"
 
 #: ../flask_admin/contrib/sqla/fields.py:246
 msgid "Value"
-msgstr ""
+msgstr "ਮੁੱਲ"
 
 #: ../flask_admin/contrib/sqla/validators.py:43
 msgid "Already exists."
@@ -338,16 +338,16 @@ msgstr "ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ |"
 #, python-format
 msgid "At least %(num)d item is required"
 msgid_plural "At least %(num)d items are required"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "لږ تر لږه %(num)d توکي اړین دي"
+msgstr[1] "لږ تر لږه %(num)d توکي اړین دي"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr ""
+msgstr "ਇੱਕ ਵੈਧ ISO ਮੁਦਰਾ ਕੋਡ ਨਹੀਂ ਹੈ (ਉਦਾਹਰਨ ਲਈ USD, EUR, CNY)।"
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
-msgstr ""
+msgstr "ਵੈਧ ਰੰਗ ਨਹੀਂ ਹੈ (ਉਦਾਹਰਨ ਲਈ \"red\", \"#f00\", \"#ff0000\")।"
 
 #: ../flask_admin/contrib/sqla/view.py:1317
 #, python-format
@@ -372,7 +372,7 @@ msgstr "ਨਾ ਵਾਜਿਬ ਫ਼ਾਈਲ ਐਕਸਟੇਨਸ਼ਨ"
 
 #: ../flask_admin/form/validators.py:18
 msgid "This field requires at least one item."
-msgstr ""
+msgstr "ਇਸ ਖੇਤਰ ਲਈ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਆਈਟਮ ਦੀ ਲੋੜ ਹੈ।"
 
 #: ../flask_admin/model/base.py:1924
 msgid "There are no items in the table."
@@ -399,7 +399,7 @@ msgstr "ਰਿਕੌਰਡ ਕਾਮਯਾਬੀ ਨਾਲ ਸਾਂਭਿਆ �
 #: ../flask_admin/model/base.py:2656
 #, python-format
 msgid "Export type \"%(type)s\" not supported."
-msgstr ""
+msgstr "ਨਿਰਯਾਤ ਕਿਸਮ \"%(type)s\" ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।"
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
 msgid "Yes"
@@ -427,11 +427,11 @@ msgstr "ਰਿਕੌਰਡ ਬਦਲੋ"
 #: ../flask_admin/model/template.py:114
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr ""
+msgstr "ਰਿਕਾਰਡ ਮਿਟਾਓ"
 
 #: ../flask_admin/model/widgets.py:71
 msgid "Please select model"
-msgstr ""
+msgstr "ਕਿਰਪਾ ਕਰਕੇ ਮਾਡਲ ਚੁਣੋ"
 
 #: ../flask_admin/templates/bootstrap4/admin/actions.html:5
 msgid "With selected"
@@ -449,11 +449,11 @@ msgstr "ਰੱਦ ਕਰੋ"
 
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:290
 msgid "Save and Add Another"
-msgstr ""
+msgstr "ਸੇਵ ਕਰੋ ਅਤੇ ਹੋਰ ਸ਼ਾਮਲ ਕਰੋ"
 
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:293
 msgid "Save and Continue Editing"
-msgstr ""
+msgstr "ਸੇਵ ਕਰੋ ਅਤੇ ਹੋਰ ਸ਼ਾਮਲ ਕਰੋ"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:10
 msgid "Root"
@@ -506,7 +506,7 @@ msgstr "ਬਣਾਓ"
 #: ../flask_admin/templates/bootstrap4/admin/model/details.html:21
 #: ../flask_admin/templates/bootstrap4/admin/model/edit.html:26
 msgid "Details"
-msgstr ""
+msgstr "ਵੇਰਵੇ"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/details.html:28
 #: ../flask_admin/templates/bootstrap4/admin/model/modals/details.html:15
@@ -525,7 +525,7 @@ msgstr "ਕੀ ਤੁਹਾਨੂੰ ਯਕੀਨ ਹੈ ਕਿ ਤੁਸੀਂ 
 
 #: ../flask_admin/templates/bootstrap4/admin/model/inline_list_base.html:33
 msgid "New"
-msgstr ""
+msgstr "ਨਵਾਂ"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/inline_list_base.html:43
 msgid "Add"
@@ -539,7 +539,7 @@ msgstr "ਫਿਲਟਰ ਜੋੜੋ"
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:19
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:26
 msgid "Export"
-msgstr ""
+msgstr "ਨਿਰਯਾਤ"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:49
 msgid "Apply"
@@ -562,7 +562,7 @@ msgstr "ਲੱਭੋ"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:102
 msgid "items"
-msgstr ""
+msgstr "ਆਈਟਮਾਂ"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:23
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:25

@@ -4,8 +4,8 @@ msgstr ""
 "Project-Id-Version:  flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-06-03 07:06+0100\n"
-"PO-Revision-Date: 2017-02-07 01:19-0500\n"
-"Last-Translator: mrjoes <serge.koval@gmail.com>\n"
+"PO-Revision-Date: 2025-07-07 20:12-0500\n"
+"Last-Translator: ElLorans <lorenzo.cerreta@gmail.com>\n"
 "Language: ro_RO\n"
 "Language-Team: Romanian\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100>0 && "
@@ -210,7 +210,7 @@ msgstr "Editare"
 
 #: ../flask_admin/contrib/fileadmin/s3.py:233
 msgid "Cannot operate on non empty directories"
-msgstr ""
+msgstr "Nu se poate opera pe directoare care nu sunt goale"
 
 #: ../flask_admin/contrib/peewee/filters.py:47
 #: ../flask_admin/contrib/pymongo/filters.py:49
@@ -326,11 +326,11 @@ msgstr "Nu o alegere valabilă"
 
 #: ../flask_admin/contrib/sqla/fields.py:245
 msgid "Key"
-msgstr ""
+msgstr "Cheie"
 
 #: ../flask_admin/contrib/sqla/fields.py:246
 msgid "Value"
-msgstr ""
+msgstr "Valoare"
 
 #: ../flask_admin/contrib/sqla/validators.py:43
 msgid "Already exists."
@@ -340,17 +340,17 @@ msgstr "Există deja."
 #, python-format
 msgid "At least %(num)d item is required"
 msgid_plural "At least %(num)d items are required"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Este necesar cel puțin %(num)d element"
+msgstr[1] "Sunt necesare cel puțin %(num)d elemente"
+msgstr[2] "Sunt necesare cel puțin %(num)d de elemente"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr ""
+msgstr "Nu este un cod de monedă ISO valid (de exemplu, USD, EUR, CNY)."
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
-msgstr ""
+msgstr "Nu este o culoare validă (de exemplu, \"red\", \"#f00\", \"#ff0000\")."
 
 #: ../flask_admin/contrib/sqla/view.py:1317
 #, python-format
@@ -375,7 +375,7 @@ msgstr "Extensia de fişier nevalid"
 
 #: ../flask_admin/form/validators.py:18
 msgid "This field requires at least one item."
-msgstr ""
+msgstr "Acest câmp necesită cel puțin un articol."
 
 #: ../flask_admin/model/base.py:1924
 msgid "There are no items in the table."
@@ -402,7 +402,7 @@ msgstr "Înregistrarea a fost salvată cu succes."
 #: ../flask_admin/model/base.py:2656
 #, python-format
 msgid "Export type \"%(type)s\" not supported."
-msgstr ""
+msgstr "Tipul de export „%(type)s” nu este acceptat."
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
 msgid "Yes"
@@ -430,11 +430,11 @@ msgstr "Editaţi înregistrarea"
 #: ../flask_admin/model/template.py:114
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr ""
+msgstr "Șterge înregistrarea"
 
 #: ../flask_admin/model/widgets.py:71
 msgid "Please select model"
-msgstr ""
+msgstr "Vă rugăm să selectați modelul"
 
 #: ../flask_admin/templates/bootstrap4/admin/actions.html:5
 msgid "With selected"
@@ -452,11 +452,11 @@ msgstr "Revocare"
 
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:290
 msgid "Save and Add Another"
-msgstr ""
+msgstr "Salvați și adăugați altul"
 
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:293
 msgid "Save and Continue Editing"
-msgstr ""
+msgstr "Salvați și continuați editarea"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:10
 msgid "Root"
@@ -507,7 +507,7 @@ msgstr "Crea"
 #: ../flask_admin/templates/bootstrap4/admin/model/details.html:21
 #: ../flask_admin/templates/bootstrap4/admin/model/edit.html:26
 msgid "Details"
-msgstr ""
+msgstr "Detalii"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/details.html:28
 #: ../flask_admin/templates/bootstrap4/admin/model/modals/details.html:15
@@ -526,7 +526,7 @@ msgstr "Sigur ștergeți această înregistrare?"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/inline_list_base.html:33
 msgid "New"
-msgstr ""
+msgstr "Nou"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/inline_list_base.html:43
 msgid "Add"
@@ -540,7 +540,7 @@ msgstr "Adauga filtru"
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:19
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:26
 msgid "Export"
-msgstr ""
+msgstr "Export"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:49
 msgid "Apply"
@@ -563,7 +563,7 @@ msgstr "Căutare"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:102
 msgid "items"
-msgstr ""
+msgstr "articole"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:23
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:25
