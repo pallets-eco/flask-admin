@@ -8,6 +8,7 @@ from flask_admin import Admin
 def db():
     db = peewee.SqliteDatabase(":memory:")
     yield db
+    db.close()
 
 
 @pytest.fixture
