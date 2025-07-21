@@ -341,7 +341,7 @@ msgstr[0] "至少需要 %(num)d 个选项"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr "不是有效的 ISO 货币代码（例如 USD、EUR、CNY)."
+msgstr "不是有效的 ISO 货币代码（例如 USD、EUR、CNY)。"
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
