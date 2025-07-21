@@ -453,7 +453,7 @@ msgstr "ਸੇਵ ਕਰੋ ਅਤੇ ਹੋਰ ਸ਼ਾਮਲ ਕਰੋ"
 
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:293
 msgid "Save and Continue Editing"
-msgstr "ਸੇਵ ਕਰੋ ਅਤੇ ਹੋਰ ਸ਼ਾਮਲ ਕਰੋ"
+msgstr "ਸੇਵ ਕਰੋ ਅਤੇ ਸੰਪਾਦਨ ਜਾਰੀ ਰੱਖੋ"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:10
 msgid "Root"
