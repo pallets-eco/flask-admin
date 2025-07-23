@@ -1,0 +1,2 @@
+# Install Flask-Admin with required extras from the root of the repository
+../..[sqlmodel-with-utils,export,translation]

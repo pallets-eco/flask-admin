@@ -59,10 +59,23 @@ images = ["pillow>=10.0.0"]
 export = ["tablib>=3.0.0"]
 rediscli = ["redis>=4.0.0"]
 translation = ["flask-babel>=3.0.1"]
+# SQLModel support
+# IMPORTANT: SQLModel backend is incompatible with Flask-SQLAlchemy due to session management conflicts
+# Choose either Flask-Admin[sqlalchemy] OR Flask-Admin[sqlmodel], not both
+sqlmodel = [
+    "sqlmodel>=0.0.20",
+]
+sqlmodel-with-utils = [
+    "Flask-Admin[sqlmodel]",
+    "sqlalchemy_utils>=0.38.0",
+    "sqlalchemy-citext>=1.8.0",
+    "colour>=0.1.5",
+    "email_validator>=2",
+    "arrow>=0.13.0",
+]
+# NOTE: 'all' excludes database backends due to incompatibilities
+# Use 'all-sqlalchemy' or 'all-sqlmodel' instead for complete installations
 all = [
-    "Flask-Admin[sqlalchemy]",
-    "Flask-Admin[sqlalchemy-with-utils]",
-    "Flask-Admin[geoalchemy]",
     "Flask-Admin[pymongo]",
     "Flask-Admin[peewee]",
     "Flask-Admin[s3]",
@@ -71,6 +84,17 @@ all = [
     "Flask-Admin[export]",
     "Flask-Admin[rediscli]",
     "Flask-Admin[translation]",
+]
+all-sqlalchemy = [
+    "Flask-Admin[all]",
+    "Flask-Admin[sqlalchemy]",
+    "Flask-Admin[sqlalchemy-with-utils]",
+    "Flask-Admin[geoalchemy]",
+]
+all-sqlmodel = [
+    "Flask-Admin[all]",
+    "Flask-Admin[sqlmodel]",
+    "Flask-Admin[sqlmodel-with-utils]",
 ]
 
 [dependency-groups]

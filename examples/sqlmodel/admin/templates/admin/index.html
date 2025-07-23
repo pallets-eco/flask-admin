@@ -1,0 +1,21 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+{{ super() }}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <h1>Flask-Admin {{ _gettext('example') }}</h1>
+            <p class="lead">
+                Basic SQLAlchemy model views.
+            </p>
+            <p>
+                This example shows how to add basic CRUD-views for your SQLAlchemy models.
+            </p>
+            <p>
+                The views are generated automatically, but it is perfectly possible to customize them to suit your needs.
+            </p>
+            <a class="btn btn-primary" href="/"><i class="glyphicon glyphicon-chevron-left"></i> {{ _gettext('Back') }}</a>
+        </div>
+    </div>
+</div>
+{% endblock body %}
