@@ -606,8 +606,25 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
                         return self.conv_python_enum(pydantic_type, column, kwargs)
 
                     # Try to get converter for the Pydantic type
+                    # Handle Annotated types that don't have __name__ directly
+                    try:
+                        type_name = pydantic_type.__name__
+                        module_name = pydantic_type.__module__
+                    except AttributeError:
+                        # For Annotated types like UUID1, UUID4, get the origin type
+                        if hasattr(pydantic_type, "__origin__"):
+                            origin_type = pydantic_type.__origin__ # type: ignore
+                            type_name = getattr(
+                                origin_type, "__name__", str(origin_type)
+                            )
+                            module_name = getattr(origin_type, "__module__", "")
+                        else:
+                            # Fallback - use string representation
+                            type_name = str(pydantic_type)
+                            module_name = ""
+
                     pydantic_type_name = (
-                        f"{pydantic_type.__module__}.{pydantic_type.__name__}"
+                        f"{module_name}.{type_name}" if module_name else type_name
                     )
                     pydantic_converter = self.converters.get(pydantic_type_name)
                     if pydantic_converter:

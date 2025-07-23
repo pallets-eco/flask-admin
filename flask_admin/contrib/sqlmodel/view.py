@@ -1462,6 +1462,13 @@ class SQLModelView(BaseModelView):
             flash(gettext("Failed to update record. %(error)s", error=str(ex)), "error")
             log.exception("Failed to update record.")
             self.session.rollback()
+            # Refresh the model to clear any invalid values that might have been
+            # assigned during populate_obj before the exception occurred
+            try:
+                self.session.refresh(model)
+            except Exception:
+                # If refresh fails, we can't do much more
+                pass
             return False
         else:
             self.after_model_change(form, model, False)

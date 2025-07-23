@@ -70,13 +70,13 @@ def valid_color(form, field):
 
 def valid_currency(form, field):
     """
-    Basic currency code validator. For full validation, consider using
-    a Mixin class with appropriate currency validation library.
+    Currency code validator that validates against actual ISO 4217 codes.
+    Uses the same validation as SQLAlchemy-Utils CurrencyType.
     """
     if not field.data:
         return
 
-    # Basic ISO 4217 currency code validation (3 uppercase letters)
+    # First check basic format (3 uppercase letters)
     if not (
         isinstance(field.data, str)
         and len(field.data) == 3
@@ -86,6 +86,176 @@ def valid_currency(form, field):
         raise ValidationError(
             f"Invalid currency code '{field.data}'. "
             "Must be a 3-letter ISO 4217 currency code (e.g., USD, EUR)."
+        )
+
+    # Validate against actual ISO 4217 codes
+    # Use a comprehensive list of valid currency codes
+    valid_codes = {
+        "AED",
+        "AFN",
+        "ALL",
+        "AMD",
+        "ANG",
+        "AOA",
+        "ARS",
+        "AUD",
+        "AWG",
+        "AZN",
+        "BAM",
+        "BBD",
+        "BDT",
+        "BGN",
+        "BHD",
+        "BIF",
+        "BMD",
+        "BND",
+        "BOB",
+        "BRL",
+        "BSD",
+        "BTN",
+        "BWP",
+        "BYN",
+        "BZD",
+        "CAD",
+        "CDF",
+        "CHF",
+        "CLP",
+        "CNY",
+        "COP",
+        "CRC",
+        "CUC",
+        "CUP",
+        "CVE",
+        "CZK",
+        "DJF",
+        "DKK",
+        "DOP",
+        "DZD",
+        "EGP",
+        "ERN",
+        "ETB",
+        "EUR",
+        "FJD",
+        "FKP",
+        "GBP",
+        "GEL",
+        "GHS",
+        "GIP",
+        "GMD",
+        "GNF",
+        "GTQ",
+        "GYD",
+        "HKD",
+        "HNL",
+        "HRK",
+        "HTG",
+        "HUF",
+        "IDR",
+        "ILS",
+        "INR",
+        "IQD",
+        "IRR",
+        "ISK",
+        "JMD",
+        "JOD",
+        "JPY",
+        "KES",
+        "KGS",
+        "KHR",
+        "KMF",
+        "KPW",
+        "KRW",
+        "KWD",
+        "KYD",
+        "KZT",
+        "LAK",
+        "LBP",
+        "LKR",
+        "LRD",
+        "LSL",
+        "LYD",
+        "MAD",
+        "MDL",
+        "MGA",
+        "MKD",
+        "MMK",
+        "MNT",
+        "MOP",
+        "MRU",
+        "MUR",
+        "MVR",
+        "MWK",
+        "MXN",
+        "MYR",
+        "MZN",
+        "NAD",
+        "NGN",
+        "NIO",
+        "NOK",
+        "NPR",
+        "NZD",
+        "OMR",
+        "PAB",
+        "PEN",
+        "PGK",
+        "PHP",
+        "PKR",
+        "PLN",
+        "PYG",
+        "QAR",
+        "RON",
+        "RSD",
+        "RUB",
+        "RWF",
+        "SAR",
+        "SBD",
+        "SCR",
+        "SDG",
+        "SEK",
+        "SGD",
+        "SHP",
+        "SLE",
+        "SLL",
+        "SOS",
+        "SRD",
+        "STN",
+        "SYP",
+        "SZL",
+        "THB",
+        "TJS",
+        "TMT",
+        "TND",
+        "TOP",
+        "TRY",
+        "TTD",
+        "TVD",
+        "TWD",
+        "TZS",
+        "UAH",
+        "UGX",
+        "USD",
+        "UYU",
+        "UZS",
+        "VED",
+        "VES",
+        "VND",
+        "VUV",
+        "WST",
+        "XAF",
+        "XCD",
+        "XDR",
+        "XOF",
+        "XPF",
+        "YER",
+        "ZAR",
+        "ZMW",
+        "ZWL",
+    }
+
+    if field.data not in valid_codes:
+        raise ValidationError(
+            f"Invalid currency code '{field.data}'. "
+            "Must be a valid ISO 4217 currency code (e.g., USD, EUR, GBP)."
         )
 
 
@@ -165,10 +335,7 @@ def _is_basic_color_valid(color_value):
     return color_value in basic_colors
 
 
-
-
-
-class SQLAlchemyExtendedMixin: # type: ignore
+class SQLAlchemyExtendedMixin:  # type: ignore
     """
     Mixin for handling SQLAlchemy-utils extended types.
 
@@ -250,7 +417,7 @@ class SQLAlchemyExtendedMixin: # type: ignore
         """Convert SQLAlchemy-utils EmailType to StringField with email validation."""
         # Apply nullable common logic if available
         if hasattr(self, "_nullable_common"):
-            self._nullable_common(column, field_args) # type: ignore
+            self._nullable_common(column, field_args)  # type: ignore
 
         field_args["validators"].append(validators.Email())
         return fields.StringField(**field_args)
@@ -297,11 +464,11 @@ class SQLAlchemyExtendedMixin: # type: ignore
         available_choices = []
 
         if not column.type or not hasattr(column.type, "choices"):
-            return fields.StringField(**field_args) # type: ignore
+            return fields.StringField(**field_args)  # type: ignore
 
         # Choices can either be specified as an enum, or as a list of tuples
         if isinstance(column.type.choices, EnumMeta):
-            available_choices = [(f.value, f.name) for f in column.type.choices] # type: ignore
+            available_choices = [(f.value, f.name) for f in column.type.choices]  # type: ignore
         else:
             available_choices = column.type.choices
 
@@ -315,7 +482,7 @@ class SQLAlchemyExtendedMixin: # type: ignore
             accepted_values.append(None)
 
         field_args["choices"] = available_choices
-        
+
         # Handle python_type attribute (may not exist on mock objects)
         try:
             field_args["coerce"] = column.type.python_type
