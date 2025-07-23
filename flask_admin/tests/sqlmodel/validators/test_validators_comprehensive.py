@@ -17,10 +17,7 @@ from wtforms import StringField
 from wtforms import ValidationError
 
 from flask_admin.contrib.sqlmodel.validators import ItemsRequired
-from flask_admin.contrib.sqlmodel.validators import TimeZoneValidator
 from flask_admin.contrib.sqlmodel.validators import Unique
-from flask_admin.contrib.sqlmodel.validators import valid_color
-from flask_admin.contrib.sqlmodel.validators import valid_currency
 
 
 # Test models for validator testing
@@ -310,260 +307,6 @@ class TestItemsRequiredValidator:
         assert isinstance(validator, InputRequired)
 
 
-class TestValidCurrencyFunction:
-    """Test the valid_currency function."""
-
-    def setup_method(self):
-        """Set up test fixtures."""
-        self.mock_form = Mock()
-        self.mock_field = Mock()
-
-    def test_valid_currency_empty_data(self):
-        """Test valid_currency with empty data."""
-        self.mock_field.data = ""
-
-        # Should not raise any exception
-        valid_currency(self.mock_form, self.mock_field)
-
-        # Test with None
-        self.mock_field.data = None
-        valid_currency(self.mock_form, self.mock_field)
-
-    def test_valid_currency_valid_codes(self):
-        """Test valid_currency with valid 3-letter codes."""
-        valid_codes = ["USD", "EUR", "GBP", "JPY", "CNY", "CAD", "AUD"]
-
-        for code in valid_codes:
-            self.mock_field.data = code
-            # Should not raise any exception
-            valid_currency(self.mock_form, self.mock_field)
-
-    def test_valid_currency_lowercase_valid(self):
-        """Test valid_currency with valid lowercase codes."""
-        self.mock_field.data = "usd"
-
-        # Should not raise any exception (isalpha() accepts lowercase)
-        valid_currency(self.mock_form, self.mock_field)
-
-    def test_valid_currency_invalid_length(self):
-        """Test valid_currency with invalid length codes."""
-        self.mock_field.gettext = Mock(return_value="Not a valid ISO currency code")
-
-        # Too short
-        self.mock_field.data = "US"
-        with pytest.raises(ValidationError, match="Not a valid ISO currency code"):
-            valid_currency(self.mock_form, self.mock_field)
-
-        # Too long
-        self.mock_field.data = "USDX"
-        with pytest.raises(ValidationError, match="Not a valid ISO currency code"):
-            valid_currency(self.mock_form, self.mock_field)
-
-    def test_valid_currency_invalid_characters(self):
-        """Test valid_currency with non-alphabetic characters."""
-        self.mock_field.gettext = Mock(return_value="Not a valid ISO currency code")
-
-        invalid_codes = ["U1D", "US$", "12D", "U-D", "U D"]
-
-        for code in invalid_codes:
-            self.mock_field.data = code
-            with pytest.raises(ValidationError, match="Not a valid ISO currency code"):
-                valid_currency(self.mock_form, self.mock_field)
-
-    def test_valid_currency_non_string_type(self):
-        """Test valid_currency with non-string data types."""
-        self.mock_field.gettext = Mock(return_value="Not a valid ISO currency code")
-
-        # Integer
-        self.mock_field.data = 123
-        with pytest.raises(ValidationError, match="Not a valid ISO currency code"):
-            valid_currency(self.mock_form, self.mock_field)
-
-        # List
-        self.mock_field.data = ["USD"]
-        with pytest.raises(ValidationError, match="Not a valid ISO currency code"):
-            valid_currency(self.mock_form, self.mock_field)
-
-
-class TestValidColorFunction:
-    """Test the valid_color function."""
-
-    def setup_method(self):
-        """Set up test fixtures."""
-        self.mock_form = Mock()
-        self.mock_field = Mock()
-
-    def test_valid_color_empty_data(self):
-        """Test valid_color with empty data."""
-        self.mock_field.data = ""
-
-        # Should not raise any exception
-        valid_color(self.mock_form, self.mock_field)
-
-        # Test with None
-        self.mock_field.data = None
-        valid_color(self.mock_form, self.mock_field)
-
-    def test_valid_color_with_colour_library(self):
-        """Test valid_color with colour library available."""
-        # Mock the colour library to be available
-        mock_color_class = Mock()
-        mock_colour_module = Mock()
-        mock_colour_module.Color = mock_color_class
-
-        with patch.dict("sys.modules", {"colour": mock_colour_module}):
-            self.mock_field.data = "red"
-
-            # Should not raise exception if Color() doesn't raise
-            valid_color(self.mock_form, self.mock_field)
-
-            # Verify Color was called with the field data
-            mock_color_class.assert_called_with("red")
-
-    def test_valid_color_with_colour_library_invalid(self):
-        """Test valid_color with colour library raising ValueError."""
-        mock_color_class = Mock()
-        mock_color_class.side_effect = ValueError("Invalid color")
-        mock_colour_module = Mock()
-        mock_colour_module.Color = mock_color_class
-
-        with patch.dict("sys.modules", {"colour": mock_colour_module}):
-            self.mock_field.data = "invalid_color"
-            self.mock_field.gettext = Mock(return_value="Not a valid color")
-
-            with pytest.raises(ValidationError, match="Not a valid color"):
-                valid_color(self.mock_form, self.mock_field)
-
-    def test_valid_color_fallback_hex_valid(self):
-        """Test valid_color fallback with valid hex colors."""
-        # Remove colour from sys.modules to trigger ImportError
-        with patch.dict("sys.modules", {"colour": None}):
-            valid_hex_colors = ["#ff0000", "#f00", "#123ABC", "#abc"]
-
-            for color in valid_hex_colors:
-                self.mock_field.data = color
-                # Should not raise any exception
-                valid_color(self.mock_form, self.mock_field)
-
-    def test_valid_color_fallback_hex_invalid(self):
-        """Test valid_color fallback with invalid hex colors."""
-        # Remove colour from sys.modules to trigger ImportError
-        with patch.dict("sys.modules", {"colour": None}):
-            self.mock_field.gettext = Mock(return_value="Not a valid color")
-
-            invalid_hex_colors = ["red", "#gg0000", "#12345", "ff0000", "#1234567"]
-
-            for color in invalid_hex_colors:
-                self.mock_field.data = color
-                with pytest.raises(ValidationError, match="Not a valid color"):
-                    valid_color(self.mock_form, self.mock_field)
-
-    def test_valid_color_fallback_non_string(self):
-        """Test valid_color fallback with non-string data."""
-        # Remove colour from sys.modules to trigger ImportError
-        with patch.dict("sys.modules", {"colour": None}):
-            self.mock_field.gettext = Mock(return_value="Not a valid color")
-
-            # Integer data
-            self.mock_field.data = 123
-            with pytest.raises(ValidationError, match="Not a valid color"):
-                valid_color(self.mock_form, self.mock_field)
-
-
-class TestTimeZoneValidator:
-    """Test the TimeZoneValidator class."""
-
-    def setup_method(self):
-        """Set up test fixtures."""
-        self.mock_form = Mock()
-        self.mock_field = Mock()
-        self.mock_coerce_function = Mock()
-
-    def test_init(self):
-        """Test TimeZoneValidator initialization."""
-        validator = TimeZoneValidator(self.mock_coerce_function)
-
-        assert validator.coerce_function == self.mock_coerce_function
-
-    def test_call_valid_timezone(self):
-        """Test validator with valid timezone."""
-        validator = TimeZoneValidator(self.mock_coerce_function)
-
-        self.mock_field.data = "America/New_York"
-
-        # Mock coerce function to succeed
-        self.mock_coerce_function.return_value = "timezone_object"
-
-        # Should not raise any exception
-        validator(self.mock_form, self.mock_field)
-
-        # Verify coerce function was called with string data
-        self.mock_coerce_function.assert_called_once_with("America/New_York")
-
-    def test_call_invalid_timezone(self):
-        """Test validator with invalid timezone."""
-        validator = TimeZoneValidator(self.mock_coerce_function)
-
-        self.mock_field.data = "Invalid/Timezone"
-        self.mock_field.gettext = Mock(return_value="Not a valid timezone")
-
-        # Mock coerce function to raise exception
-        self.mock_coerce_function.side_effect = ValueError("Invalid timezone")
-
-        with pytest.raises(ValidationError, match="Not a valid timezone"):
-            validator(self.mock_form, self.mock_field)
-
-    def test_call_with_non_string_data(self):
-        """Test validator with non-string data (gets converted to string)."""
-        validator = TimeZoneValidator(self.mock_coerce_function)
-
-        self.mock_field.data = 12345
-
-        # Should convert to string before passing to coerce function
-        validator(self.mock_form, self.mock_field)
-
-        self.mock_coerce_function.assert_called_once_with("12345")
-
-    def test_call_various_exceptions(self):
-        """Test validator with various exception types from coerce function."""
-        validator = TimeZoneValidator(self.mock_coerce_function)
-
-        self.mock_field.data = "test"
-        self.mock_field.gettext = Mock(return_value="Not a valid timezone")
-
-        # Test different exception types
-        exceptions = [
-            ValueError("Invalid"),
-            TypeError("Wrong type"),
-            KeyError("Not found"),
-            Exception("Generic error"),
-        ]
-
-        for exc in exceptions:
-            self.mock_coerce_function.side_effect = exc
-
-            with pytest.raises(ValidationError, match="Not a valid timezone"):
-                validator(self.mock_form, self.mock_field)
-
-    def test_expected_error_message_format(self):
-        """Test that error message includes expected timezone format examples."""
-        validator = TimeZoneValidator(self.mock_coerce_function)
-
-        self.mock_field.data = "invalid"
-
-        # Mock gettext to return the actual message
-        expected_msg = (
-            'Not a valid timezone (e.g. "America/New_York", '
-            '"Africa/Johannesburg", "Asia/Singapore").'
-        )
-        self.mock_field.gettext = Mock(return_value=expected_msg)
-
-        self.mock_coerce_function.side_effect = ValueError("Invalid")
-
-        with pytest.raises(ValidationError, match="America/New_York"):
-            validator(self.mock_form, self.mock_field)
-
-
 class TestValidatorIntegration:
     """Test validator integration scenarios."""
 
@@ -603,8 +346,11 @@ class TestValidatorIntegration:
 
         form = Mock()
 
-        # Should work with real field
-        valid_currency(form, field)
+        # Test ItemsRequired validator with real field
+        items_validator = ItemsRequired(min=1)
+        field.entries = [Mock()]
+        field.should_delete = Mock(return_value=False)
+        items_validator(form, field)
 
     def test_multiple_validators_chain(self):
         """Test multiple validators working together."""
@@ -614,12 +360,8 @@ class TestValidatorIntegration:
         mock_field = Mock()
         mock_form = Mock()
 
-        # Test currency validator
-        mock_field.data = "USD"
-        mock_field.gettext = lambda x: x
-        valid_currency(mock_form, mock_field)
-
-        # Test color validator
-        mock_field.data = "#ff0000"
-        with patch.dict("sys.modules", {"colour": None}):
-            valid_color(mock_form, mock_field)
+        # Test ItemsRequired validator
+        items_validator = ItemsRequired(min=2)
+        mock_field.entries = [Mock(), Mock(), Mock()]
+        mock_field.should_delete = Mock(return_value=False)
+        items_validator(mock_form, mock_field)

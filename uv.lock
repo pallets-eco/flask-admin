@@ -651,17 +651,6 @@ dependencies = [
 
 [package.optional-dependencies]
 all = [
-    { name = "azure-storage-blob" },
-    { name = "boto3" },
-    { name = "flask-babel" },
-    { name = "peewee" },
-    { name = "pillow" },
-    { name = "pymongo" },
-    { name = "redis" },
-    { name = "tablib" },
-    { name = "wtf-peewee" },
-]
-all-sqlalchemy = [
     { name = "arrow" },
     { name = "azure-storage-blob" },
     { name = "boto3" },
@@ -677,22 +666,6 @@ all-sqlalchemy = [
     { name = "shapely", version = "2.0.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "shapely", version = "2.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "sqlalchemy" },
-    { name = "sqlalchemy-citext" },
-    { name = "sqlalchemy-utils" },
-    { name = "tablib" },
-    { name = "wtf-peewee" },
-]
-all-sqlmodel = [
-    { name = "arrow" },
-    { name = "azure-storage-blob" },
-    { name = "boto3" },
-    { name = "colour" },
-    { name = "email-validator" },
-    { name = "flask-babel" },
-    { name = "peewee" },
-    { name = "pillow" },
-    { name = "pymongo" },
-    { name = "redis" },
     { name = "sqlalchemy-citext" },
     { name = "sqlalchemy-utils" },
     { name = "sqlmodel" },
@@ -742,14 +715,8 @@ sqlalchemy-with-utils = [
     { name = "sqlalchemy-utils" },
 ]
 sqlmodel = [
-    { name = "sqlmodel" },
-]
-sqlmodel-with-utils = [
-    { name = "arrow" },
-    { name = "colour" },
-    { name = "email-validator" },
-    { name = "sqlalchemy-citext" },
-    { name = "sqlalchemy-utils" },
+    { name = "flask-sqlalchemy" },
+    { name = "sqlalchemy" },
     { name = "sqlmodel" },
 ]
 translation = [
@@ -828,31 +795,25 @@ typing = [
 [package.metadata]
 requires-dist = [
     { name = "arrow", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=0.13.0" },
-    { name = "arrow", marker = "extra == 'sqlmodel-with-utils'", specifier = ">=0.13.0" },
     { name = "azure-storage-blob", marker = "extra == 'azure-blob-storage'", specifier = ">=12.0.0" },
     { name = "boto3", marker = "extra == 's3'", specifier = ">=1.33" },
     { name = "colour", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=0.1.5" },
-    { name = "colour", marker = "extra == 'sqlmodel-with-utils'", specifier = ">=0.1.5" },
     { name = "email-validator", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=2" },
-    { name = "email-validator", marker = "extra == 'sqlmodel-with-utils'", specifier = ">=2" },
     { name = "flask", specifier = ">=2.0" },
-    { name = "flask-admin", extras = ["all"], marker = "extra == 'all-sqlalchemy'", editable = "." },
-    { name = "flask-admin", extras = ["all"], marker = "extra == 'all-sqlmodel'", editable = "." },
     { name = "flask-admin", extras = ["azure-blob-storage"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["export"], marker = "extra == 'all'", editable = "." },
-    { name = "flask-admin", extras = ["geoalchemy"], marker = "extra == 'all-sqlalchemy'", editable = "." },
+    { name = "flask-admin", extras = ["geoalchemy"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["images"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["peewee"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["pymongo"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["rediscli"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["s3"], marker = "extra == 'all'", editable = "." },
-    { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'all-sqlalchemy'", editable = "." },
+    { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'geoalchemy'", editable = "." },
     { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'sqlalchemy-with-utils'", editable = "." },
-    { name = "flask-admin", extras = ["sqlalchemy-with-utils"], marker = "extra == 'all-sqlalchemy'", editable = "." },
-    { name = "flask-admin", extras = ["sqlmodel"], marker = "extra == 'all-sqlmodel'", editable = "." },
-    { name = "flask-admin", extras = ["sqlmodel"], marker = "extra == 'sqlmodel-with-utils'", editable = "." },
-    { name = "flask-admin", extras = ["sqlmodel-with-utils"], marker = "extra == 'all-sqlmodel'", editable = "." },
+    { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'sqlmodel'", editable = "." },
+    { name = "flask-admin", extras = ["sqlalchemy-with-utils"], marker = "extra == 'all'", editable = "." },
+    { name = "flask-admin", extras = ["sqlmodel"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["translation"], marker = "extra == 'all'", editable = "." },
     { name = "flask-babel", marker = "extra == 'translation'", specifier = ">=3.0.1" },
     { name = "flask-sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=3" },
@@ -866,17 +827,15 @@ requires-dist = [
     { name = "shapely", marker = "extra == 'geoalchemy'", specifier = ">=2" },
     { name = "sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=1.4" },
     { name = "sqlalchemy-citext", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=1.8.0" },
-    { name = "sqlalchemy-citext", marker = "extra == 'sqlmodel-with-utils'", specifier = ">=1.8.0" },
     { name = "sqlalchemy-utils", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=0.38.0" },
-    { name = "sqlalchemy-utils", marker = "extra == 'sqlmodel-with-utils'", specifier = ">=0.38.0" },
-    { name = "sqlmodel", marker = "extra == 'sqlmodel'", specifier = ">=0.0.20" },
+    { name = "sqlmodel", marker = "extra == 'sqlmodel'", specifier = ">=0.0.18" },
     { name = "tablib", marker = "extra == 'export'", specifier = ">=3.0.0" },
     { name = "typing-extensions", marker = "python_full_version < '3.11'" },
     { name = "werkzeug", specifier = ">=2.0" },
     { name = "wtf-peewee", marker = "extra == 'peewee'", specifier = ">=3.0.4" },
     { name = "wtforms", specifier = ">=2.3" },
 ]
-provides-extras = ["sqlalchemy", "sqlalchemy-with-utils", "geoalchemy", "pymongo", "peewee", "s3", "azure-blob-storage", "images", "export", "rediscli", "translation", "sqlmodel", "sqlmodel-with-utils", "all", "all-sqlalchemy", "all-sqlmodel"]
+provides-extras = ["sqlalchemy", "sqlalchemy-with-utils", "geoalchemy", "pymongo", "peewee", "sqlmodel", "s3", "azure-blob-storage", "images", "export", "rediscli", "translation", "all"]
 
 [package.metadata.requires-dev]
 dev = [
