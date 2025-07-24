@@ -1,0 +1,100 @@
+{%- extends 'admin/master.html' -%}
+{%- from 'admin/lib.html' import add_modal_window,
+                                 form_css,
+                                 form_js,
+                                 subnav_link,
+                                 subnav_modal_link with context -%}
+
+{% block head %}
+    {{ super() }}
+  {%- if admin_view.edit_modal or admin_view.create_modal -%}
+    {{ form_css() }}
+  {%- endif -%}
+{% endblock %}
+
+{% block body %}
+  {% block navlinks %}
+  <ul class="nav nav-pills bg-body-tertiary flex-wrap align-items-center gap-1 mb-2 p-2">
+
+    <!-- List View Link -->
+    <li class="nav-item">
+      {%- set _content = '<i class="fas fa-list"></i><span class="ms-2 d-none d-md-inline">' + _gettext('List') + '</span>' -%}
+      {{ subnav_link(content=_content, url=get_url('.index_view')) }}
+    </li>
+
+    <!-- Create View Link -->
+    {%- if admin_view.can_create -%}
+    {%- set _content = '<i class="fas fa-plus"></i><span class="ms-2 d-none d-md-inline">' + _gettext('Create') + '</span>' -%}
+    {%- set _url = get_url('.create_view', url=return_url, modal=admin_view.create_modal) -%}
+    <li class="nav-item">
+      {%- if admin_view.create_modal -%}
+        {{ subnav_modal_link(content=_content, url=_url, title=_gettext('Create New Record')) }}
+      {%- else -%}
+        {{ subnav_link(content=_content, url=_url, title=_gettext('Create New Record')) }}
+    {%- endif -%}
+    </li>
+    {%- endif -%}
+    
+    <!-- Edit View Link -->
+    {%- if admin_view.can_edit -%}
+    {%- set _content = '<i class="fas fa-pen"></i><span class="ms-2 d-none d-md-inline">' + _gettext('Edit') + '</span>' -%}
+    {%- set _return_url = get_url('.details_view', id=request.args.get('id')) -%}
+    {%- set _url = get_url('.edit_view', id=request.args.get('id'), url=_return_url, modal=admin_view.edit_modal) -%}
+    <li class="nav-item">
+      {%- if admin_view.edit_modal -%}
+        {{ subnav_modal_link(content=_content, url=_url) }}
+      {%- else -%}
+        {{ subnav_link(content=_content, url=_url) }}
+      {%- endif -%}    
+    </li>    
+    {%- endif -%}
+    
+    <!-- Details View Link (Active) -->
+    <li class="nav-item">
+      {% set _content = '<i class="fas fa-info-circle"></i><span class="ms-2 d-none d-md-inline">' + _gettext('Details') + '</span>' %}
+      {{ subnav_link(content=_content, link_extra_cls='active disabled') }}
+    </li>
+    
+  </ul>
+  {% endblock %}
+
+  {% block details_search %}
+  <div class="fa_details_filter_container d-flex justify-content-between align-items-center mb-3">
+      <label for="fa_details_filter" class="me-2 d-flex align-items-center">
+        <i class="fas fa-filter"></i><span class="ms-1 d-none d-md-inline">{{ _gettext('Filter') }}</span>
+      </label>
+      <input id="fa_details_filter" type="text" class="form-control" data-target="#details-table">
+  </div>  
+  {% endblock %}
+
+  {% block details_table %}
+    <table id="details-table" class="table table-hover table-bordered searchable">
+      <tbody>
+      {% for c, name in details_columns %}
+        <tr class="row g-0">
+          <th class="col-4" scope="row">{{ name }}</th>
+          <td class="col-8">{{ get_value(model, c) }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% endblock %}
+
+  {%- if admin_view.edit_modal or admin_view.create_modal -%}
+    {{ add_modal_window() }}
+  {%- endif -%}
+
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  
+  {% if admin_view.edit_modal or admin_view.create_modal %}
+    {{ form_js() }}
+    <script {{ admin_csp_nonce_attribute }}
+      src="{{ admin_static.url(filename='admin/js/bootstrap5/modal.js', v='1.0.0') }}"></script>
+  {% endif %}
+
+  <script {{ admin_csp_nonce_attribute }}
+    src="{{ admin_static.url(filename='admin/js/bootstrap5/details_filter.js', v='1.0.2') }}"></script>
+{% endblock %}
