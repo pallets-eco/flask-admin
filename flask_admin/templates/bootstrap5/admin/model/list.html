@@ -1,0 +1,269 @@
+{%- extends 'admin/master.html' -%}
+{%- from 'admin/static.html' import url as src_url with context -%}
+{%- from 'admin/lib.html' import form_css, form_js, add_modal_window, pager,
+                                 simple_pager, subnav_link, subnav_modal_link with context -%}
+{%- from 'admin/model/layout.html' import export_options, filter_form, filter_options,
+                                          page_size_form, search_form with context -%}
+{%- from 'admin/actions.html' import dropdown as actions_dropdown,
+                                     form as actions_form,
+                                     script as actions_script with context -%}
+{%- import 'admin/model/row_actions.html' as row_actions with context -%}
+
+{% block head %}
+    {{ super() }}
+    {{ form_css() }}
+{% endblock %}
+
+{% block body %}
+  {% block model_menu_bar %}
+    <div class="model-toolbar mb-4">
+        <ul class="nav nav-pills bg-body-tertiary flex-wrap align-items-center gap-1 mb-2 p-2">
+
+            <!-- List View Link (Active) -->
+            <li class="nav-item">
+              {% set _content = '<i class="fas fa-list"></i><span class="d-none d-md-inline ms-2">' + _gettext('List') + '</span>' %}
+              {% if count %}
+                {% set _content = _content + '<span class="badge bg-light text-dark ms-2">' + count|string + '</span>' %}
+              {% endif %}
+                {{ subnav_link(content=_content, title=_gettext('List'), link_extra_cls='active disabled') }}
+            </li>
+
+            <!-- Create View Link -->
+          {%- if admin_view.can_create -%}
+            {% set content = '<i class="fas fa-plus"></i><span class="d-none d-md-inline ms-2">' + _gettext('Create') + '</span>' %}
+            <li class="nav-item">
+              {%- if admin_view.create_modal %}
+                {{
+                    subnav_modal_link(
+                                        content=content,
+                                        url=get_url('.create_view', url=return_url, modal=True),
+                                        title=_gettext('Create New Record')
+                    )
+                }}
+              {% else %}
+                {{
+                    subnav_link(
+                                    content=content,
+                                    url=get_url('.create_view', url=return_url, modal=Flase),
+                                    title=_gettext('Create New Record')
+                    )
+                }}
+              {% endif -%}
+            </li>
+          {%- endif -%}
+
+          <!-- Export Dropdown -->
+          {% if admin_view.can_export %}
+            {{ export_options() }}
+          {% endif %}
+
+          {% block model_menu_bar_before_filters %}{% endblock %}
+
+          <!-- Add Filter Dropdown -->
+          {% if filters %}
+              {{ filter_options() }}
+          {% endif %}
+
+          <!-- Page Size Dropdown -->
+          {% if can_set_page_size %}
+            {{ page_size_form(page_size_url, admin_view.page_size_options) }}
+          {% endif %}
+
+          <!-- Bulk Actions Dropdown -->
+          {% if actions %}
+              {{ actions_dropdown(actions) }}
+          {% endif %}
+
+          <!-- Search Form -->
+          {% if search_supported %}
+              {{ search_form() }}
+          {% endif %}
+
+          {% block model_menu_bar_after_filters %}{% endblock %}
+        </ul>
+    </div>
+  {% endblock %}
+
+    <!-- Modern Filter Interface -->
+  {% if filters %}
+    {{ filter_form() }}
+  {% endif %}
+
+  {% block model_list_table %}
+    <!-- Table Container with Enhanced Styling -->
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered table-sm mb-0">
+                <thead class="table-primary">
+                    <tr>
+                      {% block list_header scoped %}
+                        {% if actions %}
+                        <th scope="col" class="text-center list-checkbox-column">
+                            <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="right"
+                                data-bs-trigger="hover" data-bs-content="{{ _gettext('Select all records') }}">
+                                <input type="checkbox" name="rowtoggle" class="form-check-input action-rowtoggle" id="selectAll">
+                            </span>
+                        </th>
+                        {% endif %}
+
+                        {% block list_row_actions_header %}
+                          {% if admin_view.column_display_actions %}
+                            <th scope="col" class="text-center list-actions-column">
+                                <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="top"
+                                    data-bs-trigger="hover" data-bs-content="{{ _gettext('Actions') }}">
+                                    <i class="fas fa-cog text-muted m-0 p-0"></i>
+                                </span>
+                            </th>
+                          {% endif %}
+                        {% endblock %}
+
+                        {% for c, name in list_columns %}
+                          {% set column = loop.index0 %}
+                            <th scope="col" class="column-header col-{{c}} position-relative">
+                              {% if admin_view.is_sortable(c) %}
+                                  {% if sort_column == column %}
+                                    <a href="{{ sort_url(column, True) }}"
+                                        title="{{ _gettext('Sort by %(name)s', name=name) }}"
+                                        class="text-decoration-none d-flex align-items-center justify-content-between">
+                                        <span>{{ name }}</span>
+                                        <span class="sort-indicator">
+                                            <i class="fas fa-sort-{% if sort_desc %}up{% else %}down{% endif %} text-primary"></i>
+                                        </span>
+                                    </a>
+                                  {% else %}
+                                    <a href="{{ sort_url(column) }}"
+                                        title="{{ _gettext('Sort by %(name)s', name=name) }}"
+                                        class="text-decoration-none d-flex align-items-center justify-content-between">
+                                        <span>{{ name }}</span>
+                                        <i class="fas fa-sort text-muted opacity-50"></i>
+                                    </a>
+                                  {% endif %}
+                                {% else %}
+                                    <span class="fw-semibold">{{ name }}</span>
+                                {% endif %}
+
+                                {% if admin_view.column_descriptions.get(c) %}
+                                    <button type="button" class="btn btn-link btn-sm p-0 ms-2 text-muted"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="{{ admin_view.column_descriptions[c] }}">
+                                        <i class="fas fa-question-circle"></i>
+                                    </button>
+                                {% endif %}
+                            </th>
+                        {% endfor %}
+                      {% endblock %}
+                    </tr>
+                </thead>
+
+                <tbody>
+                  {% for row in data %}
+                    <tr class="{% if loop.index is odd %}table-row-odd{% endif %}">
+                      {% block list_row scoped %}
+                        {% if actions %}
+                        <td class="text-center">
+                            <input type="checkbox" name="rowid" class="form-check-input action-checkbox"
+                                value="{{ get_pk_value(row) }}" id="row{{ loop.index }}"
+                                title="{{ _gettext('Select record') }}">
+                        </td>
+                        {% endif %}
+
+                        {% block list_row_actions_column scoped %}
+                          {% if admin_view.column_display_actions %}
+                            <td class="list-buttons-column">
+                                <div class="d-flex justify-content-center align-items-center gap-1">
+                                  {% block list_row_actions scoped %}
+                                    {%- for action in list_row_actions -%}
+                                      {{ action.render_ctx(get_pk_value(row), row) }}
+                                    {%- endfor -%}
+                                  {% endblock %}
+                                </div>
+                            </td>
+                          {% endif %}
+                        {% endblock %}
+
+                        {% for c, name in list_columns %}
+                            <td class="col-{{c}}">
+                                <div class="cell-content">
+                                    {{ get_value(row, c) }}
+                                </div>
+
+                            </td>
+                        {% endfor %}
+                      {% endblock %}
+                    </tr>
+                  {% else %}
+                    <tr>
+                        <td colspan="999" class="text-center py-5">
+                          {% block empty_list_message %}
+                            <div class="empty-state">
+                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">{{ admin_view.get_empty_list_message() }}</h5>
+                            </div>
+                          {% endblock %}
+                        </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+            </table>
+        </div><!-- .table-container -->
+    </div><!-- . table-responsive -->
+
+    <!-- Enhanced Pagination -->
+    {% block list_pager %}
+        <div class="d-flex {% if num_pages is not none %}justify-content-between{% else %}justify-content-end{% endif %}
+            align-items-center mt-3 p-2 bg-body-tertiary">
+          {% if num_pages is not none %}
+            <div class="pagination-info text-muted small">
+                {{ _gettext('Showing') }}
+                <strong>{{ ((page) * page_size + 1) if data else 0 }}</strong>
+                {{ _gettext('to') }}
+                <strong>{{ ((page) * page_size + data|length) if data else 0 }}</strong>
+                {{ _gettext('of') }}
+                <strong>{{ count or 0 }}</strong>
+                {{ _gettext('entries') }}
+            </div>
+            {{ pager(page, num_pages, pager_url) }}
+          {% else %}
+            {{ simple_pager(page, data|length == page_size, pager_url) }}
+          {% endif %}
+        </div>
+    {% endblock %}
+
+    {% endblock %}
+
+    {% block actions %}
+        {{ actions_form(actions, get_url('.action_view')) }}
+    {% endblock %}
+
+    {% if admin_view.edit_modal or admin_view.create_modal or admin_view.details_modal %}
+        {{ add_modal_window() }}
+    {% endif %}
+{% endblock %}
+
+{% block tail %}
+    {{ super() }}
+    {{ form_js() }}
+
+    <!-- actions -->
+    {{ actions_script(_gettext('Please select at least one record.'), actions, actions_confirmation) }}
+
+  {% if filter_groups %}
+    <!-- filters -->
+    <div id="filter-groups-data" class="d-none">{{ filter_groups|tojson|safe }}</div>
+    <div id="active-filters-data" class="d-none">{{ active_filters|tojson|safe }}</div>
+  {% endif -%}
+  {%- if filters %}
+    <script {{ admin_csp_nonce_attribute }}
+        src="{{ src_url(filename='admin/js/bootstrap5/filters.js', v='1.0.0') }}"></script>
+  {% endif %}
+
+  {%- if admin_view.edit_modal or admin_view.create_modal or admin_view.details_modal %}
+    <!-- modal -->
+    <script {{ admin_csp_nonce_attribute }}
+        src="{{ src_url(filename='admin/js/bootstrap5/modal.js', v='1.0.0') }}"></script>
+    {%- if admin_view.details_modal %}
+    <!-- filter details -->
+    <script {{ admin_csp_nonce_attribute }}
+        src="{{ src_url(filename='admin/js/bootstrap5/details_filter.js', v='1.0.2') }}"></script>
+    {% endif -%}
+  {%- endif -%}
+{% endblock %}
