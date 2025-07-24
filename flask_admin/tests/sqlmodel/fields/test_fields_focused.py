@@ -73,7 +73,7 @@ class TestHstoreForm:
     def test_form_field_labels(self):
         """Test that HstoreForm fields have correct labels."""
         form = HstoreForm()
-        assert str(form.key.label.text) == "Kwey"
+        assert str(form.key.label.text) == "Key"
         assert str(form.value.label.text) == "Value"
 
 

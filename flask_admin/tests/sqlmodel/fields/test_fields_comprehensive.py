@@ -648,7 +648,7 @@ class TestHstoreForm:
 
         assert hasattr(form, "key")
         assert hasattr(form, "value")
-        assert str(form.key.label.text) == "Kwey"
+        assert str(form.key.label.text) == "Key"
         assert str(form.value.label.text) == "Value"
 
 
