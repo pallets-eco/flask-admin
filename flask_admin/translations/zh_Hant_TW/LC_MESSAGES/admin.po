@@ -135,7 +135,7 @@ msgstr "檔案 \"%(name)s\" 已被成功刪除。"
 #: ../flask_admin/contrib/fileadmin/__init__.py:1383
 #, python-format
 msgid "Failed to delete file: %(name)s"
-msgstr ""
+msgstr "無法刪除檔案：%(name)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1207
 msgid "Renaming is disabled."
@@ -214,7 +214,7 @@ msgstr "編輯"
 
 #: ../flask_admin/contrib/fileadmin/s3.py:233
 msgid "Cannot operate on non empty directories"
-msgstr ""
+msgstr "無法對非空目錄進行操作"
 
 #: ../flask_admin/contrib/peewee/filters.py:47
 #: ../flask_admin/contrib/pymongo/filters.py:49
@@ -328,11 +328,11 @@ msgstr "選擇的值不正確"
 
 #: ../flask_admin/contrib/sqla/fields.py:245
 msgid "Key"
-msgstr ""
+msgstr "鍵"
 
 #: ../flask_admin/contrib/sqla/fields.py:246
 msgid "Value"
-msgstr ""
+msgstr "價值"
 
 #: ../flask_admin/contrib/sqla/validators.py:43
 msgid "Already exists."
@@ -342,15 +342,15 @@ msgstr "資料已經存在。"
 #, python-format
 msgid "At least %(num)d item is required"
 msgid_plural "At least %(num)d items are required"
-msgstr[0] ""
+msgstr[0] "至少需要 %(num)d 個項目"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr ""
+msgstr "不是有效的 ISO 貨幣代碼（例如 USD、EUR、CNY)。"
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
-msgstr ""
+msgstr "不是有效的顏色（例如「red」、「#f00」、「#ff0000」)。"
 
 #: ../flask_admin/contrib/sqla/view.py:1317
 #, python-format
@@ -375,7 +375,7 @@ msgstr "不正確的檔案副檔名"
 
 #: ../flask_admin/form/validators.py:18
 msgid "This field requires at least one item."
-msgstr ""
+msgstr "此欄位至少需要一個項目。"
 
 #: ../flask_admin/model/base.py:1924
 msgid "There are no items in the table."
@@ -402,7 +402,7 @@ msgstr "記錄已成功保存。"
 #: ../flask_admin/model/base.py:2656
 #, python-format
 msgid "Export type \"%(type)s\" not supported."
-msgstr ""
+msgstr "不支援匯出類型「%(type)s」。"
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
 msgid "Yes"
@@ -430,11 +430,11 @@ msgstr "編輯紀錄"
 #: ../flask_admin/model/template.py:114
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr ""
+msgstr "刪除記錄"
 
 #: ../flask_admin/model/widgets.py:71
 msgid "Please select model"
-msgstr ""
+msgstr "請選擇模型"
 
 #: ../flask_admin/templates/bootstrap4/admin/actions.html:5
 msgid "With selected"
@@ -526,7 +526,7 @@ msgstr "您確定要刪除這筆記錄嗎？"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/inline_list_base.html:33
 msgid "New"
-msgstr ""
+msgstr "新增"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/inline_list_base.html:43
 msgid "Add"
@@ -540,7 +540,7 @@ msgstr "新增過濾器"
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:19
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:26
 msgid "Export"
-msgstr ""
+msgstr "匯出"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:49
 msgid "Apply"
@@ -563,7 +563,7 @@ msgstr "搜尋"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:102
 msgid "items"
-msgstr ""
+msgstr "項目"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:23
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:25

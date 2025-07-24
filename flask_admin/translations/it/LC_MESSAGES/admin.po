@@ -4,8 +4,8 @@ msgstr ""
 "Project-Id-Version:  flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-06-03 07:06+0100\n"
-"PO-Revision-Date: 2017-02-07 01:19-0500\n"
-"Last-Translator: mrjoes <serge.koval@gmail.com>\n"
+"PO-Revision-Date: 2025-07-07 20:12-0500\n"
+"Last-Translator: ElLorans <lorenzo.cerreta@gmail.com>\n"
 "Language: it_IT\n"
 "Language-Team: Italian\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -276,7 +276,7 @@ msgstr "non tra"
 #: ../flask_admin/contrib/sqla/view.py:1356
 #, python-format
 msgid "Failed to create record. %(error)s"
-msgstr "Impossibile creare il record. %(error)s"
+msgstr "Impossibile creare la riga. %(error)s"
 
 #: ../flask_admin/contrib/peewee/view.py:564
 #: ../flask_admin/contrib/pymongo/view.py:369
@@ -284,20 +284,20 @@ msgstr "Impossibile creare il record. %(error)s"
 #: ../flask_admin/model/base.py:2728 ../flask_admin/model/base.py:2731
 #, python-format
 msgid "Failed to update record. %(error)s"
-msgstr "Impossibile aggiornare il record. %(error)s"
+msgstr "Impossibile aggiornare la riga. %(error)s"
 
 #: ../flask_admin/contrib/peewee/view.py:582
 #: ../flask_admin/contrib/pymongo/view.py:393
 #: ../flask_admin/contrib/sqla/view.py:1415
 #, python-format
 msgid "Failed to delete record. %(error)s"
-msgstr "Impossibile eliminare il record: %(error)s"
+msgstr "Impossibile eliminare la riga: %(error)s"
 
 #: ../flask_admin/contrib/peewee/view.py:604
 #: ../flask_admin/contrib/pymongo/view.py:412
 #: ../flask_admin/contrib/sqla/view.py:1439
 msgid "Are you sure you want to delete selected records?"
-msgstr "Sei sicuro di voler eliminare i record selezionati?"
+msgstr "Sei sicuro di voler eliminare le righe selezionate?"
 
 #: ../flask_admin/contrib/peewee/view.py:623
 #: ../flask_admin/contrib/pymongo/view.py:424
@@ -305,7 +305,7 @@ msgstr "Sei sicuro di voler eliminare i record selezionati?"
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
-msgstr[0] "Il record é stato eliminato con successo."
+msgstr[0] "la riga é stato eliminato con successo."
 msgstr[1] "%(count)s records eliminati con successo."
 
 #: ../flask_admin/contrib/peewee/view.py:634
@@ -343,11 +343,11 @@ msgstr[1] "Sono necessari almeno %(num)d elementi"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr ""
+msgstr "Codice valuta ISO non valido (ad esempio USD, EUR, CNY)."
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
-msgstr ""
+msgstr "Colore non valido (ad esempio \"rosso\", \"#f00\", \"#ff0000\")."
 
 #: ../flask_admin/contrib/sqla/view.py:1317
 #, python-format
@@ -372,7 +372,7 @@ msgstr "Estensione del file non valida"
 
 #: ../flask_admin/form/validators.py:18
 msgid "This field requires at least one item."
-msgstr ""
+msgstr "Questo campo richiede almeno un elemento."
 
 #: ../flask_admin/model/base.py:1924
 msgid "There are no items in the table."
@@ -427,7 +427,7 @@ msgstr "Modifica riga"
 #: ../flask_admin/model/template.py:114
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr ""
+msgstr "Elimina record"
 
 #: ../flask_admin/model/widgets.py:71
 msgid "Please select model"
@@ -560,7 +560,7 @@ msgstr "Cerca"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:102
 msgid "items"
-msgstr ""
+msgstr "elementi"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:23
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:25
@@ -570,7 +570,7 @@ msgstr "Aggiungi nuova riga"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:76
 msgid "Select all records"
-msgstr "Seleziona tutti i record"
+msgstr "Seleziona tutte le righe"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:119
 msgid "Select record"
@@ -578,7 +578,7 @@ msgstr "Seleziona riga"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
-msgstr "Selezionare almeno un record."
+msgstr "Selezionare almeno una riga."
 
 #~ msgid "ObjectId equals"
 #~ msgstr "ObjectId uguale"
