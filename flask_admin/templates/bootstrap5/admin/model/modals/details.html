@@ -1,0 +1,45 @@
+{%- import 'admin/static.html' as admin_static with context -%}
+
+{% block body %}
+    <div class="modal-header">
+      {% block header_text %}
+        <h5 class="modal-title">
+          <i class="fas fa-info-circle"></i>
+          <span class="ms-1 d-none d-md-inline">{{ _gettext('View Record') }}</span>
+          <span class="ms-1">#{{ request.args.get('id') }}</span>
+        </h5>
+      {% endblock %}
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>  
+
+    <div class="modal-body">
+      {% block details_search %}
+        <div class="fa_details_filter_container d-flex justify-content-between align-items-center mb-3">
+            <label for="fa_details_filter" class="me-2 d-flex align-items-center">
+                <i class="fas fa-filter"></i><span class="ms-1 d-none d-md-inline">{{ _gettext('Filter') }}</span>
+            </label>
+            <input id="fa_details_filter" type="text" class="form-control" data-target="#details-table">
+        </div>
+      {% endblock %}
+
+      {% block details_table %}
+        <table id="details-table" class="table table-hover table-bordered searchable">
+            <tbody>
+              {% for c, name in details_columns %}
+                <tr class="row g-0">
+                  <th class="col-4" scope="row">{{ name }}</th>
+                  <td class="col-8">{{ get_value(model, c) }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+        </table>
+      {% endblock %}
+    </div><!-- .modal-body -->
+{% endblock %}
+
+{% block tail %}
+    <script {{ admin_csp_nonce_attribute }}
+        src="{{ admin_static.url(filename='admin/js/bootstrap5/modal.js', v='1.0.0') }}"></script>
+    <script {{ admin_csp_nonce_attribute }}
+        src="{{ admin_static.url(filename='admin/js/bootstrap5/details_filter.js', v='1.0.2') }}"></script>
+{% endblock %}
