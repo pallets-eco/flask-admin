@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from flask import Flask
 from sqlalchemy.orm import registry
@@ -52,9 +54,13 @@ def sqlmodel_base()->type[SQLModel]:
 @pytest.fixture(scope="function")
 def postgres_engine(app):
     # PostgreSQL test database
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+        "SQLALCHEMY_DATABASE_URI",
+        "postgresql://postgres:postgres@localhost/flask_admin_test",
+    )
     app.config["SQLALCHEMY_ECHO"] = True
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    engine = create_engine("postgresql://postgres:postgres@localhost/flask_admin_test")
+    engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
     yield engine
     engine.dispose()
 

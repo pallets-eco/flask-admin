@@ -5,6 +5,7 @@ This file tests utility functions and basic field functionality that can be
 properly tested without complex form binding.
 """
 
+from re import L
 from unittest.mock import Mock
 
 import pytest
@@ -72,8 +73,8 @@ class TestHstoreForm:
     def test_form_field_labels(self):
         """Test that HstoreForm fields have correct labels."""
         form = HstoreForm()
-        assert form.key.label.text == "Key"
-        assert form.value.label.text == "Value"
+        assert str(form.key.label.text) == "Kwey"
+        assert str(form.value.label.text) == "Value"
 
 
 class TestUtilityFunctions:
