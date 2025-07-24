@@ -1,0 +1,57 @@
+{%- import 'admin/lib.html' as lib with context -%}
+
+{% macro link(action, url, icon_class=None) %}
+  {%- if action.title -%}
+    <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="top"
+        data-bs-trigger="hover" data-bs-content="{{ action.title }}">
+  {%- endif -%}
+    <a class="icon btn btn-link p-0" href="{{ url }}">
+        <i class="{{ icon_class or action.icon_class }}"></i>
+    </a>
+  {%- if action.title -%}
+    </span><!-- .d-inline-block -->
+  {%- endif -%}
+{% endmacro %}
+
+{% macro view_row(action, row_id, row) %}
+    {{ link(action, get_url('.details_view', id=row_id, url=return_url), 'fas fa-eye') }}
+{% endmacro %}
+
+{% macro view_row_popup(action, row_id, row) %}
+    {%- set _content = '<i class="fas fa-eye"></i>' -%}
+    {%- set _url = get_url('.details_view', id=row_id, url=return_url, modal=True) -%}
+    {{ lib.add_modal_button(url=_url, title=action.title, content=_content) }}
+{% endmacro %}
+
+{% macro edit_row(action, row_id, row) %}
+    {{ link(action, get_url('.edit_view', id=row_id, url=return_url), 'fas fa-pencil-alt') }}
+{% endmacro %}
+
+{% macro edit_row_popup(action, row_id, row) %}
+    {%- set _content = '<i class="fas fa-pencil-alt"></i>' -%}
+    {%- set _url = get_url('.edit_view', id=row_id, url=return_url, modal=True) -%}
+    {{ lib.add_modal_button(url=_url, title=action.title, content=_content) }}
+{% endmacro %}
+
+{% macro delete_row(action, row_id, row) %}
+    {%- set _message = _gettext('Are you sure you want to delete this record?') -%}
+    {%- set _pk_value = get_pk_value(row) -%}
+    {%- set _id = 'delete-form-' + _pk_value|string -%}
+    <form id="{{ _id }}" class="icon" method="POST" action="{{ get_url('.delete_view') }}">
+        {{ delete_form.id(value=_pk_value) }}
+        {{ delete_form.url(value=return_url) }}
+      
+      {%- if delete_form.csrf_token -%}
+        {{ delete_form.csrf_token }}
+      {%- elif csrf_token -%}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {%- endif -%}
+        <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="top"
+            data-bs-trigger="hover" data-bs-content="{{ _gettext('Delete record') }}">
+            <a class="icon link-danger" href="#"
+                onclick='if (faHelpers.safeConfirm({{ _message|tojson }})) { document.getElementById("{{ _id }}").submit(); } return false;'>
+                <i class="fas fa-trash"></i>
+            </a>
+        </span><!-- .d-inline-block -->
+    </form>
+{% endmacro %}
