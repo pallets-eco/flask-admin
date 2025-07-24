@@ -365,7 +365,7 @@ class SQLAlchemyExtendedMixin:  # type: ignore
             model: SQLModel class
             column: SQLAlchemy column object
             field_args: Field arguments dictionary
-            **extra: Additional arguments
+            extra (kwargs): Additional arguments
 
         Returns:
             WTForms field instance if handled, None otherwise
