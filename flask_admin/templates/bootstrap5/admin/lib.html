@@ -1,0 +1,414 @@
+{% import 'admin/static.html' as admin_static with context %}
+
+{# ---------------------- Pager -------------------------- #}
+{% macro pager(page, pages, generator) -%}
+  {% if pages > 1 %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center m-0">
+          {% set min = page - 3 %}
+          {% set max = page + 3 + 1 %}
+
+          {% if min < 0 %}
+            {% set max = max - min %}
+          {% endif %}
+          {% if max >= pages %}
+            {% set min = min - max + pages %}
+          {% endif %}
+
+          {% if min < 0 %}
+            {% set min = 0 %}
+          {% endif %}
+          {% if max >= pages %}
+            {% set max = pages %}
+          {% endif %}
+
+          {% if min > 0 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ generator(0) }}" aria-label="First page">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="First page" tabindex="-1" aria-disabled="true">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+          {% endif %}
+
+          {# Previous page button #}
+          {% if page > 0 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ generator(page - 1) }}" aria-label="Previous page">
+                    <span aria-hidden="true">&lt;</span>
+                </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Previous page" tabindex="-1" aria-disabled="true">
+                    <span aria-hidden="true">&lt;</span>
+                </a>
+            </li>
+          {% endif %}
+
+          {# Page numbers #}
+          {% for p in range(min, max) %}
+            {% set page_num = p + 1 %}
+            {% if page == p %}
+              <li class="page-item active" aria-current="page">
+                  <a class="page-link" href="#" aria-label="Page {{ page_num }} (current)">{{ page_num }}</a>
+              </li>
+            {% else %}
+              <li class="page-item">
+                  <a class="page-link" href="{{ generator(p) }}" aria-label="Go to page {{ page_num }}">{{ page_num }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+
+          {# Next page button #}
+          {% if page + 1 < pages %}
+            <li class="page-item">
+                <a class="page-link" href="{{ generator(page + 1) }}" aria-label="Next page">
+                    <span aria-hidden="true">&gt;</span>
+                </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Next page" tabindex="-1" aria-disabled="true">
+                    <span aria-hidden="true">&gt;</span>
+                </a>
+            </li>
+          {% endif %}
+
+          {# Last page button #}
+          {% if max < pages %}
+            <li class="page-item">
+                <a class="page-link" href="{{ generator(pages - 1) }}" aria-label="Last page">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Last page" tabindex="-1" aria-disabled="true">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+          {% endif %}
+        </ul>
+    </nav>
+  {% endif %}
+{%- endmacro %}
+
+{% macro simple_pager(page, have_next, generator) -%}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center m-0">
+          {%- if page > 0 -%}
+            <li class="page-item">
+                <a class="page-link" href="{{ generator(page - 1) }}" aria-label="Previous page">
+                    <span aria-hidden="true">&lt;</span>
+                </a>
+            </li>
+          {%- else -%}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Previous page" tabindex="-1" aria-disabled="true">
+                    <span aria-hidden="true">&lt;</span>
+                </a>
+            </li>
+          {%- endif -%}
+          
+          {%- if have_next -%}
+            <li class="page-item">
+                <a class="page-link" href="{{ generator(page + 1) }}" aria-label="Next page">
+                    <span aria-hidden="true">&gt;</span>
+                </a>
+            </li>
+          {%- else -%}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Next page" tabindex="-1" aria-disabled="true">
+                    <span aria-hidden="true">&gt;</span>
+                </a>
+            </li>
+          {%- endif -%}
+        </ul>
+    </nav>
+{%- endmacro %}
+
+{# ---------------------- Modal Window ------------------- #}
+{% macro add_modal_window(modal_window_id='fa_modal_window', modal_label_id='fa_modal_label') %}
+    <div class="modal fade" id="{{ modal_window_id }}" tabindex="-1" aria-labelledby="{{ modal_label_id }}" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content"></div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro add_modal_button(url='', title='', content='', modal_window_id='fa_modal_window', btn_class='icon') %}
+  {%- if title -%}
+    <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="top"
+        data-bs-trigger="hover" data-bs-content="{{ title }}">
+  {%- endif -%}
+    <a class="{{ btn_class }}" data-bs-target="#{{ modal_window_id }}" href="{{ url }}" data-bs-toggle="modal">
+        {{ content|safe }}
+    </a>
+  {%- if title -%}
+    </span><!-- .d-inline-block -->
+  {%- endif -%}
+{% endmacro %}
+
+{% macro _subnav_link(content, url='#', title='', link_extra_cls='', modal_window_id=None) %}
+  {%- if 'active' in link_extra_cls|string -%}
+    <a class="nav-link{% if link_extra_cls %} {{ link_extra_cls }}{% endif %}"
+        href="#" aria-current="page">{{ content|safe }}</a>
+  {%- else -%}
+    {%- if title -%}
+        <span class="d-inline-block" tabindex="0" data-bs-toggle="popover"
+            data-bs-placement="top" data-bs-trigger="hover" data-bs-content="{{ title }}">
+    {%- endif -%}
+    
+    {%- if modal_window_id -%}
+        <a class="nav-link btn btn-light{% if link_extra_cls %} {{ link_extra_cls }}{% endif %}"
+            data-bs-target="#{{ modal_window_id }}"{% if url %} href="{{ url }}"{% endif %} data-bs-toggle="modal">
+            {{ content|safe }}
+        </a>
+    {%- else -%}
+        <a{% if url %} href="{{ url }}"{% endif %}
+            class="nav-link btn btn-light{% if link_extra_cls %} {{ link_extra_cls }}{% endif %}">{{ content|safe }}</a>
+    {%- endif -%}
+    
+    {%- if title -%}
+        </span><!-- .d-inline-block -->
+    {%- endif -%}
+  {%- endif -%}
+{% endmacro %}
+
+{% macro subnav_modal_link(content, url='', title='', link_extra_cls='', modal_window_id='fa_modal_window') %}
+  {{ _subnav_link(content=content, url=url, title=title, link_extra_cls=link_extra_cls, modal_window_id=modal_window_id) }}
+{% endmacro %}
+
+
+{% macro subnav_link(content, url=url, title='', link_extra_cls='') %}
+  {{ _subnav_link(content=content, url=url, title=title, link_extra_cls=link_extra_cls) }}
+{% endmacro %}
+
+
+{# ---------------------- Forms -------------------------- #}
+{%- macro render_field(form, field, kwargs={}, caller=None) -%}
+  {%- if field.widget.input_type is defined and field.widget.input_type == 'checkbox' -%}
+    {%- set _ = kwargs.update({'class': 'form-check-input'}) -%}
+    {%- if direct_error -%}{%- set _ = kwargs.update({'class': kwargs['class'] ~ ' is-invalid'}) -%}{%- endif -%}
+    {%- set _ = kwargs.update({'role': 'switch'}) -%}
+
+    <div class="mb-3 {{ kwargs.get('column_class', '') }}">
+      <div class="form-check form-switch">
+          {{ field(**kwargs)|safe }}
+
+          <label class="form-check-label" for="{{ field.id }}">
+              {{- field.label.text -}}
+            {%- if h.is_required_form_field(field) -%}
+              <strong class="text-danger">*</strong>
+            {%- endif -%}
+          </label>
+
+        {%- if direct_error -%}
+          <div class="invalid-feedback d-block">
+              <ul class="list-unstyled mb-0">
+                {%- for e in field.errors if e is string -%}
+                  <li>{{ e }}</li>
+                {%- endfor -%}
+              </ul>
+          </div>
+        {%- endif -%}
+      </div><!-- .form-check form-switch -->
+
+    {%- if not direct_error and field.description -%}
+      <div class="form-text">{{ field.description|safe }}</div>
+    {%- endif -%}
+
+    {%- if caller -%}
+      {{ caller(form, field, direct_error, kwargs) }}
+    {%- endif -%}
+    </div><!-- .mb-3 {{ kwargs.get('column_class', '') }} -->
+
+  {%- else -%}
+    {%- set _ = kwargs.setdefault('class', 'form-control') -%}
+    {%- if direct_error -%}
+      {%- set _ = kwargs.update({'class': kwargs['class'] ~ ' is-invalid'}) -%}
+    {%- endif -%}
+
+    <div class="mb-3 {{ kwargs.get('column_class', '') }}">
+        <label for="{{ field.id }}" class="form-label">{{ field.label.text }}
+          {%- if h.is_required_form_field(field) -%}
+            <strong class="text-danger">*</strong>
+          {%- endif -%}
+        </label>
+
+      {%- if prepend or append -%}
+        <div class="input-group">
+          {%- if prepend -%}
+            <div class="input-group-text">
+                {{ prepend }}
+            </div>
+          {%- endif -%}
+      {%- endif -%}
+
+      {{ field(**kwargs) | safe }}
+        
+      {%- if append -%}
+        <div class="input-group-text">
+            {{ append }}
+        </div>
+      {%- endif -%}
+  
+      {%- if direct_error -%}
+        <div class="invalid-feedback">
+            <ul class="list-unstyled mb-0">
+              {%- for e in field.errors if e is string -%}
+                <li>{{ e }}</li>
+              {%- endfor -%}
+            </ul>
+        </div><!-- .invalid-feedback -->
+
+      {%- elif field.description -%}
+        <div class="form-text">{{ field.description|safe }}</div>
+      {%- endif -%}
+      
+      {%- if prepend or append -%}
+        </div><!-- .input-group -->
+      {%- endif -%}
+
+      {%- if caller -%}
+        {{ caller(form, field, direct_error, kwargs) }}
+      {%- endif -%}
+    </div><!-- .mb-3 {{ kwargs.get('column_class', '') }} -->
+  {%- endif -%}
+{%- endmacro -%}
+
+{% macro render_header(form, text) %}
+    <h3>{{ text }}</h3>
+{% endmacro %}
+
+{% macro render_form_fields(form, form_opts=None) %}
+  {% if form.hidden_tag is defined %}
+    {{ form.hidden_tag() }}
+  {% else %}
+    {% if csrf_token is defined and csrf_token %}
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% endif %}
+    {% for f in form if f.widget.input_type is defined and f.widget.input_type == 'hidden' %}
+      {{ f }}
+    {% endfor %}
+  {% endif %}
+
+  {% if form_opts and form_opts.form_rules %}
+    {% for r in form_opts.form_rules %}
+      {{ r(form, form_opts=form_opts) }}
+    {% endfor %}
+  {% else %}
+    {% for f in form if f.widget.input_type is undefined or f.widget.input_type != 'hidden' %}
+      {% if form_opts %}
+        {% set kwargs = form_opts.widget_args.get(f.short_name, {}) %}
+      {% else %}
+        {% set kwargs = {} %}
+      {% endif %}
+      {{ render_field(form, f, kwargs) }}
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+
+{% macro form_tag(form=None, action=None) %}
+    <form action="{{ action or '' }}" method="POST" role="form" class="mt-3" enctype="multipart/form-data">
+        <fieldset>
+            {{ caller() }}
+        </fieldset>
+    </form>
+{% endmacro %}
+
+{% macro render_form_buttons(cancel_url, extra=None, is_modal=False) %}
+    <div class="d-flex justify-content-end{% if is_modal %} gap-2{% else %} submit-row bg-body-tertiary p-3 mt-4 gap-1{% endif %}">
+        <button class="btn btn-primary" type="submit">
+            <i class="fas fa-save"></i><span class="ms-1 d-none d-md-inline">{{ _gettext('Save') }}</span>
+        </button>
+
+      {% if extra %}
+        {{ extra }}
+      {% endif %}
+
+      {% if is_modal %}
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">
+            <i class="fas fa-times"></i><span class="ms-1 d-none d-md-inline">{{ _gettext('Cancel') }}</span>
+        </button>
+      {% else %}
+        {% if cancel_url is defined and cancel_url %}
+        <a href="{{ cancel_url }}" class="btn btn-secondary" role="button">
+            <i class="fas fa-times"></i><span class="ms-1 d-none d-md-inline">{{ _gettext('Cancel') }}</span>
+        </a>
+        {% endif %}
+      {% endif %}
+    </div><!-- .mb-3 d-flex justify-content-end{% if not is_modal %} submit-row{% endif %} gap-1 -->
+{% endmacro %}
+
+{% macro render_form(form, cancel_url, extra=None, form_opts=None, action=None, is_modal=False) -%}
+  {% call form_tag(action=action) %}
+      {{ render_form_fields(form, form_opts=form_opts) }}
+      {{ render_form_buttons(cancel_url, extra, is_modal) }}
+  {% endcall %}
+{% endmacro %}
+
+{% macro form_css() %}
+    <link rel="stylesheet" {{ admin_csp_nonce_attribute }} 
+        href="{{ admin_static.url(filename='vendor/select2-bootstrap5/select2.min.css', v='4.1.0') }}">
+    <link rel="stylesheet" {{ admin_csp_nonce_attribute }} 
+        href="{{ admin_static.url(filename='vendor/select2-bootstrap5/select2-bootstrap-5-theme.min.css', v='4.1.0') }}">
+  {%- if config.get('FLASK_ADMIN_MAPS') -%}
+    <link rel="stylesheet" {{ admin_csp_nonce_attribute }} 
+        href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css', v='1.9.4') }}">
+    <link rel="stylesheet" {{ admin_csp_nonce_attribute }} 
+        href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css', v='1.0.4') }}">
+  {%- endif -%}
+{% endmacro %}
+
+{% macro form_js() %}
+  {%- if config.get('FLASK_ADMIN_MAPS') -%}
+    <script {{ admin_csp_nonce_attribute }}>
+        window.FLASK_ADMIN_MAPS = true;
+        window.FLASK_ADMIN_MAPBOX_MAP_ID = "{{ config.FLASK_ADMIN_MAPBOX_MAP_ID }}";
+      {% if config.get('FLASK_ADMIN_MAPBOX_ACCESS_TOKEN') %}
+        window.FLASK_ADMIN_MAPBOX_ACCESS_TOKEN = "{{ config.FLASK_ADMIN_MAPBOX_ACCESS_TOKEN }}";
+      {% endif %}
+      {% if config.get('FLASK_ADMIN_DEFAULT_CENTER_LAT') and config.get('FLASK_ADMIN_DEFAULT_CENTER_LONG') %}
+        window.FLASK_ADMIN_DEFAULT_CENTER_LAT = "{{ config.FLASK_ADMIN_DEFAULT_CENTER_LAT }}";
+        window.FLASK_ADMIN_DEFAULT_CENTER_LONG = "{{ config.FLASK_ADMIN_DEFAULT_CENTER_LONG }}";
+      {% endif %}
+    </script>
+    <script {{ admin_csp_nonce_attribute }}
+        src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js', v='1.9.4') }}"></script>
+    <script {{ admin_csp_nonce_attribute }}
+        src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js', v='1.0.4') }}"></script>
+    {% if config.get('FLASK_ADMIN_MAPS_SEARCH') %}
+    <script {{ admin_csp_nonce_attribute }}>
+        window.FLASK_ADMIN_MAPS_SEARCH = "{{ config.FLASK_ADMIN_MAPS_SEARCH }}";
+    </script>
+    <script {{ admin_csp_nonce_attribute }}
+        src="https://maps.googleapis.com/maps/api/js?v=3&libraries=places&key={{ config.get('FLASK_ADMIN_GOOGLE_MAPS_API_KEY') }}"></script>
+    {% endif %}
+  {% endif %}
+    <script {{ admin_csp_nonce_attribute }}
+        src="{{ admin_static.url(filename='vendor/jquery-3.5.1.slim.min.js', v='3.5.1') }}"></script>
+    <script {{ admin_csp_nonce_attribute }}
+        src="{{ admin_static.url(filename='vendor/select2-bootstrap5/select2.full.min.js', v='4.1.0') }}"></script>
+    <script {{ admin_csp_nonce_attribute }}
+        src="{{ admin_static.url(filename='admin/js/bootstrap5/form.js', v='1.0.1') }}"></script>
+{% endmacro %}
+
+{% macro extra() %}
+  {%- if admin_view.can_create -%}
+    <button type="submit" name="_add_another" value="1" class="btn btn-outline-primary">
+        <i class="fas fa-plus"></i><span class="ms-1 d-none d-md-inline">{{ _gettext('Save and Add Another') }}</span>
+    </button>
+  {%- endif -%}
+  {%- if admin_view.can_edit -%}
+    <button type="submit" name="_continue_editing" value="1" class="btn btn-outline-primary">
+        <i class="fas fa-pencil-alt"></i><span class="ms-1 d-none d-md-inline">{{ _gettext('Save and Continue Editing') }}</span>
+    </button>
+  {%- endif -%}
+{% endmacro %}
