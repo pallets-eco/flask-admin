@@ -118,36 +118,35 @@
                         {% endblock %}
 
                         {% for c, name in list_columns %}
-                          {% set column = loop.index0 %}
+                            {% set column = loop.index0 %}
                             <th scope="col" class="column-header col-{{c}} position-relative">
-                              {% if admin_view.is_sortable(c) %}
-                                  {% if sort_column == column %}
-                                    <a href="{{ sort_url(column, True) }}"
-                                        title="{{ _gettext('Sort by %(name)s', name=name) }}"
-                                        class="text-decoration-none d-flex align-items-center justify-content-between">
-                                        <span>{{ name }}</span>
+                                <div class="d-flex align-items-center">
+                                  {%- if admin_view.is_sortable(c) -%}
+                                    <a class="text-decoration-none" href="{{ sort_url(column, sort_column == column) }}"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="{{ _gettext('Sort by %(name)s', name=name)|lower }}">{{ name }}</a>
+                                  {%- else -%}
+                                    <span class="fw-semibold">{{ name }}</span>
+                                  {%- endif -%}
+
+                                  {%- if admin_view.column_descriptions.get(c) -%}
+                                    {%- set _desc = admin_view.column_descriptions[c] -%}
+                                    <button type="button" class="btn btn-link btn-sm p-0 ms-1 text-muted"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="{{ _desc }}">
+                                        <i class="fas fa-question-circle"></i>
+                                    </button>
+                                  {%- endif -%}
+
+                                    <div class="ms-auto">
+                                      {%- if admin_view.is_sortable(c) and sort_column == column -%}
                                         <span class="sort-indicator">
                                             <i class="fas fa-sort-{% if sort_desc %}up{% else %}down{% endif %} text-primary"></i>
                                         </span>
-                                    </a>
-                                  {% else %}
-                                    <a href="{{ sort_url(column) }}"
-                                        title="{{ _gettext('Sort by %(name)s', name=name) }}"
-                                        class="text-decoration-none d-flex align-items-center justify-content-between">
-                                        <span>{{ name }}</span>
+                                      {%- else -%}
                                         <i class="fas fa-sort text-muted opacity-50"></i>
-                                    </a>
-                                  {% endif %}
-                                {% else %}
-                                    <span class="fw-semibold">{{ name }}</span>
-                                {% endif %}
-
-                                {% if admin_view.column_descriptions.get(c) %}
-                                    <button type="button" class="btn btn-link btn-sm p-0 ms-2 text-muted"
-                                        data-bs-toggle="tooltip" data-bs-placement="top" title="{{ admin_view.column_descriptions[c] }}">
-                                        <i class="fas fa-question-circle"></i>
-                                    </button>
-                                {% endif %}
+                                      {%- endif -%}
+                                    </div>
+                                </div><!-- .d-flex align-items-center -->
                             </th>
                         {% endfor %}
                       {% endblock %}
