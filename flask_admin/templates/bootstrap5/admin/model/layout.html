@@ -20,7 +20,7 @@
 {% macro export_options(btn_class='dropdown-toggle') %}
   {% set export_type_to_icon = { 'xlsx': 'fas fa-file-excel', 'xls': 'fas fa-file-excel' } %}
     <li class="nav-item">
-  {% if admin_view.export_types|length > 1 %}  
+  {% if admin_view.export_types|length > 1 %}
         <div class="btn-group">
             <button class="nav-link btn btn-light dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
               <i class="fas fa-file-download"></i><span class="ms-2 d-none d-md-inline">{{ _gettext('Export') }}</span>
@@ -49,7 +49,7 @@
 {% endmacro %}
 
 {% macro filter_form() %}
-<form id="filter_form" method="GET" action="{{ return_url }}" class="filter-form">    
+<form id="filter_form" method="GET" action="{{ return_url }}" class="filter-form">
   {% for arg_name, arg_value in extra_args.items() %}
     <input type="hidden" name="{{ arg_name }}" value="{{ arg_value }}">
   {% endfor %}
@@ -106,14 +106,14 @@
                         <span class="badge text-bg-secondary fw-normal filter-name">{{ _gettext('Filter Name') }}</span>
                     </div>
                 </div>
-                
+
                 <!-- Filter Operation -->
                 <div class="col-auto">
                     <select class="form-select form-select-sm filter-op" style="min-width: 120px;">
                         <!-- Options will be populated dynamically -->
                     </select>
                 </div>
-                
+
                 <!-- Filter Value -->
                 <div class="col">
                     <div class="filter-input-container">
@@ -147,7 +147,7 @@
           {% if sort_desc %}
             <input type="hidden" name="desc" value="1">
           {% endif %}
-            
+
           {% if search %}
             <div class="input-group">
           {% endif %}
@@ -191,4 +191,3 @@
         </div>
     </li>
 {% endmacro %}
-

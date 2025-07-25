@@ -13,7 +13,7 @@ class Theme:
 def get_allowed_swatches(folder: str) -> list[str]:
     base = os.path.dirname(__file__)
     # Directory where all swatches for the given folder are stored
-    swatches_dir = os.path.join(base, 'static', 'bootstrap', folder, 'swatch')
+    swatches_dir = os.path.join(base, "static", "bootstrap", folder, "swatch")
 
     allowed_swatches = []
     try:
@@ -23,8 +23,7 @@ def get_allowed_swatches(folder: str) -> list[str]:
 
             # A swatch is valid if the directory exists and
             # contains bootstrap.min.css
-            if os.path.isdir(swatch_path) and \
-               os.path.isfile(swatch_file):
+            if os.path.isdir(swatch_path) and os.path.isfile(swatch_file):
                 allowed_swatches.append(swatch_name)
 
         # Always add 'default' if not present

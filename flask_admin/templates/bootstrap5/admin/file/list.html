@@ -29,13 +29,13 @@
         <thead>
             <tr>
                 {% block list_header scoped %}
-                
+
                 {% if actions %}
                 <th class="list-checkbox-column">
                     <input type="checkbox" name="rowtoggle" class="action-rowtoggle form-check-input">
                 </th>
                 {% endif %}
-                
+
                 {% for column in admin_view.column_list %}
                 <th>
                     {% if admin_view.is_column_sortable(column) %}
@@ -62,7 +62,7 @@
         {% for name, path, is_dir, size, date in items %}
         <tr>
             {% block list_row scoped %}
-            
+
             {% if actions %}
             <td>
                 {% if not is_dir %}
@@ -70,10 +70,10 @@
                 {% endif %}
             </td>
             {% endif %}
-            
+
             <td>
                 {% block list_row_actions scoped %}
-                
+
                 {% if admin_view.can_rename and path and name != '..' %}
                   {% if admin_view.rename_modal %}
                     {{ lib.add_modal_button(url=get_url('.rename', path=path, modal=True),
@@ -85,7 +85,7 @@
                     </a>
                   {% endif %}
                 {% endif %}
-                
+
                 {% if admin_view.can_delete and path %}
                     {% if is_dir %}
                         {% if name != '..' and admin_view.can_delete_dirs %}
@@ -112,7 +112,7 @@
 
                 {% endblock %}
             </td>
-            
+
             {% if is_dir %}
             <td colspan="2">
                 <a href="{{ get_dir_url('.index_view', path)|safe }}">

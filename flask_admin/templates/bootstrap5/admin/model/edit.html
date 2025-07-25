@@ -47,8 +47,8 @@
               {{ subnav_modal_link(content=_content, url=_url) }}
             {%- else -%}
               {{ subnav_link(content=_content, url=_url) }}
-            {%- endif -%}    
-          </li>    
+            {%- endif -%}
+          </li>
         {%- endif -%}
       </ul>
   {% endblock %}
@@ -72,7 +72,7 @@
         src="{{ admin_static.url(filename='admin/js/bootstrap5/modal.js', v='1.0.0') }}"></script>
 
     <script {{ admin_csp_nonce_attribute }}
-        src="{{ admin_static.url(filename='admin/js/bootstrap5/details_filter.js', v='1.0.2') }}"></script>    
+        src="{{ admin_static.url(filename='admin/js/bootstrap5/details_filter.js', v='1.0.2') }}"></script>
   {%- endif -%}
 
 {% endblock %}

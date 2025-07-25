@@ -34,7 +34,7 @@
     {%- endif -%}
     </li>
     {%- endif -%}
-    
+
     <!-- Edit View Link -->
     {%- if admin_view.can_edit -%}
     {%- set _content = '<i class="fas fa-pen"></i><span class="ms-2 d-none d-md-inline">' + _gettext('Edit') + '</span>' -%}
@@ -45,16 +45,16 @@
         {{ subnav_modal_link(content=_content, url=_url) }}
       {%- else -%}
         {{ subnav_link(content=_content, url=_url) }}
-      {%- endif -%}    
-    </li>    
+      {%- endif -%}
+    </li>
     {%- endif -%}
-    
+
     <!-- Details View Link (Active) -->
     <li class="nav-item">
       {% set _content = '<i class="fas fa-info-circle"></i><span class="ms-2 d-none d-md-inline">' + _gettext('Details') + '</span>' %}
       {{ subnav_link(content=_content, link_extra_cls='active disabled') }}
     </li>
-    
+
   </ul>
   {% endblock %}
 
@@ -64,7 +64,7 @@
         <i class="fas fa-filter"></i><span class="ms-1 d-none d-md-inline">{{ _gettext('Filter') }}</span>
       </label>
       <input id="fa_details_filter" type="text" class="form-control" data-target="#details-table">
-  </div>  
+  </div>
   {% endblock %}
 
   {% block details_table %}
@@ -88,7 +88,7 @@
 
 {% block tail %}
   {{ super() }}
-  
+
   {% if admin_view.edit_modal or admin_view.create_modal %}
     {{ form_js() }}
     <script {{ admin_csp_nonce_attribute }}

@@ -16,13 +16,13 @@
 
 {% macro menu(menu_root=None, is_submenu=False) %}
   {% if menu_root is none %}{% set menu_root = admin_view.admin.menu() %}{% endif %}
-  
+
   {%- for item in menu_root %}
     {% set _class = item.get_class_name() %}
     {% set class_name = (' ' + _class) if _class else '' %}
     {% set active_class = ' active' if item.is_active(admin_view) else '' %}
     {% set other_classes = active_class + class_name %}
-    
+
     {% if item.is_category() %}
       {% set children = item.get_children() %}
       {% if children %}

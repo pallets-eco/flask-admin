@@ -40,7 +40,7 @@
     <form id="{{ _id }}" class="icon" method="POST" action="{{ get_url('.delete_view') }}">
         {{ delete_form.id(value=_pk_value) }}
         {{ delete_form.url(value=return_url) }}
-      
+
       {%- if delete_form.csrf_token -%}
         {{ delete_form.csrf_token }}
       {%- elif csrf_token -%}

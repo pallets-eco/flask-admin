@@ -20,7 +20,7 @@
           <link rel="stylesheet" {{ admin_csp_nonce_attribute }}
               href="{{ admin_static.url(filename='bootstrap/bootstrap5/swatch/{swatch}/bootstrap.min.css'.format(swatch=theme.swatch), v='5.3.7') }}">
         {%- endif -%}
-        
+
         <link rel="stylesheet" {{ admin_csp_nonce_attribute }}
             href="{{ admin_static.url(filename='admin/css/bootstrap5/admin.css', v='1.1.1') }}">
         <link rel="stylesheet" {{ admin_csp_nonce_attribute }}
@@ -55,7 +55,7 @@
                       {% block brand %}
                         <a class="navbar-brand" href="{{ admin_view.admin.url }}">{{ admin_view.admin.name }}</a>
                       {% endblock %}
-                        
+
                       {% block main_menu %}
                         <ul class="navbar-nav me-auto">
                             {{ layout.menu() }}
@@ -67,7 +67,7 @@
                             {{ layout.menu_links() }}
                         </ul>
                       {% endblock %}
-                    
+
                       {% block access_control %}{% endblock %}
                     </div><!-- .collapse navbar-collapse -->
                 </div><!-- .container-fluid -->
@@ -133,7 +133,7 @@
                 return toast;
               });
             });
-          
+
             // popovers
             const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
             const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));

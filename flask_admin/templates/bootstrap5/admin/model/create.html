@@ -14,13 +14,13 @@
 {% block body %}
   {% block navlinks %}
   <ul class="nav nav-pills bg-body-tertiary flex-wrap align-items-center gap-1 mb-2 p-2">
-    
+
     <!-- List View Link -->
     <li class="nav-item">
       {%- set _content = '<i class="fas fa-list"></i><span class="ms-2 d-none d-md-inline">' + _gettext('List') + '</span>' -%}
       {{ subnav_link(content=_content, url=get_url('.index_view')) }}
     </li>
-    
+
     <!-- Create View Link (Active) -->
     <li class="nav-item">
       {%- set _content = '<i class="fas fa-plus"></i><span class="ms-2 d-none d-md-inline">' + _gettext('Create') + '</span>' -%}

@@ -115,7 +115,7 @@
                 </a>
             </li>
           {%- endif -%}
-          
+
           {%- if have_next -%}
             <li class="page-item">
                 <a class="page-link" href="{{ generator(page + 1) }}" aria-label="Next page">
@@ -164,7 +164,7 @@
         <span class="d-inline-block" tabindex="0" data-bs-toggle="popover"
             data-bs-placement="top" data-bs-trigger="hover" data-bs-content="{{ title }}">
     {%- endif -%}
-    
+
     {%- if modal_window_id -%}
         <a class="nav-link btn btn-light{% if link_extra_cls %} {{ link_extra_cls }}{% endif %}"
             data-bs-target="#{{ modal_window_id }}"{% if url %} href="{{ url }}"{% endif %} data-bs-toggle="modal">
@@ -174,7 +174,7 @@
         <a{% if url %} href="{{ url }}"{% endif %}
             class="nav-link btn btn-light{% if link_extra_cls %} {{ link_extra_cls }}{% endif %}">{{ content|safe }}</a>
     {%- endif -%}
-    
+
     {%- if title -%}
         </span><!-- .d-inline-block -->
     {%- endif -%}
@@ -252,13 +252,13 @@
       {%- endif -%}
 
       {{ field(**kwargs) | safe }}
-        
+
       {%- if append -%}
         <div class="input-group-text">
             {{ append }}
         </div>
       {%- endif -%}
-  
+
       {%- if direct_error -%}
         <div class="invalid-feedback">
             <ul class="list-unstyled mb-0">
@@ -271,7 +271,7 @@
       {%- elif field.description -%}
         <div class="form-text">{{ field.description|safe }}</div>
       {%- endif -%}
-      
+
       {%- if prepend or append -%}
         </div><!-- .input-group -->
       {%- endif -%}
@@ -355,14 +355,14 @@
 {% endmacro %}
 
 {% macro form_css() %}
-    <link rel="stylesheet" {{ admin_csp_nonce_attribute }} 
+    <link rel="stylesheet" {{ admin_csp_nonce_attribute }}
         href="{{ admin_static.url(filename='vendor/select2-bootstrap5/select2.min.css', v='4.1.0') }}">
-    <link rel="stylesheet" {{ admin_csp_nonce_attribute }} 
+    <link rel="stylesheet" {{ admin_csp_nonce_attribute }}
         href="{{ admin_static.url(filename='vendor/select2-bootstrap5/select2-bootstrap-5-theme.min.css', v='4.1.0') }}">
   {%- if config.get('FLASK_ADMIN_MAPS') -%}
-    <link rel="stylesheet" {{ admin_csp_nonce_attribute }} 
+    <link rel="stylesheet" {{ admin_csp_nonce_attribute }}
         href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css', v='1.9.4') }}">
-    <link rel="stylesheet" {{ admin_csp_nonce_attribute }} 
+    <link rel="stylesheet" {{ admin_csp_nonce_attribute }}
         href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css', v='1.0.4') }}">
   {%- endif -%}
 {% endmacro %}
