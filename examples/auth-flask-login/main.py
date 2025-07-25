@@ -1,6 +1,9 @@
 import os
+import typing as t
+from uuid import uuid4
 
-import flask_login as login
+import flask_login
+from flask import flash
 from flask import Flask
 from flask import redirect
 from flask import render_template
@@ -9,23 +12,27 @@ from flask import url_for
 from flask_admin import Admin
 from flask_admin import AdminIndexView
 from flask_admin import expose
-from flask_admin import helpers
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from wtforms import fields
-from wtforms import form
+from wtforms import PasswordField
 from wtforms import validators
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
 app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
-app.config["SQLALCHEMY_ECHO"] = True
+app.config["SQLALCHEMY_ECHO"] = False
 db = SQLAlchemy(app)
-login_manager = login.LoginManager()
+login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
 
@@ -34,92 +41,149 @@ def index():
     return render_template("index.html")
 
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(100))
-    last_name = db.Column(db.String(100))
-    login = db.Column(db.String(80), unique=True)
-    email = db.Column(db.String(120))
-    password = db.Column(db.String(64))
-
-    # Flask-Login integration
-    # NOTE: is_authenticated, is_active, and is_anonymous
-    # are methods in Flask-Login < 0.3.0
-    @property
-    def is_authenticated(self):
-        return True
+# inherit from flask_login.UserMixin so no need to define login methods
+class User(db.Model, flask_login.UserMixin):
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    username: Mapped[str] = mapped_column(
+        String(80),
+        unique=True,
+        index=True,
+    )
+    # having a _ will make the field hidden in flask-admin edit/create forms
+    _password: Mapped[str] = mapped_column(String(128), nullable=True)
 
     @property
-    def is_active(self):
-        return True
+    def password(self) -> str:
+        return self._password
 
-    @property
-    def is_anonymous(self):
+    @password.setter
+    def password(self, password: str) -> None:
+        # Check if this is actually a new password to avoid unnecessary updates
+        if not password:
+            return
+        if self._password is None or not self.check_password(password):
+            self._password = generate_password_hash(
+                password,
+                # on MacOS, default method="scrypt" gives AttributeError
+                method="pbkdf2",
+            )
+            self.alternative_id = uuid4().hex
+            # password.setter can be called even without any user logged in, e.g.
+            # when creating db
+            if flask_login.current_user and flask_login.current_user == self:
+                # changing the alternative id will log out even current session
+                # so if current user changes pw, we must log her back
+                flask_login.login_user(self)
+
+    def check_password(self, password: t.Optional[str]) -> bool:
+        if password is not None:
+            return check_password_hash(self._password, password)
         return False
 
-    def get_id(self):
-        return self.id
+    # security: https://flask-login.readthedocs.io/en/latest/#alternative-tokens
+    # allows logout users
+    alternative_id: Mapped[str] = mapped_column(
+        String(32), default=uuid4().hex, index=True
+    )
 
-    # Required for administrative interface
-    def __unicode__(self):
+    def get_id(self):
+        """
+        Override flask_login.UserMixin.get_id to return alternative_id for security.
+        """
+        return self.alternative_id
+
+    def __repr__(self):
         return self.username
 
+    @staticmethod
+    def get(data, field) -> t.Optional["User"]:
+        return db.session.execute(
+            db.select(User).where(getattr(User, field) == data)
+        ).scalar()
 
-# Define login and registration forms (for flask-login)
-class LoginForm(form.Form):
-    login = fields.StringField(validators=[validators.InputRequired()])
+
+@login_manager.user_loader
+def load_user(alternative_id):
+    return User.get(alternative_id, field="alternative_id")
+
+
+class LoginForm(FlaskForm):
+    username = fields.StringField(validators=[validators.InputRequired()])
     password = fields.PasswordField(validators=[validators.InputRequired()])
 
-    def validate_login(self, field):
-        user = self.get_user()
+    user: t.Optional[User] = None  # To store the authenticated user for later use
 
-        if user is None:
-            raise validators.ValidationError("Invalid user")
+    def validate_username(self, field):
+        self.user = User.get(field.data, "username")
+        if self.user is None:
+            raise validators.ValidationError("Invalid username")
 
-        # we're comparing the plaintext pw with the the hash from the db
-        if not check_password_hash(user.password, self.password.data):
-            # to compare plain text passwords use
-            # if user.password != self.password.data:
+    def validate_password(self, field):
+        if self.user is None:
+            # Skip password check if username validation already failed
+            return
+        if not self.user.check_password(field.data):
             raise validators.ValidationError("Invalid password")
 
-    def get_user(self):
-        return db.session.query(User).filter_by(login=self.login.data).first()
 
-
-class RegistrationForm(form.Form):
-    login = fields.StringField(validators=[validators.InputRequired()])
-    email = fields.StringField()
+class RegistrationForm(FlaskForm):
+    username = fields.StringField(validators=[validators.InputRequired()])
     password = fields.PasswordField(validators=[validators.InputRequired()])
 
-    def validate_login(self, field):
-        if db.session.query(User).filter_by(login=self.login.data).count() > 0:
-            raise validators.ValidationError("Duplicate username")
+    def validate_username(self, field):
+        if User.get(field.data, "username"):
+            raise validators.ValidationError("Username already taken")
 
 
 # Create customized model view class
 class MyModelView(ModelView):
+    column_exclude_list = (
+        "_password",
+        "alternative_id",
+    )
+    column_editable_list = ("username",)  # allow inline editing
+    form_excluded_columns = ("alternative_id",)
+    # password is a property, so we cannot use flask_admin.ModelView.column_list to
+    # include the password property in forms
+    form_extra_fields = {
+        "password": PasswordField("Password"),
+    }
+
     def is_accessible(self):
-        return login.current_user.is_authenticated
+        """Check if current user can access admin interface"""
+        return flask_login.current_user.is_authenticated
+
+    def inaccessible_callback(self, name, **kwargs):
+        """Redirect to login if not accessible"""
+        flash("Please login to access this page.", "danger")
+        return redirect(url_for("admin.login_view", next=request.url))
 
 
 # Create customized index view class that handles login & registration
 class MyAdminIndexView(AdminIndexView):
     @expose("/")
     def index(self):
-        if not login.current_user.is_authenticated:
+        if not flask_login.current_user.is_authenticated:
             return redirect(url_for(".login_view"))
         return super().index()
 
     @expose("/login/", methods=("GET", "POST"))
     def login_view(self):
+        if flask_login.current_user.is_authenticated:
+            return redirect(url_for(".index"))
+
         # handle user login
         form = LoginForm(request.form)
-        if helpers.validate_form_on_submit(form):
-            user = form.get_user()
-            login.login_user(user)
-
-        if login.current_user.is_authenticated:
+        if form.validate_on_submit():
+            user = form.user
+            flask_login.login_user(user)
+            # rredirect to next
+            if "next" in request.args:
+                next_url = request.args.get("next")
+                if next_url:
+                    return redirect(next_url)
             return redirect(url_for(".index"))
+
         link = (
             "<p>Don't have an account? <a href=\""
             + url_for(".register_view")
@@ -132,18 +196,12 @@ class MyAdminIndexView(AdminIndexView):
     @expose("/register/", methods=("GET", "POST"))
     def register_view(self):
         form = RegistrationForm(request.form)
-        if helpers.validate_form_on_submit(form):
+        if form.validate_on_submit():
             user = User()
-
             form.populate_obj(user)
-            # we hash the users password to avoid saving it as plaintext in the db,
-            # remove to use plain text:
-            user.password = generate_password_hash(form.password.data)
-
             db.session.add(user)
             db.session.commit()
-
-            login.login_user(user)
+            flask_login.login_user(user)
             return redirect(url_for(".index"))
         link = (
             '<p>Already have an account? <a href="'
@@ -156,7 +214,7 @@ class MyAdminIndexView(AdminIndexView):
 
     @expose("/logout/")
     def logout_view(self):
-        login.logout_user()
+        flask_login.logout_user()
         return redirect(url_for(".index"))
 
 
@@ -164,20 +222,14 @@ def build_sample_db():
     """
     Populate a small db with some example entries.
     """
-
     import random
     import string
 
     db.drop_all()
     db.create_all()
-    # passwords are hashed, to use plaintext passwords instead:
-    # test_user = User(login="test", password="test")
-    test_user = User(
-        login="test", password=generate_password_hash("test", method="pbkdf2")
-    )
+    test_user = User(username="test", password="test")
     db.session.add(test_user)
-
-    first_names = [
+    names = [
         "Harry",
         "Amelia",
         "Oliver",
@@ -204,50 +256,20 @@ def build_sample_db():
         "Stacey",
         "Lucy",
     ]
-    last_names = [
-        "Brown",
-        "Smith",
-        "Patel",
-        "Jones",
-        "Williams",
-        "Johnson",
-        "Taylor",
-        "Thomas",
-        "Roberts",
-        "Khan",
-        "Lewis",
-        "Jackson",
-        "Clarke",
-        "James",
-        "Phillips",
-        "Wilson",
-        "Ali",
-        "Mason",
-        "Mitchell",
-        "Rose",
-        "Davis",
-        "Davies",
-        "Rodriguez",
-        "Cox",
-        "Alexander",
-    ]
-
-    for i in range(len(first_names)):
-        user = User()
-        user.first_name = first_names[i]
-        user.last_name = last_names[i]
-        user.login = user.first_name.lower()
-        user.email = user.login + "@example.com"
-        user.password = generate_password_hash(
-            "".join(
-                random.choice(string.ascii_lowercase + string.digits) for i in range(10)
-            ),
-            method="pbkdf2",
+    users = []
+    for name in names:
+        password = "".join(
+            random.choice(string.ascii_lowercase + string.digits) for i in range(10)
         )
-        db.session.add(user)
-
+        users.append(
+            User(
+                username=name,
+                password=password,
+            )
+        )
+    # execute insert uses a bulk insert which is more efficient
+    db.session.add_all(users)
     db.session.commit()
-    return
 
 
 if __name__ == "__main__":
@@ -255,13 +277,8 @@ if __name__ == "__main__":
         app,
         name="Example: Auth",
         index_view=MyAdminIndexView(),
-        theme=Bootstrap4Theme(base_template="my_master.html"),
+        theme=Bootstrap4Theme(base_template="my_master.html", fluid=True),
     )
-
-    # Create user loader function
-    @login_manager.user_loader
-    def load_user(user_id):
-        return db.session.query(User).get(user_id)
 
     admin.add_view(MyModelView(User, db.session))
 
