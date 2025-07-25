@@ -66,8 +66,8 @@ if __name__ == "__main__":
     with PostgresContainer(
         image="postgis/postgis:12-3.0",
         port=5432,
-        username="hasansezertasan",
-        password="hasansezertasan",
+        username="username",
+        password="password",
         dbname="main",
     ) as postgres:
         app = Flask(__name__)
