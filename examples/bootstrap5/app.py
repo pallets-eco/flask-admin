@@ -7,9 +7,9 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form.fields import Select2Field
 from flask_admin.theme import Bootstrap5Theme
+from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 from wtforms.fields import DateTimeLocalField
-
 
 # Create application
 app = Flask(__name__)
@@ -25,6 +25,14 @@ app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
 
 
+def get_locale():
+    return "en"
+
+
+# Initialize babel
+babel = Babel(app, locale_selector=get_locale)
+
+
 # Models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -34,8 +42,9 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.now)
 
     organization_id = db.Column(
-        db.Integer, db.ForeignKey('organization.id'), nullable=False)
-    organization = db.relationship('Organization', back_populates='users')
+        db.Integer, db.ForeignKey("organization.id"), nullable=False
+    )
+    organization = db.relationship("Organization", back_populates="users")
 
     def __unicode__(self):
         return self.name
@@ -49,7 +58,7 @@ class Organization(db.Model):
     name = db.Column(db.Unicode(64))
     shortname = db.Column(db.Unicode(16))
 
-    users = db.relationship('User', back_populates='organization')
+    users = db.relationship("User", back_populates="organization")
 
     def __unicode__(self):
         return f"{self.name} {self.shortname}"
@@ -78,19 +87,16 @@ class UserAdmin(CustomView):
     can_export = True
     export_types = ["csv", "xlsx"]
 
-    form_columns = ['name', 'email', 'active', 'organization_id']
+    form_columns = ["name", "email", "active", "organization_id"]
 
-    form_overrides = {
-        'organization_id': Select2Field,
-        'created_at': DateTimeLocalField
-    }
+    form_overrides = {"organization_id": Select2Field, "created_at": DateTimeLocalField}
 
     form_args = {
-        'organization_id': {
-            'choices': [],
-            'coerce': int,
-            'label': 'Organization',
-            'description': 'select an organization for this user'
+        "organization_id": {
+            "choices": [],
+            "coerce": int,
+            "label": "Organization",
+            "description": "select an organization for this user",
         }
     }
 
@@ -100,10 +106,7 @@ class UserAdmin(CustomView):
     edit_modal = True
 
     def _organization_id_choices(self):
-        return [
-            (o.id, f"{o.name} ({o.shortname})")
-            for o in Organization.query.all()
-        ]
+        return [(o.id, f"{o.name} ({o.shortname})") for o in Organization.query.all()]
 
     def make_form(self, create_or_edit_form, obj=None):
         form = create_or_edit_form(obj)
@@ -122,7 +125,9 @@ class OrganizationAdmin(CustomView):
     column_filters = ("name", "shortname")
     create_modal = True
 
-    inline_models = [User, ]
+    inline_models = [
+        User,
+    ]
 
     can_view_details = True
 
@@ -134,8 +139,9 @@ def index():
 
 
 # Create admin with custom base template
-admin = Admin(app, "Example: Bootstrap5",
-              theme=Bootstrap5Theme(swatch="default", fluid=True))
+admin = Admin(
+    app, "Example: Bootstrap5", theme=Bootstrap5Theme(swatch="default", fluid=True)
+)
 
 # Add views
 admin.add_view(UserAdmin(User, db.session, category="Menu"))
@@ -170,22 +176,65 @@ def build_sample_db():
     # Create Organization objects and add them to the database
     for org_data in organizations_data:
         organization = Organization(
-            name=org_data["name"], shortname=org_data["shortname"])
+            name=org_data["name"], shortname=org_data["shortname"]
+        )
         db.session.add(organization)
         organizations.append(organization)
 
     # Sample data for creating users
     first_names = [
-        "Harry", "Amelia", "Oliver", "Jack", "Isabella", "Charlie", "Sophie",
-        "Mia", "Jacob", "Thomas", "Emily", "Lily", "Ava", "Isla", "Alfie",
-        "Olivia", "Jessica", "Riley", "William", "James", "Geoffrey", "Lisa",
-        "Benjamin", "Stacey", "Lucy",
+        "Harry",
+        "Amelia",
+        "Oliver",
+        "Jack",
+        "Isabella",
+        "Charlie",
+        "Sophie",
+        "Mia",
+        "Jacob",
+        "Thomas",
+        "Emily",
+        "Lily",
+        "Ava",
+        "Isla",
+        "Alfie",
+        "Olivia",
+        "Jessica",
+        "Riley",
+        "William",
+        "James",
+        "Geoffrey",
+        "Lisa",
+        "Benjamin",
+        "Stacey",
+        "Lucy",
     ]
     last_names = [
-        "Brown", "Smith", "Patel", "Jones", "Williams", "Johnson", "Taylor",
-        "Thomas", "Roberts", "Khan", "Lewis", "Jackson", "Clarke", "James",
-        "Phillips", "Wilson", "Ali", "Mason", "Mitchell", "Rose", "Davis",
-        "Davies", "Rodriguez", "Cox", "Alexander",
+        "Brown",
+        "Smith",
+        "Patel",
+        "Jones",
+        "Williams",
+        "Johnson",
+        "Taylor",
+        "Thomas",
+        "Roberts",
+        "Khan",
+        "Lewis",
+        "Jackson",
+        "Clarke",
+        "James",
+        "Phillips",
+        "Wilson",
+        "Ali",
+        "Mason",
+        "Mitchell",
+        "Rose",
+        "Davis",
+        "Davies",
+        "Rodriguez",
+        "Cox",
+        "Alexander",
     ]
 
     # Create users and assign a random organization to each one
