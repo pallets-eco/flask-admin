@@ -7,6 +7,9 @@
                                  subnav_link,
                                  subnav_modal_link with context -%}
 
+{#- needed because of hard-coded renderers in rules.py -#}
+{%- import 'admin/lib.html' as lib with context -%}
+
 {% block head %}
     {{ super() }}
     {{ form_css() }}
