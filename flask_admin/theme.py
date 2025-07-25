@@ -17,4 +17,10 @@ class BootstrapTheme(Theme):
     fluid: bool = False
 
 
+@dataclass
+class FomanticUI(Theme):
+    folder: typing.Literal["fomanticui"] = "fomanticui"
+    base_template: str = "admin/base.html"
+
+
 Bootstrap4Theme = partial(BootstrapTheme, folder="bootstrap4")
