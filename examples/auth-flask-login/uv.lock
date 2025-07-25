@@ -140,6 +140,7 @@ dependencies = [
     { name = "flask" },
     { name = "jinja2" },
     { name = "markupsafe" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
     { name = "werkzeug" },
     { name = "wtforms" },
 ]
@@ -163,19 +164,19 @@ requires-dist = [
     { name = "colour", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=0.1.5" },
     { name = "email-validator", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=2" },
     { name = "flask", specifier = ">=2.0" },
-    { name = "flask-admin", extras = ["azure-blob-storage"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["export"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["geoalchemy"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["images"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["peewee"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["pymongo"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["rediscli"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["s3"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'geoalchemy'" },
-    { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'sqlalchemy-with-utils'" },
-    { name = "flask-admin", extras = ["sqlalchemy-with-utils"], marker = "extra == 'all'" },
-    { name = "flask-admin", extras = ["translation"], marker = "extra == 'all'" },
+    { name = "flask-admin", extras = ["azure-blob-storage"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["export"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["geoalchemy"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["images"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["peewee"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["pymongo"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["rediscli"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["s3"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'geoalchemy'", editable = "../../" },
+    { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'sqlalchemy-with-utils'", editable = "../../" },
+    { name = "flask-admin", extras = ["sqlalchemy-with-utils"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["translation"], marker = "extra == 'all'", editable = "../../" },
     { name = "flask-babel", marker = "extra == 'translation'", specifier = ">=3.0.1" },
     { name = "flask-sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=3" },
     { name = "geoalchemy2", marker = "extra == 'geoalchemy'", specifier = ">=0.14.0" },
@@ -183,13 +184,14 @@ requires-dist = [
     { name = "markupsafe", specifier = ">=2.0" },
     { name = "peewee", marker = "extra == 'peewee'", specifier = ">=3.14.0" },
     { name = "pillow", marker = "extra == 'images'", specifier = ">=10.0.0" },
-    { name = "pymongo", marker = "extra == 'pymongo'", specifier = ">=3.7.0" },
+    { name = "pymongo", marker = "extra == 'pymongo'", specifier = ">=3.10.0" },
     { name = "redis", marker = "extra == 'rediscli'", specifier = ">=4.0.0" },
     { name = "shapely", marker = "extra == 'geoalchemy'", specifier = ">=2" },
     { name = "sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=1.4" },
     { name = "sqlalchemy-citext", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=1.8.0" },
     { name = "sqlalchemy-utils", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=0.38.0" },
     { name = "tablib", marker = "extra == 'export'", specifier = ">=3.0.0" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
     { name = "werkzeug", specifier = ">=2.0" },
     { name = "wtf-peewee", marker = "extra == 'peewee'", specifier = ">=3.0.4" },
     { name = "wtforms", specifier = ">=2.3" },
@@ -198,12 +200,39 @@ provides-extras = ["sqlalchemy", "sqlalchemy-with-utils", "geoalchemy", "pymongo
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "beautifulsoup4" },
+    { name = "botocore", specifier = ">=1.35" },
+    { name = "flake8" },
+    { name = "flask-admin", extras = ["all"], editable = "../../" },
+    { name = "moto" },
+    { name = "mypy" },
+    { name = "pallets-sphinx-themes" },
+    { name = "pre-commit" },
+    { name = "pre-commit-uv" },
+    { name = "psycopg2-binary" },
+    { name = "pylint" },
+    { name = "pyright" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "sphinx" },
+    { name = "sphinx-intl", specifier = ">=2.3.1" },
+    { name = "sphinxcontrib-log-cabinet" },
     { name = "tox" },
     { name = "tox-uv" },
+    { name = "types-beautifulsoup4" },
+    { name = "types-boto3" },
+    { name = "types-flask" },
+    { name = "types-flask-sqlalchemy" },
+    { name = "types-peewee" },
+    { name = "types-pillow" },
+    { name = "types-shapely" },
+    { name = "types-wtforms" },
 ]
 docs = [
+    { name = "flask-admin", extras = ["all"], editable = "../../" },
     { name = "pallets-sphinx-themes" },
     { name = "sphinx" },
+    { name = "sphinx-intl", specifier = ">=2.3.1" },
     { name = "sphinxcontrib-log-cabinet" },
 ]
 pre-commit = [
@@ -215,7 +244,7 @@ tests = [
     { name = "botocore", specifier = ">=1.35" },
     { name = "flake8" },
     { name = "moto" },
-    { name = "psycopg2" },
+    { name = "psycopg2-binary" },
     { name = "pylint" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -528,20 +557,20 @@ wheels = [
 
 [[package]]
 name = "types-python-dateutil"
-version = "2.9.0.20250516"
+version = "2.9.0.20250708"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ef/88/d65ed807393285204ab6e2801e5d11fbbea811adcaa979a2ed3b67a5ef41/types_python_dateutil-2.9.0.20250516.tar.gz", hash = "sha256:13e80d6c9c47df23ad773d54b2826bd52dbbb41be87c3f339381c1700ad21ee5", size = 13943, upload-time = "2025-05-16T03:06:58.385Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c9/95/6bdde7607da2e1e99ec1c1672a759d42f26644bbacf939916e086db34870/types_python_dateutil-2.9.0.20250708.tar.gz", hash = "sha256:ccdbd75dab2d6c9696c350579f34cffe2c281e4c5f27a585b2a2438dd1d5c8ab", size = 15834, upload-time = "2025-07-08T03:14:03.382Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c5/3f/b0e8db149896005adc938a1e7f371d6d7e9eca4053a29b108978ed15e0c2/types_python_dateutil-2.9.0.20250516-py3-none-any.whl", hash = "sha256:2b2b3f57f9c6a61fba26a9c0ffb9ea5681c9b83e69cd897c6b5f668d9c0cab93", size = 14356, upload-time = "2025-05-16T03:06:57.249Z" },
+    { url = "https://files.pythonhosted.org/packages/72/52/43e70a8e57fefb172c22a21000b03ebcc15e47e97f5cb8495b9c2832efb4/types_python_dateutil-2.9.0.20250708-py3-none-any.whl", hash = "sha256:4d6d0cc1cc4d24a2dc3816024e502564094497b713f7befda4d5bc7a8e3fd21f", size = 17724, upload-time = "2025-07-08T03:14:02.593Z" },
 ]
 
 [[package]]
 name = "typing-extensions"
-version = "4.14.0"
+version = "4.14.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d1/bc/51647cd02527e87d05cb083ccc402f93e441606ff1f01739a62c8ad09ba5/typing_extensions-4.14.0.tar.gz", hash = "sha256:8676b788e32f02ab42d9e7c61324048ae4c6d844a399eebace3d4979d75ceef4", size = 107423, upload-time = "2025-06-02T14:52:11.399Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/98/5a/da40306b885cc8c09109dc2e1abd358d5684b1425678151cdaed4731c822/typing_extensions-4.14.1.tar.gz", hash = "sha256:38b39f4aeeab64884ce9f74c94263ef78f3c22467c8724005483154c26648d36", size = 107673, upload-time = "2025-07-04T13:28:34.16Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/69/e0/552843e0d356fbb5256d21449fa957fa4eff3bbc135a74a691ee70c7c5da/typing_extensions-4.14.0-py3-none-any.whl", hash = "sha256:a1514509136dd0b477638fc68d6a91497af5076466ad0fa6c338e44e359944af", size = 43839, upload-time = "2025-06-02T14:52:10.026Z" },
+    { url = "https://files.pythonhosted.org/packages/b5/00/d631e67a838026495268c2f6884f3711a15a9a2a96cd244fdaea53b823fb/typing_extensions-4.14.1-py3-none-any.whl", hash = "sha256:d1e1e3b58374dc93031d6eda2420a48ea44a36c2b4766a4fdeb3710755731d76", size = 43906, upload-time = "2025-07-04T13:28:32.743Z" },
 ]
 
 [[package]]
