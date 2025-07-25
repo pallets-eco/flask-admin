@@ -1,8 +1,8 @@
 {% macro filter_options(btn_class='dropdown-toggle') %}
-    <a class="nav-link {{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">{{ _gettext('Add Filter') }}</a>
+    <a class="nav-link {{ btn_class }}" data-toggle="dropdown" href="#">{{ _gettext('Add Filter') }}</a>
     <div class="dropdown-menu field-filters">
         {% for k in filter_groups %}
-            <a href="javascript:void(0)" class="dropdown-item filter" onclick="return false;">{{ k }}</a>
+            <a href="#" class="dropdown-item filter" onclick="return false;">{{ k }}</a>
         {% endfor %}
     </div>
 {% endmacro %}
@@ -10,7 +10,7 @@
 {% macro export_options(btn_class='dropdown-toggle') %}
     {% if admin_view.export_types|length > 1 %}
         <li class="dropdown">
-            <a class="nav-link {{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)" role="button"
+            <a class="nav-link {{ btn_class }}" data-toggle="dropdown" href="#" role="button"
                aria-haspopup="true" aria-expanded="false">{{ _gettext('Export') }}</a>
             <div class="dropdown-menu">
                 {% for export_type in admin_view.export_types %}
@@ -98,7 +98,7 @@
 {% endmacro %}
 
 {% macro page_size_form(generator, page_size_options, btn_class='nav-link dropdown-toggle') %}
-    <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
+    <a class="{{ btn_class }}" data-toggle="dropdown" href="#">
         {{ page_size }} {{ _gettext('items') }}
     </a>
     <div class="dropdown-menu">
