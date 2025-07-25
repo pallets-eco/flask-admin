@@ -5,8 +5,6 @@ from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2.types import Geometry
 from testcontainers.postgres import PostgresContainer
-from testcontainers.postgres import PostgresContainer
-
 
 db = SQLAlchemy()
 admin = Admin(name="Example: GeoAlchemy", theme=Bootstrap4Theme())
