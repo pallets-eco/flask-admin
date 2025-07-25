@@ -4,7 +4,7 @@ Flask-Admin is now part of Pallets-Eco, an open source organization managed by t
 Pallets team to facilitate community maintenance of Flask extensions. Please update
 your references to `https://github.com/pallets-eco/flask-admin.git`.
 
-[![image](https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.svg)](https://crowdin.com/project/flask-admin) [![image](https://github.com/pallets-eco/flask-admin/actions/workflows/tests.yaml/badge.svg?branch=master)](https://github.com/pallets-eco/flask-admin/actions/workflows/test.yaml)
+[![image](https://github.com/pallets-eco/flask-admin/actions/workflows/tests.yaml/badge.svg?branch=master)](https://github.com/pallets-eco/flask-admin/actions/workflows/test.yaml)
 
 ## Pallets Community Ecosystem
 
@@ -156,8 +156,17 @@ Flask-Admin is built with the help of
 If you want to localize your application, install the
 [Flask-Babel](https://pypi.python.org/pypi/Flask-Babel) package.
 
-You can help improve Flask-Admin\'s translations through Crowdin:
-<https://crowdin.com/project/flask-admin>
+You can help improve Flask-Admin\'s translations by opening a PR.
+## As a developer who's changed some text in Flask-Admin
+```bash
+uv sync --group docs
+cd babel
+./babel.sh --update
+```
+
+## As a translator who's updated some `.po`/`.mo` files
+Run `cd babel`
+Run `./babel.sh`
 
 <!-- refs -->
 [discord]: https://discord.gg/pallets
