@@ -1,5 +1,7 @@
 # GeoAlchemy Example
 
+GeoAlchemy Example with PostGIS.
+
 ## How to run this example
 
 Clone the repository and navigate to this example:
@@ -9,20 +11,10 @@ git clone https://github.com/pallets-eco/flask-admin.git
 cd flask-admin/examples/geo-alchemy
 ```
 
-<!-- TODO @hasansezertasan: Let's automate the steps down below as part of main.py and the testcontainer we use so that manually nothing needs to happen? -->
+Install PostgreSQL on your macOS:
 
-Open the PostgreSQL Interactive terminal by running `psql postgres` command and create a database and user for the example:
-
-```sql
-CREATE DATABASE flask_admin_geo;
-CREATE ROLE flask_admin_geo LOGIN PASSWORD 'flask_admin_geo';
-GRANT ALL PRIVILEGES ON DATABASE flask_admin_geo TO flask_admin_geo;
-```
-
-Then, create the `postgis` extension in the database:
-
-```shell
-psql -d flask_admin_geo -c "CREATE EXTENSION postgis;"
+```sh
+brew install postgresql
 ```
 
 > This example uses [`uv`](https://docs.astral.sh/uv/) to manage its dependencies and developer environment.
