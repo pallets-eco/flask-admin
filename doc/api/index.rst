@@ -16,6 +16,12 @@ API
 
    mod_contrib_sqla
    mod_contrib_sqla_fields
+   mod_contrib_sqlmodel
+   mod_contrib_sqlmodel_fields
+   mod_contrib_sqlmodel_filters
+   mod_contrib_sqlmodel_validators
+   mod_contrib_sqlmodel_mixins
+   mod_contrib_sqlmodel_tools
    mod_contrib_peewee
    mod_contrib_pymongo
    mod_contrib_fileadmin

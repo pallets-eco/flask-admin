@@ -53,6 +53,10 @@ peewee = [
     "peewee>=3.14.0",
     "wtf-peewee>=3.0.4"
 ]
+sqlmodel = [
+    "sqlmodel>=0.0.18",
+    "Flask-Admin[sqlalchemy]"
+]
 s3 = ["boto3>=1.33"]
 azure-blob-storage = ["azure-storage-blob>=12.0.0"]
 images = ["pillow>=10.0.0"]
@@ -65,6 +69,7 @@ all = [
     "Flask-Admin[geoalchemy]",
     "Flask-Admin[pymongo]",
     "Flask-Admin[peewee]",
+    "Flask-Admin[sqlmodel]",
     "Flask-Admin[s3]",
     "Flask-Admin[azure-blob-storage]",
     "Flask-Admin[images]",
