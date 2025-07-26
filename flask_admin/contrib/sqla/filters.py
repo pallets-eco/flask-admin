@@ -394,7 +394,10 @@ class EnumFilterInList(FilterInList):
     def clean(self, value: t.Any) -> t.Any:
         values = super().clean(value)
         if self.enum_class is not None:
-            values = [self.enum_class[val] for val in values]
+            values = [
+                v if isinstance(v, self.enum_class) else self.enum_class[v]
+                for v in values
+            ]
         return values
 
 
@@ -408,7 +411,10 @@ class EnumFilterNotInList(FilterNotInList):
     def clean(self, value: t.Any) -> t.Any:
         values = super().clean(value)
         if self.enum_class is not None:
-            values = [self.enum_class[val] for val in values]
+            values = [
+                v if isinstance(v, self.enum_class) else self.enum_class[v]
+                for v in values
+            ]
         return values
 
 
