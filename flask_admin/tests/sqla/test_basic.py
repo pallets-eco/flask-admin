@@ -17,6 +17,7 @@ from sqlalchemy_utils import IPAddressType
 from sqlalchemy_utils import URLType
 from sqlalchemy_utils import UUIDType
 from wtforms import fields
+from wtforms import PasswordField
 from wtforms import validators
 
 from flask_admin import form
@@ -3148,3 +3149,29 @@ def test_string_null_behavior(app, db, admin):
         )
         assert empty_string_inst.string_field is None
         assert empty_string_inst.text_field is None
+
+
+def test_form_overrides(app, db, admin):
+    with app.app_context():
+
+        class UserModel(db.Model):
+            id = db.Column(db.Integer, primary_key=True)
+            text = db.Column(db.String)
+
+    class UserView(ModelView):
+        form_overrides = {
+            "text": PasswordField,
+        }
+
+    admin.add_view(UserView(UserModel, db.session))
+    client = app.test_client()
+    # Test that the create form uses <input type="password">
+    rv = client.get("/admin/usermodel/new/")
+    data = rv.data.decode("utf-8")
+    with open("f.html", "w") as f:
+        f.write(data)
+    # Check that the password input is of type password
+    assert (
+        '<input class="form-control" id="text" name="text" type="password" value="">'
+        in data
+    )
