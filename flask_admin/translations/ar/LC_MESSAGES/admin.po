@@ -4,8 +4,8 @@ msgstr ""
 "Project-Id-Version:  flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-06-03 07:06+0100\n"
-"PO-Revision-Date: 2017-02-07 01:19-0500\n"
-"Last-Translator: mrjoes <serge.koval@gmail.com>\n"
+"PO-Revision-Date: 2025-07-07 20:12-0500\n"
+"Last-Translator: ElLorans <lorenzo.cerreta@gmail.com>\n"
 "Language: ar_SA\n"
 "Language-Team: Arabic\n"
 "Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : "
@@ -210,7 +210,7 @@ msgstr "عدل"
 
 #: ../flask_admin/contrib/fileadmin/s3.py:233
 msgid "Cannot operate on non empty directories"
-msgstr ""
+msgstr "لا يمكن العمل على الدلائل غير الفارغة"
 
 #: ../flask_admin/contrib/peewee/filters.py:47
 #: ../flask_admin/contrib/pymongo/filters.py:49
@@ -329,11 +329,11 @@ msgstr "ليس خياراً صالحاً"
 
 #: ../flask_admin/contrib/sqla/fields.py:245
 msgid "Key"
-msgstr ""
+msgstr "مفتاح"
 
 #: ../flask_admin/contrib/sqla/fields.py:246
 msgid "Value"
-msgstr ""
+msgstr "قيمة"
 
 #: ../flask_admin/contrib/sqla/validators.py:43
 msgid "Already exists."
@@ -343,20 +343,20 @@ msgstr "موجود بالفعل."
 #, python-format
 msgid "At least %(num)d item is required"
 msgid_plural "At least %(num)d items are required"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
-msgstr[5] ""
+msgstr[0] "مطلوب عنصر واحد على الأقل"
+msgstr[1] "مطلوب عنصران على الأقل"
+msgstr[2] "مطلوب %(num)d عناصر على الأقل"
+msgstr[3] "مطلوب %(num)d عنصرًا على الأقل"
+msgstr[4] "مطلوب %(num)d عنصرًا على الأقل"
+msgstr[5] "مطلوب %(num)d عنصر على الأقل"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr ""
+msgstr "ليس رمز عملة ISO صالحًا (على سبيل المثال USD، EUR، CNY)."
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
-msgstr ""
+msgstr "ليس لونًا صالحًا (على سبيل المثال \"red\"، \"#f00\"، \"#ff0000\")."
 
 #: ../flask_admin/contrib/sqla/view.py:1317
 #, python-format
@@ -381,7 +381,7 @@ msgstr "ملحق الملف غير صالح"
 
 #: ../flask_admin/form/validators.py:18
 msgid "This field requires at least one item."
-msgstr ""
+msgstr "يتطلب هذا الحقل عنصرًا واحدًا على الأقل."
 
 #: ../flask_admin/model/base.py:1924
 msgid "There are no items in the table."
@@ -408,7 +408,7 @@ msgstr "تم حفظ السجل بنجاح."
 #: ../flask_admin/model/base.py:2656
 #, python-format
 msgid "Export type \"%(type)s\" not supported."
-msgstr ""
+msgstr "لا يتم دعم نوع التصدير \"%(type)s\"."
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
 msgid "Yes"
@@ -436,11 +436,11 @@ msgstr "تحرير سجل"
 #: ../flask_admin/model/template.py:114
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr ""
+msgstr "حذف السجل"
 
 #: ../flask_admin/model/widgets.py:71
 msgid "Please select model"
-msgstr ""
+msgstr "الرجاء تحديد النموذج"
 
 #: ../flask_admin/templates/bootstrap4/admin/actions.html:5
 msgid "With selected"
@@ -458,11 +458,11 @@ msgstr "إالغاء"
 
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:290
 msgid "Save and Add Another"
-msgstr ""
+msgstr "حفظ وإضافة آخر"
 
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:293
 msgid "Save and Continue Editing"
-msgstr ""
+msgstr "حفظ ومتابعة التحرير"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:10
 msgid "Root"
@@ -513,7 +513,7 @@ msgstr "إنشاء"
 #: ../flask_admin/templates/bootstrap4/admin/model/details.html:21
 #: ../flask_admin/templates/bootstrap4/admin/model/edit.html:26
 msgid "Details"
-msgstr ""
+msgstr "تفاصيل"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/details.html:28
 #: ../flask_admin/templates/bootstrap4/admin/model/modals/details.html:15
@@ -532,7 +532,7 @@ msgstr "هل أنت متأكد من أنك تريد حذف هذا السجل؟"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/inline_list_base.html:33
 msgid "New"
-msgstr ""
+msgstr "جديد"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/inline_list_base.html:43
 msgid "Add"
@@ -546,7 +546,7 @@ msgstr "إضافة عامل تصفية"
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:19
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:26
 msgid "Export"
-msgstr ""
+msgstr "يصدّر"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:49
 msgid "Apply"
@@ -569,7 +569,7 @@ msgstr "البحث"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:102
 msgid "items"
-msgstr ""
+msgstr "أغراض"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:23
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:25

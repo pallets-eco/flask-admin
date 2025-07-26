@@ -4,8 +4,8 @@ msgstr ""
 "Project-Id-Version:  flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-06-03 07:06+0100\n"
-"PO-Revision-Date: 2017-02-07 01:19-0500\n"
-"Last-Translator: mrjoes <serge.koval@gmail.com>\n"
+"PO-Revision-Date: 2025-07-07 20:12-0500\n"
+"Last-Translator: ElLorans <lorenzo.cerreta@gmail.com>\n"
 "Language: he_IL\n"
 "Language-Team: Hebrew\n"
 "Plural-Forms: nplurals=4; plural=n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 "
@@ -210,7 +210,7 @@ msgstr "עריכה"
 
 #: ../flask_admin/contrib/fileadmin/s3.py:233
 msgid "Cannot operate on non empty directories"
-msgstr ""
+msgstr "לא ניתן לפעול על ספריות לא ריקות"
 
 #: ../flask_admin/contrib/peewee/filters.py:47
 #: ../flask_admin/contrib/pymongo/filters.py:49
@@ -327,11 +327,11 @@ msgstr "לא אפשרו"
 
 #: ../flask_admin/contrib/sqla/fields.py:245
 msgid "Key"
-msgstr ""
+msgstr "מַפְתֵחַ"
 
 #: ../flask_admin/contrib/sqla/fields.py:246
 msgid "Value"
-msgstr ""
+msgstr "עֵרֶך"
 
 #: ../flask_admin/contrib/sqla/validators.py:43
 msgid "Already exists."
@@ -341,18 +341,18 @@ msgstr "כבר קיים."
 #, python-format
 msgid "At least %(num)d item is required"
 msgid_plural "At least %(num)d items are required"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "נדרש לפחות פריט אחד"
+msgstr[1] "נדרשים לפחות שני פריטים"
+msgstr[2] "נדרשים לפחות %(num)d פריטים"
+msgstr[3] "נדרשים לפחות %(num)d פריטים"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr ""
+msgstr "לא קוד מטבע ISO חוקי (למשל USD, EUR, CNY)."
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
-msgstr ""
+msgstr "צבע לא חוקי (למשל: \"red\", \"#f00\", \"#ff0000\")."
 
 #: ../flask_admin/contrib/sqla/view.py:1317
 #, python-format
@@ -377,7 +377,7 @@ msgstr "סיומת קובץ לא חוקי"
 
 #: ../flask_admin/form/validators.py:18
 msgid "This field requires at least one item."
-msgstr ""
+msgstr "שדה זה דורש לפחות פריט אחד."
 
 #: ../flask_admin/model/base.py:1924
 msgid "There are no items in the table."
@@ -404,7 +404,7 @@ msgstr "הרשומה נשמרה בהצלחה."
 #: ../flask_admin/model/base.py:2656
 #, python-format
 msgid "Export type \"%(type)s\" not supported."
-msgstr ""
+msgstr "סוג הייצוא \"%(type)s\" אינו נתמך."
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
 msgid "Yes"
@@ -432,11 +432,11 @@ msgstr "לערוך רשומה"
 #: ../flask_admin/model/template.py:114
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr ""
+msgstr "מחק רשומה"
 
 #: ../flask_admin/model/widgets.py:71
 msgid "Please select model"
-msgstr ""
+msgstr "אנא בחר דגם"
 
 #: ../flask_admin/templates/bootstrap4/admin/actions.html:5
 msgid "With selected"
@@ -454,11 +454,11 @@ msgstr "ביטול"
 
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:290
 msgid "Save and Add Another"
-msgstr ""
+msgstr "שמור והוסף עוד"
 
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:293
 msgid "Save and Continue Editing"
-msgstr ""
+msgstr "שמור והמשך בעריכה"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:10
 msgid "Root"
@@ -509,7 +509,7 @@ msgstr "צור"
 #: ../flask_admin/templates/bootstrap4/admin/model/details.html:21
 #: ../flask_admin/templates/bootstrap4/admin/model/edit.html:26
 msgid "Details"
-msgstr ""
+msgstr "פרטים"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/details.html:28
 #: ../flask_admin/templates/bootstrap4/admin/model/modals/details.html:15
@@ -528,7 +528,7 @@ msgstr "האם אתה בטוח שברצונך למחוק רשומה זו?"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/inline_list_base.html:33
 msgid "New"
-msgstr ""
+msgstr "חָדָשׁ"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/inline_list_base.html:43
 msgid "Add"
@@ -542,7 +542,7 @@ msgstr "להוסיף מסנן"
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:19
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:26
 msgid "Export"
-msgstr ""
+msgstr "יְצוּא"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:49
 msgid "Apply"
@@ -565,7 +565,7 @@ msgstr "חיפוש"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:102
 msgid "items"
-msgstr ""
+msgstr "פריטים"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:23
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:25

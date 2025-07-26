@@ -346,11 +346,11 @@ msgstr[2] "Патрабуецца як найменш %(num)d аб'ектаў"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr ""
+msgstr "Недапушчальны код валюты ISO (напрыклад, USD, EUR, CNY)."
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
-msgstr ""
+msgstr "Недапушчальны колер (напрыклад, \"red\", \"#f00\", \"#ff0000\")."
 
 #: ../flask_admin/contrib/sqla/view.py:1317
 #, python-format
@@ -375,7 +375,7 @@ msgstr "Хібнае пашырэнне файла"
 
 #: ../flask_admin/form/validators.py:18
 msgid "This field requires at least one item."
-msgstr ""
+msgstr "Гэта поле патрабуе хаця б аднаго элемента."
 
 #: ../flask_admin/model/base.py:1924
 msgid "There are no items in the table."
@@ -430,7 +430,7 @@ msgstr "Рэдагаваць запіс"
 #: ../flask_admin/model/template.py:114
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr ""
+msgstr "Выдаліць запіс"
 
 #: ../flask_admin/model/widgets.py:71
 msgid "Please select model"

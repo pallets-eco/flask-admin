@@ -4,7 +4,7 @@ Flask-Admin is now part of Pallets-Eco, an open source organization managed by t
 Pallets team to facilitate community maintenance of Flask extensions. Please update
 your references to `https://github.com/pallets-eco/flask-admin.git`.
 
-[![image](https://d322cqt584bo4o.cloudfront.net/flask-admin/localized.svg)](https://crowdin.com/project/flask-admin) [![image](https://github.com/pallets-eco/flask-admin/actions/workflows/tests.yaml/badge.svg?branch=master)](https://github.com/pallets-eco/flask-admin/actions/workflows/test.yaml)
+[![image](https://github.com/pallets-eco/flask-admin/actions/workflows/tests.yaml/badge.svg?branch=master)](https://github.com/pallets-eco/flask-admin/actions/workflows/test.yaml)
 
 ## Pallets Community Ecosystem
 
@@ -13,8 +13,6 @@ your references to `https://github.com/pallets-eco/flask-admin.git`.
 > source organization that maintains Flask; Pallets-Eco enables community
 > maintenance of related projects. If you are interested in helping maintain
 > this project, please reach out on [the Pallets Discord server][discord].
-
-[discord]: https://discord.gg/pallets
 
 ## Introduction
 
@@ -27,12 +25,11 @@ application.
 
 Out-of-the-box, Flask-Admin plays nicely with various ORM\'s, including
 
--   [SQLAlchemy](https://www.sqlalchemy.org/)
--   [pymongo](https://pymongo.readthedocs.io/)
--   and [Peewee](https://github.com/coleifer/peewee).
+- [SQLAlchemy](https://www.sqlalchemy.org/)
+- [pymongo](https://pymongo.readthedocs.io/)
+- and [Peewee](https://github.com/coleifer/peewee).
 
-It also boasts a simple file management interface and a [Redis
-client](https://redis.io/) console.
+It also boasts a simple file management interface and a [Redis client](https://redis.io/) console.
 
 The biggest feature of Flask-Admin is its flexibility. It aims to provide a
 set of simple tools that can be used to build admin interfaces of
@@ -45,48 +42,26 @@ Flask-Admin is an active project, well-tested and production-ready.
 
 ## Examples
 
-Several usage examples are included in the */examples* folder. Please
-add your own, or improve on the existing examples, and submit a
-*pull-request*.
+Several usage examples are included in the */examples* folder. Please add your own, or improve on the existing examples, and submit a *pull-request*.
 
-To run the examples in your local environment:
-1. Clone the repository:
+### How to run an example
 
-    ```bash
-    git clone https://github.com/pallets-eco/flask-admin.git
-    cd flask-admin
-    ```
-2. Create and activate a virtual environment:
+Clone the repository and navigate to an example (for this example we are using SQLAlchemy Example):
 
-    ```bash
-    # Windows:
-    python -m venv .venv
-    .venv\Scripts\activate
+```shell
+git clone https://github.com/pallets-eco/flask-admin.git
+cd flask-admin/examples/sqla
+```
 
-    # Linux:
-    python3 -m venv .venv
-    source .venv/bin/activate
-    ```
+> All examples use [`uv`](https://docs.astral.sh/uv/) to manage their dependencies and the developer environment.
 
-3. Navigate into the SQLAlchemy example folder:
+Run the example using `uv`, which will manage the environment and dependencies automatically:
 
-    ```bash
-    cd examples/sqla
-    ```
+```shell
+uv run main.py
+```
 
-4. Install requirements:
-
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-5. Run the application:
-
-    ```bash
-    python app.py
-    ```
-
-6. Check the Flask app running on <http://localhost:5000>.
+Check the Flask app running on <http://localhost:5000>.
 
 ## Documentation
 
@@ -99,7 +74,7 @@ should be included, feel free to make the changes and submit a *pull-request*.
 
 To build the docs in your local environment, from the project directory:
 
-```bash
+```shell
 tox -e docs
 ```
 
@@ -181,5 +156,17 @@ Flask-Admin is built with the help of
 If you want to localize your application, install the
 [Flask-Babel](https://pypi.python.org/pypi/Flask-Babel) package.
 
-You can help improve Flask-Admin\'s translations through Crowdin:
-<https://crowdin.com/project/flask-admin>
+You can help improve Flask-Admin\'s translations by opening a PR.
+## As a developer who's changed some text in Flask-Admin
+```bash
+uv sync --group docs
+cd babel
+./babel.sh --update
+```
+
+## As a translator who's updated some `.po`/`.mo` files
+Run `cd babel`
+Run `./babel.sh`
+
+<!-- refs -->
+[discord]: https://discord.gg/pallets
