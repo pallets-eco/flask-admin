@@ -1,0 +1,262 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+{% import 'admin/static.html' as admin_static with context %}
+{% import 'admin/model/layout.html' as model_layout with context %}
+{% import 'admin/actions.html' as actionlib with context %}
+{% import 'admin/model/row_actions.html' as row_actions with context %}
+
+{% block head %}
+  {{ super() }}
+  {{ lib.form_css() }}
+  <style>
+    #modelMenuBar {
+      height: 100%;
+    }
+    #modelMenuBar > .button:not(:last-child) {
+      margin: auto 6px;
+    }
+    #modelMenuBar > .button:last-child {
+      margin: auto 0 auto 6px;
+    }
+  </style>
+{% endblock %}
+{% block body %}
+  <h2 class="ui header">
+    {{ admin_view.name }}
+    {% if admin_view.can_create %}
+      {%- if admin_view.create_modal -%}
+        {{ lib.add_modal_button(url=get_url('.create_view', url=return_url, modal=True) , btn_class='nav-link', title=_gettext('Create New Record'), content=_gettext('Create')) }}
+      {% else %}
+        <a href="{{ get_url('.create_view', url=return_url) }}"
+           title="{{ _gettext("Create New Record") }}"
+           class="ui icon green right floated button">
+          <i class="plus icon"></i>
+          {{ _gettext("Create") }}
+        </a>
+      {%- endif -%}
+    {% endif %}
+  </h2>
+  {% block model_menu_bar %}
+    <div class="ui equal width grid stackable basic segment top attached container">
+      {# djlint:off #}
+      {% if search_supported %}
+      <div class="column">
+        {{ model_layout.search_form() }}
+      </div>
+      {% endif %}
+      {# djlint:on #}
+      <div class="column right aligned">
+        <div class="ui spaced wrapping small buttons" id="modelMenuBar">
+          {% block model_menu_bar_before_filters %}{% endblock %}
+          {% if can_set_page_size %}
+            <div class="ui floating icon dropdown button">
+              <div class="default text">{{ page_size }} {{ _gettext("items") }}</div>
+              <i class="dropdown icon"></i>
+              <div class="menu">{{ model_layout.page_size_form_items(page_size_url, admin_view.page_size_options) }}</div>
+            </div>
+          {% endif %}
+          {% if filters %}
+            <button class="ui icon button" id="filters-table-container-toggle">
+              <i class="filter icon"></i>
+              <span class="filters-count"></span>
+            </button>
+          {% endif %}
+          {% block model_menu_bar_after_filters %}{% endblock %}
+          {% if admin_view.can_export %}
+            <div class="ui floating icon dropdown button"
+                 title="{{ _gettext("Export") }}">
+              <i class="download icon"></i>
+              <div class="menu">{{ model_layout.export_options_items() }}</div>
+            </div>
+          {% endif %}
+          {% if actions %}
+            <div class="ui floating icon dropdown button"
+                 title="{{ _gettext("With selected") }}">
+              <i class="ellipsis vertical icon"></i>
+              <div class="menu">{{ actionlib.dropdown_menu_items(actions) }}</div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% if filters %}
+      <div class="ui grid">
+        <div class="row centered d-none" id="filters-table-container">
+          <div class="ui floating icon top attached dropdown secondary button"
+               id="filters-dropdown"
+               style="margin-bottom: -20px">
+            <i class="plus icon"></i>
+            {{ _gettext("Add Filter") }}
+            <div class="menu field-filters">{{ model_layout.filter_options_items() }}</div>
+          </div>
+          {{ model_layout.filter_form() }}
+        </div>
+      </div>
+    {% endif %}
+  {% endblock %}
+  <div class="ui right aligned grid attached top m-0">
+    <div class="computer only column p-0">
+      {% if num_pages is not none %}
+        {{ lib.pager(page, num_pages, pager_url, True) }}
+      {% else %}
+        {{ lib.simple_pager(page, data|length == page_size, pager_url, True) }}
+      {% endif %}
+    </div>
+  </div>
+  {% block model_list_table %}
+    <div class="ui container long scrolling m-0">
+      <table class="ui striped compact very basic small unstackable table model-list">
+        <thead>
+          <tr>
+            {% block list_header scoped %}
+              {% if actions %}
+                <th>
+                  <div class="ui fitted checkbox">
+                    <input type="checkbox"
+                           name="rowtoggle"
+                           class="action-rowtoggle"
+                           title="{{ _gettext("Select all records") }}" />
+                    <label></label>
+                  </div>
+                </th>
+              {% endif %}
+              {% for c, name in list_columns %}
+                {% set column = loop.index0 %}
+                <th class="column-header col-{{ c }}">
+                  {% if admin_view.is_sortable(c) %}
+                    {% if sort_column == column %}
+                      <a href="{{ sort_url(column, True) }}"
+                         title="{{ _gettext('Sort by %(name)s', name=name) }}">
+                        {{ name }}
+                        {% if sort_desc %}
+                          <i class="chevron up icon"></i>
+                        {% else %}
+                          <i class="chevron down icon"></i>
+                        {% endif %}
+                      </a>
+                    {% else %}
+                      <a href="{{ sort_url(column) }}"
+                         title="{{ _gettext('Sort by %(name)s', name=name) }}">{{ name }}</a>
+                    {% endif %}
+                  {% else %}
+                    {{ name }}
+                  {% endif %}
+                  {% if admin_view.column_descriptions.get(c) %}
+                    <i class="info circle grey fitted link inline icon column-description"
+                       title="{{ admin_view.column_descriptions[c] }}"></i>
+                  {% endif %}
+                </th>
+              {% endfor %}
+              {% block list_row_actions_header %}
+                {% if admin_view.column_display_actions %}<th>&nbsp;</th>{% endif %}
+              {% endblock %}
+            {% endblock %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data %}
+            <tr>
+              {% block list_row scoped %}
+                {% if actions %}
+                  <td class="collapsing">
+                    <div class="ui fitted checkbox">
+                      <input type="checkbox"
+                             name="rowid"
+                             class="action-checkbox"
+                             value="{{ get_pk_value(row) }}"
+                             title="{{ _gettext("Select record") }}" />
+                      <label></label>
+                    </div>
+                  </td>
+                {% endif %}
+                {% for c, name in list_columns %}
+                  <td class="col-{{ c }}">
+                    {% if admin_view.is_editable(c) %}
+                      {% set form = list_forms[get_pk_value(row)] %}
+                      {% if form.csrf_token is defined and form.csrf_token %}
+                        {{ form[c](pk=get_pk_value(row) , display_value=get_value(row, c), csrf=form.csrf_token._value()) }}
+                      {% elif csrf_token is defined and csrf_token %}
+                        {{ form[c](pk=get_pk_value(row) , display_value=get_value(row, c), csrf=csrf_token()) }}
+                      {% else %}
+                        {{ form[c](pk=get_pk_value(row) , display_value=get_value(row, c)) }}
+                      {% endif %}
+                    {% else %}
+                      {{ get_value(row, c) }}
+                    {% endif %}
+                  </td>
+                {% endfor %}
+                {% block list_row_actions_column scoped %}
+                  {% if admin_view.column_display_actions %}
+                    <td>
+                      <div class="ui icon tiny buttons">
+                        {% block list_row_actions scoped %}
+                          {% for action in list_row_actions %}{{ action.render_ctx(get_pk_value(row) , row) }}{% endfor %}
+                        {% endblock %}
+                      </div>
+                    </td>
+                  {%- endif -%}
+                {% endblock %}
+              {% endblock %}
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="999">
+                {% block empty_list_message %}
+                  <div class="center aligned">{{ admin_view.get_empty_list_message() }}</div>
+                {% endblock %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="999"></th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <!-- Model List Table End -->
+    <div class="ui basic right aligned segment m-0">
+      {% if count and count > 0 %}
+        {% set start = (page * page_size) + 1 %}
+        {% set end = (page * page_size) + data|length %}
+        {{ start }}-{{ end }} of {{ count }}
+      {% endif %}
+    </div>
+    <div class="ui center aligned container">
+      {% block list_pager %}
+        {% if num_pages is not none %}
+          {{ lib.pager(page, num_pages, pager_url) }}
+        {% else %}
+          {{ lib.simple_pager(page, data|length == page_size, pager_url) }}
+        {% endif %}
+      {% endblock %}
+    </div>
+  {% endblock %}
+  {% block actions %}{{ actionlib.form(actions, get_url('.action_view') ) }}{% endblock %}
+  {%- if admin_view.edit_modal or admin_view.create_modal or admin_view.details_modal -%}
+    {{ lib.add_modal_window() }}
+  {%- endif -%}
+{% endblock %}
+{% block tail_js %}
+  {{ super() }}
+  <script type="text/javascript" {{ admin_csp_nonce_attribute }}>
+    $('.column-description')
+      .popup({
+        on: 'click',
+        variation: 'small basic',
+        delay: {
+          show: 500,
+          hide: 0
+        }
+      });
+  </script>
+  {% if filter_groups %}
+    <div id="filter-groups-data" class="d-none">{{ filter_groups|tojson|safe }}</div>
+    <div id="active-filters-data" class="d-none">{{ active_filters|tojson|safe }}</div>
+  {% endif %}
+  {{ lib.form_js() }}
+  <script {{ admin_csp_nonce_attribute }}
+          src="{{ admin_static.url(filename='fomanticui/js/filters.js', v='1.0.0') }}"></script>
+  {{ actionlib.script(_gettext('Please select at least one record.') , actions, actions_confirmation) }}
+{% endblock %}
