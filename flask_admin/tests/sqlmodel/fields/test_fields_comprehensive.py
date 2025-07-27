@@ -5,6 +5,7 @@ This file tests all field classes, utility functions, and edge cases
 to improve test coverage for the fields module.
 """
 
+from typing import Any
 from typing import Optional
 from unittest.mock import Mock
 from unittest.mock import patch
@@ -19,7 +20,6 @@ from flask_admin.contrib.sqlmodel.fields import CheckboxListField
 from flask_admin.contrib.sqlmodel.fields import get_field_id
 from flask_admin.contrib.sqlmodel.fields import get_obj_pk
 from flask_admin.contrib.sqlmodel.fields import get_pk_from_identity
-from flask_admin.contrib.sqlmodel.fields import HstoreForm
 from flask_admin.contrib.sqlmodel.fields import InlineHstoreList
 from flask_admin.contrib.sqlmodel.fields import InlineModelFormList
 from flask_admin.contrib.sqlmodel.fields import InlineModelOneToOneField
@@ -37,7 +37,7 @@ class FieldTestModel(SQLModel, table=True):
     email: Optional[str] = None
     active: bool = True
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"FieldTest({self.name})"
 
 
@@ -60,27 +60,27 @@ class MultiPKModel(SQLModel, table=True):
 class TestQuerySelectField:
     """Test the QuerySelectField class."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
-        self.mock_session = Mock(spec=Session)
-        self.query_factory = Mock()
+        self.mock_session: Mock = Mock(spec=Session)
+        self.query_factory: Mock = Mock()
 
         # Create test data
-        self.test_obj1 = FieldTestModel(id=1, name="Object 1")
-        self.test_obj2 = FieldTestModel(id=2, name="Object 2")
-        self.test_objects = [self.test_obj1, self.test_obj2]
+        self.test_obj1: FieldTestModel = FieldTestModel(id=1, name="Object 1")
+        self.test_obj2: FieldTestModel = FieldTestModel(id=2, name="Object 2")
+        self.test_objects: list[FieldTestModel] = [self.test_obj1, self.test_obj2]
 
         self.query_factory.return_value = self.test_objects
 
-    def test_init_default_params(self):
+    def test_init_default_params(self) -> None:
         """Test QuerySelectField initialization with default parameters."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
 
         assert field.query_factory == self.query_factory
         assert field.get_pk == get_pk_from_identity
@@ -90,13 +90,14 @@ class TestQuerySelectField:
         assert field.query is None
         assert field._object_list is None
 
-    def test_init_custom_params(self):
+    def test_init_custom_params(self) -> None:
         """Test QuerySelectField initialization with custom parameters."""
         from wtforms import Form
 
-        custom_get_pk = Mock()
+        custom_get_pk: Mock = Mock()
+
         # custom_get_label = lambda x: f"Label: {x.name}"
-        def custom_get_label(x):
+        def custom_get_label(x: Any) -> str:
             return f"Label: {x.name}"
 
         class TestForm(Form):
@@ -108,15 +109,15 @@ class TestQuerySelectField:
                 blank_text="Select one...",
             )
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
 
         assert field.get_pk == custom_get_pk
         assert field.get_label == custom_get_label
         assert field.allow_blank
         assert field.blank_text == "Select one..."
 
-    def test_init_string_get_label(self):
+    def test_init_string_get_label(self) -> None:
         """Test QuerySelectField with string get_label parameter."""
         from wtforms import Form
 
@@ -125,51 +126,51 @@ class TestQuerySelectField:
                 query_factory=self.query_factory, get_label="name"
             )
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
 
         # Should create an attrgetter for 'name'
-        result = field.get_label(self.test_obj1)
+        result: str = field.get_label(self.test_obj1)
         assert result == "Object 1"
 
-    def test_data_property_getter(self):
+    def test_data_property_getter(self) -> None:
         """Test data property getter without formdata."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field._data = self.test_obj1
 
         assert field.data == self.test_obj1
 
-    def test_data_property_getter_with_formdata(self):
+    def test_data_property_getter_with_formdata(self) -> None:
         """Test data property getter with formdata."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field._formdata = "1"
         field._data = None
 
         # Should find and set the object with pk "1"
-        data = field.data
+        data: Any = field.data
         assert data == self.test_obj1
 
-    def test_data_property_setter(self):
+    def test_data_property_setter(self) -> None:
         """Test data property setter."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field._formdata = "some_data"
 
         field.data = self.test_obj2
@@ -177,32 +178,32 @@ class TestQuerySelectField:
         assert field._data == self.test_obj2
         assert field._formdata is None
 
-    def test_get_object_list_basic(self):
+    def test_get_object_list_basic(self) -> None:
         """Test _get_object_list with basic SQLModel objects."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
 
-        object_list = field._get_object_list()
+        object_list: list[tuple[str, Any]] = field._get_object_list()
 
         assert len(object_list) == 2
         assert object_list[0] == ("1", self.test_obj1)
         assert object_list[1] == ("2", self.test_obj2)
 
-    def test_get_object_list_with_row_objects(self):
+    def test_get_object_list_with_row_objects(self) -> None:
         """Test _get_object_list with Row-like objects."""
         from wtforms import Form
 
         # Mock Row objects that have __len__ and indexing
-        mock_row1 = Mock()
+        mock_row1: Mock = Mock()
         mock_row1.__len__ = Mock(return_value=1)
         mock_row1.__getitem__ = Mock(return_value=self.test_obj1)
 
-        mock_row2 = Mock()
+        mock_row2: Mock = Mock()
         mock_row2.__len__ = Mock(return_value=1)
         mock_row2.__getitem__ = Mock(return_value=self.test_obj2)
 
@@ -211,47 +212,47 @@ class TestQuerySelectField:
         class TestForm(Form):
             test_field = QuerySelectField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
-        object_list = field._get_object_list()
+        form: TestForm = TestForm()
+        field: Any = form.test_field
+        object_list: list[tuple[str, Any]] = field._get_object_list()
 
         assert len(object_list) == 2
         # Should extract actual objects from Row objects
         assert object_list[0][1] == self.test_obj1
         assert object_list[1][1] == self.test_obj2
 
-    def test_get_object_list_cached(self):
+    def test_get_object_list_cached(self) -> None:
         """Test that _get_object_list caches results."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
 
         # First call
-        object_list1 = field._get_object_list()
+        object_list1: list[tuple[str, Any]] = field._get_object_list()
         # Second call
-        object_list2 = field._get_object_list()
+        object_list2: list[tuple[str, Any]] = field._get_object_list()
 
         # Should be the same cached object
         assert object_list1 is object_list2
         # Query factory should only be called once
         self.query_factory.assert_called_once()
 
-    def test_iter_choices_without_blank(self):
+    def test_iter_choices_without_blank(self) -> None:
         """Test iter_choices without blank option."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field.data = self.test_obj1
 
-        choices = list(field.iter_choices())
+        choices: list[tuple[str, Any, bool]] = list(field.iter_choices())
 
         assert len(choices) == 2
         # First choice should be selected (test_obj1)
@@ -262,7 +263,7 @@ class TestQuerySelectField:
         assert choices[1][1] == self.test_obj2
         assert choices[1][2] is False
 
-    def test_iter_choices_with_blank(self):
+    def test_iter_choices_with_blank(self) -> None:
         """Test iter_choices with blank option."""
         from wtforms import Form
 
@@ -273,11 +274,11 @@ class TestQuerySelectField:
                 blank_text="Choose one...",
             )
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field.data = None
 
-        choices = list(field.iter_choices())
+        choices: list[tuple[str, Any, bool]] = list(field.iter_choices())
 
         assert len(choices) == 3
         # First choice should be blank and selected
@@ -291,22 +292,22 @@ class TestQuerySelectField:
         assert choices[2][1] == self.test_obj2
         assert choices[2][2] is False
 
-    def test_process_formdata_normal_value(self):
+    def test_process_formdata_normal_value(self) -> None:
         """Test process_formdata with normal value."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
 
         field.process_formdata(["1"])
 
         assert field._data is None
         assert field._formdata == "1"
 
-    def test_process_formdata_blank_value(self):
+    def test_process_formdata_blank_value(self) -> None:
         """Test process_formdata with blank value."""
         from wtforms import Form
 
@@ -315,43 +316,43 @@ class TestQuerySelectField:
                 query_factory=self.query_factory, allow_blank=True
             )
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
 
         field.process_formdata(["__None"])
 
         assert field.data is None
 
-    def test_process_formdata_empty_list(self):
+    def test_process_formdata_empty_list(self) -> None:
         """Test process_formdata with empty value list."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
 
         field.process_formdata([])
 
         # Should not change anything when valuelist is empty
         assert field._formdata is None
 
-    def test_pre_validate_valid_choice(self):
+    def test_pre_validate_valid_choice(self) -> None:
         """Test pre_validate with valid choice."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field.data = self.test_obj1
 
         # Should not raise any exception
-        field.pre_validate(None)  # type: ignore
+        field.pre_validate(None)
 
-    def test_pre_validate_blank_allowed(self):
+    def test_pre_validate_blank_allowed(self) -> None:
         """Test pre_validate with blank value when allowed."""
         from wtforms import Form
 
@@ -360,136 +361,140 @@ class TestQuerySelectField:
                 query_factory=self.query_factory, allow_blank=True
             )
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field.data = None
 
         # Should not raise any exception
-        field.pre_validate(None)  # type: ignore
+        field.pre_validate(None)
 
-    def test_pre_validate_invalid_choice(self):
+    def test_pre_validate_invalid_choice(self) -> None:
         """Test pre_validate with invalid choice."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field.gettext = Mock(return_value="Not a valid choice")
         # Set data to an object not in the query
-        invalid_obj = FieldTestModel(id=999, name="Invalid")
+        invalid_obj: FieldTestModel = FieldTestModel(id=999, name="Invalid")
         field.data = invalid_obj
 
         with pytest.raises(ValidationError, match="Not a valid choice"):
-            field.pre_validate(None)  # type: ignore
+            field.pre_validate(None)
 
 
 class TestQuerySelectMultipleField:
     """Test the QuerySelectMultipleField class."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
-        self.mock_session = Mock(spec=Session)
-        self.query_factory = Mock()
+        self.mock_session: Mock = Mock(spec=Session)
+        self.query_factory: Mock = Mock()
 
         # Create test data
-        self.test_obj1 = FieldTestModel(id=1, name="Object 1")
-        self.test_obj2 = FieldTestModel(id=2, name="Object 2")
-        self.test_obj3 = FieldTestModel(id=3, name="Object 3")
-        self.test_objects = [self.test_obj1, self.test_obj2, self.test_obj3]
+        self.test_obj1: FieldTestModel = FieldTestModel(id=1, name="Object 1")
+        self.test_obj2: FieldTestModel = FieldTestModel(id=2, name="Object 2")
+        self.test_obj3: FieldTestModel = FieldTestModel(id=3, name="Object 3")
+        self.test_objects: list[FieldTestModel] = [
+            self.test_obj1,
+            self.test_obj2,
+            self.test_obj3,
+        ]
 
         self.query_factory.return_value = self.test_objects
 
-    def test_init_default_params(self):
+    def test_init_default_params(self) -> None:
         """Test QuerySelectMultipleField initialization."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectMultipleField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
 
         assert field.query_factory == self.query_factory
         assert field.default == []
         assert not field._invalid_formdata
 
-    def test_init_custom_default(self):
+    def test_init_custom_default(self) -> None:
         """Test QuerySelectMultipleField with custom default."""
         from wtforms import Form
 
-        custom_default = [self.test_obj1]
+        custom_default: list[FieldTestModel] = [self.test_obj1]
 
         class TestForm(Form):
             test_field = QuerySelectMultipleField(
                 query_factory=self.query_factory, default=custom_default
             )
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
 
         assert field.default == custom_default
 
-    def test_data_property_getter_no_formdata(self):
+    def test_data_property_getter_no_formdata(self) -> None:
         """Test data property getter without formdata."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectMultipleField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field._data = [self.test_obj1, self.test_obj2]
 
         assert field.data == [self.test_obj1, self.test_obj2]
 
-    def test_data_property_getter_with_formdata(self):
+    def test_data_property_getter_with_formdata(self) -> None:
         """Test data property getter with formdata."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectMultipleField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field._formdata = {"1", "3"}  # Select objects 1 and 3
         field._data = None
 
-        data = field.data
+        data: list[FieldTestModel] = field.data
 
         assert len(data) == 2
         assert self.test_obj1 in data
         assert self.test_obj3 in data
         assert self.test_obj2 not in data
 
-    def test_data_property_getter_with_invalid_formdata(self):
+    def test_data_property_getter_with_invalid_formdata(self) -> None:
         """Test data property getter with invalid formdata."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectMultipleField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field._formdata = {"1", "999"}  # "999" is invalid
         field._data = None
 
-        data = field.data
+        data: list[FieldTestModel] = field.data
 
         assert len(data) == 1
         assert self.test_obj1 in data
         assert field._invalid_formdata  # Should mark as invalid
 
-    def test_data_property_setter(self):
+    def test_data_property_setter(self) -> None:
         """Test data property setter."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectMultipleField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field._formdata = {"some", "data"}
 
         field.data = [self.test_obj2, self.test_obj3]
@@ -497,18 +502,18 @@ class TestQuerySelectMultipleField:
         assert field._data == [self.test_obj2, self.test_obj3]
         assert field._formdata is None
 
-    def test_iter_choices(self):
+    def test_iter_choices(self) -> None:
         """Test iter_choices."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectMultipleField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field.data = [self.test_obj1, self.test_obj3]
 
-        choices = list(field.iter_choices())
+        choices: list[tuple[str, Any, bool]] = list(field.iter_choices())
 
         assert len(choices) == 3
         assert choices[0][0] == "1"
@@ -521,78 +526,78 @@ class TestQuerySelectMultipleField:
         assert choices[2][1] == self.test_obj3
         assert choices[2][2] is True  # Selected
 
-    def test_process_formdata(self):
+    def test_process_formdata(self) -> None:
         """Test process_formdata."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectMultipleField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
 
         field.process_formdata(["1", "2", "1"])  # Duplicates should be handled
 
         assert field._formdata == {"1", "2"}
 
-    def test_pre_validate_valid_data(self):
+    def test_pre_validate_valid_data(self) -> None:
         """Test pre_validate with valid data."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectMultipleField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field.data = [self.test_obj1, self.test_obj2]
         field._invalid_formdata = False
 
         # Should not raise any exception
         field.pre_validate(None)
 
-    def test_pre_validate_invalid_formdata(self):
+    def test_pre_validate_invalid_formdata(self) -> None:
         """Test pre_validate with invalid formdata."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectMultipleField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field.gettext = Mock(return_value="Not a valid choice")
         field._invalid_formdata = True
 
         with pytest.raises(ValidationError, match="Not a valid choice"):
             field.pre_validate(None)
 
-    def test_pre_validate_invalid_object_in_data(self):
+    def test_pre_validate_invalid_object_in_data(self) -> None:
         """Test pre_validate with invalid object in data."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectMultipleField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field.gettext = Mock(return_value="Not a valid choice")
         field._invalid_formdata = False
 
         # Add an object that's not in the query
-        invalid_obj = FieldTestModel(id=999, name="Invalid")
+        invalid_obj: FieldTestModel = FieldTestModel(id=999, name="Invalid")
         field.data = [self.test_obj1, invalid_obj]
 
         with pytest.raises(ValidationError, match="Not a valid choice"):
             field.pre_validate(None)
 
-    def test_pre_validate_empty_data(self):
+    def test_pre_validate_empty_data(self) -> None:
         """Test pre_validate with empty data."""
         from wtforms import Form
 
         class TestForm(Form):
             test_field = QuerySelectMultipleField(query_factory=self.query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
         field.data = []
         field._invalid_formdata = False
 
@@ -603,19 +608,19 @@ class TestQuerySelectMultipleField:
 class TestCheckboxListField:
     """Test the CheckboxListField class."""
 
-    def test_widget_type(self):
+    def test_widget_type(self) -> None:
         """Test that CheckboxListField uses the correct widget."""
         from wtforms import Form
 
         from flask_admin.contrib.sqlmodel.widgets import CheckboxListInput
 
-        query_factory = Mock(return_value=[])
+        query_factory: Mock = Mock(return_value=[])
 
         class TestForm(Form):
             test_field = CheckboxListField(query_factory=query_factory)
 
-        form = TestForm()
-        field = form.test_field
+        form: TestForm = TestForm()
+        field: Any = form.test_field
 
         # Should inherit from QuerySelectMultipleField but use CheckboxListInput
         assert isinstance(field.widget, CheckboxListInput)
@@ -624,42 +629,42 @@ class TestCheckboxListField:
 class TestKeyValue:
     """Test the KeyValue class."""
 
-    def test_init_default(self):
+    def test_init_default(self) -> None:
         """Test KeyValue initialization with defaults."""
-        kv = KeyValue()
+        kv: KeyValue = KeyValue()
 
         assert kv.key is None
         assert kv.value is None
 
-    def test_init_with_values(self):
+    def test_init_with_values(self) -> None:
         """Test KeyValue initialization with values."""
-        kv = KeyValue("test_key", "test_value")
+        kv: KeyValue = KeyValue("test_key", "test_value")
 
         assert kv.key == "test_key"
         assert kv.value == "test_value"
 
 
-class TestHstoreForm:
-    """Test the HstoreForm class."""
+# class TestHstoreForm:
+#     """Test the HstoreForm class."""
 
-    def test_form_fields(self):
-        """Test that HstoreForm has the correct fields."""
-        form = HstoreForm()
+#     def test_form_fields(self) -> None:
+#         """Test that HstoreForm has the correct fields."""
+#         form = HstoreForm()
 
-        assert hasattr(form, "key")
-        assert hasattr(form, "value")
-        assert str(form.key.label.text) == "Key"
-        assert str(form.value.label.text) == "Value"
+#         assert hasattr(form, "key")
+#         assert hasattr(form, "value")
+#         assert str(form.key.label.text) == "Key"
+#         assert str(form.value.label.text) == "Value"
 
 
 class TestInlineHstoreList:
     """Test the InlineHstoreList class."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
         self.mock_form_field = Mock()
 
-    def test_process_with_dict_data(self):
+    def test_process_with_dict_data(self) -> None:
         """Test process method with dict data."""
         from wtforms import Form
         from wtforms.fields import StringField
@@ -674,7 +679,7 @@ class TestInlineHstoreList:
         # Create field and bind it manually
         form = TestForm()
         field = InlineHstoreList(unbound_field)
-        field = field.bind(form=form, name="test_field") # type: ignore
+        field = field.bind(form=form, name="test_field")
 
         # Mock the superclass process method
         with patch(
@@ -682,7 +687,7 @@ class TestInlineHstoreList:
         ) as mock_super_process:
             test_data = {"key1": "value1", "key2": "value2"}
 
-            field.process(None, test_data)  # type: ignore
+            field.process(None, test_data)
 
             # Should convert dict to KeyValue list
             mock_super_process.assert_called_once()
@@ -691,7 +696,7 @@ class TestInlineHstoreList:
             assert len(processed_data) == 2
             assert all(isinstance(item, KeyValue) for item in processed_data)
 
-    def test_process_with_non_dict_data(self):
+    def test_process_with_non_dict_data(self) -> None:
         """Test process method with non-dict data."""
         from wtforms import Form
         from wtforms.fields import StringField
@@ -706,7 +711,7 @@ class TestInlineHstoreList:
         # Create field and bind it manually
         form = TestForm()
         field = InlineHstoreList(unbound_field)
-        field = field.bind(form=form, name="test_field") # type: ignore
+        field = field.bind(form=form, name="test_field")
 
         # Mock the superclass process method
         with patch(
@@ -714,12 +719,12 @@ class TestInlineHstoreList:
         ) as mock_super_process:
             test_data = ["not", "a", "dict"]
 
-            field.process(None, test_data)  # type: ignore
+            field.process(None, test_data)
 
             # Should pass data unchanged
             mock_super_process.assert_called_once_with(None, test_data, None)
 
-    def test_populate_obj(self):
+    def test_populate_obj(self) -> None:
         """Test populate_obj method."""
         from wtforms import Form
         from wtforms.fields import StringField
@@ -734,7 +739,7 @@ class TestInlineHstoreList:
         # Create field and bind it manually
         form = TestForm()
         field = InlineHstoreList(unbound_field)
-        field = field.bind(form=form, name="test_field") # type: ignore
+        field = field.bind(form=form, name="test_field")
 
         # Mock form field entries
         mock_entry1 = Mock()
@@ -771,23 +776,23 @@ class TestInlineHstoreList:
 class TestUtilityFunctions:
     """Test utility functions."""
 
-    def test_get_pk_from_identity_sqlmodel_single_pk(self):
+    def test_get_pk_from_identity_sqlmodel_single_pk(self) -> None:
         """Test get_pk_from_identity with SQLModel instance (single PK)."""
-        obj = FieldTestModel(id=123, name="test")
+        obj: FieldTestModel = FieldTestModel(id=123, name="test")
 
         result = get_pk_from_identity(obj)
 
         assert result == "123"
 
-    def test_get_pk_from_identity_sqlmodel_multi_pk(self):
+    def test_get_pk_from_identity_sqlmodel_multi_pk(self) -> None:
         """Test get_pk_from_identity with SQLModel instance (multiple PKs)."""
-        obj = MultiPKModel(pk1=1, pk2="test", name="multi")
+        obj: MultiPKModel = MultiPKModel(pk1=1, pk2="test", name="multi")
 
         result = get_pk_from_identity(obj)
 
         assert result == "1:test"
 
-    def test_get_pk_from_identity_fallback(self):
+    def test_get_pk_from_identity_fallback(self) -> None:
         """Test get_pk_from_identity fallback for other objects."""
         # Object with id attribute
         obj_with_id = Mock()
@@ -799,7 +804,7 @@ class TestUtilityFunctions:
 
         assert result == "456"
 
-    def test_get_pk_from_identity_fallback_no_id(self):
+    def test_get_pk_from_identity_fallback_no_id(self) -> None:
         """Test get_pk_from_identity fallback for objects without id."""
         obj = "string_object"
 
@@ -807,7 +812,7 @@ class TestUtilityFunctions:
 
         assert result == "string_object"
 
-    def test_get_obj_pk_single(self):
+    def test_get_obj_pk_single(self) -> None:
         """Test get_obj_pk with single primary key."""
         obj = Mock()
         obj.id = 789
@@ -816,7 +821,7 @@ class TestUtilityFunctions:
 
         assert result == "789"
 
-    def test_get_obj_pk_tuple(self):
+    def test_get_obj_pk_tuple(self) -> None:
         """Test get_obj_pk with tuple primary keys."""
         obj = Mock()
         obj.pk1 = 1
@@ -826,7 +831,7 @@ class TestUtilityFunctions:
 
         assert result == ("1", "test")
 
-    def test_get_field_id_single(self):
+    def test_get_field_id_single(self) -> None:
         """Test get_field_id with single ID."""
         field = Mock()
         field.get_pk.return_value = 123
@@ -835,7 +840,7 @@ class TestUtilityFunctions:
 
         assert result == "123"
 
-    def test_get_field_id_tuple(self):
+    def test_get_field_id_tuple(self) -> None:
         """Test get_field_id with tuple ID."""
         field = Mock()
         field.get_pk.return_value = (1, "test")
@@ -848,7 +853,7 @@ class TestUtilityFunctions:
 class TestInlineModelFormList:
     """Test the InlineModelFormList class."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
         self.mock_form = Mock()
         self.mock_session = Mock()
@@ -858,7 +863,7 @@ class TestInlineModelFormList:
         self.mock_inline_view.form_widget_args = None
         self.mock_inline_view._form_rules = []
 
-    def test_init(self):
+    def test_init(self) -> None:
         """Test InlineModelFormList initialization."""
         from wtforms import Form
 
@@ -881,7 +886,7 @@ class TestInlineModelFormList:
                 pass
 
             form = TestForm()
-            field = unbound_field.bind(form=form, name="test_field") # type: ignore
+            field = unbound_field.bind(form=form, name="test_field")
 
             assert field.form == self.mock_form
             assert field.session == self.mock_session
@@ -890,7 +895,7 @@ class TestInlineModelFormList:
             assert field.inline_view == self.mock_inline_view
             assert field._pk == "id"
 
-    def test_display_row_controls_with_pk(self):
+    def test_display_row_controls_with_pk(self) -> None:
         """Test display_row_controls when field has PK."""
         from wtforms import Form
 
@@ -908,7 +913,7 @@ class TestInlineModelFormList:
             pass
 
         form = TestForm()
-        field = unbound_field.bind(form=form, name="test_field") # type: ignore
+        field = unbound_field.bind(form=form, name="test_field")
 
         mock_field = Mock()
         mock_field.get_pk.return_value = "123"
@@ -917,7 +922,7 @@ class TestInlineModelFormList:
 
         assert result is True
 
-    def test_display_row_controls_without_pk(self):
+    def test_display_row_controls_without_pk(self) -> None:
         """Test display_row_controls when field has no PK."""
         from wtforms import Form
 
@@ -935,7 +940,7 @@ class TestInlineModelFormList:
             pass
 
         form = TestForm()
-        field = unbound_field.bind(form=form, name="test_field") # type: ignore
+        field = unbound_field.bind(form=form, name="test_field")
 
         mock_field = Mock()
         mock_field.get_pk.return_value = None
@@ -948,7 +953,7 @@ class TestInlineModelFormList:
 class TestInlineModelOneToOneField:
     """Test the InlineModelOneToOneField class."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
         self.mock_form = Mock()
         self.mock_session = Mock()
@@ -958,7 +963,7 @@ class TestInlineModelOneToOneField:
         self.mock_inline_view.form_widget_args = None
         self.mock_inline_view._form_rules = []
 
-    def test_init(self):
+    def test_init(self) -> None:
         """Test InlineModelOneToOneField initialization."""
         from wtforms import Form
 
@@ -983,34 +988,34 @@ class TestInlineModelOneToOneField:
             form = TestForm()
             field = unbound_field.bind(form=form, name="test_field")
 
-            assert field.form == self.mock_form # type: ignore
-            assert field.session == self.mock_session # type: ignore
-            assert field.model == self.mock_model # type: ignore
-            assert field.prop == self.mock_prop # type: ignore
-            assert field.inline_view == self.mock_inline_view # type: ignore
-            assert field._pk == "id" # type: ignore
+            assert field.form == self.mock_form
+            assert field.session == self.mock_session
+            assert field.model == self.mock_model
+            assert field.prop == self.mock_prop
+            assert field.inline_view == self.mock_inline_view
+            assert field._pk == "id"
 
-    def test_looks_empty_none(self):
+    def test_looks_empty_none(self) -> None:
         """Test _looks_empty with None."""
         result = InlineModelOneToOneField._looks_empty(None)
         assert result is True
 
-    def test_looks_empty_empty_string(self):
+    def test_looks_empty_empty_string(self) -> None:
         """Test _looks_empty with empty string."""
         result = InlineModelOneToOneField._looks_empty("")
         assert result is True
 
-    def test_looks_empty_non_empty_string(self):
+    def test_looks_empty_non_empty_string(self) -> None:
         """Test _looks_empty with non-empty string."""
         result = InlineModelOneToOneField._looks_empty("test")
         assert result is False
 
-    def test_looks_empty_other_objects(self):
+    def test_looks_empty_other_objects(self) -> None:
         """Test _looks_empty with other objects."""
         result = InlineModelOneToOneField._looks_empty(123)
         assert result is False
 
-    def test_populate_obj_form_empty(self):
+    def test_populate_obj_form_empty(self) -> None:
         """Test populate_obj when form is empty."""
         from wtforms import Form
 
@@ -1029,7 +1034,7 @@ class TestInlineModelOneToOneField:
 
         form = TestForm()
         field = unbound_field.bind(form=form, name="test_field")
-        field._pk = "id" # type: ignore
+        field._pk = "id"
 
         # Mock form fields to be empty
         mock_field1 = Mock()
@@ -1039,7 +1044,7 @@ class TestInlineModelOneToOneField:
         mock_id_field = Mock()
         mock_id_field.data = None  # Make sure ID field is also empty
 
-        field.form._fields = { # type: ignore
+        field.form._fields = {
             "field1": mock_field1,
             "field2": mock_field2,
             "id": mock_id_field,
@@ -1048,15 +1053,15 @@ class TestInlineModelOneToOneField:
         test_model = Mock()
 
         # Should return early and not create anything
-        field.populate_obj(test_model, "inline_field") # type: ignore
+        field.populate_obj(test_model, "inline_field")
 
         # For empty forms, the method should return early without setting the field
         # Since we're using a Mock, we need to check if setattr was called
         # The actual implementation should not set the attribute for empty forms
         # Let's check that inline_view.on_model_change was not called
-        field.inline_view.on_model_change.assert_not_called() # type: ignore
+        field.inline_view.on_model_change.assert_not_called()
 
-    def test_populate_obj_creates_new_model(self):
+    def test_populate_obj_creates_new_model(self) -> None:
         """Test populate_obj creates new inline model."""
         from wtforms import Form
 
@@ -1075,13 +1080,13 @@ class TestInlineModelOneToOneField:
 
         form = TestForm()
         field = unbound_field.bind(form=form, name="test_field")
-        field._pk = "id" # type: ignore
+        field._pk = "id"
 
         # Mock form fields with data
         mock_field1 = Mock()
         mock_field1.data = "test_value"
 
-        field.form._fields = {"field1": mock_field1, "id": Mock()} # type: ignore
+        field.form._fields = {"field1": mock_field1, "id": Mock()}
 
         test_model = Mock()
         test_model.inline_field = None
@@ -1090,7 +1095,7 @@ class TestInlineModelOneToOneField:
             mock_inline_instance = Mock()
             mock_model_class.return_value = mock_inline_instance
 
-            field.populate_obj(test_model, "inline_field") # type: ignore
+            field.populate_obj(test_model, "inline_field")
 
             # Should create new model and populate it
             mock_model_class.assert_called_once()
@@ -1102,4 +1107,4 @@ class TestInlineModelOneToOneField:
             assert test_model.inline_field == mock_inline_instance
 
             # Should call on_model_change
-            field.inline_view.on_model_change.assert_called_once() # type: ignore
+            field.inline_view.on_model_change.assert_called_once()

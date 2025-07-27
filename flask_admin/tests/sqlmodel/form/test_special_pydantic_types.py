@@ -76,9 +76,9 @@ class TestSpecialPydanticTypesIntegration:
 
             # Test field types in form - the actual integration test
             assert hasattr(form, "secret_data")
-            assert isinstance(form.secret_data, fields.PasswordField) # type: ignore
+            assert isinstance(form.secret_data, fields.PasswordField)
             assert hasattr(form, "optional_secret")
-            assert isinstance(form.optional_secret, fields.PasswordField) # type: ignore
+            assert isinstance(form.optional_secret, fields.PasswordField)
 
     @pytest.mark.skipif(not IP_TYPES_AVAILABLE, reason="IP address types not available")
     def test_ip_address_field_conversion(
@@ -94,10 +94,10 @@ class TestSpecialPydanticTypesIntegration:
             id: int = Field(primary_key=True)
             name: str
             # Use sa_type to specify SQLAlchemy type for Pydantic IP types
-            any_ip: IPvAnyAddress = Field(sa_type=String) # type: ignore
+            any_ip: IPvAnyAddress = Field(sa_type=String)
             ipv4_addr: IPv4Address = Field(sa_type=String)
             ipv6_addr: IPv6Address = Field(sa_type=String)
-            optional_ip: Optional[IPvAnyAddress] = Field(default=None, sa_type=String) # type: ignore
+            optional_ip: Optional[IPvAnyAddress] = Field(default=None, sa_type=String)
 
         # Create the view with proper session
         view = SQLModelView(NetworkModel, session, name="Network Model")
@@ -109,14 +109,14 @@ class TestSpecialPydanticTypesIntegration:
 
             # Test all IP field types
             assert hasattr(form, "any_ip")
-            assert isinstance(form.any_ip, fields.StringField) # type: ignore
+            assert isinstance(form.any_ip, fields.StringField)
             assert hasattr(form, "ipv4_addr")
-            assert isinstance(form.ipv4_addr, fields.StringField) # type: ignore
+            assert isinstance(form.ipv4_addr, fields.StringField)
             assert hasattr(form, "ipv6_addr")
-            assert isinstance(form.ipv6_addr, fields.StringField) # type: ignore
+            assert isinstance(form.ipv6_addr, fields.StringField)
 
             # Check for IP validation
-            any_ip_validators = [type(v) for v in form.any_ip.validators] # type: ignore
+            any_ip_validators = [type(v) for v in form.any_ip.validators]
             assert validators.IPAddress in any_ip_validators
 
     def test_uuid_field_conversion(self, app, engine, sqlmodel_base: type[SQLModel]):
@@ -141,12 +141,12 @@ class TestSpecialPydanticTypesIntegration:
             assert form is not None
 
             assert hasattr(form, "standard_uuid")
-            assert isinstance(form.standard_uuid, fields.StringField) # type: ignore
+            assert isinstance(form.standard_uuid, fields.StringField)
             assert hasattr(form, "optional_uuid")
-            assert isinstance(form.optional_uuid, fields.StringField) # type: ignore
+            assert isinstance(form.optional_uuid, fields.StringField)
 
             # Check for UUID validation
-            uuid_validators = [type(v) for v in form.standard_uuid.validators] # type: ignore
+            uuid_validators = [type(v) for v in form.standard_uuid.validators]
             assert validators.UUID in uuid_validators
 
     @pytest.mark.skipif(not ADVANCED_TYPES_AVAILABLE, reason="Json type not available")
@@ -161,8 +161,8 @@ class TestSpecialPydanticTypesIntegration:
             id: int = Field(primary_key=True)
             name: str
             # Use sa_type to specify SQLAlchemy type for Pydantic Json
-            config_data: Json = Field(sa_type=JSON) # type: ignore
-            optional_json: Optional[Json] = Field(default=None, sa_type=JSON) # type: ignore
+            config_data: Json = Field(sa_type=JSON)
+            optional_json: Optional[Json] = Field(default=None, sa_type=JSON)
 
         # Create the view with proper session
         view = SQLModelView(JsonModel, session, name="JSON Model")
@@ -176,9 +176,9 @@ class TestSpecialPydanticTypesIntegration:
             from flask_admin.form import JSONField
 
             assert hasattr(form, "config_data")
-            assert isinstance(form.config_data, JSONField) # type: ignore
+            assert isinstance(form.config_data, JSONField)
             assert hasattr(form, "optional_json")
-            assert isinstance(form.optional_json, JSONField) # type: ignore
+            assert isinstance(form.optional_json, JSONField)
 
 
 class TestSpecialTypesInSQLModelView:
@@ -198,7 +198,7 @@ class TestSpecialTypesInSQLModelView:
         session = Session()
 
         class CompleteSpecialTypesModel(sqlmodel_base, table=True):
-            __tablename__ = "special_types_test" # type: ignore
+            __tablename__ = "special_types_test"
 
             id: int = Field(primary_key=True)
             name: str
@@ -208,22 +208,22 @@ class TestSpecialTypesInSQLModelView:
             password: Optional[SecretBytes] = Field(default=None, sa_type=String)
 
             # IP types
-            server_ip: IPvAnyAddress = Field(sa_type=String) # type: ignore
+            server_ip: IPvAnyAddress = Field(sa_type=String)
             backup_ipv4: IPv4Address = Field(sa_type=String)
             backup_ipv6: IPv6Address = Field(sa_type=String)
 
             # UUID types
             session_id: uuid.UUID
-            uuid1_id: UUID1 = ( # type: ignore
+            uuid1_id: UUID1 = (
                 Field(sa_type=String) if ADVANCED_TYPES_AVAILABLE else uuid.UUID
             )
-            uuid4_id: UUID4 = ( # type: ignore
+            uuid4_id: UUID4 = (
                 Field(sa_type=String) if ADVANCED_TYPES_AVAILABLE else uuid.UUID
             )
 
             # JSON type
-            config_metadata: Json = Field(sa_type=JSON) # type: ignore
-            optional_config: Optional[Json] = Field(default=None, sa_type=JSON) # type: ignore
+            config_metadata: Json = Field(sa_type=JSON)
+            optional_config: Optional[Json] = Field(default=None, sa_type=JSON)
 
         # Create the view
         view = SQLModelView(CompleteSpecialTypesModel, session, name="Special Types")
@@ -235,33 +235,33 @@ class TestSpecialTypesInSQLModelView:
 
             # Test secret fields
             assert hasattr(form, "api_key")
-            assert isinstance(form.api_key, fields.PasswordField) # type: ignore
+            assert isinstance(form.api_key, fields.PasswordField)
             assert hasattr(form, "password")
-            assert isinstance(form.password, fields.PasswordField) # type: ignore
+            assert isinstance(form.password, fields.PasswordField)
 
             # Test IP fields
             assert hasattr(form, "server_ip")
-            assert isinstance(form.server_ip, fields.StringField) # type: ignore
+            assert isinstance(form.server_ip, fields.StringField)
             assert hasattr(form, "backup_ipv4")
-            assert isinstance(form.backup_ipv4, fields.StringField) # type: ignore
+            assert isinstance(form.backup_ipv4, fields.StringField)
             assert hasattr(form, "backup_ipv6")
-            assert isinstance(form.backup_ipv6, fields.StringField) # type: ignore
+            assert isinstance(form.backup_ipv6, fields.StringField)
 
             # Test UUID fields
             assert hasattr(form, "session_id")
-            assert isinstance(form.session_id, fields.StringField) # type: ignore
+            assert isinstance(form.session_id, fields.StringField)
             assert hasattr(form, "uuid1_id")
-            assert isinstance(form.uuid1_id, fields.StringField) # type: ignore
+            assert isinstance(form.uuid1_id, fields.StringField)
             assert hasattr(form, "uuid4_id")
-            assert isinstance(form.uuid4_id, fields.StringField) # type: ignore
+            assert isinstance(form.uuid4_id, fields.StringField)
 
             # Test JSON fields
             assert hasattr(form, "config_metadata")
             from flask_admin.form import JSONField
 
-            assert isinstance(form.config_metadata, JSONField) # type: ignore
+            assert isinstance(form.config_metadata, JSONField)
             assert hasattr(form, "optional_config")
-            assert isinstance(form.optional_config, JSONField) # type: ignore
+            assert isinstance(form.optional_config, JSONField)
 
     def test_field_validation_behavior(
         self, app, engine, babel, sqlmodel_base: type[SQLModel]
@@ -273,7 +273,7 @@ class TestSpecialTypesInSQLModelView:
         session = Session()
 
         class ValidationTestModel(sqlmodel_base, table=True):
-            __tablename__ = "validation_test" # type: ignore
+            __tablename__ = "validation_test"
 
             id: int = Field(primary_key=True)
             test_uuid: uuid.UUID
@@ -284,20 +284,20 @@ class TestSpecialTypesInSQLModelView:
             form = view.create_form()
 
             # Test UUID field has UUID validator
-            uuid_field = form.test_uuid # type: ignore
+            uuid_field = form.test_uuid
             validator_types = [type(v) for v in uuid_field.validators]
             assert validators.UUID in validator_types
 
             # Test invalid UUID validation - create a fresh form for each test
             invalid_form = form.__class__(data={"test_uuid": "invalid-uuid"})
             assert not invalid_form.validate()
-            assert invalid_form.test_uuid.errors # type: ignore
+            assert invalid_form.test_uuid.errors
 
             # Test valid UUID validation
             valid_form = form.__class__(data={"test_uuid": str(uuid.uuid4())})
             # Note: We only check the UUID field since other
             # required fields might cause validation failures
-            assert not valid_form.test_uuid.errors # type: ignore
+            assert not valid_form.test_uuid.errors
 
     @pytest.mark.skipif(not IP_TYPES_AVAILABLE, reason="IP types not available")
     def test_ip_field_validation_behavior(
@@ -310,10 +310,10 @@ class TestSpecialTypesInSQLModelView:
         session = Session()
 
         class IPTestModel(sqlmodel_base, table=True):
-            __tablename__ = "ip_test" # type: ignore
+            __tablename__ = "ip_test"
 
             id: int = Field(primary_key=True)
-            test_ip: IPvAnyAddress = Field(sa_type=String) # type: ignore
+            test_ip: IPvAnyAddress = Field(sa_type=String)
 
         view = SQLModelView(IPTestModel, session, name="IP Test")
 
@@ -321,22 +321,22 @@ class TestSpecialTypesInSQLModelView:
             form = view.create_form()
 
             # Test IP field has IP validator
-            ip_field = form.test_ip # type: ignore
+            ip_field = form.test_ip
             validator_types = [type(v) for v in ip_field.validators]
             assert validators.IPAddress in validator_types
 
             # Test invalid IP validation - create a fresh form for each test
             invalid_form = form.__class__(data={"test_ip": "invalid-ip"})
             assert not invalid_form.validate()
-            assert invalid_form.test_ip.errors # type: ignore
+            assert invalid_form.test_ip.errors
 
             # Test valid IPv4 validation
             valid_ipv4_form = form.__class__(data={"test_ip": "192.168.1.1"})
-            assert not valid_ipv4_form.test_ip.errors # type: ignore
+            assert not valid_ipv4_form.test_ip.errors
 
             # Test valid IPv6 validation
             valid_ipv6_form = form.__class__(data={"test_ip": "2001:db8::1"})
-            assert not valid_ipv6_form.test_ip.errors # type: ignore
+            assert not valid_ipv6_form.test_ip.errors
 
 
 class TestSpecialTypesCompatibility:

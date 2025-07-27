@@ -70,12 +70,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from flask import Flask
-from flask_babel import Babel
 from sqlmodel import create_engine
 from sqlmodel import Session
 
 from flask_admin import Admin
-
 from flask_admin.tests.sqlmodel import create_models
 from flask_admin.tests.sqlmodel import CustomModelView
 
@@ -85,7 +83,6 @@ def test_filter_group_naming():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False
-    babel = Babel(app)
 
     engine = create_engine("sqlite://")
     Model1, Model2 = create_models(engine)
@@ -100,14 +97,14 @@ def test_filter_group_naming():
             view1 = CustomModelView(Model1, db_session, column_filters=["test1"])
             admin.add_view(view1)
 
-            print(f"view1 (direct field 'test1'):")
+            print("view1 (direct field 'test1'):")
             print(f"  Filter groups: {list(view1._filter_groups.keys())}")
             print(f"  Total filters: {len(view1._filters)}")
 
             # Test relationship filters
             view2 = CustomModelView(Model2, db_session, column_filters=["model1"])
 
-            print(f"\nview2 (relationship field 'model1'):")
+            print("\nview2 (relationship field 'model1'):")
             print(f"  Filter groups (first 5): {list(view2._filter_groups.keys())[:5]}")
             print(f"  Total filter groups: {len(view2._filter_groups)}")
             print(f"  Total filters: {len(view2._filters)}")
@@ -117,7 +114,7 @@ def test_filter_group_naming():
                 Model2, db_session, column_filters=["model1.bool_field"]
             )
 
-            print(f"\nview3 (dot notation 'model1.bool_field'):")
+            print("\nview3 (dot notation 'model1.bool_field'):")
             print(f"  Filter groups: {list(view3._filter_groups.keys())}")
             print(f"  Total filters: {len(view3._filters)}")
 
@@ -127,7 +124,6 @@ def test_column_list_with_relationships():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False
-    babel = Babel(app)
 
     engine = create_engine("sqlite://")
     Model1, Model2 = create_models(engine)
@@ -143,7 +139,7 @@ def test_column_list_with_relationships():
             admin.add_view(view1)
 
             columns1 = view1.get_list_columns()
-            print(f"Model1 columns:")
+            print("Model1 columns:")
             for col in columns1:
                 print(f"  {col[0]}: {col[1]}")
 
@@ -151,7 +147,7 @@ def test_column_list_with_relationships():
             view2 = CustomModelView(Model2, db_session)
 
             columns2 = view2.get_list_columns()
-            print(f"\nModel2 columns:")
+            print("\nModel2 columns:")
             for col in columns2:
                 print(f"  {col[0]}: {col[1]}")
 
@@ -163,7 +159,6 @@ def test_relationship_field_handling():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False
-    babel = Babel(app)
 
     engine = create_engine("sqlite://")
     Model1, Model2 = create_models(engine)
@@ -179,17 +174,23 @@ def test_relationship_field_handling():
         if model1_attr:
             print(f"  Is relationship: {tools.is_relationship(model1_attr)}")
             print(f"  Has property: {hasattr(model1_attr, 'property')}")
-            print(
-                f"  Has mapper: {hasattr(model1_attr.property, 'mapper') if hasattr(model1_attr, 'property') else False}"
+            tmp_output = (
+                hasattr(model1_attr.property, "mapper")
+                if hasattr(model1_attr, "property")
+                else False
             )
+            print(f"  Has mapper: {tmp_output}")
 
         print(f"\nModel2.model1 exists: {model2_attr is not None}")
         if model2_attr:
             print(f"  Is relationship: {tools.is_relationship(model2_attr)}")
             print(f"  Has property: {hasattr(model2_attr, 'property')}")
-            print(
-                f"  Has mapper: {hasattr(model2_attr.property, 'mapper') if hasattr(model2_attr, 'property') else False}"
+            tmp_output = (
+                hasattr(model2_attr.property, "mapper")
+                if hasattr(model2_attr, "property")
+                else False
             )
+            print(f"  Has mapper: {tmp_output}")
 
 
 def test_primary_key_detection():
@@ -257,14 +258,11 @@ def test_dot_notation_filter_naming():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False
-    babel = Babel(app)
 
     engine = create_engine("sqlite://")
     Model1, Model2 = create_models(engine)
 
     with app.app_context():
-        admin = Admin(app)
-
         with Session(engine) as db_session:
             print("\n=== Testing Dot Notation Filter Naming ===")
 
@@ -273,7 +271,7 @@ def test_dot_notation_filter_naming():
             )
 
             print("Test case: column_filters=['model1.bool_field']")
-            print(f"Expected: 'model1 / Model1 / Bool Field'")
+            print("Expected: 'model1 / Model1 / Bool Field'")
             print(f"Actual  : {list(view3._filter_groups.keys())}")
 
             # Test multiple dot notation filters
@@ -283,7 +281,7 @@ def test_dot_notation_filter_naming():
 
             print("\nTest case: column_filters=['model1.test1', 'model1.bool_field']")
             print(
-                f"Expected: ['model1 / Model1 / Test1', 'model1 / Model1 / Bool Field']"
+                "Expected: ['model1 / Model1 / Test1', 'model1 / Model1 / Bool Field']"
             )
             print(f"Actual  : {list(view4._filter_groups.keys())}")
 
@@ -299,14 +297,16 @@ def test_dot_notation_filter_naming():
             )
 
             print("\nTest case: column_filters with custom labels")
-            print(f"Expected: ['Test Filter #1', 'Test Filter #2']")
+            print("Expected: ['Test Filter #1', 'Test Filter #2']")
             print(f"Actual  : {list(view5._filter_groups.keys())}")
 
             # Additional debug - check if column_labels are being processed
             print(f"Column labels: {view5.column_labels}")
-            print(
-                f"Filter groups match expected: {list(view5._filter_groups.keys()) == ['Test Filter #1', 'Test Filter #2']}"
-            )
+            tmp_output = list(view5._filter_groups.keys()) == [
+                "Test Filter #1",
+                "Test Filter #2",
+            ]
+            print(f"Filter groups match expected: {tmp_output}")
 
 
 def test_filter_joins_setup():
@@ -314,14 +314,11 @@ def test_filter_joins_setup():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False
-    babel = Babel(app)
 
     engine = create_engine("sqlite://")
     Model1, Model2 = create_models(engine)
 
     with app.app_context():
-        admin = Admin(app)
-
         with Session(engine) as db_session:
             print("\n=== Testing Filter Joins Setup ===")
 
@@ -348,14 +345,14 @@ def test_filter_joins_setup():
 
 def test_concrete_inheritance_field_discovery():
     """Debug test to check field discovery with concrete inheritance"""
-    from sqlmodel import SQLModel, Field
+    from sqlmodel import Field
+    from sqlmodel import SQLModel
+
     from flask_admin.contrib.sqlmodel import SQLModelView
-    from flask_admin.contrib.sqlmodel.form import get_form, AdminModelConverter
 
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False
-    babel = Babel(app)
 
     engine = create_engine("sqlite://")
 
@@ -381,17 +378,20 @@ def test_concrete_inheritance_field_discovery():
         print(f"Child mapper attrs: {[p.key for p in Child.__mapper__.attrs]}")
         print(f"Child table columns: {[col.name for col in Child.__table__.columns]}")
         print(
-            f"Child primary key columns: {[col.name for col in Child.__table__.primary_key.columns]}"
+            "Child primary key columns: "
+            + f"{[col.name for col in Child.__table__.primary_key.columns]}"
         )
 
         # Key finding: Child annotations don't include inherited fields!
-        print(f"🔍 KEY ISSUE: Child annotations missing inherited 'id' field!")
+        print("🔍 KEY ISSUE: Child annotations missing inherited 'id' field!")
         print(
-            f"   Child has 'id' in mapper: {'id' in [p.key for p in Child.__mapper__.attrs]}"
+            "   Child has 'id' in mapper: "
+            + f"{'id' in [p.key for p in Child.__mapper__.attrs]}"
         )
         print(f"   Child has 'id' in annotations: {'id' in Child.__annotations__}")
         print(
-            f"   Child has 'id' in table: {'id' in [col.name for col in Child.__table__.columns]}"
+            "   Child has 'id' in table: "
+            + f"{'id' in [col.name for col in Child.__table__.columns]}"
         )
 
         # Test field discovery in form generation
@@ -415,27 +415,32 @@ def test_concrete_inheritance_field_discovery():
                 print(f"Form scaffolding error: {e}")
 
             # Test manual field discovery using mapper vs annotations
-            print(f"\n📊 Field Discovery Sources:")
+            print("\n📊 Field Discovery Sources:")
             print(f"   From mapper.attrs: {[p.key for p in Child.__mapper__.attrs]}")
             print(f"   From annotations: {list(Child.__annotations__.keys())}")
             print(
-                f"   From table columns: {[col.name for col in Child.__table__.columns]}"
+                "   From table columns: "
+                + f"{[col.name for col in Child.__table__.columns]}"
             )
-            print(
-                f"   From SQLModel fields: {list(Child.__fields__.keys()) if hasattr(Child, '__fields__') else 'No __fields__'}"
+            tmp_output = (
+                list(Child.__fields__.keys())
+                if hasattr(Child, "__fields__")
+                else "No __fields__"
             )
+            print(f"   From SQLModel fields: {tmp_output}")
 
 
 def test_form_data_processing():
     """Debug test to reproduce the exact form data processing issue"""
-    from sqlmodel import SQLModel, Field
-    from flask_admin.contrib.sqlmodel import SQLModelView
+    from sqlmodel import Field
+    from sqlmodel import SQLModel
+
     from flask_admin import Admin
+    from flask_admin.contrib.sqlmodel import SQLModelView
 
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False
-    babel = Babel(app)
 
     engine = create_engine("sqlite:///:memory:")
 
@@ -475,17 +480,21 @@ def test_form_data_processing():
                     print(f"🔍 Scaffolding form for model: {self.model}")
                     print(f"🔍 Model mapper class: {self.model.__mapper__.class_}")
                     print(
-                        f"🔍 Are they equal? {self.model == self.model.__mapper__.class_}"
+                        "🔍 Are they equal? "
+                        + f"{self.model == self.model.__mapper__.class_}"
                     )
                     try:
                         form = super().scaffold_form()
                         if form is None:
-                            print(f"🔍 scaffold_form() returned None!")
+                            print("🔍 scaffold_form() returned None!")
                         else:
                             print(f"🔍 Form class created: {form}")
-                            print(
-                                f"🔍 Form fields: {list(form._fields.keys()) if hasattr(form, '_fields') else 'No _fields'}"
+                            tmp_output = (
+                                list(form._fields.keys())
+                                if hasattr(form, "_fields")
+                                else "No _fields"
                             )
+                            print(f"🔍 Form fields: {tmp_output}")
                         return form
                     except Exception as e:
                         print(f"🔍 scaffold_form() failed: {e}")
@@ -517,7 +526,8 @@ def test_form_data_processing():
 
 def test_inheritance_variants():
     """Debug test to compare different inheritance patterns"""
-    from sqlmodel import SQLModel, Field
+    from sqlmodel import Field
+    from sqlmodel import SQLModel
 
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
@@ -540,10 +550,12 @@ def test_inheritance_variants():
 
         print("Single table inheritance:")
         print(
-            f"  SingleChild mapper attrs: {[p.key for p in SingleChild.__mapper__.attrs]}"
+            "  SingleChild mapper attrs: "
+            + f"{[p.key for p in SingleChild.__mapper__.attrs]}"
         )
         print(
-            f"  SingleChild table columns: {[col.name for col in SingleChild.__table__.columns]}"
+            "  SingleChild table columns: "
+            + f"{[col.name for col in SingleChild.__table__.columns]}"
         )
 
         # Test 2: Concrete inheritance
@@ -559,10 +571,12 @@ def test_inheritance_variants():
 
         print("\nConcrete inheritance:")
         print(
-            f"  ConcreteChild mapper attrs: {[p.key for p in ConcreteChild.__mapper__.attrs]}"
+            "  ConcreteChild mapper attrs: "
+            + f"{[p.key for p in ConcreteChild.__mapper__.attrs]}"
         )
         print(
-            f"  ConcreteChild table columns: {[col.name for col in ConcreteChild.__table__.columns]}"
+            "  ConcreteChild table columns: "
+            + f"{[col.name for col in ConcreteChild.__table__.columns]}"
         )
 
         # Test 3: Concrete inheritance with multiple PKs
@@ -579,23 +593,28 @@ def test_inheritance_variants():
 
         print("\nConcrete inheritance with multiple PKs:")
         print(
-            f"  MultiPKChild mapper attrs: {[p.key for p in MultiPKChild.__mapper__.attrs]}"
+            "  MultiPKChild mapper attrs: "
+            + f"{[p.key for p in MultiPKChild.__mapper__.attrs]}"
         )
         print(
-            f"  MultiPKChild table columns: {[col.name for col in MultiPKChild.__table__.columns]}"
+            "  MultiPKChild table columns: "
+            + f"{[col.name for col in MultiPKChild.__table__.columns]}"
         )
         print(
-            f"  MultiPKChild primary key columns: {[col.name for col in MultiPKChild.__table__.primary_key.columns]}"
+            "  MultiPKChild primary key columns: +"
+            f"{[col.name for col in MultiPKChild.__table__.primary_key.columns]}"
         )
 
 
 def test_relationship_filter_joins():
     """Debug test for relationship filter join issues"""
+    import warnings
+
+    import sqlalchemy
+
+    from flask_admin import Admin
     from flask_admin.contrib.sqlmodel import SQLModelView
     from flask_admin.contrib.sqlmodel.tools import get_field_with_path
-    from flask_admin import Admin
-    import warnings
-    import sqlalchemy
 
     # Capture SQL warnings
     caught_warnings = []
@@ -610,7 +629,6 @@ def test_relationship_filter_joins():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False
-    babel = Babel(app)
 
     engine = create_engine("sqlite:///:memory:")
     admin = Admin(app)
@@ -633,7 +651,7 @@ def test_relationship_filter_joins():
 
             view = TestView(Model2, db_session)
 
-            print(f"🔍 Filter joins setup:")
+            print("🔍 Filter joins setup:")
             print(f"   _filter_joins: {view._filter_joins}")
             print(f"   _filters count: {len(view._filters)}")
 
@@ -646,7 +664,7 @@ def test_relationship_filter_joins():
             admin.add_view(view)
 
             # Test the query building
-            print(f"🔍 Testing query building:")
+            print("🔍 Testing query building:")
             try:
                 # This should trigger the cartesian product warning
                 count, data = view.get_list(0, None, None, None, None)
@@ -655,7 +673,7 @@ def test_relationship_filter_joins():
                 print(f"   Query failed: {e}")
 
             # Test with actual filter applied
-            print(f"🔍 Testing with filter applied:")
+            print("🔍 Testing with filter applied:")
             try:
                 # Apply a filter to see the actual query
                 filters = [(0, "bool_field", True)]  # Filter index 0, field name, value
@@ -668,14 +686,14 @@ def test_relationship_filter_joins():
 
             # Check if warnings were captured
             if caught_warnings:
-                print(f"🔍 SQL Warnings captured:")
+                print("🔍 SQL Warnings captured:")
                 for warning in caught_warnings:
                     print(f"   {warning}")
             else:
                 print("🔍 No SQL warnings captured")
 
             # Test manual query to understand the issue
-            print(f"🔍 Testing manual query:")
+            print("🔍 Testing manual query:")
             try:
                 from sqlmodel import select
 
@@ -707,14 +725,16 @@ def test_relationship_filter_joins():
 def test_property_filtering_pagination():
     """Debug test for property filtering pagination issue"""
     import uuid
-    from sqlmodel import SQLModel, Field
-    from flask_admin.contrib.sqlmodel import SQLModelView
+
+    from sqlmodel import Field
+    from sqlmodel import SQLModel
+
     from flask_admin import Admin
+    from flask_admin.contrib.sqlmodel import SQLModelView
 
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False
-    babel = Babel(app)
 
     engine = create_engine("sqlite:///:memory:")
 
@@ -769,8 +789,8 @@ def test_property_filtering_pagination():
             db_session.commit()
 
             print(f"🔍 Created {len(test_records)} total records:")
-            print(f"   10 Smith records (should match 'smith' filter)")
-            print(f"   5 Johnson records (should not match)")
+            print("   10 Smith records (should match 'smith' filter)")
+            print("   5 Johnson records (should not match)")
 
             # Create view with small page size
             class PropertyTestModelView(SQLModelView):
@@ -788,7 +808,7 @@ def test_property_filtering_pagination():
             # Test client requests
             client = app.test_client()
 
-            print(f"\n🔍 Testing basic list view (no filters):")
+            print("\n🔍 Testing basic list view (no filters):")
             try:
                 rv = client.get("/admin/propertytestmodel/")
                 print(f"   Status: {rv.status_code}")
@@ -798,21 +818,20 @@ def test_property_filtering_pagination():
                     johnson_count = rv.text.count("Johnson")
                     print(f"   Page 0 - Smith: {smith_count}, Johnson: {johnson_count}")
                 else:
-                    print(f"   Error response")
+                    print("   Error response")
             except Exception as e:
                 print(f"   Exception: {e}")
 
-            print(f"\n🔍 Testing property filter (full_name contains 'smith'):")
+            print("\n🔍 Testing property filter (full_name contains 'smith'):")
 
             # Determine which filter index corresponds to full_name
-            full_name_filter_idx = None
             for i, flt in enumerate(view._filters):
                 if hasattr(flt, "column") and isinstance(flt.column, property):
                     # This might be our full_name property filter
                     print(
-                        f"   Filter {i}: {flt.__class__.__name__} on property {flt.column}"
+                        f"   Filter {i}: {flt.__class__.__name__}"
+                        + f" on property {flt.column}"
                     )
-                    full_name_filter_idx = i
                     break
 
             # Test different filter parameter formats
@@ -836,28 +855,37 @@ def test_property_filtering_pagination():
                             print(f"   ✓ Property filter working! URL: {test_url}")
 
                             # Test pagination of filtered results
-                            print(f"   🔍 Testing pagination of filtered results:")
+                            print("   🔍 Testing pagination of filtered results:")
                             print(
-                                f"       Expected: page_size={view.page_size}, so should show {view.page_size} Smith records per page"
+                                f"       Expected: page_size={view.page_size}, "
+                                + f"so should show {view.page_size} "
+                                + "Smith records per page"
                             )
                             print(
-                                f"       Actual: showing {smith_count} Smith records on page 0"
+                                f"       Actual: showing {smith_count}"
+                                + " Smith records on page 0"
                             )
 
                             if smith_count == view.page_size:
                                 print(
-                                    f"       ✓ Correct pagination! Showing exactly {view.page_size} records"
+                                    "       ✓ Correct pagination! Showing exactly "
+                                    + f"{view.page_size} records"
                                 )
                             elif smith_count < view.page_size:
                                 print(
-                                    f"       ⚠ PAGINATION ISSUE: Showing only {smith_count} of expected {view.page_size} records"
+                                    "       ⚠ PAGINATION ISSUE: Showing only "
+                                    + f"{smith_count} of expected {view.page_size} "
+                                    + "records"
                                 )
                                 print(
-                                    f"         This indicates post-query filtering is happening AFTER pagination"
+                                    "         This indicates post-query filtering is "
+                                    + "happening AFTER pagination"
                                 )
                             else:
                                 print(
-                                    f"       ⚠ Unexpected: Showing more records ({smith_count}) than page size ({view.page_size})"
+                                    "       ⚠ Unexpected: Showing more records "
+                                    + f"({smith_count}) than page size "
+                                    + f"({view.page_size})"
                                 )
 
                             # Test second page
@@ -867,20 +895,17 @@ def test_property_filtering_pagination():
                                 rv1 = client.get(page1_url)
                                 if rv1.status_code == 200:
                                     smith_count_p1 = rv1.text.count("Smith")
-                                    print(
-                                        f"       Page 1 Smith records: {smith_count_p1}"
-                                    )
+                                    print(f"Page 1 Smith records: {smith_count_p1}")
                                     if smith_count_p1 == view.page_size:
-                                        print(
-                                            f"       ✓ Page 1 has correct number of records"
-                                        )
+                                        print("Page 1 has correct number of records")
                                     elif smith_count_p1 > 0:
                                         print(
-                                            f"       ✓ Page 1 has some records (pagination working)"
+                                            "Page 1 has some records "
+                                            + "(pagination working)"
                                         )
                                     else:
                                         print(
-                                            f"       ⚠ Page 1 has no records (pagination issue)"
+                                            "Page 1 has no records (pagination issue)"
                                         )
                                 else:
                                     print(f"       Page 1 error: {rv1.status_code}")
@@ -894,7 +919,7 @@ def test_property_filtering_pagination():
                 except Exception as e:
                     print(f"   Exception: {e}")
 
-            print(f"\n🔍 Testing regular field filter for comparison:")
+            print("\n🔍 Testing regular field filter for comparison:")
             try:
                 # Test regular field filter (category)
                 rv = client.get(
@@ -918,14 +943,11 @@ def test_filter_joins_detailed():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False
-    babel = Babel(app)
 
     engine = create_engine("sqlite:///:memory:")
     Model1, Model2 = create_models(engine)
 
     with app.app_context():
-        admin = Admin(app)
-
         with Session(engine) as db_session:
             print("\n=== Testing Detailed Filter Joins ===")
 
@@ -938,7 +960,8 @@ def test_filter_joins_detailed():
             print(f"🔍 Column filters: {view.column_filters}")
             print(f"🔍 _filter_joins keys: {list(view._filter_joins.keys())}")
             print(
-                f"🔍 _filter_name_to_joins keys: {list(view._filter_name_to_joins.keys())}"
+                "🔍 _filter_name_to_joins keys: "
+                + f"{list(view._filter_name_to_joins.keys())}"
             )
             print(f"🔍 Number of filters: {len(view._filters) if view._filters else 0}")
 
@@ -967,9 +990,12 @@ def test_uuid_type_names():
     import inspect
     import uuid
     from typing import Optional
-    from sqlmodel import SQLModel, Field, create_engine
+
     from sqlalchemy import Column
     from sqlalchemy.sql.sqltypes import Uuid as SQLAlchemyUuid
+    from sqlmodel import create_engine
+    from sqlmodel import Field
+    from sqlmodel import SQLModel
 
     engine = create_engine("sqlite:///:memory:")
 
@@ -1002,7 +1028,8 @@ def test_uuid_type_names():
                 print(f"   Column type name: {type(column.type).__name__}")
                 print(f"   Column type module: {type(column.type).__module__}")
                 print(
-                    f"   Full type string: {type(column.type).__module__}.{type(column.type).__name__}"
+                    "   Full type string: "
+                    + f"{type(column.type).__module__}.{type(column.type).__name__}"
                 )
 
                 # Show MRO (Method Resolution Order)
@@ -1013,7 +1040,7 @@ def test_uuid_type_names():
                     print(f"     {i}: {type_string}")
 
     # Test with pure Python UUID type
-    print(f"\n🔍 Pure Python UUID Type:")
+    print("\n🔍 Pure Python UUID Type:")
     print(f"   uuid.UUID module: {uuid.UUID.__module__}")
     print(f"   uuid.UUID name: {uuid.UUID.__name__}")
     print(f"   uuid.UUID full string: {uuid.UUID.__module__}.{uuid.UUID.__name__}")
@@ -1021,10 +1048,11 @@ def test_uuid_type_names():
 
 def test_column_filters_minimal():
     """Minimal test to reproduce the column filters issue"""
-    from flask_admin.contrib.sqlmodel import SQLModelView
-    from flask_admin import Admin
     import warnings
+
     import sqlalchemy
+
+    from flask_admin import Admin
 
     # Treat warnings as errors to catch the issue
     warnings.filterwarnings("error", category=sqlalchemy.exc.SAWarning)
@@ -1032,7 +1060,6 @@ def test_column_filters_minimal():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False
-    babel = Babel(app)
 
     engine = create_engine("sqlite:///:memory:")
     admin = Admin(app)
@@ -1065,11 +1092,11 @@ def test_column_filters_minimal():
             # Test the web request that was failing
             client = app.test_client()
 
-            print(f"🔍 Testing web request that was failing:")
+            print("🔍 Testing web request that was failing:")
             try:
                 rv = client.get("/admin/_model2/")
                 print(f"   Status: {rv.status_code}")
-                print(f"   Success!")
+                print("   Success!")
             except Exception as e:
                 print(f"   Failed: {e}")
                 import traceback

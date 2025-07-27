@@ -4,6 +4,7 @@ import uuid
 from datetime import date
 from datetime import datetime
 from datetime import time
+from typing import Any
 from typing import Optional
 
 import arrow
@@ -67,20 +68,22 @@ class EnumChoices(enum.Enum):
 class CustomModelView(SQLModelView):
     def __init__(
         self,
-        model,
-        session,
-        name=None,
-        category=None,
-        endpoint=None,
-        url=None,
-        **kwargs,
-    ):
+        model: Any,
+        session: Any,
+        name: Optional[str] = None,
+        category: Optional[str] = None,
+        endpoint: Optional[str] = None,
+        url: Optional[str] = None,
+        **kwargs: Any,
+    ) -> None:
         for k, v in kwargs.items():
             setattr(self, k, v)
 
         super().__init__(model, session, name, category, endpoint, url)
 
-    form_choices = {"choice_field": [("choice-1", "One"), ("choice-2", "Two")]}
+    form_choices: dict[str, list[tuple[str, str]]] = {
+        "choice_field": [("choice-1", "One"), ("choice-2", "Two")]
+    }
 
 
 # class CustomModelView(ModelView):
@@ -293,14 +296,14 @@ def sqlmodel_base() -> type[SQLModel]:
 
 
 def create_models(
-    engine, sqlmodel_class: Optional[type[SQLModel]] = None
+    engine: Any, sqlmodel_class: Optional[type[SQLModel]] = None
 ) -> tuple[type[SQLModel], type[SQLModel]]:
     """Create SQLModel models for testing with proper metadata handling"""
     if sqlmodel_class is None:
-        sqlmodel_class = sqlmodel_base()  # type: ignore
+        sqlmodel_class = sqlmodel_base()
 
     class Model1(sqlmodel_class, table=True):
-        __tablename__ = "model1"  # type: ignore
+        __tablename__ = "model1"
         __table_args__ = {"extend_existing": True}  # Allow table recreation
 
         id: Optional[int] = Field(default=None, primary_key=True)
@@ -363,18 +366,18 @@ def create_models(
         # Relationships
         model2: list["Model2"] = Relationship(back_populates="model1")
 
-        model_config = {"arbitrary_types_allowed": True}  # type: ignore
+        model_config = {"arbitrary_types_allowed": True}
 
-        def __unicode__(self):
+        def __unicode__(self) -> str:
             return self.test1
 
-        def __str__(self):
+        def __str__(self) -> str:
             return self.test1 or ""
 
     class Model2(sqlmodel_class, table=True):
-        __tablename__ = "model2"  # type: ignore
+        __tablename__ = "model2"
         __table_args__ = {"extend_existing": True}  # Allow table recreation
-        model_config = {"arbitrary_types_allowed": True}  # type: ignore
+        model_config = {"arbitrary_types_allowed": True}
 
         id: Optional[int] = Field(default=None, primary_key=True)
         string_field: Optional[str] = Field(default=None, sa_column=Column(String))
@@ -396,7 +399,7 @@ def create_models(
         model1_id: Optional[int] = Field(default=None, foreign_key="model1.id")
         model1: Optional[Model1] = Relationship(back_populates="model2")
 
-        model_config = {"arbitrary_types_allowed": True}  # type: ignore
+        model_config = {"arbitrary_types_allowed": True}
 
     # Create tables with the test metadata
     sqlmodel_class.metadata.create_all(engine)
@@ -404,7 +407,7 @@ def create_models(
     return Model1, Model2
 
 
-def fill_db(session, Model1, Model2):
+def fill_db(session: Any, Model1: type[SQLModel], Model2: type[SQLModel]) -> None:
     """Fill database with test data"""
     model1_obj1 = Model1(test1="test1_val_1", test2="test2_val_1", bool_field=True)
     model1_obj2 = Model1(test1="test1_val_2", test2="test2_val_2", bool_field=False)
@@ -473,10 +476,13 @@ def fill_db(session, Model1, Model2):
 
 
 @pytest.mark.filterwarnings(
-    "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1create_models, this "
+    "ignore:'iter_groups' is expected to return 4 items tuple "
+    "since wtforms 3.1create_models, this "
     "will be mandatory in wtforms 3.2:DeprecationWarning",
 )
-def test_model(app, engine, admin, sqlmodel_base):
+def test_model(
+    app: Any, engine: Any, admin: Any, sqlmodel_base: type[SQLModel]
+) -> None:
     with app.app_context():
         Model1, _ = create_models(engine, sqlmodel_base)
 
@@ -501,34 +507,34 @@ def test_model(app, engine, admin, sqlmodel_base):
         assert view._filters is None
 
         # Verify form fields
-        assert view._create_form_class.test1.field_class == fields.StringField  # type: ignore
-        assert view._create_form_class.test2.field_class == fields.StringField  # type: ignore
-        assert view._create_form_class.test3.field_class == fields.TextAreaField  # type: ignore
-        assert view._create_form_class.test4.field_class == fields.TextAreaField  # type: ignore
-        assert view._create_form_class.email_field.field_class == fields.StringField  # type: ignore
-        assert view._create_form_class.choice_field.field_class == Select2Field  # type: ignore
-        assert view._create_form_class.enum_field.field_class == Select2Field  # type: ignore
-        assert view._create_form_class.sqla_utils_choice.field_class == Select2Field  # type: ignore
-        assert view._create_form_class.sqla_utils_enum.field_class == Select2Field  # type: ignore
+        assert view._create_form_class.test1.field_class == fields.StringField
+        assert view._create_form_class.test2.field_class == fields.StringField
+        assert view._create_form_class.test3.field_class == fields.TextAreaField
+        assert view._create_form_class.test4.field_class == fields.TextAreaField
+        assert view._create_form_class.email_field.field_class == fields.StringField
+        assert view._create_form_class.choice_field.field_class == Select2Field
+        assert view._create_form_class.enum_field.field_class == Select2Field
+        assert view._create_form_class.sqla_utils_choice.field_class == Select2Field
+        assert view._create_form_class.sqla_utils_enum.field_class == Select2Field
         assert (
-            view._create_form_class.sqla_utils_arrow.field_class == AdminDateTimeField  # type: ignore
+            view._create_form_class.sqla_utils_arrow.field_class == AdminDateTimeField
         )
-        assert view._create_form_class.sqla_utils_uuid.field_class == fields.StringField  # type: ignore
-        assert view._create_form_class.sqla_utils_url.field_class == fields.StringField  # type: ignore
+        assert view._create_form_class.sqla_utils_uuid.field_class == fields.StringField
+        assert view._create_form_class.sqla_utils_url.field_class == fields.StringField
         assert (
-            view._create_form_class.sqla_utils_ip_address.field_class  # type: ignore
+            view._create_form_class.sqla_utils_ip_address.field_class
             == fields.StringField
         )
         assert (
-            view._create_form_class.sqla_utils_currency.field_class  # type: ignore
+            view._create_form_class.sqla_utils_currency.field_class
             == fields.StringField
         )
         assert (
-            view._create_form_class.sqla_utils_color.field_class == fields.StringField  # type: ignore
+            view._create_form_class.sqla_utils_color.field_class == fields.StringField
         )
 
         # Make test client
-        client = app.test_client()
+        client: Any = app.test_client()
         # Check that we can retrieve a list view
         rv = client.get("/admin/model1/")
         assert rv.status_code == 200
@@ -538,7 +544,7 @@ def test_model(app, engine, admin, sqlmodel_base):
         assert rv.status_code == 200
 
         # Create a new record
-        uuid_obj = uuid.uuid4()
+        uuid_obj: uuid.UUID = uuid.uuid4()
         rv = client.post(
             "/admin/model1/new/",
             data=dict(
@@ -593,7 +599,7 @@ def test_model(app, engine, admin, sqlmodel_base):
             assert "00:00:00" in rv.data.decode("utf-8")
 
             # Edit the record
-            new_uuid_obj = uuid.uuid4()
+            new_uuid_obj: uuid.UUID = uuid.uuid4()
             rv = client.post(
                 url,
                 data=dict(
@@ -643,7 +649,7 @@ def test_model(app, engine, admin, sqlmodel_base):
 
 
 @pytest.mark.xfail(raises=Exception)
-def test_no_pk(app, engine, admin):
+def test_no_pk(app: Any, engine: Any, admin: Any) -> None:
     """Test that models without primary keys raise an exception"""
     sqlmodel_class = sqlmodel_base()  # init to clear registry
 
@@ -656,13 +662,13 @@ def test_no_pk(app, engine, admin):
             admin.add_view(view)
 
 
-def test_editable_list_special_pks(app, engine, admin):
+def test_editable_list_special_pks(app: Any, engine: Any, admin: Any) -> None:
     """Tests editable list view + a primary key with special characters"""
     with app.app_context():
         sqlmodel_class = sqlmodel_base()
 
         class Model1(sqlmodel_class, table=True):
-            model_config = {"extra": "allow"}  # type: ignore # Allow extra fields
+            model_config = {"extra": "allow"}  # Allow extra fields
             id: Optional[str] = Field(
                 default=None, sa_column=(Column(String(20), primary_key=True))
             )
@@ -677,7 +683,7 @@ def test_editable_list_special_pks(app, engine, admin):
             db_session.add(Model1(id="1-5", val1="test2"))
             db_session.commit()
 
-        client = app.test_client()
+        client: Any = app.test_client()
 
         # Form - Test basic in-line edit functionality
         rv = client.post(
@@ -696,16 +702,16 @@ def test_editable_list_special_pks(app, engine, admin):
         assert "change-success-1" in data
 
 
-def test_hybrid_property(app, engine, admin):
+def test_hybrid_property(app: Any, engine: Any, admin: Any) -> None:
     pass
 
 
-def test_computed_property(app, engine, admin):
+def test_computed_property(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         sqlmodel_class = sqlmodel_base()
 
         class Model1(sqlmodel_class, table=True):
-            model_config = {"extra": "allow"}  # type: ignore # Allow extra fields
+            model_config = {"extra": "allow"}  # Allow extra fields
 
             id: Optional[int] = Field(
                 default=None, sa_column=(Column(Integer(), primary_key=True))
@@ -725,7 +731,7 @@ def test_computed_property(app, engine, admin):
                 return str(self.number_of_pixels)
 
         # Function to check if a field is a computed property
-        def is_computed_property(model_class, field_name):
+        def is_computed_property(model_class: type[SQLModel], field_name: str) -> bool:
             attr = getattr(model_class, field_name, None)
             return isinstance(attr, property)
 
@@ -740,7 +746,7 @@ def test_computed_property(app, engine, admin):
             db_session.add(Model1(id=2, name="test_row_2", width=10, height=10))
             db_session.commit()
 
-            client = app.test_client()
+            client: Any = app.test_client()
 
             view = CustomModelView(
                 Model1,
@@ -816,7 +822,7 @@ def test_computed_property(app, engine, admin):
 #         db.session.add(Model2(id=3, name="map", owner_id=2))
 #         db.session.commit()
 
-#         client = app.test_client()
+#         client: Any = app.test_client()
 
 #         view = CustomModelView(
 #             Model2,
@@ -833,7 +839,7 @@ def test_computed_property(app, engine, admin):
 #         assert "Jim Smith" in data
 
 
-def test_non_int_pk(app, engine, admin):
+def test_non_int_pk(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         sqlmodel_class = sqlmodel_base()
 
@@ -846,7 +852,7 @@ def test_non_int_pk(app, engine, admin):
             view = CustomModelView(Model, db_session, form_columns=["id", "test"])
             admin.add_view(view)
 
-        client = app.test_client()
+        client: Any = app.test_client()
 
         rv = client.get("/admin/model/")
         assert rv.status_code == 200
@@ -865,7 +871,7 @@ def test_non_int_pk(app, engine, admin):
         assert "test2" in data
 
 
-def test_form_columns(app, engine, admin):
+def test_form_columns(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         sqlmodel_class = sqlmodel_base()
 
@@ -926,9 +932,9 @@ def test_form_columns(app, engine, admin):
             )
             view3 = CustomModelView(ChildModel, db_session, endpoint="view3")
 
-            form1 = view1.create_form()
-            form2 = view2.create_form()
-            form3 = view3.create_form()
+            form1: Any = view1.create_form()
+            form2: Any = view2.create_form()
+            form3: Any = view3.create_form()
 
             assert "int_field" in form1._fields
             assert "text_field" in form1._fields
@@ -936,27 +942,27 @@ def test_form_columns(app, engine, admin):
             assert "excluded_column" not in form2._fields
 
             # check that relation shows up as a query select
-            assert type(form3.model).__name__ == "QuerySelectField"  # type: ignore
+            assert type(form3.model).__name__ == "QuerySelectField"
 
             # check that select field is rendered if form_choices were specified
-            assert type(form3.choice_field).__name__ == "Select2Field"  # type: ignore
+            assert type(form3.choice_field).__name__ == "Select2Field"
 
             # check that select field is rendered for enum fields
-            assert type(form3.enum_field).__name__ == "Select2Field"  # type: ignore
+            assert type(form3.enum_field).__name__ == "Select2Field"
 
             # check that sqlalchemy_utils field types are handled appropriately
-            assert type(form3.sqla_utils_choice).__name__ == "Select2Field"  # type: ignore
-            assert type(form3.sqla_utils_enum).__name__ == "Select2Field"  # type: ignore
+            assert type(form3.sqla_utils_choice).__name__ == "Select2Field"
+            assert type(form3.sqla_utils_enum).__name__ == "Select2Field"
 
             # test form_columns with model objects
-            view4 = CustomModelView(
+            view4: CustomModelView = CustomModelView(
                 Model, db_session, endpoint="view1", form_columns=[Model.int_field]
             )
-            form4 = view4.create_form()
+            form4: Any = view4.create_form()
             assert "int_field" in form4._fields
 
 
-def test_form_args(app, engine, admin):
+def test_form_args(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         sqlmodel_class = sqlmodel_base()
 
@@ -968,20 +974,22 @@ def test_form_args(app, engine, admin):
 
         sqlmodel_class.metadata.create_all(engine)
         with Session(engine) as db_session:
-            shared_form_args = {"test": {"validators": [validators.Regexp("test")]}}
+            shared_form_args: dict[str, dict[str, list[Any]]] = {
+                "test": {"validators": [validators.Regexp("test")]}
+            }
 
             view = CustomModelView(Model, db_session, form_args=shared_form_args)
             admin.add_view(view)
 
-            create_form = view.create_form()
-            assert len(create_form.test.validators) == 2  # type: ignore
+            create_form: Any = view.create_form()
+            assert len(create_form.test.validators) == 2
 
             # ensure shared field_args don't create duplicate validators
-            edit_form = view.edit_form()
-            assert len(edit_form.test.validators) == 2  # type: ignore
+            edit_form: Any = view.edit_form()
+            assert len(edit_form.test.validators) == 2
 
 
-def test_form_override(app, engine, admin):
+def test_form_override(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         sqlmodel_class = sqlmodel_base()
 
@@ -1001,11 +1009,11 @@ def test_form_override(app, engine, admin):
             admin.add_view(view1)
             admin.add_view(view2)
 
-            assert view1._create_form_class.test.field_class == fields.StringField  # type: ignore
-            assert view2._create_form_class.test.field_class == fields.FileField  # type: ignore
+            assert view1._create_form_class.test.field_class == fields.StringField
+            assert view2._create_form_class.test.field_class == fields.FileField
 
 
-def test_form_onetoone(app, engine, admin):
+def test_form_onetoone(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         sqlmodel_class = sqlmodel_base()
 
@@ -1041,16 +1049,16 @@ def test_form_onetoone(app, engine, admin):
             assert model1.model2 == model2
             assert model2.model1 == model1
 
-            assert not view1._create_form_class.model2.field_class.widget.multiple  # type: ignore
-            assert not view2._create_form_class.model1.field_class.widget.multiple  # type: ignore
+            assert not view1._create_form_class.model2.field_class.widget.multiple
+            assert not view2._create_form_class.model1.field_class.widget.multiple
 
 
-def test_relations():
+def test_relations() -> None:
     # TODO: test relations
     pass
 
 
-def test_extra_field_order(app, engine, admin):
+def test_extra_field_order(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         Model1, _ = create_models(engine)
         with Session(engine) as db_session:
@@ -1062,7 +1070,7 @@ def test_extra_field_order(app, engine, admin):
             )
             admin.add_view(view)
 
-        client = app.test_client()
+        client: Any = app.test_client()
 
         rv = client.get("/admin/model1/new/")
         assert rv.status_code == 200
@@ -1095,7 +1103,9 @@ def test_extra_field_order(app, engine, admin):
     "will be mandatory in wtforms 3.2:DeprecationWarning",
 )
 @flask_babel_test_decorator
-def test_modelview_localization(request, app, locale, expect_text):
+def test_modelview_localization(
+    request: Any, app: Any, locale: str, expect_text: str
+) -> None:
     # We need to configure the default Babel locale _before_ the `babel` fixture is
     # initialised, so we have to use `request.getfixturevalue` to pull the fixture
     # within the test function rather than the test signature. The `admin` fixture
@@ -1122,7 +1132,7 @@ def test_modelview_localization(request, app, locale, expect_text):
 
             admin.add_view(view)
 
-        client = app.test_client()
+        client: Any = app.test_client()
 
         rv = client.get("/admin/model1/")
         assert expect_text in rv.text
@@ -1159,7 +1169,7 @@ def test_modelview_localization(request, app, locale, expect_text):
 #         assert "test1_equals" == flt_name
 
 
-def test_custom_form_base(app, engine, admin):
+def test_custom_form_base(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
 
         class TestForm(form.BaseForm):
@@ -1172,11 +1182,11 @@ def test_custom_form_base(app, engine, admin):
 
         assert hasattr(view._create_form_class, "test1")
 
-        create_form = view.create_form()
+        create_form: Any = view.create_form()
         assert isinstance(create_form, TestForm)
 
 
-def test_ajax_fk(app, engine, admin):
+def test_ajax_fk(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         Model1, Model2 = create_models(engine)
         with Session(engine) as db_session:
@@ -1208,21 +1218,21 @@ def test_ajax_fk(app, engine, admin):
             assert items[0].test1 == "foo"
 
             # Check form generation
-            form = view.create_form()
+            form: Any = view.create_form()
             assert form.model1.__class__.__name__ == "AjaxSelectField"
 
             with app.test_request_context("/admin/view/"):
-                assert 'value=""' not in form.model1()  # type: ignore
+                assert 'value=""' not in form.model1()
 
-                form.model1.data = model  # type: ignore
+                form.model1.data = model
                 assert (
-                    f'data-json="[{model.id}, &quot;first&quot;]"' in form.model1()  # type: ignore
-                    or f'data-json="[{model.id}, &#34;first&#34;]"' in form.model1()  # type: ignore
+                    f'data-json="[{model.id}, &quot;first&quot;]"' in form.model1()
+                    or f'data-json="[{model.id}, &#34;first&#34;]"' in form.model1()
                 )
-                assert 'value="1"' in form.model1()  # type: ignore
+                assert 'value="1"' in form.model1()
 
             # Check querying
-            client = app.test_client()
+            client: Any = app.test_client()
 
             req = client.get("/admin/view/ajax/lookup/?name=model1&query=foo")
             assert req.data.decode("utf-8") == f'[[{model2.id}, "foo"]]'
@@ -1234,14 +1244,15 @@ def test_ajax_fk(app, engine, admin):
 
             assert mdl is not None
             assert mdl.model1_id == model.id
-            # Get the related model1 through a separate query since relationships may not be auto-loaded
+            # Get the related model1 through a separate query since relationships
+            # may not be auto-loaded
             related_model1 = db_session.get(Model1, mdl.model1_id)
             assert related_model1 is not None
             assert related_model1.id == model.id
             assert related_model1.test1 == "first"
 
 
-def test_ajax_fk_multi(app, engine, admin):
+def test_ajax_fk_multi(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         sqlmodel_class = sqlmodel_base()  # init to clear registry
 
@@ -1254,7 +1265,7 @@ def test_ajax_fk_multi(app, engine, admin):
             )
 
         class Model1(sqlmodel_class, table=True):
-            __tablename__ = "model1"  # type: ignore
+            __tablename__ = "model1"
 
             id: Optional[int] = Field(default=None, primary_key=True)
             name: Optional[str] = Field(default=None)
@@ -1263,11 +1274,11 @@ def test_ajax_fk_multi(app, engine, admin):
                 back_populates="model1", link_model=M2M
             )
 
-            def __str__(self):
+            def __str__(self) -> str:
                 return self.name or ""
 
         class Model2(sqlmodel_class, table=True):
-            __tablename__ = "model2"  # type: ignore
+            __tablename__ = "model2"
 
             id: Optional[int] = Field(default=None, primary_key=True)
             name: Optional[str] = Field(default=None, max_length=20)
@@ -1291,20 +1302,20 @@ def test_ajax_fk_multi(app, engine, admin):
             db_session.commit()
 
             # Check form generation
-            form = view.create_form()
-            assert form.model1.__class__.__name__ == "AjaxSelectMultipleField"  # type: ignore
+            form: Any = view.create_form()
+            assert form.model1.__class__.__name__ == "AjaxSelectMultipleField"
 
             with app.test_request_context("/admin/view/"):
-                assert 'data-json="[]"' in form.model1()  # type: ignore
+                assert 'data-json="[]"' in form.model1()
 
-                form.model1.data = [model]  # type: ignore
+                form.model1.data = [model]
                 assert (
-                    'data-json="[[1, &quot;first&quot;]]"' in form.model1()  # type: ignore
-                    or 'data-json="[[1, &#34;first&#34;]]"' in form.model1()  # type: ignore
+                    'data-json="[[1, &quot;first&quot;]]"' in form.model1()
+                    or 'data-json="[[1, &#34;first&#34;]]"' in form.model1()
                 )
 
             # Check submitting
-            client = app.test_client()
+            client: Any = app.test_client()
             client.post("/admin/view/new/", data={"model1": as_unicode(model.id)})
             # Get the created Model2 instance - it should have id=1 since it's the first
             mdl = db_session.get(Model2, 1)
@@ -1315,14 +1326,14 @@ def test_ajax_fk_multi(app, engine, admin):
             assert len(mdl.model1) == 1
 
 
-def test_safe_redirect(app, engine, admin):
+def test_safe_redirect(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         Model1, _ = create_models(engine)
         with Session(engine) as db_session:
             view = CustomModelView(Model1, db_session)
             admin.add_view(view)
 
-        client = app.test_client()
+        client: Any = app.test_client()
 
         rv = client.post(
             "/admin/model1/new/?url=http://localhost/admin/model2view/",
@@ -1365,7 +1376,7 @@ def test_safe_redirect(app, engine, admin):
         assert "id=2" in rv.location
 
 
-def test_simple_list_pager(app, engine, admin):
+def test_simple_list_pager(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         Model1, _ = create_models(engine)
         with Session(engine) as db_session:
@@ -1373,7 +1384,7 @@ def test_simple_list_pager(app, engine, admin):
             class TestModelView(CustomModelView):
                 simple_list_pager = True
 
-                def get_count_query(self):
+                def get_count_query(self) -> None:
                     raise AssertionError()
 
             view = TestModelView(Model1, db_session)
@@ -1383,7 +1394,7 @@ def test_simple_list_pager(app, engine, admin):
             assert count is None
 
 
-def test_customising_page_size(app, engine, admin):
+def test_customising_page_size(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         M1, _ = create_models(engine)
         with Session(engine) as db_session:
@@ -1417,7 +1428,7 @@ def test_customising_page_size(app, engine, admin):
             )
             admin.add_view(view4)
 
-        client = app.test_client()
+        client: Any = app.test_client()
 
         rv = client.get("/admin/view1/")
         assert "instance-020" in rv.text
@@ -1470,7 +1481,7 @@ def test_customising_page_size(app, engine, admin):
         assert "instance-016" not in rv.text
 
 
-def test_unlimited_page_size(app, engine, admin):
+def test_unlimited_page_size(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         M1, _ = create_models(engine)
         with Session(engine) as db_session:
@@ -1514,7 +1525,7 @@ def test_unlimited_page_size(app, engine, admin):
         assert len(data) == 21
 
 
-def test_advanced_joins(app, engine, admin):
+def test_advanced_joins(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         sqlmodel_class = sqlmodel_base()  # init to clear registry
 
@@ -1588,14 +1599,14 @@ def test_advanced_joins(app, engine, admin):
         # Check if normal properties are supported by tools.get_field_with_path
         attr, path = tools.get_field_with_path(Model2, Model1.test)
         assert attr == Model1.test
-        assert path == [Model1.__table__]  # type: ignore
+        assert path == [Model1.__table__]
 
         q3, joins, alias = view2._apply_path_joins(view2.get_query(), joins, path)
         assert len(joins) == 3
         assert alias is None
 
 
-def test_multipath_joins(app, engine, admin):
+def test_multipath_joins(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         sqlmodel_class = sqlmodel_base()  # init to clear registry
 
@@ -1634,7 +1645,7 @@ def test_multipath_joins(app, engine, admin):
             view = CustomModelView(Model2, db_session, filters=["first.test"])
             admin.add_view(view)
 
-        client = app.test_client()
+        client: Any = app.test_client()
 
         rv = client.get("/admin/model2/")
         assert rv.status_code == 200
@@ -1643,7 +1654,7 @@ def test_multipath_joins(app, engine, admin):
 # SQLModel does not support bindings
 # This is a wrkaoround that creates both Models
 # in the other engine
-def test_different_bind_joins(request, app, engine):
+def test_different_bind_joins(request: Any, app: Any, engine: Any) -> None:
     app.config["SQLALCHEMY_BINDS"] = {"other": "sqlite:///"}
 
     admin = request.getfixturevalue("admin")
@@ -1657,7 +1668,7 @@ def test_different_bind_joins(request, app, engine):
             val1: Optional[str] = Field(default=None, max_length=20)
 
         class Model2(sqlmodel_class, table=True):
-            __tablename__ = "model2"  # type: ignore
+            __tablename__ = "model2"
 
             id: Optional[int] = Field(default=None, primary_key=True)
             val1: Optional[str] = Field(default=None, max_length=20)
@@ -1665,23 +1676,23 @@ def test_different_bind_joins(request, app, engine):
             first_id: Optional[int] = Field(default=None, foreign_key="model1.id")
             first: Optional[Model1] = Relationship()
 
-        sqlmodel_class.metadata.create_all(engine, tables=[Model1.__table__])  # type: ignore
+        sqlmodel_class.metadata.create_all(engine, tables=[Model1.__table__])
         other_metadata = sqlmodel_class.metadata
         other_metadata.create_all(
             other_engine,
-            tables=[Model1.__table__, Model2.__table__],  # type: ignore
+            tables=[Model1.__table__, Model2.__table__],
         )
         with Session(other_engine) as db_session:
             view = CustomModelView(Model2, db_session)
             admin.add_view(view)
 
-        client = app.test_client()
+        client: Any = app.test_client()
 
         rv = client.get("/admin/model2/")
         assert rv.status_code == 200
 
 
-def test_model_default(app, engine, admin):
+def test_model_default(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         _, Model2 = create_models(engine)
 
@@ -1692,12 +1703,12 @@ def test_model_default(app, engine, admin):
             view = ModelView(Model2, db_session)
             admin.add_view(view)
 
-        client = app.test_client()
+        client: Any = app.test_client()
         rv = client.post("/admin/model2/new/", data=dict())
         assert b"This field is required" not in rv.data
 
 
-def test_export_csv(app, engine, admin):
+def test_export_csv(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         with Session(engine) as db_session:
             Model1, Model2 = create_models(engine)
@@ -1724,7 +1735,7 @@ def test_export_csv(app, engine, admin):
             )
             admin.add_view(view2)
 
-        client = app.test_client()
+        client: Any = app.test_client()
 
         # test export_max_rows
         rv = client.get("/admin/row_limit_2/export/csv/")
@@ -1747,7 +1758,7 @@ def test_export_csv(app, engine, admin):
 STRING_CONSTANT = "Anyway, here's Wonderwall"
 
 
-def test_string_null_behavior(app, engine, admin):
+def test_string_null_behavior(app: Any, engine: Any, admin: Any) -> None:
     with app.app_context():
         sqlmodel_class = sqlmodel_base()  # init to clear registry
 
@@ -1772,7 +1783,7 @@ def test_string_null_behavior(app, engine, admin):
             view = CustomModelView(StringTestModel, db_session)
             admin.add_view(view)
 
-            client = app.test_client()
+            client: Any = app.test_client()
 
             valid_params = {
                 "test_no": 1,
@@ -1848,7 +1859,7 @@ def test_string_null_behavior(app, engine, admin):
             assert empty_string_inst.text_field is None
 
 
-def test_primary_key_detection(app, engine, admin):
+def test_primary_key_detection(app: Any, engine: Any, admin: Any) -> None:
     """Test that primary key detection works with sa_column fields"""
     with app.app_context():
         Model1, _ = create_models(engine)
@@ -1869,7 +1880,7 @@ def test_primary_key_detection(app, engine, admin):
         assert not tools.has_multiple_pks(Model1)
 
 
-def test_union_type_detection(app, engine, admin):
+def test_union_type_detection(app: Any, engine: Any, admin: Any) -> None:
     """Test that modern Python union types (str | None) are detected properly"""
     with app.app_context():
         Model1, _ = create_models(engine)
@@ -1892,7 +1903,7 @@ def test_union_type_detection(app, engine, admin):
             assert "model_fields_set" not in sortable  # set type
 
 
-def test_field_type_info(app, engine, admin):
+def test_field_type_info(app: Any, engine: Any, admin: Any) -> None:
     """Test field type information extraction"""
     with app.app_context():
         Model1, _ = create_models(engine)

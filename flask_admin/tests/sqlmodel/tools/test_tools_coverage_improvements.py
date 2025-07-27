@@ -369,7 +369,7 @@ class TestWTFormsIntegrationEdgeCases:
 
         # Should have stored in _wtf_bad_field
         assert hasattr(obj, "_wtf_bad_field")
-        assert obj._wtf_bad_field == "test_value"  # type: ignore
+        assert obj._wtf_bad_field == "test_value"
 
 
 class TestTypeValidationEdgeCases:

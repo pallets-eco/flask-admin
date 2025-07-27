@@ -6,7 +6,6 @@ error handling, and various validation scenarios.
 """
 
 from unittest.mock import Mock
-from unittest.mock import patch
 
 import pytest
 from sqlmodel import Field
@@ -318,7 +317,7 @@ class TestValidatorIntegration:
             email = StringField("Email")
 
         form = TestForm()
-        form._obj = None # type: ignore
+        form._obj = None
 
         mock_session = Mock()
         mock_model = ValidatorTestModel
@@ -342,7 +341,7 @@ class TestValidatorIntegration:
 
         field = StringField("Test Field")
         field.data = "USD"
-        field.gettext = lambda x: x  # type: ignore # Simple gettext mock
+        field.gettext = lambda x: x  # Simple gettext mock
 
         form = Mock()
 

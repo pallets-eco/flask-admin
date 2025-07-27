@@ -8,7 +8,6 @@ from sqlmodel import Session
 from wtforms import fields
 
 from flask_admin.contrib.sqlmodel import filters
-
 from flask_admin.tests.sqlmodel import create_models
 from flask_admin.tests.sqlmodel import CustomModelView
 from flask_admin.tests.sqlmodel import fill_db
@@ -113,7 +112,7 @@ def test_column_filters(app, engine, admin):
 
             client = app.test_client()
 
-            assert len(view1._filters) == 7  # type: ignore
+            assert len(view1._filters) == 7
 
             # Generate views
             view2 = CustomModelView(Model2, db_session, column_filters=["model1"])
@@ -174,7 +173,7 @@ def test_column_filters(app, engine, admin):
             view13 = CustomModelView(
                 Model2,
                 db_session,
-                column_filters=[filters.FilterEqual(Model1.test1, "Test1")],  # type: ignore
+                column_filters=[filters.FilterEqual(Model1.test1, "Test1")],
                 endpoint="_relation_test",
             )
             admin.add_view(view13)
@@ -189,8 +188,7 @@ def test_column_filters(app, engine, admin):
 
             # Test views
             assert [
-                (f["index"], f["operation"])
-                for f in view1._filter_groups["Test1"]  # type: ignore
+                (f["index"], f["operation"]) for f in view1._filter_groups["Test1"]
             ] == [
                 (0, "contains"),
                 (1, "not contains"),
@@ -204,7 +202,7 @@ def test_column_filters(app, engine, admin):
             # Test filter that references property0
             assert [
                 (f["index"], f["operation"])
-                for f in view2._filter_groups["Model1 / Test1"]  # type: ignore
+                for f in view2._filter_groups["Model1 / Test1"]
             ] == [
                 (0, "contains"),
                 (1, "not contains"),
@@ -222,7 +220,7 @@ def test_column_filters(app, engine, admin):
 
             assert [
                 (f["index"], f["operation"])
-                for f in view3._filter_groups["model1 / Model1 / Bool Field"]  # type: ignore
+                for f in view3._filter_groups["model1 / Model1 / Bool Field"]
             ] == [
                 (0, "equals"),
                 (1, "not equal"),
@@ -239,7 +237,7 @@ def test_column_filters(app, engine, admin):
                 },
             )
 
-            assert list(view4._filter_groups.keys()) == [  # type: ignore
+            assert list(view4._filter_groups.keys()) == [
                 "Test Filter #1",
                 "Test Filter #2",
             ]
@@ -266,8 +264,7 @@ def test_column_filters(app, engine, admin):
 
             # Test string filter
             assert [
-                (f["index"], f["operation"])
-                for f in view5._filter_groups["Test1"]  # type: ignore
+                (f["index"], f["operation"]) for f in view5._filter_groups["Test1"]
             ] == [
                 (0, "contains"),
                 (1, "not contains"),
@@ -287,8 +284,7 @@ def test_column_filters(app, engine, admin):
 
             # Test integer filter
             assert [
-                (f["index"], f["operation"])
-                for f in view6._filter_groups["Int Field"]  # type: ignore
+                (f["index"], f["operation"]) for f in view6._filter_groups["Int Field"]
             ] == [
                 (0, "equals"),
                 (1, "not equal"),
@@ -308,8 +304,7 @@ def test_column_filters(app, engine, admin):
 
             # Test boolean filter
             assert [
-                (f["index"], f["operation"])
-                for f in view7._filter_groups["Bool Field"]  # type: ignore
+                (f["index"], f["operation"]) for f in view7._filter_groups["Bool Field"]
             ] == [
                 (0, "equals"),
                 (1, "not equal"),
@@ -342,15 +337,15 @@ def test_column_searchable_list(app, engine, admin):
             admin.add_view(view)
 
             assert view._search_supported
-            assert len(view._search_fields) == 2  # type: ignore
+            assert len(view._search_fields) == 2
 
-            assert isinstance(view._search_fields[0][0], InstrumentedAttribute)  # type: ignore
-            assert isinstance(view._search_fields[1][0], InstrumentedAttribute)  # type: ignore
-            assert view._search_fields[0][0].key == "string_field"  # type: ignore
-            assert view._search_fields[1][0].key == "int_field"  # type: ignore
+            assert isinstance(view._search_fields[0][0], InstrumentedAttribute)
+            assert isinstance(view._search_fields[1][0], InstrumentedAttribute)
+            assert view._search_fields[0][0].key == "string_field"
+            assert view._search_fields[1][0].key == "int_field"
 
-            db_session.add(Model2(string_field="model1-test", int_field=5000))  # type: ignore
-            db_session.add(Model2(string_field="model2-test", int_field=9000))  # type: ignore
+            db_session.add(Model2(string_field="model1-test", int_field=5000))
+            db_session.add(Model2(string_field="model2-test", int_field=9000))
             db_session.commit()
 
         client = app.test_client()
@@ -370,10 +365,10 @@ def test_column_filters_sqla_obj(app, engine, admin):
     with app.app_context():
         Model1, Model2 = create_models(engine)
         with Session(engine) as db_session:
-            view = CustomModelView(Model1, db_session, column_filters=[Model1.test1])  # type: ignore
+            view = CustomModelView(Model1, db_session, column_filters=[Model1.test1])
             admin.add_view(view)
 
-            assert len(view._filters) == 7  # type: ignore
+            assert len(view._filters) == 7
 
 
 @pytest.mark.xfail(raises=Exception)
@@ -418,7 +413,7 @@ def test_complex_searchable_list(app, engine, admin):
             view2 = CustomModelView(
                 Model1,
                 db_session,
-                column_searchable_list=[Model2.string_field],  # type: ignore
+                column_searchable_list=[Model2.string_field],
             )
             admin.add_view(view2)
 
@@ -552,7 +547,7 @@ def test_default_complex_sort(app, engine, admin):
                 M2,
                 db_session,
                 endpoint="model2_2",
-                column_default_sort=(M1.test1, False),  # type: ignore
+                column_default_sort=(M1.test1, False),
             )
             admin.add_view(view2)
 
@@ -576,7 +571,7 @@ def test_default_sort(app, engine, admin):
                 ]
             )
             db_session.commit()
-            count = db_session.exec(select(func.count()).select_from(M1)).scalar()  # type: ignore
+            count = db_session.exec(select(func.count()).select_from(M1)).scalar()
             assert count == 3
 
             view = CustomModelView(M1, db_session, column_default_sort="test1")
@@ -823,7 +818,7 @@ def test_list_columns(app, engine, admin):
                 Model1,
                 db_session,
                 endpoint="model1_2",
-                column_list=[Model1.test1, Model1.test3],  # type: ignore
+                column_list=[Model1.test1, Model1.test3],
                 column_labels=dict(test1="Column1"),
             )
             admin.add_view(view2)
@@ -881,17 +876,17 @@ def test_on_model_change_delete(app, engine, admin):
                 "/admin/model1/new/", data=dict(test1="test1large", test2="test2")
             )
 
-            model = db_session.exec(select(Model1)).scalars().first()  # type: ignore
-            assert model.test1 == "TEST1LARGE"  # type: ignore
+            model = db_session.exec(select(Model1)).scalars().first()
+            assert model.test1 == "TEST1LARGE"
             db_session.refresh(model)
 
-            url = f"/admin/model1/edit/?id={model.id}"  # type: ignore
+            url = f"/admin/model1/edit/?id={model.id}"
             resp = client.post(url, data=dict(test1="test1small", test2="test2large"))
             assert resp.status_code == 302
 
             db_session.expire_all()
-            model = db_session.exec(select(Model1)).scalars().first()  # type: ignore
-            assert model.test1 == "TEST1SMALL"  # type: ignore
+            model = db_session.exec(select(Model1)).scalars().first()
+            assert model.test1 == "TEST1SMALL"
 
             url = f"/admin/model1/delete/?id={model.id}"
             client.post(url)
@@ -904,7 +899,7 @@ def test_multiple_delete(app, engine, admin):
         with Session(engine) as db_session:
             db_session.add_all([M1(test1="a"), M1(test1="b"), M1(test1="c")])
             db_session.commit()
-            assert len(db_session.exec(select(M1)).scalars().all()) == 3  # type: ignore
+            assert len(db_session.exec(select(M1)).scalars().all()) == 3
 
             view = CustomModelView(M1, db_session)
             admin.add_view(view)
@@ -915,7 +910,7 @@ def test_multiple_delete(app, engine, admin):
                 "/admin/model1/action/", data=dict(action="delete", rowid=[1, 2, 3])
             )
             assert rv.status_code == 302
-            assert len(db_session.exec(select(M1)).scalars().all()) == 0  # type: ignore
+            assert len(db_session.exec(select(M1)).scalars().all()) == 0
 
 
 def test_url_args(app, engine, admin):

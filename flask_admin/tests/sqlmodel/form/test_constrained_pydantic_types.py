@@ -38,11 +38,11 @@ class TestConstrainedPydanticTypesIntegration:
             id: int = Field(primary_key=True)
             name: str
             # Constrained string: 3-20 chars, letters only
-            username: constr(min_length=3, max_length=20, pattern=r"^[A-Za-z]+$") = (  # type: ignore
+            username: constr(min_length=3, max_length=20, pattern=r"^[A-Za-z]+$") = (
                 Field(sa_type=String)
             )
             # Optional constrained string
-            nickname: Optional[constr(min_length=2, max_length=10)] = Field(  # type: ignore
+            nickname: Optional[constr(min_length=2, max_length=10)] = Field(
                 default=None, sa_type=String
             )
 
@@ -58,13 +58,11 @@ class TestConstrainedPydanticTypesIntegration:
 
             # Test username field (constrained string)
             assert hasattr(form, "username")
-            assert isinstance(form.username, fields.StringField)  # type: ignore
+            assert isinstance(form.username, fields.StringField)
 
             # Check for Length validators
             length_validators = [
-                v
-                for v in form.username.validators # type: ignore
-                if isinstance(v, validators.Length)
+                v for v in form.username.validators if isinstance(v, validators.Length)
             ]
             assert len(length_validators) == 2  # min and max length
             min_lengths = [v.min for v in length_validators if v.min != -1]
@@ -74,9 +72,7 @@ class TestConstrainedPydanticTypesIntegration:
 
             # Check for Regexp validator
             regexp_validators = [
-                v
-                for v in form.username.validators # type: ignore
-                if isinstance(v, validators.Regexp)  # type: ignore
+                v for v in form.username.validators if isinstance(v, validators.Regexp)
             ]
             assert len(regexp_validators) == 1
             pattern = (
@@ -88,7 +84,7 @@ class TestConstrainedPydanticTypesIntegration:
 
             # Test nickname field (optional constrained string)
             assert hasattr(form, "nickname")
-            assert isinstance(form.nickname, fields.StringField)  # type: ignore
+            assert isinstance(form.nickname, fields.StringField)
 
     def test_constrained_integer_conversion(
         self, app, engine, babel, sqlmodel_base: type[SQLModel]
@@ -103,11 +99,11 @@ class TestConstrainedPydanticTypesIntegration:
             id: int = Field(primary_key=True)
             name: str
             # Constrained integer: 0-100
-            score: conint(ge=0, le=100) = Field()  # type: ignore
+            score: conint(ge=0, le=100) = Field()
             # Constrained integer: greater than 0, less than 1000
-            points: conint(gt=0, lt=1000) = Field()  # type: ignore
+            points: conint(gt=0, lt=1000) = Field()
             # Optional constrained integer
-            bonus: Optional[conint(ge=0, le=50)] = Field(default=None)  # type: ignore
+            bonus: Optional[conint(ge=0, le=50)] = Field(default=None)
 
         # Create the view with proper session
         view = SQLModelView(ConstrainedIntModel, session, name="Constrained Int Model")
@@ -119,11 +115,11 @@ class TestConstrainedPydanticTypesIntegration:
 
             # Test score field (ge/le constraints)
             assert hasattr(form, "score")
-            assert isinstance(form.score, fields.IntegerField)  # type: ignore
+            assert isinstance(form.score, fields.IntegerField)
 
             range_validators = [
                 v
-                for v in form.score.validators  # type: ignore
+                for v in form.score.validators
                 if isinstance(v, validators.NumberRange)
             ]
             assert len(range_validators) == 1
@@ -133,11 +129,11 @@ class TestConstrainedPydanticTypesIntegration:
             # Test points field (gt/lt constraints - should
             # be converted to ge/le with adjustment)
             assert hasattr(form, "points")
-            assert isinstance(form.points, fields.IntegerField)  # type: ignore
+            assert isinstance(form.points, fields.IntegerField)
 
             range_validators = [
                 v
-                for v in form.points.validators  # type: ignore
+                for v in form.points.validators
                 if isinstance(v, validators.NumberRange)
             ]
             assert len(range_validators) == 1
@@ -147,7 +143,7 @@ class TestConstrainedPydanticTypesIntegration:
 
             # Test bonus field (optional)
             assert hasattr(form, "bonus")
-            assert isinstance(form.bonus, fields.IntegerField)  # type: ignore
+            assert isinstance(form.bonus, fields.IntegerField)
 
     def test_constrained_float_conversion(
         self, app, engine, babel, sqlmodel_base: type[SQLModel]
@@ -162,11 +158,11 @@ class TestConstrainedPydanticTypesIntegration:
             id: int = Field(primary_key=True)
             name: str
             # Constrained float: 0.0-1.0 (percentage)
-            percentage: confloat(ge=0.0, le=1.0) = Field()  # type: ignore
+            percentage: confloat(ge=0.0, le=1.0) = Field()
             # Constrained float: greater than 0.0
-            rating: confloat(gt=0.0, lt=10.0) = Field()  # type: ignore
+            rating: confloat(gt=0.0, lt=10.0) = Field()
             # Optional constrained float
-            weight: Optional[confloat(ge=0.0)] = Field(default=None)  # type: ignore
+            weight: Optional[confloat(ge=0.0)] = Field(default=None)
 
         # Create the view with proper session
         view = SQLModelView(
@@ -180,11 +176,11 @@ class TestConstrainedPydanticTypesIntegration:
 
             # Test percentage field (ge/le constraints)
             assert hasattr(form, "percentage")
-            assert isinstance(form.percentage, fields.DecimalField)  # type: ignore
+            assert isinstance(form.percentage, fields.DecimalField)
 
             range_validators = [
                 v
-                for v in form.percentage.validators  # type: ignore
+                for v in form.percentage.validators
                 if isinstance(v, validators.NumberRange)
             ]
             assert len(range_validators) == 1
@@ -193,11 +189,11 @@ class TestConstrainedPydanticTypesIntegration:
 
             # Test rating field (gt/lt constraints)
             assert hasattr(form, "rating")
-            assert isinstance(form.rating, fields.DecimalField)  # type: ignore
+            assert isinstance(form.rating, fields.DecimalField)
 
             range_validators = [
                 v
-                for v in form.rating.validators  # type: ignore
+                for v in form.rating.validators
                 if isinstance(v, validators.NumberRange)
             ]
             assert len(range_validators) == 1
@@ -207,7 +203,7 @@ class TestConstrainedPydanticTypesIntegration:
 
             # Test weight field (optional, only lower bound)
             assert hasattr(form, "weight")
-            assert isinstance(form.weight, fields.DecimalField)  # type: ignore
+            assert isinstance(form.weight, fields.DecimalField)
 
     def test_constrained_types_validation_behavior(
         self, app, engine, babel, sqlmodel_base: type[SQLModel]
@@ -219,12 +215,12 @@ class TestConstrainedPydanticTypesIntegration:
         session = Session()
 
         class ValidationTestModel(sqlmodel_base, table=True):
-            __tablename__ = "validation_test"  # type: ignore
+            __tablename__ = "validation_test"
 
             id: int = Field(primary_key=True)
-            username: constr(min_length=3, max_length=10) = Field(sa_type=String)  # type: ignore
-            score: conint(ge=0, le=100) = Field()  # type: ignore
-            percentage: confloat(ge=0.0, le=1.0) = Field()  # type: ignore
+            username: constr(min_length=3, max_length=10) = Field(sa_type=String)
+            score: conint(ge=0, le=100) = Field()
+            percentage: confloat(ge=0.0, le=1.0) = Field()
 
         view = SQLModelView(ValidationTestModel, session, name="Validation Test")
 
@@ -232,7 +228,7 @@ class TestConstrainedPydanticTypesIntegration:
             form = view.create_form()
 
             # Test username validation (remove InputRequired for testing)
-            username_field = form.username  # type: ignore
+            username_field = form.username
             username_field.validators = [
                 v
                 for v in username_field.validators
@@ -258,7 +254,7 @@ class TestConstrainedPydanticTypesIntegration:
             print(f"Username validation errors: {username_field.errors}")  # Debug print
 
             # Test score validation
-            score_field = form.score # type: ignore
+            score_field = form.score
             score_field.validators = [
                 v
                 for v in score_field.validators
@@ -277,7 +273,7 @@ class TestConstrainedPydanticTypesIntegration:
             )
 
             # Test percentage validation
-            percentage_field = form.percentage  # type: ignore
+            percentage_field = form.percentage
             percentage_field.validators = [
                 v
                 for v in percentage_field.validators

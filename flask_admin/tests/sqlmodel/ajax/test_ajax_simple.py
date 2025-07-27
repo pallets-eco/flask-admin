@@ -16,7 +16,7 @@ from flask_admin.contrib.sqlmodel.ajax import QueryAjaxModelLoader
 
 # Simple test model
 class SimpleUser(SQLModel, table=True):
-    __tablename__ = "simple_user"  # type: ignore # Explicit table name
+    __tablename__ = "simple_user"  # Explicit table name
 
     id: int = Field(primary_key=True)
     name: str

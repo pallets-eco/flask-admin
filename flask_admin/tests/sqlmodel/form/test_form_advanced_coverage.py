@@ -38,20 +38,20 @@ class TestSQLAlchemyExtendedMixin:
         mock_column = Mock()
         mock_column.nullable = True
         field_args = {"validators": []}
-        result = mixin._convert_email_type(mock_column, field_args) # type: ignore
+        result = mixin._convert_email_type(mock_column, field_args)
         assert isinstance(result, type(StringField()))
         assert any(isinstance(v, validators.Email) for v in field_args["validators"])
 
         # Test URL converter
         field_args = {"validators": []}
-        result = mixin._convert_url_type(field_args) # type: ignore # type: ignore
+        result = mixin._convert_url_type(field_args)
         assert isinstance(result, type(StringField()))
         assert any(isinstance(v, validators.URL) for v in field_args["validators"])
         assert len(field_args["filters"]) > 0
 
         # Test IP address converter
         field_args = {"validators": []}
-        result = mixin._convert_ip_address_type(field_args) # type: ignore
+        result = mixin._convert_ip_address_type(field_args)
         assert isinstance(result, type(StringField()))
         assert any(
             isinstance(v, validators.IPAddress) for v in field_args["validators"]
@@ -59,14 +59,14 @@ class TestSQLAlchemyExtendedMixin:
 
         # Test color converter
         field_args = {"validators": []}
-        result = mixin._convert_color_type(field_args) # type: ignore
+        result = mixin._convert_color_type(field_args)
         assert isinstance(result, type(StringField()))
         assert len(field_args["validators"]) > 0
         assert len(field_args["filters"]) > 0
 
         # Test currency converter
         field_args = {"validators": []}
-        result = mixin._convert_currency_type(field_args) # type: ignore
+        result = mixin._convert_currency_type(field_args)
         assert isinstance(result, type(StringField()))
         assert len(field_args["validators"]) > 0
         assert len(field_args["filters"]) > 0
@@ -84,7 +84,7 @@ class TestSQLAlchemyExtendedMixin:
         mock_column.type.choices = [("value1", "Label 1"), ("value2", "Label 2")]
         field_args = {"validators": []}
 
-        result = mixin._convert_choice_type(mock_column, field_args) # type: ignore
+        result = mixin._convert_choice_type(mock_column, field_args)
         assert result is not None
         assert field_args["allow_blank"] is True
         assert field_args["choices"] == [("value1", "Label 1"), ("value2", "Label 2")]
@@ -97,7 +97,7 @@ class TestSQLAlchemyExtendedMixin:
         mock_column.type.choices = TestEnum
         field_args = {"validators": []}
 
-        result = mixin._convert_choice_type(mock_column, field_args) # type: ignore
+        result = mixin._convert_choice_type(mock_column, field_args)
         assert result is not None
         expected_choices = [(f.value, f.name) for f in TestEnum]
         assert field_args["choices"] == expected_choices
@@ -113,7 +113,7 @@ class TestSQLAlchemyExtendedMixin:
         mock_column.type._coerce = Mock()
         field_args = {"validators": []}
 
-        result = mixin._convert_timezone_type(mock_column, field_args) # type: ignore
+        result = mixin._convert_timezone_type(mock_column, field_args)
         assert isinstance(result, type(StringField()))
         assert len(field_args["validators"]) > 0
 
@@ -124,7 +124,7 @@ class TestSQLAlchemyExtendedMixin:
         mixin = SQLAlchemyExtendedMixin()
         field_args = {}
 
-        result = mixin._convert_arrow_type(field_args) # type: ignore
+        result = mixin._convert_arrow_type(field_args)
         assert result is not None  # Should return DateTimeField
 
     def test_handle_integer_types_with_unsigned(self):

@@ -11,7 +11,6 @@ from sqlmodel import Field
 from sqlmodel import Session
 
 from flask_admin.base import Admin
-
 from flask_admin.tests.sqlmodel import CustomModelView
 from flask_admin.tests.sqlmodel import sqlmodel_base
 
@@ -22,7 +21,7 @@ def test_hstore(app: Flask, postgres_engine: Engine, postgres_admin: Admin):
 
         # Define model
         class Model(sqlmodel_class, table=True):
-            id: Optional[int]  = Field(default=None, primary_key=True)
+            id: Optional[int] = Field(default=None, primary_key=True)
             hstore_test: Optional[dict[str, str]] = Field(sa_column=Column(HSTORE))
 
         # Create table
@@ -61,7 +60,7 @@ def test_json(app: Flask, postgres_engine: Engine, postgres_admin: Admin):
         sqlmodel_class = sqlmodel_base()  # init to clear registry
 
         class JSONModel(sqlmodel_class, table=True):
-            id: Optional[int]  = Field(default=None, primary_key=True)
+            id: Optional[int] = Field(default=None, primary_key=True)
             json_test: Optional[dict] = Field(default=None, sa_column=Column(JSON))
 
         sqlmodel_class.metadata.create_all(postgres_engine)

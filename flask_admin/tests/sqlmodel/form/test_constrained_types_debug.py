@@ -3,18 +3,7 @@
 Quick test script for Pydantic constrained types support.
 """
 
-from typing import Optional
-
-from pydantic import confloat
-from pydantic import conint
-from pydantic import constr
-from sqlalchemy import String
-from sqlmodel import Field
-from sqlmodel import Session
 from sqlmodel import SQLModel
-from wtforms import validators
-
-from flask_admin.contrib.sqlmodel.view import SQLModelView
 
 
 def test_constrained_types(app, engine, sqlmodel_base: type[SQLModel]):
@@ -30,18 +19,18 @@ def test_constrained_types(app, engine, sqlmodel_base: type[SQLModel]):
     #     id: int = Field(primary_key=True)
 
     #     # Constrained string: 3-20 chars, letters only
-    #     username: constr(min_length=3, max_length=20, pattern=r"^[A-Za-z]+$") = Field(  # type: ignore
-    #         sa_type=String
+    #     username: constr(min_length=3, max_length=20, pattern=r"^[A-Za-z]+$")
+    # = Field( sa_type=String
     #     )
 
     #     # Constrained integer: 0-100
-    #     score: conint(ge=0, le=100) = Field()  # type: ignore
+    #     score: conint(ge=0, le=100) = Field()
 
     #     # Constrained float: 0.0-1.0
-    #     percentage: confloat(ge=0.0, le=1.0) = Field()  # type: ignore
+    #     percentage: confloat(ge=0.0, le=1.0) = Field()
 
     #     # Optional constrained string
-    #     nickname: Optional[constr(min_length=2, max_length=10)] = Field(  # type: ignore
+    #     nickname: Optional[constr(min_length=2, max_length=10)] = Field(
     #         default=None, sa_type=String
     #     )
 
@@ -69,7 +58,7 @@ def test_constrained_types(app, engine, sqlmodel_base: type[SQLModel]):
     #     print(f"Form fields: {list(form._fields.keys())}")
 
     #     # Test username field (constrained string)
-    #     username_field = form.username  # type: ignore
+    #     username_field = form.username
     #     print(f"Username field type: {type(username_field)}")
     #     print(f"Username validators: {[type(v) for v in username_field.validators]}")
 
@@ -78,7 +67,8 @@ def test_constrained_types(app, engine, sqlmodel_base: type[SQLModel]):
     #         v for v in username_field.validators if isinstance(v, validators.Length)
     #     ]
     #     print(
-    #         f"Username Length validators: {[(v.min, v.max) for v in length_validators]}"
+    #         f"Username Length validators:
+    #   {[(v.min, v.max) for v in length_validators]}"
     #     )
 
     #     # Check if Regexp validator is present
@@ -90,7 +80,7 @@ def test_constrained_types(app, engine, sqlmodel_base: type[SQLModel]):
     #     )
 
     #     # Test score field (constrained integer)
-    #     score_field = form.score  # type: ignore
+    #     score_field = form.score
     #     print(f"Score field type: {type(score_field)}")
     #     print(f"Score validators: {[type(v) for v in score_field.validators]}")
 
@@ -103,7 +93,7 @@ def test_constrained_types(app, engine, sqlmodel_base: type[SQLModel]):
     #     )
 
     #     # Test percentage field (constrained float)
-    #     percentage_field = form.percentage  # type: ignore
+    #     percentage_field = form.percentage
     #     print(f"Percentage field type: {type(percentage_field)}")
     #     print(
     #         f"Percentage validators: {[type(v) for v in percentage_field.validators]}"
@@ -123,7 +113,7 @@ def test_constrained_types(app, engine, sqlmodel_base: type[SQLModel]):
     #     print("\nTesting validation:")
 
     #     # Test field validation directly (remove InputRequired for testing)
-    #     username_field = form.username  # type: ignore
+    #     username_field = form.username
     #     # Remove InputRequired validator for testing
     #     username_field.validators = [
     #         v
@@ -136,7 +126,8 @@ def test_constrained_types(app, engine, sqlmodel_base: type[SQLModel]):
 
     #     username_field.process_formdata(["Al"])  # Too short
     #     print(
-    #         f"Invalid username (too short) validation: {username_field.validate(form)}"
+    #         f"Invalid username (too short) validation:
+    # {username_field.validate(form)}"
     #     )
     #     if username_field.errors:
     #         print(f"Username errors: {username_field.errors}")
@@ -151,7 +142,7 @@ def test_constrained_types(app, engine, sqlmodel_base: type[SQLModel]):
     #         print(f"Username errors: {username_field.errors}")
 
     #     # Test score validation
-    #     score_field = form.score  # type: ignore
+    #     score_field = form.score
     #     # Remove InputRequired validator for testing
     #     score_field.validators = [
     #         v
@@ -167,7 +158,7 @@ def test_constrained_types(app, engine, sqlmodel_base: type[SQLModel]):
     #         print(f"Score errors: {score_field.errors}")
 
     #     # Test percentage validation
-    #     percentage_field = form.percentage  # type: ignore
+    #     percentage_field = form.percentage
     #     # Remove InputRequired validator for testing
     #     percentage_field.validators = [
     #         v

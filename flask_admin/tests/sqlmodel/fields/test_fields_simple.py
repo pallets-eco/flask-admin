@@ -26,7 +26,7 @@ from flask_admin.contrib.sqlmodel.fields import QuerySelectMultipleField
 class SimpleTestModel(SQLModel, table=True):
     """Simple test model."""
 
-    __tablename__ = "simple_test_model_fields" # type: ignore
+    __tablename__ = "simple_test_model_fields"
 
     id: int = Field(primary_key=True)
     name: str
@@ -38,7 +38,7 @@ class SimpleTestModel(SQLModel, table=True):
 class MultiPKModel(SQLModel, table=True):
     """Model with multiple primary keys."""
 
-    __tablename__ = "multi_pk_model_fields" # type: ignore
+    __tablename__ = "multi_pk_model_fields"
 
     pk1: int = Field(primary_key=True)
     pk2: str = Field(primary_key=True)
@@ -397,7 +397,7 @@ class TestFieldValidation:
         field.data = self.obj1
 
         # Should not raise
-        field.pre_validate(None)  # type: ignore
+        field.pre_validate(None)
 
     def test_query_select_field_blank_allowed(self):
         """Test QuerySelectField validation with blank when allowed."""
@@ -413,7 +413,7 @@ class TestFieldValidation:
         field.data = None
 
         # Should not raise
-        field.pre_validate(None)  # type: ignore
+        field.pre_validate(None)
 
     def test_query_select_field_invalid_choice(self):
         """Test QuerySelectField validation with invalid choice."""
@@ -433,7 +433,7 @@ class TestFieldValidation:
         field.data = invalid_obj
 
         with pytest.raises(ValidationError, match="Not a valid choice"):
-            field.pre_validate(None)  # type: ignore
+            field.pre_validate(None)
 
     def test_query_select_multiple_field_valid_data(self):
         """Test QuerySelectMultipleField validation with valid data."""

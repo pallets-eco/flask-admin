@@ -205,7 +205,7 @@ class TestComputedFieldConversion:
 
         assert isinstance(result, type(StringField()))
         # Check that readonly attribute is set
-        assert kwargs["render_kw"]["readonly"] is True  # type: ignore
+        assert kwargs["render_kw"]["readonly"] is True
 
 
 class TestAssociationProxyErrorHandling:

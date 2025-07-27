@@ -55,9 +55,9 @@ def test_mixin_graceful_degradation_import_error():
 
         # Should return None when sqlalchemy-utils is not available
         result = mixin.handle_extended_types(TestModel, mock_column, field_args)
-        assert result is None, (
-            "Mixin should return None when sqlalchemy-utils is not available"
-        )
+        assert (
+            result is None
+        ), "Mixin should return None when sqlalchemy-utils is not available"
 
 
 def test_converter_continues_working_without_sqlalchemy_utils():
@@ -92,7 +92,7 @@ def test_form_creation_works_without_sqlalchemy_utils(app):
     """Test that form creation works normally when sqlalchemy-utils is not available."""
 
     class TestModel(SQLModel, table=True):
-        __tablename__ = "test_graceful_degradation" # type: ignore
+        __tablename__ = "test_graceful_degradation"
 
         id: int = Field(primary_key=True)
         name: str = Field()
@@ -119,9 +119,9 @@ def test_form_creation_works_without_sqlalchemy_utils(app):
             assert "description" in form._fields
 
             # Fields should be regular StringFields (not extended types)
-            assert isinstance(form.name, fields.StringField) # type: ignore
-            assert isinstance(form.email, fields.StringField) # type: ignore
-            assert isinstance(form.description, fields.StringField) # type: ignore
+            assert isinstance(form.name, fields.StringField)
+            assert isinstance(form.email, fields.StringField)
+            assert isinstance(form.description, fields.StringField)
 
 
 def test_no_exception_on_mixin_initialization():

@@ -7,7 +7,7 @@ and compatibility helpers for bridging SQLModel and SQLAlchemy.
 """
 
 import types
-import typing
+import typing as t
 from dataclasses import dataclass
 from typing import Any
 from typing import get_args
@@ -25,17 +25,15 @@ from sqlalchemy.orm.clsregistry import _class_resolver
 
 try:
     # SQLAlchemy 2.0
-    from sqlalchemy.ext.associationproxy import (  # type: ignore[attr-defined]
-        AssociationProxyExtensionType,
-    )
+    from sqlalchemy.ext.associationproxy import AssociationProxyExtensionType
 
     ASSOCIATION_PROXY = AssociationProxyExtensionType.ASSOCIATION_PROXY
 except ImportError:
-    from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY  # type: ignore
+    from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
 
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
-from sqlalchemy.sql.operators import eq  # type: ignore[attr-defined]
+from sqlalchemy.sql.operators import eq
 
 from flask_admin._compat import filter_list
 from flask_admin._compat import string_types
@@ -251,7 +249,7 @@ def is_pydantic_constrained_type(type_annotation: Any) -> bool:
 
     # Pydantic v2 constrained types are typing.Annotated types
     origin = get_origin(type_annotation)
-    if origin is not typing.Annotated:
+    if origin is not t.Annotated:
         return False
 
     args = get_args(type_annotation)
@@ -357,7 +355,7 @@ def _get_sqlmodel_property_info(model: Any, name: str) -> dict[str, Any]:
         info["is_computed"] = True
         computed_info = attr.__pydantic_computed_field__
 
-        if isinstance(computed_info, ComputedFieldInfo):  # type: ignore
+        if isinstance(computed_info, ComputedFieldInfo):
             info["type_"] = computed_info.return_type
             info["description"] = computed_info.description
 
@@ -576,13 +574,13 @@ def is_sqlmodel_class(model: Any) -> bool:
     """Check if a model is a SQLModel class."""
     if not SQLMODEL_AVAILABLE:
         return False
-    return isinstance(model, type) and issubclass(model, SQLModel)  # type: ignore
+    return isinstance(model, type) and issubclass(model, SQLModel)
 
 
 def get_primary_key(model: Any) -> Union[str, tuple[str, ...], None]:
     """
     Return primary key name from a model. If the primary key consists of multiple
-    columns, return the corresponding tuple.
+    columns, return the corresponding ``tuple``.
 
     Works with both SQLModel and SQLAlchemy models.
 
@@ -777,11 +775,11 @@ def convert_pk_from_url(model: Any, pk_value: Any) -> Any:
 
 def tuple_operator_in(model_pk: list[Any], ids: list[tuple[Any, ...]]) -> Optional[Any]:
     """
-    The tuple_ Operator only works on certain engines like MySQL or Postgresql. It
+    The ``tuple_`` Operator only works on certain engines like MySQL or Postgresql. It
     does not work with sqlite.
 
-    The function returns an or_ - operator, that contains and_ - operators for every
-    single tuple in ids.
+    The function returns an ``or_`` - operator, that contains ``and_`` - operators for every
+    single ``tuple`` in ``ids``.
 
     Example::
 
@@ -792,7 +790,7 @@ def tuple_operator_in(model_pk: list[Any], ids: list[tuple[Any, ...]]) -> Option
       ->
       or_( and_( ColumnA == 1, ColumnB == 2), and_( ColumnA == 1, ColumnB == 3) )
 
-    The returning operator can be used within a filter(), as it is just an or_ operator
+    The returning operator can be used within a ``filter()``, as it is just an ``or_`` operator
     """
     ands = []
     for id_tuple in ids:
@@ -827,11 +825,11 @@ def get_query_for_ids(modelquery, model: Any, ids: list[Any]):
         if isinstance(pk_names, tuple):
             model_pk = [getattr(model, name) for name in pk_names]
         else:
-            model_pk = [getattr(model, pk_names)]  # type: ignore
+            model_pk = [getattr(model, pk_names)]
 
         try:
             query = modelquery.filter(tuple_(*model_pk).in_(converted_ids))
-            # Only the execution of the query will tell us, if the tuple_
+            # Only the execution of the query will tell us, if the ``tuple_``
             # operator really works
             query.all()
         except DBAPIError:
@@ -840,11 +838,11 @@ def get_query_for_ids(modelquery, model: Any, ids: list[Any]):
         # Convert single primary key values to proper types
         pk_name = get_primary_key(model)
         pk_types = get_primary_key_types(model)
-        pk_type = pk_types.get(pk_name, str) if pk_name else str # type: ignore
+        pk_type = pk_types.get(pk_name, str) if pk_name else str
 
         converted_ids = [convert_pk_value(id_val, pk_type) for id_val in ids]
 
-        model_pk = getattr(model, pk_name)  # type: ignore
+        model_pk = getattr(model, pk_name)
         query = modelquery.filter(model_pk.in_(converted_ids))
 
     return query
@@ -1372,7 +1370,7 @@ def get_field_python_type(field: ModelField) -> Any:
     Get the Python type for a field, handling Optional, Union, and special Pydantic types.
 
     :param field: ModelField instance
-    :return: Python type or tuple of types for Union
+    :return: Python type or ``tuple`` of types for Union
     """  # noqa: E501
     if field.type_ is None:
         return str  # Default fallback
@@ -1431,7 +1429,7 @@ def validate_field_type(value: Any, field: ModelField) -> tuple[bool, str]:
 
     :param value: Value to validate
     :param field: ModelField instance
-    :return: Tuple of (is_valid, error_message)
+    :return: ``Tuple`` of (is_valid, error_message)
     """
     if value is None:
         if field.required:

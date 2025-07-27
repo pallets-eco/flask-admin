@@ -3,7 +3,9 @@ Useful form fields for use with SQLModel ORM.
 """
 
 import operator
+import typing as t
 
+from wtforms import form
 from wtforms.fields import SelectFieldBase
 from wtforms.fields import StringField
 from wtforms.utils import unset_value
@@ -20,6 +22,8 @@ from flask_admin.form import Select2Widget
 from flask_admin.model.fields import InlineFieldList
 from flask_admin.model.fields import InlineModelFormField
 
+from ..._types import T_ITER_CHOICES
+from ..._types import T_VALIDATOR
 from .tools import get_primary_key
 from .widgets import CheckboxListInput
 
@@ -59,15 +63,15 @@ class QuerySelectField(SelectFieldBase):
 
     def __init__(
         self,
-        label=None,
-        validators=None,
-        query_factory=None,
-        get_pk=None,
-        get_label=None,
-        allow_blank=False,
-        blank_text="",
-        **kwargs,
-    ):
+        label: t.Optional[str] = None,
+        validators: t.Optional[list[T_VALIDATOR]] = None,
+        query_factory: t.Optional[t.Callable[[], t.Any]] = None,
+        get_pk: t.Optional[t.Callable[[t.Any], t.Any]] = None,
+        get_label: t.Optional[t.Union[str, t.Callable[[t.Any], str]]] = None,
+        allow_blank: bool = False,
+        blank_text: str = "",
+        **kwargs: t.Any,
+    ) -> None:
         super().__init__(label, validators, **kwargs)
         self.query_factory = query_factory
 
@@ -88,7 +92,7 @@ class QuerySelectField(SelectFieldBase):
         self.query = None
         self._object_list = None
 
-    def _get_data(self):
+    def _get_data(self) -> t.Any:
         if self._formdata is not None:
             for pk, obj in self._get_object_list():
                 if pk == self._formdata:
@@ -96,15 +100,15 @@ class QuerySelectField(SelectFieldBase):
                     break
         return self._data
 
-    def _set_data(self, data):
+    def _set_data(self, data: t.Any) -> None:
         self._data = data
         self._formdata = None
 
     data = property(_get_data, _set_data)
 
-    def _get_object_list(self):
+    def _get_object_list(self) -> list[tuple[t.Any, t.Any]]:
         if self._object_list is None:
-            query = self.query or self.query_factory()  # type: ignore
+            query = self.query or self.query_factory()
             get_pk = self.get_pk
             # Extract actual SQLModel instances from Row objects if needed
             processed_objects = []
@@ -120,7 +124,7 @@ class QuerySelectField(SelectFieldBase):
             self._object_list = processed_objects
         return self._object_list
 
-    def iter_choices(self):
+    def iter_choices(self) -> t.Iterator[T_ITER_CHOICES]:
         if self.allow_blank:
             yield _iter_choices_wtforms_compat(
                 "__None", self.blank_text, self.data is None
@@ -131,7 +135,7 @@ class QuerySelectField(SelectFieldBase):
                 pk, self.get_label(obj), obj == self.data
             )
 
-    def process_formdata(self, valuelist):
+    def process_formdata(self, valuelist: list[str]) -> None:
         if valuelist:
             if self.allow_blank and valuelist[0] == "__None":
                 self.data = None
@@ -139,7 +143,7 @@ class QuerySelectField(SelectFieldBase):
                 self._data = None
                 self._formdata = valuelist[0]
 
-    def pre_validate(self, form):
+    def pre_validate(self, form: form.BaseForm) -> None:
         if not self.allow_blank or self.data is not None:
             for _pk, obj in self._get_object_list():
                 if self.data == obj:
@@ -228,7 +232,7 @@ class CheckboxListField(QuerySelectMultipleField):
             }
     """
 
-    widget = CheckboxListInput()  # type: ignore[assignment]
+    widget = CheckboxListInput()
 
 
 class HstoreForm(BaseForm):
@@ -266,9 +270,9 @@ class InlineHstoreList(InlineFieldList):
         for form_field in self.entries:
             if not self.should_delete(form_field):
                 fake_obj = _fake()
-                fake_obj.data = KeyValue()  # type: ignore
+                fake_obj.data = KeyValue()
                 form_field.populate_obj(fake_obj, "data")
-                output[fake_obj.data.key] = fake_obj.data.value  # type: ignore
+                output[fake_obj.data.key] = fake_obj.data.value
 
         setattr(obj, name, output)
 
@@ -426,7 +430,7 @@ def get_pk_from_identity(obj):
             return ":".join(text_type(x) for x in key_values)
         else:
             # Single primary key
-            return text_type(getattr(obj, pk_names))  # type: ignore
+            return text_type(getattr(obj, pk_names))
 
     # Fallback for other objects - try to get id attribute
     return text_type(getattr(obj, "id", obj))

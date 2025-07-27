@@ -31,7 +31,7 @@ class SampleEnum(Enum):
 class TypFmtTestModel(SQLModel, table=True):
     """Test model for typefmt coverage tests."""
 
-    __tablename__ = "typefmt_test_model" # type: ignore
+    __tablename__ = "typefmt_test_model"
     id: int = Field(primary_key=True)
     name: str
     status: Optional[SampleEnum] = None
@@ -165,7 +165,7 @@ class TestListFormatterInherited:
         formatter = DEFAULT_FORMATTERS.get(list)
 
         mock_view = Mock()
-        result = formatter(mock_view, [], "test_field") # type: ignore
+        result = formatter(mock_view, [], "test_field")
         # Empty list should return empty string
         assert result == ""
 
@@ -175,7 +175,7 @@ class TestListFormatterInherited:
 
         mock_view = Mock()
         enum_list = [SampleEnum.VALUE1, SampleEnum.VALUE2]
-        result = formatter(mock_view, enum_list, "test_field") # type: ignore
+        result = formatter(mock_view, enum_list, "test_field")
 
         # Should contain string representations of enums
         assert "SampleEnum.VALUE1" in result or "VALUE1" in result

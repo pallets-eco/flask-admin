@@ -216,7 +216,7 @@ class TestSQLAlchemyUtilsConverters:
         field_args = {"validators": []}
 
         # Test the email converter method directly
-        result = mixin._convert_email_type(mock_column, field_args) # type: ignore
+        result = mixin._convert_email_type(mock_column, field_args)
         assert isinstance(result, type(StringField()))
 
     def test_url_converter_via_mixin(self):
@@ -227,7 +227,7 @@ class TestSQLAlchemyUtilsConverters:
         field_args = {"validators": []}
 
         # Test the URL converter method directly
-        result = mixin._convert_url_type(field_args) # type: ignore
+        result = mixin._convert_url_type(field_args)
         assert isinstance(result, type(StringField()))
         assert len(field_args["filters"]) > 0
 
@@ -239,7 +239,7 @@ class TestSQLAlchemyUtilsConverters:
         field_args = {"validators": []}
 
         # Test the color converter method directly
-        result = mixin._convert_color_type(field_args) # type: ignore
+        result = mixin._convert_color_type(field_args)
         assert isinstance(result, type(StringField()))
         assert len(field_args["validators"]) > 0
         assert len(field_args["filters"]) > 0

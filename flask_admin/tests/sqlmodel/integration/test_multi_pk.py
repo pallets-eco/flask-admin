@@ -8,7 +8,6 @@ from sqlmodel import Field
 from sqlmodel import Session
 
 from flask_admin.contrib.sqlmodel import SQLModelView
-
 from flask_admin.tests.sqlmodel import CustomModelView
 from flask_admin.tests.sqlmodel import sqlmodel_base
 
@@ -98,11 +97,13 @@ def test_multiple_pk(app, engine, admin):
 #         SQLModel.metadata.create_all(engine)
 #         # Use SQLAlchemy ORM session for Flask-Admin
 #         orm_session = sessionmaker(bind=engine)()
-#         admin.add_view(CustomModelView(Child, orm_session, form_columns=["id", "test", "name"]))
+#         admin.add_view(CustomModelView(Child, orm_session,
+#         form_columns=["id", "test", "name"]))
 #         client = app.test_client()
 
 #         # Test creating new child record
-#         rv = client.post("/admin/child/new/", data={"id": 1, "test": "foo", "name": "bar"})
+#         rv = client.post("/admin/child/new/",
+#         data={"id": 1, "test": "foo", "name": "bar"})
 #         assert rv.status_code == 302
 
 #         # Test editing child record

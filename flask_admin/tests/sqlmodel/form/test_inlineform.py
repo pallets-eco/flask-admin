@@ -14,7 +14,6 @@ from wtforms import fields
 from flask_admin import form
 from flask_admin.contrib.sqlmodel import validators
 from flask_admin.contrib.sqlmodel.fields import InlineModelFormList
-
 from flask_admin.tests.sqlmodel import CustomModelView
 from flask_admin.tests.sqlmodel import sqlmodel_base
 
@@ -26,7 +25,7 @@ sqlmodel_class = sqlmodel_base()
 
 
 class UserInfo(sqlmodel_class, table=True):
-    __tablename__ = "user_info"  # type: ignore[misc]
+    __tablename__ = "user_info"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     key: str = Field(index=True)  # Remove sa_column for basic string fields
@@ -40,7 +39,7 @@ class UserInfo(sqlmodel_class, table=True):
 
 
 class UserEmail(sqlmodel_class, table=True):
-    __tablename__ = "user_email"  # type: ignore[misc]
+    __tablename__ = "user_email"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     email: str = Field(unique=True, index=True)  # Use Field's unique parameter
@@ -52,7 +51,7 @@ class UserEmail(sqlmodel_class, table=True):
 
 
 class User(sqlmodel_class, table=True):
-    __tablename__ = "user"  # type: ignore[misc]
+    __tablename__ = "user"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     name: Optional[str] = Field(default=None, unique=True, index=True)
@@ -75,7 +74,7 @@ class User(sqlmodel_class, table=True):
 
 # Tree model with self-referential relationship
 class Tree(sqlmodel_class, table=True):
-    __tablename__ = "tree"  # type: ignore[misc]
+    __tablename__ = "tree"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     parent_id: Optional[int] = Field(default=None, foreign_key="tree.id")
@@ -89,7 +88,7 @@ class Tree(sqlmodel_class, table=True):
 
 # If you have a Tag model, here's a suggested structure:
 class Tag(sqlmodel_class, table=True):
-    __tablename__ = "tag"  # type: ignore[misc]
+    __tablename__ = "tag"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(unique=True, index=True)
@@ -125,8 +124,8 @@ def test_inline_form(app, admin, engine):
             print()
             print("Type", type(view._create_form_class))
             print(dir(view._create_form_class))
-            assert view._create_form_class.name.field_class == fields.StringField  # type: ignore
-            assert view._create_form_class.info.field_class == InlineModelFormList  # type: ignore
+            assert view._create_form_class.name.field_class == fields.StringField
+            assert view._create_form_class.info.field_class == InlineModelFormList
 
             rv = client.get("/admin/user/")
             assert rv.status_code == 200
@@ -136,14 +135,14 @@ def test_inline_form(app, admin, engine):
             # Create
             rv = client.post("/admin/user/new/", data=dict(name="äõüxyz"))
             assert rv.status_code == 302
-            assert db_session.exec(select(func.count(User.id))).one() == 1  # type: ignore
-            assert db_session.exec(select(func.count(UserInfo.id))).one() == 0  # type: ignore
+            assert db_session.exec(select(func.count(User.id))).one() == 1
+            assert db_session.exec(select(func.count(UserInfo.id))).one() == 0
 
             data = {"name": "fbar", "info-0-key": "foo", "info-0-val": "bar"}
             rv = client.post("/admin/user/new/", data=data)
             assert rv.status_code == 302
-            assert db_session.exec(select(func.count(User.id))).one() == 2  # type: ignore
-            assert db_session.exec(select(func.count(UserInfo.id))).one() == 1  # type: ignore
+            assert db_session.exec(select(func.count(User.id))).one() == 2
+            assert db_session.exec(select(func.count(UserInfo.id))).one() == 1
 
             # Edit
             rv = client.get("/admin/user/edit/?id=2")
@@ -158,7 +157,7 @@ def test_inline_form(app, admin, engine):
             }
             rv = client.post("/admin/user/edit/?id=2", data=data)
             assert rv.status_code == 302
-            assert db_session.exec(select(func.count(UserInfo.id))).one() == 1  # type: ignore
+            assert db_session.exec(select(func.count(UserInfo.id))).one() == 1
             user_info = db_session.exec(select(UserInfo)).one()
             assert user_info.key == "xxx"
 
@@ -175,19 +174,19 @@ def test_inline_form(app, admin, engine):
             rv = client.post("/admin/user/edit/?id=2", data=data)
             assert rv.status_code == 302
             db_session.commit()
-            assert db_session.exec(select(func.count(User.id))).one() == 2  # type: ignore
-            assert db_session.get(User, 2).name == "barf"  # type: ignore
-            assert db_session.exec(select(func.count(UserInfo.id))).one() == 1  # type: ignore
+            assert db_session.exec(select(func.count(User.id))).one() == 2
+            assert db_session.get(User, 2).name == "barf"
+            assert db_session.exec(select(func.count(UserInfo.id))).one() == 1
             assert db_session.exec(select(UserInfo)).one().key == "bar"
 
             # Delete
             rv = client.post("/admin/user/delete/?id=2")
             assert rv.status_code == 302
-            assert db_session.exec(select(func.count(User.id))).one() == 1  # type: ignore
+            assert db_session.exec(select(func.count(User.id))).one() == 1
             rv = client.post("/admin/user/delete/?id=1")
             assert rv.status_code == 302
-            assert db_session.exec(select(func.count(User.id))).one() == 0  # type: ignore
-            assert db_session.exec(select(func.count(UserInfo.id))).one() == 0  # type: ignore
+            assert db_session.exec(select(func.count(User.id))).one() == 0
+            assert db_session.exec(select(func.count(UserInfo.id))).one() == 0
 
 
 def test_inline_form_required(app, admin, engine):
@@ -211,13 +210,13 @@ def test_inline_form_required(app, admin, engine):
             # Create
             rv = client.post("/admin/user/new/", data=dict(name="no-email"))
             assert rv.status_code == 200  # Should now return OK with validation error
-            assert db_session.exec(select(func.count(User.id))).one() == 0  # type: ignore
+            assert db_session.exec(select(func.count(User.id))).one() == 0
 
             data = {"name": "hasEmail", "emails-0-email": "foo@bar.com"}
             rv = client.post("/admin/user/new/", data=data)
             assert rv.status_code == 302
-            assert db_session.exec(select(func.count(User.id))).one() == 1  # type: ignore
-            assert db_session.exec(select(func.count(UserEmail.id))).one() == 1  # type: ignore
+            assert db_session.exec(select(func.count(User.id))).one() == 1
+            assert db_session.exec(select(func.count(UserEmail.id))).one() == 1
 
             # Attempted delete, prevented by ItemsRequired
             data = {
@@ -228,8 +227,8 @@ def test_inline_form_required(app, admin, engine):
             }
             rv = client.post("/admin/user/edit/?id=1", data=data)
             assert rv.status_code == 200
-            assert db_session.exec(select(func.count(User.id))).one() == 1  # type: ignore
-            assert db_session.exec(select(func.count(UserEmail.id))).one() == 1  # type: ignore
+            assert db_session.exec(select(func.count(User.id))).one() == 1
+            assert db_session.exec(select(func.count(UserEmail.id))).one() == 1
 
 
 def test_inline_form_ajax_fk(app, admin, engine):
@@ -247,7 +246,7 @@ def test_inline_form_ajax_fk(app, admin, engine):
             admin.add_view(view)
 
             form = view.create_form()
-            user_info_form = form.info.unbound_field.args[0]  # type: ignore
+            user_info_form = form.info.unbound_field.args[0]
             loader = user_info_form.tag.args[0]
             assert loader.name == "userinfo-tag"
             assert loader.model == Tag
@@ -275,7 +274,7 @@ def test_inline_form_self(app, admin, engine):
             db_session.refresh(child)
 
             form = view.edit_form(obj=child)
-            assert form.parent.data == parent  # type: ignore
+            assert form.parent.data == parent
 
 
 # There are some issues with SQLModel registry and pytest fixtures
@@ -285,7 +284,7 @@ def test_inline_form_base_class(app, admin, engine):
         sqlmodel_class = sqlmodel_base()
 
         class User1(sqlmodel_class, table=True):
-            __tablename__ = "user1"  # type: ignore
+            __tablename__ = "user1"
             id: Optional[int] = Field(default=None, primary_key=True)
             name: Optional[str] = Field(
                 default=None, sa_column=Column(String, unique=True)
@@ -298,7 +297,7 @@ def test_inline_form_base_class(app, admin, engine):
                 self.name = name
 
         class UserEmail1(sqlmodel_class, table=True):
-            __tablename__ = "user_email1"  # type: ignore
+            __tablename__ = "user_email1"
             id: Optional[int] = Field(default=None, primary_key=True)
             email: str = Field(sa_column=Column(String, unique=True))
             verified_at: Optional[datetime] = Field(
@@ -365,5 +364,5 @@ def test_inline_form_base_class(app, admin, engine):
         assert rv.status_code == 200  # Should now return OK with validation error
 
         with Session(engine) as db_session:
-            assert db_session.exec(select(func.count(User1.id))).one() == 0  # type: ignore
+            assert db_session.exec(select(func.count(User1.id))).one() == 0
             assert b"success!" in rv.data, rv.data

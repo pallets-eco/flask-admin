@@ -38,7 +38,8 @@ def test_babel_translations_exist(request: pytest.FixtureRequest, app: Flask):
             # If any translation actually changed, Babel is working
             if translated != test_string:
                 print(
-                    f"DEBUG: Found working translation: '{test_string}' -> '{translated}'"
+                    "DEBUG: Found working translation: "
+                    + f"'{test_string}' -> '{translated}'"
                 )
                 break
         else:

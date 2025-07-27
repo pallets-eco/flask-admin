@@ -9,14 +9,14 @@ This file specifically targets missing coverage areas identified in coverage rep
 """
 
 from typing import Optional
-from unittest.mock import patch
-import pytest
 
+import pytest
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import Text
+
 try:
     from sqlalchemy.orm import declarative_base
 except ImportError:
@@ -24,16 +24,16 @@ except ImportError:
 from sqlalchemy.sql import func
 from sqlmodel import Field
 from sqlmodel import SQLModel
+
 try:
     from pydantic import computed_field
 except ImportError:
     # Fallback for older pydantic versions
     computed_field = None
 
-from flask_admin.contrib.sqlmodel.tools import get_model_fields
-from flask_admin.contrib.sqlmodel.tools import is_sqlmodel_property
-from flask_admin.contrib.sqlmodel.tools import ModelField
 from flask_admin.contrib.sqlmodel.tools import _get_sqlmodel_property_info
+from flask_admin.contrib.sqlmodel.tools import get_model_fields
+from flask_admin.contrib.sqlmodel.tools import ModelField
 
 
 class TestImportFallbacks:
@@ -43,28 +43,31 @@ class TestImportFallbacks:
         """Test that ASSOCIATION_PROXY constant is available."""
         # This test verifies lines 32-33 import fallback worked correctly
         from flask_admin.contrib.sqlmodel.tools import ASSOCIATION_PROXY
-        
+
         assert ASSOCIATION_PROXY is not None
         # ASSOCIATION_PROXY can be either enum or string depending on SQLAlchemy version
-        assert hasattr(ASSOCIATION_PROXY, '__str__') or isinstance(ASSOCIATION_PROXY, str)
+        assert hasattr(ASSOCIATION_PROXY, "__str__") or isinstance(
+            ASSOCIATION_PROXY, str
+        )
 
     def test_sqlmodel_availability_check(self):
         """Test SQLModel availability detection."""
         # This test verifies lines 51-56 work correctly
         from flask_admin.contrib.sqlmodel.tools import SQLMODEL_AVAILABLE
-        
+
         # In our test environment, SQLModel should be available
         assert SQLMODEL_AVAILABLE is True
-        
+
         # Verify the imported components are available
         from flask_admin.contrib.sqlmodel.tools import SQLModel
+
         assert SQLModel is not None
 
     def test_pydantic_types_availability_check(self):
         """Test that Pydantic types availability is detected."""
         # This test verifies lines around 58-69
         from flask_admin.contrib.sqlmodel.tools import PYDANTIC_TYPES_AVAILABLE
-        
+
         # Should be True in our test environment
         assert isinstance(PYDANTIC_TYPES_AVAILABLE, bool)
 

@@ -238,7 +238,7 @@ class TestSQLAlchemyUtilsIntegration:
         mock_column.nullable = True
         field_args = {"validators": []}
 
-        result = mixin._convert_email_type(mock_column, field_args) # type: ignore
+        result = mixin._convert_email_type(mock_column, field_args)
 
         assert result is not None
         # Should handle nullable logic (if _nullable_common is available)
@@ -426,7 +426,7 @@ class TestMixinEdgeCases:
         mock_column.nullable = False
         field_args = {"validators": []}
 
-        result = mixin._convert_choice_type(mock_column, field_args) # type: ignore
+        result = mixin._convert_choice_type(mock_column, field_args)
         assert result is not None  # Should still return a field
 
     def test_choice_type_with_missing_python_type(self):
@@ -452,7 +452,7 @@ class TestMixinEdgeCases:
         mock_column.type = MockTypeWithoutPythonType()
 
         # Should handle missing python_type gracefully
-        result = mixin._convert_choice_type(mock_column, field_args) # type: ignore
+        result = mixin._convert_choice_type(mock_column, field_args)
         assert result is not None
         # Should fallback to str coercion
         assert field_args["coerce"] is str

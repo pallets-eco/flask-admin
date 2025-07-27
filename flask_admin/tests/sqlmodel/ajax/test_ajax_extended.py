@@ -504,8 +504,8 @@ class TestIntegrationScenarios:
 
             result = loader.format(user)
 
-            assert result[0] == 42  # type: ignore
-            assert "Custom User" in str(result[1])  # type: ignore
+            assert result[0] == 42
+            assert "Custom User" in str(result[1])
 
     def test_get_list_with_empty_search(self):
         """Test get_list with empty search term."""

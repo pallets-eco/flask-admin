@@ -38,20 +38,20 @@ Properties with both getter and setter are automatically supported for display a
 .. code-block:: python
 
     from sqlmodel import SQLModel, Field
-    
+
     class User(SQLModel, table=True):
         first_name: str
         last_name: str
-        
+
         @property
         def full_name(self) -> str:
             return f"{self.first_name} {self.last_name}"
-            
+
         @full_name.setter
         def full_name(self, value: str):
             # Setter required for Flask-Admin detection
             pass
-    
+
     class UserAdmin(SQLModelView):
         column_list = ['first_name', 'last_name', 'full_name']
         column_filters = ['full_name']

@@ -6,6 +6,7 @@ particularly around primary keys, relationships, computed fields,
 queries, and edge cases.
 """
 
+from typing import Any
 from typing import Optional
 from unittest.mock import Mock
 from unittest.mock import patch
@@ -14,6 +15,8 @@ import pytest
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.sql.schema import Table
 from sqlmodel import Field
 from sqlmodel import SQLModel
 
@@ -107,7 +110,7 @@ class SQLAlchemyModel:
 class TestPrimaryKeyFunctions:
     """Test primary key related functions."""
 
-    def test_get_primary_key_single_pk_sqlmodel(self):
+    def test_get_primary_key_single_pk_sqlmodel(self) -> None:
         """Test get_primary_key with single PK SQLModel."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
@@ -115,7 +118,7 @@ class TestPrimaryKeyFunctions:
         pk = get_primary_key(BasicSQLModel)
         assert pk == "id"
 
-    def test_get_primary_key_multi_pk_sqlmodel(self):
+    def test_get_primary_key_multi_pk_sqlmodel(self) -> None:
         """Test get_primary_key with multiple PK SQLModel."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
@@ -123,11 +126,11 @@ class TestPrimaryKeyFunctions:
         pk = get_primary_key(MultiPKSQLModel)
         assert pk == ("id1", "id2")
 
-    def test_get_primary_key_sqlalchemy_model(self):
+    def test_get_primary_key_sqlalchemy_model(self) -> None:
         """Test get_primary_key with SQLAlchemy model."""
         # Mock SQLAlchemy model with _sa_class_manager
-        mock_model = Mock()
-        mock_mapper = Mock()
+        mock_model: Mock = Mock()
+        mock_mapper: Mock = Mock()
         mock_prop = Mock()
         mock_prop.key = "id"
         mock_column = Mock()
@@ -138,7 +141,7 @@ class TestPrimaryKeyFunctions:
         pk = get_primary_key(mock_model)
         assert pk == "id"
 
-    def test_get_primary_key_with_inspection(self):
+    def test_get_primary_key_with_inspection(self) -> None:
         """Test get_primary_key using SQLAlchemy inspection."""
         with patch("flask_admin.contrib.sqlmodel.tools.inspect") as mock_inspect:
             mock_mapper = Mock()
@@ -156,7 +159,7 @@ class TestPrimaryKeyFunctions:
             pk = get_primary_key(mock_model)
             assert pk == "test_id"
 
-    def test_get_primary_key_no_pk(self):
+    def test_get_primary_key_no_pk(self) -> None:
         """Test get_primary_key with no primary key."""
         mock_model = Mock()
         mock_mapper = Mock()
@@ -166,7 +169,7 @@ class TestPrimaryKeyFunctions:
         pk = get_primary_key(mock_model)
         assert pk is None
 
-    def test_has_multiple_pks_sqlmodel_single(self):
+    def test_has_multiple_pks_sqlmodel_single(self) -> None:
         """Test has_multiple_pks with single PK SQLModel."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
@@ -174,7 +177,7 @@ class TestPrimaryKeyFunctions:
         result = has_multiple_pks(BasicSQLModel)
         assert result is False
 
-    def test_has_multiple_pks_sqlmodel_multi(self):
+    def test_has_multiple_pks_sqlmodel_multi(self) -> None:
         """Test has_multiple_pks with multiple PK SQLModel."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
@@ -182,7 +185,7 @@ class TestPrimaryKeyFunctions:
         result = has_multiple_pks(MultiPKSQLModel)
         assert result is True
 
-    def test_has_multiple_pks_sqlalchemy_model(self):
+    def test_has_multiple_pks_sqlalchemy_model(self) -> None:
         """Test has_multiple_pks with SQLAlchemy model."""
         mock_model = Mock()
         mock_mapper = Mock()
@@ -192,7 +195,7 @@ class TestPrimaryKeyFunctions:
         result = has_multiple_pks(mock_model)
         assert result is True
 
-    def test_has_multiple_pks_with_inspection(self):
+    def test_has_multiple_pks_with_inspection(self) -> None:
         """Test has_multiple_pks using SQLAlchemy inspection."""
         with patch("flask_admin.contrib.sqlmodel.tools.inspect") as mock_inspect:
             mock_mapper = Mock()
@@ -209,75 +212,75 @@ class TestPrimaryKeyFunctions:
 class TestModelTableFunctions:
     """Test model table related functions."""
 
-    def test_get_model_table_sqlmodel_with_table(self):
+    def test_get_model_table_sqlmodel_with_table(self) -> None:
         """Test get_model_table with SQLModel table=True."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
 
-        table = get_model_table(BasicSQLModel)
+        table: Optional[Table] = get_model_table(BasicSQLModel)
         assert table is not None
         assert hasattr(table, "columns")
 
-    def test_get_model_table_sqlmodel_without_table(self):
+    def test_get_model_table_sqlmodel_without_table(self) -> None:
         """Test get_model_table with SQLModel without table."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
 
-        table = get_model_table(NonTableSQLModel)
+        table: Optional[Table] = get_model_table(NonTableSQLModel)
         assert table is None
 
-    def test_get_model_table_sqlalchemy_model(self):
+    def test_get_model_table_sqlalchemy_model(self) -> None:
         """Test get_model_table with SQLAlchemy model."""
-        mock_model = Mock()
-        mock_table = Mock()
+        mock_model: Mock = Mock()
+        mock_table: Mock = Mock()
         mock_model.__table__ = mock_table
 
-        table = get_model_table(mock_model)
+        table: Optional[Table] = get_model_table(mock_model)
         assert table == mock_table
 
-    def test_get_model_table_no_table_attr(self):
+    def test_get_model_table_no_table_attr(self) -> None:
         """Test get_model_table with no __table__ attribute."""
-        mock_model = Mock()
+        mock_model: Mock = Mock()
         del mock_model.__table__
 
-        table = get_model_table(mock_model)
+        table: Optional[Any] = get_model_table(mock_model)
         assert table is None
 
-    def test_is_sqlmodel_table_model_true(self):
+    def test_is_sqlmodel_table_model_true(self) -> None:
         """Test is_sqlmodel_table_model with table model."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
 
-        result = is_sqlmodel_table_model(BasicSQLModel)
+        result: bool = is_sqlmodel_table_model(BasicSQLModel)
         assert result is True
 
-    def test_is_sqlmodel_table_model_false(self):
+    def test_is_sqlmodel_table_model_false(self) -> None:
         """Test is_sqlmodel_table_model with non-table model."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
 
-        result = is_sqlmodel_table_model(NonTableSQLModel)
+        result: bool = is_sqlmodel_table_model(NonTableSQLModel)
         assert result is False
 
-    def test_is_sqlmodel_table_alias(self):
+    def test_is_sqlmodel_table_alias(self) -> None:
         """Test is_sqlmodel_table alias function."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
 
-        result = is_sqlmodel_table(BasicSQLModel)
+        result: bool = is_sqlmodel_table(BasicSQLModel)
         assert result is True
 
-    def test_get_sqlmodel_column_names(self):
+    def test_get_sqlmodel_column_names(self) -> None:
         """Test get_sqlmodel_column_names."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
 
-        columns = get_sqlmodel_column_names(BasicSQLModel)
+        columns: list[str] = get_sqlmodel_column_names(BasicSQLModel)
         assert "id" in columns
         assert "name" in columns
         assert "email" in columns
 
-    def test_get_sqlmodel_column_names_non_table_error(self):
+    def test_get_sqlmodel_column_names_non_table_error(self) -> None:
         """Test get_sqlmodel_column_names with non-table model."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
@@ -285,52 +288,52 @@ class TestModelTableFunctions:
         with pytest.raises(TypeError, match="must be a SQLModel table"):
             get_sqlmodel_column_names(NonTableSQLModel)
 
-    def test_get_sqlmodel_field_names(self):
+    def test_get_sqlmodel_field_names(self) -> None:
         """Test get_sqlmodel_field_names."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
 
-        fields = get_sqlmodel_field_names(BasicSQLModel)
+        fields: list[str] = get_sqlmodel_field_names(BasicSQLModel)
         assert "id" in fields
         assert "name" in fields
         assert "email" in fields
 
-    def test_get_sqlmodel_field_names_non_sqlmodel_error(self):
+    def test_get_sqlmodel_field_names_non_sqlmodel_error(self) -> None:
         """Test get_sqlmodel_field_names with non-SQLModel."""
         with pytest.raises(TypeError, match="must be a SQLModel class"):
             get_sqlmodel_field_names(str)
 
-    def test_get_sqlmodel_fields(self):
+    def test_get_sqlmodel_fields(self) -> None:
         """Test get_sqlmodel_fields."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
 
-        fields = get_sqlmodel_fields(BasicSQLModel)
+        fields: dict[str, Any] = get_sqlmodel_fields(BasicSQLModel)
         assert "id" in fields
         assert "name" in fields
         assert "email" in fields
 
-    def test_get_sqlmodel_fields_non_sqlmodel_error(self):
+    def test_get_sqlmodel_fields_non_sqlmodel_error(self) -> None:
         """Test get_sqlmodel_fields with non-SQLModel."""
         with pytest.raises(TypeError, match="must be a SQLModel class"):
             get_sqlmodel_fields(str)
 
-    def test_get_sqlmodel_fields_no_sqlmodel_available(self):
+    def test_get_sqlmodel_fields_no_sqlmodel_available(self) -> None:
         """Test get_sqlmodel_fields when SQLModel not available."""
         with patch("flask_admin.contrib.sqlmodel.tools.SQLMODEL_AVAILABLE", False):
             with pytest.raises(ImportError, match="SQLModel is not available"):
                 get_sqlmodel_fields(BasicSQLModel)
 
-    def test_get_all_model_fields_sqlmodel(self):
+    def test_get_all_model_fields_sqlmodel(self) -> None:
         """Test get_all_model_fields with SQLModel."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
 
-        fields = get_all_model_fields(BasicSQLModel)
+        fields: dict[str, Any] = get_all_model_fields(BasicSQLModel)
         assert "id" in fields
         assert "name" in fields
 
-    def test_get_all_model_fields_sqlalchemy(self):
+    def test_get_all_model_fields_sqlalchemy(self) -> None:
         """Test get_all_model_fields with SQLAlchemy model."""
         with patch("flask_admin.contrib.sqlmodel.tools.inspect") as mock_inspect:
             mock_mapper = Mock()
@@ -341,7 +344,7 @@ class TestModelTableFunctions:
             mock_inspect.return_value = mock_mapper
 
             mock_model = Mock()
-            fields = get_all_model_fields(mock_model)
+            fields: dict[str, Any] = get_all_model_fields(mock_model)
 
             assert "test_field" in fields
             assert fields["test_field"] == mock_prop
@@ -350,34 +353,34 @@ class TestModelTableFunctions:
 class TestRelationshipFunctions:
     """Test relationship related functions."""
 
-    def test_is_relationship_true(self):
+    def test_is_relationship_true(self) -> None:
         """Test is_relationship with actual relationship."""
-        mock_attr = Mock()
+        mock_attr: Mock = Mock()
         mock_attr.property.direction = "ONETOMANY"
 
-        result = is_relationship(mock_attr)
+        result: bool = is_relationship(mock_attr)
         assert result is True
 
-    def test_is_relationship_false(self):
+    def test_is_relationship_false(self) -> None:
         """Test is_relationship with non-relationship."""
-        mock_attr = Mock()
+        mock_attr: Mock = Mock()
         del mock_attr.property
 
-        result = is_relationship(mock_attr)
+        result: bool = is_relationship(mock_attr)
         assert result is False
 
-    def test_is_association_proxy_true(self):
+    def test_is_association_proxy_true(self) -> None:
         """Test is_association_proxy with association proxy."""
         from flask_admin.contrib.sqlmodel.tools import ASSOCIATION_PROXY
 
         # Create a mock that doesn't have a parent attribute
-        mock_attr = Mock(spec_set=["extension_type"])
+        mock_attr: Mock = Mock(spec_set=["extension_type"])
         mock_attr.extension_type = ASSOCIATION_PROXY
 
-        result = is_association_proxy(mock_attr)
+        result: bool = is_association_proxy(mock_attr)
         assert result is True
 
-    def test_is_association_proxy_with_parent(self):
+    def test_is_association_proxy_with_parent(self) -> None:
         """Test is_association_proxy with parent attribute."""
         from flask_admin.contrib.sqlmodel.tools import ASSOCIATION_PROXY
 
@@ -387,19 +390,19 @@ class TestRelationshipFunctions:
         mock_attr.parent = mock_parent
         del mock_attr.extension_type
 
-        result = is_association_proxy(mock_attr)
+        result: bool = is_association_proxy(mock_attr)
         assert result is True
 
-    def test_is_association_proxy_false(self):
+    def test_is_association_proxy_false(self) -> None:
         """Test is_association_proxy with regular attribute."""
         mock_attr = Mock()
         del mock_attr.extension_type
         del mock_attr.parent
 
-        result = is_association_proxy(mock_attr)
+        result: bool = is_association_proxy(mock_attr)
         assert result is False
 
-    def test_need_join_sqlmodel_true(self):
+    def test_need_join_sqlmodel_true(self) -> None:
         """Test need_join with SQLModel requiring join."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
@@ -410,10 +413,10 @@ class TestRelationshipFunctions:
             mock_mapper.tables = [Mock()]  # Different table
             mock_inspect.return_value = mock_mapper
 
-            result = need_join(BasicSQLModel, mock_table)
+            result: bool = need_join(BasicSQLModel, mock_table)
             assert result is True
 
-    def test_need_join_sqlmodel_false(self):
+    def test_need_join_sqlmodel_false(self) -> None:
         """Test need_join with SQLModel not requiring join."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
@@ -424,10 +427,10 @@ class TestRelationshipFunctions:
             mock_mapper.tables = [mock_table]  # Same table
             mock_inspect.return_value = mock_mapper
 
-            result = need_join(BasicSQLModel, mock_table)
+            result: bool = need_join(BasicSQLModel, mock_table)
             assert result is False
 
-    def test_need_join_sqlalchemy_model(self):
+    def test_need_join_sqlalchemy_model(self) -> None:
         """Test need_join with SQLAlchemy model."""
         mock_model = Mock()
         mock_mapper = Mock()
@@ -435,10 +438,10 @@ class TestRelationshipFunctions:
         mock_mapper.tables = [mock_table]
         mock_model._sa_class_manager.mapper = mock_mapper
 
-        result = need_join(mock_model, mock_table)
+        result: bool = need_join(mock_model, mock_table)
         assert result is False
 
-    def test_need_join_with_inspection_fallback(self):
+    def test_need_join_with_inspection_fallback(self) -> None:
         """Test need_join using inspection fallback."""
         with patch("flask_admin.contrib.sqlmodel.tools.inspect") as mock_inspect:
             mock_mapper = Mock()
@@ -450,14 +453,14 @@ class TestRelationshipFunctions:
             del mock_model._sa_class_manager
             del mock_model.__table__
 
-            result = need_join(mock_model, mock_table)
+            result: bool = need_join(mock_model, mock_table)
             assert result is True
 
 
 class TestComputedFieldFunctions:
     """Test computed field and property functions."""
 
-    def test_get_computed_fields_sqlmodel(self):
+    def test_get_computed_fields_sqlmodel(self) -> None:
         """Test get_computed_fields with SQLModel."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
@@ -469,10 +472,10 @@ class TestComputedFieldFunctions:
         with patch(
             "flask_admin.contrib.sqlmodel.tools.is_sqlmodel_class", return_value=True
         ):
-            fields = get_computed_fields(mock_model)
+            fields: dict[str, Any] = get_computed_fields(mock_model)
             assert "test_field" in fields
 
-    def test_get_computed_fields_with_decorated_methods(self):
+    def test_get_computed_fields_with_decorated_methods(self) -> None:
         """Test get_computed_fields with @computed_field decorated methods."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
@@ -492,21 +495,21 @@ class TestComputedFieldFunctions:
             patch("builtins.dir", return_value=["test_computed_method"]),
             patch.object(mock_model, "test_computed_method", mock_method),
         ):
-            fields = get_computed_fields(mock_model)
+            fields: dict[str, Any] = get_computed_fields(mock_model)
             assert "test_computed_method" in fields
 
-    def test_get_computed_fields_non_sqlmodel_error(self):
+    def test_get_computed_fields_non_sqlmodel_error(self) -> None:
         """Test get_computed_fields with non-SQLModel."""
         with pytest.raises(TypeError, match="must be a SQLModel class"):
             get_computed_fields(str)
 
-    def test_get_sqlmodel_properties(self):
+    def test_get_sqlmodel_properties(self) -> None:
         """Test get_sqlmodel_properties."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
 
-        mock_model = Mock()
-        mock_property = property(lambda self: "test")
+        mock_model: Mock = Mock()
+        mock_property: property = property(lambda self: "test")
 
         with (
             patch(
@@ -516,15 +519,15 @@ class TestComputedFieldFunctions:
             patch("builtins.dir", return_value=["test_prop"]),
             patch.object(mock_model, "test_prop", mock_property),
         ):
-            props = get_sqlmodel_properties(mock_model)
+            props: dict[str, Any] = get_sqlmodel_properties(mock_model)
             assert "test_prop" in props
 
-    def test_get_sqlmodel_properties_non_sqlmodel_error(self):
+    def test_get_sqlmodel_properties_non_sqlmodel_error(self) -> None:
         """Test get_sqlmodel_properties with non-SQLModel."""
         with pytest.raises(TypeError, match="must be a SQLModel class"):
             get_sqlmodel_properties(str)
 
-    def test_is_computed_field_true(self):
+    def test_is_computed_field_true(self) -> None:
         """Test is_computed_field with computed field."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
@@ -541,10 +544,10 @@ class TestComputedFieldFunctions:
                 return_value={"test_field": Mock()},
             ),
         ):
-            result = is_computed_field(mock_model, "test_field")
+            result: bool = is_computed_field(mock_model, "test_field")
             assert result is True
 
-    def test_is_computed_field_false(self):
+    def test_is_computed_field_false(self) -> None:
         """Test is_computed_field with non-computed field."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
@@ -561,15 +564,15 @@ class TestComputedFieldFunctions:
                 return_value={},
             ),
         ):
-            result = is_computed_field(mock_model, "test_field")
+            result: bool = is_computed_field(mock_model, "test_field")
             assert result is False
 
-    def test_is_computed_field_non_sqlmodel(self):
+    def test_is_computed_field_non_sqlmodel(self) -> None:
         """Test is_computed_field with non-SQLModel."""
-        result = is_computed_field(str, "test_field")
+        result: bool = is_computed_field(str, "test_field")
         assert result is False
 
-    def test_is_sqlmodel_property_true(self):
+    def test_is_sqlmodel_property_true(self) -> None:
         """Test is_sqlmodel_property with property."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
@@ -586,10 +589,10 @@ class TestComputedFieldFunctions:
                 return_value={"test_prop": property(lambda self: "test")},
             ),
         ):
-            result = is_sqlmodel_property(mock_model, "test_prop")
+            result: bool = is_sqlmodel_property(mock_model, "test_prop")
             assert result is True
 
-    def test_is_sqlmodel_property_false(self):
+    def test_is_sqlmodel_property_false(self) -> None:
         """Test is_sqlmodel_property with non-property."""
         if not SQLMODEL_AVAILABLE:
             pytest.skip("SQLModel not available")
@@ -606,20 +609,20 @@ class TestComputedFieldFunctions:
                 return_value={},
             ),
         ):
-            result = is_sqlmodel_property(mock_model, "test_prop")
+            result: bool = is_sqlmodel_property(mock_model, "test_prop")
             assert result is False
 
-    def test_is_sqlmodel_property_non_sqlmodel(self):
+    def test_is_sqlmodel_property_non_sqlmodel(self) -> None:
         """Test is_sqlmodel_property with non-SQLModel."""
-        result = is_sqlmodel_property(str, "test_prop")
+        result: bool = is_sqlmodel_property(str, "test_prop")
         assert result is False
 
-    def test_get_hybrid_properties(self):
+    def test_get_hybrid_properties(self) -> None:
         """Test get_hybrid_properties."""
         with patch("flask_admin.contrib.sqlmodel.tools.inspect") as mock_inspect:
             from sqlalchemy.ext.hybrid import hybrid_property
 
-            mock_hybrid = hybrid_property(lambda self: "test")
+            mock_hybrid: Any = hybrid_property(lambda self: "test")
             mock_regular = Mock()
 
             mock_descriptor_dict = {
@@ -632,12 +635,12 @@ class TestComputedFieldFunctions:
             mock_inspect.return_value = mock_mapper
 
             mock_model = Mock()
-            result = get_hybrid_properties(mock_model)
+            result: dict[str, Any] = get_hybrid_properties(mock_model)
 
             assert "hybrid_prop" in result
             assert "regular_prop" not in result
 
-    def test_is_hybrid_property_true(self):
+    def test_is_hybrid_property_true(self) -> None:
         """Test is_hybrid_property with hybrid property."""
         mock_model = Mock()
 
@@ -645,27 +648,27 @@ class TestComputedFieldFunctions:
             "flask_admin.contrib.sqlmodel.tools.get_hybrid_properties",
             return_value={"test_hybrid": Mock()},
         ):
-            result = is_hybrid_property(mock_model, "test_hybrid")
+            result: bool = is_hybrid_property(mock_model, "test_hybrid")
             assert result is True
 
-    def test_is_hybrid_property_false(self):
+    def test_is_hybrid_property_false(self) -> None:
         """Test is_hybrid_property with non-hybrid property."""
         mock_model = Mock()
 
         with patch(
             "flask_admin.contrib.sqlmodel.tools.get_hybrid_properties", return_value={}
         ):
-            result = is_hybrid_property(mock_model, "test_field")
+            result: bool = is_hybrid_property(mock_model, "test_field")
             assert result is False
 
 
 class TestQueryFunctions:
     """Test query related functions."""
 
-    def test_get_query_for_ids_single_pk(self):
+    def test_get_query_for_ids_single_pk(self) -> None:
         """Test get_query_for_ids with single primary key."""
-        mock_query = Mock()
-        mock_model = Mock()
+        mock_query: Mock = Mock()
+        mock_model: Mock = Mock()
         mock_model_pk = Mock()
         mock_model.test_id = mock_model_pk
 
@@ -683,12 +686,12 @@ class TestQueryFunctions:
                 return_value={"test_id": int},
             ),
         ):
-            _result = get_query_for_ids(mock_query, mock_model, [1, 2, 3])
+            _result: Any = get_query_for_ids(mock_query, mock_model, [1, 2, 3])
 
             mock_query.filter.assert_called_once()
             mock_model_pk.in_.assert_called_once_with([1, 2, 3])
 
-    def test_get_query_for_ids_multi_pk_with_tuple_support(self):
+    def test_get_query_for_ids_multi_pk_with_tuple_support(self) -> None:
         """Test get_query_for_ids with multiple PKs and tuple support."""
 
         mock_query = Mock()
@@ -722,12 +725,12 @@ class TestQueryFunctions:
         ):
             mock_tuple.return_value.in_.return_value = "tuple_filter"
 
-            _result = get_query_for_ids(mock_query, mock_model, [(1, 2), (3, 4)])
+            _result: Any = get_query_for_ids(mock_query, mock_model, [(1, 2), (3, 4)])
 
             mock_tuple.assert_called_once()
             mock_query.filter.assert_called_once()
 
-    def test_get_query_for_ids_multi_pk_tuple_fallback(self):
+    def test_get_query_for_ids_multi_pk_tuple_fallback(self) -> None:
         """Test get_query_for_ids with multiple PKs
         falling back to tuple_operator_in."""
         from sqlalchemy.exc import DBAPIError
@@ -741,7 +744,7 @@ class TestQueryFunctions:
 
         # Mock query that raises DBAPIError on execution
         mock_filtered_query = Mock()
-        mock_filtered_query.all.side_effect = DBAPIError("statement", "params", "orig")  # type: ignore
+        mock_filtered_query.all.side_effect = DBAPIError("statement", "params", "orig")
         mock_query.filter.return_value = mock_filtered_query
 
         with (
@@ -767,12 +770,12 @@ class TestQueryFunctions:
             mock_tuple.return_value.in_.return_value = "tuple_filter"
             mock_tuple_op.return_value = "fallback_filter"
 
-            _result = get_query_for_ids(mock_query, mock_model, [(1, 2), (3, 4)])
+            _result: Any = get_query_for_ids(mock_query, mock_model, [(1, 2), (3, 4)])
 
             # Should call tuple_operator_in as fallback
             mock_tuple_op.assert_called_once()
 
-    def test_get_query_for_ids_multi_pk_single_pk_name(self):
+    def test_get_query_for_ids_multi_pk_single_pk_name(self) -> None:
         """Test get_query_for_ids with multiple PKs but single name returned."""
         mock_query = Mock()
         mock_model = Mock()
@@ -801,7 +804,7 @@ class TestQueryFunctions:
             mock_filtered_query.all.return_value = []
             mock_query.filter.return_value = mock_filtered_query
 
-            _result = get_query_for_ids(mock_query, mock_model, [(1,), (2,)])
+            _result: Any = get_query_for_ids(mock_query, mock_model, [(1,), (2,)])
 
             mock_query.filter.assert_called_once()
 
@@ -809,7 +812,7 @@ class TestQueryFunctions:
 class TestFieldPathFunctions:
     """Test field path and join related functions."""
 
-    def test_get_field_with_path_string_simple(self):
+    def test_get_field_with_path_string_simple(self) -> None:
         """Test get_field_with_path with simple string field."""
         mock_model = Mock()
         mock_attr = Mock()
@@ -826,10 +829,10 @@ class TestFieldPathFunctions:
         ):
             attr, path = get_field_with_path(mock_model, "test_field")
 
-            assert attr == mock_attr  # type: ignore
+            assert attr == mock_attr
             assert path == []
 
-    def test_get_field_with_path_string_with_relationship(self):
+    def test_get_field_with_path_string_with_relationship(self) -> None:
         """Test get_field_with_path with relationship in path."""
         mock_model = Mock()
         mock_relation = Mock()
@@ -853,11 +856,11 @@ class TestFieldPathFunctions:
         ):
             attr, path = get_field_with_path(mock_model, "relation.target_field")
 
-            assert attr == mock_target_attr # type: ignore
+            assert attr == mock_target_attr
             assert len(path) == 1
             assert path[0] == mock_relation
 
-    def test_get_field_with_path_association_proxy(self):
+    def test_get_field_with_path_association_proxy(self) -> None:
         """Test get_field_with_path with association proxy."""
         mock_model = Mock()
         mock_proxy = Mock()
@@ -880,9 +883,8 @@ class TestFieldPathFunctions:
 
             assert attr == mock_proxy.remote_attr
 
-    def test_get_field_with_path_non_string_attribute(self):
+    def test_get_field_with_path_non_string_attribute(self) -> None:
         """Test get_field_with_path with non-string attribute."""
-        from sqlalchemy.orm.attributes import InstrumentedAttribute
 
         mock_attr = Mock(spec=InstrumentedAttribute)
         mock_column = Mock()
@@ -901,9 +903,8 @@ class TestFieldPathFunctions:
             assert len(path) == 1
             assert path[0] == mock_column.table
 
-    def test_get_field_with_path_multiple_columns_error(self):
+    def test_get_field_with_path_multiple_columns_error(self) -> None:
         """Test get_field_with_path with multiple columns raises error."""
-        from sqlalchemy.orm.attributes import InstrumentedAttribute
 
         mock_attr = Mock(spec=InstrumentedAttribute)
 
@@ -918,7 +919,7 @@ class TestFieldPathFunctions:
 class TestFilterForeignColumns:
     """Test filter_foreign_columns function."""
 
-    def test_filter_foreign_columns_matching(self):
+    def test_filter_foreign_columns_matching(self) -> None:
         """Test filter_foreign_columns with matching table."""
         mock_table = Mock()
         mock_column1 = Mock()
@@ -926,20 +927,20 @@ class TestFilterForeignColumns:
         mock_column2 = Mock()
         mock_column2.table = Mock()  # Different table
 
-        columns = [mock_column1, mock_column2]
-        result = filter_foreign_columns(mock_table, columns)
+        columns: list[Any] = [mock_column1, mock_column2]
+        result: list[Any] = filter_foreign_columns(mock_table, columns)
 
         assert len(result) == 1
         assert result[0] == mock_column1
 
-    def test_filter_foreign_columns_empty(self):
+    def test_filter_foreign_columns_empty(self) -> None:
         """Test filter_foreign_columns with no matching columns."""
         mock_table = Mock()
         mock_column = Mock()
         mock_column.table = Mock()  # Different table
 
-        columns = [mock_column]
-        result = filter_foreign_columns(mock_table, columns)
+        columns: list[Any] = [mock_column]
+        result: list[Any] = filter_foreign_columns(mock_table, columns)
 
         assert len(result) == 0
 
@@ -947,7 +948,7 @@ class TestFilterForeignColumns:
 class TestEdgeCasesAndErrorHandling:
     """Test edge cases and error handling."""
 
-    def test_get_columns_for_field_invalid_field(self):
+    def test_get_columns_for_field_invalid_field(self) -> None:
         """Test get_columns_for_field with invalid field."""
         from flask_admin.contrib.sqlmodel.tools import get_columns_for_field
 
@@ -967,7 +968,7 @@ class TestEdgeCasesAndErrorHandling:
         with pytest.raises(Exception, match="Invalid field"):
             get_columns_for_field(mock_field)
 
-    def test_complex_path_resolution(self):
+    def test_complex_path_resolution(self) -> None:
         """Test complex path resolution with nested relationships."""
         # Test the complex path resolution in is_hybrid_property and is_computed_field
         mock_model = Mock()
@@ -995,10 +996,10 @@ class TestEdgeCasesAndErrorHandling:
                 return_value={"target_field": Mock()},
             ),
         ):
-            _result = is_computed_field(mock_model, "relation.target_field")
+            _result: bool = is_computed_field(mock_model, "relation.target_field")
             # This tests the complex path resolution logic
 
-    def test_class_resolver_handling(self):
+    def test_class_resolver_handling(self) -> None:
         """Test handling of _class_resolver in path resolution."""
         from sqlalchemy.orm.clsregistry import _class_resolver
 
@@ -1006,7 +1007,7 @@ class TestEdgeCasesAndErrorHandling:
         mock_model._decl_class_registry = {"TestModel": Mock()}
 
         mock_attr = Mock()
-        mock_resolver = _class_resolver("TestModel", None, None, None) # type: ignore
+        mock_resolver = _class_resolver("TestModel", None, None, None)
         mock_attr.property.argument = mock_resolver
         mock_model.relation = mock_attr
 
@@ -1024,10 +1025,10 @@ class TestEdgeCasesAndErrorHandling:
                 return_value={},
             ),
         ):
-            _result = is_computed_field(mock_model, "relation.target_field")
+            _result: bool = is_computed_field(mock_model, "relation.target_field")
             # This tests the _class_resolver handling
 
-    def test_function_type_handling(self):
+    def test_function_type_handling(self) -> None:
         """Test handling of function types in path resolution."""
         mock_model = Mock()
         mock_attr = Mock()
@@ -1052,5 +1053,5 @@ class TestEdgeCasesAndErrorHandling:
                 return_value={},
             ),
         ):
-            _result = is_computed_field(mock_model, "relation.target_field")
+            _result: bool = is_computed_field(mock_model, "relation.target_field")
             # This tests the function type handling

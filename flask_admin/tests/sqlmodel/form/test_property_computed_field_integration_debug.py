@@ -33,7 +33,7 @@ def test_property_computed_field_integration(
 
     # Define comprehensive model with various field types
     class ComprehensiveModel(sqlmodel_base, table=True):
-        __tablename__ = "comprehensive_model"  # type: ignore
+        __tablename__ = "comprehensive_model"
 
         id: int = Field(primary_key=True)
         name: str = Field(sa_type=String)
@@ -164,7 +164,7 @@ def test_property_computed_field_integration(
         print("=== PROPERTY BEHAVIOR VALIDATION ===")
 
         # Create test instance
-        instance = ComprehensiveModel(name="John Doe", age=30)  # type: ignore
+        instance = ComprehensiveModel(name="John Doe", age=30)
 
         # Test read-only property
         print(f"Read-only property full_name_readonly: {instance.full_name_readonly}")

@@ -1,9 +1,7 @@
 import pytest
 from sqlmodel import Session
-from sqlmodel import SQLModel
 
 from flask_admin.form import rules
-
 from flask_admin.tests.sqlmodel import create_models
 from flask_admin.tests.sqlmodel import CustomModelView
 

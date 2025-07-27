@@ -8,11 +8,10 @@ for SQLModel-based applications.
 """
 
 import logging
+import typing as t
 from typing import Any
 from typing import get_args
 from typing import get_origin
-
-# from typing import cast as t_cast
 from typing import Optional
 from typing import Union
 
@@ -30,6 +29,7 @@ from sqlmodel import func
 from sqlmodel import or_
 from sqlmodel import select
 from sqlmodel import String
+from wtforms import Form
 
 # from flask_admin._compat import string_types
 from flask_admin._compat import text_type
@@ -43,7 +43,16 @@ from flask_admin.contrib.sqlmodel import tools
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
 
+from ..._types import T_COLUMN
+from ..._types import T_FIELD_ARGS_VALIDATORS
+from ..._types import T_FILTER
+from ..._types import T_SQLALCHEMY_MODEL
+from ..._types import T_SQLALCHEMY_QUERY
+from ..._types import T_SQLALCHEMY_SESSION
+from ..._types import T_WIDGET
 from .ajax import create_ajax_loader
+from .ajax import QueryAjaxModelLoader
+from .filters import BaseSQLModelFilter
 from .typefmt import DEFAULT_FORMATTERS
 
 log = logging.getLogger("flask-admin.sqlmodel")
@@ -231,17 +240,17 @@ class SQLModelView(BaseModelView):
 
     def __init__(
         self,
-        model,
-        session,
-        name=None,
-        category=None,
-        endpoint=None,
-        url=None,
-        static_folder=None,
-        menu_class_name=None,
-        menu_icon_type=None,
-        menu_icon_value=None,
-    ):
+        model: T_SQLALCHEMY_MODEL,
+        session: T_SQLALCHEMY_SESSION,
+        name: t.Optional[str] = None,
+        category: t.Optional[str] = None,
+        endpoint: t.Optional[str] = None,
+        url: t.Optional[str] = None,
+        static_folder: t.Optional[str] = None,
+        menu_class_name: t.Optional[str] = None,
+        menu_icon_type: t.Optional[str] = None,
+        menu_icon_value: t.Optional[str] = None,
+    ) -> None:
         """
         Constructor.
 
@@ -305,7 +314,9 @@ class SQLModelView(BaseModelView):
         self._auto_joins = self.scaffold_auto_joins()
 
     # Internal API
-    def _get_model_iterator(self, model=None):
+    def _get_model_iterator(
+        self, model: t.Optional[t.Any] = None
+    ) -> t.Iterator[tuple[str, t.Any]]:
         """
         Return property iterator for the model
         """
@@ -318,7 +329,13 @@ class SQLModelView(BaseModelView):
             # Fallback for older Pydantic versions
             return model.__fields__.items()
 
-    def _apply_path_joins(self, query, joins, path, inner_join=True):
+    def _apply_path_joins(
+        self,
+        query: T_SQLALCHEMY_QUERY,
+        joins: dict[t.Any, t.Any],
+        path: list[t.Any],
+        inner_join: bool = True,
+    ) -> tuple[T_SQLALCHEMY_QUERY, dict[t.Any, t.Any], t.Any]:
         """
         Apply join path to the query.
 
@@ -362,14 +379,14 @@ class SQLModelView(BaseModelView):
         return query, joins, last
 
     # Scaffolding
-    def scaffold_pk(self):
+    def scaffold_pk(self) -> t.Union[t.Any, tuple[t.Any, ...]]:
         """
         Return the primary key name(s) from a model
         If model has single primary key, will return a string and tuple otherwise
         """
         return tools.get_primary_key(self.model)
 
-    def get_pk_value(self, model):
+    def get_pk_value(self, model: t.Any) -> t.Any:
         """
         Return the primary key value from a model object.
         If there are multiple primary keys, they're encoded into string representation.
@@ -380,9 +397,9 @@ class SQLModelView(BaseModelView):
             pk_parts = [getattr(model, attr) for attr in self._primary_key]
             return tools.iterencode(pk_parts)
         else:
-            return tools.escape(getattr(model, self._primary_key))  # type: ignore
+            return tools.escape(getattr(model, self._primary_key))
 
-    def scaffold_list_columns(self):
+    def scaffold_list_columns(self) -> list:
         """
         Return a list of column names from the model.
         Include both Pydantic model fields and SQLModel relationship attributes.
@@ -417,7 +434,7 @@ class SQLModelView(BaseModelView):
 
         return result
 
-    def scaffold_sortable_columns(self):
+    def scaffold_sortable_columns(self) -> dict[T_COLUMN, T_COLUMN]:
         """
         Return a dictionary of sortable columns.
         Key is column name, value is the actual attribute or column.
@@ -440,7 +457,7 @@ class SQLModelView(BaseModelView):
             if not name.startswith("_") and is_scalar_type(field.annotation)
         }
 
-    def get_sortable_columns(self):
+    def get_sortable_columns(self) -> dict[T_COLUMN, T_COLUMN]:
         """
         Returns a dictionary of the sortable columns. Key is a model
         field name and value is sort column (for example - attribute).
@@ -465,7 +482,9 @@ class SQLModelView(BaseModelView):
                 result[column_name] = column
             return result
 
-    def get_column_names(self, only_columns, excluded_columns):
+    def get_column_names(
+        self, only_columns: list[str], excluded_columns: t.Optional[list[str]]
+    ) -> list[tuple[str, str]]:
         """
         Returns a list of tuples with the model field name and formatted
         field name.
@@ -483,14 +502,14 @@ class SQLModelView(BaseModelView):
         for c in only_columns:
             try:
                 column, path = tools.get_field_with_path(self.model, c)
-                column_name = str(c) if path else column.key  # type: ignore
+                column_name = str(c) if path else column.key
             except AttributeError:
                 column_name = str(c)
             visible_name = self.get_column_name(column_name)
             formatted_columns.append((column_name, visible_name))
         return formatted_columns
 
-    def init_search(self):
+    def init_search(self) -> bool:
         """
         Initialize search. Returns `True` if search is supported for this
         view.
@@ -507,7 +526,7 @@ class SQLModelView(BaseModelView):
                 self._search_fields.append((attr, joins))
         return bool(self.column_searchable_list)
 
-    def search_placeholder(self):
+    def search_placeholder(self) -> t.Optional[str]:
         """
         Return search placeholder.
 
@@ -522,12 +541,11 @@ class SQLModelView(BaseModelView):
         if not self.column_searchable_list:
             return None
         placeholders = [
-            str(self.column_labels.get(s, s))  # type: ignore
-            for s in self.column_searchable_list
+            str(self.column_labels.get(s, s)) for s in self.column_searchable_list
         ]
         return ", ".join(placeholders)
 
-    def scaffold_filters(self, name):
+    def scaffold_filters(self, name: str) -> t.Optional[list[BaseSQLModelFilter]]:
         """
         Return list of enabled filters
         """
@@ -549,8 +567,8 @@ class SQLModelView(BaseModelView):
             name_str = str(name)
 
         # Check for custom column labels first
-        if name_str in self.column_labels:  # type: ignore
-            visible_name = str(self.column_labels[name_str])  # type: ignore
+        if name_str in self.column_labels:
+            visible_name = str(self.column_labels[name_str])
         elif "." in name_str:
             # For dot notation like "model1.bool_field",
             # create name like "model1 / Model1 / Bool Field"
@@ -597,7 +615,7 @@ class SQLModelView(BaseModelView):
             type_name,
             attr,
             visible_name,
-            options=self.column_choices.get(name),  # type: ignore
+            options=self.column_choices.get(name),
         )
 
         # Set key_name for each filter in the list to enable proper join lookup
@@ -610,7 +628,9 @@ class SQLModelView(BaseModelView):
             self._filter_name_to_joins[name] = joins
         return flt
 
-    def _scaffold_relationship_filters(self, attr, joins, visible_name):
+    def _scaffold_relationship_filters(
+        self, attr: t.Any, joins: list[t.Any], visible_name: str
+    ) -> list[BaseSQLModelFilter]:
         """
         Create filters for relationship fields by examining the related model's columns.
         Similar to SQLModel's approach in scaffold_filters.
@@ -664,7 +684,7 @@ class SQLModelView(BaseModelView):
                 type_name,
                 related_attr,
                 filter_name,
-                options=self.column_choices.get(f"{attr.key}.{field_name}"),  # type: ignore
+                options=self.column_choices.get(f"{attr.key}.{field_name}"),
             )
 
             if flt:
@@ -680,7 +700,9 @@ class SQLModelView(BaseModelView):
 
         return filters
 
-    def _scaffold_property_filters(self, prop, name_str, joins, visible_name):
+    def _scaffold_property_filters(
+        self, prop: property, name_str: str, joins: list[t.Any], visible_name: str
+    ) -> t.Optional[list[BaseSQLModelFilter]]:
         """
         Create filters for Python properties (computed fields).
 
@@ -719,7 +741,7 @@ class SQLModelView(BaseModelView):
             # If we can't create filters for this property, return None
             return None
 
-    def is_valid_filter(self, filter_):
+    def is_valid_filter(self, filter_: t.Any) -> bool:
         """
         Verify whether the given object is a valid filter.
 
@@ -730,22 +752,22 @@ class SQLModelView(BaseModelView):
         """
         return isinstance(filter_, sqlmodel_filters.BaseSQLModelFilter)
 
-    def handle_filter(self, filter_):
+    def handle_filter(self, filter_: t.Any) -> t.Any:
         if isinstance(filter_, sqlmodel_filters.BaseSQLModelFilter):
             column = filter_.column
 
             # Handle relationship filters
             if tools.is_relationship(column):
-                self._filter_joins[column.key] = [column.class_]  # type: ignore
+                self._filter_joins[column.key] = [column.class_]
             # Handle custom filters that reference columns from different tables
-            elif hasattr(column, "property") and hasattr(column.property, "columns"):  # type: ignore
+            elif hasattr(column, "property") and hasattr(column.property, "columns"):
                 # This is an InstrumentedAttribute (regular column)
-                columns = column.property.columns  # type: ignore
+                columns = column.property.columns
                 if columns and tools.need_join(self.model, columns[0].table):
                     self._filter_joins[column] = [columns[0].table]
         return filter_
 
-    def _preprocess_uuid_fields(self, form, model):
+    def _preprocess_uuid_fields(self, form: Form, model: T_SQLALCHEMY_MODEL) -> None:
         """
         Convert UUID string fields to UUID objects before populate_obj.
 
@@ -792,7 +814,7 @@ class SQLModelView(BaseModelView):
             # This ensures the method is safe and won't break existing functionality
             pass
 
-    def scaffold_form(self):
+    def scaffold_form(self) -> type[Form]:
         """
         Create form from the model.
         """
@@ -810,7 +832,11 @@ class SQLModelView(BaseModelView):
             form_class = self.scaffold_inline_form_models(form_class)
         return form_class
 
-    def scaffold_list_form(self, widget=None, validators=None):
+    def scaffold_list_form(
+        self,
+        widget: t.Optional[T_WIDGET] = None,
+        validators: t.Optional[T_FIELD_ARGS_VALIDATORS] = None,
+    ) -> type[Form]:
         """
         Create form for the `index_view` using only the columns from
         `self.column_editable_list`.
@@ -831,7 +857,7 @@ class SQLModelView(BaseModelView):
         )
         return create_editable_list_form(self.form_base_class, form_class, widget)
 
-    def scaffold_inline_form_models(self, form_class):
+    def scaffold_inline_form_models(self, form_class: type[Form]) -> type[Form]:
         """
         Contribute inline models to the form
 
@@ -842,7 +868,7 @@ class SQLModelView(BaseModelView):
             self.session, self, self.model_form_converter
         )
 
-        for m in self.inline_models:  # type: ignore
+        for m in self.inline_models:
             if not hasattr(m, "inline_converter"):
                 form_class = default_converter.contribute(self.model, form_class, m)
                 continue
@@ -853,7 +879,7 @@ class SQLModelView(BaseModelView):
             form_class = custom_converter.contribute(self.model, form_class, m)
         return form_class
 
-    def scaffold_auto_joins(self):
+    def scaffold_auto_joins(self) -> list:
         """
         Return a list of joined tables by going through the
         displayed columns.
@@ -867,10 +893,14 @@ class SQLModelView(BaseModelView):
             if prop in relations
         ]
 
-    def _create_ajax_loader(self, name, options):
+    def _create_ajax_loader(
+        self, name: str, options: dict[str, t.Any]
+    ) -> QueryAjaxModelLoader:
         return create_ajax_loader(self.model, self.session, name, name, options)
 
-    def _ensure_column_properties_loaded(self, query):
+    def _ensure_column_properties_loaded(
+        self, query: T_SQLALCHEMY_QUERY
+    ) -> T_SQLALCHEMY_QUERY:
         """
         Ensure that column_property fields are properly loaded in the query.
 
@@ -879,7 +909,9 @@ class SQLModelView(BaseModelView):
         """
         return query
 
-    def _fix_column_property_values(self, models):
+    def _fix_column_property_values(
+        self, models: list[T_SQLALCHEMY_MODEL]
+    ) -> list[T_SQLALCHEMY_MODEL]:
         """
         Fix column_property values that may be NULL due to SQLModel issues.
 
@@ -893,7 +925,7 @@ class SQLModelView(BaseModelView):
         # should work with deferred=False setting
         return models
 
-    def get_query(self):
+    def get_query(self) -> T_SQLALCHEMY_QUERY:
         """
         Return a query for the model type.
 
@@ -921,7 +953,7 @@ class SQLModelView(BaseModelView):
 
         return query
 
-    def get_count_query(self):
+    def get_count_query(self) -> T_SQLALCHEMY_QUERY:
         """
         Return a the count query for the model type
 
@@ -960,7 +992,7 @@ class SQLModelView(BaseModelView):
                     column = (
                         field_attr
                         if field_alias is None
-                        else getattr(field_alias, field_attr.key)  # type: ignore
+                        else getattr(field_alias, field_attr.key)
                     )
                     query = query.order_by(desc(column) if sort_desc else column)
             else:
@@ -1064,7 +1096,7 @@ class SQLModelView(BaseModelView):
             stmt = tools.parse_like_term(term)
             filter_stmt = []
             count_filter_stmt = []
-            for field, path in self._search_fields:  # type: ignore
+            for field, path in self._search_fields:
                 query, joins, alias = self._apply_path_joins(
                     query, joins, path, inner_join=False
                 )
@@ -1102,7 +1134,7 @@ class SQLModelView(BaseModelView):
 
     def _apply_filters(self, query, count_query, joins, count_joins, filters):
         for idx, _flt_name, value in filters:
-            flt = self._filters[idx]  # type: ignore
+            flt = self._filters[idx]
 
             alias = None
             count_alias = None
@@ -1203,14 +1235,14 @@ class SQLModelView(BaseModelView):
 
     def get_list(
         self,
-        page,
-        sort_column,
-        sort_desc,
-        search,
-        filters,
-        execute=True,
-        page_size=None,
-    ):
+        page: t.Optional[int],
+        sort_column: t.Optional[str],
+        sort_desc: bool,
+        search: t.Optional[str],
+        filters: t.Optional[list[T_FILTER]],
+        execute: bool = True,
+        page_size: t.Optional[int] = None,
+    ) -> tuple[t.Optional[int], t.Union[list[T_SQLALCHEMY_MODEL], T_SQLALCHEMY_QUERY]]:
         """
         Return records from the database.
 
@@ -1248,7 +1280,7 @@ class SQLModelView(BaseModelView):
 
         # Check if we have property filters that need post-query processing
         has_property_filters = (
-            hasattr(query, "_property_filters") and query._property_filters # type: ignore
+            hasattr(query, "_property_filters") and query._property_filters
         )
 
         if has_property_filters:
@@ -1272,7 +1304,7 @@ class SQLModelView(BaseModelView):
                 else None
             )
 
-            for j in self._auto_joins:  # type: ignore
+            for j in self._auto_joins:
                 query = query.options(joinedload(j))
 
             query, joins = self._apply_sorting(query, joins, sort_column, sort_desc)
@@ -1304,7 +1336,7 @@ class SQLModelView(BaseModelView):
         This method fetches all matching records, applies property filters,
         then handles pagination on the filtered results.
         """
-        for j in self._auto_joins:  # type: ignore
+        for j in self._auto_joins:
             query = query.options(joinedload(j))
 
         # Apply sorting but NOT pagination yet - we need all records to filter properly
@@ -1346,7 +1378,7 @@ class SQLModelView(BaseModelView):
 
         return filtered_count, paginated_models
 
-    def get_one(self, id_):
+    def get_one(self, id_: str) -> t.Optional[T_SQLALCHEMY_MODEL]:
         """
         Return a single model by its id.
 
@@ -1379,7 +1411,7 @@ class SQLModelView(BaseModelView):
             # Return None so the view can handle it as "record not found"
             return None
 
-    def handle_view_exception(self, exc):
+    def handle_view_exception(self, exc: Exception) -> bool:
         if isinstance(exc, IntegrityError):
             if current_app.config.get(
                 "FLASK_ADMIN_RAISE_ON_INTEGRITY_ERROR",
@@ -1395,7 +1427,7 @@ class SQLModelView(BaseModelView):
 
         return super().handle_view_exception(exc)
 
-    def build_new_instance(self):
+    def build_new_instance(self) -> T_SQLALCHEMY_MODEL:
         """
         Build new instance of a model. Useful to override the Flask-Admin behavior
         when the model has a custom __init__ method.
@@ -1409,7 +1441,7 @@ class SQLModelView(BaseModelView):
 
         return model
 
-    def create_model(self, form):
+    def create_model(self, form: Form) -> t.Union[T_SQLALCHEMY_MODEL, bool]:
         """
         Create model from form.
 
@@ -1431,7 +1463,7 @@ class SQLModelView(BaseModelView):
             self.session.rollback()
             return False
 
-    def update_model(self, form, model):
+    def update_model(self, form: Form, model: T_SQLALCHEMY_MODEL) -> bool:
         """
         Update model from form.
 
@@ -1475,7 +1507,7 @@ class SQLModelView(BaseModelView):
 
             return True
 
-    def delete_model(self, model):
+    def delete_model(self, model: T_SQLALCHEMY_MODEL) -> bool:
         """
         Delete model.
 
@@ -1495,7 +1527,7 @@ class SQLModelView(BaseModelView):
             return False
 
     # Default model actions
-    def is_action_allowed(self, name):
+    def is_action_allowed(self, name: str) -> bool:
         # Check delete action permission
         if name == "delete" and not self.can_delete:
             return False
@@ -1507,7 +1539,7 @@ class SQLModelView(BaseModelView):
         lazy_gettext("Delete"),
         lazy_gettext("Are you sure you want to delete selected records?"),
     )
-    def action_delete(self, ids):
+    def action_delete(self, ids: list[str]) -> None:
         try:
             count = 0
             for id_ in ids:

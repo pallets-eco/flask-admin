@@ -375,8 +375,7 @@ class TestUtilityFunctions:
         instance = MockSQLModelClass(id=1, name="test")
         setter(instance, "test_value")
         assert hasattr(instance, "_wtf_test_field")
-        assert instance._wtf_test_field == "test_value" # type: ignore
-
+        assert instance._wtf_test_field == "test_value"
 
     def test_make_computed_field_wtforms_compatible(self):
         """Test make_computed_field_wtforms_compatible function."""
@@ -415,7 +414,7 @@ class TestUtilityFunctions:
 
         # Test fallback to private storage
         set_field_value_with_fallback(instance, "custom_field", "custom_value")
-        assert instance._wtf_custom_field == "custom_value" # type: ignore
+        assert instance._wtf_custom_field == "custom_value"
 
     def test_debug_model_fields(self):
         """Test debug_model_fields function."""

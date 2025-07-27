@@ -13,8 +13,6 @@ from datetime import time
 from typing import Optional
 
 import arrow
-from sqlalchemy import func
-from sqlalchemy import select
 from sqlalchemy.orm import registry
 from sqlalchemy.types import Enum as SQLAEnum
 from sqlalchemy_utils import ArrowType
@@ -43,13 +41,14 @@ from flask_admin.contrib.sqlmodel import SQLModelView
 
 class EnumChoices(enum.Enum):
     """Internal test enum for choice fields."""
+
     first = 1
     second = 2
 
 
 class CustomModelView(SQLModelView):
     """Custom SQLModel view for testing with additional configuration."""
-    
+
     def __init__(
         self,
         model,
@@ -69,7 +68,8 @@ class CustomModelView(SQLModelView):
 
 
 def sqlmodel_base() -> type[SQLModel]:
-    """Create a fresh SQLModel base class for each test to avoid class name conflicts."""
+    """Create a fresh SQLModel base class for each test
+    to avoid class name conflicts."""
     # Create a fresh registry and metadata for complete isolation
     test_registry = registry()
 
@@ -85,10 +85,10 @@ def create_models(
 ) -> tuple[type[SQLModel], type[SQLModel]]:
     """Create SQLModel models for testing with proper metadata handling."""
     if sqlmodel_class is None:
-        sqlmodel_class = sqlmodel_base()  # type: ignore
+        sqlmodel_class = sqlmodel_base()
 
     class Model1(sqlmodel_class, table=True):
-        __tablename__ = "model1"  # type: ignore
+        __tablename__ = "model1"
         __table_args__ = {"extend_existing": True}  # Allow table recreation
 
         id: Optional[int] = Field(default=None, primary_key=True)
@@ -142,7 +142,7 @@ def create_models(
         # Relationships
         model2: list["Model2"] = Relationship(back_populates="model1")
 
-        model_config = {"arbitrary_types_allowed": True}  # type: ignore
+        model_config = {"arbitrary_types_allowed": True}
 
         def __unicode__(self):
             return self.test1
@@ -151,9 +151,9 @@ def create_models(
             return self.test1 or ""
 
     class Model2(sqlmodel_class, table=True):
-        __tablename__ = "model2"  # type: ignore
+        __tablename__ = "model2"
         __table_args__ = {"extend_existing": True}  # Allow table recreation
-        model_config = {"arbitrary_types_allowed": True}  # type: ignore
+        model_config = {"arbitrary_types_allowed": True}
 
         id: Optional[int] = Field(default=None, primary_key=True)
         string_field: Optional[str] = Field(default=None, sa_column=Column(String))
@@ -175,7 +175,7 @@ def create_models(
         model1_id: Optional[int] = Field(default=None, foreign_key="model1.id")
         model1: Optional[Model1] = Relationship(back_populates="model2")
 
-        model_config = {"arbitrary_types_allowed": True}  # type: ignore
+        model_config = {"arbitrary_types_allowed": True}
 
     # Create tables with the test metadata
     sqlmodel_class.metadata.create_all(engine)
@@ -253,8 +253,8 @@ def fill_db(session, Model1, Model2):
 
 # Export only the utilities that are actually imported by test files
 __all__ = [
-    'CustomModelView',
-    'create_models', 
-    'fill_db',
-    'sqlmodel_base',
+    "CustomModelView",
+    "create_models",
+    "fill_db",
+    "sqlmodel_base",
 ]

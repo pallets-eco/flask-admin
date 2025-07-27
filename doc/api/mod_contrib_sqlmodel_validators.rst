@@ -18,12 +18,12 @@ SQLModel validators for Flask-Admin forms.
 
 .. note::
 
-    **SQLAlchemy-utils specific validators have been moved** to the 
-    :mod:`flask_admin.contrib.sqlmodel.mixins` module for better 
+    **SQLAlchemy-utils specific validators have been moved** to the
+    :mod:`flask_admin.contrib.sqlmodel.mixins` module for better
     dependency management:
 
     * ``valid_color`` - Color validation
-    * ``valid_currency`` - Currency code validation  
+    * ``valid_currency`` - Currency code validation
     * ``TimeZoneValidator`` - Timezone validation
 
     These validators are now part of the ``SQLAlchemyExtendedMixin`` class

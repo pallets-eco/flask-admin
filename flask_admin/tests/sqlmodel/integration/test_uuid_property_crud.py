@@ -18,10 +18,11 @@ from flask_admin.tests.sqlmodel import sqlmodel_base
 
 sqlmodel_class = sqlmodel_base()
 
+
 class UUIDPropertyTestModel(sqlmodel_class, table=True):
     """Test model with UUID primary key and computed properties."""
 
-    __tablename__ = "uuid_property_test" # type: ignore
+    __tablename__ = "uuid_property_test"
 
     # UUID primary key using native SQLModel
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)

@@ -7,6 +7,7 @@ equality, comparison, and text searches.
 """
 
 import enum
+import typing as t
 
 # Import from sqlalchemy for functions not in sqlmodel
 try:
@@ -16,6 +17,11 @@ except ImportError:
     from sqlalchemy import not_
     from sqlalchemy import or_
 
+from sqlalchemy.sql.schema import Column
+
+from flask_admin._types import T_OPTIONS
+from flask_admin._types import T_SQLALCHEMY_QUERY
+from flask_admin._types import T_WIDGET_TYPE
 from flask_admin.babel import lazy_gettext
 from flask_admin.contrib.sqlmodel import tools
 from flask_admin.model import filters
@@ -26,7 +32,13 @@ class BaseSQLModelFilter(filters.BaseFilter):
     Base SQLModel filter.
     """
 
-    def __init__(self, column, name, options=None, data_type=None):
+    def __init__(
+        self,
+        column: Column,
+        name: str,
+        options: T_OPTIONS = None,
+        data_type: T_WIDGET_TYPE = None,
+    ) -> None:
         """
         Constructor.
 
@@ -48,7 +60,9 @@ class BaseSQLModelFilter(filters.BaseFilter):
             self.column = column
         self.key_name = None  # Will be set during scaffolding for relationship filters
 
-    def _convert_computed_field_to_sql(self, prop):
+    def _convert_computed_field_to_sql(
+        self, prop: property
+    ) -> t.Union[tuple[str, property], property]:
         """
         Convert computed field property to a SQL expression.
         This is specific to known computed fields.
@@ -70,10 +84,10 @@ class BaseSQLModelFilter(filters.BaseFilter):
         # For unknown computed fields, return the property as-is
         return prop
 
-    def get_column(self, alias):
+    def get_column(self, alias: t.Optional[t.Any]) -> t.Any:
         # Handle computed fields and properties
         if hasattr(self.column, "key"):
-            return self.column if alias is None else getattr(alias, self.column.key)  # type: ignore
+            return self.column if alias is None else getattr(alias, self.column.key)
         elif (
             isinstance(self.column, tuple)
             and self.column[0] == "computed_number_of_pixels"
@@ -102,13 +116,17 @@ class BaseSQLModelFilter(filters.BaseFilter):
             # With alias, we can access the columns directly
             return alias.width * alias.height
 
-    def apply(self, query, value, alias=None):
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
         return super().apply(query, value)
 
 
 # Common filters
 class FilterEqual(BaseSQLModelFilter):
-    def apply(self, query, value, alias=None):
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
         column = self.get_column(alias)
 
         # Check if this is a property filter that needs post-query processing
@@ -125,12 +143,14 @@ class FilterEqual(BaseSQLModelFilter):
 
         return query.filter(column == value)
 
-    def operation(self):
+    def operation(self) -> str:
         return lazy_gettext("equals")
 
 
 class FilterNotEqual(BaseSQLModelFilter):
-    def apply(self, query, value, alias=None):
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
         column = self.get_column(alias)
 
         # Check if this is a property filter that needs post-query processing
@@ -145,12 +165,14 @@ class FilterNotEqual(BaseSQLModelFilter):
 
         return query.filter(column != value)
 
-    def operation(self):
+    def operation(self) -> str:
         return lazy_gettext("not equal")
 
 
 class FilterLike(BaseSQLModelFilter):
-    def apply(self, query, value, alias=None):
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
         column = self.get_column(alias)
 
         # Check if this is a property filter that needs post-query processing
@@ -164,45 +186,53 @@ class FilterLike(BaseSQLModelFilter):
             return query
 
         stmt = tools.parse_like_term(value)
-        return query.filter(column.ilike(stmt))  # type: ignore
+        return query.filter(column.ilike(stmt))
 
-    def operation(self):
+    def operation(self) -> str:
         return lazy_gettext("contains")
 
 
 class FilterNotLike(BaseSQLModelFilter):
-    def apply(self, query, value, alias=None):
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
         stmt = tools.parse_like_term(value)
-        return query.filter(~self.get_column(alias).ilike(stmt))  # type: ignore
+        return query.filter(~self.get_column(alias).ilike(stmt))
 
-    def operation(self):
+    def operation(self) -> str:
         return lazy_gettext("not contains")
 
 
 class FilterGreater(BaseSQLModelFilter):
-    def apply(self, query, value, alias=None):
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
         return query.filter(self.get_column(alias) > value)
 
-    def operation(self):
+    def operation(self) -> str:
         return lazy_gettext("greater than")
 
 
 class FilterSmaller(BaseSQLModelFilter):
-    def apply(self, query, value, alias=None):
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
         return query.filter(self.get_column(alias) < value)
 
-    def operation(self):
+    def operation(self) -> str:
         return lazy_gettext("smaller than")
 
 
 class FilterEmpty(BaseSQLModelFilter, filters.BaseBooleanFilter):
-    def apply(self, query, value, alias=None):
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
         if value == "1":
             return query.filter(self.get_column(alias) == None)  # noqa: E711
         else:
             return query.filter(self.get_column(alias) != None)  # noqa: E711
 
-    def operation(self):
+    def operation(self) -> str:
         return lazy_gettext("empty")
 
 
@@ -213,20 +243,24 @@ class FilterInList(BaseSQLModelFilter):
     def clean(self, value):
         return [v.strip() for v in value.split(",") if v.strip()]
 
-    def apply(self, query, value, alias=None):
-        return query.filter(self.get_column(alias).in_(value))  # type: ignore
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
+        return query.filter(self.get_column(alias).in_(value))
 
-    def operation(self):
+    def operation(self) -> str:
         return lazy_gettext("in list")
 
 
 class FilterNotInList(FilterInList):
-    def apply(self, query, value, alias=None):
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
         # NOT IN can exclude NULL values, so "or_ == None" needed to be added
         column = self.get_column(alias)
-        return query.filter(or_(~column.in_(value), column == None))  # type: ignore # noqa: E711
+        return query.filter(or_(~column.in_(value), column == None))  # noqa: E711
 
-    def operation(self):
+    def operation(self) -> str:
         return lazy_gettext("not in list")
 
 
@@ -307,17 +341,21 @@ class DateBetweenFilter(BaseSQLModelFilter, filters.BaseDateBetweenFilter):
     def __init__(self, column, name, options=None, data_type=None):
         super().__init__(column, name, options, data_type="daterangepicker")
 
-    def apply(self, query, value, alias=None):
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
         start, end = value
-        return query.filter(self.get_column(alias).between(start, end))  # type: ignore
+        return query.filter(self.get_column(alias).between(start, end))
 
 
 class DateNotBetweenFilter(DateBetweenFilter):
-    def apply(self, query, value, alias=None):
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
         start, end = value
-        return query.filter(not_(self.get_column(alias).between(start, end)))  # type: ignore
+        return query.filter(not_(self.get_column(alias).between(start, end)))
 
-    def operation(self):
+    def operation(self) -> str:
         return lazy_gettext("not between")
 
 
@@ -341,17 +379,21 @@ class DateTimeBetweenFilter(BaseSQLModelFilter, filters.BaseDateTimeBetweenFilte
     def __init__(self, column, name, options=None, data_type=None):
         super().__init__(column, name, options, data_type="datetimerangepicker")
 
-    def apply(self, query, value, alias=None):
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
         start, end = value
-        return query.filter(self.get_column(alias).between(start, end))  # type: ignore
+        return query.filter(self.get_column(alias).between(start, end))
 
 
 class DateTimeNotBetweenFilter(DateTimeBetweenFilter):
-    def apply(self, query, value, alias=None):
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
         start, end = value
-        return query.filter(not_(self.get_column(alias).between(start, end)))  # type: ignore
+        return query.filter(not_(self.get_column(alias).between(start, end)))
 
-    def operation(self):
+    def operation(self) -> str:
         return lazy_gettext("not between")
 
 
@@ -375,17 +417,21 @@ class TimeBetweenFilter(BaseSQLModelFilter, filters.BaseTimeBetweenFilter):
     def __init__(self, column, name, options=None, data_type=None):
         super().__init__(column, name, options, data_type="timerangepicker")
 
-    def apply(self, query, value, alias=None):
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
         start, end = value
-        return query.filter(self.get_column(alias).between(start, end))  # type: ignore
+        return query.filter(self.get_column(alias).between(start, end))
 
 
 class TimeNotBetweenFilter(TimeBetweenFilter):
-    def apply(self, query, value, alias=None):
+    def apply(
+        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLALCHEMY_QUERY:
         start, end = value
-        return query.filter(not_(self.get_column(alias).between(start, end)))  # type: ignore
+        return query.filter(not_(self.get_column(alias).between(start, end)))
 
-    def operation(self):
+    def operation(self) -> str:
         return lazy_gettext("not between")
 
 
@@ -449,20 +495,20 @@ class ChoiceTypeEqualFilter(FilterEqual):
         column = self.get_column(alias)
         choice_type = None
         # loop through choice 'values' to try and find an exact match
-        if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore
-            for choice in column.type.choices:  # type: ignore
-                if choice.name == user_query:  # type: ignore
-                    choice_type = choice.value  # type: ignore
+        if isinstance(column.type.choices, enum.EnumMeta):
+            for choice in column.type.choices:
+                if choice.name == user_query:
+                    choice_type = choice.value
                     break
         else:
-            for type, value in column.type.choices:  # type: ignore
+            for type, value in column.type.choices:
                 if value == user_query:
                     choice_type = type
                     break
         if choice_type:
             return query.filter(column == choice_type)
         else:
-            return query.filter(column.in_([]))  # type: ignore
+            return query.filter(column.in_([]))
 
 
 class ChoiceTypeNotEqualFilter(FilterNotEqual):
@@ -473,19 +519,19 @@ class ChoiceTypeNotEqualFilter(FilterNotEqual):
         column = self.get_column(alias)
         choice_type = None
         # loop through choice 'values' to try and find an exact match
-        if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore
-            for choice in column.type.choices:  # type: ignore
-                if choice.name == user_query:  # type: ignore
-                    choice_type = choice.value  # type: ignore
+        if isinstance(column.type.choices, enum.EnumMeta):
+            for choice in column.type.choices:
+                if choice.name == user_query:
+                    choice_type = choice.value
                     break
         else:
-            for type, value in column.type.choices:  # type: ignore
+            for type, value in column.type.choices:
                 if value == user_query:
                     choice_type = type
                     break
         if choice_type:
             # != can exclude NULL values, so "or_ == None" needed to be added
-            return query.filter(or_(column != choice_type, column == None))  # type: ignore # noqa: E711
+            return query.filter(or_(column != choice_type, column == None))  # noqa: E711
         else:
             return query
 
@@ -499,16 +545,16 @@ class ChoiceTypeLikeFilter(FilterLike):
         choice_types = []
         if user_query:
             # loop through choice 'values' looking for matches
-            if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore
-                for choice in column.type.choices:  # type: ignore
-                    if user_query.lower() in choice.name.lower():  # type: ignore
-                        choice_types.append(choice.value)  # type: ignore
+            if isinstance(column.type.choices, enum.EnumMeta):
+                for choice in column.type.choices:
+                    if user_query.lower() in choice.name.lower():
+                        choice_types.append(choice.value)
             else:
-                for type, value in column.type.choices:  # type: ignore
+                for type, value in column.type.choices:
                     if user_query.lower() in value.lower():
                         choice_types.append(type)
         if choice_types:
-            return query.filter(column.in_(choice_types))  # type: ignore
+            return query.filter(column.in_(choice_types))
         else:
             return query
 
@@ -522,17 +568,17 @@ class ChoiceTypeNotLikeFilter(FilterNotLike):
         choice_types = []
         if user_query:
             # loop through choice 'values' looking for matches
-            if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore
-                for choice in column.type.choices:  # type: ignore
-                    if user_query.lower() in choice.name.lower():  # type: ignore
-                        choice_types.append(choice.value)  # type: ignore
+            if isinstance(column.type.choices, enum.EnumMeta):
+                for choice in column.type.choices:
+                    if user_query.lower() in choice.name.lower():
+                        choice_types.append(choice.value)
             else:
-                for type, value in column.type.choices:  # type: ignore
+                for type, value in column.type.choices:
                     if user_query.lower() in value.lower():
                         choice_types.append(type)
         if choice_types:
             # != can exclude NULL values, so "or_ == None" needed to be added
-            return query.filter(or_(column.notin_(choice_types), column == None))  # type: ignore # noqa: E711
+            return query.filter(or_(column.notin_(choice_types), column == None))  # noqa: E711
         else:
             return query
 

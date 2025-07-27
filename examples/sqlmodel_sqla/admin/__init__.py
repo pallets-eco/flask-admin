@@ -12,6 +12,7 @@ engine = create_engine(
     app.config["SQLALCHEMY_DATABASE_URI"], echo=app.config.get("SQLALCHEMY_ECHO", True)
 )
 
+
 # 2. Create the database tables
 def init_db():
     SQLModel.metadata.create_all(engine)

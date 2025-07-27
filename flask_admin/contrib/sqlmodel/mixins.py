@@ -5,6 +5,7 @@ This module provides optional support for SQLAlchemy-utils extended types
 through a mixin class that can be composed with the main AdminModelConverter.
 """
 
+import typing as t
 from enum import EnumMeta
 from typing import Any
 from typing import Optional
@@ -18,7 +19,7 @@ from wtforms.validators import ValidationError
 from flask_admin import form
 
 
-def avoid_empty_strings(value):
+def avoid_empty_strings(value: t.Any) -> t.Optional[t.Any]:
     """
     Return None if the incoming value is an empty string or whitespace.
     """
@@ -47,7 +48,7 @@ except ImportError:
 
 
 # SQLAlchemy-utils specific validators - moved from validators.py
-def valid_color(form, field):
+def valid_color(form: t.Any, field: t.Any) -> None:
     """
     Color validator that supports both named colors and hex values.
     Uses the colour library to validate colors just like SQLAlchemy version.
@@ -68,7 +69,7 @@ def valid_color(form, field):
         raise ValidationError(f"Invalid color '{field.data}'. Error: {err}") from err
 
 
-def valid_currency(form, field):
+def valid_currency(form: t.Any, field: t.Any) -> None:
     """
     Currency code validator that validates against actual ISO 4217 codes.
     Uses the same validation as SQLAlchemy-Utils CurrencyType.
@@ -264,10 +265,12 @@ class TimeZoneValidator:
     Tries to coerce a TimeZone object from input data
     """
 
-    def __init__(self, coerce_function=None):
+    def __init__(
+        self, coerce_function: t.Optional[t.Callable[[t.Any], t.Any]] = None
+    ) -> None:
         self.coerce_function = coerce_function
 
-    def __call__(self, form, field):
+    def __call__(self, form: t.Any, field: t.Any) -> None:
         if not field.data:
             return
 
@@ -294,7 +297,7 @@ class TimeZoneValidator:
                 ) from err
 
 
-def _is_basic_color_valid(color_value):
+def _is_basic_color_valid(color_value: str) -> bool:
     """Basic color validation without external libraries."""
     if not isinstance(color_value, str):
         return False
@@ -335,7 +338,7 @@ def _is_basic_color_valid(color_value):
     return color_value in basic_colors
 
 
-class SQLAlchemyExtendedMixin:  # type: ignore
+class SQLAlchemyExtendedMixin:
     """
     Mixin for handling SQLAlchemy-utils extended types.
 
@@ -417,29 +420,37 @@ class SQLAlchemyExtendedMixin:  # type: ignore
         """Convert SQLAlchemy-utils EmailType to StringField with email validation."""
         # Apply nullable common logic if available
         if hasattr(self, "_nullable_common"):
-            self._nullable_common(column, field_args)  # type: ignore
+            self._nullable_common(column, field_args)
 
         field_args["validators"].append(validators.Email())
         return fields.StringField(**field_args)
 
-    def _convert_url_type(self, field_args: dict, **extra) -> fields.StringField:
+    def _convert_url_type(
+        self, field_args: dict[str, t.Any], **extra: t.Any
+    ) -> fields.StringField:
         """Convert SQLAlchemy-utils URLType to StringField with URL validation."""
         field_args["validators"].append(validators.URL())
         field_args["filters"] = [avoid_empty_strings]
         return fields.StringField(**field_args)
 
-    def _convert_ip_address_type(self, field_args: dict, **extra) -> fields.StringField:
+    def _convert_ip_address_type(
+        self, field_args: dict[str, t.Any], **extra: t.Any
+    ) -> fields.StringField:
         """Convert SQLAlchemy-utils IPAddressType to StringField with IP validation."""
         field_args["validators"].append(validators.IPAddress())
         return fields.StringField(**field_args)
 
-    def _convert_color_type(self, field_args: dict, **extra) -> fields.StringField:
+    def _convert_color_type(
+        self, field_args: dict[str, t.Any], **extra: t.Any
+    ) -> fields.StringField:
         """Convert SQLAlchemy-utils ColorType to StringField with color validation."""
         field_args["validators"].append(valid_color)
         field_args["filters"] = [avoid_empty_strings]
         return fields.StringField(**field_args)
 
-    def _convert_currency_type(self, field_args: dict, **extra) -> fields.StringField:
+    def _convert_currency_type(
+        self, field_args: dict[str, t.Any], **extra: t.Any
+    ) -> fields.StringField:
         """Convert SQLAlchemy-utils CurrencyType
         to StringField with currency validation."""
         field_args["validators"].append(valid_currency)
@@ -464,11 +475,11 @@ class SQLAlchemyExtendedMixin:  # type: ignore
         available_choices = []
 
         if not column.type or not hasattr(column.type, "choices"):
-            return fields.StringField(**field_args)  # type: ignore
+            return fields.StringField(**field_args)
 
         # Choices can either be specified as an enum, or as a list of tuples
         if isinstance(column.type.choices, EnumMeta):
-            available_choices = [(f.value, f.name) for f in column.type.choices]  # type: ignore
+            available_choices = [(f.value, f.name) for f in column.type.choices]
         else:
             available_choices = column.type.choices
 
@@ -492,7 +503,9 @@ class SQLAlchemyExtendedMixin:  # type: ignore
 
         return form.Select2Field(**field_args)
 
-    def _convert_arrow_type(self, field_args: dict, **extra) -> form.DateTimeField:
+    def _convert_arrow_type(
+        self, field_args: dict[str, t.Any], **extra: t.Any
+    ) -> form.DateTimeField:
         """Convert SQLAlchemy-utils ArrowType to DateTimeField."""
         return form.DateTimeField(**field_args)
 

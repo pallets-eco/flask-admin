@@ -6,14 +6,17 @@ SQLModel field values in Flask-Admin list and detail views.
 Includes formatters for enums, dates, and other SQLModel-specific types.
 """
 
+import typing as t
 from enum import Enum
 
 from flask_admin.model.typefmt import BASE_FORMATTERS
 from flask_admin.model.typefmt import EXPORT_FORMATTERS
 from flask_admin.model.typefmt import list_formatter
 
+from ..._types import T_MODEL_VIEW
 
-def enum_formatter(view, enum_member, name) -> str:
+
+def enum_formatter(view: T_MODEL_VIEW, enum_member: Enum, name: str) -> str:
     """
     Return the value of an Enum member.
 
@@ -23,7 +26,7 @@ def enum_formatter(view, enum_member, name) -> str:
     return enum_member.value
 
 
-def arrow_formatter(view, arrow_time, name) -> str:
+def arrow_formatter(view: T_MODEL_VIEW, arrow_time: t.Any, name: str) -> str:
     """
     Return a human-friendly string of the time relative to now.
     See https://arrow.readthedocs.io/

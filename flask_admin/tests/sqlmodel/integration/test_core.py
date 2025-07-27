@@ -23,7 +23,6 @@ from wtforms.form import Form
 from flask_admin.base import Admin
 from flask_admin.model.base import BaseModelView
 from flask_admin.model.filters import BaseFilter
-
 from flask_admin.tests.sqlmodel import CustomModelView
 from flask_admin.tests.sqlmodel import sqlmodel_base
 
@@ -74,9 +73,9 @@ def test_required_scaffolding_methods_are_implemented(
             ]
 
             for method_name in required_methods:
-                assert hasattr(view, method_name), (
-                    f"Method {method_name} not implemented"
-                )
+                assert hasattr(
+                    view, method_name
+                ), f"Method {method_name} not implemented"
                 method = getattr(view, method_name)
                 assert callable(method), f"Method {method_name} is not callable"
 
@@ -139,9 +138,9 @@ def test_scaffold_list_columns_method(app: Flask, engine: Engine, admin: Admin):
             # Test expected columns are present
             expected_columns = ["id", "name", "email", "active"]
             for col in expected_columns:
-                assert col in columns, (
-                    f"Column {col} missing from scaffold_list_columns"
-                )
+                assert (
+                    col in columns
+                ), f"Column {col} missing from scaffold_list_columns"
 
             # Test all returned values are strings (column names)
             for col in columns:
@@ -175,9 +174,9 @@ def test_scaffold_sortable_columns_method(app: Flask, engine: Engine, admin: Adm
             if sortable is not None:
                 # Test keys are strings (field names)
                 for key in sortable.keys():
-                    assert isinstance(key, str), (
-                        f"Sortable column key {key} is not a string"
-                    )
+                    assert isinstance(
+                        key, str
+                    ), f"Sortable column key {key} is not a string"
 
 
 def test_init_search_method(app: Flask, engine: Engine, admin: Admin):
@@ -312,7 +311,7 @@ def test_get_one_method(app: Flask, engine: Engine, admin: Admin):
 
             assert retrieved is not None
             assert hasattr(retrieved, "id")
-            # PK value might be string or int depending on implementation  
+            # PK value might be string or int depending on implementation
             retrieved_pk = view.get_pk_value(retrieved)
             assert retrieved_pk == created_id or retrieved_pk == str(created_id)
             assert retrieved.name == "test_item"
@@ -354,7 +353,7 @@ def test_create_model_method(app: Flask, engine: Engine, admin: Admin):
                 filters=None,
                 page_size=10,
             )
-            assert count > 0 # type: ignore
+            assert count > 0
 
 
 def test_update_model_method(app: Flask, engine: Engine, admin: Admin):
@@ -593,7 +592,7 @@ def test_specification_required_operations_work_together(
                 filters=None,
                 page_size=10,
             )
-            assert count > 0 # type: ignore
+            assert count > 0
             assert len(models) > 0
 
             created_model = models[0]  # Get the created model

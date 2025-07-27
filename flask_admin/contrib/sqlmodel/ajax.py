@@ -5,8 +5,8 @@ This module provides AJAX-based model loading functionality for SQLModel models,
 enabling dynamic population of form fields with related model data.
 """
 
+import typing as t
 from typing import Any
-from typing import Optional
 
 from sqlmodel import cast
 from sqlmodel import or_
@@ -26,13 +26,22 @@ from flask_admin._compat import string_types
 from flask_admin.model.ajax import AjaxModelLoader
 from flask_admin.model.ajax import DEFAULT_PAGE_SIZE
 
+from ..._types import T_SQLALCHEMY_MODEL
+from ..._types import T_SQLALCHEMY_QUERY
+from ..._types import T_SQLALCHEMY_SESSION
 from .tools import get_primary_key
 from .tools import has_multiple_pks
 from .tools import is_relationship
 
 
 class QueryAjaxModelLoader(AjaxModelLoader):
-    def __init__(self, name, session, model, **options):
+    def __init__(
+        self,
+        name: str,
+        session: T_SQLALCHEMY_SESSION,
+        model: T_SQLALCHEMY_MODEL,
+        **options: t.Any,
+    ) -> None:
         """
         Constructor.
 
@@ -67,7 +76,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
     def _process_fields(self) -> list[Any]:
         remote_fields = []
 
-        for field in self.fields:  # type: ignore
+        for field in self.fields:
             if isinstance(field, string_types):
                 attr = getattr(self.model, field, None)
 
@@ -81,16 +90,16 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
-    def format(self, model) -> Optional[tuple[Any, str]]:
+    def format(self, model: T_SQLALCHEMY_MODEL) -> t.Optional[tuple[t.Any, str]]:
         if not model:
             return None
 
-        return getattr(model, self.pk), as_unicode(model)  # type: ignore
+        return getattr(model, self.pk), as_unicode(model)
 
-    def get_query(self):
+    def get_query(self) -> T_SQLALCHEMY_QUERY:
         return self.session.query(self.model)
 
-    def get_one(self, pk):
+    def get_one(self, pk: t.Any) -> t.Optional[T_SQLALCHEMY_MODEL]:
         # prevent autoflush from occurring during populate_obj
         with self.session.no_autoflush:
             # Import tools here to avoid circular import
@@ -98,14 +107,16 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
             # Convert string primary key to proper type if needed
             converted_pk = tools.convert_pk_value(
-                pk, tools.get_primary_key_types(self.model).get(self.pk, str) # type: ignore
+                pk, tools.get_primary_key_types(self.model).get(self.pk, str)
             )
             stmt = select(self.model).where(
-                getattr(self.model, self.pk) == converted_pk # type: ignore
-            )  # type: ignore
+                getattr(self.model, self.pk) == converted_pk
+            )
             return self.session.scalar(stmt)
 
-    def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
+    def get_list(
+        self, term: str, offset: int = 0, limit: int = DEFAULT_PAGE_SIZE
+    ) -> list[T_SQLALCHEMY_MODEL]:
         # Start with a select statement that returns ORM objects
         stmt = select(self.model)
 
@@ -129,7 +140,13 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         return self.session.scalars(stmt.offset(offset).limit(limit)).all()
 
 
-def create_ajax_loader(model, session, name, field_name, options):
+def create_ajax_loader(
+    model: T_SQLALCHEMY_MODEL,
+    session: T_SQLALCHEMY_SESSION,
+    name: str,
+    field_name: str,
+    options: dict[str, t.Any],
+) -> QueryAjaxModelLoader:
     attr = getattr(model, field_name, None)
 
     if attr is None:

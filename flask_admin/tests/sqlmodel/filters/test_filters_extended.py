@@ -143,13 +143,13 @@ class TestBaseSQLModelFilter:
 
         # Without alias
         result = filter_obj.get_column(None)
-        assert result == mock_column  # type: ignore
+        assert result == mock_column
 
         # With alias
         mock_alias = Mock()
         mock_alias.test_field = "aliased_field"
         result = filter_obj.get_column(mock_alias)
-        assert result == "aliased_field"  # type: ignore
+        assert result == "aliased_field"
 
     def test_get_column_computed_pixels(self):
         """Test get_column with computed number_of_pixels field."""
@@ -188,7 +188,7 @@ class TestBaseSQLModelFilter:
         result = filter_obj.get_column(None)
 
         # Should return the property filter marker
-        assert result == ("__PROPERTY_FILTER__", mock_prop) # type: ignore
+        assert result == ("__PROPERTY_FILTER__", mock_prop)
 
 
 class TestFilterOperations:

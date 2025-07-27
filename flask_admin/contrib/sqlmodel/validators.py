@@ -6,12 +6,18 @@ including uniqueness validation, currency validation, color validation,
 and other common field validators.
 """
 
+import typing as t
+
 from sqlmodel import select
 from wtforms import ValidationError
 from wtforms.validators import InputRequired
 
 from flask_admin._compat import filter_list
 from flask_admin.babel import lazy_gettext
+
+from ..._types import T_SQLALCHEMY_MODEL
+from ..._types import T_SQLALCHEMY_SESSION
+from ..._types import T_TRANSLATABLE
 
 
 class Unique:
@@ -29,13 +35,19 @@ class Unique:
 
     field_flags = {"unique": True}
 
-    def __init__(self, db_session, model, column, message=None):
+    def __init__(
+        self,
+        db_session: T_SQLALCHEMY_SESSION,
+        model: T_SQLALCHEMY_MODEL,
+        column: t.Any,
+        message: t.Optional[T_TRANSLATABLE] = None,
+    ) -> None:
         self.db_session = db_session
         self.model = model
         self.column = column
         self.message = message or lazy_gettext("Already exists.")
 
-    def __call__(self, form, field):
+    def __call__(self, form: t.Any, field: t.Any) -> None:
         # databases allow multiple NULL values for unique columns
         if field.data is None:
             return
@@ -67,7 +79,7 @@ class ItemsRequired(InputRequired):
         self.min = min
 
     def __call__(self, form, field):
-        items = filter_list(lambda e: not field.should_delete(e), field.entries)  # type: ignore
+        items = filter_list(lambda e: not field.should_delete(e), field.entries)
         if len(items) < self.min:
             if self.message is None:
                 message = field.ngettext(
@@ -81,5 +93,5 @@ class ItemsRequired(InputRequired):
             raise ValidationError(message)
 
 
-# Note: SQLAlchemy-utils specific validators have been moved to 
+# Note: SQLAlchemy-utils specific validators have been moved to
 # SQLAlchemyExtendedMixin in mixins.py for better dependency management

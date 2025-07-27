@@ -1,4 +1,5 @@
 import inspect
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -17,20 +18,20 @@ sqla_admin_model_converters = [
 
 class TestAdminModelConverter:
     @pytest.mark.parametrize("method_name", sqla_admin_model_converters)
-    def test_can_override_widget(self, method_name):
+    def test_can_override_widget(self, method_name: str) -> None:
         # Simulate your SQLModelView converter
         converter = AdminModelConverter(None, None)
 
-        def fake_widget(*args, **kwargs):
+        def fake_widget(*args: Any, **kwargs: Any) -> str:
             return "<p>widget overridden</p>"
 
         class TestForm(wtforms.Form):
             pass
 
-        argspec = inspect.signature(StringField.__init__).parameters
-        name_field = "name" if "name" in argspec else "_name"
+        argspec: dict[str, Any] = inspect.signature(StringField.__init__).parameters
+        name_field: str = "name" if "name" in argspec else "_name"
 
-        field_args = {
+        field_args: dict[str, Any] = {
             "_form": TestForm(),
             name_field: "field",
             "widget": fake_widget,
@@ -38,7 +39,7 @@ class TestAdminModelConverter:
         }
 
         # Convert field using one of the converter methods
-        field = getattr(converter, method_name)(
+        field: Any = getattr(converter, method_name)(
             field_args=field_args,
             column=MagicMock(),
         )
@@ -49,15 +50,3 @@ class TestAdminModelConverter:
             pass
 
         assert field() == "<p>widget overridden</p>"
-
-
-
-
-
-
-
-
-
-
-
-

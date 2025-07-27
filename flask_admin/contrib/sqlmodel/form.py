@@ -6,6 +6,7 @@ including automatic field conversion from SQLModel types to WTForms fields,
 and support for inline models and relationships.
 """
 
+import typing as t
 import warnings
 from enum import Enum
 from typing import Any
@@ -23,6 +24,7 @@ except ImportError:
     from sqlalchemy import Column
 
 from sqlalchemy.orm import ColumnProperty
+from wtforms import Field
 from wtforms import fields
 from wtforms import validators
 
@@ -40,6 +42,12 @@ from flask_admin.model.form import InlineModelConverterBase
 from flask_admin.model.form import ModelConverterBase
 from flask_admin.model.helpers import prettify_name
 
+from ..._types import T_FIELD_ARGS_FILTERS
+from ..._types import T_FIELD_ARGS_LABEL
+from ..._types import T_FIELD_ARGS_VALIDATORS
+from ..._types import T_MODEL_VIEW
+from ..._types import T_SQLALCHEMY_MODEL
+from ..._types import T_SQLALCHEMY_SESSION
 from .ajax import create_ajax_loader
 from .fields import HstoreForm
 from .fields import InlineHstoreList
@@ -64,7 +72,7 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
     SQLModel to form converter
     """
 
-    def __init__(self, session, view):
+    def __init__(self, session: T_SQLALCHEMY_SESSION, view: T_MODEL_VIEW) -> None:
         super().__init__()
 
         self.session = session
@@ -114,7 +122,7 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
         # 3. No override found - will fall back to type-based conversion
         return None
 
-    def _get_label(self, name, field_args):
+    def _get_label(self, name: str, field_args: T_FIELD_ARGS_LABEL) -> str:
         """
         Label for field name. If it is not specified explicitly,
         then the views prettify_name method is used to find it.
@@ -136,7 +144,9 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
 
         return prettify_name(name)
 
-    def _get_description(self, name, field_args):
+    def _get_description(
+        self, name: str, field_args: dict[str, t.Any]
+    ) -> t.Optional[str]:
         if "description" in field_args:
             return field_args["description"]
 
@@ -145,7 +155,7 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
         if column_descriptions:
             return column_descriptions.get(name)
 
-    def _get_field_override(self, name):
+    def _get_field_override(self, name: str) -> t.Any:
         form_overrides = getattr(self.view, "form_overrides", None)
 
         if form_overrides:
@@ -153,7 +163,9 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
 
         return None
 
-    def _model_select_field(self, prop, multiple, remote_model, **kwargs):
+    def _model_select_field(
+        self, prop: t.Any, multiple: bool, remote_model: t.Any, **kwargs: t.Any
+    ) -> t.Union[QuerySelectField, QuerySelectMultipleField]:
         loader = getattr(self.view, "_form_ajax_refs", {}).get(prop.key)
 
         if loader:
@@ -170,7 +182,13 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
         else:
             return QuerySelectField(**kwargs)
 
-    def _convert_relation(self, name, prop, property_is_association_proxy, kwargs):
+    def _convert_relation(
+        self,
+        name: str,
+        prop: t.Any,
+        property_is_association_proxy: bool,
+        kwargs: dict[str, t.Any],
+    ) -> t.Optional[Field]:
         # Check if relation is specified
         form_columns = getattr(self.view, "form_columns", None)
         if form_columns and name not in form_columns:
@@ -215,7 +233,9 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
         )
         return self._model_select_field(prop, multiple, remote_model, **kwargs)
 
-    def _convert_computed_field(self, model, name, field_info, kwargs):
+    def _convert_computed_field(
+        self, model: t.Any, name: str, field_info: t.Any, kwargs: dict[str, t.Any]
+    ) -> t.Optional[Field]:
         """
         Convert SQLModel computed field to form field.
         Enhanced to support computed fields with setters for WTForms compatibility.
@@ -281,7 +301,13 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
         # Default to StringField for computed fields
         return fields.StringField(**kwargs)
 
-    def _convert_property_field(self, model, name, property_obj, kwargs):
+    def _convert_property_field(
+        self,
+        model: t.Any,
+        name: str,
+        property_obj: property,
+        kwargs: dict[str, t.Any],
+    ) -> t.Optional[Field]:
         """
         Convert SQLModel @property to form field.
         Only includes properties with setters for WTForms compatibility.
@@ -335,7 +361,15 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
         # Default to StringField for properties
         return fields.StringField(**kwargs)
 
-    def convert(self, model, mapper, name, prop, field_args, hidden_pk):
+    def convert(
+        self,
+        model: T_SQLALCHEMY_MODEL,
+        mapper: t.Any,
+        name: str,
+        prop: t.Any,
+        field_args: T_FIELD_ARGS_VALIDATORS,
+        hidden_pk: bool,
+    ) -> t.Optional[Field]:
         # Properly handle forced fields
         if isinstance(prop, FieldPlaceholder):
             return form.recreate_field(prop.field)
@@ -377,19 +411,19 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
         if hasattr(prop, "direction") or is_association_proxy(prop):
             property_is_association_proxy = is_association_proxy(prop)
             if property_is_association_proxy:
-                if not hasattr(prop.remote_attr, "prop"):  # type: ignore
+                if not hasattr(prop.remote_attr, "prop"):
                     raise Exception(
                         "Association proxy referencing another association proxy is "
                         "not supported."
                     )
-                prop = prop.remote_attr.prop  # type: ignore
+                prop = prop.remote_attr.prop
             return self._convert_relation(
                 name, prop, property_is_association_proxy, kwargs
             )
         elif hasattr(prop, "columns"):  # Ignore pk/fk
             # Check if more than one column mapped to the property
-            if len(prop.columns) > 1 and not isinstance(prop, ColumnProperty):  # type: ignore
-                columns = filter_foreign_columns(model.__table__, prop.columns)  # type: ignore
+            if len(prop.columns) > 1 and not isinstance(prop, ColumnProperty):
+                columns = filter_foreign_columns(model.__table__, prop.columns)
 
                 if len(columns) == 0:
                     return None
@@ -397,7 +431,7 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
                     warnings.warn(
                         (
                             f"Can not convert multiple-column properties"
-                            f" ({model}.{prop.key})"  # type: ignore
+                            f" ({model}.{prop.key})"
                         ),
                         stacklevel=1,
                     )
@@ -406,13 +440,13 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
                 column = columns[0]
             else:
                 # Grab column
-                column = prop.columns[0]  # type: ignore
+                column = prop.columns[0]
 
             form_columns = getattr(self.view, "form_columns", None) or ()
 
             # Do not display foreign keys - use relations, except when explicitly
             # instructed
-            if column.foreign_keys and prop.key not in form_columns:  # type: ignore
+            if column.foreign_keys and prop.key not in form_columns:
                 return None
 
             # Only display "real" columns
@@ -433,7 +467,7 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
                     if (
                         hasattr(self.view, "form_columns")
                         and self.view.form_columns is not None
-                        and prop.key not in self.view.form_columns  # type: ignore
+                        and prop.key not in self.view.form_columns
                     ):
                         return None
 
@@ -451,7 +485,7 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
             # For SQLModel, also check if field is Optional in the model definition
             if issubclass(model, SQLModel):
                 model_fields = getattr(model, "model_fields", {})
-                field_info = model_fields.get(prop.key)  # type: ignore
+                field_info = model_fields.get(prop.key)
                 is_optional = field_info and not field_info.is_required()
             else:
                 is_optional = False
@@ -467,8 +501,8 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
 
             # Apply label and description if it isn't inline form field
             if self.view.model == mapper.class_:
-                kwargs["label"] = self._get_label(prop.key, kwargs)  # type: ignore
-                kwargs["description"] = self._get_description(prop.key, kwargs)  # type: ignore
+                kwargs["label"] = self._get_label(prop.key, kwargs)
+                kwargs["description"] = self._get_description(prop.key, kwargs)
 
             # Figure out default value
             default = getattr(column, "default", None)
@@ -489,7 +523,7 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
                 from pydantic_core import PydanticUndefined
 
                 model_fields = getattr(model, "model_fields", {})
-                field_info = model_fields.get(prop.key)  # type: ignore
+                field_info = model_fields.get(prop.key)
                 if (
                     field_info
                     and field_info.default is not None
@@ -498,32 +532,32 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
                     value = field_info.default
 
             if value is not None:
-                kwargs["default"] = value  # type: ignore
+                kwargs["default"] = value
 
             # Check nullable
             if column.nullable or is_optional:
                 kwargs["validators"].append(validators.Optional())
 
             # Override field type if necessary
-            override = self._get_field_override(prop.key)  # type: ignore
+            override = self._get_field_override(prop.key)
             if override:
                 return override(**kwargs)
 
             # Check if a list of 'form_choices' are specified
             form_choices = getattr(self.view, "form_choices", None)
             if mapper.class_ == self.view.model and form_choices:
-                choices = form_choices.get(prop.key)  # type: ignore
+                choices = form_choices.get(prop.key)
                 if choices:
                     # Check if this is an enum field that needs coercion
                     coerce_func = None
                     if issubclass(model, SQLModel):
                         model_fields = getattr(model, "model_fields", {})
-                        field_info = model_fields.get(prop.key)  # type: ignore
+                        field_info = model_fields.get(prop.key)
                         if field_info:
                             # Get the type annotation
                             original_annotation = getattr(
                                 model, "__annotations__", {}
-                            ).get(prop.key)  # type: ignore
+                            ).get(prop.key)
                             pydantic_type = original_annotation or field_info.annotation
 
                             # Handle Optional types
@@ -555,8 +589,8 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
 
                     field_kwargs = {
                         "choices": choices,
-                        "allow_blank": column.nullable or is_optional,  # type: ignore
-                        **kwargs,  # type: ignore
+                        "allow_blank": column.nullable or is_optional,
+                        **kwargs,
                     }
                     if coerce_func:
                         field_kwargs["coerce"] = coerce_func
@@ -566,12 +600,12 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
             # For SQLModel, check for special Pydantic types first
             if issubclass(model, SQLModel):
                 model_fields = getattr(model, "model_fields", {})
-                field_info = model_fields.get(prop.key)  # type: ignore
+                field_info = model_fields.get(prop.key)
                 if field_info:
                     # Get the original annotation from __annotations__
                     # which preserves constrained types
                     original_annotation = getattr(model, "__annotations__", {}).get(
-                        prop.key  # type: ignore
+                        prop.key
                     )
                     pydantic_type = original_annotation or field_info.annotation
 
@@ -613,7 +647,7 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
                     except AttributeError:
                         # For Annotated types like UUID1, UUID4, get the origin type
                         if hasattr(pydantic_type, "__origin__"):
-                            origin_type = pydantic_type.__origin__ # type: ignore
+                            origin_type = pydantic_type.__origin__
                             type_name = getattr(
                                 origin_type, "__name__", str(origin_type)
                             )
@@ -647,14 +681,16 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
         return None
 
     @classmethod
-    def _nullable_common(cls, column, field_args):
+    def _nullable_common(cls, column: t.Any, field_args: T_FIELD_ARGS_FILTERS) -> None:
         if column.nullable:
             filters = field_args.get("filters", [])
             filters.append(lambda x: x or None)
             field_args["filters"] = filters
 
     @classmethod
-    def _string_common(cls, column, field_args, **extra):
+    def _string_common(
+        cls, column: t.Any, field_args: T_FIELD_ARGS_FILTERS, **extra: t.Any
+    ) -> dict[str, t.Any]:
         if (
             hasattr(column.type, "length")
             and isinstance(column.type.length, int)
@@ -664,7 +700,9 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
         cls._nullable_common(column, field_args)
 
     @converts("String")  # includes VARCHAR, CHAR, and Unicode
-    def conv_String(self, column, field_args, **extra):
+    def conv_String(
+        self, column: t.Any, field_args: T_FIELD_ARGS_FILTERS, **extra: t.Any
+    ) -> fields.StringField:
         self._string_common(column=column, field_args=field_args, **extra)
         return fields.StringField(**field_args)
 
@@ -765,7 +803,7 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
                 if valuelist and valuelist[0]:
                     try:
                         # Convert string to UUID object
-                        self.data = uuid.UUID(valuelist[0])  # type: ignore
+                        self.data = uuid.UUID(valuelist[0])
                     except (ValueError, TypeError):
                         self.data = None
                         raise ValueError("Invalid UUID format") from None
@@ -777,10 +815,10 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
                 if value is not None:
                     try:
                         if isinstance(value, uuid.UUID):
-                            self.data = value  # type: ignore
+                            self.data = value
                         else:
                             # Convert string to UUID object
-                            self.data = uuid.UUID(str(value))  # type: ignore
+                            self.data = uuid.UUID(str(value))
                     except (ValueError, TypeError):
                         self.data = None
                 else:
@@ -792,7 +830,7 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
                 # After processing, ensure data is always a UUID object if not None
                 if self.data is not None and not isinstance(self.data, uuid.UUID):
                     try:
-                        self.data = uuid.UUID(str(self.data))  # type: ignore
+                        self.data = uuid.UUID(str(self.data))
                     except (ValueError, TypeError):
                         pass  # Keep original data if conversion fails
 
@@ -1126,7 +1164,7 @@ def get_form(
         if not hasattr(model, "_sa_class_manager"):
             raise TypeError("model must be a sqlalchemy mapped model")
 
-    mapper = model._sa_class_manager.mapper  # type: ignore
+    mapper = model._sa_class_manager.mapper
     field_args = field_args or {}
 
     properties = list((p.key, p) for p in mapper.attrs)
@@ -1216,7 +1254,7 @@ def get_form(
                 return name, column
 
             if hasattr(column, "key"):
-                relation_name = column.key  # type: ignore
+                relation_name = column.key
 
                 if column is not None and hasattr(column, "property"):
                     return relation_name, column.property
@@ -1262,12 +1300,14 @@ class InlineModelConverter(InlineModelConverterBase):
 
     inline_field_list_type = InlineModelFormList
 
-    def __init__(self, session, view, model_converter):
+    def __init__(
+        self, session: T_SQLALCHEMY_SESSION, view: T_MODEL_VIEW, model_converter: t.Any
+    ) -> None:
         super().__init__(view)
         self.session = session
         self.model_converter = model_converter
 
-    def get_info(self, p):
+    def get_info(self, p: t.Any) -> t.Any:
         # Already a subclass of InlineBaseFormAdmin or InlineFormAdmin
         if isinstance(p, self.form_admin_class):
             info = p
@@ -1291,7 +1331,7 @@ class InlineModelConverter(InlineModelConverterBase):
             info = self.form_admin_class(model, **attrs)
 
         # Always process AJAX references
-        info._form_ajax_refs = self.process_ajax_refs(info)  # type: ignore
+        info._form_ajax_refs = self.process_ajax_refs(info)
 
         return info
 
@@ -1316,7 +1356,7 @@ class InlineModelConverter(InlineModelConverterBase):
     ) -> dict[str, str]:
         result: dict[str, str] = {}
 
-        parent_mapper = parent_model._sa_class_manager.mapper  # type: ignore
+        parent_mapper = parent_model._sa_class_manager.mapper
         child_mapper = info.model._sa_class_manager.mapper
 
         for rel in parent_mapper.relationships:
@@ -1358,8 +1398,8 @@ class InlineModelConverter(InlineModelConverterBase):
             rel_type = fld.annotation
             if rel_type is parent_model or (
                 hasattr(rel_type, "__origin__")
-                and rel_type.__origin__ is list  # type: ignore
-                and rel_type.__args__[0] is parent_model  # type: ignore
+                and rel_type.__origin__ is list
+                and rel_type.__args__[0] is parent_model
             ):
                 return name
 
@@ -1416,8 +1456,8 @@ class InlineModelConverter(InlineModelConverterBase):
 
         for forward_key, reverse_key in forward_reverse_props_keys.items():
             exclude = [reverse_key]
-            if info.form_excluded_columns:  # type: ignore
-                exclude.extend(info.form_excluded_columns)  # type: ignore
+            if info.form_excluded_columns:
+                exclude.extend(info.form_excluded_columns)
 
             # Create a new converter for the inline model
             converter = self.model_converter(self.session, info)
@@ -1428,12 +1468,12 @@ class InlineModelConverter(InlineModelConverterBase):
                 child_form = get_form(
                     info.model,
                     converter,
-                    base_class=info.form_base_class or form.BaseForm,  # type: ignore
-                    only=info.form_columns,  # type: ignore
+                    base_class=info.form_base_class or form.BaseForm,
+                    only=info.form_columns,
                     exclude=exclude,
-                    field_args=info.form_args,  # type: ignore
+                    field_args=info.form_args,
                     hidden_pk=True,
-                    extra_fields=info.form_extra_fields,  # type: ignore
+                    extra_fields=info.form_extra_fields,
                 )
 
             # Allow further customization
@@ -1467,11 +1507,11 @@ class InlineModelConverter(InlineModelConverterBase):
 
 
 class InlineOneToOneModelConverter(InlineModelConverter):
-    inline_field_list_type = InlineModelOneToOneField  # type: ignore
+    inline_field_list_type = InlineModelOneToOneField
 
     def _calculate_mapping_key_pair(self, model: type[SQLModel], info):
         forward_mapper = info.model._sa_class_manager.mapper
-        target_mapper = model._sa_class_manager.mapper  # type: ignore
+        target_mapper = model._sa_class_manager.mapper
 
         for forward_prop in forward_mapper.relationships:
             if forward_prop.mapper.class_ == target_mapper.class_:
@@ -1489,8 +1529,8 @@ class InlineOneToOneModelConverter(InlineModelConverter):
         inline_relationships = self._calculate_mapping_key_pair(model, info)
 
         exclude = list(inline_relationships.values()) + list(
-            info.form_excluded_columns or []  # type: ignore
-        )  # type: ignore
+            info.form_excluded_columns or []
+        )
 
         converter = self.model_converter(self.session, info)
         child_form = info.get_form()
@@ -1498,12 +1538,12 @@ class InlineOneToOneModelConverter(InlineModelConverter):
             child_form = get_form(
                 info.model,
                 converter,
-                base_class=info.form_base_class or BaseForm,  # type: ignore
-                only=info.form_columns,  # type: ignore
+                base_class=info.form_base_class or BaseForm,
+                only=info.form_columns,
                 exclude=exclude,
-                field_args=info.form_args,  # type: ignore
+                field_args=info.form_args,
                 hidden_pk=True,
-                extra_fields=info.form_extra_fields,  # type: ignore
+                extra_fields=info.form_extra_fields,
             )
 
         child_form = info.postprocess_form(child_form)

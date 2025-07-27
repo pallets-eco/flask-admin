@@ -62,7 +62,7 @@ class TestPropertyComputedFieldIntegration:
 
             # Property with setter should be included automatically
             assert "display_name" in form._fields
-            assert isinstance(form.display_name, fields.StringField) # type: ignore
+            assert isinstance(form.display_name, fields.StringField)
 
             # Property without setter should not be included by default
             assert "readonly_name" not in form._fields
@@ -122,7 +122,7 @@ class TestPropertyComputedFieldIntegration:
 
             # Computed field with setter should be included when explicit
             assert "computed_score" in explicit_form._fields
-            assert isinstance(explicit_form.computed_score, fields.IntegerField) # type: ignore
+            assert isinstance(explicit_form.computed_score, fields.IntegerField)
 
             # Read-only computed field should not be included even when explicit
             # (unless specifically configured to include read-only fields)
@@ -239,9 +239,9 @@ class TestPropertyComputedFieldIntegration:
             form = view.create_form()
 
             # Check that field types are correctly inferred
-            assert isinstance(form.int_property, fields.IntegerField) # type: ignore
-            assert isinstance(form.float_property, fields.DecimalField) # type: ignore
-            assert isinstance(form.bool_property, fields.BooleanField) # type: ignore
+            assert isinstance(form.int_property, fields.IntegerField)
+            assert isinstance(form.float_property, fields.DecimalField)
+            assert isinstance(form.bool_property, fields.BooleanField)
 
     def test_form_population_with_properties(
         self, app, engine, babel, sqlmodel_base: type[SQLModel]
@@ -282,16 +282,16 @@ class TestPropertyComputedFieldIntegration:
 
         with app.app_context():
             # Create test instance
-            instance = PopulationTestModel(name="Test User") # type: ignore
+            instance = PopulationTestModel(name="Test User")
             instance.display_name = "Custom Display"
             instance.set_score(150)
 
             # Test form population
             form = view.edit_form(instance)
 
-            assert form.name.data == "Test User" # type: ignore
-            assert form.display_name.data == "Custom Display" # type: ignore
-            assert form.score.data == 150 # type: ignore
+            assert form.name.data == "Test User"
+            assert form.display_name.data == "Custom Display"
+            assert form.score.data == 150
 
     def test_backward_compatibility(
         self, app, engine, babel, sqlmodel_base: type[SQLModel]
@@ -316,12 +316,12 @@ class TestPropertyComputedFieldIntegration:
             assert "id" in form._fields
             assert "name" in form._fields
             assert "age" in form._fields
-            assert isinstance(form.name, fields.StringField) # type: ignore
-            assert isinstance(form.age, fields.IntegerField) # type: ignore
+            assert isinstance(form.name, fields.StringField)
+            assert isinstance(form.age, fields.IntegerField)
 
             # Test form functionality
-            instance = BasicModel(name="John", age=30) # type: ignore
+            instance = BasicModel(name="John", age=30)
             edit_form = view.edit_form(instance)
 
-            assert edit_form.name.data == "John" # type: ignore
-            assert edit_form.age.data == 30 # type: ignore
+            assert edit_form.name.data == "John"
+            assert edit_form.age.data == 30

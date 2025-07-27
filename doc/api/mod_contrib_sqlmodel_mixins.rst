@@ -19,7 +19,7 @@ inherits from ``SQLAlchemyExtendedMixin`` to provide seamless integration.
         **Supported Extended Types:**
 
         * **EmailType**: Email validation with proper WTForms Email validator
-        * **URLType**: URL validation with WTForms URL validator  
+        * **URLType**: URL validation with WTForms URL validator
         * **IPAddressType**: IP address validation
         * **ColorType**: Color validation (hex codes and named colors)
         * **CurrencyType**: ISO currency code validation
@@ -28,14 +28,14 @@ inherits from ``SQLAlchemyExtendedMixin`` to provide seamless integration.
         * **ArrowType**: Arrow datetime fields
 
         **Graceful Degradation:**
-        
+
         When ``sqlalchemy-utils`` is not installed, all methods return ``None``,
         allowing the main form converter to handle fields as regular SQLAlchemy types.
 
     .. autofunction:: valid_color
 
         Validates color values. Accepts:
-        
+
         * Hex color codes: ``#FF0000``, ``#fff``
         * Named CSS colors: ``red``, ``blue``, ``green``, etc.
 
