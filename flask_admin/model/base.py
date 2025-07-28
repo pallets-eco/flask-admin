@@ -690,7 +690,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 form_excluded_columns = ('last_name', 'email')
     """
 
-    form_overrides: t.Optional[dict[str, Field]] = None
+    form_overrides: t.Optional[dict[str, type[Field]]] = None
     """
         Dictionary of form column overrides.
 

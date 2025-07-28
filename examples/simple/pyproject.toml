@@ -1,0 +1,12 @@
+[project]
+name = "example-simple"
+version = "0.1.0"
+description = "Simple Flask-Admin Example."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "flask-admin"
+]
+
+[tool.uv.sources]
+flask-admin = { path = "../../", editable = true }
