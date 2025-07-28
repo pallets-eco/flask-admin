@@ -20,10 +20,12 @@ except ImportError:
 from sqlalchemy.sql.schema import Column
 
 from flask_admin._types import T_OPTIONS
-from flask_admin._types import T_SQLALCHEMY_QUERY
 from flask_admin._types import T_WIDGET_TYPE
 from flask_admin.babel import lazy_gettext
 from flask_admin.contrib.sqlmodel import tools
+
+# Import centralized types
+from flask_admin.contrib.sqlmodel._types import T_SQLMODEL_QUERY
 from flask_admin.model import filters
 
 
@@ -34,7 +36,7 @@ class BaseSQLModelFilter(filters.BaseFilter):
 
     def __init__(
         self,
-        column: Column,
+        column: t.Union[Column, property, tuple[str, property]],
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
@@ -55,7 +57,8 @@ class BaseSQLModelFilter(filters.BaseFilter):
 
         # Handle computed fields by converting them to SQL expressions
         if isinstance(column, property):
-            self.column = self._convert_computed_field_to_sql(column)
+            tmp_value = self._convert_computed_field_to_sql(column)
+            self.column: t.Union[Column, tuple[str, property], property] = tmp_value
         else:
             self.column = column
         self.key_name = None  # Will be set during scaffolding for relationship filters
@@ -87,7 +90,7 @@ class BaseSQLModelFilter(filters.BaseFilter):
     def get_column(self, alias: t.Optional[t.Any]) -> t.Any:
         # Handle computed fields and properties
         if hasattr(self.column, "key"):
-            return self.column if alias is None else getattr(alias, self.column.key)
+            return self.column if alias is None else getattr(alias, self.column.key)  # type: ignore[union-attr]
         elif (
             isinstance(self.column, tuple)
             and self.column[0] == "computed_number_of_pixels"
@@ -117,16 +120,16 @@ class BaseSQLModelFilter(filters.BaseFilter):
             return alias.width * alias.height
 
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         return super().apply(query, value)
 
 
 # Common filters
 class FilterEqual(BaseSQLModelFilter):
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         column = self.get_column(alias)
 
         # Check if this is a property filter that needs post-query processing
@@ -137,8 +140,8 @@ class FilterEqual(BaseSQLModelFilter):
         ):
             # For property filters, return the query unchanged and store filter info
             # The view will handle the actual filtering after the query executes
-            query._property_filters = getattr(query, "_property_filters", [])
-            query._property_filters.append((column[1], "equals", value))
+            query._property_filters = getattr(query, "_property_filters", [])  # type: ignore[union-attr]
+            query._property_filters.append((column[1], "equals", value))  # type: ignore[union-attr]
             return query
 
         return query.filter(column == value)
@@ -149,8 +152,8 @@ class FilterEqual(BaseSQLModelFilter):
 
 class FilterNotEqual(BaseSQLModelFilter):
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         column = self.get_column(alias)
 
         # Check if this is a property filter that needs post-query processing
@@ -159,8 +162,8 @@ class FilterNotEqual(BaseSQLModelFilter):
             and len(column) == 2
             and column[0] == "__PROPERTY_FILTER__"
         ):
-            query._property_filters = getattr(query, "_property_filters", [])
-            query._property_filters.append((column[1], "not_equals", value))
+            query._property_filters = getattr(query, "_property_filters", [])  # type: ignore[union-attr]
+            query._property_filters.append((column[1], "not_equals", value))  # type: ignore[union-attr]
             return query
 
         return query.filter(column != value)
@@ -171,8 +174,8 @@ class FilterNotEqual(BaseSQLModelFilter):
 
 class FilterLike(BaseSQLModelFilter):
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         column = self.get_column(alias)
 
         # Check if this is a property filter that needs post-query processing
@@ -181,8 +184,8 @@ class FilterLike(BaseSQLModelFilter):
             and len(column) == 2
             and column[0] == "__PROPERTY_FILTER__"
         ):
-            query._property_filters = getattr(query, "_property_filters", [])
-            query._property_filters.append((column[1], "contains", value))
+            query._property_filters = getattr(query, "_property_filters", [])  # type: ignore[union-attr]
+            query._property_filters.append((column[1], "contains", value))  # type: ignore[union-attr]
             return query
 
         stmt = tools.parse_like_term(value)
@@ -194,8 +197,8 @@ class FilterLike(BaseSQLModelFilter):
 
 class FilterNotLike(BaseSQLModelFilter):
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         stmt = tools.parse_like_term(value)
         return query.filter(~self.get_column(alias).ilike(stmt))
 
@@ -205,8 +208,8 @@ class FilterNotLike(BaseSQLModelFilter):
 
 class FilterGreater(BaseSQLModelFilter):
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         return query.filter(self.get_column(alias) > value)
 
     def operation(self) -> str:
@@ -215,8 +218,8 @@ class FilterGreater(BaseSQLModelFilter):
 
 class FilterSmaller(BaseSQLModelFilter):
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         return query.filter(self.get_column(alias) < value)
 
     def operation(self) -> str:
@@ -225,8 +228,8 @@ class FilterSmaller(BaseSQLModelFilter):
 
 class FilterEmpty(BaseSQLModelFilter, filters.BaseBooleanFilter):
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         if value == "1":
             return query.filter(self.get_column(alias) == None)  # noqa: E711
         else:
@@ -244,8 +247,8 @@ class FilterInList(BaseSQLModelFilter):
         return [v.strip() for v in value.split(",") if v.strip()]
 
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         return query.filter(self.get_column(alias).in_(value))
 
     def operation(self) -> str:
@@ -254,8 +257,8 @@ class FilterInList(BaseSQLModelFilter):
 
 class FilterNotInList(FilterInList):
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         # NOT IN can exclude NULL values, so "or_ == None" needed to be added
         column = self.get_column(alias)
         return query.filter(or_(~column.in_(value), column == None))  # noqa: E711
@@ -342,16 +345,16 @@ class DateBetweenFilter(BaseSQLModelFilter, filters.BaseDateBetweenFilter):
         super().__init__(column, name, options, data_type="daterangepicker")
 
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         start, end = value
         return query.filter(self.get_column(alias).between(start, end))
 
 
 class DateNotBetweenFilter(DateBetweenFilter):
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         start, end = value
         return query.filter(not_(self.get_column(alias).between(start, end)))
 
@@ -380,16 +383,16 @@ class DateTimeBetweenFilter(BaseSQLModelFilter, filters.BaseDateTimeBetweenFilte
         super().__init__(column, name, options, data_type="datetimerangepicker")
 
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         start, end = value
         return query.filter(self.get_column(alias).between(start, end))
 
 
 class DateTimeNotBetweenFilter(DateTimeBetweenFilter):
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         start, end = value
         return query.filter(not_(self.get_column(alias).between(start, end)))
 
@@ -418,16 +421,16 @@ class TimeBetweenFilter(BaseSQLModelFilter, filters.BaseTimeBetweenFilter):
         super().__init__(column, name, options, data_type="timerangepicker")
 
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         start, end = value
         return query.filter(self.get_column(alias).between(start, end))
 
 
 class TimeNotBetweenFilter(TimeBetweenFilter):
     def apply(
-        self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
-    ) -> T_SQLALCHEMY_QUERY:
+        self, query: T_SQLMODEL_QUERY, value: t.Any, alias: t.Optional[t.Any] = None
+    ) -> T_SQLMODEL_QUERY:
         start, end = value
         return query.filter(not_(self.get_column(alias).between(start, end)))
 

@@ -8,8 +8,10 @@ including widgets for handling relationships and special field types.
 import typing as t
 
 from markupsafe import Markup
-from wtforms import Field
-from wtforms.widgets.core import escape
+from wtforms.widgets.core import escape  # type: ignore[attr-defined]
+
+# Import centralized types
+from flask_admin.contrib.sqlmodel._types import T_SELECT_FIELD_BASE
 
 
 class CheckboxListInput:
@@ -28,7 +30,7 @@ class CheckboxListInput:
         "</div>"
     )
 
-    def __call__(self, field: Field, **kwargs: t.Any) -> Markup:
+    def __call__(self, field: T_SELECT_FIELD_BASE, **kwargs: t.Any) -> Markup:
         items = []
         for field_choices in field.iter_choices():
             if len(field_choices) == 3:  # wtforms <3.1, >=3.1.1, <3.2

@@ -7,6 +7,7 @@ enabling dynamic population of form fields with related model data.
 
 import typing as t
 from typing import Any
+from typing import Optional
 
 from sqlmodel import cast
 from sqlmodel import or_
@@ -23,12 +24,14 @@ except ImportError:
 
 from flask_admin._compat import as_unicode
 from flask_admin._compat import string_types
+
+# Import centralized types
+from flask_admin.contrib.sqlmodel._types import T_SQLMODEL
+from flask_admin.contrib.sqlmodel._types import T_SQLMODEL_PK_VALUE
+from flask_admin.contrib.sqlmodel._types import T_SQLMODEL_SESSION_TYPE
 from flask_admin.model.ajax import AjaxModelLoader
 from flask_admin.model.ajax import DEFAULT_PAGE_SIZE
 
-from ..._types import T_SQLALCHEMY_MODEL
-from ..._types import T_SQLALCHEMY_QUERY
-from ..._types import T_SQLALCHEMY_SESSION
 from .tools import get_primary_key
 from .tools import has_multiple_pks
 from .tools import is_relationship
@@ -38,8 +41,8 @@ class QueryAjaxModelLoader(AjaxModelLoader):
     def __init__(
         self,
         name: str,
-        session: T_SQLALCHEMY_SESSION,
-        model: T_SQLALCHEMY_MODEL,
+        session: T_SQLMODEL_SESSION_TYPE,
+        model: type[T_SQLMODEL],
         **options: t.Any,
     ) -> None:
         """
@@ -54,7 +57,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         self.session = session
         self.model = model
-        self.fields = options.get("fields")
+        self.fields: Optional[list[t.Any]] = options.get("fields")
         self.order_by = options.get("order_by")
         self.filters = options.get("filters")
 
@@ -71,12 +74,13 @@ class QueryAjaxModelLoader(AjaxModelLoader):
                 "Flask-Admin does not support multi-pk AJAX model loading."
             )
 
-        self.pk = get_primary_key(model)  # Single PK only, checked above
+        pk_result = get_primary_key(model)  # Single PK only, checked above
+        self.pk = str(pk_result) if pk_result is not None else "id"
 
     def _process_fields(self) -> list[Any]:
         remote_fields = []
 
-        for field in self.fields:
+        for field in self.fields or []:
             if isinstance(field, string_types):
                 attr = getattr(self.model, field, None)
 
@@ -90,35 +94,40 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
-    def format(self, model: T_SQLALCHEMY_MODEL) -> t.Optional[tuple[t.Any, str]]:
+    def format(self, model: t.Any) -> t.Optional[tuple[t.Any, str]]:
         if not model:
             return None
 
-        return getattr(model, self.pk), as_unicode(model)
+        pk_value: T_SQLMODEL_PK_VALUE = getattr(model, str(self.pk))
+        return pk_value, as_unicode(model)
 
-    def get_query(self) -> T_SQLALCHEMY_QUERY:
-        return self.session.query(self.model)
+    def get_query(self) -> t.Any:
+        # For compatibility, return session.query if available, otherwise select
+        if hasattr(self.session, "query"):
+            return self.session.query(self.model)
+        else:
+            return select(self.model)
 
-    def get_one(self, pk: t.Any) -> t.Optional[T_SQLALCHEMY_MODEL]:
+    def get_one(self, pk: t.Any) -> Optional[T_SQLMODEL]:
         # prevent autoflush from occurring during populate_obj
-        with self.session.no_autoflush:
+        with self.session.no_autoflush:  # type: ignore[attr-defined]
             # Import tools here to avoid circular import
             from . import tools
 
             # Convert string primary key to proper type if needed
             converted_pk = tools.convert_pk_value(
-                pk, tools.get_primary_key_types(self.model).get(self.pk, str)
+                pk, tools.get_primary_key_types(self.model).get(str(self.pk), str)
             )
-            stmt = select(self.model).where(
-                getattr(self.model, self.pk) == converted_pk
+            stmt: t.Any = select(self.model).where(
+                getattr(self.model, str(self.pk)) == converted_pk
             )
             return self.session.scalar(stmt)
 
     def get_list(
         self, term: str, offset: int = 0, limit: int = DEFAULT_PAGE_SIZE
-    ) -> list[T_SQLALCHEMY_MODEL]:
+    ) -> list[T_SQLMODEL]:
         # Start with a select statement that returns ORM objects
-        stmt = select(self.model)
+        stmt: t.Any = select(self.model)
 
         # Apply filters
         filters = (
@@ -127,11 +136,19 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         stmt = stmt.filter(or_(*filters))
 
         if self.filters:
-            filters = [
-                text(f"{self.model.__tablename__.lower()}.{value}")
-                for value in self.filters
+            # Get tablename safely
+            tablename = getattr(self.model, "__tablename__", None)
+            if tablename and hasattr(tablename, "lower"):
+                tablename_str = tablename.lower()
+            elif isinstance(tablename, str):
+                tablename_str = tablename.lower()
+            else:
+                tablename_str = str(self.model.__name__).lower()
+
+            filter_expressions = [
+                text(f"{tablename_str}.{value}") for value in self.filters
             ]
-            stmt = stmt.filter(and_(*filters))
+            stmt = stmt.filter(and_(*filter_expressions))
 
         if self.order_by:
             stmt = stmt.order_by(self.order_by)
@@ -141,8 +158,8 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
 
 def create_ajax_loader(
-    model: T_SQLALCHEMY_MODEL,
-    session: T_SQLALCHEMY_SESSION,
+    model: type[T_SQLMODEL],
+    session: T_SQLMODEL_SESSION_TYPE,
     name: str,
     field_name: str,
     options: dict[str, t.Any],

@@ -53,7 +53,7 @@ class Unique:
             return
 
         try:
-            obj = self.db_session.exec(
+            obj = self.db_session.exec(  # type: ignore[attr-defined]
                 select(self.model).where(self.column == field.data)
             ).one()
 

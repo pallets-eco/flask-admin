@@ -155,6 +155,8 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
         if column_descriptions:
             return column_descriptions.get(name)
 
+        return None
+
     def _get_field_override(self, name: str) -> t.Any:
         form_overrides = getattr(self.view, "form_overrides", None)
 
@@ -175,7 +177,7 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
                 return AjaxSelectField(loader, **kwargs)
 
         if "query_factory" not in kwargs:
-            kwargs["query_factory"] = lambda: self.session.exec(select(remote_model))
+            kwargs["query_factory"] = lambda: self.session.exec(select(remote_model))  # type: ignore[attr-defined]
 
         if multiple:
             return QuerySelectMultipleField(**kwargs)
@@ -698,6 +700,7 @@ class AdminModelConverter(ModelConverterBase, SQLAlchemyExtendedMixin):
         ):
             field_args["validators"].append(validators.Length(max=column.type.length))
         cls._nullable_common(column, field_args)
+        return field_args
 
     @converts("String")  # includes VARCHAR, CHAR, and Unicode
     def conv_String(

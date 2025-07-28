@@ -40,6 +40,19 @@ from flask_admin.babel import ngettext
 from flask_admin.contrib.sqlmodel import filters as sqlmodel_filters
 from flask_admin.contrib.sqlmodel import form
 from flask_admin.contrib.sqlmodel import tools
+from flask_admin.contrib.sqlmodel._types import T_COLUMN_DICT
+from flask_admin.contrib.sqlmodel._types import T_COLUMN_NAME_LIST
+from flask_admin.contrib.sqlmodel._types import T_FILTER_LIST
+from flask_admin.contrib.sqlmodel._types import T_GET_LIST_RESULT
+from flask_admin.contrib.sqlmodel._types import T_JOIN_DICT
+from flask_admin.contrib.sqlmodel._types import T_SEARCH_FIELD_LIST
+
+# Import centralized types
+from flask_admin.contrib.sqlmodel._types import T_SQLMODEL
+from flask_admin.contrib.sqlmodel._types import T_SQLMODEL_BASE_FILTER
+from flask_admin.contrib.sqlmodel._types import T_SQLMODEL_COLUMN_LIST
+from flask_admin.contrib.sqlmodel._types import T_SQLMODEL_QUERY
+from flask_admin.contrib.sqlmodel._types import T_SQLMODEL_SESSION_TYPE
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
 
@@ -48,7 +61,6 @@ from ..._types import T_FIELD_ARGS_VALIDATORS
 from ..._types import T_FILTER
 from ..._types import T_SQLALCHEMY_MODEL
 from ..._types import T_SQLALCHEMY_QUERY
-from ..._types import T_SQLALCHEMY_SESSION
 from ..._types import T_WIDGET
 from .ajax import create_ajax_loader
 from .ajax import QueryAjaxModelLoader
@@ -240,8 +252,8 @@ class SQLModelView(BaseModelView):
 
     def __init__(
         self,
-        model: T_SQLALCHEMY_MODEL,
-        session: T_SQLALCHEMY_SESSION,
+        model: type[T_SQLMODEL],
+        session: T_SQLMODEL_SESSION_TYPE,
         name: t.Optional[str] = None,
         category: t.Optional[str] = None,
         endpoint: t.Optional[str] = None,
@@ -280,7 +292,7 @@ class SQLModelView(BaseModelView):
             Icon glyph name or URL, depending on `menu_icon_type` setting
         """
         self.session = session
-        self._search_fields = None
+        self._search_fields: t.Optional[T_SEARCH_FIELD_LIST] = None
         self._filter_joins: dict[Any, Any] = {}
         self._sortable_joins: dict[Any, Any] = {}
         self._filter_name_to_joins: dict[
@@ -327,7 +339,7 @@ class SQLModelView(BaseModelView):
             return model.model_fields.items()
         else:
             # Fallback for older Pydantic versions
-            return model.__fields__.items()
+            return model.__fields__.items()  # type: ignore[union-attr]
 
     def _apply_path_joins(
         self,
@@ -469,7 +481,7 @@ class SQLModelView(BaseModelView):
         if self.column_sortable_list is None:
             return self.scaffold_sortable_columns()
         else:
-            result = {}
+            result: T_COLUMN_DICT = {}
             for c in self.column_sortable_list:
                 if isinstance(c, tuple):
                     column, path = tools.get_field_with_path(self.model, c[1])
@@ -483,8 +495,10 @@ class SQLModelView(BaseModelView):
             return result
 
     def get_column_names(
-        self, only_columns: list[str], excluded_columns: t.Optional[list[str]]
-    ) -> list[tuple[str, str]]:
+        self,
+        only_columns: T_SQLMODEL_COLUMN_LIST,
+        excluded_columns: t.Optional[t.Sequence[str]],
+    ) -> T_COLUMN_NAME_LIST:
         """
         Returns a list of tuples with the model field name and formatted
         field name.
@@ -545,7 +559,9 @@ class SQLModelView(BaseModelView):
         ]
         return ", ".join(placeholders)
 
-    def scaffold_filters(self, name: str) -> t.Optional[list[BaseSQLModelFilter]]:
+    def scaffold_filters(
+        self, name: t.Union[str, T_SQLMODEL_BASE_FILTER]
+    ) -> T_FILTER_LIST:
         """
         Return list of enabled filters
         """
@@ -615,7 +631,7 @@ class SQLModelView(BaseModelView):
             type_name,
             attr,
             visible_name,
-            options=self.column_choices.get(name),
+            options=self.column_choices.get(name) if self.column_choices else None,
         )
 
         # Set key_name for each filter in the list to enable proper join lookup
@@ -684,7 +700,9 @@ class SQLModelView(BaseModelView):
                 type_name,
                 related_attr,
                 filter_name,
-                options=self.column_choices.get(f"{attr.key}.{field_name}"),
+                options=self.column_choices.get(f"{attr.key}.{field_name}")
+                if self.column_choices
+                else None,
             )
 
             if flt:
@@ -721,9 +739,9 @@ class SQLModelView(BaseModelView):
             from flask_admin.contrib.sqlmodel.filters import FilterNotEqual
 
             filters = [
-                FilterEqual(column=prop, name=visible_name),
-                FilterNotEqual(column=prop, name=visible_name),
-                FilterLike(column=prop, name=visible_name),
+                FilterEqual(column=prop, name=visible_name),  # type: ignore[arg-type]
+                FilterNotEqual(column=prop, name=visible_name),  # type: ignore[arg-type]
+                FilterLike(column=prop, name=visible_name),  # type: ignore[arg-type]
             ]
 
             # Set key_name for each filter
@@ -741,7 +759,7 @@ class SQLModelView(BaseModelView):
             # If we can't create filters for this property, return None
             return None
 
-    def is_valid_filter(self, filter_: t.Any) -> bool:
+    def is_valid_filter(self, filter_: t.Any) -> bool:  # type: ignore[override]
         """
         Verify whether the given object is a valid filter.
 
@@ -868,7 +886,7 @@ class SQLModelView(BaseModelView):
             self.session, self, self.model_form_converter
         )
 
-        for m in self.inline_models:
+        for m in self.inline_models:  # type: ignore[attr-defined]
             if not hasattr(m, "inline_converter"):
                 form_class = default_converter.contribute(self.model, form_class, m)
                 continue
@@ -885,7 +903,9 @@ class SQLModelView(BaseModelView):
         displayed columns.
         """
         relations = {
-            p.key for p in self._get_model_iterator() if tools.is_relationship(p)
+            p.key
+            for p in self._get_model_iterator()
+            if tools.is_relationship(p)  # type: ignore[attr-defined]
         }
         return [
             getattr(self.model, prop)
@@ -944,7 +964,7 @@ class SQLModelView(BaseModelView):
         for displaying the correct item count in the list view, and `get_one`, which is
         used when retrieving records for the edit view.
         """
-        query = select(self.model)
+        query: T_SQLMODEL_QUERY = select(self.model)
 
         # Handle column_property fields that may not be properly computed
         # This is needed because SQLModel's Field(sa_column=column_property(...))
@@ -1242,7 +1262,7 @@ class SQLModelView(BaseModelView):
         filters: t.Optional[list[T_FILTER]],
         execute: bool = True,
         page_size: t.Optional[int] = None,
-    ) -> tuple[t.Optional[int], t.Union[list[T_SQLALCHEMY_MODEL], T_SQLALCHEMY_QUERY]]:
+    ) -> T_GET_LIST_RESULT:
         """
         Return records from the database.
 
@@ -1263,8 +1283,8 @@ class SQLModelView(BaseModelView):
             overriden to change the page_size limit. Removing the page_size
             limit requires setting page_size to 0 or False.
         """
-        joins = {}
-        count_joins = {}
+        joins: T_JOIN_DICT = {}
+        count_joins: T_JOIN_DICT = {}
         query = self.get_query()
         count_query = self.get_count_query() if not self.simple_list_pager else None
 
@@ -1299,7 +1319,7 @@ class SQLModelView(BaseModelView):
         else:
             # Normal case: use efficient SQL-level filtering and pagination
             count = (
-                self.session.exec(count_query).one()
+                self.session.exec(count_query).one()  # type: ignore[attr-defined]
                 if count_query is not None
                 else None
             )
@@ -1311,7 +1331,7 @@ class SQLModelView(BaseModelView):
             query = self._apply_pagination(query, page, page_size)
 
             if execute:
-                models = self.session.exec(query).all()
+                models = self.session.exec(query).all()  # type: ignore[attr-defined]
                 # Fix any column_property issues
                 models = self._fix_column_property_values(models)
 
@@ -1463,7 +1483,7 @@ class SQLModelView(BaseModelView):
             self.session.rollback()
             return False
 
-    def update_model(self, form: Form, model: T_SQLALCHEMY_MODEL) -> bool:
+    def update_model(self, form: Form, model: T_SQLMODEL) -> bool:
         """
         Update model from form.
 
@@ -1507,7 +1527,7 @@ class SQLModelView(BaseModelView):
 
             return True
 
-    def delete_model(self, model: T_SQLALCHEMY_MODEL) -> bool:
+    def delete_model(self, model: T_SQLMODEL) -> bool:
         """
         Delete model.
 

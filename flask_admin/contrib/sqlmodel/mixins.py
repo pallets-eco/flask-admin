@@ -284,7 +284,7 @@ class TimeZoneValidator:
         else:
             # Basic timezone validation fallback
             try:
-                import pytz
+                import pytz  # type: ignore[import-untyped]
 
                 pytz.timezone(field.data)
             except ImportError:
@@ -470,16 +470,16 @@ class SQLAlchemyExtendedMixin:
 
     def _convert_choice_type(
         self, column: Any, field_args: dict, **extra
-    ) -> fields.SelectField:
+    ) -> t.Union[fields.SelectField, fields.StringField]:
         """Convert SQLAlchemy-utils ChoiceType to SelectField with choices."""
-        available_choices = []
+        available_choices: list[tuple[Any, str]] = []
 
         if not column.type or not hasattr(column.type, "choices"):
             return fields.StringField(**field_args)
 
         # Choices can either be specified as an enum, or as a list of tuples
         if isinstance(column.type.choices, EnumMeta):
-            available_choices = [(f.value, f.name) for f in column.type.choices]
+            available_choices = [(f.value, f.name) for f in column.type.choices]  # type: ignore[var-annotated]
         else:
             available_choices = column.type.choices
 
@@ -510,15 +510,5 @@ class SQLAlchemyExtendedMixin:
         return form.DateTimeField(**field_args)
 
 
-# For backward compatibility, create a
-# no-op mixin when sqlalchemy-utils is not available
-if not SQLALCHEMY_UTILS_AVAILABLE:
-
-    class SQLAlchemyExtendedMixin:
-        """No-op mixin when sqlalchemy-utils is not available."""
-
-        def handle_extended_types(
-            self, model: Any, column: Any, field_args: dict, **extra
-        ) -> None:
-            """Return None when sqlalchemy-utils is not available."""
-            return None
+# The SQLAlchemyExtendedMixin class above already handles both cases:
+# when sqlalchemy-utils is available and when it's not available

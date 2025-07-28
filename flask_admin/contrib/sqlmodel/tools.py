@@ -23,17 +23,23 @@ from sqlalchemy import tuple_
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm.clsregistry import _class_resolver
 
+from flask_admin.contrib.sqlmodel._types import T_MODEL_FIELD_LIST
+
+# Import centralized types
+from flask_admin.contrib.sqlmodel._types import T_SQLMODEL_PK_VALUE
+
 try:
     # SQLAlchemy 2.0
     from sqlalchemy.ext.associationproxy import AssociationProxyExtensionType
 
     ASSOCIATION_PROXY = AssociationProxyExtensionType.ASSOCIATION_PROXY
 except ImportError:
+    # Fallback for older versions
     from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
 
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
-from sqlalchemy.sql.operators import eq
+from sqlalchemy.sql.operators import eq  # type: ignore[attr-defined]
 
 from flask_admin._compat import filter_list
 from flask_admin._compat import string_types
@@ -48,10 +54,10 @@ try:
 
     SQLMODEL_AVAILABLE = True
 except ImportError:
-    SQLModel = None
+    SQLModel = None  # type: ignore[misc,assignment]
     computed_field = None
     FieldInfo = None
-    ComputedFieldInfo = None
+    ComputedFieldInfo = None  # type: ignore[misc,assignment]
     SQLMODEL_AVAILABLE = False
 
 # Special Pydantic types
@@ -65,12 +71,12 @@ try:
 
     PYDANTIC_TYPES_AVAILABLE = True
 except ImportError:
-    EmailStr = None
-    AnyUrl = None
-    HttpUrl = None
-    SecretStr = None
-    SecretBytes = None
-    Json = None
+    EmailStr = None  # type: ignore[misc,assignment]
+    AnyUrl = None  # type: ignore[misc,assignment]
+    HttpUrl = None  # type: ignore[misc,assignment]
+    SecretStr = None  # type: ignore[misc,assignment]
+    SecretBytes = None  # type: ignore[misc,assignment]
+    Json = None  # type: ignore[misc]
     PYDANTIC_TYPES_AVAILABLE = False
 
 # IP Address types
@@ -83,9 +89,9 @@ try:
 
     PYDANTIC_IP_TYPES_AVAILABLE = True
 except ImportError:
-    IPvAnyAddress = None
-    IPv4Address = None
-    IPv6Address = None
+    IPvAnyAddress = None  # type: ignore[misc]
+    IPv4Address = None  # type: ignore[misc,assignment]
+    IPv6Address = None  # type: ignore[misc,assignment]
     PYDANTIC_IP_TYPES_AVAILABLE = False
 
 # Constrained types (Pydantic v2)
@@ -96,9 +102,9 @@ try:
 
     PYDANTIC_CONSTRAINED_TYPES_AVAILABLE = True
 except ImportError:
-    constr = None
-    conint = None
-    confloat = None
+    constr = None  # type: ignore[assignment]
+    conint = None  # type: ignore[assignment]
+    confloat = None  # type: ignore[assignment]
     PYDANTIC_CONSTRAINED_TYPES_AVAILABLE = False
 
 # UUID types
@@ -119,7 +125,7 @@ except ImportError:
         UUID1 = UUID3 = UUID4 = UUID5 = UUID
         PYDANTIC_UUID_TYPES_AVAILABLE = True
     except ImportError:
-        UUID = UUID1 = UUID3 = UUID4 = UUID5 = None
+        UUID = UUID1 = UUID3 = UUID4 = UUID5 = None  # type: ignore[misc,assignment]
         PYDANTIC_UUID_TYPES_AVAILABLE = False
 
 if TYPE_CHECKING:
@@ -276,7 +282,7 @@ def get_pydantic_field_constraints(
     field_info: Any, type_annotation: Any
 ) -> dict[str, Any]:
     """Extract Pydantic field constraints for WTForms validation."""
-    constraints = {}
+    constraints: dict[str, Any] = {}
 
     if not PYDANTIC_CONSTRAINED_TYPES_AVAILABLE:
         return constraints
@@ -357,7 +363,9 @@ def _get_sqlmodel_property_info(model: Any, name: str) -> dict[str, Any]:
 
         if isinstance(computed_info, ComputedFieldInfo):
             info["type_"] = computed_info.return_type
-            info["description"] = computed_info.description
+            # Ensure description is always a string or None
+            desc = computed_info.description
+            info["description"] = str(desc) if desc is not None else None  # type: ignore[assignment]
 
         # Check if there's a setter method
         setter_name = f"set_{name}"
@@ -386,7 +394,7 @@ def _get_sqlmodel_property_info(model: Any, name: str) -> dict[str, Any]:
     return info
 
 
-def get_model_fields(model) -> list[ModelField]:
+def get_model_fields(model) -> T_MODEL_FIELD_LIST:
     """
     Get all fields from a model, supporting both SQLModel and SQLAlchemy.
     For SQLModel, includes regular fields, properties, and computed fields.
@@ -577,7 +585,7 @@ def is_sqlmodel_class(model: Any) -> bool:
     return isinstance(model, type) and issubclass(model, SQLModel)
 
 
-def get_primary_key(model: Any) -> Union[str, tuple[str, ...], None]:
+def get_primary_key(model: Any) -> T_SQLMODEL_PK_VALUE:
     """
     Return primary key name from a model. If the primary key consists of multiple
     columns, return the corresponding ``tuple``.
@@ -731,6 +739,7 @@ def convert_pk_from_url(model: Any, pk_value: Any) -> Any:
     if isinstance(pk_value, tuple):
         if is_composite_pk:
             # Model has composite PK, convert each part
+            assert isinstance(pk_names, tuple)  # Help mypy understand pk_names is tuple
             if len(pk_value) != len(pk_names):
                 raise ValueError(
                     f"Primary key value count ({len(pk_value)}) doesn't match model ({len(pk_names)})"  # noqa: E501
@@ -738,7 +747,7 @@ def convert_pk_from_url(model: Any, pk_value: Any) -> Any:
 
             converted_values = []
             for name, value in zip(pk_names, pk_value):
-                pk_type = pk_types.get(name, str)
+                pk_type = pk_types.get(str(name), str)
                 converted_values.append(convert_pk_value(value, pk_type))
 
             return tuple(converted_values)
@@ -746,7 +755,7 @@ def convert_pk_from_url(model: Any, pk_value: Any) -> Any:
             # Model has single PK but got tuple (from iterdecode)
             if len(pk_value) == 1:
                 # Single value tuple - unwrap and convert
-                pk_type = pk_types.get(pk_names, str) if pk_names else str
+                pk_type = pk_types.get(str(pk_names), str) if pk_names else str
                 return convert_pk_value(pk_value[0], pk_type)
             elif len(pk_value) == 0:
                 # Empty tuple
@@ -766,7 +775,7 @@ def convert_pk_from_url(model: Any, pk_value: Any) -> Any:
             )
         else:
             # Model has single PK, convert the value
-            pk_type = pk_types.get(pk_names, str) if pk_names else str
+            pk_type = pk_types.get(str(pk_names), str) if pk_names else str
             return convert_pk_value(pk_value, pk_type)
 
     # Fallback - return original value
@@ -778,8 +787,8 @@ def tuple_operator_in(model_pk: list[Any], ids: list[tuple[Any, ...]]) -> Option
     The ``tuple_`` Operator only works on certain engines like MySQL or Postgresql. It
     does not work with sqlite.
 
-    The function returns an ``or_`` - operator, that contains ``and_`` - operators for every
-    single ``tuple`` in ``ids``.
+    The function returns an ``or_`` - operator, that contains ``and_`` - operators
+    for every single ``tuple`` in ``ids``.
 
     Example::
 
@@ -790,7 +799,8 @@ def tuple_operator_in(model_pk: list[Any], ids: list[tuple[Any, ...]]) -> Option
       ->
       or_( and_( ColumnA == 1, ColumnB == 2), and_( ColumnA == 1, ColumnB == 3) )
 
-    The returning operator can be used within a ``filter()``, as it is just an ``or_`` operator
+    The returning operator can be used within a ``filter()``, as it is
+    just an ``or_`` operator
     """
     ands = []
     for id_tuple in ids:
@@ -823,9 +833,9 @@ def get_query_for_ids(modelquery, model: Any, ids: list[Any]):
         # Get model primary key property references
         pk_names = get_primary_key(model)
         if isinstance(pk_names, tuple):
-            model_pk = [getattr(model, name) for name in pk_names]
+            model_pk = [getattr(model, str(name)) for name in pk_names]
         else:
-            model_pk = [getattr(model, pk_names)]
+            model_pk = [getattr(model, str(pk_names))]
 
         try:
             query = modelquery.filter(tuple_(*model_pk).in_(converted_ids))
@@ -838,11 +848,11 @@ def get_query_for_ids(modelquery, model: Any, ids: list[Any]):
         # Convert single primary key values to proper types
         pk_name = get_primary_key(model)
         pk_types = get_primary_key_types(model)
-        pk_type = pk_types.get(pk_name, str) if pk_name else str
+        pk_type = pk_types.get(str(pk_name), str) if pk_name else str
 
         converted_ids = [convert_pk_value(id_val, pk_type) for id_val in ids]
 
-        model_pk = getattr(model, pk_name)
+        model_pk = getattr(model, str(pk_name))
         query = modelquery.filter(model_pk.in_(converted_ids))
 
     return query

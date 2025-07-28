@@ -16,13 +16,14 @@ from flask_admin._compat import iteritems
 from flask_admin._compat import string_types
 from flask_admin._compat import text_type
 from flask_admin.babel import lazy_gettext
+
+# Import centralized types
 from flask_admin.form import BaseForm
 from flask_admin.form import FormOpts
 from flask_admin.form import Select2Widget
 from flask_admin.model.fields import InlineFieldList
 from flask_admin.model.fields import InlineModelFormField
 
-from ..._types import T_ITER_CHOICES
 from ..._types import T_VALIDATOR
 from .tools import get_primary_key
 from .widgets import CheckboxListInput
@@ -89,8 +90,9 @@ class QuerySelectField(SelectFieldBase):
 
         self.allow_blank = allow_blank
         self.blank_text = blank_text
-        self.query = None
-        self._object_list = None
+        self.query: t.Optional[t.Any] = None
+        self._object_list: t.Optional[list[tuple[t.Any, t.Any]]] = None
+        self._formdata: t.Optional[str] = None
 
     def _get_data(self) -> t.Any:
         if self._formdata is not None:
@@ -108,7 +110,12 @@ class QuerySelectField(SelectFieldBase):
 
     def _get_object_list(self) -> list[tuple[t.Any, t.Any]]:
         if self._object_list is None:
-            query = self.query or self.query_factory()
+            if self.query is not None:
+                query = self.query
+            elif self.query_factory is not None:
+                query = self.query_factory()
+            else:
+                query = []
             get_pk = self.get_pk
             # Extract actual SQLModel instances from Row objects if needed
             processed_objects = []
@@ -122,18 +129,28 @@ class QuerySelectField(SelectFieldBase):
                     # It's already a SQLModel instance
                     processed_objects.append((text_type(get_pk(obj)), obj))
             self._object_list = processed_objects
-        return self._object_list
+        return self._object_list if self._object_list is not None else []
 
-    def iter_choices(self) -> t.Iterator[T_ITER_CHOICES]:
+    def iter_choices(self) -> t.Iterator[tuple[t.Any, t.Any, bool, dict[str, t.Any]]]:
         if self.allow_blank:
-            yield _iter_choices_wtforms_compat(
+            choice = _iter_choices_wtforms_compat(
                 "__None", self.blank_text, self.data is None
             )
+            # Ensure we always return a 4-tuple
+            if len(choice) == 3:
+                yield (choice[0], choice[1], choice[2], {})
+            else:
+                yield (choice[0], choice[1], choice[2], choice[3])
 
         for pk, obj in self._get_object_list():
-            yield _iter_choices_wtforms_compat(
-                pk, self.get_label(obj), obj == self.data
-            )
+            # Get the label using get_label function
+            label = self.get_label(obj)
+            choice = _iter_choices_wtforms_compat(pk, label, obj == self.data)
+            # Ensure we always return a 4-tuple
+            if len(choice) == 3:
+                yield (choice[0], choice[1], choice[2], {})
+            else:
+                yield (choice[0], choice[1], choice[2], choice[3])
 
     def process_formdata(self, valuelist: list[str]) -> None:
         if valuelist:
@@ -232,7 +249,7 @@ class CheckboxListField(QuerySelectMultipleField):
             }
     """
 
-    widget = CheckboxListInput()
+    widget = CheckboxListInput()  # type: ignore[assignment]
 
 
 class HstoreForm(BaseForm):
