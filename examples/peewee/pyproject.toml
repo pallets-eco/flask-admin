@@ -1,0 +1,12 @@
+[project]
+name = "example-peewee"
+version = "0.1.0"
+description = "Peewee Model Backend Integration Example"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "flask-admin[peewee]"
+]
+
+[tool.uv.sources]
+flask-admin = { path = "../../", editable = true }
