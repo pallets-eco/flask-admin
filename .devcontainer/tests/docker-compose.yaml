@@ -1,11 +1,14 @@
 # Modified to use podman in place of docker
+name: tests
+
 services:
   app:
+    image: tests_app
     build:
       context: ../..
       dockerfile: .devcontainer/tests/Dockerfile
       args:
-        IMAGE: python:3.12
+        IMAGE: 3.12-slim
 
     volumes:
       - ../..:/workspace
@@ -24,7 +27,6 @@ services:
 
   postgres:
     image: docker.io/postgis/postgis:16-3.4
-    restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: flask_admin_test
@@ -34,13 +36,11 @@ services:
 
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite:latest
-    restart: unless-stopped
     volumes:
       - azurite-data:/data
 
   mongo:
     image: docker.io/library/mongo:5.0.14-focal
-    restart: unless-stopped
 
 volumes:
   postgres-data:

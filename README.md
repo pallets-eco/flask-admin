@@ -1,5 +1,15 @@
 # Flask-Admin
 
+This fork adds SQLModel (>= 0.0.18) to Flask-Admin 2.x, with some caveats:
+- SQLModel requires SQLAlchemy 2.x since version 0.0.12, therefore it cannot be merged with the main branch.
+- The work must be considered in alpha stage and must be tested on the field.
+- I removed Python 3.13 support given some testing issues.
+- I used Pdoman in place of Docker. You can change the makefile and the docker files if you use Docker.
+- Type hinting support is still in progress. I had to exlcude view.py, form.py and tools.py from checking.
+- The number of tests for the SQLModel module is overwhelming and must be rationalized, but at present, they are convenient for debugging.
+- There are two example apps for SQLModel: one with almost pure SQLModel syntax, the other one `sqlmodel_sqla` with SQLAlchemy syntax.
+---
+
 Flask-Admin is now part of Pallets-Eco, an open source organization managed by the
 Pallets team to facilitate community maintenance of Flask extensions. Please update
 your references to `https://github.com/pallets-eco/flask-admin.git`.

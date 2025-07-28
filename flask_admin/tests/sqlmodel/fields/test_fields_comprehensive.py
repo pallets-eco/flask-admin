@@ -20,6 +20,7 @@ from flask_admin.contrib.sqlmodel.fields import CheckboxListField
 from flask_admin.contrib.sqlmodel.fields import get_field_id
 from flask_admin.contrib.sqlmodel.fields import get_obj_pk
 from flask_admin.contrib.sqlmodel.fields import get_pk_from_identity
+from flask_admin.contrib.sqlmodel.fields import HstoreForm
 from flask_admin.contrib.sqlmodel.fields import InlineHstoreList
 from flask_admin.contrib.sqlmodel.fields import InlineModelFormList
 from flask_admin.contrib.sqlmodel.fields import InlineModelOneToOneField
@@ -644,17 +645,17 @@ class TestKeyValue:
         assert kv.value == "test_value"
 
 
-# class TestHstoreForm:
-#     """Test the HstoreForm class."""
+class TestHstoreForm:
+    """Test the HstoreForm class."""
 
-#     def test_form_fields(self) -> None:
-#         """Test that HstoreForm has the correct fields."""
-#         form = HstoreForm()
+    def test_form_fields(self) -> None:
+        """Test that HstoreForm has the correct fields."""
+        form = HstoreForm()
 
-#         assert hasattr(form, "key")
-#         assert hasattr(form, "value")
-#         assert str(form.key.label.text) == "Key"
-#         assert str(form.value.label.text) == "Value"
+        assert hasattr(form, "key")
+        assert hasattr(form, "value")
+        assert str(form.key.label.text) == "Key"
+        assert str(form.value.label.text) == "Value"
 
 
 class TestInlineHstoreList:

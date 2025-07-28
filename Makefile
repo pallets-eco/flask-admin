@@ -154,8 +154,8 @@ doctest:
 
 .PHONY: test-in-docker
 test-in-docker:
-	docker compose -f .devcontainer/tests/docker-compose.yaml run app uv run pytest
+	podman compose -f .devcontainer/tests/docker-compose.yaml run app uv run pytest
 
 .PHONY: tox-in-docker
 tox-in-docker:
-	docker compose -f .devcontainer/tests/docker-compose.yaml run app uv run tox
+	podman compose -f .devcontainer/tests/docker-compose.yaml run app uv run tox
