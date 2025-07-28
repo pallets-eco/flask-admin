@@ -1,3 +1,4 @@
+# Modified to use podman in place of docker
 services:
   app:
     build:
@@ -22,7 +23,7 @@ services:
       - mongo
 
   postgres:
-    image: postgis/postgis:16-3.4
+    image: docker.io/postgis/postgis:16-3.4
     restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: postgres
@@ -38,7 +39,7 @@ services:
       - azurite-data:/data
 
   mongo:
-    image: mongo:5.0.14-focal
+    image: docker.io/library/mongo:5.0.14-focal
     restart: unless-stopped
 
 volumes:

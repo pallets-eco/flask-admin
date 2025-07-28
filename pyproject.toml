@@ -33,7 +33,7 @@ dependencies = [
 [project.optional-dependencies]
 sqlalchemy = [
     "flask-sqlalchemy>=3",
-    "sqlalchemy>=1.4",
+    "sqlalchemy>=2.0",
 ]
 sqlalchemy-with-utils = [
     "Flask-Admin[sqlalchemy]",
@@ -57,6 +57,10 @@ sqlmodel = [
     "sqlmodel>=0.0.18",
     "Flask-Admin[sqlalchemy]"
 ]
+sqlmodel-with-utils=[
+    "sqlmodel>=0.0.18",
+    "Flask-Admin[sqlalchemy-with-utils]",
+]
 s3 = ["boto3>=1.33"]
 azure-blob-storage = ["azure-storage-blob>=12.0.0"]
 images = ["pillow>=10.0.0"]
@@ -70,6 +74,7 @@ all = [
     "Flask-Admin[pymongo]",
     "Flask-Admin[peewee]",
     "Flask-Admin[sqlmodel]",
+    "Flask-Admin[sqlmodel-with-utils]",
     "Flask-Admin[s3]",
     "Flask-Admin[azure-blob-storage]",
     "Flask-Admin[images]",
@@ -222,11 +227,17 @@ module = [
     "pymongo",
     "sqlalchemy.*",
     "sqlalchemy_utils",
+    "sqlmodel",
     "tablib",
     "wtforms.*",
     "wtfpeewee.*",
 ]
 ignore_missing_imports = true
+
+# Exclude specific directories or file patterns (regex)
+exclude = [
+  "flask_admin/tests/sqlmodel",        # folder
+]
 
 # TODO: reenable after pyright test pass
 #[tool.pyright]
@@ -258,9 +269,7 @@ order-by-type = false
 [tool.tox]
 env_list = [
     "py39", "py310", "py311", "py312", "py313",
-    "py39-sqlalchemy1", "py313-sqlalchemy1",
     "py313-noflaskbabel",
-    "py39-min",
     "style",
     "typing",
     "docs",
