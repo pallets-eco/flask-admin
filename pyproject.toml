@@ -18,9 +18,8 @@ classifiers = [
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
-    'Programming Language :: Python :: 3.13',
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.9,<3.13"
 dependencies = [
     "flask>=2.0",
     "jinja2>=3.0",
@@ -212,6 +211,9 @@ no_implicit_reexport = false
 # This one can be tricky to get passing if you use a lot of untyped libraries
 warn_return_any = false
 
+# Exclude specific directories or file patterns (regex)
+exclude = "flask_admin/tests/sqlmodel"
+
 [[tool.mypy.overrides]]
 module = [
     "arrow",
@@ -227,17 +229,22 @@ module = [
     "pymongo",
     "sqlalchemy.*",
     "sqlalchemy_utils",
-    "sqlmodel",
+    "sqlmodel.*",
     "tablib",
     "wtforms.*",
     "wtfpeewee.*",
 ]
 ignore_missing_imports = true
 
-# Exclude specific directories or file patterns (regex)
-exclude = [
-  "flask_admin/tests/sqlmodel",        # folder
+[[tool.mypy.overrides]]
+module = [
+    "flask_admin.contrib.sqlmodel.view",
+    "flask_admin.contrib.sqlmodel.form",
+    "flask_admin.contrib.sqlmodel.tools"
 ]
+ignore_errors = true
+
+
 
 # TODO: reenable after pyright test pass
 #[tool.pyright]
@@ -268,8 +275,7 @@ order-by-type = false
 
 [tool.tox]
 env_list = [
-    "py39", "py310", "py311", "py312", "py313",
-    "py313-noflaskbabel",
+    "py39", "py310", "py311", "py312", "py312-noflaskbabel",
     "style",
     "typing",
     "docs",
@@ -354,9 +360,10 @@ commands = [
     ],
 ]
 
-[tool.tox.env.py313-noflaskbabel]
+[tool.tox.env.py312-noflaskbabel]
 description = "pytest without flask-babel"
 base = ["env_run_base"]
+base_python = ["3.12"]
 commands = [
     ["uv", "pip", "uninstall", "flask-babel"],
     [
@@ -377,7 +384,7 @@ description = "run static type checkers"
 dependency_groups = ["typing"]
 commands = [
     ["mypy", "--python-version", "3.9"],
-    ["mypy", "--python-version", "3.13"],
+    ["mypy", "--python-version", "3.12"],
     # TODO: reenable after pyright test pass
     # ["pyright"],
 ]

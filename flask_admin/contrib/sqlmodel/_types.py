@@ -80,17 +80,13 @@ else:
     T_SELECT_FIELD_BASE = "wtforms.SelectFieldBase"
     T_BASE_FORM = "wtforms.form.BaseForm"
 
-    T_SQLMODEL_QUERY = t.Union[
-        "sqlalchemy.orm.Query", "sqlalchemy.sql.selectable.Select"
-    ]
-    T_SQLMODEL_SESSION_TYPE = t.Union[
-        "sqlmodel.Session", "sqlalchemy.orm.scoped_session"
-    ]
-    T_SQLMODEL_COLUMN = t.Union[str, "sqlalchemy.Column"]
+    T_SQLMODEL_QUERY = t.Union[T_SQLALCHEMY_QUERY_ORM, T_SQLALCHEMY_SELECT]
+    T_SQLMODEL_SESSION_TYPE = t.Union[T_SQLMODEL_SESSION, T_SCOPED_SESSION]
+    T_SQLMODEL_COLUMN = t.Union[str, T_SQLALCHEMY_COLUMN]
     T_SQLMODEL_FIELD_SOURCE = t.Union[
-        "pydantic.fields.FieldInfo",
-        "pydantic.fields.ComputedFieldInfo",
-        "sqlalchemy.Column",
+        T_PYDANTIC_FIELD_INFO,
+        T_PYDANTIC_COMPUTED_FIELD_INFO,
+        T_SQLALCHEMY_COLUMN,
         property,
     ]
 
