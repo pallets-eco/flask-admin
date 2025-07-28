@@ -8,7 +8,8 @@ from flask_admin import form
 from flask_admin.contrib import rediscli
 from flask_admin.contrib import sqla
 from flask_admin.form import rules
-from flask_admin.theme import Bootstrap4Theme
+from flask_admin.theme import Bootstrap5Theme
+from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import Markup
 from redis import Redis
@@ -27,6 +28,15 @@ app.config["DATABASE_FILE"] = "sample_db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
+
+
+def get_locale():
+    return "en"
+
+
+# Initialize babel
+babel = Babel(app, locale_selector=get_locale)
+
 
 # Create directory for file fields to use
 file_path = op.join(op.dirname(__file__), "files")
@@ -147,6 +157,9 @@ class ImageView(sqla.ModelView):
 
     column_formatters = {"path": _list_thumbnail}
 
+    # Add custom column label
+    column_labels = {"path": "Thumbnail"}
+
     # Alternative way to contribute field is to override it completely.
     # In this case, Flask-Admin won't attempt to merge various parameters for the field.
     form_extra_fields = {
@@ -194,7 +207,9 @@ def index():
 
 
 # Create admin
-admin = Admin(app, "Example: Forms", theme=Bootstrap4Theme(swatch="cerulean"))
+admin = Admin(
+    app, "Example: Forms", theme=Bootstrap5Theme(swatch="cerulean", fluid=True)
+)
 
 # Add views
 admin.add_view(FileView(File, db.session))
@@ -341,4 +356,4 @@ if __name__ == "__main__":
             build_sample_db()
 
     # Start app
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")
