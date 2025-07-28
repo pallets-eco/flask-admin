@@ -27,7 +27,9 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
 babel = Babel(app, locale_selector=get_locale)
-admin = Admin(app, name="Example: Forms", theme=Bootstrap5Theme(swatch="cerulean", fluid=True))
+admin = Admin(
+    app, name="Example: Forms", theme=Bootstrap5Theme(swatch="cerulean", fluid=True)
+)
 
 
 @app.route("/")
