@@ -21,10 +21,18 @@
                 allowClear: $el.data('allow-blank') || false,
                 minimumInputLength: $el.data('minimum-input-length') || 0,
             };
+
+            // detect if the select2 is inside a modal
+            const modal = $el.closest('.modal');
+            if (modal.length > 0) {
+                opts.dropdownParent = modal;
+            }
+
             if ($el.data('tags')) {
                 opts.tags = true;
                 opts.tokenSeparators = [','];
             }
+
             $el.select2(opts);
         }
 
@@ -55,6 +63,13 @@
                     }
                 }
             };
+
+            // detect if the select2 is inside a modal
+            const modal = $el.closest('.modal');
+            if (modal.length > 0) {
+                opts.dropdownParent = modal;
+            }
+
             $el.select2(opts);
         }
 
@@ -92,7 +107,7 @@
                 this.applyStyle($el, $el.data('role'));
             });
         }
-        
+
         /**
          * Adds a new inline form group based on a template.
          * @param {DOMElement} el - The 'Add' button that was clicked.
@@ -105,7 +120,7 @@
             const fieldList = fieldsetContainer.querySelector('.inline-field-list');
             const template = fieldsetContainer.querySelector('.inline-field-template');
             if (!fieldList || !template) return;
-            
+
             let maxId = -1;
             fieldList.querySelectorAll(':scope > .inline-field').forEach(field => {
                 const parts = field.id.split('-');
@@ -115,9 +130,9 @@
                 }
             });
             const newId = maxId + 1;
-            
+
             const newFieldHTML = template.innerHTML.replace(/__prefix__/g, newId);
-            
+
             const parser = new DOMParser();
             const doc = parser.parseFromString(newFieldHTML, 'text/html');
             const newFieldNode = doc.body.firstChild;
@@ -126,12 +141,12 @@
                 console.error("Failed to create new inline field from template.");
                 return;
             }
-            
+
             newFieldNode.id = `${elID}-${newId}`;
-            
+
             fieldList.appendChild(newFieldNode);
             this.applyGlobalStyles(newFieldNode);
-            
+
             newFieldNode.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
@@ -146,7 +161,7 @@
         window.faForm.applyGlobalStyles(document.body);
         document.dispatchEvent(new CustomEvent('fa.main.ready', { bubbles: true }));
     });
-    
+
     // Listen for the custom event dispatched by modal.js when modal content is ready.
     document.addEventListener('fa.modal.contentLoaded', function(event) {
         // Check if the event detail contains the content container.
