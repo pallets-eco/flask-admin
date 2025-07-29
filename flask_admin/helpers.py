@@ -4,6 +4,7 @@ from re import sub
 from urllib.parse import urljoin
 from urllib.parse import urlparse
 
+from flask import current_app
 from flask import flash
 from flask import g
 from flask import request
@@ -17,8 +18,7 @@ from wtforms.form import Form
 from wtforms.validators import DataRequired
 from wtforms.validators import InputRequired
 
-from flask_admin._compat import iteritems
-
+from ._compat import iteritems
 from ._compat import string_types
 from ._types import T_MODEL_VIEW
 
@@ -179,3 +179,65 @@ def get_redirect_target(param_name: str = "url") -> t.Optional[str]:
     if target and is_safe_url(target):
         return target
     return None
+
+
+def get_theme() -> str:
+    """
+    Gets the theme folder by inspecting the active Admin instance's views.
+
+    This function identifies the correct Admin instance for the current
+    request by matching the request's endpoint against the endpoints of the
+    views registered within each Admin instance.
+
+    If called from outside an Admin view (e.g., a public homepage), it
+    falls back to the theme of the first registered Admin instance.
+
+    :return:
+        The theme folder (e.g., 'bootstrap5').
+        Returns 'bootstrap4' as a safe fallback.
+    """
+    fallback_folder = "bootstrap4"
+
+    try:
+        # 1. Get the list of all registered Admin instances.
+        admins = current_app.extensions.get("admin", [])
+        if not admins:
+            return fallback_folder
+
+        # 2. Determine the correct Admin instance by checking its views.
+        target_admin = None
+        current_endpoint = getattr(request, "endpoint", None)
+
+        if current_endpoint:
+            # A flag to break out of the outer loop once a match is found.
+            found_admin = False
+            for admin in admins:
+                # We loop through each view registered in this Admin instance.
+                for view in admin._views:
+                    # Check if the current endpoint belongs to this view.
+                    if current_endpoint.startswith(view.endpoint):
+                        target_admin = admin
+                        found_admin = True
+                        break  # Found the correct view. Exit inner loop.
+                if found_admin:
+                    break  # Exit outer loop.
+
+        # If no matching view was found (e.g., on a public page) or if we are
+        # outside a request, fall back to the first registered admin.
+        if target_admin is None:
+            target_admin = admins[0]
+
+        # 3. Extract the theme folder from the chosen instance.
+        theme_obj = getattr(target_admin, "theme", None)
+        if theme_obj:
+            folder = getattr(theme_obj, "folder", None)
+            if folder:
+                return folder
+
+    except (RuntimeError, IndexError):
+        # RuntimeError: Called outside an active Flask app/request context.
+        # IndexError: `admins` list was somehow empty after the initial check.
+        pass
+
+    # Return the ultimate fallback folder if any step above failed.
+    return fallback_folder
