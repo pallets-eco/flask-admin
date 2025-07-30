@@ -1,7 +1,8 @@
-{% import 'admin/lib.html' as lib with context %}
 
-{% macro link(action, url, icon_class=None) %}
-  <a class="ui button" href="{{ url }}" title="{{ action.title or '' }}">
+{% macro link(action, url, icon_class=None, modal=False) %}
+  <a class="ui button{% if modal %} modal-opener{% endif %}"
+     href="{{ url }}"
+     title="{{ action.title or '' }}">
     <i class="{{ icon_class or action.icon_class }}"></i>
   </a>
 {% endmacro %}
@@ -11,15 +12,15 @@
 {% endmacro %}
 
 {% macro view_row_popup(action, row_id, row) %}
-  {{ lib.add_modal_button(url=get_url('.details_view', id=row_id, url=return_url, modal=True) , title=action.title, content='<i class="eye icon"></i>') }}
+  {{ link(action, get_url('.details_view', id=row_id, url=return_url, modal=True) , 'eye icon', True) }}
 {% endmacro %}
 
 {% macro edit_row(action, row_id, row) %}
-  {{ link(action, get_url('.edit_view', id=row_id, url=return_url) , 'pen alternate icon') }}
+  {{ link(action, get_url('.edit_view', id=row_id, url=return_url) , 'pencil alternate icon') }}
 {% endmacro %}
 
 {% macro edit_row_popup(action, row_id, row) %}
-  {{ lib.add_modal_button(url=get_url('.edit_view', id=row_id, url=return_url, modal=True) , title=action.title, content='<i class="pen icon"></i>') }}
+  {{ link(action, get_url('.edit_view', id=row_id, url=return_url, modal=True) , 'pencil alternate icon', True) }}
 {% endmacro %}
 
 {% macro delete_row(action, row_id, row) %}
