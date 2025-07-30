@@ -1,0 +1,261 @@
+{% import 'admin/static.html' as admin_static with context %}
+
+{# ---------------------- Pager -------------------------- #}
+{% macro pager(page, pages, generator, mini_type=False) -%}
+  {% if pages > 1 %}
+    <div class="{{ 'ui text small compact menu' if mini_type else 'ui wrapping small pagination menu' }}">
+      {% set min = page - 3 %}
+      {% set max = page + 3 + 1 %}
+
+      {% if min < 0 %}
+        {% set max = max - min %}
+      {% endif %}
+      {% if max >= pages %}
+        {% set min = min - max + pages %}
+      {% endif %}
+
+      {% if min < 0 %}
+        {% set min = 0 %}
+      {% endif %}
+      {% if max >= pages %}
+        {% set max = pages %}
+      {% endif %}
+
+      {% if min > 0 %}
+        <a class="icon item" href="{{ generator(0) }}">
+          <i class="fitted angle double left icon"></i>
+        </a>
+      {% else %}
+        <a class="item disabled">
+          <i class="fitted angle double left icon"></i>
+        </a>
+      {% endif %}
+      {% if page > 0 %}
+        <a class="item" href="{{ generator(page-1) }}">
+          <i class="fitted left chevron icon"></i>
+        </a>
+      {% else %}
+        <a class="item disabled">
+          <i class="fitted left chevron icon"></i>
+        </a>
+      {% endif %}
+
+      {% for p in range(min, max) %}
+        {% if page == p %}
+          <a class="item active disabled">{{ p + 1 }}</a>
+        {% else %}
+          <a class="item" href="{{ generator(p) }}">{{ p + 1 }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if page + 1 < pages %}
+        <a class="item" href="{{ generator(page + 1) }}">
+          <i class="fitted right chevron icon"></i>
+        </a>
+      {% else %}
+        <a class="item disabled">
+          <i class="fitted right chevron icon"></i>
+        </a>
+      {% endif %}
+      {% if max < pages %}
+        <a class="item" href="{{ generator(pages - 1) }}">
+          <i class="fitted angle double right icon"></i>
+        </a>
+      {% else %}
+        <a class="item disabled">
+          <i class="fitted angle double right icon"></i>
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+{%- endmacro %}
+
+{% macro simple_pager(page, have_next, generator, mini_type=False) -%}
+  <div class="{{ 'ui text small compact menu' if mini_type else 'ui pagination menu' }}">
+    {% if page > 0 %}
+      <a href="{{ generator(page - 1) }}" class="item">
+        <i class="fitted left chevron icon"></i>
+      </a>
+    {% else %}
+      <a href="{{ generator(0) }}" class="item disabled">
+        <i class="fitted left chevron icon"></i>
+      </a>
+    {% endif %}
+    {% if have_next %}
+      <a href="{{ generator(page + 1) }}" class="item">
+        <i class="fitted right chevron icon"></i>
+      </a>
+    {% else %}
+      <a href="{{ generator(page) }}" class="item disabled">
+        <i class="fitted right chevron icon"></i>
+      </a>
+    {% endif %}
+  </div>
+{%- endmacro %}
+
+
+{# ---------------------- Forms -------------------------- #}
+{% macro render_field(form, field, kwargs={}, caller=None) %}
+  {# @TODO: Need to refactor param `kwargs` - append/prepend #}
+  {% set direct_error = h.is_field_error(field.errors) %}
+  {% set prepend = None %}
+  {% set append = None %}
+  <div class="field {{ kwargs.get('column_class', '') }} {% if h.is_required_form_field(field) %}required{% endif %} {%- if direct_error %} error {% endif -%} ">
+    <label for="{{ field.id }}">{{- field.label.text -}}</label>
+    {% if prepend or append %}
+      <div class="input-group">
+        {%- if prepend -%}
+          <div class="input-group-prepend">{{ prepend }}</div>
+        {%- endif -%}
+      {% endif %}
+      {{ field(**kwargs) | safe }}
+      {%- if append -%}
+        <div class="input-group-append">{{ append }}</div>
+      {%- endif -%}
+      {% if direct_error %}
+        <div class="ui error top pointing very basic tiny label message">
+          <ul class="list">
+            {% for e in field.errors if e is string %}<li>{{ e }}</li>{% endfor %}
+          </ul>
+        </div>
+      {% elif field.description %}
+        <span class="ui grey small text">{{ field.description|safe }}</span>
+      {% endif %}
+      {% if prepend or append %}</div>{% endif %}
+    {% if caller %}{{ caller(form, field, direct_error, kwargs) }}{% endif %}
+  </div>
+{% endmacro %}
+
+{% macro render_header(form, text) %}
+  <h3>{{ text }}</h3>
+{% endmacro %}
+
+{% macro render_form_fields(form, form_opts=None) %}
+  {% if form.hidden_tag is defined %}
+    {{ form.hidden_tag() }}
+  {% else %}
+    {% if csrf_token is defined and csrf_token %}
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    {% endif %}
+    {% for f in form if f.widget.input_type is defined and f.widget.input_type == 'hidden' %}{{ f }}{% endfor %}
+  {% endif %}
+
+  {% if form_opts and form_opts.form_rules %}
+    {% for r in form_opts.form_rules %}{{ r(form, form_opts=form_opts) }}{% endfor %}
+  {% else %}
+    {% for f in form if f.widget.input_type is undefined or f.widget.input_type != 'hidden' %}
+      {% if form_opts %}
+        {% set kwargs = form_opts.widget_args.get(f.short_name, {}) %}
+      {% else %}
+        {% set kwargs = {} %}
+      {% endif %}
+      {{ render_field(form, f, kwargs) }}
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+
+{% macro form_tag(form=None, action=None) %}
+  <form action="{{ action or '' }}"
+        method="post"
+        role="form"
+        class="ui form admin-form"
+        enctype="multipart/form-data">
+    {{ caller() }}
+  </form>
+{% endmacro %}
+
+{# @TODO: Use FomanticUI Modal #}
+{% macro render_form_buttons(cancel_url, extra=None) %}
+  <div class="ui very compact grid">
+    <div class="equal width row">
+      {% if cancel_url is defined and cancel_url %}
+        <div class="column">
+          <a href="{{ cancel_url }}"
+             class="ui icon fluid button"
+             role="button">
+             <i class="cancel icon"></i>
+             {{ _gettext("Cancel") }}</a>
+        </div>
+      {% endif %}
+      <div class="column">
+        <button class="ui positive icon fluid button">
+          <i class="check icon"></i>
+          {{ _gettext("Save") }}
+        </button>
+      </div>
+    </div>
+    {% if extra %}<div class="equal width stackable row">{{ extra }}</div>{% endif %}
+  </div>
+{% endmacro %}
+
+{% macro render_form(form, cancel_url, extra=None, form_opts=None, action=None) -%}
+  {% call form_tag(action=action) %}
+    {{ render_form_fields(form, form_opts=form_opts) }}
+    <div class="ui divider"></div>
+    {{ render_form_buttons(cancel_url, extra) }}
+  {% endcall %}
+{% endmacro %}
+
+{% macro form_css() %}
+  {% if config.FLASK_ADMIN_MAPS is defined and config.FLASK_ADMIN_MAPS %}
+    <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css', v='1.0.2') }}"
+          rel="stylesheet">
+    <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css', v='0.4.6') }}"
+          rel="stylesheet">
+  {% endif %}
+  {% if editable_columns is defined and editable_columns %}
+    <!-- <link href="{{ admin_static.url(filename='vendor/x-editable/css/bootstrap4-editable.css', v='1.5.1.1') }}" rel="stylesheet"> -->
+  {% endif %}
+{% endmacro %}
+
+{# @TODO: #}
+{% macro form_js() %}
+  {% if config.FLASK_ADMIN_MAPS is defined and config.FLASK_ADMIN_MAPS %}
+    <script {{ admin_csp_nonce_attribute }}>
+      window.FLASK_ADMIN_MAPS = true;
+      window.FLASK_ADMIN_MAPBOX_MAP_ID = "{{ config.FLASK_ADMIN_MAPBOX_MAP_ID }}";
+      {% if config.FLASK_ADMIN_MAPBOX_ACCESS_TOKEN is defined and config.FLASK_ADMIN_MAPBOX_ACCESS_TOKEN %}
+        window.FLASK_ADMIN_MAPBOX_ACCESS_TOKEN = "{{ config.FLASK_ADMIN_MAPBOX_ACCESS_TOKEN }}";
+      {% endif %}
+      {% if config.FLASK_ADMIN_DEFAULT_CENTER_LAT is defined and config.FLASK_ADMIN_DEFAULT_CENTER_LONG %}
+        window.FLASK_ADMIN_DEFAULT_CENTER_LAT = "{{ config.FLASK_ADMIN_DEFAULT_CENTER_LAT }}";
+        window.FLASK_ADMIN_DEFAULT_CENTER_LONG = "{{ config.FLASK_ADMIN_DEFAULT_CENTER_LONG }}";
+      {% endif %}
+    </script>
+    <script {{ admin_csp_nonce_attribute }}
+            src="{{ admin_static.url(filename='vendor/leaflet/leaflet.js', v='1.0.2') }}"></script>
+    <script {{ admin_csp_nonce_attribute }}
+            src="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.js', v='0.4.6') }}"></script>
+    {% if config.FLASK_ADMIN_MAPS_SEARCH is defined and config.FLASK_ADMIN_MAPS_SEARCH %}
+      <script {{ admin_csp_nonce_attribute }}>
+        window.FLASK_ADMIN_MAPS_SEARCH = "{{ config.FLASK_ADMIN_MAPS_SEARCH }}";
+      </script>
+      <script {{ admin_csp_nonce_attribute }}
+              src="https://maps.googleapis.com/maps/api/js?v=3&libraries=places&key={{ config.get('FLASK_ADMIN_GOOGLE_MAPS_API_KEY') }}"></script>
+    {% endif %}
+  {% endif %}
+  {% if editable_columns is defined and editable_columns %}
+    <!-- <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/x-editable/js/bootstrap4-editable.min.js', v='1.5.1.1') }}"></script> -->
+  {% endif %}
+  <script {{ admin_csp_nonce_attribute }}
+          src="{{ admin_static.url(filename='fomanticui/js/form.js', v='1.0.1') }}"></script>
+{% endmacro %}
+
+{% macro extra() %}
+  {% if admin_view.can_edit %}
+    <div class="column">
+      <input name="_continue_editing"
+             type="submit"
+             class="ui positive basic fluid button"
+             value="{{ _gettext("Save and Continue Editing") }}" />
+    </div>
+  {% endif %}
+  {% if admin_view.can_create %}
+    <div class="column">
+      <input name="_add_another"
+             type="submit"
+             class="ui positive basic fluid button"
+             value="{{ _gettext("Save and Add Another") }}" />
+    </div>
+  {% endif %}
+{% endmacro %}
