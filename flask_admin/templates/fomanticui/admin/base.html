@@ -1,0 +1,125 @@
+{% import 'admin/layout.html' as layout with context -%}
+{% import 'admin/static.html' as admin_static with context %}
+{% import 'admin/lib.html' as lib with context %}
+{% import 'admin/footer.html' as footer with context %}
+{% import 'admin/utils.html' as utils with context %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+      {% block title %}
+        {% if admin_view.category %}{{ admin_view.category }} -{% endif %}
+        {{ admin_view.name }} - {{ admin_view.admin.name }}
+      {% endblock %}
+    </title>
+    {% block head_meta %}
+      <meta charset="utf-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+      <meta name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+      <meta name="description" content="{{ admin_view.name }} admin interface" />
+      <meta name="keywords" content="admin, {{ admin_view.name }}" />
+    {% endblock %}
+    {% block head_preload %}
+      {# runs before CSS to avoid flash #}
+      <script {{ admin_csp_nonce_attribute }} type="text/javascript">
+        /* Preload script runs ASAP to avoid sidebar flash */
+        (function () {
+          const isMobile = () => window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+
+          let sidebarPreference = null;
+          try {
+            sidebarPreference = localStorage.getItem('sidebarPreference');
+            if (sidebarPreference === null || !['0', '1'].includes(sidebarPreference)) {
+              sidebarPreference = '1'; // default open on desktop
+              localStorage.setItem('sidebarPreference', '1');
+            }
+          } catch (e) { /* storage disabled */ }
+
+          const shouldOpen = !isMobile() && sidebarPreference === '1';
+          if (shouldOpen) {
+            document.documentElement.classList.add('sidebar-pref-open');
+          }
+
+          window.shouldOpenSidebar = shouldOpen;
+        })();
+      </script>
+    {% endblock %}
+    {% block head_css %}
+      <link {{ admin_csp_nonce_attribute }}
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.4/dist/semantic.min.css" />
+      <link {{ admin_csp_nonce_attribute }}
+            rel="stylesheet"
+            href="{{ admin_static.url(filename='fomanticui/css/style.css') }}" />
+      {% if admin_view.extra_css %}
+        {% for css_url in admin_view.extra_css %}
+          <link {{ admin_csp_nonce_attribute }} href="{{ css_url }}" rel="stylesheet" />
+        {% endfor %}
+      {% endif %}
+    {% endblock %}
+    {% block head %}{% endblock %}
+    {% block head_tail %}{% endblock %}
+  </head>
+  <body>
+    <a href="#main-container" class="visually-hidden-focusable">Skip to main content</a>
+    {% block page_body %}
+      <div class="ui vertical inverted menu" id="sidebar-menu" role="navigation">
+        {{ layout.menu() }}
+        {% block menu_links %}{{ layout.menu_links() }}{% endblock %}
+      </div>
+      <div class="ui top fixed inverted menu" id="fixed-menu" role="navigation">
+        <div class="ui container">
+          <a class="toc item"
+             id="sidebar-menu-toggler"
+             role="button"
+             aria-controls="sidebar-menu"
+             aria-expanded="false">
+            <i class="sidebar icon"></i>
+          </a>
+          <a href="{{ admin_view.admin.url }}" class="header item">
+            {% block brand %}{{ admin_view.admin.name }}{% endblock %}
+          </a>
+          {% block main_menu %}
+            {# TODO: Add or remove? - nav menu on top fixed bar #}
+            {# layout.menu() #}
+          {% endblock %}
+          {% block access_control %}{% endblock %}
+        </div>
+      </div>
+      <div class="pusher" id="main-pusher">
+        <div class="ui main container" id="main-container">
+          {{ utils.breadcrumb() }}
+          {% block messages %}{{ layout.messages() }}{% endblock %}
+          {# store the jinja2 context for form_rules rendering logic #}
+          {% set render_ctx = h.resolve_ctx() %}
+          {% block body %}{% endblock %}
+        </div>
+        {% block footer %}{{ footer.footer() }}{% endblock %}
+      </div>
+    {% endblock %}
+    {% block tail_js %}
+      {# @TODO: offline externals #}
+      <script {{ admin_csp_nonce_attribute }}
+              src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+      <script {{ admin_csp_nonce_attribute }}
+              src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.4/dist/semantic.min.js"></script>
+      <script {{ admin_csp_nonce_attribute }}
+              src="{{ admin_static.url(filename='fomanticui/js/sidebar.js', v='1.0.0') }}"
+              type="text/javascript"
+              defer></script>
+      <script {{ admin_csp_nonce_attribute }}
+              src="{{ admin_static.url(filename='fomanticui/js/helpers.js', v='1.0.0') }}"
+              type="text/javascript"
+              defer></script>
+      {% if admin_view.extra_js %}
+        {% for js_url in admin_view.extra_js %}
+          <script {{ admin_csp_nonce_attribute }}
+                  src="{{ js_url }}"
+                  type="text/javascript"></script>
+        {% endfor %}
+      {% endif %}
+    {% endblock %}
+    {% block tail %}{% endblock %}
+  </body>
+</html>
