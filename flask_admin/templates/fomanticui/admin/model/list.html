@@ -4,28 +4,23 @@
 {% import 'admin/model/layout.html' as model_layout with context %}
 {% import 'admin/actions.html' as actionlib with context %}
 {% import 'admin/model/row_actions.html' as row_actions with context %}
+{% import 'admin/model/modals/lib.html' as modal_lib with context %}
 
 {% block head %}
   {{ super() }}
   {{ lib.form_css() }}
-  <style>
-    #modelMenuBar {
-      height: 100%;
-    }
-    #modelMenuBar > .button:not(:last-child) {
-      margin: auto 6px;
-    }
-    #modelMenuBar > .button:last-child {
-      margin: auto 0 auto 6px;
-    }
-  </style>
 {% endblock %}
 {% block body %}
   <h2 class="ui header">
     {{ admin_view.name }}
     {% if admin_view.can_create %}
-      {%- if admin_view.create_modal -%}
-        {{ lib.add_modal_button(url=get_url('.create_view', url=return_url, modal=True) , btn_class='nav-link', title=_gettext('Create New Record'), content=_gettext('Create')) }}
+      {% if admin_view.create_modal %}
+        <a href="{{ get_url('.create_view', url=return_url, modal=True) }}"
+           title="{{ _gettext("Create New Record") }}"
+           class="ui icon green right floated button modal-opener">
+          <i class="plus icon"></i>
+          {{ _gettext("Create") }}
+        </a>
       {% else %}
         <a href="{{ get_url('.create_view', url=return_url) }}"
            title="{{ _gettext("Create New Record") }}"
@@ -33,7 +28,7 @@
           <i class="plus icon"></i>
           {{ _gettext("Create") }}
         </a>
-      {%- endif -%}
+      {% endif %}
     {% endif %}
   </h2>
   {% block model_menu_bar %}
@@ -46,31 +41,30 @@
       {% endif %}
       {# djlint:on #}
       <div class="column right aligned">
-        <div class="ui spaced wrapping small buttons" id="modelMenuBar">
+        <div class="ui spaced wrapping icon small buttons listing-menu-bar">
           {% block model_menu_bar_before_filters %}{% endblock %}
           {% if can_set_page_size %}
-            <div class="ui floating icon dropdown button">
+            <div class="ui floating dropdown button">
               <div class="default text">{{ page_size }} {{ _gettext("items") }}</div>
               <i class="dropdown icon"></i>
               <div class="menu">{{ model_layout.page_size_form_items(page_size_url, admin_view.page_size_options) }}</div>
             </div>
           {% endif %}
           {% if filters %}
-            <button class="ui icon button" id="filters-table-container-toggle">
+            <button class="ui button" id="filters-table-container-toggle">
               <i class="filter icon"></i>
               <span class="filters-count"></span>
             </button>
           {% endif %}
           {% block model_menu_bar_after_filters %}{% endblock %}
           {% if admin_view.can_export %}
-            <div class="ui floating icon dropdown button"
-                 title="{{ _gettext("Export") }}">
+            <div class="ui floating dropdown button" title="{{ _gettext("Export") }}">
               <i class="download icon"></i>
               <div class="menu">{{ model_layout.export_options_items() }}</div>
             </div>
           {% endif %}
           {% if actions %}
-            <div class="ui floating icon dropdown button"
+            <div class="ui floating dropdown button"
                  title="{{ _gettext("With selected") }}">
               <i class="ellipsis vertical icon"></i>
               <div class="menu">{{ actionlib.dropdown_menu_items(actions) }}</div>
@@ -235,13 +229,16 @@
   {% endblock %}
   {% block actions %}{{ actionlib.form(actions, get_url('.action_view') ) }}{% endblock %}
   {%- if admin_view.edit_modal or admin_view.create_modal or admin_view.details_modal -%}
-    {{ lib.add_modal_window() }}
+    {{ modal_lib.render_form_modal() }}
   {%- endif -%}
 {% endblock %}
 {% block tail_js %}
   {{ super() }}
+  {{ lib.form_js() }}
+
   <script type="text/javascript" {{ admin_csp_nonce_attribute }}>
-    $('.column-description')
+    $(document).ready(function(){
+      $('.column-description')
       .popup({
         on: 'click',
         variation: 'small basic',
@@ -250,12 +247,19 @@
           hide: 0
         }
       });
+    });
   </script>
+
+  {%- if admin_view.edit_modal or admin_view.create_modal or admin_view.details_modal -%}
+    <script {{ admin_csp_nonce_attribute }}
+            src="{{ admin_static.url(filename='fomanticui/js/form_modal.js', v='1.0.0') }}"></script>
+  {%- endif -%}
+
   {% if filter_groups %}
     <div id="filter-groups-data" class="d-none">{{ filter_groups|tojson|safe }}</div>
     <div id="active-filters-data" class="d-none">{{ active_filters|tojson|safe }}</div>
   {% endif %}
-  {{ lib.form_js() }}
+
   <script {{ admin_csp_nonce_attribute }}
           src="{{ admin_static.url(filename='fomanticui/js/filters.js', v='1.0.0') }}"></script>
   {{ actionlib.script(_gettext('Please select at least one record.') , actions, actions_confirmation) }}
