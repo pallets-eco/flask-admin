@@ -1,0 +1,11 @@
+{% import 'admin/static.html' as admin_static with context %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block body %}
+  {%- include 'admin/model/_details.html' -%}
+{% endblock %}
+
+{% block tail %}
+  <script {{ admin_csp_nonce_attribute }}
+          src="{{ admin_static.url(filename='fomanticui/js/details_filter.js', v='1.0.0') }}"></script>
+{% endblock %}
