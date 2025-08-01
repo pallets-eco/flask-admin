@@ -93,14 +93,13 @@
   </div>
 {%- endmacro %}
 
-
 {# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field, kwargs={}, caller=None) %}
   {# @TODO: Need to refactor param `kwargs` - append/prepend #}
   {% set direct_error = h.is_field_error(field.errors) %}
   {% set prepend = None %}
   {% set append = None %}
-  <div class="field {{ kwargs.get('column_class', '') }} {% if h.is_required_form_field(field) %}required{% endif %} {%- if direct_error %} error {% endif -%} ">
+  <div class="field{{ ' ' ~ kwargs.get('column_class', '') if kwargs.get('column_class', '') else '' }}{% if h.is_required_form_field(field) %} required{% endif %}{% if direct_error %} error{% endif %}">
     <label for="{{ field.id }}">{{- field.label.text -}}</label>
     {% if prepend or append %}
       <div class="input-group">
@@ -127,7 +126,7 @@
 {% endmacro %}
 
 {% macro render_header(form, text) %}
-  <h3>{{ text }}</h3>
+  <h3 class="ui header">{{ text }}</h3>
 {% endmacro %}
 
 {% macro render_form_fields(form, form_opts=None) %}
@@ -164,17 +163,14 @@
   </form>
 {% endmacro %}
 
-{# @TODO: Use FomanticUI Modal #}
 {% macro render_form_buttons(cancel_url, extra=None) %}
   <div class="ui very compact grid">
     <div class="equal width row">
       {% if cancel_url is defined and cancel_url %}
         <div class="column">
-          <a href="{{ cancel_url }}"
-             class="ui icon fluid button"
-             role="button">
-             <i class="cancel icon"></i>
-             {{ _gettext("Cancel") }}</a>
+          <a href="{{ cancel_url }}" class="ui icon fluid button" role="button">
+            <i class="cancel icon"></i>
+          {{ _gettext("Cancel") }}</a>
         </div>
       {% endif %}
       <div class="column">
@@ -198,17 +194,14 @@
 
 {% macro form_css() %}
   {% if config.FLASK_ADMIN_MAPS is defined and config.FLASK_ADMIN_MAPS %}
+    {# @TODO: for backward compatibility #}
     <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css', v='1.0.2') }}"
           rel="stylesheet">
     <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css', v='0.4.6') }}"
           rel="stylesheet">
   {% endif %}
-  {% if editable_columns is defined and editable_columns %}
-    <!-- <link href="{{ admin_static.url(filename='vendor/x-editable/css/bootstrap4-editable.css', v='1.5.1.1') }}" rel="stylesheet"> -->
-  {% endif %}
 {% endmacro %}
 
-{# @TODO: #}
 {% macro form_js() %}
   {% if config.FLASK_ADMIN_MAPS is defined and config.FLASK_ADMIN_MAPS %}
     <script {{ admin_csp_nonce_attribute }}>
@@ -233,9 +226,6 @@
       <script {{ admin_csp_nonce_attribute }}
               src="https://maps.googleapis.com/maps/api/js?v=3&libraries=places&key={{ config.get('FLASK_ADMIN_GOOGLE_MAPS_API_KEY') }}"></script>
     {% endif %}
-  {% endif %}
-  {% if editable_columns is defined and editable_columns %}
-    <!-- <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/x-editable/js/bootstrap4-editable.min.js', v='1.5.1.1') }}"></script> -->
   {% endif %}
   <script {{ admin_csp_nonce_attribute }}
           src="{{ admin_static.url(filename='fomanticui/js/form.js', v='1.0.1') }}"></script>
