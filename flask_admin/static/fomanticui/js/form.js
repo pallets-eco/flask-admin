@@ -123,18 +123,6 @@
           });
           return true;
 
-        case 'daterangepicker': // NO USE
-          // @TODO: This case must be removed - not used anymore.
-          // As they need to set endCalendar & startCalendar
-          /* Old: For ranges you normally wire two inputs together.
-             The template can set data-start / data-end IDs if needed. */
-          $el.calendar({
-            type: 'date',
-            endCalendar: $($el.data('end-calendar')),   // optional
-            startCalendar: $($el.data('start-calendar'))
-          });
-          return true;
-
         case 'datetimepicker':
           $el.calendar({
             type: 'datetime',
@@ -145,19 +133,6 @@
           });
           return true;
 
-        case 'datetimerangepicker': // NO USE
-          // @TODO: This case must be removed - not used anymore.
-          // As they need to set endCalendar & startCalendar
-          $el.calendar({
-            type: 'datetime',
-            formatter: {
-              datetime: 'YYYY-MM-DD HH:mm:ss'
-            },
-            endCalendar: $($el.data('end-calendar')),
-            startCalendar: $($el.data('start-calendar'))
-          });
-          return true;
-
         case 'timepicker':
           $el.calendar({
             type: 'time',
@@ -165,16 +140,6 @@
             formatter: {
               time: $el.data('date-format') || 'HH:mm:ss'
             }
-          });
-          return true;
-
-        case 'timerangepicker': // NO USE
-          // @TODO: This case must be removed - not used anymore.
-          // As they need to set endCalendar & startCalendar
-          $el.calendar({
-            type: 'time',
-            endCalendar: $($el.data('end-calendar')),
-            startCalendar: $($el.data('start-calendar'))
           });
           return true;
 
