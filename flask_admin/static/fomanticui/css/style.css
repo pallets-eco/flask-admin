@@ -49,8 +49,6 @@
     margin-right: 1.5em;
 }
 
-
-
 #sidebar-menu {
     position: fixed;
     top: 50px;
@@ -152,13 +150,19 @@ html.sidebar-pref-open #main-container,
 }
 
 .listing-menu-bar {
-    height: 100%!important;
+    height: 100% !important;
 }
 
 .listing-menu-bar>.button:not(:last-child) {
-    margin: auto 6px!important;
+    margin: auto 6px !important;
 }
 
 .listing-menu-bar>.button:last-child {
-    margin: auto 0 auto 6px!important;
+    margin: auto 0 auto 6px !important;
+}
+
+form.ui.form.admin-form {
+    max-width: 40em;
+    margin-left: auto;
+    margin-right: auto;
 }
