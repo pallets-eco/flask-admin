@@ -1,8 +1,9 @@
 
-{% macro link(action, url, icon_class=None, modal=False) %}
-  <a class="ui button{% if modal %} modal-opener{% endif %}"
+{% macro link(action, url, icon_class=None, modal_action_name=None) %}
+  <a class="ui button{% if modal_action_name %} modal-opener{% endif %}"
      href="{{ url }}"
-     title="{{ action.title or '' }}">
+     title="{{ action.title or '' }}"
+     {% if modal_action_name %}data-action="{{ modal_action_name }}"{% endif %}>
     <i class="{{ icon_class or action.icon_class }}"></i>
   </a>
 {% endmacro %}
@@ -12,7 +13,7 @@
 {% endmacro %}
 
 {% macro view_row_popup(action, row_id, row) %}
-  {{ link(action, get_url('.details_view', id=row_id, url=return_url, modal=True) , 'eye icon', True) }}
+  {{ link(action, get_url('.details_view', id=row_id, url=return_url, modal=True) , 'eye icon', 'view') }}
 {% endmacro %}
 
 {% macro edit_row(action, row_id, row) %}
@@ -20,14 +21,13 @@
 {% endmacro %}
 
 {% macro edit_row_popup(action, row_id, row) %}
-  {{ link(action, get_url('.edit_view', id=row_id, url=return_url, modal=True) , 'pencil alternate icon', True) }}
+  {{ link(action, get_url('.edit_view', id=row_id, url=return_url, modal=True) , 'pencil alternate icon', 'edit') }}
 {% endmacro %}
 
 {% macro delete_row(action, row_id, row) %}
   <form class="delete-record-form"
         method="post"
-        action="{{ get_url(".delete_view") }}"
-        title="{{ _gettext("Delete Record") }}">
+        action="{{ get_url(".delete_view") }}">
     {{ delete_form.id(value=get_pk_value(row) ) }}
     {{ delete_form.url(value=return_url) }}
     {% if delete_form.csrf_token is defined and delete_form.csrf_token %}
