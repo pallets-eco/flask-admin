@@ -33,7 +33,7 @@ def filter_list(f: t.Callable, l: list) -> list[t.Any]:
     return list(filter(f, l))
 
 
-def as_unicode(s: t.Union[str, bytes]) -> str:
+def as_unicode(s: t.Union[str, bytes, int]) -> str:
     if isinstance(s, bytes):
         return s.decode("utf-8")
 

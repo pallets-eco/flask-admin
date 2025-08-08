@@ -1,5 +1,6 @@
 from bson.objectid import ObjectId
 from flask import Flask
+from flask import url_for
 from flask_admin import Admin
 from flask_admin.contrib.pymongo import filters
 from flask_admin.contrib.pymongo import ModelView
@@ -99,9 +100,14 @@ class TweetView(ModelView):
         return model
 
 
+@app.route("/")
+def index():
+    return f'<a href="{url_for("admin.index")}">Go to admin!</a>'
+
+
 if __name__ == "__main__":
     with MongoDbContainer("mongo:7.0.7") as mongo:
-        conn = MongoClient(mongo.get_connection_url())
+        conn: MongoClient = MongoClient(mongo.get_connection_url())
         db = conn.test
 
         admin.add_view(UserView(db.user, "User"))
