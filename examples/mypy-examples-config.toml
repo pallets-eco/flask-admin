@@ -1,0 +1,55 @@
+# mypy custom settings for examples/ subfolders
+
+[tool.mypy]
+python_version = "3.9"
+files = ["examples"]
+show_error_codes = true
+pretty = true
+strict = true
+
+# this is the difference vs pyproject.toml
+# relative imports in examples cause errors when mypy is run from proj folder
+ignore_missing_imports = true
+disable_error_code = "name-defined" # otherwise flask_sqlalchemy db.Model needs to be ignored, littering examples
+warn_unused_ignores = false # otherwise we get conflict with first run of mypy on proj folder
+
+# Strongly recommend enabling this one as soon as you can
+check_untyped_defs = false
+
+# These shouldn't be too much additional work, but may be tricky to
+# get passing if you use a lot of untyped libraries
+disallow_subclassing_any = false
+disallow_untyped_decorators = false
+disallow_any_generics = false
+
+# These next few are various gradations of forcing use of type annotations
+disallow_untyped_calls = false
+disallow_incomplete_defs = false
+disallow_untyped_defs = false
+
+# This one isn't too hard to get passing, but return on investment is lower
+no_implicit_reexport = false
+
+# This one can be tricky to get passing if you use a lot of untyped libraries
+warn_return_any = false
+
+[[tool.mypy.overrides]]
+module = [
+    "arrow",
+    "azure.*",
+    "bson.*",
+    "citext",
+    "colour",
+    "flask_babel",
+    "flask_wtf",
+    "gridfs",
+    "marker",
+    "playhouse.*",
+    "pymongo",
+    "sqlalchemy.*",
+    "sqlalchemy_utils",
+    "tablib",
+    "wtforms.*",
+    "wtfpeewee.*",
+]
+ignore_missing_imports = true
