@@ -1,0 +1,58 @@
+.console {
+    background-color: var(--bs-dark, #212529);
+    color: var(--bs-light, #f8f9fa);
+    padding: 1rem;
+    border-radius: var(--bs-border-radius, 0.375rem);
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 0.9em;
+    height: 70vh; /* Responsive height */
+    min-height: 400px;
+    display: flex;
+    flex-direction: column; /* Key for the flex layout */
+}
+
+.console-container {
+    flex-grow: 1; /* Allows this container to fill available space */
+    overflow-y: auto; /* Adds a scrollbar only when needed */
+    margin-bottom: 1rem;
+    border: 1px solid var(--bs-border-color, #495057);
+    padding: 0.5rem;
+    border-radius: var(--bs-border-radius-sm, 0.25rem);
+}
+
+.console-line {
+    flex-shrink: 0; /* Prevents the input line from shrinking */
+}
+
+.console-line .form-control {
+    background-color: #343a40;
+    color: #f8f9fa;
+    border-color: #495057;
+}
+
+.console-line .form-control:focus {
+    background-color: #495057;
+    color: #f8f9fa;
+    border-color: #86b7fe; /* Bootstrap's standard focus color */
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Styling for command and response entries */
+.console .entry {
+    margin-bottom: 0.5rem;
+}
+
+.console .cmd {
+    color: #6ea8fe; /* A light blue for commands */
+    word-break: break-all;
+}
+
+.console .response {
+    padding-left: 1rem;
+    white-space: pre-wrap; /* Wraps long responses */
+    word-break: break-all;
+}
+
+.console .error {
+    color: var(--bs-danger, #dc3545);
+}
