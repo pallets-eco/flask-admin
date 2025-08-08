@@ -163,7 +163,6 @@ def test_admin_customizations(app, babel):
     )
     assert admin.name == "Test"
     assert admin.url == "/foobar"
-    assert admin.index_view.blueprint
     assert admin.index_view.blueprint.static_url_path == "/static/my/admin"
 
     client = app.test_client()
@@ -223,7 +222,6 @@ def test_baseview_registration():
 
     view = MockView(static_url_path="/static/my/test")
     view.create_blueprint(base.Admin())
-    assert view.blueprint
     assert view.blueprint.static_url_path == "/static/my/test"
 
 
@@ -232,7 +230,7 @@ def test_baseview_urls(admin):
     view = MockView()
     admin.add_view(view)
 
-    assert len(view._urls) == 2  # type: ignore[attr-defined]
+    assert len(view._urls) == 2
 
 
 @pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
@@ -308,7 +306,7 @@ def test_inaccessible_callback(app, admin):
     client = app.test_client()
 
     view.allow_access = False
-    view.inaccessible_callback = lambda *args, **kwargs: abort(418)  # type: ignore[method-assign]
+    view.inaccessible_callback = lambda *args, **kwargs: abort(418)
 
     rv = client.get("/admin/mockview/")
     assert rv.status_code == 418

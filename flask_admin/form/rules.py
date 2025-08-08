@@ -595,7 +595,7 @@ class RuleSet:
     def __init__(
         self,
         view: t.Union[T_MODEL_VIEW, T_INLINE_BASE_FORM_ADMIN],
-        rules: t.Sequence[t.Union[str, tuple, list, BaseRule, FieldSet]],
+        rules: t.Sequence[t.Union[BaseRule, FieldSet]],
     ) -> None:
         """
         Constructor.

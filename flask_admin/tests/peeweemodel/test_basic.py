@@ -136,10 +136,10 @@ def test_model(app, db, admin):
     assert view._filters is None
 
     # Verify form
-    assert view._create_form_class.test1.field_class == fields.StringField  # type: ignore[attr-defined]
-    assert view._create_form_class.test2.field_class == fields.StringField  # type: ignore[attr-defined]
-    assert view._create_form_class.test3.field_class == fields.TextAreaField  # type: ignore[attr-defined]
-    assert view._create_form_class.test4.field_class == fields.TextAreaField  # type: ignore[attr-defined]
+    assert view._create_form_class.test1.field_class == fields.StringField
+    assert view._create_form_class.test2.field_class == fields.StringField
+    assert view._create_form_class.test3.field_class == fields.TextAreaField
+    assert view._create_form_class.test4.field_class == fields.TextAreaField
 
     # Make some test clients
     client = app.test_client()
@@ -353,9 +353,9 @@ def test_column_filters(app, db, admin):
         endpoint="_datetime",
     )
     admin.add_view(view5)
-    assert view._filters
+
     assert len(view._filters) == 7
-    assert view._filter_groups
+
     assert [(f["index"], f["operation"]) for f in view._filter_groups["Test1"]] == [
         (0, "contains"),
         (1, "not contains"),
@@ -430,7 +430,7 @@ def test_column_filters(app, db, admin):
     assert "test2_val_2" not in data
     assert "test1_val_3" in data
     assert "test1_val_4" in data
-    assert view2._filter_groups
+
     assert [
         (f["index"], f["operation"]) for f in view2._filter_groups["Int Field"]
     ] == [
@@ -532,7 +532,7 @@ def test_column_filters(app, db, admin):
     assert "char_field_val_2" in data
     assert "char_field_val_3" not in data
     assert "char_field_val_4" not in data
-    assert view3._filter_groups
+
     assert [
         (f["index"], f["operation"]) for f in view3._filter_groups["Bool Field"]
     ] == [
@@ -571,7 +571,7 @@ def test_column_filters(app, db, admin):
     assert "char_field_val_1" in data
     assert "char_field_val_2" not in data
     assert "char_field_val_3" not in data
-    assert view4._filter_groups
+
     assert [
         (f["index"], f["operation"]) for f in view4._filter_groups["Float Field"]
     ] == [
@@ -659,7 +659,7 @@ def test_column_filters(app, db, admin):
     assert "char_field_val_2" in data
     assert "char_field_val_3" not in data
     assert "char_field_val_4" not in data
-    assert view5._filter_groups
+
     assert [
         (f["index"], f["operation"]) for f in view5._filter_groups["Date Field"]
     ] == [
@@ -960,10 +960,10 @@ def test_form_args(app, db, admin):
     # ensure shared field_args don't create duplicate validators
     create_form = view.create_form()
 
-    assert len(create_form.test.validators) == 2  # type: ignore[attr-defined]
+    assert len(create_form.test.validators) == 2
 
     edit_form = view.edit_form()
-    assert len(edit_form.test.validators) == 2  # type: ignore[attr-defined]
+    assert len(edit_form.test.validators) == 2
 
 
 def test_ajax_fk(app, db, admin):
@@ -998,12 +998,12 @@ def test_ajax_fk(app, db, admin):
 
     # Check loader
     loader = view._form_ajax_refs["model1"]
-    mdl = loader.get_one(model.id)  # type: ignore[attr-defined]
+    mdl = loader.get_one(model.id)
     assert mdl.test1 == model.test1
 
     items = loader.get_list("fir")
     assert len(items) == 1
-    assert items[0].id == model.id  # type: ignore[attr-defined]
+    assert items[0].id == model.id
 
     items = loader.get_list("bar")
     assert len(items) == 1
@@ -1011,31 +1011,31 @@ def test_ajax_fk(app, db, admin):
 
     # Check form generation
     form = view.create_form()
-    assert form.model1.__class__.__name__ == "AjaxSelectField"  # type: ignore[attr-defined]
+    assert form.model1.__class__.__name__ == "AjaxSelectField"
 
     with app.test_request_context("/admin/view/"):
-        assert 'value=""' not in form.model1()  # type: ignore[attr-defined]
+        assert 'value=""' not in form.model1()
 
-        form.model1.data = model  # type: ignore[attr-defined]
+        form.model1.data = model
         assert (
-            f'data-json="[{as_unicode(model.id)}, &quot;first&quot;]"' in form.model1()  # type: ignore[attr-defined]
-            or f'data-json="[{as_unicode(model.id)}, &#34;first&#34;]"'  # type: ignore[attr-defined]
+            f'data-json="[{as_unicode(model.id)}, &quot;first&quot;]"' in form.model1()
+            or f'data-json="[{as_unicode(model.id)}, &#34;first&#34;]"'
         )
-        assert f'value="{as_unicode(model.id)}"' in form.model1()  # type: ignore[attr-defined]
+        assert f'value="{as_unicode(model.id)}"' in form.model1()
 
     # Check querying
     client = app.test_client()
 
     req = client.get("/admin/view/ajax/lookup/?name=model1&query=foo")
-    assert req.data == b'[[%d, "foo"]]' % model2.id  # type: ignore[attr-defined]
+    assert req.data == b'[[%d, "foo"]]' % model2.id
 
     # Check submitting
-    client.post("/admin/view/new/", data={"model1": as_unicode(model.id)})  # type: ignore[attr-defined]
+    client.post("/admin/view/new/", data={"model1": as_unicode(model.id)})
     mdl = Model2.select().first()
 
     assert mdl is not None
     assert mdl.model1 is not None
-    assert mdl.model1.id == model.id  # type: ignore[attr-defined]
+    assert mdl.model1.id == model.id
     assert mdl.model1.test1 == "first"
 
 

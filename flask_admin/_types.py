@@ -27,13 +27,6 @@ if t.TYPE_CHECKING:
     )
     from flask_admin.contrib.sqla.validators import Unique as T_UNIQUE
     from flask_admin.form import FormOpts as T_FORM_OPTS  # noqa
-    from flask_admin.form.rules import (
-        FieldSet as T_FIELD_SET,
-        BaseRule as T_BASE_RULE,
-        Header as T_HEADER,
-        Field as T_FLASK_ADMIN_FIELD,
-        Macro as T_MACRO,
-    )
     from flask_admin.model import BaseModelView as T_MODEL_VIEW
     from flask_admin.model.ajax import AjaxModelLoader as T_AJAX_MODEL_LOADER  # noqa
     from flask_admin.model.fields import AjaxSelectField as T_AJAX_SELECT_FIELD  # noqa
@@ -55,7 +48,7 @@ if t.TYPE_CHECKING:
     from flask_babel import LazyString as T_LAZY_STRING  # noqa
 
     from flask_sqlalchemy import Model as T_SQLALCHEMY_MODEL
-    from peewee import Model as T_PEEWEE_MODEL
+    from flask_admin.contrib.peewee.form import BaseModel as T_PEEWEE_MODEL
     from peewee import Field as T_PEEWEE_FIELD  # noqa
     from pymongo import MongoClient as T_MONGO_CLIENT
     import sqlalchemy  # noqa
@@ -65,8 +58,8 @@ if t.TYPE_CHECKING:
     from sqlalchemy.orm import scoped_session as T_SQLALCHEMY_SESSION  # noqa
     from sqlalchemy.orm.query import Query
     from sqlalchemy.sql.selectable import Select
-    from sqlalchemy_utils import Choice as T_CHOICE  # noqa
-    from sqlalchemy_utils import ChoiceType as T_CHOICE_TYPE  # noqa
+    from sqlalchemy_utils import Choice as T_CHOICE
+    from sqlalchemy_utils import ChoiceType as T_CHOICE_TYPE
 
     T_SQLALCHEMY_QUERY = t.Union[Query, Select]
     from redis import Redis as T_REDIS  # noqa
@@ -76,7 +69,7 @@ if t.TYPE_CHECKING:
     from flask_admin.contrib.sqla.ajax import (
         QueryAjaxModelLoader as T_SQLA_QUERY_AJAX_MODEL_LOADER,
     )  # noqa
-    from PIL.Image import Image as T_PIL_IMAGE  # noqa
+    from PIL.Image import Image as T_PIL_IMAGE
 else:
     T_VIEW = "flask_admin.base.BaseView"
     T_INPUT_REQUIRED = "InputRequired"
@@ -93,19 +86,13 @@ else:
     T_INLINE_AJAX_SELECT2_WIDGET = "flask_admin.model.widgets.AjaxSelect2Widget"
     T_INLINE_X_EDITABLE_WIDGET = "flask_admin.model.widgets.XEditableWidget"
 
-    T_FIELD_SET = "flask_admin.form.rules.FieldSet"
-    T_BASE_RULE = "flask_admin.form.rules.BaseRule"
-    T_HEADER = "flask_admin.form.rules.Header"
-    T_FLASK_ADMIN_FIELD = "flask_admin.form.rules.Field"
-    T_MACRO = "flask_admin.form.rules.Macro"
-
     # optional dependencies
     T_ARROW = "arrow.Arrow"
     T_LAZY_STRING = "flask_babel.LazyString"
     T_SQLALCHEMY_COLUMN = "sqlalchemy.Column"
     T_SQLALCHEMY_MODEL = "flask_sqlalchemy.Model"
     T_PEEWEE_FIELD = "peewee.Field"
-    T_PEEWEE_MODEL = "peewee.Model"
+    T_PEEWEE_MODEL = "peewee.BaseModel"
     T_MONGO_CLIENT = "pymongo.MongoClient"
     T_TABLE = "sqlalchemy.Table"
     T_CHOICE_TYPE = "sqlalchemy_utils.ChoiceType"
@@ -127,18 +114,8 @@ else:
 
 T_COLUMN = t.Union[str, T_SQLALCHEMY_COLUMN]
 T_FILTER = tuple[int, T_COLUMN, str]
-T_ORM_COLUMN = t.Union[T_COLUMN, T_PEEWEE_FIELD]
-T_COLUMN_LIST = t.Sequence[
-    t.Union[
-        T_ORM_COLUMN, t.Iterable[T_ORM_COLUMN], tuple[str, tuple[T_ORM_COLUMN, ...]]
-    ]
-]
-T_CONTRAVARIANT_MODEL_VIEW = t.TypeVar(
-    "T_CONTRAVARIANT_MODEL_VIEW", bound=T_MODEL_VIEW, contravariant=True
-)
-T_FORMATTER = t.Callable[
-    [T_CONTRAVARIANT_MODEL_VIEW, t.Optional[Context], t.Any, str], t.Union[str, Markup]
-]
+T_COLUMN_LIST = t.Sequence[T_COLUMN]
+T_FORMATTER = t.Callable[[T_MODEL_VIEW, t.Optional[Context], t.Any, str], str]
 T_COLUMN_FORMATTERS = dict[str, T_FORMATTER]
 T_TYPE_FORMATTER = t.Callable[[T_MODEL_VIEW, t.Any, str], t.Union[str, Markup]]
 T_COLUMN_TYPE_FORMATTERS = dict[type, T_TYPE_FORMATTER]
@@ -157,15 +134,9 @@ T_QUERY_AJAX_MODEL_LOADER = t.Union[
     T_PEEWEE_QUERY_AJAX_MODEL_LOADER, T_SQLA_QUERY_AJAX_MODEL_LOADER
 ]
 T_RESPONSE = t.Union[Response, Wkzg_Response]
-T_SQLALCHEMY_INLINE_MODELS = t.Sequence[
-    t.Union[
-        T_INLINE_FORM_ADMIN,
-        type[T_SQLALCHEMY_MODEL],
-        tuple[type[T_SQLALCHEMY_MODEL], dict[str, t.Any]],
-    ]
-]
-T_RULES_SEQUENCE = t.Sequence[
-    t.Union[str, T_FIELD_SET, T_BASE_RULE, T_HEADER, T_FLASK_ADMIN_FIELD, T_MACRO]
+T_SQLALCHEMY_INLINE_MODELS = t.Union[
+    t.Sequence[t.Union[T_INLINE_FORM_ADMIN, T_SQLALCHEMY_MODEL]],
+    tuple[T_SQLALCHEMY_MODEL, dict[str, t.Any]],
 ]
 T_VALIDATOR = t.Union[
     t.Callable[[t.Any, t.Any], t.Any],
@@ -249,11 +220,6 @@ class T_FIELD_ARGS_VALIDATORS(t.TypedDict, total=False):
 
 class T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK(T_FIELD_ARGS_VALIDATORS):
     allow_blank: NotRequired[bool]
-
-
-class T_FIELD_ARGS_VALIDATORS_FILES(T_FIELD_ARGS_VALIDATORS):
-    base_path: NotRequired[str]
-    allow_overwrite: NotRequired[bool]
 
 
 # Flask types

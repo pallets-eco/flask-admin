@@ -15,14 +15,13 @@ from flask_admin._compat import iteritems
 from flask_admin._types import T_AJAX_MODEL_LOADER
 from flask_admin._types import T_VALIDATOR
 
-from ..form import RenderTemplateWidget
 from .widgets import AjaxSelect2Widget
 from .widgets import InlineFieldListWidget
 from .widgets import InlineFormWidget
 
 
 class InlineFieldList(FieldList):
-    widget: RenderTemplateWidget = InlineFieldListWidget()
+    widget = InlineFieldListWidget()
 
     def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)

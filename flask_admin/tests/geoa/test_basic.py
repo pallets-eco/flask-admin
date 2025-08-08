@@ -9,7 +9,7 @@ from flask_admin.contrib.geoa.fields import GeoJSONField
 
 
 def create_models(db):
-    class GeoModel(db.Model):  # type: ignore[name-defined]
+    class GeoModel(db.Model):
         id = db.Column(db.Integer, primary_key=True)
         name = db.Column(db.String(20))
         point = db.Column(Geometry("POINT"))
@@ -37,14 +37,14 @@ def test_model(app, db, admin):
     assert view._primary_key == "id"
 
     # Verify form
-    assert view._create_form_class.point.field_class == GeoJSONField  # type: ignore[attr-defined]
-    assert view._create_form_class.point.kwargs["geometry_type"] == "POINT"  # type: ignore[attr-defined]
-    assert view._create_form_class.line.field_class == GeoJSONField  # type: ignore[attr-defined]
-    assert view._create_form_class.line.kwargs["geometry_type"] == "LINESTRING"  # type: ignore[attr-defined]
-    assert view._create_form_class.polygon.field_class == GeoJSONField  # type: ignore[attr-defined]
-    assert view._create_form_class.polygon.kwargs["geometry_type"] == "POLYGON"  # type: ignore[attr-defined]
-    assert view._create_form_class.multi.field_class == GeoJSONField  # type: ignore[attr-defined]
-    assert view._create_form_class.multi.kwargs["geometry_type"] == "MULTIPOINT"  # type: ignore[attr-defined]
+    assert view._create_form_class.point.field_class == GeoJSONField
+    assert view._create_form_class.point.kwargs["geometry_type"] == "POINT"
+    assert view._create_form_class.line.field_class == GeoJSONField
+    assert view._create_form_class.line.kwargs["geometry_type"] == "LINESTRING"
+    assert view._create_form_class.polygon.field_class == GeoJSONField
+    assert view._create_form_class.polygon.kwargs["geometry_type"] == "POLYGON"
+    assert view._create_form_class.multi.field_class == GeoJSONField
+    assert view._create_form_class.multi.kwargs["geometry_type"] == "MULTIPOINT"
 
     # Make some test clients
     client = app.test_client()
@@ -104,7 +104,7 @@ def test_model(app, db, admin):
 
     html = rv.data.decode("utf-8")
     pattern = r'(.|\n)+({.*"type": ?"Point".*})</textarea>(.|\n)+'
-    group = re.match(pattern, html).group(2) # type: ignore[union-attr]
+    group = re.match(pattern, html).group(2)
     p = json.loads(group)
     assert p["coordinates"][0] == 125.8
     assert p["coordinates"][1] == 10.0

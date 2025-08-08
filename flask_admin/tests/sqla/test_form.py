@@ -17,7 +17,7 @@ sqla_admin_model_converters = [
 class TestAdminModelConverter:
     @pytest.mark.parametrize("method_name", sqla_admin_model_converters)
     def test_can_override_widget(self, method_name):
-        converter = AdminModelConverter(None, None)  # type: ignore[arg-type]
+        converter = AdminModelConverter(None, None)
 
         def fake_widget(*args, **kwargs):
             return "<p>widget overridden</p>"

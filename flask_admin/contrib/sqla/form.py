@@ -33,7 +33,6 @@ from ..._types import T_FIELD_ARGS_LABEL
 from ..._types import T_FIELD_ARGS_PLACES
 from ..._types import T_FIELD_ARGS_VALIDATORS
 from ..._types import T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK
-from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
 from ..._types import T_MODEL_VIEW
 from ..._types import T_ORM_MODEL
 from ..._types import T_SQLALCHEMY_INLINE_MODELS
@@ -667,7 +666,7 @@ def get_form(
     base_class: type[form.BaseForm] = form.BaseForm,
     only: t.Optional[t.Collection[t.Union[str, InstrumentedAttribute]]] = None,
     exclude: t.Optional[t.Collection[t.Union[str, InstrumentedAttribute]]] = None,
-    field_args: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS_FILES]] = None,
+    field_args: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS]] = None,
     hidden_pk: bool = False,
     ignore_hidden: bool = True,
     extra_fields: t.Optional[dict[t.Union[str, InstrumentedAttribute], Field]] = None,
@@ -692,6 +691,7 @@ def get_form(
     :param ignore_hidden:
         If set to True (default), will ignore properties that start with underscore
     """
+
     # TODO: Support new 0.8 API
     if not hasattr(model, "_sa_class_manager"):
         raise TypeError("model must be a sqlalchemy mapped model")
@@ -811,7 +811,7 @@ class InlineModelConverter(InlineModelConverterBase):
         # Special case for model instances
         if info is None:
             if hasattr(p, "_sa_class_manager"):
-                return self.form_admin_class(p)  # type: ignore[arg-type]
+                return self.form_admin_class(p)
             else:
                 model = getattr(p, "model", None)
 

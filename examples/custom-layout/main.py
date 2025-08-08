@@ -1,4 +1,3 @@
-import datetime
 import os
 import os.path as op
 
@@ -14,7 +13,11 @@ app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
-admin = Admin(app, name="Example: Bootstrap4", theme=Bootstrap4Theme(swatch="flatly"))
+admin = Admin(
+    app,
+    name="Example: Custom Layout - Bootstrap4",
+    theme=Bootstrap4Theme(base_template="layout.html"),
+)
 
 
 @app.route("/")
@@ -26,8 +29,6 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
     email = db.Column(db.Unicode(64))
-    active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __unicode__(self):
         return self.name
@@ -43,14 +44,14 @@ class Page(db.Model):
 
 
 class CustomView(ModelView):
-    pass
+    list_template = "list.html"
+    create_template = "create.html"
+    edit_template = "edit.html"
 
 
 class UserAdmin(CustomView):
     column_searchable_list = ("name",)
     column_filters = ("name", "email")
-    can_export = True
-    export_types = ["csv", "xlsx"]
 
 
 def build_sample_db():
@@ -185,8 +186,8 @@ def build_sample_db():
 
 
 if __name__ == "__main__":
-    admin.add_view(UserAdmin(User, db.session, category="Menu"))
-    admin.add_view(CustomView(Page, db.session, category="Menu"))
+    admin.add_view(UserAdmin(User, db.session))
+    admin.add_view(CustomView(Page, db.session))
 
     app_dir = op.realpath(os.path.dirname(__file__))
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])

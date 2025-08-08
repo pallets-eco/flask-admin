@@ -27,14 +27,12 @@ from .._types import T_COLUMN
 from .._types import T_COLUMN_FORMATTERS
 from .._types import T_COLUMN_LIST
 from .._types import T_COLUMN_TYPE_FORMATTERS
-from .._types import T_FIELD_ARGS_VALIDATORS_FILES
+from .._types import T_FIELD_ARGS_VALIDATORS
 from .._types import T_FILTER
 from .._types import T_INSTRUMENTED_ATTRIBUTE
 from .._types import T_ORM_MODEL
-from .._types import T_PEEWEE_FIELD
 from .._types import T_QUERY_AJAX_MODEL_LOADER
 from .._types import T_RESPONSE
-from .._types import T_RULES_SEQUENCE
 from .._types import T_WIDGET
 from ..form.rules import RuleSet
 from .filters import BaseFilter
@@ -79,7 +77,7 @@ from .helpers import get_mdict_item_or_list
 from .helpers import prettify_name
 
 if sys.version_info >= (3, 10):
-    from typing import TypeGuard  # noqa
+    from typing import TypeGuard
 else:
     from typing_extensions import TypeGuard
 
@@ -643,7 +641,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
     """
 
-    form_args: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS_FILES]] = None
+    form_args: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS]] = None
     """
         Dictionary of form field arguments. Refer to WTForms documentation for
         list of possible options.
@@ -764,11 +762,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
     form_ajax_refs: t.Optional[
         dict[
-            str,
-            t.Union[
-                AjaxModelLoader,
-                dict[str, t.Union[str, t.Iterable[t.Union[str, T_PEEWEE_FIELD]], int]],
-            ],
+            str, t.Union[AjaxModelLoader, dict[str, t.Union[str, t.Iterable[str], int]]]
         ]
     ] = None
     """
@@ -803,7 +797,13 @@ class BaseModelView(BaseView, ActionsMixin):
         behavior in your `AjaxModelLoader` class.
     """
 
-    form_rules: t.Optional[T_RULES_SEQUENCE] = None
+    form_rules: t.Optional[
+        t.Sequence[
+            t.Union[
+                rules.FieldSet, rules.BaseRule, rules.Header, rules.Field, rules.Macro
+            ]
+        ]
+    ] = None
     """
         List of rendering rules for model creation form.
 
@@ -833,12 +833,24 @@ class BaseModelView(BaseView, ActionsMixin):
                 ]
     """
 
-    form_edit_rules: t.Optional[T_RULES_SEQUENCE] = None
+    form_edit_rules: t.Optional[
+        t.Sequence[
+            t.Union[
+                rules.FieldSet, rules.BaseRule, rules.Header, rules.Field, rules.Macro
+            ]
+        ]
+    ] = None
     """
         Customized rules for the edit form. Override `form_rules` if present.
     """
 
-    form_create_rules: t.Optional[T_RULES_SEQUENCE] = None
+    form_create_rules: t.Optional[
+        t.Sequence[
+            t.Union[
+                rules.FieldSet, rules.BaseRule, rules.Header, rules.Field, rules.Macro
+            ]
+        ]
+    ] = None
     """
         Customized rules for the create form. Override `form_rules` if present.
     """
@@ -905,7 +917,7 @@ class BaseModelView(BaseView, ActionsMixin):
         Constructor.
 
         :param model:
-            Model class type
+            Model class
         :param name:
             View name. If not provided, will use the model class name
         :param category:
@@ -928,6 +940,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Icon glyph name or URL, depending on `menu_icon_type` setting
         """
         self.model = model
+
         # If name not provided, it is model name
         if name is None:
             name = f"{self._prettify_class_name(model.__name__)}"
@@ -1099,7 +1112,7 @@ class BaseModelView(BaseView, ActionsMixin):
         self._validate_form_class(self._form_create_rules, self._create_form_class)
 
     # Primary key
-    def get_pk_value(self, model: T_ORM_MODEL) -> t.Union[t.Any, tuple[str, ...]]:
+    def get_pk_value(self, model: type[T_ORM_MODEL]) -> t.Union[t.Any, tuple[str, ...]]:
         """
         Return PK value from a model object.
         """
@@ -1173,7 +1186,7 @@ class BaseModelView(BaseView, ActionsMixin):
             only_columns = [c for c in only_columns if c not in excluded_columns]
 
         return [
-            (  # type: ignore[misc]
+            (
                 c,
                 self.get_column_name(
                     c  # type: ignore[arg-type]
@@ -1385,7 +1398,7 @@ class BaseModelView(BaseView, ActionsMixin):
     def scaffold_list_form(
         self,
         widget: t.Optional[type[T_WIDGET]] = None,
-        validators: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS_FILES]] = None,
+        validators: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS]] = None,
     ) -> type[Form]:
         """
         Create form for the `index_view` using only the columns from
@@ -1502,7 +1515,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return self._create_form_class(get_form_data(), obj=obj)
 
-    def edit_form(self, obj: t.Optional[T_ORM_MODEL] = None) -> Form:
+    def edit_form(self, obj: t.Optional[type[T_ORM_MODEL]] = None) -> Form:
         """
         Instantiate model editing form and return it.
 
@@ -1527,7 +1540,7 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             return self._delete_form_class()
 
-    def list_form(self, obj: t.Optional[object] = None) -> Form:
+    def list_form(self, obj: t.Optional[type] = None) -> Form:
         """
         Instantiate model editing form for list view and return it.
 
@@ -1552,7 +1565,9 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return validate_form_on_submit(form)
 
-    def get_save_return_url(self, model: T_ORM_MODEL, is_created: bool = False) -> str:
+    def get_save_return_url(
+        self, model: type[T_ORM_MODEL], is_created: bool = False
+    ) -> str:
         """
         Return url where user is redirected after successful form save.
 
@@ -2351,6 +2366,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 elif "_continue_editing" in request.form:
                     # if we have a valid model, try to go to the edit view
                     if model is not True:
+                        model = t.cast(type[T_ORM_MODEL], model)
                         url = self.get_url(
                             ".edit_view", id=self.get_pk_value(model), url=return_url
                         )
@@ -2358,7 +2374,7 @@ class BaseModelView(BaseView, ActionsMixin):
                         url = return_url
                     return redirect(url)
                 else:
-                    model = t.cast(T_ORM_MODEL, model)
+                    model = t.cast(type[T_ORM_MODEL], model)
                     # save button
                     return redirect(self.get_save_return_url(model, is_created=True))
 
@@ -2394,6 +2410,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if model is None:
             flash(gettext("Record does not exist."), "error")
             return redirect(return_url)
+        model = t.cast(type[T_ORM_MODEL], model)
         form = self.edit_form(obj=model)
         if not hasattr(form, "_validated_ruleset") or not form._validated_ruleset:
             self._validate_form_instance(ruleset=self._form_edit_rules, form=form)
@@ -2482,6 +2499,7 @@ class BaseModelView(BaseView, ActionsMixin):
             if model is None:
                 flash(gettext("Record does not exist."), "error")
                 return redirect(return_url)
+            model = t.cast(type[T_ORM_MODEL], model)
             # message is flashed from within delete_model if it fails
             if self.delete_model(model):
                 count = 1

@@ -37,15 +37,13 @@ from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
 
 from ..._types import T_COLUMN
-from ..._types import T_COLUMN_LIST
-from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
+from ..._types import T_FIELD_ARGS_VALIDATORS
 from ..._types import T_FILTER
 from ..._types import T_SQLALCHEMY_INLINE_MODELS
 from ..._types import T_SQLALCHEMY_MODEL
 from ..._types import T_SQLALCHEMY_QUERY
 from ..._types import T_SQLALCHEMY_SESSION
 from ..._types import T_WIDGET
-from ...model.filters import BaseFilter
 from .ajax import create_ajax_loader
 from .ajax import QueryAjaxModelLoader
 from .filters import BaseSQLAFilter
@@ -145,7 +143,7 @@ class ModelView(BaseModelView):
           used.
     """
 
-    column_filters: t.Optional[t.Collection[t.Union[str, BaseFilter]]] = None
+    column_filters: t.Optional[t.Sequence[str]] = None
     """
         Collection of the column filters.
 
@@ -399,6 +397,7 @@ class ModelView(BaseModelView):
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
         )
+        self.model = t.cast(type[T_SQLALCHEMY_MODEL], self.model)
         self._manager = manager_of_class(self.model)
 
         # Primary key
@@ -481,7 +480,7 @@ class ModelView(BaseModelView):
 
     def get_pk_value(
         self,
-        model: T_SQLALCHEMY_MODEL,  # type: ignore[override]
+        model: type[T_SQLALCHEMY_MODEL],  # type: ignore[override]
     ) -> t.Union[t.Any, tuple[str, ...]]:
         """
         Return the primary key value from a model object.
@@ -576,7 +575,7 @@ class ModelView(BaseModelView):
             return self.scaffold_sortable_columns()
         else:
             result = dict()
-            self.model = t.cast(type[T_SQLALCHEMY_MODEL], self.model)
+
             for c in self.column_sortable_list:
                 if isinstance(c, tuple):
                     if isinstance(c[1], tuple):
@@ -589,11 +588,11 @@ class ModelView(BaseModelView):
                             path.append(path_item)
                         column_name = c[0]
                     else:
-                        column, path = tools.get_field_with_path(self.model, c[1])  # type: ignore[assignment]
+                        column, path = tools.get_field_with_path(self.model, c[1])
                         column_name = c[0]
                 else:
-                    column, path = tools.get_field_with_path(  # type: ignore[assignment]
-                        self.model,
+                    column, path = tools.get_field_with_path(
+                        self.model,  # type: ignore[arg-type]
                         c,  # type: ignore[arg-type]
                     )
                     column_name = text_type(c)
@@ -610,7 +609,7 @@ class ModelView(BaseModelView):
                 else:
                     # column is in same table, use only model attribute name
                     if getattr(column, "key", None) is not None:
-                        column_name = column.key  # type: ignore[attr-defined]
+                        column_name = column.key  # type: ignore[union-attr]
 
                 # column_name must match column_name used in `get_list_columns`
                 result[column_name] = column
@@ -619,8 +618,8 @@ class ModelView(BaseModelView):
 
     def get_column_names(
         self,
-        only_columns: T_COLUMN_LIST,
-        excluded_columns: t.Optional[t.Sequence[str]],
+        only_columns: t.Iterable[T_COLUMN],
+        excluded_columns: t.Optional[t.Iterable[T_COLUMN]],
     ) -> list[tuple[T_COLUMN, str]]:
         """
         Returns a list of tuples with the model field name and formatted
@@ -884,7 +883,7 @@ class ModelView(BaseModelView):
     def scaffold_list_form(
         self,
         widget: t.Optional[type[T_WIDGET]] = None,
-        validators: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS_FILES]] = None,
+        validators: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS]] = None,
     ) -> type[Form]:
         """
         Create form for the `index_view` using only the columns from
@@ -927,7 +926,7 @@ class ModelView(BaseModelView):
                 )
                 continue
 
-            custom_converter = m.inline_converter( # type: ignore[union-attr]
+            custom_converter = m.inline_converter(
                 self.session, self, self.model_form_converter
             )
             form_class = custom_converter.contribute(self.model, form_class, m)

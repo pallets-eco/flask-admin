@@ -47,7 +47,7 @@ class TestS3FileAdmin(Base.FileAdminTests):
         return (boto3.client("s3"),), {"bucket_name": _bucket_name}
 
     @pytest.mark.skip
-    def test_file_admin_edit(self):  # type: ignore[override]
+    def test_file_admin_edit(self):
         """Override the inherited test as S3FileAdmin has no edit file functionality."""
         pass
 
@@ -55,7 +55,7 @@ class TestS3FileAdmin(Base.FileAdminTests):
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
-        class MyFileAdmin(fileadmin_class):  # type: ignore[misc, valid-type]
+        class MyFileAdmin(fileadmin_class):
             editable_extensions = ("txt",)
 
         view_kwargs = dict(fileadmin_kwargs)
@@ -68,7 +68,7 @@ class TestS3FileAdmin(Base.FileAdminTests):
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
-        class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+        class MyFileAdmin(fileadmin_class):
             editable_extensions = ("txt",)
 
         view_kwargs = dict(fileadmin_kwargs)
@@ -97,7 +97,7 @@ class TestS3FileAdmin(Base.FileAdminTests):
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
-        class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+        class MyFileAdmin(fileadmin_class):
             editable_extensions = ("txt",)
 
         view_kwargs = dict(fileadmin_kwargs)
@@ -118,7 +118,7 @@ class TestS3FileAdmin(Base.FileAdminTests):
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
-        class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+        class MyFileAdmin(fileadmin_class):
             editable_extensions = ("txt",)
 
         view_kwargs = dict(fileadmin_kwargs)
@@ -149,7 +149,7 @@ class TestS3FileAdmin(Base.FileAdminTests):
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
-        class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+        class MyFileAdmin(fileadmin_class):
             editable_extensions = ("txt",)
 
         view_kwargs = dict(fileadmin_kwargs)

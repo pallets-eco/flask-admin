@@ -1,6 +1,4 @@
 import logging
-import sys
-import typing as t
 
 import pymongo
 from bson import ObjectId
@@ -15,15 +13,8 @@ from flask_admin.babel import ngettext
 from flask_admin.helpers import get_form_data
 from flask_admin.model import BaseModelView
 
-from ..._types import T_FILTER
-from ...model.filters import BaseFilter
 from .filters import BasePyMongoFilter
 from .tools import parse_like_term
-
-if sys.version_info >= (3, 10):
-    from typing import TypeGuard  # noqa
-else:
-    from typing_extensions import TypeGuard
 
 # Set up logger
 log = logging.getLogger("flask-admin.pymongo")
@@ -34,7 +25,7 @@ class ModelView(BaseModelView):
     MongoEngine model scaffolding.
     """
 
-    column_filters: t.Optional[t.Collection[t.Union[str, BaseFilter]]] = None
+    column_filters = None
     """
         Collection of the column filters.
 
@@ -119,7 +110,7 @@ class ModelView(BaseModelView):
             endpoint = (f"{coll.name}view").lower()
 
         super().__init__(
-            None, # type: ignore[arg-type]
+            None,
             name,
             category,
             endpoint,
@@ -179,9 +170,7 @@ class ModelView(BaseModelView):
         """
         raise NotImplementedError()
 
-    def is_valid_filter(
-        self, filter: t.Union[BaseFilter, t.Any]
-    ) -> TypeGuard[BaseFilter]:
+    def is_valid_filter(self, filter):
         """
         Validate if it is valid MongoEngine filter
 
@@ -199,10 +188,10 @@ class ModelView(BaseModelView):
         """
         return model.get(name)
 
-    def _search(self, query, search_term: str):
+    def _search(self, query, search_term):
         values = search_term.split(" ")
 
-        queries: list[dict] = []
+        queries = []
 
         # Construct inner querie
         for value in values:
@@ -235,15 +224,15 @@ class ModelView(BaseModelView):
 
         return query
 
-    def get_list(  # type: ignore[override]
+    def get_list(
         self,
-        page: t.Optional[int],
+        page,
         sort_column,
-        sort_desc: bool,
-        search: t.Optional[str],
-        filters: t.Optional[t.Sequence[T_FILTER]],
+        sort_desc,
+        search,
+        filters,
         execute=True,
-        page_size: t.Optional[int] = None,
+        page_size=None,
     ):
         """
         Get list of objects from MongoEngine
@@ -269,9 +258,9 @@ class ModelView(BaseModelView):
 
         # Filters
         if self._filters:
-            data: list = []
+            data = []
 
-            for flt, _flt_name, value in filters:  # type: ignore[union-attr]
+            for flt, _flt_name, value in filters:
                 f = self._filters[flt]
                 data = f.apply(data, f.clean(value))
 
@@ -335,7 +324,7 @@ class ModelView(BaseModelView):
         """
         return self.coll.find_one({"_id": self._get_valid_id(id)})
 
-    def edit_form(self, obj): # type: ignore[override]
+    def edit_form(self, obj):
         """
         Create edit form from the MongoDB document
         """
