@@ -64,7 +64,7 @@ def get_primary_key(
     columns, return the corresponding tuple
 
     :param model:
-        Model class
+        Model instance
     """
     mapper = model._sa_class_manager.mapper  # type: ignore[union-attr]
     pks = [mapper.get_property_by_column(c).key for c in mapper.primary_key]

@@ -111,7 +111,7 @@ class UserAdmin(ModelView):
         "enum_choice_field",
         "sqla_utils_choice_field",
         "sqla_utils_enum_choice_field",
-    ] + column_list
+    ] + column_list  # type: ignore[operator]
     form_columns = [
         "id",
         "type",

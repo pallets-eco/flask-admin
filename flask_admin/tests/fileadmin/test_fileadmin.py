@@ -21,7 +21,7 @@ class Base:
             fileadmin_class = self.fileadmin_class()
             fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
-            class MyFileAdmin(fileadmin_class):
+            class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
                 editable_extensions = ("txt",)
 
             view_kwargs = dict(fileadmin_kwargs)
@@ -122,7 +122,7 @@ class Base:
             fileadmin_class = self.fileadmin_class()
             fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
-            class MyFileAdmin(fileadmin_class):
+            class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
                 editable_extensions = ("txt",)
 
             view_kwargs = dict(fileadmin_kwargs)
@@ -155,11 +155,11 @@ class Base:
             fileadmin_class = self.fileadmin_class()
             fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
-            class EditModalOn(fileadmin_class):
+            class EditModalOn(fileadmin_class):  # type: ignore[valid-type, misc]
                 edit_modal = True
                 editable_extensions = ("txt",)
 
-            class EditModalOff(fileadmin_class):
+            class EditModalOff(fileadmin_class):  # type: ignore[valid-type, misc]
                 edit_modal = False
                 editable_extensions = ("txt",)
 
@@ -201,7 +201,7 @@ class TestLocalFileAdmin(Base.FileAdminTests):
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
-        class MyFileAdmin(fileadmin_class):
+        class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
             editable_extensions = ("txt",)
 
         view_kwargs = dict(fileadmin_kwargs)

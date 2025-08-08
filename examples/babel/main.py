@@ -26,7 +26,7 @@ def get_locale():
 babel = Babel(app, locale_selector=get_locale)
 
 
-class User(db.Model):
+class User(db.Model):  # type: ignore[name-defined]
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
@@ -36,7 +36,7 @@ class User(db.Model):
         return self.username
 
 
-class Post(db.Model):
+class Post(db.Model):  # type: ignore[name-defined]
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
     text = db.Column(db.Text, nullable=False)

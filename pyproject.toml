@@ -177,13 +177,19 @@ source = ["flask_admin", "*/site-packages"]
 
 [tool.mypy]
 python_version = "3.9"
-files = ["flask_admin"]
+files = ["flask_admin", ]
 show_error_codes = true
 pretty = true
 strict = true
 
 # Strongly recommend enabling this one as soon as you can
-check_untyped_defs = false
+check_untyped_defs = true
+
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+strict_equality = true
+strict_concatenate = true
 
 # These shouldn't be too much additional work, but may be tricky to
 # get passing if you use a lot of untyped libraries
@@ -364,6 +370,7 @@ dependency_groups = ["typing"]
 commands = [
     ["mypy", "--python-version", "3.9"],
     ["mypy", "--python-version", "3.13"],
+    ["mypy", "--python-version", "3.9", "--config-file", "examples/mypy-examples-config.toml", "examples", ]
     # TODO: reenable after pyright test pass
     # ["pyright"],
 ]

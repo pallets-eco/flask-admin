@@ -9,7 +9,7 @@ from .test_basic import CustomModelView
 def test_hstore(app, postgres_db, postgres_admin):
     with app.app_context():
 
-        class Model(postgres_db.Model):
+        class Model(postgres_db.Model):  # type: ignore[name-defined]
             id = postgres_db.Column(
                 postgres_db.Integer, primary_key=True, autoincrement=True
             )
@@ -47,7 +47,7 @@ def test_hstore(app, postgres_db, postgres_admin):
 def test_json(app, postgres_db, postgres_admin):
     with app.app_context():
 
-        class JSONModel(postgres_db.Model):
+        class JSONModel(postgres_db.Model): # type: ignore[name-defined]
             id = postgres_db.Column(
                 postgres_db.Integer, primary_key=True, autoincrement=True
             )
@@ -90,7 +90,7 @@ def test_json(app, postgres_db, postgres_admin):
 def test_citext(app, postgres_db, postgres_admin):
     with app.app_context():
 
-        class CITextModel(postgres_db.Model):
+        class CITextModel(postgres_db.Model):  # type: ignore[name-defined]
             id = postgres_db.Column(
                 postgres_db.Integer, primary_key=True, autoincrement=True
             )

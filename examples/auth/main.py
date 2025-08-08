@@ -53,7 +53,7 @@ roles_users = db.Table(
 )
 
 
-class Role(db.Model, RoleMixin):
+class Role(db.Model, RoleMixin):  # type: ignore[name-defined]
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
@@ -62,7 +62,7 @@ class Role(db.Model, RoleMixin):
         return self.name
 
 
-class User(db.Model, UserMixin):
+class User(db.Model, UserMixin):  # type: ignore[name-defined]
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))

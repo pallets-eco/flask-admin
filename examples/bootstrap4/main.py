@@ -22,7 +22,7 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
-class User(db.Model):
+class User(db.Model):  # type: ignore[name-defined]
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(64))
     email = db.Column(db.Unicode(64))
@@ -33,7 +33,7 @@ class User(db.Model):
         return self.name
 
 
-class Page(db.Model):
+class Page(db.Model):  # type: ignore[name-defined]
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Unicode(64))
     content = db.Column(db.UnicodeText)

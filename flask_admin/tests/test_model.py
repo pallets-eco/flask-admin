@@ -28,7 +28,7 @@ class Form(form.BaseForm):
 
 
 class SimpleFilter(filters.BaseFilter):
-    def apply(self, query):
+    def apply(self, query, value):
         query._applied = True
         return query
 
@@ -74,7 +74,7 @@ class MockModelView(base.BaseModelView):
         columns = ["col1", "col2", "col3"]
 
         if self.column_exclude_list:
-            return filter(lambda x: x not in self.column_exclude_list, columns)
+            return filter(lambda x: x not in self.column_exclude_list, columns)  # type: ignore[arg-type]
 
         return columns
 
@@ -122,13 +122,13 @@ def test_mockview(app, admin):
     view = MockModelView(Model)
     admin.add_view(view)
 
-    assert view.model == Model
+    assert view.model == Model  # type: ignore[comparison-overlap]
 
     assert view.name == "Model"
     assert view.endpoint == "model"
 
     # Verify scaffolding
-    assert view._sortable_columns == ["col1", "col2", "col3"]
+    assert view._sortable_columns == ["col1", "col2", "col3"]  # type: ignore[comparison-overlap]
     assert view._create_form_class == Form
     assert view._edit_form_class == Form
     assert view._search_supported is False
@@ -187,7 +187,7 @@ def test_mockview(app, admin):
     # continue" functionality works when app is not located at root
     dummy_app = Flask("dummy_app")
     dispatched_app = DispatcherMiddleware(dummy_app, {"/dispatched": app})
-    dispatched_client = Client(dispatched_app)
+    dispatched_client: Client = Client(dispatched_app)
 
     rv = dispatched_client.post(
         "/dispatched/admin/model/edit/?id=3&url=/dispatched/admin/model/?flt0_filter%3Dvalue",
@@ -302,13 +302,16 @@ def test_column_filters(app, admin):
     view = MockModelView(Model, column_filters=["col1", "col2"])
     admin.add_view(view)
 
+    assert view._filters
     assert len(view._filters) == 2
     assert view._filters[0].name == "col1"
     assert view._filters[1].name == "col2"
-
+    assert view._filter_groups
+    assert view._filter_groups["col1"]
     assert [(f["index"] == f["operation"]) for f in view._filter_groups["col1"]], [
         (0, "test")
     ]
+    view._filter_groups["col2"]
     assert [(f["index"] == f["operation"]) for f in view._filter_groups["col2"]], [
         (1, "test")
     ]
@@ -323,6 +326,7 @@ def test_filter_list_callable(app, admin):
     admin.add_view(view)
 
     opts = flt.get_options(view)
+    assert opts
     assert len(opts) == 2
     assert opts == [("1", "Test 1"), ("2", "Test 2")]
 
