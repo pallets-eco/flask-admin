@@ -1,11 +1,11 @@
 {% import 'admin/static.html' as admin_static with context %}
 
 {% macro dropdown(actions, btn_class='nav-link dropdown-toggle') -%}
-    <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)" role="button" aria-haspopup="true"
+    <a class="{{ btn_class }}" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
        aria-expanded="false">{{ _gettext('With selected') }}</a>
     <div class="dropdown-menu">
         {% for p in actions %}
-            <a class="dropdown-item" href="javascript:void(0)"
+            <a class="dropdown-item" href="#"
                onclick="return modelActions.execute('{{ p[0] }}');">{{ _gettext(p[1]) }}</a>
         {% endfor %}
     </div>
