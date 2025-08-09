@@ -4,21 +4,13 @@ from peewee import CharField
 from peewee import DateField
 from peewee import DateTimeField
 from peewee import ForeignKeyField
+from peewee import ModelBase
 from peewee import PrimaryKeyField
 from peewee import TimeField
 from wtforms import Field
 from wtforms import fields
 from wtforms.form import BaseForm
 from wtforms.form import Form
-
-from ..._types import T_MODEL_VIEW
-from ..._types import T_PEEWEE_MODEL
-
-try:
-    from peewee import BaseModel  # type: ignore[attr-defined]
-except ImportError:
-    from peewee import ModelBase as BaseModel
-
 from wtfpeewee.orm import model_form
 from wtfpeewee.orm import ModelConverter
 
@@ -31,6 +23,8 @@ from flask_admin.model.fields import InlineModelFormField
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin.model.form import InlineModelConverterBase
 
+from ..._types import T_MODEL_VIEW
+from ..._types import T_PEEWEE_MODEL
 from .ajax import create_ajax_loader
 from .tools import get_meta_fields
 from .tools import get_primary_key
@@ -192,7 +186,7 @@ class CustomModelConverter(ModelConverter):
 
 
 def get_form(
-    model: BaseModel,
+    model: T_PEEWEE_MODEL,
     converter: CustomModelConverter,
     base_class: type[form.BaseForm] = form.BaseForm,
     only: t.Any = None,
@@ -234,12 +228,20 @@ class InlineModelConverter(InlineModelConverterBase):
         you can create your own wtforms field and use it instead
     """
 
-    def get_info(self, p: t.Union[BaseModel, InlineFormAdmin]) -> InlineFormAdmin:
-        info = super().get_info(p)
+    def get_info(
+        self,
+        p: t.Union[  # type: ignore[override]
+            tuple[T_PEEWEE_MODEL, dict[str, t.Any]],
+            InlineFormAdmin,
+            type[T_PEEWEE_MODEL],
+            T_PEEWEE_MODEL,
+        ],
+    ) -> InlineFormAdmin:
+        info = super().get_info(p)  # type: ignore[arg-type]
 
         if info is None:
-            if isinstance(p, BaseModel):
-                info = InlineFormAdmin(p)
+            if isinstance(p, ModelBase):
+                info = InlineFormAdmin(p)  # type: ignore[arg-type]
             else:
                 model = getattr(p, "model", None)
                 if model is None:
@@ -287,7 +289,7 @@ class InlineModelConverter(InlineModelConverterBase):
         converter: t.Any,
         model: t.Any,
         form_class: type[Form],
-        inline_model: t.Union[BaseModel, InlineFormAdmin],
+        inline_model: t.Union[T_PEEWEE_MODEL, InlineFormAdmin],
     ) -> type[Form]:
         # Find property from target model to current model
         reverse_field = None

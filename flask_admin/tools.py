@@ -112,7 +112,7 @@ def escape(value: t.Union[str, bytes]) -> str:
     )
 
 
-def iterencode(iter: t.Iterable[t.Union[str, bytes]]) -> str:
+def iterencode(iter: t.Iterable[t.Union[str, bytes, int]]) -> str:
     """
     Encode enumerable as compact string representation.
 
