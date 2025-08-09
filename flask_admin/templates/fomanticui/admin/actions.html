@@ -1,0 +1,35 @@
+{% import 'admin/static.html' as admin_static with context %}
+
+{% macro dropdown_menu_items(actions, btn_class='') -%}
+  {% for p in actions %}
+    <div class="actionable item"
+         onclick="return modelActions.execute('{{ p[0] }}');">{{ _gettext(p[1]) }}</div>
+  {% endfor %}
+{% endmacro %}
+
+{% macro form(actions, url) %}
+  {% if actions %}
+    <form id="action_form" action="{{ url }}" method="post" class="d-none">
+      {% if action_form.csrf_token is defined and action_form.csrf_token %}
+        {{ action_form.csrf_token }}
+      {% elif csrf_token is defined and csrf_token %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      {% endif %}
+      {% if return_url is defined and return_url %}
+        {{ action_form.url(value=return_url) }}
+      {% else %}
+        {{ action_form.url() }}
+      {% endif %}
+      {{ action_form.action() }}
+    </form>
+  {% endif %}
+{% endmacro %}
+
+{% macro script(message, actions, actions_confirmation) %}
+  {% if actions %}
+    <div id="actions-confirmation-data" class="d-none">{{ actions_confirmation|tojson|safe }}</div>
+    <div id="message-data" class="d-none">{{ message|tojson|safe }}</div>
+    <script {{ admin_csp_nonce_attribute }}
+            src="{{ admin_static.url(filename='fomanticui/js/actions.js', v='1.0.0') }}"></script>
+  {% endif %}
+{% endmacro %}

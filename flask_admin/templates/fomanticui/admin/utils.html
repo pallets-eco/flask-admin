@@ -1,0 +1,38 @@
+
+{% macro breadcrumb() %}
+  {# Build a breadcrumb trail for the current admin view #}
+  <div class="ui breadcrumb mb-1">
+    <a class="section" href="{{ admin_view.admin.url }}">{{ admin_view.admin.name }}</a>
+    {% if admin_view.category %}
+      <div class="divider">/</div>
+      <span class="section">{{ admin_view.category }}</span>
+    {% endif %}
+
+    {% set endpoint_tail = request.endpoint.split('.')[-1] if request.endpoint else '' %}
+    {# record id may come from query args (?id=) or url path (<id>) #}
+    {% set record_id = request.args.get('id') or (request.view_args.get('id') if request.view_args is defined and request.view_args else None) %}
+
+    {# Base link to the model list #}
+    <div class="divider">/</div>
+    <a class="section" href="{{ admin_view.url }}">{{ admin_view.name }}</a>
+
+    {% if endpoint_tail == 'details_view' and record_id %}
+      {# Currently on details page -> show id as active, no further action segment #}
+      <div class="divider">/</div>
+      <div class="active section">#{{ record_id }}</div>
+    {% elif endpoint_tail == 'edit_view' and record_id %}
+      {# On edit page -> id links to details, followed by active Edit #}
+      <div class="divider">/</div>
+      <a class="section" href="{{ get_url('.details_view', id=record_id) }}">#{{ record_id }}</a>
+      <div class="divider">/</div>
+      <div class="active section">{{ _gettext("Edit") }}</div>
+    {% elif endpoint_tail == 'create_view' %}
+      {# On create page -> show active Create segment #}
+      <div class="divider">/</div>
+      <div class="active section">{{ _gettext("Create") }}</div>
+    {% else %}
+      {# List or other pages -> model already included, mark active #}
+      {# No extra segments needed #}
+    {% endif %}
+  </div>
+{% endmacro %}
