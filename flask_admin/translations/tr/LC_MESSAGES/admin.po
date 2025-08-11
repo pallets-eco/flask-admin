@@ -370,11 +370,11 @@ msgstr[1] "En az %(num)d adet nesne gerekli"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr ""
+msgstr "Geçerli bir ISO para birimi kodu değil (örn. USD, EUR, CNY)."
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
-msgstr ""
+msgstr "Geçerli bir renk değil (örn. \"red\", \"#f00\", \"#ff0000\")."
 
 #: ../flask_admin/contrib/sqla/view.py:1316
 #, python-format
@@ -399,7 +399,7 @@ msgstr "Geçersiz dosya uzantısı"
 
 #: ../flask_admin/form/validators.py:18
 msgid "This field requires at least one item."
-msgstr ""
+msgstr "Bu alan en az bir öğeyi gerektirir."
 
 #: ../flask_admin/model/base.py:1926
 msgid "There are no items in the table."
@@ -454,7 +454,7 @@ msgstr "Kaydı Düzenleme"
 #: ../flask_admin/model/template.py:114
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr ""
+msgstr "Kaydı Sil"
 
 #: ../flask_admin/model/widgets.py:71
 msgid "Please select model"

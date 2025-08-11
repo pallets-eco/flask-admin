@@ -7,7 +7,7 @@ license = { file = "LICENSE.txt" }
 author = [{ name = "Flask-Admin team" }]
 maintainers = [{ name = "Pallets Ecosystem", email = "contact@palletsprojects.com" }]
 classifiers = [
-    'Development Status :: 4 - Beta',
+    'Development Status :: 5 - Production/Stable',
     'Environment :: Web Environment',
     'Intended Audience :: Developers',
     'License :: OSI Approved :: BSD License',
@@ -18,6 +18,7 @@ classifiers = [
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
 ]
 requires-python = ">=3.9"
 dependencies = [
@@ -164,6 +165,9 @@ filterwarnings = [
 
     # `flask.testing` accesses this attribute; remove when they have updated their code.
     "default:The '__version__' attribute is deprecated and will be removed in Werkzeug 3\\.1\\.:DeprecationWarning",
+
+    # raised by flask-sqlalchemy https://github.com/pallets-eco/flask-sqlalchemy/issues/137
+    "ignore:Exception ignored in.*sqlite3.Connection:pytest.PytestUnraisableExceptionWarning",
 ]
 
 [tool.coverage.run]
@@ -251,9 +255,9 @@ order-by-type = false
 
 [tool.tox]
 env_list = [
-    "py39", "py310", "py311", "py312",
-    "py39-sqlalchemy1", "py312-sqlalchemy1",
-    "py312-noflaskbabel",
+    "py39", "py310", "py311", "py312", "py313",
+    "py39-sqlalchemy1", "py313-sqlalchemy1",
+    "py313-noflaskbabel",
     "py39-min",
     "style",
     "typing",
@@ -327,10 +331,10 @@ commands = [
     ],
 ]
 
-[tool.tox.env.py312-sqlalchemy1]
-description = "pytest with SQLAlchemy 1.x on Python 3.12"
+[tool.tox.env.py313-sqlalchemy1]
+description = "pytest with SQLAlchemy 1.x on Python 3.13"
 base = ["env_run_base"]
-base_python = ["3.12"]
+base_python = ["3.13"]
 commands = [
     ["uv", "pip", "install", "sqlalchemy>=1.4,<2"],
     ["uv", "pip", "install", "flask-sqlalchemy<=3.0.5"],
@@ -340,7 +344,7 @@ commands = [
     ],
 ]
 
-[tool.tox.env.py312-noflaskbabel]
+[tool.tox.env.py313-noflaskbabel]
 description = "pytest without flask-babel"
 base = ["env_run_base"]
 commands = [
@@ -363,7 +367,7 @@ description = "run static type checkers"
 dependency_groups = ["typing"]
 commands = [
     ["mypy", "--python-version", "3.9"],
-    ["mypy", "--python-version", "3.12"],
+    ["mypy", "--python-version", "3.13"],
     # TODO: reenable after pyright test pass
     # ["pyright"],
 ]

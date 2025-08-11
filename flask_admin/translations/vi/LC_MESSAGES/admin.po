@@ -3,16 +3,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-20 20:51+0200\n"
-"PO-Revision-Date: 2017-02-07 01:19-0500\n"
-"Last-Translator: mrjoes <serge.koval@gmail.com>\n"
+"POT-Creation-Date: 2025-06-03 07:06+0100\n"
+"PO-Revision-Date: 2025-07-07 20:12-0500\n"
+"Last-Translator: ElLorans <lorenzo.cerreta@gmail.com>\n"
 "Language: vi_VN\n"
 "Language-Team: Vietnamese\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.17.0\n"
+"Generated-By: Babel 2.16.0\n"
 
 #: ../flask_admin/base.py:516
 msgid "Home"
@@ -58,7 +58,7 @@ msgstr "Tập tin \"%(name)s\" đã tồn tại."
 #: ../flask_admin/contrib/fileadmin/__init__.py:1144
 #: ../flask_admin/contrib/fileadmin/__init__.py:1211
 #: ../flask_admin/contrib/fileadmin/__init__.py:1280
-#: ../flask_admin/model/base.py:2568
+#: ../flask_admin/model/base.py:2566
 msgid "Permission denied."
 msgstr "Từ chối cho phép."
 
@@ -66,12 +66,12 @@ msgstr "Từ chối cho phép."
 msgid "File uploading is disabled."
 msgstr "Tập tin tải lên bị vô hiệu hóa."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1003
+#: ../flask_admin/contrib/fileadmin/__init__.py:1002
 #, python-format
 msgid "Successfully saved file: %(name)s"
 msgstr "Tệp đã lưu thành công: %(name)s"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1012
+#: ../flask_admin/contrib/fileadmin/__init__.py:1011
 #, python-format
 msgid "Failed to save file: %(error)s"
 msgstr "Không thể lưu tập tin: %(error)s"
@@ -86,12 +86,12 @@ msgstr "Tải lên tập tin"
 msgid "Directory creation is disabled."
 msgstr "Tạo ra thư mục bị vô hiệu hóa."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1087
+#: ../flask_admin/contrib/fileadmin/__init__.py:1086
 #, python-format
 msgid "Successfully created directory: %(directory)s"
 msgstr "Thành công tạo ra thư mục: %(directory)s"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1096
+#: ../flask_admin/contrib/fileadmin/__init__.py:1095
 #, python-format
 msgid "Failed to create directory: %(error)s"
 msgstr "Không thể tạo thư mục: %(error)s"
@@ -110,12 +110,12 @@ msgstr "Xóa bị vô hiệu hóa."
 msgid "Directory deletion is disabled."
 msgstr "Xóa thư mục bị vô hiệu hóa."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1157
+#: ../flask_admin/contrib/fileadmin/__init__.py:1156
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
 msgstr "Thư mục \"%(path)s\" đã được xóa thành công."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1164
+#: ../flask_admin/contrib/fileadmin/__init__.py:1163
 #, python-format
 msgid "Failed to delete directory: %(error)s"
 msgstr "Không thể xoá thư mục: %(error)s"
@@ -126,8 +126,8 @@ msgstr "Không thể xoá thư mục: %(error)s"
 msgid "File \"%(name)s\" was successfully deleted."
 msgstr "Tập tin \"%(name)s\" đã được xóa thành công."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1181
-#: ../flask_admin/contrib/fileadmin/__init__.py:1384
+#: ../flask_admin/contrib/fileadmin/__init__.py:1180
+#: ../flask_admin/contrib/fileadmin/__init__.py:1383
 #, python-format
 msgid "Failed to delete file: %(name)s"
 msgstr "Không xóa tập tin: %(name)s"
@@ -140,12 +140,12 @@ msgstr "Đổi tên bị vô hiệu hóa."
 msgid "Path does not exist."
 msgstr "Đường dẫn không tồn tại."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1228
+#: ../flask_admin/contrib/fileadmin/__init__.py:1229
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
 msgstr "Thành công được đổi tên thành \"%(src)s\" để \"%(dst)s\""
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1237
+#: ../flask_admin/contrib/fileadmin/__init__.py:1236
 #, python-format
 msgid "Failed to rename: %(error)s"
 msgstr "Không thể đổi tên: %(error)s"
@@ -171,7 +171,7 @@ msgid "Error reading %(name)s."
 msgstr "Lỗi đọc %(name)s."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1318
-#: ../flask_admin/contrib/fileadmin/__init__.py:1331
+#: ../flask_admin/contrib/fileadmin/__init__.py:1330
 #, python-format
 msgid "Unexpected error while reading from %(name)s"
 msgstr "Lỗi bất ngờ trong khi đọc từ %(name)s"
@@ -187,10 +187,9 @@ msgid "Editing %(path)s"
 msgstr "Chỉnh sửa %(path)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1363
-#: ../flask_admin/contrib/mongoengine/view.py:725
 #: ../flask_admin/contrib/peewee/view.py:603
 #: ../flask_admin/contrib/pymongo/view.py:411
-#: ../flask_admin/contrib/sqla/view.py:1437
+#: ../flask_admin/contrib/sqla/view.py:1438
 msgid "Delete"
 msgstr "Xóa"
 
@@ -212,67 +211,57 @@ msgstr "Chỉnh sửa"
 msgid "Cannot operate on non empty directories"
 msgstr "Không thể hoạt động trên thư mục không trống"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:41
 #: ../flask_admin/contrib/peewee/filters.py:47
 #: ../flask_admin/contrib/pymongo/filters.py:49
 #: ../flask_admin/contrib/sqla/filters.py:62
 msgid "equals"
 msgstr "bằng"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:50
 #: ../flask_admin/contrib/peewee/filters.py:55
 #: ../flask_admin/contrib/pymongo/filters.py:58
 #: ../flask_admin/contrib/sqla/filters.py:72
 msgid "not equal"
 msgstr "không bằng"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:60
 #: ../flask_admin/contrib/peewee/filters.py:64
 #: ../flask_admin/contrib/pymongo/filters.py:68
 #: ../flask_admin/contrib/sqla/filters.py:83
 msgid "contains"
 msgstr "chứa"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:70
 #: ../flask_admin/contrib/peewee/filters.py:73
 #: ../flask_admin/contrib/pymongo/filters.py:78
 #: ../flask_admin/contrib/sqla/filters.py:94
 msgid "not contains"
 msgstr "không có"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:79
 #: ../flask_admin/contrib/peewee/filters.py:81
 #: ../flask_admin/contrib/pymongo/filters.py:91
 #: ../flask_admin/contrib/sqla/filters.py:104
 msgid "greater than"
 msgstr "lớn hơn"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:88
 #: ../flask_admin/contrib/peewee/filters.py:89
 #: ../flask_admin/contrib/pymongo/filters.py:104
 #: ../flask_admin/contrib/sqla/filters.py:114
 msgid "smaller than"
 msgstr "nhỏ hơn"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:100
 #: ../flask_admin/contrib/peewee/filters.py:100
 #: ../flask_admin/contrib/sqla/filters.py:127
 msgid "empty"
 msgstr "sản phẩm nào"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:115
 #: ../flask_admin/contrib/peewee/filters.py:120
 #: ../flask_admin/contrib/sqla/filters.py:149
 msgid "in list"
 msgstr "trong danh sách"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:124
 #: ../flask_admin/contrib/peewee/filters.py:129
 #: ../flask_admin/contrib/sqla/filters.py:161
 msgid "not in list"
 msgstr "không có trong danh sách"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:223
 #: ../flask_admin/contrib/peewee/filters.py:228
 #: ../flask_admin/contrib/peewee/filters.py:268
 #: ../flask_admin/contrib/peewee/filters.py:308
@@ -282,99 +271,83 @@ msgstr "không có trong danh sách"
 msgid "not between"
 msgstr "không giữa"
 
-#: ../flask_admin/contrib/mongoengine/filters.py:248
-msgid "ObjectId equals"
-msgstr ""
-
-#: ../flask_admin/contrib/mongoengine/form.py:120
-#: ../flask_admin/contrib/sqla/fields.py:151
-#: ../flask_admin/contrib/sqla/fields.py:210
-#: ../flask_admin/contrib/sqla/fields.py:215 ../flask_admin/model/fields.py:224
-#: ../flask_admin/model/fields.py:284
-msgid "Not a valid choice"
-msgstr "Không phải là một lựa chọn hợp lệ"
-
-#: ../flask_admin/contrib/mongoengine/view.py:605
-#, python-format
-msgid "Failed to get model. %(error)s"
-msgstr ""
-
-#: ../flask_admin/contrib/mongoengine/view.py:626
 #: ../flask_admin/contrib/peewee/view.py:542
 #: ../flask_admin/contrib/pymongo/view.py:345
-#: ../flask_admin/contrib/sqla/view.py:1355
+#: ../flask_admin/contrib/sqla/view.py:1356
 #, python-format
 msgid "Failed to create record. %(error)s"
 msgstr "Hỏng khi tạo hồ sơ. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:655
 #: ../flask_admin/contrib/peewee/view.py:564
 #: ../flask_admin/contrib/pymongo/view.py:369
-#: ../flask_admin/contrib/sqla/view.py:1386 ../flask_admin/model/base.py:2723
-#: ../flask_admin/model/base.py:2730 ../flask_admin/model/base.py:2734
+#: ../flask_admin/contrib/sqla/view.py:1387 ../flask_admin/model/base.py:2721
+#: ../flask_admin/model/base.py:2728 ../flask_admin/model/base.py:2731
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr "Hỏng khi tạo hồ sơ. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:681
 #: ../flask_admin/contrib/peewee/view.py:582
 #: ../flask_admin/contrib/pymongo/view.py:393
-#: ../flask_admin/contrib/sqla/view.py:1414
+#: ../flask_admin/contrib/sqla/view.py:1415
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr "Không xóa hồ sơ. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:726
 #: ../flask_admin/contrib/peewee/view.py:604
 #: ../flask_admin/contrib/pymongo/view.py:412
-#: ../flask_admin/contrib/sqla/view.py:1438
+#: ../flask_admin/contrib/sqla/view.py:1439
 msgid "Are you sure you want to delete selected records?"
 msgstr "Bạn có chắc bạn muốn xóa hồ sơ đã chọn không?"
 
-#: ../flask_admin/contrib/mongoengine/view.py:738
-#: ../flask_admin/contrib/peewee/view.py:624
-#: ../flask_admin/contrib/pymongo/view.py:425
-#: ../flask_admin/contrib/sqla/view.py:1461 ../flask_admin/model/base.py:2503
+#: ../flask_admin/contrib/peewee/view.py:623
+#: ../flask_admin/contrib/pymongo/view.py:424
+#: ../flask_admin/contrib/sqla/view.py:1461 ../flask_admin/model/base.py:2500
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
 msgstr[0] "%(count)s hồ sơ đã được xóa thành công."
 
-#: ../flask_admin/contrib/mongoengine/view.py:748
 #: ../flask_admin/contrib/peewee/view.py:634
 #: ../flask_admin/contrib/pymongo/view.py:434
-#: ../flask_admin/contrib/sqla/view.py:1473
+#: ../flask_admin/contrib/sqla/view.py:1474
 #, python-format
 msgid "Failed to delete records. %(error)s"
 msgstr "Không xóa hồ sơ. %(error)s"
 
-#: ../flask_admin/contrib/sqla/fields.py:246
-msgid "Key"
-msgstr ""
+#: ../flask_admin/contrib/sqla/fields.py:150
+#: ../flask_admin/contrib/sqla/fields.py:209
+#: ../flask_admin/contrib/sqla/fields.py:214 ../flask_admin/model/fields.py:224
+#: ../flask_admin/model/fields.py:284
+msgid "Not a valid choice"
+msgstr "Không phải là một lựa chọn hợp lệ"
 
-#: ../flask_admin/contrib/sqla/fields.py:247
+#: ../flask_admin/contrib/sqla/fields.py:245
+msgid "Key"
+msgstr "Chìa khóa"
+
+#: ../flask_admin/contrib/sqla/fields.py:246
 msgid "Value"
-msgstr ""
+msgstr "Giá trị"
 
 #: ../flask_admin/contrib/sqla/validators.py:43
 msgid "Already exists."
 msgstr "Đã tồn tại."
 
-#: ../flask_admin/contrib/sqla/validators.py:81
+#: ../flask_admin/contrib/sqla/validators.py:80
 #, python-format
 msgid "At least %(num)d item is required"
 msgid_plural "At least %(num)d items are required"
-msgstr[0] ""
+msgstr[0] "Cần ít nhất %(num)d mục"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr ""
+msgstr "Không phải là mã tiền tệ ISO hợp lệ (ví dụ: USD, EUR, CNY)."
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
-msgstr ""
+msgstr "Không phải là màu hợp lệ (ví dụ: \"red\", \"#f00\", \"#ff0000\")."
 
-#: ../flask_admin/contrib/sqla/view.py:1316
+#: ../flask_admin/contrib/sqla/view.py:1317
 #, python-format
 msgid "Integrity error. %(message)s"
 msgstr "Tính toàn vẹn lỗi. %(message)s"
@@ -391,40 +364,40 @@ msgstr "Lựa chọn không hợp lệ: không có thể ép buộc"
 msgid "Invalid JSON"
 msgstr "JSON không hợp lệ"
 
-#: ../flask_admin/form/upload.py:241
+#: ../flask_admin/form/upload.py:245
 msgid "Invalid file extension"
 msgstr "Phần mở rộng tệp không hợp lệ"
 
 #: ../flask_admin/form/validators.py:18
 msgid "This field requires at least one item."
-msgstr ""
+msgstr "Trường này yêu cầu ít nhất một mục."
 
-#: ../flask_admin/model/base.py:1926
+#: ../flask_admin/model/base.py:1924
 msgid "There are no items in the table."
 msgstr "Không có mục nào trong bảng."
 
-#: ../flask_admin/model/base.py:1935
+#: ../flask_admin/model/base.py:1933
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
 msgstr "Giá trị không hợp lệ bộ lọc: %(value)s"
 
-#: ../flask_admin/model/base.py:2358
+#: ../flask_admin/model/base.py:2356
 msgid "Record was successfully created."
 msgstr "Kỷ lục được tạo thành công."
 
-#: ../flask_admin/model/base.py:2406 ../flask_admin/model/base.py:2461
-#: ../flask_admin/model/base.py:2495 ../flask_admin/model/base.py:2714
+#: ../flask_admin/model/base.py:2404 ../flask_admin/model/base.py:2459
+#: ../flask_admin/model/base.py:2493 ../flask_admin/model/base.py:2712
 msgid "Record does not exist."
 msgstr "Hồ sơ không tồn tại."
 
-#: ../flask_admin/model/base.py:2415 ../flask_admin/model/base.py:2719
+#: ../flask_admin/model/base.py:2413 ../flask_admin/model/base.py:2717
 msgid "Record was successfully saved."
 msgstr "Hồ sơ đã được lưu thành công."
 
-#: ../flask_admin/model/base.py:2658
+#: ../flask_admin/model/base.py:2656
 #, python-format
-msgid "Export type \"%(type)s\" is not supported."
-msgstr ""
+msgid "Export type \"%(type)s\" not supported."
+msgstr "Loại xuất \"%(type)s\" không được hỗ trợ."
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
 msgid "Yes"
@@ -452,11 +425,11 @@ msgstr "Chỉnh sửa bản ghi"
 #: ../flask_admin/model/template.py:114
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr ""
+msgstr "Xóa bản ghi"
 
 #: ../flask_admin/model/widgets.py:71
 msgid "Please select model"
-msgstr ""
+msgstr "Vui lòng chọn mẫu"
 
 #: ../flask_admin/templates/bootstrap4/admin/actions.html:5
 msgid "With selected"
@@ -585,7 +558,7 @@ msgstr "Tìm"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:102
 msgid "items"
-msgstr ""
+msgstr "mặt hàng"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:23
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:25
@@ -619,6 +592,3 @@ msgstr "Vui lòng chọn ít nhất một kỷ lục."
 
 #~ msgid "File \"%s\" already exists."
 #~ msgstr "Tập tin \"%s\" đã tồn tại."
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr ""

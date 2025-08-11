@@ -368,11 +368,11 @@ msgstr[0] "至少需要 %(num)d 个选项"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr ""
+msgstr "不是有效的 ISO 货币代码（例如 USD、EUR、CNY)。"
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
-msgstr ""
+msgstr "颜色无效（例如“red”、“#f00”、“#ff0000”）。"
 
 #: ../flask_admin/contrib/sqla/view.py:1316
 #, python-format
@@ -397,7 +397,7 @@ msgstr "无效文件扩展名"
 
 #: ../flask_admin/form/validators.py:18
 msgid "This field requires at least one item."
-msgstr ""
+msgstr "此字段至少需要一个项目。"
 
 #: ../flask_admin/model/base.py:1926
 msgid "There are no items in the table."
@@ -452,7 +452,7 @@ msgstr "编辑记录"
 #: ../flask_admin/model/template.py:114
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr ""
+msgstr "删除记录"
 
 #: ../flask_admin/model/widgets.py:71
 msgid "Please select model"

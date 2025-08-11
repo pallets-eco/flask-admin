@@ -370,11 +370,11 @@ msgstr[1] "Al menos %(num)d item son requeridos"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr ""
+msgstr "No es un código de moneda ISO válido (por ejemplo, USD, EUR, CNY)."
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
-msgstr ""
+msgstr "No es un color válido (por ejemplo, \"red\", \"#f00\", \"#ff0000\")."
 
 #: ../flask_admin/contrib/sqla/view.py:1316
 #, python-format
@@ -399,7 +399,7 @@ msgstr "Extensión del archivo no válido"
 
 #: ../flask_admin/form/validators.py:18
 msgid "This field requires at least one item."
-msgstr ""
+msgstr "Este campo requiere al menos un elemento."
 
 #: ../flask_admin/model/base.py:1926
 msgid "There are no items in the table."
@@ -454,7 +454,7 @@ msgstr "Editar Registro"
 #: ../flask_admin/model/template.py:114
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr ""
+msgstr "Eliminar registro"
 
 #: ../flask_admin/model/widgets.py:71
 msgid "Please select model"

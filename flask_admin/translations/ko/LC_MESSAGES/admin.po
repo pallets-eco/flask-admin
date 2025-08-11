@@ -368,11 +368,11 @@ msgstr[0] "최소 %(num)d 개의 항목이 필요합니다."
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr ""
+msgstr "유효한 ISO 통화 코드(예: USD, EUR, CNY)가 아닙니다."
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
-msgstr ""
+msgstr "유효한 색상이 아닙니다(예: \"red\", \"#f00\", \"#ff0000\")."
 
 #: ../flask_admin/contrib/sqla/view.py:1316
 #, python-format
@@ -397,7 +397,7 @@ msgstr "잘못된 파일 확장명"
 
 #: ../flask_admin/form/validators.py:18
 msgid "This field requires at least one item."
-msgstr ""
+msgstr "이 필드에는 최소한 1개의 항목이 필요합니다."
 
 #: ../flask_admin/model/base.py:1926
 msgid "There are no items in the table."
@@ -452,7 +452,7 @@ msgstr "레코드 편집"
 #: ../flask_admin/model/template.py:114
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr ""
+msgstr "기록 삭제"
 
 #: ../flask_admin/model/widgets.py:71
 msgid "Please select model"
@@ -585,7 +585,7 @@ msgstr "검색"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:102
 msgid "items"
-msgstr ""
+msgstr "아이템"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:23
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:25

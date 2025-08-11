@@ -17,7 +17,6 @@ def build_sample_db():
     db.drop_all()
     db.create_all()
 
-    # Create sample Users
     first_names = [
         "Harry",
         "Amelia",
@@ -105,7 +104,6 @@ def build_sample_db():
         user_list.append(user)
         db.session.add(user)
 
-    # Create sample Tags
     tag_list = []
     for tmp in [
         "YELLOW",
@@ -123,7 +121,6 @@ def build_sample_db():
         tag_list.append(tag)
         db.session.add(tag)
 
-    # Create sample Posts
     sample_text = [
         {
             "title": "de Finibus Bonorum et Malorum - Part I",
@@ -177,18 +174,17 @@ def build_sample_db():
     ]
 
     for user in user_list:
-        entry = random.choice(sample_text)  # select text at random
+        entry = random.choice(sample_text)
         post = Post()
         post.user = user
         post.title = "{}'s opinion on {}".format(user.first_name, entry["title"])
         post.text = entry["content"]
         post.background_color = random.choice(["#cccccc", "red", "lightblue", "#0f0"])
-        tmp = int(1000 * random.random())  # random number between 0 and 1000:
+        tmp = int(1000 * random.random())
         post.date = datetime.datetime.now() - datetime.timedelta(days=tmp)
-        post.tags = random.sample(tag_list, 2)  # select a couple of tags at random
+        post.tags = random.sample(tag_list, 2)
         db.session.add(post)
 
-    # Create a sample Tree structure
     trunk = Tree(name="Trunk")
     db.session.add(trunk)
     for i in range(5):
