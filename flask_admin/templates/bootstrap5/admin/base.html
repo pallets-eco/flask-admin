@@ -1,0 +1,145 @@
+{%- import 'admin/layout.html' as layout with context -%}
+{%- import 'admin/static.html' as admin_static with context -%}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}{% if admin_view.category %}{{ admin_view.category }} / {% endif %}{{ admin_view.name }} :: {{ admin_view.admin.name }}{% endblock %}</title>
+      {% block head_meta %}
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="{% block meta_descripton %}{% endblock %}">
+        <meta name="author" content="{% block meta_author %}{% endblock %}">
+      {% endblock %}
+
+      {% block head_css %}
+        {%- if theme.swatch == 'default' -%}
+          <link rel="stylesheet" {{ admin_csp_nonce_attribute }}
+              href="{{ admin_static.url(filename='bootstrap/bootstrap5/css/bootstrap.min.css', v='5.3.7') }}">
+        {%- else -%}
+          <link rel="stylesheet" {{ admin_csp_nonce_attribute }}
+              href="{{ admin_static.url(filename='bootstrap/bootstrap5/swatch/{swatch}/bootstrap.min.css'.format(swatch=theme.swatch), v='5.3.7') }}">
+        {%- endif -%}
+
+        <link rel="stylesheet" {{ admin_csp_nonce_attribute }}
+            href="{{ admin_static.url(filename='admin/css/bootstrap5/admin.css', v='1.1.1') }}">
+        <link rel="stylesheet" {{ admin_csp_nonce_attribute }}
+            href="{{ admin_static.url(filename='admin/css/bootstrap5/submenu.css', v='1.0.0') }}">
+        <link rel="stylesheet" {{ admin_csp_nonce_attribute }}
+            href="{{ admin_static.url(filename='vendor/fontawesome-free-5.1.0-web/css/all.css', v='5.1.0') }}">
+
+        {%- if admin_view.extra_css -%}
+          {%- for css_url in admin_view.extra_css -%}
+            <link rel="stylesheet" {{ admin_csp_nonce_attribute }} href="{{ css_url }}">
+          {%- endfor -%}
+        {%- endif -%}
+      {% endblock %}
+
+      {% block head %}{% endblock %}
+
+      {% block head_tail %}{% endblock %}
+    </head>
+
+    <body>
+      {% block page_body %}
+        <header class="container{% if theme.fluid %}-fluid p-0{% endif %}">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-2" role="navigation">
+                <div class="container-fluid">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#admin-navbar-collapse"
+                        aria-controls="admin-navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <!-- navbar content -->
+                    <div class="collapse navbar-collapse" id="admin-navbar-collapse">
+                      {% block brand %}
+                        <a class="navbar-brand" href="{{ admin_view.admin.url }}">{{ admin_view.admin.name }}</a>
+                      {% endblock %}
+
+                      {% block main_menu %}
+                        <ul class="navbar-nav me-auto">
+                            {{ layout.menu() }}
+                        </ul>
+                      {% endblock %}
+
+                      {% block menu_links %}
+                        <ul class="navbar-nav">
+                            {{ layout.menu_links() }}
+                        </ul>
+                      {% endblock %}
+
+                      {% block access_control %}{% endblock %}
+                    </div><!-- .collapse navbar-collapse -->
+                </div><!-- .container-fluid -->
+            </nav>
+        </header>
+
+        <div class="container{% if theme.fluid %}-fluid p-4{% endif %}">
+          {# store the jinja2 context for form_rules rendering logic #}
+          {% set render_ctx = h.resolve_ctx() %}
+
+          {% block body %}{% endblock %}
+        </div><!-- .container{% if theme.fluid %}-fluid p-4{% endif %} -->
+
+      {% block messages %}
+        {%- with messages = get_flashed_messages(with_categories=True) -%}
+        {%- if messages -%}
+          {% set category_to_color = {
+            'success': 'bg-success text-white',
+            'warning': 'bg-warning text-dark',
+            'danger': 'bg-danger text-white',
+            'error': 'bg-danger text-white',
+            'info': 'bg-info text-dark',
+            'message': 'bg-secondary text-white'
+          } %}
+            <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
+              {%- for category, message in messages -%}
+                {% set color_class = category_to_color.get(category, 'bg-secondary text-white') %}
+                <div class="toast align-items-center {{ color_class }} border-0"
+                    role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+                    <div class="d-flex">
+                        <div class="toast-body">{{ message }}</div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div><!-- .toast align-items-center {{ color_class }} border-0 -->
+              {%- endfor -%}
+            </div>
+        {%- endif -%}
+        {%- endwith -%}
+      {% endblock %}
+
+{% endblock %}
+
+{%- block tail_js %}
+        <script {{ admin_csp_nonce_attribute }}
+            src="{{ admin_static.url(filename='bootstrap/bootstrap5/js/bootstrap.bundle.min.js', v='5.3.7') }}"></script>
+
+        <script {{ admin_csp_nonce_attribute }}
+            src="{{ admin_static.url(filename='admin/js/helpers.js', v='1.0.0') }}"></script>
+
+      {% if admin_view.extra_js %}
+        {% for js_url in admin_view.extra_js %}
+        <script {{ admin_csp_nonce_attribute }} src="{{ js_url }}"></script>
+        {% endfor %}
+      {% endif %}
+
+        <script {{ admin_csp_nonce_attribute }}>
+            // toasts
+            document.addEventListener('DOMContentLoaded', (event) => {
+              const toastElList = document.querySelectorAll('.toast');
+              const toastList = [...toastElList].map(toastEl => {
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+                return toast;
+              });
+            });
+
+            // popovers
+            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+            const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+        </script>
+{% endblock -%}
+
+{% block tail %}{% endblock %}
+    </body>
+</html>

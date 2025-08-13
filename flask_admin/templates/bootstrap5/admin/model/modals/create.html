@@ -1,0 +1,34 @@
+{%- import 'admin/static.html' as admin_static with context -%}
+{%- from 'admin/lib.html' import form_tag,
+                                 render_form_buttons,
+                                 render_form_fields with context -%}
+
+{# store the jinja2 context for form_rules rendering logic #}
+{%- set render_ctx = h.resolve_ctx() -%}
+
+{% block body %}
+    <div class="modal-header">
+      {% block header_text %}
+        <h5 class="modal-title">
+            <i class="fas fa-plus"></i>
+            <span class="ms-1 d-none d-md-inline">{{ _gettext('Create New Record') }}</span>
+        </h5>
+      {% endblock %}
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+  {% call form_tag(action=url_for('.create_view', url=return_url)) %}
+    <div class="modal-body">
+        {{ render_form_fields(form, form_opts=form_opts) }}
+    </div>
+
+    <div class="modal-footer bg-body-tertiary">
+        {{ render_form_buttons(return_url, extra=None, is_modal=True) }}
+    </div>
+  {% endcall %}
+{% endblock %}
+
+{% block tail %}
+    <script {{ admin_csp_nonce_attribute }}
+        src="{{ admin_static.url(filename='admin/js/bootstrap5/modal.js', v='1.0.0') }}"></script>
+{% endblock %}

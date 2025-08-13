@@ -7,12 +7,18 @@ from flask_admin import Admin
 from flask_admin import form
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import rules
-from flask_admin.theme import Bootstrap4Theme
+from flask_admin.theme import Bootstrap5Theme
+from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import Markup
 from sqlalchemy.event import listens_for
 from wtforms import fields
 from wtforms import widgets
+
+
+def get_locale():
+    return "en"
+
 
 app = Flask(__name__, static_folder="files")
 app.config["SECRET_KEY"] = "secret"
@@ -20,7 +26,10 @@ app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
-admin = Admin(app, name="Example: Forms", theme=Bootstrap4Theme(swatch="cerulean"))
+babel = Babel(app, locale_selector=get_locale)
+admin = Admin(
+    app, name="Example: Forms", theme=Bootstrap5Theme(swatch="cerulean", fluid=True)
+)
 
 
 @app.route("/")
@@ -144,6 +153,9 @@ class ImageView(ModelView):
         )
 
     column_formatters = {"path": _list_thumbnail}
+
+    # Add custom column label
+    column_labels = {"path": "Thumbnail"}
 
     # Alternative way to contribute field is to override it completely.
     # In this case, Flask-Admin won't attempt to merge various parameters for the field.
@@ -325,4 +337,4 @@ if __name__ == "__main__":
         with app.app_context():
             build_sample_db()
 
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")

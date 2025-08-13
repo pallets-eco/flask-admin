@@ -1,0 +1,16 @@
+/* List View - fix checkbox column width */
+.list-checkbox-column {
+    width: 14px;
+}
+
+/* List View - prevent word wrap on actions column, to keep it on one line */
+.list-actions-column {
+    white-space: nowrap;
+    width: 100px;
+}
+
+/* Image thumbnails */
+.image-thumbnail img {
+    max-width: 100px;
+    max-height: 100px;
+}

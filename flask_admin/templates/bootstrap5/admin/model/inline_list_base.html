@@ -1,0 +1,77 @@
+{% macro render_inline_fields(field, template, render, check=None) %}
+{% set confirmation_message = _gettext('Are you sure you want to delete this record?') %}
+
+<div class="inline-field" id="{{ field.id }}">
+    <div class="inline-field-list">
+      {%- for subfield in field -%}
+
+        {# Create the main card container. #}
+        <div id="{{ subfield.id }}" class="inline-field card card border-light mb-3">
+
+            {# Create the Card Header. #}
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="card-title mb-0">
+                  {%- if subfield.get_pk and subfield.get_pk() -%}
+                    {{ field.label.text }} #{{ loop.index }}
+                  {%- else -%}
+                    {{ _gettext('New') }} {{ field.label.text }}
+                  {%- endif -%}
+                </h6>
+
+              {%- if subfield.get_pk and subfield.get_pk() -%}
+                <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="top"
+                    data-bs-trigger="hover" data-bs-content="{{ _gettext('Delete on submit?') }}">
+                    <div class="bg-body-secondary px-2 rounded">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" autocomplete="off">
+                            <label class="form-check-label text-danger" for="del-{{ subfield.id }}">
+                              <i class="fas fa-trash"></i>
+                            </label>
+                        </div>
+                    </div>
+                </span>
+              {%- else -%}
+                <a href="#" value="{{ confirmation_message }}" class="inline-remove-field btn btn-danger btn-sm">
+                    <i class="fas fa-trash"></i><span class="ms-1 d-none d-md-inline">{{ _gettext('Delete') }}</span>
+                </a>
+              {%- endif -%}
+            </div>
+
+            {# Create the Card Body for the form fields. #}
+            <div class="card-body">
+                {{ render(subfield) }}
+            </div>
+
+        </div><!-- .card-header d-flex justify-content-between align-items-center -->
+      {%- endfor -%}
+    </div><!-- .inline-field-list -->
+
+    <div class="inline-field-template d-none">
+        <div class="inline-field card card border-light mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-plus"></i><span class="ms-1 d-none d-md-inline">{{ _gettext('New') }}</span>
+                    {{ field.label.text }}
+                </h6>
+                <a href="#" value="{{ confirmation_message }}" class="inline-remove-field btn btn-danger btn-sm">
+                    <i class="fas fa-trash"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                {{ render(template) }}
+            </div>
+        </div>
+    </div><!-- .inline-field-template -->
+
+    <div class="d-flex justify-content-between align-items-center bg-body-secondary px-3 py-2">
+      <a id="{{ field.id }}-button" href="#" class="btn btn-primary" role="button"
+          onclick="faForm.addInlineField(this, '{{ field.id }}'); return false;">
+          <i class="fas fa-plus"></i><span class="ms-1 d-none d-md-inline">{{ _gettext('Add') }}</span>
+          {{ field.label.text }}
+      </a>
+      <a class="btn btn-secondary" role="button" href="#{{ field.id }}">
+          <i class="fas fa-chevron-up"></i>
+      </a>
+    </div>
+</div><!-- .inline-field -->
+{% endmacro %}
