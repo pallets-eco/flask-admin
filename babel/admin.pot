@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Flask-Admin VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-20 20:51+0200\n"
+"POT-Creation-Date: 2025-07-29 00:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -62,7 +62,7 @@ msgstr ""
 #: ../flask_admin/contrib/fileadmin/__init__.py:1144
 #: ../flask_admin/contrib/fileadmin/__init__.py:1211
 #: ../flask_admin/contrib/fileadmin/__init__.py:1280
-#: ../flask_admin/model/base.py:2568
+#: ../flask_admin/model/base.py:2573
 msgid "Permission denied."
 msgstr ""
 
@@ -191,10 +191,9 @@ msgid "Editing %(path)s"
 msgstr ""
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1363
-#: ../flask_admin/contrib/mongoengine/view.py:725
-#: ../flask_admin/contrib/peewee/view.py:603
+#: ../flask_admin/contrib/peewee/view.py:608
 #: ../flask_admin/contrib/pymongo/view.py:411
-#: ../flask_admin/contrib/sqla/view.py:1437
+#: ../flask_admin/contrib/sqla/view.py:1438
 msgid "Delete"
 msgstr ""
 
@@ -216,67 +215,57 @@ msgstr ""
 msgid "Cannot operate on non empty directories"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/filters.py:41
 #: ../flask_admin/contrib/peewee/filters.py:47
 #: ../flask_admin/contrib/pymongo/filters.py:49
 #: ../flask_admin/contrib/sqla/filters.py:62
 msgid "equals"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/filters.py:50
 #: ../flask_admin/contrib/peewee/filters.py:55
 #: ../flask_admin/contrib/pymongo/filters.py:58
 #: ../flask_admin/contrib/sqla/filters.py:72
 msgid "not equal"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/filters.py:60
 #: ../flask_admin/contrib/peewee/filters.py:64
 #: ../flask_admin/contrib/pymongo/filters.py:68
 #: ../flask_admin/contrib/sqla/filters.py:83
 msgid "contains"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/filters.py:70
 #: ../flask_admin/contrib/peewee/filters.py:73
 #: ../flask_admin/contrib/pymongo/filters.py:78
 #: ../flask_admin/contrib/sqla/filters.py:94
 msgid "not contains"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/filters.py:79
 #: ../flask_admin/contrib/peewee/filters.py:81
 #: ../flask_admin/contrib/pymongo/filters.py:91
 #: ../flask_admin/contrib/sqla/filters.py:104
 msgid "greater than"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/filters.py:88
 #: ../flask_admin/contrib/peewee/filters.py:89
 #: ../flask_admin/contrib/pymongo/filters.py:104
 #: ../flask_admin/contrib/sqla/filters.py:114
 msgid "smaller than"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/filters.py:100
 #: ../flask_admin/contrib/peewee/filters.py:100
 #: ../flask_admin/contrib/sqla/filters.py:127
 msgid "empty"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/filters.py:115
 #: ../flask_admin/contrib/peewee/filters.py:120
 #: ../flask_admin/contrib/sqla/filters.py:149
 msgid "in list"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/filters.py:124
 #: ../flask_admin/contrib/peewee/filters.py:129
 #: ../flask_admin/contrib/sqla/filters.py:161
 msgid "not in list"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/filters.py:223
 #: ../flask_admin/contrib/peewee/filters.py:228
 #: ../flask_admin/contrib/peewee/filters.py:268
 #: ../flask_admin/contrib/peewee/filters.py:308
@@ -286,71 +275,55 @@ msgstr ""
 msgid "not between"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/filters.py:248
-msgid "ObjectId equals"
-msgstr ""
-
-#: ../flask_admin/contrib/mongoengine/form.py:120
-#: ../flask_admin/contrib/sqla/fields.py:151
-#: ../flask_admin/contrib/sqla/fields.py:210
-#: ../flask_admin/contrib/sqla/fields.py:215 ../flask_admin/model/fields.py:224
-#: ../flask_admin/model/fields.py:284
-msgid "Not a valid choice"
-msgstr ""
-
-#: ../flask_admin/contrib/mongoengine/view.py:605
-#, python-format
-msgid "Failed to get model. %(error)s"
-msgstr ""
-
-#: ../flask_admin/contrib/mongoengine/view.py:626
-#: ../flask_admin/contrib/peewee/view.py:542
+#: ../flask_admin/contrib/peewee/view.py:547
 #: ../flask_admin/contrib/pymongo/view.py:345
-#: ../flask_admin/contrib/sqla/view.py:1355
+#: ../flask_admin/contrib/sqla/view.py:1356
 #, python-format
 msgid "Failed to create record. %(error)s"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/view.py:655
-#: ../flask_admin/contrib/peewee/view.py:564
+#: ../flask_admin/contrib/peewee/view.py:569
 #: ../flask_admin/contrib/pymongo/view.py:369
-#: ../flask_admin/contrib/sqla/view.py:1386 ../flask_admin/model/base.py:2723
-#: ../flask_admin/model/base.py:2730 ../flask_admin/model/base.py:2734
+#: ../flask_admin/contrib/sqla/view.py:1387 ../flask_admin/model/base.py:2728
+#: ../flask_admin/model/base.py:2735 ../flask_admin/model/base.py:2739
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/view.py:681
-#: ../flask_admin/contrib/peewee/view.py:582
+#: ../flask_admin/contrib/peewee/view.py:587
 #: ../flask_admin/contrib/pymongo/view.py:393
-#: ../flask_admin/contrib/sqla/view.py:1414
+#: ../flask_admin/contrib/sqla/view.py:1415
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/view.py:726
-#: ../flask_admin/contrib/peewee/view.py:604
+#: ../flask_admin/contrib/peewee/view.py:609
 #: ../flask_admin/contrib/pymongo/view.py:412
-#: ../flask_admin/contrib/sqla/view.py:1438
+#: ../flask_admin/contrib/sqla/view.py:1439
 msgid "Are you sure you want to delete selected records?"
 msgstr ""
 
-#: ../flask_admin/contrib/mongoengine/view.py:738
-#: ../flask_admin/contrib/peewee/view.py:624
+#: ../flask_admin/contrib/peewee/view.py:629
 #: ../flask_admin/contrib/pymongo/view.py:425
-#: ../flask_admin/contrib/sqla/view.py:1461 ../flask_admin/model/base.py:2503
+#: ../flask_admin/contrib/sqla/view.py:1462 ../flask_admin/model/base.py:2508
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../flask_admin/contrib/mongoengine/view.py:748
-#: ../flask_admin/contrib/peewee/view.py:634
+#: ../flask_admin/contrib/peewee/view.py:639
 #: ../flask_admin/contrib/pymongo/view.py:434
-#: ../flask_admin/contrib/sqla/view.py:1473
+#: ../flask_admin/contrib/sqla/view.py:1474
 #, python-format
 msgid "Failed to delete records. %(error)s"
+msgstr ""
+
+#: ../flask_admin/contrib/sqla/fields.py:151
+#: ../flask_admin/contrib/sqla/fields.py:210
+#: ../flask_admin/contrib/sqla/fields.py:215 ../flask_admin/model/fields.py:224
+#: ../flask_admin/model/fields.py:284
+msgid "Not a valid choice"
 msgstr ""
 
 #: ../flask_admin/contrib/sqla/fields.py:246
@@ -380,7 +353,7 @@ msgstr ""
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
 msgstr ""
 
-#: ../flask_admin/contrib/sqla/view.py:1316
+#: ../flask_admin/contrib/sqla/view.py:1317
 #, python-format
 msgid "Integrity error. %(message)s"
 msgstr ""
@@ -405,29 +378,29 @@ msgstr ""
 msgid "This field requires at least one item."
 msgstr ""
 
-#: ../flask_admin/model/base.py:1926
+#: ../flask_admin/model/base.py:1931
 msgid "There are no items in the table."
 msgstr ""
 
-#: ../flask_admin/model/base.py:1935
+#: ../flask_admin/model/base.py:1940
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
 msgstr ""
 
-#: ../flask_admin/model/base.py:2358
+#: ../flask_admin/model/base.py:2363
 msgid "Record was successfully created."
 msgstr ""
 
-#: ../flask_admin/model/base.py:2406 ../flask_admin/model/base.py:2461
-#: ../flask_admin/model/base.py:2495 ../flask_admin/model/base.py:2714
+#: ../flask_admin/model/base.py:2411 ../flask_admin/model/base.py:2466
+#: ../flask_admin/model/base.py:2500 ../flask_admin/model/base.py:2719
 msgid "Record does not exist."
 msgstr ""
 
-#: ../flask_admin/model/base.py:2415 ../flask_admin/model/base.py:2719
+#: ../flask_admin/model/base.py:2420 ../flask_admin/model/base.py:2724
 msgid "Record was successfully saved."
 msgstr ""
 
-#: ../flask_admin/model/base.py:2658
+#: ../flask_admin/model/base.py:2663
 #, python-format
 msgid "Export type \"%(type)s\" is not supported."
 msgstr ""

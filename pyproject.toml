@@ -7,7 +7,7 @@ license = { file = "LICENSE.txt" }
 author = [{ name = "Flask-Admin team" }]
 maintainers = [{ name = "Pallets Ecosystem", email = "contact@palletsprojects.com" }]
 classifiers = [
-    'Development Status :: 4 - Beta',
+    'Development Status :: 5 - Production/Stable',
     'Environment :: Web Environment',
     'Intended Audience :: Developers',
     'License :: OSI Approved :: BSD License',
@@ -18,6 +18,7 @@ classifiers = [
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
 ]
 requires-python = ">=3.9"
 dependencies = [
@@ -26,6 +27,7 @@ dependencies = [
     "markupsafe>=2.0",
     "werkzeug>=2.0",
     "wtforms>=2.3",
+    "typing_extensions; python_version < '3.11'"
 ]
 
 [project.optional-dependencies]
@@ -46,7 +48,7 @@ geoalchemy = [
     "geoalchemy2>=0.14.0",
     "shapely>=2",
 ]
-pymongo = ["pymongo>=3.7.0"]
+pymongo = ["pymongo>=3.10.0"]
 mongoengine = ["mongoengine>=0.29.0"]
 peewee = [
     "peewee>=3.14.0",
@@ -151,6 +153,10 @@ filterwarnings = [
     "default:ast\\.Str is deprecated and will be removed in Python 3\\.14:DeprecationWarning",
     "default:Attribute s is deprecated and will be removed in Python 3\\.14:DeprecationWarning",
 
+    # Werkzeug <3 with Flask>2.2. Remove when werkzeug min version is >= 3.0
+    "default:'werkzeug\\.urls\\.url_parse' is deprecated and will be removed in Werkzeug 3\\.0:DeprecationWarning",
+    "default:'werkzeug\\.urls\\.URL' is deprecated and will be removed in Werkzeug 3\\.0:DeprecationWarning",
+
     # Flask is responsible for the below deprecation warning; remove when they have updated their code.
     "default:'pkgutil\\.get_loader' is deprecated and slated for removal in Python 3\\.14:DeprecationWarning",
     "default:'pkgutil\\.find_loader' is deprecated and slated for removal in Python 3\\.14:DeprecationWarning",
@@ -159,6 +165,9 @@ filterwarnings = [
 
     # `flask.testing` accesses this attribute; remove when they have updated their code.
     "default:The '__version__' attribute is deprecated and will be removed in Werkzeug 3\\.1\\.:DeprecationWarning",
+
+    # raised by flask-sqlalchemy https://github.com/pallets-eco/flask-sqlalchemy/issues/137
+    "ignore:Exception ignored in.*sqlite3.Connection:pytest.PytestUnraisableExceptionWarning",
 ]
 
 [tool.coverage.run]
@@ -246,9 +255,9 @@ order-by-type = false
 
 [tool.tox]
 env_list = [
-    "py39", "py310", "py311", "py312",
-    "py39-sqlalchemy1", "py312-sqlalchemy1",
-    "py312-noflaskbabel",
+    "py39", "py310", "py311", "py312", "py313",
+    "py39-sqlalchemy1", "py313-sqlalchemy1",
+    "py313-noflaskbabel",
     "py39-min",
     "style",
     "typing",
@@ -272,7 +281,8 @@ commands = [[
     {replace = "posargs", default = [], extend = true},
 ]]
 
-[tool.tox.env.tests-min]
+
+[tool.tox.env.py39-min]
 description = "pytest on minimum dependency versions"
 base_python = ["3.9"]
 commands = [
@@ -287,11 +297,12 @@ commands = [
         "flask-sqlalchemy==3.0.0",
         "colour==0.1.5",
         "email_validator==2.0.0",
-        "arrow==0.13.0",
+        "arrow==0.14.0",
+        "numpy<2.0", # old versions of shapely are built with numpy1.x
         "geoalchemy2==0.14.0",
         "shapely==2",
         "boto3==1.33.0",
-        "pymongo==3.7.0",
+        "pymongo==3.10.0",
         "mongoengine==0.29.0",
         "peewee==3.14.0",
         "wtf-peewee==3.0.4",
@@ -320,10 +331,10 @@ commands = [
     ],
 ]
 
-[tool.tox.env.py312-sqlalchemy1]
-description = "pytest with SQLAlchemy 1.x on Python 3.12"
+[tool.tox.env.py313-sqlalchemy1]
+description = "pytest with SQLAlchemy 1.x on Python 3.13"
 base = ["env_run_base"]
-base_python = ["3.12"]
+base_python = ["3.13"]
 commands = [
     ["uv", "pip", "install", "sqlalchemy>=1.4,<2"],
     ["uv", "pip", "install", "flask-sqlalchemy<=3.0.5"],
@@ -333,7 +344,7 @@ commands = [
     ],
 ]
 
-[tool.tox.env.py312-noflaskbabel]
+[tool.tox.env.py313-noflaskbabel]
 description = "pytest without flask-babel"
 base = ["env_run_base"]
 commands = [
@@ -356,7 +367,7 @@ description = "run static type checkers"
 dependency_groups = ["typing"]
 commands = [
     ["mypy", "--python-version", "3.9"],
-    ["mypy", "--python-version", "3.12"],
+    ["mypy", "--python-version", "3.13"],
     # TODO: reenable after pyright test pass
     # ["pyright"],
 ]
