@@ -1,7 +1,7 @@
 [project]
-name = "example-pymongo"
+name = "example-mongoengine"
 version = "0.1.0"
-description = "PyMongo Example."
+description = "MongoEngine Example."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [

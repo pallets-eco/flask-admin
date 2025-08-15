@@ -161,7 +161,7 @@ wheels = [
 ]
 
 [[package]]
-name = "example-pymongo"
+name = "example-mongoengine"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
@@ -225,6 +225,7 @@ requires-dist = [
     { name = "flask-admin", extras = ["images"], marker = "extra == 'all'", editable = "../../" },
     { name = "flask-admin", extras = ["mongoengine"], marker = "extra == 'all'", editable = "../../" },
     { name = "flask-admin", extras = ["peewee"], marker = "extra == 'all'", editable = "../../" },
+    { name = "flask-admin", extras = ["pymongo"], marker = "extra == 'all'", editable = "../../" },
     { name = "flask-admin", extras = ["rediscli"], marker = "extra == 'all'", editable = "../../" },
     { name = "flask-admin", extras = ["s3"], marker = "extra == 'all'", editable = "../../" },
     { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'all'", editable = "../../" },
@@ -240,6 +241,7 @@ requires-dist = [
     { name = "mongoengine", marker = "extra == 'mongoengine'", specifier = ">=0.29.0" },
     { name = "peewee", marker = "extra == 'peewee'", specifier = ">=3.14.0" },
     { name = "pillow", marker = "extra == 'images'", specifier = ">=10.0.0" },
+    { name = "pymongo", marker = "extra == 'pymongo'", specifier = ">=3.7.0" },
     { name = "redis", marker = "extra == 'rediscli'", specifier = ">=4.0.0" },
     { name = "shapely", marker = "extra == 'geoalchemy'", specifier = ">=2" },
     { name = "sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=1.4" },
@@ -250,7 +252,7 @@ requires-dist = [
     { name = "wtf-peewee", marker = "extra == 'peewee'", specifier = ">=3.0.4" },
     { name = "wtforms", specifier = ">=2.3" },
 ]
-provides-extras = ["sqlalchemy", "sqlalchemy-with-utils", "geoalchemy", "mongoengine", "peewee", "s3", "azure-blob-storage", "images", "export", "rediscli", "translation", "all"]
+provides-extras = ["sqlalchemy", "sqlalchemy-with-utils", "geoalchemy", "pymongo", "mongoengine", "peewee", "s3", "azure-blob-storage", "images", "export", "rediscli", "translation", "all"]
 
 [package.metadata.requires-dev]
 dev = [
