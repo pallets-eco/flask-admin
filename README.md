@@ -111,6 +111,7 @@ uv sync --extra all
 ```
 
 Finally, enable pre-commit hooks:
+
 ```shell
 pre-commit install
 ```
