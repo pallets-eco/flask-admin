@@ -1,0 +1,37 @@
+[env]
+_.python.venv = { path = ".venv", create = true, uv_create_args = ['--seed'] }
+PROJECT_NAME = "{{ config_root | basename }}"
+NODE_MODULES = "{{ ['.'] | concat(with='node_modules') | join_path }}"
+FLASK_ADMIN_PATH = "{{ ['.'] | concat(with='flask_admin') | join_path }}"
+STATIC_PATH = "{{ [env.FLASK_ADMIN_PATH] | concat(with='static') | join_path }}"
+VENDOR_PATH = "{{ [env.STATIC_PATH] | concat(with='vendor') | join_path }}"
+
+
+[tools]
+python = "{{ get_env(name='PYTHON_VERSION', default='3.9') }}"
+node = "{{ env['NODE_VERSION'] | default(value='lts') }}"
+uv = "latest"
+
+
+[tasks.setup]
+description = "Setup"
+run = '''
+#!/usr/bin/env bash
+echo - Installing Dependencies
+mise exec npm -- npm install
+
+echo - Copying Font Awesome
+mkdir -p ${VENDOR_PATH}/fontawesome
+cp -a ${NODE_MODULES}/@fortawesome/fontawesome-free/. ${VENDOR_PATH}/fontawesome/
+
+echo - Copying Tabler
+mkdir -p ${VENDOR_PATH}/tabler
+cp -a ${NODE_MODULES}/@tabler/core/dist/. ${VENDOR_PATH}/tabler/
+
+echo - "Copying X-editable"
+mkdir -p ${VENDOR_PATH}/skycyclone/x-editable
+cp -a ${NODE_MODULES}/x-editable/dist/. ${VENDOR_PATH}/x-editable/
+
+echo - Removing Node Modules
+rm -rf node_modules
+'''
