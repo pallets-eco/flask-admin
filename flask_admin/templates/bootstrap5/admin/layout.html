@@ -1,0 +1,79 @@
+{% macro menu_icon(item) %}
+  {% set icon_type = item.get_icon_type() %}
+  {% if icon_type %}
+    {% set icon_value = item.get_icon_value() %}
+    {% if icon_type == 'glyph' %}
+      <i class="fa {{ icon_value|replace('glyphicon-', 'fa-') }}"></i>
+    {% elif icon_type == 'fa' %}
+      <i class="fa {{ icon_value }}"></i>
+    {% elif icon_type == 'image' %}
+      <img src="{{ url_for('static', filename=icon_value) }}" alt="menu image">
+    {% elif icon_type == 'image-url' %}
+      <img src="{{ icon_value }}" alt="menu image">
+    {% endif %}
+  {% endif %}
+{% endmacro %}
+
+{% macro menu(menu_root=None, is_submenu=False) %}
+  {% if menu_root is none %}{% set menu_root = admin_view.admin.menu() %}{% endif %}
+
+  {%- for item in menu_root %}
+    {% set _class = item.get_class_name() %}
+    {% set class_name = (' ' + _class) if _class else '' %}
+    {% set active_class = ' active' if item.is_active(admin_view) else '' %}
+    {% set other_classes = active_class + class_name %}
+
+    {% if item.is_category() %}
+      {% set children = item.get_children() %}
+      {% if children %}
+        {% if is_submenu %}
+          <li class="dropdown-submenu{{ other_classes }}">
+              <a class="dropdown-item dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  {{ menu_icon(item) }}{{ item.name }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark dropend">
+                  {{ menu(menu_root=children, is_submenu=True) }}
+              </ul>
+          </li>
+        {% else %}
+          <li class="nav-item dropdown{{ other_classes }}">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  {{ menu_icon(item) }}{{ item.name }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark dropend">
+                  {{ menu(menu_root=children, is_submenu=True) }}
+              </ul>
+          </li>
+        {% endif %}
+      {% endif %}
+    {% elif item.is_accessible() and item.is_visible() %}
+      {% if is_submenu %}
+          <li{% if class_name %} class="{{ class_name }}"{% endif %}>
+              <a class="dropdown-item{{ active_class }}" href="{{ item.get_url() }}"{% if item.target %} target="{{ item.target }}"{% endif %}>
+                  {{ menu_icon(item) }}{{ item.name }}
+              </a>
+          </li>
+      {% else %}
+          <li class="nav-item{{ class_name }}">
+              <a class="nav-link{{ active_class }}" href="{{ item.get_url() }}"{% if item.target %} target="{{ item.target }}"{% endif %}>
+                 {{ menu_icon(item) }}{{ item.name }}
+              </a>
+          </li>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+{% macro menu_links(links=None) %}
+  {% if links is none %}{% set links = admin_view.admin.menu_links() %}{% endif %}
+  {% for item in links %}
+    {% set class_name = item.get_class_name() %}
+    {% if item.is_accessible() and item.is_visible() %}
+      <li class="nav-item{% if class_name %} {{ class_name }}{% endif %}">
+          <a class="nav-link" href="{{ item.get_url() }}"{% if item.target %} target="{{ item.target }}"{% endif %}>
+              {{ menu_icon(item) }}{{ item.name }}
+          </a>
+      </li>
+    {% endif %}
+  {% endfor %}
+{% endmacro %}

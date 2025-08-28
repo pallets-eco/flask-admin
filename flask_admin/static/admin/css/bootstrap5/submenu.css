@@ -1,0 +1,19 @@
+/* Main container for a submenu item */
+.dropdown-submenu {
+    position: relative;
+}
+
+/* The nested dropdown menu */
+.dropdown-submenu > .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+    display: none; /* Hidden by default */
+}
+
+/* Show the submenu on hover */
+.dropdown-submenu:hover > .dropdown-menu {
+    display: block;
+}
+
+

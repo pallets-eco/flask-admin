@@ -19,6 +19,7 @@ from flask_admin._compat import string_types
 from flask_admin._types import T_PIL_IMAGE
 from flask_admin._types import T_VALIDATOR
 from flask_admin.babel import gettext
+from flask_admin.helpers import get_theme
 from flask_admin.helpers import get_url
 
 try:
@@ -47,30 +48,70 @@ class FileUploadInput:
     look and feel.
     """
 
-    empty_template = "<input %(file)s>"
-    input_type = "file"
+    # This dictionary holds the default templates for each theme.
+    _templates = {
+        "bootstrap4": {
+            "empty_template": ("<input %(file)s>"),
+            "data_template": (
+                "<div>"
+                " <input %(text)s>"
+                ' <input type="checkbox" name="%(marker)s">Delete</input>'
+                "</div>"
+                "<input %(file)s>"
+            ),
+        },
+        "bootstrap5": {
+            "empty_template": '<input class="form-control" %(file)s>',
+            "data_template": (
+                '<div class="d-flex align-items-center gap-1">'
+                '  <input class="form-control" %(text)s>'
+                "  <input %(file)s>"
+                '  <span class="d-inline-block" tabindex="0" data-bs-toggle="popover"'
+                '    data-bs-placement="top" data-bs-trigger="hover"'
+                '    data-bs-content="Delete on submit?">'
+                '    <div class="bg-body-secondary py-1 px-2 rounded">'
+                '      <div class="form-check form-switch">'
+                '        <label for="%(marker)s" class="form-check-label text-danger">'
+                '          <i class="fas fa-trash"></i>'
+                "        </label>"
+                '        <input class="form-check-input" role="switch" type="checkbox"'
+                '          name="%(marker)s" id="%(marker)s">'
+                "      </div>"
+                "    </div>"
+                "  </span>"
+                "</div>"
+            ),
+        },
+    }
 
-    data_template = (
-        "<div>"
-        " <input %(text)s>"
-        ' <input type="checkbox" name="%(marker)s">Delete</input>'
-        "</div>"
-        "<input %(file)s>"
-    )
+    input_type = "file"
 
     def __call__(self, field: Field, **kwargs: str) -> Markup:
         kwargs.setdefault("id", field.id)
         kwargs.setdefault("name", field.name)
 
-        template = self.data_template if field.data else self.empty_template
+        # 1. Get the active theme and its default configuration.
+        _theme = get_theme()
+        templates = self._templates.get(_theme, self._templates["bootstrap4"])
+
+        if not hasattr(self, "data_template") and not hasattr(self, "empty_template"):
+            # If neither template is defined, use the default from the config.
+            empty_template = templates["empty_template"]
+            data_template = templates["data_template"]
+
+            # set the templates as attributes of the class instance
+            kwargs.setdefault("class", "form-control")
+
+        template = data_template if field.data else empty_template
 
         if field.errors:
-            template = self.empty_template
+            template = empty_template
 
-        if field.data and isinstance(field.data, FileStorage):
-            value = field.data.filename
-        else:
-            value = field.data or ""
+        value = (
+            field.data.filename
+            if isinstance(field.data, FileStorage)
+            else (field.data or "")
+        )
 
         return Markup(
             template
@@ -78,7 +119,7 @@ class FileUploadInput:
                 "text": html_params(
                     type="text", readonly="readonly", value=value, name=field.name
                 ),
-                "file": html_params(type="file", value=value, **kwargs),
+                "file": html_params(type=self.input_type, value=value, **kwargs),
                 "marker": f"_{field.name}-delete",
             }
         )
@@ -92,25 +133,64 @@ class ImageUploadInput:
     look and feel.
     """
 
-    empty_template = "<input %(file)s>"
-    input_type = "file"
+    # This dictionary holds the default templates for each theme.
+    _templates = {
+        "bootstrap4": {
+            "empty_template": ("<input %(file)s>"),
+            "data_template": (
+                '<div class="image-thumbnail">'
+                " <img %(image)s>"
+                ' <input type="checkbox" name="%(marker)s">Delete</input>'
+                " <input %(text)s>"
+                "</div>"
+                "<input %(file)s>"
+            ),
+        },
+        "bootstrap5": {
+            "empty_template": '<input class="form-control" %(file)s>',
+            "data_template": (
+                '<div class="image-thumbnail d-flex align-items-center gap-1">'
+                '  <img class="img-thumbnail" %(image)s>'
+                "  <input %(file)s>"
+                '  <span class="d-inline-block" tabindex="0" data-bs-toggle="popover"'
+                '    data-bs-placement="top" data-bs-trigger="hover"'
+                '    data-bs-content="Delete on submit?">'
+                '    <div class="bg-body-secondary py-1 px-2 rounded">'
+                '      <div class="form-check form-switch">'
+                '        <label for="%(marker)s" class="form-check-label text-danger">'
+                '          <i class="fas fa-trash"></i>'
+                "        </label>"
+                '        <input class="form-check-input" role="switch" type="checkbox"'
+                '          name="%(marker)s" id="%(marker)s">'
+                "      </div>"
+                "    </div>"
+                "  </span>"
+                "</div>"
+            ),
+        },
+    }
 
-    data_template = (
-        '<div class="image-thumbnail">'
-        " <img %(image)s>"
-        ' <input type="checkbox" name="%(marker)s">Delete</input>'
-        " <input %(text)s>"
-        "</div>"
-        "<input %(file)s>"
-    )
+    input_type = "file"
 
     def __call__(self, field: "ImageUploadField", **kwargs: str) -> Markup:
         kwargs.setdefault("id", field.id)
         kwargs.setdefault("name", field.name)
 
+        # 1. Get the active theme and its default configuration.
+        _theme = get_theme()
+        templates = self._templates.get(_theme, self._templates["bootstrap4"])
+
+        if not hasattr(self, "data_template") and not hasattr(self, "empty_template"):
+            # If neither template is defined, use the default from the config.
+            empty_template = templates["empty_template"]
+            data_template = templates["data_template"]
+
+            # set the templates as attributes of the class instance
+            kwargs.setdefault("class", "form-control")
+
         args = {
             "text": html_params(type="hidden", value=field.data, name=field.name),
-            "file": html_params(type="file", **kwargs),
+            "file": html_params(type=self.input_type, **kwargs),
             "marker": f"_{field.name}-delete",
         }
 
@@ -118,9 +198,9 @@ class ImageUploadInput:
             url = self.get_url(field)
             args["image"] = html_params(src=url)
 
-            template = self.data_template
+            template = data_template
         else:
-            template = self.empty_template
+            template = empty_template
 
         return Markup(template % args)
 

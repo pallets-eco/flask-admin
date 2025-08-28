@@ -1,0 +1,20 @@
+{%- import 'admin/static.html' as admin_static with context -%}
+{%- from 'admin/lib.html' import render_form with context -%}
+
+{% block body %}
+    <div class="modal-header">
+        <h5 class="modal-title">
+            {% block header %}{{ header_text }}{% endblock %}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      {% block fa_form %}
+        {{ render_form(form, dir_url, action=request.url, is_modal=True) }}
+      {% endblock %}
+    </div>
+{% endblock %}
+
+{% block tail %}
+    <script src="{{ admin_static.url(filename='admin/js/bootstrap5/modal.js', v='1.0.0') }}"></script>
+{% endblock %}

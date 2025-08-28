@@ -1,0 +1,193 @@
+{% macro filter_options(btn_class='dropdown-toggle') %}
+    <li class="nav-item">
+        <div class="btn-group">
+            <button class="nav-link btn btn-light {{ btn_class }}" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                <i class="fas fa-filter"></i><span class="ms-2 d-none d-md-inline">{{ _gettext('Add Filter') }}</span>
+            </button>
+            <ul class="dropdown-menu field-filters">
+              {% for k in filter_groups %}
+                <li>
+                    <a href="#" class="dropdown-item filter" onclick="return false;">
+                        <i class="fas fa-tag me-2"></i>{{ k }}
+                    </a>
+                </li>
+              {% endfor %}
+            </ul>
+        </div>
+    </li>
+{% endmacro %}
+
+{% macro export_options(btn_class='dropdown-toggle') %}
+  {% set export_type_to_icon = { 'xlsx': 'fas fa-file-excel', 'xls': 'fas fa-file-excel' } %}
+    <li class="nav-item">
+  {% if admin_view.export_types|length > 1 %}
+        <div class="btn-group">
+            <button class="nav-link btn btn-light dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+              <i class="fas fa-file-download"></i><span class="ms-2 d-none d-md-inline">{{ _gettext('Export') }}</span>
+            </button>
+            <ul class="dropdown-menu">
+              {% for export_type in admin_view.export_types %}
+                {% set export_type_cls = export_type_to_icon.get(export_type, 'fas fa-file-alt') %}
+                <li>
+                    <a class="dropdown-item" href="{{ get_url('.export', export_type=export_type, **request.args) }}">
+                        <i class="{{ export_type_cls }}"></i>
+                        <span class="ms-2 d-none d-md-inline">{{ _gettext('Export') }}</span>
+                        <span class="ms-2">{{ export_type|upper }}</span>
+                    </a>
+                </li>
+              {% endfor %}
+            </ul>
+        </div>
+  {% else %}
+    {% set export_type_cls = export_type_to_icon.get(admin_view.export_types[0], 'fas fa-file-download') %}
+        <a class="nav-link btn btn-light" href="{{ get_url('.export', export_type=admin_view.export_types[0], **request.args) }}" title="{{ _gettext('Export') }}">
+            <i class="{{ export_type_cls }}"></i>
+            <span class="ms-2 d-none d-md-inline">{{ _gettext('Export') }}</span>
+        </a>
+  {% endif %}
+    </li><!-- .nav-item -->
+{% endmacro %}
+
+{% macro filter_form() %}
+<form id="filter_form" method="GET" action="{{ return_url }}" class="filter-form">
+  {% for arg_name, arg_value in extra_args.items() %}
+    <input type="hidden" name="{{ arg_name }}" value="{{ arg_value }}">
+  {% endfor %}
+  {% if sort_column is not none %}
+    <input type="hidden" name="sort" value="{{ sort_column }}">
+  {% endif %}
+  {% if sort_desc %}
+    <input type="hidden" name="desc" value="1">
+  {% endif %}
+  {% if search %}
+    <input type="hidden" name="search" value="{{ search }}">
+  {% endif %}
+  {% if page_size != default_page_size %}
+    <input type="hidden" name="page_size" value="{{ page_size }}">
+  {% endif %}
+
+    <div id="filter-card" class="card border-light mb-3 d-none">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold">
+                    <i class="fas fa-filter"></i><span class="ms-2 d-none d-md-inline">{{ _gettext('Active filters') }}</span>
+                </h6>
+                <div class="filter-actions gap-1">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fas fa-check"></i><span class="ms-1 d-none d-md-inline">{{ _gettext('Apply') }}</span>
+                    </button>
+                    <a href="{{ clear_search_url }}" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-undo"></i><span class="ms-1 d-none d-md-inline">{{ _gettext('Reset Filters') }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-2">
+            <div class="filters-container">
+                <div class="filters-list" role="list" aria-label="{{ _gettext('Applied filters') }}">
+                    {# Dynamic filters will be added here via JS #}
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+{# Template for a single filter item #}
+<template id="filter-item-template">
+    <div class="filter-item card my-1 bg-body-tertiary border-0" role="listitem">
+        <div class="card-body p-3">
+            <div class="row g-2 align-items-center">
+                <!-- Filter Name & Remove Button -->
+                <div class="col-auto">
+                    <div class="d-flex align-items-center">
+                        <button type="button" class="btn btn-outline-danger btn-sm me-2 remove-filter" aria-label="Remove filter">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <span class="badge text-bg-secondary fw-normal filter-name">{{ _gettext('Filter Name') }}</span>
+                    </div>
+                </div>
+
+                <!-- Filter Operation -->
+                <div class="col-auto">
+                    <select class="form-select form-select-sm filter-op" style="min-width: 120px;">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+
+                <!-- Filter Value -->
+                <div class="col">
+                    <div class="filter-input-container">
+                        <!-- Input will be created dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+{% endmacro %}
+
+
+{% macro search_form(input_class="") %}
+<li class="nav-item ms-auto">
+    <div class="nav-link p-0">
+        <form method="GET" action="{{ return_url }}" class="d-flex my-2 my-lg-0" role="search">
+          {% for flt_name, flt_value in filter_args.items() %}
+            <input type="hidden" name="{{ flt_name }}" value="{{ flt_value }}">
+          {% endfor %}
+          {% if page_size != default_page_size %}
+            <input type="hidden" name="page_size" value="{{ page_size }}">
+          {% endif %}
+          {% for arg_name, arg_value in extra_args.items() %}
+            <input type="hidden" name="{{ arg_name }}" value="{{ arg_value }}">
+          {% endfor %}
+          {% if sort_column is not none %}
+            <input type="hidden" name="sort" value="{{ sort_column }}">
+          {% endif %}
+          {% if sort_desc %}
+            <input type="hidden" name="desc" value="1">
+          {% endif %}
+
+          {% if search %}
+            <div class="input-group">
+          {% endif %}
+            <input class="form-control {{ input_class }}" size="30" type="text" {% if search %}value="{{ search }}"{% endif %}
+                name="search"placeholder="{{ _gettext('%(placeholder)s', placeholder=search_placeholder) }}">
+          {% if search %}
+            <div class="input-group-text">
+                <a href="{{ clear_search_url }}" class="align-middle">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+          {% endif %}
+            <button class="btn btn-secondary ms-2 d-flex align-items-center" type="submit">
+                <i class="fas fa-search"></i><span class="ms-1 d-none d-md-inline">{{ _gettext('Search') }}</span>
+            </button>
+          {% if search %}
+            </div>
+          {% endif %}
+
+        </form>
+    </div>
+</li>
+{% endmacro %}
+
+{% macro page_size_form(generator, page_size_options, btn_class='dropdown-toggle') %}
+    <li class="nav-item">
+        <div class="btn-group">
+            <button class="nav-link btn btn-light {{ btn_class }}" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                <i class="fas fa-list-ul"></i><span class="ms-2">{{ page_size }}</span>
+                <span class="ms-2 d-none d-md-inline">{{ _gettext('items') }}</span>
+            </button>
+            <ul class="dropdown-menu">
+              {% for option in page_size_options %}
+                <li>
+                    <a class="dropdown-item{% if page_size == option %} active{% endif %}" href="{{ page_size_url(option) }}">
+                        {{ _ngettext('{} item'.format(option), '{} items'.format(option), option) }}
+                    </a>
+                </li>
+              {% endfor %}
+            </ul>
+        </div>
+    </li>
+{% endmacro %}
