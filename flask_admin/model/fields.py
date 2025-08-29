@@ -1,7 +1,6 @@
 import itertools
 import typing as t
 
-from markupsafe import Markup
 from wtforms import Field
 from wtforms.fields import FieldList
 from wtforms.fields import FormField
@@ -22,12 +21,12 @@ from .widgets import InlineFormWidget
 
 
 class InlineFieldList(FieldList):
-    widget: RenderTemplateWidget = InlineFieldListWidget()
+    widget: RenderTemplateWidget = InlineFieldListWidget()  # type: ignore[assignment]
 
     def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
 
-    def __call__(self, **kwargs: t.Any) -> Markup:
+    def __call__(self, **kwargs: t.Any) -> str:  # type: ignore[override]
         # Create template
         meta = getattr(self, "meta", None)
         if meta:
@@ -126,7 +125,7 @@ class InlineFormField(FormField):
     Inline version of the ``FormField`` widget.
     """
 
-    widget = InlineFormWidget()
+    widget = InlineFormWidget()  # type: ignore[assignment]
 
 
 class InlineModelFormField(FormField):
@@ -137,7 +136,7 @@ class InlineModelFormField(FormField):
     handles `should_delete` flag.
     """
 
-    widget = InlineFormWidget()
+    widget = InlineFormWidget()  # type: ignore[assignment]
 
     def __init__(
         self,

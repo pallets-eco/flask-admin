@@ -2,7 +2,6 @@ import sys
 import typing as t
 from enum import Enum
 from os import PathLike
-from types import TracebackType
 
 import wtforms.widgets
 from flask import Response
@@ -64,11 +63,10 @@ if t.TYPE_CHECKING:
     from sqlalchemy.orm import InstrumentedAttribute as T_INSTRUMENTED_ATTRIBUTE  # noqa
     from sqlalchemy.orm import scoped_session as T_SQLALCHEMY_SESSION  # noqa
     from sqlalchemy.orm.query import Query
-    from sqlalchemy.sql.selectable import Select
     from sqlalchemy_utils import Choice as T_CHOICE  # noqa
     from sqlalchemy_utils import ChoiceType as T_CHOICE_TYPE  # noqa
 
-    T_SQLALCHEMY_QUERY = t.Union[Query, Select]
+    T_SQLALCHEMY_QUERY = Query
     from redis import Redis as T_REDIS  # noqa
     from flask_admin.contrib.peewee.ajax import (
         QueryAjaxModelLoader as T_PEEWEE_QUERY_AJAX_MODEL_LOADER,
@@ -111,9 +109,7 @@ else:
     T_CHOICE_TYPE = "sqlalchemy_utils.ChoiceType"
     T_CHOICE = "sqlalchemy_utils.Choice"
 
-    T_SQLALCHEMY_QUERY = t.Union[
-        "sqlalchemy.sql.selectable.Select", "sqlalchemy.orm.query.Query"
-    ]
+    T_SQLALCHEMY_QUERY = "sqlalchemy.orm.query.Query"
     T_INSTRUMENTED_ATTRIBUTE = "sqlalchemy.orm.InstrumentedAttribute"
     T_SQLALCHEMY_SESSION = "sqlalchemy.orm.scoped_session"
     T_REDIS = "redis.Redis"
@@ -254,26 +250,3 @@ class T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK(T_FIELD_ARGS_VALIDATORS):
 class T_FIELD_ARGS_VALIDATORS_FILES(T_FIELD_ARGS_VALIDATORS):
     base_path: NotRequired[str]
     allow_overwrite: NotRequired[bool]
-
-
-# Flask types
-_ExcInfo = tuple[
-    t.Optional[type[BaseException]],
-    t.Optional[BaseException],
-    t.Optional[TracebackType],
-]
-_StartResponse = t.Callable[
-    [str, list[tuple[str, str]], t.Optional[_ExcInfo]], t.Callable[[bytes], t.Any]
-]
-_WSGICallable = t.Callable[[dict[str, t.Any], _StartResponse], t.Iterable[bytes]]
-_Status = t.Union[str, int]
-_Headers = t.Union[dict[t.Any, t.Any], list[tuple[t.Any, t.Any]]]
-_Body = t.Union[str, t.ByteString, dict[str, t.Any], Response, _WSGICallable]
-_ViewFuncReturnType = t.Union[
-    _Body,
-    tuple[_Body, _Status, _Headers],
-    tuple[_Body, _Status],
-    tuple[_Body, _Headers],
-]
-
-_ViewFunc = t.Union[t.Callable[..., t.NoReturn], t.Callable[..., _ViewFuncReturnType]]

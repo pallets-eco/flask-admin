@@ -354,7 +354,7 @@ class EnumEqualFilter(FilterEqual):
     def __init__(
         self, column: Column, name: str, options: T_OPTIONS = None, **kwargs: t.Any
     ) -> None:
-        self.enum_class = column.type.enum_class
+        self.enum_class = column.type.enum_class  # type: ignore[attr-defined]
         super().__init__(column, name, options, **kwargs)
 
     def clean(self, value: t.Any) -> t.Any:
@@ -367,7 +367,7 @@ class EnumFilterNotEqual(FilterNotEqual):
     def __init__(
         self, column: Column, name: str, options: T_OPTIONS = None, **kwargs: t.Any
     ) -> None:
-        self.enum_class = column.type.enum_class
+        self.enum_class = column.type.enum_class  # type: ignore[attr-defined]
         super().__init__(column, name, options, **kwargs)
 
     def clean(self, value: t.Any) -> t.Any:
@@ -380,7 +380,7 @@ class EnumFilterEmpty(FilterEmpty):
     def __init__(
         self, column: Column, name: str, options: T_OPTIONS = None, **kwargs: t.Any
     ) -> None:
-        self.enum_class = column.type.enum_class
+        self.enum_class = column.type.enum_class  # type: ignore[attr-defined]
         super().__init__(column, name, options, **kwargs)
 
 
@@ -388,7 +388,7 @@ class EnumFilterInList(FilterInList):
     def __init__(
         self, column: Column, name: str, options: T_OPTIONS = None, **kwargs: t.Any
     ) -> None:
-        self.enum_class = column.type.enum_class
+        self.enum_class = column.type.enum_class  # type: ignore[attr-defined]
         super().__init__(column, name, options, **kwargs)
 
     def clean(self, value: t.Any) -> t.Any:
@@ -405,7 +405,7 @@ class EnumFilterNotInList(FilterNotInList):
     def __init__(
         self, column: Column, name: str, options: T_OPTIONS = None, **kwargs: t.Any
     ) -> None:
-        self.enum_class = column.type.enum_class
+        self.enum_class = column.type.enum_class  # type: ignore[attr-defined]
         super().__init__(column, name, options, **kwargs)
 
     def clean(self, value: t.Any) -> t.Any:
@@ -430,13 +430,13 @@ class ChoiceTypeEqualFilter(FilterEqual):
         column = self.get_column(alias)
         choice_type = None
         # loop through choice 'values' to try and find an exact match
-        if isinstance(column.type.choices, enum.EnumMeta):
-            for choice in column.type.choices:  # type: enum.Enum
+        if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore[attr-defined]
+            for choice in column.type.choices:  # type: enum.Enum  # type: ignore[attr-defined]
                 if choice.name == user_query:
                     choice_type = choice.value
                     break
         else:
-            for type, value in column.type.choices:
+            for type, value in column.type.choices:  # type: ignore[attr-defined]
                 if value == user_query:
                     choice_type = type
                     break
@@ -458,13 +458,13 @@ class ChoiceTypeNotEqualFilter(FilterNotEqual):
         column = self.get_column(alias)
         choice_type = None
         # loop through choice 'values' to try and find an exact match
-        if isinstance(column.type.choices, enum.EnumMeta):
-            for choice in column.type.choices:  # type: enum.Enum
+        if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore[attr-defined]
+            for choice in column.type.choices:  # type: enum.Enum # type: ignore[attr-defined]
                 if choice.name == user_query:
                     choice_type = choice.value
                     break
         else:
-            for type, value in column.type.choices:
+            for type, value in column.type.choices:  # type: ignore[attr-defined]
                 if value == user_query:
                     choice_type = type
                     break
@@ -488,12 +488,12 @@ class ChoiceTypeLikeFilter(FilterLike):
         choice_types = []
         if user_query:
             # loop through choice 'values' looking for matches
-            if isinstance(column.type.choices, enum.EnumMeta):
-                for choice in column.type.choices:  # type: enum.Enum
+            if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore[attr-defined]
+                for choice in column.type.choices:  # type: enum.Enum  # type: ignore[attr-defined]
                     if user_query.lower() in choice.name.lower():
                         choice_types.append(choice.value)
             else:
-                for type, value in column.type.choices:
+                for type, value in column.type.choices:  # type: ignore[attr-defined]
                     if user_query.lower() in value.lower():
                         choice_types.append(type)
         if choice_types:
@@ -515,12 +515,12 @@ class ChoiceTypeNotLikeFilter(FilterNotLike):
         choice_types = []
         if user_query:
             # loop through choice 'values' looking for matches
-            if isinstance(column.type.choices, enum.EnumMeta):
-                for choice in column.type.choices:  # type: enum.Enum
+            if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore[attr-defined]
+                for choice in column.type.choices:  # type: enum.Enum  # type: ignore[attr-defined]
                     if user_query.lower() in choice.name.lower():
                         choice_types.append(choice.value)
             else:
-                for type, value in column.type.choices:
+                for type, value in column.type.choices:  # type: ignore[attr-defined]
                     if user_query.lower() in value.lower():
                         choice_types.append(type)
         if choice_types:
@@ -735,7 +735,7 @@ class FilterConverter(filters.BaseFilterConverter):
         self, column: Column, name: str, options: T_OPTIONS = None, **kwargs: t.Any
     ) -> list[BaseSQLAFilter]:
         if not options:
-            options = [(v, v) for v in column.type.enums]
+            options = [(v, v) for v in column.type.enums]  # type: ignore[attr-defined]
 
         return [f(column, name, options, **kwargs) for f in self.enum]
 

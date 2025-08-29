@@ -84,11 +84,11 @@ class TweetView(ModelView):
         form.user_id.choices = [(str(x["_id"]), x["name"]) for x in users]
         return form
 
-    def create_form(self):
+    def create_form(self):  # type: ignore[override]
         form = super().create_form()
         return self._feed_user_choices(form)
 
-    def edit_form(self, obj):
+    def edit_form(self, obj):  # type: ignore[override]
         form = super().edit_form(obj)
         return self._feed_user_choices(form)
 

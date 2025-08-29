@@ -241,7 +241,7 @@ class InlineModelConverter(InlineModelConverterBase):
 
         if info is None:
             if isinstance(p, ModelBase):
-                info = InlineFormAdmin(p)  # type: ignore[arg-type]
+                info = InlineFormAdmin(p)
             else:
                 model = getattr(p, "model", None)
                 if model is None:

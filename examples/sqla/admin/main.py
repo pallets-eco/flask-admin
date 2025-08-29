@@ -157,8 +157,8 @@ class UserAdmin(ModelView):
 
     # setup edit forms so that only posts created by this user can be selected as
     # 'featured'
-    def edit_form(self, obj):
-        return self._filtered_posts(super().edit_form(obj))
+    def edit_form(self, obj):  # type: ignore[override]
+        return self._filtered_posts(super().edit_form(obj))  # type: ignore[override]
 
     def _filtered_posts(self, form):
         form.featured_post.query_factory = lambda: Post.query.filter(

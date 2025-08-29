@@ -4,8 +4,9 @@ from flask import Flask
 from flask import request
 from flask.blueprints import Blueprint as FlaskBlueprint
 from flask.blueprints import BlueprintSetupState as FlaskBlueprintSetupState
+from flask.sansio.app import App
+from flask.typing import RouteCallable
 
-from flask_admin._types import _ViewFunc
 from flask_admin.consts import ADMIN_ROUTES_HOST_VARIABLE
 from flask_admin.consts import ADMIN_ROUTES_HOST_VARIABLE_NAME
 
@@ -18,7 +19,7 @@ class _BlueprintSetupStateWithHostSupport(FlaskBlueprintSetupState):
     def __init__(
         self,
         blueprint: FlaskBlueprint,
-        app: Flask,
+        app: App,
         options: t.Any,
         first_registration: bool,
     ) -> None:
@@ -29,17 +30,17 @@ class _BlueprintSetupStateWithHostSupport(FlaskBlueprintSetupState):
         self,
         rule: str,
         endpoint: t.Optional[str] = None,
-        view_func: t.Optional[_ViewFunc] = None,
+        view_func: t.Optional[RouteCallable] = None,
         **options: t.Any,
     ) -> None:
         # Ensure that every route registered by this blueprint has the host parameter
         options.setdefault("host", self.host)
-        super().add_url_rule(rule, endpoint, view_func, **options)  # type:ignore[arg-type]
+        super().add_url_rule(rule, endpoint, view_func, **options)
 
 
 class _BlueprintWithHostSupport(FlaskBlueprint):
     def make_setup_state(
-        self, app: Flask, options: t.Any, first_registration: bool = False
+        self, app: App, options: t.Any, first_registration: bool = False
     ) -> _BlueprintSetupStateWithHostSupport:
         return _BlueprintSetupStateWithHostSupport(
             self, app, options, first_registration

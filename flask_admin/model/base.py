@@ -18,7 +18,7 @@ from flask import json
 from flask import redirect
 from flask import request
 from flask import stream_with_context
-from jinja2 import pass_context  # type: ignore[attr-defined]
+from jinja2 import pass_context
 from jinja2.runtime import Context
 from werkzeug import Response
 from werkzeug.utils import secure_filename
@@ -2706,7 +2706,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 return gettext("Record was successfully saved.")
             else:
                 # Error: No records changed, or problem saving to database.
-                msgs = ", ".join([msg for msg in get_flashed_messages()])
+                msgs = ", ".join([msg for msg in get_flashed_messages()])  # type: ignore[misc]
                 return gettext("Failed to update record. %(error)s", error=msgs), 500
         else:
             for field in form:

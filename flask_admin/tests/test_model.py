@@ -122,7 +122,7 @@ def test_mockview(app, admin):
     view = MockModelView(Model)
     admin.add_view(view)
 
-    assert view.model == Model  # type: ignore[comparison-overlap]
+    assert view.model == Model
 
     assert view.name == "Model"
     assert view.endpoint == "model"

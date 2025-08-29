@@ -135,7 +135,7 @@ class LocalFileStorage:
         """
         Sends the file located at `file_path` to the user
         """
-        return send_file(file_path)
+        return send_file(file_path)  # type: ignore[arg-type, type-var]
 
     def read_file(self, path: T_PATH_LIKE) -> bytes:
         """
@@ -508,7 +508,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             # Workaround for allowing both CSRF token + FileField to be submitted
             # https://bitbucket.org/danjac/flask-wtf/issue/12/fieldlist-filefield-does-not-follow
             formdata = request.form.copy()  # as request.form is immutable
-            formdata.update(request.files)
+            formdata.update(request.files)  # type: ignore[arg-type]
 
             # admin=self allows the form to use self.is_file_allowed
             return upload_form_class(formdata, admin=self)
@@ -1265,7 +1265,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         next_url = None
 
-        path = request.args.getlist("path")
+        path: t.Union[str, list[str]] = request.args.getlist("path")
         if not path:
             return redirect(self.get_url(".index_view"))
 

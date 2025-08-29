@@ -80,7 +80,7 @@ class CustomInlineFieldListWidget(RenderTemplateWidget):
 
 # This InlineModelFormList will use our custom widget and hide row controls
 class CustomInlineModelFormList(InlineModelFormList):
-    widget = CustomInlineFieldListWidget()
+    widget = CustomInlineFieldListWidget()  # type: ignore[assignment]
 
     def display_row_controls(self, field):
         return False
@@ -123,7 +123,7 @@ class LocationImageInlineModelForm(InlineFormAdmin):
         file_data = request.files.get(form.upload.name)
 
         if file_data:
-            model.path = secure_filename(file_data.filename)
+            model.path = secure_filename(file_data.filename)  # type: ignore[arg-type]
             file_data.save(op.join(base_path, model.path))
 
 

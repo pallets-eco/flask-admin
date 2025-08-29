@@ -1820,7 +1820,7 @@ def test_hybrid_property(app, db, admin):
             db.session,
             column_default_sort="number_of_pixels",
             column_filters=[
-                filters.IntGreaterFilter(Model1.number_of_pixels, "Number of Pixels")
+                filters.IntGreaterFilter(Model1.number_of_pixels, "Number of Pixels")  # type: ignore[arg-type]
             ],
             column_searchable_list=[
                 "number_of_pixels_str",
@@ -1842,8 +1842,8 @@ def test_hybrid_property(app, db, admin):
         _, data = view.get_list(0, None, False, None, None)
 
         assert len(data) == 2
-        assert data[0].name == "test_row_2"  # type: ignore[attr-defined]
-        assert data[1].name == "test_row_1"  # type: ignore[attr-defined]
+        assert data[0].name == "test_row_2"
+        assert data[1].name == "test_row_1"
 
         # searching
         rv = client.get("/admin/model1/?search=100")
@@ -2228,9 +2228,9 @@ def test_default_sort(app, db, admin):
 
         _, data = view.get_list(0, None, False, None, None)
         assert len(data) == 3
-        assert data[0].test1 == "a"  # type: ignore[attr-defined]
-        assert data[1].test1 == "b"  # type: ignore[attr-defined]
-        assert data[2].test1 == "c"  # type: ignore[attr-defined]
+        assert data[0].test1 == "a"
+        assert data[1].test1 == "b"
+        assert data[2].test1 == "c"
 
         # test default sort on renamed columns - with column_list scaffolding
         view2 = CustomModelView(
@@ -2245,9 +2245,9 @@ def test_default_sort(app, db, admin):
         _, data = view2.get_list(0, None, False, None, None)
 
         assert len(data) == 3
-        assert data[0].test1 == "a"  # type: ignore[attr-defined]
-        assert data[1].test1 == "b"  # type: ignore[attr-defined]
-        assert data[2].test1 == "c"  # type: ignore[attr-defined]
+        assert data[0].test1 == "a"
+        assert data[1].test1 == "b"
+        assert data[2].test1 == "c"
 
         # test default sort on renamed columns - without column_list scaffolding
         view3 = CustomModelView(
@@ -2263,9 +2263,9 @@ def test_default_sort(app, db, admin):
         _, data = view3.get_list(0, None, False, None, None)
 
         assert len(data) == 3
-        assert data[0].test1 == "a"  # type: ignore[attr-defined]
-        assert data[1].test1 == "b"  # type: ignore[attr-defined]
-        assert data[2].test1 == "c"  # type: ignore[attr-defined]
+        assert data[0].test1 == "a"
+        assert data[1].test1 == "b"
+        assert data[2].test1 == "c"
 
         # test default sort with multiple columns
         order = [("test2", False), ("test1", False)]
@@ -2277,9 +2277,9 @@ def test_default_sort(app, db, admin):
         _, data = view4.get_list(0, None, False, None, None)
 
         assert len(data) == 3
-        assert data[0].test1 == "b"  # type: ignore[attr-defined]
-        assert data[1].test1 == "c"  # type: ignore[attr-defined]
-        assert data[2].test1 == "a"  # type: ignore[attr-defined]
+        assert data[0].test1 == "b"
+        assert data[1].test1 == "c"
+        assert data[2].test1 == "a"
 
 
 def test_complex_sort(app, db, admin):
@@ -2324,9 +2324,9 @@ def test_complex_sort(app, db, admin):
 
         _, data = view.get_list(0, "model1.test1", False, None, None)
 
-        assert data[0].model1.test1 == "a"  # type: ignore[attr-defined]
-        assert data[1].model1.test1 == "b"  # type: ignore[attr-defined]
-        assert data[2].model1.test1 == "c"  # type: ignore[attr-defined]
+        assert data[0].model1.test1 == "a"
+        assert data[1].model1.test1 == "b"
+        assert data[2].model1.test1 == "c"
 
         # test sorting on multiple columns in related model
         rv = client.get("/admin/m1_2/?sort=0")
@@ -2334,9 +2334,9 @@ def test_complex_sort(app, db, admin):
 
         _, data = view2.get_list(0, "model1", False, None, None)
 
-        assert data[0].model1.test1 == "b"  # type: ignore[attr-defined]
-        assert data[1].model1.test1 == "c"  # type: ignore[attr-defined]
-        assert data[2].model1.test1 == "a"  # type: ignore[attr-defined]
+        assert data[0].model1.test1 == "b"
+        assert data[1].model1.test1 == "c"
+        assert data[2].model1.test1 == "a"
 
 
 @pytest.mark.xfail(raises=Exception)
@@ -2354,8 +2354,8 @@ def test_complex_sort_exception(app, db, admin):
         _, data = view.get_list(0, sort_column, False, None, None)
 
         assert len(data) == 2
-        assert data[0].model1.test1 == "a"  # type: ignore[attr-defined]
-        assert data[1].model1.test1 == "b"  # type: ignore[attr-defined]
+        assert data[0].model1.test1 == "a"
+        assert data[1].model1.test1 == "b"
 
 
 def test_default_complex_sort(app, db, admin):
@@ -2378,8 +2378,8 @@ def test_default_complex_sort(app, db, admin):
         _, data = view.get_list(0, None, False, None, None)
 
         assert len(data) == 2
-        assert data[0].model1.test1 == "a"  # type: ignore[attr-defined]
-        assert data[1].model1.test1 == "b"  # type: ignore[attr-defined]
+        assert data[0].model1.test1 == "a"
+        assert data[1].model1.test1 == "b"
 
         # test column_default_sort on a related table's column object
         view2 = CustomModelView(
@@ -2390,8 +2390,8 @@ def test_default_complex_sort(app, db, admin):
         _, data = view2.get_list(0, None, False, None, None)
 
         assert len(data) == 2
-        assert data[0].model1.test1 == "a"  # type: ignore[attr-defined]
-        assert data[1].model1.test1 == "b"  # type: ignore[attr-defined]
+        assert data[0].model1.test1 == "a"
+        assert data[1].model1.test1 == "b"
 
 
 @pytest.mark.filterwarnings(
@@ -2931,7 +2931,7 @@ def test_advanced_joins(app, db, admin):
 
         if hasattr(q2, "_join_entities"):
             for p in q2._join_entities:
-                assert p in q1._join_entities  # type: ignore[union-attr]
+                assert p in q1._join_entities  # type: ignore[attr-defined]
 
         assert alias is not None
 
