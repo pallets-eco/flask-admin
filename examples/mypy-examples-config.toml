@@ -1,7 +1,7 @@
 # mypy custom settings for examples/ subfolders
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.13"
 files = ["examples"]
 show_error_codes = true
 pretty = true
