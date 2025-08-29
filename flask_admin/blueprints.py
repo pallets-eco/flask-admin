@@ -4,7 +4,11 @@ from flask import Flask
 from flask import request
 from flask.blueprints import Blueprint as FlaskBlueprint
 from flask.blueprints import BlueprintSetupState as FlaskBlueprintSetupState
-from flask.sansio.app import App
+
+try:
+    from flask.sansio.app import App  # Flask >3.0
+except ImportError:
+    from flask import Flask as App  # Flask < 3.0
 from flask.typing import RouteCallable
 
 from flask_admin.consts import ADMIN_ROUTES_HOST_VARIABLE
