@@ -1,3 +1,5 @@
+from typing import Union
+
 from wtforms import fields
 
 from flask_admin import form
@@ -11,7 +13,7 @@ def test_inline_form(app, db, admin):
         client = app.test_client()
 
         # Set up models and database
-        class User(db.Model):
+        class User(db.Model):  # type: ignore[name-defined]
             __tablename__ = "users"
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String, unique=True)
@@ -19,7 +21,7 @@ def test_inline_form(app, db, admin):
             def __init__(self, name=None):
                 self.name = name
 
-        class UserInfo(db.Model):
+        class UserInfo(db.Model):  # type: ignore[name-defined]
             __tablename__ = "user_info"
             id = db.Column(db.Integer, primary_key=True)
             key = db.Column(db.String, nullable=False)
@@ -47,8 +49,8 @@ def test_inline_form(app, db, admin):
         assert view.endpoint == "user"
 
         # Verify form
-        assert view._create_form_class.name.field_class == fields.StringField
-        assert view._create_form_class.info.field_class == InlineModelFormList
+        assert view._create_form_class.name.field_class == fields.StringField  # type: ignore[attr-defined]
+        assert view._create_form_class.info.field_class == InlineModelFormList  # type: ignore[attr-defined]
 
         rv = client.get("/admin/user/")
         assert rv.status_code == 200
@@ -62,7 +64,11 @@ def test_inline_form(app, db, admin):
         assert User.query.count() == 1
         assert UserInfo.query.count() == 0
 
-        data = {"name": "fbar", "info-0-key": "foo", "info-0-val": "bar"}
+        data: dict[str, Union[str, int, None]] = {
+            "name": "fbar",
+            "info-0-key": "foo",
+            "info-0-val": "bar",
+        }
         rv = client.post("/admin/user/new/", data=data)
         assert rv.status_code == 302
         assert User.query.count() == 2
@@ -115,7 +121,7 @@ def test_inline_form_required(app, db, admin):
         client = app.test_client()
 
         # Set up models and database
-        class User(db.Model):
+        class User(db.Model):  # type: ignore[name-defined]
             __tablename__ = "users"
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String, unique=True)
@@ -123,7 +129,7 @@ def test_inline_form_required(app, db, admin):
             def __init__(self, name=None):
                 self.name = name
 
-        class UserEmail(db.Model):
+        class UserEmail(db.Model):  # type: ignore[name-defined]
             __tablename__ = "user_info"
             id = db.Column(db.Integer, primary_key=True)
             email = db.Column(db.String, nullable=False, unique=True)
@@ -175,7 +181,7 @@ def test_inline_form_required(app, db, admin):
 def test_inline_form_ajax_fk(app, db, admin):
     with app.app_context():
         # Set up models and database
-        class User(db.Model):
+        class User(db.Model):  # type: ignore[name-defined]
             __tablename__ = "users"
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String, unique=True)
@@ -183,13 +189,13 @@ def test_inline_form_ajax_fk(app, db, admin):
             def __init__(self, name=None):
                 self.name = name
 
-        class Tag(db.Model):
+        class Tag(db.Model):  # type: ignore[name-defined]
             __tablename__ = "tags"
 
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String, unique=True)
 
-        class UserInfo(db.Model):
+        class UserInfo(db.Model):  # type: ignore[name-defined]
             __tablename__ = "user_info"
             id = db.Column(db.Integer, primary_key=True)
             key = db.Column(db.String, nullable=False)
@@ -218,7 +224,7 @@ def test_inline_form_ajax_fk(app, db, admin):
         admin.add_view(view)
 
         form = view.create_form()
-        user_info_form = form.info.unbound_field.args[0]
+        user_info_form = form.info.unbound_field.args[0]  # type: ignore[attr-defined]
         loader = user_info_form.tag.args[0]
         assert loader.name == "userinfo-tag"
         assert loader.model == Tag
@@ -229,7 +235,7 @@ def test_inline_form_ajax_fk(app, db, admin):
 def test_inline_form_self(app, db, admin):
     with app.app_context():
 
-        class Tree(db.Model):
+        class Tree(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             parent_id = db.Column(db.Integer, db.ForeignKey("tree.id"))
             parent = db.relationship("Tree", remote_side=[id], backref="children")
@@ -244,7 +250,7 @@ def test_inline_form_self(app, db, admin):
         parent = Tree()
         child = Tree(parent=parent)
         form = view.edit_form(child)
-        assert form.parent.data == parent
+        assert form.parent.data == parent  # type: ignore[attr-defined]
 
 
 def test_inline_form_base_class(app, db, admin):
@@ -252,7 +258,7 @@ def test_inline_form_base_class(app, db, admin):
 
     with app.app_context():
         # Set up models and database
-        class User(db.Model):
+        class User(db.Model):  # type: ignore[name-defined]
             __tablename__ = "users"
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String, unique=True)
@@ -260,7 +266,7 @@ def test_inline_form_base_class(app, db, admin):
             def __init__(self, name=None):
                 self.name = name
 
-        class UserEmail(db.Model):
+        class UserEmail(db.Model):  # type: ignore[name-defined]
             __tablename__ = "user_info"
             id = db.Column(db.Integer, primary_key=True)
             email = db.Column(db.String, nullable=False, unique=True)

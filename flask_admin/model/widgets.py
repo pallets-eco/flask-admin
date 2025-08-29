@@ -25,7 +25,7 @@ class InlineFormWidget(RenderTemplateWidget):
     def __init__(self) -> None:
         super().__init__("admin/model/inline_form.html")
 
-    def __call__(self, field: Field, **kwargs: t.Any) -> Markup:
+    def __call__(self, field: Field, **kwargs: t.Any) -> str:
         kwargs.setdefault("form_opts", getattr(field, "form_opts", None))
         return super().__call__(field, **kwargs)
 

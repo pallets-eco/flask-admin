@@ -1,7 +1,7 @@
 import typing as t
 from functools import reduce
 
-from jinja2 import pass_context  # type: ignore[attr-defined]
+from jinja2 import pass_context
 from jinja2.runtime import Context
 
 from flask_admin._compat import string_types
@@ -115,7 +115,7 @@ class DeleteRowAction(TemplateLinkRowAction):
 
 
 # Macro helper
-def macro(name: object) -> t.Callable[[t.Any, Context, T_MODEL_VIEW, T_COLUMN], t.Any]:
+def macro(name: str) -> t.Callable[[t.Any, Context, T_MODEL_VIEW, T_COLUMN], t.Any]:
     """
     Jinja2 macro list column formatter.
 

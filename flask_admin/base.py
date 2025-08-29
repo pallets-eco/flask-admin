@@ -29,7 +29,9 @@ from flask_admin.theme import Bootstrap4Theme
 from flask_admin.theme import Theme
 
 
-def expose(url: str = "/", methods: t.Iterable[str] = ("GET",)) -> t.Callable:
+def expose(
+    url: str = "/", methods: t.Optional[t.Iterable[str]] = ("GET",)
+) -> t.Callable:
     """
     Use this decorator to expose views in your view classes.
 
@@ -42,7 +44,7 @@ def expose(url: str = "/", methods: t.Iterable[str] = ("GET",)) -> t.Callable:
     def wrap(f: AdminViewMeta) -> AdminViewMeta:
         if not hasattr(f, "_urls"):
             f._urls = []
-        f._urls.append((url, methods))
+        f._urls.append((url, methods))  # type: ignore[arg-type]
         return f
 
     return wrap

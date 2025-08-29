@@ -8,7 +8,7 @@ def test_multiple_pk(app, db, admin):
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
-        class Model(db.Model):
+        class Model(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             id2 = db.Column(db.String(20), primary_key=True)
             test = db.Column(db.String)
@@ -45,7 +45,7 @@ def test_joined_inheritance(app, db, admin):
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
-        class Parent(db.Model):
+        class Parent(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             test = db.Column(db.String)
 
@@ -84,7 +84,7 @@ def test_single_table_inheritance(app, db, admin):
     with app.app_context():
         CustomModel = declarative_base(cls=Model, name="Model")
 
-        class Parent(CustomModel):
+        class Parent(CustomModel):  # type: ignore[valid-type, misc]
             __tablename__ = "parent"
 
             id = db.Column(db.Integer, primary_key=True)
@@ -121,7 +121,7 @@ def test_concrete_table_inheritance(app, db, admin):
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
-        class Parent(db.Model):
+        class Parent(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             test = db.Column(db.String)
 
@@ -155,7 +155,7 @@ def test_concrete_multipk_inheritance(app, db, admin):
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
-        class Parent(db.Model):
+        class Parent(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             test = db.Column(db.String)
 

@@ -8,7 +8,7 @@ from flask import flash
 from flask import g
 from flask import request
 from flask import url_for
-from jinja2 import pass_context  # type: ignore[attr-defined]
+from jinja2 import pass_context
 from jinja2.runtime import Context
 from werkzeug.datastructures import ImmutableMultiDict
 from wtforms.fields.core import Field
@@ -95,7 +95,7 @@ def get_form_data() -> t.Optional[ImmutableMultiDict]:
     if is_form_submitted():
         formdata = request.form
         if request.files:
-            formdata = formdata.copy()
+            formdata = formdata.copy()  # type: ignore[assignment]
             formdata.update(request.files)
         return formdata
 

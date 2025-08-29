@@ -106,7 +106,7 @@ class RenderTemplateWidget:
         """
         self.template = template
 
-    def __call__(self, field: Field, **kwargs: t.Any) -> Markup:
+    def __call__(self, field: Field, **kwargs: t.Any) -> str:
         kwargs.update(
             {
                 "field": field,

@@ -3,6 +3,7 @@ import uuid
 from datetime import date
 from datetime import datetime
 from datetime import time
+from typing import Any
 
 import arrow
 import pytest
@@ -51,7 +52,7 @@ class CustomModelView(ModelView):
 
 
 def create_models(db):
-    class Model1(db.Model):
+    class Model1(db.Model):  # type: ignore[name-defined]
         def __init__(
             self,
             test1=None,
@@ -114,7 +115,7 @@ def create_models(db):
         def __str__(self):
             return self.test1
 
-    class Model2(db.Model):
+    class Model2(db.Model):  # type: ignore[name-defined]
         def __init__(
             self,
             string_field=None,
@@ -243,28 +244,28 @@ def test_model(app, db, admin):
         assert view._filters is None
 
         # Verify form
-        assert view._create_form_class.test1.field_class == fields.StringField
-        assert view._create_form_class.test2.field_class == fields.StringField
-        assert view._create_form_class.test3.field_class == fields.TextAreaField
-        assert view._create_form_class.test4.field_class == fields.TextAreaField
-        assert view._create_form_class.email_field.field_class == fields.StringField
-        assert view._create_form_class.choice_field.field_class == Select2Field
-        assert view._create_form_class.enum_field.field_class == Select2Field
-        assert view._create_form_class.sqla_utils_choice.field_class == Select2Field
-        assert view._create_form_class.sqla_utils_enum.field_class == Select2Field
-        assert view._create_form_class.sqla_utils_arrow.field_class == DateTimeField
-        assert view._create_form_class.sqla_utils_uuid.field_class == fields.StringField
-        assert view._create_form_class.sqla_utils_url.field_class == fields.StringField
+        assert view._create_form_class.test1.field_class == fields.StringField  # type: ignore[attr-defined]
+        assert view._create_form_class.test2.field_class == fields.StringField  # type: ignore[attr-defined]
+        assert view._create_form_class.test3.field_class == fields.TextAreaField  # type: ignore[attr-defined]
+        assert view._create_form_class.test4.field_class == fields.TextAreaField  # type: ignore[attr-defined]
+        assert view._create_form_class.email_field.field_class == fields.StringField  # type: ignore[attr-defined]
+        assert view._create_form_class.choice_field.field_class == Select2Field  # type: ignore[attr-defined]
+        assert view._create_form_class.enum_field.field_class == Select2Field  # type: ignore[attr-defined]
+        assert view._create_form_class.sqla_utils_choice.field_class == Select2Field  # type: ignore[attr-defined]
+        assert view._create_form_class.sqla_utils_enum.field_class == Select2Field  # type: ignore[attr-defined]
+        assert view._create_form_class.sqla_utils_arrow.field_class == DateTimeField  # type: ignore[attr-defined]
+        assert view._create_form_class.sqla_utils_uuid.field_class == fields.StringField  # type: ignore[attr-defined]
+        assert view._create_form_class.sqla_utils_url.field_class == fields.StringField  # type: ignore[attr-defined]
         assert (
-            view._create_form_class.sqla_utils_ip_address.field_class
+            view._create_form_class.sqla_utils_ip_address.field_class  # type: ignore[attr-defined]
             == fields.StringField
         )
         assert (
-            view._create_form_class.sqla_utils_currency.field_class
+            view._create_form_class.sqla_utils_currency.field_class  # type: ignore[attr-defined]
             == fields.StringField
         )
         assert (
-            view._create_form_class.sqla_utils_color.field_class == fields.StringField
+            view._create_form_class.sqla_utils_color.field_class == fields.StringField  # type: ignore[attr-defined]
         )
 
         # Make some test clients
@@ -381,10 +382,10 @@ def test_model(app, db, admin):
 
 @pytest.mark.xfail(raises=Exception)
 def test_no_pk(app, db, admin):
-    class Model(db.Model):
+    class Model(db.Model):  # type: ignore[name-defined]
         test = db.Column(db.Integer)
 
-    view = CustomModelView(Model)
+    view = CustomModelView(Model, db.session)
     admin.add_view(view)
 
 
@@ -505,6 +506,7 @@ def test_column_searchable_list(app, db, admin):
         admin.add_view(view)
 
         assert view._search_supported
+        assert view._search_fields
         assert len(view._search_fields) == 2
 
         assert isinstance(view._search_fields[0][0], db.Column)
@@ -782,7 +784,7 @@ def test_editable_list_special_pks(app, db, admin):
     """Tests editable list view + a primary key with special characters"""
     with app.app_context():
 
-        class Model1(db.Model):
+        class Model1(db.Model):  # type: ignore[name-defined]
             def __init__(self, id=None, val1=None):
                 self.id = id
                 self.val1 = val1
@@ -826,7 +828,7 @@ def test_column_filters(app, db, admin):
         admin.add_view(view1)
 
         client = app.test_client()
-
+        assert view1._filters
         assert len(view1._filters) == 7
 
         # Generate views
@@ -900,8 +902,8 @@ def test_column_filters(app, db, admin):
             endpoint="_enumtypefield",
         )
         admin.add_view(view14)
-
         # Test views
+        assert view1._filter_groups
         assert [
             (f["index"], f["operation"]) for f in view1._filter_groups["Test1"]
         ] == [
@@ -913,7 +915,7 @@ def test_column_filters(app, db, admin):
             (5, "in list"),
             (6, "not in list"),
         ]
-
+        assert view2._filter_groups
         # Test filter that references property0
         assert [
             (f["index"], f["operation"]) for f in view2._filter_groups["Model1 / Test1"]
@@ -1084,7 +1086,7 @@ def test_column_filters(app, db, admin):
         view3 = CustomModelView(
             Model2, db.session, column_filters=["model1.bool_field"]
         )
-
+        assert view3._filter_groups
         assert [
             (f["index"], f["operation"])
             for f in view3._filter_groups["model1 / Model1 / Bool Field"]
@@ -1103,7 +1105,7 @@ def test_column_filters(app, db, admin):
                 "string_field": "Test Filter #2",
             },
         )
-
+        assert view4._filter_groups
         assert list(view4._filter_groups.keys()) == ["Test Filter #1", "Test Filter #2"]
 
         fill_db(db, Model1, Model2)
@@ -1125,8 +1127,8 @@ def test_column_filters(app, db, admin):
 
         assert "test1_val_2" in data
         assert "test2_val_1" not in data
-
         # Test string filter
+        assert view5._filter_groups
         assert [
             (f["index"], f["operation"]) for f in view5._filter_groups["Test1"]
         ] == [
@@ -1200,8 +1202,8 @@ def test_column_filters(app, db, admin):
         assert "test2_val_2" not in data
         assert "test1_val_3" in data
         assert "test1_val_4" in data
-
         # Test integer filter
+        assert view6._filter_groups
         assert [
             (f["index"], f["operation"]) for f in view6._filter_groups["Int Field"]
         ] == [
@@ -1303,8 +1305,8 @@ def test_column_filters(app, db, admin):
         assert "test2_val_2" in data
         assert "test2_val_3" not in data
         assert "test2_val_4" not in data
-
         # Test boolean filter
+        assert view7._filter_groups
         assert [
             (f["index"], f["operation"]) for f in view7._filter_groups["Bool Field"]
         ] == [
@@ -1343,8 +1345,8 @@ def test_column_filters(app, db, admin):
         assert "test2_val_1" in data
         assert "test2_val_2" not in data
         assert "test2_val_3" not in data
-
         # Test float filter
+        assert view8._filter_groups
         assert [
             (f["index"], f["operation"]) for f in view8._filter_groups["Float Field"]
         ] == [
@@ -1448,8 +1450,8 @@ def test_column_filters(app, db, admin):
         data = rv.data.decode("utf-8")
         assert "test1_val_1" in data
         assert "test1_val_2" not in data
-
         # Test date, time, and datetime filters
+        assert view11._filter_groups
         assert [
             (f["index"], f["operation"]) for f in view11._filter_groups["Date Field"]
         ] == [
@@ -1775,14 +1777,14 @@ def test_column_filters_sqla_obj(app, db, admin):
 
         view = CustomModelView(Model1, db.session, column_filters=[Model1.test1])
         admin.add_view(view)
-
+        assert view._filters
         assert len(view._filters) == 7
 
 
 def test_hybrid_property(app, db, admin):
     with app.app_context():
 
-        class Model1(db.Model):
+        class Model1(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String)
             width = db.Column(db.Integer)
@@ -1796,7 +1798,7 @@ def test_hybrid_property(app, db, admin):
             def number_of_pixels_str(self):
                 return str(self.number_of_pixels())
 
-            @number_of_pixels_str.expression
+            @number_of_pixels_str.expression  # type: ignore[no-redef]
             def number_of_pixels_str(cls):
                 return cast(cls.width * cls.height, db.String)
 
@@ -1818,7 +1820,7 @@ def test_hybrid_property(app, db, admin):
             db.session,
             column_default_sort="number_of_pixels",
             column_filters=[
-                filters.IntGreaterFilter(Model1.number_of_pixels, "Number of Pixels")
+                filters.IntGreaterFilter(Model1.number_of_pixels, "Number of Pixels")  # type: ignore[arg-type]
             ],
             column_searchable_list=[
                 "number_of_pixels_str",
@@ -1837,7 +1839,7 @@ def test_hybrid_property(app, db, admin):
         rv = client.get("/admin/model1/?sort=0")
         assert rv.status_code == 200
 
-        _, data = view.get_list(0, None, None, None, None)
+        _, data = view.get_list(0, None, False, None, None)
 
         assert len(data) == 2
         assert data[0].name == "test_row_2"
@@ -1854,7 +1856,7 @@ def test_hybrid_property(app, db, admin):
 def test_hybrid_property_nested(app, db, admin):
     with app.app_context():
 
-        class Model1(db.Model):
+        class Model1(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             firstname = db.Column(db.String)
             lastname = db.Column(db.String)
@@ -1863,7 +1865,7 @@ def test_hybrid_property_nested(app, db, admin):
             def fullname(self):
                 return f"{self.firstname} {self.lastname}"
 
-        class Model2(db.Model):
+        class Model2(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String)
             owner_id = db.Column(
@@ -1965,7 +1967,7 @@ def test_url_args(app, db, admin):
 def test_non_int_pk(app, db, admin):
     with app.app_context():
 
-        class Model(db.Model):
+        class Model(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.String, primary_key=True)
             test = db.Column(db.String)
 
@@ -1996,14 +1998,14 @@ def test_non_int_pk(app, db, admin):
 def test_form_columns(app, db, admin):
     with app.app_context():
 
-        class Model(db.Model):
+        class Model(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.String, primary_key=True)
             int_field = db.Column(db.Integer)
             datetime_field = db.Column(db.DateTime)
             text_field = db.Column(db.UnicodeText)
             excluded_column = db.Column(db.String)
 
-        class ChildModel(db.Model):
+        class ChildModel(db.Model):  # type: ignore[name-defined]
             class EnumChoices(enum.Enum):
                 first = 1
                 second = 2
@@ -2046,17 +2048,17 @@ def test_form_columns(app, db, admin):
         assert "excluded_column" not in form2._fields
 
         # check that relation shows up as a query select
-        assert type(form3.model).__name__ == "QuerySelectField"
+        assert type(form3.model).__name__ == "QuerySelectField"  # type: ignore[attr-defined]
 
         # check that select field is rendered if form_choices were specified
-        assert type(form3.choice_field).__name__ == "Select2Field"
+        assert type(form3.choice_field).__name__ == "Select2Field"  # type: ignore[attr-defined]
 
         # check that select field is rendered for enum fields
-        assert type(form3.enum_field).__name__ == "Select2Field"
+        assert type(form3.enum_field).__name__ == "Select2Field"  # type: ignore[attr-defined]
 
         # check that sqlalchemy_utils field types are handled appropriately
-        assert type(form3.sqla_utils_choice).__name__ == "Select2Field"
-        assert type(form3.sqla_utils_enum).__name__ == "Select2Field"
+        assert type(form3.sqla_utils_choice).__name__ == "Select2Field"  # type: ignore[attr-defined]
+        assert type(form3.sqla_utils_enum).__name__ == "Select2Field"  # type: ignore[attr-defined]
 
         # test form_columns with model objects
         view4 = CustomModelView(
@@ -2079,7 +2081,7 @@ def test_complex_form_columns(app, db, admin):
 def test_form_args(app, db, admin):
     with app.app_context():
 
-        class Model(db.Model):
+        class Model(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.String, primary_key=True)
             test = db.Column(db.String, nullable=False)
 
@@ -2091,17 +2093,17 @@ def test_form_args(app, db, admin):
         admin.add_view(view)
 
         create_form = view.create_form()
-        assert len(create_form.test.validators) == 2
+        assert len(create_form.test.validators) == 2  # type: ignore[attr-defined]
 
         # ensure shared field_args don't create duplicate validators
         edit_form = view.edit_form()
-        assert len(edit_form.test.validators) == 2
+        assert len(edit_form.test.validators) == 2  # type: ignore[attr-defined]
 
 
 def test_form_override(app, db, admin):
     with app.app_context():
 
-        class Model(db.Model):
+        class Model(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.String, primary_key=True)
             test = db.Column(db.String)
 
@@ -2117,18 +2119,18 @@ def test_form_override(app, db, admin):
         admin.add_view(view1)
         admin.add_view(view2)
 
-        assert view1._create_form_class.test.field_class == fields.StringField
-        assert view2._create_form_class.test.field_class == fields.FileField
+        assert view1._create_form_class.test.field_class == fields.StringField  # type: ignore[attr-defined]
+        assert view2._create_form_class.test.field_class == fields.FileField  # type: ignore[attr-defined]
 
 
 def test_form_onetoone(app, db, admin):
     with app.app_context():
 
-        class Model1(db.Model):
+        class Model1(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             test = db.Column(db.String)
 
-        class Model2(db.Model):
+        class Model2(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
 
             model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
@@ -2152,8 +2154,8 @@ def test_form_onetoone(app, db, admin):
         assert model1.model2 == model2
         assert model2.model1 == model1
 
-        assert not view1._create_form_class.model2.field_class.widget.multiple
-        assert not view2._create_form_class.model1.field_class.widget.multiple
+        assert not view1._create_form_class.model2.field_class.widget.multiple  # type: ignore[attr-defined]
+        assert not view2._create_form_class.model1.field_class.widget.multiple  # type: ignore[attr-defined]
 
 
 def test_relations():
@@ -2224,8 +2226,7 @@ def test_default_sort(app, db, admin):
         view = CustomModelView(M1, db.session, column_default_sort="test1")
         admin.add_view(view)
 
-        _, data = view.get_list(0, None, None, None, None)
-
+        _, data = view.get_list(0, None, False, None, None)
         assert len(data) == 3
         assert data[0].test1 == "a"
         assert data[1].test1 == "b"
@@ -2241,7 +2242,7 @@ def test_default_sort(app, db, admin):
         )
         admin.add_view(view2)
 
-        _, data = view2.get_list(0, None, None, None, None)
+        _, data = view2.get_list(0, None, False, None, None)
 
         assert len(data) == 3
         assert data[0].test1 == "a"
@@ -2259,7 +2260,7 @@ def test_default_sort(app, db, admin):
         )
         admin.add_view(view3)
 
-        _, data = view3.get_list(0, None, None, None, None)
+        _, data = view3.get_list(0, None, False, None, None)
 
         assert len(data) == 3
         assert data[0].test1 == "a"
@@ -2273,7 +2274,7 @@ def test_default_sort(app, db, admin):
         )
         admin.add_view(view4)
 
-        _, data = view4.get_list(0, None, None, None, None)
+        _, data = view4.get_list(0, None, False, None, None)
 
         assert len(data) == 3
         assert data[0].test1 == "b"
@@ -2349,7 +2350,7 @@ def test_complex_sort_exception(app, db, admin):
         )
         admin.add_view(view)
 
-        sort_column = view._get_column_by_idx(0)[0]
+        sort_column = view._get_column_by_idx(0)[0]  # type: ignore[index]
         _, data = view.get_list(0, sort_column, False, None, None)
 
         assert len(data) == 2
@@ -2374,7 +2375,7 @@ def test_default_complex_sort(app, db, admin):
         view = CustomModelView(M2, db.session, column_default_sort="model1.test1")
         admin.add_view(view)
 
-        _, data = view.get_list(0, None, None, None, None)
+        _, data = view.get_list(0, None, False, None, None)
 
         assert len(data) == 2
         assert data[0].model1.test1 == "a"
@@ -2386,7 +2387,7 @@ def test_default_complex_sort(app, db, admin):
         )
         admin.add_view(view2)
 
-        _, data = view2.get_list(0, None, None, None, None)
+        _, data = view2.get_list(0, None, False, None, None)
 
         assert len(data) == 2
         assert data[0].model1.test1 == "a"
@@ -2521,8 +2522,8 @@ def test_modelview_named_filter_localization(request, app):
             named_filter_urls=True,
             column_filters=["test1"],
         )
-
         filters = view.get_filters()
+        assert filters
         flt = filters[2]
         with app.test_request_context():
             flt_name = view.get_filter_arg(2, flt)
@@ -2580,17 +2581,17 @@ def test_ajax_fk(app, db, admin):
 
         # Check form generation
         form = view.create_form()
-        assert form.model1.__class__.__name__ == "AjaxSelectField"
+        assert form.model1.__class__.__name__ == "AjaxSelectField"  # type: ignore[attr-defined]
 
         with app.test_request_context("/admin/view/"):
-            assert 'value=""' not in form.model1()
+            assert 'value=""' not in form.model1()  # type: ignore[attr-defined]
 
-            form.model1.data = model
+            form.model1.data = model  # type: ignore[attr-defined]
             assert (
-                f'data-json="[{model.id}, &quot;first&quot;]"' in form.model1()
-                or f'data-json="[{model.id}, &#34;first&#34;]"' in form.model1()
+                f'data-json="[{model.id}, &quot;first&quot;]"' in form.model1()  # type: ignore[attr-defined]
+                or f'data-json="[{model.id}, &#34;first&#34;]"' in form.model1()  # type: ignore[attr-defined]
             )
-            assert 'value="1"' in form.model1()
+            assert 'value="1"' in form.model1()  # type: ignore[attr-defined]
 
         # Check querying
         client = app.test_client()
@@ -2611,7 +2612,7 @@ def test_ajax_fk(app, db, admin):
 def test_ajax_fk_multi(app, db, admin):
     with app.app_context():
 
-        class Model1(db.Model):
+        class Model1(db.Model):  # type: ignore[name-defined]
             __tablename__ = "model1"
 
             id = db.Column(db.Integer, primary_key=True)
@@ -2627,7 +2628,7 @@ def test_ajax_fk_multi(app, db, admin):
             db.Column("model2_id", db.Integer, db.ForeignKey("model2.id")),
         )
 
-        class Model2(db.Model):
+        class Model2(db.Model):  # type: ignore[name-defined]
             __tablename__ = "model2"
 
             id = db.Column(db.Integer, primary_key=True)
@@ -2654,15 +2655,15 @@ def test_ajax_fk_multi(app, db, admin):
 
         # Check form generation
         form = view.create_form()
-        assert form.model1.__class__.__name__ == "AjaxSelectMultipleField"
+        assert form.model1.__class__.__name__ == "AjaxSelectMultipleField"  # type: ignore[attr-defined]
 
         with app.test_request_context("/admin/view/"):
-            assert 'data-json="[]"' in form.model1()
+            assert 'data-json="[]"' in form.model1()  # type: ignore[attr-defined]
 
-            form.model1.data = [model]
+            form.model1.data = [model]  # type: ignore[attr-defined]
             assert (
-                'data-json="[[1, &quot;first&quot;]]"' in form.model1()
-                or 'data-json="[[1, &#34;first&#34;]]"' in form.model1()
+                'data-json="[[1, &quot;first&quot;]]"' in form.model1()  # type: ignore[attr-defined]
+                or 'data-json="[[1, &#34;first&#34;]]"' in form.model1()  # type: ignore[attr-defined]
             )
 
         # Check submitting
@@ -2738,7 +2739,7 @@ def test_simple_list_pager(app, db, admin):
         view = TestModelView(Model1, db.session)
         admin.add_view(view)
 
-        count, data = view.get_list(0, None, None, None, None)
+        count, data = view.get_list(0, None, False, None, None)
         assert count is None
 
 
@@ -2859,12 +2860,12 @@ def test_unlimited_page_size(app, db, admin):
         view = CustomModelView(M1, db.session)
 
         # test 0 as page_size
-        _, data = view.get_list(0, None, None, None, None, execute=True, page_size=0)
+        _, data = view.get_list(0, None, False, None, None, execute=True, page_size=0)
         assert len(data) == 21
 
         # test False as page_size
         _, data = view.get_list(
-            0, None, None, None, None, execute=True, page_size=False
+            0, None, False, None, None, execute=True, page_size=False
         )
         assert len(data) == 21
 
@@ -2872,19 +2873,19 @@ def test_unlimited_page_size(app, db, admin):
 def test_advanced_joins(app, db, admin):
     with app.app_context():
 
-        class Model1(db.Model):
+        class Model1(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             val1 = db.Column(db.String(20))
             test = db.Column(db.String(20))
 
-        class Model2(db.Model):
+        class Model2(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             val2 = db.Column(db.String(20))
 
             model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
             model1 = db.relationship(Model1, backref="model2")
 
-        class Model3(db.Model):
+        class Model3(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             val2 = db.Column(db.String(20))
 
@@ -2916,7 +2917,7 @@ def test_advanced_joins(app, db, admin):
         # Test how joins are applied
         query = view3.get_query()
 
-        joins = {}
+        joins: dict[tuple[bool, Any], Any] = {}
         q1, joins, alias = view3._apply_path_joins(query, joins, path)
         assert (True, Model3.model2) in joins
         assert (True, Model2.model1) in joins
@@ -2930,7 +2931,7 @@ def test_advanced_joins(app, db, admin):
 
         if hasattr(q2, "_join_entities"):
             for p in q2._join_entities:
-                assert p in q1._join_entities
+                assert p in q1._join_entities  # type: ignore[attr-defined]
 
         assert alias is not None
 
@@ -2947,12 +2948,12 @@ def test_advanced_joins(app, db, admin):
 def test_multipath_joins(app, db, admin):
     with app.app_context():
 
-        class Model1(db.Model):
+        class Model1(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             val1 = db.Column(db.String(20))
             test = db.Column(db.String(20))
 
-        class Model2(db.Model):
+        class Model2(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             val2 = db.Column(db.String(20))
 
@@ -2981,11 +2982,11 @@ def test_different_bind_joins(request, app):
 
     with app.app_context():
 
-        class Model1(db.Model):
+        class Model1(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             val1 = db.Column(db.String(20))
 
-        class Model2(db.Model):
+        class Model2(db.Model):  # type: ignore[name-defined]
             __bind_key__ = "other"
             id = db.Column(db.Integer, primary_key=True)
             val1 = db.Column(db.String(20))
@@ -3069,7 +3070,7 @@ STRING_CONSTANT = "Anyway, here's Wonderwall"
 def test_string_null_behavior(app, db, admin):
     with app.app_context():
 
-        class StringTestModel(db.Model):
+        class StringTestModel(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             test_no = db.Column(db.Integer, nullable=False)
             string_field = db.Column(db.String)
@@ -3154,7 +3155,7 @@ def test_string_null_behavior(app, db, admin):
 def test_form_overrides(app, db, admin):
     with app.app_context():
 
-        class UserModel(db.Model):
+        class UserModel(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             text = db.Column(db.String)
 

@@ -85,5 +85,5 @@ class SecureForm(BaseForm):
             return secret
 
         @property
-        def csrf_context(self) -> session:
+        def csrf_context(self) -> t.Any:
             return session
