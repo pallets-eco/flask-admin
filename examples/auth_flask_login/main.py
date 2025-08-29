@@ -16,9 +16,10 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from wtforms import fields
@@ -42,14 +43,14 @@ def index():
 
 # inherit from flask_login.UserMixin so no need to define login methods
 class User(db.Model, flask_login.UserMixin):
-    id = Column(Integer, primary_key=True)
-    username = Column(
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    username: Mapped[str] = mapped_column(
         String(80),
         unique=True,
         index=True,
     )
     # having a _ will make the field hidden in flask-admin edit/create forms
-    _password = Column(String(128), nullable=True)
+    _password: Mapped[str] = mapped_column(String(128), nullable=True)
 
     @property
     def password(self):
@@ -66,7 +67,7 @@ class User(db.Model, flask_login.UserMixin):
                 # on MacOS, default method="scrypt" gives AttributeError
                 method="pbkdf2",
             )
-            self.alternative_id = uuid4().hex  # type: ignore[assignment]
+            self.alternative_id = uuid4().hex
             # password.setter can be called even without any user logged in, e.g.
             # when creating db
             if flask_login.current_user and flask_login.current_user == self:
@@ -81,7 +82,9 @@ class User(db.Model, flask_login.UserMixin):
 
     # security: https://flask-login.readthedocs.io/en/latest/#alternative-tokens
     # allows logout users
-    alternative_id = Column(String(32), default=uuid4().hex, index=True)
+    alternative_id: Mapped[str] = mapped_column(
+        String(32), default=uuid4().hex, index=True
+    )
 
     def get_id(self):
         """

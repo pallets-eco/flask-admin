@@ -10,10 +10,10 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.model import typefmt
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import Markup
-from sqlalchemy import Column
 from sqlalchemy import DateTime
-from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
@@ -43,9 +43,9 @@ def set_timezone():
 
 
 class Article(db.Model):
-    id = Column(Integer, primary_key=True)
-    text = Column(String(30))
-    last_edit = Column(DateTime(timezone=True))
+    id: Mapped[int] = mapped_column(primary_key=True)
+    text: Mapped[str] = mapped_column(String(30))
+    last_edit: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
 def date_format(view, value, name):
