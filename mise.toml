@@ -8,7 +8,7 @@ VENDOR_PATH = "{{ [env.STATIC_PATH] | concat(with='vendor') | join_path }}"
 
 
 [tools]
-python = "{{ get_env(name='PYTHON_VERSION', default='3.9') }}"
+python = "{{ get_env(name='PYTHON_VERSION', default='3.10') }}"
 node = "{{ env['NODE_VERSION'] | default(value='lts') }}"
 uv = "latest"
 
@@ -18,7 +18,7 @@ description = "Setup"
 run = '''
 #!/usr/bin/env bash
 echo - Installing Dependencies
-mise exec npm -- npm install
+mise exec npm -- npm install  --no-optional
 
 echo - Copying Font Awesome
 mkdir -p ${VENDOR_PATH}/fontawesome
