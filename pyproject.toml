@@ -41,7 +41,7 @@ sqlalchemy-with-utils = [
     "sqlalchemy-citext>=1.8.0",
     "colour>=0.1.5",
     "email_validator>=2",
-    "arrow>=0.13.0",
+    "arrow>=0.14.0",
 ]
 geoalchemy = [
     "Flask-Admin[sqlalchemy]",
@@ -108,14 +108,12 @@ typing = [
     "mypy",
     "pyright",
     "pytest",
-    "types-Flask-SQLAlchemy",
-    "types-Pillow",
-    "types-beautifulsoup4",
-    "types-boto3",
-    "types-peewee",
-    "types-Flask",
-    "types-WTForms",
-    "types-shapely",
+    "types-Pillow", # keep until pillow < 4.13.0
+    "types-beautifulsoup4", # keep for beautifulsoup 4.12
+    "types-boto3", # keep
+    "types-peewee", # for peewee==3.18.2
+    "types-WTForms", # for WTForms 3.2.1
+    "types-shapely", # for shapely==2.1.*
 ]
 
 [project.urls]
@@ -183,7 +181,13 @@ pretty = true
 strict = true
 
 # Strongly recommend enabling this one as soon as you can
-check_untyped_defs = false
+check_untyped_defs = true
+
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+strict_equality = true
+strict_concatenate = true
 
 # These shouldn't be too much additional work, but may be tricky to
 # get passing if you use a lot of untyped libraries
@@ -285,7 +289,7 @@ base_python = ["3.9"]
 commands = [
     [
         "uv", "pip", "install",
-        "flask==2.2.0",
+        "flask==2.2.0", # flask-sqlalchemy depends on flask >=2.2
         "werkzeug==2.3.8",
         "wtforms==2.3.0",
         "sqlalchemy==1.4.18",
@@ -364,6 +368,11 @@ dependency_groups = ["typing"]
 commands = [
     ["mypy", "--python-version", "3.9"],
     ["mypy", "--python-version", "3.13"],
+    ["mypy", "--python-version", "3.13",
+        "--ignore-missing-imports",
+        "--disable-error-code", "name-defined", # allow flask_sqlalchemy's db.Model in examples
+        "--no-warn-unused-ignores",  # prevent conflict with mypy 1st run on src folder
+        "examples", ]
     # TODO: reenable after pyright test pass
     # ["pyright"],
 ]

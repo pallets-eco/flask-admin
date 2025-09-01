@@ -53,7 +53,7 @@ class User(db.Model, flask_login.UserMixin):
     _password: Mapped[str] = mapped_column(String(128), nullable=True)
 
     @property
-    def password(self) -> str:
+    def password(self):
         return self._password
 
     @password.setter

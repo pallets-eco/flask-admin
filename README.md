@@ -110,6 +110,12 @@ or mongoengine support. To install all extras, run:
 uv sync --extra all
 ```
 
+Finally, enable pre-commit hooks:
+
+```shell
+pre-commit install
+```
+
 ## Tests
 
 Tests are run with *pytest*. If you are not familiar with this package, you can find out more on [their website](https://pytest.org/).

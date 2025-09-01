@@ -179,7 +179,7 @@ class AzureStorage:
             blob_file,
             mimetype=mime_type,
             as_attachment=True,
-            download_name=path,  # type: ignore[call-arg]
+            download_name=path,
         )
 
     def read_file(self, path: t.Optional[str]) -> bytes:

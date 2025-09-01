@@ -33,6 +33,7 @@ from ..._types import T_FIELD_ARGS_LABEL
 from ..._types import T_FIELD_ARGS_PLACES
 from ..._types import T_FIELD_ARGS_VALIDATORS
 from ..._types import T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK
+from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
 from ..._types import T_MODEL_VIEW
 from ..._types import T_ORM_MODEL
 from ..._types import T_SQLALCHEMY_INLINE_MODELS
@@ -242,7 +243,7 @@ class AdminModelConverter(ModelConverterBase):
             # Check if more than one column mapped to the property
             if len(prop.columns) > 1 and not isinstance(prop, ColumnProperty):
                 columns = filter_foreign_columns(
-                    model.__table__,  # type: ignore[attr-defined]
+                    model.__table__,
                     prop.columns,
                 )
 
@@ -344,7 +345,9 @@ class AdminModelConverter(ModelConverterBase):
                 choices = form_choices.get(prop.key)
                 if choices:
                     return form.Select2Field(  # type: ignore[misc]
-                        choices=choices, allow_blank=column.nullable, **kwargs
+                        choices=choices,
+                        allow_blank=column.nullable,  # type: ignore[arg-type]
+                        **kwargs,
                     )
 
             # Run converter
@@ -401,7 +404,7 @@ class AdminModelConverter(ModelConverterBase):
         field_args: T_FIELD_ARGS_FILTERS,
         **extra: t.Any,
     ) -> form.Select2Field:
-        available_choices = [(f, f) for f in column.type.enums]
+        available_choices = [(f, f) for f in column.type.enums]  # type: ignore[attr-defined]
         accepted_values = [choice[0] for choice in available_choices]
 
         if column.nullable:
@@ -421,12 +424,13 @@ class AdminModelConverter(ModelConverterBase):
     ) -> form.Select2Field:
         available_choices: t.Union[list[Enum], list[tuple[int, str]]] = []
         # choices can either be specified as an enum, or as a list of tuples
-        if isinstance(column.type.choices, EnumMeta):
+        if isinstance(column.type.choices, EnumMeta):  # type: ignore[attr-defined]
             available_choices = [  # type: ignore[var-annotated]
-                (f.value, f.name) for f in column.type.choices
+                (f.value, f.name)
+                for f in column.type.choices  # type: ignore[attr-defined]
             ]
         else:
-            available_choices = column.type.choices
+            available_choices = column.type.choices  # type: ignore[attr-defined]
         accepted_values = [
             choice[0] if isinstance(choice, tuple) else choice.value
             for choice in available_choices
@@ -536,7 +540,7 @@ class AdminModelConverter(ModelConverterBase):
         self, column: Column, field_args: T_FIELD_ARGS_VALIDATORS, **extra: t.Any
     ) -> fields.StringField:
         field_args["validators"].append(
-            TimeZoneValidator(coerce_function=column.type._coerce)
+            TimeZoneValidator(coerce_function=column.type._coerce)  # type: ignore[attr-defined]
         )
         return fields.StringField(**field_args)
 
@@ -666,7 +670,7 @@ def get_form(
     base_class: type[form.BaseForm] = form.BaseForm,
     only: t.Optional[t.Collection[t.Union[str, InstrumentedAttribute]]] = None,
     exclude: t.Optional[t.Collection[t.Union[str, InstrumentedAttribute]]] = None,
-    field_args: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS]] = None,
+    field_args: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS_FILES]] = None,
     hidden_pk: bool = False,
     ignore_hidden: bool = True,
     extra_fields: t.Optional[dict[t.Union[str, InstrumentedAttribute], Field]] = None,
@@ -691,7 +695,6 @@ def get_form(
     :param ignore_hidden:
         If set to True (default), will ignore properties that start with underscore
     """
-
     # TODO: Support new 0.8 API
     if not hasattr(model, "_sa_class_manager"):
         raise TypeError("model must be a sqlalchemy mapped model")
@@ -875,7 +878,7 @@ class InlineModelConverter(InlineModelConverterBase):
         :return:
             A dict of forward property key and reverse property key
         """
-        mapper = model._sa_class_manager.mapper  # type: ignore[attr-defined]
+        mapper = model._sa_class_manager.mapper
 
         # Find property from target model to current model
         # Use the base mapper to support inheritance
@@ -1002,7 +1005,7 @@ class InlineModelConverter(InlineModelConverterBase):
                 self.inline_field_list_type(
                     child_form,
                     self.session,
-                    info.model,  # type: ignore[arg-type]
+                    info.model,
                     reverse_prop_key,
                     info,
                     **kwargs,
@@ -1019,7 +1022,7 @@ class InlineOneToOneModelConverter(InlineModelConverter):
         self, model: type[T_SQLALCHEMY_MODEL], info: InlineFormAdmin
     ) -> dict[str, str]:
         mapper = info.model._sa_class_manager.mapper.base_mapper  # type: ignore[union-attr]
-        target_mapper = model._sa_class_manager.mapper  # type: ignore[attr-defined]
+        target_mapper = model._sa_class_manager.mapper
 
         inline_relationship = dict()
 

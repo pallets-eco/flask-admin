@@ -41,7 +41,7 @@ def test_column_label_translation(request, app):
 def test_unique_validator_translation_is_dynamic(app, db, admin):
     with app.app_context():
 
-        class UniqueTable(db.Model):
+        class UniqueTable(db.Model):  # type: ignore[name-defined]
             id = db.Column(db.Integer, primary_key=True)
             value = db.Column(db.String, unique=True)
 

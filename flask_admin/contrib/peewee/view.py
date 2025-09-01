@@ -8,6 +8,7 @@ from peewee import Expression
 from peewee import Field
 from peewee import ForeignKeyField
 from peewee import JOIN
+from peewee import ModelBase
 from peewee import ModelSelect
 from peewee import PrimaryKeyField
 from peewee import TextField
@@ -24,8 +25,9 @@ from flask_admin.model.filters import BaseFilter
 from flask_admin.model.form import create_editable_list_form
 from flask_admin.model.form import InlineFormAdmin
 
-from ..._types import T_FIELD_ARGS_VALIDATORS
+from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
 from ..._types import T_FILTER
+from ..._types import T_PEEWEE_FIELD
 from ..._types import T_PEEWEE_MODEL
 from ..._types import T_WIDGET
 from .ajax import create_ajax_loader
@@ -48,7 +50,7 @@ log = logging.getLogger("flask-admin.peewee")
 
 
 class ModelView(BaseModelView):
-    column_filters: t.Optional[t.Collection[t.Union[str, BaseFilter]]] = None
+    column_filters: t.Optional[t.Collection[t.Union[str, T_PEEWEE_FIELD]]] = None  # type: ignore[assignment]
     """
         Collection of the column filters.
 
@@ -142,7 +144,7 @@ class ModelView(BaseModelView):
 
     inline_models: t.Optional[
         t.Union[
-            t.Sequence[t.Union[InlineFormAdmin, T_PEEWEE_MODEL]],
+            t.Sequence[t.Union[InlineFormAdmin, T_PEEWEE_MODEL, ModelBase]],
             tuple[T_PEEWEE_MODEL, dict[str, t.Any]],
         ]
     ] = None
@@ -206,7 +208,6 @@ class ModelView(BaseModelView):
         menu_icon_value: t.Optional[str] = None,
     ) -> None:
         self._search_fields: list = []
-
         super().__init__(
             model,
             name,
@@ -218,26 +219,25 @@ class ModelView(BaseModelView):
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
         )
-        self.model: type[T_PEEWEE_MODEL]
         self._primary_key = self.scaffold_pk()
 
     def _get_model_fields(
-        self, model: t.Optional[T_PEEWEE_MODEL] = None
+        self, model: t.Optional[type[T_PEEWEE_MODEL]] = None
     ) -> t.Generator[tuple[str, Field], t.Any, None]:
         if model is None:
-            model = self.model
-
+            model = self.model  # type: ignore[assignment]
+        model = t.cast(type[T_PEEWEE_MODEL], model)
         return ((field.name, field) for field in get_meta_fields(model))
 
     def scaffold_pk(self) -> str:
-        return get_primary_key(self.model)
+        return get_primary_key(self.model)  # type: ignore[arg-type]
 
-    def get_pk_value(self, model: type[T_PEEWEE_MODEL]) -> t.Any:
-        if self.model._meta.composite_key:
+    def get_pk_value(self, model: type[T_PEEWEE_MODEL]) -> t.Any:  # type: ignore[override]
+        if self.model._meta.composite_key:  # type: ignore[union-attr]
             return tuple(
                 [
                     getattr(model, field_name)
-                    for field_name in self.model._meta.primary_key.field_names
+                    for field_name in self.model._meta.primary_key.field_names  # type: ignore[union-attr]
                 ]
             )
         return getattr(model, self._primary_key)
@@ -321,7 +321,7 @@ class ModelView(BaseModelView):
 
     def scaffold_form(self) -> type[Form]:
         form_class = get_form(
-            self.model,
+            self.model,  # type: ignore[arg-type]
             self.model_form_converter(self),
             base_class=self.form_base_class,
             only=self.form_columns,
@@ -343,7 +343,7 @@ class ModelView(BaseModelView):
     def scaffold_list_form(
         self,
         widget: t.Optional[type[T_WIDGET]] = None,
-        validators: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS]] = None,
+        validators: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS_FILES]] = None,
     ) -> type[Form]:
         """
         Create form for the `index_view` using only the columns from
@@ -356,7 +356,7 @@ class ModelView(BaseModelView):
             {'name': {'validators': [required()]}}
         """
         form_class = get_form(
-            self.model,
+            self.model,  # type: ignore[arg-type]
             self.model_form_converter(self),
             base_class=self.form_base_class,
             only=self.column_editable_list,
@@ -371,7 +371,10 @@ class ModelView(BaseModelView):
 
         for m in self.inline_models:  # type: ignore[union-attr]
             form_class = inline_converter.contribute(
-                converter, self.model, form_class, m
+                converter,
+                self.model,
+                form_class,
+                m,  # type: ignore[arg-type]
             )
 
         return form_class
@@ -380,7 +383,7 @@ class ModelView(BaseModelView):
     def _create_ajax_loader(
         self, name: str, options: t.Union[dict[str, t.Any], list, tuple]
     ) -> QueryAjaxModelLoader:
-        return create_ajax_loader(self.model, name, name, options)
+        return create_ajax_loader(self.model, name, name, options)  # type: ignore[arg-type]
 
     def _handle_join(
         self, query: ModelSelect, field: t.Any, joins: set[str]
@@ -428,7 +431,7 @@ class ModelView(BaseModelView):
         return query, joins, clause
 
     def get_query(self) -> ModelSelect:
-        return self.model.select()
+        return self.model.select()  # type: ignore[union-attr]
 
     def get_list(  # type: ignore[override]
         self,
@@ -526,18 +529,18 @@ class ModelView(BaseModelView):
         return count, query
 
     def get_one(self, id: t.Any) -> t.Any:
-        if self.model._meta.composite_key:
-            return self.model.get(
-                **dict(zip(self.model._meta.primary_key.field_names, id))
+        if self.model._meta.composite_key:  # type: ignore[union-attr]
+            return self.model.get(  # type: ignore[union-attr]
+                **dict(zip(self.model._meta.primary_key.field_names, id))  # type: ignore[union-attr]
             )
-        return self.model.get(**{self._primary_key: id})
+        return self.model.get(**{self._primary_key: id})  # type: ignore[union-attr]
 
     def create_model(self, form: Form) -> t.Union[bool, T_PEEWEE_MODEL]:
         try:
             model = self.model()
             form.populate_obj(model)
             self._on_model_change(form, model, True)
-            model.save(force_insert=True)
+            model.save(force_insert=True)  # type: ignore[operator]
 
             # For peewee have to save inline forms after model was saved
             save_inline(form, model)
@@ -553,9 +556,9 @@ class ModelView(BaseModelView):
         else:
             self.after_model_change(form, model, True)
 
-        return model
+        return model  # type: ignore[return-value]
 
-    def update_model(self, form: Form, model: T_PEEWEE_MODEL) -> t.Optional[bool]:
+    def update_model(self, form: Form, model: T_PEEWEE_MODEL) -> t.Optional[bool]:  # type: ignore[override]
         try:
             form.populate_obj(model)
             self._on_model_change(form, model, False)
@@ -577,7 +580,7 @@ class ModelView(BaseModelView):
 
         return True
 
-    def delete_model(self, model: T_PEEWEE_MODEL) -> bool:
+    def delete_model(self, model: T_PEEWEE_MODEL) -> bool:  # type: ignore[override]
         try:
             self.on_model_delete(model)
             model.delete_instance(recursive=True)
@@ -613,11 +616,11 @@ class ModelView(BaseModelView):
             model_pk = getattr(self.model, self._primary_key)
 
             if self.fast_mass_delete:
-                count = self.model.delete().where(model_pk << ids).execute()
+                count = self.model.delete().where(model_pk << ids).execute()  # type: ignore[union-attr]
             else:
                 count = 0
 
-                query = self.model.select().filter(model_pk << ids)
+                query = self.model.select().filter(model_pk << ids)  # type: ignore[union-attr]
 
                 for m in query:
                     self.on_model_delete(m)
