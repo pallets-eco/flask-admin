@@ -237,7 +237,7 @@ class Macro(BaseRule):
             if not field:
                 return field
 
-        return field
+        return field  # type: ignore[return-value]
 
     def __call__(
         self,
@@ -324,7 +324,7 @@ class Container(Macro):
         context = helpers.get_render_ctx()
 
         def caller(**kwargs: t.Any) -> None:
-            return context.call(  # type:ignore[union-attr]
+            return context.call(  # type:ignore[union-attr, return-value]
                 self.child_rule, form, form_opts, kwargs
             )
 
@@ -595,7 +595,7 @@ class RuleSet:
     def __init__(
         self,
         view: t.Union[T_MODEL_VIEW, T_INLINE_BASE_FORM_ADMIN],
-        rules: t.Sequence[t.Union[BaseRule, FieldSet]],
+        rules: t.Sequence[t.Union[str, tuple, list, BaseRule, FieldSet]],
     ) -> None:
         """
         Constructor.

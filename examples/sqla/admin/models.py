@@ -2,6 +2,7 @@ import enum
 import uuid
 
 import arrow
+from admin import db
 from sqlalchemy import cast
 from sqlalchemy import sql
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -14,8 +15,6 @@ from sqlalchemy_utils import IPAddressType
 from sqlalchemy_utils import TimezoneType
 from sqlalchemy_utils import URLType
 from sqlalchemy_utils import UUIDType
-
-from admin import db
 
 AVAILABLE_USER_TYPES = [
     ("admin", "Admin"),
@@ -70,7 +69,7 @@ class User(db.Model):
             )
         return
 
-    @phone_number.expression
+    @phone_number.expression  # type: ignore[no-redef]
     def phone_number(cls):
         return sql.operators.ColumnOperators.concat(
             cast(cls.dialling_code, db.String), cls.local_phone_number

@@ -48,7 +48,7 @@ class Article(db.Model):
     last_edit: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
-def date_format(view, value):
+def date_format(view, value, name):
     """
     Ensure consistent date format and inject class for timezone.js parser.
     """
