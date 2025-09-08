@@ -88,7 +88,7 @@ def _wrap_view(f: t.Callable) -> t.Callable:
         if abort is not None:
             return abort
 
-        return self._run_view(f, *args, **kwargs)
+        return self._run_view(current_app.ensure_sync(f), *args, **kwargs)
 
     inner._wrapped = True  # type:ignore[attr-defined]
 
