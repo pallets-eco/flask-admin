@@ -235,6 +235,9 @@ class ModelView(BaseModelView):
 
         return query
 
+    def get_query(self) -> dict[str, t.Any]:
+        return {}
+
     def get_list(  # type: ignore[override]
         self,
         page: t.Optional[int],
@@ -265,7 +268,7 @@ class ModelView(BaseModelView):
             overriden to change the page_size limit. Removing the page_size
             limit requires setting page_size to 0 or False.
         """
-        query = {}
+        query = self.get_query()
 
         # Filters
         if self._filters:
