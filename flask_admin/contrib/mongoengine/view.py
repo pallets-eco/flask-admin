@@ -8,6 +8,7 @@ from flask import abort
 from flask import flash
 from flask import request
 from flask import Response
+from mongoengine import Document
 from mongoengine.connection import get_db
 
 from flask_admin import expose
@@ -160,7 +161,7 @@ class ModelView(BaseModelView):
         List of allowed search field types.
     """
 
-    form_subdocuments = None
+    form_subdocuments: t.Optional[dict[t.Any, t.Any]] = None
     """
         Subdocument configuration options.
 
@@ -389,7 +390,7 @@ class ModelView(BaseModelView):
         if self.column_searchable_list:
             for p in self.column_searchable_list:
                 if isinstance(p, string_types):
-                    p = self.model._fields.get(p)
+                    p = self.model._fields.get(p)  # type: ignore[union-attr]
 
                 if p is None:
                     raise Exception("Invalid search field")
@@ -415,7 +416,7 @@ class ModelView(BaseModelView):
             Either field name or field instance
         """
         if isinstance(name, string_types):
-            attr = self.model._fields.get(name)
+            attr = self.model._fields.get(name)  # type: ignore[union-attr]
         else:
             attr = name
 
@@ -437,7 +438,7 @@ class ModelView(BaseModelView):
 
         return flt
 
-    def is_valid_filter(self, filter):
+    def is_valid_filter(self, filter: BaseMongoEngineFilter):  # type: ignore[override]
         """
         Validate if the provided filter is a valid MongoEngine filter
 
@@ -492,7 +493,7 @@ class ModelView(BaseModelView):
         Returns the QuerySet for this view.  By default, it returns all the
         objects for the current model.
         """
-        return self.model.objects
+        return self.model.objects  # type: ignore[union-attr]
 
     def _search(self, query, search_term):
         # TODO: Unfortunately, MongoEngine contains bug which
@@ -520,16 +521,16 @@ class ModelView(BaseModelView):
 
         return query.filter(criteria)
 
-    def get_list(
+    def get_list(  # type: ignore[override]
         self,
-        page,
-        sort_column,
-        sort_desc,
-        search,
-        filters,
-        execute=True,
-        page_size=None,
-    ):
+        page: t.Optional[int],
+        sort_column: str,
+        sort_desc: bool,
+        search: t.Optional[str],
+        filters: t.Optional[t.Sequence[tuple[int, str, str]]],
+        execute: bool = True,
+        page_size: t.Optional[int] = None,
+    ) -> tuple[t.Optional[int], Document]:
         """
         Get list of objects from MongoEngine
 
@@ -554,7 +555,7 @@ class ModelView(BaseModelView):
 
         # Filters
         if self._filters:
-            for flt, _flt_name, value in filters:
+            for flt, _flt_name, value in filters:  # type: ignore[union-attr]
                 f = self._filters[flt]
                 query = f.apply(query, f.clean(value))
 
@@ -618,7 +619,7 @@ class ModelView(BaseModelView):
             model = self.model()
             form.populate_obj(model)
             self._on_model_change(form, model, True)
-            model.save()
+            model.save()  # type: ignore[operator]
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 flash(
@@ -709,7 +710,7 @@ class ModelView(BaseModelView):
         return Response(
             data.read(),
             content_type=data.content_type,
-            headers={"Content-Length": data.length},
+            headers={"Content-Length": data.length},  # type: ignore[arg-type]
         )
 
     # Default model actions

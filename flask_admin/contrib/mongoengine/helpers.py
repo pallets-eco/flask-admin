@@ -1,3 +1,5 @@
+import typing as t
+
 from mongoengine import ValidationError
 from wtforms.validators import ValidationError as wtfValidationError
 
@@ -26,11 +28,11 @@ def make_thumb_args(value):
         return make_gridfs_args(value)
 
 
-def format_error(error):
+def format_error(error: t.Union[ValidationError, wtfValidationError, str]):
     if isinstance(error, ValidationError):
         return as_unicode(error)
 
     if isinstance(error, wtfValidationError):
-        return ". ".join(itervalues(error.to_dict()))
+        return ". ".join(itervalues(error.to_dict()))  # type: ignore[attr-defined]
 
     return as_unicode(error)

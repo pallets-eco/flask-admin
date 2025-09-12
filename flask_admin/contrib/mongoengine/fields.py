@@ -1,3 +1,5 @@
+import typing as t
+
 from mongoengine.base import get_document
 from werkzeug.datastructures import FileStorage
 from wtforms import fields
@@ -5,6 +7,7 @@ from wtforms.utils import unset_value
 
 from flask_admin.model.fields import InlineFormField
 
+from ..._types import _MultiDictLikeWithGetlist
 from . import widgets
 
 
@@ -54,13 +57,18 @@ class MongoFileField(fields.FileField):
 
         self._should_delete = False
 
-    def process(self, formdata, data=unset_value):
+    def process(
+        self,
+        formdata: t.Optional[_MultiDictLikeWithGetlist],
+        data: t.Any = unset_value,
+        extra_filters: t.Optional[t.Sequence[t.Callable[[t.Any], t.Any]]] = None,
+    ) -> None:
         if formdata:
             marker = f"_{self.name}-delete"
             if marker in formdata:
                 self._should_delete = True
 
-        return super().process(formdata, data)
+        return super().process(formdata, data, extra_filters)
 
     def populate_obj(self, obj, name):
         field = getattr(obj, name, None)

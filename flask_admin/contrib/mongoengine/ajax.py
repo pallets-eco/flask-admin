@@ -31,7 +31,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
     def _process_fields(self):
         remote_fields = []
 
-        for field in self.fields:
+        for field in self.fields:  # type:  ignore[union-attr]
             if isinstance(field, string_types):
                 attr = getattr(self.model, field, None)
 

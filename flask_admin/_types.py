@@ -254,3 +254,14 @@ class T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK(T_FIELD_ARGS_VALIDATORS):
 class T_FIELD_ARGS_VALIDATORS_FILES(T_FIELD_ARGS_VALIDATORS):
     base_path: NotRequired[str]
     allow_overwrite: NotRequired[bool]
+
+
+# wtfforms types
+class _MultiDictLikeBase(t.Protocol):
+    def __iter__(self) -> t.Iterator[str]: ...
+    def __len__(self) -> int: ...
+    def __contains__(self, key: t.Any, /) -> bool: ...
+
+
+class _MultiDictLikeWithGetlist(_MultiDictLikeBase, t.Protocol):
+    def getlist(self, key: str, /) -> list[t.Any]: ...

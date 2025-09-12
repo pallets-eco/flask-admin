@@ -1,4 +1,5 @@
 import decimal
+import typing as t
 
 from bson import ObjectId
 from mongoengine import ListField
@@ -507,6 +508,9 @@ def get_form(
     field_args = field_args or {}
 
     # Find properties
+    properties: t.Union[
+        t.Generator[tuple[t.Any, t.Any], None, None], list[tuple[t.Any, t.Any]]
+    ]
     properties = sorted(
         ((k, v) for k, v in iteritems(model._fields)),
         key=lambda v: v[1].creation_counter,
