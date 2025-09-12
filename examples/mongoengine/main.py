@@ -44,6 +44,30 @@ class User(Document):
     meta = {"collection": "user"}
 
 
+class SafeInlineFieldList(InlineFieldList):
+    """
+    Prevent type error when InlineFieldList is assigned to an empty object.
+    """
+
+    def populate_obj(self, obj, name):
+        # Get the current value or initialize as empty list
+        values = getattr(obj, name, [])
+
+        # Clear the existing list
+        while values:
+            values.pop()
+
+        # Add new values from form data
+        for entry in self.entries:
+            if entry.data and any(entry.data.values()):  # Only add non-empty entries
+                # Create a new embedded document
+                embedded_doc = Inner()
+                for field_name, field_value in entry.data.items():
+                    if field_value:  # Only set non-empty values
+                        setattr(embedded_doc, field_name, field_value)
+                values.append(embedded_doc)
+
+
 class UserForm(form.Form):
     name = fields.StringField("Name")
     email = fields.StringField("Email")
@@ -53,7 +77,7 @@ class UserForm(form.Form):
     inner = InlineFormField(InnerForm)
 
     # Form list
-    form_list = InlineFieldList(InlineFormField(InnerForm))
+    form_list = SafeInlineFieldList(InlineFormField(InnerForm))
 
 
 class UserView(ModelView):
