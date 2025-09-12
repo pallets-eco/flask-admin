@@ -106,14 +106,12 @@ class RedisCli(BaseView):
         Execute single command.
 
         :param name:
-            Command name
+            Command name (case-insensitive)
         :param args:
             Command arguments
         """
-        # Do some remapping
-        new_cmd = self.remapped_commands.get(name)
-        if new_cmd:
-            name = new_cmd
+        name = name.lower()  # make commands case-insensitive
+        name = self.remapped_commands.get(name, name)  # Do some remapping
 
         # Execute command
         if name not in self.commands:
