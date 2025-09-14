@@ -377,7 +377,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             menu_icon_value=menu_icon_value,
         )
 
-    def _normpath(self, path: T_PATH_LIKE) -> t.Optional[str]:
+    def _normpath(self, path: T_PATH_LIKE):
         """
         Return Normalize path compatible with the speicified platform
         """
