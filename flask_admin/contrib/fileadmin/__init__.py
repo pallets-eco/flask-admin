@@ -377,11 +377,11 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             menu_icon_value=menu_icon_value,
         )
 
-    def _normpath(self, path: t.Optional[str]) -> str | bytes:
+    def _normpath(self, path: T_PATH_LIKE) -> t.Union[str, bytes]:
         """
         Return Normalize path compatible with the speicified platform
         """
-        normized = str(op.normpath(path))
+        normized = op.normpath(path)
         if self._on_windows:
             return normized.replace("/", "\\")
         else:
