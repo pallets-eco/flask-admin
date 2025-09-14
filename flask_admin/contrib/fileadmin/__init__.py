@@ -327,7 +327,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         menu_icon_type: t.Optional[str] = None,
         menu_icon_value: t.Optional[str] = None,
         storage: t.Optional[LocalFileStorage] = None,
-        on_windows: t.Optional[bool] = None
+        on_windows: t.Optional[bool] = None,
     ) -> None:
         """
         Constructor.
@@ -355,9 +355,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         self.init_actions()
 
         if on_windows is not None:
-            self._on_windows = on_windows  
+            self._on_windows = on_windows
         else:
-            self._on_windows =platform.system() == "Windows"
+            self._on_windows = platform.system() == "Windows"
 
         # Convert allowed_extensions to set for quick validation
         if self.allowed_extensions and not isinstance(self.allowed_extensions, set):
@@ -386,7 +386,6 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             return normized.replace("/", "\\")
         else:
             return normized.replace("\\", "/")
-    
 
     def is_accessible_path(self, path: str) -> bool:
         """
@@ -629,7 +628,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         :param directory:
             Directory path to check
         """
-        return self._normpath(directory).startswith(base_path)  
+        return self._normpath(directory).startswith(base_path)
 
     def save_file(self, path: str, file_data: FileStorage) -> None:
         """
