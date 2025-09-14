@@ -1,7 +1,0 @@
-{
-  "python.testing.pytestArgs": [
-    "flask_admin"
-  ],
-  "python.testing.unittestEnabled": false,
-  "python.testing.pytestEnabled": true
-}
