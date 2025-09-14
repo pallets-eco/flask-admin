@@ -167,3 +167,33 @@ class TestS3FileAdmin(Base.FileAdminTests):
         rv = client.get("/admin/myfileadmin/")
         assert rv.status_code == 200
         assert "successfully deleted" in rv.text
+
+
+
+    def test_deep_browsing(self, app, admin, mock_s3_client):
+        fileadmin_class = self.fileadmin_class()
+        fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+
+        class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+            pass
+
+        view_kwargs = dict(fileadmin_kwargs)
+        
+        # explicitly set the OS based on the platform of s3-cloud 
+        view_kwargs['on_windows'] = False
+        
+        view_kwargs.setdefault("name", "Files")
+        view = MyFileAdmin(*fileadmin_args, **view_kwargs)
+
+        admin.add_view(view)
+
+        client = app.test_client()
+
+        # create deep path
+        rv = client.post("/admin/myfileadmin/mkdir/", data={'name':'xx'})
+        rv = client.post("/admin/myfileadmin/mkdir/xx", data={'name':'yy'})
+        rv = client.post("/admin/myfileadmin/mkdir/xx/yy", data={'name':'zz'})
+        
+        # Test access to deep path
+        rv = client.get("/admin/myfileadmin/b/xx/yy/zz")
+        assert rv.status_code == 200
