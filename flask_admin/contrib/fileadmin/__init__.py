@@ -354,7 +354,10 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         self.init_actions()
 
-        self._on_windows = on_windows if on_windows != None else (platform.system() == "Windows")
+        if on_windows is not None:
+            self._on_windows = on_windows  
+        else:
+            self._on_windows =platform.system() == "Windows"
 
         # Convert allowed_extensions to set for quick validation
         if self.allowed_extensions and not isinstance(self.allowed_extensions, set):
@@ -374,11 +377,15 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             menu_icon_value=menu_icon_value,
         )
 
-    def _normpath(self, path: T_PATH_LIKE) -> str:
+    def _normpath(self, path: t.Optional[str]) -> str | bytes:
+        """
+        Return Normalize path compatible with the speicified platform
+        """
+        normized = str(op.normpath(path))
         if self._on_windows:
-            return op.normpath(path).replace("/", "\\")
+            return normized.replace("/", "\\")
         else:
-            return op.normpath(path).replace("\\", "/")
+            return normized.replace("\\", "/")
     
 
     def is_accessible_path(self, path: str) -> bool:
