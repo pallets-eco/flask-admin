@@ -52,7 +52,7 @@ if __name__ == "__main__":
             S3FileAdmin(
                 bucket_name=bucket_name,
                 s3_client=s3_client,
-                # explicitly set the OS based on the platform of s3-cloud
+                # explicitly set the OS based on the platform of s3-cloud storage
                 on_windows=False,
             )
         )

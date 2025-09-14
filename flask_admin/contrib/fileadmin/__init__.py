@@ -348,6 +348,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         :param storage:
             The storage backend that the `BaseFileAdmin` will use to operate on the
             files.
+        :param on_windows:
+            True if the operating system of the storage is. Use it only when the
+            current os is different than storage os.
         """
         self.base_url = base_url
         self.storage = storage
@@ -381,11 +384,11 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         Return Normalize path compatible with the speicified platform
         """
-        normized = str(op.normpath(path))
+        noramlized = str(op.normpath(path))
         if self._on_windows:
-            return normized.replace("/", "\\")
+            return noramlized.replace("/", "\\")
         else:
-            return normized.replace("\\", "/")
+            return noramlized.replace("\\", "/")
 
     def is_accessible_path(self, path: str) -> bool:
         """
