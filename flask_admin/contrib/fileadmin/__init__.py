@@ -327,7 +327,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         menu_icon_type: t.Optional[str] = None,
         menu_icon_value: t.Optional[str] = None,
         storage: t.Optional[LocalFileStorage] = None,
-        on_windows: bool = None
+        on_windows: t.Optional[bool] = None
     ) -> None:
         """
         Constructor.
@@ -377,7 +377,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             menu_icon_value=menu_icon_value,
         )
 
-    def _normpath(self, path: T_PATH_LIKE) -> t.Union[str, bytes]:
+    def _normpath(self, path: T_PATH_LIKE) -> t.Optional[str]:
         """
         Return Normalize path compatible with the speicified platform
         """
