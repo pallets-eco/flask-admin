@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-20 20:51+0200\n"
+"POT-Creation-Date: 2025-09-16 00:18+0200\n"
 "PO-Revision-Date: 2017-03-03 00:31-0500\n"
 "Last-Translator: mrjoes <serge.koval@gmail.com>\n"
 "Language: ko_KR\n"
@@ -14,11 +14,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../flask_admin/base.py:516
+#: ../flask_admin/base.py:518
 msgid "Home"
 msgstr "홈"
 
-#: ../flask_admin/contrib/rediscli.py:120
+#: ../flask_admin/contrib/rediscli.py:118
 msgid "Cli: Invalid command."
 msgstr "Cli: 잘못된 명령입니다."
 
@@ -58,7 +58,7 @@ msgstr "\"%(name)s\" 파일은 이미 존재합니다."
 #: ../flask_admin/contrib/fileadmin/__init__.py:1144
 #: ../flask_admin/contrib/fileadmin/__init__.py:1211
 #: ../flask_admin/contrib/fileadmin/__init__.py:1280
-#: ../flask_admin/model/base.py:2568
+#: ../flask_admin/model/base.py:2555
 msgid "Permission denied."
 msgstr "권한이 없습니다."
 
@@ -187,10 +187,10 @@ msgid "Editing %(path)s"
 msgstr "%(path)s 편집 중"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1363
-#: ../flask_admin/contrib/mongoengine/view.py:725
-#: ../flask_admin/contrib/peewee/view.py:603
-#: ../flask_admin/contrib/pymongo/view.py:411
-#: ../flask_admin/contrib/sqla/view.py:1437
+#: ../flask_admin/contrib/mongoengine/view.py:726
+#: ../flask_admin/contrib/peewee/view.py:611
+#: ../flask_admin/contrib/pymongo/view.py:422
+#: ../flask_admin/contrib/sqla/view.py:1436
 msgid "Delete"
 msgstr "삭제"
 
@@ -284,9 +284,9 @@ msgstr "사이에 존재하지않는"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:248
 msgid "ObjectId equals"
-msgstr ""
+msgstr "ObjectId와 동일"
 
-#: ../flask_admin/contrib/mongoengine/form.py:120
+#: ../flask_admin/contrib/mongoengine/form.py:121
 #: ../flask_admin/contrib/sqla/fields.py:151
 #: ../flask_admin/contrib/sqla/fields.py:210
 #: ../flask_admin/contrib/sqla/fields.py:215 ../flask_admin/model/fields.py:224
@@ -294,56 +294,56 @@ msgstr ""
 msgid "Not a valid choice"
 msgstr "유효하지 않은 선택"
 
-#: ../flask_admin/contrib/mongoengine/view.py:605
+#: ../flask_admin/contrib/mongoengine/view.py:606
 #, python-format
 msgid "Failed to get model. %(error)s"
-msgstr ""
+msgstr "모델을 가져오지 못했습니다. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:626
-#: ../flask_admin/contrib/peewee/view.py:542
-#: ../flask_admin/contrib/pymongo/view.py:345
-#: ../flask_admin/contrib/sqla/view.py:1355
+#: ../flask_admin/contrib/mongoengine/view.py:627
+#: ../flask_admin/contrib/peewee/view.py:550
+#: ../flask_admin/contrib/pymongo/view.py:356
+#: ../flask_admin/contrib/sqla/view.py:1356
 #, python-format
 msgid "Failed to create record. %(error)s"
 msgstr "레코드를 만들지 못했습니다. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:655
-#: ../flask_admin/contrib/peewee/view.py:564
-#: ../flask_admin/contrib/pymongo/view.py:369
-#: ../flask_admin/contrib/sqla/view.py:1386 ../flask_admin/model/base.py:2723
-#: ../flask_admin/model/base.py:2730 ../flask_admin/model/base.py:2734
+#: ../flask_admin/contrib/mongoengine/view.py:656
+#: ../flask_admin/contrib/peewee/view.py:572
+#: ../flask_admin/contrib/pymongo/view.py:380
+#: ../flask_admin/contrib/sqla/view.py:1385 ../flask_admin/model/base.py:2710
+#: ../flask_admin/model/base.py:2717 ../flask_admin/model/base.py:2721
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr "레코드를 업데이트하지 못했습니다. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:681
-#: ../flask_admin/contrib/peewee/view.py:582
-#: ../flask_admin/contrib/pymongo/view.py:393
-#: ../flask_admin/contrib/sqla/view.py:1414
+#: ../flask_admin/contrib/mongoengine/view.py:682
+#: ../flask_admin/contrib/peewee/view.py:590
+#: ../flask_admin/contrib/pymongo/view.py:404
+#: ../flask_admin/contrib/sqla/view.py:1413
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr "레코드를 삭제하지 못했습니다. %(error)s"
 
-#: ../flask_admin/contrib/mongoengine/view.py:726
-#: ../flask_admin/contrib/peewee/view.py:604
-#: ../flask_admin/contrib/pymongo/view.py:412
-#: ../flask_admin/contrib/sqla/view.py:1438
+#: ../flask_admin/contrib/mongoengine/view.py:727
+#: ../flask_admin/contrib/peewee/view.py:612
+#: ../flask_admin/contrib/pymongo/view.py:423
+#: ../flask_admin/contrib/sqla/view.py:1437
 msgid "Are you sure you want to delete selected records?"
 msgstr "선택한 레코드를 삭제하시겠습니까?"
 
-#: ../flask_admin/contrib/mongoengine/view.py:738
-#: ../flask_admin/contrib/peewee/view.py:624
-#: ../flask_admin/contrib/pymongo/view.py:425
-#: ../flask_admin/contrib/sqla/view.py:1461 ../flask_admin/model/base.py:2503
+#: ../flask_admin/contrib/mongoengine/view.py:739
+#: ../flask_admin/contrib/peewee/view.py:632
+#: ../flask_admin/contrib/pymongo/view.py:436
+#: ../flask_admin/contrib/sqla/view.py:1460 ../flask_admin/model/base.py:2490
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
 msgstr[0] "%(count)s 레코드 성공적으로 삭제되었습니다."
 
-#: ../flask_admin/contrib/mongoengine/view.py:748
-#: ../flask_admin/contrib/peewee/view.py:634
-#: ../flask_admin/contrib/pymongo/view.py:434
-#: ../flask_admin/contrib/sqla/view.py:1473
+#: ../flask_admin/contrib/mongoengine/view.py:749
+#: ../flask_admin/contrib/peewee/view.py:642
+#: ../flask_admin/contrib/pymongo/view.py:445
+#: ../flask_admin/contrib/sqla/view.py:1472
 #, python-format
 msgid "Failed to delete records. %(error)s"
 msgstr "레코드를 삭제하지 못했습니다. %(error)s"
@@ -374,7 +374,7 @@ msgstr "유효한 ISO 통화 코드(예: USD, EUR, CNY)가 아닙니다."
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
 msgstr "유효한 색상이 아닙니다(예: \"red\", \"#f00\", \"#ff0000\")."
 
-#: ../flask_admin/contrib/sqla/view.py:1316
+#: ../flask_admin/contrib/sqla/view.py:1317
 #, python-format
 msgid "Integrity error. %(message)s"
 msgstr "무결성 오류입니다. %(message)s"
@@ -399,32 +399,32 @@ msgstr "잘못된 파일 확장명"
 msgid "This field requires at least one item."
 msgstr "이 필드에는 최소한 1개의 항목이 필요합니다."
 
-#: ../flask_admin/model/base.py:1926
+#: ../flask_admin/model/base.py:1916
 msgid "There are no items in the table."
 msgstr "테이블에 아무 항목도 없습니다."
 
-#: ../flask_admin/model/base.py:1935
+#: ../flask_admin/model/base.py:1925
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
 msgstr "잘못된 필터 값: %(value)s"
 
-#: ../flask_admin/model/base.py:2358
+#: ../flask_admin/model/base.py:2348
 msgid "Record was successfully created."
 msgstr "레코드가 성공적으로 만들어졌습니다."
 
-#: ../flask_admin/model/base.py:2406 ../flask_admin/model/base.py:2461
-#: ../flask_admin/model/base.py:2495 ../flask_admin/model/base.py:2714
+#: ../flask_admin/model/base.py:2395 ../flask_admin/model/base.py:2449
+#: ../flask_admin/model/base.py:2483 ../flask_admin/model/base.py:2701
 msgid "Record does not exist."
 msgstr "레코드가 없습니다."
 
-#: ../flask_admin/model/base.py:2415 ../flask_admin/model/base.py:2719
+#: ../flask_admin/model/base.py:2403 ../flask_admin/model/base.py:2706
 msgid "Record was successfully saved."
 msgstr "레코드가 저장되었습니다."
 
-#: ../flask_admin/model/base.py:2658
+#: ../flask_admin/model/base.py:2645
 #, python-format
 msgid "Export type \"%(type)s\" is not supported."
-msgstr ""
+msgstr "\"%(type)s 타입의 가져오기가 지원되지 않습니다."
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
 msgid "Yes"
@@ -576,7 +576,7 @@ msgstr "필터 재설정"
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:93
 #, python-format
 msgid "%(placeholder)s"
-msgstr ""
+msgstr "%(placeholder)s"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:88
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:94
