@@ -424,7 +424,7 @@ msgstr "保存记录成功"
 #: ../flask_admin/model/base.py:2645
 #, python-format
 msgid "Export type \"%(type)s\" is not supported."
-msgstr "不支持导出类型 \"%(type)s 。"
+msgstr "不支持导出类型 \"%(type)s\" 。"
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
 msgid "Yes"

@@ -426,7 +426,7 @@ msgstr "Registro fue guardado con éxito."
 #: ../flask_admin/model/base.py:2645
 #, python-format
 msgid "Export type \"%(type)s\" is not supported."
-msgstr "Exportación de tipo \"%(type)s no compatible."
+msgstr "Exportación de tipo \"%(type)s\" no compatible."
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
 msgid "Yes"

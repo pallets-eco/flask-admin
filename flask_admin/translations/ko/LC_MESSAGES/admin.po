@@ -424,7 +424,7 @@ msgstr "레코드가 저장되었습니다."
 #: ../flask_admin/model/base.py:2645
 #, python-format
 msgid "Export type \"%(type)s\" is not supported."
-msgstr "\"%(type)s 타입의 가져오기가 지원되지 않습니다."
+msgstr "\"%(type)s\" 타입의 가져오기가 지원되지 않습니다."
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
 msgid "Yes"
