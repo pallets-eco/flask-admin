@@ -609,21 +609,3 @@ msgstr "選擇記錄"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "請至少選擇一筆資料。"
-
-#~ msgid "ObjectId equals"
-#~ msgstr ""
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "未能獲取資料。%(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr ""
-
-#~ msgid "Size"
-#~ msgstr ""
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "檔案 \"%s\" 已經存在。"
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "不支援匯出類型「%(type)s」。"

@@ -608,21 +608,3 @@ msgstr "ਰਿਕੌਰਡ ਚੁਣੋ"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "ਕਿਰਪਾ ਕਰਕੇ ਘੱਟੋ ਘੱਟ ਇੱਕ ਰਿਕੌਰਡ ਜਰੂਰ ਚੁਣੋ |"
-
-#~ msgid "ObjectId equals"
-#~ msgstr ""
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "ਮੌਡਲ ਕੱਢਣ ਵਿੱਚ ਨਾਕਾਮਯਾਬੀ |  %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr ""
-
-#~ msgid "Size"
-#~ msgstr ""
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "ਫ਼ਾਈਲ \"%s\" ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ |"
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "ਨਿਰਯਾਤ ਕਿਸਮ \"%(type)s\" ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।"

@@ -606,21 +606,3 @@ msgstr "انتخاب رکورد"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "حداقل یک پوشه انتخاب کنید"
-
-#~ msgid "ObjectId equals"
-#~ msgstr ""
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "خواندن مدل با مشکل روبرو شد. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr ""
-
-#~ msgid "Size"
-#~ msgstr ""
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "فایل \"%s\" قبلا وجود داشته است"
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "نوع صادرات \"%(type)s\" پشتیبانی نمی شود."

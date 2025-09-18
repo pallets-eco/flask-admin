@@ -611,21 +611,3 @@ msgstr "בחר רשומה"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "נא בחר רשומה אחת לפחות."
-
-#~ msgid "ObjectId equals"
-#~ msgstr ""
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "מודל נכשלה. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr ""
-
-#~ msgid "Size"
-#~ msgstr ""
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "קובץ \"%s\" כבר קיים."
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "סוג הייצוא \"%(type)s\" אינו נתמך."

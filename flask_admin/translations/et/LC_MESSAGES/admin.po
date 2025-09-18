@@ -606,21 +606,3 @@ msgstr "Vali kirje"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "Palun valige vähemalt üks kirje."
-
-#~ msgid "ObjectId equals"
-#~ msgstr ""
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "Mudeli päring ebaõnnestus. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr ""
-
-#~ msgid "Size"
-#~ msgstr ""
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "Fail \"%s\" on juba olemas."
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "Eksporditüüpi \"%(type)s\" ei toetata."

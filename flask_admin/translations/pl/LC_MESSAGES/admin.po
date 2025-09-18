@@ -609,21 +609,3 @@ msgstr "Zaznacz rekord"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "Wybierz co najmniej jeden rekord."
-
-#~ msgid "ObjectId equals"
-#~ msgstr ""
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "Nie udało się uzyskać modelu. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr "Zależność Tablib nie zainstalowana."
-
-#~ msgid "Size"
-#~ msgstr ""
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "Plik \"%s\" już istnieje."
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "Niewspierany typ eksportowy \"%(type)s."

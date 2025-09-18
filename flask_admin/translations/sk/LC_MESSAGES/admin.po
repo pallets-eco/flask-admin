@@ -608,21 +608,3 @@ msgstr "Vyberte záznam"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "Prosím, vyberte aspoň jeden záznam."
-
-#~ msgid "ObjectId equals"
-#~ msgstr ""
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "Nepodarilo sa získať model. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr "Tablib závislosti nie sú nainštalované."
-
-#~ msgid "Size"
-#~ msgstr ""
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "Súbor s názvom \"%s\" už existuje."
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "Typ exportu \"%(type)s nie je podporovaný."

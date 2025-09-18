@@ -615,21 +615,3 @@ msgstr "حدد السجل"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "الرجاء تحديد سجل واحد على الأقل."
-
-#~ msgid "ObjectId equals"
-#~ msgstr ""
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "فشل في الحصول على نموذج. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr ""
-
-#~ msgid "Size"
-#~ msgstr ""
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "ملف \"%s\" موجود بالفعل."
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "لا يتم دعم نوع التصدير \"%(type)s\"."

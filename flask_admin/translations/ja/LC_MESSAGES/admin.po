@@ -604,21 +604,3 @@ msgstr "レコードを選択"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "少なくとも1つのレコードを選択してください。"
-
-#~ msgid "ObjectId equals"
-#~ msgstr ""
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "モデルを取得できませんでした。%(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr "Tablib の依存関係がインストールされていません。"
-
-#~ msgid "Size"
-#~ msgstr ""
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "ファイル「%s」は既に存在します。"
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "\"%(type)sエクスポートの種類 はサポートされていません。"

@@ -606,21 +606,3 @@ msgstr "Çek'i seçin"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "Lütfen en az bir kayıt seçin."
-
-#~ msgid "ObjectId equals"
-#~ msgstr "ObjectId eşittir"
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "Model alma başarısız oldu. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr "Tablib bağımlılığı yüklü değil."
-
-#~ msgid "Size"
-#~ msgstr "Boyut"
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "\"%s\" dosyası zaten var."
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "%(type)s türünde dışa aktarım desteklenmiyor."

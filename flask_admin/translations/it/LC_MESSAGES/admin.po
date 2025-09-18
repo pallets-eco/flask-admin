@@ -606,21 +606,3 @@ msgstr "Seleziona riga"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "Selezionare almeno una riga."
-
-#~ msgid "ObjectId equals"
-#~ msgstr "ObjectId uguale"
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "Impossibile ottenere il modello. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr "Dipendenza Tablib non installata."
-
-#~ msgid "Size"
-#~ msgstr ""
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "Il file \"%s\" esiste giá."
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "Esportazione tipo \"%(type)s non supportata."

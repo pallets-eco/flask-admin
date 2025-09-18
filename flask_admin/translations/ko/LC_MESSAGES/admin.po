@@ -604,21 +604,3 @@ msgstr "레코드 선택"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "최소한 하나 이상의 레코드를 선택하십시오."
-
-#~ msgid "ObjectId equals"
-#~ msgstr "ObjectId 같음"
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "모델을 가져오는 데 실패하였습니다. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr "Tablib 종속성 설치 되지 않았습니다."
-
-#~ msgid "Size"
-#~ msgstr ""
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "\"%s\" 파일은 이미 있습니다."
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "\"%(type)s 타입의 가져오기가 지원되지 않습니다."

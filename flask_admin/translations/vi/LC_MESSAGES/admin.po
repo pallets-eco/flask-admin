@@ -604,21 +604,3 @@ msgstr "Chọn hồ sơ"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "Vui lòng chọn ít nhất một kỷ lục."
-
-#~ msgid "ObjectId equals"
-#~ msgstr ""
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "Không thể có được mô hình. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr ""
-
-#~ msgid "Size"
-#~ msgstr ""
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "Tập tin \"%s\" đã tồn tại."
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "Loại xuất \"%(type)s\" không được hỗ trợ."

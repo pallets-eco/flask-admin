@@ -606,21 +606,3 @@ msgstr "Record selecteren"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "Selecteer ten minste één record."
-
-#~ msgid "ObjectId equals"
-#~ msgstr ""
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "Fout bij het ophalen van model. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr "Talbib dependency is niet geïnstalleerd."
-
-#~ msgid "Size"
-#~ msgstr ""
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "Er bestaat al een bestand \"%s\"."
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "Exporteren naar type %(type)s wordt niet ondersteund."

@@ -606,21 +606,3 @@ msgstr "Seleccione registro"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "Por favor, seleccione al menos un elemento."
-
-#~ msgid "ObjectId equals"
-#~ msgstr "ObjectId es igual a"
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "Error al obtener el modelo. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr "Tablib dependencia no instalado."
-
-#~ msgid "Size"
-#~ msgstr "Tamaño"
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "El archivo \"%s\" ya existe."
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "Exportación de tipo \"%(type)s no compatible."

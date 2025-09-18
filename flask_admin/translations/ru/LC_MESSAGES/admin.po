@@ -609,21 +609,3 @@ msgstr "Выберите запись"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "Выберите по крайней мере одну запись."
-
-#~ msgid "ObjectId equals"
-#~ msgstr "Id объекта равно"
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "Не удалось получить модель. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr "Tablib не установлена."
-
-#~ msgid "Size"
-#~ msgstr "Размер"
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "Файл с именем \"%s\" уже существует."
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "Экспорт в формате %(type)s не поддерживается."

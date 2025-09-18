@@ -606,21 +606,3 @@ msgstr "Välj post"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "Välj minst en post."
-
-#~ msgid "ObjectId equals"
-#~ msgstr ""
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "Det gick inte att få modell. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr ""
-
-#~ msgid "Size"
-#~ msgstr ""
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "Filen \"%s\" finns redan."
-
-#~ msgid "Export type \"%(type)s\" not supported."
-#~ msgstr "Exporttypen \"%(type)s\" stöds inte."
