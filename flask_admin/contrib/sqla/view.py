@@ -423,6 +423,7 @@ class ModelView(BaseModelView):
         """
         if model is None:
             model = self.model
+
         return model._sa_class_manager.mapper.attrs  # type: ignore[union-attr]
 
     def _apply_path_joins(
