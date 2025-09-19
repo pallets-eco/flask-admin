@@ -55,7 +55,7 @@ class DatePickerWidget(widgets.TextInput):
     """
     Date picker widget.
 
-    You must include bootstrap-datepicker.js and form-x.x.x.js for styling to work.
+    You must include bootstrap-daterangepicker.js and form-x.x.x.js for styling to work.
     """
 
     def __call__(self, field: Field, **kwargs: t.Any) -> Markup:
@@ -70,7 +70,7 @@ class DateTimePickerWidget(widgets.TextInput):
     """
     Datetime picker widget.
 
-    You must include bootstrap-datepicker.js and form-x.x.x.js for styling to work.
+    You must include bootstrap-daterangepicker.js and form-x.x.x.js for styling to work.
     """
 
     def __call__(self, field: Field, **kwargs: t.Any) -> Markup:
@@ -83,7 +83,7 @@ class TimePickerWidget(widgets.TextInput):
     """
     Date picker widget.
 
-    You must include bootstrap-datepicker.js and form-x.x.x.js for styling to work.
+    You must include bootstrap-daterangepicker.js and form-x.x.x.js for styling to work.
     """
 
     def __call__(self, field: Field, **kwargs: t.Any) -> Markup:
