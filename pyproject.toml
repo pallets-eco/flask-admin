@@ -96,6 +96,7 @@ docs = [
 ]
 tests = [
     "flake8",
+    "flask[async]",
     "pylint",
     "pytest",
     "pytest-cov",
