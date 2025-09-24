@@ -1,21 +1,22 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version:  flask-admin\n"
+"Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-06-03 07:06+0100\n"
-"PO-Revision-Date: 2025-07-07 20:12-0500\n"
+"PO-Revision-Date: 2025-09-24 14:47+0200\n"
 "Last-Translator: ElLorans <lorenzo.cerreta@gmail.com>\n"
-"Language: sr_SP\n"
 "Language-Team: Serbian (Cyrillic)\n"
+"Language: sr_SP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 "Generated-By: Babel 2.16.0\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #: ../flask_admin/base.py:516
 msgid "Home"
-msgstr "Dom"
+msgstr "Početna"
 
 #: ../flask_admin/contrib/rediscli.py:120
 msgid "Cli: Invalid command."
@@ -204,7 +205,7 @@ msgstr "Arhivski snimak brisanje sa invaliditetom."
 #: ../flask_admin/templates/bootstrap4/admin/model/details.html:17
 #: ../flask_admin/templates/bootstrap4/admin/model/edit.html:22
 msgid "Edit"
-msgstr "Snimanje"
+msgstr "Uredi"
 
 #: ../flask_admin/contrib/fileadmin/s3.py:233
 msgid "Cannot operate on non empty directories"
@@ -304,8 +305,9 @@ msgstr "Da li si siguran da želiš da obrišem odabrani ploče?"
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
-msgstr[0] "Rekord uspešno izbriše."
+msgstr[0] "Zapis je uspešno obrisan"
 msgstr[1] "%(count)s ploče su uspešno izbriše."
+msgstr[2] ""
 
 #: ../flask_admin/contrib/peewee/view.py:634
 #: ../flask_admin/contrib/pymongo/view.py:434
@@ -339,6 +341,7 @@ msgid "At least %(num)d item is required"
 msgid_plural "At least %(num)d items are required"
 msgstr[0] "Potrebna je najmanje %(num)d stavka"
 msgstr[1] "Potrebne su najmanje %(num)d stavke"
+msgstr[2] ""
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
@@ -398,7 +401,7 @@ msgstr "Rekord uspešno spasao."
 #: ../flask_admin/model/base.py:2656
 #, python-format
 msgid "Export type \"%(type)s\" not supported."
-msgstr "Тип извоза \"%(типе)с\" није подржан."
+msgstr "Tip izvoza \"%(типе)с\" nije podržan."
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
 msgid "Yes"
@@ -439,7 +442,7 @@ msgstr "Sa izabran"
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:216
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:227
 msgid "Save"
-msgstr "Spasi"
+msgstr "sačuvaj"
 
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:221
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:232
@@ -555,11 +558,11 @@ msgstr ""
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:88
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:94
 msgid "Search"
-msgstr "Potraga"
+msgstr "Pretraga"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:102
 msgid "items"
-msgstr "ставке"
+msgstr "stavke"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:23
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:25
@@ -569,27 +572,18 @@ msgstr "Stvori Novi Zapis"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:76
 msgid "Select all records"
-msgstr "Izaberu sve podatke"
+msgstr "Izaberi sve zapise"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:119
 msgid "Select record"
-msgstr "Izaberu rekord"
+msgstr "Izaberi zapis"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "Molimo odaberite najmanje jedan zapis."
 
-#~ msgid "ObjectId equals"
-#~ msgstr ""
-
 #~ msgid "Failed to get model. %(error)s"
 #~ msgstr "Nije uspeo da dobije model. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr ""
-
-#~ msgid "Size"
-#~ msgstr ""
 
 #~ msgid "File \"%s\" already exists."
 #~ msgstr "Dokument \"%s\" već postoji."
