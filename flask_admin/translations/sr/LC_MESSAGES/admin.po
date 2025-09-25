@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-06-03 07:06+0100\n"
-"PO-Revision-Date: 2025-09-24 14:52+0200\n"
+"PO-Revision-Date: 2025-09-25 09:29+0200\n"
 "Last-Translator: ElLorans <lorenzo.cerreta@gmail.com>\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "Language: sr_SP\n"
@@ -221,7 +221,7 @@ msgstr "jednaki"
 #: ../flask_admin/contrib/pymongo/filters.py:58
 #: ../flask_admin/contrib/sqla/filters.py:72
 msgid "not equal"
-msgstr "Ne ravnopravan"
+msgstr "nije jednako"
 
 #: ../flask_admin/contrib/peewee/filters.py:64
 #: ../flask_admin/contrib/pymongo/filters.py:68
@@ -269,7 +269,7 @@ msgstr "nije na listi"
 #: ../flask_admin/contrib/sqla/filters.py:306
 #: ../flask_admin/contrib/sqla/filters.py:350
 msgid "not between"
-msgstr "Ne između"
+msgstr "nije između"
 
 #: ../flask_admin/contrib/peewee/view.py:542
 #: ../flask_admin/contrib/pymongo/view.py:345
@@ -305,9 +305,9 @@ msgstr "Da li si siguran da želiš da obrišem odabrani ploče?"
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
-msgstr[0] "Zapis je uspešno obrisan"
-msgstr[1] "%(count)s ploče su uspešno izbriše."
-msgstr[2] ""
+msgstr[0] "%(count)s zapis je uspešno obrisan."
+msgstr[1] "%(count)s zapisa je uspešno obrisano."
+msgstr[2] "%(count)s zapisa je uspešno obrisano."
 
 #: ../flask_admin/contrib/peewee/view.py:634
 #: ../flask_admin/contrib/pymongo/view.py:434
@@ -325,11 +325,11 @@ msgstr "Nije važeći izbor"
 
 #: ../flask_admin/contrib/sqla/fields.py:245
 msgid "Key"
-msgstr "Кључ"
+msgstr "Ključ"
 
 #: ../flask_admin/contrib/sqla/fields.py:246
 msgid "Value"
-msgstr "Вредност"
+msgstr "Vrednost"
 
 #: ../flask_admin/contrib/sqla/validators.py:43
 msgid "Already exists."
@@ -341,7 +341,7 @@ msgid "At least %(num)d item is required"
 msgid_plural "At least %(num)d items are required"
 msgstr[0] "Potrebna je najmanje %(num)d stavka"
 msgstr[1] "Potrebne su najmanje %(num)d stavke"
-msgstr[2] ""
+msgstr[2] "Potrebne su najmanje %(num)d stavke"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
@@ -401,7 +401,7 @@ msgstr "Rekord uspešno spasao."
 #: ../flask_admin/model/base.py:2656
 #, python-format
 msgid "Export type \"%(type)s\" not supported."
-msgstr "Tip izvoza \"%(типе)с\" nije podržan."
+msgstr "Tip izvoza \"%(type)s\" nije podržan."
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
 msgid "Yes"
@@ -409,7 +409,7 @@ msgstr "Da"
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:127
 msgid "No"
-msgstr "ne"
+msgstr "Ne"
 
 #: ../flask_admin/model/filters.py:197 ../flask_admin/model/filters.py:244
 #: ../flask_admin/model/filters.py:291
@@ -429,7 +429,7 @@ msgstr "Uredite Zapis"
 #: ../flask_admin/model/template.py:114
 #: ../flask_admin/templates/bootstrap4/admin/model/row_actions.html:34
 msgid "Delete Record"
-msgstr "Избриши запис"
+msgstr "Izbriši zapis"
 
 #: ../flask_admin/model/widgets.py:71
 msgid "Please select model"
