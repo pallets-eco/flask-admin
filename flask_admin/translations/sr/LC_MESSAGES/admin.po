@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-06-03 07:06+0100\n"
-"PO-Revision-Date: 2025-09-25 09:30+0200\n"
+"PO-Revision-Date: 2025-09-25 09:33+0200\n"
 "Last-Translator: Saša Stamenković <umpirsky\"gmail.com>\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "Language: sr_SP\n"
@@ -387,7 +387,7 @@ msgstr "Nevažećih Filter vrednost: %(value)s"
 
 #: ../flask_admin/model/base.py:2356
 msgid "Record was successfully created."
-msgstr "Rekord je uspešno uspostavljena."
+msgstr "Zapis je uspešno kreiran."
 
 #: ../flask_admin/model/base.py:2404 ../flask_admin/model/base.py:2459
 #: ../flask_admin/model/base.py:2493 ../flask_admin/model/base.py:2712
@@ -396,7 +396,7 @@ msgstr "Zapis ne postoji."
 
 #: ../flask_admin/model/base.py:2413 ../flask_admin/model/base.py:2717
 msgid "Record was successfully saved."
-msgstr "Rekord uspešno spasao."
+msgstr "Zapis je uspešno sačuvan."
 
 #: ../flask_admin/model/base.py:2656
 #, python-format
