@@ -59,7 +59,7 @@ class UserAdmin(CustomView):
     can_export = True
     export_types = ["csv", "xlsx"]
     can_set_page_size = True
-    page_size_options = [3, 5, 7, 10, 20, 50, 100]
+    page_size_options = (3, 5, 7, 10, 20, 50, 100)
     page_size = 7
 
 
