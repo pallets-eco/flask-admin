@@ -23,9 +23,9 @@
       {%- if children %}
         {% set class_name = item.get_class_name() or '' %}
         {%- if item.is_active(admin_view) %}
-          <li class="active dropdown{% if class_name %} {{ class_name }}{% endif %}">
+          <li class="active dropdown">
             {% else -%}
-          <li class="dropdown{% if class_name %} {{ class_name }}{% endif %}">
+          <li class="dropdown">
         {%- endif %}
       <a class="dropdown-toggle {% if is_main_nav %}nav-link{% else %}dropdown-item{% endif %}" data-toggle="dropdown" href="javascript:void(0)">
         {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}

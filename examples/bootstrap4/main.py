@@ -14,7 +14,14 @@ app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
-admin = Admin(app, name="Example: Bootstrap4", theme=Bootstrap4Theme(swatch="flatly"))
+admin = Admin(
+    app,
+    name="Example: Bootstrap4",
+    theme=Bootstrap4Theme(swatch="flatly"),
+    category_icon_classes={
+        "Menu": "fa fa-cog",
+    },
+)
 
 
 @app.route("/")
@@ -51,6 +58,9 @@ class UserAdmin(CustomView):
     column_filters = ("name", "email")
     can_export = True
     export_types = ["csv", "xlsx"]
+    can_set_page_size = True
+    page_size_options = [3, 5, 7, 10, 20, 50, 100]
+    page_size = 7
 
 
 def build_sample_db():
@@ -185,7 +195,15 @@ def build_sample_db():
 
 
 if __name__ == "__main__":
-    admin.add_view(UserAdmin(User, db.session, category="Menu"))
+    admin.add_view(
+        UserAdmin(
+            User,
+            db.session,
+            category="Menu",
+            menu_icon_type="fa",
+            menu_icon_value="fa-users",
+        )
+    )
     admin.add_view(CustomView(Page, db.session, category="Menu"))
 
     app_dir = op.realpath(os.path.dirname(__file__))
