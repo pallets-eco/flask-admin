@@ -28,6 +28,7 @@
           <li class="dropdown">
         {%- endif %}
       <a class="dropdown-toggle {% if is_main_nav %}nav-link{% else %}dropdown-item{% endif %}" data-toggle="dropdown" href="javascript:void(0)">
+        <!-- show icon -->
         {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}
         {{ menu_icon(item) }}{{ item.name }}
         {%- if 'dropdown-submenu' in class_name -%}
@@ -42,14 +43,14 @@
             {{ menu(menu_root=[child]) }}
           {% else %}
             {% set class_name = child.get_class_name() %}
-            <li{% if class_name %} class="{{ class_name }}"{% endif %}>
+            <li>
               {%- if child.is_active(admin_view) %}
-                <a class="dropdown-item active" href="{{ child.get_url() }}"{% if child.target %}
-                   target="{{ child.target }}"{% endif %}>
+                <a class="dropdown-item active {{ class_name }} " href="{{ child.get_url() }}"{% if child.target %}
+                target="{{ child.target }}"{% endif %}>
                   {{ menu_icon(child) }}{{ child.name }}</a>
               {% else %}
-                <a class="dropdown-item" href="{{ child.get_url() }}"{% if child.target %}
-                   target="{{ child.target }}"{% endif %}>
+                <a class="dropdown-item {{ class_name }}" href="{{ child.get_url() }}"{% if child.target %}
+                target="{{ child.target }}"{% endif %}>
                   {{ menu_icon(child) }}{{ child.name }}</a>
               {%- endif %}
             </li>
@@ -62,11 +63,11 @@
       {%- if item.is_accessible() and item.is_visible() -%}
         {% set class_name = item.get_class_name() %}
         {%- if item.is_active(admin_view) %}
-          <li class="active{% if class_name %} {{ class_name }}{% endif %}">
+          <li class="active">
             {%- else %}
-          <li{% if class_name %} class="{{ class_name }}"{% endif %}>
+          <li>
         {%- endif %}
-      <a class="nav-link" href="{{ item.get_url() }}"{% if item.target %} target="{{ item.target }}"{% endif %}>
+      <a class="nav-link {{ class_name }}" href="{{ item.get_url() }}"{% if item.target %} target="{{ item.target }}"{% endif %}>
         {{ menu_icon(item) }}{{ item.name }}</a>
       </li>
       {%- endif -%}
@@ -79,8 +80,8 @@
   {% for item in links %}
     {% set class_name = item.get_class_name() %}
     {% if item.is_accessible() and item.is_visible() %}
-      <li{% if class_name %} class="{{ class_name }}"{% endif %}>
-        <a class="nav-link" href="{{ item.get_url() }}"{% if item.target %} target="{{ item.target }}"{% endif %}>
+      <li>
+        <a class="nav-link {{ class_name }}" href="{{ item.get_url() }}"{% if item.target %} target="{{ item.target }}"{% endif %}>
           {{ menu_icon(item) }}{{ item.name }}</a>
       </li>
     {% endif %}
