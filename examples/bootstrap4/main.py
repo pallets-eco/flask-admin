@@ -1,10 +1,12 @@
 import datetime
-import os
 import os.path as op
 
 from flask import Flask
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.menu import MenuLink
+from flask_admin.model.template import EndpointLinkRowAction
+from flask_admin.model.template import LinkRowAction
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
 
@@ -43,7 +45,10 @@ class Page(db.Model):
 
 
 class CustomView(ModelView):
-    pass
+    column_extra_row_actions = [
+        LinkRowAction("bi bi-chat-quote", "/admin/page?id={row_id}"),
+        EndpointLinkRowAction("bi bi-cake-fill", ".index_view"),
+    ]
 
 
 class UserAdmin(CustomView):
@@ -188,9 +193,64 @@ if __name__ == "__main__":
     admin.add_view(UserAdmin(User, db.session, category="Menu"))
     admin.add_view(CustomView(Page, db.session, category="Menu"))
 
-    app_dir = op.realpath(os.path.dirname(__file__))
+    admin.add_link(
+        MenuLink(
+            name="Fontawesome",
+            url="http://www.example.com/",
+            category="Icons",
+            icon_type="fa",
+            icon_value="fa-home shadow",
+        )
+    )
+    admin.add_link(
+        MenuLink(
+            name="Bootstrap Icons",
+            url="http://www.example.com/",
+            category="Icons",
+            icon_type="bi",
+            icon_value="bi-bootstrap",
+        )
+    )
+    admin.add_link(
+        MenuLink(
+            name="glyphicon",
+            url="http://www.example.com/",
+            category="Icons",
+            icon_type="glyph",
+            icon_value="glyphicon-home",
+        )
+    )
+    admin.add_link(
+        MenuLink(
+            name="image from /static",
+            url="http://www.example.com/",
+            category="Icons",
+            icon_type="image",
+            icon_value="h.png",
+            class_name="shadow",
+        )
+    )
+    admin.add_link(
+        MenuLink(
+            name="image URL",
+            url="http://www.example.com/",
+            category="Icons",
+            icon_type="image-url",
+            icon_value="https://placehold.co/32?text=S",
+        )
+    )
+
+    admin.add_sub_category("Links", parent_name="Icons")
+    admin.add_link(
+        MenuLink(name="External Link1", url="https://example.com/", category="Links")
+    )
+    admin.add_link(
+        MenuLink(name="External Link2", url="https://example.com/", category="Links")
+    )
+
+    app_dir = op.realpath(op.dirname(__file__))
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])
-    if not os.path.exists(database_path):
+    if not op.exists(database_path):
         with app.app_context():
             build_sample_db()
 
