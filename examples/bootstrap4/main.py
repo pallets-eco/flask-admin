@@ -16,7 +16,14 @@ app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
 app.config["SQLALCHEMY_ECHO"] = True
 db = SQLAlchemy(app)
-admin = Admin(app, name="Example: Bootstrap4", theme=Bootstrap4Theme(swatch="flatly"))
+admin = Admin(
+    app,
+    name="Example: Bootstrap4",
+    theme=Bootstrap4Theme(swatch="flatly"),
+    category_icon_classes={
+        "Menu": "fa fa-cog text-danger",
+    },
+)
 
 
 @app.route("/")
@@ -56,6 +63,9 @@ class UserAdmin(CustomView):
     column_filters = ("name", "email")
     can_export = True
     export_types = ["csv", "xlsx"]
+    can_set_page_size = True
+    page_size_options = (3, 5, 7, 10, 20, 50, 100)
+    page_size = 7
 
 
 def build_sample_db():
@@ -190,8 +200,68 @@ def build_sample_db():
 
 
 if __name__ == "__main__":
-    admin.add_view(UserAdmin(User, db.session, category="Menu"))
+    # Icons reference (FontAwesome v4):
+    # https://fontawesome.com/v4/icons/
+
+    admin.add_view(
+        UserAdmin(
+            User,
+            db.session,
+            category="Menu",
+            menu_icon_type="fa",
+            menu_icon_value="fa-users",
+            menu_class_name="text-warning",
+        )
+    )
     admin.add_view(CustomView(Page, db.session, category="Menu"))
+    admin.add_view(
+        CustomView(
+            Page,
+            db.session,
+            name="Page-with-icon",
+            endpoint="page2",
+            menu_class_name="text-danger",
+            menu_icon_type="fa",
+            menu_icon_value="fa-file",
+        )
+    )
+
+    admin.add_link(
+        MenuLink(
+            name="link1",
+            url="http://www.example.com/",
+            class_name="text-warning bg-danger",
+            icon_type="fa",
+            icon_value="fa-external-link",
+        )
+    )
+    admin.add_link(
+        MenuLink(name="link2", url="http://www.example.com/", class_name="text-danger")
+    )
+    admin.add_link(MenuLink(name="Link3", url="http://www.example.com/"))
+
+    admin.add_sub_category(name="Links", parent_name="Menu")
+    admin.add_link(
+        MenuLink(
+            name="External link",
+            url="http://www.example.com/",
+            category="Links",
+            class_name="text-info",
+            icon_type="fa",
+            icon_value="fa-external-link",
+        )
+    )
+    admin.add_link(
+        MenuLink(
+            name="External link",
+            url="http://www.example.com/",
+            category="Links",
+            class_name="text-success",
+        )
+    )
+    admin.add_link(
+        MenuLink(name="External link", url="http://www.example.com/", category="Links")
+    )
 
     admin.add_link(
         MenuLink(
