@@ -36,11 +36,13 @@ def bool_formatter(view: T_MODEL_VIEW, value: t.Any, name: str) -> str:
     :param value:
         Value to check
     """
+    bootstrap = "check-circle-fill" if value else "dash-circle-fill"
     glyph = "ok-circle" if value else "minus-sign"
     fa = "fa-check-circle" if value else "fa-minus-circle"
     label = f'{name}: {"true" if value else "false"}'
     return Markup(
         f'<span class="fa {fa} glyphicon glyphicon-{glyph} '
+        f"bi bi-{bootstrap} "
         f'icon-{glyph}" title="{label}"></span>'
     )
 
