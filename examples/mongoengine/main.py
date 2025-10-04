@@ -163,11 +163,25 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
+def create_example_data():
+    # Create example users
+    user1 = User(name="Alice", email="alice@example.com", password="alice123").save()
+    user2 = User(name="Bob", email="bob@example.com", password="bob123").save()
+
+    # Create example tweets
+    Tweet(
+        name="First Tweet", user_id=user1, text="Hello from Alice!", testie=True
+    ).save()
+    Tweet(
+        name="Second Tweet", user_id=user2, text="Bob's first tweet.", testie=False
+    ).save()
+
+
 if __name__ == "__main__":
     with MongoDbContainer("mongo:7.0.7") as mongo:
         mongo_uri = mongo.get_connection_url()
         connect(host=mongo_uri)
-
+        create_example_data()
         admin.add_view(UserView(User, "User"))
         admin.add_view(TweetView(Tweet, "Tweets"))
 
