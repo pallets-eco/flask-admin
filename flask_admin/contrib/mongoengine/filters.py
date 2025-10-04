@@ -13,12 +13,12 @@ class BaseMongoEngineFilter(filters.BaseFilter):
     Base MongoEngine filter.
     """
 
-    def __init__(self, column, name, options=None, data_type=None):
+    def __init__(self, column: str, name, options=None, data_type=None):
         """
         Constructor.
 
         :param column:
-            Model field
+            Model field name
         :param name:
             Display name
         :param options:
@@ -34,7 +34,7 @@ class BaseMongoEngineFilter(filters.BaseFilter):
 # Common filters
 class FilterEqual(BaseMongoEngineFilter):
     def apply(self, query, value):
-        flt = {str(self.column.name): value}
+        flt = {str(self.column): value}
         return query.filter(**flt)
 
     def operation(self):
@@ -43,7 +43,7 @@ class FilterEqual(BaseMongoEngineFilter):
 
 class FilterNotEqual(BaseMongoEngineFilter):
     def apply(self, query, value):
-        flt = {f"{self.column.name}__ne": value}
+        flt = {f"{self.column}__ne": value}
         return query.filter(**flt)
 
     def operation(self):
@@ -53,7 +53,7 @@ class FilterNotEqual(BaseMongoEngineFilter):
 class FilterLike(BaseMongoEngineFilter):
     def apply(self, query, value):
         term, data = parse_like_term(value)
-        flt = {f"{self.column.name}__{term}": data}
+        flt = {f"{self.column}__{term}": data}
         return query.filter(**flt)
 
     def operation(self):
@@ -63,7 +63,7 @@ class FilterLike(BaseMongoEngineFilter):
 class FilterNotLike(BaseMongoEngineFilter):
     def apply(self, query, value):
         term, data = parse_like_term(value)
-        flt = {f"{self.column.name}__not__{term}": data}
+        flt = {f"{self.column}__not__{term}": data}
         return query.filter(**flt)
 
     def operation(self):
@@ -72,7 +72,7 @@ class FilterNotLike(BaseMongoEngineFilter):
 
 class FilterGreater(BaseMongoEngineFilter):
     def apply(self, query, value):
-        flt = {f"{self.column.name}__gt": value}
+        flt = {f"{self.column}__gt": value}
         return query.filter(**flt)
 
     def operation(self):
@@ -81,7 +81,7 @@ class FilterGreater(BaseMongoEngineFilter):
 
 class FilterSmaller(BaseMongoEngineFilter):
     def apply(self, query, value):
-        flt = {f"{self.column.name}__lt": value}
+        flt = {f"{self.column}__lt": value}
         return query.filter(**flt)
 
     def operation(self):
@@ -91,9 +91,9 @@ class FilterSmaller(BaseMongoEngineFilter):
 class FilterEmpty(BaseMongoEngineFilter, filters.BaseBooleanFilter):
     def apply(self, query, value):
         if value == "1":
-            flt = {str(self.column.name): None}
+            flt = {str(self.column): None}
         else:
-            flt = {f"{self.column.name}__ne": None}
+            flt = {f"{self.column}__ne": None}
         return query.filter(**flt)
 
     def operation(self):
@@ -108,7 +108,7 @@ class FilterInList(BaseMongoEngineFilter):
         return [v.strip() for v in value.split(",") if v.strip()]
 
     def apply(self, query, value):
-        flt = {f"{self.column.name}__in": value}
+        flt = {f"{self.column}__in": value}
         return query.filter(**flt)
 
     def operation(self):
@@ -117,7 +117,7 @@ class FilterInList(BaseMongoEngineFilter):
 
 class FilterNotInList(FilterInList):
     def apply(self, query, value):
-        flt = {f"{self.column.name}__nin": value}
+        flt = {f"{self.column}__nin": value}
         return query.filter(**flt)
 
     def operation(self):
@@ -127,13 +127,13 @@ class FilterNotInList(FilterInList):
 # Customized type filters
 class BooleanEqualFilter(FilterEqual, filters.BaseBooleanFilter):
     def apply(self, query, value):
-        flt = {str(self.column.name): value == "1"}
+        flt = {str(self.column): value == "1"}
         return query.filter(**flt)
 
 
 class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
     def apply(self, query, value):
-        flt = {str(self.column.name): value != "1"}
+        flt = {str(self.column): value != "1"}
         return query.filter(**flt)
 
 
@@ -207,7 +207,7 @@ class DateTimeBetweenFilter(BaseMongoEngineFilter, filters.BaseDateTimeBetweenFi
 
     def apply(self, query, value):
         start, end = value
-        flt = {f"{self.column.name}__gte": start, f"{self.column.name}__lte": end}
+        flt = {f"{self.column}__gte": start, f"{self.column}__lte": end}
         return query.filter(**flt)
 
 
@@ -215,8 +215,8 @@ class DateTimeNotBetweenFilter(DateTimeBetweenFilter):
     def apply(self, query, value):
         start, end = value
         return query.filter(
-            Q(**{f"{self.column.name}__not__gte": start})
-            | Q(**{f"{self.column.name}__not__lte": end})
+            Q(**{f"{self.column}__not__gte": start})
+            | Q(**{f"{self.column}__not__lte": end})
         )
 
     def operation(self):
@@ -241,7 +241,7 @@ class ReferenceObjectIdFilter(BaseMongoEngineFilter):
         return ObjectId(value.strip())
 
     def apply(self, query, value):
-        flt = {str(self.column.name): value}
+        flt = {str(self.column): value}
         return query.filter(**flt)
 
     def operation(self):
