@@ -6,7 +6,6 @@ from wtforms import form
 
 from flask_admin.contrib.mongoengine import filters
 from flask_admin.contrib.mongoengine import ModelView
-from flask_admin.contrib.mongoengine.filters import FilterEqual
 
 
 class Test(Document):
@@ -53,7 +52,7 @@ def test_model(app, db, admin):
     assert view._edit_form_class is not None
     assert not view._search_supported
     assert view._filters
-    assert all(isinstance(f, FilterEqual) for f in view._filters)
+    assert all(isinstance(f, filters.FilterEqual) for f in view._filters)
     assert [f.__dict__ for f in view._filters] == [
         {
             "name": "test1",
