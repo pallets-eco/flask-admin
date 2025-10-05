@@ -4,7 +4,9 @@ from mongoengine.connection import get_db
 from wtforms import fields
 from wtforms import form
 
+from flask_admin.contrib.mongoengine import filters
 from flask_admin.contrib.mongoengine import ModelView
+from flask_admin.contrib.mongoengine.filters import FilterEqual
 
 
 class Test(Document):
@@ -26,6 +28,11 @@ class TestView(ModelView):
 
     form = TestForm
 
+    column_filters = (
+        filters.FilterEqual("test1", "test1"),
+        filters.FilterEqual("test2", "test2"),
+    )
+
 
 def test_model(app, db, admin):
     view = TestView(Test, "Test", endpoint="testview")
@@ -45,7 +52,24 @@ def test_model(app, db, admin):
     assert view._create_form_class is not None
     assert view._edit_form_class is not None
     assert not view._search_supported
-    assert view._filters is None
+    assert view._filters
+    assert all(isinstance(f, FilterEqual) for f in view._filters)
+    assert [f.__dict__ for f in view._filters] == [
+        {
+            "name": "test1",
+            "options": None,
+            "data_type": None,
+            "key_name": None,
+            "column": "test1",
+        },
+        {
+            "name": "test2",
+            "options": None,
+            "data_type": None,
+            "key_name": None,
+            "column": "test2",
+        },
+    ]
 
     # Make some test clients
     client = app.test_client()
@@ -86,3 +110,17 @@ def test_model(app, db, admin):
     rv = client.post(url)
     assert rv.status_code == 302
     assert db.test.estimated_document_count() == 0
+
+    # Filter: test1 equals "test1large"
+    rv = client.get("/admin/testview/?flt1_0=test1large")
+    assert rv.status_code == 200
+    data = rv.data.decode("utf-8")
+    assert "test1large" in data
+    assert "test1small" not in data
+
+    # Filter: test2 equals "test2"
+    rv = client.get("/admin/testview/?flt2_0=test2")
+    assert rv.status_code == 200
+    data = rv.data.decode("utf-8")
+    assert "test2large" not in data
+    assert "test2" in data
