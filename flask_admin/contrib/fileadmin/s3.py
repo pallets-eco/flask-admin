@@ -1,11 +1,14 @@
 import functools
+import posixpath
 import typing as t
+from pathlib import PureWindowsPath
 
 from botocore.client import BaseClient
 from botocore.exceptions import ClientError
 from flask import redirect
 from werkzeug import Response
 
+from flask_admin._compat import as_unicode
 from flask_admin.babel import gettext
 
 from ..._types import T_RESPONSE
@@ -63,7 +66,9 @@ class S3Storage:
         fileadmin_view = MyS3Admin(storage=S3Storage(...))
     """
 
-    def __init__(self, s3_client: BaseClient, bucket_name: str) -> None:
+    def __init__(
+        self, s3_client: BaseClient, bucket_name: str, prefix: t.Union[str, bytes] = ""
+    ) -> None:
         """
         Constructor
 
@@ -80,41 +85,44 @@ class S3Storage:
         self.s3_client = s3_client
         self.bucket_name = bucket_name
         self.separator = "/"
+        prefix = PureWindowsPath(as_unicode(prefix)).as_posix()
+        prefix = posixpath.normpath(prefix).lstrip("/")
+        self.prefix = "" if prefix in [".", "./"] else prefix
 
     @_strip_leading_slash_from("path")
     def get_files(self, path: str, directory: str) -> list:
-        def _strip_path(name: str, path: str) -> str:
-            if name.startswith(path):
-                return name.replace(path, "", 1)
-            return name
-
-        def _remove_trailing_slash(name: str) -> str:
-            return name[:-1]
-
         files = []
         directories = []
+
         if path and not path.endswith(self.separator):
             path += self.separator
 
+        if directory and not directory.endswith(self.separator):
+            directory += self.separator
+
         try:
             paginator = self.s3_client.get_paginator("list_objects_v2")
+            # paginator = self.s3_client.get_paginator("list_objects")
             for page in paginator.paginate(
-                Bucket=self.bucket_name, Prefix=path, Delimiter=self.separator
+                Bucket=self.bucket_name, Prefix=directory, Delimiter=self.separator
             ):
                 for common_prefix in page.get("CommonPrefixes", []):
-                    name = _remove_trailing_slash(
-                        _strip_path(common_prefix["Prefix"], path)
+                    name = posixpath.basename(
+                        common_prefix["Prefix"].strip(self.separator)
                     )
-                    key_name = _remove_trailing_slash(common_prefix["Prefix"])
-                    directories.append((name, key_name, True, 0, 0))
+                    rel_path = common_prefix["Prefix"].replace(self.prefix, "", 1)
+
+                    directories.append((name, rel_path, True, 0, 0))
 
                 for obj in page.get("Contents", []):
-                    if obj["Key"] == path:
+                    if obj["Key"] == directory:
                         continue
 
                     last_modified = int(obj["LastModified"].timestamp())
-                    name = _strip_path(obj["Key"], path)
-                    files.append((name, obj["Key"], False, obj["Size"], last_modified))
+                    name = posixpath.basename(obj["Key"])
+                    rel_path = obj["Key"].replace(self.prefix, "", 1)
+
+                    files.append((name, rel_path, False, obj["Size"], last_modified))
 
         except ClientError as e:
             raise ValueError(f"Failed to list files: {e}") from e
@@ -164,7 +172,7 @@ class S3Storage:
         return path in keys or (path + self.separator) in keys
 
     def get_base_path(self) -> str:
-        return ""
+        return self.prefix
 
     @_strip_leading_slash_from("path")
     def get_breadcrumbs(self, path: str) -> list[tuple[str, str]]:
@@ -300,8 +308,9 @@ class S3FileAdmin(BaseFileAdmin):
         self,
         s3_client: BaseClient,
         bucket_name: str,
+        prefix: t.Union[str, bytes] = "",
         *args: t.Any,
         **kwargs: t.Any,
     ) -> None:
-        storage = S3Storage(s3_client, bucket_name)
-        super().__init__(*args, storage=storage, **kwargs)  # type: ignore[misc, arg-type]
+        storage = S3Storage(s3_client, bucket_name, prefix=prefix)
+        super().__init__(*args, storage=storage, on_windows=False, **kwargs)  # type: ignore[misc, arg-type]

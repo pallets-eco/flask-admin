@@ -1,6 +1,7 @@
 import os
 import os.path as op
 import platform
+import posixpath
 import re
 import shutil
 import sys
@@ -384,11 +385,10 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         Return Normalize path compatible with the speicified platform
         """
-        noramlized = str(op.normpath(path))
         if self._on_windows:
-            return noramlized.replace("/", "\\")
+            return op.normpath(path)
         else:
-            return noramlized.replace("\\", "/")
+            return posixpath.normpath(path)
 
     def is_accessible_path(self, path: str) -> bool:
         """

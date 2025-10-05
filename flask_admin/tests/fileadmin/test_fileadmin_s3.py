@@ -176,11 +176,6 @@ class TestS3FileAdmin(Base.FileAdminTests):
             pass
 
         view_kwargs = dict(fileadmin_kwargs)
-
-        # explicitly set the OS based on the platform of s3-cloud
-        view_kwargs["on_windows"] = False
-
-        view_kwargs.setdefault("name", "Files")
         view = MyFileAdmin(*fileadmin_args, **view_kwargs)
 
         admin.add_view(view)
@@ -195,3 +190,83 @@ class TestS3FileAdmin(Base.FileAdminTests):
         # Test access to deep path
         rv = client.get("/admin/myfileadmin/b/xx/yy/zz")
         assert rv.status_code == 200
+
+    @pytest.mark.parametrize(
+        "prefix",
+        (
+            "xx/yy",
+            "xx/yy/",
+            "/xx/yy",
+            "/xx/yy/",
+            "/xx//yy/",
+            "xx\\yy",
+            "/xx\\yy/",
+            "xx/../xx/yy",
+            "xx/../xx//yy",
+        ),
+    )
+    def test_base_path(self, app, admin, mock_s3_client, prefix):
+        fileadmin_class = self.fileadmin_class()
+        fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+
+        s3 = fileadmin_args[0]
+        s3.upload_fileobj(BytesIO(b""), _bucket_name, "xx/yy/zz/dummy2.txt")
+
+        class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+            pass
+
+        view_kwargs = dict(fileadmin_kwargs)
+        view_kwargs["prefix"] = prefix
+        view_kwargs.setdefault("name", "Files")
+        view = MyFileAdmin(*fileadmin_args, **view_kwargs)
+
+        admin.add_view(view)
+
+        client = app.test_client()
+
+        # actual s3 prefix is xx/yy/
+        rv = client.get("/admin/myfileadmin/")
+        assert rv.status_code == 200
+        assert "dummy2.txt" not in rv.data.decode("utf-8")
+
+        rv = client.get("/admin/myfileadmin/b/xx/zz/")
+        assert rv.status_code == 404
+
+        rv = client.get("/admin/myfileadmin/b/zz/")
+        assert rv.status_code == 200
+        assert "dummy2.txt" in rv.data.decode("utf-8")
+
+    @pytest.mark.parametrize(
+        "bpath",
+        ("", ".", "/", "./", "\\", ".\\", ".\\."),
+    )
+    def test_base_path_root(self, app, admin, mock_s3_client, bpath):
+        fileadmin_class = self.fileadmin_class()
+        fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+
+        s3 = fileadmin_args[0]
+        s3.upload_fileobj(BytesIO(b""), _bucket_name, "xx/yy/zz/dummy2.txt")
+
+        class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+            pass
+
+        view_kwargs = dict(fileadmin_kwargs)
+        view_kwargs["prefix"] = bpath
+        view_kwargs.setdefault("name", "Files")
+        view = MyFileAdmin(*fileadmin_args, **view_kwargs)
+
+        admin.add_view(view)
+
+        client = app.test_client()
+
+        rv = client.get("/admin/myfileadmin/")
+        assert rv.status_code == 200
+        assert "dummy2.txt" not in rv.data.decode("utf-8")
+
+        rv = client.get("/admin/myfileadmin/b/xx/yy/")
+        assert rv.status_code == 200
+        assert "dummy2.txt" not in rv.data.decode("utf-8")
+
+        rv = client.get("/admin/myfileadmin/b/xx/yy/zz")
+        assert rv.status_code == 200
+        assert "dummy2.txt" in rv.data.decode("utf-8")
