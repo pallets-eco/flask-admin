@@ -1,6 +1,7 @@
 import os
 import os.path as op
 import platform
+import posixpath
 import re
 import shutil
 import sys
@@ -327,6 +328,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         menu_icon_type: t.Optional[str] = None,
         menu_icon_value: t.Optional[str] = None,
         storage: t.Optional[LocalFileStorage] = None,
+        on_windows: t.Optional[bool] = None,
     ) -> None:
         """
         Constructor.
@@ -347,13 +349,19 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         :param storage:
             The storage backend that the `BaseFileAdmin` will use to operate on the
             files.
+        :param on_windows:
+            True if the operating system of the storage is. Use it only when the
+            current os is different than storage os.
         """
         self.base_url = base_url
         self.storage = storage
 
         self.init_actions()
 
-        self._on_windows = platform.system() == "Windows"
+        if on_windows is not None:
+            self._on_windows = on_windows
+        else:
+            self._on_windows = platform.system() == "Windows"
 
         # Convert allowed_extensions to set for quick validation
         if self.allowed_extensions and not isinstance(self.allowed_extensions, set):
@@ -372,6 +380,15 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
         )
+
+    def _normpath(self, path: T_PATH_LIKE):
+        """
+        Return Normalize path compatible with the speicified platform
+        """
+        if self._on_windows:
+            return op.normpath(path)
+        else:
+            return posixpath.normpath(path)
 
     def is_accessible_path(self, path: str) -> bool:
         """
@@ -614,7 +631,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         :param directory:
             Directory path to check
         """
-        return op.normpath(directory).startswith(base_path)  # type: ignore[arg-type]
+        return self._normpath(directory).startswith(base_path)
 
     def save_file(self, path: str, file_data: FileStorage) -> None:
         """
@@ -689,13 +706,13 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             directory = base_path
             path = ""
         else:
-            path = op.normpath(path)
+            path = self._normpath(path)
             if base_path:
                 directory = self._separator.join([base_path, path])
             else:
                 directory = path
 
-            directory = op.normpath(directory)
+            directory = self._normpath(directory)
 
             if not self.is_in_folder(base_path, directory):
                 abort(404)
@@ -890,7 +907,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         # Parent directory
         if directory != base_path:
-            parent_path: t.Optional[str] = op.normpath(
+            parent_path: t.Optional[str] = self._normpath(
                 self._separator.join([path, ".."])
             )
             if parent_path == ".":
