@@ -1,6 +1,6 @@
 [project]
 name = "Flask-Admin"
-version = "2.0.0a4"
+version = "2.0.0a5"
 description = "Simple and extensible admin interface framework for Flask"
 readme = "README.md"
 license = { file = "LICENSE.txt" }
