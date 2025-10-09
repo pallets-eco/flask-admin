@@ -667,6 +667,7 @@ all = [
     { name = "flask-babel" },
     { name = "flask-sqlalchemy" },
     { name = "geoalchemy2" },
+    { name = "mongoengine" },
     { name = "peewee" },
     { name = "pillow" },
     { name = "pymongo" },
@@ -694,6 +695,9 @@ geoalchemy = [
 ]
 images = [
     { name = "pillow" },
+]
+mongoengine = [
+    { name = "mongoengine" },
 ]
 peewee = [
     { name = "peewee" },
@@ -804,6 +808,7 @@ requires-dist = [
     { name = "flask-admin", extras = ["export"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["geoalchemy"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["images"], marker = "extra == 'all'", editable = "." },
+    { name = "flask-admin", extras = ["mongoengine"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["peewee"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["pymongo"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["rediscli"], marker = "extra == 'all'", editable = "." },
@@ -818,6 +823,7 @@ requires-dist = [
     { name = "geoalchemy2", marker = "extra == 'geoalchemy'", specifier = ">=0.14.0" },
     { name = "jinja2", specifier = ">=3.0" },
     { name = "markupsafe", specifier = ">=2.0" },
+    { name = "mongoengine", marker = "extra == 'mongoengine'", specifier = ">=0.29.0" },
     { name = "peewee", marker = "extra == 'peewee'", specifier = ">=3.14.0" },
     { name = "pillow", marker = "extra == 'images'", specifier = ">=10.0.0" },
     { name = "pymongo", marker = "extra == 'pymongo'", specifier = ">=3.10.0" },
@@ -832,7 +838,7 @@ requires-dist = [
     { name = "wtf-peewee", marker = "extra == 'peewee'", specifier = ">=3.0.4" },
     { name = "wtforms", specifier = ">=2.3" },
 ]
-provides-extras = ["sqlalchemy", "sqlalchemy-with-utils", "geoalchemy", "pymongo", "peewee", "s3", "azure-blob-storage", "images", "export", "rediscli", "translation", "all"]
+provides-extras = ["sqlalchemy", "sqlalchemy-with-utils", "geoalchemy", "pymongo", "mongoengine", "peewee", "s3", "azure-blob-storage", "images", "export", "rediscli", "translation", "all"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -1170,6 +1176,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/e7/ff/0ffefdcac38932a54d2b5eed4e0ba8a408f215002cd178ad1df0f2806ff8/mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325", size = 9658, upload-time = "2022-01-24T01:14:51.113Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/27/1a/1f68f9ba0c207934b35b86a8ca3aad8395a3d6dd7921c0686e23853ff5a9/mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e", size = 7350, upload-time = "2022-01-24T01:14:49.62Z" },
+]
+
+[[package]]
+name = "mongoengine"
+version = "0.29.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pymongo" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/32/0b/f0bd3da47c77b2d48103b42b9a38a70de9c41c979dd681a9a6aff43bf2eb/mongoengine-0.29.1.tar.gz", hash = "sha256:3b43abaf2d5f0b7d39efc2b7d9e78f4d4a5dc7ce92b9889ba81a5a9b8dee3cf3", size = 168735, upload-time = "2024-09-19T08:41:22.487Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/97/52/a0788a31f8ec2cfb508e1fb29c321d5082f0aa58bc88ba118c898e72f612/mongoengine-0.29.1-py3-none-any.whl", hash = "sha256:9302ec407dd60f47f62cc07684d9f6cac87f1e93283c54203851788104d33df4", size = 112377, upload-time = "2024-09-19T08:41:20.626Z" },
 ]
 
 [[package]]
