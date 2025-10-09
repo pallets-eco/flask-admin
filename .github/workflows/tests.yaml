@@ -22,17 +22,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
         tox: ['normal']
         include:
           - python: '3.9'
             tox: 'py39-min'
-          - python: '3.13'
-            tox: 'py313-noflaskbabel'
+          - python: '3.14'
+            tox: 'py314-noflaskbabel'
           - python: '3.9'
             tox: 'py39-sqlalchemy1'
-          - python: '3.13'
-            tox: 'py313-sqlalchemy1'
+          - python: '3.14'
+            tox: 'py314-sqlalchemy1'
     services:
       # Label used to access the service container
       postgres:

@@ -19,6 +19,7 @@ classifiers = [
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
 ]
 requires-python = ">=3.9"
 dependencies = [
@@ -260,9 +261,9 @@ order-by-type = false
 
 [tool.tox]
 env_list = [
-    "py39", "py310", "py311", "py312", "py313",
-    "py39-sqlalchemy1", "py313-sqlalchemy1",
-    "py313-noflaskbabel",
+    "py39", "py310", "py311", "py312", "py313", "py314",
+    "py39-sqlalchemy1", "py314-sqlalchemy1",
+    "py314-noflaskbabel",
     "py39-min",
     "style",
     "typing",
@@ -336,10 +337,10 @@ commands = [
     ],
 ]
 
-[tool.tox.env.py313-sqlalchemy1]
-description = "pytest with SQLAlchemy 1.x on Python 3.13"
+[tool.tox.env.py314-sqlalchemy1]
+description = "pytest with SQLAlchemy 1.x on Python 3.14"
 base = ["env_run_base"]
-base_python = ["3.13"]
+base_python = ["3.14"]
 commands = [
     ["uv", "pip", "install", "sqlalchemy>=1.4,<2"],
     ["uv", "pip", "install", "flask-sqlalchemy<=3.0.5"],
@@ -349,7 +350,7 @@ commands = [
     ],
 ]
 
-[tool.tox.env.py313-noflaskbabel]
+[tool.tox.env.py314-noflaskbabel]
 description = "pytest without flask-babel"
 base = ["env_run_base"]
 commands = [
@@ -372,8 +373,8 @@ description = "run static type checkers"
 dependency_groups = ["typing"]
 commands = [
     ["mypy", "--python-version", "3.9"],
-    ["mypy", "--python-version", "3.13"],
-    ["mypy", "--python-version", "3.13",
+    ["mypy", "--python-version", "3.14"],
+    ["mypy", "--python-version", "3.14",
         "--ignore-missing-imports",
         "--disable-error-code", "name-defined", # allow flask_sqlalchemy's db.Model in examples
         "--no-warn-unused-ignores",  # prevent conflict with mypy 1st run on src folder
