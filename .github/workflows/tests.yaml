@@ -29,10 +29,6 @@ jobs:
             tox: 'py39-min'
           - python: '3.13'
             tox: 'py313-noflaskbabel'
-          - python: '3.9'
-            tox: 'py39-sqlalchemy1'
-          - python: '3.13'
-            tox: 'py313-sqlalchemy1'
     services:
       # Label used to access the service container
       postgres:

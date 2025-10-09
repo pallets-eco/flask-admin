@@ -33,7 +33,7 @@ dependencies = [
 [project.optional-dependencies]
 sqlalchemy = [
     "flask-sqlalchemy>=3",
-    "sqlalchemy>=1.4",
+    "sqlalchemy>=2.0",
 ]
 sqlalchemy-with-utils = [
     "Flask-Admin[sqlalchemy]",
@@ -261,7 +261,6 @@ order-by-type = false
 [tool.tox]
 env_list = [
     "py39", "py310", "py311", "py312", "py313",
-    "py39-sqlalchemy1", "py313-sqlalchemy1",
     "py313-noflaskbabel",
     "py39-min",
     "style",
@@ -317,32 +316,6 @@ commands = [
         "tablib==3.0.0",
         "redis==4.0.0",
     ],
-    [
-        "pytest", "-v", "--tb=short", "--basetemp={env_tmp_dir}",
-        {replace = "posargs", default = [], extend = true},
-    ],
-]
-
-[tool.tox.env.py39-sqlalchemy1]
-description = "pytest with SQLAlchemy 1.x on Python 3.9"
-base = ["env_run_base"]
-base_python = ["3.9"]
-commands = [
-    ["uv", "pip", "install", "sqlalchemy>=1.4,<2"],
-    ["uv", "pip", "install", "flask-sqlalchemy<=3.0.5"],
-    [
-        "pytest", "-v", "--tb=short", "--basetemp={env_tmp_dir}",
-        {replace = "posargs", default = [], extend = true},
-    ],
-]
-
-[tool.tox.env.py313-sqlalchemy1]
-description = "pytest with SQLAlchemy 1.x on Python 3.13"
-base = ["env_run_base"]
-base_python = ["3.13"]
-commands = [
-    ["uv", "pip", "install", "sqlalchemy>=1.4,<2"],
-    ["uv", "pip", "install", "flask-sqlalchemy<=3.0.5"],
     [
         "pytest", "-v", "--tb=short", "--basetemp={env_tmp_dir}",
         {replace = "posargs", default = [], extend = true},

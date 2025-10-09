@@ -5,34 +5,25 @@ from sqlalchemy import and_
 from sqlalchemy import inspect
 from sqlalchemy import or_
 from sqlalchemy import tuple_
+from sqlalchemy.exc import DBAPIError
+from sqlalchemy.ext.associationproxy import AssociationProxyExtensionType
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.clsregistry import _class_resolver
 from sqlalchemy.orm.properties import ColumnProperty
+from sqlalchemy.sql.operators import eq
 from sqlalchemy.sql.schema import Column
 from sqlalchemy.sql.schema import Table
 
-from flask_admin._types import T_ORM_MODEL
-from flask_admin._types import T_SQLALCHEMY_MODEL
-
-try:
-    # SQLAlchemy 2.0
-    from sqlalchemy.ext.associationproxy import AssociationProxyExtensionType
-
-    ASSOCIATION_PROXY = AssociationProxyExtensionType.ASSOCIATION_PROXY
-except ImportError:
-    from sqlalchemy.ext.associationproxy import (  # type: ignore[attr-defined, no-redef]
-        ASSOCIATION_PROXY,
-    )
-
-from sqlalchemy.exc import DBAPIError
-from sqlalchemy.sql.operators import eq
-
 from flask_admin._compat import filter_list
 from flask_admin._compat import string_types
+from flask_admin._types import T_ORM_MODEL
+from flask_admin._types import T_SQLALCHEMY_MODEL
 from flask_admin.tools import escape  # noqa: F401
 from flask_admin.tools import iterdecode  # noqa: F401
 from flask_admin.tools import iterencode  # noqa: F401
+
+ASSOCIATION_PROXY = AssociationProxyExtensionType.ASSOCIATION_PROXY
 
 
 def parse_like_term(term: str) -> str:
