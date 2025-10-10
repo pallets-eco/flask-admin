@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-10-10 11:21+0200\n"
-"PO-Revision-Date: 2025-10-10 11:55+0200\n"
+"PO-Revision-Date: 2025-10-10 12:00+0200\n"
 "Last-Translator: Saša Stamenković <umpirsky\"gmail.com>\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "Language: sr_SP\n"
@@ -143,7 +143,7 @@ msgstr "Putanja ne postoji."
 #: ../flask_admin/contrib/fileadmin/__init__.py:1228
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
-msgstr "Uspešno preimenovane \"%(src)s\" u \"%(dst)s\""
+msgstr "Uspešno preimenovano \"%(src)s\" u \"%(dst)s\""
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1237
 #, python-format
@@ -158,7 +158,7 @@ msgstr "Preimenuj %(name)s"
 #: ../flask_admin/contrib/fileadmin/__init__.py:1298
 #, python-format
 msgid "Error saving changes to %(name)s."
-msgstr "Greške čuvanja promene u %(name)s."
+msgstr "Greška čuvanja promene u %(name)s."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1304
 #, python-format
@@ -168,7 +168,7 @@ msgstr "Izmene u %(name)s su uspešno izvršene."
 #: ../flask_admin/contrib/fileadmin/__init__.py:1314
 #, python-format
 msgid "Error reading %(name)s."
-msgstr "Greške čitanja %(name)s."
+msgstr "Greška čitanja %(name)s."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1318
 #: ../flask_admin/contrib/fileadmin/__init__.py:1331
