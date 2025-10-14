@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Flask-Admin VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-09-16 00:18+0200\n"
+"POT-Creation-Date: 2025-10-15 00:13+0200\n"
 "PO-Revision-Date: 2018-11-05 05:43+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hant_TW\n"
@@ -194,8 +194,8 @@ msgstr "編輯 %(path)s"
 #: ../flask_admin/contrib/fileadmin/__init__.py:1363
 #: ../flask_admin/contrib/mongoengine/view.py:726
 #: ../flask_admin/contrib/peewee/view.py:611
-#: ../flask_admin/contrib/pymongo/view.py:422
-#: ../flask_admin/contrib/sqla/view.py:1436
+#: ../flask_admin/contrib/pymongo/view.py:425
+#: ../flask_admin/contrib/sqla/view.py:1437
 msgid "Delete"
 msgstr "刪除"
 
@@ -306,16 +306,16 @@ msgstr "無法取得模型。%(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:627
 #: ../flask_admin/contrib/peewee/view.py:550
-#: ../flask_admin/contrib/pymongo/view.py:356
-#: ../flask_admin/contrib/sqla/view.py:1356
+#: ../flask_admin/contrib/pymongo/view.py:359
+#: ../flask_admin/contrib/sqla/view.py:1357
 #, python-format
 msgid "Failed to create record. %(error)s"
 msgstr "建立紀錄的時候發生異常：%(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:656
 #: ../flask_admin/contrib/peewee/view.py:572
-#: ../flask_admin/contrib/pymongo/view.py:380
-#: ../flask_admin/contrib/sqla/view.py:1385 ../flask_admin/model/base.py:2710
+#: ../flask_admin/contrib/pymongo/view.py:383
+#: ../flask_admin/contrib/sqla/view.py:1386 ../flask_admin/model/base.py:2710
 #: ../flask_admin/model/base.py:2717 ../flask_admin/model/base.py:2721
 #, python-format
 msgid "Failed to update record. %(error)s"
@@ -323,23 +323,23 @@ msgstr "更新紀錄的時候發生異常：%(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:682
 #: ../flask_admin/contrib/peewee/view.py:590
-#: ../flask_admin/contrib/pymongo/view.py:404
-#: ../flask_admin/contrib/sqla/view.py:1413
+#: ../flask_admin/contrib/pymongo/view.py:407
+#: ../flask_admin/contrib/sqla/view.py:1414
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr "刪除紀錄的時候發生異常：%(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:727
 #: ../flask_admin/contrib/peewee/view.py:612
-#: ../flask_admin/contrib/pymongo/view.py:423
-#: ../flask_admin/contrib/sqla/view.py:1437
+#: ../flask_admin/contrib/pymongo/view.py:426
+#: ../flask_admin/contrib/sqla/view.py:1438
 msgid "Are you sure you want to delete selected records?"
 msgstr "您確定要刪除這些紀錄嗎？"
 
 #: ../flask_admin/contrib/mongoengine/view.py:739
 #: ../flask_admin/contrib/peewee/view.py:632
-#: ../flask_admin/contrib/pymongo/view.py:436
-#: ../flask_admin/contrib/sqla/view.py:1460 ../flask_admin/model/base.py:2490
+#: ../flask_admin/contrib/pymongo/view.py:439
+#: ../flask_admin/contrib/sqla/view.py:1461 ../flask_admin/model/base.py:2490
 #, fuzzy, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
@@ -347,8 +347,8 @@ msgstr[0] "紀錄刪除成功。"
 
 #: ../flask_admin/contrib/mongoengine/view.py:749
 #: ../flask_admin/contrib/peewee/view.py:642
-#: ../flask_admin/contrib/pymongo/view.py:445
-#: ../flask_admin/contrib/sqla/view.py:1472
+#: ../flask_admin/contrib/pymongo/view.py:448
+#: ../flask_admin/contrib/sqla/view.py:1473
 #, python-format
 msgid "Failed to delete records. %(error)s"
 msgstr "刪除紀錄的時候發生異常：%(error)s"
@@ -379,7 +379,7 @@ msgstr "不是有效的 ISO 貨幣代碼（例如 USD、EUR、CNY)。"
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
 msgstr "不是有效的顏色（例如「red」、「#f00」、「#ff0000」)。"
 
-#: ../flask_admin/contrib/sqla/view.py:1317
+#: ../flask_admin/contrib/sqla/view.py:1318
 #, python-format
 msgid "Integrity error. %(message)s"
 msgstr "完整性錯誤。%(message)s"
