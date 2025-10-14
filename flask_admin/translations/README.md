@@ -1,2 +1,1 @@
-Translations are ONLY handled through Crowdin!
-https://crowdin.com/project/flask-admin
+Translations were moved from crowdin to PR requests only!

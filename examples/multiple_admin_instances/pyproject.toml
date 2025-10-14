@@ -1,0 +1,12 @@
+[project]
+name = "example-multiple-admin-instances"
+version = "0.1.0"
+description = "Multiple Admin Instances Example."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "flask-admin"
+]
+
+[tool.uv.sources]
+flask-admin = { path = "../../", editable = true }

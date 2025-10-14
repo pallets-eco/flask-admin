@@ -4,7 +4,7 @@
 {% block body %}
   <div class="modal-header">
     {% block header_text %}
-      <h3>{{ _gettext('View Record') + ' #' + request.args.get('id') }}</h3>
+      <h5 class="modal-title">{{ _gettext('View Record') + ' #' + request.args.get('id') }}</h5>
     {% endblock %}
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
   </div>
@@ -35,6 +35,6 @@
 {% endblock %}
 
 {% block tail %}
-  <script src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
-  <script src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
+  <script {{ admin_csp_nonce_attribute }}>window.faForm.applyGlobalStyles(document.getElementsByClassName('modal-content'));</script>
 {% endblock %}

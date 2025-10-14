@@ -1,5 +1,5 @@
 # Flask-Admin
-# http://flask-admin.readthedocs.io/en/latest/
+# https://flask-admin.readthedocs.io/en/latest/
 #
 # Copyright (C) 2012-2015, Serge S. Koval
 # This file is distributed under the same license as the flask-admin
@@ -25,12 +25,12 @@ msgstr "Flask-Admin"
 
 #: ../../index.rst:6
 msgid ""
-"**Why Flask?** As a micro-framework, `Flask <http://flask.pocoo.org/>`_ "
+"**Why Flask?** As a micro-framework, `Flask <https://flask.palletsprojects.com/>`_ "
 "lets you build web services with very little overhead. It offers freedom "
 "for you, the designer, to implement your project in a way that suits your"
 " particular application."
 msgstr ""
-"**为什么选择 Flask？** 作为一个微框架，`Flask <http://flask.pocoo.org/>`_ "
+"**为什么选择 Flask？** 作为一个微框架，`Flask <https://flask.palletsprojects.com/>`_ "
 "允许您以非常少的开销构建 Web 服务。它为您的设计提供了自由，使您能够以适合特定应用程序"
 "的方式实现您的项目。"
 
@@ -70,11 +70,11 @@ msgid ""
 "**What does it look like?** At http://examples.flask-admin.org/ you can "
 "see some examples of Flask-Admin in action, or browse through the "
 "`examples/` directory in the `GitHub repository <https://github.com"
-"/flask-admin/flask-admin>`_."
+"/pallets-eco/flask-admin>`_."
 msgstr ""
 "**它是什么样子的？** 在 http://examples.flask-admin.org/，你可以看到 "
 "Flask-Admin 的一些示例，也可以直接浏览 `GitHub 存储库 <https://github.com"
-"/flask-admin/flask-admin>`_ 中的 `examples/` 目录。"
+"/pallets-eco/flask-admin>`_ 中的 `examples/` 目录。"
 
 #: ../../index.rst:40
 msgid "Support"

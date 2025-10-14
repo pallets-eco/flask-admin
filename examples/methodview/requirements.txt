@@ -1,2 +1,0 @@
-Flask
-Flask-Admin

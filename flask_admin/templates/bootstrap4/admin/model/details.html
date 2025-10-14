@@ -48,5 +48,5 @@
 
 {% block tail %}
   {{ super() }}
-  <script src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
 {% endblock %}

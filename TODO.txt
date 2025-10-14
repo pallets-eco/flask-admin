@@ -1,6 +1,0 @@
-- Python 3
-  - Test for raw wtforms form
-- Model backends
-  - model_changed callback to accept 3rd parameter
-- MongoEngine
-  - ImageField support

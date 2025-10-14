@@ -3,6 +3,9 @@ try:
     import geoalchemy2
     import shapely
 except ImportError:
-    raise Exception('Please install geoalchemy2 and shapely in order to use geoalchemy integration')
+    raise Exception(
+        "Could not import `geoalchemy2` or `shapely`. "
+        "Enable `geoalchemy` integration by installing `flask-admin[geoalchemy]`"
+    )
 
 from .view import ModelView

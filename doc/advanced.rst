@@ -18,35 +18,71 @@ SecureForm class in your *ModelView* subclass by specifying the *form_base_class
 SecureForm requires WTForms 2 or greater. It uses the WTForms SessionCSRF class
 to generate and validate the tokens for you when the forms are submitted.
 
-Localization With Flask-Babelex
--------------------------------
+CSP support
+-----------
 
-****
+To support `CSP <https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html>`_
+in Flask-Admin, you can pass a `csp_nonce_generator` function through to Flask-Admin on
+initialisation. This function should return a CSP nonce that will be attached to all
+`<script>` and `<style>` resources. You are responsible for making sure that your Flask
+responses include an appropriate 'Content-Security-Policy` header that also includes the
+same nonce value.
+
+We recommend using `Flask-Talisman <https://pypi.org/project/flask-talisman/>`_. Here's an example
+of how to configure Flask-Admin to inject CSP nonce values::
+
+    app = Flask(__name__)
+
+    talisman = Talisman(
+        app,
+        content_security_policy={
+            "default-src": "'self'",
+        },
+        content_security_policy_nonce_in=["script-src", "style-src"]
+    )
+    csp_nonce_generator = app.jinja_env.globals["csp_nonce"]  # this is talisman's generator function
+
+    admin = admin.Admin(app, name="Example", theme=Bootstrap4Theme(), csp_nonce_generator=csp_nonce_generator)
+
+If you decide to use a content security policy, you should pay close attention to the policy you set to
+make sure it is appropriate for your project's security needs.
+
+If you create any of your own templates for Flask-Admin pages, you will need to inject the CSP nonces yourself as appropriate.
+
+Adding Custom Javascript and CSS
+--------------------------------
+
+To add custom JavaScript or CSS in your *ModelView* use *extra_js* or *extra_css* parameters::
+
+    class MyModelView(ModelView):
+        extra_js = ['https://example.com/custom.js']
+        extra_css = ['https://example.com/custom.css']
+
+Localization With Flask-Babel
+-----------------------------
 
 Flask-Admin comes with translations for several languages.
 Enabling localization is simple:
 
-#. Install `Flask-BabelEx <http://github.com/mrjoes/flask-babelex/>`_ to do the heavy
-   lifting. It's a fork of the
-   `Flask-Babel <http://github.com/mitshuhiko/flask-babel/>`_ package::
+#. Install `Flask-Babel <https://github.com/python-babel/flask-babel/>`_ to do the heavy
+   lifting.
 
-        pip install flask-babelex
-
-#. Initialize Flask-BabelEx by creating instance of `Babel` class::
-
-        from flask import Flask
-        from flask_babelex import Babel
-
-        app = Flask(__name__)
-        babel = Babel(app)
+        pip install flask-babel
 
 #. Create a locale selector function::
 
-        @babel.localeselector
         def get_locale():
             if request.args.get('lang'):
                 session['lang'] = request.args.get('lang')
             return session.get('lang', 'en')
+
+#. Initialize Flask-Babel by creating instance of `Babel` class::
+
+        from flask import Flask
+        from flask_babel import Babel
+
+        app = Flask(__name__)
+        babel = Babel(app, locale_selector=get_locale)
 
 Now, you could try a French version of the application at: `http://localhost:5000/admin/?lang=fr <http://localhost:5000/admin/?lang=fr>`_.
 
@@ -54,15 +90,60 @@ Go ahead and add your own logic to the locale selector function. The application
 a user profile, cookie, session, etc. It can also use the `Accept-Language`
 header to make the selection automatically.
 
-If the built-in translations are not enough, look at the `Flask-BabelEx documentation <https://pythonhosted.org/Flask-BabelEx/>`_
+If the built-in translations are not enough, look at the `Flask-Babel documentation <https://python-babel.github.io/flask-babel/>`_
 to see how you can add your own.
+
+Using with Flask in `host_matching` mode
+----------------------------------------
+
+If Flask is configured with `host_matching` enabled, then all routes registered on the app need to know which host(s) they should be served for.
+
+This requires some additional explicit configuration for Flask-Admin by passing the `host` argument to `Admin()` calls.
+
+#. With your Flask app initialised::
+
+        from flask import Flask
+        app = Flask(__name__, host='my.domain.com', static_host='static.domain.com')
+
+
+Serving Flask-Admin on a single, explicit host
+**********************************************
+Construct your Admin instance(s) and pass the desired `host` for the admin instance::
+
+        class AdminView(admin.BaseView):
+            @admin.expose('/')
+            def index(self):
+                return self.render('template.html')
+
+        admin1 = admin.Admin(app, url='/admin', host='admin.domain.com')
+        admin1.add_view(AdminView())
+
+Flask's `url_for` calls will work without any additional configuration/information::
+
+        url_for('admin.index', _external=True) == 'http://admin.domain.com/admin')
+
+
+Serving Flask-Admin on all hosts
+********************************
+Pass a wildcard to the `host` parameter to serve the admin instance on all hosts::
+
+        class AdminView(admin.BaseView):
+            @admin.expose('/')
+            def index(self):
+                return self.render('template.html')
+
+        admin1 = admin.Admin(app, url='/admin', host='*')
+        admin1.add_view(AdminView())
+
+If you need to generate URLs for a wildcard admin instance, you will need to pass `admin_routes_host` to the `url_for` call::
+
+        url_for('admin.index', admin_routes_host='admin.domain.com', _external=True) == 'http://admin.domain.com/admin')
+        url_for('admin.index', admin_routes_host='admin2.domain.com', _external=True) == 'http://admin2.domain.com/admin')
 
 .. _file-admin:
 
 Managing Files & Folders
 ------------------------
-
-****
 
 To manage static files instead of database records, Flask-Admin comes with
 the FileAdmin plug-in. It gives you the ability to upload, delete, rename, etc. You
@@ -74,21 +155,21 @@ can use it by adding a FileAdmin view to your app::
 
     # Flask setup here
 
-    admin = Admin(app, name='microblog', template_mode='bootstrap3')
+    admin = Admin(app, name='microblog', theme=Bootstrap4Theme())
 
     path = op.join(op.dirname(__file__), 'static')
     admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
 
 
 FileAdmin also has out-of-the-box support for managing files located on a Amazon Simple Storage Service
-bucket. To add it to your app::
+bucket using a `boto3 client <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html#boto3.session.Session.client>`_. To add it to your app::
 
     from flask_admin import Admin
     from flask_admin.contrib.fileadmin.s3 import S3FileAdmin
 
     admin = Admin()
 
-    admin.add_view(S3FileAdmin('files_bucket', 'us-east-1', 'key_id', 'secret_key')
+    admin.add_view(S3FileAdmin(boto3.client('s3'), 'files_bucket'))
 
 You can disable uploads, disable file deletion, restrict file uploads to certain types, etc.
 Check :mod:`flask_admin.contrib.fileadmin` in the API documentation for more details.
@@ -103,8 +184,6 @@ API documentation for details on the methods.
 Adding A Redis Console
 ----------------------
 
-****
-
 Another plug-in that's available is the Redis Console. If you have a Redis
 instance running on the same machine as your app, you can::
 
@@ -113,15 +192,13 @@ instance running on the same machine as your app, you can::
 
     # Flask setup here
 
-    admin = Admin(app, name='microblog', template_mode='bootstrap3')
+    admin = Admin(app, name='microblog', theme=Bootstrap4Theme())
 
     admin.add_view(rediscli.RedisCli(Redis()))
 
 
 Replacing Individual Form Fields
 --------------------------------
-
-****
 
 The `form_overrides` attribute allows you to replace individual fields within a form.
 A common use-case for this would be to add a *What-You-See-Is-What-You-Get* (WYSIWIG) editor, or to handle
@@ -130,7 +207,7 @@ file / image uploads that need to be tied to a field in your model.
 WYSIWIG Text Fields
 *******************
 To handle complicated text content, you can use
-`CKEditor <http://ckeditor.com/>`_ by subclassing some of the built-in WTForms
+`CKEditor <https://ckeditor.com/>`_ by subclassing some of the built-in WTForms
 classes as follows::
 
     from wtforms import TextAreaField
@@ -164,17 +241,13 @@ Image handling also requires you to have `Pillow <https://pypi.python.org/pypi/P
 installed if you need to do any processing on the image files.
 
 Have a look at the example at
-https://github.com/flask-admin/Flask-Admin/tree/master/examples/forms-files-images.
-
-If you are using the MongoEngine backend, Flask-Admin supports GridFS-backed image and file uploads through WTForms fields. Documentation can be found at :mod:`flask_admin.contrib.mongoengine.fields`.
+https://github.com/pallets-eco/flask-admin/tree/master/examples/forms-files-images.
 
 If you just want to manage static files in a directory, without tying them to a database model, then
 use the :ref:`File-Admin<file-admin>` plug-in.
 
 Managing Geographical Models
 ----------------------------
-
-****
 
 If you want to store spatial information in a GIS database, Flask-Admin has
 you covered. The GeoAlchemy backend extends the SQLAlchemy backend (just as
@@ -183,13 +256,13 @@ editor for your admin pages.
 
 Some notable features include:
 
- - Maps are displayed using the amazing `Leaflet <http://leafletjs.com/>`_ Javascript library,
-   with map data from `Mapbox <https://www.mapbox.com/>`_.
+ - Maps are displayed using the amazing `Leaflet <https://leafletjs.com/>`_ Javascript library,
+   with map data from `Mapbox <https://www.mapbox.com>`_.
  - Geographic information, including points, lines and polygons, can be edited
    interactively using `Leaflet.Draw <https://github.com/Leaflet/Leaflet.draw>`_.
- - Graceful fallback: `GeoJSON <http://geojson.org/>`_ data can be edited in a ``<textarea>``, if the
+ - Graceful fallback: `GeoJSON <https://geojson.org/>`_ data can be edited in a ``<textarea>``, if the
    user has turned off Javascript.
- - Works with a `Geometry <https://geoalchemy-2.readthedocs.io/en/latest/types.html#geoalchemy2.types.Geometry>`_ SQL field that is integrated with `Shapely <http://toblerity.org/shapely/>`_ objects.
+ - Works with a `Geometry <https://geoalchemy-2.readthedocs.io/en/latest/types.html#geoalchemy2.types.Geometry>`_ SQL field that is integrated with `Shapely <https://shapely.readthedocs.io/>`_ objects.
 
 To get started, define some fields on your model using GeoAlchemy's *Geometry*
 field. Next, add model views to your interface using the ModelView class
@@ -199,7 +272,8 @@ from the GeoAlchemy backend, rather than the usual SQLAlchemy backend::
     from flask_admin.contrib.geoa import ModelView
 
     # .. flask initialization
-    db = SQLAlchemy(app)
+    db = SQLAlchemy()
+    db.init_app(app)
 
     class Location(db.Model):
         id = db.Column(db.Integer, primary_key=True)
@@ -209,23 +283,42 @@ from the GeoAlchemy backend, rather than the usual SQLAlchemy backend::
 Some of the Geometry field types that are available include:
 "POINT", "MULTIPOINT", "POLYGON", "MULTIPOLYGON", "LINESTRING" and "MULTILINESTRING".
 
-Have a look at https://github.com/flask-admin/flask-admin/tree/master/examples/geo_alchemy
+Have a look at https://github.com/pallets-eco/flask-admin/tree/master/examples/geo-alchemy
 to get started.
 
-Loading Tiles From Mapbox
-*************************
+Display map widgets
+*******************
 
-To have map data display correctly, you'll have to sign up for an account at https://www.mapbox.com/
-and include some credentials in your application's config::
+Flask-Admin uses `Leaflet <https://leafletjs.com/>`_ to display map widgets for
+geographical data. By default, this uses `MapBox <https://www.mapbox.com>`_.
+
+To have MapBox data display correctly, you'll have to sign up for an account and include
+some credentials in your application's config::
 
     app = Flask(__name__)
-    app.config['MAPBOX_MAP_ID'] = "example.abc123"
-    app.config['MAPBOX_ACCESS_TOKEN'] = "pk.def456"
+    app.config['FLASK_ADMIN_MAPS'] = True
 
+    # Required: configure the default centre position for blank maps
+    app.config['FLASK_ADMIN_DEFAULT_CENTER_LAT'] = -33.918861
+    app.config['FLASK_ADMIN_DEFAULT_CENTER_LONG'] = 18.423300
 
-Leaflet supports loading map tiles from any arbitrary map tile provider, but
-at the moment, Flask-Admin only supports Mapbox. If you want to use other
-providers, make a pull request!
+    # Required if using the default Mapbox integration
+    app.config['FLASK_ADMIN_MAPBOX_MAP_ID'] = "example.abc123"
+    app.config['FLASK_ADMIN_MAPBOX_ACCESS_TOKEN'] = "pk.def456"
+
+If you want to use a map provider other than MapBox (eg OpenStreetMaps), you can override
+the tile layer URLs and tile attribution attributes::
+
+    class CityView(ModelView):
+        tile_layer_url = '{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+        tile_layer_attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+
+If you want to include a search box on map widgets for looking up locations, you need the following additional configuration::
+
+    app.config['FLASK_ADMIN_MAPS_SEARCH'] = True
+    app.config['FLASK_ADMIN_GOOGLE_MAPS_API_KEY'] = 'secret'
+
+Flask-Admin currently only supports Google Maps for map search.
 
 Limitations
 ***********
@@ -236,8 +329,6 @@ If you have any ideas or suggestions, make a pull request!
 
 Customising Builtin Forms Via Rendering Rules
 ---------------------------------------------
-
-****
 
 Before version 1.0.7, all model backends were rendering the *create* and *edit* forms
 using a special Jinja2 macro, which was looping over the fields of a WTForms form object and displaying
@@ -295,8 +386,6 @@ Form Rendering Rule                                     Description
 
 Using Different Database Backends
 ---------------------------------
-
-****
 
 Other than SQLAlchemy... There are five different backends for you to choose
 from, depending on which database you would like to use for your application. If, however, you need
@@ -356,36 +445,6 @@ a model that violates a unique-constraint leads to an Sqlalchemy-Integrity-Error
 a proper error message and you can change the data in the form. When the application has been started with ``debug=True``
 the ``werkzeug`` debugger will catch the exception and will display the stacktrace.
 
-MongoEngine
-***********
-
-If you're looking for something simpler than SQLAlchemy, and your data models
-are reasonably self-contained, then `MongoDB <https://www.mongodb.org/>`_, a popular *NoSQL* database,
-could be a better option.
-
-`MongoEngine <http://mongoengine.org/>`_ is a python wrapper for MongoDB.
-For an example of using MongoEngine with Flask-Admin, see
-https://github.com/flask-admin/flask-admin/tree/master/examples/mongoengine.
-
-
-Features:
-
- - MongoEngine 0.7+ support
- - Paging, sorting, filters, etc
- - Supports complex document structure (lists, subdocuments and so on)
- - GridFS support for file and image uploads
-
-In order to use MongoEngine integration, install the
-`Flask-MongoEngine <https://flask-mongoengine.readthedocs.io>`_ package.
-Flask-Admin uses form scaffolding from it.
-
-Known issues:
-
- - Search functionality can't split query into multiple terms due to
-   MongoEngine query language limitations
-
-For more, check the :class:`~flask_admin.contrib.mongoengine` API documentation.
-
 Peewee
 ******
 
@@ -396,14 +455,14 @@ Features:
  - Inline editing of related models;
 
 In order to use peewee integration, you need to install two additional Python
-packages: `peewee <http://docs.peewee-orm.com/>`_ and `wtf-peewee <https://github.com/coleifer/wtf-peewee/>`_.
+packages: `peewee <https://docs.peewee-orm.com/>`_ and `wtf-peewee <https://github.com/coleifer/wtf-peewee/>`_.
 
 Known issues:
 
  - Many-to-Many model relations are not supported: there's no built-in way to express M2M relation in Peewee
 
 For more, check the :class:`~flask_admin.contrib.peewee` API documentation. Or look at
-the Peewee example at https://github.com/flask-admin/flask-admin/tree/master/examples/peewee.
+the Peewee example at https://github.com/pallets-eco/flask-admin/tree/master/examples/peewee.
 
 PyMongo
 *******
@@ -432,13 +491,51 @@ This is minimal PyMongo view::
 
 On top of that you can add sortable columns, filters, text search, etc.
 
-For more, check the :class:`~flask_admin.contrib.pymongoe` API documentation. Or look at
-the Peewee example at https://github.com/flask-admin/flask-admin/tree/master/examples/pymongo.
+For more, check the :class:`~flask_admin.contrib.pymongo` API documentation. Or look at
+the pymongo example at https://github.com/pallets-eco/flask-admin/tree/master/examples/pymongo.
+
+MongoEngine
+***********
+
+The bare minimum you have to provide for Flask-Admin to work with MongoEngine:
+
+ 1. A list of columns by setting `column_list` property
+ 2. Provide form to use by setting `form` property
+ 3. When instantiating :class:`flask_admin.contrib.mongoengine.ModelView` class, you have to provide MongoEngine Document object
+
+This is the minimal MongoEngine view::
+
+  from mongoengine import Document
+  from mongoengine import StringField
+  from mongoengine.connection import get_db
+  from wtforms import fields
+  from wtforms import form
+
+  from flask_admin.contrib.mongoengine import ModelView
+
+  class User(Document):
+      name = StringField()
+      email = StringField()
+
+  class UserForm(Form):
+      name = StringField('Name')
+      email = StringField('Email')
+
+  class UserView(ModelView):
+      column_list = ('name', 'email')
+      form = UserForm
+
+  if __name__ == '__main__':
+      admin = Admin(app)
+      admin.add_view(UserView(User))
+
+On top of that you can add sortable columns, filters, text search, etc.
+
+For more, check the :class:`~flask_admin.contrib.mongoengine` API documentation. Or look at
+the mongoengine example at https://github.com/pallets-eco/flask-admin/tree/master/examples/mongoengine.
 
 Migrating From Django
 ---------------------
-
-****
 
 If you are used to `Django <https://www.djangoproject.com/>`_ and the *django-admin* package, you will find
 Flask-Admin to work slightly different from what you would expect.
@@ -460,11 +557,11 @@ applications out there on the web.
 
 Flask-Admin follows this same design philosophy. So even though it provides you with several tools for getting up &
 running quickly, it will be up to you, as a developer, to tell Flask-Admin what should be displayed and how. Even
-though it is easy to get started with a simple `CRUD <http://en.wikipedia.org/wiki/Create,_read,_update_and_delete>`_
+though it is easy to get started with a simple `CRUD <https://en.wikipedia.org/wiki/Create,_read,_update_and_delete>`_
 interface for each model in your application, Flask-Admin doesn't fix you to this approach, and you are free to
 define other ways of interacting with some, or all, of your models.
 
-Due to Flask-Admin supporting more than one ORM (SQLAlchemy, MongoEngine, Peewee, raw pymongo), the developer is even
+Due to Flask-Admin supporting more than one ORM (SQLAlchemy, Peewee, raw pymongo, mongoengine), the developer is even
 free to mix different model types into one application by instantiating appropriate CRUD classes.
 
 Here is a list of some of the configuration properties that are made available by Flask-Admin and the
@@ -495,8 +592,6 @@ than what is displayed in this table.
 Overriding the Form Scaffolding
 -------------------------------
 
-****
-
 If you don't want to the use the built-in Flask-Admin form scaffolding logic, you are free to roll your own
 by simply overriding :meth:`~flask_admin.model.base.scaffold_form`. For example, if you use
 `WTForms-Alchemy <https://github.com/kvesteri/wtforms-alchemy>`_, you could put your form generation code
@@ -513,8 +608,6 @@ do with it, so it won't generate a form field. In this case, you would need to m
 
 Customizing Batch Actions
 -------------------------
-
-****
 
 If you want to add other batch actions to the list view, besides the default delete action,
 then you can define a function that implements the desired logic and wrap it with the `@action` decorator.
@@ -544,3 +637,42 @@ While the wrapped function should accept only one parameter - `ids`::
                     raise
 
                 flash(gettext('Failed to approve users. %(error)s', error=str(ex)), 'error')
+
+
+Raise exceptions instead of flash error messages
+------------------------------------------------
+
+By default, Flask-Admin will capture most exceptions related to reading/writing models
+and display a flash message instead of raising an exception. If your Flask app is running
+in debug mode (ie under local development), exceptions will not be suppressed.
+
+The flash message behaviour can be overridden with some Flask configuration.::
+
+    app = Flask(__name__)
+    app.config['FLASK_ADMIN_RAISE_ON_VIEW_EXCEPTION'] = True
+    app.config['FLASK_ADMIN_RAISE_ON_INTEGRITY_ERROR'] = True
+
+
+FLASK_ADMIN_RAISE_ON_VIEW_EXCEPTION
+***********************************
+Instead of turning exceptions on model create/update/delete actions into flash messages,
+raise the exception as normal. You should expect the view to return a 500 to the user,
+unless you add specific handling to prevent this.
+
+FLASK_ADMIN_RAISE_ON_INTEGRITY_ERROR
+************************************
+This targets SQLAlchemy specifically.
+
+Unlike the previous setting, this will specifically only affect the behaviour of
+IntegrityErrors. These usually come from violations on constraints in the database,
+for example trying to insert a row with a primary key that already exists.
+
+Adding a favicon to the admin page
+************************************
+Adding a favicon to flask-admin is easy: just save a .ico file and add a /favicon.ico
+route to your flask app.::
+
+    from flask import redirect, url_for
+    @app.route("/favicon.ico")
+    def favicon():
+        return redirect(url_for("static", filename="favicon.ico"))

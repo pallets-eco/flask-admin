@@ -1,37 +1,41 @@
-import os.path as op
-from os import getenv
+import os
 from uuid import uuid4
 
-from nose import SkipTest
+import pytest
 
 from flask_admin.contrib.fileadmin import azure
 
 from .test_fileadmin import Base
 
 
-class AzureFileAdminTests(Base.FileAdminTests):
-    _test_storage = getenv('AZURE_STORAGE_CONNECTION_STRING')
+class TestAzureFileAdmin(Base.FileAdminTests):
+    @pytest.fixture(autouse=True)
+    def setup_and_teardown(self):
+        azure_connection_string = os.getenv(
+            "AZURE_STORAGE_CONNECTION_STRING",
+            "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://localhost:10000/devstoreaccount1;",
+        )
+        self._container_name = f"fileadmin-tests-{uuid4()}"
 
-    def setUp(self):
-        if not azure.BlockBlobService:
-            raise SkipTest('AzureFileAdmin dependencies not installed')
+        if not azure_connection_string or not self._container_name:
+            raise ValueError("AzureFileAdmin test credentials not set, tests will fail")
 
-        self._container_name = 'fileadmin-tests-%s' % uuid4()
+        self._client = azure.BlobServiceClient.from_connection_string(
+            azure_connection_string
+        )
+        self._client.create_container(self._container_name)
+        file_name = "dummy.txt"
+        file_path = os.path.join(self._test_files_root, file_name)
+        blob_client = self._client.get_blob_client(self._container_name, file_name)
+        with open(file_path, "rb") as file:
+            blob_client.upload_blob(file)
 
-        if not self._test_storage or not self._container_name:
-            raise SkipTest('AzureFileAdmin test credentials not set')
+        yield
 
-        client = azure.BlockBlobService(connection_string=self._test_storage)
-        client.create_container(self._container_name)
-        dummy = op.join(self._test_files_root, 'dummy.txt')
-        client.create_blob_from_path(self._container_name, 'dummy.txt', dummy)
-
-    def tearDown(self):
-        client = azure.BlockBlobService(connection_string=self._test_storage)
-        client.delete_container(self._container_name)
+        self._client.delete_container(self._container_name)
 
     def fileadmin_class(self):
         return azure.AzureFileAdmin
 
     def fileadmin_args(self):
-        return (self._container_name, self._test_storage), {}
+        return (self._client, self._container_name), {}

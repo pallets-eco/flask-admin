@@ -1,16 +1,16 @@
 import re
 
 
-def parse_like_term(term):
+def parse_like_term(term: str) -> str:
     """
-        Parse search term into (operation, term) tuple
+    Parse search term into (operation, term) tuple
 
-        :param term:
-            Search term
+    :param term:
+        Search term
     """
-    if term.startswith('^'):
-        return '^{}'.format(re.escape(term[1:]))
-    elif term.startswith('='):
-        return '^{}$'.format(re.escape(term[1:]))
+    if term.startswith("^"):
+        return f"^{re.escape(term[1:])}"
+    elif term.startswith("="):
+        return f"^{re.escape(term[1:])}$"
 
     return re.escape(term)

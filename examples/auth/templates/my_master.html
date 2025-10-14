@@ -11,7 +11,7 @@
         {{ current_user.email }}
         {%- endif %}<span class="caret"></span></a>
     <ul class="dropdown-menu" role="menu">
-        <li><a href="{{ url_for('security.logout') }}">Log out</a></li>
+        <li><a class="text-black-50" href="{{ url_for('security.logout') }}">Log out</a></li>
     </ul>
 </div>
 {% endif %}
