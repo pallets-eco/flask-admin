@@ -339,7 +339,7 @@ class ModelView(BaseModelView):
     def __init__(
         self,
         model: type[T_SQLALCHEMY_MODEL],
-        session: T_SQLALCHEMY_SESSION,
+        session: t.Union[T_SQLALCHEMY_SESSION, t.Callable[[], T_SQLALCHEMY_SESSION]],
         name: t.Optional[str] = None,
         category: t.Optional[str] = None,
         endpoint: t.Optional[str] = None,
@@ -377,7 +377,7 @@ class ModelView(BaseModelView):
         :param menu_icon_value:
             Icon glyph name or URL, depending on `menu_icon_type` setting
         """
-        self.session = session
+        self._session = session
 
         self._search_fields: t.Optional[list[tuple[Column, t.Any]]] = None
 
@@ -413,6 +413,13 @@ class ModelView(BaseModelView):
             self._auto_joins = self.scaffold_auto_joins()
         else:
             self._auto_joins = self.column_select_related_list
+
+    @property
+    def session(self) -> T_SQLALCHEMY_SESSION:
+        if callable(self._session):
+            return self._session()
+
+        return self._session
 
     # Internal API
     def _get_model_iterator(
