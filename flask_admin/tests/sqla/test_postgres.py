@@ -127,3 +127,75 @@ def test_citext(app, postgres_db, postgres_admin):
         data = rv.data.decode("utf-8")
         assert 'name="citext_test"' in data
         assert ">Foo</" in data or ">\nFoo</" in data or ">\r\nFoo</" in data
+
+
+def test_boolean_filters(app, postgres_db, postgres_admin):
+    """
+    Test that boolean filters work correctly with PostgreSQL.
+    This is particularly important for psycopg3 compatibility,
+    which is stricter about type coercion than psycopg2.
+    """
+    with app.app_context():
+
+        class BoolModel(postgres_db.Model):  # type: ignore[name-defined]
+            id = postgres_db.Column(
+                postgres_db.Integer, primary_key=True, autoincrement=True
+            )
+            bool_field = postgres_db.Column(postgres_db.Boolean, nullable=False)
+            name = postgres_db.Column(postgres_db.String(50))
+
+        postgres_db.create_all()
+
+        # Add test data
+        postgres_db.session.add(BoolModel(bool_field=True, name="true_val_1"))
+        postgres_db.session.add(BoolModel(bool_field=False, name="false_val_1"))
+        postgres_db.session.add(BoolModel(bool_field=False, name="false_val_2"))
+        postgres_db.session.commit()
+
+        view = CustomModelView(
+            BoolModel, postgres_db.session, column_filters=["bool_field"]
+        )
+        postgres_admin.add_view(view)
+
+        client = app.test_client()
+
+        # Verify filters are set up
+        assert view._filter_groups
+        assert [
+            (f["index"], f["operation"]) for f in view._filter_groups["Bool Field"]
+        ] == [
+            (0, "equals"),
+            (1, "not equal"),
+        ]
+
+        # Test boolean equals True (value="1")
+        rv = client.get("/admin/boolmodel/?flt0_0=1")
+        assert rv.status_code == 200
+        data = rv.data.decode("utf-8")
+        assert "true_val_1" in data
+        assert "false_val_1" not in data
+        assert "false_val_2" not in data
+
+        # Test boolean equals False (value="0")
+        rv = client.get("/admin/boolmodel/?flt0_0=0")
+        assert rv.status_code == 200
+        data = rv.data.decode("utf-8")
+        assert "true_val_1" not in data
+        assert "false_val_1" in data
+        assert "false_val_2" in data
+
+        # Test boolean not equals True (value="1")
+        rv = client.get("/admin/boolmodel/?flt0_1=1")
+        assert rv.status_code == 200
+        data = rv.data.decode("utf-8")
+        assert "true_val_1" not in data
+        assert "false_val_1" in data
+        assert "false_val_2" in data
+
+        # Test boolean not equals False (value="0")
+        rv = client.get("/admin/boolmodel/?flt0_1=0")
+        assert rv.status_code == 200
+        data = rv.data.decode("utf-8")
+        assert "true_val_1" in data
+        assert "false_val_1" not in data
+        assert "false_val_2" not in data
