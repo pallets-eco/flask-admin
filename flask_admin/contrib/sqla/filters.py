@@ -163,11 +163,21 @@ class FilterNotInList(FilterInList):
 
 # Customized type filters
 class BooleanEqualFilter(FilterEqual, filters.BaseBooleanFilter):
-    pass
+    def clean(self, value: str) -> bool:
+        """
+        Convert string value to boolean for database comparison.
+        Required for compatibility with psycopg3 which is stricter about type coercion.
+        """
+        return value == "1"
 
 
 class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
-    pass
+    def clean(self, value: str) -> bool:
+        """
+        Convert string value to boolean for database comparison.
+        Required for compatibility with psycopg3 which is stricter about type coercion.
+        """
+        return value == "1"
 
 
 class IntEqualFilter(FilterEqual, filters.BaseIntFilter):
