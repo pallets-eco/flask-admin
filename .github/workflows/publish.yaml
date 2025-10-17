@@ -37,9 +37,7 @@ jobs:
           artifact-ids: ${{ needs.build.outputs.artifact-id }}
           path: dist/
       - name: create release
-        run: >
-          gh release create --draft --repo ${{ github.repository }}
-          ${{ github.ref_name }} artifact/*
+        run: gh release create --draft --repo ${{ github.repository }} ${{ github.ref_name }} dist/*
         env:
           GH_TOKEN: ${{ github.token }}
   publish-pypi:
