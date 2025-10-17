@@ -10,6 +10,8 @@
       <img src="{{ url_for('static', filename=icon_value) }}" alt="menu image">
     {% elif icon_type == 'image-url' %}
       <img src="{{ icon_value }}" alt="menu image">
+    {% elif icon_type == 'bi' %}
+      <i class="bi {{ icon_value }}"></i>
     {% endif %}
   {% endif %}
 {%- endmacro %}
@@ -32,6 +34,7 @@
         {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}
         {{ menu_icon(item) }}{{ item.name }}
         {%- if 'dropdown-submenu' in class_name -%}
+          <!-- this glypicon works properly while it is not the case in the most of the project! -->
           <i class="glyphicon glyphicon-chevron-right small"></i>
         {%- else -%}
           <i class="glyphicon glyphicon-chevron-down small"></i>
