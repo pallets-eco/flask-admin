@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.0.0rc1
+--------
+
+Fixes:
+* SQLAlchemy boolean filters now convert "1" and "0" to Python booleans, which fixes a type coercion issue with psycopg(3).
+
+
 2.0.0a5
 -------
 
