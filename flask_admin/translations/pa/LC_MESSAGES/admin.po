@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-09-16 00:18+0200\n"
+"POT-Creation-Date: 2025-10-15 00:13+0200\n"
 "PO-Revision-Date: 2025-07-07 20:12-0500\n"
 "Last-Translator: ElLorans <lorenzo.cerreta@gmail.com>\n"
 "Language: pa_IN\n"
@@ -189,8 +189,8 @@ msgstr " %(path)s ਬਦਲਿਆ ਜਾ ਰਿਹਾ "
 #: ../flask_admin/contrib/fileadmin/__init__.py:1363
 #: ../flask_admin/contrib/mongoengine/view.py:726
 #: ../flask_admin/contrib/peewee/view.py:611
-#: ../flask_admin/contrib/pymongo/view.py:422
-#: ../flask_admin/contrib/sqla/view.py:1436
+#: ../flask_admin/contrib/pymongo/view.py:425
+#: ../flask_admin/contrib/sqla/view.py:1437
 msgid "Delete"
 msgstr "ਮਿਟਾਓ"
 
@@ -301,16 +301,16 @@ msgstr "ਮਾਡਲ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ। %
 
 #: ../flask_admin/contrib/mongoengine/view.py:627
 #: ../flask_admin/contrib/peewee/view.py:550
-#: ../flask_admin/contrib/pymongo/view.py:356
-#: ../flask_admin/contrib/sqla/view.py:1356
+#: ../flask_admin/contrib/pymongo/view.py:359
+#: ../flask_admin/contrib/sqla/view.py:1357
 #, python-format
 msgid "Failed to create record. %(error)s"
 msgstr "ਰਿਕਾਰਡ ਬਨਾਉਣ ਵਿੱਚ ਨਾਕਾਮਯਾਬੀ |  %(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:656
 #: ../flask_admin/contrib/peewee/view.py:572
-#: ../flask_admin/contrib/pymongo/view.py:380
-#: ../flask_admin/contrib/sqla/view.py:1385 ../flask_admin/model/base.py:2710
+#: ../flask_admin/contrib/pymongo/view.py:383
+#: ../flask_admin/contrib/sqla/view.py:1386 ../flask_admin/model/base.py:2710
 #: ../flask_admin/model/base.py:2717 ../flask_admin/model/base.py:2721
 #, python-format
 msgid "Failed to update record. %(error)s"
@@ -318,23 +318,23 @@ msgstr "ਰਿਕਾਰਡ ਬਦਲਣ ਵਿੱਚ ਨਾਕਾਮਯਾਬੀ
 
 #: ../flask_admin/contrib/mongoengine/view.py:682
 #: ../flask_admin/contrib/peewee/view.py:590
-#: ../flask_admin/contrib/pymongo/view.py:404
-#: ../flask_admin/contrib/sqla/view.py:1413
+#: ../flask_admin/contrib/pymongo/view.py:407
+#: ../flask_admin/contrib/sqla/view.py:1414
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr "ਰਿਕਾਰਡ ਮਿਟਾਉਣ ਵਿੱਚ ਨਾਕਾਮਯਾਬੀ |  %(error)s"
 
 #: ../flask_admin/contrib/mongoengine/view.py:727
 #: ../flask_admin/contrib/peewee/view.py:612
-#: ../flask_admin/contrib/pymongo/view.py:423
-#: ../flask_admin/contrib/sqla/view.py:1437
+#: ../flask_admin/contrib/pymongo/view.py:426
+#: ../flask_admin/contrib/sqla/view.py:1438
 msgid "Are you sure you want to delete selected records?"
 msgstr "ਕੀ ਤੁਹਾਨੂੰ ਯਕੀਨ ਹੈ  ਕਿ ਤੁਸੀਂ ਚੁਣੇ ਹੋਏ ਰਿਕਾਰਡ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
 #: ../flask_admin/contrib/mongoengine/view.py:739
 #: ../flask_admin/contrib/peewee/view.py:632
-#: ../flask_admin/contrib/pymongo/view.py:436
-#: ../flask_admin/contrib/sqla/view.py:1460 ../flask_admin/model/base.py:2490
+#: ../flask_admin/contrib/pymongo/view.py:439
+#: ../flask_admin/contrib/sqla/view.py:1461 ../flask_admin/model/base.py:2490
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
@@ -343,8 +343,8 @@ msgstr[1] "%(count)s ਰਿਕਾਰਡ ਕਾਮਯਾਬੀ ਨਾਲ ਮਿ�
 
 #: ../flask_admin/contrib/mongoengine/view.py:749
 #: ../flask_admin/contrib/peewee/view.py:642
-#: ../flask_admin/contrib/pymongo/view.py:445
-#: ../flask_admin/contrib/sqla/view.py:1472
+#: ../flask_admin/contrib/pymongo/view.py:448
+#: ../flask_admin/contrib/sqla/view.py:1473
 #, python-format
 msgid "Failed to delete records. %(error)s"
 msgstr "ਰਿਕਾਰਡ ਮਿਟਾਉਣ ਵਿੱਚ ਨਾਕਾਮਯਾਬੀ |  %(error)s"
@@ -376,7 +376,7 @@ msgstr "ਇੱਕ ਵੈਧ ISO ਮੁਦਰਾ ਕੋਡ ਨਹੀਂ ਹੈ (�
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
 msgstr "ਵੈਧ ਰੰਗ ਨਹੀਂ ਹੈ (ਉਦਾਹਰਨ ਲਈ \"red\", \"#f00\", \"#ff0000\")।"
 
-#: ../flask_admin/contrib/sqla/view.py:1317
+#: ../flask_admin/contrib/sqla/view.py:1318
 #, python-format
 msgid "Integrity error. %(message)s"
 msgstr "ਪੂਰਨਤਾ ਗਲਤੀ| %(message)s"
