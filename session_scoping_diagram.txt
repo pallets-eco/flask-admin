@@ -1,0 +1,118 @@
+Flask-Admin Session Scoping Diagram
+====================================
+
+App Initialization:
+-------------------
+┌─────────────────────────────────────────────────────────┐
+│  Flask App                                              │
+│                                                         │
+│  db = SQLAlchemy(app)                                  │
+│       │                                                 │
+│       └─> db.session (scoped_session proxy)           │
+│           ├─> Registry (Flask request context)        │
+│           └─> SessionFactory (creates sessions)       │
+│                                                         │
+│  admin.add_view(ModelView(User, db.session))          │
+│                              │                          │
+│                              └─> Stores the PROXY      │
+└─────────────────────────────────────────────────────────┘
+
+
+Request Lifecycle:
+------------------
+
+REQUEST 1:                    REQUEST 2:                    REQUEST 3:
+┌──────────────┐            ┌──────────────┐            ┌──────────────┐
+│ HTTP Request │            │ HTTP Request │            │ HTTP Request │
+└──────┬───────┘            └──────┬───────┘            └──────┬───────┘
+       │                           │                           │
+       v                           v                           v
+┌──────────────┐            ┌──────────────┐            ┌──────────────┐
+│ Flask Context│            │ Flask Context│            │ Flask Context│
+│   (new)      │            │   (new)      │            │   (new)      │
+└──────┬───────┘            └──────┬───────┘            └──────┬───────┘
+       │                           │                           │
+       v                           v                           v
+┌──────────────────────────────────────────────────────────────────────┐
+│                    ModelView.session (SAME PROXY)                    │
+│                         (id: 140602337298720)                        │
+└────────────┬────────────────────┬────────────────────┬───────────────┘
+             │                    │                    │
+             v                    v                    v
+      ┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+      │ Session A   │      │ Session B   │      │ Session C   │
+      │ (id: ...160)│      │ (id: ...728)│      │ (id: ...816)│
+      └─────────────┘      └─────────────┘      └─────────────┘
+             │                    │                    │
+             v                    v                    v
+      ┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+      │ Query DB    │      │ Query DB    │      │ Query DB    │
+      └─────────────┘      └─────────────┘      └─────────────┘
+             │                    │                    │
+             v                    v                    v
+      ┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+      │ Teardown    │      │ Teardown    │      │ Teardown    │
+      │ (cleanup A) │      │ (cleanup B) │      │ (cleanup C) │
+      └─────────────┘      └─────────────┘      └─────────────┘
+
+
+Key Points:
+-----------
+1. ModelView stores ONE proxy object (the scoped_session)
+2. The proxy creates/returns DIFFERENT session instances per request
+3. Flask-SQLAlchemy manages session lifecycle automatically
+4. Each request is isolated - no data leaks between requests
+
+
+How scoped_session Works:
+--------------------------
+┌─────────────────────────────────────────────────────┐
+│ scoped_session Proxy (stored in ModelView)         │
+├─────────────────────────────────────────────────────┤
+│                                                     │
+│  When called (self.session.query(...)):            │
+│                                                     │
+│  1. Check registry for current context (request)   │
+│  2. If session exists for context → return it      │
+│  3. If not → create new session → store in registry│
+│  4. Return the session for current context         │
+│                                                     │
+│  On request teardown:                              │
+│  - Flask-SQLAlchemy removes session from registry  │
+│  - Next request gets fresh session                 │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+
+
+Comparison:
+-----------
+
+❌ What People Worry About (NOT what happens):
+┌──────────────┐
+│ ModelView    │
+│  .session ───┼──> Session Instance X (lives forever)
+└──────────────┘          ├─> Request 1 uses X
+                          ├─> Request 2 uses X (stale data!)
+                          └─> Request 3 uses X (stale data!)
+
+✓ What Actually Happens (correct behavior):
+┌──────────────┐
+│ ModelView    │
+│  .session ───┼──> scoped_session Proxy
+└──────────────┘          ├─> Request 1 → Session A (fresh)
+                          ├─> Request 2 → Session B (fresh)
+                          └─> Request 3 → Session C (fresh)
+
+
+Verification Commands:
+----------------------
+# Run the test suite
+pytest flask_admin/tests/sqla/test_session_scoping.py -v
+
+# Run the reproduction script
+python reproduction_script.py
+
+# Expected output shows:
+# - Same proxy ID across requests (✓ expected)
+# - Different session IDs per request (✓ expected)
+# - No data leakage between requests (✓ expected)
