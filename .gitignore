@@ -29,3 +29,5 @@ env
 .tox/
 .env
 doc/_build
+instance/
+test.db
