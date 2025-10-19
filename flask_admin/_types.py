@@ -127,18 +127,16 @@ T_COLUMN = t.Union[str, T_SQLALCHEMY_COLUMN]
 T_FILTER = tuple[int, T_COLUMN, str]
 T_ORM_COLUMN = t.Union[T_COLUMN, T_PEEWEE_FIELD]
 T_COLUMN_LIST = t.Sequence[
-    t.Union[
-        T_ORM_COLUMN, t.Iterable[T_ORM_COLUMN], tuple[str, tuple[T_ORM_COLUMN, ...]]
-    ]
+    T_ORM_COLUMN | t.Iterable[T_ORM_COLUMN] | tuple[str, tuple[T_ORM_COLUMN, ...]]
 ]
 T_CONTRAVARIANT_MODEL_VIEW = t.TypeVar(
     "T_CONTRAVARIANT_MODEL_VIEW", bound=T_MODEL_VIEW, contravariant=True
 )
 T_FORMATTER = t.Callable[
-    [T_CONTRAVARIANT_MODEL_VIEW, t.Optional[Context], t.Any, str], t.Union[str, Markup]
+    [T_CONTRAVARIANT_MODEL_VIEW, Context | None, t.Any, str], str | Markup
 ]
 T_COLUMN_FORMATTERS = dict[str, T_FORMATTER]
-T_TYPE_FORMATTER = t.Callable[[T_MODEL_VIEW, t.Any, str], t.Union[str, Markup]]
+T_TYPE_FORMATTER = t.Callable[[T_MODEL_VIEW, t.Any, str], str | Markup]
 T_COLUMN_TYPE_FORMATTERS = dict[type, T_TYPE_FORMATTER]
 T_TRANSLATABLE = t.Union[str, T_LAZY_STRING]
 # Compatibility for 3-tuples and 4-tuples in iter_choices
@@ -185,7 +183,7 @@ T_PATH_LIKE = t.Union[str, bytes, PathLike[str], PathLike[bytes]]
 
 
 class WidgetProtocol(t.Protocol):
-    def __call__(self, field: Field, **kwargs: t.Any) -> t.Union[str, Markup]: ...
+    def __call__(self, field: Field, **kwargs: t.Any) -> str | Markup: ...
 
 
 T_WIDGET = t.Union[
@@ -198,19 +196,17 @@ T_WIDGET = t.Union[
 ]
 
 T_WIDGET_TYPE = t.Optional[
-    t.Union[
-        t.Literal[
-            "daterangepicker",
-            "datetimepicker",
-            "datetimerangepicker",
-            "datepicker",
-            "select2-tags",
-            "timepicker",
-            "timerangepicker",
-            "uuid",
-        ],
-        str,
+    t.Literal[
+        "daterangepicker",
+        "datetimepicker",
+        "datetimerangepicker",
+        "datepicker",
+        "select2-tags",
+        "timepicker",
+        "timerangepicker",
+        "uuid",
     ]
+    | str
 ]
 
 
@@ -221,7 +217,7 @@ class T_FIELD_ARGS_DESCRIPTION(t.TypedDict, total=False):
 class T_FIELD_ARGS_FILTERS(t.TypedDict):
     filters: NotRequired[list[t.Callable[[t.Any], t.Any]]]
     allow_blank: NotRequired[bool]
-    choices: NotRequired[t.Union[list[tuple[int, str]], list[Enum]]]
+    choices: NotRequired[list[tuple[int, str]] | list[Enum]]
     validators: NotRequired[list[T_VALIDATOR]]
     coerce: NotRequired[t.Callable[[t.Any], t.Any]]
 
@@ -231,7 +227,7 @@ class T_FIELD_ARGS_LABEL(t.TypedDict):
 
 
 class T_FIELD_ARGS_PLACES(t.TypedDict):
-    places: t.Optional[UnsetValue]
+    places: UnsetValue | None
 
 
 class T_FIELD_ARGS_VALIDATORS(t.TypedDict, total=False):

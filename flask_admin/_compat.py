@@ -24,7 +24,7 @@ def itervalues(d: dict) -> t.Iterator[t.Any]:
 
 
 def iteritems(
-    d: t.Union[dict, MappingProxyType[str, t.Any], t.Mapping[str, t.Any]],
+    d: dict | MappingProxyType[str, t.Any] | t.Mapping[str, t.Any],
 ) -> t.Iterator[tuple[t.Any, t.Any]]:
     return iter(d.items())
 
@@ -33,14 +33,14 @@ def filter_list(f: t.Callable, l: list) -> list[t.Any]:
     return list(filter(f, l))
 
 
-def as_unicode(s: t.Union[str, bytes, int]) -> str:
+def as_unicode(s: str | bytes | int) -> str:
     if isinstance(s, bytes):
         return s.decode("utf-8")
 
     return str(s)
 
 
-def csv_encode(s: t.Union[str, bytes]) -> str:
+def csv_encode(s: str | bytes) -> str:
     """Returns unicode string expected by Python 3's csv module"""
     return as_unicode(s)
 

@@ -251,6 +251,9 @@ select = [
     "UP",  # pyupgrade
     "W",  # pycodestyle warning
 ]
+ignore = [
+    "UP007",  # Use X | Y for type annotations; doesn't work with some of our (stringy) type definitions - should aim to resolve this
+]
 ignore-init-module-imports = true
 
 [tool.ruff.lint.isort]

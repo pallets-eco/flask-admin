@@ -11,7 +11,7 @@ from flask_admin.helpers import flash_errors
 from flask_admin.helpers import get_redirect_target
 
 
-def action(name: str, text: str, confirmation: t.Optional[str] = None) -> t.Callable:
+def action(name: str, text: str, confirmation: str | None = None) -> t.Callable:
     """
     Use this decorator to expose actions that span more than one
     entity (model, file, etc)
@@ -52,14 +52,14 @@ class ActionsMixin:
         Default constructor.
         """
         self._actions: list[tuple[str, str]] = []
-        self._actions_data: dict[str, tuple[Any, str, t.Optional[str]]] = {}
+        self._actions_data: dict[str, tuple[Any, str, str | None]] = {}
 
     def init_actions(self) -> None:
         """
         Initialize list of actions for the current administrative view.
         """
         self._actions: list[tuple[str, str]] = []  # type:ignore[no-redef]
-        self._actions_data: dict[str, tuple[Any, str, t.Optional[str]]] = {}  # type:ignore[no-redef]
+        self._actions_data: dict[str, tuple[Any, str, str | None]] = {}  # type:ignore[no-redef]
 
         for p in dir(self):
             attr = tools.get_dict_attr(self, p)
@@ -102,7 +102,7 @@ class ActionsMixin:
 
         return actions, actions_confirmation
 
-    def handle_action(self, return_view: t.Optional[str] = None) -> T_RESPONSE:
+    def handle_action(self, return_view: str | None = None) -> T_RESPONSE:
         """
         Handle action request.
 

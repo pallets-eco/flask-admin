@@ -74,7 +74,7 @@ class AzureStorage:
         return epoch.total_seconds()
 
     @classmethod
-    def _ensure_blob_path(cls, path: t.Optional[str]) -> t.Optional[str]:
+    def _ensure_blob_path(cls, path: str | None) -> str | None:
         if path is None:
             return None
 
@@ -82,7 +82,7 @@ class AzureStorage:
         return cls.separator.join(path_parts).lstrip(cls.separator)
 
     def get_files(
-        self, path: str, directory: t.Optional[str]
+        self, path: str, directory: str | None
     ) -> list[tuple[str, str, bool, int, float]]:
         if directory and path != directory:
             path = op.join(path, directory)
@@ -127,7 +127,7 @@ class AzureStorage:
 
         return files
 
-    def is_dir(self, path: t.Optional[str]) -> bool:
+    def is_dir(self, path: str | None) -> bool:
         path = self._ensure_blob_path(path)
 
         blobs = self._container_client.list_blobs(name_starts_with=path)
@@ -136,7 +136,7 @@ class AzureStorage:
                 return True
         return False
 
-    def path_exists(self, path: t.Optional[str]) -> bool:
+    def path_exists(self, path: str | None) -> bool:
         path = self._ensure_blob_path(path)
 
         if path == self.get_base_path():
@@ -153,7 +153,7 @@ class AzureStorage:
     def get_base_path(self) -> str:
         return ""
 
-    def get_breadcrumbs(self, path: t.Optional[str]) -> list[tuple[str, str]]:
+    def get_breadcrumbs(self, path: str | None) -> list[tuple[str, str]]:
         path = self._ensure_blob_path(path)
 
         accumulator = []
@@ -182,38 +182,38 @@ class AzureStorage:
             download_name=path,
         )
 
-    def read_file(self, path: t.Optional[str]) -> bytes:
+    def read_file(self, path: str | None) -> bytes:
         path = self._ensure_blob_path(path)
         if path is None:
             raise ValueError("No path provided")
         blob = self._container_client.get_blob_client(path).download_blob()
         return blob.readall()
 
-    def write_file(self, path: t.Optional[str], content: t.Any) -> None:
+    def write_file(self, path: str | None, content: t.Any) -> None:
         path = self._ensure_blob_path(path)
         if path is None:
             raise ValueError("No path provided")
         self._container_client.upload_blob(path, content, overwrite=True)
 
-    def save_file(self, path: t.Optional[str], file_data: t.Any) -> None:
+    def save_file(self, path: str | None, file_data: t.Any) -> None:
         path = self._ensure_blob_path(path)
         if path is None:
             raise ValueError("No path provided")
         self._container_client.upload_blob(path, file_data.stream)
 
-    def delete_tree(self, directory: t.Optional[str]) -> None:
+    def delete_tree(self, directory: str | None) -> None:
         directory = self._ensure_blob_path(directory)
 
         for blob in self._container_client.list_blobs(directory):
             self._container_client.delete_blob(blob.name)
 
-    def delete_file(self, file_path: t.Optional[str]) -> None:
+    def delete_file(self, file_path: str | None) -> None:
         file_path = self._ensure_blob_path(file_path)
         if file_path is None:
             raise ValueError("No path provided")
         self._container_client.delete_blob(file_path)
 
-    def make_dir(self, path: t.Optional[str], directory: t.Optional[str]) -> None:
+    def make_dir(self, path: str | None, directory: str | None) -> None:
         path = self._ensure_blob_path(path)
         directory = self._ensure_blob_path(directory)
         if path is None or directory is None:

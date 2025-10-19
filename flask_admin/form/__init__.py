@@ -25,7 +25,7 @@ class BaseForm(form.Form):
 
     def __init__(
         self,
-        formdata: t.Optional[dict] = None,
+        formdata: dict | None = None,
         obj: t.Any = None,
         prefix: str = "",
         **kwargs: t.Any,
@@ -44,13 +44,13 @@ class FormOpts:
     __slots__ = ["widget_args", "form_rules"]
 
     def __init__(
-        self, widget_args: t.Optional[dict] = None, form_rules: t.Any = None
+        self, widget_args: dict | None = None, form_rules: t.Any = None
     ) -> None:
         self.widget_args = widget_args or {}
         self.form_rules = form_rules
 
 
-def recreate_field(unbound: t.Union[UnboundField, Field]) -> t.Any:
+def recreate_field(unbound: UnboundField | Field) -> t.Any:
     """
     Create new instance of the unbound field, resetting wtforms creation counter.
 
@@ -78,7 +78,7 @@ class SecureForm(BaseForm):
         _csrf_secret = urandom(24)
 
         @property
-        def csrf_secret(self) -> t.Union[bytes, str, None]:
+        def csrf_secret(self) -> bytes | str | None:
             secret = current_app.secret_key or self._csrf_secret
             if isinstance(secret, text_type):
                 secret = secret.encode("utf-8")
