@@ -3,7 +3,7 @@ name = "example-auth-flask-login"
 version = "0.1.0"
 description = "Auth with Flask-Login Example."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "flask-admin[sqlalchemy-with-utils]",
     "flask-login>=0.6.2",
