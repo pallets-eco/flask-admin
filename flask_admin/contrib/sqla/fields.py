@@ -69,8 +69,8 @@ class QuerySelectField(SelectFieldBase):
 
     def __init__(
         self,
-        label: t.Optional[str] = None,
-        validators: t.Union[list[T_VALIDATOR], tuple[T_VALIDATOR, ...], None] = None,
+        label: str | None = None,
+        validators: list[T_VALIDATOR] | tuple[T_VALIDATOR, ...] | None = None,
         query_factory: t.Any = None,
         get_pk: t.Any = None,
         get_label: t.Any = None,
@@ -100,7 +100,7 @@ class QuerySelectField(SelectFieldBase):
         self.allow_blank = allow_blank
         self.blank_text = blank_text
         self.query = None
-        self._object_list: t.Optional[list[tuple[str, t.Any]]] = None
+        self._object_list: list[tuple[str, t.Any]] | None = None
 
     def _get_data(self) -> t.Any:
         if self._formdata is not None:
@@ -112,7 +112,7 @@ class QuerySelectField(SelectFieldBase):
 
     def _set_data(self, data: t.Any) -> None:
         self._data = data
-        self._formdata: t.Union[set, str, None] = None
+        self._formdata: set | str | None = None
 
     data = property(_get_data, _set_data)
 
@@ -165,8 +165,8 @@ class QuerySelectMultipleField(QuerySelectField):
 
     def __init__(
         self,
-        label: t.Optional[str] = None,
-        validators: t.Optional[list[T_VALIDATOR]] = None,
+        label: str | None = None,
+        validators: list[T_VALIDATOR] | None = None,
         default: t.Any = None,
         **kwargs: t.Any,
     ) -> None:
@@ -192,7 +192,7 @@ class QuerySelectMultipleField(QuerySelectField):
 
     def _set_data(self, data: list[t.Any]) -> None:
         self._data = data
-        self._formdata: t.Optional[set] = None
+        self._formdata: set | None = None
 
     data = property(_get_data, _set_data)
 
@@ -251,9 +251,7 @@ class KeyValue:
     """Used by InlineHstoreList to simulate a key and a value field instead of
     the single HSTORE column."""
 
-    def __init__(
-        self, key: t.Optional[str] = None, value: t.Optional[str] = None
-    ) -> None:
+    def __init__(self, key: str | None = None, value: str | None = None) -> None:
         self.key = key
         self.value = value
 
@@ -263,8 +261,8 @@ class InlineHstoreList(InlineFieldList):
 
     def process(
         self,
-        formdata: t.Optional[dict],  # type: ignore[override]
-        data: t.Union[UnsetValue, list[KeyValue]] = unset_value,
+        formdata: dict | None,  # type: ignore[override]
+        data: UnsetValue | list[KeyValue] = unset_value,
         extra_filters: t.Any = None,
     ) -> None:
         """SQLAlchemy returns a dict for HSTORE columns, but WTForms cannot
@@ -392,7 +390,7 @@ class InlineModelOneToOneField(InlineModelFormField):
         self.prop = prop
         self.inline_view = inline_view
 
-        self._pk: t.Union[tuple[t.Any, ...], t.Any] = get_primary_key(model)  # type: ignore[assignment]
+        self._pk: tuple[t.Any, ...] | t.Any = get_primary_key(model)  # type: ignore[assignment]
 
         # Generate inline form field
         form_opts = FormOpts(
@@ -402,7 +400,7 @@ class InlineModelOneToOneField(InlineModelFormField):
         super().__init__(form, self._pk, form_opts=form_opts, **kwargs)  # type: ignore[arg-type]
 
     @staticmethod
-    def _looks_empty(field: t.Optional[t.Any]) -> bool:
+    def _looks_empty(field: t.Any | None) -> bool:
         """
         Check while installed fields is not null
         """
@@ -448,9 +446,7 @@ def get_pk_from_identity(obj: t.Any) -> str:
     return ":".join(text_type(x) for x in key)
 
 
-def get_obj_pk(
-    obj: t.Any, pk: t.Union[str, tuple[str, ...]]
-) -> t.Union[str, tuple[str, ...]]:
+def get_obj_pk(obj: t.Any, pk: str | tuple[str, ...]) -> str | tuple[str, ...]:
     """
     get and format pk from obj
     :rtype: text_type
@@ -462,7 +458,7 @@ def get_obj_pk(
     return text_type(getattr(obj, pk))
 
 
-def get_field_id(field: InlineModelFormField) -> t.Union[tuple[str, ...], str]:
+def get_field_id(field: InlineModelFormField) -> tuple[str, ...] | str:
     """
     get and format id from field
     :rtype: text_type

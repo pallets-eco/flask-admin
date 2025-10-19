@@ -22,15 +22,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        python: ['3.10', '3.11', '3.12', '3.13']
         tox: ['normal']
         include:
-          - python: '3.9'
-            tox: 'py39-min'
+          - python: '3.10'
+            tox: 'py310-min'
           - python: '3.13'
             tox: 'py313-noflaskbabel'
-          - python: '3.9'
-            tox: 'py39-sqlalchemy1'
+          - python: '3.10'
+            tox: 'py310-sqlalchemy1'
           - python: '3.13'
             tox: 'py313-sqlalchemy1'
     services:

@@ -48,7 +48,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
-    def format(self, model: t.Union[None, str, bytes]) -> t.Optional[tuple[t.Any, str]]:
+    def format(self, model: None | str | bytes) -> tuple[t.Any, str] | None:
         if not model:
             return None
 
@@ -84,7 +84,7 @@ def create_ajax_loader(
     model: type[T_PEEWEE_MODEL],
     name: str,
     field_name: str,
-    options: t.Union[dict[str, t.Any], list, tuple],
+    options: dict[str, t.Any] | list | tuple,
 ) -> QueryAjaxModelLoader:
     prop = getattr(model, field_name, None)
 

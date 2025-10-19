@@ -78,8 +78,8 @@ class ModelView(BaseModelView):
         will still make separate database call.
     """
 
-    column_select_related_list: t.Optional[t.Sequence[str]] = t_cast(
-        t.Optional[t.Sequence[str]],
+    column_select_related_list: t.Sequence[str] | None = t_cast(
+        t.Sequence[str] | None,
         ObsoleteAttr("column_select_related", "list_select_related", None),
     )
     """
@@ -99,7 +99,7 @@ class ModelView(BaseModelView):
         Please refer to the `subqueryload` on list of possible values.
     """
 
-    column_display_all_relations: t.Optional[bool] = t_cast(
+    column_display_all_relations: bool | None = t_cast(
         bool,
         ObsoleteAttr(
             "column_display_all_relations", "list_display_all_relations", False
@@ -110,7 +110,7 @@ class ModelView(BaseModelView):
     """
 
     column_searchable_list = t_cast(
-        t.Optional[t.Sequence[str]],
+        t.Sequence[str] | None,
         ObsoleteAttr("column_searchable_list", "searchable_columns", None),
     )
     """
@@ -145,7 +145,7 @@ class ModelView(BaseModelView):
           used.
     """
 
-    column_filters: t.Optional[t.Collection[t.Union[str, BaseFilter]]] = None
+    column_filters: t.Collection[str | BaseFilter] | None = None
     """
         Collection of the column filters.
 
@@ -238,7 +238,7 @@ class ModelView(BaseModelView):
         CASCADE`` for your model.
     """
 
-    inline_models: t.Optional[T_SQLALCHEMY_INLINE_MODELS] = None
+    inline_models: T_SQLALCHEMY_INLINE_MODELS | None = None
     """
         Inline related-model editing for models with parent-child relations.
 
@@ -304,7 +304,7 @@ class ModelView(BaseModelView):
         DEFAULT_FORMATTERS
     )
 
-    form_choices: t.Optional[dict[str, list[tuple[str, str]]]] = None
+    form_choices: dict[str, list[tuple[str, str]]] | None = None
     """
         Map choices to form fields
 
@@ -340,14 +340,14 @@ class ModelView(BaseModelView):
         self,
         model: type[T_SQLALCHEMY_MODEL],
         session: T_SQLALCHEMY_SESSION,
-        name: t.Optional[str] = None,
-        category: t.Optional[str] = None,
-        endpoint: t.Optional[str] = None,
-        url: t.Optional[str] = None,
-        static_folder: t.Optional[str] = None,
-        menu_class_name: t.Optional[str] = None,
-        menu_icon_type: t.Optional[str] = None,
-        menu_icon_value: t.Optional[str] = None,
+        name: str | None = None,
+        category: str | None = None,
+        endpoint: str | None = None,
+        url: str | None = None,
+        static_folder: str | None = None,
+        menu_class_name: str | None = None,
+        menu_icon_type: str | None = None,
+        menu_icon_value: str | None = None,
     ) -> None:
         """
         Constructor.
@@ -379,7 +379,7 @@ class ModelView(BaseModelView):
         """
         self.session = session
 
-        self._search_fields: t.Optional[list[tuple[Column, t.Any]]] = None
+        self._search_fields: list[tuple[Column, t.Any]] | None = None
 
         self._filter_joins: dict = dict()
 
@@ -416,7 +416,7 @@ class ModelView(BaseModelView):
 
     # Internal API
     def _get_model_iterator(
-        self, model: t.Optional[type[T_SQLALCHEMY_MODEL]] = None
+        self, model: type[T_SQLALCHEMY_MODEL] | None = None
     ) -> t.Iterable:
         """
         Return property iterator for the model
@@ -430,9 +430,9 @@ class ModelView(BaseModelView):
         self,
         query: T_SQLALCHEMY_QUERY,
         joins: dict,
-        path: t.Optional[t.Iterable],
+        path: t.Iterable | None,
         inner_join: bool = True,
-    ) -> tuple[T_SQLALCHEMY_QUERY, dict, t.Optional[t.Any]]:
+    ) -> tuple[T_SQLALCHEMY_QUERY, dict, t.Any | None]:
         """
         Apply join path to the query.
 
@@ -472,7 +472,7 @@ class ModelView(BaseModelView):
         return query, joins, last
 
     # Scaffolding
-    def scaffold_pk(self) -> t.Union[t.Any, tuple[t.Any, ...]]:
+    def scaffold_pk(self) -> t.Any | tuple[t.Any, ...]:
         """
         Return the primary key name(s) from a model
         If model has single primary key, will return a string and tuple otherwise
@@ -482,7 +482,7 @@ class ModelView(BaseModelView):
     def get_pk_value(
         self,
         model: T_SQLALCHEMY_MODEL,
-    ) -> t.Union[t.Any, tuple[str, ...]]:
+    ) -> t.Any | tuple[str, ...]:
         """
         Return the primary key value from a model object.
         If there are multiple primary keys, they're encoded into string representation.
@@ -620,7 +620,7 @@ class ModelView(BaseModelView):
     def get_column_names(
         self,
         only_columns: T_COLUMN_LIST,
-        excluded_columns: t.Optional[t.Sequence[str]],
+        excluded_columns: t.Sequence[str] | None,
     ) -> list[tuple[T_COLUMN, str]]:
         """
         Returns a list of tuples with the model field name and formatted
@@ -698,7 +698,7 @@ class ModelView(BaseModelView):
 
         return bool(self.column_searchable_list)
 
-    def search_placeholder(self) -> t.Optional[str]:
+    def search_placeholder(self) -> str | None:
         """
         Return search placeholder.
 
@@ -727,7 +727,7 @@ class ModelView(BaseModelView):
 
     def scaffold_filters(  # type: ignore[override]
         self, name: t.Any
-    ) -> t.Optional[list[BaseSQLAFilter]]:
+    ) -> list[BaseSQLAFilter] | None:
         """
         Return list of enabled filters
         """
@@ -883,8 +883,8 @@ class ModelView(BaseModelView):
 
     def scaffold_list_form(
         self,
-        widget: t.Optional[type[T_WIDGET]] = None,
-        validators: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS_FILES]] = None,
+        widget: type[T_WIDGET] | None = None,
+        validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
     ) -> type[Form]:
         """
         Create form for the `index_view` using only the columns from
@@ -1010,7 +1010,7 @@ class ModelView(BaseModelView):
         query: T_SQLALCHEMY_QUERY,
         joins: dict,
         sort_joins: dict,
-        sort_field: t.Optional[InstrumentedAttribute],
+        sort_field: InstrumentedAttribute | None,
         sort_desc: bool,
     ) -> tuple[T_SQLALCHEMY_QUERY, dict]:
         """
@@ -1044,7 +1044,7 @@ class ModelView(BaseModelView):
 
     def _get_default_order(  # type: ignore[override]
         self,
-    ) -> t.Generator[tuple[t.Optional[t.Any], list, bool], None, None]:
+    ) -> t.Generator[tuple[t.Any | None, list, bool], None, None]:
         order = super()._get_default_order()
         for field, direction in order or []:
             attr, joins = tools.get_field_with_path(
@@ -1057,7 +1057,7 @@ class ModelView(BaseModelView):
         self,
         query: T_SQLALCHEMY_QUERY,
         joins: dict,
-        sort_column: t.Optional[T_COLUMN],
+        sort_column: T_COLUMN | None,
         sort_desc: bool,
     ) -> tuple[T_SQLALCHEMY_QUERY, dict]:
         if sort_column is not None:
@@ -1068,7 +1068,9 @@ class ModelView(BaseModelView):
                 sort_joins = t.cast(dict, self._sortable_joins.get(sort_column))
 
                 if isinstance(sort_field, list):
-                    for field_item, join_item in zip(sort_field, sort_joins):
+                    for field_item, join_item in zip(
+                        sort_field, sort_joins, strict=False
+                    ):
                         query, joins = self._order_by(
                             query, joins, join_item, field_item, sort_desc
                         )
@@ -1198,8 +1200,8 @@ class ModelView(BaseModelView):
     def _apply_pagination(
         self,
         query: T_SQLALCHEMY_QUERY,
-        page: t.Optional[int],
-        page_size: t.Optional[int],
+        page: int | None,
+        page_size: int | None,
     ) -> T_SQLALCHEMY_QUERY:
         if page_size is None:
             page_size = self.page_size
@@ -1214,14 +1216,14 @@ class ModelView(BaseModelView):
 
     def get_list(  # type: ignore[override]
         self,
-        page: t.Optional[int],
-        sort_column: t.Optional[T_COLUMN],
+        page: int | None,
+        sort_column: T_COLUMN | None,
         sort_desc: bool,
-        search: t.Optional[str],
-        filters: t.Optional[t.Sequence[T_FILTER]],
+        search: str | None,
+        filters: t.Sequence[T_FILTER] | None,
         execute: bool = True,
-        page_size: t.Optional[int] = None,
-    ) -> tuple[t.Optional[int], list[T_SQLALCHEMY_MODEL]]:
+        page_size: int | None = None,
+    ) -> tuple[int | None, list[T_SQLALCHEMY_MODEL]]:
         """
         Return records from the database.
 

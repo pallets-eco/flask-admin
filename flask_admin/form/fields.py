@@ -41,9 +41,9 @@ class DateTimeField(fields.DateTimeField):
 
     def __init__(
         self,
-        label: t.Optional[T_TRANSLATABLE] = None,
-        validators: t.Optional[list[T_VALIDATOR]] = None,
-        format: t.Optional[str] = None,
+        label: T_TRANSLATABLE | None = None,
+        validators: list[T_VALIDATOR] | None = None,
+        format: str | None = None,
         **kwargs: t.Any,
     ) -> None:
         """
@@ -71,10 +71,10 @@ class TimeField(fields.Field):
 
     def __init__(
         self,
-        label: t.Optional[T_TRANSLATABLE] = None,
-        validators: t.Optional[list[T_VALIDATOR]] = None,
-        formats: t.Optional[t.Iterable] = None,
-        default_format: t.Optional[str] = None,
+        label: T_TRANSLATABLE | None = None,
+        validators: list[T_VALIDATOR] | None = None,
+        formats: t.Iterable | None = None,
+        default_format: str | None = None,
         widget_format: t.Any = None,
         **kwargs: t.Any,
     ) -> None:
@@ -145,12 +145,12 @@ class Select2Field(fields.SelectField):
 
     def __init__(
         self,
-        label: t.Optional[T_TRANSLATABLE] = None,
-        validators: t.Optional[list[T_VALIDATOR]] = None,
+        label: T_TRANSLATABLE | None = None,
+        validators: list[T_VALIDATOR] | None = None,
         coerce: t.Callable[[t.Any], t.Any] = text_type,
-        choices: t.Union[tuple[str, ...], Enum, None] = None,
+        choices: tuple[str, ...] | Enum | None = None,
         allow_blank: bool = False,
-        blank_text: t.Optional[T_TRANSLATABLE] = None,
+        blank_text: T_TRANSLATABLE | None = None,
         **kwargs: t.Any,
     ) -> None:
         super().__init__(
@@ -190,7 +190,7 @@ class Select2Field(fields.SelectField):
             except (ValueError, TypeError):
                 self.data = None
 
-    def process_formdata(self, valuelist: t.Optional[t.Sequence[str]]) -> None:
+    def process_formdata(self, valuelist: t.Sequence[str] | None) -> None:
         if valuelist:
             if valuelist[0] == "__None":
                 self.data = None
@@ -222,8 +222,8 @@ class Select2TagsField(fields.StringField):
 
     def __init__(
         self,
-        label: t.Optional[T_TRANSLATABLE] = None,
-        validators: t.Optional[list[T_VALIDATOR]] = None,
+        label: T_TRANSLATABLE | None = None,
+        validators: list[T_VALIDATOR] | None = None,
         save_as_list: bool = False,
         coerce: t.Callable[[t.Any], t.Any] = text_type,
         allow_duplicates: bool = False,
@@ -242,7 +242,7 @@ class Select2TagsField(fields.StringField):
 
         super().__init__(label, validators, **kwargs)
 
-    def process_formdata(self, valuelist: t.Optional[t.Sequence[str]] = None) -> None:
+    def process_formdata(self, valuelist: t.Sequence[str] | None = None) -> None:
         if valuelist:
             entrylist = valuelist[0]
             if self.allow_duplicates and entrylist.endswith(" "):
@@ -258,7 +258,7 @@ class Select2TagsField(fields.StringField):
                 self.data = self.coerce(entrylist)
 
     def _value(self) -> str:
-        if isinstance(self.data, (list, tuple)):
+        if isinstance(self.data, list | tuple):
             return ",".join(as_unicode(v) for v in self.data)
         elif self.data:
             return as_unicode(self.data)
@@ -276,7 +276,7 @@ class JSONField(fields.TextAreaField):
         else:
             return "{}"
 
-    def process_formdata(self, valuelist: t.Optional[t.Sequence[str]]) -> None:
+    def process_formdata(self, valuelist: t.Sequence[str] | None) -> None:
         if valuelist:
             value = valuelist[0]
 

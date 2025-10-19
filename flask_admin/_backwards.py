@@ -42,7 +42,7 @@ class ObsoleteAttr:
         self.cache = "_cache_" + new_name
         self.default = default
 
-    def __get__(self, obj: t.Any, objtype: t.Optional[type] = None) -> "ObsoleteAttr":
+    def __get__(self, obj: t.Any, objtype: type | None = None) -> "ObsoleteAttr":
         if obj is None:
             return self
 
@@ -74,7 +74,7 @@ class ImportRedirect:
         self.target = target
 
     def find_module(
-        self, fullname: str, path: t.Optional[str] = None
+        self, fullname: str, path: str | None = None
     ) -> t.Optional["ImportRedirect"]:
         if fullname.startswith(self.prefix):
             return self

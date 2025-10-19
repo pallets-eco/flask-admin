@@ -145,7 +145,7 @@ class CustomModelConverter(ModelConverter):
 
     def handle_foreign_key(
         self, model: t.Any, field: t.Any, **kwargs: t.Any
-    ) -> t.Optional[tuple[str, AjaxSelectField]]:
+    ) -> tuple[str, AjaxSelectField] | None:
         loader = getattr(self.view, "_form_ajax_refs", {}).get(field.name)
 
         if loader:
@@ -269,7 +269,7 @@ class InlineModelConverter(InlineModelConverterBase):
             for name, opts in iteritems(refs):
                 new_name = f"{info.model.__name__.lower()}.{name}"  # type: ignore[union-attr]
 
-                if isinstance(opts, (list, tuple)):
+                if isinstance(opts, list | tuple):
                     loader = create_ajax_loader(
                         info.model,  # type: ignore[arg-type]
                         new_name,

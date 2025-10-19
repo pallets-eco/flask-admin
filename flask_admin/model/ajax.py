@@ -18,7 +18,7 @@ class AjaxModelLoader:
         self.name = name
         self.options = options
 
-    def format(self, model: t.Union[None, str, bytes]) -> t.Optional[tuple[t.Any, str]]:
+    def format(self, model: None | str | bytes) -> tuple[t.Any, str] | None:
         """
         Return (id, name) tuple from the model.
         """

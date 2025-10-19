@@ -29,9 +29,7 @@ from flask_admin.theme import Bootstrap4Theme
 from flask_admin.theme import Theme
 
 
-def expose(
-    url: str = "/", methods: t.Optional[t.Iterable[str]] = ("GET",)
-) -> t.Callable:
+def expose(url: str = "/", methods: t.Iterable[str] | None = ("GET",)) -> t.Callable:
     """
     Use this decorator to expose views in your view classes.
 
@@ -61,7 +59,7 @@ def expose_plugview(url: str = "/") -> t.Callable:
     .. versionadded:: 1.0.4
     """
 
-    def wrap(v: t.Union[View, MethodView]) -> t.Any:
+    def wrap(v: View | MethodView) -> t.Any:
         handler = expose(url, v.methods)
 
         if hasattr(v, "as_view"):
@@ -110,7 +108,7 @@ class AdminViewMeta(type):
 
         # Gather exposed views
         cls._urls: list[
-            t.Union[tuple[str, t.Iterable[str]], tuple[str, str, t.Iterable[str]]]
+            tuple[str, t.Iterable[str]] | tuple[str, str, t.Iterable[str]]
         ] = []
         cls._default_view = None
 
@@ -195,15 +193,15 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
 
     def __init__(
         self,
-        name: t.Optional[str] = None,
-        category: t.Optional[str] = None,
-        endpoint: t.Optional[str] = None,
-        url: t.Optional[str] = None,
-        static_folder: t.Optional[str] = None,
-        static_url_path: t.Optional[str] = None,
-        menu_class_name: t.Optional[str] = None,
-        menu_icon_type: t.Optional[str] = None,
-        menu_icon_value: t.Optional[str] = None,
+        name: str | None = None,
+        category: str | None = None,
+        endpoint: str | None = None,
+        url: str | None = None,
+        static_folder: str | None = None,
+        static_url_path: str | None = None,
+        menu_class_name: str | None = None,
+        menu_icon_type: str | None = None,
+        menu_icon_value: str | None = None,
     ) -> None:
         """
         Constructor.
@@ -245,15 +243,15 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
         self.url = url
         self.static_folder = static_folder
         self.static_url_path = static_url_path
-        self.menu: t.Optional[MenuView] = None
+        self.menu: MenuView | None = None
 
         self.menu_class_name = menu_class_name
         self.menu_icon_type = menu_icon_type
         self.menu_icon_value = menu_icon_value
 
         # Initialized from create_blueprint
-        self.admin: t.Optional[Admin] = None
-        self.blueprint: t.Optional[Blueprint] = None
+        self.admin: Admin | None = None
+        self.blueprint: Blueprint | None = None
 
         # Default view
         if self._default_view is None:  # type: ignore[attr-defined]
@@ -262,7 +260,7 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
                 "without default view"
             )
 
-    def _get_endpoint(self, endpoint: t.Optional[str]) -> str:
+    def _get_endpoint(self, endpoint: str | None) -> str:
         """
         Generate Flask endpoint name. By default converts class name to lower case if
         endpoint is not explicitly provided.
@@ -272,7 +270,7 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
 
         return self.__class__.__name__.lower()
 
-    def _get_view_url(self, admin: "Admin", url: t.Optional[str]) -> str:
+    def _get_view_url(self, admin: "Admin", url: str | None) -> str:
         """
         Generate URL for the view. Override to change default behavior.
         """
@@ -505,14 +503,14 @@ class AdminIndexView(BaseView):
 
     def __init__(
         self,
-        name: t.Optional[str] = None,
-        category: t.Optional[str] = None,
-        endpoint: t.Optional[str] = None,
-        url: t.Optional[str] = None,
+        name: str | None = None,
+        category: str | None = None,
+        endpoint: str | None = None,
+        url: str | None = None,
         template: str = "admin/index.html",
-        menu_class_name: t.Optional[str] = None,
-        menu_icon_type: t.Optional[str] = None,
-        menu_icon_value: t.Optional[str] = None,
+        menu_class_name: str | None = None,
+        menu_icon_type: str | None = None,
+        menu_icon_value: str | None = None,
     ) -> None:
         super().__init__(
             name or babel.lazy_gettext("Home"),
@@ -538,18 +536,18 @@ class Admin:
 
     def __init__(
         self,
-        app: t.Optional[Flask] = None,
-        name: t.Optional[str] = None,
-        url: t.Optional[str] = None,
-        subdomain: t.Optional[str] = None,
-        index_view: t.Optional[AdminIndexView] = None,
-        translations_path: t.Optional[str] = None,
-        endpoint: t.Optional[str] = None,
-        static_url_path: t.Optional[str] = None,
-        theme: t.Optional[Theme] = None,
-        category_icon_classes: t.Optional[dict[str, str]] = None,
-        host: t.Optional[str] = None,
-        csp_nonce_generator: t.Optional[t.Callable] = None,
+        app: Flask | None = None,
+        name: str | None = None,
+        url: str | None = None,
+        subdomain: str | None = None,
+        index_view: AdminIndexView | None = None,
+        translations_path: str | None = None,
+        endpoint: str | None = None,
+        static_url_path: str | None = None,
+        theme: Theme | None = None,
+        category_icon_classes: dict[str, str] | None = None,
+        host: str | None = None,
+        csp_nonce_generator: t.Callable | None = None,
     ) -> None:
         """
         Constructor.
@@ -661,9 +659,9 @@ class Admin:
 
     def _set_admin_index_view(
         self,
-        index_view: t.Optional[AdminIndexView] = None,
-        endpoint: t.Optional[str] = None,
-        url: t.Optional[str] = None,
+        index_view: AdminIndexView | None = None,
+        endpoint: str | None = None,
+        url: str | None = None,
     ) -> None:
         """
           Add the admin index view.
@@ -713,9 +711,9 @@ class Admin:
     def add_category(
         self,
         name: str,
-        class_name: t.Optional[str] = None,
-        icon_type: t.Optional[str] = None,
-        icon_value: t.Optional[str] = None,
+        class_name: str | None = None,
+        icon_type: str | None = None,
+        icon_value: str | None = None,
     ) -> None:
         """
         Add a category of a given name
@@ -790,7 +788,7 @@ class Admin:
             self.add_link(link)
 
     def add_menu_item(
-        self, menu_item: BaseMenu, target_category: t.Optional[str] = None
+        self, menu_item: BaseMenu, target_category: str | None = None
     ) -> None:
         """
         Add menu item to menu tree hierarchy.
@@ -821,7 +819,7 @@ class Admin:
             self._menu.append(menu_item)
 
     def _add_menu_item(
-        self, menu_item: BaseMenu, target_category: t.Optional[str] = None
+        self, menu_item: BaseMenu, target_category: str | None = None
     ) -> None:
         warnings.warn(
             "Admin._add_menu_item is obsolete - use Admin.add_menu_item instead.",
@@ -844,15 +842,15 @@ class Admin:
             view.category,
         )
 
-    def get_category_menu_item(self, name: str) -> t.Optional[MenuCategory]:
+    def get_category_menu_item(self, name: str) -> MenuCategory | None:
         return self._menu_categories.get(name)
 
     def init_app(
         self,
         app: Flask,
-        index_view: t.Optional[AdminIndexView] = None,
-        endpoint: t.Optional[str] = None,
-        url: t.Optional[str] = None,
+        index_view: AdminIndexView | None = None,
+        endpoint: str | None = None,
+        url: str | None = None,
     ) -> None:
         """
         Register all views with the Flask application.

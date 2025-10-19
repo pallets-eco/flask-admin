@@ -76,7 +76,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
-    def format(self, model: t.Union[None, str, bytes]) -> t.Optional[tuple[t.Any, str]]:
+    def format(self, model: None | str | bytes) -> tuple[t.Any, str] | None:
         if not model:
             return None
 

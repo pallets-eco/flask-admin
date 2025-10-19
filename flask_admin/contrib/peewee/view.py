@@ -1,6 +1,6 @@
 import logging
-import sys
 import typing as t
+from typing import TypeGuard
 
 from flask import flash
 from peewee import CharField
@@ -40,17 +40,12 @@ from .tools import get_meta_fields
 from .tools import get_primary_key
 from .tools import parse_like_term
 
-if sys.version_info >= (3, 10):
-    from typing import TypeGuard
-else:
-    from typing_extensions import TypeGuard
-
 # Set up logger
 log = logging.getLogger("flask-admin.peewee")
 
 
 class ModelView(BaseModelView):
-    column_filters: t.Optional[t.Collection[t.Union[str, T_PEEWEE_FIELD]]] = None  # type: ignore[assignment]
+    column_filters: t.Collection[t.Union[str, T_PEEWEE_FIELD]] | None = None  # type: ignore[assignment]
     """
         Collection of the column filters.
 
@@ -142,12 +137,11 @@ class ModelView(BaseModelView):
         for your model.
     """
 
-    inline_models: t.Optional[
-        t.Union[
-            t.Sequence[t.Union[InlineFormAdmin, T_PEEWEE_MODEL, ModelBase]],
-            tuple[T_PEEWEE_MODEL, dict[str, t.Any]],
-        ]
-    ] = None
+    inline_models: (
+        t.Sequence[t.Union[InlineFormAdmin, T_PEEWEE_MODEL, ModelBase]]
+        | tuple[T_PEEWEE_MODEL, dict[str, t.Any]]
+        | None
+    ) = None
     """
         Inline related-model editing for models with parent to child relation.
 
@@ -198,14 +192,14 @@ class ModelView(BaseModelView):
     def __init__(
         self,
         model: type[T_PEEWEE_MODEL],
-        name: t.Optional[str] = None,
-        category: t.Optional[str] = None,
-        endpoint: t.Optional[str] = None,
-        url: t.Optional[str] = None,
-        static_folder: t.Optional[str] = None,
-        menu_class_name: t.Optional[str] = None,
-        menu_icon_type: t.Optional[str] = None,
-        menu_icon_value: t.Optional[str] = None,
+        name: str | None = None,
+        category: str | None = None,
+        endpoint: str | None = None,
+        url: str | None = None,
+        static_folder: str | None = None,
+        menu_class_name: str | None = None,
+        menu_icon_type: str | None = None,
+        menu_icon_value: str | None = None,
     ) -> None:
         self._search_fields: list = []
         super().__init__(
@@ -222,7 +216,7 @@ class ModelView(BaseModelView):
         self._primary_key = self.scaffold_pk()
 
     def _get_model_fields(
-        self, model: t.Optional[type[T_PEEWEE_MODEL]] = None
+        self, model: type[T_PEEWEE_MODEL] | None = None
     ) -> t.Generator[tuple[str, Field], t.Any, None]:
         if model is None:
             model = self.model  # type: ignore[assignment]
@@ -269,7 +263,7 @@ class ModelView(BaseModelView):
                     p = getattr(self.model, p)
 
                 # Check type
-                if not isinstance(p, (CharField, TextField)):
+                if not isinstance(p, CharField | TextField):
                     raise Exception(
                         f"Can only search on text columns. "
                         f'Failed to setup search for "{p}"'
@@ -279,9 +273,7 @@ class ModelView(BaseModelView):
 
         return bool(self._search_fields)
 
-    def scaffold_filters(
-        self, name: t.Union[str, BaseFilter]
-    ) -> t.Optional[list[BaseFilter]]:
+    def scaffold_filters(self, name: str | BaseFilter) -> list[BaseFilter] | None:
         if isinstance(name, string_types):
             attr = getattr(self.model, name, None)
         else:
@@ -315,7 +307,7 @@ class ModelView(BaseModelView):
 
     def is_valid_filter(
         self,
-        filter: t.Union[filters.BasePeeweeFilter, t.Any],
+        filter: filters.BasePeeweeFilter | t.Any,
     ) -> TypeGuard[filters.BasePeeweeFilter]:
         return isinstance(filter, filters.BasePeeweeFilter)
 
@@ -342,8 +334,8 @@ class ModelView(BaseModelView):
 
     def scaffold_list_form(
         self,
-        widget: t.Optional[type[T_WIDGET]] = None,
-        validators: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS_FILES]] = None,
+        widget: type[T_WIDGET] | None = None,
+        validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
     ) -> type[Form]:
         """
         Create form for the `index_view` using only the columns from
@@ -381,7 +373,7 @@ class ModelView(BaseModelView):
 
     # AJAX foreignkey support
     def _create_ajax_loader(
-        self, name: str, options: t.Union[dict[str, t.Any], list, tuple]
+        self, name: str, options: dict[str, t.Any] | list | tuple
     ) -> QueryAjaxModelLoader:
         return create_ajax_loader(self.model, name, name, options)  # type: ignore[arg-type]
 
@@ -435,14 +427,14 @@ class ModelView(BaseModelView):
 
     def get_list(  # type: ignore[override]
         self,
-        page: t.Optional[int],
-        sort_column: t.Optional[str],
-        sort_desc: t.Optional[bool],
-        search: t.Optional[str],
-        filters: t.Optional[t.Sequence[T_FILTER]],
+        page: int | None,
+        sort_column: str | None,
+        sort_desc: bool | None,
+        search: str | None,
+        filters: t.Sequence[T_FILTER] | None,
         execute: bool = True,
-        page_size: t.Optional[int] = None,
-    ) -> tuple[t.Optional[int], t.Union[list, ModelSelect]]:
+        page_size: int | None = None,
+    ) -> tuple[int | None, list | ModelSelect]:
         """
         Return records from the database.
 
@@ -503,7 +495,7 @@ class ModelView(BaseModelView):
         count = query.count() if not self.simple_list_pager else None
 
         # Apply sorting
-        order: t.Optional[list[tuple[str, bool]]]
+        order: list[tuple[str, bool]] | None
         if sort_column is not None:
             sort_field = t.cast(str, self._sortable_columns[sort_column])
             order = [(sort_field, sort_desc)]  # type: ignore[list-item]
@@ -531,7 +523,7 @@ class ModelView(BaseModelView):
     def get_one(self, id: t.Any) -> t.Any:
         if self.model._meta.composite_key:  # type: ignore[union-attr]
             return self.model.get(  # type: ignore[union-attr]
-                **dict(zip(self.model._meta.primary_key.field_names, id))  # type: ignore[union-attr]
+                **dict(zip(self.model._meta.primary_key.field_names, id, strict=False))  # type: ignore[union-attr]
             )
         return self.model.get(**{self._primary_key: id})  # type: ignore[union-attr]
 
@@ -558,7 +550,7 @@ class ModelView(BaseModelView):
 
         return model  # type: ignore[return-value]
 
-    def update_model(self, form: Form, model: T_PEEWEE_MODEL) -> t.Optional[bool]:  # type: ignore[override]
+    def update_model(self, form: Form, model: T_PEEWEE_MODEL) -> bool | None:  # type: ignore[override]
         try:
             form.populate_obj(model)
             self._on_model_change(form, model, False)

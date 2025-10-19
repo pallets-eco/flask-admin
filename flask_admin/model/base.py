@@ -2,7 +2,6 @@ import csv
 import inspect
 import mimetypes
 import re
-import sys
 import time
 import typing as t
 import warnings
@@ -44,6 +43,8 @@ try:
     import tablib
 except ImportError:
     tablib = None
+from typing import TypeGuard  # noqa
+
 from wtforms.fields import HiddenField
 from wtforms.fields.core import Field
 from wtforms.fields.core import UnboundField
@@ -78,11 +79,6 @@ from .ajax import AjaxModelLoader
 from .helpers import get_mdict_item_or_list
 from .helpers import prettify_name
 
-if sys.version_info >= (3, 10):
-    from typing import TypeGuard  # noqa
-else:
-    from typing_extensions import TypeGuard
-
 # Used to generate filter query string name
 filter_char_re = re.compile("[^a-z0-9 ]")
 filter_compact_re = re.compile(" +")
@@ -95,13 +91,13 @@ class ViewArgs:
 
     def __init__(
         self,
-        page: t.Optional[int] = None,
-        page_size: t.Optional[int] = None,
-        sort: t.Optional[int] = None,
-        sort_desc: t.Optional[int] = None,
-        search: t.Optional[str] = None,
-        filters: t.Optional[t.Sequence[T_FILTER]] = None,
-        extra_args: t.Optional[dict[str, t.Any]] = None,
+        page: int | None = None,
+        page_size: int | None = None,
+        sort: int | None = None,
+        sort_desc: int | None = None,
+        search: str | None = None,
+        filters: t.Sequence[T_FILTER] | None = None,
+        extra_args: dict[str, t.Any] | None = None,
     ) -> None:
         self.page = page
         self.page_size = page_size
@@ -233,7 +229,7 @@ class BaseModelView(BaseView, ActionsMixin):
     """Setting this to true will display the details_view as a modal dialog."""
 
     # Customizations
-    column_list: t.Optional[T_COLUMN_LIST] = cast(
+    column_list: T_COLUMN_LIST | None = cast(
         None, ObsoleteAttr("column_list", "list_columns", None)
     )
     """
@@ -255,7 +251,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_list = ('<relationship>.<related column name>',)
     """
 
-    column_exclude_list: t.Optional[t.Sequence[str]] = cast(
+    column_exclude_list: t.Sequence[str] | None = cast(
         None, ObsoleteAttr("column_exclude_list", "excluded_list_columns", None)
     )
     """
@@ -267,24 +263,24 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_exclude_list = ('last_name', 'email')
     """
 
-    column_details_list: t.Optional[list[str]] = None
+    column_details_list: list[str] | None = None
     """
         Collection of the field names included in the details view.
         If set to `None`, will get them from the model.
     """
 
-    column_details_exclude_list: t.Optional[list[str]] = None
+    column_details_exclude_list: list[str] | None = None
     """
         Collection of fields excluded from the details view.
     """
 
-    column_export_list: t.Optional[list[str]] = None
+    column_export_list: list[str] | None = None
     """
         Collection of the field names included in the export.
         If set to `None`, will get them from the model.
     """
 
-    column_export_exclude_list: t.Optional[list[str]] = None
+    column_export_exclude_list: list[str] | None = None
     """
         Collection of fields excluded from the export.
     """
@@ -323,7 +319,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 pass
     """
 
-    column_formatters_export: t.Optional[T_COLUMN_FORMATTERS] = None
+    column_formatters_export: T_COLUMN_FORMATTERS | None = None
     """
         Dictionary of list view column formatters to be used for export.
 
@@ -333,7 +329,7 @@ class BaseModelView(BaseView, ActionsMixin):
         that macros are not supported.
     """
 
-    column_formatters_detail: t.Optional[T_COLUMN_FORMATTERS] = None
+    column_formatters_detail: T_COLUMN_FORMATTERS | None = None
     """
         Dictionary of list view column formatters to be used for the detail view.
 
@@ -344,7 +340,7 @@ class BaseModelView(BaseView, ActionsMixin):
         that macros are not supported.
     """
 
-    column_type_formatters: t.Optional[T_COLUMN_TYPE_FORMATTERS] = cast(
+    column_type_formatters: T_COLUMN_TYPE_FORMATTERS | None = cast(
         None, ObsoleteAttr("column_type_formatters", "list_type_formatters", None)
     )
     """
@@ -394,7 +390,7 @@ class BaseModelView(BaseView, ActionsMixin):
         the 'name' param, but a warning will be raised.
     """
 
-    column_type_formatters_export: t.Optional[T_COLUMN_TYPE_FORMATTERS] = None
+    column_type_formatters_export: T_COLUMN_TYPE_FORMATTERS | None = None
     """
         Dictionary of value type formatters to be used in the export.
 
@@ -406,7 +402,7 @@ class BaseModelView(BaseView, ActionsMixin):
         Functions the same way as column_type_formatters.
     """
 
-    column_type_formatters_detail: t.Optional[T_COLUMN_TYPE_FORMATTERS] = None
+    column_type_formatters_detail: T_COLUMN_TYPE_FORMATTERS | None = None
     """
         Dictionary of value type formatters to be used in the detail view.
 
@@ -430,7 +426,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_labels = dict(name='Name', last_name='Last Name')
     """
 
-    column_descriptions: t.Optional[dict[str, str]] = None
+    column_descriptions: dict[str, str] | None = None
     """
         Dictionary where key is column name and
         value is description for `list view` column or add/edit form field.
@@ -443,7 +439,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 )
     """
 
-    column_sortable_list: t.Optional[T_COLUMN_LIST] = cast(
+    column_sortable_list: T_COLUMN_LIST | None = cast(
         None,
         ObsoleteAttr("column_sortable_list", "sortable_columns", None),
     )
@@ -475,9 +471,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_sortable_list = ('name', ('user', User.username))
     """
 
-    column_default_sort: t.Union[
-        None, str, tuple[str, bool], list[tuple[str, bool]]
-    ] = None
+    column_default_sort: None | str | tuple[str, bool] | list[tuple[str, bool]] = None
     """
         Default sort column if no sorting is applied.
 
@@ -499,7 +493,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_default_sort = [('name', True), ('last_name', True)]
     """
 
-    column_searchable_list: t.Optional[T_COLUMN_LIST] = cast(
+    column_searchable_list: T_COLUMN_LIST | None = cast(
         None,
         ObsoleteAttr("column_searchable_list", "searchable_columns", None),
     )
@@ -514,7 +508,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_searchable_list = ('name', 'email')
     """
 
-    column_editable_list: t.Optional[t.Collection[str]] = None
+    column_editable_list: t.Collection[str] | None = None
     """
         Collection of the columns which can be edited from the list view.
 
@@ -524,7 +518,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_editable_list = ('name', 'last_name')
     """
 
-    column_choices: t.Optional[dict[str, t.Sequence[tuple[str, str]]]] = None
+    column_choices: dict[str, t.Sequence[tuple[str, str]]] | None = None
     """
         Map choices to columns in list view
 
@@ -538,7 +532,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 }
     """
 
-    column_filters: t.Optional[t.Collection[t.Union[str, BaseFilter]]] = None
+    column_filters: t.Collection[str | BaseFilter] | None = None
     """
         Collection of the column filters.
 
@@ -581,7 +575,7 @@ class BaseModelView(BaseView, ActionsMixin):
         actions endpoints are accessible.
     """
 
-    column_extra_row_actions: t.Optional[list[BaseListRowAction]] = None
+    column_extra_row_actions: list[BaseListRowAction] | None = None
     """
         List of row actions
         (instances of :class:`~flask_admin.model.template.BaseListRowAction`).
@@ -611,7 +605,7 @@ class BaseModelView(BaseView, ActionsMixin):
         prev/next pager buttons.
     """
 
-    form: t.Optional[type[Form]] = None
+    form: type[Form] | None = None
     """
         Form class. Override if you want to use custom form for your model.
         Will completely disable form scaffolding functionality.
@@ -643,7 +637,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
     """
 
-    form_args: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS_FILES]] = None
+    form_args: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None
     """
         Dictionary of form field arguments. Refer to WTForms documentation for
         list of possible options.
@@ -657,9 +651,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 )
     """
 
-    form_columns: t.Optional[t.Collection[t.Union[str, T_INSTRUMENTED_ATTRIBUTE]]] = (
-        None
-    )
+    form_columns: t.Collection[t.Union[str, T_INSTRUMENTED_ATTRIBUTE]] | None = None
     """
         Collection of the model field names for the form. If set to `None` will
         get them from the model.
@@ -692,7 +684,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 form_excluded_columns = ('last_name', 'email')
     """
 
-    form_overrides: t.Optional[dict[str, type[Field]]] = None
+    form_overrides: dict[str, type[Field]] | None = None
     """
         Dictionary of form column overrides.
 
@@ -702,7 +694,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 form_overrides = dict(name=wtf.FileField)
     """
 
-    form_widget_args: t.Optional[dict[str, dict[str, t.Union[int, str, bool]]]] = None
+    form_widget_args: dict[str, dict[str, int | str | bool]] | None = None
     """
         Dictionary of form widget rendering arguments.
         Use this to customize how widget is rendered without using custom template.
@@ -737,7 +729,7 @@ class BaseModelView(BaseView, ActionsMixin):
             )
     """
 
-    form_extra_fields: t.Optional[dict[str, Field]] = None
+    form_extra_fields: dict[str, Field] | None = None
     """
         Dictionary of additional fields.
 
@@ -762,15 +754,14 @@ class BaseModelView(BaseView, ActionsMixin):
         are autogenerated.
     """
 
-    form_ajax_refs: t.Optional[
+    form_ajax_refs: (
         dict[
             str,
-            t.Union[
-                AjaxModelLoader,
-                dict[str, t.Union[str, t.Iterable[t.Union[str, T_PEEWEE_FIELD]], int]],
-            ],
+            AjaxModelLoader
+            | dict[str, str | t.Iterable[t.Union[str, T_PEEWEE_FIELD]] | int],
         ]
-    ] = None
+        | None
+    ) = None
     """
         Use AJAX for foreign key model loading.
 
@@ -803,7 +794,7 @@ class BaseModelView(BaseView, ActionsMixin):
         behavior in your `AjaxModelLoader` class.
     """
 
-    form_rules: t.Optional[T_RULES_SEQUENCE] = None
+    form_rules: T_RULES_SEQUENCE | None = None
     """
         List of rendering rules for model creation form.
 
@@ -833,12 +824,12 @@ class BaseModelView(BaseView, ActionsMixin):
                 ]
     """
 
-    form_edit_rules: t.Optional[T_RULES_SEQUENCE] = None
+    form_edit_rules: T_RULES_SEQUENCE | None = None
     """
         Customized rules for the edit form. Override `form_rules` if present.
     """
 
-    form_create_rules: t.Optional[T_RULES_SEQUENCE] = None
+    form_create_rules: T_RULES_SEQUENCE | None = None
     """
         Customized rules for the create form. Override `form_rules` if present.
     """
@@ -892,14 +883,14 @@ class BaseModelView(BaseView, ActionsMixin):
     def __init__(
         self,
         model: type[T_ORM_MODEL],
-        name: t.Optional[str] = None,
-        category: t.Optional[str] = None,
-        endpoint: t.Optional[str] = None,
-        url: t.Optional[str] = None,
-        static_folder: t.Optional[str] = None,
-        menu_class_name: t.Optional[str] = None,
-        menu_icon_type: t.Optional[str] = None,
-        menu_icon_value: t.Optional[str] = None,
+        name: str | None = None,
+        category: str | None = None,
+        endpoint: str | None = None,
+        url: str | None = None,
+        static_folder: str | None = None,
+        menu_class_name: str | None = None,
+        menu_icon_type: str | None = None,
+        menu_icon_value: str | None = None,
     ) -> None:
         """
         Constructor.
@@ -957,7 +948,7 @@ class BaseModelView(BaseView, ActionsMixin):
             )
 
     # Endpoint
-    def _get_endpoint(self, endpoint: t.Optional[str]) -> str:
+    def _get_endpoint(self, endpoint: str | None) -> str:
         if endpoint:
             return super()._get_endpoint(endpoint)
 
@@ -966,9 +957,9 @@ class BaseModelView(BaseView, ActionsMixin):
     # Caching
     def _refresh_forms_cache(self) -> None:
         # Forms
-        self._form_ajax_refs: dict[
-            str, t.Union[AjaxModelLoader, T_QUERY_AJAX_MODEL_LOADER]
-        ] = self._process_ajax_references()
+        self._form_ajax_refs: dict[str, AjaxModelLoader | T_QUERY_AJAX_MODEL_LOADER] = (
+            self._process_ajax_references()
+        )
 
         if self.form_widget_args is None:
             self.form_widget_args = {}
@@ -988,8 +979,8 @@ class BaseModelView(BaseView, ActionsMixin):
         self._filters = self.get_filters()
 
         if self._filters:
-            self._filter_groups: t.Optional[t.OrderedDict] = OrderedDict()
-            self._filter_args: t.Optional[dict[str, tuple[int, BaseFilter]]] = {}
+            self._filter_groups: t.OrderedDict | None = OrderedDict()
+            self._filter_args: dict[str, tuple[int, BaseFilter]] | None = {}
 
             for i, flt in enumerate(self._filters):
                 key = as_unicode(flt.name)
@@ -1011,13 +1002,13 @@ class BaseModelView(BaseView, ActionsMixin):
             self._filter_args = None
 
     def _refresh_form_rules_cache(self) -> None:
-        self._form_create_rules: t.Optional[rules.RuleSet]
+        self._form_create_rules: rules.RuleSet | None
         if self.form_create_rules:
             self._form_create_rules = rules.RuleSet(self, self.form_create_rules)
         else:
             self._form_create_rules = None
 
-        self._form_edit_rules: t.Optional[rules.RuleSet]
+        self._form_edit_rules: rules.RuleSet | None
         if self.form_edit_rules:
             self._form_edit_rules = rules.RuleSet(self, self.form_edit_rules)
         else:
@@ -1099,7 +1090,7 @@ class BaseModelView(BaseView, ActionsMixin):
         self._validate_form_class(self._form_create_rules, self._create_form_class)
 
     # Primary key
-    def get_pk_value(self, model: T_ORM_MODEL) -> t.Union[t.Any, tuple[str, ...]]:
+    def get_pk_value(self, model: T_ORM_MODEL) -> t.Any | tuple[str, ...]:
         """
         Return PK value from a model object.
         """
@@ -1156,7 +1147,7 @@ class BaseModelView(BaseView, ActionsMixin):
     def get_column_names(
         self,
         only_columns: T_COLUMN_LIST,
-        excluded_columns: t.Optional[t.Sequence[str]],
+        excluded_columns: t.Sequence[str] | None,
     ) -> list[tuple[T_COLUMN, str]]:
         """
         Returns a list of tuples with the model field name and formatted
@@ -1266,16 +1257,14 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return False
 
-    def search_placeholder(self) -> t.Optional[str]:
+    def search_placeholder(self) -> str | None:
         """
         Return search placeholder text.
         """
         return None
 
     # Filter helpers
-    def scaffold_filters(
-        self, name: t.Union[str, BaseFilter]
-    ) -> t.Optional[list[BaseFilter]]:
+    def scaffold_filters(self, name: str | BaseFilter) -> list[BaseFilter] | None:
         """
         Generate filter object for the given name
 
@@ -1285,7 +1274,7 @@ class BaseModelView(BaseView, ActionsMixin):
         return None
 
     def is_valid_filter(
-        self, filter: t.Union[filters.BaseFilter, t.Any]
+        self, filter: filters.BaseFilter | t.Any
     ) -> TypeGuard[BaseFilter]:
         """
         Verify that the provided filter object is valid.
@@ -1308,7 +1297,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return filter
 
-    def get_filters(self) -> t.Optional[list[BaseFilter]]:
+    def get_filters(self) -> list[BaseFilter] | None:
         """
         Return a list of filter objects.
 
@@ -1359,7 +1348,7 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             return str(index)
 
-    def _get_filter_groups(self) -> t.Optional[OrderedDict]:
+    def _get_filter_groups(self) -> OrderedDict | None:
         """
         Returns non-lazy version of filter strings
         """
@@ -1384,8 +1373,8 @@ class BaseModelView(BaseView, ActionsMixin):
 
     def scaffold_list_form(
         self,
-        widget: t.Optional[type[T_WIDGET]] = None,
-        validators: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS_FILES]] = None,
+        widget: type[T_WIDGET] | None = None,
+        validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
     ) -> type[Form]:
         """
         Create form for the `index_view` using only the columns from
@@ -1502,7 +1491,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return self._create_form_class(get_form_data(), obj=obj)
 
-    def edit_form(self, obj: t.Optional[T_ORM_MODEL] = None) -> Form:
+    def edit_form(self, obj: T_ORM_MODEL | None = None) -> Form:
         """
         Instantiate model editing form and return it.
 
@@ -1527,7 +1516,7 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             return self._delete_form_class()
 
-    def list_form(self, obj: t.Optional[object] = None) -> Form:
+    def list_form(self, obj: object | None = None) -> Form:
         """
         Instantiate model editing form for list view and return it.
 
@@ -1535,7 +1524,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return self._list_form_class(get_form_data(), obj=obj)
 
-    def action_form(self, obj: t.Optional[type] = None) -> Form:
+    def action_form(self, obj: type | None = None) -> Form:
         """
         Instantiate model action form and return it.
 
@@ -1573,7 +1562,7 @@ class BaseModelView(BaseView, ActionsMixin):
         return get_redirect_target() or self.get_url(".index_view")
 
     def _get_ruleset_missing_fields(
-        self, ruleset: t.Optional[RuleSet], form: Form
+        self, ruleset: RuleSet | None, form: Form
     ) -> list[str]:
         missing_fields = []
 
@@ -1590,7 +1579,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
     def _validate_form_class(
         self,
-        ruleset: t.Optional[RuleSet],
+        ruleset: RuleSet | None,
         form_class: type[Form],
         remove_missing: bool = True,
     ) -> None:
@@ -1614,7 +1603,7 @@ class BaseModelView(BaseView, ActionsMixin):
             self._remove_fields_from_form_class(missing_fields, form_class)
 
     def _validate_form_instance(
-        self, ruleset: t.Optional[RuleSet], form: Form, remove_missing: bool = True
+        self, ruleset: RuleSet | None, form: Form, remove_missing: bool = True
     ) -> None:
         missing_fields = self._get_ruleset_missing_fields(ruleset=ruleset, form=form)
         if missing_fields:
@@ -1657,9 +1646,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return name in self.column_editable_list and self.can_edit  # type: ignore[operator]
 
-    def _get_column_by_idx(
-        self, idx: t.Optional[int]
-    ) -> t.Optional[tuple[T_COLUMN, str]]:
+    def _get_column_by_idx(self, idx: int | None) -> tuple[T_COLUMN, str] | None:
         """
         Return column index by
         """
@@ -1668,7 +1655,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return self._list_columns[idx]
 
-    def _get_default_order(self) -> t.Optional[list[tuple[str, bool]]]:
+    def _get_default_order(self) -> list[tuple[str, bool]] | None:
         """
         Return default sort order
         """
@@ -1682,7 +1669,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return None
 
-    def get_safe_page_size(self, page_size: t.Optional[int]) -> int:
+    def get_safe_page_size(self, page_size: int | None) -> int:
         safe_page_size = self.page_size
 
         if self.can_set_page_size and page_size in self.page_size_options:
@@ -1693,12 +1680,12 @@ class BaseModelView(BaseView, ActionsMixin):
     # Database-related API
     def get_list(
         self,
-        page: t.Optional[int],
-        sort_field: t.Optional[T_COLUMN],
+        page: int | None,
+        sort_field: T_COLUMN | None,
         sort_desc: bool,
-        search: t.Optional[str],
-        filters: t.Optional[t.Sequence[T_FILTER]],
-        page_size: t.Optional[int] = None,
+        search: str | None,
+        filters: t.Sequence[T_FILTER] | None,
+        page_size: int | None = None,
     ) -> tuple[int, list[T_ORM_MODEL]]:
         """
         Return a tuple of a count of results and a paginated and sorted list of models
@@ -1724,7 +1711,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         raise NotImplementedError("Please implement get_list method")
 
-    def get_one(self, id: t.Any) -> t.Optional[T_ORM_MODEL]:
+    def get_one(self, id: t.Any) -> T_ORM_MODEL | None:
         """
         Return one model by its id.
 
@@ -1859,7 +1846,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         pass
 
-    def create_model(self, form: Form) -> t.Union[bool, T_ORM_MODEL]:
+    def create_model(self, form: Form) -> bool | T_ORM_MODEL:
         """
         Create model from the form.
 
@@ -1872,7 +1859,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         raise NotImplementedError()
 
-    def update_model(self, form: Form, model: T_ORM_MODEL) -> t.Optional[bool]:
+    def update_model(self, form: Form, model: T_ORM_MODEL) -> bool | None:
         """
         Update model from the form.
 
@@ -1925,7 +1912,7 @@ class BaseModelView(BaseView, ActionsMixin):
         return gettext("Invalid Filter Value: %(value)s", value=value)
 
     # URL generation helpers
-    def _get_list_filter_args(self) -> t.Optional[list[T_FILTER]]:
+    def _get_list_filter_args(self) -> list[T_FILTER] | None:
         if self._filters:
             filters = []
 
@@ -1982,9 +1969,7 @@ class BaseModelView(BaseView, ActionsMixin):
             ),
         )
 
-    def _get_filters(
-        self, filters: t.Optional[t.Sequence[T_FILTER]]
-    ) -> dict[str, t.Any]:
+    def _get_filters(self, filters: t.Sequence[T_FILTER] | None) -> dict[str, t.Any]:
         """
         Get active filters as dictionary of URL arguments and values
 
@@ -2049,7 +2034,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
     def _get_list_value(
         self,
-        context: t.Optional[Context],
+        context: Context | None,
         model: T_ORM_MODEL,
         name: str,
         column_formatters: T_COLUMN_FORMATTERS,
@@ -2250,7 +2235,7 @@ class BaseModelView(BaseView, ActionsMixin):
             num_pages = None  # use simple pager
 
         # Various URL generation helpers
-        def pager_url(p: t.Optional[int]) -> str:
+        def pager_url(p: int | None) -> str:
             # Do not add page number if it is first page
             if p == 0:
                 p = None
@@ -2327,7 +2312,7 @@ class BaseModelView(BaseView, ActionsMixin):
         )
 
     @expose("/new/", methods=("GET", "POST"))
-    def create_view(self) -> t.Union[T_RESPONSE, str]:
+    def create_view(self) -> T_RESPONSE | str:
         """
         Create model view
         """
@@ -2376,7 +2361,7 @@ class BaseModelView(BaseView, ActionsMixin):
         )
 
     @expose("/edit/", methods=("GET", "POST"))
-    def edit_view(self) -> t.Union[T_RESPONSE, str]:
+    def edit_view(self) -> T_RESPONSE | str:
         """
         Edit model view
         """
@@ -2430,7 +2415,7 @@ class BaseModelView(BaseView, ActionsMixin):
         )
 
     @expose("/details/")
-    def details_view(self) -> t.Union[T_RESPONSE, str]:
+    def details_view(self) -> T_RESPONSE | str:
         """
         Details model view
         """
@@ -2676,7 +2661,7 @@ class BaseModelView(BaseView, ActionsMixin):
         return Response(json.dumps(data), mimetype="application/json")
 
     @expose("/ajax/update/", methods=("POST",))
-    def ajax_update(self) -> t.Union[None, tuple[str, int], str]:
+    def ajax_update(self) -> None | tuple[str, int] | str:
         """
         Edits a single column of a record in list view.
         """

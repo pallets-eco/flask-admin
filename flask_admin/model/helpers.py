@@ -17,7 +17,7 @@ def prettify_name(name: str) -> str:
 
 def get_mdict_item_or_list(
     mdict: werkzeug.datastructures.MultiDict, key: str
-) -> t.Optional[t.Any]:
+) -> t.Any | None:
     """
     Return the value for the given key of the multidict.
 

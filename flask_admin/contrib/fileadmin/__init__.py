@@ -45,7 +45,7 @@ else:
 
 
 class LocalFileStorage:
-    def __init__(self, base_path: t.Union[str, bytes]) -> None:
+    def __init__(self, base_path: str | bytes) -> None:
         """
         Constructor.
 
@@ -317,16 +317,16 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
     def __init__(
         self,
-        base_url: t.Optional[str] = None,
-        name: t.Optional[str] = None,
-        category: t.Optional[str] = None,
-        endpoint: t.Optional[str] = None,
-        url: t.Optional[str] = None,
+        base_url: str | None = None,
+        name: str | None = None,
+        category: str | None = None,
+        endpoint: str | None = None,
+        url: str | None = None,
         verify_path: bool = True,
-        menu_class_name: t.Optional[str] = None,
-        menu_icon_type: t.Optional[str] = None,
-        menu_icon_value: t.Optional[str] = None,
-        storage: t.Optional[LocalFileStorage] = None,
+        menu_class_name: str | None = None,
+        menu_icon_type: str | None = None,
+        menu_icon_value: str | None = None,
+        storage: LocalFileStorage | None = None,
     ) -> None:
         """
         Constructor.
@@ -391,7 +391,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         return self.storage.get_base_path()  # type: ignore[union-attr]
 
-    def get_base_url(self) -> t.Optional[str]:
+    def get_base_url(self) -> str | None:
         """
         Return base URL. Override to customize behavior (per-user
         directories, etc)
@@ -637,7 +637,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         return helpers.validate_form_on_submit(form)
 
     def _get_dir_url(
-        self, endpoint: str, path: t.Optional[str] = None, **kwargs: t.Any
+        self, endpoint: str, path: str | None = None, **kwargs: t.Any
     ) -> str:
         """
         Return prettified URL
@@ -676,7 +676,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         return self.get_url(route, path=path, **kwargs)
 
-    def _normalize_path(self, path: t.Optional[str]) -> tuple[str, str, str]:
+    def _normalize_path(self, path: str | None) -> tuple[str, str, str]:
         """
         Verify and normalize path.
 
@@ -859,7 +859,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
     @expose("/old_index")
     @expose("/old_b/<path:path>")
-    def index(self, path: t.Optional[str] = None) -> T_RESPONSE:
+    def index(self, path: str | None = None) -> T_RESPONSE:
         warnings.warn(
             "deprecated: use index_view instead.", DeprecationWarning, stacklevel=1
         )
@@ -867,7 +867,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
     @expose("/")
     @expose("/b/<path:path>")
-    def index_view(self, path: t.Optional[str] = None) -> t.Union[T_RESPONSE, str]:
+    def index_view(self, path: str | None = None) -> T_RESPONSE | str:
         """
         Index view method
 
@@ -886,13 +886,11 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             return redirect(self._get_dir_url(".index_view"))
 
         # Get directory listing
-        items: list[tuple[str, t.Optional[str], bool, int, int]] = []
+        items: list[tuple[str, str | None, bool, int, int]] = []
 
         # Parent directory
         if directory != base_path:
-            parent_path: t.Optional[str] = op.normpath(
-                self._separator.join([path, ".."])
-            )
+            parent_path: str | None = op.normpath(self._separator.join([path, ".."]))
             if parent_path == ".":
                 parent_path = None
 
@@ -946,7 +944,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         else:
             action_form = None
 
-        def sort_url(column: str, path: t.Optional[str], invert: bool = False) -> str:
+        def sort_url(column: str, path: str | None, invert: bool = False) -> str:
             desc = None
 
             if not path:
@@ -976,7 +974,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
     @expose("/upload/", methods=("GET", "POST"))
     @expose("/upload/<path:path>", methods=("GET", "POST"))
-    def upload(self, path: t.Optional[str] = None) -> t.Union[T_RESPONSE, str]:
+    def upload(self, path: str | None = None) -> T_RESPONSE | str:
         """
         Upload view method
 
@@ -1028,7 +1026,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         )
 
     @expose("/download/<path:path>")
-    def download(self, path: t.Optional[str] = None) -> T_RESPONSE:
+    def download(self, path: str | None = None) -> T_RESPONSE:
         """
         Download view method.
 
@@ -1050,7 +1048,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
     @expose("/mkdir/", methods=("GET", "POST"))
     @expose("/mkdir/<path:path>", methods=("GET", "POST"))
-    def mkdir(self, path: t.Optional[str] = None) -> t.Union[T_RESPONSE, str]:
+    def mkdir(self, path: str | None = None) -> T_RESPONSE | str:
         """
         Directory creation view method
 
@@ -1189,7 +1187,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         return redirect(return_url)
 
     @expose("/rename/", methods=("GET", "POST"))
-    def rename(self) -> t.Union[T_RESPONSE, str]:
+    def rename(self) -> T_RESPONSE | str:
         """
         Rename view method
         """
@@ -1259,13 +1257,13 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         )
 
     @expose("/edit/", methods=("GET", "POST"))
-    def edit(self) -> t.Union[T_RESPONSE, str]:
+    def edit(self) -> T_RESPONSE | str:
         """
         Edit view method
         """
         next_url = None
 
-        path: t.Union[str, list[str]] = request.args.getlist("path")
+        path: str | list[str] = request.args.getlist("path")
         if not path:
             return redirect(self.get_url(".index_view"))
 
@@ -1416,8 +1414,6 @@ class FileAdmin(BaseFileAdmin):
         admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
     """
 
-    def __init__(
-        self, base_path: t.Union[str, bytes], *args: t.Any, **kwargs: t.Any
-    ) -> None:
+    def __init__(self, base_path: str | bytes, *args: t.Any, **kwargs: t.Any) -> None:
         storage = LocalFileStorage(base_path)
         super().__init__(*args, storage=storage, **kwargs)  # type: ignore[misc]

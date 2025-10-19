@@ -11,7 +11,7 @@ from flask_admin.babel import gettext
 
 
 class BaseListRowAction:
-    def __init__(self, title: t.Optional[str] = None) -> None:
+    def __init__(self, title: str | None = None) -> None:
         self.title = title
 
     def render(self, context: Context, row_id: str, row: t.Any) -> t.Any:
@@ -31,9 +31,7 @@ class BaseListRowAction:
 
 
 class LinkRowAction(BaseListRowAction):
-    def __init__(
-        self, icon_class: str, url: str, title: t.Optional[str] = None
-    ) -> None:
+    def __init__(self, icon_class: str, url: str, title: str | None = None) -> None:
         super().__init__(title=title)
 
         self.url = url
@@ -55,9 +53,9 @@ class EndpointLinkRowAction(BaseListRowAction):
         self,
         icon_class: str,
         endpoint: str,
-        title: t.Optional[str] = None,
+        title: str | None = None,
         id_arg: str = "id",
-        url_args: t.Optional[dict[str, t.Any]] = None,
+        url_args: dict[str, t.Any] | None = None,
     ) -> None:
         super().__init__(title=title)
 
@@ -79,7 +77,7 @@ class EndpointLinkRowAction(BaseListRowAction):
 
 
 class TemplateLinkRowAction(BaseListRowAction):
-    def __init__(self, template_name: str, title: t.Optional[str] = None) -> None:
+    def __init__(self, template_name: str, title: str | None = None) -> None:
         super().__init__(title=title)
 
         self.template_name = template_name

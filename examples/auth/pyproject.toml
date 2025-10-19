@@ -3,7 +3,7 @@ name = "example-auth"
 version = "0.1.0"
 description = "Auth Example."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "flask-admin[sqlalchemy-with-utils]",
     "flask-security-too>=5.6.2",
