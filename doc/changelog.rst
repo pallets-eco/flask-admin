@@ -1,6 +1,29 @@
 Changelog
 =========
 
+2.0.0rc1
+--------
+
+Fixes:
+* SQLAlchemy boolean filters now convert "1" and "0" to Python booleans, which fixes a type coercion issue with psycopg(3).
+
+
+2.0.0a5
+-------
+
+New functionality:
+* Mongonengine support has been added back (no longer using `flask-mongoengine`): https://github.com/pallets-eco/flask-admin/pull/2611
+* The default query for pymongo can be overridden: https://github.com/pallets-eco/flask-admin/pull/2661
+* Flask async routes are supported: https://github.com/pallets-eco/flask-admin/pull/2659
+
+Fixes:
+* Bootstrap menu icons should show up properly and not duplicated: https://github.com/pallets-eco/flask-admin/pull/2666
+* Redis CLI commands are now case insensitive: https://github.com/pallets-eco/flask-admin/issues/2411
+
+Misc:
+* Translations and docs have been updated
+* Various type hinting improvements and fixes
+
 2.0.0a4
 -------
 Breaking changes:

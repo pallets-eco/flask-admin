@@ -1,6 +1,6 @@
 [project]
 name = "Flask-Admin"
-version = "2.0.0a4"
+version = "2.0.0rc1"
 description = "Simple and extensible admin interface framework for Flask"
 readme = "README.md"
 license = { file = "LICENSE.txt" }
@@ -49,6 +49,7 @@ geoalchemy = [
     "shapely>=2",
 ]
 pymongo = ["pymongo>=3.10.0"]
+mongoengine = ["mongoengine>=0.29.0"]
 peewee = [
     "peewee>=3.14.0",
     "wtf-peewee>=3.0.4"
@@ -64,6 +65,7 @@ all = [
     "Flask-Admin[sqlalchemy-with-utils]",
     "Flask-Admin[geoalchemy]",
     "Flask-Admin[pymongo]",
+    "Flask-Admin[mongoengine]",
     "Flask-Admin[peewee]",
     "Flask-Admin[s3]",
     "Flask-Admin[azure-blob-storage]",
@@ -96,6 +98,7 @@ docs = [
 ]
 tests = [
     "flake8",
+    "flask[async]",
     "pylint",
     "pytest",
     "pytest-cov",
@@ -219,6 +222,7 @@ module = [
     "marker",
     "playhouse.*",
     "pymongo",
+    "mongoengine.*",
     "sqlalchemy.*",
     "sqlalchemy_utils",
     "tablib",
@@ -304,6 +308,7 @@ commands = [
         "shapely==2",
         "boto3==1.33.0",
         "pymongo==3.10.0",
+        "mongoengine==0.29.0",
         "peewee==3.14.0",
         "wtf-peewee==3.0.4",
         "azure-storage-blob==12.0.0",

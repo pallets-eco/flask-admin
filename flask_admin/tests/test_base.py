@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 import pytest
@@ -9,6 +10,8 @@ from flask.views import MethodView
 from jinja2 import StrictUndefined
 
 from flask_admin import base
+from flask_admin import BaseView
+from flask_admin import expose
 
 
 @pytest.fixture
@@ -446,6 +449,47 @@ def test_add_links(app, admin):
     data = rv.data.decode("utf-8")
     assert "TestMenuLink1" in data
     assert "TestMenuLink2" in data
+
+
+def test_async_admin_view(app, admin):
+    """
+    Test admin with async view.
+    """
+
+    class AsyncView(BaseView):
+        @expose("/")
+        async def index(self):
+            await asyncio.sleep(0.05)
+            return "Async Hello world"
+
+    admin.add_view(AsyncView(name="Async"))
+    client = app.test_client()
+
+    # Test async admin view
+    rv = client.get("/admin/asyncview/")
+    assert rv.status_code == 200
+    assert b"Async Hello world" == rv.data
+
+
+def test_with_async_routes(app, admin):
+    """
+    Test flask-admin working at same time of async routes.
+    """
+    import asyncio
+
+    @app.route("/compute", methods=["POST"])
+    async def compute():
+        await asyncio.sleep(0.1)
+        return {"success": True}
+
+    admin.add_view(MockView())
+    client = app.test_client()
+    rv = client.post("/compute")
+    data = rv.get_json()
+    assert data["success"] is True
+
+    rv = client.get("/admin/mockview/")
+    assert rv.data == b"Success!"
 
 
 def check_class_name():

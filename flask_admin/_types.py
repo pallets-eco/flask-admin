@@ -57,6 +57,7 @@ if t.TYPE_CHECKING:
     from peewee import Model as T_PEEWEE_MODEL
     from peewee import Field as T_PEEWEE_FIELD  # noqa
     from pymongo import MongoClient as T_MONGO_CLIENT
+    from mongoengine import Document as T_MONGO_ENGINE_CLIENT
     import sqlalchemy  # noqa
     from sqlalchemy import Column as T_SQLALCHEMY_COLUMN
     from sqlalchemy import Table as T_TABLE  # noqa
@@ -105,6 +106,7 @@ else:
     T_PEEWEE_FIELD = "peewee.Field"
     T_PEEWEE_MODEL = "peewee.Model"
     T_MONGO_CLIENT = "pymongo.MongoClient"
+    T_MONGO_ENGINE_CLIENT = "mongoengine.Document"
     T_TABLE = "sqlalchemy.Table"
     T_CHOICE_TYPE = "sqlalchemy_utils.ChoiceType"
     T_CHOICE = "sqlalchemy_utils.Choice"
@@ -148,7 +150,9 @@ T_ITER_CHOICES = t.Union[
 T_OPTION = tuple[str, T_TRANSLATABLE]
 T_OPTION_LIST = t.Sequence[T_OPTION]
 T_OPTIONS = t.Union[None, T_OPTION_LIST, t.Callable[[], T_OPTION_LIST]]
-T_ORM_MODEL = t.Union[T_SQLALCHEMY_MODEL, T_PEEWEE_MODEL, T_MONGO_CLIENT]
+T_ORM_MODEL = t.Union[
+    T_SQLALCHEMY_MODEL, T_PEEWEE_MODEL, T_MONGO_CLIENT, T_MONGO_ENGINE_CLIENT
+]
 T_QUERY_AJAX_MODEL_LOADER = t.Union[
     T_PEEWEE_QUERY_AJAX_MODEL_LOADER, T_SQLA_QUERY_AJAX_MODEL_LOADER
 ]
@@ -250,3 +254,14 @@ class T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK(T_FIELD_ARGS_VALIDATORS):
 class T_FIELD_ARGS_VALIDATORS_FILES(T_FIELD_ARGS_VALIDATORS):
     base_path: NotRequired[str]
     allow_overwrite: NotRequired[bool]
+
+
+# wtfforms types
+class _MultiDictLikeBase(t.Protocol):
+    def __iter__(self) -> t.Iterator[str]: ...
+    def __len__(self) -> int: ...
+    def __contains__(self, key: t.Any, /) -> bool: ...
+
+
+class _MultiDictLikeWithGetlist(_MultiDictLikeBase, t.Protocol):
+    def getlist(self, key: str, /) -> list[t.Any]: ...
