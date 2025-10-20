@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.0.0rc2
+--------
+
+* Serbian translation updates
+
 2.0.0rc1
 --------
 
