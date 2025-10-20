@@ -570,7 +570,7 @@ async = [
 
 [[package]]
 name = "flask-admin"
-version = "2.0.0rc1"
+version = "2.0.0rc2"
 source = { editable = "." }
 dependencies = [
     { name = "flask" },
