@@ -1,6 +1,6 @@
-# bootstrap glyph icon
-ICON_TYPE_GLYPH = "glyph"
-# font awesome glyph icon
+# bootstrap icon
+ICON_TYPE_BOOTSTRAP = "bi"
+# fontawesome icon
 ICON_TYPE_FONT_AWESOME = "fa"
 # image relative to Flask static folder
 ICON_TYPE_IMAGE = "image"
