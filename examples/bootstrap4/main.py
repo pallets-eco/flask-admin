@@ -3,6 +3,7 @@ import os.path as op
 
 from flask import Flask
 from flask_admin import Admin
+from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
 from flask_admin.model.template import EndpointLinkRowAction
@@ -223,6 +224,15 @@ if __name__ == "__main__":
             menu_class_name="text-danger",
             menu_icon_type="fa",
             menu_icon_value="fa-file",
+        )
+    )
+    admin.add_view(
+        FileAdmin(
+            base_path="static",
+            name="Static File",
+            category="Menu",
+            menu_icon_type="bi",
+            menu_icon_value="bi bi-file-earmark-medical-fill",
         )
     )
 

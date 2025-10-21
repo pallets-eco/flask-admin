@@ -89,9 +89,9 @@
                                 <a href="{{ sort_url(column, True) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">
                                     {{ name }}
                                     {% if sort_desc %}
-                                        <span class="fa fa-chevron-up glyphicon glyphicon-chevron-up"></span>
+                                        <span class="fa fa-chevron-up bi bi-chevron-up"></span>
                                     {% else %}
-                                        <span class="fa fa-chevron-down glyphicon glyphicon-chevron-down"></span>
+                                        <span class="fa fa-chevron-down bi bi-chevron-down"></span>
                                     {% endif %}
                                 </a>
                             {% else %}
@@ -101,7 +101,7 @@
                             {{ name }}
                         {% endif %}
                         {% if admin_view.column_descriptions.get(c) %}
-                            <a class="fa fa-question-circle glyphicon glyphicon-question-sign"
+                            <a class="fa fa-question-circle bi bi-question-circle-fill"
                                title="{{ admin_view.column_descriptions[c] }}"
                                href="javascript:void(0)" data-role="tooltip"
                             ></a>

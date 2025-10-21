@@ -2,8 +2,6 @@
   {% set icon_type = item.get_icon_type() %}
   {%- if icon_type %}
     {% set icon_value = item.get_icon_value() %}
-    {% if icon_type == 'glyph' %}
-      <i class="glyphicon {{ icon_value }}"></i>
     {% elif icon_type == 'fa' %}
       <i class="fa {{ icon_value }}"></i>
     {% elif icon_type == 'image' %}
@@ -33,12 +31,6 @@
         <!-- show icon -->
         {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}
         {{ menu_icon(item) }}{{ item.name }}
-        {%- if 'dropdown-submenu' in class_name -%}
-          <!-- this glypicon works properly while it is not the case in the most of the project! -->
-          <i class="glyphicon glyphicon-chevron-right small"></i>
-        {%- else -%}
-          <i class="glyphicon glyphicon-chevron-down small"></i>
-        {%- endif -%}
       </a>
       <ul class="dropdown-menu">
         {%- for child in children -%}
