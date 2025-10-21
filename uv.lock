@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.10"
 resolution-markers = [
     "python_full_version >= '3.12'",
@@ -748,7 +748,7 @@ requires-dist = [
     { name = "pillow", marker = "extra == 'images'", specifier = ">=10.0.0" },
     { name = "pymongo", marker = "extra == 'pymongo'", specifier = ">=3.10.0" },
     { name = "redis", marker = "extra == 'rediscli'", specifier = ">=4.0.0" },
-    { name = "shapely", marker = "extra == 'geoalchemy'", specifier = ">=2.1.2" },
+    { name = "shapely", marker = "extra == 'geoalchemy'", specifier = ">=2" },
     { name = "sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=1.4" },
     { name = "sqlalchemy-citext", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=1.8.0" },
     { name = "sqlalchemy-utils", marker = "extra == 'sqlalchemy-with-utils'", specifier = ">=0.38.0" },
