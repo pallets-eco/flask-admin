@@ -56,7 +56,7 @@ peewee = [
 ]
 s3 = ["boto3>=1.33"]
 azure-blob-storage = ["azure-storage-blob>=12.0.0"]
-images = ["pillow>=10.0.0"]
+images = ["pillow>=11.3.0"]
 export = ["tablib>=3.0.0"]
 rediscli = ["redis>=4.0.0"]
 translation = ["flask-babel>=3.0.1"]
@@ -111,7 +111,6 @@ typing = [
     "mypy",
     "pyright",
     "pytest",
-    "types-Pillow", # keep until pillow < 4.13.0
     "types-beautifulsoup4", # keep for beautifulsoup 4.12
     "types-boto3", # keep
     "types-peewee", # for peewee==3.18.2
@@ -318,7 +317,7 @@ commands = [
         "peewee==3.14.0",
         "wtf-peewee==3.0.4",
         "azure-storage-blob==12.0.0",
-        "pillow==10.0.0",
+        "pillow==11.3.0",
         "flask-babel==3.0.1",
         "tablib==3.0.0",
         "redis==4.0.0",
