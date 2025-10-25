@@ -272,14 +272,15 @@ class ModelView(BaseModelView):
         :param menu_icon_type:
             Optional icon. Possible icon types:
 
-             - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
+             - `flask_admin.consts.ICON_TYPE_BOOTSTRAP` - Bootstrap icon
              - `flask_admin.consts.ICON_TYPE_FONT_AWESOME` - Font Awesome icon
              - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to
                                                       Flask static directory
              - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
 
         :param menu_icon_value:
-            Icon glyph name or URL, depending on `menu_icon_type` setting
+            Icon name (fontawesome, or bootstrap) or URL, depending on
+            `menu_icon_type` setting
         """
         self._search_fields = []
 
