@@ -5,6 +5,7 @@ Changelog
 -----
 
 Breaking changes:
+
 * Removed support for Python <3.10
 * Use of the `boto` library has been replaced by `boto3`. S3FileAdmin and S3Storage now accept an `s3_client` parameter taking a `boto3.client('s3')` instance rather than `aws_access_key_id`, `aws_secret_access_key`, and `region` parameters.
 * Azure Blob Storage SDK has been upgraded from the legacy version (v2) to the latest version (v12). AzureFileAdmin now accept `blob_service_client` rather than `connection_string` to give more flexibility with connection types.
@@ -14,7 +15,7 @@ Breaking changes:
 * `Admin()` now takes a `theme` parameter that encapsulates all of the configuration options for theming the admin instance. This replaces the `template_mode` parameter.
 * All remaining Flask-Admin config has been namespaced under `FLASK_ADMIN_`.
 
-.. list-table:: Title
+.. list-table:: Configuration Changes
    :widths: 50 50
    :header-rows: 1
 
@@ -42,6 +43,7 @@ Breaking changes:
      - Renamed to FLASK_ADMIN_RAISE_ON_VIEW_EXCEPTION
 
 New functionality:
+
 * Added support for Python <=3.13
 * The default query for pymongo can be overridden
 * Flask async routes are supported
@@ -52,6 +54,7 @@ New functionality:
 * `page_size_options` can now be configured on Admin models, to restrict the page sizes that users can select. These are now enforced properly and cannot be bypassed by URL hacking.
 
 Fixes:
+
 * Bootstrap menu icons should show up properly and not duplicated
 * Redis CLI commands are now case insensitive
 * SQLAlchemy boolean filters now convert "1" and "0" to Python booleans, which fixes a type coercion issue with psycopg(3).
@@ -66,6 +69,7 @@ Fixes:
 * “Save and Continue Editing” button no longer discards the “return URL” (allowing to retain filters when switching back to the list)
 
 Misc:
+
 * Translations and docs have been updated
 * Various type hinting improvements and fixes
 
