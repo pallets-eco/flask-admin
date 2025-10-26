@@ -1,83 +1,21 @@
 Changelog
 =========
 
-2.0.0rc2
---------
-
-* Serbian translation updates
-
-2.0.0rc1
---------
-
-Fixes:
-* SQLAlchemy boolean filters now convert "1" and "0" to Python booleans, which fixes a type coercion issue with psycopg(3).
-
-
-2.0.0a5
--------
-
-New functionality:
-* Mongonengine support has been added back (no longer using `flask-mongoengine`): https://github.com/pallets-eco/flask-admin/pull/2611
-* The default query for pymongo can be overridden: https://github.com/pallets-eco/flask-admin/pull/2661
-* Flask async routes are supported: https://github.com/pallets-eco/flask-admin/pull/2659
-
-Fixes:
-* Bootstrap menu icons should show up properly and not duplicated: https://github.com/pallets-eco/flask-admin/pull/2666
-* Redis CLI commands are now case insensitive: https://github.com/pallets-eco/flask-admin/issues/2411
-
-Misc:
-* Translations and docs have been updated
-* Various type hinting improvements and fixes
-
-2.0.0a4
--------
-Breaking changes:
-
-* Azure Blob Storage SDK has been upgraded from the legacy version (v2) to the latest version (v12). AzureFileAdmin now accept `blob_service_client` rather than `connection_string` to give more flexibility with connection types.
-
-2.0.0a3
--------
-
-Fixes:
-
-* Jinja templates can now be loaded in StrictUndefined mode.
-* Remove an implicit dependency on `packaging`
-* Fixed an error caused by the fallback implementation of `gettext()` (when used in templates)
-
-2.0.0a2
--------
+2.0.0
+-----
 
 Breaking changes:
 
-* Removed support for Python 3.8.
+* Removed support for Python <3.10
 * Use of the `boto` library has been replaced by `boto3`. S3FileAdmin and S3Storage now accept an `s3_client` parameter taking a `boto3.client('s3')` instance rather than `aws_access_key_id`, `aws_secret_access_key`, and `region` parameters.
-
-2.0.0a1
--------
-
-Fixes:
-
-* Fixes compatibility with WTForms 3.2+.
-* The `Apply` button for filters will show/hide correctly again
-* Fix `translations_path` attribute when Flask-Admin is used with Flask-Babel
-* Some translation updates.
-* Date fields no longer override `widget` if set in `form_args`
-* “Save and Continue Editing” button no longer discards the “return URL” (allowing to retain filters when switching back to the list)
-
-2.0.0a0
--------
-
-Breaking changes:
-
-* Added support for Python 3.12
-* Dropped support for Python 3.7
+* Azure Blob Storage SDK has been upgraded from the legacy version (v2) to the latest version (v12). AzureFileAdmin now accept `blob_service_client` rather than `connection_string` to give more flexibility with connection types.
 * Flask-BabelEx is no longer supported; the package is no longer maintained and Flask-Babel is recommended/active instead.
-* Flask-Mongoengine is no longer supported due to that package being unmaintained.
+* Mongoengine support in Flask-Admin no longer uses Flask-Mongoengine, as that library is no longer actively maintained.
 * Bootstrap2 and Bootstrap3 themes are no longer available.
 * `Admin()` now takes a `theme` parameter that encapsulates all of the configuration options for theming the admin instance. This replaces the `template_mode` parameter.
 * All remaining Flask-Admin config has been namespaced under `FLASK_ADMIN_`.
 
-.. list-table:: Title
+.. list-table:: Configuration Changes
    :widths: 50 50
    :header-rows: 1
 
@@ -104,17 +42,36 @@ Breaking changes:
    * - ADMIN_RAISE_ON_VIEW_EXCEPTION
      - Renamed to FLASK_ADMIN_RAISE_ON_VIEW_EXCEPTION
 
-New features:
+New functionality:
 
+* Added support for Python <=3.13
+* The default query for pymongo can be overridden
+* Flask async routes are supported
 * Flask-Admin now supports the `host_matching` mode of Flask apps. See documentation for how to configure this where needed.
 * Flask-Admin is now compatible with SQLAlchemy v2+, Flask v3+, WTForms v3+, and Pillow v10+.
 * Flask-Admin now declares its dependencies and supported dependency versions more cleanly, including using pip extras. If you use Flask-Admin with SQLAlchemy, for example, you should use `pip install flask-admin[sqlalchemy]` or list `flask-admin[sqlalchemy]` in your requirements.txt or pyproject.toml files.
 * Apps using content security policies to restrict the assets that can be loaded can now whitelist Flask-Admin's assets by passing a `csp_nonce_generator` function to the Admin instance. See examples or documentation for how to configure this where needed.
 * `page_size_options` can now be configured on Admin models, to restrict the page sizes that users can select. These are now enforced properly and cannot be bypassed by URL hacking.
 
-And various smaller bug fixes and documentation updates.
+Fixes:
 
-For the full changelog, see https://github.com/pallets-eco/flask-admin/releases/tag/v2.0.0a0
+* Bootstrap menu icons should show up properly and not duplicated
+* Redis CLI commands are now case insensitive
+* SQLAlchemy boolean filters now convert "1" and "0" to Python booleans, which fixes a type coercion issue with psycopg(3).
+* Jinja templates can now be loaded in StrictUndefined mode.
+* Remove an implicit dependency on `packaging`
+* Fixed an error caused by the fallback implementation of `gettext()` (when used in templates)
+* Fixes compatibility with WTForms 3.2+.
+* The `Apply` button for filters will show/hide correctly again
+* Fix `translations_path` attribute when Flask-Admin is used with Flask-Babel
+* Some translation updates.
+* Date fields no longer override `widget` if set in `form_args`
+* “Save and Continue Editing” button no longer discards the “return URL” (allowing to retain filters when switching back to the list)
+
+Misc:
+
+* Translations and docs have been updated
+* Various type hinting improvements and fixes
 
 1.6.1
 -----
