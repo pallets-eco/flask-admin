@@ -23,10 +23,14 @@ package, but implemented in such a way that the developer has total
 control over the look, feel, functionality and user experience of the resulting
 application.
 
+<img width="1242" height="596" alt="image" src="https://github.com/user-attachments/assets/177c1ffd-1f55-4c0d-88a8-abce0d3371f6" />
+
+
 Out-of-the-box, Flask-Admin plays nicely with various ORM\'s, including
 
 - [SQLAlchemy](https://www.sqlalchemy.org/)
 - [pymongo](https://pymongo.readthedocs.io/)
+- [MongoEngine](https://mongoengine.org/)
 - and [Peewee](https://github.com/coleifer/peewee).
 
 It also boasts a simple file management interface and a [Redis client](https://redis.io/) console.
