@@ -26,7 +26,7 @@ except ImportError:
 else:
     from flask_admin import translations
 
-    class CustomDomain(Domain):
+    class CustomDomain(Domain):  # type: ignore[misc]
         def __init__(self) -> None:
             super().__init__(translations.__path__[0], domain="admin")
 

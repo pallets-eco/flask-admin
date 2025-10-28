@@ -8,7 +8,7 @@ from flask_admin.contrib.mongoengine import filters
 from flask_admin.contrib.mongoengine import ModelView
 
 
-class Test(Document):
+class Test(Document):  # type: ignore[misc]
     __test__ = False
     test1 = StringField()
     test2 = StringField()
