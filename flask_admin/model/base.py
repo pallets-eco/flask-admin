@@ -1462,7 +1462,7 @@ class BaseModelView(BaseView, ActionsMixin):
         Override to implement customized behavior.
         """
 
-        class DeleteForm(self.form_base_class):  # type: ignore[name-defined]
+        class DeleteForm(self.form_base_class):  # type: ignore[name-defined, misc]
             id = HiddenField(validators=[InputRequired()])
             url = HiddenField()
 
@@ -1475,7 +1475,7 @@ class BaseModelView(BaseView, ActionsMixin):
         Override to implement customized behavior.
         """
 
-        class ActionForm(self.form_base_class):  # type: ignore[name-defined]
+        class ActionForm(self.form_base_class):  # type: ignore[name-defined, misc]
             action = HiddenField()
             url = (
                 HiddenField()

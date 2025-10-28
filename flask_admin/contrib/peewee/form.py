@@ -124,7 +124,7 @@ class InlineModelFormList(InlineFieldList):
                     f.save_related(model)
 
 
-class CustomModelConverter(ModelConverter):
+class CustomModelConverter(ModelConverter):  # type: ignore[misc]
     def __init__(self, view: t.Any, additional: t.Any = None) -> None:
         super().__init__(additional)
         self.view = view
