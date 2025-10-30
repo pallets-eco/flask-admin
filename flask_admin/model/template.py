@@ -31,7 +31,12 @@ class BaseListRowAction:
 
 
 class LinkRowAction(BaseListRowAction):
-    def __init__(self, icon_class: str, url: str, title: str | None = None) -> None:
+    def __init__(
+        self,
+        icon_class: str,
+        url: str | t.Callable[["LinkRowAction", str, t.Any], str],
+        title: str | None = None,
+    ) -> None:
         super().__init__(title=title)
 
         self.url = url
