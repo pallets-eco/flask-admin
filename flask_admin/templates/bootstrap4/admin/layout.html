@@ -10,7 +10,8 @@
       <img src="{{ url_for('static', filename=icon_value) }}" alt="menu image">
     {% elif icon_type == 'image-url' %}
       <img src="{{ icon_value }}" alt="menu image">
-    {% endif %}
+    {% elif icon_type == 'bi' %}
+      <i class="bi {{ icon_value }}"></i>    {% endif %}
   {% endif %}
 {%- endmacro %}
 
