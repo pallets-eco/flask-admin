@@ -4,8 +4,8 @@ msgstr ""
 "Project-Id-Version:  flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-09-16 00:18+0200\n"
-"PO-Revision-Date: 2025-07-07 20:12-0500\n"
-"Last-Translator: ElLorans <lorenzo.cerreta@gmail.com>\n"
+"PO-Revision-Date: 2025-31-10 20:12-0500\n"
+"Last-Translator: Sami Alfattany <sami_alfattani@hotmail.com>\n"
 "Language: ar_SA\n"
 "Language-Team: Arabic\n"
 "Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : "
@@ -17,7 +17,7 @@ msgstr ""
 
 #: ../flask_admin/base.py:518
 msgid "Home"
-msgstr "الصفحة الرئيسية"
+msgstr "الرئيسية"
 
 #: ../flask_admin/contrib/rediscli.py:118
 msgid "Cli: Invalid command."
@@ -25,11 +25,11 @@ msgstr "Cli: أمر غير صالح."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:414
 msgid "File to upload"
-msgstr "ملف لتحميله"
+msgstr "الملف المراد رفعه"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:422
 msgid "File required."
-msgstr "الملف المطلوب."
+msgstr "الملف مطلوب."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:427
 msgid "Invalid file type."
@@ -37,7 +37,7 @@ msgstr "امتداد الملف غير صالح."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:440
 msgid "Content"
-msgstr "محتوى السكريبت"
+msgstr "المحتوى"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:457
 msgid "Invalid name"
@@ -51,7 +51,7 @@ msgstr "الإسم"
 #: ../flask_admin/contrib/fileadmin/__init__.py:838
 #, python-format
 msgid "File \"%(name)s\" already exists."
-msgstr "ملف \"%(name)s\" موجود بالفعل."
+msgstr "الملف \"%(name)s\" موجود بالفعل."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:885
 #: ../flask_admin/contrib/fileadmin/__init__.py:994
@@ -65,12 +65,12 @@ msgstr "ممنوع الدخول."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:990
 msgid "File uploading is disabled."
-msgstr "تحميل الملف معطل."
+msgstr "خاصية رفع الملفات معطلة."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1003
 #, python-format
 msgid "Successfully saved file: %(name)s"
-msgstr "ملف تم حفظه بنجاح: %(name)s"
+msgstr "تم حفظ الملف بنجاح: %(name)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1012
 #, python-format
@@ -81,27 +81,27 @@ msgstr "فشل في حفظ الملف: %(error)s"
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:154
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:156
 msgid "Upload File"
-msgstr "تحميل الملف"
+msgstr "رفع الملف"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1066
 msgid "Directory creation is disabled."
-msgstr "يتم تعطيل إنشاء الدليل."
+msgstr "تم تعطيل إنشاء المجلد."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1087
 #, python-format
 msgid "Successfully created directory: %(directory)s"
-msgstr "الدليل الذي تم إنشاؤه بنجاح: %(directory)s"
+msgstr "المجلد الذي تم إنشاؤه بنجاح: %(directory)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1096
 #, python-format
 msgid "Failed to create directory: %(error)s"
-msgstr "فشل إنشاء الدليل: %(error)s"
+msgstr "فشل إنشاء المجلد: %(error)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1113
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:165
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:167
 msgid "Create Directory"
-msgstr "إنشاء دليل"
+msgstr "إنشاء مجلد"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1140
 msgid "Deletion is disabled."
@@ -109,17 +109,17 @@ msgstr "يتم تعطيل الحذف."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1149
 msgid "Directory deletion is disabled."
-msgstr "يتم تعطيل حذف الدليل."
+msgstr "يتم تعطيل حذف المجلد."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1157
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
-msgstr "تم بنجاح حذف الدليل \"%(path)s\"."
+msgstr "تم بنجاح حذف المجلد \"%(path)s\"."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1164
 #, python-format
 msgid "Failed to delete directory: %(error)s"
-msgstr "فشل في حذف الدليل: %(error)s"
+msgstr "فشل في حذف المجلد: %(error)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1175
 #: ../flask_admin/contrib/fileadmin/__init__.py:1378
@@ -135,7 +135,7 @@ msgstr "فشل في حذف الملف: %(name)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1207
 msgid "Renaming is disabled."
-msgstr "إعادة تسمية معطل."
+msgstr "خاصية إعادة التسمية معطلة."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1215
 msgid "Path does not exist."
@@ -164,12 +164,12 @@ msgstr "حدث خطأ أثناء حفظ التغييرات إلى %(name)s."
 #: ../flask_admin/contrib/fileadmin/__init__.py:1304
 #, python-format
 msgid "Changes to %(name)s saved successfully."
-msgstr "التغييرات إلى %(name)s حفظه بنجاح."
+msgstr "تم حفظ التعديلات على  %(name)s  بنجاح."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1314
 #, python-format
 msgid "Error reading %(name)s."
-msgstr "خطأ القراءة %(name)s."
+msgstr "خطأ في قراءة %(name)s."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1318
 #: ../flask_admin/contrib/fileadmin/__init__.py:1331
@@ -201,17 +201,17 @@ msgstr "هل تريد فعلا حذف %d من الملفات؟?"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1368
 msgid "File deletion is disabled."
-msgstr "يتم تعطيل حذف الملف."
+msgstr "تم تعطيل حذف الملف."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1390
 #: ../flask_admin/templates/bootstrap4/admin/model/details.html:17
 #: ../flask_admin/templates/bootstrap4/admin/model/edit.html:22
 msgid "Edit"
-msgstr "عدل"
+msgstr "تعديل"
 
 #: ../flask_admin/contrib/fileadmin/s3.py:233
 msgid "Cannot operate on non empty directories"
-msgstr "لا يمكن العمل على الدلائل غير الفارغة"
+msgstr "لا يمكن العمل على المجلدات غير الفارغة"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:41
 #: ../flask_admin/contrib/peewee/filters.py:47
@@ -225,7 +225,7 @@ msgstr "يساوي"
 #: ../flask_admin/contrib/pymongo/filters.py:58
 #: ../flask_admin/contrib/sqla/filters.py:72
 msgid "not equal"
-msgstr "لا تساوي"
+msgstr "لا يساوي"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:60
 #: ../flask_admin/contrib/peewee/filters.py:64
@@ -239,7 +239,7 @@ msgstr "يحتوي على"
 #: ../flask_admin/contrib/pymongo/filters.py:78
 #: ../flask_admin/contrib/sqla/filters.py:94
 msgid "not contains"
-msgstr "لا تحتوي علي"
+msgstr "لا يحتوي علي"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:79
 #: ../flask_admin/contrib/peewee/filters.py:81
@@ -285,7 +285,7 @@ msgstr "ليس بين"
 
 #: ../flask_admin/contrib/mongoengine/filters.py:248
 msgid "ObjectId equals"
-msgstr "معرّف الكائن يساوي"
+msgstr "ObjectId يساوي"
 
 #: ../flask_admin/contrib/mongoengine/form.py:121
 #: ../flask_admin/contrib/sqla/fields.py:151
@@ -339,12 +339,12 @@ msgstr "هل أنت متأكد من أنك تريد حذف السجلات الم
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
-msgstr[0] "تم بنجاح حذف السجلات %(count)s."
+msgstr[0] "تم حذف %(count)s  سجلات بنجاح ."
 msgstr[1] "تم حذف السجل بنجاح."
-msgstr[2] "تم بنجاح حذف السجلات %(count)s."
-msgstr[3] "تم بنجاح حذف السجلات %(count)s."
-msgstr[4] "تم بنجاح حذف السجلات %(count)s."
-msgstr[5] "تم بنجاح حذف السجلات %(count)s."
+msgstr[2] "تم حذف السجلين بنجاح."
+msgstr[3] "تم حذف %(count)s  سجلات بنجاح ."
+msgstr[4] "تم حذف %(count)s  سجلات بنجاح ."
+msgstr[5] "تم حذف %(count)s  سجلات بنجاح ."
 
 #: ../flask_admin/contrib/mongoengine/view.py:749
 #: ../flask_admin/contrib/peewee/view.py:642
@@ -379,20 +379,20 @@ msgstr[5] "مطلوب %(num)d عنصر على الأقل"
 
 #: ../flask_admin/contrib/sqla/validators.py:98
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
-msgstr "ليس رمز عملة ISO صالحًا (على سبيل المثال USD، EUR، CNY)."
+msgstr "رمز عملة غير صالح، استخدم رمز مطابق للـISO (مثلا: USD، EUR، CNY)."
 
 #: ../flask_admin/contrib/sqla/validators.py:109
 msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
-msgstr "ليس لونًا صالحًا (على سبيل المثال \"red\"، \"#f00\"، \"#ff0000\")."
+msgstr "ليس لونًا صالحًا (مثلا \"red\"، \"#f00\"، \"#ff0000\")."
 
 #: ../flask_admin/contrib/sqla/view.py:1317
 #, python-format
 msgid "Integrity error. %(message)s"
-msgstr "خطأ سلامة. %(message)s"
+msgstr "خطأ في توافق البيانات. %(message)s"
 
 #: ../flask_admin/form/fields.py:131
 msgid "Invalid time format"
-msgstr "تنسيق الوقت غير صالح"
+msgstr "صيغة الوقت غير صالح"
 
 #: ../flask_admin/form/fields.py:202
 msgid "Invalid Choice: could not coerce"
@@ -400,11 +400,11 @@ msgstr "خيار غير صالح: لا يمكن إرغام"
 
 #: ../flask_admin/form/fields.py:291
 msgid "Invalid JSON"
-msgstr "JSON غير صالح"
+msgstr "صيغة JSON غير صالحة"
 
 #: ../flask_admin/form/upload.py:241
 msgid "Invalid file extension"
-msgstr "ملحق الملف غير صالح"
+msgstr "امتداد الملف غير صالح"
 
 #: ../flask_admin/form/validators.py:18
 msgid "This field requires at least one item."
@@ -476,7 +476,7 @@ msgstr "مع تحديد"
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:216
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:227
 msgid "Save"
-msgstr "احفظ"
+msgstr "حفظ"
 
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:221
 #: ../flask_admin/templates/bootstrap4/admin/lib.html:232
@@ -545,7 +545,7 @@ msgstr "تفاصيل"
 #: ../flask_admin/templates/bootstrap4/admin/model/details.html:28
 #: ../flask_admin/templates/bootstrap4/admin/model/modals/details.html:15
 msgid "Filter"
-msgstr "الذهاب »"
+msgstr "بحث"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/inline_list_base.html:14
 msgid "Delete?"
@@ -567,13 +567,13 @@ msgstr "إضافة"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:2
 msgid "Add Filter"
-msgstr "إضافة عامل تصفية"
+msgstr "إضافة تصفية"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:14
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:19
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:26
 msgid "Export"
-msgstr "يصدّر"
+msgstr "تصدير"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:49
 msgid "Apply"
@@ -581,7 +581,7 @@ msgstr "تطبيق"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:51
 msgid "Reset Filters"
-msgstr "إعادة تعيين عوامل تصفية"
+msgstr "حذف التصفية"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:80
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:93
@@ -592,17 +592,17 @@ msgstr "%(placeholder)s"
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:88
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:94
 msgid "Search"
-msgstr "البحث"
+msgstr "بحث"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:102
 msgid "items"
-msgstr "أغراض"
+msgstr "عناصر"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:23
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:25
 #: ../flask_admin/templates/bootstrap4/admin/model/modals/create.html:10
 msgid "Create New Record"
-msgstr "قم بإنشاء سجل جديد"
+msgstr "إنشاء سجل جديد"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:76
 msgid "Select all records"
