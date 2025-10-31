@@ -149,7 +149,7 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
 
         admin.add_view(
             MyView(
-                name='My View', menu_icon_type='glyph', menu_icon_value='glyphicon-home'
+                name='My View', menu_icon_type='bi', menu_icon_value='bi-house'
             )
         )
     """
@@ -577,7 +577,7 @@ class Admin:
             Base theme. Defaults to `Bootstrap4Theme()`.
         :param category_icon_classes:
             A dict of category names as keys and html classes as values to be added to
-            menu category icons. Example: {'Favorites': 'glyphicon glyphicon-star'}
+            menu category icons. Example: {'Favorites': 'bi bi-star-fill'}
         :param host:
             The host to register all admin views on. Mutually exclusive with `subdomain`
         :param csp_nonce_generator:

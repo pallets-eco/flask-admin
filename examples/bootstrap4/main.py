@@ -283,15 +283,6 @@ if __name__ == "__main__":
     )
     admin.add_link(
         MenuLink(
-            name="glyphicon",
-            url="http://www.example.com/",
-            category="Icons",
-            icon_type="glyph",
-            icon_value="glyphicon-home",
-        )
-    )
-    admin.add_link(
-        MenuLink(
             name="image from /static",
             url="http://www.example.com/",
             category="Icons",

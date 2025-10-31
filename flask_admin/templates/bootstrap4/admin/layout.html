@@ -33,9 +33,9 @@
         {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}
         {{ menu_icon(item) }}{{ item.name }}
         {%- if 'dropdown-submenu' in class_name -%}
-          <i class="glyphicon glyphicon-chevron-right small"></i>
+          <i class="bi bi-chevron-right small"></i>
         {%- else -%}
-          <i class="glyphicon glyphicon-chevron-down small"></i>
+          <i class="bi bi-chevron-down small"></i>
         {%- endif -%}
       </a>
       <ul class="dropdown-menu">

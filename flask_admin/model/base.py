@@ -590,10 +590,10 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(BaseModelView):
                 column_extra_row_actions = [
                     LinkRowAction(
-                        'glyphicon glyphicon-off', 'http://direct.link/?id={row_id}'
+                        'bi bi-rocket-takeoff', 'http://direct.link/?id={row_id}'
                     ),
                     EndpointLinkRowAction(
-                        'glyphicon glyphicon-test', 'my_view.index_view'
+                        'bi bi-box-arrow-up-right', 'my_view.index_view'
                     )
                 ]
     """
