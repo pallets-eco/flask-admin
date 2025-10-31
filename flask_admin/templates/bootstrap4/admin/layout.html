@@ -12,6 +12,8 @@
         <img src="{{ url_for('static', filename=icon_value) }}" alt="menu image">
       {% elif icon_type == 'image-url' %}
         <img src="{{ icon_value }}" alt="menu image">
+      {% elif icon_type == 'bi' %}
+        <i class="bi {{ icon_value }}"></i> 
       {% endif %}
     {% endif %}
   {% endif %}
@@ -33,12 +35,16 @@
           <a class="dropdown-toggle {% if is_main_nav %}nav-link{% else %}dropdown-item{% endif %}" data-toggle="dropdown" href="javascript:void(0)">
             <!-- show icon -->
             {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}
-            {{ menu_icon(item) }}{{ item.name }}
+            {{ menu_icon(item) }}{{ item.name }} 
+
+            {# 
+            <!-- no longer needed as bootstrap 4 handles this with CSS -->
             {%- if 'dropdown-submenu' in class_name -%}
-              <i class="glyphicon glyphicon-chevron-right small"></i>
+              <i class="bi bi-chevron-right small"></i>
             {%- else -%}
-              <i class="glyphicon glyphicon-chevron-down small"></i>
+              <i class="bi bi-chevron-down small"></i>
             {%- endif -%}
+            #}
           </a>
           <ul class="dropdown-menu">
             {%- for child in children -%}
@@ -50,15 +56,11 @@
                   <li class="{{ class_name }}"></li>
                 {% else %}
                   <li>
-                    {%- if child.is_active(admin_view) %}
-                      <a class="dropdown-item active {{ class_name }} " href="{{ child.get_url() }}"{% if child.target %}
-                      target="{{ child.target }}"{% endif %}>
-                        {{ menu_icon(child) }}{{ child.name }}</a>
-                    {% else %}
-                      <a class="dropdown-item {{ class_name }}" href="{{ child.get_url() }}"{% if child.target %}
-                      target="{{ child.target }}"{% endif %}>
-                        {{ menu_icon(child) }}{{ child.name }}</a>
-                    {%- endif %}
+                    {% set dd_active = 'active' if child.is_active(admin_view) else '' %}
+                    <a class="dropdown-item {{ dd_active }} {{ class_name }} " href="{{ child.get_url() }}"
+                      {% if child.target %} target="{{ child.target }}"{% endif %} >
+                      {{ menu_icon(child) }}{{ child.name }} AA
+                    </a>
                   </li>
                 {%- endif %}
               {%- endif %}
