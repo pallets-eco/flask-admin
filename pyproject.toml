@@ -105,6 +105,7 @@ tests = [
     "botocore>=1.35",
     "psycopg2-binary",
     "beautifulsoup4",
+    "pymssql",
 ]
 typing = [
     "mypy",

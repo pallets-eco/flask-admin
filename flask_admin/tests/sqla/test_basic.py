@@ -431,6 +431,48 @@ def test_list_columns(app, db, admin):
         assert "Test2" not in data
 
 
+def test_pagination(app, db, admin):
+    with app.app_context():
+
+        class Model3(db.Model):  # type: ignore[name-defined]
+            def __init__(self, id=None, test1=None):
+                self.id = id
+                self.test1 = test1
+
+            id = db.Column(db.Integer, primary_key=True)
+            test1 = db.Column(db.String(20))
+
+            def __str__(self):
+                return self.test1
+
+        db.create_all()
+
+        # test column_list with a list of strings
+        view = CustomModelView(Model3, db.session, page_size=10)
+        admin.add_view(view)
+
+        for i in range(1, 100):
+            m = Model3(id=i, test1=f"test-{i}")
+            db.session.add(m)
+
+        assert Model3.query.count() == 99
+
+        client = app.test_client()
+
+        rv = client.get("/admin/model3/")
+        data = rv.data.decode("utf-8")
+        assert "test-1" in data
+        assert "test-10" in data
+        assert "test-11" not in data
+
+        rv = client.get("/admin/model3/?page=1")
+        data = rv.data.decode("utf-8")
+        assert "test-10" not in data
+        assert "test-11" in data
+        assert "test-20" in data
+        assert "test-21" not in data
+
+
 def test_complex_list_columns(app, db, admin):
     with app.app_context():
         M1, M2 = create_models(db)

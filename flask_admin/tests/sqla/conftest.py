@@ -51,3 +51,22 @@ def admin(app, babel, db):
 def postgres_admin(app, babel, postgres_db):
     admin = Admin(app)
     yield admin
+
+
+@pytest.fixture
+def mssql_db(app):
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+        "SQLALCHEMY_DATABASE_URI",
+        "mssql+pymssql://sa:cs4gerF5fYcPi5KzVDa@localhost",
+    )
+    app.config["SQLALCHEMY_ECHO"] = True
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    db = SQLAlchemy(app)
+    yield db
+
+
+@pytest.fixture
+def mssql_admin(app, babel, mssql_db):
+    admin = Admin(app)
+    yield admin

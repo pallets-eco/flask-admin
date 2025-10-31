@@ -4,12 +4,13 @@
 	"dockerComposeFile": "docker-compose.yaml",
 	"service": "app",
 	"workspaceFolder": "/workspace",
-	"forwardPorts": [10000, 10001, 5432, 27017],
+	"forwardPorts": [10000, 10001, 5432, 27017, 1433],
 	"portsAttributes": {
 		"10000": {"label": "Azurite Blob Storage Emulator", "onAutoForward": "silent"},
-        "10001": {"label": "Azurite Blob Storage Emulator HTTPS", "onAutoForward": "silent"},
+    "10001": {"label": "Azurite Blob Storage Emulator HTTPS", "onAutoForward": "silent"},
 		"5432": {"label": "PostgreSQL port", "onAutoForward": "silent"},
 		"27017": {"label": "MongoDB port", "onAutoForward": "silent"},
+    "1433": {"label": "MS-SQL Server DB port", "onAutoForward": "silent"},
 	},
 	"features": {
 		// For authenticating to a production Azure account
