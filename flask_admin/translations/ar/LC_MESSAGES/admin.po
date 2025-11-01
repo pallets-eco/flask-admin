@@ -197,7 +197,7 @@ msgstr "مسح"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1364
 msgid "Are you sure you want to delete these files?"
-msgstr "هل تريد فعلا حذف %d من الملفات؟?"
+msgstr "هل تريد فعلا حذف هذه الملفات؟?"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1368
 msgid "File deletion is disabled."
