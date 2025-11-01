@@ -16,7 +16,7 @@ from wtforms.widgets import Input
 if sys.version_info >= (3, 11):
     from typing import NotRequired
 else:
-    from typing_extensions import NotRequired
+    from typing_extensions import NotRequired  # noqa
 
 if t.TYPE_CHECKING:
     from flask_admin.base import BaseView as T_VIEW  # noqa
@@ -56,18 +56,21 @@ if t.TYPE_CHECKING:
     from flask_sqlalchemy import Model as T_SQLALCHEMY_MODEL
     from peewee import Model as T_PEEWEE_MODEL
     from peewee import Field as T_PEEWEE_FIELD  # noqa
-    from pymongo import MongoClient as T_MONGO_CLIENT
+    from pymongo import MongoClient
     from mongoengine import Document as T_MONGO_ENGINE_CLIENT
     import sqlalchemy  # noqa
-    from sqlalchemy import Column as T_SQLALCHEMY_COLUMN
+    from sqlalchemy import Column
     from sqlalchemy import Table as T_TABLE  # noqa
     from sqlalchemy.orm import InstrumentedAttribute as T_INSTRUMENTED_ATTRIBUTE  # noqa
-    from sqlalchemy.orm import scoped_session as T_SQLALCHEMY_SESSION  # noqa
+    from sqlalchemy.orm import scoped_session  # noqa
     from sqlalchemy.orm.query import Query
     from sqlalchemy_utils import Choice as T_CHOICE  # noqa
     from sqlalchemy_utils import ChoiceType as T_CHOICE_TYPE  # noqa
 
-    T_SQLALCHEMY_QUERY = Query
+    T_SQLALCHEMY_COLUMN = Column[t.Any]
+    T_SQLALCHEMY_QUERY = Query[t.Any]
+    T_MONGO_CLIENT = MongoClient[t.Any]
+    T_SQLALCHEMY_SESSION = scoped_session[t.Any]
     from redis import Redis as T_REDIS  # noqa
     from flask_admin.contrib.peewee.ajax import (
         QueryAjaxModelLoader as T_PEEWEE_QUERY_AJAX_MODEL_LOADER,
@@ -101,19 +104,19 @@ else:
     # optional dependencies
     T_ARROW = "arrow.Arrow"
     T_LAZY_STRING = "flask_babel.LazyString"
-    T_SQLALCHEMY_COLUMN = "sqlalchemy.Column"
+    T_SQLALCHEMY_COLUMN = "sqlalchemy.Column[t.Any]"
     T_SQLALCHEMY_MODEL = "flask_sqlalchemy.Model"
     T_PEEWEE_FIELD = "peewee.Field"
     T_PEEWEE_MODEL = "peewee.Model"
-    T_MONGO_CLIENT = "pymongo.MongoClient"
+    T_MONGO_CLIENT = "pymongo.MongoClient[t.Any]"
     T_MONGO_ENGINE_CLIENT = "mongoengine.Document"
     T_TABLE = "sqlalchemy.Table"
     T_CHOICE_TYPE = "sqlalchemy_utils.ChoiceType"
     T_CHOICE = "sqlalchemy_utils.Choice"
 
-    T_SQLALCHEMY_QUERY = "sqlalchemy.orm.query.Query"
+    T_SQLALCHEMY_QUERY = "sqlalchemy.orm.query.Query[t.Any]"
     T_INSTRUMENTED_ATTRIBUTE = "sqlalchemy.orm.InstrumentedAttribute"
-    T_SQLALCHEMY_SESSION = "sqlalchemy.orm.scoped_session"
+    T_SQLALCHEMY_SESSION = "sqlalchemy.orm.scoped_session[t.Any"
     T_REDIS = "redis.Redis"
     T_PEEWEE_QUERY_AJAX_MODEL_LOADER = (
         "flask_admin.contrib.peewee.ajax.QueryAjaxModelLoader"
@@ -135,7 +138,7 @@ T_CONTRAVARIANT_MODEL_VIEW = t.TypeVar(
 T_FORMATTER = t.Callable[
     [T_CONTRAVARIANT_MODEL_VIEW, Context | None, t.Any, str], str | Markup
 ]
-T_COLUMN_FORMATTERS = dict[str, T_FORMATTER]
+T_COLUMN_FORMATTERS = dict[str, T_FORMATTER[T_CONTRAVARIANT_MODEL_VIEW]]
 T_TYPE_FORMATTER = t.Callable[[T_MODEL_VIEW, t.Any, str], str | Markup]
 T_COLUMN_TYPE_FORMATTERS = dict[type, T_TYPE_FORMATTER]
 T_TRANSLATABLE = t.Union[str, T_LAZY_STRING]

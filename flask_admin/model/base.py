@@ -131,12 +131,12 @@ class ViewArgs:
 class FilterGroup:
     def __init__(self, label: str) -> None:
         self.label = label
-        self.filters: list[dict] = []
+        self.filters: list[dict[t.Any, t.Any]] = []
 
-    def append(self, filter: dict) -> None:
+    def append(self, filter: dict[t.Any, t.Any]) -> None:
         self.filters.append(filter)
 
-    def non_lazy(self) -> tuple[str, list[dict]]:
+    def non_lazy(self) -> tuple[str, list[dict[t.Any, t.Any]]]:
         filters = []
         for item in self.filters:
             copy = dict(item)
@@ -148,7 +148,7 @@ class FilterGroup:
             filters.append(copy)
         return as_unicode(self.label), filters
 
-    def __iter__(self) -> t.Iterator[dict]:
+    def __iter__(self) -> t.Iterator[dict[t.Any, t.Any]]:
         return iter(self.filters)
 
 
@@ -286,7 +286,8 @@ class BaseModelView(BaseView, ActionsMixin):
     """
 
     column_formatters: T_COLUMN_FORMATTERS = cast(
-        dict, ObsoleteAttr("column_formatters", "list_formatters", dict())
+        T_COLUMN_FORMATTERS,
+        ObsoleteAttr("column_formatters", "list_formatters", dict()),
     )
     """
         Dictionary of list view column formatters.
@@ -651,7 +652,9 @@ class BaseModelView(BaseView, ActionsMixin):
                 )
     """
 
-    form_columns: t.Collection[t.Union[str, T_INSTRUMENTED_ATTRIBUTE]] | None = None
+    form_columns: t.Collection[t.Union[str, T_INSTRUMENTED_ATTRIBUTE[t.Any]]] | None = (
+        None
+    )
     """
         Collection of the model field names for the form. If set to `None` will
         get them from the model.
@@ -672,7 +675,7 @@ class BaseModelView(BaseView, ActionsMixin):
     """
 
     form_excluded_columns: t.Collection[str] = cast(
-        t.Collection,
+        t.Collection[str],
         ObsoleteAttr("form_excluded_columns", "excluded_form_columns", None),
     )
     """
@@ -979,7 +982,7 @@ class BaseModelView(BaseView, ActionsMixin):
         self._filters = self.get_filters()
 
         if self._filters:
-            self._filter_groups: t.OrderedDict | None = OrderedDict()
+            self._filter_groups: OrderedDict[str, FilterGroup] | None = OrderedDict()
             self._filter_args: dict[str, tuple[int, BaseFilter]] | None = {}
 
             for i, flt in enumerate(self._filters):
@@ -1348,7 +1351,7 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             return str(index)
 
-    def _get_filter_groups(self) -> OrderedDict | None:
+    def _get_filter_groups(self) -> OrderedDict[str, FilterGroup] | None:
         """
         Returns non-lazy version of filter strings
         """
@@ -1725,7 +1728,7 @@ class BaseModelView(BaseView, ActionsMixin):
     # Exception handler
     def handle_view_exception(self, exc: Exception) -> bool:
         if isinstance(exc, ValidationError):
-            flash(as_unicode(exc), "error")  # type: ignore[arg-type]
+            flash(as_unicode(exc), "error")
             return True
 
         if current_app.config.get("FLASK_ADMIN_RAISE_ON_VIEW_EXCEPTION"):
@@ -2180,7 +2183,9 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return result
 
-    def _create_ajax_loader(self, name: str, options: dict) -> AjaxModelLoader:
+    def _create_ajax_loader(
+        self, name: str, options: dict[str, t.Any]
+    ) -> AjaxModelLoader:
         """
         Model backend will override this to implement AJAX model loading.
         """
@@ -2211,7 +2216,7 @@ class BaseModelView(BaseView, ActionsMixin):
         page_size = self.get_safe_page_size(view_args.page_size)
 
         # Get count and data
-        data: list
+        data: list[T_ORM_MODEL]
         count, data = self.get_list(
             view_args.page,
             sort_column,
@@ -2492,7 +2497,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return self.handle_action()
 
-    def _export_data(self) -> tuple[int, list]:
+    def _export_data(self) -> tuple[int, list[T_ORM_MODEL]]:
         # Macros in column_formatters are not supported.
         # Macros will have a function name 'inner'
         # This causes non-macro functions named 'inner' not work.
@@ -2520,7 +2525,7 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             sort_column = None
         # Get count and data
-        data: list
+        data: list[T_ORM_MODEL]
         count, data = self.get_list(
             0,
             sort_column,

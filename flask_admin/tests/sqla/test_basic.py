@@ -2573,11 +2573,11 @@ def test_ajax_fk(app, db, admin):
 
         items = loader.get_list("fir")
         assert len(items) == 1
-        assert items[0].id == model.id
+        assert items[0].id == model.id  # type: ignore[union-attr]
 
         items = loader.get_list("bar")
         assert len(items) == 1
-        assert items[0].test1 == "foo"
+        assert items[0].test1 == "foo"  # type: ignore[union-attr]
 
         # Check form generation
         form = view.create_form()

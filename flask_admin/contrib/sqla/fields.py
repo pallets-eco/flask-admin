@@ -112,7 +112,7 @@ class QuerySelectField(SelectFieldBase):
 
     def _set_data(self, data: t.Any) -> None:
         self._data = data
-        self._formdata: set | str | None = None
+        self._formdata: set[str] | str | None = None
 
     data = property(_get_data, _set_data)
 
@@ -192,7 +192,7 @@ class QuerySelectMultipleField(QuerySelectField):
 
     def _set_data(self, data: list[t.Any]) -> None:
         self._data = data
-        self._formdata: set | None = None
+        self._formdata: set[str] | None = None
 
     data = property(_get_data, _set_data)
 
@@ -202,7 +202,7 @@ class QuerySelectMultipleField(QuerySelectField):
                 pk, self.get_label(obj), obj in self.data
             )
 
-    def process_formdata(self, valuelist: t.Iterable) -> None:
+    def process_formdata(self, valuelist: t.Iterable[str]) -> None:
         self._formdata = set(valuelist)
 
     def pre_validate(self, form: form.BaseForm) -> None:
@@ -261,7 +261,7 @@ class InlineHstoreList(InlineFieldList):
 
     def process(
         self,
-        formdata: dict | None,  # type: ignore[override]
+        formdata: dict[t.Any, t.Any] | None,  # type: ignore[override]
         data: UnsetValue | list[KeyValue] = unset_value,
         extra_filters: t.Any = None,
     ) -> None:

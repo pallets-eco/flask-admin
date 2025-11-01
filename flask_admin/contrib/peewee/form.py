@@ -274,7 +274,7 @@ class InlineModelConverter(InlineModelConverterBase):
                         info.model,  # type: ignore[arg-type]
                         new_name,
                         name,
-                        opts,
+                        opts,  # type: ignore[arg-type]
                     )
                 else:
                     loader = opts
