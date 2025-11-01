@@ -348,7 +348,7 @@ To start using the form rendering rules, put a list of form field names into the
 property one of your admin views::
 
     class RuleView(sqla.ModelView):
-        form_create_rules = ('email', 'first_name', 'last_name')
+       form_create_rules = ['email', rules.Text('Foobar'), 'first_name', 'last_name']
 
 In this example, only three fields will be rendered and `email` field will be above other two fields.
 
@@ -368,19 +368,70 @@ Built-in Rules
 
 Flask-Admin comes with few built-in rules that can be found in the :mod:`flask_admin.form.rules` module:
 
-======================================================= ========================================================
-Form Rendering Rule                                     Description
-======================================================= ========================================================
-:class:`flask_admin.form.rules.BaseRule`                All rules derive from this class
-:class:`flask_admin.form.rules.NestedRule`              Allows rule nesting, useful for HTML containers
-:class:`flask_admin.form.rules.Text`                    Simple text rendering rule
-:class:`flask_admin.form.rules.HTML`                    Same as `Text` rule, but does not escape the text
-:class:`flask_admin.form.rules.Macro`                   Calls macro from current Jinja2 context
-:class:`flask_admin.form.rules.Container`               Wraps child rules into container rendered by macro
-:class:`flask_admin.form.rules.Field`                   Renders single form field
-:class:`flask_admin.form.rules.Header`                  Renders form header
-:class:`flask_admin.form.rules.FieldSet`                Renders form header and child rules
-======================================================= ========================================================
+================================================= ==================================================== ======================
+Form Rendering Rule                               Description                                          Snippet
+================================================= ==================================================== ======================
+:class:`flask_admin.form.rules.BaseRule`          All rules derive from this class
+                                                      rules.Text('Foobar')
+:class:`flask_admin.form.rules.NestedRule`        Allows rule nesting, useful for HTML containers
+:class:`flask_admin.form.rules.Text`              Simple text rendering rule                            ``rules.Text('Foobar')``
+:class:`flask_admin.form.rules.HTML`              Same as `Text` rule, but does not escape the text     ``rules.HTML('<hr>')``
+:class:`flask_admin.form.rules.Macro`             Calls macro from current Jinja2 context               ``rules.Macro('my_macro', arg1=1, arg2=2)``
+:class:`flask_admin.form.rules.Container`         Wraps a child rule into container rendered by
+                                                  macro, where the macro should be defined in the
+                                                  current Jinja2 context containing ``{{caller()}}``
+                                                  . read more in the next section.
+:class:`flask_admin.form.rules.Field`             Renders single form field, helpful when it is used    ``rules.Field('email')``
+                                                  with `NestedRule`
+:class:`flask_admin.form.rules.Header`            Renders form header                                   ``rules.Header('Posts')``
+:class:`flask_admin.form.rules.FieldSet`          Renders form header and child rules                   ``rules.FieldSet(('phone_number', 'email'), 'Contacts:')``
+:class:`flask_admin.form.rules.Row`               Renders child rules in a single row                   ``rules.Row(('dialing_code', 'phone_number'), 'Contacts:')``
+:class:`flask_admin.form.rules.Group`             Bootstrap Input field in a group style. It            ``rules.Group('dialling_code', prepend='+')``
+                                                  renders the target field whatever its type
+                                                  is (text, radio, checkbox..etc), allowing a
+                                                  prepended and appended boxes to be filled
+                                                  with any HTML content.
+================================================= ==================================================== ======================
+
+**Rules and Macros**
+Each one of the ``Macro`` and ``Container`` rules needs a macros to be deifined
+in advance. As an example of Container rule, Let's say we want to warp some fields winthin a
+[Bootstrap Card](https://getbootstrap.com/docs/4.6/components/card/), then we can define a Jinja Macro
+that includes ``caller()`` which is a functoin to be placed where we want to render the contained rule.
+We can extend the ``create.html`` as the following::
+
+    {% extends 'admin/model/create.html' %}
+
+    {% macro wrap_in_card( ) %}
+
+    <div class="card">
+        <div class="card-header">
+            <h5>Some Fields </h5>
+        </div>
+        <div class="card-body">
+            <!-- the rule will be rendered here -->
+            {{ caller() }}
+        </div>
+    </div>
+
+    {% endmacro %}
+
+Now the ``wrap_in_card`` macro can be passed to the container rule like: ::
+
+    from flask_admin.form import rules
+
+    class RuleView(sqla.ModelView):
+        create_template = 'admin/create.html'
+        form_create_rules = [
+            rules.Container('wrap_in_card',
+                rules.NestedRule( separator='<hr>', rules= [
+                    rules.Field('field1'),
+                    rules.Field('field2'),
+                    rules.Field('field3'),
+                ]),
+            )
+    ]
+
 
 .. _database-backends:
 
