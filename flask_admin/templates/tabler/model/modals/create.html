@@ -1,0 +1,37 @@
+{% import "admin/static.html" as admin_static with context %}
+{% import "admin/lib.html" as lib with context %}
+{% block body %}
+    <div class="modal-header">
+        {% block header_text %}
+            <h5 class="modal-title">{{ _gettext("Create New Record") }}</h5>
+        {% endblock header_text %}
+        <div class="card-actions">
+            {% set confirmation = _gettext('The changes you made will be lost if you navigate away from this page.') %}
+            <a class="btn"
+               href="{{ get_url('.create_view', url=return_url) }}"
+               title="{{ _gettext("Full Screen") }}"
+               onclick="return confirm('{{ confirmation }}');">
+                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                    <i class="fa fa-expand"></i>
+                </span>
+                {{ _gettext("Full Screen") }}
+            </a>
+        </div>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _gettext("Cancel") }}"></button>
+    </div>
+    {% call lib.form_tag(action=url_for('.create_view', url=return_url)) %}
+        <div class="modal-body">{{ lib.render_form_fields(form, form_opts=form_opts) }}</div>
+        <div class="modal-footer">{{ lib.render_form_buttons(return_url, extra=None, is_modal=True) }}</div>
+    {% endcall %}
+{% endblock body %}
+{% block tail %}
+    <script>
+        $(function() {
+            // Apply flask-admin form styles after the modal is loaded
+            window.faForm.applyGlobalStyles(document);
+        });
+    </script>
+{% endblock tail %}
