@@ -201,7 +201,7 @@ class ModelView(BaseModelView):
         menu_icon_type: str | None = None,
         menu_icon_value: str | None = None,
     ) -> None:
-        self._search_fields: list = []
+        self._search_fields: list[t.Any] = []
         super().__init__(
             model,
             name,
@@ -373,7 +373,7 @@ class ModelView(BaseModelView):
 
     # AJAX foreignkey support
     def _create_ajax_loader(
-        self, name: str, options: dict[str, t.Any] | list | tuple
+        self, name: str, options: dict[str, t.Any]
     ) -> QueryAjaxModelLoader:
         return create_ajax_loader(self.model, name, name, options)  # type: ignore[arg-type]
 
@@ -434,7 +434,7 @@ class ModelView(BaseModelView):
         filters: t.Sequence[T_FILTER] | None,
         execute: bool = True,
         page_size: int | None = None,
-    ) -> tuple[int | None, list | ModelSelect]:
+    ) -> tuple[int | None, list[ModelBase] | ModelSelect]:
         """
         Return records from the database.
 

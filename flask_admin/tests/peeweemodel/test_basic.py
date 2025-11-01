@@ -889,9 +889,9 @@ def test_default_sort(app, db, admin):
 
     _, data = view.get_list(0, None, None, None, None)
 
-    assert data[0].test1 == "a"
-    assert data[1].test1 == "b"
-    assert data[2].test1 == "c"
+    assert data[0].test1 == "a"  # type: ignore[union-attr]
+    assert data[1].test1 == "b"  # type: ignore[union-attr]
+    assert data[2].test1 == "c"  # type: ignore[union-attr]
 
     # test default sort with multiple columns
     order = [("test2", False), ("test1", False)]
@@ -901,9 +901,9 @@ def test_default_sort(app, db, admin):
     _, data = view2.get_list(0, None, None, None, None)
 
     assert len(data) == 3
-    assert data[0].test1 == "b"
-    assert data[1].test1 == "c"
-    assert data[2].test1 == "a"
+    assert data[0].test1 == "b"  # type: ignore[union-attr]
+    assert data[1].test1 == "c"  # type: ignore[union-attr]
+    assert data[2].test1 == "a"  # type: ignore[union-attr]
 
 
 def test_extra_fields(app, db, admin):
@@ -1003,11 +1003,11 @@ def test_ajax_fk(app, db, admin):
 
     items = loader.get_list("fir")
     assert len(items) == 1
-    assert items[0].id == model.id  # type: ignore[attr-defined]
+    assert items[0].id == model.id  # type: ignore[attr-defined, union-attr]
 
     items = loader.get_list("bar")
     assert len(items) == 1
-    assert items[0].test1 == "foo"
+    assert items[0].test1 == "foo"  # type: ignore[union-attr]
 
     # Check form generation
     form = view.create_form()

@@ -328,14 +328,14 @@ class BaseUuidListFilter(BaseFilter):
         return [str(uuid.UUID(v.strip())) for v in value.split(",") if v.strip()]
 
 
-def convert(*args: t.Any) -> t.Callable:
+def convert(*args: t.Any) -> t.Callable[..., t.Any]:
     """
     Decorator for field to filter conversion routine.
 
     See :mod:`flask_admin.contrib.sqla.filters` for usage example.
     """
 
-    def _inner(func: t.Callable) -> t.Callable:
+    def _inner(func: t.Callable[..., t.Any]) -> t.Callable[..., t.Any]:
         func._converter_for = list(map(lambda x: x.lower(), args))  # type: ignore[attr-defined]
         return func
 

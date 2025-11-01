@@ -11,7 +11,7 @@ def test_inline_form(app, db, admin):
         client = app.test_client()
 
         # Set up models and database
-        class User(db.Model):  # type: ignore[name-defined]
+        class User(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String, unique=True)
@@ -19,7 +19,7 @@ def test_inline_form(app, db, admin):
             def __init__(self, name=None):
                 self.name = name
 
-        class UserInfo(db.Model):  # type: ignore[name-defined]
+        class UserInfo(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
             id = db.Column(db.Integer, primary_key=True)
             key = db.Column(db.String, nullable=False)
@@ -119,7 +119,7 @@ def test_inline_form_required(app, db, admin):
         client = app.test_client()
 
         # Set up models and database
-        class User(db.Model):  # type: ignore[name-defined]
+        class User(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String, unique=True)
@@ -127,7 +127,7 @@ def test_inline_form_required(app, db, admin):
             def __init__(self, name=None):
                 self.name = name
 
-        class UserEmail(db.Model):  # type: ignore[name-defined]
+        class UserEmail(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
             id = db.Column(db.Integer, primary_key=True)
             email = db.Column(db.String, nullable=False, unique=True)
@@ -179,7 +179,7 @@ def test_inline_form_required(app, db, admin):
 def test_inline_form_ajax_fk(app, db, admin):
     with app.app_context():
         # Set up models and database
-        class User(db.Model):  # type: ignore[name-defined]
+        class User(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String, unique=True)
@@ -187,13 +187,13 @@ def test_inline_form_ajax_fk(app, db, admin):
             def __init__(self, name=None):
                 self.name = name
 
-        class Tag(db.Model):  # type: ignore[name-defined]
+        class Tag(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "tags"
 
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String, unique=True)
 
-        class UserInfo(db.Model):  # type: ignore[name-defined]
+        class UserInfo(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
             id = db.Column(db.Integer, primary_key=True)
             key = db.Column(db.String, nullable=False)
@@ -233,7 +233,7 @@ def test_inline_form_ajax_fk(app, db, admin):
 def test_inline_form_self(app, db, admin):
     with app.app_context():
 
-        class Tree(db.Model):  # type: ignore[name-defined]
+        class Tree(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.Integer, primary_key=True)
             parent_id = db.Column(db.Integer, db.ForeignKey("tree.id"))
             parent = db.relationship("Tree", remote_side=[id], backref="children")
@@ -256,7 +256,7 @@ def test_inline_form_base_class(app, db, admin):
 
     with app.app_context():
         # Set up models and database
-        class User(db.Model):  # type: ignore[name-defined]
+        class User(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String, unique=True)
@@ -264,7 +264,7 @@ def test_inline_form_base_class(app, db, admin):
             def __init__(self, name=None):
                 self.name = name
 
-        class UserEmail(db.Model):  # type: ignore[name-defined]
+        class UserEmail(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
             id = db.Column(db.Integer, primary_key=True)
             email = db.Column(db.String, nullable=False, unique=True)

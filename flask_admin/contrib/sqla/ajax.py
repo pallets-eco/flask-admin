@@ -59,7 +59,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         self.pk: str = t.cast(str, get_primary_key(model))
 
-    def _process_fields(self) -> list:
+    def _process_fields(self) -> list[t.Any]:
         remote_fields = []
 
         for field in self.fields:  # type: ignore[union-attr]
@@ -76,7 +76,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
-    def format(self, model: None | str | bytes) -> tuple[t.Any, str] | None:
+    def format(self, model: T_SQLALCHEMY_MODEL | None) -> tuple[t.Any, str] | None:
         if not model:
             return None
 
