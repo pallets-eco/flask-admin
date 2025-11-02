@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.0.1
+-----
+
+* Fix documentation
+* Update arabic translations
+
 2.0.0
 -----
 
