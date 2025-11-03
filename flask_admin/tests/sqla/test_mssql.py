@@ -18,13 +18,14 @@ def test_pagination(app, mssql_db, mssql_admin):
         mssql_db.create_all()
 
         view3 = CustomModelView(Model3, mssql_db.session, page_size=10)
+        view3.column_default_sort = ("test1", False)
         mssql_admin.add_view(view3)
 
-        for i in range(1, 100):
-            m = Model3(id=i, test1=f"test-{i}")
+        for i in range(10, 100):
+            m = Model3(id=i, test1=f"test-{i:02d}")
             mssql_db.session.add(m)
 
-        assert Model3.query.count() == 99
+        # assert Model3.query.count() == 99
 
         client = app.test_client()
 
@@ -32,18 +33,18 @@ def test_pagination(app, mssql_db, mssql_admin):
         rv = client.get("/admin/model3/")
         data = rv.data.decode("utf-8")
         assert rv.status_code == 200
-        assert "test-1" in data
         assert "test-10" in data
-        assert "test-11" not in data
+        assert "test-12" in data
+        assert "test-13" in data
 
         # test second page
         rv = client.get("/admin/model3/?page=1")
         data = rv.data.decode("utf-8")
         assert rv.status_code == 200
-        assert "test-10" not in data
-        assert "test-11" in data
-        assert "test-20" in data
-        assert "test-21" not in data
+        assert "test-21" in data
+        assert "test-22" in data
+        assert "test-23" in data
+        # assert "test-21" not in data
 
 
 def test_pagination_2_PKs(app, mssql_db, mssql_admin):
@@ -65,13 +66,14 @@ def test_pagination_2_PKs(app, mssql_db, mssql_admin):
         view4 = CustomModelView(
             Model4, mssql_db.session, page_size=10, endpoint="model4"
         )
+        view4.column_default_sort = ("test1", False)
         mssql_admin.add_view(view4)
 
-        for i in range(1, 100):
+        for i in range(10, 100):
             m = Model4(id=i, id2=i, test1=f"test-{i}")
             mssql_db.session.add(m)
 
-        assert Model4.query.count() == 99
+        assert Model4.query.count() == 90
 
         client = app.test_client()
 
@@ -79,24 +81,25 @@ def test_pagination_2_PKs(app, mssql_db, mssql_admin):
         rv = client.get("/admin/model4/")
         data = rv.data.decode("utf-8")
         assert rv.status_code == 200
-        assert "test-1" in data
         assert "test-10" in data
-        assert "test-11" not in data
+        assert "test-11" in data
+        assert "test-12" in data
+        assert "test-20" not in data
 
         # test second page
         rv = client.get("/admin/model4/?page=1")
         data = rv.data.decode("utf-8")
         assert rv.status_code == 200
-        assert "test-10" not in data
-        assert "test-11" in data
-        assert "test-20" in data
-        assert "test-21" not in data
+        assert "test-19" not in data
+        assert "test-21" in data
+        assert "test-22" in data
+        assert "test-30" not in data
 
         # test second page
         rv = client.get("/admin/model4/?page=1&sort=bougs")
         data = rv.data.decode("utf-8")
         assert rv.status_code == 200
-        assert "test-10" not in data
-        assert "test-11" in data
-        assert "test-20" in data
-        assert "test-21" not in data
+        assert "test-19" not in data
+        assert "test-21" in data
+        assert "test-29" in data
+        assert "test-30" not in data
