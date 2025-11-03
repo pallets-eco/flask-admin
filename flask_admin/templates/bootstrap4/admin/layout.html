@@ -22,42 +22,45 @@
       {% set children = item.get_children() %}
       {%- if children %}
         {% set class_name = item.get_class_name() or '' %}
-        {%- if item.is_active(admin_view) %}
-          <li class="active dropdown">
-            {% else -%}
-          <li class="dropdown">
-        {%- endif %}
-      <a class="dropdown-toggle {% if is_main_nav %}nav-link{% else %}dropdown-item{% endif %}" data-toggle="dropdown" href="javascript:void(0)">
-        <!-- show icon -->
-        {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}
-        {{ menu_icon(item) }}{{ item.name }}
-        {%- if 'dropdown-submenu' in class_name -%}
-          <i class="glyphicon glyphicon-chevron-right small"></i>
-        {%- else -%}
-          <i class="glyphicon glyphicon-chevron-down small"></i>
-        {%- endif -%}
-      </a>
-      <ul class="dropdown-menu">
-        {%- for child in children -%}
-          {%- if child.is_category() -%}
-            {{ menu(menu_root=[child]) }}
-          {% else %}
-            {% set class_name = child.get_class_name() %}
-            <li>
-              {%- if child.is_active(admin_view) %}
-                <a class="dropdown-item active {{ class_name }} " href="{{ child.get_url() }}"{% if child.target %}
-                target="{{ child.target }}"{% endif %}>
-                  {{ menu_icon(child) }}{{ child.name }}</a>
+
+        <!-- just enhance the readability -->
+        <li class="{% if item.is_active(admin_view) %}active {% endif %}dropdown">
+
+          <a class="dropdown-toggle {% if is_main_nav %}nav-link{% else %}dropdown-item{% endif %}" data-toggle="dropdown" href="javascript:void(0)">
+            <!-- show icon -->
+            {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}
+            {{ menu_icon(item) }}{{ item.name }}
+            {%- if 'dropdown-submenu' in class_name -%}
+              <i class="glyphicon glyphicon-chevron-right small"></i>
+            {%- else -%}
+              <i class="glyphicon glyphicon-chevron-down small"></i>
+            {%- endif -%}
+          </a>
+          <ul class="dropdown-menu">
+            {%- for child in children -%}
+              {%- if child.is_category() -%}
+                {{ menu(menu_root=[child]) }}
               {% else %}
-                <a class="dropdown-item {{ class_name }}" href="{{ child.get_url() }}"{% if child.target %}
-                target="{{ child.target }}"{% endif %}>
-                  {{ menu_icon(child) }}{{ child.name }}</a>
+                {% set class_name = child.get_class_name() %}
+                {% if 'dropdown-divider' in class_name %}
+                  <li class="{{ class_name }}"></li>
+                {% else %}
+                  <li>
+                    {%- if child.is_active(admin_view) %}
+                      <a class="dropdown-item active {{ class_name }} " href="{{ child.get_url() }}"{% if child.target %}
+                      target="{{ child.target }}"{% endif %}>
+                        {{ menu_icon(child) }}{{ child.name }}</a>
+                    {% else %}
+                      <a class="dropdown-item {{ class_name }}" href="{{ child.get_url() }}"{% if child.target %}
+                      target="{{ child.target }}"{% endif %}>
+                        {{ menu_icon(child) }}{{ child.name }}</a>
+                    {%- endif %}
+                  </li>
+                {%- endif %}
               {%- endif %}
-            </li>
-          {%- endif %}
-        {%- endfor %}
-      </ul>
-      </li>
+            {%- endfor %}
+          </ul>
+        </li>
       {% endif %}
     {%- else %}
       {%- if item.is_accessible() and item.is_visible() -%}

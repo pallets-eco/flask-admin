@@ -12,6 +12,8 @@ from jinja2 import StrictUndefined
 from flask_admin import base
 from flask_admin import BaseView
 from flask_admin import expose
+from flask_admin.menu import MenuDivider
+from flask_admin.menu import MenuLink
 
 
 @pytest.fixture
@@ -352,6 +354,40 @@ def test_submenu(admin):
     assert len(children) == 1
 
     assert children[0].is_accessible()
+
+
+def test_menu_divider(app, admin):
+    # admin.add_view(MockView(name="Test 1", category="Test", endpoint="test1"))
+    # admin.add_view(MockView(name="Test 2", category="Test", endpoint="test2"))
+    admin.add_link(
+        MenuLink(name="link1", url="http://www.example.com/", category="Links")
+    )
+    admin.add_link(
+        MenuLink(name="link2", url="http://www.example.com/", category="Links")
+    )
+    admin.add_menu_item(MenuDivider(), target_category="Links")
+    admin.add_link(
+        MenuLink(name="link3", url="http://www.example.com/", category="Links")
+    )
+
+    assert admin.menu()[1].name == "Links"
+    assert len(admin._menu) == 2
+    assert admin._menu[1].name == "Links"
+    assert len(admin._menu[1]._children) == 4
+
+    client = app.test_client()
+
+    rv = client.get("/admin/")
+    assert rv.status_code == 200
+
+    data = rv.data.decode("utf-8")
+    pos1 = data.find("link1")
+    pos2 = data.find("link2")
+    pos3 = data.find('<li class="dropdown-divider"></li>')
+    pos4 = data.find("link3")
+    assert pos2 > pos1
+    assert pos3 > pos2
+    assert pos4 > pos3
 
 
 def test_delayed_init(app, admin):

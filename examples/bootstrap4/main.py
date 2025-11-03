@@ -4,6 +4,7 @@ import os.path as op
 from flask import Flask
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.menu import MenuDivider
 from flask_admin.menu import MenuLink
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
@@ -208,6 +209,7 @@ if __name__ == "__main__":
             menu_class_name="text-warning",
         )
     )
+    admin.add_menu_item(MenuDivider(), target_category="Menu")
     admin.add_view(CustomView(Page, db.session, category="Menu"))
     admin.add_view(
         CustomView(
@@ -254,6 +256,7 @@ if __name__ == "__main__":
             class_name="text-success",
         )
     )
+    admin.add_menu_item(MenuDivider(), target_category="Links")
     admin.add_link(
         MenuLink(name="External link", url="http://www.example.com/", category="Links")
     )
