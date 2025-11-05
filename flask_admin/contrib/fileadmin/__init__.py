@@ -625,7 +625,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         :param directory:
             Directory path to check
         """
-        return self._normpath(directory).startswith(base_path)  # type: ignore[arg-type]
+        return self._normpath(directory).startswith(base_path)
 
     def save_file(self, path: str, file_data: FileStorage) -> None:
         """
