@@ -14,6 +14,11 @@ admin = Admin(app, name="Example: S3 File Admin")
 babel = Babel(app)
 
 
+@app.route("/")
+def index():
+    return '<a href="/admin/">Click me to get to Admin!</a>'
+
+
 if __name__ == "__main__":
     with LocalStackContainer(image="localstack/localstack:latest") as localstack:
         s3_endpoint = localstack.get_url()
@@ -31,8 +36,6 @@ if __name__ == "__main__":
         bucket_name = "bucket"
         s3_client.create_bucket(Bucket=bucket_name)
 
-        s3_client.upload_fileobj(BytesIO(b""), "bucket", "some-directory/")
-
         s3_client.upload_fileobj(
             BytesIO(b"abcdef"),
             "bucket",
@@ -44,6 +47,13 @@ if __name__ == "__main__":
             BytesIO(b"abcdef"),
             "bucket",
             "some-directory/some-file",
+            ExtraArgs={"ContentType": "text/plain"},
+        )
+
+        s3_client.upload_fileobj(
+            BytesIO(b"abcdef"),
+            "bucket",
+            "some-directory/yy/another-file",
             ExtraArgs={"ContentType": "text/plain"},
         )
 

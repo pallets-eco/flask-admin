@@ -1,6 +1,7 @@
 import os
 import os.path as op
 import platform
+import posixpath
 import re
 import shutil
 import sys
@@ -327,6 +328,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         menu_icon_type: str | None = None,
         menu_icon_value: str | None = None,
         storage: LocalFileStorage | None = None,
+        on_windows: bool | None = None,
     ) -> None:
         """
         Constructor.
@@ -353,7 +355,10 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         self.init_actions()
 
-        self._on_windows = platform.system() == "Windows"
+        if on_windows is not None:
+            self._on_windows = on_windows
+        else:
+            self._on_windows = platform.system() == "Windows"
 
         # Convert allowed_extensions to set for quick validation
         if self.allowed_extensions and not isinstance(self.allowed_extensions, set):
@@ -372,6 +377,12 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
         )
+
+    def _normpath(self, path):
+        if self._on_windows:
+            return op.normpath(path)
+        else:
+            return posixpath.normpath(path)
 
     def is_accessible_path(self, path: str) -> bool:
         """
@@ -614,7 +625,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         :param directory:
             Directory path to check
         """
-        return op.normpath(directory).startswith(base_path)  # type: ignore[arg-type]
+        return self._normpath(directory).startswith(base_path)  # type: ignore[arg-type]
 
     def save_file(self, path: str, file_data: FileStorage) -> None:
         """
@@ -689,13 +700,13 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             directory = base_path
             path = ""
         else:
-            path = op.normpath(path)
+            path = self._normpath(path)
             if base_path:
                 directory = self._separator.join([base_path, path])
             else:
                 directory = path
 
-            directory = op.normpath(directory)
+            directory = self._normpath(directory)
 
             if not self.is_in_folder(base_path, directory):
                 abort(404)
@@ -890,7 +901,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         # Parent directory
         if directory != base_path:
-            parent_path: str | None = op.normpath(self._separator.join([path, ".."]))
+            parent_path: str | None = self._normpath(self._separator.join([path, ".."]))
             if parent_path == ".":
                 parent_path = None
 
