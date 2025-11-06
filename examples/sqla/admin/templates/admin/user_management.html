@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Tabler Design</title>
+    <!-- Tabler CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css">
+    <!-- Tabler Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@1.78.1/iconfont/tabler-icons.min.css">
+    <style>
+        /* 虚拟滚动容器 */
+        .virtual-scroll-container {
+            height: 70vh;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+        }
+        
+        /* 用户列表项 */
+        .user-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .user-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .user-item.active {
+            background-color: #e9ecef;
+        }
+        
+        /* 加载更多指示器 */
+        .loading-indicator {
+            text-align: center;
+            padding: 16px;
+            color: #6c757d;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .user-item {
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">用户管理</h3>
+                <div class="card-actions">
+                    <button class="btn btn-primary" id="addUserBtn">
+                        <i class="ti ti-user-plus"></i> 添加用户
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- 筛选和搜索 -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <select class="form-select" id="attributeTemplate">
+                            <option value="default">默认模板</option>
+                            <option value="extended">扩展模板</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" id="roleFilter">
+                            <option value="admin">管理员</option>
+                            <option value="editor">编辑</option>
+                            <option value="viewer">查看者</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="searchInput" placeholder="搜索用户...">
+                    </div>
+                </div>
+                
+                <!-- 用户列表 - 虚拟滚动 -->
+                <div class="virtual-scroll-container" id="userListContainer">
+                    <div id="userList"></div>
+                    <div class="loading-indicator" id="loadingIndicator" style="display: none;">
+                        <i class="ti ti-loader ti-spin"></i> 加载更多...
+                    </div>
+                </div>
+                
+                <!-- 用户详情 -->
+                <div class="mt-4" id="userDetail" style="display: none;">
+                    <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">用户详情</h4>
+                        <div class="card-actions">
+                            <button class="btn btn-danger" id="deleteUserBtn">
+                                <i class="ti ti-trash"></i> 删除
+                            </button>
+                            <button class="btn btn-secondary" id="closeDetailBtn">
+                                <i class="ti ti-x"></i> 关闭
+                            </button>
+                        </div>
+                    </div>
+                        <div class="card-body" id="userDetailContent">
+                            <!-- 用户详情内容将通过JS动态加载 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 审计日志 -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3 class="card-title">审计日志</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>操作</th>
+                                <th>用户ID</th>
+                                <th>详情</th>
+                                <th>时间戳</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditLogsTable">
+                            <!-- 审计日志将通过JS动态加载 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <!-- 创建用户模态框 -->
+    <div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createUserModalLabel">创建用户</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createUserForm">
+                        <div class="mb-3">
+                            <label for="firstName" class="form-label">名</label>
+                            <input type="text" class="form-control" id="firstName" name="first_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="lastName" class="form-label">姓</label>
+                            <input type="text" class="form-control" id="lastName" name="last_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">邮箱</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">电话</label>
+                            <input type="text" class="form-control" id="phone" name="phone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">地址</label>
+                            <textarea class="form-control" id="address" name="address" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="website" class="form-label">网站</label>
+                            <input type="url" class="form-control" id="website" name="website">
+                        </div>
+                        <div class="mb-3">
+                            <label for="ipAddress" class="form-label">IP地址</label>
+                            <input type="text" class="form-control" id="ipAddress" name="ip_address">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="saveUserBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tabler JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/js/tabler.min.js"></script>
+    <script>
+        // 虚拟滚动实现
+        class VirtualScroller {
+            constructor(container, itemHeight = 60) {
+                this.container = container;
+                this.itemHeight = itemHeight;
+                this.items = [];
+                this.isLoading = false;
+                this.nextCursor = null;
+                this.hasMore = true;
+                
+                this.init();
+            }
+            
+            init() {
+                this.container.addEventListener('scroll', () => this.handleScroll());
+                this.loadMore();
+            }
+            
+            async loadMore() {
+                if (this.isLoading || !this.hasMore) return;
+                
+                this.isLoading = true;
+                document.getElementById('loadingIndicator').style.display = 'block';
+                
+                try {
+                    const template = document.getElementById('attributeTemplate').value;
+                    const role = document.getElementById('roleFilter').value;
+                    const search = document.getElementById('searchInput').value;
+                    
+                    const params = new URLSearchParams({
+                        limit: 100,
+                        template: template,
+                        role: role,
+                        search: search
+                    });
+                    
+                    if (this.nextCursor) {
+                        params.append('cursor', this.nextCursor);
+                    }
+                    
+                    const response = await fetch(`/admin/user/api/users?${params}`);
+                    const data = await response.json();
+                    
+                    this.items = this.items.concat(data.users);
+                    this.nextCursor = data.next_cursor;
+                    this.hasMore = data.has_more;
+                    
+                    this.render();
+                } catch (error) {
+                    console.error('Error loading users:', error);
+                } finally {
+                    this.isLoading = false;
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                }
+            }
+            
+            handleScroll() {
+                const { scrollTop, scrollHeight, clientHeight } = this.container;
+                if (scrollTop + clientHeight >= scrollHeight - 200) {
+                    this.loadMore();
+                }
+            }
+            
+            render() {
+                const userList = document.getElementById('userList');
+                userList.innerHTML = '';
+                
+                this.items.forEach((user, index) => {
+                    const userItem = document.createElement('div');
+                    userItem.className = 'user-item';
+                    userItem.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">${user.first_name} ${user.last_name}</h6>
+                                <small class="text-muted">${user.email}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-primary">${user.phone_number || 'N/A'}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    userItem.addEventListener('click', () => this.showUserDetail(user.id));
+                    userList.appendChild(userItem);
+                });
+            }
+            
+            async showUserDetail(userId) {
+                try {
+                    const role = document.getElementById('roleFilter').value;
+                    const response = await fetch(`/admin/user/api/users/${userId}?role=${role}`);
+                    const user = await response.json();
+                    
+                    const detailContent = document.getElementById('userDetailContent');
+                    detailContent.innerHTML = `
+                        <div class="row">
+                            ${Object.entries(user).map(([key, value]) => `
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-group">
+                                        <label class="form-label">${key.replace('_', ' ').toUpperCase()}</label>
+                                        <input type="text" class="form-control" value="${value || ''}" readonly>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    
+                    document.getElementById('userDetail').style.display = 'block';
+                    document.getElementById('deleteUserBtn').onclick = () => this.deleteUser(userId);
+                } catch (error) {
+                    console.error('Error loading user detail:', error);
+                }
+            }
+            
+            async deleteUser(userId) {
+                if (confirm('Are you sure you want to delete this user?')) {
+                    try {
+                        await fetch(`/admin/user/api/users/${userId}`, { method: 'DELETE' });
+                        this.items = this.items.filter(user => user.id !== userId);
+                        this.render();
+                        document.getElementById('userDetail').style.display = 'none';
+                    } catch (error) {
+                        console.error('Error deleting user:', error);
+                    }
+                }
+            }
+            
+            refresh() {
+                this.items = [];
+                this.nextCursor = null;
+                this.hasMore = true;
+                this.render();
+                this.loadMore();
+            }
+        }
+        
+        // 初始化虚拟滚动
+        const container = document.getElementById('userListContainer');
+        const scroller = new VirtualScroller(container);
+        
+        // 事件监听
+        document.getElementById('attributeTemplate').addEventListener('change', () => scroller.refresh());
+        document.getElementById('roleFilter').addEventListener('change', () => scroller.refresh());
+        document.getElementById('searchInput').addEventListener('input', () => scroller.refresh());
+        
+        document.getElementById('closeDetailBtn').addEventListener('click', () => {
+            document.getElementById('userDetail').style.display = 'none';
+        });
+        
+        // 创建用户模态框事件
+        document.getElementById('addUserBtn').addEventListener('click', () => {
+            const modal = new bootstrap.Modal(document.getElementById('createUserModal'));
+            modal.show();
+        });
+        
+        // 保存用户事件
+        document.getElementById('saveUserBtn').addEventListener('click', async () => {
+            const form = document.getElementById('createUserForm');
+            const formData = new FormData(form);
+            const userData = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch('/admin/user/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData),
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('User created:', result);
+                    
+                    // 关闭模态框
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('createUserModal'));
+                    modal.hide();
+                    
+                    // 刷新用户列表
+                    scroller.refresh();
+                    
+                    // 重置表单
+                    form.reset();
+                } else {
+                    console.error('Error creating user:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error creating user:', error);
+            }
+        });
+        
+        // 加载审计日志
+        async function loadAuditLogs() {
+            try {
+                const response = await fetch('/admin/user/api/audit-logs');
+                const logs = await response.json();
+                
+                const logsTable = document.getElementById('auditLogsTable');
+                logsTable.innerHTML = logs.map(log => `
+                    <tr>
+                        <td><span class="badge bg-info">${log.action}</span></td>
+                        <td>${log.user_id}</td>
+                        <td>${JSON.stringify(log.details)}</td>
+                        <td>${new Date(log.timestamp).toLocaleString()}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading audit logs:', error);
+            }
+        }
+        
+        // 初始化
+        loadAuditLogs();
+        
+        // 定时刷新审计日志
+        setInterval(loadAuditLogs, 5000);
+    </script>
+</body>
+</html>

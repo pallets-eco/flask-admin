@@ -55,6 +55,8 @@ class User(db.Model):
 
     dialling_code = db.Column(db.Integer())
     local_phone_number = db.Column(db.String(10))
+    phone = db.Column(db.String(20))  # New field: phone number
+    address = db.Column(db.Text)  # New field: address
 
     featured_post_id = db.Column(db.Integer, db.ForeignKey("post.id"))
     featured_post = db.relationship("Post", foreign_keys=[featured_post_id])
