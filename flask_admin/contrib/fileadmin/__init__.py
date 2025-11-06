@@ -349,6 +349,11 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         :param storage:
             The storage backend that the `BaseFileAdmin` will use to operate on the
             files.
+        :param on_windows:
+            True for Windows storage, this parameter is needed only if your storage
+            is placed externally on a platform different than the one of you are
+            hosting your flask project on. e.g if Flask app runs on Windows with
+            S3 storage (on Linux), then on_windows must be set to False.
         """
         self.base_url = base_url
         self.storage = storage
