@@ -10,9 +10,9 @@ from wtforms.validators import InputRequired
 from flask_admin._compat import filter_list
 from flask_admin._types import T_COLUMN
 from flask_admin._types import T_SQLALCHEMY_MODEL
-from flask_admin._types import T_SQLALCHEMY_SESSION
 from flask_admin._types import T_TRANSLATABLE
 from flask_admin.babel import lazy_gettext
+from flask_admin.contrib.sqla._types import T_SCOPED_SESSION
 
 
 class Unique:
@@ -32,7 +32,7 @@ class Unique:
 
     def __init__(
         self,
-        db_session: T_SQLALCHEMY_SESSION,
+        db_session: T_SCOPED_SESSION,
         model: type[T_SQLALCHEMY_MODEL],
         column: T_COLUMN,
         message: T_TRANSLATABLE | None = None,

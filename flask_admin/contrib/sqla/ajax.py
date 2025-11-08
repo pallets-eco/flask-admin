@@ -1,5 +1,6 @@
 import typing as t
 
+from flask_sqlalchemy.model import Model
 from sqlalchemy import and_
 from sqlalchemy import cast
 from sqlalchemy import or_
@@ -11,9 +12,8 @@ from flask_admin._compat import string_types
 from flask_admin.model.ajax import AjaxModelLoader
 from flask_admin.model.ajax import DEFAULT_PAGE_SIZE
 
-from ..._types import T_SQLALCHEMY_MODEL
-from ..._types import T_SQLALCHEMY_QUERY
-from ..._types import T_SQLALCHEMY_SESSION
+from ._types import T_SCOPED_SESSION
+from ._types import T_SQLALCHEMY_QUERY
 from .tools import get_primary_key
 from .tools import has_multiple_pks
 from .tools import is_association_proxy
@@ -24,8 +24,8 @@ class QueryAjaxModelLoader(AjaxModelLoader):
     def __init__(
         self,
         name: str,
-        session: T_SQLALCHEMY_SESSION,
-        model: type[T_SQLALCHEMY_MODEL],
+        session: T_SCOPED_SESSION,
+        model: type[Model],
         **options: t.Any,
     ) -> None:
         """
@@ -59,7 +59,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         self.pk: str = t.cast(str, get_primary_key(model))
 
-    def _process_fields(self) -> list:
+    def _process_fields(self) -> list[t.Any]:
         remote_fields = []
 
         for field in self.fields:  # type: ignore[union-attr]
@@ -76,7 +76,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
-    def format(self, model: None | str | bytes) -> tuple[t.Any, str] | None:
+    def format(self, model: Model | None) -> tuple[t.Any, str] | None:  # type: ignore[override]
         if not model:
             return None
 
@@ -106,7 +106,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         if self.filters:
             filters = [
-                text(f"{self.model.__tablename__.lower()}.{value}")
+                text(f"{self.model.__tablename__.lower()}.{value}")  # type: ignore[attr-defined]
                 for value in self.filters
             ]
             query = query.filter(and_(*filters))
@@ -119,7 +119,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
 def create_ajax_loader(
     model: t.Any,
-    session: T_SQLALCHEMY_SESSION,
+    session: T_SCOPED_SESSION,
     name: str,
     field_name: str,
     options: dict[str, t.Any],

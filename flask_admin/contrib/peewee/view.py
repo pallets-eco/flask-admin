@@ -27,11 +27,11 @@ from flask_admin.model.form import InlineFormAdmin
 
 from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
 from ..._types import T_FILTER
-from ..._types import T_PEEWEE_FIELD
 from ..._types import T_PEEWEE_MODEL
 from ..._types import T_WIDGET
 from .ajax import create_ajax_loader
 from .ajax import QueryAjaxModelLoader
+from .filters import BasePeeweeFilter
 from .form import CustomModelConverter
 from .form import get_form
 from .form import InlineModelConverter
@@ -45,12 +45,15 @@ log = logging.getLogger("flask-admin.peewee")
 
 
 class ModelView(BaseModelView):
-    column_filters: t.Collection[t.Union[str, T_PEEWEE_FIELD]] | None = None  # type: ignore[assignment]
+    column_filters: t.Collection[str | Field | BasePeeweeFilter] | None = None  # type: ignore[assignment]
     """
         Collection of the column filters.
 
-        Can contain either field names or instances of
-        :class:`flask_admin.contrib.peewee.filters.BasePeeweeFilter` classes.
+        Can contain either:
+        - Field names (str) or Fields (instances of :class:`peewee.Field`): allow any
+        filter operation available for the field’s data type.
+        - Instances of :class:`flask_admin.contrib.peewee.filters.BasePeeweeFilter`
+        classes: restrict or customize which filters are available for a specific field.
 
         Filters will be grouped by name when displayed in the drop-down.
 
@@ -201,7 +204,7 @@ class ModelView(BaseModelView):
         menu_icon_type: str | None = None,
         menu_icon_value: str | None = None,
     ) -> None:
-        self._search_fields: list = []
+        self._search_fields: list[t.Any] = []
         super().__init__(
             model,
             name,
@@ -373,7 +376,7 @@ class ModelView(BaseModelView):
 
     # AJAX foreignkey support
     def _create_ajax_loader(
-        self, name: str, options: dict[str, t.Any] | list | tuple
+        self, name: str, options: dict[str, t.Any]
     ) -> QueryAjaxModelLoader:
         return create_ajax_loader(self.model, name, name, options)  # type: ignore[arg-type]
 
@@ -434,7 +437,7 @@ class ModelView(BaseModelView):
         filters: t.Sequence[T_FILTER] | None,
         execute: bool = True,
         page_size: int | None = None,
-    ) -> tuple[int | None, list | ModelSelect]:
+    ) -> tuple[int | None, list[ModelBase] | ModelSelect]:
         """
         Return records from the database.
 

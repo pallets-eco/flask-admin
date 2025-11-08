@@ -16,7 +16,7 @@ def prettify_name(name: str) -> str:
 
 
 def get_mdict_item_or_list(
-    mdict: werkzeug.datastructures.MultiDict, key: str
+    mdict: werkzeug.datastructures.MultiDict[str, str], key: str
 ) -> t.Any | None:
     """
     Return the value for the given key of the multidict.
@@ -33,7 +33,7 @@ def get_mdict_item_or_list(
     if hasattr(mdict, "getlist"):
         v = mdict.getlist(key)
         if len(v) == 1:
-            value = v[0]
+            value: str | None = v[0]
 
             # Special case for empty strings, treat them as "no-value"
             if value == "":

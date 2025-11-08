@@ -257,9 +257,9 @@ class FileUploadField(fields.StringField):
 
     def process(
         self,
-        formdata: dict,  # type:ignore[override]
+        formdata: dict[str, str],  # type:ignore[override]
         data: UnsetValue = unset_value,
-        extra_filters: t.Sequence | None = None,
+        extra_filters: t.Sequence[t.Any] | None = None,
     ) -> None:
         if formdata:
             marker = f"_{self.name}-delete"

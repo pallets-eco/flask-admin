@@ -1,12 +1,14 @@
+from __future__ import annotations
+
 import typing as t
 import warnings
+from collections.abc import Callable
 from enum import Enum
 from enum import EnumMeta
 
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy.orm import ColumnProperty
-from sqlalchemy.orm import InstrumentedAttribute
 from wtforms import Field
 from wtforms import fields
 from wtforms import Form
@@ -34,12 +36,14 @@ from ..._types import T_FIELD_ARGS_PLACES
 from ..._types import T_FIELD_ARGS_VALIDATORS
 from ..._types import T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK
 from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
+from ..._types import T_INSTRUMENTED_ATTRIBUTE
 from ..._types import T_MODEL_VIEW
 from ..._types import T_ORM_MODEL
+from ..._types import T_SQLALCHEMY_COLUMN
 from ..._types import T_SQLALCHEMY_INLINE_MODELS
 from ..._types import T_SQLALCHEMY_MODEL
-from ..._types import T_SQLALCHEMY_SESSION
 from ...form import Select2Field
+from ._types import T_SCOPED_SESSION
 from .ajax import create_ajax_loader
 from .fields import HstoreForm
 from .fields import InlineHstoreList
@@ -63,7 +67,7 @@ class AdminModelConverter(ModelConverterBase):
     SQLAlchemy model to form converter
     """
 
-    def __init__(self, session: T_SQLALCHEMY_SESSION, view: T_MODEL_VIEW) -> None:
+    def __init__(self, session: T_SCOPED_SESSION, view: T_MODEL_VIEW) -> None:
         super().__init__()
 
         self.session = session
@@ -103,7 +107,7 @@ class AdminModelConverter(ModelConverterBase):
             return column_descriptions.get(name)
         return None
 
-    def _get_field_override(self, name: str) -> t.Callable | None:
+    def _get_field_override(self, name: str) -> Callable[..., t.Any] | None:
         form_overrides = getattr(self.view, "form_overrides", None)
 
         if form_overrides:
@@ -113,7 +117,7 @@ class AdminModelConverter(ModelConverterBase):
 
     def _model_select_field(
         self,
-        prop: ColumnProperty | InstrumentedAttribute,
+        prop: ColumnProperty[t.Any] | T_INSTRUMENTED_ATTRIBUTE,
         multiple: str | bool,
         remote_model: type[T_SQLALCHEMY_MODEL],
         **kwargs: t.Any,
@@ -201,7 +205,7 @@ class AdminModelConverter(ModelConverterBase):
         model: type[T_SQLALCHEMY_MODEL],
         mapper: t.Any,
         name: str,
-        prop: FieldPlaceholder | ColumnProperty | InstrumentedAttribute,
+        prop: FieldPlaceholder | ColumnProperty[t.Any] | T_INSTRUMENTED_ATTRIBUTE,
         field_args: T_FIELD_ARGS_VALIDATORS,
         hidden_pk: bool,
     ) -> (
@@ -262,13 +266,13 @@ class AdminModelConverter(ModelConverterBase):
                 column = columns[0]
             else:
                 # Grab column
-                column = prop.columns[0]
+                column = prop.columns[0]  # type: ignore[assignment]
 
             form_columns = getattr(self.view, "form_columns", None) or ()
 
             # Do not display foreign keys - use relations, except when explicitly
             # instructed
-            if column.foreign_keys and prop.key not in form_columns:
+            if column.foreign_keys and prop.key not in form_columns:  # type: ignore[union-attr]
                 return None
 
             # Only display "real" columns
@@ -364,7 +368,7 @@ class AdminModelConverter(ModelConverterBase):
     @classmethod
     def _nullable_common(
         cls,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         field_args: T_FIELD_ARGS_FILTERS | T_FIELD_ARGS_VALIDATORS,
     ) -> None:
         if column.nullable:
@@ -375,7 +379,7 @@ class AdminModelConverter(ModelConverterBase):
     @classmethod
     def _string_common(
         cls,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         field_args: T_FIELD_ARGS_VALIDATORS,
         **extra: t.Any,
     ) -> None:
@@ -390,7 +394,7 @@ class AdminModelConverter(ModelConverterBase):
     @converts("String")  # includes VARCHAR, CHAR, and Unicode
     def conv_String(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         field_args: T_FIELD_ARGS_VALIDATORS,
         **extra: t.Any,
     ) -> fields.StringField:
@@ -400,7 +404,7 @@ class AdminModelConverter(ModelConverterBase):
     @converts("sqlalchemy.sql.sqltypes.Enum")
     def convert_enum(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         field_args: T_FIELD_ARGS_FILTERS,
         **extra: t.Any,
     ) -> form.Select2Field:
@@ -420,7 +424,10 @@ class AdminModelConverter(ModelConverterBase):
 
     @converts("sqlalchemy_utils.types.choice.ChoiceType")
     def convert_choice_type(
-        self, column: Column, field_args: T_FIELD_ARGS_FILTERS, **extra: t.Any
+        self,
+        column: T_SQLALCHEMY_COLUMN,
+        field_args: T_FIELD_ARGS_FILTERS,
+        **extra: t.Any,
     ) -> form.Select2Field:
         available_choices: list[Enum] | list[tuple[int, str]] = []
         # choices can either be specified as an enum, or as a list of tuples
@@ -491,7 +498,7 @@ class AdminModelConverter(ModelConverterBase):
     def convert_email(
         self,
         field_args: T_FIELD_ARGS_VALIDATORS,
-        column: Column | None = None,
+        column: T_SQLALCHEMY_COLUMN | None = None,
         **extra: t.Any,
     ) -> fields.StringField:
         self._nullable_common(column, field_args)  # type: ignore[arg-type]
@@ -537,7 +544,10 @@ class AdminModelConverter(ModelConverterBase):
 
     @converts("sqlalchemy_utils.types.timezone.TimezoneType")
     def convert_timezone(
-        self, column: Column, field_args: T_FIELD_ARGS_VALIDATORS, **extra: t.Any
+        self,
+        column: T_SQLALCHEMY_COLUMN,
+        field_args: T_FIELD_ARGS_VALIDATORS,
+        **extra: t.Any,
     ) -> fields.StringField:
         field_args["validators"].append(
             TimeZoneValidator(coerce_function=column.type._coerce)  # type: ignore[attr-defined]
@@ -546,7 +556,10 @@ class AdminModelConverter(ModelConverterBase):
 
     @converts("Integer")  # includes BigInteger and SmallInteger
     def handle_integer_types(
-        self, column: Column, field_args: T_FIELD_ARGS_VALIDATORS, **extra: t.Any
+        self,
+        column: T_SQLALCHEMY_COLUMN,
+        field_args: T_FIELD_ARGS_VALIDATORS,
+        **extra: t.Any,
     ) -> fields.IntegerField:
         unsigned = getattr(column.type, "unsigned", False)
         if unsigned:
@@ -649,7 +662,7 @@ def choice_type_coerce_factory(type_: T_CHOICE_TYPE) -> t.Callable[[t.Any], t.An
     return choice_coerce
 
 
-def _resolve_prop(prop: ColumnProperty) -> ColumnProperty:
+def _resolve_prop(prop: ColumnProperty[t.Any]) -> ColumnProperty[t.Any]:
     """
     Resolve proxied property
 
@@ -668,12 +681,12 @@ def get_form(
     model: type[T_SQLALCHEMY_MODEL],
     converter: AdminModelConverter,
     base_class: type[form.BaseForm] = form.BaseForm,
-    only: t.Collection[str | InstrumentedAttribute] | None = None,
-    exclude: t.Collection[str | InstrumentedAttribute] | None = None,
+    only: t.Collection[str | T_INSTRUMENTED_ATTRIBUTE] | None = None,
+    exclude: t.Collection[str | T_INSTRUMENTED_ATTRIBUTE] | None = None,
     field_args: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
     hidden_pk: bool = False,
     ignore_hidden: bool = True,
-    extra_fields: dict[str | InstrumentedAttribute, Field] | None = None,
+    extra_fields: dict[str | T_INSTRUMENTED_ATTRIBUTE, Field] | None = None,
 ) -> type:
     """
     Generate form from the model.
@@ -707,7 +720,7 @@ def get_form(
     if only:
 
         def find(
-            name: str | InstrumentedAttribute,
+            name: str | T_INSTRUMENTED_ATTRIBUTE,
         ) -> (
             tuple[str, FieldPlaceholder]
             | tuple[str, t.Any | None]
@@ -720,7 +733,7 @@ def get_form(
             column, path = get_field_with_path(
                 model, name, return_remote_proxy_attr=False
             )
-            column = t.cast(InstrumentedAttribute, column)
+            column = t.cast(T_INSTRUMENTED_ATTRIBUTE, column)
             if path and not (is_relationship(column) or is_association_proxy(column)):
                 raise Exception(
                     "form column is located in another table and "
@@ -784,9 +797,9 @@ class InlineModelConverter(InlineModelConverterBase):
 
     def __init__(
         self,
-        session: T_SQLALCHEMY_SESSION,
+        session: T_SCOPED_SESSION,
         view: T_MODEL_VIEW,
-        model_converter: t.Callable[[T_SQLALCHEMY_SESSION, t.Any], t.Any],
+        model_converter: t.Callable[[T_SCOPED_SESSION, t.Any], t.Any],
     ) -> None:
         """
         Constructor.
@@ -833,7 +846,7 @@ class InlineModelConverter(InlineModelConverterBase):
 
         return info
 
-    def process_ajax_refs(self, info: InlineFormAdmin) -> dict:
+    def process_ajax_refs(self, info: InlineFormAdmin) -> dict[t.Any, t.Any]:
         refs = getattr(info, "form_ajax_refs", None)
 
         result = {}
@@ -951,7 +964,7 @@ class InlineModelConverter(InlineModelConverterBase):
         """
 
         info = t.cast(T_MODEL_VIEW, self.get_info(inline_model))  # type: ignore[arg-type]
-        forward_reverse_props_keys: dict = self._calculate_mapping_key_pair(
+        forward_reverse_props_keys: dict[str, str] = self._calculate_mapping_key_pair(
             model,
             info,  # type: ignore[arg-type]
         )
@@ -993,7 +1006,9 @@ class InlineModelConverter(InlineModelConverterBase):
                 kwargs["label"] = label
 
             if self.view.form_args:
-                field_args = t.cast(dict, self.view.form_args.get(forward_prop_key, {}))
+                field_args = t.cast(
+                    dict[t.Any, t.Any], self.view.form_args.get(forward_prop_key, {})
+                )
                 kwargs.update(**field_args)
 
             # Contribute field
@@ -1109,7 +1124,7 @@ class InlineOneToOneModelConverter(InlineModelConverter):
         # Post-process form
         child_form = info.postprocess_form(child_form)  # type: ignore[attr-defined]
 
-        kwargs: dict = dict()
+        kwargs: dict[t.Any, t.Any] = dict()
 
         # Contribute field
         for key in inline_relationships.keys():

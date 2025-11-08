@@ -12,7 +12,7 @@ class FieldListInputRequired:
 
     field_flags = {"required": True}
 
-    def __call__(self, form: Form, field: FieldList) -> None:
+    def __call__(self, form: Form, field: FieldList) -> None:  # type: ignore[type-arg]
         if len(field.entries) == 0:
             field.errors[:] = []  # type:ignore[index]
             raise StopValidation(gettext("This field requires at least one item."))
