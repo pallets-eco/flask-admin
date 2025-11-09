@@ -109,6 +109,7 @@ class TweetView(ModelView):
     column_sortable_list = ("name", "text")
 
     column_filters = (
+        "text",
         filters.FilterEqual("name", "Name"),
         filters.FilterNotEqual("name", "Name"),
         filters.FilterLike("name", "Name"),
