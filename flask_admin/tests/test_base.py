@@ -245,6 +245,7 @@ def test_add_views(admin):
     assert len(admin.menu()) == 3
 
 
+@pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
 def test_add_category(admin):
     admin.add_category("Category1", "class-name", "icon-type", "icon-value")
     admin.add_view(MockView(name="Test 1", endpoint="test1", category="Category1"))
