@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-06-03 07:06+0100\n"
+"POT-Creation-Date: 2025-09-16 00:18+0200\n"
 "PO-Revision-Date: 2025-07-07 20:12-0500\n"
 "Last-Translator: ElLorans <lorenzo.cerreta@gmail.com>\n"
 "Language: fi_FI\n"
@@ -12,13 +12,13 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.16.0\n"
+"Generated-By: Babel 2.17.0\n"
 
-#: ../flask_admin/base.py:516
+#: ../flask_admin/base.py:518
 msgid "Home"
 msgstr "Etusivu"
 
-#: ../flask_admin/contrib/rediscli.py:120
+#: ../flask_admin/contrib/rediscli.py:118
 msgid "Cli: Invalid command."
 msgstr "CLI: Virheellinen komento."
 
@@ -58,7 +58,7 @@ msgstr "Tiedosto \"%(name)s\" on jo olemassa."
 #: ../flask_admin/contrib/fileadmin/__init__.py:1144
 #: ../flask_admin/contrib/fileadmin/__init__.py:1211
 #: ../flask_admin/contrib/fileadmin/__init__.py:1280
-#: ../flask_admin/model/base.py:2566
+#: ../flask_admin/model/base.py:2555
 msgid "Permission denied."
 msgstr "Käyttö estetty."
 
@@ -66,12 +66,12 @@ msgstr "Käyttö estetty."
 msgid "File uploading is disabled."
 msgstr "Tiedostojen lataaminen on poistettu käytöstä."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1002
+#: ../flask_admin/contrib/fileadmin/__init__.py:1003
 #, python-format
 msgid "Successfully saved file: %(name)s"
 msgstr "Onnistuneesti tallennettu tiedosto: %(name)s"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1011
+#: ../flask_admin/contrib/fileadmin/__init__.py:1012
 #, python-format
 msgid "Failed to save file: %(error)s"
 msgstr "Tiedostoa ei voi tallentaa: %(error)s"
@@ -86,12 +86,12 @@ msgstr "Lataa tiedosto"
 msgid "Directory creation is disabled."
 msgstr "Hakemiston luominen on poistettu käytöstä."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1086
+#: ../flask_admin/contrib/fileadmin/__init__.py:1087
 #, python-format
 msgid "Successfully created directory: %(directory)s"
 msgstr "Onnistuneesti perustettu hakemistoon: %(directory)s"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1095
+#: ../flask_admin/contrib/fileadmin/__init__.py:1096
 #, python-format
 msgid "Failed to create directory: %(error)s"
 msgstr "Ei voi luoda hakemiston: %(error)s"
@@ -110,12 +110,12 @@ msgstr "Poistaminen on poistettu käytöstä."
 msgid "Directory deletion is disabled."
 msgstr "Kansion poistaminen on poistettu käytöstä."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1156
+#: ../flask_admin/contrib/fileadmin/__init__.py:1157
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
 msgstr "Hakemisto \"%(path)s\" poistaminen onnistui."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1163
+#: ../flask_admin/contrib/fileadmin/__init__.py:1164
 #, python-format
 msgid "Failed to delete directory: %(error)s"
 msgstr "Ei voinut poistaa hakemistoa: %(error)s"
@@ -126,8 +126,8 @@ msgstr "Ei voinut poistaa hakemistoa: %(error)s"
 msgid "File \"%(name)s\" was successfully deleted."
 msgstr "Poistettiin tiedoston \"%(name)s\"."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1180
-#: ../flask_admin/contrib/fileadmin/__init__.py:1383
+#: ../flask_admin/contrib/fileadmin/__init__.py:1181
+#: ../flask_admin/contrib/fileadmin/__init__.py:1384
 #, python-format
 msgid "Failed to delete file: %(name)s"
 msgstr "Tiedoston poistaminen epäonnistui: %(name)s"
@@ -140,12 +140,12 @@ msgstr "Uudelleennimeäminen ei ole käytettävissä."
 msgid "Path does not exist."
 msgstr "Polkua ei ole."
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1229
+#: ../flask_admin/contrib/fileadmin/__init__.py:1228
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
 msgstr "Onnistuneesti nimetty \"%(src)s\" \"%(dst)s\""
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1236
+#: ../flask_admin/contrib/fileadmin/__init__.py:1237
 #, python-format
 msgid "Failed to rename: %(error)s"
 msgstr "Uudelleennimeäminen epäonnistui: %(error)s"
@@ -171,7 +171,7 @@ msgid "Error reading %(name)s."
 msgstr "Virhe käsittelyssä %(name)s."
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1318
-#: ../flask_admin/contrib/fileadmin/__init__.py:1330
+#: ../flask_admin/contrib/fileadmin/__init__.py:1331
 #, python-format
 msgid "Unexpected error while reading from %(name)s"
 msgstr "Odottamaton virhe luettaessa %(name)s"
@@ -187,9 +187,10 @@ msgid "Editing %(path)s"
 msgstr "Muokkaus %(path)s"
 
 #: ../flask_admin/contrib/fileadmin/__init__.py:1363
-#: ../flask_admin/contrib/peewee/view.py:603
-#: ../flask_admin/contrib/pymongo/view.py:411
-#: ../flask_admin/contrib/sqla/view.py:1438
+#: ../flask_admin/contrib/mongoengine/view.py:726
+#: ../flask_admin/contrib/peewee/view.py:611
+#: ../flask_admin/contrib/pymongo/view.py:422
+#: ../flask_admin/contrib/sqla/view.py:1436
 msgid "Delete"
 msgstr "Poista"
 
@@ -211,57 +212,67 @@ msgstr "Muokkaa"
 msgid "Cannot operate on non empty directories"
 msgstr "Ei voi toimia muissa kuin tyhjissä hakemistoissa"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:41
 #: ../flask_admin/contrib/peewee/filters.py:47
 #: ../flask_admin/contrib/pymongo/filters.py:49
 #: ../flask_admin/contrib/sqla/filters.py:62
 msgid "equals"
 msgstr "vastaa"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:50
 #: ../flask_admin/contrib/peewee/filters.py:55
 #: ../flask_admin/contrib/pymongo/filters.py:58
 #: ../flask_admin/contrib/sqla/filters.py:72
 msgid "not equal"
 msgstr "eri suuri"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:60
 #: ../flask_admin/contrib/peewee/filters.py:64
 #: ../flask_admin/contrib/pymongo/filters.py:68
 #: ../flask_admin/contrib/sqla/filters.py:83
 msgid "contains"
 msgstr "sisältää"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:70
 #: ../flask_admin/contrib/peewee/filters.py:73
 #: ../flask_admin/contrib/pymongo/filters.py:78
 #: ../flask_admin/contrib/sqla/filters.py:94
 msgid "not contains"
 msgstr "ei sisällä"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:79
 #: ../flask_admin/contrib/peewee/filters.py:81
 #: ../flask_admin/contrib/pymongo/filters.py:91
 #: ../flask_admin/contrib/sqla/filters.py:104
 msgid "greater than"
 msgstr "suurempi kuin"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:88
 #: ../flask_admin/contrib/peewee/filters.py:89
 #: ../flask_admin/contrib/pymongo/filters.py:104
 #: ../flask_admin/contrib/sqla/filters.py:114
 msgid "smaller than"
 msgstr "pienempi kuin"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:100
 #: ../flask_admin/contrib/peewee/filters.py:100
 #: ../flask_admin/contrib/sqla/filters.py:127
 msgid "empty"
 msgstr "tyhjä"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:115
 #: ../flask_admin/contrib/peewee/filters.py:120
 #: ../flask_admin/contrib/sqla/filters.py:149
 msgid "in list"
 msgstr "-luettelosta"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:124
 #: ../flask_admin/contrib/peewee/filters.py:129
 #: ../flask_admin/contrib/sqla/filters.py:161
 msgid "not in list"
 msgstr "ei luettelossa"
 
+#: ../flask_admin/contrib/mongoengine/filters.py:223
 #: ../flask_admin/contrib/peewee/filters.py:228
 #: ../flask_admin/contrib/peewee/filters.py:268
 #: ../flask_admin/contrib/peewee/filters.py:308
@@ -271,62 +282,78 @@ msgstr "ei luettelossa"
 msgid "not between"
 msgstr "ei välillä"
 
-#: ../flask_admin/contrib/peewee/view.py:542
-#: ../flask_admin/contrib/pymongo/view.py:345
+#: ../flask_admin/contrib/mongoengine/filters.py:248
+msgid "ObjectId equals"
+msgstr "ObjectId on yhtä kuin"
+
+#: ../flask_admin/contrib/mongoengine/form.py:121
+#: ../flask_admin/contrib/sqla/fields.py:151
+#: ../flask_admin/contrib/sqla/fields.py:210
+#: ../flask_admin/contrib/sqla/fields.py:215 ../flask_admin/model/fields.py:224
+#: ../flask_admin/model/fields.py:284
+msgid "Not a valid choice"
+msgstr "Ei ole kelvollinen valinta"
+
+#: ../flask_admin/contrib/mongoengine/view.py:606
+#, python-format
+msgid "Failed to get model. %(error)s"
+msgstr "Mallin hakeminen epäonnistui. %(error)s"
+
+#: ../flask_admin/contrib/mongoengine/view.py:627
+#: ../flask_admin/contrib/peewee/view.py:550
+#: ../flask_admin/contrib/pymongo/view.py:356
 #: ../flask_admin/contrib/sqla/view.py:1356
 #, python-format
 msgid "Failed to create record. %(error)s"
 msgstr "Tietueen luominen epäonnistui. %(error)s"
 
-#: ../flask_admin/contrib/peewee/view.py:564
-#: ../flask_admin/contrib/pymongo/view.py:369
-#: ../flask_admin/contrib/sqla/view.py:1387 ../flask_admin/model/base.py:2721
-#: ../flask_admin/model/base.py:2728 ../flask_admin/model/base.py:2731
+#: ../flask_admin/contrib/mongoengine/view.py:656
+#: ../flask_admin/contrib/peewee/view.py:572
+#: ../flask_admin/contrib/pymongo/view.py:380
+#: ../flask_admin/contrib/sqla/view.py:1385 ../flask_admin/model/base.py:2710
+#: ../flask_admin/model/base.py:2717 ../flask_admin/model/base.py:2721
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr "Tietueen luominen epäonnistui. %(error)s"
 
-#: ../flask_admin/contrib/peewee/view.py:582
-#: ../flask_admin/contrib/pymongo/view.py:393
-#: ../flask_admin/contrib/sqla/view.py:1415
+#: ../flask_admin/contrib/mongoengine/view.py:682
+#: ../flask_admin/contrib/peewee/view.py:590
+#: ../flask_admin/contrib/pymongo/view.py:404
+#: ../flask_admin/contrib/sqla/view.py:1413
 #, python-format
 msgid "Failed to delete record. %(error)s"
 msgstr "Tietueen poistaminen epäonnistui. %(error)s"
 
-#: ../flask_admin/contrib/peewee/view.py:604
-#: ../flask_admin/contrib/pymongo/view.py:412
-#: ../flask_admin/contrib/sqla/view.py:1439
+#: ../flask_admin/contrib/mongoengine/view.py:727
+#: ../flask_admin/contrib/peewee/view.py:612
+#: ../flask_admin/contrib/pymongo/view.py:423
+#: ../flask_admin/contrib/sqla/view.py:1437
 msgid "Are you sure you want to delete selected records?"
 msgstr "Oletko varma, että haluat poistaa valitut tietueet?"
 
-#: ../flask_admin/contrib/peewee/view.py:623
-#: ../flask_admin/contrib/pymongo/view.py:424
-#: ../flask_admin/contrib/sqla/view.py:1461 ../flask_admin/model/base.py:2500
+#: ../flask_admin/contrib/mongoengine/view.py:739
+#: ../flask_admin/contrib/peewee/view.py:632
+#: ../flask_admin/contrib/pymongo/view.py:436
+#: ../flask_admin/contrib/sqla/view.py:1460 ../flask_admin/model/base.py:2490
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
 msgstr[0] "Tietueen poistaminen onnistui."
 msgstr[1] "%(count)s tietueet on poistettu."
 
-#: ../flask_admin/contrib/peewee/view.py:634
-#: ../flask_admin/contrib/pymongo/view.py:434
-#: ../flask_admin/contrib/sqla/view.py:1474
+#: ../flask_admin/contrib/mongoengine/view.py:749
+#: ../flask_admin/contrib/peewee/view.py:642
+#: ../flask_admin/contrib/pymongo/view.py:445
+#: ../flask_admin/contrib/sqla/view.py:1472
 #, python-format
 msgid "Failed to delete records. %(error)s"
 msgstr "Tietueen poistaminen epäonnistui. %(error)s"
 
-#: ../flask_admin/contrib/sqla/fields.py:150
-#: ../flask_admin/contrib/sqla/fields.py:209
-#: ../flask_admin/contrib/sqla/fields.py:214 ../flask_admin/model/fields.py:224
-#: ../flask_admin/model/fields.py:284
-msgid "Not a valid choice"
-msgstr "Ei ole kelvollinen valinta"
-
-#: ../flask_admin/contrib/sqla/fields.py:245
+#: ../flask_admin/contrib/sqla/fields.py:246
 msgid "Key"
 msgstr "Avain"
 
-#: ../flask_admin/contrib/sqla/fields.py:246
+#: ../flask_admin/contrib/sqla/fields.py:247
 msgid "Value"
 msgstr "Arvo"
 
@@ -334,7 +361,7 @@ msgstr "Arvo"
 msgid "Already exists."
 msgstr "On jo olemassa."
 
-#: ../flask_admin/contrib/sqla/validators.py:80
+#: ../flask_admin/contrib/sqla/validators.py:81
 #, python-format
 msgid "At least %(num)d item is required"
 msgid_plural "At least %(num)d items are required"
@@ -366,7 +393,7 @@ msgstr "Virheellinen valinta: ei voitu pakottaa"
 msgid "Invalid JSON"
 msgstr "Virheellinen JSON"
 
-#: ../flask_admin/form/upload.py:245
+#: ../flask_admin/form/upload.py:241
 msgid "Invalid file extension"
 msgstr "Virheellinen tunniste"
 
@@ -374,31 +401,31 @@ msgstr "Virheellinen tunniste"
 msgid "This field requires at least one item."
 msgstr "Tämä kenttä vaatii vähintään yhden kohteen."
 
-#: ../flask_admin/model/base.py:1924
+#: ../flask_admin/model/base.py:1916
 msgid "There are no items in the table."
 msgstr "Näytettäviä kohteita ei ole taulukossa."
 
-#: ../flask_admin/model/base.py:1933
+#: ../flask_admin/model/base.py:1925
 #, python-format
 msgid "Invalid Filter Value: %(value)s"
 msgstr "Virheellinen suodattimen arvo: %(value)s"
 
-#: ../flask_admin/model/base.py:2356
+#: ../flask_admin/model/base.py:2348
 msgid "Record was successfully created."
 msgstr "Tietue on luotu."
 
-#: ../flask_admin/model/base.py:2404 ../flask_admin/model/base.py:2459
-#: ../flask_admin/model/base.py:2493 ../flask_admin/model/base.py:2712
+#: ../flask_admin/model/base.py:2395 ../flask_admin/model/base.py:2449
+#: ../flask_admin/model/base.py:2483 ../flask_admin/model/base.py:2701
 msgid "Record does not exist."
 msgstr "Tietuetta ei ole."
 
-#: ../flask_admin/model/base.py:2413 ../flask_admin/model/base.py:2717
+#: ../flask_admin/model/base.py:2403 ../flask_admin/model/base.py:2706
 msgid "Record was successfully saved."
 msgstr "Tietueen tallentaminen onnistui."
 
-#: ../flask_admin/model/base.py:2656
+#: ../flask_admin/model/base.py:2645
 #, python-format
-msgid "Export type \"%(type)s\" not supported."
+msgid "Export type \"%(type)s\" is not supported."
 msgstr "Vientityyppiä \"%(type)s\" ei tueta."
 
 #: ../flask_admin/model/filters.py:121 ../flask_admin/model/widgets.py:128
@@ -551,7 +578,7 @@ msgstr "Palauta suodattimet"
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:93
 #, python-format
 msgid "%(placeholder)s"
-msgstr ""
+msgstr "%(placeholder)s"
 
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:88
 #: ../flask_admin/templates/bootstrap4/admin/model/layout.html:94
@@ -579,18 +606,3 @@ msgstr "Valitse tietue"
 #: ../flask_admin/templates/bootstrap4/admin/model/list.html:195
 msgid "Please select at least one record."
 msgstr "Valitse vähintään yksi tietue."
-
-#~ msgid "ObjectId equals"
-#~ msgstr ""
-
-#~ msgid "Failed to get model. %(error)s"
-#~ msgstr "Ei saanut malli. %(error)s"
-
-#~ msgid "Tablib dependency not installed."
-#~ msgstr ""
-
-#~ msgid "Size"
-#~ msgstr ""
-
-#~ msgid "File \"%s\" already exists."
-#~ msgstr "Tiedosto \"%s\" on jo olemassa."

@@ -42,6 +42,7 @@ def test_upload_field(app, babel):
         upload = form.FileUploadField("Upload", base_path=path, allow_overwrite=False)
 
     class Dummy:
+        upload: str | None
         pass
 
     my_form = TestForm()
@@ -141,6 +142,7 @@ def test_image_upload_field():
         )
 
     class Dummy:
+        upload: str | None
         pass
 
     my_form = TestForm()
@@ -279,6 +281,7 @@ def test_relative_path():
         upload = form.FileUploadField("Upload", base_path=path, relative_path="inner/")
 
     class Dummy:
+        upload: str | None
         pass
 
     my_form = TestForm()

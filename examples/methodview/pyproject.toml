@@ -3,7 +3,7 @@ name = "example-methodview"
 version = "0.1.0"
 description = "MethodView Example."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "flask-admin"
 ]

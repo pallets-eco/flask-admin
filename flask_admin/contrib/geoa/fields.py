@@ -35,7 +35,7 @@ class GeoJSONField(JSONField):
     def _value(self):
         if self.raw_data:
             return self.raw_data[0]
-        if type(self.data) is geoalchemy2.elements.WKBElement:
+        if type(self.data) is geoalchemy2.elements.WKBElement:  # type: ignore[comparison-overlap]
             if self.srid == -1:
                 return self.session.scalar(  # pyright: ignore[reportOptionalMemberAccess]
                     func.ST_AsGeoJSON(self.data)
@@ -55,7 +55,7 @@ class GeoJSONField(JSONField):
             web_shape = self.session.scalar(  # pyright: ignore[reportOptionalMemberAccess]
                 func.ST_AsText(
                     func.ST_Transform(
-                        func.ST_GeomFromText(shape(self.data).wkt, self.web_srid),
+                        func.ST_GeomFromText(shape(self.data).wkt, self.web_srid),  # type: ignore[arg-type]
                         self.transform_srid,
                     )
                 )

@@ -37,13 +37,15 @@ from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
 
 from ..._types import T_COLUMN
-from ..._types import T_FIELD_ARGS_VALIDATORS
+from ..._types import T_COLUMN_LIST
+from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
 from ..._types import T_FILTER
 from ..._types import T_SQLALCHEMY_INLINE_MODELS
 from ..._types import T_SQLALCHEMY_MODEL
 from ..._types import T_SQLALCHEMY_QUERY
 from ..._types import T_SQLALCHEMY_SESSION
 from ..._types import T_WIDGET
+from ...model.filters import BaseFilter
 from .ajax import create_ajax_loader
 from .ajax import QueryAjaxModelLoader
 from .filters import BaseSQLAFilter
@@ -76,8 +78,8 @@ class ModelView(BaseModelView):
         will still make separate database call.
     """
 
-    column_select_related_list: t.Optional[t.Sequence[str]] = t_cast(
-        t.Optional[t.Sequence[str]],
+    column_select_related_list: t.Sequence[str] | None = t_cast(
+        t.Sequence[str] | None,
         ObsoleteAttr("column_select_related", "list_select_related", None),
     )
     """
@@ -97,7 +99,7 @@ class ModelView(BaseModelView):
         Please refer to the `subqueryload` on list of possible values.
     """
 
-    column_display_all_relations: t.Optional[bool] = t_cast(
+    column_display_all_relations: bool | None = t_cast(
         bool,
         ObsoleteAttr(
             "column_display_all_relations", "list_display_all_relations", False
@@ -108,7 +110,7 @@ class ModelView(BaseModelView):
     """
 
     column_searchable_list = t_cast(
-        t.Optional[t.Sequence[str]],
+        t.Sequence[str] | None,
         ObsoleteAttr("column_searchable_list", "searchable_columns", None),
     )
     """
@@ -143,7 +145,7 @@ class ModelView(BaseModelView):
           used.
     """
 
-    column_filters: t.Optional[t.Sequence[str]] = None
+    column_filters: t.Collection[str | BaseFilter] | None = None
     """
         Collection of the column filters.
 
@@ -236,7 +238,7 @@ class ModelView(BaseModelView):
         CASCADE`` for your model.
     """
 
-    inline_models: t.Optional[T_SQLALCHEMY_INLINE_MODELS] = None
+    inline_models: T_SQLALCHEMY_INLINE_MODELS | None = None
     """
         Inline related-model editing for models with parent-child relations.
 
@@ -302,7 +304,7 @@ class ModelView(BaseModelView):
         DEFAULT_FORMATTERS
     )
 
-    form_choices: t.Optional[dict[str, list[tuple[str, str]]]] = None
+    form_choices: dict[str, list[tuple[str, str]]] | None = None
     """
         Map choices to form fields
 
@@ -338,14 +340,14 @@ class ModelView(BaseModelView):
         self,
         model: type[T_SQLALCHEMY_MODEL],
         session: T_SQLALCHEMY_SESSION,
-        name: t.Optional[str] = None,
-        category: t.Optional[str] = None,
-        endpoint: t.Optional[str] = None,
-        url: t.Optional[str] = None,
-        static_folder: t.Optional[str] = None,
-        menu_class_name: t.Optional[str] = None,
-        menu_icon_type: t.Optional[str] = None,
-        menu_icon_value: t.Optional[str] = None,
+        name: str | None = None,
+        category: str | None = None,
+        endpoint: str | None = None,
+        url: str | None = None,
+        static_folder: str | None = None,
+        menu_class_name: str | None = None,
+        menu_icon_type: str | None = None,
+        menu_icon_value: str | None = None,
     ) -> None:
         """
         Constructor.
@@ -377,7 +379,7 @@ class ModelView(BaseModelView):
         """
         self.session = session
 
-        self._search_fields: t.Optional[list[tuple[Column, t.Any]]] = None
+        self._search_fields: list[tuple[Column, t.Any]] | None = None
 
         self._filter_joins: dict = dict()
 
@@ -397,7 +399,6 @@ class ModelView(BaseModelView):
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
         )
-        self.model = t.cast(type[T_SQLALCHEMY_MODEL], self.model)
         self._manager = manager_of_class(self.model)
 
         # Primary key
@@ -415,13 +416,13 @@ class ModelView(BaseModelView):
 
     # Internal API
     def _get_model_iterator(
-        self, model: t.Optional[type[T_SQLALCHEMY_MODEL]] = None
+        self, model: type[T_SQLALCHEMY_MODEL] | None = None
     ) -> t.Iterable:
         """
         Return property iterator for the model
         """
         if model is None:
-            model = self.model  # type: ignore[assignment]
+            model = self.model
 
         return model._sa_class_manager.mapper.attrs  # type: ignore[union-attr]
 
@@ -429,9 +430,9 @@ class ModelView(BaseModelView):
         self,
         query: T_SQLALCHEMY_QUERY,
         joins: dict,
-        path: t.Optional[t.Iterable],
+        path: t.Iterable | None,
         inner_join: bool = True,
-    ) -> tuple[T_SQLALCHEMY_QUERY, dict, t.Optional[t.Any]]:
+    ) -> tuple[T_SQLALCHEMY_QUERY, dict, t.Any | None]:
         """
         Apply join path to the query.
 
@@ -471,7 +472,7 @@ class ModelView(BaseModelView):
         return query, joins, last
 
     # Scaffolding
-    def scaffold_pk(self) -> t.Union[t.Any, tuple[t.Any, ...]]:
+    def scaffold_pk(self) -> t.Any | tuple[t.Any, ...]:
         """
         Return the primary key name(s) from a model
         If model has single primary key, will return a string and tuple otherwise
@@ -480,8 +481,8 @@ class ModelView(BaseModelView):
 
     def get_pk_value(
         self,
-        model: type[T_SQLALCHEMY_MODEL],  # type: ignore[override]
-    ) -> t.Union[t.Any, tuple[str, ...]]:
+        model: T_SQLALCHEMY_MODEL,
+    ) -> t.Any | tuple[str, ...]:
         """
         Return the primary key value from a model object.
         If there are multiple primary keys, they're encoded into string representation.
@@ -575,7 +576,7 @@ class ModelView(BaseModelView):
             return self.scaffold_sortable_columns()
         else:
             result = dict()
-
+            self.model = t.cast(type[T_SQLALCHEMY_MODEL], self.model)
             for c in self.column_sortable_list:
                 if isinstance(c, tuple):
                     if isinstance(c[1], tuple):
@@ -588,11 +589,11 @@ class ModelView(BaseModelView):
                             path.append(path_item)
                         column_name = c[0]
                     else:
-                        column, path = tools.get_field_with_path(self.model, c[1])
+                        column, path = tools.get_field_with_path(self.model, c[1])  # type: ignore[assignment]
                         column_name = c[0]
                 else:
-                    column, path = tools.get_field_with_path(
-                        self.model,  # type: ignore[arg-type]
+                    column, path = tools.get_field_with_path(  # type: ignore[assignment]
+                        self.model,
                         c,  # type: ignore[arg-type]
                     )
                     column_name = text_type(c)
@@ -609,7 +610,7 @@ class ModelView(BaseModelView):
                 else:
                     # column is in same table, use only model attribute name
                     if getattr(column, "key", None) is not None:
-                        column_name = column.key  # type: ignore[union-attr]
+                        column_name = column.key  # type: ignore[attr-defined]
 
                 # column_name must match column_name used in `get_list_columns`
                 result[column_name] = column
@@ -618,8 +619,8 @@ class ModelView(BaseModelView):
 
     def get_column_names(
         self,
-        only_columns: t.Iterable[T_COLUMN],
-        excluded_columns: t.Optional[t.Iterable[T_COLUMN]],
+        only_columns: T_COLUMN_LIST,
+        excluded_columns: t.Sequence[str] | None,
     ) -> list[tuple[T_COLUMN, str]]:
         """
         Returns a list of tuples with the model field name and formatted
@@ -640,7 +641,7 @@ class ModelView(BaseModelView):
         for c in only_columns:
             try:
                 column, path = tools.get_field_with_path(
-                    self.model,  # type: ignore[arg-type]
+                    self.model,
                     c,  # type: ignore[arg-type]
                 )
 
@@ -679,14 +680,14 @@ class ModelView(BaseModelView):
 
             for name in self.column_searchable_list:
                 attr, joins = tools.get_field_with_path(
-                    self.model,  # type: ignore[arg-type]
+                    self.model,
                     name,
                 )
 
                 if not attr:
                     raise Exception(f"Failed to find field for search field: {name}")
 
-                if tools.is_hybrid_property(self.model, name):  # type: ignore[arg-type]
+                if tools.is_hybrid_property(self.model, name):
                     column = attr
                     if isinstance(name, string_types):
                         column.key = name.split(".")[-1]
@@ -697,7 +698,7 @@ class ModelView(BaseModelView):
 
         return bool(self.column_searchable_list)
 
-    def search_placeholder(self) -> t.Optional[str]:
+    def search_placeholder(self) -> str | None:
         """
         Return search placeholder.
 
@@ -726,12 +727,12 @@ class ModelView(BaseModelView):
 
     def scaffold_filters(  # type: ignore[override]
         self, name: t.Any
-    ) -> t.Optional[list[BaseSQLAFilter]]:
+    ) -> list[BaseSQLAFilter] | None:
         """
         Return list of enabled filters
         """
 
-        attr, joins = tools.get_field_with_path(self.model, name)  # type: ignore[arg-type]
+        attr, joins = tools.get_field_with_path(self.model, name)
 
         if attr is None:
             raise Exception(f"Failed to find field for filter: {name}")
@@ -761,7 +762,7 @@ class ModelView(BaseModelView):
 
                         if joins:
                             self._filter_joins[column] = joins
-                        elif tools.need_join(self.model, table):  # type: ignore[arg-type]
+                        elif tools.need_join(self.model, table):
                             self._filter_joins[column] = [table]
 
                         filters.extend(flt)
@@ -769,7 +770,7 @@ class ModelView(BaseModelView):
             return filters
         else:
             is_hybrid_property = tools.is_hybrid_property(
-                self.model,  # type: ignore[arg-type]
+                self.model,
                 name,
             )
             if is_hybrid_property:
@@ -795,7 +796,7 @@ class ModelView(BaseModelView):
             # Join not needed for hybrid properties
             if (
                 not is_hybrid_property
-                and tools.need_join(self.model, column.table)  # type: ignore[arg-type]
+                and tools.need_join(self.model, column.table)
                 and name not in self.column_labels
             ):
                 if joined_column_name:
@@ -840,7 +841,7 @@ class ModelView(BaseModelView):
             if joins:
                 self._filter_joins[key_name] = joins
             elif not is_hybrid_property and tools.need_join(
-                self.model,  # type: ignore[arg-type]
+                self.model,
                 column.table,
             ):
                 self._filter_joins[key_name] = [column.table]
@@ -865,7 +866,7 @@ class ModelView(BaseModelView):
         """
         converter = self.model_form_converter(self.session, self)
         form_class = form.get_form(
-            self.model,  # type: ignore[arg-type]
+            self.model,
             converter,
             base_class=self.form_base_class,
             only=self.form_columns,
@@ -882,8 +883,8 @@ class ModelView(BaseModelView):
 
     def scaffold_list_form(
         self,
-        widget: t.Optional[type[T_WIDGET]] = None,
-        validators: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS]] = None,
+        widget: type[T_WIDGET] | None = None,
+        validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
     ) -> type[Form]:
         """
         Create form for the `index_view` using only the columns from
@@ -897,7 +898,7 @@ class ModelView(BaseModelView):
         """
         converter = self.model_form_converter(self.session, self)
         form_class = form.get_form(
-            self.model,  # type: ignore[arg-type]
+            self.model,
             converter,
             base_class=self.form_base_class,
             only=self.column_editable_list,
@@ -920,13 +921,13 @@ class ModelView(BaseModelView):
         for m in self.inline_models:  # type: ignore[union-attr]
             if not hasattr(m, "inline_converter"):
                 form_class = default_converter.contribute(
-                    self.model,  # type: ignore[arg-type]
+                    self.model,
                     form_class,
                     m,  # type: ignore[arg-type]
                 )
                 continue
 
-            custom_converter = m.inline_converter(
+            custom_converter = m.inline_converter(  # type: ignore[union-attr]
                 self.session, self, self.model_form_converter
             )
             form_class = custom_converter.contribute(self.model, form_class, m)
@@ -1009,7 +1010,7 @@ class ModelView(BaseModelView):
         query: T_SQLALCHEMY_QUERY,
         joins: dict,
         sort_joins: dict,
-        sort_field: t.Optional[InstrumentedAttribute],
+        sort_field: InstrumentedAttribute | None,
         sort_desc: bool,
     ) -> tuple[T_SQLALCHEMY_QUERY, dict]:
         """
@@ -1043,11 +1044,11 @@ class ModelView(BaseModelView):
 
     def _get_default_order(  # type: ignore[override]
         self,
-    ) -> t.Generator[tuple[t.Optional[t.Any], list, bool], None, None]:
+    ) -> t.Generator[tuple[t.Any | None, list, bool], None, None]:
         order = super()._get_default_order()
         for field, direction in order or []:
             attr, joins = tools.get_field_with_path(
-                self.model,  # type: ignore[arg-type]
+                self.model,
                 field,
             )
             yield attr, joins, direction
@@ -1056,7 +1057,7 @@ class ModelView(BaseModelView):
         self,
         query: T_SQLALCHEMY_QUERY,
         joins: dict,
-        sort_column: t.Optional[T_COLUMN],
+        sort_column: T_COLUMN | None,
         sort_desc: bool,
     ) -> tuple[T_SQLALCHEMY_QUERY, dict]:
         if sort_column is not None:
@@ -1067,7 +1068,9 @@ class ModelView(BaseModelView):
                 sort_joins = t.cast(dict, self._sortable_joins.get(sort_column))
 
                 if isinstance(sort_field, list):
-                    for field_item, join_item in zip(sort_field, sort_joins):
+                    for field_item, join_item in zip(
+                        sort_field, sort_joins, strict=False
+                    ):
                         query, joins = self._order_by(
                             query, joins, join_item, field_item, sort_desc
                         )
@@ -1197,8 +1200,8 @@ class ModelView(BaseModelView):
     def _apply_pagination(
         self,
         query: T_SQLALCHEMY_QUERY,
-        page: t.Optional[int],
-        page_size: t.Optional[int],
+        page: int | None,
+        page_size: int | None,
     ) -> T_SQLALCHEMY_QUERY:
         if page_size is None:
             page_size = self.page_size
@@ -1213,14 +1216,14 @@ class ModelView(BaseModelView):
 
     def get_list(  # type: ignore[override]
         self,
-        page: t.Optional[int],
-        sort_column: t.Optional[T_COLUMN],
+        page: int | None,
+        sort_column: T_COLUMN | None,
         sort_desc: bool,
-        search: t.Optional[str],
-        filters: t.Optional[t.Sequence[T_FILTER]],
+        search: str | None,
+        filters: t.Sequence[T_FILTER] | None,
         execute: bool = True,
-        page_size: t.Optional[int] = None,
-    ) -> tuple[t.Optional[int], list[T_SQLALCHEMY_MODEL]]:
+        page_size: int | None = None,
+    ) -> tuple[int | None, list[T_SQLALCHEMY_MODEL]]:
         """
         Return records from the database.
 
@@ -1283,7 +1286,7 @@ class ModelView(BaseModelView):
 
         # Execute if needed
         if execute:
-            query = query.all()  # type: ignore[assignment, union-attr]
+            query = query.all()  # type: ignore[assignment]
 
         return count, query  # type: ignore[return-value]
 
@@ -1366,9 +1369,7 @@ class ModelView(BaseModelView):
 
         return model
 
-    def update_model(  # type: ignore[override]
-        self, form: Form, model: T_SQLALCHEMY_MODEL
-    ) -> bool:
+    def update_model(self, form: Form, model: T_SQLALCHEMY_MODEL) -> bool:
         """
         Update model from form.
 
@@ -1397,7 +1398,7 @@ class ModelView(BaseModelView):
 
         return True
 
-    def delete_model(self, model: T_SQLALCHEMY_MODEL) -> bool:  # type: ignore[override]
+    def delete_model(self, model: T_SQLALCHEMY_MODEL) -> bool:
         """
         Delete model.
 
@@ -1442,7 +1443,7 @@ class ModelView(BaseModelView):
         try:
             query = tools.get_query_for_ids(
                 self.get_query(),
-                self.model,  # type: ignore[arg-type]
+                self.model,
                 ids,
             )
 

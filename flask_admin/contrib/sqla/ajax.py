@@ -76,7 +76,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
-    def format(self, model: t.Union[None, str, bytes]) -> t.Optional[tuple[t.Any, str]]:
+    def format(self, model: None | str | bytes) -> tuple[t.Any, str] | None:
         if not model:
             return None
 
@@ -87,7 +87,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
     def get_one(self, pk: t.Any) -> t.Any:
         # prevent autoflush from occuring during populate_obj
-        with self.session.no_autoflush:  # type: ignore[attr-defined]
+        with self.session.no_autoflush:
             return self.session.get(self.model, pk)
 
     def get_list(
@@ -106,7 +106,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         if self.filters:
             filters = [
-                text(f"{self.model.__tablename__.lower()}.{value}")  # type: ignore[attr-defined]
+                text(f"{self.model.__tablename__.lower()}.{value}")
                 for value in self.filters
             ]
             query = query.filter(and_(*filters))

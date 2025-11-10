@@ -2,7 +2,6 @@ import sys
 import typing as t
 from enum import Enum
 from os import PathLike
-from types import TracebackType
 
 import wtforms.widgets
 from flask import Response
@@ -27,6 +26,13 @@ if t.TYPE_CHECKING:
     )
     from flask_admin.contrib.sqla.validators import Unique as T_UNIQUE
     from flask_admin.form import FormOpts as T_FORM_OPTS  # noqa
+    from flask_admin.form.rules import (
+        FieldSet as T_FIELD_SET,
+        BaseRule as T_BASE_RULE,
+        Header as T_HEADER,
+        Field as T_FLASK_ADMIN_FIELD,
+        Macro as T_MACRO,
+    )
     from flask_admin.model import BaseModelView as T_MODEL_VIEW
     from flask_admin.model.ajax import AjaxModelLoader as T_AJAX_MODEL_LOADER  # noqa
     from flask_admin.model.fields import AjaxSelectField as T_AJAX_SELECT_FIELD  # noqa
@@ -48,20 +54,20 @@ if t.TYPE_CHECKING:
     from flask_babel import LazyString as T_LAZY_STRING  # noqa
 
     from flask_sqlalchemy import Model as T_SQLALCHEMY_MODEL
-    from flask_admin.contrib.peewee.form import BaseModel as T_PEEWEE_MODEL
+    from peewee import Model as T_PEEWEE_MODEL
     from peewee import Field as T_PEEWEE_FIELD  # noqa
     from pymongo import MongoClient as T_MONGO_CLIENT
+    from mongoengine import Document as T_MONGO_ENGINE_CLIENT
     import sqlalchemy  # noqa
     from sqlalchemy import Column as T_SQLALCHEMY_COLUMN
     from sqlalchemy import Table as T_TABLE  # noqa
     from sqlalchemy.orm import InstrumentedAttribute as T_INSTRUMENTED_ATTRIBUTE  # noqa
     from sqlalchemy.orm import scoped_session as T_SQLALCHEMY_SESSION  # noqa
     from sqlalchemy.orm.query import Query
-    from sqlalchemy.sql.selectable import Select
-    from sqlalchemy_utils import Choice as T_CHOICE
-    from sqlalchemy_utils import ChoiceType as T_CHOICE_TYPE
+    from sqlalchemy_utils import Choice as T_CHOICE  # noqa
+    from sqlalchemy_utils import ChoiceType as T_CHOICE_TYPE  # noqa
 
-    T_SQLALCHEMY_QUERY = t.Union[Query, Select]
+    T_SQLALCHEMY_QUERY = Query
     from redis import Redis as T_REDIS  # noqa
     from flask_admin.contrib.peewee.ajax import (
         QueryAjaxModelLoader as T_PEEWEE_QUERY_AJAX_MODEL_LOADER,
@@ -69,7 +75,7 @@ if t.TYPE_CHECKING:
     from flask_admin.contrib.sqla.ajax import (
         QueryAjaxModelLoader as T_SQLA_QUERY_AJAX_MODEL_LOADER,
     )  # noqa
-    from PIL.Image import Image as T_PIL_IMAGE
+    from PIL.Image import Image as T_PIL_IMAGE  # noqa
 else:
     T_VIEW = "flask_admin.base.BaseView"
     T_INPUT_REQUIRED = "InputRequired"
@@ -86,21 +92,26 @@ else:
     T_INLINE_AJAX_SELECT2_WIDGET = "flask_admin.model.widgets.AjaxSelect2Widget"
     T_INLINE_X_EDITABLE_WIDGET = "flask_admin.model.widgets.XEditableWidget"
 
+    T_FIELD_SET = "flask_admin.form.rules.FieldSet"
+    T_BASE_RULE = "flask_admin.form.rules.BaseRule"
+    T_HEADER = "flask_admin.form.rules.Header"
+    T_FLASK_ADMIN_FIELD = "flask_admin.form.rules.Field"
+    T_MACRO = "flask_admin.form.rules.Macro"
+
     # optional dependencies
     T_ARROW = "arrow.Arrow"
     T_LAZY_STRING = "flask_babel.LazyString"
     T_SQLALCHEMY_COLUMN = "sqlalchemy.Column"
     T_SQLALCHEMY_MODEL = "flask_sqlalchemy.Model"
     T_PEEWEE_FIELD = "peewee.Field"
-    T_PEEWEE_MODEL = "peewee.BaseModel"
+    T_PEEWEE_MODEL = "peewee.Model"
     T_MONGO_CLIENT = "pymongo.MongoClient"
+    T_MONGO_ENGINE_CLIENT = "mongoengine.Document"
     T_TABLE = "sqlalchemy.Table"
     T_CHOICE_TYPE = "sqlalchemy_utils.ChoiceType"
     T_CHOICE = "sqlalchemy_utils.Choice"
 
-    T_SQLALCHEMY_QUERY = t.Union[
-        "sqlalchemy.sql.selectable.Select", "sqlalchemy.orm.query.Query"
-    ]
+    T_SQLALCHEMY_QUERY = "sqlalchemy.orm.query.Query"
     T_INSTRUMENTED_ATTRIBUTE = "sqlalchemy.orm.InstrumentedAttribute"
     T_SQLALCHEMY_SESSION = "sqlalchemy.orm.scoped_session"
     T_REDIS = "redis.Redis"
@@ -114,10 +125,18 @@ else:
 
 T_COLUMN = t.Union[str, T_SQLALCHEMY_COLUMN]
 T_FILTER = tuple[int, T_COLUMN, str]
-T_COLUMN_LIST = t.Sequence[T_COLUMN]
-T_FORMATTER = t.Callable[[T_MODEL_VIEW, t.Optional[Context], t.Any, str], str]
+T_ORM_COLUMN = t.Union[T_COLUMN, T_PEEWEE_FIELD]
+T_COLUMN_LIST = t.Sequence[
+    T_ORM_COLUMN | t.Iterable[T_ORM_COLUMN] | tuple[str, tuple[T_ORM_COLUMN, ...]]
+]
+T_CONTRAVARIANT_MODEL_VIEW = t.TypeVar(
+    "T_CONTRAVARIANT_MODEL_VIEW", bound=T_MODEL_VIEW, contravariant=True
+)
+T_FORMATTER = t.Callable[
+    [T_CONTRAVARIANT_MODEL_VIEW, Context | None, t.Any, str], str | Markup
+]
 T_COLUMN_FORMATTERS = dict[str, T_FORMATTER]
-T_TYPE_FORMATTER = t.Callable[[T_MODEL_VIEW, t.Any, str], t.Union[str, Markup]]
+T_TYPE_FORMATTER = t.Callable[[T_MODEL_VIEW, t.Any, str], str | Markup]
 T_COLUMN_TYPE_FORMATTERS = dict[type, T_TYPE_FORMATTER]
 T_TRANSLATABLE = t.Union[str, T_LAZY_STRING]
 # Compatibility for 3-tuples and 4-tuples in iter_choices
@@ -129,14 +148,22 @@ T_ITER_CHOICES = t.Union[
 T_OPTION = tuple[str, T_TRANSLATABLE]
 T_OPTION_LIST = t.Sequence[T_OPTION]
 T_OPTIONS = t.Union[None, T_OPTION_LIST, t.Callable[[], T_OPTION_LIST]]
-T_ORM_MODEL = t.Union[T_SQLALCHEMY_MODEL, T_PEEWEE_MODEL, T_MONGO_CLIENT]
+T_ORM_MODEL = t.Union[
+    T_SQLALCHEMY_MODEL, T_PEEWEE_MODEL, T_MONGO_CLIENT, T_MONGO_ENGINE_CLIENT
+]
 T_QUERY_AJAX_MODEL_LOADER = t.Union[
     T_PEEWEE_QUERY_AJAX_MODEL_LOADER, T_SQLA_QUERY_AJAX_MODEL_LOADER
 ]
 T_RESPONSE = t.Union[Response, Wkzg_Response]
-T_SQLALCHEMY_INLINE_MODELS = t.Union[
-    t.Sequence[t.Union[T_INLINE_FORM_ADMIN, T_SQLALCHEMY_MODEL]],
-    tuple[T_SQLALCHEMY_MODEL, dict[str, t.Any]],
+T_SQLALCHEMY_INLINE_MODELS = t.Sequence[
+    t.Union[
+        T_INLINE_FORM_ADMIN,
+        type[T_SQLALCHEMY_MODEL],
+        tuple[type[T_SQLALCHEMY_MODEL], dict[str, t.Any]],
+    ]
+]
+T_RULES_SEQUENCE = t.Sequence[
+    t.Union[str, T_FIELD_SET, T_BASE_RULE, T_HEADER, T_FLASK_ADMIN_FIELD, T_MACRO]
 ]
 T_VALIDATOR = t.Union[
     t.Callable[[t.Any, t.Any], t.Any],
@@ -156,7 +183,7 @@ T_PATH_LIKE = t.Union[str, bytes, PathLike[str], PathLike[bytes]]
 
 
 class WidgetProtocol(t.Protocol):
-    def __call__(self, field: Field, **kwargs: t.Any) -> t.Union[str, Markup]: ...
+    def __call__(self, field: Field, **kwargs: t.Any) -> str | Markup: ...
 
 
 T_WIDGET = t.Union[
@@ -169,19 +196,17 @@ T_WIDGET = t.Union[
 ]
 
 T_WIDGET_TYPE = t.Optional[
-    t.Union[
-        t.Literal[
-            "daterangepicker",
-            "datetimepicker",
-            "datetimerangepicker",
-            "datepicker",
-            "select2-tags",
-            "timepicker",
-            "timerangepicker",
-            "uuid",
-        ],
-        str,
+    t.Literal[
+        "daterangepicker",
+        "datetimepicker",
+        "datetimerangepicker",
+        "datepicker",
+        "select2-tags",
+        "timepicker",
+        "timerangepicker",
+        "uuid",
     ]
+    | str
 ]
 
 
@@ -192,7 +217,7 @@ class T_FIELD_ARGS_DESCRIPTION(t.TypedDict, total=False):
 class T_FIELD_ARGS_FILTERS(t.TypedDict):
     filters: NotRequired[list[t.Callable[[t.Any], t.Any]]]
     allow_blank: NotRequired[bool]
-    choices: NotRequired[t.Union[list[tuple[int, str]], list[Enum]]]
+    choices: NotRequired[list[tuple[int, str]] | list[Enum]]
     validators: NotRequired[list[T_VALIDATOR]]
     coerce: NotRequired[t.Callable[[t.Any], t.Any]]
 
@@ -202,7 +227,7 @@ class T_FIELD_ARGS_LABEL(t.TypedDict):
 
 
 class T_FIELD_ARGS_PLACES(t.TypedDict):
-    places: t.Optional[UnsetValue]
+    places: UnsetValue | None
 
 
 class T_FIELD_ARGS_VALIDATORS(t.TypedDict, total=False):
@@ -222,24 +247,17 @@ class T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK(T_FIELD_ARGS_VALIDATORS):
     allow_blank: NotRequired[bool]
 
 
-# Flask types
-_ExcInfo = tuple[
-    t.Optional[type[BaseException]],
-    t.Optional[BaseException],
-    t.Optional[TracebackType],
-]
-_StartResponse = t.Callable[
-    [str, list[tuple[str, str]], t.Optional[_ExcInfo]], t.Callable[[bytes], t.Any]
-]
-_WSGICallable = t.Callable[[dict[str, t.Any], _StartResponse], t.Iterable[bytes]]
-_Status = t.Union[str, int]
-_Headers = t.Union[dict[t.Any, t.Any], list[tuple[t.Any, t.Any]]]
-_Body = t.Union[str, t.ByteString, dict[str, t.Any], Response, _WSGICallable]
-_ViewFuncReturnType = t.Union[
-    _Body,
-    tuple[_Body, _Status, _Headers],
-    tuple[_Body, _Status],
-    tuple[_Body, _Headers],
-]
+class T_FIELD_ARGS_VALIDATORS_FILES(T_FIELD_ARGS_VALIDATORS):
+    base_path: NotRequired[str]
+    allow_overwrite: NotRequired[bool]
 
-_ViewFunc = t.Union[t.Callable[..., t.NoReturn], t.Callable[..., _ViewFuncReturnType]]
+
+# wtfforms types
+class _MultiDictLikeBase(t.Protocol):
+    def __iter__(self) -> t.Iterator[str]: ...
+    def __len__(self) -> int: ...
+    def __contains__(self, key: t.Any, /) -> bool: ...
+
+
+class _MultiDictLikeWithGetlist(_MultiDictLikeBase, t.Protocol):
+    def getlist(self, key: str, /) -> list[t.Any]: ...

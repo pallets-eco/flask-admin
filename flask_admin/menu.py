@@ -14,10 +14,10 @@ class BaseMenu:
     def __init__(
         self,
         name: str,
-        class_name: t.Optional[str] = None,
-        icon_type: t.Optional[str] = None,
-        icon_value: t.Optional[str] = None,
-        target: t.Optional[str] = None,
+        class_name: str | None = None,
+        icon_type: str | None = None,
+        icon_value: str | None = None,
+        target: str | None = None,
     ) -> None:
         self.name = name
         self.class_name: str = class_name if class_name is not None else ""
@@ -25,7 +25,7 @@ class BaseMenu:
         self.icon_value = icon_value
         self.target = target
 
-        self.parent: t.Optional[BaseMenu] = None
+        self.parent: BaseMenu | None = None
         self._children: list[BaseMenu] = []
 
     def add_child(self, menu: "BaseMenu") -> None:
@@ -33,7 +33,7 @@ class BaseMenu:
         menu.parent = self
         self._children.append(menu)
 
-    def get_url(self) -> t.Optional[str]:
+    def get_url(self) -> str | None:
         raise NotImplementedError()
 
     def is_category(self) -> bool:
@@ -49,10 +49,10 @@ class BaseMenu:
     def get_class_name(self) -> str:
         return self.class_name
 
-    def get_icon_type(self) -> t.Optional[str]:
+    def get_icon_type(self) -> str | None:
         return self.icon_type
 
-    def get_icon_value(self) -> t.Optional[str]:
+    def get_icon_value(self) -> str | None:
         return self.icon_value
 
     def is_visible(self) -> bool:
@@ -70,7 +70,7 @@ class MenuCategory(BaseMenu):
     Menu category item.
     """
 
-    def get_url(self) -> t.Optional[str]:
+    def get_url(self) -> str | None:
         return None
 
     def is_category(self) -> bool:
@@ -111,11 +111,11 @@ class MenuView(BaseMenu):
 
         self._view = view
         self._cache = cache
-        self._cached_url: t.Optional[str] = None
+        self._cached_url: str | None = None
 
         view.menu = self
 
-    def get_url(self) -> t.Optional[str]:
+    def get_url(self) -> str | None:
         if self._view is None:
             return None
 
@@ -158,13 +158,13 @@ class MenuLink(BaseMenu):
     def __init__(
         self,
         name: str,
-        url: t.Optional[str] = None,
-        endpoint: t.Optional[str] = None,
-        category: t.Optional[str] = None,
-        class_name: t.Optional[str] = None,
-        icon_type: t.Optional[str] = None,
-        icon_value: t.Optional[str] = None,
-        target: t.Optional[str] = None,
+        url: str | None = None,
+        endpoint: str | None = None,
+        category: str | None = None,
+        class_name: str | None = None,
+        icon_type: str | None = None,
+        icon_value: str | None = None,
+        target: str | None = None,
     ) -> None:
         super().__init__(name, class_name, icon_type, icon_value, target)
 
@@ -181,3 +181,23 @@ class SubMenuCategory(MenuCategory):
     def __init__(self, *args: str, **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
         self.class_name += " dropdown-submenu dropright"
+
+
+class MenuDivider(MenuLink):
+    """
+    Bootstrap Menu divider item
+    Usage:
+      admin = Admin(app, ...)
+      admin.add_menu_item(MenuDivider(), target_category='Category1')
+    """
+
+    def __init__(self, class_name=""):
+        class_name = "dropdown-divider" + (" " + class_name if class_name else "")
+        super().__init__("divider", class_name=class_name)
+
+    def get_url(self):
+        return None
+
+    def is_visible(self):
+        # Return True/False depending on your use-case
+        return True

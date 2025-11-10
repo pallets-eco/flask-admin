@@ -180,8 +180,8 @@ def build_sample_db():
         post.title = "{}'s opinion on {}".format(user.first_name, entry["title"])
         post.text = entry["content"]
         post.background_color = random.choice(["#cccccc", "red", "lightblue", "#0f0"])
-        tmp = int(1000 * random.random())
-        post.date = datetime.datetime.now() - datetime.timedelta(days=tmp)
+        tmp_days = int(1000 * random.random())
+        post.date = datetime.datetime.now() - datetime.timedelta(days=tmp_days)
         post.tags = random.sample(tag_list, 2)
         db.session.add(post)
 

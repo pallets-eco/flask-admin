@@ -25,7 +25,7 @@ class InlineFormWidget(RenderTemplateWidget):
     def __init__(self) -> None:
         super().__init__("admin/model/inline_form.html")
 
-    def __call__(self, field: Field, **kwargs: t.Any) -> Markup:
+    def __call__(self, field: Field, **kwargs: t.Any) -> str:
         kwargs.setdefault("form_opts", getattr(field, "form_opts", None))
         return super().__call__(field, **kwargs)
 
@@ -130,7 +130,7 @@ class XEditableWidget:
             )
             kwargs["data-role"] = "x-editable-boolean"
         elif field.type in ["Select2Field", "SelectField"]:
-            field = t.cast(t.Union[Select2Field, SelectField], field)
+            field = t.cast(Select2Field | SelectField, field)
             kwargs["data-type"] = "select2"
             choices = [  # type:ignore[misc]
                 {"value": x, "text": y} for x, y in field.choices

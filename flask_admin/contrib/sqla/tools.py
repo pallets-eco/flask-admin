@@ -17,16 +17,16 @@ from flask_admin._types import T_SQLALCHEMY_MODEL
 
 try:
     # SQLAlchemy 2.0
-    from sqlalchemy.ext.associationproxy import (  # type: ignore[attr-defined]
-        AssociationProxyExtensionType,
-    )
+    from sqlalchemy.ext.associationproxy import AssociationProxyExtensionType
 
     ASSOCIATION_PROXY = AssociationProxyExtensionType.ASSOCIATION_PROXY
 except ImportError:
-    from sqlalchemy.ext.associationproxy import ASSOCIATION_PROXY
+    from sqlalchemy.ext.associationproxy import (  # type: ignore[attr-defined, no-redef]
+        ASSOCIATION_PROXY,
+    )
 
 from sqlalchemy.exc import DBAPIError
-from sqlalchemy.sql.operators import eq  # type: ignore[attr-defined]
+from sqlalchemy.sql.operators import eq
 
 from flask_admin._compat import filter_list
 from flask_admin._compat import string_types
@@ -58,13 +58,13 @@ def filter_foreign_columns(base_table: Table, columns: list) -> list:
 
 def get_primary_key(
     model: type[T_ORM_MODEL],
-) -> t.Union[tuple[t.Any, ...], t.Any]:
+) -> tuple[t.Any, ...] | t.Any:
     """
     Return primary key name from a model. If the primary key consists of multiple
     columns, return the corresponding tuple
 
     :param model:
-        Model class
+        Model instance
     """
     mapper = model._sa_class_manager.mapper  # type: ignore[union-attr]
     pks = [mapper.get_property_by_column(c).key for c in mapper.primary_key]
@@ -157,7 +157,7 @@ def get_query_for_ids(
 
 
 def get_columns_for_field(
-    field: t.Union[InstrumentedAttribute, ColumnProperty],
+    field: InstrumentedAttribute | ColumnProperty,
 ) -> list[Column]:
     if (
         not field
@@ -174,14 +174,14 @@ def need_join(model: type[T_SQLALCHEMY_MODEL], table: Table) -> bool:
     """
     Check if join to a table is necessary.
     """
-    return table not in model._sa_class_manager.mapper.tables  # type: ignore[attr-defined]
+    return table not in model._sa_class_manager.mapper.tables
 
 
 def get_field_with_path(
     model: type[T_SQLALCHEMY_MODEL],
-    name: t.Union[str, InstrumentedAttribute, ColumnProperty],
+    name: str | InstrumentedAttribute | ColumnProperty,
     return_remote_proxy_attr: bool = True,
-) -> tuple[t.Optional[t.Any], list]:
+) -> tuple[t.Any | None, list]:
     """
     Resolve property by name and figure out its join path.
 
@@ -256,8 +256,8 @@ def is_hybrid_property(model: type[T_SQLALCHEMY_MODEL], attr_name: str) -> bool:
             if isinstance(last_model, string_types):
                 last_model = attr.property._clsregistry_resolve_name(last_model)()
             elif isinstance(last_model, _class_resolver):
-                last_model = model._decl_class_registry[last_model.arg]  # type: ignore[attr-defined]
-            elif isinstance(last_model, (types.FunctionType, types.MethodType)):
+                last_model = model._decl_class_registry[last_model.arg]
+            elif isinstance(last_model, types.FunctionType | types.MethodType):
                 last_model = last_model()
         last_name = names[-1]
         return last_name in get_hybrid_properties(last_model)
@@ -269,7 +269,7 @@ def is_relationship(attr: InstrumentedAttribute) -> bool:
     return hasattr(attr, "property") and hasattr(attr.property, "direction")
 
 
-def is_association_proxy(attr: t.Union[ColumnProperty, InstrumentedAttribute]) -> bool:
+def is_association_proxy(attr: ColumnProperty | InstrumentedAttribute) -> bool:
     if hasattr(attr, "parent"):
-        attr = attr.parent
+        attr = attr.parent  # type: ignore[assignment]
     return hasattr(attr, "extension_type") and attr.extension_type == ASSOCIATION_PROXY

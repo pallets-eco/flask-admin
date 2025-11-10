@@ -1,4 +1,6 @@
 import logging
+import typing as t
+from typing import TypeGuard  # noqa
 
 import pymongo
 from bson import ObjectId
@@ -13,6 +15,8 @@ from flask_admin.babel import ngettext
 from flask_admin.helpers import get_form_data
 from flask_admin.model import BaseModelView
 
+from ..._types import T_FILTER
+from ...model.filters import BaseFilter
 from .filters import BasePyMongoFilter
 from .tools import parse_like_term
 
@@ -25,7 +29,7 @@ class ModelView(BaseModelView):
     MongoEngine model scaffolding.
     """
 
-    column_filters = None
+    column_filters: t.Collection[str | BaseFilter] | None = None
     """
         Collection of the column filters.
 
@@ -110,7 +114,7 @@ class ModelView(BaseModelView):
             endpoint = (f"{coll.name}view").lower()
 
         super().__init__(
-            None,
+            None,  # type: ignore[arg-type]
             name,
             category,
             endpoint,
@@ -170,7 +174,7 @@ class ModelView(BaseModelView):
         """
         raise NotImplementedError()
 
-    def is_valid_filter(self, filter):
+    def is_valid_filter(self, filter: BaseFilter | t.Any) -> TypeGuard[BaseFilter]:
         """
         Validate if it is valid MongoEngine filter
 
@@ -188,10 +192,10 @@ class ModelView(BaseModelView):
         """
         return model.get(name)
 
-    def _search(self, query, search_term):
+    def _search(self, query, search_term: str):
         values = search_term.split(" ")
 
-        queries = []
+        queries: list[dict] = []
 
         # Construct inner querie
         for value in values:
@@ -224,15 +228,18 @@ class ModelView(BaseModelView):
 
         return query
 
-    def get_list(
+    def get_query(self) -> dict[str, t.Any]:
+        return {}
+
+    def get_list(  # type: ignore[override]
         self,
-        page,
+        page: int | None,
         sort_column,
-        sort_desc,
-        search,
-        filters,
+        sort_desc: bool,
+        search: str | None,
+        filters: t.Sequence[T_FILTER] | None,
         execute=True,
-        page_size=None,
+        page_size: int | None = None,
     ):
         """
         Get list of objects from MongoEngine
@@ -254,13 +261,13 @@ class ModelView(BaseModelView):
             overriden to change the page_size limit. Removing the page_size
             limit requires setting page_size to 0 or False.
         """
-        query = {}
+        query = self.get_query()
 
         # Filters
         if self._filters:
-            data = []
+            data: list = []
 
-            for flt, _flt_name, value in filters:
+            for flt, _flt_name, value in filters:  # type: ignore[union-attr]
                 f = self._filters[flt]
                 data = f.apply(data, f.clean(value))
 
@@ -324,7 +331,7 @@ class ModelView(BaseModelView):
         """
         return self.coll.find_one({"_id": self._get_valid_id(id)})
 
-    def edit_form(self, obj):
+    def edit_form(self, obj):  # type: ignore[override]
         """
         Create edit form from the MongoDB document
         """

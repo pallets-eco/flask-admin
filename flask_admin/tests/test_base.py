@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 import pytest
@@ -9,6 +10,10 @@ from flask.views import MethodView
 from jinja2 import StrictUndefined
 
 from flask_admin import base
+from flask_admin import BaseView
+from flask_admin import expose
+from flask_admin.menu import MenuDivider
+from flask_admin.menu import MenuLink
 
 
 @pytest.fixture
@@ -163,6 +168,7 @@ def test_admin_customizations(app, babel):
     )
     assert admin.name == "Test"
     assert admin.url == "/foobar"
+    assert admin.index_view.blueprint
     assert admin.index_view.blueprint.static_url_path == "/static/my/admin"
 
     client = app.test_client()
@@ -222,6 +228,7 @@ def test_baseview_registration():
 
     view = MockView(static_url_path="/static/my/test")
     view.create_blueprint(base.Admin())
+    assert view.blueprint
     assert view.blueprint.static_url_path == "/static/my/test"
 
 
@@ -230,7 +237,7 @@ def test_baseview_urls(admin):
     view = MockView()
     admin.add_view(view)
 
-    assert len(view._urls) == 2
+    assert len(view._urls) == 2  # type: ignore[attr-defined]
 
 
 @pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
@@ -240,6 +247,7 @@ def test_add_views(admin):
     assert len(admin.menu()) == 3
 
 
+@pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
 def test_add_category(admin):
     admin.add_category("Category1", "class-name", "icon-type", "icon-value")
     admin.add_view(MockView(name="Test 1", endpoint="test1", category="Category1"))
@@ -306,7 +314,7 @@ def test_inaccessible_callback(app, admin):
     client = app.test_client()
 
     view.allow_access = False
-    view.inaccessible_callback = lambda *args, **kwargs: abort(418)
+    view.inaccessible_callback = lambda *args, **kwargs: abort(418)  # type: ignore[method-assign]
 
     rv = client.get("/admin/mockview/")
     assert rv.status_code == 418
@@ -347,6 +355,40 @@ def test_submenu(admin):
     assert len(children) == 1
 
     assert children[0].is_accessible()
+
+
+def test_menu_divider(app, admin):
+    # admin.add_view(MockView(name="Test 1", category="Test", endpoint="test1"))
+    # admin.add_view(MockView(name="Test 2", category="Test", endpoint="test2"))
+    admin.add_link(
+        MenuLink(name="link1", url="http://www.example.com/", category="Links")
+    )
+    admin.add_link(
+        MenuLink(name="link2", url="http://www.example.com/", category="Links")
+    )
+    admin.add_menu_item(MenuDivider(), target_category="Links")
+    admin.add_link(
+        MenuLink(name="link3", url="http://www.example.com/", category="Links")
+    )
+
+    assert admin.menu()[1].name == "Links"
+    assert len(admin._menu) == 2
+    assert admin._menu[1].name == "Links"
+    assert len(admin._menu[1]._children) == 4
+
+    client = app.test_client()
+
+    rv = client.get("/admin/")
+    assert rv.status_code == 200
+
+    data = rv.data.decode("utf-8")
+    pos1 = data.find("link1")
+    pos2 = data.find("link2")
+    pos3 = data.find('<li class="dropdown-divider"></li>')
+    pos4 = data.find("link3")
+    assert pos2 > pos1
+    assert pos3 > pos2
+    assert pos4 > pos3
 
 
 def test_delayed_init(app, admin):
@@ -444,6 +486,47 @@ def test_add_links(app, admin):
     data = rv.data.decode("utf-8")
     assert "TestMenuLink1" in data
     assert "TestMenuLink2" in data
+
+
+def test_async_admin_view(app, admin):
+    """
+    Test admin with async view.
+    """
+
+    class AsyncView(BaseView):
+        @expose("/")
+        async def index(self):
+            await asyncio.sleep(0.05)
+            return "Async Hello world"
+
+    admin.add_view(AsyncView(name="Async"))
+    client = app.test_client()
+
+    # Test async admin view
+    rv = client.get("/admin/asyncview/")
+    assert rv.status_code == 200
+    assert b"Async Hello world" == rv.data
+
+
+def test_with_async_routes(app, admin):
+    """
+    Test flask-admin working at same time of async routes.
+    """
+    import asyncio
+
+    @app.route("/compute", methods=["POST"])
+    async def compute():
+        await asyncio.sleep(0.1)
+        return {"success": True}
+
+    admin.add_view(MockView())
+    client = app.test_client()
+    rv = client.post("/compute")
+    data = rv.get_json()
+    assert data["success"] is True
+
+    rv = client.get("/admin/mockview/")
+    assert rv.data == b"Success!"
 
 
 def check_class_name():
