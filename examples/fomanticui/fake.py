@@ -160,7 +160,7 @@ def generate_fake_data(app):
 
         for order in orders:
             if not order.items:
-                chosen_products = fake.random_elements(
+                chosen_products = fake.random_elements(  # type: ignore
                     elements=products, length=randint(1, 5), unique=True
                 )
                 total = 0

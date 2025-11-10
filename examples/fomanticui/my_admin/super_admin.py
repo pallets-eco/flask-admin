@@ -17,7 +17,6 @@ from .views import IndexView
 class UserModelView(ModelView):
     column_list = ["id", "email", "name", "age", "active", "created_at"]
     column_editable_list = ["active"]
-    column_type_formatters = {bool: lambda v, value: "✔" if value else "–"}
     can_view_details = True
     can_set_page_size = True
     can_export = True

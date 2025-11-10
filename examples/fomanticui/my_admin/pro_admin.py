@@ -42,7 +42,6 @@ class ReadOnlyModelView(ModelView):
     can_export = True
     export_types = ["csv", "json", "xls", "xlsx", "html", "pdf"]
     page_size_options = (5, 10, 25, 50, 100)
-    column_type_formatters = {bool: lambda v, value: "✔" if value else "✘"}
 
 
 # ---------------- Inline helpers ----------------

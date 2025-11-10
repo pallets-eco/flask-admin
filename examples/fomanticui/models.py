@@ -218,7 +218,7 @@ class Product(db.Model):
 class Order(db.Model):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"))
-    status = Column(Enum(OrderStatus), default=OrderStatus.pending)
+    status = Column(Enum(OrderStatus), default=OrderStatus.pending)  # type: ignore
     total_price = Column(Numeric(10, 2), default=0)
     created_at = Column(DateTime, default=func.now())
 
@@ -253,7 +253,7 @@ class Payment(db.Model):
     order_id = Column(Integer, ForeignKey("order.id"))
     amount = Column(Numeric(10, 2), nullable=False)
     paid_at = Column(DateTime, default=func.now())
-    method = Column(Enum(PaymentMethod))
+    method = Column(Enum(PaymentMethod))  # type: ignore
 
     order = relationship("Order", back_populates="payments")
 
