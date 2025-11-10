@@ -4,6 +4,7 @@ from io import BytesIO
 import boto3
 from flask import Flask
 from flask_admin import Admin
+from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.fileadmin.s3 import S3FileAdmin
 from flask_babel import Babel
 from testcontainers.localstack import LocalStackContainer
@@ -64,5 +65,8 @@ if __name__ == "__main__":
                 s3_client=s3_client,
             )
         )
+
+        # Add Local Directory view
+        admin.add_view(FileAdmin("localdir", name="Local Dir"))
 
         app.run(debug=True)

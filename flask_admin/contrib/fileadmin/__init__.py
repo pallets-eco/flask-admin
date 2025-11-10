@@ -45,7 +45,33 @@ else:
     utc_fromtimestamp = datetime.utcfromtimestamp
 
 
-class LocalFileStorage:
+class BaseFileStorage:
+    def __init__(self, on_windows: bool) -> None:
+        """
+        Constructor.
+
+        :param on_windows:
+            True for Windows storage, this parameter is needed only if your storage
+            is placed externally on a platform different than the one of you are
+            hosting your flask project on. e.g if Flask app runs on Windows with
+            S3 storage (on Linux), then on_windows must be set to False.
+        """
+        self.on_windows = on_windows
+
+    def normpath(self, path):
+        """
+        returns the correct normalized path based on the platform of the storage.
+
+        :param path:
+            path to be normalized.
+        """
+        if self.on_windows:
+            return op.normpath(path)
+        else:
+            return posixpath.normpath(path)
+
+
+class LocalFileStorage(BaseFileStorage):
     def __init__(self, base_path: str | bytes) -> None:
         """
         Constructor.
@@ -53,6 +79,10 @@ class LocalFileStorage:
         :param base_path:
             Base file storage location
         """
+
+        on_windows = platform.system() == "Windows"
+        super().__init__(on_windows=on_windows)
+
         self.base_path = as_unicode(base_path)
 
         self.separator = os.sep
@@ -327,8 +357,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         menu_class_name: str | None = None,
         menu_icon_type: str | None = None,
         menu_icon_value: str | None = None,
-        storage: LocalFileStorage | None = None,
-        on_windows: bool | None = None,
+        storage: BaseFileStorage | None = None,
     ) -> None:
         """
         Constructor.
@@ -349,21 +378,13 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         :param storage:
             The storage backend that the `BaseFileAdmin` will use to operate on the
             files.
-        :param on_windows:
-            True for Windows storage, this parameter is needed only if your storage
-            is placed externally on a platform different than the one of you are
-            hosting your flask project on. e.g if Flask app runs on Windows with
-            S3 storage (on Linux), then on_windows must be set to False.
         """
         self.base_url = base_url
         self.storage = storage
 
         self.init_actions()
 
-        if on_windows is not None:
-            self._on_windows = on_windows
-        else:
-            self._on_windows = platform.system() == "Windows"
+        self._on_windows = platform.system() == "Windows"
 
         # Convert allowed_extensions to set for quick validation
         if self.allowed_extensions and not isinstance(self.allowed_extensions, set):
@@ -382,12 +403,6 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
         )
-
-    def _normpath(self, path):
-        if self._on_windows:
-            return op.normpath(path)
-        else:
-            return posixpath.normpath(path)
 
     def is_accessible_path(self, path: str) -> bool:
         """
@@ -630,7 +645,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         :param directory:
             Directory path to check
         """
-        return self._normpath(directory).startswith(base_path)
+        return self.normpath(directory).startswith(base_path)
 
     def save_file(self, path: str, file_data: FileStorage) -> None:
         """
@@ -705,13 +720,13 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             directory = base_path
             path = ""
         else:
-            path = self._normpath(path)
+            path = self.normpath(path)
             if base_path:
                 directory = self._separator.join([base_path, path])
             else:
                 directory = path
 
-            directory = self._normpath(directory)
+            directory = self.normpath(directory)
 
             if not self.is_in_folder(base_path, directory):
                 abort(404)
@@ -857,6 +872,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             self.save_file(filename, form.upload.data)
             self.on_file_upload(directory, path, filename)
 
+    def normpath(self, path):
+        self.storage.normpath(path)  # type: ignore[union-attr]
+
     @property
     def _separator(self) -> str:
         return self.storage.separator  # type: ignore[union-attr]
@@ -868,6 +886,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         """
         accumulator = []
         breadcrumbs = []
+
         for n in path.split(self._separator):
             accumulator.append(n)
             breadcrumbs.append((n, self._separator.join(accumulator)))
@@ -906,7 +925,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         # Parent directory
         if directory != base_path:
-            parent_path: str | None = self._normpath(self._separator.join([path, ".."]))
+            parent_path: str | None = self.normpath(self._separator.join([path, ".."]))
             if parent_path == ".":
                 parent_path = None
 
@@ -915,7 +934,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         for item in self.storage.get_files(path, directory):  # type: ignore[union-attr]
             file_name, rel_path, is_dir, size, last_modified = item
             if self.is_accessible_path(rel_path):
-                items.append(item)  # type: ignore[arg-type]
+                items.append(item)
 
         sort_column = (
             request.args.get("sort", None, type=str) or self.default_sort_column

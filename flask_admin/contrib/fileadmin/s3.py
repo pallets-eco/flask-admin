@@ -10,6 +10,7 @@ from flask_admin.babel import gettext
 
 from ..._types import T_RESPONSE
 from . import BaseFileAdmin
+from . import BaseFileStorage
 
 
 def _strip_leading_slash_from(
@@ -47,7 +48,7 @@ def _strip_leading_slash_from(
     return decorator
 
 
-class S3Storage:
+class S3Storage(BaseFileStorage):
     """
     Storage object representing files on an Amazon S3 bucket.
 
@@ -76,6 +77,9 @@ class S3Storage:
         Make sure the credentials have the correct permissions set up on
         Amazon or else S3 will return a 403 FORBIDDEN error.
         """
+
+        # S3 Storage always uses Unix based path format.
+        super().__init__(on_windows=False)
 
         self.s3_client = s3_client
         self.bucket_name = bucket_name
@@ -304,4 +308,4 @@ class S3FileAdmin(BaseFileAdmin):
         **kwargs: t.Any,
     ) -> None:
         storage = S3Storage(s3_client, bucket_name)
-        super().__init__(*args, storage=storage, on_windows=False, **kwargs)  # type: ignore[misc, arg-type]
+        super().__init__(*args, storage=storage, **kwargs)  # type: ignore[misc]
