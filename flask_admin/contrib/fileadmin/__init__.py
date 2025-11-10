@@ -873,7 +873,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             self.on_file_upload(directory, path, filename)
 
     def normpath(self, path):
-        self.storage.normpath(path)  # type: ignore[union-attr]
+        return self.storage.normpath(path)  # type: ignore[union-attr]
 
     @property
     def _separator(self) -> str:
