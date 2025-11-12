@@ -1194,6 +1194,10 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         form = self.name_form()
 
         path = form.path.data  # type: ignore[attr-defined]
+
+        if request.method == "GET" and hasattr(form, "name"):
+            form.name.data = op.basename(path)
+
         if path:
             base_path, full_path, path = self._normalize_path(path)
 
@@ -1241,6 +1245,8 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             return redirect(return_url)
         else:
             helpers.flash_errors(form, message="Failed to rename: %(error)s")
+            if hasattr(form, "name"):
+                form.name.data = op.basename(path)
 
         if self.rename_modal and request.args.get("modal"):
             template = self.rename_modal_template
