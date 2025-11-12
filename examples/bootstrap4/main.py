@@ -3,6 +3,7 @@ import os.path as op
 
 from flask import Flask
 from flask_admin import Admin
+from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuDivider
 from flask_admin.menu import MenuLink
@@ -62,6 +63,13 @@ class UserAdmin(CustomView):
     can_set_page_size = True
     page_size_options = (3, 5, 7, 10, 20, 50, 100)
     page_size = 7
+
+
+class FileAdminModal(FileAdmin):
+    rename_modal = True
+    edit_modal = True
+    mkdir_modal = True
+    upload_modal = True
 
 
 def build_sample_db():
@@ -221,6 +229,11 @@ if __name__ == "__main__":
             menu_icon_type="fa",
             menu_icon_value="fa-file",
         )
+    )
+
+    admin.add_view(FileAdmin("files/", name="Local Files", category="Menu"))
+    admin.add_view(
+        FileAdminModal("files/", name="Local Files with Modals", category="Menu")
     )
 
     admin.add_link(
