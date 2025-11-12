@@ -475,6 +475,7 @@ main_menu      Main menu
 menu_links     Links menu
 access_control Section to the right of the menu (can be used to add login/logout buttons)
 messages       Alerts and various messages
+page_title     Page title containing the view name and icon
 body           Content (that's where your view will be displayed)
 tail           Empty area below content
 ============== ========================================================================
@@ -485,9 +486,9 @@ also contains the following blocks:
 ======================= ============================================
 Block Name              Description
 ======================= ============================================
-model_menu_bar          Menu bar
-model_list_table  		Table container
-list_header       		Table header row
+model_menu_bar          Menu bar for the model view with add/export/etc buttons
+model_list_table  		  Table container for the list view
+list_header       		  Table header row for the list view
 list_row_actions_header Actions header
 list_row                Single row
 list_row_actions        Row action cell with edit/remove/etc buttons
