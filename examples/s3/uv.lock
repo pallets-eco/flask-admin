@@ -1,9 +1,6 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.10"
-resolution-markers = [
-    "python_version < '0'",
-]
 
 [[package]]
 name = "babel"
@@ -190,7 +187,7 @@ wheels = [
 
 [[package]]
 name = "flask-admin"
-version = "2.0.0rc1"
+version = "2.0.1"
 source = { editable = "../../" }
 dependencies = [
     { name = "flask" },
