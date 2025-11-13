@@ -595,7 +595,7 @@ class RuleSet:
     def __init__(
         self,
         view: t.Union[T_MODEL_VIEW, T_INLINE_BASE_FORM_ADMIN],
-        rules: t.Sequence[str | tuple | list | BaseRule | FieldSet],
+        rules: t.Sequence[str | tuple[BaseRule] | list[BaseRule] | BaseRule | FieldSet],
     ) -> None:
         """
         Constructor.
@@ -626,7 +626,7 @@ class RuleSet:
 
     def configure_rules(
         self,
-        rules: t.Sequence[str | tuple | list | BaseRule | FieldSet],
+        rules: t.Sequence[str | tuple[BaseRule] | list[BaseRule] | BaseRule | FieldSet],
         parent: BaseRule | None = None,
     ) -> list[BaseRule]:
         """

@@ -22,11 +22,11 @@ def _strip_leading_slash_from(
     """
 
     def decorator(
-        func: t.Callable,
+        func: t.Callable[..., t.Any],
     ) -> t.Callable[[tuple[t.Any, ...], dict[str, t.Any]], t.Any]:
         @functools.wraps(func)
         def wrapper(*args: t.Any, **kwargs: t.Any) -> t.Any:
-            args: list = list(args)  # type: ignore[no-redef]
+            args: list[t.Any] = list(args)  # type: ignore[no-redef]
             arg_names = func.__code__.co_varnames[: func.__code__.co_argcount]
 
             if arg_name in arg_names:
@@ -82,7 +82,7 @@ class S3Storage:
         self.separator = "/"
 
     @_strip_leading_slash_from("path")
-    def get_files(self, path: str, directory: str) -> list:
+    def get_files(self, path: str, directory: str) -> list[t.Any]:
         def _strip_path(name: str, path: str) -> str:
             if name.startswith(path):
                 return name.replace(path, "", 1)

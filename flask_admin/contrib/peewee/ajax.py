@@ -20,7 +20,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         super().__init__(name, options)
 
         self.model = model
-        self.fields = t.cast(t.Iterable, options.get("fields"))
+        self.fields = t.cast(t.Iterable[t.Any], options.get("fields"))
 
         if not self.fields:
             raise ValueError(
@@ -48,7 +48,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
-    def format(self, model: None | str | bytes) -> tuple[t.Any, str] | None:
+    def format(self, model: T_PEEWEE_MODEL | None) -> tuple[t.Any, str] | None:  # type: ignore[override]
         if not model:
             return None
 
@@ -84,7 +84,7 @@ def create_ajax_loader(
     model: type[T_PEEWEE_MODEL],
     name: str,
     field_name: str,
-    options: dict[str, t.Any] | list | tuple,
+    options: dict[str, t.Any],
 ) -> QueryAjaxModelLoader:
     prop = getattr(model, field_name, None)
 
@@ -93,4 +93,4 @@ def create_ajax_loader(
 
     # TODO: Check for field
     remote_model = prop.rel_model
-    return QueryAjaxModelLoader(name, remote_model, **options)  # type: ignore[arg-type]
+    return QueryAjaxModelLoader(name, remote_model, **options)
