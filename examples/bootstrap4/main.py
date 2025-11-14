@@ -3,6 +3,7 @@ import os.path as op
 
 from flask import Flask
 from flask_admin import Admin
+from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuDivider
 from flask_admin.menu import MenuLink
@@ -14,7 +15,9 @@ app.config["SECRET_KEY"] = "secret"
 app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
 app.config["SQLALCHEMY_ECHO"] = True
+
 db = SQLAlchemy(app)
+
 admin = Admin(
     app,
     name="Example: Bootstrap4",
@@ -50,11 +53,7 @@ class Page(db.Model):
         return self.name
 
 
-class CustomView(ModelView):
-    pass
-
-
-class UserAdmin(CustomView):
+class UserAdmin(ModelView):
     column_searchable_list = ("name",)
     column_filters = ("name", "email")
     can_export = True
@@ -64,136 +63,21 @@ class UserAdmin(CustomView):
     page_size = 7
 
 
-def build_sample_db():
-    """
-    Populate a small db with some example entries.
-    """
+class SimplePageView(ModelView):
+    can_view_details = True
 
-    db.drop_all()
-    db.create_all()
 
-    first_names = [
-        "Harry",
-        "Amelia",
-        "Oliver",
-        "Jack",
-        "Isabella",
-        "Charlie",
-        "Sophie",
-        "Mia",
-        "Jacob",
-        "Thomas",
-        "Emily",
-        "Lily",
-        "Ava",
-        "Isla",
-        "Alfie",
-        "Olivia",
-        "Jessica",
-        "Riley",
-        "William",
-        "James",
-        "Geoffrey",
-        "Lisa",
-        "Benjamin",
-        "Stacey",
-        "Lucy",
-    ]
-    last_names = [
-        "Brown",
-        "Smith",
-        "Patel",
-        "Jones",
-        "Williams",
-        "Johnson",
-        "Taylor",
-        "Thomas",
-        "Roberts",
-        "Khan",
-        "Lewis",
-        "Jackson",
-        "Clarke",
-        "James",
-        "Phillips",
-        "Wilson",
-        "Ali",
-        "Mason",
-        "Mitchell",
-        "Rose",
-        "Davis",
-        "Davies",
-        "Rodriguez",
-        "Cox",
-        "Alexander",
-    ]
+class PageWithModalView(ModelView):
+    create_modal = True
+    edit_modal = True
+    details_modal = True
+    can_view_details = True
 
-    for i in range(len(first_names)):
-        user = User()
-        user.name = first_names[i] + " " + last_names[i]
-        user.email = first_names[i].lower() + "@example.com"
-        db.session.add(user)
 
-    sample_text = [
-        {
-            "title": "de Finibus Bonorum et Malorum - Part I",
-            "content": (
-                "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do "
-                "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim "
-                "ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
-                "aliquip ex ea commodo consequat. Duis aute irure dolor in "
-                "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
-                "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
-                "culpa qui officia deserunt mollit anim id est laborum."
-            ),
-        },
-        {
-            "title": "de Finibus Bonorum et Malorum - Part II",
-            "content": (
-                "Sed ut perspiciatis unde omnis iste natus error sit voluptatem "
-                "accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae "
-                "ab illo inventore veritatis et quasi architecto beatae vitae dicta "
-                "sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit "
-                "aspernatur aut odit aut fugit, sed quia consequuntur magni dolores "
-                "eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, "
-                "qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, "
-                "sed quia non numquam eius modi tempora incidunt ut labore et dolore "
-                "magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis "
-                "nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut "
-                "aliquid ex ea commodi consequatur? Quis autem vel eum iure "
-                "reprehenderit qui in ea voluptate velit esse quam nihil molestiae "
-                "consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla "
-                "pariatur?"
-            ),
-        },
-        {
-            "title": "de Finibus Bonorum et Malorum - Part III",
-            "content": (
-                "At vero eos et accusamus et iusto odio dignissimos ducimus qui "
-                "blanditiis praesentium voluptatum deleniti atque corrupti quos "
-                "dolores et quas molestias excepturi sint occaecati cupiditate non "
-                "provident, similique sunt in culpa qui officia deserunt mollitia "
-                "animi, id est laborum et dolorum fuga. Et harum quidem rerum "
-                "facilis est et expedita distinctio. Nam libero tempore, cum soluta "
-                "nobis est eligendi optio cumque nihil impedit quo minus id quod "
-                "maxime placeat facere possimus, omnis voluptas assumenda est, omnis "
-                "dolor repellendus. Temporibus autem quibusdam et aut officiis debitis "
-                "aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae "
-                "sint et molestiae non recusandae. Itaque earum rerum hic tenetur a "
-                "sapiente delectus, ut aut reiciendis voluptatibus maiores alias "
-                "consequatur aut perferendis doloribus asperiores repellat."
-            ),
-        },
-    ]
+with app.app_context():
+    from data import build_sample_db
 
-    for entry in sample_text:
-        page = Page()
-        page.title = entry["title"]
-        page.content = entry["content"]
-        db.session.add(page)
-
-    db.session.commit()
-    return
-
+    build_sample_db(db, User, Page)
 
 if __name__ == "__main__":
     # Icons reference (FontAwesome v4):
@@ -210,9 +94,18 @@ if __name__ == "__main__":
         )
     )
     admin.add_menu_item(MenuDivider(), target_category="Menu")
-    admin.add_view(CustomView(Page, db.session, category="Menu"))
     admin.add_view(
-        CustomView(
+        SimplePageView(Page, db.session, category="Menu", name="Simple Page")
+    )
+
+    admin.add_view(
+        PageWithModalView(
+            Page, db.session, category="Menu", endpoint="page-modal", name="Page-Modal"
+        )
+    )
+
+    admin.add_view(
+        ModelView(
             Page,
             db.session,
             name="Page-with-icon",
@@ -222,6 +115,8 @@ if __name__ == "__main__":
             menu_icon_value="fa-file",
         )
     )
+
+    admin.add_view(FileAdmin("static", name="Static Files", category="Menu"))
 
     admin.add_link(
         MenuLink(
@@ -265,6 +160,6 @@ if __name__ == "__main__":
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])
     if not op.exists(database_path):
         with app.app_context():
-            build_sample_db()
+            build_sample_db(db, User, Page)
 
     app.run(debug=True)
