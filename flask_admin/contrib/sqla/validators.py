@@ -112,7 +112,7 @@ def valid_color(form: Form, field: Field) -> None:
 
 class TimeZoneValidator:
     """
-    Tries to coerce a TimZone object from input data
+    Tries to coerce a timezone object from input data
     """
 
     def __init__(self, coerce_function: t.Callable[[str], t.Any]) -> None:
