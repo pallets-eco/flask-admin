@@ -258,7 +258,7 @@ class ModelView(BaseModelView):
             Run query immediately or not
         :param page_size:
             Number of results. Defaults to ModelView's page_size. Can be
-            overriden to change the page_size limit. Removing the page_size
+            overridden to change the page_size limit. Removing the page_size
             limit requires setting page_size to 0 or False.
         """
         query = self.get_query()
