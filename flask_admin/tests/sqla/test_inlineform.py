@@ -1,5 +1,3 @@
-from typing import Union
-
 from wtforms import fields
 
 from flask_admin import form
@@ -64,7 +62,7 @@ def test_inline_form(app, db, admin):
         assert User.query.count() == 1
         assert UserInfo.query.count() == 0
 
-        data: dict[str, Union[str, int, None]] = {
+        data: dict[str, str | int | None] = {
             "name": "fbar",
             "info-0-key": "foo",
             "info-0-val": "bar",

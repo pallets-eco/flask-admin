@@ -151,7 +151,7 @@
       {%- endif -%}
       {% if direct_error %}
         <div class="invalid-feedback">
-          <ul class="form-text text-muted {% if field.widget.input_type == 'checkbox' %}mt-0{% endif %}">
+          <ul class="form-text text-danger {% if field.widget.input_type == 'checkbox' %}mt-0{% endif %}">
           {% for e in field.errors if e is string %}
             <li>{{ e }}</li>
           {% endfor %}

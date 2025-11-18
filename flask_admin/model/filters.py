@@ -21,7 +21,7 @@ class BaseFilter:
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
-        key_name: t.Optional[str] = None,
+        key_name: str | None = None,
     ) -> None:
         """
         Constructor.
@@ -40,7 +40,7 @@ class BaseFilter:
         self.data_type = data_type
         self.key_name = key_name
 
-    def get_options(self, view: T_MODEL_VIEW) -> t.Optional[T_OPTION_LIST]:
+    def get_options(self, view: T_MODEL_VIEW) -> T_OPTION_LIST | None:
         """
         Return list of predefined options.
 

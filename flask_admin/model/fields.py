@@ -55,8 +55,8 @@ class InlineFieldList(FieldList):
 
     def process(
         self,
-        formdata: t.Optional[dict],  # type: ignore[override]
-        data: t.Union[UnsetValue, list[t.Any]] = unset_value,
+        formdata: dict | None,  # type: ignore[override]
+        data: UnsetValue | list[t.Any] = unset_value,
         extra_filters: t.Any = None,
     ) -> None:
         res = super().process(
@@ -110,7 +110,7 @@ class InlineFieldList(FieldList):
         _fake = type("_fake", (object,), {})
 
         output = []
-        for field, data in zip(self.entries, candidates):
+        for field, data in zip(self.entries, candidates, strict=False):
             if not self.should_delete(field):
                 fake_obj = _fake()
                 fake_obj.data = data
@@ -150,8 +150,8 @@ class InlineModelFormField(FormField):
         self._pk = pk
         self.form_opts = form_opts
 
-    def get_pk(self) -> t.Union[tuple[t.Any, ...], t.Any]:
-        if isinstance(self._pk, (tuple, list)):
+    def get_pk(self) -> tuple[t.Any, ...] | t.Any:
+        if isinstance(self._pk, tuple | list):
             return tuple(getattr(self.form, pk).data for pk in self._pk)
 
         return getattr(self.form, self._pk).data
@@ -174,8 +174,8 @@ class AjaxSelectField(SelectFieldBase):
     def __init__(
         self,
         loader: T_AJAX_MODEL_LOADER,
-        label: t.Optional[str] = None,
-        validators: t.Optional[t.Sequence[T_VALIDATOR]] = None,
+        label: str | None = None,
+        validators: t.Sequence[T_VALIDATOR] | None = None,
         allow_blank: bool = False,
         blank_text: str = "",
         **kwargs: t.Any,
@@ -201,7 +201,7 @@ class AjaxSelectField(SelectFieldBase):
 
     def _set_data(self, data: t.Any) -> None:
         self._data = data
-        self._formdata: t.Optional[str] = None
+        self._formdata: str | None = None
 
     data = property(_get_data, _set_data)
 
@@ -209,9 +209,7 @@ class AjaxSelectField(SelectFieldBase):
         value = t.cast(tuple[t.Any, str], self.loader.format(self.data))
         return (value[0], value[1], True)
 
-    def process_formdata(
-        self, valuelist: t.Optional[t.Sequence[t.Optional[str]]]
-    ) -> None:
+    def process_formdata(self, valuelist: t.Sequence[str | None] | None) -> None:
         if valuelist:
             if self.allow_blank and valuelist[0] == "__None":
                 self.data = None
@@ -234,8 +232,8 @@ class AjaxSelectMultipleField(AjaxSelectField):
     def __init__(
         self,
         loader: T_AJAX_MODEL_LOADER,
-        label: t.Optional[str] = None,
-        validators: t.Optional[t.Sequence[T_VALIDATOR]] = None,
+        label: str | None = None,
+        validators: t.Sequence[T_VALIDATOR] | None = None,
         default: t.Any = None,
         **kwargs: t.Any,
     ) -> None:

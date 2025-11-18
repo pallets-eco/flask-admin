@@ -33,8 +33,8 @@ class _BlueprintSetupStateWithHostSupport(FlaskBlueprintSetupState):
     def add_url_rule(
         self,
         rule: str,
-        endpoint: t.Optional[str] = None,
-        view_func: t.Optional[RouteCallable] = None,
+        endpoint: str | None = None,
+        view_func: RouteCallable | None = None,
         **options: t.Any,
     ) -> None:
         # Ensure that every route registered by this blueprint has the host parameter
@@ -70,7 +70,7 @@ class _BlueprintWithHostSupport(FlaskBlueprint):
         # required by any of them.
         @self.url_value_preprocessor
         def strip_admin_routes_host_from_static_endpoint(
-            endpoint: t.Optional[str], values: t.Optional[dict[str, t.Any]]
+            endpoint: str | None, values: dict[str, t.Any] | None
         ) -> None:
             if (
                 endpoint

@@ -3,7 +3,7 @@ name = "example-rediscli"
 version = "0.1.0"
 description = "RedisCLI Example."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "flask-admin[rediscli]",
     "testcontainers[redis]",

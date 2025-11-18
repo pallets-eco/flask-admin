@@ -645,7 +645,7 @@ class FilterConverter(filters.BaseFilterConverter):
 
     def convert(
         self, type_name: str, column: Column, name: str, **kwargs: t.Any
-    ) -> t.Optional[list[BaseSQLAFilter]]:
+    ) -> list[BaseSQLAFilter] | None:
         filter_name = type_name.lower()
 
         if filter_name in self.converters:

@@ -149,12 +149,12 @@ class FileUploadField(fields.StringField):
 
     def __init__(
         self,
-        label: t.Optional[str] = None,
-        validators: t.Optional[list[T_VALIDATOR]] = None,
-        base_path: t.Optional[str] = None,
-        relative_path: t.Optional[str] = None,
-        namegen: t.Optional[t.Callable[[t.Any, FileStorage], str]] = None,
-        allowed_extensions: t.Optional[t.Sequence[str]] = None,
+        label: str | None = None,
+        validators: list[T_VALIDATOR] | None = None,
+        base_path: str | None = None,
+        relative_path: str | None = None,
+        namegen: t.Callable[[t.Any, FileStorage], str] | None = None,
+        allowed_extensions: t.Sequence[str] | None = None,
         permission: int = 0o666,
         allow_overwrite: bool = True,
         **kwargs: t.Any,
@@ -230,8 +230,8 @@ class FileUploadField(fields.StringField):
         )
 
     def _is_uploaded_file(
-        self, data: t.Union[FileStorage, None, str]
-    ) -> t.Union[FileStorage, None, bool, str]:
+        self, data: FileStorage | None | str
+    ) -> FileStorage | None | bool | str:
         return data and isinstance(data, FileStorage) and data.filename
 
     def pre_validate(self, form: BaseForm) -> None:
@@ -259,7 +259,7 @@ class FileUploadField(fields.StringField):
         self,
         formdata: dict,  # type:ignore[override]
         data: UnsetValue = unset_value,
-        extra_filters: t.Optional[t.Sequence] = None,
+        extra_filters: t.Sequence | None = None,
     ) -> None:
         if formdata:
             marker = f"_{self.name}-delete"
@@ -275,7 +275,7 @@ class FileUploadField(fields.StringField):
                 extra_filters,
             )
 
-    def process_formdata(self, valuelist: list[t.Union[str, FileStorage]]) -> None:
+    def process_formdata(self, valuelist: list[str | FileStorage]) -> None:
         if self._should_delete:
             self.data = None
         elif valuelist:
@@ -358,18 +358,18 @@ class ImageUploadField(FileUploadField):
 
     def __init__(
         self,
-        label: t.Optional[str] = None,
-        validators: t.Optional[list[T_VALIDATOR]] = None,
-        base_path: t.Optional[str] = None,
-        relative_path: t.Optional[str] = None,
-        namegen: t.Optional[t.Callable[[t.Any, FileStorage], str]] = None,
-        allowed_extensions: t.Optional[t.Sequence[str]] = None,
-        max_size: t.Optional[tuple[int, int, bool]] = None,
-        thumbgen: t.Optional[t.Callable[[str], str]] = None,
-        thumbnail_size: t.Optional[tuple[int, int, bool]] = None,
+        label: str | None = None,
+        validators: list[T_VALIDATOR] | None = None,
+        base_path: str | None = None,
+        relative_path: str | None = None,
+        namegen: t.Callable[[t.Any, FileStorage], str] | None = None,
+        allowed_extensions: t.Sequence[str] | None = None,
+        max_size: tuple[int, int, bool] | None = None,
+        thumbgen: t.Callable[[str], str] | None = None,
+        thumbnail_size: tuple[int, int, bool] | None = None,
         permission: int = 0o666,
-        url_relative_path: t.Optional[str] = None,
-        endpoint: t.Optional[str] = "static",
+        url_relative_path: str | None = None,
+        endpoint: str | None = "static",
         **kwargs: t.Any,
     ) -> None:
         """
@@ -454,7 +454,7 @@ class ImageUploadField(FileUploadField):
         self.thumbnail_fn = thumbgen or thumbgen_filename
         self.thumbnail_size = thumbnail_size
         self.endpoint = endpoint
-        self.image: t.Optional[T_PIL_IMAGE] = None
+        self.image: T_PIL_IMAGE | None = None
         self.url_relative_path = url_relative_path
 
         if not allowed_extensions:

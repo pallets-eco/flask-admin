@@ -51,10 +51,10 @@ class RedisCli(BaseView):
     def __init__(
         self,
         redis: T_REDIS,
-        name: t.Optional[str] = None,
+        name: str | None = None,
         category: t.Any = None,
-        endpoint: t.Optional[str] = None,
-        url: t.Optional[str] = None,
+        endpoint: str | None = None,
+        url: str | None = None,
     ) -> None:
         """
         Constructor.

@@ -59,9 +59,9 @@ class MongoFileField(fields.FileField):
 
     def process(
         self,
-        formdata: t.Optional[_MultiDictLikeWithGetlist],
+        formdata: _MultiDictLikeWithGetlist | None,
         data: t.Any = unset_value,
-        extra_filters: t.Optional[t.Sequence[t.Callable[[t.Any], t.Any]]] = None,
+        extra_filters: t.Sequence[t.Callable[[t.Any], t.Any]] | None = None,
     ) -> None:
         if formdata:
             marker = f"_{self.name}-delete"

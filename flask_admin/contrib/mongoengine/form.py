@@ -502,15 +502,13 @@ def get_form(
     if isinstance(model, str):
         model = get_document(model)
 
-    if not isinstance(model, (BaseDocument, DocumentMetaclass)):
+    if not isinstance(model, BaseDocument | DocumentMetaclass):
         raise TypeError("Model must be a mongoengine Document schema")
 
     field_args = field_args or {}
 
     # Find properties
-    properties: t.Union[
-        t.Generator[tuple[t.Any, t.Any], None, None], list[tuple[t.Any, t.Any]]
-    ]
+    properties: t.Generator[tuple[t.Any, t.Any], None, None] | list[tuple[t.Any, t.Any]]
     properties = sorted(
         ((k, v) for k, v in iteritems(model._fields)),
         key=lambda v: v[1].creation_counter,

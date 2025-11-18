@@ -75,7 +75,7 @@ class User(db.Model, flask_login.UserMixin):
                 # so if current user changes pw, we must log her back
                 flask_login.login_user(self)
 
-    def check_password(self, password: t.Optional[str]) -> bool:
+    def check_password(self, password: str | None) -> bool:
         if password is not None:
             return check_password_hash(self._password, password)
         return False
@@ -111,7 +111,7 @@ class LoginForm(FlaskForm):
     username = fields.StringField(validators=[validators.InputRequired()])
     password = fields.PasswordField(validators=[validators.InputRequired()])
 
-    user: t.Optional[User] = None  # To store the authenticated user for later use
+    user: User | None = None  # To store the authenticated user for later use
 
     def validate_username(self, field):
         self.user = User.get(field.data, "username")

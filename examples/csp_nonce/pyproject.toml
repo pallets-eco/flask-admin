@@ -3,7 +3,7 @@ name = "example-csp-nonce"
 version = "0.1.0"
 description = "CSP Nonce Example."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "flask-admin",
     "flask-talisman",

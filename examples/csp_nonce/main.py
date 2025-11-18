@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 
 from flask import Flask
 from flask_admin import Admin

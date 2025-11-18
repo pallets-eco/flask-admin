@@ -22,17 +22,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
         tox: ['normal']
         include:
-          - python: '3.9'
-            tox: 'py39-min'
-          - python: '3.13'
-            tox: 'py313-noflaskbabel'
-          - python: '3.9'
-            tox: 'py39-sqlalchemy1'
-          - python: '3.13'
-            tox: 'py313-sqlalchemy1'
+          - python: '3.10'
+            tox: 'py310-min'
+          - python: '3.14'
+            tox: 'py314-noflaskbabel'
+          - python: '3.10'
+            tox: 'py310-sqlalchemy1'
+          - python: '3.14'
+            tox: 'py314-sqlalchemy1'
     services:
       # Label used to access the service container
       postgres:
@@ -62,7 +62,7 @@ jobs:
           - 10000:10000
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+      - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41 # v7.1.2
         with:
           enable-cache: true
           prune-cache: false
@@ -92,7 +92,7 @@ jobs:
         tox: ['docs', 'typing', 'style']
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+      - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41 # v7.1.2
         with:
           enable-cache: true
           prune-cache: false

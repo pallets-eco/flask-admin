@@ -93,7 +93,7 @@ class AdminModelConverter(ModelConverterBase):
 
     def _get_description(
         self, name: str, field_args: T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK
-    ) -> t.Optional[str]:
+    ) -> str | None:
         if "description" in field_args:
             return field_args["description"]
 
@@ -103,7 +103,7 @@ class AdminModelConverter(ModelConverterBase):
             return column_descriptions.get(name)
         return None
 
-    def _get_field_override(self, name: str) -> t.Optional[t.Callable]:
+    def _get_field_override(self, name: str) -> t.Callable | None:
         form_overrides = getattr(self.view, "form_overrides", None)
 
         if form_overrides:
@@ -113,16 +113,16 @@ class AdminModelConverter(ModelConverterBase):
 
     def _model_select_field(
         self,
-        prop: t.Union[ColumnProperty, InstrumentedAttribute],
-        multiple: t.Union[str, bool],
+        prop: ColumnProperty | InstrumentedAttribute,
+        multiple: str | bool,
         remote_model: type[T_SQLALCHEMY_MODEL],
         **kwargs: t.Any,
-    ) -> t.Union[
-        AjaxSelectField,
-        AjaxSelectMultipleField,
-        QuerySelectMultipleField,
-        QuerySelectField,
-    ]:
+    ) -> (
+        AjaxSelectField
+        | AjaxSelectMultipleField
+        | QuerySelectMultipleField
+        | QuerySelectField
+    ):
         loader = getattr(self.view, "_form_ajax_refs", {}).get(prop.key)
 
         if loader:
@@ -145,13 +145,13 @@ class AdminModelConverter(ModelConverterBase):
         prop: t.Any,
         property_is_association_proxy: bool,
         kwargs: T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK,
-    ) -> t.Union[
-        None,
-        AjaxSelectField,
-        AjaxSelectMultipleField,
-        QuerySelectMultipleField,
-        QuerySelectField,
-    ]:
+    ) -> (
+        None
+        | AjaxSelectField
+        | AjaxSelectMultipleField
+        | QuerySelectMultipleField
+        | QuerySelectField
+    ):
         # Check if relation is specified
         form_columns = getattr(self.view, "form_columns", None)
         if form_columns and name not in form_columns:
@@ -201,18 +201,18 @@ class AdminModelConverter(ModelConverterBase):
         model: type[T_SQLALCHEMY_MODEL],
         mapper: t.Any,
         name: str,
-        prop: t.Union[FieldPlaceholder, ColumnProperty, InstrumentedAttribute],
+        prop: FieldPlaceholder | ColumnProperty | InstrumentedAttribute,
         field_args: T_FIELD_ARGS_VALIDATORS,
         hidden_pk: bool,
-    ) -> t.Union[
-        None,
-        AjaxSelectField,
-        AjaxSelectMultipleField,
-        QuerySelectMultipleField,
-        QuerySelectField,
-        HiddenField,
-        Select2Field,
-    ]:
+    ) -> (
+        None
+        | AjaxSelectField
+        | AjaxSelectMultipleField
+        | QuerySelectMultipleField
+        | QuerySelectField
+        | HiddenField
+        | Select2Field
+    ):
         # Properly handle forced fields
         if isinstance(prop, FieldPlaceholder):
             return form.recreate_field(prop.field)
@@ -365,7 +365,7 @@ class AdminModelConverter(ModelConverterBase):
     def _nullable_common(
         cls,
         column: Column,
-        field_args: t.Union[T_FIELD_ARGS_FILTERS, T_FIELD_ARGS_VALIDATORS],
+        field_args: T_FIELD_ARGS_FILTERS | T_FIELD_ARGS_VALIDATORS,
     ) -> None:
         if column.nullable:
             filters = field_args.get("filters", [])
@@ -422,7 +422,7 @@ class AdminModelConverter(ModelConverterBase):
     def convert_choice_type(
         self, column: Column, field_args: T_FIELD_ARGS_FILTERS, **extra: t.Any
     ) -> form.Select2Field:
-        available_choices: t.Union[list[Enum], list[tuple[int, str]]] = []
+        available_choices: list[Enum] | list[tuple[int, str]] = []
         # choices can either be specified as an enum, or as a list of tuples
         if isinstance(column.type.choices, EnumMeta):  # type: ignore[attr-defined]
             available_choices = [  # type: ignore[var-annotated]
@@ -491,7 +491,7 @@ class AdminModelConverter(ModelConverterBase):
     def convert_email(
         self,
         field_args: T_FIELD_ARGS_VALIDATORS,
-        column: t.Optional[Column] = None,
+        column: Column | None = None,
         **extra: t.Any,
     ) -> fields.StringField:
         self._nullable_common(column, field_args)  # type: ignore[arg-type]
@@ -668,12 +668,12 @@ def get_form(
     model: type[T_SQLALCHEMY_MODEL],
     converter: AdminModelConverter,
     base_class: type[form.BaseForm] = form.BaseForm,
-    only: t.Optional[t.Collection[t.Union[str, InstrumentedAttribute]]] = None,
-    exclude: t.Optional[t.Collection[t.Union[str, InstrumentedAttribute]]] = None,
-    field_args: t.Optional[dict[str, T_FIELD_ARGS_VALIDATORS_FILES]] = None,
+    only: t.Collection[str | InstrumentedAttribute] | None = None,
+    exclude: t.Collection[str | InstrumentedAttribute] | None = None,
+    field_args: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
     hidden_pk: bool = False,
     ignore_hidden: bool = True,
-    extra_fields: t.Optional[dict[t.Union[str, InstrumentedAttribute], Field]] = None,
+    extra_fields: dict[str | InstrumentedAttribute, Field] | None = None,
 ) -> type:
     """
     Generate form from the model.
@@ -707,12 +707,12 @@ def get_form(
     if only:
 
         def find(
-            name: t.Union[str, InstrumentedAttribute],
-        ) -> t.Union[
-            tuple[str, FieldPlaceholder],
-            tuple[str, t.Optional[t.Any]],
-            tuple[t.Any, t.Any],
-        ]:
+            name: str | InstrumentedAttribute,
+        ) -> (
+            tuple[str, FieldPlaceholder]
+            | tuple[str, t.Any | None]
+            | tuple[t.Any, t.Any]
+        ):
             # If field is in extra_fields, it has higher priority
             if extra_fields and name in extra_fields:
                 return name, FieldPlaceholder(extra_fields[name])
@@ -805,9 +805,7 @@ class InlineModelConverter(InlineModelConverterBase):
 
     def get_info(
         self,
-        p: t.Union[
-            tuple[T_ORM_MODEL, dict[str, t.Any]], InlineFormAdmin, type[T_ORM_MODEL]
-        ],
+        p: tuple[T_ORM_MODEL, dict[str, t.Any]] | InlineFormAdmin | type[T_ORM_MODEL],
     ) -> InlineFormAdmin:
         info = super().get_info(p)
 

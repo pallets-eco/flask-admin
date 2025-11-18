@@ -31,7 +31,7 @@ def set_current_view(view: T_MODEL_VIEW) -> None:
     g._admin_view = view
 
 
-def get_current_view() -> t.Optional[t.Any]:
+def get_current_view() -> t.Any | None:
     """
     Get current administrative view.
     """
@@ -68,7 +68,7 @@ def is_required_form_field(field: Field) -> bool:
     from flask_admin.form.validators import FieldListInputRequired
 
     for validator in field.validators:
-        if isinstance(validator, (DataRequired, InputRequired, FieldListInputRequired)):
+        if isinstance(validator, DataRequired | InputRequired | FieldListInputRequired):
             return True
     return False
 
@@ -87,7 +87,7 @@ def validate_form_on_submit(form: Form) -> bool:
     return is_form_submitted() and form.validate()
 
 
-def get_form_data() -> t.Optional[ImmutableMultiDict]:
+def get_form_data() -> ImmutableMultiDict | None:
     """
     If current method is PUT or POST, return concatenated `request.form` with
     `request.files` or `None` otherwise.
@@ -102,14 +102,14 @@ def get_form_data() -> t.Optional[ImmutableMultiDict]:
     return None
 
 
-def is_field_error(errors: t.Union[list, tuple, None]) -> bool:
+def is_field_error(errors: list | tuple | None) -> bool:
     """
     Check if wtforms field has error without checking its children.
 
     :param errors:
         Errors list.
     """
-    if isinstance(errors, (list, tuple)):
+    if isinstance(errors, list | tuple):
         for e in errors:
             if isinstance(e, string_types):
                 return True
@@ -133,7 +133,7 @@ def resolve_ctx(context: Context) -> None:
     g._admin_render_ctx = context
 
 
-def get_render_ctx() -> t.Optional[Context]:
+def get_render_ctx() -> Context | None:
     """
     Get view template context.
     """
@@ -173,7 +173,7 @@ def is_safe_url(target: str) -> bool:
     return ref_url.netloc == test_url.netloc
 
 
-def get_redirect_target(param_name: str = "url") -> t.Optional[str]:
+def get_redirect_target(param_name: str = "url") -> str | None:
     target = request.values.get(param_name)
 
     if target and is_safe_url(target):

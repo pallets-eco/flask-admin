@@ -1,6 +1,6 @@
 [project]
 name = "Flask-Admin"
-version = "2.0.0rc1"
+version = "2.0.2"
 description = "Simple and extensible admin interface framework for Flask"
 readme = "README.md"
 license = { file = "LICENSE.txt" }
@@ -14,13 +14,13 @@ classifiers = [
     'Operating System :: OS Independent',
     'Programming Language :: Python',
     'Topic :: Software Development :: Libraries :: Python Modules',
-    'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "flask>=2.0",
     "jinja2>=3.0",
@@ -165,8 +165,11 @@ filterwarnings = [
     # `flask.testing` accesses this attribute; remove when they have updated their code.
     "default:The '__version__' attribute is deprecated and will be removed in Werkzeug 3\\.1\\.:DeprecationWarning",
 
-    # raised by flask-sqlalchemy https://github.com/pallets-eco/flask-sqlalchemy/issues/137
+    # raised by flask-sqlalchemy https://github.com/pallets-eco/flask-sqlalchemy/issues/1379
     "ignore:Exception ignored in.*sqlite3.Connection:pytest.PytestUnraisableExceptionWarning",
+
+    # raised by flask-sqlalchemy https://github.com/pallets-eco/flask-sqlalchemy/issues/1379
+    "ignore:unclosed database in <sqlite3\\.Connection object at 0x[0-9a-f]+>:ResourceWarning",
 ]
 
 [tool.coverage.run]
@@ -177,7 +180,7 @@ source = ["flask_admin", "tests"]
 source = ["flask_admin", "*/site-packages"]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 files = ["flask_admin"]
 show_error_codes = true
 pretty = true
@@ -233,7 +236,7 @@ ignore_missing_imports = true
 
 # TODO: reenable after pyright test pass
 #[tool.pyright]
-#pythonVersion = "3.9"
+#pythonVersion = "3.10"
 #include = ["flask_admin", "tests"]
 #typeCheckingMode = "basic"
 
@@ -252,6 +255,9 @@ select = [
     "UP",  # pyupgrade
     "W",  # pycodestyle warning
 ]
+ignore = [
+    "UP007",  # Use X | Y for type annotations; doesn't work with some of our (stringy) type definitions - should aim to resolve this
+]
 ignore-init-module-imports = true
 
 [tool.ruff.lint.isort]
@@ -260,10 +266,10 @@ order-by-type = false
 
 [tool.tox]
 env_list = [
-    "py39", "py310", "py311", "py312", "py313",
-    "py39-sqlalchemy1", "py313-sqlalchemy1",
-    "py313-noflaskbabel",
-    "py39-min",
+    "py310", "py311", "py312", "py313", "py314",
+    "py310-sqlalchemy1", "py314-sqlalchemy1",
+    "py314-noflaskbabel",
+    "py310-min",
     "style",
     "typing",
     "docs",
@@ -287,9 +293,9 @@ commands = [[
 ]]
 
 
-[tool.tox.env.py39-min]
+[tool.tox.env.py310-min]
 description = "pytest on minimum dependency versions"
-base_python = ["3.9"]
+base_python = ["3.10"]
 commands = [
     [
         "uv", "pip", "install",
@@ -323,10 +329,10 @@ commands = [
     ],
 ]
 
-[tool.tox.env.py39-sqlalchemy1]
-description = "pytest with SQLAlchemy 1.x on Python 3.9"
+[tool.tox.env.py310-sqlalchemy1]
+description = "pytest with SQLAlchemy 1.x on Python 3.10"
 base = ["env_run_base"]
-base_python = ["3.9"]
+base_python = ["3.10"]
 commands = [
     ["uv", "pip", "install", "sqlalchemy>=1.4,<2"],
     ["uv", "pip", "install", "flask-sqlalchemy<=3.0.5"],
@@ -336,10 +342,10 @@ commands = [
     ],
 ]
 
-[tool.tox.env.py313-sqlalchemy1]
-description = "pytest with SQLAlchemy 1.x on Python 3.13"
+[tool.tox.env.py314-sqlalchemy1]
+description = "pytest with SQLAlchemy 1.x on Python 3.14"
 base = ["env_run_base"]
-base_python = ["3.13"]
+base_python = ["3.14"]
 commands = [
     ["uv", "pip", "install", "sqlalchemy>=1.4,<2"],
     ["uv", "pip", "install", "flask-sqlalchemy<=3.0.5"],
@@ -349,7 +355,7 @@ commands = [
     ],
 ]
 
-[tool.tox.env.py313-noflaskbabel]
+[tool.tox.env.py314-noflaskbabel]
 description = "pytest without flask-babel"
 base = ["env_run_base"]
 commands = [
@@ -371,9 +377,9 @@ commands = [["pre-commit", "run", "--all-files"]]
 description = "run static type checkers"
 dependency_groups = ["typing"]
 commands = [
-    ["mypy", "--python-version", "3.9"],
-    ["mypy", "--python-version", "3.13"],
-    ["mypy", "--python-version", "3.13",
+    ["mypy", "--python-version", "3.10"],
+    ["mypy", "--python-version", "3.14"],
+    ["mypy", "--python-version", "3.14",
         "--ignore-missing-imports",
         "--disable-error-code", "name-defined", # allow flask_sqlalchemy's db.Model in examples
         "--no-warn-unused-ignores",  # prevent conflict with mypy 1st run on src folder

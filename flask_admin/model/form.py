@@ -1,7 +1,7 @@
 import inspect
 import typing as t
 import warnings
-from typing import Callable
+from collections.abc import Callable
 
 from wtforms import Field
 from wtforms import Form
@@ -34,7 +34,7 @@ class BaseListForm(BaseForm):
 def create_editable_list_form(
     form_base_class: type[Form],
     form_class: type[Form],
-    widget: t.Optional[t.Callable] = None,
+    widget: t.Callable | None = None,
 ) -> type[BaseListForm]:
     """
     Create a form class with all the fields wrapped in a FieldList.
@@ -104,13 +104,13 @@ class InlineBaseFormAdmin:
 
         # Convert form rules
         form_rules = getattr(self, "form_rules", None)
-        self._form_rules: t.Optional[rules.RuleSet]
+        self._form_rules: rules.RuleSet | None
         if form_rules:
             self._form_rules = rules.RuleSet(self, form_rules)
         else:
             self._form_rules = None
 
-    def get_form(self) -> t.Optional[T_MODEL_VIEW]:
+    def get_form(self) -> t.Union[T_MODEL_VIEW, None]:
         """
         If you want to use completely custom form for inline field, you can override
         Flask-Admin form generation logic by overriding this method and returning your
@@ -189,9 +189,7 @@ class InlineFormAdmin(InlineBaseFormAdmin):
 
 
 class ModelConverterBase:
-    def __init__(
-        self, converters: t.Optional[dict] = None, use_mro: bool = True
-    ) -> None:
+    def __init__(self, converters: dict | None = None, use_mro: bool = True) -> None:
         self.use_mro = use_mro
 
         if not converters:
@@ -205,8 +203,8 @@ class ModelConverterBase:
 
         self.converters = converters
 
-    def get_converter(self, column: T_SQLALCHEMY_COLUMN) -> t.Optional[t.Callable]:
-        types: t.Union[list[type], tuple[type, ...]]
+    def get_converter(self, column: T_SQLALCHEMY_COLUMN) -> t.Callable | None:
+        types: list[type] | tuple[type, ...]
         if self.use_mro:
             types = inspect.getmro(type(column.type))
         else:
@@ -249,7 +247,7 @@ class InlineModelConverterBase:
         """
         self.view = view
 
-    def get_label(self, info: T_MODEL_VIEW, name: str) -> t.Optional[str]:
+    def get_label(self, info: T_MODEL_VIEW, name: str) -> str | None:
         """
         Get inline model field label
 
@@ -271,10 +269,8 @@ class InlineModelConverterBase:
 
     def get_info(
         self,
-        p: t.Union[
-            tuple[T_ORM_MODEL, dict[str, t.Any]], InlineFormAdmin, type[T_ORM_MODEL]
-        ],
-    ) -> t.Optional[InlineFormAdmin]:
+        p: tuple[T_ORM_MODEL, dict[str, t.Any]] | InlineFormAdmin | type[T_ORM_MODEL],
+    ) -> InlineFormAdmin | None:
         """
         Figure out InlineFormAdmin information.
 

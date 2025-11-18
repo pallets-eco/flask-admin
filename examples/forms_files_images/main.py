@@ -1,7 +1,5 @@
 import os
 import os.path as op
-from typing import Optional
-from typing import Union
 
 import jinja2.runtime
 from flask import Flask
@@ -137,8 +135,8 @@ class FileView(ModelView):
 
 class ImageView(ModelView):
     def _list_thumbnail(
-        view, context: Optional[jinja2.runtime.Context], model, name: str
-    ) -> Union[str, Markup]:
+        view, context: jinja2.runtime.Context | None, model, name: str
+    ) -> str | Markup:
         if not model.path:
             return ""
 

@@ -60,7 +60,7 @@ class ModelView(BaseModelView):
     MongoEngine model scaffolding.
     """
 
-    column_filters: t.Optional[t.Collection[t.Union[str, BaseFilter]]] = None
+    column_filters: t.Collection[str | BaseFilter] | None = None
     """
         Collection of the column filters.
 
@@ -161,7 +161,7 @@ class ModelView(BaseModelView):
         List of allowed search field types.
     """
 
-    form_subdocuments: t.Optional[dict[t.Any, t.Any]] = None
+    form_subdocuments: dict[t.Any, t.Any] | None = None
     """
         Subdocument configuration options.
 
@@ -523,14 +523,14 @@ class ModelView(BaseModelView):
 
     def get_list(  # type: ignore[override]
         self,
-        page: t.Optional[int],
+        page: int | None,
         sort_column: str,
         sort_desc: bool,
-        search: t.Optional[str],
-        filters: t.Optional[t.Sequence[tuple[int, str, str]]],
+        search: str | None,
+        filters: t.Sequence[tuple[int, str, str]] | None,
         execute: bool = True,
-        page_size: t.Optional[int] = None,
-    ) -> tuple[t.Optional[int], Document]:
+        page_size: int | None = None,
+    ) -> tuple[int | None, Document]:
         """
         Get list of objects from MongoEngine
 

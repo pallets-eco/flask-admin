@@ -1,5 +1,3 @@
-import typing as t
-
 from flask_admin.contrib.geoa import form
 from flask_admin.contrib.geoa import typefmt
 from flask_admin.contrib.sqla import ModelView as SQLAModelView
@@ -10,5 +8,5 @@ class ModelView(SQLAModelView):
     column_type_formatters = typefmt.DEFAULT_FORMATTERS
     # tile_layer_url is prefixed with '//' in flask_admin/static/admin/js/form.js
     # Leave it as None or set it to a string starting with a hostname, NOT "http".
-    tile_layer_url: t.Optional[str] = None
-    tile_layer_attribution: t.Optional[str] = None
+    tile_layer_url: str | None = None
+    tile_layer_attribution: str | None = None

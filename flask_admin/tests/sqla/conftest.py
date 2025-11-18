@@ -27,6 +27,10 @@ def db(app):
     db = SQLAlchemy(app)
     yield db
 
+    with app.app_context():
+        db.session.close()
+        db.engine.dispose()
+
 
 @pytest.fixture
 def postgres_db(app):
@@ -39,6 +43,10 @@ def postgres_db(app):
 
     db = SQLAlchemy(app)
     yield db
+
+    with app.app_context():
+        db.session.close()
+        db.engine.dispose()
 
 
 @pytest.fixture

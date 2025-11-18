@@ -20,8 +20,8 @@ class BaseRule:
     """
 
     def __init__(self) -> None:
-        self.parent: t.Optional[BaseRule] = None
-        self.rule_set: t.Optional[RuleSet] = None
+        self.parent: BaseRule | None = None
+        self.rule_set: RuleSet | None = None
 
     def configure(
         self, rule_set: "RuleSet", parent: t.Optional["BaseRule"]
@@ -48,7 +48,7 @@ class BaseRule:
     def __call__(
         self,
         form: Form,
-        form_opts: t.Optional[T_FORM_OPTS] = None,
+        form_opts: t.Union[T_FORM_OPTS, None] = None,
         field_args: t.Any = None,
     ) -> str:
         """
@@ -71,7 +71,7 @@ class NestedRule(BaseRule):
 
     def __init__(
         self,
-        rules: t.Optional[t.Sequence[t.Union[str, "Header"]]] = None,
+        rules: t.Optional[t.Sequence[t.Union[str, "Header"]]] = None,  # ruff: noqa
         separator: str = "",
     ) -> None:
         """
@@ -85,10 +85,10 @@ class NestedRule(BaseRule):
         if rules is None:
             rules = []
         super().__init__()
-        self.rules: list[t.Union[str, Header, BaseRule]] = list(rules)
+        self.rules: list[str | Header | BaseRule] = list(rules)
         self.separator = separator
 
-    def configure(self, rule_set: "RuleSet", parent: t.Optional[BaseRule]) -> BaseRule:
+    def configure(self, rule_set: "RuleSet", parent: BaseRule | None) -> BaseRule:
         """
         Configure rule.
 
@@ -120,7 +120,7 @@ class NestedRule(BaseRule):
     def __call__(
         self,
         form: Form,
-        form_opts: t.Optional[T_FORM_OPTS] = None,
+        form_opts: t.Union[T_FORM_OPTS, None] = None,
         field_args: t.Any = None,
     ) -> str:
         """
@@ -171,7 +171,7 @@ class Text(BaseRule):
     def __call__(
         self,
         form: Form,
-        form_opts: t.Optional[T_FORM_OPTS] = None,
+        form_opts: t.Union[T_FORM_OPTS, None] = None,
         field_args: t.Any = None,
     ) -> str:
         if field_args is None:
@@ -210,7 +210,7 @@ class Macro(BaseRule):
         self.macro_name = macro_name
         self.default_args = kwargs
 
-    def _resolve(self, context: Context, name: str) -> t.Optional[WTField]:
+    def _resolve(self, context: Context, name: str) -> WTField | None:
         """
         Resolve macro in a Jinja2 context
 
@@ -242,7 +242,7 @@ class Macro(BaseRule):
     def __call__(
         self,
         form: Form,
-        form_opts: t.Optional[T_FORM_OPTS] = None,
+        form_opts: t.Union[T_FORM_OPTS, None] = None,
         field_args: t.Any = None,
     ) -> str:
         """
@@ -287,7 +287,7 @@ class Container(Macro):
         super().__init__(macro_name, **kwargs)
         self.child_rule = child_rule
 
-    def configure(self, rule_set: "RuleSet", parent: t.Optional[BaseRule]) -> BaseRule:
+    def configure(self, rule_set: "RuleSet", parent: BaseRule | None) -> BaseRule:
         """
         Configure rule.
 
@@ -306,7 +306,7 @@ class Container(Macro):
     def __call__(
         self,
         form: Form,
-        form_opts: t.Optional[T_FORM_OPTS] = None,
+        form_opts: t.Union[T_FORM_OPTS, None] = None,
         field_args: t.Any = None,
     ) -> str:
         """
@@ -358,7 +358,7 @@ class Field(Macro):
     def __call__(
         self,
         form: Form,
-        form_opts: t.Optional[T_FORM_OPTS] = None,
+        form_opts: t.Union[T_FORM_OPTS, None] = None,
         field_args: t.Any = None,
     ) -> str:
         """
@@ -415,7 +415,7 @@ class FieldSet(NestedRule):
     def __init__(
         self,
         rules: t.Sequence[str],
-        header: t.Optional[T_TRANSLATABLE] = None,
+        header: T_TRANSLATABLE | None = None,
         separator: str = "",
     ) -> None:
         """
@@ -439,12 +439,12 @@ class FieldSet(NestedRule):
 class Row(NestedRule):
     def __init__(self, *columns: BaseRule, **kw: t.Any) -> None:
         super().__init__()
-        self.rules: list[t.Union[str, Header, BaseRule]] = columns  # type:ignore[assignment]
+        self.rules: list[str | Header | BaseRule] = columns  # type:ignore[assignment]
 
     def __call__(
         self,
         form: Form,
-        form_opts: t.Optional[T_FORM_OPTS] = None,
+        form_opts: t.Union[T_FORM_OPTS, None] = None,
         field_args: t.Any = None,
     ) -> str:
         if field_args is None:
@@ -470,8 +470,8 @@ class Group(Macro):
     def __init__(
         self,
         field_name: str,
-        prepend: t.Union[str, tuple[str], list[str], None] = None,
-        append: t.Union[str, tuple[str], list[str], None] = None,
+        prepend: str | tuple[str] | list[str] | None = None,
+        append: str | tuple[str] | list[str] | None = None,
         **kwargs: t.Any,
     ) -> None:
         """
@@ -483,7 +483,7 @@ class Group(Macro):
         self._addons = []
 
         if prepend:
-            if not isinstance(prepend, (tuple, list)):
+            if not isinstance(prepend, tuple | list):
                 prepend = [prepend]
 
             for cnf in prepend:
@@ -496,7 +496,7 @@ class Group(Macro):
                     self._addons.append(cnf)
 
         if append:
-            if not isinstance(append, (tuple, list)):
+            if not isinstance(append, tuple | list):
                 append = [append]
 
             for cnf in append:
@@ -521,7 +521,7 @@ class Group(Macro):
     def __call__(
         self,
         form: Form,
-        form_opts: t.Optional[T_FORM_OPTS] = None,
+        form_opts: t.Union[T_FORM_OPTS, None] = None,
         field_args: t.Any = None,
     ) -> str:
         """
@@ -550,7 +550,7 @@ class Group(Macro):
         prepend = []
         append = []
         for cnf in self._addons:
-            ctn: t.Optional[str] = None
+            ctn: str | None = None
             typ = cnf["type"]
             if typ == "field":
                 name = cnf["name"]
@@ -595,7 +595,7 @@ class RuleSet:
     def __init__(
         self,
         view: t.Union[T_MODEL_VIEW, T_INLINE_BASE_FORM_ADMIN],
-        rules: t.Sequence[t.Union[str, tuple, list, BaseRule, FieldSet]],
+        rules: t.Sequence[str | tuple | list | BaseRule | FieldSet],
     ) -> None:
         """
         Constructor.
@@ -626,8 +626,8 @@ class RuleSet:
 
     def configure_rules(
         self,
-        rules: t.Sequence[t.Union[str, tuple, list, BaseRule, FieldSet]],
-        parent: t.Optional[BaseRule] = None,
+        rules: t.Sequence[str | tuple | list | BaseRule | FieldSet],
+        parent: BaseRule | None = None,
     ) -> list[BaseRule]:
         """
         Configure all rules recursively - bind them to current RuleSet and
@@ -643,7 +643,7 @@ class RuleSet:
         for r in rules:
             if isinstance(r, string_types):
                 result.append(self.convert_string(r).configure(self, parent))
-            elif isinstance(r, (tuple, list)):
+            elif isinstance(r, tuple | list):
                 row = Row(*r)
                 result.append(row.configure(self, parent))
             else:

@@ -35,7 +35,7 @@ class Unique:
         db_session: T_SQLALCHEMY_SESSION,
         model: type[T_SQLALCHEMY_MODEL],
         column: T_COLUMN,
-        message: t.Optional[T_TRANSLATABLE] = None,
+        message: T_TRANSLATABLE | None = None,
     ) -> None:
         self.db_session = db_session
         self.model = model
@@ -66,7 +66,7 @@ class ItemsRequired(InputRequired):
     to require a minimum number of related items.
     """
 
-    def __init__(self, min: int = 1, message: t.Optional[T_TRANSLATABLE] = None):
+    def __init__(self, min: int = 1, message: T_TRANSLATABLE | None = None):
         super().__init__(message=message)
         self.min = min
 

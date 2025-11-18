@@ -11,7 +11,7 @@ CHAR_ESCAPE = "."
 CHAR_SEPARATOR = ","
 
 
-def import_module(name: str, required: bool = True) -> t.Optional[ModuleType]:
+def import_module(name: str, required: bool = True) -> ModuleType | None:
     """
     Import module by name
 
@@ -86,7 +86,7 @@ def rec_getattr(obj: t.Any, attr: str, default: t.Any = None) -> t.Any:
         return default
 
 
-def get_dict_attr(obj: t.Any, attr: str, default: t.Any = None) -> t.Optional[t.Any]:
+def get_dict_attr(obj: t.Any, attr: str, default: t.Any = None) -> t.Any | None:
     """
     Get attribute of the object without triggering its __getattr__.
 
@@ -104,7 +104,7 @@ def get_dict_attr(obj: t.Any, attr: str, default: t.Any = None) -> t.Optional[t.
     return default
 
 
-def escape(value: t.Union[str, bytes]) -> str:
+def escape(value: str | bytes) -> str:
     return (
         as_unicode(value)
         .replace(CHAR_ESCAPE, CHAR_ESCAPE + CHAR_ESCAPE)
@@ -112,7 +112,7 @@ def escape(value: t.Union[str, bytes]) -> str:
     )
 
 
-def iterencode(iter: t.Iterable[t.Union[str, bytes, int]]) -> str:
+def iterencode(iter: t.Iterable[str | bytes | int]) -> str:
     """
     Encode enumerable as compact string representation.
 

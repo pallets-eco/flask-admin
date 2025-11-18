@@ -58,7 +58,7 @@ def filter_foreign_columns(base_table: Table, columns: list) -> list:
 
 def get_primary_key(
     model: type[T_ORM_MODEL],
-) -> t.Union[tuple[t.Any, ...], t.Any]:
+) -> tuple[t.Any, ...] | t.Any:
     """
     Return primary key name from a model. If the primary key consists of multiple
     columns, return the corresponding tuple
@@ -157,7 +157,7 @@ def get_query_for_ids(
 
 
 def get_columns_for_field(
-    field: t.Union[InstrumentedAttribute, ColumnProperty],
+    field: InstrumentedAttribute | ColumnProperty,
 ) -> list[Column]:
     if (
         not field
@@ -179,9 +179,9 @@ def need_join(model: type[T_SQLALCHEMY_MODEL], table: Table) -> bool:
 
 def get_field_with_path(
     model: type[T_SQLALCHEMY_MODEL],
-    name: t.Union[str, InstrumentedAttribute, ColumnProperty],
+    name: str | InstrumentedAttribute | ColumnProperty,
     return_remote_proxy_attr: bool = True,
-) -> tuple[t.Optional[t.Any], list]:
+) -> tuple[t.Any | None, list]:
     """
     Resolve property by name and figure out its join path.
 
@@ -257,7 +257,7 @@ def is_hybrid_property(model: type[T_SQLALCHEMY_MODEL], attr_name: str) -> bool:
                 last_model = attr.property._clsregistry_resolve_name(last_model)()
             elif isinstance(last_model, _class_resolver):
                 last_model = model._decl_class_registry[last_model.arg]
-            elif isinstance(last_model, (types.FunctionType, types.MethodType)):
+            elif isinstance(last_model, types.FunctionType | types.MethodType):
                 last_model = last_model()
         last_name = names[-1]
         return last_name in get_hybrid_properties(last_model)
@@ -269,7 +269,7 @@ def is_relationship(attr: InstrumentedAttribute) -> bool:
     return hasattr(attr, "property") and hasattr(attr.property, "direction")
 
 
-def is_association_proxy(attr: t.Union[ColumnProperty, InstrumentedAttribute]) -> bool:
+def is_association_proxy(attr: ColumnProperty | InstrumentedAttribute) -> bool:
     if hasattr(attr, "parent"):
         attr = attr.parent  # type: ignore[assignment]
     return hasattr(attr, "extension_type") and attr.extension_type == ASSOCIATION_PROXY
