@@ -29,3 +29,4 @@ env
 .tox/
 .env
 doc/_build
+.vscode/
