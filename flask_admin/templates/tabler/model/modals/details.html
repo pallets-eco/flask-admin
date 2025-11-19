@@ -1,0 +1,57 @@
+{% import "admin/static.html" as admin_static with context %}
+{% import "admin/lib.html" as lib with context %}
+{% block body %}
+    <div class="modal-header">
+        {% block header_text %}
+            <h3>{{ _gettext("View Record") + ' #' + request.args.get('id') }}</h3>
+        {% endblock header_text %}
+        <div class="card-actions">
+            {% set confirmation = _gettext('Are you sure you want to leave this page?') %}
+            <a class="btn"
+               href="{{ url_for('.details_view', id=request.args.get('id') , url=return_url) }}"
+               title="{{ _gettext("Full Screen") }}"
+               onclick="return confirm('{{ confirmation }}');">
+                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                    <i class="fa fa-expand"></i>
+                </span>
+                {{ _gettext("Full Screen") }}
+            </a>
+        </div>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _gettext("Cancel") }}"></button>
+    </div>
+    <div class="modal-body">
+        {% block details_search %}
+            <div class="input-group fa_filter_container">
+                <label class="input-group-text" id="fa_filter_label" for="fa_filter">{{ _gettext("Filter") }}</label>
+                <input class="form-control"
+                       id="fa_filter"
+                       type="text"
+                       aria-describedby="fa_filter_label">
+            </div>
+        {% endblock details_search %}
+        {% block details_table %}
+            <table class="table table-hover table-bordered searchable">
+                {% for c, name in details_columns %}
+                    <tr>
+                        <td>
+                            <b>{{ name }}</b>
+                        </td>
+                        <td>{{ get_value(model, c) }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endblock details_table %}
+    </div>
+{% endblock body %}
+{% block tail %}
+    <script src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
+    <script>
+        $(function() {
+            // Apply flask-admin form styles after the modal is loaded
+            window.faForm.applyGlobalStyles(document);
+        });
+    </script>
+{% endblock tail %}
