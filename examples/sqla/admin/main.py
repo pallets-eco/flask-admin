@@ -7,6 +7,7 @@ from flask_admin.contrib.sqla import filters
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter
 from flask_admin.contrib.sqla.filters import FilterEqual
+from flask_admin.form import rules
 from flask_admin.theme import Bootstrap4Theme
 from markupsafe import Markup
 from wtforms import validators
@@ -131,6 +132,46 @@ class UserAdmin(ModelView):
         "first_name",
         "type",
         "email",
+    ]
+
+    create_template = "admin/users/create.html"
+    form_create_rules = [
+        rules.Header("Users"),  # HTML header
+        rules.HTML("<hr>"),  # HTML horizontal line
+        "last_name",  # show it as first field
+        "first_name",  # show it as second field
+        rules.Text("Foobar"),  # static text
+        rules.FieldSet(
+            (
+                "type",
+                rules.Row(
+                    rules.Group(
+                        "dialling_code",
+                        prepend="➕",
+                        append='<i class="fa fa-phone"></i>',
+                    ),
+                    "local_phone_number",
+                    "email",
+                ),
+                rules.Text("--- The end of contact details ---"),
+            ),
+            "Contact details:",
+        ),  # field set with legend
+        # custom container (see templates/admin/create.html)
+        rules.Container(
+            "wrap_in_card",
+            rules.NestedRule(
+                separator="<hr>",
+                rules=[
+                    rules.Field("enum_choice_field"),
+                    rules.Field("sqla_utils_choice_field"),
+                    rules.Field("sqla_utils_enum_choice_field"),
+                ],
+            ),
+            card_title="Some Choices",
+        ),
+        # render a macro (see templates/admin/create.html)
+        rules.Macro("my_macro", arg1="Just a Title", arg2="bla bla bla"),
     ]
 
     column_auto_select_related = True
