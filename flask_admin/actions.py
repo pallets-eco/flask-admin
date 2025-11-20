@@ -11,7 +11,9 @@ from flask_admin.helpers import flash_errors
 from flask_admin.helpers import get_redirect_target
 
 
-def action(name: str, text: str, confirmation: str | None = None) -> t.Callable:
+def action(
+    name: str, text: str, confirmation: str | None = None
+) -> t.Callable[..., t.Any]:
     """
     Use this decorator to expose actions that span more than one
     entity (model, file, etc)
@@ -25,7 +27,7 @@ def action(name: str, text: str, confirmation: str | None = None) -> t.Callable:
         unconditionally.
     """
 
-    def wrap(f: t.Callable) -> t.Callable:
+    def wrap(f: t.Callable[..., t.Any]) -> t.Callable[..., t.Any]:
         f._action = (name, text, confirmation)  # type: ignore[attr-defined]
         return f
 
