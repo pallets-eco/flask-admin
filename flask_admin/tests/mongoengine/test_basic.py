@@ -1,3 +1,6 @@
+from datetime import datetime
+
+import pytest
 from mongoengine import Document
 from mongoengine import StringField
 from mongoengine.connection import get_db
@@ -18,6 +21,11 @@ class TestForm(form.Form):
     __test__ = False
     test1 = fields.StringField("Test1")
     test2 = fields.StringField("Test2")
+
+    intfield = fields.IntegerField("intfield")
+    floatfield = fields.FloatField("floatfield")
+    boolfield = fields.BooleanField("boolfield")
+    datefield = fields.DateField("datefield")
 
 
 class TestView(ModelView):
@@ -59,6 +67,7 @@ def test_model(app, db, admin):
             "options": None,
             "data_type": None,
             "key_name": None,
+            "url_value": None,
             "column": "test1",
         },
         {
@@ -66,6 +75,7 @@ def test_model(app, db, admin):
             "options": None,
             "data_type": None,
             "key_name": None,
+            "url_value": None,
             "column": "test2",
         },
     ]
@@ -123,3 +133,230 @@ def test_model(app, db, admin):
     data = rv.data.decode("utf-8")
     assert "test2large" not in data
     assert "test2" in data
+
+
+def create_filter_params():
+    params = [
+        (filters.FilterEqual, "test1", "x", "flt0_0", "flt0_test1_equals", "x"),
+        (filters.FilterNotEqual, "test1", "x", "flt0_0", "flt0_test1_not_equal", "x"),
+        (filters.FilterLike, "test1", "x", "flt0_0", "flt0_test1_contains", "x"),
+        (filters.FilterNotLike, "test1", "x", "flt0_0", "flt0_test1_not_contains", "x"),
+        (filters.FilterGreater, "test1", "x", "flt0_0", "flt0_test1_greater_than", "x"),
+        (filters.FilterSmaller, "test1", "x", "flt0_0", "flt0_test1_smaller_than", "x"),
+        (filters.FilterEmpty, "test1", "1", "flt0_0", "flt0_test1_empty", "1"),
+        (
+            filters.FilterInList,
+            "test1",
+            ["x", "y"],
+            "flt0_0",
+            "flt0_test1_in_list",
+            "x,y",
+        ),
+        (
+            filters.FilterNotInList,
+            "test1",
+            ["x", "y"],
+            "flt0_0",
+            "flt0_test1_not_in_list",
+            "x,y",
+        ),
+        (
+            filters.BooleanEqualFilter,
+            "boolfield",
+            "1",
+            "flt0_0",
+            "flt0_boolfield_equals",
+            "1",
+        ),
+        (
+            filters.BooleanNotEqualFilter,
+            "boolfield",
+            "1",
+            "flt0_0",
+            "flt0_boolfield_not_equal",
+            "1",
+        ),
+        (
+            filters.IntEqualFilter,
+            "intfield",
+            10,
+            "flt0_0",
+            "flt0_intfield_equals",
+            "10",
+        ),
+        (
+            filters.IntNotEqualFilter,
+            "intfield",
+            10,
+            "flt0_0",
+            "flt0_intfield_not_equal",
+            "10",
+        ),
+        (
+            filters.IntGreaterFilter,
+            "intfield",
+            10,
+            "flt0_0",
+            "flt0_intfield_greater_than",
+            "10",
+        ),
+        (
+            filters.IntSmallerFilter,
+            "intfield",
+            10,
+            "flt0_0",
+            "flt0_intfield_smaller_than",
+            "10",
+        ),
+        (
+            filters.IntInListFilter,
+            "intfield",
+            [10, 20],
+            "flt0_0",
+            "flt0_intfield_in_list",
+            "10,20",
+        ),
+        (
+            filters.IntNotInListFilter,
+            "intfield",
+            [10, 20],
+            "flt0_0",
+            "flt0_intfield_not_in_list",
+            "10,20",
+        ),
+        (
+            filters.FloatEqualFilter,
+            "floatfield",
+            1.2,
+            "flt0_0",
+            "flt0_floatfield_equals",
+            "1.2",
+        ),
+        (
+            filters.FloatNotEqualFilter,
+            "floatfield",
+            1.2,
+            "flt0_0",
+            "flt0_floatfield_not_equal",
+            "1.2",
+        ),
+        (
+            filters.FloatGreaterFilter,
+            "floatfield",
+            1.2,
+            "flt0_0",
+            "flt0_floatfield_greater_than",
+            "1.2",
+        ),
+        (
+            filters.FloatSmallerFilter,
+            "floatfield",
+            1.2,
+            "flt0_0",
+            "flt0_floatfield_smaller_than",
+            "1.2",
+        ),
+        (
+            filters.FloatInListFilter,
+            "floatfield",
+            [1.2, 2.4],
+            "flt0_0",
+            "flt0_floatfield_in_list",
+            "1.2,2.4",
+        ),
+        (
+            filters.FloatNotInListFilter,
+            "floatfield",
+            [1.2, 2.4],
+            "flt0_0",
+            "flt0_floatfield_not_in_list",
+            "1.2,2.4",
+        ),
+        (
+            filters.DateTimeEqualFilter,
+            "datefield",
+            datetime(2025, 11, 1),
+            "flt0_0",
+            "flt0_datefield_equals",
+            "2025-11-01 00:00:00",
+        ),
+        (
+            filters.DateTimeNotEqualFilter,
+            "datefield",
+            datetime(2025, 11, 1),
+            "flt0_0",
+            "flt0_datefield_not_equal",
+            "2025-11-01 00:00:00",
+        ),
+        (
+            filters.DateTimeGreaterFilter,
+            "datefield",
+            datetime(2025, 11, 1),
+            "flt0_0",
+            "flt0_datefield_greater_than",
+            "2025-11-01 00:00:00",
+        ),
+        (
+            filters.DateTimeSmallerFilter,
+            "datefield",
+            datetime(2025, 11, 1),
+            "flt0_0",
+            "flt0_datefield_smaller_than",
+            "2025-11-01 00:00:00",
+        ),
+        (
+            filters.DateTimeBetweenFilter,
+            "datefield",
+            (datetime(2025, 11, 1), datetime(2025, 11, 15)),
+            "flt0_0",
+            "flt0_datefield_between",
+            "2025-11-01 00:00:00 to 2025-11-15 00:00:00",
+        ),
+        (
+            filters.DateTimeNotBetweenFilter,
+            "datefield",
+            (datetime(2025, 11, 1), datetime(2025, 11, 15)),
+            "flt0_0",
+            "flt0_datefield_not_between",
+            "2025-11-01 00:00:00 to 2025-11-15 00:00:00",
+        ),
+    ]
+    return params
+
+
+@pytest.mark.parametrize(
+    "FilterClass, col, filter_value, arg_key, arg_named_key, expected_value",
+    create_filter_params(),
+)
+def test_url_for(
+    app,
+    db,
+    admin,
+    FilterClass,
+    col,
+    filter_value,
+    arg_key,
+    arg_named_key,
+    expected_value,
+):
+    class MyView(ModelView):
+        __test__ = False
+
+        column_list = ("test1", "test2", "test3", "test4")
+        column_sortable_list = ("test1", "test2")
+        column_filters = [
+            FilterClass(col, col),
+        ]
+        form = TestForm
+
+    view = MyView(Test, "Test", endpoint="user")
+    admin.add_view(view)
+
+    d1 = filter_value
+    filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+    assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
+
+    view.named_filter_urls = True
+    d1 = filter_value
+    filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+    assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"

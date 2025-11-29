@@ -1,3 +1,5 @@
+import typing as t
+
 from bson.errors import InvalidId
 from bson.objectid import ObjectId
 from mongoengine.queryset import Q
@@ -118,6 +120,9 @@ class FilterInList(BaseMongoEngineFilter):
     def operation(self):
         return lazy_gettext("in list")
 
+    def stringify(self, value: t.Any) -> str:
+        return ",".join(str(v) for v in value)
+
 
 class FilterNotInList(FilterInList):
     def __init__(self, column, name, options=None, data_type=None, url_value=None):
@@ -131,6 +136,9 @@ class FilterNotInList(FilterInList):
 
     def operation(self):
         return lazy_gettext("not in list")
+
+    def stringify(self, value: t.Any) -> str:
+        return ",".join(str(v) for v in value)
 
 
 # Customized type filters

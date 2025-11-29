@@ -208,10 +208,18 @@ Implementing filters
             def validate(self, value):
                 return True
 
-            # You can "clean" values before they will be
-            # passed to the your data access layer
+            # You can "clean" the value before it is passed to the data
+            # access layer. Usually it is used to parse string values into
+            # a valid clean data type. For example, you can convert string
+            # to integer, etc.
             def clean(self, value):
                 return value
+
+            # You can also convert value back to string representation
+            # for displaying in the URL.
+            def stringify(self, value):
+                return str(value)
+
 
 
 Feel free ask questions if you have problems adding a new model backend.

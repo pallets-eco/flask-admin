@@ -989,14 +989,14 @@ class BaseModelView(BaseView, ActionsMixin):
                 self._filter_groups[key].append(
                     {
                         "index": i,
-                        "arg": self.get_filter_arg(i, flt),
+                        "arg": self.get_filter_arg_name(i, flt),
                         "operation": flt.operation(),
                         "options": flt.get_options(self) or None,
                         "type": flt.data_type,
                     }
                 )
 
-                self._filter_args[self.get_filter_arg(i, flt)] = (i, flt)
+                self._filter_args[self.get_filter_arg_name(i, flt)] = (i, flt)
         else:
             self._filter_groups = None
             self._filter_args = None
@@ -1320,7 +1320,7 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             return None
 
-    def get_filter_arg(self, index: int, flt: BaseFilter) -> str:
+    def get_filter_arg_name(self, index: int, flt: BaseFilter) -> str:
         """
         Given a filter `flt`, return a unique name for that filter in
         this view.
@@ -1416,7 +1416,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             idx, filter_arg = filter_arg
 
-            farg = self.get_filter_arg(
+            farg = self.get_filter_arg_name(
                 idx,
                 self._filters[idx],  # type: ignore[index]
             )
@@ -2047,12 +2047,12 @@ class BaseModelView(BaseView, ActionsMixin):
         kwargs = {}
 
         if filters:
-            for i, pair in enumerate(filters):
-                idx, flt_name, value = pair
+            for i, flt in enumerate(filters):
+                idx, flt_name, value = flt
 
                 key = "flt%d_%s" % (
                     i,
-                    self.get_filter_arg(
+                    self.get_filter_arg_name(
                         idx,
                         self._filters[idx],  # type: ignore[index]
                     ),

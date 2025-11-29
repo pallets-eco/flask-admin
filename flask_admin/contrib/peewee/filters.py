@@ -125,6 +125,9 @@ class FilterInList(BasePeeweeFilter):
     def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("in list")
 
+    def stringify(self, value: t.Any) -> str:
+        return ",".join(str(v) for v in value)
+
 
 class FilterNotInList(FilterInList):
     def apply(self, query: t.Any, value: t.Any) -> t.Any:
@@ -133,6 +136,9 @@ class FilterNotInList(FilterInList):
 
     def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("not in list")
+
+    def stringify(self, value: t.Any) -> str:
+        return ",".join(str(v) for v in value)
 
 
 # Customized type filters

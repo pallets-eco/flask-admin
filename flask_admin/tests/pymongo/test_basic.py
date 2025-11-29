@@ -18,7 +18,7 @@ class TestForm(form.Form):
 class TestView(ModelView):
     __test__ = False
     column_list = ("test1", "int_field", "bool_field", "test4")
-    column_sortable_list = ("test1", "int_field")
+    column_sortable_list = ("test1", "test2", "int_field")
 
     form = TestForm
 

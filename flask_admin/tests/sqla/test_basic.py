@@ -90,7 +90,6 @@ def create_models(db):
         test2 = db.Column(db.Unicode(20))
         test3 = db.Column(db.Text)
         test4 = db.Column(db.UnicodeText)
-        test5 = db.Column(db.Numeric(10, 2))
         bool_field = db.Column(db.Boolean)
         date_field = db.Column(db.Date)
         time_field = db.Column(db.Time)
@@ -109,6 +108,7 @@ def create_models(db):
         sqla_utils_ip_address = db.Column(IPAddressType)
         sqla_utils_currency = db.Column(CurrencyType)
         sqla_utils_color = db.Column(ColorType)
+        test5 = db.Column(db.Numeric(10, 2))
 
         def __unicode__(self):
             return self.test1
@@ -487,6 +487,7 @@ def test_exclude_columns(app, db, admin):
             ("bool_field", "Bool Field"),
             ("email_field", "Email Field"),
             ("choice_field", "Choice Field"),
+            ("test5", "Test5"),
         ]
 
         client = app.test_client()
@@ -3062,7 +3063,7 @@ def test_modelview_named_filter_localization(request, app):
         assert filters
         flt = filters[2]
         with app.test_request_context():
-            flt_name = view.get_filter_arg(2, flt)
+            flt_name = view.get_filter_arg_name(2, flt)
         assert "test1_equals" == flt_name
 
 
