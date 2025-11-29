@@ -1363,6 +1363,73 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return None
 
+    def _find_filter_arg(self, flt: BaseFilter) -> str | None:
+        """
+        Given a filter `flt`, return the unique name for that filter in
+        this view.
+
+        :param flt:
+            Filter instance
+        """
+        if not self._filter_args:
+            return None
+
+        found = None
+        for k, v in self._filter_args.items():
+            filter_arg = v[1]
+            flt_col_name = (
+                flt.column.name if hasattr(flt.column, "name") else str(flt.column)
+            )
+            filter_arg_col_name = (
+                filter_arg.column.name
+                if hasattr(filter_arg.column, "name")
+                else str(filter_arg.column)
+            )
+
+            if filter_arg_col_name.lower() == flt_col_name.lower() and type(
+                flt
+            ) == type(filter_arg):
+                found = k
+                break
+
+        return self._filter_args[found] if found else None
+
+    def url_for(
+        self, search: str | None = None, filters: list[BaseFilter] | None = None
+    ) -> str:
+        url_args = []
+        if search:
+            url_args.append(f"search={search}")
+
+        if filters is None:
+            filters = []
+
+        for i, flt in enumerate(filters):
+            filter_arg = self._find_filter_arg(flt)
+            if not filter_arg:
+                warnings.warn(
+                    f"The filter {flt.__class__.__name__}('{flt.column}') is not found "
+                    "in filter arguments, did you forget to add it in column_filters?",
+                    stacklevel=1,
+                )
+                continue
+
+            idx, filter_arg = filter_arg
+
+            farg = self.get_filter_arg(
+                idx,
+                self._filters[idx],  # type: ignore[index]
+            )
+
+            url_args.append(flt.get_url_argument(i, farg))
+
+        url = f"/{self.admin.endpoint}/{self.endpoint}"
+        url_args = "&".join(url_args)
+        if url_args:
+            url = f"{url}/?{url_args}"
+
+        return url
+
     # Form helpers
     def scaffold_form(self) -> type[Form]:
         """
@@ -1941,6 +2008,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return None
 
+    # TODO: rename to get_view_args()
     def _get_list_extra_args(self) -> ViewArgs:
         """
         Return arguments from query string.

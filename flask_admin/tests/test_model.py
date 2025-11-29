@@ -299,11 +299,11 @@ def test_column_searchable_list(app, admin):
 
 
 def test_column_filters(app, admin):
-    view = MockModelView(Model, column_filters=["col1", "col2"])
+    view = MockModelView(Model, column_filters=["col1", "col2", "col3"])
     admin.add_view(view)
 
     assert view._filters
-    assert len(view._filters) == 2
+    assert len(view._filters) == 3
     assert view._filters[0].name == "col1"
     assert view._filters[1].name == "col2"
     assert view._filter_groups

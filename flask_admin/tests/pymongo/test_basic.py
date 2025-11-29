@@ -1,6 +1,8 @@
+import pytest
 from wtforms import fields
 from wtforms import form
 
+from flask_admin.contrib.pymongo import filters
 from flask_admin.contrib.pymongo import ModelView
 
 
@@ -9,11 +11,14 @@ class TestForm(form.Form):
     test1 = fields.StringField("Test1")
     test2 = fields.StringField("Test2")
 
+    int_field = fields.IntegerField("int_field")
+    bool_field = fields.BooleanField("bool_field")
+
 
 class TestView(ModelView):
     __test__ = False
-    column_list = ("test1", "test2", "test3", "test4")
-    column_sortable_list = ("test1", "test2")
+    column_list = ("test1", "int_field", "bool_field", "test4")
+    column_sortable_list = ("test1", "int_field")
 
     form = TestForm
 
@@ -76,3 +81,85 @@ def test_model(app, db, admin):
     rv = client.post(url)
     assert rv.status_code == 302
     assert db.test.estimated_document_count() == 0
+
+
+def create_filter_params():
+    params = [
+        (filters.FilterEqual, "test1", "x", "flt0_0", "flt0_test1_equals", "x"),
+        (filters.FilterNotEqual, "test1", "x", "flt0_0", "flt0_test1_not_equal", "x"),
+        (filters.FilterLike, "test1", "x", "flt0_0", "flt0_test1_contains", "x"),
+        (filters.FilterNotLike, "test1", "x", "flt0_0", "flt0_test1_not_contains", "x"),
+        (
+            filters.FilterGreater,
+            "intfield",
+            10,
+            "flt0_0",
+            "flt0_intfield_greater_than",
+            "10",
+        ),
+        (
+            filters.FilterSmaller,
+            "intfield",
+            10,
+            "flt0_0",
+            "flt0_intfield_smaller_than",
+            "10",
+        ),
+        (
+            filters.BooleanEqualFilter,
+            "boolfield",
+            True,
+            "flt0_0",
+            "flt0_boolfield_equals",
+            "1",
+        ),  # equals
+        (
+            filters.BooleanNotEqualFilter,
+            "boolfield",
+            True,
+            "flt0_0",
+            "flt0_boolfield_not_equal",
+            "1",
+        ),  # not equal
+    ]
+    return params
+
+
+@pytest.mark.parametrize(
+    "FilterClass, col, filter_value, arg_key, arg_named_key, expected_value",
+    create_filter_params(),
+)
+def test_url_for(
+    app,
+    db,
+    admin,
+    FilterClass,
+    col,
+    filter_value,
+    arg_key,
+    arg_named_key,
+    expected_value,
+):
+    class MyView(ModelView):
+        __test__ = False
+
+        column_list = ("test1", "test2", "test3", "test4")
+        column_sortable_list = ("test1", "test2")
+        column_filters = [
+            FilterClass(col, col),
+        ]
+        form = TestForm
+
+    view = MyView(db.test, endpoint="user")
+    admin.add_view(view)
+
+    # print(view.column_filters)
+
+    d1 = filter_value
+    filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+    assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
+
+    view.named_filter_urls = True
+    d1 = filter_value
+    filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+    assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"

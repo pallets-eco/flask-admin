@@ -1,5 +1,6 @@
 import pytest
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from jinja2 import StrictUndefined
 
 from flask_admin import Admin
@@ -25,6 +26,20 @@ def babel(app):
         pass
 
     yield babel
+
+
+@pytest.fixture
+def db(app):
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
+    app.config["SQLALCHEMY_ECHO"] = True
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    db = SQLAlchemy(app)
+
+    yield db
+
+    with app.app_context():
+        db.session.close()
+        db.engine.dispose()
 
 
 @pytest.fixture

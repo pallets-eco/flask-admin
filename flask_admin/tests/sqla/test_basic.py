@@ -90,6 +90,7 @@ def create_models(db):
         test2 = db.Column(db.Unicode(20))
         test3 = db.Column(db.Text)
         test4 = db.Column(db.UnicodeText)
+        test5 = db.Column(db.Numeric(10, 2))
         bool_field = db.Column(db.Boolean)
         date_field = db.Column(db.Date)
         time_field = db.Column(db.Time)
@@ -1769,6 +1770,541 @@ def test_column_filters(app, db, admin):
 
         assert "test1_val_1" in data
         assert "test1_val_2" not in data
+
+
+def test_url_for_simple(app, db, admin):
+    with app.app_context():
+        Model1, Model2 = create_models(db)
+
+        view = CustomModelView(
+            Model1,
+            db.session,
+            endpoint="user",
+            column_filters=["test1", "id", "test5", "bool_field"],
+        )
+        admin.add_view(view)
+
+    filtered_url = view.url_for()
+    assert filtered_url == "/admin/user"
+
+    filtered_url = view.url_for(search="exam", filters=[])
+    assert filtered_url == "/admin/user/?search=exam"
+
+    filtered_url = view.url_for(
+        search="exam",
+        filters=[
+            filters.FilterLike("test1", "Email", url_value="test1"),
+            filters.FilterLike("test1", "Email222", url_value="test1"),
+            filters.BooleanEqualFilter("bool_field", "active", url_value=False),
+            filters.IntInListFilter("id", "ID", url_value=[33, 30, 35]),
+            filters.FloatGreaterFilter("test5", "Salary", url_value=50000.0),
+            filters.FloatSmallerFilter("test5", "Salary", url_value=150000.0),
+        ],
+    )
+    assert (
+        filtered_url == "/admin/user/?search=exam&flt0_0=test1&flt1_0=test1&"
+        "flt2_21=0&flt3_12=33,30,35&flt4_16=50000.0&flt5_17=150000.0"
+    )
+
+
+def create_filter_params():
+    uuid1 = "a81bc81b-dead-4e5d-abff-90865d1e13b1"
+    uuid2 = "344a5ad9-6b2a-410c-aa06-401d1ae8ea39"
+
+    params = [
+        (filters.FilterLike, "test1", "x", "flt0_0", "flt0_test1_contains", "x"),
+        (filters.FilterNotLike, "test1", "x", "flt0_1", "flt0_test1_not_contains", "x"),
+        (filters.FilterEqual, "test1", "x", "flt0_2", "flt0_test1_equals", "x"),
+        (filters.FilterNotEqual, "test1", "x", "flt0_3", "flt0_test1_not_equal", "x"),
+        (filters.FilterEmpty, "test1", "1", "flt0_4", "flt0_test1_empty", "1"),
+        (
+            filters.FilterInList,
+            "test1",
+            ["x", "y"],
+            "flt0_5",
+            "flt0_test1_in_list",
+            "x,y",
+        ),
+        (
+            filters.FilterNotInList,
+            "test1",
+            ["x", "y"],
+            "flt0_6",
+            "flt0_test1_not_in_list",
+            "x,y",
+        ),
+        (filters.IntEqualFilter, "id", 30, "flt0_0", "flt0_id_equals", "30"),  # equals
+        (
+            filters.IntNotEqualFilter,
+            "id",
+            30,
+            "flt0_1",
+            "flt0_id_not_equal",
+            "30",
+        ),  # not equal
+        (
+            filters.IntGreaterFilter,
+            "id",
+            30,
+            "flt0_2",
+            "flt0_id_greater_than",
+            "30",
+        ),  # greater
+        (
+            filters.IntSmallerFilter,
+            "id",
+            30,
+            "flt0_3",
+            "flt0_id_smaller_than",
+            "30",
+        ),  # smaller
+        (filters.FilterEmpty, "id", 1, "flt0_4", "flt0_id_empty", "1"),  # empty
+        (
+            filters.IntInListFilter,
+            "id",
+            [30, 35],
+            "flt0_5",
+            "flt0_id_in_list",
+            "30,35",
+        ),  # in list
+        (
+            filters.IntNotInListFilter,
+            "id",
+            [30, 35],
+            "flt0_6",
+            "flt0_id_not_in_list",
+            "30,35",
+        ),  # not in list
+        (
+            filters.FloatEqualFilter,
+            "test5",
+            1.5,
+            "flt0_0",
+            "flt0_test5_equals",
+            "1.5",
+        ),  # equals
+        (
+            filters.FloatNotEqualFilter,
+            "test5",
+            1.5,
+            "flt0_1",
+            "flt0_test5_not_equal",
+            "1.5",
+        ),  # not equal
+        (
+            filters.FloatGreaterFilter,
+            "test5",
+            1.5,
+            "flt0_2",
+            "flt0_test5_greater_than",
+            "1.5",
+        ),  # greater
+        (
+            filters.FloatSmallerFilter,
+            "test5",
+            1.5,
+            "flt0_3",
+            "flt0_test5_smaller_than",
+            "1.5",
+        ),  # smaller
+        (filters.FilterEmpty, "test5", 1, "flt0_4", "flt0_test5_empty", "1"),  # empty
+        (
+            filters.FloatInListFilter,
+            "test5",
+            [1.5, 2.5],
+            "flt0_5",
+            "flt0_test5_in_list",
+            "1.5,2.5",
+        ),  # in list
+        (
+            filters.FloatNotInListFilter,
+            "test5",
+            [1.5, 2.5],
+            "flt0_6",
+            "flt0_test5_not_in_list",
+            "1.5,2.5",
+        ),  # not in list
+        (
+            filters.BooleanEqualFilter,
+            "bool_field",
+            True,
+            "flt0_0",
+            "flt0_bool_field_equals",
+            "1",
+        ),  # equals
+        (
+            filters.BooleanEqualFilter,
+            "bool_field",
+            False,
+            "flt0_0",
+            "flt0_bool_field_equals",
+            "0",
+        ),  # equals
+        (
+            filters.BooleanNotEqualFilter,
+            "bool_field",
+            True,
+            "flt0_1",
+            "flt0_bool_field_not_equal",
+            "1",
+        ),  # not equal
+        (
+            filters.BooleanNotEqualFilter,
+            "bool_field",
+            False,
+            "flt0_1",
+            "flt0_bool_field_not_equal",
+            "0",
+        ),  # not equal
+        (
+            filters.DateEqualFilter,
+            "date_field",
+            datetime(2025, 11, 1),
+            "flt0_0",
+            "flt0_date_field_equals",
+            "2025-11-01",
+        ),
+        (
+            filters.DateNotEqualFilter,
+            "date_field",
+            datetime(2025, 11, 1),
+            "flt0_1",
+            "flt0_date_field_not_equal",
+            "2025-11-01",
+        ),
+        (
+            filters.DateGreaterFilter,
+            "date_field",
+            datetime(2025, 11, 1),
+            "flt0_2",
+            "flt0_date_field_greater_than",
+            "2025-11-01",
+        ),
+        (
+            filters.DateSmallerFilter,
+            "date_field",
+            datetime(2025, 11, 1),
+            "flt0_3",
+            "flt0_date_field_smaller_than",
+            "2025-11-01",
+        ),
+        (
+            filters.DateBetweenFilter,
+            "date_field",
+            (datetime(2025, 11, 1), datetime(2025, 11, 15)),
+            "flt0_4",
+            "flt0_date_field_between",
+            "2025-11-01 to 2025-11-15",
+        ),
+        (
+            filters.DateNotBetweenFilter,
+            "date_field",
+            (datetime(2025, 11, 1), datetime(2025, 11, 15)),
+            "flt0_5",
+            "flt0_date_field_not_between",
+            "2025-11-01 to 2025-11-15",
+        ),
+        (
+            filters.FilterEmpty,
+            "date_field",
+            "1",
+            "flt0_6",
+            "flt0_date_field_empty",
+            "1",
+        ),
+        (
+            filters.DateTimeEqualFilter,
+            "datetime_field",
+            datetime(2025, 11, 1),
+            "flt0_0",
+            "flt0_datetime_field_equals",
+            "2025-11-01 00:00:00",
+        ),
+        (
+            filters.DateTimeNotEqualFilter,
+            "datetime_field",
+            datetime(2025, 11, 1),
+            "flt0_1",
+            "flt0_datetime_field_not_equal",
+            "2025-11-01 00:00:00",
+        ),
+        (
+            filters.DateTimeGreaterFilter,
+            "datetime_field",
+            datetime(2025, 11, 1),
+            "flt0_2",
+            "flt0_datetime_field_greater_than",
+            "2025-11-01 00:00:00",
+        ),
+        (
+            filters.DateTimeSmallerFilter,
+            "datetime_field",
+            datetime(2025, 11, 1),
+            "flt0_3",
+            "flt0_datetime_field_smaller_than",
+            "2025-11-01 00:00:00",
+        ),
+        (
+            filters.DateTimeBetweenFilter,
+            "datetime_field",
+            (datetime(2025, 11, 1), datetime(2025, 11, 15)),
+            "flt0_4",
+            "flt0_datetime_field_between",
+            "2025-11-01 00:00:00 to 2025-11-15 00:00:00",
+        ),
+        (
+            filters.DateTimeNotBetweenFilter,
+            "datetime_field",
+            (datetime(2025, 11, 1), datetime(2025, 11, 15)),
+            "flt0_5",
+            "flt0_datetime_field_not_between",
+            "2025-11-01 00:00:00 to 2025-11-15 00:00:00",
+        ),
+        (
+            filters.FilterEmpty,
+            "datetime_field",
+            "1",
+            "flt0_6",
+            "flt0_datetime_field_empty",
+            "1",
+        ),
+        (
+            filters.TimeEqualFilter,
+            "time_field",
+            time(6, 30, 0),
+            "flt0_0",
+            "flt0_time_field_equals",
+            "06:30:00",
+        ),
+        (
+            filters.TimeNotEqualFilter,
+            "time_field",
+            time(6, 30, 0),
+            "flt0_1",
+            "flt0_time_field_not_equal",
+            "06:30:00",
+        ),
+        (
+            filters.TimeGreaterFilter,
+            "time_field",
+            time(6, 30, 0),
+            "flt0_2",
+            "flt0_time_field_greater_than",
+            "06:30:00",
+        ),
+        (
+            filters.TimeSmallerFilter,
+            "time_field",
+            time(6, 30, 0),
+            "flt0_3",
+            "flt0_time_field_smaller_than",
+            "06:30:00",
+        ),
+        (
+            filters.TimeBetweenFilter,
+            "time_field",
+            (time(6, 30, 0), time(7, 30, 0)),
+            "flt0_4",
+            "flt0_time_field_between",
+            "06:30:00 to 07:30:00",
+        ),
+        (
+            filters.TimeNotBetweenFilter,
+            "time_field",
+            (time(6, 30, 0), time(7, 30, 0)),
+            "flt0_5",
+            "flt0_time_field_not_between",
+            "06:30:00 to 07:30:00",
+        ),
+        (
+            filters.FilterEmpty,
+            "time_field",
+            "1",
+            "flt0_6",
+            "flt0_time_field_empty",
+            "1",
+        ),
+        (
+            filters.EnumEqualFilter,
+            "enum_field",
+            "model1_v1",
+            "flt0_0",
+            "flt0_enum_field_equals",
+            "model1_v1",
+        ),
+        (
+            filters.EnumFilterNotEqual,
+            "enum_field",
+            "model1_v1",
+            "flt0_1",
+            "flt0_enum_field_not_equal",
+            "model1_v1",
+        ),
+        (
+            filters.EnumFilterEmpty,
+            "enum_field",
+            "1",
+            "flt0_2",
+            "flt0_enum_field_empty",
+            "1",
+        ),
+        (
+            filters.EnumFilterInList,
+            "enum_field",
+            ["model1_v1"],
+            "flt0_3",
+            "flt0_enum_field_in_list",
+            "model1_v1",
+        ),
+        (
+            filters.EnumFilterNotInList,
+            "enum_field",
+            ["model1_v1"],
+            "flt0_4",
+            "flt0_enum_field_not_in_list",
+            "model1_v1",
+        ),
+        (
+            filters.ChoiceTypeEqualFilter,
+            "sqla_utils_choice",
+            "choice-1",
+            "flt0_0",
+            "flt0_sqla_utils_choice_equals",
+            "choice-1",
+        ),
+        (
+            filters.ChoiceTypeNotEqualFilter,
+            "sqla_utils_choice",
+            "choice-1",
+            "flt0_1",
+            "flt0_sqla_utils_choice_not_equal",
+            "choice-1",
+        ),
+        (
+            filters.ChoiceTypeLikeFilter,
+            "sqla_utils_choice",
+            "choice-1",
+            "flt0_2",
+            "flt0_sqla_utils_choice_contains",
+            "choice-1",
+        ),
+        (
+            filters.ChoiceTypeNotLikeFilter,
+            "sqla_utils_choice",
+            "choice-1",
+            "flt0_3",
+            "flt0_sqla_utils_choice_not_contains",
+            "choice-1",
+        ),
+        (
+            filters.FilterEmpty,
+            "sqla_utils_choice",
+            "1",
+            "flt0_4",
+            "flt0_sqla_utils_choice_empty",
+            "1",
+        ),
+        (
+            filters.UuidFilterEqual,
+            "sqla_utils_uuid",
+            uuid1,
+            "flt0_0",
+            "flt0_sqla_utils_uuid_equals",
+            uuid1,
+        ),
+        (
+            filters.UuidFilterNotEqual,
+            "sqla_utils_uuid",
+            uuid1,
+            "flt0_1",
+            "flt0_sqla_utils_uuid_not_equal",
+            uuid1,
+        ),
+        (
+            filters.FilterEmpty,
+            "sqla_utils_uuid",
+            "1",
+            "flt0_2",
+            "flt0_sqla_utils_uuid_empty",
+            "1",
+        ),
+        (
+            filters.UuidFilterInList,
+            "sqla_utils_uuid",
+            [uuid1, uuid2],
+            "flt0_3",
+            "flt0_sqla_utils_uuid_in_list",
+            f"{uuid1},{uuid2}",
+        ),
+        (
+            filters.UuidFilterNotInList,
+            "sqla_utils_uuid",
+            [uuid1, uuid2],
+            "flt0_4",
+            "flt0_sqla_utils_uuid_not_in_list",
+            f"{uuid1},{uuid2}",
+        ),
+        (
+            filters.DateTimeGreaterFilter,
+            "sqla_utils_arrow",
+            datetime(2025, 11, 1),
+            "flt0_0",
+            "flt0_sqla_utils_arrow_greater_than",
+            "2025-11-01 00:00:00",
+        ),
+        (
+            filters.DateTimeSmallerFilter,
+            "sqla_utils_arrow",
+            datetime(2025, 11, 1),
+            "flt0_1",
+            "flt0_sqla_utils_arrow_smaller_than",
+            "2025-11-01 00:00:00",
+        ),
+        (
+            filters.FilterEmpty,
+            "sqla_utils_arrow",
+            "1",
+            "flt0_2",
+            "flt0_sqla_utils_arrow_empty",
+            "1",
+        ),
+    ]
+    return params
+
+
+@pytest.mark.parametrize(
+    "FilterClass, col, filter_value, arg_key, arg_named_key, expected_value",
+    create_filter_params(),
+)
+def test_url_for(
+    app,
+    db,
+    admin,
+    FilterClass,
+    col,
+    filter_value,
+    arg_key,
+    arg_named_key,
+    expected_value,
+):
+    with app.app_context():
+        Model1, Model2 = create_models(db)
+
+        col = getattr(Model1, col)
+
+        view = CustomModelView(
+            Model1, db.session, endpoint="user", column_filters=[col]
+        )
+        admin.add_view(view)
+
+        d1 = filter_value
+        filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+        assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
+
+        view.named_filter_urls = True
+        d1 = filter_value
+        filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+        assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
 
 
 def test_column_filters_sqla_obj(app, db, admin):
