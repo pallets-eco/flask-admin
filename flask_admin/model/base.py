@@ -1363,7 +1363,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return None
 
-    def _find_filter_arg(self, flt: BaseFilter) -> str | None:
+    def _find_filter_arg(self, flt: BaseFilter) -> tuple[int, BaseFilter] | None:
         """
         Given a filter `flt`, return the unique name for that filter in
         this view.
@@ -1377,9 +1377,11 @@ class BaseModelView(BaseView, ActionsMixin):
         found = None
         for k, v in self._filter_args.items():
             filter_arg = v[1]
-            flt_col_name = (
-                flt.column.name if hasattr(flt.column, "name") else str(flt.column)
-            )
+            if hasattr(flt.column, "name"):
+                flt_col_name = flt.column.name
+            else:
+                flt_col_name = str(flt.column)
+
             filter_arg_col_name = (
                 filter_arg.column.name
                 if hasattr(filter_arg.column, "name")
@@ -1394,6 +1396,8 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return self._filter_args[found] if found else None
 
+    from sqlalchemy.sql.schema import Column
+
     def url_for(
         self, search: str | None = None, filters: list[BaseFilter] | None = None
     ) -> str:
@@ -1405,28 +1409,27 @@ class BaseModelView(BaseView, ActionsMixin):
             filters = []
 
         for i, flt in enumerate(filters):
-            filter_arg = self._find_filter_arg(flt)
-            if not filter_arg:
+            found_arg = self._find_filter_arg(flt)
+            if not found_arg:
                 warnings.warn(
-                    f"The filter {flt.__class__.__name__}('{flt.column}') is not found "
+                    f"The filter {flt.__class__.__name__}('{flt.name}') is not found "
                     "in filter arguments, did you forget to add it in column_filters?",
                     stacklevel=1,
                 )
                 continue
+            else:
+                idx, filter_arg = found_arg
 
-            idx, filter_arg = filter_arg
+                farg = self.get_filter_arg_name(
+                    idx,
+                    self._filters[idx],  # type: ignore[index]
+                )
 
-            farg = self.get_filter_arg_name(
-                idx,
-                self._filters[idx],  # type: ignore[index]
-            )
-
-            url_args.append(flt.get_url_argument(i, farg))
+                url_args.append(flt.get_url_argument(i, farg))
 
         url = f"/{self.admin.endpoint}/{self.endpoint}"
-        url_args = "&".join(url_args)
         if url_args:
-            url = f"{url}/?{url_args}"
+            url = f"{url}/?{ '&'.join(url_args) }"
 
         return url
 

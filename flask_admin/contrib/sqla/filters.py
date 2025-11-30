@@ -39,7 +39,7 @@ class BaseSQLAFilter(filters.BaseFilter):
         :param data_type:
             Client data type
         """
-        super().__init__(name, options, data_type, url_value=url_value)
+        super().__init__(column, name, options, data_type, url_value=url_value)
 
         self.column = column
 

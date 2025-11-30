@@ -1794,12 +1794,12 @@ def test_url_for_simple(app, db, admin):
     filtered_url = view.url_for(
         search="exam",
         filters=[
-            filters.FilterLike("test1", "Email", url_value="test1"),
-            filters.FilterLike("test1", "Email222", url_value="test1"),
-            filters.BooleanEqualFilter("bool_field", "active", url_value=False),
-            filters.IntInListFilter("id", "ID", url_value=[33, 30, 35]),
-            filters.FloatGreaterFilter("test5", "Salary", url_value=50000.0),
-            filters.FloatSmallerFilter("test5", "Salary", url_value=150000.0),
+            filters.FilterLike(Model1.test1, "Email", url_value="test1"),
+            filters.FilterLike(Model1.test1, "Email222", url_value="test1"),
+            filters.BooleanEqualFilter(Model1.bool_field, "active", url_value=False),
+            filters.IntInListFilter(Model1.id, "ID", url_value=[33, 30, 35]),
+            filters.FloatGreaterFilter(Model1.test5, "Salary", url_value=50000.0),
+            filters.FloatSmallerFilter(Model1.test5, "Salary", url_value=150000.0),
         ],
     )
     assert (

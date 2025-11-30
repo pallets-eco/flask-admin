@@ -18,6 +18,7 @@ class BaseFilter:
 
     def __init__(
         self,
+        column: t.Any,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
@@ -29,6 +30,8 @@ class BaseFilter:
         """
         Constructor.
 
+        :param column:
+            Model/Document field
         :param name:
             Displayed name
         :param options:
@@ -38,6 +41,7 @@ class BaseFilter:
         :param key_name:
             Optional name who represent this filter.
         """
+        self.column = column
         self.name = name
         self.options = options
         self.data_type = data_type
@@ -152,12 +156,14 @@ class BaseBooleanFilter(BaseFilter):
 
     def __init__(
         self,
+        column: t.Any,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
         url_value: str | None = None,
     ) -> None:
         super().__init__(
+            column,
             name,
             (("1", lazy_gettext("Yes")), ("0", lazy_gettext("No"))),
             data_type,
@@ -226,12 +232,15 @@ class BaseDateFilter(BaseFilter):
 
     def __init__(
         self,
+        column: t.Any,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
         url_value: str | None = None,
     ):
-        super().__init__(name, options, data_type="datepicker", url_value=url_value)
+        super().__init__(
+            column, name, options, data_type="datepicker", url_value=url_value
+        )
 
     def clean(self, value: str) -> datetime.date:
         return datetime.datetime.strptime(value, "%Y-%m-%d").date()
@@ -281,12 +290,15 @@ class BaseDateTimeFilter(BaseFilter):
 
     def __init__(
         self,
+        column: t.Any,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
         url_value: str | None = None,
     ) -> None:
-        super().__init__(name, options, data_type="datetimepicker", url_value=url_value)
+        super().__init__(
+            column, name, options, data_type="datetimepicker", url_value=url_value
+        )
 
     def clean(self, value: str) -> datetime.datetime:
         # datetime filters will not work in SQLite + SQLAlchemy if value not converted
@@ -336,12 +348,15 @@ class BaseTimeFilter(BaseFilter):
 
     def __init__(
         self,
+        column: t.Any,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
         url_value: str | None = None,
     ) -> None:
-        super().__init__(name, options, data_type="timepicker", url_value=url_value)
+        super().__init__(
+            column, name, options, data_type="timepicker", url_value=url_value
+        )
 
     def clean(self, value: str) -> datetime.time:
         # time filters will not work in SQLite + SQLAlchemy if value not converted
@@ -393,12 +408,13 @@ class BaseUuidFilter(BaseFilter):
 
     def __init__(
         self,
+        column: t.Any,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
         url_value: str | None = None,
     ) -> None:
-        super().__init__(name, options, data_type="uuid", url_value=url_value)
+        super().__init__(column, name, options, data_type="uuid", url_value=url_value)
 
     def clean(self, value: str) -> t.Any:
         value = uuid.UUID(value)  # type: ignore[assignment]
