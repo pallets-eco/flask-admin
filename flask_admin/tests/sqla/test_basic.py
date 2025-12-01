@@ -1807,6 +1807,27 @@ def test_url_for_simple(app, app_context, db, admin):
         "flt2_21=0&flt3_12=33,30,35&flt4_16=50000.0&flt5_17=150000.0"
     )
 
+    view.named_filter_urls = True
+
+    filtered_url = view.url_for(
+        search="exam",
+        filters=[
+            filters.FilterLike(Model1.test1, "Email", url_value="test1"),
+            filters.FilterLike(Model1.test1, "Email222", url_value="test1"),
+            filters.BooleanEqualFilter(Model1.bool_field, "active", url_value=False),
+            filters.IntInListFilter(Model1.id, "ID", url_value=[33, 30, 35]),
+            filters.FloatGreaterFilter(Model1.test5, "Salary", url_value=50000.0),
+        ],
+    )
+    assert (
+        filtered_url == "/admin/user/?search=exam&"
+        "flt0_test1_contains=test1&"
+        "flt1_test1_contains=test1&"
+        "flt2_bool_field_equals=0&"
+        "flt3_id_in_list=33,30,35&"
+        "flt4_test5_greater_than=50000.0"
+    )
+
 
 def create_filter_params():
     uuid1 = "a81bc81b-dead-4e5d-abff-90865d1e13b1"
