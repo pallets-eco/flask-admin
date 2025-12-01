@@ -11,8 +11,16 @@ def app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False
+    app.config["TESTING"] = True
+    app.config["SERVER_NAME"] = "localhost"
     app.jinja_env.undefined = StrictUndefined
     yield app
+
+
+@pytest.fixture
+def app_context(app):
+    with app.app_context():
+        yield
 
 
 @pytest.fixture

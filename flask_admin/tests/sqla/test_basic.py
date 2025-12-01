@@ -1773,20 +1773,20 @@ def test_column_filters(app, db, admin):
         assert "test1_val_2" not in data
 
 
-def test_url_for_simple(app, db, admin):
-    with app.app_context():
-        Model1, Model2 = create_models(db)
+def test_url_for_simple(app, app_context, db, admin):
+    # with app.app_context():
+    Model1, Model2 = create_models(db)
 
-        view = CustomModelView(
-            Model1,
-            db.session,
-            endpoint="user",
-            column_filters=["test1", "id", "test5", "bool_field"],
-        )
-        admin.add_view(view)
+    view = CustomModelView(
+        Model1,
+        db.session,
+        endpoint="user",
+        column_filters=["test1", "id", "test5", "bool_field"],
+    )
+    admin.add_view(view)
 
     filtered_url = view.url_for()
-    assert filtered_url == "/admin/user"
+    assert filtered_url == "/admin/user/"
 
     filtered_url = view.url_for(search="exam", filters=[])
     assert filtered_url == "/admin/user/?search=exam"
@@ -1811,6 +1811,7 @@ def test_url_for_simple(app, db, admin):
 def create_filter_params():
     uuid1 = "a81bc81b-dead-4e5d-abff-90865d1e13b1"
     uuid2 = "344a5ad9-6b2a-410c-aa06-401d1ae8ea39"
+    # db.Enum("model1_v1", "model1_v2")
 
     params = [
         (filters.FilterLike, "test1", "x", "flt0_0", "flt0_test1_contains", "x"),
@@ -1995,7 +1996,7 @@ def create_filter_params():
             (datetime(2025, 11, 1), datetime(2025, 11, 15)),
             "flt0_4",
             "flt0_date_field_between",
-            "2025-11-01 to 2025-11-15",
+            "2025-11-01+to+2025-11-15",
         ),
         (
             filters.DateNotBetweenFilter,
@@ -2003,7 +2004,7 @@ def create_filter_params():
             (datetime(2025, 11, 1), datetime(2025, 11, 15)),
             "flt0_5",
             "flt0_date_field_not_between",
-            "2025-11-01 to 2025-11-15",
+            "2025-11-01+to+2025-11-15",
         ),
         (
             filters.FilterEmpty,
@@ -2019,7 +2020,7 @@ def create_filter_params():
             datetime(2025, 11, 1),
             "flt0_0",
             "flt0_datetime_field_equals",
-            "2025-11-01 00:00:00",
+            "2025-11-01+00:00:00",
         ),
         (
             filters.DateTimeNotEqualFilter,
@@ -2027,7 +2028,7 @@ def create_filter_params():
             datetime(2025, 11, 1),
             "flt0_1",
             "flt0_datetime_field_not_equal",
-            "2025-11-01 00:00:00",
+            "2025-11-01+00:00:00",
         ),
         (
             filters.DateTimeGreaterFilter,
@@ -2035,7 +2036,7 @@ def create_filter_params():
             datetime(2025, 11, 1),
             "flt0_2",
             "flt0_datetime_field_greater_than",
-            "2025-11-01 00:00:00",
+            "2025-11-01+00:00:00",
         ),
         (
             filters.DateTimeSmallerFilter,
@@ -2043,7 +2044,7 @@ def create_filter_params():
             datetime(2025, 11, 1),
             "flt0_3",
             "flt0_datetime_field_smaller_than",
-            "2025-11-01 00:00:00",
+            "2025-11-01+00:00:00",
         ),
         (
             filters.DateTimeBetweenFilter,
@@ -2051,7 +2052,7 @@ def create_filter_params():
             (datetime(2025, 11, 1), datetime(2025, 11, 15)),
             "flt0_4",
             "flt0_datetime_field_between",
-            "2025-11-01 00:00:00 to 2025-11-15 00:00:00",
+            "2025-11-01+00:00:00+to+2025-11-15+00:00:00",
         ),
         (
             filters.DateTimeNotBetweenFilter,
@@ -2059,7 +2060,7 @@ def create_filter_params():
             (datetime(2025, 11, 1), datetime(2025, 11, 15)),
             "flt0_5",
             "flt0_datetime_field_not_between",
-            "2025-11-01 00:00:00 to 2025-11-15 00:00:00",
+            "2025-11-01+00:00:00+to+2025-11-15+00:00:00",
         ),
         (
             filters.FilterEmpty,
@@ -2107,7 +2108,7 @@ def create_filter_params():
             (time(6, 30, 0), time(7, 30, 0)),
             "flt0_4",
             "flt0_time_field_between",
-            "06:30:00 to 07:30:00",
+            "06:30:00+to+07:30:00",
         ),
         (
             filters.TimeNotBetweenFilter,
@@ -2115,7 +2116,7 @@ def create_filter_params():
             (time(6, 30, 0), time(7, 30, 0)),
             "flt0_5",
             "flt0_time_field_not_between",
-            "06:30:00 to 07:30:00",
+            "06:30:00+to+07:30:00",
         ),
         (
             filters.FilterEmpty,
@@ -2251,7 +2252,7 @@ def create_filter_params():
             datetime(2025, 11, 1),
             "flt0_0",
             "flt0_sqla_utils_arrow_greater_than",
-            "2025-11-01 00:00:00",
+            "2025-11-01+00:00:00",
         ),
         (
             filters.DateTimeSmallerFilter,
@@ -2259,7 +2260,7 @@ def create_filter_params():
             datetime(2025, 11, 1),
             "flt0_1",
             "flt0_sqla_utils_arrow_smaller_than",
-            "2025-11-01 00:00:00",
+            "2025-11-01+00:00:00",
         ),
         (
             filters.FilterEmpty,
@@ -2279,6 +2280,7 @@ def create_filter_params():
 )
 def test_url_for(
     app,
+    app_context,
     db,
     admin,
     FilterClass,
@@ -2288,24 +2290,22 @@ def test_url_for(
     arg_named_key,
     expected_value,
 ):
-    with app.app_context():
-        Model1, Model2 = create_models(db)
+    # with app.app_context():
+    Model1, Model2 = create_models(db)
 
-        col = getattr(Model1, col)
+    col = getattr(Model1, col)
 
-        view = CustomModelView(
-            Model1, db.session, endpoint="user", column_filters=[col]
-        )
-        admin.add_view(view)
+    view = CustomModelView(Model1, db.session, endpoint="user", column_filters=[col])
+    admin.add_view(view)
 
-        d1 = filter_value
-        filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
-        assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
+    d1 = filter_value
+    filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+    assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
 
-        view.named_filter_urls = True
-        d1 = filter_value
-        filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
-        assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
+    view.named_filter_urls = True
+    d1 = filter_value
+    filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+    assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
 
 
 def test_column_filters_sqla_obj(app, db, admin):

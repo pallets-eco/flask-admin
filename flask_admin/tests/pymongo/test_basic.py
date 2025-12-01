@@ -131,6 +131,7 @@ def create_filter_params():
 )
 def test_url_for(
     app,
+    app_context,
     db,
     admin,
     FilterClass,

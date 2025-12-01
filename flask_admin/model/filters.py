@@ -124,7 +124,7 @@ class BaseFilter:
         """
         return str(value)
 
-    def get_url_argument(self, flt_idx: int, flt_key: str) -> str:
+    def get_url_argument(self, flt_idx: int, flt_key: str) -> tuple[str, str]:
         """
         Return URL argument for this filter. e.g. flt0_7=value
 
@@ -142,7 +142,7 @@ class BaseFilter:
                 f"Value: {self.url_value}"
             )
 
-        return f"flt{flt_idx}_{flt_key}={stringified}"
+        return f"flt{flt_idx}_{flt_key}", f"{stringified}"
 
     def __unicode__(self) -> str:
         return self.name

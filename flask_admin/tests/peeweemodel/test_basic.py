@@ -1354,7 +1354,7 @@ def create_filter_params():
             (date(2025, 11, 1), date(2025, 11, 15)),
             "flt0_4",
             "flt0_date_field_between",
-            "2025-11-01 to 2025-11-15",
+            "2025-11-01+to+2025-11-15",
         ),
         (
             filters.DateNotBetweenFilter,
@@ -1362,7 +1362,7 @@ def create_filter_params():
             (date(2025, 11, 1), date(2025, 11, 15)),
             "flt0_5",
             "flt0_date_field_not_between",
-            "2025-11-01 to 2025-11-15",
+            "2025-11-01+to+2025-11-15",
         ),
         (
             filters.FilterEmpty,
@@ -1410,7 +1410,7 @@ def create_filter_params():
             (time(15, 30, 0), time(15, 30, 0)),
             "flt0_4",
             "flt0_timeonly_field_between",
-            "15:30:00 to 15:30:00",
+            "15:30:00+to+15:30:00",
         ),
         (
             filters.TimeNotBetweenFilter,
@@ -1418,7 +1418,7 @@ def create_filter_params():
             (time(15, 30, 0), time(15, 30, 0)),
             "flt0_5",
             "flt0_timeonly_field_not_between",
-            "15:30:00 to 15:30:00",
+            "15:30:00+to+15:30:00",
         ),
         (
             filters.FilterEmpty,
@@ -1434,7 +1434,7 @@ def create_filter_params():
             datetime(2025, 11, 1),
             "flt0_0",
             "flt0_datetime_field_equals",
-            "2025-11-01 00:00:00",
+            "2025-11-01+00:00:00",
         ),
         (
             filters.DateTimeNotEqualFilter,
@@ -1442,7 +1442,7 @@ def create_filter_params():
             datetime(2025, 11, 1),
             "flt0_1",
             "flt0_datetime_field_not_equal",
-            "2025-11-01 00:00:00",
+            "2025-11-01+00:00:00",
         ),
         (
             filters.DateTimeGreaterFilter,
@@ -1450,7 +1450,7 @@ def create_filter_params():
             datetime(2025, 11, 1),
             "flt0_2",
             "flt0_datetime_field_greater_than",
-            "2025-11-01 00:00:00",
+            "2025-11-01+00:00:00",
         ),
         (
             filters.DateTimeSmallerFilter,
@@ -1458,7 +1458,7 @@ def create_filter_params():
             datetime(2025, 11, 1),
             "flt0_3",
             "flt0_datetime_field_smaller_than",
-            "2025-11-01 00:00:00",
+            "2025-11-01+00:00:00",
         ),
         (
             filters.DateTimeBetweenFilter,
@@ -1466,7 +1466,7 @@ def create_filter_params():
             (datetime(2025, 11, 1), datetime(2025, 11, 15)),
             "flt0_4",
             "flt0_datetime_field_between",
-            "2025-11-01 00:00:00 to 2025-11-15 00:00:00",
+            "2025-11-01+00:00:00+to+2025-11-15+00:00:00",
         ),
         (
             filters.DateTimeNotBetweenFilter,
@@ -1474,7 +1474,7 @@ def create_filter_params():
             (datetime(2025, 11, 1), datetime(2025, 11, 15)),
             "flt0_5",
             "flt0_datetime_field_not_between",
-            "2025-11-01 00:00:00 to 2025-11-15 00:00:00",
+            "2025-11-01+00:00:00+to+2025-11-15+00:00:00",
         ),
         (
             filters.FilterEmpty,
@@ -1494,6 +1494,7 @@ def create_filter_params():
 )
 def test_url_for(
     app,
+    app_context,
     db,
     admin,
     FilterClass,

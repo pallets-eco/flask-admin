@@ -1401,9 +1401,9 @@ class BaseModelView(BaseView, ActionsMixin):
     def url_for(
         self, search: str | None = None, filters: list[BaseFilter] | None = None
     ) -> str:
-        url_args = []
+        url_args = {}
         if search:
-            url_args.append(f"search={search}")
+            url_args["search"] = search
 
         if filters is None:
             filters = []
@@ -1425,11 +1425,10 @@ class BaseModelView(BaseView, ActionsMixin):
                     self._filters[idx],  # type: ignore[index]
                 )
 
-                url_args.append(flt.get_url_argument(i, farg))
+                k, v = flt.get_url_argument(i, farg)
+                url_args[k] = v
 
-        url = f"/{self.admin.endpoint}/{self.endpoint}"
-        if url_args:
-            url = f"{url}/?{ '&'.join(url_args) }"
+        url = self.get_url(f"{self.endpoint}.index_view", _external=False, **url_args)
 
         return url
 
