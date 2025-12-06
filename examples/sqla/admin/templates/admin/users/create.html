@@ -1,0 +1,29 @@
+{% extends 'admin/model/create.html' %}
+
+
+{% macro wrap_in_card( card_title ) %}
+
+  <div class="card">
+      <div class="card-header">
+          <h5> {{ card_title }} </h5>
+      </div>
+      <div class="card-body">
+          {{ caller() }}
+      </div>
+</div>
+
+{% endmacro %}
+
+
+{% macro my_macro(arg1, arg2) %}
+
+  <div class="card">
+      <div class="card-header">
+          <h5>{{ arg1 }} </h5>
+      </div>
+      <div class="card-body">
+          {{ arg2 }}
+      </div>
+</div>
+
+{% endmacro %}

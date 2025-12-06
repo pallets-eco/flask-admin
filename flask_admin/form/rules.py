@@ -11,6 +11,7 @@ from flask_admin._compat import string_types
 from flask_admin._types import T_FORM_OPTS
 from flask_admin._types import T_INLINE_BASE_FORM_ADMIN
 from flask_admin._types import T_MODEL_VIEW
+from flask_admin._types import T_RULES_SEQUENCE
 from flask_admin._types import T_TRANSLATABLE
 
 
@@ -71,7 +72,7 @@ class NestedRule(BaseRule):
 
     def __init__(
         self,
-        rules: t.Optional[t.Sequence[t.Union[str, "Header"]]] = None,  # ruff: noqa
+        rules: t.Optional[T_RULES_SEQUENCE] = None,  # ruff: noqa
         separator: str = "",
     ) -> None:
         """
@@ -283,6 +284,12 @@ class Container(Macro):
             Child rule to be rendered inside of container
         :param kwargs:
             Container macro arguments
+
+
+        The container is nothing but a Jinja Macro
+        that is placed within the current jinja context. The rule inside the container
+        is represented by `{{ caller() }}` as it is shown in the follwoing Jinja
+        [snippet](/advanced/index.html#built-in-rules):
         """
         super().__init__(macro_name, **kwargs)
         self.child_rule = child_rule
@@ -414,7 +421,7 @@ class FieldSet(NestedRule):
 
     def __init__(
         self,
-        rules: t.Sequence[str],
+        rules: T_RULES_SEQUENCE,
         header: T_TRANSLATABLE | None = None,
         separator: str = "",
     ) -> None:
@@ -437,9 +444,13 @@ class FieldSet(NestedRule):
 
 
 class Row(NestedRule):
-    def __init__(self, *columns: BaseRule, **kw: t.Any) -> None:
+    """
+    Takes a list of rules and render them in a single row.
+    """
+
+    def __init__(self, *columns: str | BaseRule, **kw: t.Any) -> None:
         super().__init__()
-        self.rules: list[str | Header | BaseRule] = columns  # type:ignore[assignment]
+        self.rules: list[str | BaseRule] = columns  # type:ignore[assignment]
 
     def __call__(
         self,
@@ -475,7 +486,10 @@ class Group(Macro):
         **kwargs: t.Any,
     ) -> None:
         """
-        Bootstrap Input group.
+        [Bootstrap Input group](https://getbootstrap.com/docs/4.6/components/input-group/).
+        It renders the target field whatever its type is
+        (text, radio, checkbox..etc), allowing prepended and appended boxes to
+        be filled with any HTML content.
         """
         render_field = kwargs.get("render_field", "lib.render_field")
         super().__init__(render_field)
