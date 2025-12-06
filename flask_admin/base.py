@@ -16,6 +16,7 @@ from markupsafe import Markup
 from flask_admin import babel
 from flask_admin import helpers as h
 from flask_admin._compat import as_unicode
+from flask_admin._types import T_VIEW
 
 # For compatibility reasons import MenuLink
 from flask_admin.blueprints import _BlueprintWithHostSupport as Blueprint
@@ -29,7 +30,9 @@ from flask_admin.theme import Bootstrap4Theme
 from flask_admin.theme import Theme
 
 
-def expose(url: str = "/", methods: t.Iterable[str] | None = ("GET",)) -> t.Callable:
+def expose(
+    url: str = "/", methods: t.Iterable[str] | None = ("GET",)
+) -> t.Callable[[t.Any], t.Any]:
     """
     Use this decorator to expose views in your view classes.
 
@@ -48,7 +51,7 @@ def expose(url: str = "/", methods: t.Iterable[str] | None = ("GET",)) -> t.Call
     return wrap
 
 
-def expose_plugview(url: str = "/") -> t.Callable:
+def expose_plugview(url: str = "/") -> t.Callable[[t.Any], t.Any]:
     """
     Decorator to expose Flask's pluggable view classes
     (``flask.views.View`` or ``flask.views.MethodView``).
@@ -71,7 +74,7 @@ def expose_plugview(url: str = "/") -> t.Callable:
 
 
 # Base views
-def _wrap_view(f: t.Callable) -> t.Callable:
+def _wrap_view(f: t.Callable[..., t.Any]) -> t.Callable[..., t.Any]:
     # Avoid wrapping view method twice
     if hasattr(f, "_wrapped"):
         return f
@@ -161,7 +164,7 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
     """Extra JavaScript files to include in the page"""
 
     @property
-    def _template_args(self) -> dict:
+    def _template_args(self) -> dict[str, str]:
         """
         Extra template arguments.
 
@@ -418,7 +421,7 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
             return self.inaccessible_callback(name, **kwargs)
 
     def _run_view(
-        self, fn: t.Callable, *args: tuple[t.Any], **kwargs: dict[str, t.Any]
+        self, fn: t.Callable[..., t.Any], *args: t.Any, **kwargs: t.Any
     ) -> t.Any:
         """
         This method will run actual view function.
@@ -547,7 +550,7 @@ class Admin:
         theme: Theme | None = None,
         category_icon_classes: dict[str, str] | None = None,
         host: str | None = None,
-        csp_nonce_generator: t.Callable | None = None,
+        csp_nonce_generator: t.Callable[[], t.Any] | None = None,
     ) -> None:
         """
         Constructor.
@@ -587,10 +590,10 @@ class Admin:
 
         self.translations_path = translations_path
 
-        self._views = []  # type: ignore[var-annotated]
-        self._menu = []  # type: ignore[var-annotated]
+        self._views: list[T_VIEW] = []
+        self._menu: list[MenuView | MenuCategory | BaseMenu] = []
         self._menu_categories: dict[str, MenuCategory] = dict()
-        self._menu_links = []  # type: ignore[var-annotated]
+        self._menu_links: list[MenuLink] = []
 
         if name is None:
             name = "Admin"
@@ -891,13 +894,13 @@ class Admin:
         admins.append(self)
         self.app.extensions["admin"] = admins  # type: ignore[union-attr]
 
-    def menu(self) -> list:
+    def menu(self) -> list[MenuView | MenuCategory | BaseMenu]:
         """
         Return the menu hierarchy.
         """
         return self._menu
 
-    def menu_links(self) -> list:
+    def menu_links(self) -> list[MenuLink]:
         """
         Return menu links.
         """
