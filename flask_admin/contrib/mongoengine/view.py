@@ -61,11 +61,13 @@ class ModelView(BaseModelView):
 
     column_filters: t.Collection[str | BaseMongoEngineFilter] | None = None
     """
-        Collection of the column filters.
+        Collection of column filters used in the list view.
 
-        Can contain either field names or instances of
-        :class:`flask_admin.contrib.mongoengine.filters.BaseMongoEngineFilter`
-        classes.
+        Can contain either:
+        - Field names (str): allow any appropriate filter operation based on the
+        field’s data type.
+        - Instances of :class:`~flask_admin.contrib.mongoengine.filters.BaseFilter`
+        classes: restrict or customize which filters are available for a specific field.
 
         Filters will be grouped by name when displayed in the drop-down.
 
