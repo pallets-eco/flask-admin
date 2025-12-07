@@ -65,9 +65,8 @@ class UserAdmin(ModelView):
 
 class SimplePageView(ModelView):
     can_view_details = True
-    
-    
-    
+
+
 class FileAdminModal(FileAdmin):
     rename_modal = True
     edit_modal = True
