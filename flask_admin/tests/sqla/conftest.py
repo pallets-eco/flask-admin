@@ -15,7 +15,6 @@ def app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False
-    app.config["TESTING"] = True
     app.config["SERVER_NAME"] = "localhost"
 
     yield app

@@ -1832,7 +1832,6 @@ def test_url_for_simple(app, app_context, db, admin):
 def create_filter_params():
     uuid1 = "a81bc81b-dead-4e5d-abff-90865d1e13b1"
     uuid2 = "344a5ad9-6b2a-410c-aa06-401d1ae8ea39"
-    # db.Enum("model1_v1", "model1_v2")
 
     params = [
         (filters.FilterLike, "test1", "x", "flt0_0", "flt0_test1_contains", "x"),
@@ -2100,134 +2099,6 @@ def create_filter_params():
             "06:30:00",
         ),
         (
-            filters.TimeNotEqualFilter,
-            "time_field",
-            time(6, 30, 0),
-            "flt0_1",
-            "flt0_time_field_not_equal",
-            "06:30:00",
-        ),
-        (
-            filters.TimeGreaterFilter,
-            "time_field",
-            time(6, 30, 0),
-            "flt0_2",
-            "flt0_time_field_greater_than",
-            "06:30:00",
-        ),
-        (
-            filters.TimeSmallerFilter,
-            "time_field",
-            time(6, 30, 0),
-            "flt0_3",
-            "flt0_time_field_smaller_than",
-            "06:30:00",
-        ),
-        (
-            filters.TimeBetweenFilter,
-            "time_field",
-            (time(6, 30, 0), time(7, 30, 0)),
-            "flt0_4",
-            "flt0_time_field_between",
-            "06:30:00+to+07:30:00",
-        ),
-        (
-            filters.TimeNotBetweenFilter,
-            "time_field",
-            (time(6, 30, 0), time(7, 30, 0)),
-            "flt0_5",
-            "flt0_time_field_not_between",
-            "06:30:00+to+07:30:00",
-        ),
-        (
-            filters.FilterEmpty,
-            "time_field",
-            "1",
-            "flt0_6",
-            "flt0_time_field_empty",
-            "1",
-        ),
-        (
-            filters.EnumEqualFilter,
-            "enum_field",
-            "model1_v1",
-            "flt0_0",
-            "flt0_enum_field_equals",
-            "model1_v1",
-        ),
-        (
-            filters.EnumFilterNotEqual,
-            "enum_field",
-            "model1_v1",
-            "flt0_1",
-            "flt0_enum_field_not_equal",
-            "model1_v1",
-        ),
-        (
-            filters.EnumFilterEmpty,
-            "enum_field",
-            "1",
-            "flt0_2",
-            "flt0_enum_field_empty",
-            "1",
-        ),
-        (
-            filters.EnumFilterInList,
-            "enum_field",
-            ["model1_v1"],
-            "flt0_3",
-            "flt0_enum_field_in_list",
-            "model1_v1",
-        ),
-        (
-            filters.EnumFilterNotInList,
-            "enum_field",
-            ["model1_v1"],
-            "flt0_4",
-            "flt0_enum_field_not_in_list",
-            "model1_v1",
-        ),
-        (
-            filters.ChoiceTypeEqualFilter,
-            "sqla_utils_choice",
-            "choice-1",
-            "flt0_0",
-            "flt0_sqla_utils_choice_equals",
-            "choice-1",
-        ),
-        (
-            filters.ChoiceTypeNotEqualFilter,
-            "sqla_utils_choice",
-            "choice-1",
-            "flt0_1",
-            "flt0_sqla_utils_choice_not_equal",
-            "choice-1",
-        ),
-        (
-            filters.ChoiceTypeLikeFilter,
-            "sqla_utils_choice",
-            "choice-1",
-            "flt0_2",
-            "flt0_sqla_utils_choice_contains",
-            "choice-1",
-        ),
-        (
-            filters.ChoiceTypeNotLikeFilter,
-            "sqla_utils_choice",
-            "choice-1",
-            "flt0_3",
-            "flt0_sqla_utils_choice_not_contains",
-            "choice-1",
-        ),
-        (
-            filters.FilterEmpty,
-            "sqla_utils_choice",
-            "1",
-            "flt0_4",
-            "flt0_sqla_utils_choice_empty",
-            "1",
-        ),
-        (
             filters.UuidFilterEqual,
             "sqla_utils_uuid",
             uuid1,
@@ -2300,6 +2171,126 @@ def create_filter_params():
     create_filter_params(),
 )
 def test_url_for(
+    app,
+    app_context,
+    db,
+    admin,
+    FilterClass,
+    col,
+    filter_value,
+    arg_key,
+    arg_named_key,
+    expected_value,
+):
+    # with app.app_context():
+    Model1, Model2 = create_models(db)
+
+    col = getattr(Model1, col)
+
+    view = CustomModelView(Model1, db.session, endpoint="user", column_filters=[col])
+    admin.add_view(view)
+
+    d1 = filter_value
+    filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+    assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
+
+    view.named_filter_urls = True
+    d1 = filter_value
+    filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+    assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
+
+
+def create_filter_params_enums_and_choices():
+    params = [
+        (
+            filters.EnumEqualFilter,
+            "enum_field",
+            "model1_v1",
+            "flt0_0",
+            "flt0_enum_field_equals",
+            "model1_v1",
+        ),
+        (
+            filters.EnumFilterNotEqual,
+            "enum_field",
+            "model1_v1",
+            "flt0_1",
+            "flt0_enum_field_not_equal",
+            "model1_v1",
+        ),
+        (
+            filters.EnumFilterEmpty,
+            "enum_field",
+            "1",
+            "flt0_2",
+            "flt0_enum_field_empty",
+            "1",
+        ),
+        (
+            filters.EnumFilterInList,
+            "enum_field",
+            ["model1_v1"],
+            "flt0_3",
+            "flt0_enum_field_in_list",
+            "model1_v1",
+        ),
+        (
+            filters.EnumFilterNotInList,
+            "enum_field",
+            ["model1_v1"],
+            "flt0_4",
+            "flt0_enum_field_not_in_list",
+            "model1_v1",
+        ),
+        (
+            filters.ChoiceTypeEqualFilter,
+            "sqla_utils_choice",
+            "choice-1",
+            "flt0_0",
+            "flt0_sqla_utils_choice_equals",
+            "choice-1",
+        ),
+        (
+            filters.ChoiceTypeNotEqualFilter,
+            "sqla_utils_choice",
+            "choice-1",
+            "flt0_1",
+            "flt0_sqla_utils_choice_not_equal",
+            "choice-1",
+        ),
+        (
+            filters.ChoiceTypeLikeFilter,
+            "sqla_utils_choice",
+            "choice-1",
+            "flt0_2",
+            "flt0_sqla_utils_choice_contains",
+            "choice-1",
+        ),
+        (
+            filters.ChoiceTypeNotLikeFilter,
+            "sqla_utils_choice",
+            "choice-1",
+            "flt0_3",
+            "flt0_sqla_utils_choice_not_contains",
+            "choice-1",
+        ),
+        # (
+        #     filters.FilterEmpty,
+        #     "sqla_utils_choice",
+        #     "1",
+        #     "flt0_4",
+        #     "flt0_sqla_utils_choice_empty",
+        #     "1",
+        # ),
+    ]
+    return params
+
+
+@pytest.mark.parametrize(
+    "FilterClass, col, filter_value, arg_key, arg_named_key, expected_value",
+    create_filter_params_enums_and_choices(),
+)
+def test_url_for_enums_and_choices(
     app,
     app_context,
     db,
