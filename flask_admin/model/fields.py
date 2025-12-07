@@ -20,7 +20,7 @@ from .widgets import InlineFieldListWidget
 from .widgets import InlineFormWidget
 
 
-class InlineFieldList(FieldList):
+class InlineFieldList(FieldList):  # type: ignore[type-arg]
     widget: RenderTemplateWidget = InlineFieldListWidget()  # type: ignore[assignment]
 
     def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
@@ -55,7 +55,7 @@ class InlineFieldList(FieldList):
 
     def process(
         self,
-        formdata: dict | None,  # type: ignore[override]
+        formdata: dict[str, str] | None,  # type: ignore[override]
         data: UnsetValue | list[t.Any] = unset_value,
         extra_filters: t.Any = None,
     ) -> None:
@@ -75,7 +75,7 @@ class InlineFieldList(FieldList):
     def validate(
         self,
         form: BaseForm,
-        extra_validators: tuple = tuple(),  # type: ignore[override]
+        extra_validators: tuple[t.Any] = tuple(),  # type: ignore[override, assignment]
     ) -> bool:
         """
         Validate this FieldList.
@@ -84,7 +84,7 @@ class InlineFieldList(FieldList):
         that FieldList validates all its enclosed fields first before running any
         of its own validators.
         """
-        self.errors: list = []
+        self.errors: list[t.Any] = []
 
         # Run validators on all entries within
         for subfield in self.entries:
@@ -120,7 +120,7 @@ class InlineFieldList(FieldList):
         setattr(obj, name, output)
 
 
-class InlineFormField(FormField):
+class InlineFormField(FormField):  # type: ignore[type-arg]
     """
     Inline version of the ``FormField`` widget.
     """
@@ -128,7 +128,7 @@ class InlineFormField(FormField):
     widget = InlineFormWidget()  # type: ignore[assignment]
 
 
-class InlineModelFormField(FormField):
+class InlineModelFormField(FormField):  # type: ignore[type-arg]
     """
     Customized ``FormField``.
 
@@ -201,7 +201,7 @@ class AjaxSelectField(SelectFieldBase):
 
     def _set_data(self, data: t.Any) -> None:
         self._data = data
-        self._formdata: str | None = None
+        self._formdata: str | set[str] | None = None
 
     data = property(_get_data, _set_data)
 
@@ -263,7 +263,7 @@ class AjaxSelectMultipleField(AjaxSelectField):
 
     def _set_data(self, data: t.Any) -> None:
         self._data = data
-        self._formdata = None  # type: ignore[assignment]
+        self._formdata = None
 
     data = property(_get_data, _set_data)
 
@@ -271,7 +271,7 @@ class AjaxSelectMultipleField(AjaxSelectField):
         self,
         valuelist: t.Sequence[str],  # type: ignore[override]
     ) -> None:
-        self._formdata: set = set()  # type: ignore[assignment]
+        self._formdata = set()
 
         for field in valuelist:
             for n in field.split(self.separator):

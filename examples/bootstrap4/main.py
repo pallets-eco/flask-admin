@@ -65,6 +65,14 @@ class UserAdmin(ModelView):
 
 class SimplePageView(ModelView):
     can_view_details = True
+    
+    
+    
+class FileAdminModal(FileAdmin):
+    rename_modal = True
+    edit_modal = True
+    mkdir_modal = True
+    upload_modal = True
 
 
 class PageWithModalView(ModelView):
@@ -116,7 +124,10 @@ if __name__ == "__main__":
         )
     )
 
-    admin.add_view(FileAdmin("static", name="Static Files", category="Menu"))
+    admin.add_view(FileAdmin("files/", name="Local Files", category="Menu"))
+    admin.add_view(
+        FileAdminModal("files/", name="Local Files with Modals", category="Menu")
+    )
 
     admin.add_link(
         MenuLink(
