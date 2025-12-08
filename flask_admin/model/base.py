@@ -609,10 +609,10 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(BaseModelView):
                 column_extra_row_actions = [
                     LinkRowAction(
-                        'glyphicon glyphicon-off', 'http://direct.link/?id={row_id}'
+                        'bi bi-rocket-takeoff', 'http://direct.link/?id={row_id}'
                     ),
                     EndpointLinkRowAction(
-                        'glyphicon glyphicon-test', 'my_view.index_view'
+                        'bi bi-box-arrow-up-right', 'my_view.index_view'
                     )
                 ]
     """
@@ -929,13 +929,14 @@ class BaseModelView(BaseView, ActionsMixin):
         :param menu_icon_type:
             Optional icon. Possible icon types:
 
-             - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
+             - `flask_admin.consts.ICON_TYPE_BOOTSTRAP` - Bootstrap icon
              - `flask_admin.consts.ICON_TYPE_FONT_AWESOME` - Font Awesome icon
              - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask
                 static directory
              - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
         :param menu_icon_value:
-            Icon glyph name or URL, depending on `menu_icon_type` setting
+            Icon name (Fontawesome, or Bootstrap) or URL, depending on
+            `menu_icon_type` setting
         """
         self.model = model
         # If name not provided, it is model name

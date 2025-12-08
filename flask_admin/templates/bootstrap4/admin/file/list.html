@@ -42,9 +42,9 @@
                         <a href="{{ sort_url(column, dir_path, True) }}" title="{{ _gettext('Sort by %(name)s', name=column) }}">
                             {{ admin_view.column_label(column) }}
                             {% if sort_desc %}
-                                <span class="fa fa-chevron-up glyphicon glyphicon-chevron-up"></span>
+                                <span class="fa fa-chevron-up bi bi-chevron-up"></span>
                             {% else %}
-                                <span class="fa fa-chevron-down glyphicon glyphicon-chevron-down"></span>
+                                <span class="fa fa-chevron-down bi bi-chevron-down"></span>
                             {% endif %}
                         </a>
                     {% else %}
@@ -74,10 +74,10 @@
                   {%- if admin_view.rename_modal -%}
                     {{ lib.add_modal_button(url=get_url('.rename', path=path, modal=True),
                                             title=_gettext('Rename File'),
-                                            content='<i class="fa fa-pencil glyphicon glyphicon-pencil"></i>') }}
+                                            content='<i class="fa fa-pencil bi bi-pencil-fill"></i>') }}
                   {% else %}
                     <a class="icon" href="{{ get_url('.rename', path=path) }}" title="{{ _gettext('Rename File') }}">
-                      <i class="fa fa-pencil glyphicon glyphicon-pencil"></i>
+                      <i class="fa fa-pencil bi bi-pencil-fill"></i>
                     </a>
                   {%- endif -%}
                 {% endif %}
@@ -90,7 +90,7 @@
                             {{ delete_form.csrf_token }}
                             {% endif %}
                             <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
-                                <i class="fa fa-times glyphicon glyphicon-remove"></i>
+                                <i class="fa fa-times bi bi-trash-fill"></i>
                             </button>
                         </form>
                         {% endif %}
@@ -101,7 +101,7 @@
                         {{ delete_form.csrf_token }}
                         {% endif %}
                         <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
-                            <i class="fa fa-trash glyphicon glyphicon-trash"></i>
+                            <i class="fa fa-trash bi bi-trash-fill"></i>
                         </button>
                     </form>
                     {% endif %}
@@ -111,7 +111,7 @@
             {% if is_dir %}
             <td colspan="2">
                 <a href="{{ get_dir_url('.index_view', path)|safe }}">
-                    <i class="fa fa-folder-o glyphicon glyphicon-folder-close"></i> <span>{{ name }}</span>
+                    <i class="fa fa-folder-o bi bi-folder"></i> <span>{{ name }}</span>
                 </a>
             </td>
             {% else %}
