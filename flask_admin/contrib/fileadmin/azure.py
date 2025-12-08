@@ -50,7 +50,7 @@ class AzureStorage(BaseFileStorage):
         self,
         blob_service_client: BlobServiceClient,
         container_name: str,
-        on_windows=True,
+        on_windows=False,
     ):
         """
         Constructor
