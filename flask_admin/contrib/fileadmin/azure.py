@@ -301,7 +301,7 @@ class AzureFileAdmin(BaseFileAdmin):
         self,
         blob_service_client: BlobServiceClient,
         container_name: str,
-        on_windows: bool | None = True,
+        on_windows: bool | None = False,
         *args: t.Any,
         **kwargs: t.Any,
     ) -> None:

@@ -189,9 +189,15 @@ Likewise, it supports Azure storage::
         AzureFileAdmin(
             blob_service_client=client,
             container_name="<container-name>",
-            on_windows=True
+            on_windows=False
         )
     )
+
+Notice the *on_windows* parameter in the above example. This is required to handle differences in path
+separators between Windows and Unix-based operating systems. Set it to *True* if your Storage is
+running on a Windows server. However, most of Azure storage services are operating-system agnostic,
+so you can usually leave it to *False*.
+
 
 You can disable uploads, disable file deletion, restrict file uploads to certain types, etc.
 Check :mod:`flask_admin.contrib.fileadmin` in the API documentation for more details.
