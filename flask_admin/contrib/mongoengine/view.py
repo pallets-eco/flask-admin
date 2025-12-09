@@ -21,7 +21,6 @@ from flask_admin.babel import ngettext
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
 
-from ...model.filters import BaseFilter
 from .ajax import create_ajax_loader
 from .ajax import process_ajax_references
 from .filters import BaseMongoEngineFilter
@@ -60,13 +59,15 @@ class ModelView(BaseModelView):
     MongoEngine model scaffolding.
     """
 
-    column_filters: t.Collection[str | BaseFilter] | None = None
+    column_filters: t.Collection[str | BaseMongoEngineFilter] | None = None
     """
-        Collection of the column filters.
+        Collection of column filters used in the list view.
 
-        Can contain either field names or instances of
-        :class:`flask_admin.contrib.mongoengine.filters.BaseMongoEngineFilter`
-        classes.
+        Can contain either:
+        - Field names (str): allow any appropriate filter operation based on the
+        field’s data type.
+        - Instances of :class:`~flask_admin.contrib.mongoengine.filters.BaseFilter`
+        classes: restrict or customize which filters are available for a specific field.
 
         Filters will be grouped by name when displayed in the drop-down.
 

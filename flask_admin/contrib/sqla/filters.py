@@ -3,14 +3,14 @@ import typing as t
 
 from sqlalchemy.sql import not_
 from sqlalchemy.sql import or_
-from sqlalchemy.sql.schema import Column
 
 from flask_admin._types import T_OPTIONS
-from flask_admin._types import T_SQLALCHEMY_QUERY
+from flask_admin._types import T_SQLALCHEMY_COLUMN
 from flask_admin._types import T_TRANSLATABLE
 from flask_admin._types import T_WIDGET_TYPE
 from flask_admin.babel import lazy_gettext
 from flask_admin.contrib.sqla import tools
+from flask_admin.contrib.sqla._types import T_SQLALCHEMY_QUERY
 from flask_admin.model import filters
 
 
@@ -21,7 +21,7 @@ class BaseSQLAFilter(filters.BaseFilter):
 
     def __init__(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
@@ -43,7 +43,7 @@ class BaseSQLAFilter(filters.BaseFilter):
 
         self.column = column
 
-    def get_column(self, alias: t.Any) -> Column:
+    def get_column(self, alias: t.Any) -> T_SQLALCHEMY_COLUMN:
         return self.column if alias is None else getattr(alias, self.column.key)
 
     def apply(
@@ -131,7 +131,7 @@ class FilterEmpty(BaseSQLAFilter, filters.BaseBooleanFilter):
 class FilterInList(BaseSQLAFilter):
     def __init__(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
@@ -257,7 +257,7 @@ class DateSmallerFilter(FilterSmaller, filters.BaseDateFilter):
 class DateBetweenFilter(BaseSQLAFilter, filters.BaseDateBetweenFilter):
     def __init__(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
@@ -304,7 +304,7 @@ class DateTimeSmallerFilter(FilterSmaller, filters.BaseDateTimeFilter):
 class DateTimeBetweenFilter(BaseSQLAFilter, filters.BaseDateTimeBetweenFilter):
     def __init__(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
@@ -351,7 +351,7 @@ class TimeSmallerFilter(FilterSmaller, filters.BaseTimeFilter):
 class TimeBetweenFilter(BaseSQLAFilter, filters.BaseTimeBetweenFilter):
     def __init__(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
@@ -382,7 +382,7 @@ class TimeNotBetweenFilter(TimeBetweenFilter):
 class EnumEqualFilter(FilterEqual):
     def __init__(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
@@ -400,7 +400,7 @@ class EnumEqualFilter(FilterEqual):
 class EnumFilterNotEqual(FilterNotEqual):
     def __init__(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
@@ -418,7 +418,7 @@ class EnumFilterNotEqual(FilterNotEqual):
 class EnumFilterEmpty(FilterEmpty):
     def __init__(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
@@ -431,7 +431,7 @@ class EnumFilterEmpty(FilterEmpty):
 class EnumFilterInList(FilterInList):
     def __init__(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
@@ -453,7 +453,7 @@ class EnumFilterInList(FilterInList):
 class EnumFilterNotInList(FilterNotInList):
     def __init__(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
@@ -475,7 +475,7 @@ class EnumFilterNotInList(FilterNotInList):
 class ChoiceTypeEqualFilter(FilterEqual):
     def __init__(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
@@ -508,7 +508,7 @@ class ChoiceTypeEqualFilter(FilterEqual):
 class ChoiceTypeNotEqualFilter(FilterNotEqual):
     def __init__(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
@@ -542,7 +542,7 @@ class ChoiceTypeNotEqualFilter(FilterNotEqual):
 class ChoiceTypeLikeFilter(FilterLike):
     def __init__(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
@@ -574,7 +574,7 @@ class ChoiceTypeLikeFilter(FilterLike):
 class ChoiceTypeNotLikeFilter(FilterNotLike):
     def __init__(
         self,
-        column: Column,
+        column: T_SQLALCHEMY_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
@@ -708,7 +708,7 @@ class FilterConverter(filters.BaseFilterConverter):
     arrow_type_filters = (DateTimeGreaterFilter, DateTimeSmallerFilter, FilterEmpty)
 
     def convert(
-        self, type_name: str, column: Column, name: str, **kwargs: t.Any
+        self, type_name: str, column: T_SQLALCHEMY_COLUMN, name: str, **kwargs: t.Any
     ) -> list[BaseSQLAFilter] | None:
         filter_name = type_name.lower()
 
@@ -736,19 +736,19 @@ class FilterConverter(filters.BaseFilterConverter):
         "IPAddressType",
     )
     def conv_string(
-        self, column: Column, name: str, **kwargs: t.Any
+        self, column: T_SQLALCHEMY_COLUMN, name: str, **kwargs: t.Any
     ) -> list[BaseSQLAFilter]:
         return [f(column, name, **kwargs) for f in self.strings]
 
     @filters.convert("UUIDType", "ColorType", "TimezoneType", "CurrencyType")
     def conv_string_keys(
-        self, column: Column, name: str, **kwargs: t.Any
+        self, column: T_SQLALCHEMY_COLUMN, name: str, **kwargs: t.Any
     ) -> list[BaseSQLAFilter]:
         return [f(column, name, **kwargs) for f in self.string_key_filters]
 
     @filters.convert("boolean", "tinyint")
     def conv_bool(
-        self, column: Column, name: str, **kwargs: t.Any
+        self, column: T_SQLALCHEMY_COLUMN, name: str, **kwargs: t.Any
     ) -> list[BaseSQLAFilter]:
         return [f(column, name, **kwargs) for f in self.bool_filters]
 
@@ -762,7 +762,7 @@ class FilterConverter(filters.BaseFilterConverter):
         "mediumint",
     )
     def conv_int(
-        self, column: Column, name: str, **kwargs: t.Any
+        self, column: T_SQLALCHEMY_COLUMN, name: str, **kwargs: t.Any
     ) -> list[BaseSQLAFilter]:
         return [f(column, name, **kwargs) for f in self.int_filters]
 
@@ -770,43 +770,47 @@ class FilterConverter(filters.BaseFilterConverter):
         "float", "real", "decimal", "numeric", "double_precision", "double"
     )
     def conv_float(
-        self, column: Column, name: str, **kwargs: t.Any
+        self, column: T_SQLALCHEMY_COLUMN, name: str, **kwargs: t.Any
     ) -> list[BaseSQLAFilter]:
         return [f(column, name, **kwargs) for f in self.float_filters]
 
     @filters.convert("date")
     def conv_date(
-        self, column: Column, name: str, **kwargs: t.Any
+        self, column: T_SQLALCHEMY_COLUMN, name: str, **kwargs: t.Any
     ) -> list[BaseSQLAFilter]:
         return [f(column, name, **kwargs) for f in self.date_filters]
 
     @filters.convert("datetime", "datetime2", "timestamp", "smalldatetime")
     def conv_datetime(
-        self, column: Column, name: str, **kwargs: t.Any
+        self, column: T_SQLALCHEMY_COLUMN, name: str, **kwargs: t.Any
     ) -> list[BaseSQLAFilter]:
         return [f(column, name, **kwargs) for f in self.datetime_filters]
 
     @filters.convert("time")
     def conv_time(
-        self, column: Column, name: str, **kwargs: t.Any
+        self, column: T_SQLALCHEMY_COLUMN, name: str, **kwargs: t.Any
     ) -> list[BaseSQLAFilter]:
         return [f(column, name, **kwargs) for f in self.time_filters]
 
     @filters.convert("ChoiceType")
     def conv_sqla_utils_choice(
-        self, column: Column, name: str, **kwargs: t.Any
+        self, column: T_SQLALCHEMY_COLUMN, name: str, **kwargs: t.Any
     ) -> list[BaseSQLAFilter]:
         return [f(column, name, **kwargs) for f in self.choice_type_filters]
 
     @filters.convert("ArrowType")
     def conv_sqla_utils_arrow(
-        self, column: Column, name: str, **kwargs: t.Any
+        self, column: T_SQLALCHEMY_COLUMN, name: str, **kwargs: t.Any
     ) -> list[BaseSQLAFilter]:
         return [f(column, name, **kwargs) for f in self.arrow_type_filters]
 
     @filters.convert("enum")
     def conv_enum(
-        self, column: Column, name: str, options: T_OPTIONS = None, **kwargs: t.Any
+        self,
+        column: T_SQLALCHEMY_COLUMN,
+        name: str,
+        options: T_OPTIONS = None,
+        **kwargs: t.Any,
     ) -> list[BaseSQLAFilter]:
         if not options:
             options = [(v, v) for v in column.type.enums]  # type: ignore[attr-defined]
@@ -815,6 +819,6 @@ class FilterConverter(filters.BaseFilterConverter):
 
     @filters.convert("uuid", "UUIDType")
     def conv_uuid(
-        self, column: Column, name: str, **kwargs: t.Any
+        self, column: T_SQLALCHEMY_COLUMN, name: str, **kwargs: t.Any
     ) -> list[BaseSQLAFilter]:
         return [f(column, name, **kwargs) for f in self.uuid_filters]

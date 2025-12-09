@@ -405,7 +405,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         Override to implement customized behavior.
         """
 
-        class UploadForm(self.form_base_class):  # type: ignore[name-defined]
+        class UploadForm(self.form_base_class):  # type: ignore[name-defined, misc]
             """
             File upload form. Works with FileAdmin instance to check if it
             is allowed to upload file with given extension.
@@ -435,7 +435,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         Override to implement customized behavior.
         """
 
-        class EditForm(self.form_base_class):  # type: ignore[name-defined]
+        class EditForm(self.form_base_class):  # type: ignore[name-defined, misc]
             content = fields.TextAreaField(
                 lazy_gettext("Content"), (validators.InputRequired(),)
             )
@@ -456,7 +456,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             if not regexp.match(field.data):
                 raise validators.ValidationError(gettext("Invalid name"))
 
-        class NameForm(self.form_base_class):  # type: ignore[name-defined]
+        class NameForm(self.form_base_class):  # type: ignore[name-defined, misc]
             """
             Form with a filename input field.
 
@@ -478,7 +478,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         Override to implement customized behavior.
         """
 
-        class DeleteForm(self.form_base_class):  # type: ignore[name-defined]
+        class DeleteForm(self.form_base_class):  # type: ignore[name-defined, misc]
             path = fields.HiddenField(validators=[validators.InputRequired()])
 
         return DeleteForm
@@ -490,7 +490,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         Override to implement customized behavior.
         """
 
-        class ActionForm(self.form_base_class):  # type: ignore[name-defined]
+        class ActionForm(self.form_base_class):  # type: ignore[name-defined, misc]
             action = fields.HiddenField()
             url = fields.HiddenField()
             # rowid is retrieved using getlist, for backward compatibility
@@ -1194,6 +1194,10 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         form = self.name_form()
 
         path = form.path.data  # type: ignore[attr-defined]
+
+        if request.method == "GET" and hasattr(form, "name"):
+            form.name.data = op.basename(path)
+
         if path:
             base_path, full_path, path = self._normalize_path(path)
 
@@ -1241,6 +1245,8 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             return redirect(return_url)
         else:
             helpers.flash_errors(form, message="Failed to rename: %(error)s")
+            if hasattr(form, "name"):
+                form.name.data = op.basename(path)
 
         if self.rename_modal and request.args.get("modal"):
             template = self.rename_modal_template
