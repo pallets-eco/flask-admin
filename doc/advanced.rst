@@ -171,8 +171,37 @@ bucket using a `boto3 client <https://boto3.amazonaws.com/v1/documentation/api/l
 
     admin.add_view(S3FileAdmin(boto3.client('s3'), 'files_bucket'))
 
+Likewise, it supports Azure storage::
+
+    from flask_admin import Admin
+    from flask_admin.contrib.fileadmin.azure import AzureFileAdmin
+    from azure.storage.blob import BlobServiceClient
+
+    admin = Admin()
+
+    connection_string = "<your-connection-string>"
+
+    client = BlobServiceClient.from_connection_string(
+        connection_string, api_version="2019-12-12"
+    )
+
+    admin.add_view(
+        AzureFileAdmin(
+            blob_service_client=client,
+            container_name="<container-name>",
+            on_windows=False
+        )
+    )
+
+Notice the *on_windows* parameter in the above example. This is required to handle differences in path
+separators between Windows and Unix-based operating systems. Set it to *True* if your Storage is
+running on a Windows server. However, most of Azure storage services are operating-system agnostic,
+so you can usually leave it to *False*.
+
+
 You can disable uploads, disable file deletion, restrict file uploads to certain types, etc.
 Check :mod:`flask_admin.contrib.fileadmin` in the API documentation for more details.
+
 
 Adding new file backends
 ************************
