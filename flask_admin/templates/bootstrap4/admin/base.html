@@ -68,6 +68,13 @@
         {# store the jinja2 context for form_rules rendering logic #}
         {% set render_ctx = h.resolve_ctx() %}
 
+        {% block page_title %}
+          <h4 class="mb-4">
+            {{ layout.menu_icon(admin_view.menu) }}
+            {{ admin_view.name }}
+          </h4>
+        {% endblock  %}
+
         {% block body %}{% endblock %}
     </div>
 {% endblock %}
