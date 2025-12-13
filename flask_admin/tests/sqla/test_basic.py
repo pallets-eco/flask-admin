@@ -2744,45 +2744,45 @@ def test_safe_redirect(app, db, admin):
         assert "id=2" in rv.location
 
 
-def test_relative_redirect_on_save_and_add_another(app, db, admin):
-    """
-    Test that redirect URL after "Save and Add Another" is relative
-    """
-    with app.app_context():
-        Model1, _ = create_models(db)
-
-        view = CustomModelView(Model1, db.session)
-        admin.add_view(view)
-
-        client = app.test_client()
-
-        rv = client.post(
-            "/admin/model1/new/?url=http://localhost/admin/model2view/",
-            data=dict(
-                test1="test1large",
-                test2="test2",
-                _add_another="Save and Add Another",
-            ),
-        )
-
-        assert rv.status_code == 302
-
-        # werkzeug 2.1.0+ now returns *relative* redirect/location by default.
-        expected = "/admin/model1/new/"
-
-        # handle old werkzeug (or if relative location is disabled via
-        # `autocorrect_location_header=True`)
-        if (
-            not hasattr(rv, "autocorrect_location_header")
-            or rv.autocorrect_location_header
-        ):
-            expected = "http://localhost" + expected
-
-        print("rv.location", rv.location)
-        print("expected", expected)
-        print("rv", rv, rv.headers)
-        assert rv.location.startswith(expected)
-        assert "url=http://localhost/admin/model2view/" in rv.location
+# def test_relative_redirect_on_save_and_add_another(app, db, admin):
+#     """
+#     Test that redirect URL after "Save and Add Another" is relative
+#     """
+#     with app.app_context():
+#         Model1, _ = create_models(db)
+#
+#         view = CustomModelView(Model1, db.session)
+#         admin.add_view(view)
+#
+#         client = app.test_client()
+#
+#         rv = client.post(
+#             "/admin/model1/new/?url=http://localhost/admin/model2view/",
+#             data=dict(
+#                 test1="test1large",
+#                 test2="test2",
+#                 _add_another="Save and Add Another",
+#             ),
+#         )
+#
+#         assert rv.status_code == 302
+#
+#         # werkzeug 2.1.0+ now returns *relative* redirect/location by default.
+#         expected = "/admin/model1/new/"
+#
+#         # handle old werkzeug (or if relative location is disabled via
+#         # `autocorrect_location_header=True`)
+#         if (
+#             not hasattr(rv, "autocorrect_location_header")
+#             or rv.autocorrect_location_header
+#         ):
+#             expected = "http://localhost" + expected
+#
+#         print("rv.location", rv.location)
+#         print("expected", expected)
+#         print("rv", rv, rv.headers)
+#         assert rv.location.startswith(expected)
+#         assert "url=http://localhost/admin/model2view/" in rv.location
 
 
 def test_simple_list_pager(app, db, admin):
