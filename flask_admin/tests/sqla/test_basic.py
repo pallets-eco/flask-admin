@@ -2759,8 +2759,7 @@ def test_relative_redirect_on_save_and_add_another(app, db, admin):
         rv = client.post(
             "/admin/model1/new/?url=http://localhost/admin/model2view/",
             data=dict(
-                test1="test1large",
-                test2="test2",
+                test1="test",
                 _add_another="Save and Add Another",
             ),
         )
