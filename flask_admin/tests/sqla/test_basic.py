@@ -2765,26 +2765,21 @@ def test_safe_redirect(app, db, admin):
 #             ),
 #         )
 #
-#         assert rv.status_code == 302
-#
-#         # werkzeug 2.1.0+ now returns *relative* redirect/location by default.
-#         expected = "/admin/model1/new/"
-#
-#         # handle old werkzeug (or if relative location is disabled via
-#         # `autocorrect_location_header=True`)
-#         if (
-#             not hasattr(rv, "autocorrect_location_header")
-#             or rv.autocorrect_location_header
-#         ):
-#             expected = "http://localhost" + expected
-#
-#         print("rv.location", rv.location)
-#         print("expected", expected)
-#         print("rv", rv, rv.headers)
-#         assert rv.location.startswith(expected)
-#         assert "url=http://localhost/admin/model2view/" in rv.location
+        assert rv.status_code == 302
 
+        # werkzeug 2.1.0+ now returns *relative* redirect/location by default.
+        expected = "/admin/model1/new/"
 
+        # handle old werkzeug (or if relative location is disabled via
+        # `autocorrect_location_header=True`)
+        if (
+            not hasattr(rv, "autocorrect_location_header")
+            or rv.autocorrect_location_header
+        ):
+            expected = "http://localhost" + expected
+
+        assert rv.location.startswith(expected)
+        assert "url=http://localhost/admin/model2view/" in rv.location
 def test_simple_list_pager(app, db, admin):
     with app.app_context():
         Model1, _ = create_models(db)
