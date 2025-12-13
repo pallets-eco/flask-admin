@@ -236,10 +236,16 @@ the *column_exclude_list* parameter::
 
     column_exclude_list = ['password', ]
 
-To **make columns searchable**, or to use them for filtering, specify a list of column names::
+To **make columns searchable**, specify a list of column names::
 
     column_searchable_list = ['name', 'email']
+
+To **use columns for filtering**, specify a list of filterable objects, where it could
+be a string column's name, column, or :meth:`~flask_admin.model.filters.BaseFilter`::
+
     column_filters = ['country']
+    column_filters = [User.country]
+    column_filters = [FilterLike("email", "Email")]
 
 For a faster editing experience, enable **inline editing** in the list view::
 
