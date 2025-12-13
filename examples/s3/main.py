@@ -47,7 +47,7 @@ if __name__ == "__main__":
         s3_client.upload_fileobj(
             BytesIO(b"abcdef"),
             "bucket",
-            "some-directory/some-file",
+            "some-directory/some-file-2",
             ExtraArgs={"ContentType": "text/plain"},
         )
 
@@ -63,6 +63,16 @@ if __name__ == "__main__":
             S3FileAdmin(
                 bucket_name=bucket_name,
                 s3_client=s3_client,
+            )
+        )
+
+        admin.add_view(
+            S3FileAdmin(
+                bucket_name=bucket_name,
+                s3_client=s3_client,
+                name="S3 with Prefix",
+                prefix="some-directory/",
+                endpoint= "s3-with-prefix"
             )
         )
 
