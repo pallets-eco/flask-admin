@@ -43,7 +43,11 @@ from ..._types import T_SQLALCHEMY_COLUMN
 from ..._types import T_SQLALCHEMY_INLINE_MODELS
 from ..._types import T_SQLALCHEMY_MODEL
 from ...form import Select2Field
+from ._compat import get_deprecated_session
+from ._compat import warn_session_deprecation
 from ._types import T_SCOPED_SESSION
+from ._types import T_SQLALCHEMY
+from ._types import T_SQLALCHEMY_LITE
 from .ajax import create_ajax_loader
 from .fields import HstoreForm
 from .fields import InlineHstoreList
@@ -67,10 +71,14 @@ class AdminModelConverter(ModelConverterBase):
     SQLAlchemy model to form converter
     """
 
-    def __init__(self, session: T_SCOPED_SESSION, view: T_MODEL_VIEW) -> None:
+    def __init__(
+        self,
+        session: T_SCOPED_SESSION | T_SQLALCHEMY | T_SQLALCHEMY_LITE,
+        view: T_MODEL_VIEW,
+    ) -> None:
         super().__init__()
 
-        self.session = session
+        self.session = warn_session_deprecation(session)
         self.view = view
 
     def _get_label(self, name: str, field_args: T_FIELD_ARGS_LABEL) -> str:
@@ -136,7 +144,8 @@ class AdminModelConverter(ModelConverterBase):
                 return AjaxSelectField(loader, **kwargs)
 
         if "query_factory" not in kwargs:
-            kwargs["query_factory"] = lambda: self.session.query(remote_model)
+            session = get_deprecated_session(self.session)
+            kwargs["query_factory"] = lambda: session.query(remote_model)
 
         if multiple:
             return QuerySelectMultipleField(**kwargs)
@@ -281,6 +290,8 @@ class AdminModelConverter(ModelConverterBase):
 
             unique = False
 
+            session = get_deprecated_session(self.session)
+
             if column.primary_key:
                 if hidden_pk:
                     # If requested to add hidden field, show it
@@ -293,12 +304,12 @@ class AdminModelConverter(ModelConverterBase):
 
                     # Current Unique Validator does not work with multicolumns-pks
                     if not has_multiple_pks(model):
-                        kwargs["validators"].append(Unique(self.session, model, column))
+                        kwargs["validators"].append(Unique(session, model, column))
                         unique = True
 
             # If field is unique, validate it
             if column.unique and not unique:
-                kwargs["validators"].append(Unique(self.session, model, column))
+                kwargs["validators"].append(Unique(session, model, column))
 
             optional_types = getattr(self.view, "form_optional_types", (Boolean,))
 
@@ -797,15 +808,19 @@ class InlineModelConverter(InlineModelConverterBase):
 
     def __init__(
         self,
-        session: T_SCOPED_SESSION,
+        session: T_SCOPED_SESSION | T_SQLALCHEMY | T_SQLALCHEMY_LITE,
         view: T_MODEL_VIEW,
-        model_converter: t.Callable[[T_SCOPED_SESSION, t.Any], t.Any],
+        model_converter: t.Callable[
+            [T_SCOPED_SESSION | T_SQLALCHEMY | T_SQLALCHEMY_LITE, t.Any], t.Any
+        ],
     ) -> None:
         """
         Constructor.
-
-        :param session:
-            SQLAlchemy session
+         :param session:
+            flask_sqlalchemy.SQLAlchemy/flask_sqlalchemy_lite.SQLAlchemy object
+            (preferred) or scoped session (deprecated).
+            When passing a SQLAlchemy object, the session will be accessed via its
+            .session attribute.
         :param view:
             Flask-Admin view object
         :param model_converter:
@@ -813,7 +828,7 @@ class InlineModelConverter(InlineModelConverterBase):
             appropriate `InlineFormAdmin` instance.
         """
         super().__init__(view)
-        self.session = session
+        self.session = warn_session_deprecation(session)
         self.model_converter = model_converter
 
     def get_info(
@@ -942,11 +957,6 @@ class InlineModelConverter(InlineModelConverterBase):
         """
         Generate form fields for inline forms and contribute them to
         the `form_class`
-
-        :param converter:
-            ModelConverterBase instance
-        :param session:
-            SQLAlchemy session
         :param model:
             Model class
         :param form_class:
