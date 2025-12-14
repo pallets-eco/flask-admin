@@ -1,3 +1,4 @@
+import pytest
 from wtforms import fields
 
 from flask_admin import form
@@ -6,7 +7,14 @@ from flask_admin.contrib.sqla.fields import InlineModelFormList
 from flask_admin.contrib.sqla.validators import ItemsRequired
 
 
-def test_inline_form(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_inline_form(app, db, admin, session_or_db):
     with app.app_context():
         client = app.test_client()
 
@@ -38,7 +46,8 @@ def test_inline_form(app, db, admin):
         class UserModelView(ModelView):
             inline_models = (UserInfo,)
 
-        view = UserModelView(User, db.session)
+        param = db.session if session_or_db == "session" else db
+        view = UserModelView(User, param)
         admin.add_view(view)
 
         # Basic tests
@@ -114,7 +123,14 @@ def test_inline_form(app, db, admin):
         assert UserInfo.query.count() == 0
 
 
-def test_inline_form_required(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_inline_form_required(app, db, admin, session_or_db):
     with app.app_context():
         client = app.test_client()
 
@@ -147,7 +163,8 @@ def test_inline_form_required(app, db, admin):
             inline_models = (UserEmail,)
             form_args = {"emails": {"validators": [ItemsRequired()]}}
 
-        view = UserModelView(User, db.session)
+        param = db.session if session_or_db == "session" else db
+        view = UserModelView(User, param)
         admin.add_view(view)
 
         # Create
@@ -176,7 +193,14 @@ def test_inline_form_required(app, db, admin):
         assert UserEmail.query.count() == 1
 
 
-def test_inline_form_ajax_fk(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_inline_form_ajax_fk(app, db, admin, session_or_db):
     with app.app_context():
         # Set up models and database
         class User(db.Model):  # type: ignore[name-defined, misc]
@@ -218,7 +242,8 @@ def test_inline_form_ajax_fk(app, db, admin):
 
             inline_models = [(UserInfo, opts)]
 
-        view = UserModelView(User, db.session)
+        param = db.session if session_or_db == "session" else db
+        view = UserModelView(User, param)
         admin.add_view(view)
 
         form = view.create_form()
@@ -230,7 +255,14 @@ def test_inline_form_ajax_fk(app, db, admin):
         assert "userinfo-tag" in view._form_ajax_refs
 
 
-def test_inline_form_self(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_inline_form_self(app, db, admin, session_or_db):
     with app.app_context():
 
         class Tree(db.Model):  # type: ignore[name-defined, misc]
@@ -243,7 +275,8 @@ def test_inline_form_self(app, db, admin):
         class TreeView(ModelView):
             inline_models = (Tree,)
 
-        view = TreeView(Tree, db.session)
+        param = db.session if session_or_db == "session" else db
+        view = TreeView(Tree, param)
 
         parent = Tree()
         child = Tree(parent=parent)
@@ -251,7 +284,14 @@ def test_inline_form_self(app, db, admin):
         assert form.parent.data == parent  # type: ignore[attr-defined]
 
 
-def test_inline_form_base_class(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_inline_form_base_class(app, db, admin, session_or_db):
     client = app.test_client()
 
     with app.app_context():
@@ -297,7 +337,8 @@ def test_inline_form_base_class(app, db, admin):
             inline_models = ((UserEmail, {"form_base_class": StubBaseForm}),)
             form_args = {"emails": {"validators": [ItemsRequired()]}}
 
-        view = UserModelView(User, db.session)
+        param = db.session if session_or_db == "session" else db
+        view = UserModelView(User, param)
         admin.add_view(view)
 
         # Create

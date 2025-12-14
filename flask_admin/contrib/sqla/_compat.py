@@ -20,14 +20,14 @@ def warn_session_deprecation(
             # https://github.com/pallets-eco/flask-admin/pull/2680
             raise TypeError(
                 "Passing a session object directly is not supported with "
-                "Flask-SQLAlchemy-Lite."
+                "Flask-SQLAlchemy-Lite. "
                 "Please pass the SQLAlchemy db object instead. "
                 "Example: ModelView(User, db) instead of ModelView(User, db.session)"
             )
         if warn:
             warnings.warn(
                 "Passing a session object directly is deprecated and will be "
-                "removed in version 3.0."
+                "removed in version 3.0. "
                 "Please pass the SQLAlchemy db object instead. "
                 "Note: the parameter will be renamed from 'session' to 'db' in version "
                 "3.0. "

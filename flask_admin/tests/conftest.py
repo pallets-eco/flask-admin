@@ -31,3 +31,12 @@ def babel(app):
 def admin(app, babel):
     admin = Admin(app)
     yield admin
+
+
+session_or_db = pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
