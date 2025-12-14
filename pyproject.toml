@@ -35,6 +35,9 @@ sqlalchemy = [
     "flask-sqlalchemy>=3",
     "sqlalchemy>=1.4",
 ]
+sqlalchemy-lite = [
+    "flask-sqlalchemy-lite",
+]
 sqlalchemy-with-utils = [
     "Flask-Admin[sqlalchemy]",
     "sqlalchemy_utils>=0.38.0",
@@ -62,6 +65,7 @@ rediscli = ["redis>=4.0.0"]
 translation = ["flask-babel>=3.0.1"]
 all = [
     "Flask-Admin[sqlalchemy]",
+    "Flask-Admin[sqlalchemy-lite]",
     "Flask-Admin[sqlalchemy-with-utils]",
     "Flask-Admin[geoalchemy]",
     "Flask-Admin[pymongo]",

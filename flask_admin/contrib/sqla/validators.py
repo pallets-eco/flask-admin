@@ -13,6 +13,8 @@ from flask_admin._types import T_SQLALCHEMY_MODEL
 from flask_admin._types import T_TRANSLATABLE
 from flask_admin.babel import lazy_gettext
 from flask_admin.contrib.sqla._types import T_SCOPED_SESSION
+from flask_admin.contrib.sqla._types import T_SQLALCHEMY
+from flask_admin.contrib.sqla._types import T_SQLALCHEMY_LITE
 
 
 class Unique:
@@ -32,7 +34,7 @@ class Unique:
 
     def __init__(
         self,
-        db_session: T_SCOPED_SESSION,
+        db_session: T_SCOPED_SESSION | T_SQLALCHEMY | T_SQLALCHEMY_LITE,
         model: type[T_SQLALCHEMY_MODEL],
         column: T_COLUMN,
         message: T_TRANSLATABLE | None = None,

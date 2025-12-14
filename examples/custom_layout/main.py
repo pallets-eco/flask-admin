@@ -186,8 +186,8 @@ def build_sample_db():
 
 
 if __name__ == "__main__":
-    admin.add_view(UserAdmin(User, db.session))
-    admin.add_view(CustomView(Page, db.session))
+    admin.add_view(UserAdmin(User, db))
+    admin.add_view(CustomView(Page, db))
 
     app_dir = op.realpath(os.path.dirname(__file__))
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])

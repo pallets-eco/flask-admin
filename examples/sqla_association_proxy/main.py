@@ -90,8 +90,8 @@ class KeywordAdmin(ModelView):
 
 
 if __name__ == "__main__":
-    admin.add_view(UserAdmin(User, db.session))
-    admin.add_view(KeywordAdmin(Keyword, db.session))
+    admin.add_view(UserAdmin(User, db))
+    admin.add_view(KeywordAdmin(Keyword, db))
 
     with app.app_context():
         db.create_all()

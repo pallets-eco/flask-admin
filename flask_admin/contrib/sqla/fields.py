@@ -30,7 +30,11 @@ from ..._types import T_ORM_MODEL
 from ..._types import T_SQLALCHEMY_MODEL
 from ..._types import T_VALIDATOR
 from ...model.form import InlineBaseFormAdmin
+from ._compat import get_deprecated_session
+from ._compat import warn_session_deprecation
 from ._types import T_SCOPED_SESSION
+from ._types import T_SQLALCHEMY
+from ._types import T_SQLALCHEMY_LITE
 from .tools import get_primary_key
 
 
@@ -300,7 +304,7 @@ class InlineModelFormList(InlineFieldList):
     def __init__(
         self,
         form: type[form.BaseForm],
-        session: T_SCOPED_SESSION,
+        session: T_SCOPED_SESSION | T_SQLALCHEMY | T_SQLALCHEMY_LITE,
         model: type[T_SQLALCHEMY_MODEL],
         prop: str,
         inline_view: t.Any,
@@ -312,7 +316,10 @@ class InlineModelFormList(InlineFieldList):
         :param form:
             Form for the related model
         :param session:
-            SQLAlchemy session
+            flask_sqlalchemy.SQLAlchemy/flask_sqlalchemy_lite.SQLAlchemy db object
+            (preferred) or .session attribute (deprecated).
+            When passing a SQLAlchemy object, the session will be accessed via its
+            .session attribute.
         :param model:
             Related model
         :param prop:
@@ -321,7 +328,7 @@ class InlineModelFormList(InlineFieldList):
             Inline view
         """
         self.form = form
-        self.session = session
+        self.session = warn_session_deprecation(session)
         self.model = model
         self.prop = prop
         self.inline_view = inline_view
@@ -363,7 +370,8 @@ class InlineModelFormList(InlineFieldList):
                 model = pk_map[field_id]
 
                 if self.should_delete(field):
-                    self.session.delete(model)
+                    session = get_deprecated_session(self.session)
+                    session.delete(model)
                     continue
             else:
                 model = self.model()
@@ -378,14 +386,14 @@ class InlineModelOneToOneField(InlineModelFormField):
     def __init__(
         self,
         form: type[form.BaseForm],
-        session: T_SCOPED_SESSION,
+        session: T_SCOPED_SESSION | T_SQLALCHEMY | T_SQLALCHEMY_LITE,
         model: type[T_ORM_MODEL],
         prop: str,
         inline_view: InlineBaseFormAdmin,
         **kwargs: t.Any,
     ) -> None:
         self.form = form
-        self.session = session
+        self.session = warn_session_deprecation(session)
         self.model = model
         self.prop = prop
         self.inline_view = inline_view
