@@ -462,6 +462,7 @@ def test_root_mount(app, babel):
     assert rv.status_code == 200
 
 
+@pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
 def test_menu_links(app, admin):
     admin.add_link(base.MenuLink("TestMenuLink1", endpoint=".index"))
     admin.add_link(base.MenuLink("TestMenuLink2", url="http://python.org/"))
