@@ -1,0 +1,11 @@
+.plugin-checkbox_options:not(.rtl) {
+	.option input {
+		margin-right: 0.5rem;
+	}
+}
+
+.plugin-checkbox_options.rtl {
+	.option input {
+		margin-left: 0.5rem;
+	}
+}

@@ -1,0 +1,155 @@
+{
+  "name": "tom-select",
+  "keywords": [
+    "select",
+    "ui",
+    "form",
+    "input",
+    "control",
+    "autocomplete",
+    "tagging",
+    "tag"
+  ],
+  "type": "module",
+  "main": "dist/cjs/tom-select.complete.js",
+  "module": "dist/esm/tom-select.complete.js",
+  "browser": "dist/js/tom-select.complete.js",
+  "style": "dist/css/tom-select.default.css",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/tom-select.complete.js",
+      "require": "./dist/cjs/tom-select.complete.js"
+    },
+    "./base": {
+      "import": "./dist/esm/tom-select.js",
+      "require": "./dist/cjs/tom-select.js"
+    },
+    "./popular": {
+      "import": "./dist/esm/tom-select.popular.js",
+      "require": "./dist/cjs/tom-select.popular.js"
+    },
+    "./utils": {
+      "import": "./dist/esm/utils.js",
+      "require": "./dist/cjs/utils.js"
+    },
+    "./plugins/*": {
+      "import": "./dist/esm/plugins/*",
+      "require": "./dist/cjs/plugins/*"
+    },
+    "./src/*": "./src/*",
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
+  },
+  "description": "Tom Select is a versatile and dynamic <select> UI control. Forked from Selectize.js to provide a framework agnostic autocomplete widget with native-feeling keyboard navigation, it's useful for tagging, contact lists, country selectors, etc.",
+  "homepage": "https://tom-select.js.org",
+  "version": "2.4.3",
+  "files": [
+    "/dist",
+    "/src"
+  ],
+  "author": "Josh Schmidt (https://github.com/oyejorge)",
+  "contributors": [
+    "Brian Reavis <brian@thirdroute.com>"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/orchidjs/tom-select.git"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.0",
+    "@arethetypeswrong/cli": "^0.17.0",
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-typescript": "^7.26.0",
+    "@lodder/grunt-postcss": "^3.1.1",
+    "@popperjs/core": "^2.11.8",
+    "@rollup/plugin-alias": "^5.1.1",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "autoprefixer": "^10.4.20",
+    "bootstrap": "npm:bootstrap@4",
+    "bootstrap-sass": "^3.4.3",
+    "bootstrap5": "npm:bootstrap@^5.3.3",
+    "broken-link-checker": "^0.7.8",
+    "chai": "^4.5.0",
+    "cssnano": "^7.0.6",
+    "grunt": "^1.6.1",
+    "grunt-cli": "^1.5.0",
+    "grunt-contrib-clean": "^2.0.1",
+    "grunt-contrib-connect": "^5.0.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-replace": "^2.0.2",
+    "grunt-sass": "^3.1.0",
+    "grunt-shell": "^4.0.0",
+    "husky": "^9.1.6",
+    "icon-blender": "^1.0.0-beta.4",
+    "jsdom": "^25.0.1",
+    "karma": "^6.4.4",
+    "karma-browserstack-launcher": "^1.6.0",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^3.2.0",
+    "karma-coverage": "^2.2.1",
+    "karma-coveralls": "^2.1.0",
+    "karma-firefox-launcher": "^2.1.3",
+    "karma-mocha": "^2.0.1",
+    "karma-mocha-reporter": "^2.2.5",
+    "karma-safari-launcher": "^1.0.0",
+    "karma-sourcemap-loader": "^0.4.0",
+    "load-grunt-tasks": "^5.1.0",
+    "mocha": "^11.0.1",
+    "postcss": "^8.4.49",
+    "puppeteer": "^24.1.1",
+    "rollup": "^4.27.2",
+    "rollup-plugin-insert": "^1.3.2",
+    "sass": "^1.81.0",
+    "stylelint": "^16.10.0",
+    "stylelint-config-prettier-scss": "^1.0.0",
+    "stylelint-config-standard": "^36.0.1",
+    "stylelint-config-standard-scss": "^14.0.0",
+    "syn": "^0.15.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.7.2"
+  },
+  "scripts": {
+    "build": "grunt build",
+    "build:docs": "grunt builddocs",
+    "build:js": "npm run build:js:esm && npm run build:js:cjs && npm run build:js:umd",
+    "build:js:esm": "tsc -p .config/tsconfig.esm.json",
+    "build:js:cjs": "tsc -p .config/tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > ./dist/cjs/package.json",
+    "build:js:umd": "rollup -c .config/rollup.config.mjs && echo '{\"type\":\"commonjs\"}' > ./dist/js/package.json",
+    "build:types": "tsc -p .config/tsconfig.types.json",
+    "test": "karma start .config/karma.conf.cjs",
+    "test:one": "karma start --test_one .config/karma.conf.cjs",
+    "test:types": "attw --pack --profile node16 .",
+    "start": "grunt serve",
+    "pretest": "grunt build",
+    "prepare": "husky",
+    "stylelint": "stylelint -c .config/stylelintrc.json 'src/**/*.scss'"
+  },
+  "engines": {
+    "node": "*"
+  },
+  "browserslist": [
+    ">= 0.5%",
+    "not dead",
+    "Chrome >= 60",
+    "Firefox >= 60",
+    "Firefox ESR",
+    "Edge >= 17",
+    "iOS >= 12",
+    "Safari >= 12",
+    "not Explorer <= 11"
+  ],
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/tom-select"
+  },
+  "dependencies": {
+    "@orchidjs/sifter": "^1.1.0",
+    "@orchidjs/unicode-variants": "^1.1.2"
+  }
+}

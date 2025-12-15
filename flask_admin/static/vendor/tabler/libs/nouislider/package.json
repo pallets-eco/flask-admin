@@ -1,0 +1,46 @@
+{
+  "name": "nouislider",
+  "version": "15.8.1",
+  "main": "dist/nouislider.js",
+  "module": "dist/nouislider.mjs",
+  "style": "dist/nouislider.min.css",
+  "types": "dist/nouislider.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "build": "npm run build:mjs && npm run build:js && npm run build:styles",
+    "build:js": "npm run build:js:write && npm run build:js:compress && npm run build:js:compress:mjs",
+    "build:js:write": "rollup -c rollup.config.js",
+    "build:js:compress": "uglifyjs dist/nouislider.js --compress --mangle --output dist/nouislider.min.js",
+    "build:js:compress:mjs": "uglifyjs dist/nouislider.mjs --compress --mangle --output dist/nouislider.min.mjs",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:mjs": "tsc --module ES6 && mv dist/nouislider.js dist/nouislider.mjs",
+    "build:styles": "npm run build:styles:write && npm run build:styles:compress",
+    "build:styles:write": "lessc src/nouislider.less dist/nouislider.css",
+    "build:styles:compress": "lessc src/nouislider.less dist/nouislider.min.css --clean-css",
+    "prepublishOnly": "npm run build",
+    "format": "prettier src/nouislider.ts --write --config .prettierrc",
+    "lint": "eslint src/nouislider.ts",
+    "docs": "cd ../ && php -S localhost:${PORT:-8080} nouislider/documentation/_run/router.php"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.10",
+    "@typescript-eslint/parser": "^5.10",
+    "eslint": "^8.7",
+    "less": "^4.1",
+    "less-plugin-clean-css": "^1.5",
+    "prettier": "^2.5",
+    "rollup": "^2.65.0",
+    "rollup-plugin-typescript2": "^0.31",
+    "typescript": "^4.5",
+    "uglify-js": "^3.14"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/leongersen/noUiSlider.git"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "dependencies": {}
+}
