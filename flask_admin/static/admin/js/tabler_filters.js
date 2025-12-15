@@ -1,4 +1,4 @@
-/* 
+/*
 This file is from Flask-Admin project with a slight modification to work with Tabler.
 */
 var AdminFilters = function(element, filtersElement, filterGroups, activeFilters) {
