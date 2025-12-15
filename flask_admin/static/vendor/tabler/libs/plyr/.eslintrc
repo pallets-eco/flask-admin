@@ -1,0 +1,18 @@
+{
+  "parser": "babel-eslint",
+  "extends": ["@sampotts/eslint-config/es6"],
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "globals": {
+    "Plyr": false,
+    "jQuery": false
+  },
+  "rules": {
+    "import/no-cycle": "warn"
+  },
+  "parserOptions": {
+    "sourceType": "module"
+  }
+}

@@ -1,5 +1,4 @@
 [env]
-_.python.venv = { path = ".venv", create = true, uv_create_args = ['--seed'] }
 PROJECT_NAME = "{{ config_root | basename }}"
 NODE_MODULES = "{{ ['.'] | concat(with='node_modules') | join_path }}"
 FLASK_ADMIN_PATH = "{{ ['.'] | concat(with='flask_admin') | join_path }}"
@@ -8,13 +7,12 @@ VENDOR_PATH = "{{ [env.STATIC_PATH] | concat(with='vendor') | join_path }}"
 
 
 [tools]
-python = "{{ get_env(name='PYTHON_VERSION', default='3.10') }}"
 node = "{{ env['NODE_VERSION'] | default(value='lts') }}"
 uv = "latest"
 
 
-[tasks.setup]
-description = "Setup"
+[tasks.setup-tabler-theme-assets]
+description = "Setup Tabler Theme Assets"
 run = '''
 #!/usr/bin/env bash
 echo - Installing Dependencies

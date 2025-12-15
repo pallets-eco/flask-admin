@@ -1,0 +1,36 @@
+{
+  "name": "typed.js",
+  "version": "2.1.0",
+  "homepage": "https://github.com/mattboldt/typed.js",
+  "repository": "https://github.com/mattboldt/typed.js",
+  "license": "MIT",
+  "author": "Matt Boldt",
+  "description": "A JavaScript Typing Animation Library",
+  "type": "module",
+  "source": "src/typed.js",
+  "types": "./index.d.ts",
+  "files": [
+    "dist",
+    "index.d.ts"
+  ],
+  "exports": {
+    "require": "./dist/typed.cjs",
+    "import": "./dist/typed.module.js",
+    "types": "./index.d.ts"
+  },
+  "main": "./dist/typed.cjs",
+  "module": "./dist/typed.module.js",
+  "unpkg": "./dist/typed.umd.js",
+  "keywords": [
+    "typed",
+    "animation"
+  ],
+  "devDependencies": {
+    "microbundle": "^0.15.1"
+  },
+  "scripts": {
+    "build": "microbundle --name=Typed",
+    "dev": "microbundle --name=Typed watch",
+    "diff": "git diff -- ':^docs'"
+  }
+}

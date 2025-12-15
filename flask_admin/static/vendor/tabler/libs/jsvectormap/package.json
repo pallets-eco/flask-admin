@@ -1,0 +1,48 @@
+{
+  "name": "jsvectormap",
+  "version": "1.7.0",
+  "description": "A lightweight Javascript library for creating interactive maps",
+  "main": "dist/jsvectormap.min.js",
+  "jsdelivr": "dist/jsvectormap.min.js",
+  "exports": {
+    ".": {
+      "import": "./dist/jsvectormap.esm.js",
+      "default": "./dist/jsvectormap.min.js",
+      "require": "./dist/jsvectormap.cjs",
+      "style": "./dist/jsvectormap.css",
+      "sass": "./src/scss/jsvectormap.scss"
+    },
+    "./*": "./*"
+  },
+  "style": "dist/jsvectormap.min.css",
+  "sass": "src/scss/jsvectormap.scss",
+  "author": {
+    "name": "Mustafa Omar",
+    "email": "themustafaomar@gmail.com"
+  },
+  "scripts": {
+    "dev": "rollup --config --watch",
+    "build": "rollup --config ./build/package.js"
+  },
+  "keywords": [
+    "javascript",
+    "interactive",
+    "vector",
+    "map",
+    "svg"
+  ],
+  "files": [
+    "dist",
+    "src",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/themustafaomar/jsvectormap.git"
+  },
+  "bugs": {
+    "url": "https://github.com/themustafaomar/jsvectormap/issues"
+  },
+  "homepage": "https://jvm-docs.vercel.app",
+  "license": "MIT"
+}

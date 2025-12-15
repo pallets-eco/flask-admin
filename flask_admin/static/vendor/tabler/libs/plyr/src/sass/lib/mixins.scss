@@ -1,0 +1,80 @@
+// ==========================================================================
+// Mixins
+// ==========================================================================
+
+// Nicer focus styles
+// ---------------------------------------
+@mixin plyr-focus-visible($color: $plyr-focus-visible-color) {
+  outline: 2px dashed $color;
+  outline-offset: 2px;
+}
+
+// Font smoothing
+// ---------------------------------------
+@mixin plyr-font-smoothing($mode: true) {
+  @if $mode {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+// <input type="range"> styling
+// ---------------------------------------
+@mixin plyr-range-track() {
+  background: transparent;
+  border: 0;
+  border-radius: calc(#{$plyr-range-track-height} / 2);
+  height: $plyr-range-track-height;
+  transition: box-shadow 0.3s ease;
+  user-select: none;
+}
+
+@mixin plyr-range-thumb() {
+  background: $plyr-range-thumb-background;
+  border: 0;
+  border-radius: 100%;
+  box-shadow: $plyr-range-thumb-shadow;
+  height: $plyr-range-thumb-height;
+  position: relative;
+  transition: all 0.2s ease;
+  width: $plyr-range-thumb-height;
+}
+
+@mixin plyr-range-thumb-active($color) {
+  box-shadow: $plyr-range-thumb-shadow, 0 0 0 $plyr-range-thumb-active-shadow-width $color;
+}
+
+// Fullscreen styles
+// ---------------------------------------
+@mixin plyr-fullscreen-active() {
+  background: #000;
+  border-radius: 0 !important;
+  height: 100%;
+  margin: 0;
+  width: 100%;
+
+  video {
+    height: 100%;
+  }
+
+  // Display correct icon
+  .plyr__control .icon--exit-fullscreen {
+    display: block;
+
+    + svg {
+      display: none;
+    }
+  }
+
+  // Hide cursor in fullscreen when controls hidden
+  &.plyr--hide-controls {
+    cursor: none;
+  }
+
+  // Large captions in full screen on larger screens
+  @media (min-width: $plyr-bp-lg) {
+    .plyr__captions {
+      font-size: $plyr-font-size-captions-large;
+    }
+  }
+}

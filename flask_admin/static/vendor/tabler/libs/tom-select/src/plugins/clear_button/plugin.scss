@@ -1,0 +1,33 @@
+/* stylelint-disable function-name-case */
+
+.plugin-clear_button {
+	--ts-pr-clear-button: 1em;
+
+	.clear-button{
+		opacity: 0;
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		right: calc(#{$select-padding-x} - #{$select-padding-item-x});
+		margin-right: 0 !important;
+		background: transparent !important;
+		transition: opacity 0.5s;
+		cursor: pointer;
+	}
+
+	&.form-select .clear-button,
+	&.single .clear-button {
+
+		@if variable-exists(select-padding-dropdown-item-x) {
+			right: Max(var(--ts-pr-caret), #{$select-padding-dropdown-item-x});
+		}
+		@else{
+			right: Max(var(--ts-pr-caret), calc(#{$select-padding-x} - #{$select-padding-item-x}));
+		}
+	}
+
+	&.focus.has-items .clear-button,
+	&:not(.disabled):hover.has-items .clear-button{
+		opacity: 1;
+	}
+}

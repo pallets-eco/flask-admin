@@ -1,0 +1,3 @@
+@function to-percentage($input) {
+  @return $input * 1%;
+}

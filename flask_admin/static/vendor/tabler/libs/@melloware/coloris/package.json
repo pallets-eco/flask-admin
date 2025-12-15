@@ -1,0 +1,74 @@
+{
+  "name": "@melloware/coloris",
+  "version": "0.25.0",
+  "description": "A lightweight and elegant color picker.",
+  "author": "Momo Bassit",
+  "contributors": [
+    "Melloware <mellowaredev@gmail.com> (http://melloware.com)",
+    "Andre Wachsmuth <sensenmann5@gmail.com> (https://github.com/blutorange)"
+  ],
+  "license": "MIT",
+  "main": "dist/umd/coloris.js",
+  "module": "dist/esm/coloris.js",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/coloris.js",
+      "require": "./dist/umd/coloris.js",
+      "types": "./dist/coloris.d.ts"
+    },
+    "./dist/coloris.css": "./dist/coloris.css"
+  },
+  "types": "dist/coloris.d.ts",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/melloware/coloris-npm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mdbassit/Coloris/issues"
+  },
+  "homepage": "https://coloris.js.org",
+  "keywords": [
+    "color",
+    "picker",
+    "color picker",
+    "color-picker",
+    "colorpicker",
+    "accessible",
+    "accessibility",
+    "aria",
+    "a11y",
+    "wai-aria"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "@babel/register": "^7.23.7",
+    "gulp": "^5.0.0",
+    "gulp-babel": "^8.0.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-replace": "^1.1.4",
+    "gulp-uglify": "^3.0.2",
+    "gulp-wrap": "^0.15.0"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "start": "gulp",
+    "prepack": "gulp build",
+    "test-npm": "gulp build && node test-npm/harness/esm/run-tests.js"
+  },
+  "browserslist": "> 0.25%, not dead",
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "loose": true
+        }
+      ]
+    ]
+  }
+}

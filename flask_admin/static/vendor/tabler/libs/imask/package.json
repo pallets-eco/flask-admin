@@ -1,0 +1,84 @@
+{
+  "name": "imask",
+  "version": "7.6.1",
+  "author": "Alexey Kryazhev",
+  "license": "MIT",
+  "bugs": "https://github.com/uNmAnNeR/imaskjs/issues",
+  "homepage": "https://imask.js.org/",
+  "description": "vanilla javascript input mask",
+  "main": "dist/imask.js",
+  "module": "esm/index.js",
+  "type": "module",
+  "repository": "https://github.com/uNmAnNeR/imaskjs",
+  "types": "index.d.ts",
+  "engines": {
+    "npm": ">=4.0.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./esm/index.d.ts",
+      "import": "./esm/index.js",
+      "require": "./dist/imask.cjs",
+      "default": "./dist/imask.js"
+    },
+    "./holder": {
+      "types": "./esm/imask.d.ts",
+      "default": "./esm/imask.js"
+    },
+    "./holder.js": {
+      "types": "./esm/imask.d.ts",
+      "default": "./esm/imask.js"
+    },
+    "./esm": {
+      "types": "./esm/index.d.ts",
+      "default": "./esm/index.js"
+    },
+    "./esm/*": {
+      "types": "./esm/*.d.ts",
+      "default": "./esm/*.js"
+    },
+    "./esm/*.js": {
+      "types": "./esm/*.d.ts",
+      "default": "./esm/*.js"
+    },
+    "./*": {
+      "types": "./esm/*.d.ts",
+      "default": "./esm/*.js"
+    },
+    "./*.js": {
+      "types": "./esm/*.d.ts",
+      "default": "./esm/*.js"
+    }
+  },
+  "typesVersions": {
+    ">=4.2": {
+      "holder": [
+        "esm/imask.d.ts"
+      ],
+      "esm/*": [
+        "esm/*"
+      ],
+      "*": [
+        "esm/*"
+      ]
+    }
+  },
+  "scripts": {
+    "test": "cross-env NODE_ENV=test c8 node --test-reporter=spec --loader tsx --test test/**/*",
+    "watch": "rollup -c -w",
+    "lint": "eslint src",
+    "prebuild": "npm run lint -- --quiet && rimraf --glob \"{dist,esm}\"",
+    "build": "tsc --emitDeclarationOnly && rollup -c",
+    "coverage": "c8 report --reporter=lcov"
+  },
+  "keywords": [
+    "javascript",
+    "inputmask",
+    "input",
+    "mask"
+  ],
+  "gitHead": "a02a14b642f70b335e24789e8a187857473a21a5",
+  "dependencies": {
+    "@babel/runtime-corejs3": "^7.24.4"
+  }
+}
