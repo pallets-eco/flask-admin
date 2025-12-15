@@ -28,8 +28,5 @@ cp -a ${NODE_MODULES}/@tabler/core/dist/. ${VENDOR_PATH}/tabler/
 
 echo - "Copying X-editable"
 mkdir -p ${VENDOR_PATH}/skycyclone/x-editable
-cp -a ${NODE_MODULES}/x-editable/dist/. ${VENDOR_PATH}/x-editable/
-
-echo - Removing Node Modules
-rm -rf node_modules
+cp -a ${NODE_MODULES}/x-editable/dist/. ${VENDOR_PATH}/skycyclone/x-editable/
 '''
