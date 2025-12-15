@@ -87,7 +87,7 @@ def validate_form_on_submit(form: Form) -> bool:
     return is_form_submitted() and form.validate()
 
 
-def get_form_data() -> ImmutableMultiDict | None:
+def get_form_data() -> ImmutableMultiDict[str, str] | None:
     """
     If current method is PUT or POST, return concatenated `request.form` with
     `request.files` or `None` otherwise.
@@ -102,7 +102,7 @@ def get_form_data() -> ImmutableMultiDict | None:
     return None
 
 
-def is_field_error(errors: list | tuple | None) -> bool:
+def is_field_error(errors: list[t.Any] | tuple[t.Any, ...] | None) -> bool:
     """
     Check if wtforms field has error without checking its children.
 

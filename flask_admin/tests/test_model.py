@@ -1,3 +1,4 @@
+import pytest
 from flask import Flask
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from werkzeug.test import Client
@@ -458,6 +459,7 @@ def test_custom_form(app, admin):
     assert not hasattr(view._create_form_class, "col1")
 
 
+@pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
 def test_modal_edit_bs4(app, babel):
     admin_bs4 = Admin(app, theme=Bootstrap4Theme())
 

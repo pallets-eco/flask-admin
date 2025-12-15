@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from typing import Any
 
 from flask import Flask
 from flask_admin import Admin
@@ -19,7 +20,7 @@ talisman = Talisman(
     content_security_policy_nonce_in=["script-src", "style-src"],
 )
 # Get the CSP nonce generator from jinja environment globals which is added by Talisman
-csp_nonce_generator: Callable = app.jinja_env.globals["csp_nonce"]  # type: ignore[assignment]
+csp_nonce_generator: Callable[[], Any] = app.jinja_env.globals["csp_nonce"]  # type: ignore[assignment]
 
 
 @app.route("/")

@@ -1,5 +1,7 @@
 import typing as t
 
+from flask_admin._types import T_ORM_MODEL
+
 DEFAULT_PAGE_SIZE = 10
 
 
@@ -8,7 +10,7 @@ class AjaxModelLoader:
     Ajax related model loader. Override this to implement custom loading behavior.
     """
 
-    def __init__(self, name: str, options: dict) -> None:
+    def __init__(self, name: str, options: dict[t.Any, t.Any]) -> None:
         """
         Constructor.
 
@@ -18,7 +20,7 @@ class AjaxModelLoader:
         self.name = name
         self.options = options
 
-    def format(self, model: None | str | bytes) -> tuple[t.Any, str] | None:
+    def format(self, model: T_ORM_MODEL | None) -> tuple[t.Any, str] | None:
         """
         Return (id, name) tuple from the model.
         """
@@ -35,7 +37,7 @@ class AjaxModelLoader:
 
     def get_list(
         self, query: str, offset: int = 0, limit: int = DEFAULT_PAGE_SIZE
-    ) -> list:
+    ) -> list[T_ORM_MODEL]:
         """
         Return models that match `query`.
 

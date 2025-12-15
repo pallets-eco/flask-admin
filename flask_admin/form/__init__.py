@@ -25,7 +25,7 @@ class BaseForm(form.Form):
 
     def __init__(
         self,
-        formdata: dict | None = None,
+        formdata: dict[str, t.Any] | None = None,
         obj: t.Any = None,
         prefix: str = "",
         **kwargs: t.Any,
@@ -44,13 +44,13 @@ class FormOpts:
     __slots__ = ["widget_args", "form_rules"]
 
     def __init__(
-        self, widget_args: dict | None = None, form_rules: t.Any = None
+        self, widget_args: dict[t.Any, t.Any] | None = None, form_rules: t.Any = None
     ) -> None:
         self.widget_args = widget_args or {}
         self.form_rules = form_rules
 
 
-def recreate_field(unbound: UnboundField | Field) -> t.Any:
+def recreate_field(unbound: "UnboundField[t.Any] | Field") -> t.Any:
     """
     Create new instance of the unbound field, resetting wtforms creation counter.
 
