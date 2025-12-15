@@ -9,7 +9,7 @@ from flask_admin.contrib.geoa.fields import GeoJSONField
 
 
 def create_models(db):
-    class GeoModel(db.Model):  # type: ignore[name-defined]
+    class GeoModel(db.Model):  # type: ignore[name-defined, misc]
         id = db.Column(db.Integer, primary_key=True)
         name = db.Column(db.String(20))
         point = db.Column(Geometry("POINT"))

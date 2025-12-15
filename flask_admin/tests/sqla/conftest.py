@@ -26,10 +26,7 @@ def db(app):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db = SQLAlchemy(app)
     yield db
-
-    with app.app_context():
-        db.session.close()
-        db.engine.dispose()
+    db.session.remove()
 
 
 @pytest.fixture
@@ -43,10 +40,7 @@ def postgres_db(app):
 
     db = SQLAlchemy(app)
     yield db
-
-    with app.app_context():
-        db.session.close()
-        db.engine.dispose()
+    db.session.remove()
 
 
 @pytest.fixture

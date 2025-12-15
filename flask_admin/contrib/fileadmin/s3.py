@@ -10,6 +10,7 @@ from flask_admin.babel import gettext
 
 from ..._types import T_RESPONSE
 from . import BaseFileAdmin
+from . import BaseFileStorage
 
 
 def _strip_leading_slash_from(
@@ -22,11 +23,11 @@ def _strip_leading_slash_from(
     """
 
     def decorator(
-        func: t.Callable,
+        func: t.Callable[..., t.Any],
     ) -> t.Callable[[tuple[t.Any, ...], dict[str, t.Any]], t.Any]:
         @functools.wraps(func)
         def wrapper(*args: t.Any, **kwargs: t.Any) -> t.Any:
-            args: list = list(args)  # type: ignore[no-redef]
+            args: list[t.Any] = list(args)  # type: ignore[no-redef]
             arg_names = func.__code__.co_varnames[: func.__code__.co_argcount]
 
             if arg_name in arg_names:
@@ -47,7 +48,7 @@ def _strip_leading_slash_from(
     return decorator
 
 
-class S3Storage:
+class S3Storage(BaseFileStorage):
     """
     Storage object representing files on an Amazon S3 bucket.
 
@@ -77,12 +78,15 @@ class S3Storage:
         Amazon or else S3 will return a 403 FORBIDDEN error.
         """
 
+        # S3 Storage always uses Unix based path format.
+        super().__init__(on_windows=False)
+
         self.s3_client = s3_client
         self.bucket_name = bucket_name
         self.separator = "/"
 
     @_strip_leading_slash_from("path")
-    def get_files(self, path: str, directory: str) -> list:
+    def get_files(self, path: str, directory: str) -> list[t.Any]:
         def _strip_path(name: str, path: str) -> str:
             if name.startswith(path):
                 return name.replace(path, "", 1)
@@ -304,4 +308,4 @@ class S3FileAdmin(BaseFileAdmin):
         **kwargs: t.Any,
     ) -> None:
         storage = S3Storage(s3_client, bucket_name)
-        super().__init__(*args, storage=storage, **kwargs)  # type: ignore[misc, arg-type]
+        super().__init__(*args, storage=storage, **kwargs)  # type: ignore[misc]
