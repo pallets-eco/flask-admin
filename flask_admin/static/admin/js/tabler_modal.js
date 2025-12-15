@@ -1,4 +1,4 @@
-/* 
+/*
 This file is from Flask-Admin project with a slight modification to work with Tabler.
 */
 // fixes "content does not load remote modal on clicked modal button"
