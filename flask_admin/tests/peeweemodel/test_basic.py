@@ -1517,11 +1517,12 @@ def test_url_for(
     view = MyView(Model1, endpoint="user")
     admin.add_view(view)
 
-    d1 = filter_value
-    filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
-    assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
+    with app.test_request_context("http://localhost/admin/user/"):
+        d1 = filter_value
+        filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+        assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
 
-    view.named_filter_urls = True
-    d1 = filter_value
-    filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
-    assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
+        view.named_filter_urls = True
+        d1 = filter_value
+        filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+        assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
