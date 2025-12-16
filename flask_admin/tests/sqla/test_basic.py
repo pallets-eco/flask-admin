@@ -2748,7 +2748,6 @@ def test_relative_redirect_on_save_and_add_another(app, db, admin):
     """
     Test that redirect URL after "Save and Add Another" is relative
     """
-
     with app.app_context():
         Model1, _ = create_models(db)
 
