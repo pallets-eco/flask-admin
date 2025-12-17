@@ -12,11 +12,9 @@ from flask_admin._compat import string_types
 from flask_admin.model.ajax import AjaxModelLoader
 from flask_admin.model.ajax import DEFAULT_PAGE_SIZE
 
-from ._compat import get_deprecated_session
-from ._compat import warn_session_deprecation
-from ._types import T_SCOPED_SESSION
-from ._types import T_SQLALCHEMY
-from ._types import T_SQLALCHEMY_LITE
+from ._compat import _get_deprecated_session
+from ._compat import _warn_session_deprecation
+from ._types import T_SESSION_OR_DB
 from ._types import T_SQLALCHEMY_QUERY
 from .tools import get_primary_key
 from .tools import has_multiple_pks
@@ -28,7 +26,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
     def __init__(
         self,
         name: str,
-        session: T_SCOPED_SESSION | T_SQLALCHEMY | T_SQLALCHEMY_LITE,
+        session: T_SESSION_OR_DB,
         model: type[Model],
         **options: t.Any,
     ) -> None:
@@ -42,7 +40,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         """
         super().__init__(name, options)
 
-        self.session = warn_session_deprecation(session)
+        self.session = _warn_session_deprecation(session)
         self.model = model
         self.fields = options.get("fields")
         self.order_by = options.get("order_by")
@@ -87,11 +85,11 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         return getattr(model, self.pk), as_unicode(model)
 
     def get_query(self) -> T_SQLALCHEMY_QUERY:
-        session = get_deprecated_session(self.session)
+        session = _get_deprecated_session(self.session)
         return session.query(self.model)
 
     def get_one(self, pk: t.Any) -> t.Any:
-        session = get_deprecated_session(self.session)
+        session = _get_deprecated_session(self.session)
         # prevent autoflush from occuring during populate_obj
         with session.no_autoflush:
             return session.get(self.model, pk)
@@ -125,7 +123,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
 def create_ajax_loader(
     model: t.Any,
-    session: T_SCOPED_SESSION | T_SQLALCHEMY | T_SQLALCHEMY_LITE,
+    session: T_SESSION_OR_DB,
     name: str,
     field_name: str,
     options: dict[str, t.Any],
@@ -142,4 +140,5 @@ def create_ajax_loader(
         attr = attr.remote_attr
 
     remote_model = attr.prop.mapper.class_
-    return QueryAjaxModelLoader(name, session, remote_model, **options)
+    db_session = _get_deprecated_session(session)
+    return QueryAjaxModelLoader(name, db_session, remote_model, **options)

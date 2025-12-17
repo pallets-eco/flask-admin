@@ -1,20 +1,30 @@
 import typing as t
 import warnings
 
+from flask_admin.contrib.sqla._types import T_SCOPED_SESSION
+from flask_admin.contrib.sqla._types import T_SESSION
 from flask_admin.contrib.sqla._types import T_SESSION_OR_DB
 from flask_admin.contrib.sqla._types import T_SQLALCHEMY
 from flask_admin.contrib.sqla._types import T_SQLALCHEMY_LITE
 
 
-def warn_session_deprecation(
+@t.overload
+def _warn_session_deprecation(session: None, warn: bool = True) -> None: ...
+
+
+@t.overload
+def _warn_session_deprecation(
     session: T_SESSION_OR_DB, warn: bool = True
-) -> T_SESSION_OR_DB:
+) -> T_SESSION_OR_DB: ...
+
+
+def _warn_session_deprecation(session, warn: bool = True):
     """
-    Warns about deprecation of passing session objects directly.
+    Warn about deprecation of passing session objects directly.
     Raise error if session is from Flask-SQLAlchemy-Lite.
     """
     if hasattr(session, "session"):
-        if T_SQLALCHEMY_LITE is not t.Any and isinstance(session, T_SQLALCHEMY_LITE):
+        if isinstance(session, T_SQLALCHEMY_LITE):
             # see::
             # https://github.com/pallets-eco/flask-admin/issues/2585
             # https://github.com/pallets-eco/flask-admin/pull/2680
@@ -38,14 +48,22 @@ def warn_session_deprecation(
     return session
 
 
-def get_deprecated_session(
+@t.overload
+def _get_deprecated_session(session: None) -> None: ...
+
+
+@t.overload
+def _get_deprecated_session(
     session: T_SESSION_OR_DB,
-) -> t.Optional[t.Any]:
+) -> T_SCOPED_SESSION | T_SESSION: ...
+
+
+def _get_deprecated_session(
+    session,
+):
     """
     Returns the session if passed directly, session.session otherwise.
     """
-    if (T_SQLALCHEMY is not t.Any and isinstance(session, T_SQLALCHEMY)) or (
-        T_SQLALCHEMY_LITE is not t.Any and isinstance(session, T_SQLALCHEMY_LITE)
-    ):
+    if isinstance(session, T_SQLALCHEMY) or isinstance(session, T_SQLALCHEMY_LITE):
         return session.session
     return session

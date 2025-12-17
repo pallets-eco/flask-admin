@@ -4,11 +4,9 @@ from sqlalchemy import func
 
 from flask_admin.form import JSONField
 
-from ..sqla._compat import get_deprecated_session
-from ..sqla._compat import warn_session_deprecation
-from ..sqla._types import T_SCOPED_SESSION
-from ..sqla._types import T_SQLALCHEMY
-from ..sqla._types import T_SQLALCHEMY_LITE
+from ..sqla._compat import _get_deprecated_session
+from ..sqla._compat import _warn_session_deprecation
+from ..sqla._types import T_SESSION_OR_DB
 from .widgets import LeafletWidget
 
 
@@ -19,7 +17,7 @@ class GeoJSONField(JSONField):
         validators=None,
         geometry_type="GEOMETRY",
         srid="-1",
-        session: T_SCOPED_SESSION | T_SQLALCHEMY | T_SQLALCHEMY_LITE | None = None,
+        session: T_SESSION_OR_DB | None = None,
         tile_layer_url=None,
         tile_layer_attribution=None,
         **kwargs,
@@ -35,13 +33,13 @@ class GeoJSONField(JSONField):
         else:
             self.transform_srid = self.srid
         self.geometry_type = geometry_type.upper()
-        self.session = warn_session_deprecation(session)
+        self.session = _warn_session_deprecation(session)
 
     def _value(self):
         if self.raw_data:
             return self.raw_data[0]
         if type(self.data) is geoalchemy2.elements.WKBElement:  # type: ignore[comparison-overlap]
-            session = get_deprecated_session(self.session)
+            session = _get_deprecated_session(self.session)
 
             if self.srid == -1:
                 return session.scalar(  # pyright: ignore[reportOptionalMemberAccess]
@@ -59,8 +57,8 @@ class GeoJSONField(JSONField):
         if str(self.data) == "":
             self.data = None
         if self.data is not None:
-            session = get_deprecated_session(self.session)
-            web_shape = session.scalar(  # pyright: ignore[reportOptionalMemberAccess]
+            session = _get_deprecated_session(self.session)
+            web_shape = session.scalar(  # type: ignore[union-attr]
                 func.ST_AsText(
                     func.ST_Transform(
                         func.ST_GeomFromText(shape(self.data).wkt, self.web_srid),  # type: ignore[arg-type]

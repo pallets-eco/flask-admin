@@ -4,7 +4,7 @@ from markupsafe import Markup
 from sqlalchemy import func
 from wtforms.widgets import html_params
 
-from flask_admin.contrib.sqla._compat import get_deprecated_session
+from flask_admin.contrib.sqla._compat import _get_deprecated_session
 from flask_admin.contrib.sqla.typefmt import DEFAULT_FORMATTERS as BASE_FORMATTERS
 
 
@@ -29,7 +29,7 @@ def geom_formatter(view, value, name) -> str:
 
     if value.srid == -1:
         value.srid = 4326
-    session = get_deprecated_session(view.session)
+    session = _get_deprecated_session(view.session)
     geojson = session.query(view.model).with_entities(func.ST_AsGeoJSON(value)).scalar()
     return Markup(f"<textarea {params}>{geojson}</textarea>")
 

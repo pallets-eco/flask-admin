@@ -45,11 +45,9 @@ from ..._types import T_SQLALCHEMY_COLUMN
 from ..._types import T_SQLALCHEMY_INLINE_MODELS
 from ..._types import T_SQLALCHEMY_MODEL
 from ..._types import T_WIDGET
-from ._compat import get_deprecated_session
-from ._compat import warn_session_deprecation
-from ._types import T_SCOPED_SESSION
-from ._types import T_SQLALCHEMY
-from ._types import T_SQLALCHEMY_LITE
+from ._compat import _get_deprecated_session
+from ._compat import _warn_session_deprecation
+from ._types import T_SESSION_OR_DB
 from ._types import T_SQLALCHEMY_QUERY
 from .ajax import create_ajax_loader
 from .ajax import QueryAjaxModelLoader
@@ -344,7 +342,7 @@ class ModelView(BaseModelView):
     def __init__(
         self,
         model: type[T_SQLALCHEMY_MODEL],
-        session: T_SCOPED_SESSION | T_SQLALCHEMY | T_SQLALCHEMY_LITE,
+        session: T_SESSION_OR_DB,
         name: str | None = None,
         category: str | None = None,
         endpoint: str | None = None,
@@ -385,7 +383,7 @@ class ModelView(BaseModelView):
         :param menu_icon_value:
             Icon glyph name or URL, depending on `menu_icon_type` setting
         """
-        self.session = warn_session_deprecation(session)
+        self.session = _warn_session_deprecation(session)
 
         self._search_fields: list[tuple[T_SQLALCHEMY_COLUMN, t.Any]] | None = None
 
@@ -1000,7 +998,7 @@ class ModelView(BaseModelView):
         for displaying the correct item count in the list view, and `get_one`, which is
         used when retrieving records for the edit view.
         """
-        session = get_deprecated_session(self.session)
+        session = _get_deprecated_session(self.session)
         return session.query(self.model)
 
     def get_count_query(self) -> T_SQLALCHEMY_QUERY:
@@ -1012,7 +1010,7 @@ class ModelView(BaseModelView):
 
         See commit ``#45a2723`` for details.
         """
-        session = get_deprecated_session(self.session)
+        session = _get_deprecated_session(self.session)
         return session.query(func.count("*")).select_from(self.model)
 
     def _order_by(
@@ -1328,7 +1326,7 @@ class ModelView(BaseModelView):
         :param id:
             Model id
         """
-        session = get_deprecated_session(self.session)
+        session = _get_deprecated_session(self.session)
         return session.get(self.model, tools.iterdecode(id))
 
     # Error handler
@@ -1374,7 +1372,7 @@ class ModelView(BaseModelView):
             model = self.build_new_instance()
 
             form.populate_obj(model)
-            session = get_deprecated_session(self.session)
+            session = _get_deprecated_session(self.session)
             session.add(model)
             self._on_model_change(form, model, True)
             session.commit()
@@ -1406,7 +1404,7 @@ class ModelView(BaseModelView):
         try:
             form.populate_obj(model)
             self._on_model_change(form, model, False)
-            session = get_deprecated_session(self.session)
+            session = _get_deprecated_session(self.session)
             session.commit()
         except Exception as ex:
             if not self.handle_view_exception(ex):
@@ -1431,7 +1429,7 @@ class ModelView(BaseModelView):
         :param model:
             Model to delete
         """
-        session = get_deprecated_session(self.session)
+        session = _get_deprecated_session(self.session)
         try:
             self.on_model_delete(model)
             session.flush()
@@ -1483,7 +1481,7 @@ class ModelView(BaseModelView):
                     if self.delete_model(m):
                         count += 1
 
-            session = get_deprecated_session(self.session)
+            session = _get_deprecated_session(self.session)
             session.commit()
 
             flash(
