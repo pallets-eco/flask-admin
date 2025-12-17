@@ -1,5 +1,4 @@
 import typing as t
-from typing import Protocol
 
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import Session
@@ -13,14 +12,6 @@ else:  # sqlalchemy 1.x types are not subscriptable
     T_SQLALCHEMY_QUERY = Query
     T_SCOPED_SESSION = scoped_session
 
-
-T_SESSION = Session
-
-
-class HasSession(Protocol):
-    session: scoped_session[Session]
-
-
 try:
     from flask_sqlalchemy_lite import SQLAlchemy as T_SQLALCHEMY_LITE
 except ImportError:
@@ -32,4 +23,5 @@ except ImportError:
     T_SQLALCHEMY: t.Any | None = None  # type: ignore[no-redef]
 
 
+T_SESSION = Session
 T_SESSION_OR_DB = T_SCOPED_SESSION | T_SESSION | T_SQLALCHEMY | T_SQLALCHEMY_LITE
