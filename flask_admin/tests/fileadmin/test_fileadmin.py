@@ -141,7 +141,7 @@ class Base:
 
             rv = client.post(
                 "/admin/myfileadmin/edit/?path=dummy.txt",
-                data=dict(content="new_string"),
+                data=dict(content="new_string\n"),
             )
             assert rv.status_code == 302
 
