@@ -1,4 +1,6 @@
 import enum
+import os
+import re
 import uuid
 from datetime import date
 from datetime import datetime
@@ -24,6 +26,7 @@ from wtforms import validators
 from flask_admin import form
 from flask_admin._compat import as_unicode
 from flask_admin._compat import iteritems
+from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import filters
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla import tools
@@ -41,12 +44,27 @@ class CustomModelView(ModelView):
         category=None,
         endpoint=None,
         url=None,
+        static_folder=None,
+        menu_class_name=None,
+        menu_icon_type=None,
+        menu_icon_value=None,
         **kwargs,
     ):
         for k, v in iteritems(kwargs):
             setattr(self, k, v)
 
-        super().__init__(model, session, name, category, endpoint, url)
+        super().__init__(
+            model,
+            session,
+            name,
+            category,
+            endpoint,
+            url,
+            static_folder,
+            menu_class_name,
+            menu_icon_type,
+            menu_icon_value,
+        )
 
     form_choices = {"choice_field": [("choice-1", "One"), ("choice-2", "Two")]}
 
@@ -3725,3 +3743,82 @@ def test_form_overrides(app, db, admin):
         '<input class="form-control" id="text" name="text" type="password" value="">'
         in data
     )
+
+
+def match_page_title_and_icon(data: str, title: str, icon_html: str) -> bool:
+    # Regex to match the given HTML block with possible whitespace/newlines
+    pattern = re.compile(rf'<h4 class="mb-4">.*?{re.escape(title)}.*?</h4>', re.DOTALL)
+    title_match = pattern.search(data)
+
+    pattern = re.compile(
+        rf'<h4 class="mb-4">.*?{re.escape(icon_html)}.*?</h4>', re.DOTALL
+    )
+    icon_match = pattern.search(data)
+
+    return bool(title_match and icon_match)
+
+
+def test_page_title(app, db, admin):
+    with app.app_context():
+        Model1, Model2 = create_models(db)
+        db.session.add_all(
+            [
+                Model1("1"),
+                Model1("2"),
+            ]
+        )
+        db.session.commit()
+
+        class MyModelView(CustomModelView):
+            can_view_details = True
+
+        # test column_list with a list of strings
+        view = MyModelView(
+            Model1,
+            db.session,
+            name="My Model1",
+            menu_icon_type="fa",
+            menu_icon_value="fa-user",
+        )
+        admin.add_view(view)
+        admin.add_view(
+            FileAdmin(
+                os.path.dirname(__file__),
+                "/files/",
+                name="Local Files",
+                menu_icon_type="fa",
+                menu_icon_value="fa-folder",
+            )
+        )
+
+        client = app.test_client()
+
+        rv = client.get("/admin/model1/")
+        data = rv.data.decode("utf-8")
+        assert match_page_title_and_icon(
+            data, "My Model1", '<i class="fa fa-user"></i>'
+        )
+
+        rv = client.get("/admin/model1/edit/?id=1")
+        data = rv.data.decode("utf-8")
+        assert match_page_title_and_icon(
+            data, "My Model1", '<i class="fa fa-user"></i>'
+        )
+
+        rv = client.get("/admin/model1/new/?id=1")
+        data = rv.data.decode("utf-8")
+        assert match_page_title_and_icon(
+            data, "My Model1", '<i class="fa fa-user"></i>'
+        )
+
+        rv = client.get("/admin/model1/details/?id=1")
+        data = rv.data.decode("utf-8")
+        assert match_page_title_and_icon(
+            data, "My Model1", '<i class="fa fa-user"></i>'
+        )
+
+        rv = client.get("/admin/fileadmin/")
+        data = rv.data.decode("utf-8")
+        assert match_page_title_and_icon(
+            data, "Local Files", '<i class="fa fa-folder"></i>'
+        )
