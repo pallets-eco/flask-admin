@@ -33,7 +33,7 @@ wheels = [
 ]
 
 [[package]]
-name = "example-simple"
+name = "example-simple-tabler"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
