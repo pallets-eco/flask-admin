@@ -31,16 +31,17 @@ class MyAdminIndexView(AdminIndexView):
 
         t = reqTheme or cookTheme or "cosmo"
 
-        self.admin.theme.swatch = t
+        if self.admin and self.admin.theme:
+            if hasattr(self.admin.theme, "swatch"):
+                self.admin.theme.swatch = t
 
     @expose("/change-theme")
     def change_theme(self):
         self.set_theme()
 
-        if request.args.get("next"):
-            return redirect(request.args.get("next"))
+        next = request.args.get("next")
 
-        return redirect(url_for("admin.index"))
+        return redirect(next or url_for("admin.index"))
 
 
 admin = Admin(
