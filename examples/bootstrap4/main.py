@@ -2,7 +2,12 @@ import datetime
 import os.path as op
 
 from flask import Flask
+from flask import redirect
+from flask import request
+from flask import url_for
 from flask_admin import Admin
+from flask_admin import AdminIndexView
+from flask_admin import expose
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuDivider
@@ -18,10 +23,32 @@ app.config["SQLALCHEMY_ECHO"] = True
 
 db = SQLAlchemy(app)
 
+
+class MyAdminIndexView(AdminIndexView):
+    def set_theme(self):
+        reqTheme = request.args.get("theme")
+        cookTheme = request.cookies.get("theme")
+
+        t = reqTheme or cookTheme or "cosmo"
+
+        if self.admin and self.admin.theme:
+            if hasattr(self.admin.theme, "swatch"):
+                self.admin.theme.swatch = t
+
+    @expose("/change-theme")
+    def change_theme(self):
+        self.set_theme()
+
+        next = request.args.get("next")
+
+        return redirect(next or url_for("admin.index"))
+
+
 admin = Admin(
     app,
     name="Example: Bootstrap4",
-    theme=Bootstrap4Theme(swatch="flatly"),
+    theme=Bootstrap4Theme(swatch="cosmo"),
+    index_view=MyAdminIndexView(),
     category_icon_classes={
         "Menu": "fa fa-cog text-danger",
     },
@@ -89,6 +116,8 @@ with app.app_context():
 if __name__ == "__main__":
     # Icons reference (FontAwesome v4):
     # https://fontawesome.com/v4/icons/
+
+    from data import all_themes
 
     admin.add_view(
         UserAdmin(
@@ -165,6 +194,15 @@ if __name__ == "__main__":
     admin.add_link(
         MenuLink(name="External link", url="http://www.example.com/", category="Links")
     )
+
+    for t in all_themes:
+        admin.add_link(
+            MenuLink(
+                name=f"{t.title()}",
+                url=f"/admin/change-theme?theme={t}&next=/admin/user/",
+                category="Themes",
+            )
+        )
 
     app_dir = op.realpath(op.dirname(__file__))
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])
