@@ -7,9 +7,10 @@ from flask_admin import Admin
 
 
 @pytest.fixture
-def db():
+def db(app):
     db = SQLAlchemy()
     yield db
+    db.session.remove()
 
 
 @pytest.fixture

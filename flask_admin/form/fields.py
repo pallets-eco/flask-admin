@@ -73,7 +73,7 @@ class TimeField(fields.Field):
         self,
         label: T_TRANSLATABLE | None = None,
         validators: list[T_VALIDATOR] | None = None,
-        formats: t.Iterable | None = None,
+        formats: t.Iterable[str] | None = None,
         default_format: str | None = None,
         widget_format: t.Any = None,
         **kwargs: t.Any,

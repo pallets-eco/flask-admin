@@ -181,3 +181,23 @@ class SubMenuCategory(MenuCategory):
     def __init__(self, *args: str, **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
         self.class_name += " dropdown-submenu dropright"
+
+
+class MenuDivider(MenuLink):
+    """
+    Bootstrap Menu divider item
+    Usage:
+      admin = Admin(app, ...)
+      admin.add_menu_item(MenuDivider(), target_category='Category1')
+    """
+
+    def __init__(self, class_name=""):
+        class_name = "dropdown-divider" + (" " + class_name if class_name else "")
+        super().__init__("divider", class_name=class_name)
+
+    def get_url(self):
+        return None
+
+    def is_visible(self):
+        # Return True/False depending on your use-case
+        return True

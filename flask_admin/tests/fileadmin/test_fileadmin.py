@@ -41,6 +41,7 @@ class Base:
             rv = client.get("/admin/myfileadmin/rename/?path=dummy.txt")
             assert rv.status_code == 200
             assert "dummy.txt" in rv.data.decode("utf-8")
+            assert 'value="dummy.txt"' in rv.data.decode("utf-8")
 
             rv = client.post(
                 "/admin/myfileadmin/rename/?path=dummy.txt",
@@ -140,7 +141,7 @@ class Base:
 
             rv = client.post(
                 "/admin/myfileadmin/edit/?path=dummy.txt",
-                data=dict(content="new_string"),
+                data=dict(content="new_string\n"),
             )
             assert rv.status_code == 302
 

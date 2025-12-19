@@ -1,4 +1,6 @@
 import enum
+import os
+import re
 import uuid
 from datetime import date
 from datetime import datetime
@@ -24,6 +26,7 @@ from wtforms import validators
 from flask_admin import form
 from flask_admin._compat import as_unicode
 from flask_admin._compat import iteritems
+from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import filters
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla import tools
@@ -41,18 +44,33 @@ class CustomModelView(ModelView):
         category=None,
         endpoint=None,
         url=None,
+        static_folder=None,
+        menu_class_name=None,
+        menu_icon_type=None,
+        menu_icon_value=None,
         **kwargs,
     ):
         for k, v in iteritems(kwargs):
             setattr(self, k, v)
 
-        super().__init__(model, session, name, category, endpoint, url)
+        super().__init__(
+            model,
+            session,
+            name,
+            category,
+            endpoint,
+            url,
+            static_folder,
+            menu_class_name,
+            menu_icon_type,
+            menu_icon_value,
+        )
 
     form_choices = {"choice_field": [("choice-1", "One"), ("choice-2", "Two")]}
 
 
 def create_models(db):
-    class Model1(db.Model):  # type: ignore[name-defined]
+    class Model1(db.Model):  # type: ignore[name-defined, misc]
         def __init__(
             self,
             test1=None,
@@ -115,7 +133,7 @@ def create_models(db):
         def __str__(self):
             return self.test1
 
-    class Model2(db.Model):  # type: ignore[name-defined]
+    class Model2(db.Model):  # type: ignore[name-defined, misc]
         def __init__(
             self,
             string_field=None,
@@ -382,7 +400,7 @@ def test_model(app, db, admin):
 
 @pytest.mark.xfail(raises=Exception)
 def test_no_pk(app, db, admin):
-    class Model(db.Model):  # type: ignore[name-defined]
+    class Model(db.Model):  # type: ignore[name-defined, misc]
         test = db.Column(db.Integer)
 
     view = CustomModelView(Model, db.session)
@@ -826,7 +844,7 @@ def test_editable_list_special_pks(app, db, admin):
     """Tests editable list view + a primary key with special characters"""
     with app.app_context():
 
-        class Model1(db.Model):  # type: ignore[name-defined]
+        class Model1(db.Model):  # type: ignore[name-defined, misc]
             def __init__(self, id=None, val1=None):
                 self.id = id
                 self.val1 = val1
@@ -1826,7 +1844,7 @@ def test_column_filters_sqla_obj(app, db, admin):
 def test_hybrid_property(app, db, admin):
     with app.app_context():
 
-        class Model1(db.Model):  # type: ignore[name-defined]
+        class Model1(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String)
             width = db.Column(db.Integer)
@@ -1898,7 +1916,7 @@ def test_hybrid_property(app, db, admin):
 def test_hybrid_property_nested(app, db, admin):
     with app.app_context():
 
-        class Model1(db.Model):  # type: ignore[name-defined]
+        class Model1(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.Integer, primary_key=True)
             firstname = db.Column(db.String)
             lastname = db.Column(db.String)
@@ -1907,7 +1925,7 @@ def test_hybrid_property_nested(app, db, admin):
             def fullname(self):
                 return f"{self.firstname} {self.lastname}"
 
-        class Model2(db.Model):  # type: ignore[name-defined]
+        class Model2(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String)
             owner_id = db.Column(
@@ -2009,7 +2027,7 @@ def test_url_args(app, db, admin):
 def test_non_int_pk(app, db, admin):
     with app.app_context():
 
-        class Model(db.Model):  # type: ignore[name-defined]
+        class Model(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.String, primary_key=True)
             test = db.Column(db.String)
 
@@ -2040,14 +2058,14 @@ def test_non_int_pk(app, db, admin):
 def test_form_columns(app, db, admin):
     with app.app_context():
 
-        class Model(db.Model):  # type: ignore[name-defined]
+        class Model(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.String, primary_key=True)
             int_field = db.Column(db.Integer)
             datetime_field = db.Column(db.DateTime)
             text_field = db.Column(db.UnicodeText)
             excluded_column = db.Column(db.String)
 
-        class ChildModel(db.Model):  # type: ignore[name-defined]
+        class ChildModel(db.Model):  # type: ignore[name-defined, misc]
             class EnumChoices(enum.Enum):
                 first = 1
                 second = 2
@@ -2123,7 +2141,7 @@ def test_complex_form_columns(app, db, admin):
 def test_form_args(app, db, admin):
     with app.app_context():
 
-        class Model(db.Model):  # type: ignore[name-defined]
+        class Model(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.String, primary_key=True)
             test = db.Column(db.String, nullable=False)
 
@@ -2145,7 +2163,7 @@ def test_form_args(app, db, admin):
 def test_form_override(app, db, admin):
     with app.app_context():
 
-        class Model(db.Model):  # type: ignore[name-defined]
+        class Model(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.String, primary_key=True)
             test = db.Column(db.String)
 
@@ -2168,11 +2186,11 @@ def test_form_override(app, db, admin):
 def test_form_onetoone(app, db, admin):
     with app.app_context():
 
-        class Model1(db.Model):  # type: ignore[name-defined]
+        class Model1(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.Integer, primary_key=True)
             test = db.Column(db.String)
 
-        class Model2(db.Model):  # type: ignore[name-defined]
+        class Model2(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.Integer, primary_key=True)
 
             model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
@@ -2615,11 +2633,11 @@ def test_ajax_fk(app, db, admin):
 
         items = loader.get_list("fir")
         assert len(items) == 1
-        assert items[0].id == model.id
+        assert items[0].id == model.id  # type: ignore[union-attr]
 
         items = loader.get_list("bar")
         assert len(items) == 1
-        assert items[0].test1 == "foo"
+        assert items[0].test1 == "foo"  # type: ignore[union-attr]
 
         # Check form generation
         form = view.create_form()
@@ -2654,7 +2672,7 @@ def test_ajax_fk(app, db, admin):
 def test_ajax_fk_multi(app, db, admin):
     with app.app_context():
 
-        class Model1(db.Model):  # type: ignore[name-defined]
+        class Model1(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "model1"
 
             id = db.Column(db.Integer, primary_key=True)
@@ -2670,7 +2688,7 @@ def test_ajax_fk_multi(app, db, admin):
             db.Column("model2_id", db.Integer, db.ForeignKey("model2.id")),
         )
 
-        class Model2(db.Model):  # type: ignore[name-defined]
+        class Model2(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "model2"
 
             id = db.Column(db.Integer, primary_key=True)
@@ -2915,19 +2933,19 @@ def test_unlimited_page_size(app, db, admin):
 def test_advanced_joins(app, db, admin):
     with app.app_context():
 
-        class Model1(db.Model):  # type: ignore[name-defined]
+        class Model1(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.Integer, primary_key=True)
             val1 = db.Column(db.String(20))
             test = db.Column(db.String(20))
 
-        class Model2(db.Model):  # type: ignore[name-defined]
+        class Model2(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.Integer, primary_key=True)
             val2 = db.Column(db.String(20))
 
             model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
             model1 = db.relationship(Model1, backref="model2")
 
-        class Model3(db.Model):  # type: ignore[name-defined]
+        class Model3(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.Integer, primary_key=True)
             val2 = db.Column(db.String(20))
 
@@ -2990,12 +3008,12 @@ def test_advanced_joins(app, db, admin):
 def test_multipath_joins(app, db, admin):
     with app.app_context():
 
-        class Model1(db.Model):  # type: ignore[name-defined]
+        class Model1(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.Integer, primary_key=True)
             val1 = db.Column(db.String(20))
             test = db.Column(db.String(20))
 
-        class Model2(db.Model):  # type: ignore[name-defined]
+        class Model2(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.Integer, primary_key=True)
             val2 = db.Column(db.String(20))
 
@@ -3024,11 +3042,11 @@ def test_different_bind_joins(request, app):
 
     with app.app_context():
 
-        class Model1(db.Model):  # type: ignore[name-defined]
+        class Model1(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.Integer, primary_key=True)
             val1 = db.Column(db.String(20))
 
-        class Model2(db.Model):  # type: ignore[name-defined]
+        class Model2(db.Model):  # type: ignore[name-defined, misc]
             __bind_key__ = "other"
             id = db.Column(db.Integer, primary_key=True)
             val1 = db.Column(db.String(20))
@@ -3112,7 +3130,7 @@ STRING_CONSTANT = "Anyway, here's Wonderwall"
 def test_string_null_behavior(app, db, admin):
     with app.app_context():
 
-        class StringTestModel(db.Model):  # type: ignore[name-defined]
+        class StringTestModel(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.Integer, primary_key=True)
             test_no = db.Column(db.Integer, nullable=False)
             string_field = db.Column(db.String)
@@ -3197,7 +3215,7 @@ def test_string_null_behavior(app, db, admin):
 def test_form_overrides(app, db, admin):
     with app.app_context():
 
-        class UserModel(db.Model):  # type: ignore[name-defined]
+        class UserModel(db.Model):  # type: ignore[name-defined, misc]
             id = db.Column(db.Integer, primary_key=True)
             text = db.Column(db.String)
 
@@ -3218,3 +3236,82 @@ def test_form_overrides(app, db, admin):
         '<input class="form-control" id="text" name="text" type="password" value="">'
         in data
     )
+
+
+def match_page_title_and_icon(data: str, title: str, icon_html: str) -> bool:
+    # Regex to match the given HTML block with possible whitespace/newlines
+    pattern = re.compile(rf'<h4 class="mb-4">.*?{re.escape(title)}.*?</h4>', re.DOTALL)
+    title_match = pattern.search(data)
+
+    pattern = re.compile(
+        rf'<h4 class="mb-4">.*?{re.escape(icon_html)}.*?</h4>', re.DOTALL
+    )
+    icon_match = pattern.search(data)
+
+    return bool(title_match and icon_match)
+
+
+def test_page_title(app, db, admin):
+    with app.app_context():
+        Model1, Model2 = create_models(db)
+        db.session.add_all(
+            [
+                Model1("1"),
+                Model1("2"),
+            ]
+        )
+        db.session.commit()
+
+        class MyModelView(CustomModelView):
+            can_view_details = True
+
+        # test column_list with a list of strings
+        view = MyModelView(
+            Model1,
+            db.session,
+            name="My Model1",
+            menu_icon_type="fa",
+            menu_icon_value="fa-user",
+        )
+        admin.add_view(view)
+        admin.add_view(
+            FileAdmin(
+                os.path.dirname(__file__),
+                "/files/",
+                name="Local Files",
+                menu_icon_type="fa",
+                menu_icon_value="fa-folder",
+            )
+        )
+
+        client = app.test_client()
+
+        rv = client.get("/admin/model1/")
+        data = rv.data.decode("utf-8")
+        assert match_page_title_and_icon(
+            data, "My Model1", '<i class="fa fa-user"></i>'
+        )
+
+        rv = client.get("/admin/model1/edit/?id=1")
+        data = rv.data.decode("utf-8")
+        assert match_page_title_and_icon(
+            data, "My Model1", '<i class="fa fa-user"></i>'
+        )
+
+        rv = client.get("/admin/model1/new/?id=1")
+        data = rv.data.decode("utf-8")
+        assert match_page_title_and_icon(
+            data, "My Model1", '<i class="fa fa-user"></i>'
+        )
+
+        rv = client.get("/admin/model1/details/?id=1")
+        data = rv.data.decode("utf-8")
+        assert match_page_title_and_icon(
+            data, "My Model1", '<i class="fa fa-user"></i>'
+        )
+
+        rv = client.get("/admin/fileadmin/")
+        data = rv.data.decode("utf-8")
+        assert match_page_title_and_icon(
+            data, "Local Files", '<i class="fa fa-folder"></i>'
+        )
