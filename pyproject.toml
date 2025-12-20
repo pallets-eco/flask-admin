@@ -175,6 +175,9 @@ filterwarnings = [
     # raised by flask-sqlalchemy https://github.com/pallets-eco/flask-sqlalchemy/issues/1379
     "ignore:unclosed database in <sqlite3\\.Connection object at 0x[0-9a-f]+>:ResourceWarning",
 
+    # raised at end of test run
+    "ignore:unclosed file <_io.FileIO name='/home/runner/work/flask-admin/flask-admin/flask_admin/static/bootstrap/bootstrap4/css/bootstrap.min.css' mode='rb' closefd=True>:ResourceWarning",
+
     "ignore:Passing a session object directly is deprecated.*:DeprecationWarning",
 ]
 
