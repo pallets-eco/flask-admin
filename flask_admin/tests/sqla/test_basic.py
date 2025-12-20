@@ -452,7 +452,7 @@ def test_list_columns(app, db, admin):
 def test_pagination(app, db, admin):
     with app.app_context():
 
-        class Model3(db.Model):  # type: ignore[name-defined]
+        class Model3(db.Model):  # type: ignore[name-defined, misc]
             def __init__(self, id=None, test1=None):
                 self.id = id
                 self.test1 = test1

@@ -6,7 +6,7 @@ from .test_basic import CustomModelView
 def test_pagination(app, mssql_db, mssql_admin):
     with app.app_context():
 
-        class Model3(mssql_db.Model):  # type: ignore[name-defined]
+        class Model3(mssql_db.Model):  # type: ignore[name-defined, misc]
             def __init__(self, id=None, test1=None):
                 self.id = id
                 self.test1 = test1
@@ -61,7 +61,7 @@ def test_pagination(app, mssql_db, mssql_admin):
 def test_pagination_2_PKs(app, mssql_db, mssql_admin):
     with app.app_context():
 
-        class Model4(mssql_db.Model):  # type: ignore[name-defined]
+        class Model4(mssql_db.Model):  # type: ignore[name-defined, misc]
             def __init__(self, id=None, id2=None, test1=None):
                 self.id = id
                 self.id2 = id2
