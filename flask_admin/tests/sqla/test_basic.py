@@ -3043,7 +3043,6 @@ def test_safe_redirect(app, db, admin, session_or_db):
         assert "id=2" in rv.location
 
 
-
 def test_relative_redirect_on_save_and_add_another(app, db, admin):
     """
     Test that redirect URL after "Save and Add Another" is relative
