@@ -10,9 +10,7 @@ from flask_admin import Admin
 def db(app):
     db = SQLAlchemy()
     yield db
-    with app.app_context():
-        db.session.close()
-        db.engine.dispose()
+    db.session.remove()
 
 
 @pytest.fixture
