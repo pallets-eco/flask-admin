@@ -1,3 +1,29 @@
+all_themes = [
+    "default",
+    "cerulean",
+    "cosmo",
+    "cyborg",
+    "darkly",
+    "flatly",
+    "journal",
+    "litera",
+    "lumen",
+    "lux",
+    "materia",
+    "minty",
+    "pulse",
+    "sandstone",
+    "simplex",
+    "sketchy",
+    "slate",
+    "solar",
+    "spacelab",
+    "superhero",
+    "united",
+    "yeti",
+]
+
+
 def build_sample_db(db, User, Page):
     """
     Populate a small db with some example entries.

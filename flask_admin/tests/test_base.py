@@ -308,6 +308,7 @@ def test_permissions(app, admin):
     assert rv.status_code == 403
 
 
+@pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
 def test_inaccessible_callback(app, admin):
     view = MockView()
     admin.add_view(view)
@@ -462,6 +463,7 @@ def test_root_mount(app, babel):
     assert rv.status_code == 200
 
 
+@pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
 def test_menu_links(app, admin):
     admin.add_link(base.MenuLink("TestMenuLink1", endpoint=".index"))
     admin.add_link(base.MenuLink("TestMenuLink2", url="http://python.org/"))
