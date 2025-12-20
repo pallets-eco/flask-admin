@@ -64,6 +64,8 @@ def _get_deprecated_session(
     """
     Returns the session if passed directly, session.session otherwise.
     """
-    if isinstance(session, T_SQLALCHEMY) or isinstance(session, T_SQLALCHEMY_LITE):
+    if (T_SQLALCHEMY is not None and isinstance(session, T_SQLALCHEMY)) or (
+        T_SQLALCHEMY_LITE is not None and isinstance(session, T_SQLALCHEMY_LITE)
+    ):
         return session.session
     return session
