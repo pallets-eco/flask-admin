@@ -50,6 +50,7 @@ geoalchemy = [
 ]
 pymongo = ["pymongo>=3.10.0"]
 mongoengine = ["mongoengine>=0.29.0"]
+pymssql = ["pymssql>=2.3.10"]
 peewee = [
     "peewee>=3.14.0",
     "wtf-peewee>=3.0.4"
@@ -66,6 +67,7 @@ all = [
     "Flask-Admin[geoalchemy]",
     "Flask-Admin[pymongo]",
     "Flask-Admin[mongoengine]",
+    "Flask-Admin[pymssql]",
     "Flask-Admin[peewee]",
     "Flask-Admin[s3]",
     "Flask-Admin[azure-blob-storage]",
@@ -227,6 +229,7 @@ module = [
     "playhouse.*",
     "pymongo",
     "mongoengine.*",
+    "pymssql",
     "sqlalchemy.*",
     "sqlalchemy_utils",
     "tablib",
@@ -317,6 +320,7 @@ commands = [
         "boto3==1.33.0",
         "pymongo==3.10.0",
         "mongoengine==0.29.0",
+        "pymssql==2.3.10",
         "peewee==3.14.0",
         "wtf-peewee==3.0.4",
         "azure-storage-blob==12.0.0",
