@@ -58,7 +58,7 @@ def postgres_admin(app, babel, postgres_db):
 @pytest.fixture
 def mssql_db(app):
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-        "SQLALCHEMY_DATABASE_URI",
+        "SQLALCHEMY_DATABASE_URI_MSSQL",
         "mssql+pymssql://sa:cs4gerF5fYcPi5KzVDa@localhost",
     )
     app.config["SQLALCHEMY_ECHO"] = True

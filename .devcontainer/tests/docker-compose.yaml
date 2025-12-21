@@ -15,6 +15,7 @@ services:
     environment:
       AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;
       SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@postgres/flask_admin_test
+      SQLALCHEMY_DATABASE_URI_MSSQL: mssql+pymssql://sa:cs4gerF5fYcPi5KzVDa@localhost
       MONGOCLIENT_HOST: mongo
     depends_on:
       - postgres
