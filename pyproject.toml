@@ -287,7 +287,7 @@ package = "wheel"
 wheel_build_env = ".pkg"
 extras = ["all"]
 setenv = { SQLALCHEMY_SILENCE_UBER_WARNING = "1" }
-pass_env = ["AZURE_STORAGE_CONNECTION_STRING", "SQLALCHEMY_DATABASE_URI", "MONGOCLIENT_HOST"]
+pass_env = ["AZURE_STORAGE_CONNECTION_STRING", "SQLALCHEMY_DATABASE_URI", "SQLALCHEMY_DATABASE_URI_MSSQL", "MONGOCLIENT_HOST"]
 constrain_package_deps = true
 use_frozen_constraints = true
 dependency_groups = ["tests"]
