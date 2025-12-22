@@ -54,6 +54,13 @@ jobs:
         image: mongo:5.0.14-focal
         ports:
           - 27017:27017
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_SA_PASSWORD: cs4gerF5fYcPi5KzVDa
+        ports:
+          - 1433:1433
       azurite:
         image: mcr.microsoft.com/azure-storage/azurite:latest
         env:
