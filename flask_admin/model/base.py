@@ -2423,7 +2423,7 @@ class BaseModelView(BaseView, ActionsMixin):
             if model:
                 flash(gettext("Record was successfully created."), "success")
                 if "_add_another" in request.form:
-                    return redirect(request.url)
+                    return redirect(self.get_url(".create_view", url=return_url))
                 elif "_continue_editing" in request.form:
                     # if we have a valid model, try to go to the edit view
                     if model is not True:
