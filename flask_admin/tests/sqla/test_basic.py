@@ -663,7 +663,12 @@ def test_column_editable_list(app, db, admin):
         Model1, Model2 = create_models(db)
 
         view = CustomModelView(
-            Model1, db.session, column_editable_list=["test1", "enum_field"]
+            Model1,
+            db.session,
+            column_editable_list=["test1", "test2", "enum_field"],
+            column_formatters={
+                "test2": lambda v, c, m, p: m.test2.upper() if m.test2 else ""
+            },
         )
         admin.add_view(view)
 
@@ -679,6 +684,9 @@ def test_column_editable_list(app, db, admin):
         rv = client.get("/admin/model1/")
         data = rv.data.decode("utf-8")
         assert 'data-role="x-editable"' in data
+        assert "test1_val_1" in data
+        assert 'data-value="test2_val_1"' in data
+        assert "TEST2_VAL_1</a>" in data
 
         # Form - Test basic in-line edit functionality
         rv = client.post(
@@ -691,10 +699,24 @@ def test_column_editable_list(app, db, admin):
         data = rv.data.decode("utf-8")
         assert "Record was successfully saved." == data
 
+        # Form - Test in-line edit with column_formatter
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={
+                "list_form_pk": "1",
+                "test2": "change-success-2",
+            },
+        )
+        data = rv.data.decode("utf-8")
+        assert "Record was successfully saved." == data
+
         # ensure the value has changed
         rv = client.get("/admin/model1/")
         data = rv.data.decode("utf-8")
+
         assert "change-success-1" in data
+        assert 'data-value="change-success-2"' in data
+        assert "CHANGE-SUCCESS-2</a>" in data
 
         # Test validation error
         rv = client.post(

@@ -2108,6 +2108,28 @@ class BaseModelView(BaseView, ActionsMixin):
         return value
 
     @pass_context
+    def get_unformatted_value(
+        self, context: Context, model: T_ORM_MODEL, name: str
+    ) -> t.Any:
+        """
+        Returns the actual value (Unformatted) to be displayed in editable form.
+
+        :param context:
+            :py:class:`jinja2.runtime.Context`
+        :param model:
+            Model instance
+        :param name:
+            Field name
+        """
+        return self._get_list_value(
+            context,
+            model,
+            name,
+            {},  # no column formatters
+            {},  # no column type formatters
+        )
+
+    @pass_context
     def get_list_value(self, context: Context, model: T_ORM_MODEL, name: str) -> t.Any:
         """
         Returns the value to be displayed in the list view
@@ -2328,6 +2350,7 @@ class BaseModelView(BaseView, ActionsMixin):
             enumerate=enumerate,
             get_pk_value=self.get_pk_value,
             get_value=self.get_list_value,
+            get_unformatted_value=self.get_unformatted_value,
             return_url=self._get_list_url(view_args),  # Extras
             extra_args=view_args.extra_args,
         )
