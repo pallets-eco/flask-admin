@@ -241,7 +241,7 @@ if __name__ == "__main__":
             icon_value="https://placehold.co/32?text=S",
         )
     )
-    
+
     for t in all_themes:
         admin.add_link(
             MenuLink(
