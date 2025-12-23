@@ -665,10 +665,7 @@ def test_column_editable_list(app, db, admin):
         view = CustomModelView(
             Model1,
             db.session,
-            column_editable_list=["test1", "test2", "enum_field"],
-            column_formatters={
-                "test2": lambda v, c, m, p: m.test2.upper() if m.test2 else ""
-            },
+            column_editable_list=["test1", "enum_field"],
         )
         admin.add_view(view)
 
@@ -685,8 +682,6 @@ def test_column_editable_list(app, db, admin):
         data = rv.data.decode("utf-8")
         assert 'data-role="x-editable"' in data
         assert "test1_val_1" in data
-        assert 'data-value="test2_val_1"' in data
-        assert "TEST2_VAL_1</a>" in data
 
         # Form - Test basic in-line edit functionality
         rv = client.post(
@@ -699,24 +694,13 @@ def test_column_editable_list(app, db, admin):
         data = rv.data.decode("utf-8")
         assert "Record was successfully saved." == data
 
-        # Form - Test in-line edit with column_formatter
-        rv = client.post(
-            "/admin/model1/ajax/update/",
-            data={
-                "list_form_pk": "1",
-                "test2": "change-success-2",
-            },
-        )
-        data = rv.data.decode("utf-8")
-        assert "Record was successfully saved." == data
-
         # ensure the value has changed
         rv = client.get("/admin/model1/")
         data = rv.data.decode("utf-8")
 
         assert "change-success-1" in data
-        assert 'data-value="change-success-2"' in data
-        assert "CHANGE-SUCCESS-2</a>" in data
+        assert 'data-value="change-success-1"' in data
+        assert "change-success-1</a>" in data
 
         # Test validation error
         rv = client.post(
@@ -764,6 +748,96 @@ def test_column_editable_list(app, db, admin):
         rv = client.get("/admin/model2/")
         data = rv.data.decode("utf-8")
         assert "test1_val_3" in data
+
+
+def test_column_editable_list_with_column_formatter(app, db, admin):
+    """Tests column_editable_list with a column_formatter defined for the same field"""
+
+    with app.app_context():
+        Model1, Model2 = create_models(db)
+
+        view = CustomModelView(
+            Model1,
+            db.session,
+            column_editable_list=["test2"],
+            column_formatters={
+                "test2": lambda v, c, m, p: m.test2.upper() if m.test2 else ""
+            },
+        )
+        admin.add_view(view)
+
+        # Test in-line editing for relations
+        view = CustomModelView(Model2, db.session, column_editable_list=["model1"])
+        admin.add_view(view)
+
+        fill_db(db, Model1, Model2)
+
+        client = app.test_client()
+
+        # Test in-line edit field rendering
+        rv = client.get("/admin/model1/")
+        data = rv.data.decode("utf-8")
+        assert 'data-role="x-editable"' in data
+        assert 'data-value="test2_val_1"' in data
+        assert "TEST2_VAL_1</a>" in data
+
+        # Form - Test in-line edit with column_formatter
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={
+                "list_form_pk": "1",
+                "test2": "change-success-2",
+            },
+        )
+        data = rv.data.decode("utf-8")
+        assert "Record was successfully saved." == data
+
+        # ensure the value has changed
+        rv = client.get("/admin/model1/")
+        data = rv.data.decode("utf-8")
+
+        assert 'data-value="change-success-2"' in data
+        assert "CHANGE-SUCCESS-2</a>" in data
+
+
+def test_editable_list_special_pks(app, db, admin):
+    """Tests editable list view + a primary key with special characters"""
+    with app.app_context():
+
+        class Model1(db.Model):  # type: ignore[name-defined, misc]
+            def __init__(self, id=None, val1=None):
+                self.id = id
+                self.val1 = val1
+
+            id = db.Column(db.String(20), primary_key=True)
+            val1 = db.Column(db.String(20))
+
+        db.create_all()
+
+        view = CustomModelView(Model1, db.session, column_editable_list=["val1"])
+        admin.add_view(view)
+
+        db.session.add(Model1("1-1", "test1"))
+        db.session.add(Model1("1-5", "test2"))
+        db.session.commit()
+
+        client = app.test_client()
+
+        # Form - Test basic in-line edit functionality
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={
+                "list_form_pk": "1-1",
+                "val1": "change-success-1",
+            },
+        )
+        data = rv.data.decode("utf-8")
+        assert "Record was successfully saved." == data
+
+        # ensure the value has changed
+        rv = client.get("/admin/model1/")
+        data = rv.data.decode("utf-8")
+        assert "change-success-1" in data
 
 
 def test_details_view(app, db, admin):
@@ -818,46 +892,6 @@ def test_details_view(app, db, admin):
         assert "String Field" in data
         assert "test2_val_1" in data
         assert "test1_val_1" not in data
-
-
-def test_editable_list_special_pks(app, db, admin):
-    """Tests editable list view + a primary key with special characters"""
-    with app.app_context():
-
-        class Model1(db.Model):  # type: ignore[name-defined, misc]
-            def __init__(self, id=None, val1=None):
-                self.id = id
-                self.val1 = val1
-
-            id = db.Column(db.String(20), primary_key=True)
-            val1 = db.Column(db.String(20))
-
-        db.create_all()
-
-        view = CustomModelView(Model1, db.session, column_editable_list=["val1"])
-        admin.add_view(view)
-
-        db.session.add(Model1("1-1", "test1"))
-        db.session.add(Model1("1-5", "test2"))
-        db.session.commit()
-
-        client = app.test_client()
-
-        # Form - Test basic in-line edit functionality
-        rv = client.post(
-            "/admin/model1/ajax/update/",
-            data={
-                "list_form_pk": "1-1",
-                "val1": "change-success-1",
-            },
-        )
-        data = rv.data.decode("utf-8")
-        assert "Record was successfully saved." == data
-
-        # ensure the value has changed
-        rv = client.get("/admin/model1/")
-        data = rv.data.decode("utf-8")
-        assert "change-success-1" in data
 
 
 def test_column_filters(app, db, admin):
