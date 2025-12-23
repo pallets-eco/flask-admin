@@ -1415,8 +1415,6 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return self._filter_args[found] if found else None
 
-    from sqlalchemy.sql.schema import Column
-
     def url_for(
         self, search: str | None = None, filters: list[BaseFilter] | None = None
     ) -> str:
