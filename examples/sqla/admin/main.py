@@ -333,7 +333,25 @@ class EditableView(ModelView):
         "sqla_utils_currency",
         "sqla_utils_color",
     ]
-    column_editable_list = column_list
+    column_editable_list = [
+        "test1",
+        "bool_field",
+        "date_field",
+        "time_field",
+        "datetime_field",
+        "email_field",
+        "choice_field",
+        "enum_field",
+        "enum_type_field",
+        "sqla_utils_choice",
+        "sqla_utils_enum",
+        "sqla_utils_arrow",
+        "sqla_utils_uuid",
+        "sqla_utils_url",
+        "sqla_utils_ip_address",
+        "sqla_utils_currency",
+        "sqla_utils_color",
+    ]
 
 
 admin = Admin(app, name="Example: SQLAlchemy", theme=Bootstrap4Theme(swatch="default"))
