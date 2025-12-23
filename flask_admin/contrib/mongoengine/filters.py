@@ -1,3 +1,5 @@
+import typing as t
+
 from bson.errors import InvalidId
 from bson.objectid import ObjectId
 from mongoengine.queryset import Q
@@ -13,7 +15,7 @@ class BaseMongoEngineFilter(filters.BaseFilter):
     Base MongoEngine filter.
     """
 
-    def __init__(self, column: str, name, options=None, data_type=None):
+    def __init__(self, column: str, name, options=None, data_type=None, url_value=None):
         """
         Constructor.
 
@@ -25,8 +27,10 @@ class BaseMongoEngineFilter(filters.BaseFilter):
             Fixed set of options. If provided, will use drop down instead of textbox.
         :param data_type:
             Client data type
+        :param url_value:
+            URL value
         """
-        super().__init__(name, options, data_type)
+        super().__init__(column, name, options, data_type, url_value=url_value)
 
         self.column = column
 
@@ -101,8 +105,10 @@ class FilterEmpty(BaseMongoEngineFilter, filters.BaseBooleanFilter):
 
 
 class FilterInList(BaseMongoEngineFilter):
-    def __init__(self, column, name, options=None, data_type=None):
-        super().__init__(column, name, options, data_type="select2-tags")
+    def __init__(self, column, name, options=None, data_type=None, url_value=None):
+        super().__init__(
+            column, name, options, data_type="select2-tags", url_value=url_value
+        )
 
     def clean(self, value):
         return [v.strip() for v in value.split(",") if v.strip()]
@@ -114,14 +120,25 @@ class FilterInList(BaseMongoEngineFilter):
     def operation(self):
         return lazy_gettext("in list")
 
+    def stringify(self, value: t.Any) -> str:
+        return ",".join(str(v) for v in value)
+
 
 class FilterNotInList(FilterInList):
+    def __init__(self, column, name, options=None, data_type=None, url_value=None):
+        super().__init__(
+            column, name, options, data_type="select2-tags", url_value=url_value
+        )
+
     def apply(self, query, value):
         flt = {f"{self.column}__nin": value}
         return query.filter(**flt)
 
     def operation(self):
         return lazy_gettext("not in list")
+
+    def stringify(self, value: t.Any) -> str:
+        return ",".join(str(v) for v in value)
 
 
 # Customized type filters
@@ -202,8 +219,10 @@ class DateTimeSmallerFilter(FilterSmaller, filters.BaseDateTimeFilter):
 
 
 class DateTimeBetweenFilter(BaseMongoEngineFilter, filters.BaseDateTimeBetweenFilter):
-    def __init__(self, column, name, options=None, data_type=None):
-        super().__init__(column, name, options, data_type="datetimerangepicker")
+    def __init__(self, column, name, options=None, data_type=None, url_value=None):
+        super().__init__(
+            column, name, options, data_type="datetimerangepicker", url_value=url_value
+        )
 
     def apply(self, query, value):
         start, end = value
