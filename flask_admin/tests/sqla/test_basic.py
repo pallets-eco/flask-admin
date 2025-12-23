@@ -1803,48 +1803,53 @@ def test_url_for_simple(app, app_context, db, admin):
     )
     admin.add_view(view)
 
-    filtered_url = view.url_for()
-    assert filtered_url == "/admin/user/"
+    with app.test_request_context("http://localhost/admin/user/"):
+        filtered_url = view.url_for()
+        assert filtered_url == "/admin/user/"
 
-    filtered_url = view.url_for(search="exam", filters=[])
-    assert filtered_url == "/admin/user/?search=exam"
+        filtered_url = view.url_for(search="exam", filters=[])
+        assert filtered_url == "/admin/user/?search=exam"
 
-    filtered_url = view.url_for(
-        search="exam",
-        filters=[
-            filters.FilterLike(Model1.test1, "Email", url_value="test1"),
-            filters.FilterLike(Model1.test1, "Email222", url_value="test1"),
-            filters.BooleanEqualFilter(Model1.bool_field, "active", url_value=False),
-            filters.IntInListFilter(Model1.id, "ID", url_value=[33, 30, 35]),
-            filters.FloatGreaterFilter(Model1.test5, "Salary", url_value=50000.0),
-            filters.FloatSmallerFilter(Model1.test5, "Salary", url_value=150000.0),
-        ],
-    )
-    assert (
-        filtered_url == "/admin/user/?search=exam&flt0_0=test1&flt1_0=test1&"
-        "flt2_21=0&flt3_12=33,30,35&flt4_16=50000.0&flt5_17=150000.0"
-    )
+        filtered_url = view.url_for(
+            search="exam",
+            filters=[
+                filters.FilterLike(Model1.test1, "Email", url_value="test1"),
+                filters.FilterLike(Model1.test1, "Email222", url_value="test1"),
+                filters.BooleanEqualFilter(
+                    Model1.bool_field, "active", url_value=False
+                ),
+                filters.IntInListFilter(Model1.id, "ID", url_value=[33, 30, 35]),
+                filters.FloatGreaterFilter(Model1.test5, "Salary", url_value=50000.0),
+                filters.FloatSmallerFilter(Model1.test5, "Salary", url_value=150000.0),
+            ],
+        )
+        assert (
+            filtered_url == "/admin/user/?search=exam&flt0_0=test1&flt1_0=test1&"
+            "flt2_21=0&flt3_12=33,30,35&flt4_16=50000.0&flt5_17=150000.0"
+        )
 
-    view.named_filter_urls = True
+        view.named_filter_urls = True
 
-    filtered_url = view.url_for(
-        search="exam",
-        filters=[
-            filters.FilterLike(Model1.test1, "Email", url_value="test1"),
-            filters.FilterLike(Model1.test1, "Email222", url_value="test1"),
-            filters.BooleanEqualFilter(Model1.bool_field, "active", url_value=False),
-            filters.IntInListFilter(Model1.id, "ID", url_value=[33, 30, 35]),
-            filters.FloatGreaterFilter(Model1.test5, "Salary", url_value=50000.0),
-        ],
-    )
-    assert (
-        filtered_url == "/admin/user/?search=exam&"
-        "flt0_test1_contains=test1&"
-        "flt1_test1_contains=test1&"
-        "flt2_bool_field_equals=0&"
-        "flt3_id_in_list=33,30,35&"
-        "flt4_test5_greater_than=50000.0"
-    )
+        filtered_url = view.url_for(
+            search="exam",
+            filters=[
+                filters.FilterLike(Model1.test1, "Email", url_value="test1"),
+                filters.FilterLike(Model1.test1, "Email222", url_value="test1"),
+                filters.BooleanEqualFilter(
+                    Model1.bool_field, "active", url_value=False
+                ),
+                filters.IntInListFilter(Model1.id, "ID", url_value=[33, 30, 35]),
+                filters.FloatGreaterFilter(Model1.test5, "Salary", url_value=50000.0),
+            ],
+        )
+        assert (
+            filtered_url == "/admin/user/?search=exam&"
+            "flt0_test1_contains=test1&"
+            "flt1_test1_contains=test1&"
+            "flt2_bool_field_equals=0&"
+            "flt3_id_in_list=33,30,35&"
+            "flt4_test5_greater_than=50000.0"
+        )
 
 
 def create_filter_params():
@@ -2208,18 +2213,13 @@ def test_url_for(
     view = CustomModelView(Model1, db.session, endpoint="user", column_filters=[col])
     admin.add_view(view)
 
-    with app.test_request_context(
-        path="/admin/user/",
-    ):
+    with app.test_request_context("http://localhost/admin/user/"):
         d1 = filter_value
         filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
         assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
 
-    view.named_filter_urls = True
+        view.named_filter_urls = True
 
-    with app.test_request_context(
-        path="/admin/user/",
-    ):
         d1 = filter_value
         filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
         assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
@@ -2335,14 +2335,15 @@ def test_url_for_enums_and_choices(
     view = CustomModelView(Model1, db.session, endpoint="user", column_filters=[col])
     admin.add_view(view)
 
-    d1 = filter_value
-    filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
-    assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
+    with app.test_request_context("http://localhost/admin/user/"):
+        d1 = filter_value
+        filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+        assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
 
-    view.named_filter_urls = True
-    d1 = filter_value
-    filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
-    assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
+        view.named_filter_urls = True
+        d1 = filter_value
+        filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+        assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
 
 
 def test_column_filters_sqla_obj(app, db, admin):
