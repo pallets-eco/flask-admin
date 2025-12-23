@@ -213,6 +213,7 @@ class PostAdmin(ModelView):
     column_list = [
         "id",
         "user",
+        "user.email",
         "title",
         "date",
         "tags",
@@ -229,6 +230,7 @@ class PostAdmin(ModelView):
         "id",
         "title",
         "date",
+        "user.email",
         ("user", ("user.last_name", "user.first_name")),  # sort on multiple columns
     ]
     column_labels = {
