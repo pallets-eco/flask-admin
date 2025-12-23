@@ -15,6 +15,7 @@ from wtforms import validators
 from . import app
 from . import db
 from .models import AVAILABLE_USER_TYPES
+from .models import Model1
 from .models import Post
 from .models import Tag
 from .models import Tree
@@ -192,7 +193,12 @@ class UserAdmin(ModelView):
         "currency",
         "timezone",
     ]
-    column_formatters = {"phone_number": phone_number_formatter}
+
+    column_editable_list = ["last_name"]
+    column_formatters = {
+        "phone_number": phone_number_formatter,
+        "last_name": lambda v, c, m, p: m.last_name.upper() if m.last_name else "",
+    }
 
     # setup edit forms so that only posts created by this user can be selected as
     # 'featured'
@@ -304,11 +310,35 @@ class TreeView(ModelView):
         return super().render(template, foo="bar", **kwargs)
 
 
+class EditableView(ModelView):
+    column_list = [
+        "test1",
+        "bool_field",
+        "date_field",
+        "time_field",
+        "datetime_field",
+        "email_field",
+        "choice_field",
+        "enum_field",
+        "enum_type_field",
+        "sqla_utils_choice",
+        "sqla_utils_enum",
+        "sqla_utils_arrow",
+        "sqla_utils_uuid",
+        "sqla_utils_url",
+        "sqla_utils_ip_address",
+        "sqla_utils_currency",
+        "sqla_utils_color",
+    ]
+    column_editable_list = column_list
+
+
 admin = Admin(app, name="Example: SQLAlchemy", theme=Bootstrap4Theme(swatch="default"))
 
 admin.add_view(UserAdmin(User, db))
 admin.add_view(ModelView(Tag, db))
 admin.add_view(PostAdmin(db))
+admin.add_view(EditableView(Model1, db, name="Editable View", category="Other"))
 admin.add_view(TreeView(Tree, db, category="Other"))
 admin.add_sub_category(name="Links", parent_name="Other")
 admin.add_link(MenuLink(name="Back Home", url="/", category="Links"))
