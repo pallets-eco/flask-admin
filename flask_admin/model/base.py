@@ -2684,7 +2684,28 @@ class BaseModelView(BaseView, ActionsMixin):
     @expose("/ajax/update/", methods=("POST",))
     def ajax_update(self) -> None | tuple[str, int] | str:
         """
-        Edits a single column of a record in list view.
+        Edits a single column of a record in list view. Usually used with
+        `column_editable_list` that integrates with the x-editable library.
+
+        .. code-block:: javascript
+
+            // you can use jQuery to make ajax calls like this:
+
+            $.ajax({
+                url: '/admin/<your_model_view_endpoint>/ajax/update/',
+                type: 'POST',
+                data: {
+                    "list_form_pk" : "<primary_key_value>",
+                    "<column_name>": "<new_value>"
+                },
+                success: function(response) {
+                    // handle success
+                },
+                error: function(response) {
+                    // handle error
+                }
+            });
+
         """
         if not self.column_editable_list:
             abort(404)
