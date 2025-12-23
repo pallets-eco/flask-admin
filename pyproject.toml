@@ -170,6 +170,9 @@ filterwarnings = [
 
     # raised by flask-sqlalchemy https://github.com/pallets-eco/flask-sqlalchemy/issues/1379
     "ignore:unclosed database in <sqlite3\\.Connection object at 0x[0-9a-f]+>:ResourceWarning",
+
+    # raised at end of test run, maybe by Werkzeug?
+    "ignore:unclosed file <_io.FileIO name='/home/runner/work/flask-admin/flask-admin/flask_admin/static/bootstrap/bootstrap4/css/bootstrap.min.css' mode='rb' closefd=True>:ResourceWarning",
 ]
 
 [tool.coverage.run]
@@ -258,8 +261,6 @@ select = [
 ignore = [
     "UP007",  # Use X | Y for type annotations; doesn't work with some of our (stringy) type definitions - should aim to resolve this
 ]
-
-ignore-init-module-imports = true
 
 [tool.ruff.lint.isort]
 force-single-line = true
