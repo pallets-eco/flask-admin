@@ -12,19 +12,20 @@ from ..._types import T_RESPONSE
 from . import BaseFileAdmin
 from . import BaseFileStorage
 
+P = t.ParamSpec("P")
+R = t.TypeVar("R")
+
 
 def _strip_leading_slash_from(
     arg_name: str,
-) -> t.Callable[[t.Any], t.Callable[[tuple[t.Any, ...], dict[str, t.Any]], t.Any]]:
+) -> t.Callable[[t.Callable[P, R]], t.Callable[P, R]]:
     """Strips leading slashes from the specified argument of the decorated function.
 
     This is used to clean S3 object/key names because the base FileAdmin layers passes
     paths with leading slashes, but S3 doesn't want and doesn't handle this.
     """
 
-    def decorator(
-        func: t.Callable[..., t.Any],
-    ) -> t.Callable[[tuple[t.Any, ...], dict[str, t.Any]], t.Any]:
+    def decorator(func: t.Callable[P, R]) -> t.Callable[P, R]:
         @functools.wraps(func)
         def wrapper(*args: t.Any, **kwargs: t.Any) -> t.Any:
             args: list[t.Any] = list(args)  # type: ignore[no-redef]
@@ -206,7 +207,7 @@ class S3Storage(BaseFileStorage):
     @_strip_leading_slash_from("directory")
     def delete_tree(self, directory: str) -> None:
         self._check_empty_directory(directory)
-        self.delete_file(directory + self.separator)  # type: ignore[misc, arg-type]
+        self.delete_file(directory + self.separator)
 
     @_strip_leading_slash_from("file_path")
     def delete_file(self, file_path: str) -> None:
@@ -240,7 +241,7 @@ class S3Storage(BaseFileStorage):
     @_strip_leading_slash_from("src")
     @_strip_leading_slash_from("dst")
     def rename_path(self, src: str, dst: str) -> None:
-        if self.is_dir(src):  # type: ignore[misc, arg-type]
+        if self.is_dir(src):
             self._check_empty_directory(src)
             src += self.separator
             dst += self.separator
@@ -249,7 +250,7 @@ class S3Storage(BaseFileStorage):
             self.s3_client.copy_object(  # type: ignore[attr-defined]
                 CopySource=copy_source, Bucket=self.bucket_name, Key=dst
             )
-            self.delete_file(src)  # type: ignore[misc, arg-type]
+            self.delete_file(src)
         except ClientError as e:
             raise ValueError(f"Failed to rename path: {e}") from e
 
