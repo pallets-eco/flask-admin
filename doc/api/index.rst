@@ -7,6 +7,7 @@ API
    mod_base
    mod_helpers
    mod_model
+   mod_model_filters
    mod_form
    mod_form_rules
    mod_form_fields

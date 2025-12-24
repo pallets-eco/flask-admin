@@ -382,7 +382,9 @@ class ModelView(BaseModelView):
 
         self._search_fields: list[tuple[T_SQLALCHEMY_COLUMN, t.Any]] | None = None
 
-        self._filter_joins: dict[tuple[bool, t.Any], t.Any] = dict()
+        self._filter_joins: dict[T_COLUMN | InstrumentedAttribute[t.Any], t.Any] = (
+            dict()
+        )
 
         self._sortable_joins: dict[T_COLUMN, list[T_INSTRUMENTED_ATTRIBUTE]] = dict()
 
@@ -1171,7 +1173,7 @@ class ModelView(BaseModelView):
             if isinstance(flt, sqla_filters.BaseSQLAFilter):
                 # If no key_name is specified, use filter column as filter key
                 filter_key = flt.key_name or flt.column
-                path = self._filter_joins.get(filter_key, [])  # type: ignore[call-overload]
+                path = self._filter_joins.get(filter_key, [])
 
                 query, joins, alias = self._apply_path_joins(
                     query, joins, path, inner_join=False
