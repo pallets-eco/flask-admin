@@ -55,8 +55,9 @@ The first step is to initialize an empty admin interface for your Flask app::
 
     app.run()
 
-Here, both the *name* and *theme* parameters are optional. Alternatively,
-you could use the :meth:`~flask_admin.base.Admin.init_app` method.
+Here, both the *name* and *theme* parameters are optional, have a look to the API
+:class:`~flask_admin.base.Admin` for more details about all other parameters.
+Alternatively, you could use the :meth:`~flask_admin.base.Admin.init_app` method.
 
 If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
 you should see an empty page with a navigation bar on top. Customize the look by
