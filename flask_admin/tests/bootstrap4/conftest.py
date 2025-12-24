@@ -23,7 +23,9 @@ def db(app):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db = SQLAlchemy(app)
     yield db
-    db.session.remove()
+
+    with app.app_context():
+        db.session.remove()
 
 
 @pytest.fixture
