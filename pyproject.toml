@@ -78,7 +78,7 @@ all = [
 [dependency-groups]
 dev = [
     "flask-admin[all]",
-    "tox < 4.3",   # https://github.com/tox-dev/tox/issues/3602
+    "tox<4.30",   # https://github.com/tox-dev/tox/issues/3602
     "tox-uv",
     {include-group = "pre-commit"},
     {include-group = "docs"},
