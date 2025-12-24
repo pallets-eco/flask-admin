@@ -469,9 +469,8 @@ def test_pagination(app, db, admin):
         view = CustomModelView(Model3, db.session, page_size=10)
         admin.add_view(view)
 
-        for i in range(1, 100):
-            m = Model3(id=i, test1=f"test-{i}")
-            db.session.add(m)
+        models = [Model3(id=i, test1=f"test-{i}") for i in range(1, 100)]
+        db.session.bulk_save_objects(models)
 
         assert Model3.query.count() == 99
 
