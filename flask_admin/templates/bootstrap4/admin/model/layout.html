@@ -2,9 +2,22 @@
     <a class="nav-link {{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">{{ _gettext('Add Filter') }}</a>
     <div class="dropdown-menu field-filters">
         {% for k in filter_groups %}
-            <a href="javascript:void(0)" class="dropdown-item filter" onclick="return false;">{{ k }}</a>
+            <a class="dropdown-item filter" >{{ k }}</a>
         {% endfor %}
     </div>
+
+    <script {{ admin_csp_nonce_attribute }}>
+
+      document.addEventListener('DOMContentLoaded', function ()
+      {
+          document.querySelectorAll('.filter').forEach(function (el) {
+            el.addEventListener('click', function (e) {
+            e.preventDefault();
+            return false;
+          });
+        });
+      });
+    </script>
 {% endmacro %}
 
 {% macro export_options(btn_class='dropdown-toggle') %}
