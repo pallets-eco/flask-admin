@@ -5,6 +5,7 @@ API
    :maxdepth: 2
 
    mod_base
+   mod_theme
    mod_helpers
    mod_model
    mod_form
