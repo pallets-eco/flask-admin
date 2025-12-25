@@ -1,0 +1,31 @@
+{% import 'admin/static.html' as admin_static with context%}
+{% import 'admin/lib.html' as lib with context %}
+
+{# store the jinja2 context for form_rules rendering logic #}
+{% set render_ctx = h.resolve_ctx() %}
+
+{% block body %}
+  <div class="modal-header">
+    {% block header_text %}
+    <h5 class="modal-title">{{ _gettext('Edit Record') + ' #' + request.args.get('id') }}</h5>
+    {% endblock %}
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+
+  </div>
+
+  {% call lib.form_tag(action=url_for('.edit_view', id=request.args.get('id'), url=return_url)) %}
+  <div class="modal-body">
+        {{ lib.render_form_fields(form, form_opts=form_opts) }}
+  </div>
+  <div class="modal-footer">
+        {{ lib.render_form_buttons(return_url, extra=None, is_modal=True) }}
+  </div>
+  {% endcall %}
+
+{% endblock %}
+
+{% block tail %}
+  <script src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
+{% endblock %}
