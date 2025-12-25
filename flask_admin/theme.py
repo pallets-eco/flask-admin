@@ -11,6 +11,19 @@ class Theme:
 
 @dataclass
 class BootstrapTheme(Theme):
+    """
+    Bootstrap theme for Flask-Admin.
+
+    Usage::
+
+        t = Bootstrap4Theme(
+            base_template='my_base.html', # relative your templates folder
+            swatch='cerulean',
+            fluid=True
+        )
+        admin = Admin(app, name='microblog', theme=t)
+    """
+
     folder: typing.Literal["bootstrap4"]
     base_template: str = "admin/base.html"
     swatch: str = "default"
