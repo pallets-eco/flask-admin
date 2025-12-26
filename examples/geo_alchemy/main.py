@@ -87,12 +87,12 @@ if __name__ == "__main__":
         app.add_url_rule(rule="/", view_func=index)
         db.init_app(app)
         admin.init_app(app)
-        admin.add_view(LeafletModelView(Point, db.session, category="Points"))
-        admin.add_view(OSMModelView(MultiPoint, db.session, category="Points"))
-        admin.add_view(LeafletModelView(Polygon, db.session, category="Polygons"))
-        admin.add_view(OSMModelView(MultiPolygon, db.session, category="Polygons"))
-        admin.add_view(LeafletModelView(LineString, db.session, category="Lines"))
-        admin.add_view(OSMModelView(MultiLineString, db.session, category="Lines"))
+        admin.add_view(LeafletModelView(Point, db, category="Points"))
+        admin.add_view(OSMModelView(MultiPoint, db, category="Points"))
+        admin.add_view(LeafletModelView(Polygon, db, category="Polygons"))
+        admin.add_view(OSMModelView(MultiPolygon, db, category="Polygons"))
+        admin.add_view(LeafletModelView(LineString, db, category="Lines"))
+        admin.add_view(OSMModelView(MultiLineString, db, category="Lines"))
 
         with app.app_context():
             db.create_all()

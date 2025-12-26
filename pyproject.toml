@@ -35,6 +35,9 @@ sqlalchemy = [
     "flask-sqlalchemy>=3",
     "sqlalchemy>=1.4",
 ]
+sqlalchemy-lite = [
+    "flask-sqlalchemy-lite",
+]
 sqlalchemy-with-utils = [
     "Flask-Admin[sqlalchemy]",
     "sqlalchemy_utils>=0.38.0",
@@ -62,6 +65,7 @@ rediscli = ["redis>=4.0.0"]
 translation = ["flask-babel>=3.0.1"]
 all = [
     "Flask-Admin[sqlalchemy]",
+    "Flask-Admin[sqlalchemy-lite]",
     "Flask-Admin[sqlalchemy-with-utils]",
     "Flask-Admin[geoalchemy]",
     "Flask-Admin[pymongo]",
@@ -173,6 +177,9 @@ filterwarnings = [
 
     # raised at end of test run, maybe by Werkzeug?
     "ignore:unclosed file <_io.FileIO name='/home/runner/work/flask-admin/flask-admin/flask_admin/static/bootstrap/bootstrap4/css/bootstrap.min.css' mode='rb' closefd=True>:ResourceWarning",
+
+    # remove once the deprecated ModelView(Model, db.session) API is fully retired
+    "ignore:Passing a session object directly is deprecated.*:DeprecationWarning",
 ]
 
 [tool.coverage.run]

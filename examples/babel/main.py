@@ -72,8 +72,8 @@ def index():
 
 if __name__ == "__main__":
     # admin.locale_selector(get_locale)
-    admin.add_view(ModelView(User, db.session))
-    admin.add_view(ModelView(Post, db.session))
+    admin.add_view(ModelView(User, db))
+    admin.add_view(ModelView(Post, db))
 
     with app.app_context():
         db.create_all()
