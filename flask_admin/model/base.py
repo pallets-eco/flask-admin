@@ -2710,7 +2710,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if not self.column_editable_list:
             abort(404)
 
-        form = self.list_form()
+        form = self.list_form()  # returns a form of all fields
 
         # prevent validation issues due to submitting a single field
         # delete all fields except the submitted fields and csrf token
