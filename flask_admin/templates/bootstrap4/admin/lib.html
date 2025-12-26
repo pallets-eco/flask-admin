@@ -268,7 +268,7 @@
 
       <script {{ admin_csp_nonce_attribute }} >
 
-        function deleteButtonHandler(e) {
+        function deleteButtonHandler() {
           $('#btn-delete').on('click', function (e)
           {
             const msg = $(this).data('msg');
@@ -278,13 +278,16 @@
 
         document.addEventListener('DOMContentLoaded', function()
         {
+          //console.log("DOM is fully loaded and parsed");
           deleteButtonHandler();
-
-          $('#fa_modal_window').on('shown.bs.modal', function (e)
-          {
-            deleteButtonHandler(e);
-          });
         });
+
+        $('#fa_modal_window').on('shown.bs.modal', function (e)
+        {
+          //console.log("Modal shown");
+          deleteButtonHandler();
+        });
+
       </script>
 
     {% endif %}
