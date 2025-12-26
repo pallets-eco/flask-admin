@@ -3373,7 +3373,7 @@ def test_del_btn_in_edit_and_details(app, db, admin, with_delete, modal):
 
             can_delete = with_delete
             edit_modal = modal
-            details_modal = (modal,)
+            details_modal = modal
 
         # test column_list with a list of strings
         view = MyModelView(
