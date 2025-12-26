@@ -2431,8 +2431,19 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             template = self.edit_template
 
+        if self.can_delete:
+            delete_form = self.delete_form()
+        else:
+            delete_form = None
+
         return self.render(
-            template, model=model, form=form, form_opts=form_opts, return_url=return_url
+            template,
+            model=model,
+            form=form,
+            form_opts=form_opts,
+            return_url=return_url,
+            delete_form=delete_form,
+            get_pk_value=self.get_pk_value,
         )
 
     @expose("/details/")
@@ -2460,12 +2471,19 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             template = self.details_template
 
+        if self.can_delete:
+            delete_form = self.delete_form()
+        else:
+            delete_form = None
+
         return self.render(
             template,
             model=model,
             details_columns=self._details_columns,
             get_value=self.get_detail_value,
             return_url=return_url,
+            delete_form=delete_form,
+            get_pk_value=self.get_pk_value,
         )
 
     @expose("/delete/", methods=("POST",))
