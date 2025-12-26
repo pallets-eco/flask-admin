@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 
-from .test_basic import CustomModelView
+from flask_admin.contrib.sqla import ModelView
 
 
 def test_pagination(app, mssql_db, mssql_admin):
@@ -17,13 +17,14 @@ def test_pagination(app, mssql_db, mssql_admin):
         mssql_db.drop_all()
         mssql_db.create_all()
 
-        view3 = CustomModelView(Model3, mssql_db.session, page_size=10)
+        view3 = ModelView(Model3, mssql_db.session)
+        view3.page_size = 10
         view3.column_default_sort = ("test1", False)
         mssql_admin.add_view(view3)
 
-        for i in range(10, 100):
-            m = Model3(id=i, test1=f"test-{i:02d}")
-            mssql_db.session.add(m)
+        models = [Model3(id=i, test1=f"test-{i:02d}") for i in range(10, 100)]
+        mssql_db.session.add_all(models)
+        mssql_db.session.commit()
 
         client = app.test_client()
 
@@ -74,15 +75,14 @@ def test_pagination_2_PKs(app, mssql_db, mssql_admin):
         mssql_db.drop_all()
         mssql_db.create_all()
 
-        view4 = CustomModelView(
-            Model4, mssql_db.session, page_size=10, endpoint="model4"
-        )
+        view4 = ModelView(Model4, mssql_db.session, endpoint="model4")
+        view4.page_size = 10
         view4.column_default_sort = ("test1", False)
         mssql_admin.add_view(view4)
 
-        for i in range(10, 100):
-            m = Model4(id=i, id2=i, test1=f"test-{i:02d}")
-            mssql_db.session.add(m)
+        models = [Model4(id=i, id2=i, test1=f"test-{i:02d}") for i in range(10, 100)]
+        mssql_db.session.add_all(models)
+        mssql_db.session.commit()
 
         assert Model4.query.count() == 90
 
