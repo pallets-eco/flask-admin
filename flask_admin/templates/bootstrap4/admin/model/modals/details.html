@@ -9,12 +9,18 @@
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
   </div>
 
-  <div class="modal-body">
-  {% block details_search %}
-    <div class="form-inline fa_filter_container col-lg-6">
-      <label for="fa_filter">{{ _gettext('Filter') }}</label>
-      <input id="fa_filter" type="text" class="ml-3 form-control">
-    </div>
+  {% block details_actions %}
+  <div class="form-inline fa_filter_container col d-flex justify-content-between">
+    {% block details_search %}
+        <div class="form-inline">
+        <label for="fa_filter">{{ _gettext('Filter') }}</label>
+        <input id="fa_filter" type="text" class="ml-3 form-control">
+        </div>
+    {% endblock %}
+    {% block details_delete %}
+        {{ lib.render_delete_form()  }}
+    {% endblock %}
+  </div>
   {% endblock %}
 
   {% block details_table %}

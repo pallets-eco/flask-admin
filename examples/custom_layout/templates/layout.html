@@ -17,12 +17,12 @@
     </div>
     <div class="col-md-10">
       <div id="content" class="row">
-    	{% block brand %}
-    	<h2 id="brand">{{ admin_view.name|capitalize }}</h2>
-    	{% endblock %}
-    	{{ layout.messages() }}
+        {% block brand %}
+        <h2 id="brand">{{ admin_view.name|capitalize }}</h2>
+        {% endblock %}
+        {{ layout.messages() }}
 
-	{% set render_ctx = h.resolve_ctx() %}
+	      {% set render_ctx = h.resolve_ctx() %}
 
         {% block body %}{% endblock %}
       </div>

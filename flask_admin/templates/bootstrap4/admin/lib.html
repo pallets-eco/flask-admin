@@ -176,6 +176,7 @@
 {% endmacro %}
 
 {% macro render_form_fields(form, form_opts=None) %}
+
     {% if form.hidden_tag is defined %}
         {{ form.hidden_tag() }}
     {% else %}
@@ -204,6 +205,11 @@
 {% endmacro %}
 
 {% macro form_tag(form=None, action=None) %}
+
+    <div class="d-flex col justify-content-end mt-3 mb-0">
+      {{ render_delete_form() }}
+    </div>
+
     <form action="{{ action or '' }}" method="POST" role="form" class="admin-form" enctype="multipart/form-data">
     <fieldset>
       {{ caller() }}
@@ -213,13 +219,13 @@
 
 {% macro render_form_buttons(cancel_url, extra=None, is_modal=False) %}
   {% if is_modal %}
-        <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
-        {% if extra %}
-        {{ extra }}
-        {% endif %}
-        {% if cancel_url %}
-          <a href="{{ cancel_url }}" class="btn btn-danger" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
-        {% endif %}
+    <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
+    {% if extra %}
+    {{ extra }}
+    {% endif %}
+    {% if cancel_url %}
+      <a href="{{ cancel_url }}" class="btn btn-danger" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
+    {% endif %}
   {% else %}
     <hr>
     <div class="form-group">
@@ -228,15 +234,67 @@
         {% if extra %}
         {{ extra }}
         {% endif %}
+
         {% if cancel_url is defined and cancel_url %}
           <a href="{{ cancel_url }}" class="btn btn-danger" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
         {% endif %}
+
+
       </div>
     </div>
   {% endif %}
 {% endmacro %}
 
+
+{% macro render_delete_form() -%}
+
+    {% if delete_form is defined  %}
+
+      <form class="icon" method="POST" action="{{ get_url('.delete_view') }}">
+
+        {{ delete_form.id(value=get_pk_value(model)) }}
+        {{ delete_form.url(value=return_url) }}
+        {% if delete_form.csrf_token is defined and delete_form.csrf_token %}
+        {{ delete_form.csrf_token }}
+        {% elif csrf_token is defined and csrf_token %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        {% endif %}
+
+        <button class="btn btn-outline-danger"  id="btn-delete"
+          data-msg="{{ _gettext('Are you sure you want to delete this record?') }}"
+          title="{{ _gettext('Delete Record') }}">
+          <span class="fa fa-trash glyphicon glyphicon-trash"></span>
+          {{ _gettext('Delete') }}
+        </button>
+      </form>
+
+      <script {{ admin_csp_nonce_attribute }} >
+
+        function deleteButtonHandler(e) {
+          $('#btn-delete').on('click', function (e)
+          {
+            const msg = $(this).data('msg');
+            return faHelpers.safeConfirm(msg);
+          });
+        }
+
+        document.addEventListener('DOMContentLoaded', function()
+        {
+          deleteButtonHandler();
+
+          $('#fa_modal_window').on('shown.bs.modal', function (e)
+          {
+            deleteButtonHandler(e);
+          });
+        });
+      </script>
+
+    {% endif %}
+
+{% endmacro %}
+
 {% macro render_form(form, cancel_url, extra=None, form_opts=None, action=None, is_modal=False) -%}
+
     {% call form_tag(action=action) %}
         {{ render_form_fields(form, form_opts=form_opts) }}
         {{ render_form_buttons(cancel_url, extra, is_modal) }}
