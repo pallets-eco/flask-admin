@@ -89,7 +89,7 @@
                             {% if delete_form.csrf_token is defined and delete_form.csrf_token %}
                             {{ delete_form.csrf_token }}
                             {% endif %}
-                            <button class="btn-delete-dir"
+                            <button class="confirm-first"
                                 data-msg="{{ _gettext('Are you sure you want to delete \'%(name)s\' recursively?', name=name) }}">
                                 <i class="fa fa-times glyphicon glyphicon-remove"></i>
                             </button>
@@ -101,7 +101,7 @@
                         {% if delete_form.csrf_token is defined and delete_form.csrf_token %}
                         {{ delete_form.csrf_token }}
                         {% endif %}
-                        <button class="btn-delete-file"
+                        <button class="confirm-first"
                             data-msg="{{ _gettext('Are you sure you want to delete \'%(name)s\' ?', name=name) }}">
                             <i class="fa fa-trash glyphicon glyphicon-trash"></i>
                         </button>
@@ -198,13 +198,7 @@
 
   <script {{ admin_csp_nonce_attribute }}>
 
-    $('.btn-delete-file').on('click', function (e)
-    {
-        var message = $(this).data('msg');
-        return confirm(message);
-    });
-
-    $('.btn-delete-dir').on('click', function (e)
+    $('.confirm-first').on('click', function (e)
     {
         var message = $(this).data('msg');
         return confirm(message);
