@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  flask-admin\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-06 17:53+0100\n"
+"POT-Creation-Date: 2025-12-30 13:22+0300\n"
 "PO-Revision-Date: 2017-02-13 09:18-0500\n"
 "Last-Translator: Grey Li <withlihui@gmail.com>\n"
 "Language: zh_CN\n"
@@ -22,171 +22,171 @@ msgstr "首页"
 msgid "Cli: Invalid command."
 msgstr "Cli：无效命令。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:414
+#: ../flask_admin/contrib/fileadmin/__init__.py:445
 msgid "File to upload"
 msgstr "要上传的文件"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:422
+#: ../flask_admin/contrib/fileadmin/__init__.py:453
 msgid "File required."
 msgstr "请上传有效的文件。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:427
+#: ../flask_admin/contrib/fileadmin/__init__.py:458
 msgid "Invalid file type."
 msgstr "不允许的文件类型。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:440
+#: ../flask_admin/contrib/fileadmin/__init__.py:471
 msgid "Content"
 msgstr "内容"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:457
+#: ../flask_admin/contrib/fileadmin/__init__.py:488
 msgid "Invalid name"
 msgstr "无效的名称。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:467
+#: ../flask_admin/contrib/fileadmin/__init__.py:498
 #: ../flask_admin/tests/sqla/test_translation.py:22
 msgid "Name"
 msgstr "名称"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:838
+#: ../flask_admin/contrib/fileadmin/__init__.py:871
 #, python-format
 msgid "File \"%(name)s\" already exists."
 msgstr "文件 %(name)s 已经存在。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:885
-#: ../flask_admin/contrib/fileadmin/__init__.py:992
-#: ../flask_admin/contrib/fileadmin/__init__.py:1068
-#: ../flask_admin/contrib/fileadmin/__init__.py:1142
-#: ../flask_admin/contrib/fileadmin/__init__.py:1213
-#: ../flask_admin/contrib/fileadmin/__init__.py:1284
-#: ../flask_admin/model/base.py:2561
+#: ../flask_admin/contrib/fileadmin/__init__.py:922
+#: ../flask_admin/contrib/fileadmin/__init__.py:1029
+#: ../flask_admin/contrib/fileadmin/__init__.py:1107
+#: ../flask_admin/contrib/fileadmin/__init__.py:1181
+#: ../flask_admin/contrib/fileadmin/__init__.py:1252
+#: ../flask_admin/contrib/fileadmin/__init__.py:1323
+#: ../flask_admin/model/base.py:2565
 msgid "Permission denied."
 msgstr "权限被拒绝。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:988
+#: ../flask_admin/contrib/fileadmin/__init__.py:1025
 msgid "File uploading is disabled."
 msgstr "文件上传功能已被禁用。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1001
+#: ../flask_admin/contrib/fileadmin/__init__.py:1038
 #, python-format
 msgid "Successfully saved file: %(name)s"
 msgstr "已成功保存的文件: %(name)s"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1010
+#: ../flask_admin/contrib/fileadmin/__init__.py:1047
 #, python-format
 msgid "Failed to save file: %(error)s"
 msgstr "保存文件失败：%(error)s"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1024
+#: ../flask_admin/contrib/fileadmin/__init__.py:1063
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:154
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:156
 msgid "Upload File"
 msgstr "上传文件"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1064
+#: ../flask_admin/contrib/fileadmin/__init__.py:1103
 msgid "Directory creation is disabled."
 msgstr "文件夹创建功能已被禁用。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1085
+#: ../flask_admin/contrib/fileadmin/__init__.py:1124
 #, python-format
 msgid "Successfully created directory: %(directory)s"
 msgstr "成功创建的文件夹: %(directory)s"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1094
+#: ../flask_admin/contrib/fileadmin/__init__.py:1133
 #, python-format
 msgid "Failed to create directory: %(error)s"
 msgstr "创建文件夹失败：%(error)s"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1111
+#: ../flask_admin/contrib/fileadmin/__init__.py:1150
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:165
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:167
 msgid "Create Directory"
 msgstr "创建文件夹"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1138
+#: ../flask_admin/contrib/fileadmin/__init__.py:1177
 msgid "Deletion is disabled."
 msgstr "删除功能已被禁用。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1147
+#: ../flask_admin/contrib/fileadmin/__init__.py:1186
 msgid "Directory deletion is disabled."
 msgstr "删除文件夹功能已被禁用。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1155
+#: ../flask_admin/contrib/fileadmin/__init__.py:1194
 #, python-format
 msgid "Directory \"%(path)s\" was successfully deleted."
 msgstr "已成功删除文件夹 \"%(path)s\"。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1162
+#: ../flask_admin/contrib/fileadmin/__init__.py:1201
 #, python-format
 msgid "Failed to delete directory: %(error)s"
 msgstr "删除文件夹失败：$(error)s"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1173
-#: ../flask_admin/contrib/fileadmin/__init__.py:1382
+#: ../flask_admin/contrib/fileadmin/__init__.py:1212
+#: ../flask_admin/contrib/fileadmin/__init__.py:1421
 #, python-format
 msgid "File \"%(name)s\" was successfully deleted."
 msgstr "删除文件 %(name)s 成功。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1179
-#: ../flask_admin/contrib/fileadmin/__init__.py:1388
+#: ../flask_admin/contrib/fileadmin/__init__.py:1218
+#: ../flask_admin/contrib/fileadmin/__init__.py:1427
 #, python-format
 msgid "Failed to delete file: %(name)s"
 msgstr "删除文件 %(name)s 失败"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1209
+#: ../flask_admin/contrib/fileadmin/__init__.py:1248
 msgid "Renaming is disabled."
 msgstr "重命名功能已被禁用。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1217
+#: ../flask_admin/contrib/fileadmin/__init__.py:1256
 msgid "Path does not exist."
 msgstr "路径不存在。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1230
+#: ../flask_admin/contrib/fileadmin/__init__.py:1269
 #, python-format
 msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
 msgstr "重命名文件 %(src)s 为 %(dst)s 成功"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1239
+#: ../flask_admin/contrib/fileadmin/__init__.py:1278
 #, python-format
 msgid "Failed to rename: %(error)s"
 msgstr "重命名文件失败：%(error)s"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1262
+#: ../flask_admin/contrib/fileadmin/__init__.py:1301
 #, python-format
 msgid "Rename %(name)s"
 msgstr "重命名 %(name)s"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1302
+#: ../flask_admin/contrib/fileadmin/__init__.py:1341
 #, python-format
 msgid "Error saving changes to %(name)s."
 msgstr "保存修改到 %(name)s 出现错误。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1308
+#: ../flask_admin/contrib/fileadmin/__init__.py:1347
 #, python-format
 msgid "Changes to %(name)s saved successfully."
 msgstr "保存修改到 %(name)s 成功。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1318
+#: ../flask_admin/contrib/fileadmin/__init__.py:1357
 #, python-format
 msgid "Error reading %(name)s."
 msgstr "读取 %(name)s 错误。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1322
-#: ../flask_admin/contrib/fileadmin/__init__.py:1335
+#: ../flask_admin/contrib/fileadmin/__init__.py:1361
+#: ../flask_admin/contrib/fileadmin/__init__.py:1374
 #, python-format
 msgid "Unexpected error while reading from %(name)s"
 msgstr "读取文件 %(name)s 时出现未知错误"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1330
+#: ../flask_admin/contrib/fileadmin/__init__.py:1369
 #, python-format
 msgid "Cannot edit %(name)s."
 msgstr "无法编辑 %(name)s。"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1357
+#: ../flask_admin/contrib/fileadmin/__init__.py:1396
 #, python-format
 msgid "Editing %(path)s"
 msgstr "编辑 %(path)s"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1367
+#: ../flask_admin/contrib/fileadmin/__init__.py:1406
 #: ../flask_admin/contrib/mongoengine/view.py:727
 #: ../flask_admin/contrib/peewee/view.py:606
 #: ../flask_admin/contrib/pymongo/view.py:418
@@ -194,21 +194,21 @@ msgstr "编辑 %(path)s"
 msgid "Delete"
 msgstr "删除"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1368
+#: ../flask_admin/contrib/fileadmin/__init__.py:1407
 msgid "Are you sure you want to delete these files?"
 msgstr "你确定要要删除这些文件吗？"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1372
+#: ../flask_admin/contrib/fileadmin/__init__.py:1411
 msgid "File deletion is disabled."
 msgstr "删除文件功能已被禁用"
 
-#: ../flask_admin/contrib/fileadmin/__init__.py:1394
+#: ../flask_admin/contrib/fileadmin/__init__.py:1433
 #: ../flask_admin/templates/bootstrap4/admin/model/details.html:17
 #: ../flask_admin/templates/bootstrap4/admin/model/edit.html:22
 msgid "Edit"
 msgstr "编辑"
 
-#: ../flask_admin/contrib/fileadmin/s3.py:233
+#: ../flask_admin/contrib/fileadmin/s3.py:238
 msgid "Cannot operate on non empty directories"
 msgstr "无法对非空的文件夹操作"
 
@@ -310,8 +310,8 @@ msgstr "创建记录失败。%(error)s"
 #: ../flask_admin/contrib/mongoengine/view.py:657
 #: ../flask_admin/contrib/peewee/view.py:567
 #: ../flask_admin/contrib/pymongo/view.py:376
-#: ../flask_admin/contrib/sqla/view.py:1402 ../flask_admin/model/base.py:2716
-#: ../flask_admin/model/base.py:2723 ../flask_admin/model/base.py:2727
+#: ../flask_admin/contrib/sqla/view.py:1402 ../flask_admin/model/base.py:2720
+#: ../flask_admin/model/base.py:2727 ../flask_admin/model/base.py:2731
 #, python-format
 msgid "Failed to update record. %(error)s"
 msgstr "更新记录失败。%(error)s"
@@ -334,7 +334,7 @@ msgstr "你确定要删除这些选中的记录吗？"
 #: ../flask_admin/contrib/mongoengine/view.py:740
 #: ../flask_admin/contrib/peewee/view.py:627
 #: ../flask_admin/contrib/pymongo/view.py:432
-#: ../flask_admin/contrib/sqla/view.py:1477 ../flask_admin/model/base.py:2496
+#: ../flask_admin/contrib/sqla/view.py:1477 ../flask_admin/model/base.py:2500
 #, python-format
 msgid "Record was successfully deleted."
 msgid_plural "%(count)s records were successfully deleted."
@@ -412,16 +412,24 @@ msgstr "无效的筛选器值： %(value)s"
 msgid "Record was successfully created."
 msgstr "创建记录成功。"
 
-#: ../flask_admin/model/base.py:2401 ../flask_admin/model/base.py:2455
-#: ../flask_admin/model/base.py:2489 ../flask_admin/model/base.py:2707
+#: ../flask_admin/model/base.py:2371
+msgid "Failed to create record."
+msgstr "创建记录失败。"
+
+#: ../flask_admin/model/base.py:2403 ../flask_admin/model/base.py:2459
+#: ../flask_admin/model/base.py:2493 ../flask_admin/model/base.py:2711
 msgid "Record does not exist."
 msgstr "记录不存在。"
 
-#: ../flask_admin/model/base.py:2409 ../flask_admin/model/base.py:2712
+#: ../flask_admin/model/base.py:2411 ../flask_admin/model/base.py:2716
 msgid "Record was successfully saved."
 msgstr "保存记录成功"
 
-#: ../flask_admin/model/base.py:2651
+#: ../flask_admin/model/base.py:2424
+msgid "Failed to save record."
+msgstr "保存记录失败。"
+
+#: ../flask_admin/model/base.py:2655
 #, python-format
 msgid "Export type \"%(type)s\" is not supported."
 msgstr "不支持导出类型 \"%(type)s\"。"
