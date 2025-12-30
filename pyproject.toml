@@ -50,6 +50,7 @@ geoalchemy = [
 ]
 pymongo = ["pymongo>=3.10.0"]
 mongoengine = ["mongoengine>=0.29.0"]
+pymssql = ["pymssql>=2.3.10"]
 peewee = [
     "peewee>=3.14.0",
     "wtf-peewee>=3.0.4"
@@ -66,6 +67,7 @@ all = [
     "Flask-Admin[geoalchemy]",
     "Flask-Admin[pymongo]",
     "Flask-Admin[mongoengine]",
+    "Flask-Admin[pymssql]",
     "Flask-Admin[peewee]",
     "Flask-Admin[s3]",
     "Flask-Admin[azure-blob-storage]",
@@ -106,6 +108,7 @@ tests = [
     "botocore>=1.35",
     "psycopg2-binary",
     "beautifulsoup4",
+    "pymssql",
 ]
 typing = [
     "mypy",
@@ -173,6 +176,9 @@ filterwarnings = [
 
     # raised at end of test run, maybe by Werkzeug?
     "ignore:unclosed file <_io.FileIO name='/home/runner/work/flask-admin/flask-admin/flask_admin/static/bootstrap/bootstrap4/css/bootstrap.min.css' mode='rb' closefd=True>:ResourceWarning",
+
+    # remove once the deprecated ModelView(Model, db.session) API is fully retired
+    "ignore:Passing a session object directly is deprecated.*:DeprecationWarning",
 ]
 
 [tool.coverage.run]
@@ -229,6 +235,7 @@ module = [
     "playhouse.*",
     "pymongo",
     "mongoengine.*",
+    "pymssql",
     "sqlalchemy.*",
     "sqlalchemy_utils",
     "tablib",
@@ -284,7 +291,7 @@ package = "wheel"
 wheel_build_env = ".pkg"
 extras = ["all"]
 setenv = { SQLALCHEMY_SILENCE_UBER_WARNING = "1" }
-pass_env = ["AZURE_STORAGE_CONNECTION_STRING", "SQLALCHEMY_DATABASE_URI", "MONGOCLIENT_HOST"]
+pass_env = ["AZURE_STORAGE_CONNECTION_STRING", "SQLALCHEMY_DATABASE_URI", "SQLALCHEMY_DATABASE_URI_MSSQL", "MONGOCLIENT_HOST"]
 constrain_package_deps = true
 use_frozen_constraints = true
 dependency_groups = ["tests"]
@@ -317,6 +324,7 @@ commands = [
         "boto3==1.33.0",
         "pymongo==3.10.0",
         "mongoengine==0.29.0",
+        "pymssql==2.3.10",
         "peewee==3.14.0",
         "wtf-peewee==3.0.4",
         "azure-storage-blob==12.0.0",
