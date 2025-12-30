@@ -256,8 +256,11 @@ For a faster editing experience, enable **inline editing** in the list view::
 
     column_editable_list = ['name', 'last_name']
 
-Or, have the add & edit forms display inside a **modal window** on the list page, instead of
-the dedicated *create* & *edit* pages::
+Editable_list is converts each column into Ajax form so that you can edit & save the new value
+in same row. see the API docs :meth:`~flask_admin.model.BaseModelView.ajax_update` for Ajax example.
+
+Another way of inline editing without losing the current context, have the add & edit forms display
+inside a **modal window** on the list page, instead of the dedicated *create* & *edit* pages::
 
     create_modal = True
     edit_modal = True
