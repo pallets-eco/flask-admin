@@ -2367,6 +2367,8 @@ class BaseModelView(BaseView, ActionsMixin):
                     model = t.cast(T_ORM_MODEL, model)
                     # save button
                     return redirect(self.get_save_return_url(model, is_created=True))
+        else:
+            flash(gettext("Failed to create record."), "danger")
 
         form_opts = FormOpts(
             widget_args=self.form_widget_args, form_rules=self._form_create_rules
@@ -2418,6 +2420,8 @@ class BaseModelView(BaseView, ActionsMixin):
                 else:
                     # save button
                     return redirect(self.get_save_return_url(model, is_created=False))
+        else:
+            flash(gettext("Failed to save record."), "danger")
 
         if request.method == "GET" or form.errors:
             self.on_form_prefill(form, id)
