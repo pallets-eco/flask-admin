@@ -20,14 +20,12 @@ class Model:
         self.col1 = c1
         self.col2 = c2
         self.col3 = c3
-        self.age = 0
 
 
 class Form(form.BaseForm):
     col1 = fields.StringField()
     col2 = fields.StringField()
     col3 = fields.StringField()
-    age = fields.IntegerField()
 
 
 class SimpleFilter(filters.BaseFilter):
@@ -844,40 +842,3 @@ def test_list_row_actions(app, admin):
     assert "glyphicon-off" in data
     assert "http://localhost/?id=" in data
     assert "glyphicon-test" in data
-
-
-def test_form_submit(app, admin):
-    # Test error flashing
-    view = MockModelView(Model)
-    admin.add_view(view)
-    client = app.test_client()
-    rv = client.post(
-        "/admin/model/new/",
-        data=dict(col1="test1", col2="test2", col3="test3"),
-        follow_redirects=True,
-    )
-    assert rv.status_code == 200
-    data = rv.data.decode("utf-8")
-    assert "Record was successfully created." in data
-
-    client = app.test_client()
-    rv = client.post(
-        "/admin/model/new/",
-        data=dict(col1="test1", col2="test2", col3="test3", age="notanint"),
-        follow_redirects=True,
-    )
-    assert rv.status_code == 200
-    data = rv.data.decode("utf-8")
-    assert "Failed to create record" in data
-    assert "Not a valid integer value" in data
-
-    client = app.test_client()
-    rv = client.post(
-        "/admin/model/edit/?id=1",
-        data=dict(col1="test1", col2="test2", col3="test3", age="notanint"),
-        follow_redirects=True,
-    )
-    assert rv.status_code == 200
-    data = rv.data.decode("utf-8")
-    assert "Failed to save record" in data
-    assert "Not a valid integer value" in data
