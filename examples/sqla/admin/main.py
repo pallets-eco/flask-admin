@@ -105,7 +105,7 @@ class UserAdmin(ModelView):
         "phone_number",
         "email",
     ]
-    column_editable_list = ["type", "currency", "timezone"]
+    column_editable_list = ["type", "currency", "timezone", "last_name"]
     column_details_list = [
         "id",
         "featured_post",
@@ -127,12 +127,6 @@ class UserAdmin(ModelView):
         "website",
         "dialling_code",
         "local_phone_number",
-    ]
-    form_create_rules = [
-        "last_name",
-        "first_name",
-        "type",
-        "email",
     ]
 
     create_template = "admin/users/create.html"
@@ -196,7 +190,6 @@ class UserAdmin(ModelView):
         "timezone",
     ]
 
-    column_editable_list = ["last_name"]
     column_formatters = {
         "phone_number": phone_number_formatter,
         "last_name": lambda v, c, m, p: m.last_name.upper() if m.last_name else "",
