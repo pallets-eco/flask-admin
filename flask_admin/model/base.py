@@ -2370,7 +2370,7 @@ class BaseModelView(BaseView, ActionsMixin):
                     return redirect(self.get_save_return_url(model, is_created=True))
         else:
             if is_form_submitted():
-              flash(gettext("Failed to create record."), "danger")
+                flash(gettext("Failed to create record."), "danger")
 
         form_opts = FormOpts(
             widget_args=self.form_widget_args, form_rules=self._form_create_rules
