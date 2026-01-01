@@ -1,8 +1,13 @@
-import datetime
 import random
+from datetime import date
+from datetime import datetime
+from datetime import time
+from datetime import timedelta
 
+import arrow
 from admin import db
 from admin.models import AVAILABLE_USER_TYPES
+from admin.models import Model1
 from admin.models import Post
 from admin.models import Tag
 from admin.models import Tree
@@ -69,7 +74,7 @@ def build_sample_db():
         "Davies",
         "Rodriguez",
         "Cox",
-        "Alexander",
+        None,
     ]
 
     countries = [
@@ -181,7 +186,7 @@ def build_sample_db():
         post.text = entry["content"]
         post.background_color = random.choice(["#cccccc", "red", "lightblue", "#0f0"])
         tmp_days = int(1000 * random.random())
-        post.date = datetime.datetime.now() - datetime.timedelta(days=tmp_days)
+        post.date = datetime.now() - timedelta(days=tmp_days)
         post.tags = random.sample(tag_list, 2)
         db.session.add(post)
 
@@ -197,6 +202,37 @@ def build_sample_db():
             leaf.name = "Leaf " + str(j + 1)
             leaf.parent = branch
             db.session.add(leaf)
+
+    obj1 = Model1("test1_val_1", "test2_val_1", bool_field=True)
+    obj4 = Model1(
+        "test1_val_4",
+        "test2_val_4",
+        date_field=date(2014, 11, 17),
+        time_field=time(11, 10, 9),
+        datetime_field=datetime(2014, 4, 3, 1, 9, 0),
+        email_field="test@test.com",
+        choice_field="choice-1",
+        enum_field="model1_v2",
+        enum_type_field=Model1.EnumChoices.second,
+    )
+    obj4.sqla_utils_choice = "choice-2"
+    obj4.sqla_utils_enum = Model1.EnumChoices.second
+    obj4.sqla_utils_arrow = arrow.utcnow()
+    obj4.sqla_utils_uuid = "123e4567-e89b-12d3-a456-426614174000"
+    obj4.sqla_utils_url = "https://www.example.com"
+    obj4.sqla_utils_ip_address = "192.168.1.1"
+    obj4.sqla_utils_currency = "USD"
+    obj4.sqla_utils_color = "#123456"
+
+    empty_obj = Model1(test2="empty_obj")
+
+    db.session.add_all(
+        [
+            obj1,
+            obj4,
+            empty_obj,
+        ]
+    )
 
     db.session.commit()
     return
