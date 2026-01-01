@@ -68,7 +68,7 @@ from flask_admin.base import expose
 from flask_admin.form import BaseForm
 from flask_admin.form import FormOpts
 from flask_admin.form import rules
-from flask_admin.helpers import flash_errors
+from flask_admin.helpers import flash_errors, is_form_submitted
 from flask_admin.helpers import get_form_data
 from flask_admin.helpers import get_redirect_target
 from flask_admin.helpers import validate_form_on_submit
@@ -2343,6 +2343,7 @@ class BaseModelView(BaseView, ActionsMixin):
             return redirect(return_url)
 
         form = self.create_form()
+
         if not hasattr(form, "_validated_ruleset") or not form._validated_ruleset:
             self._validate_form_instance(ruleset=self._form_create_rules, form=form)
 
@@ -2368,7 +2369,8 @@ class BaseModelView(BaseView, ActionsMixin):
                     # save button
                     return redirect(self.get_save_return_url(model, is_created=True))
         else:
-            flash(gettext("Failed to create record."), "danger")
+            if is_form_submitted():
+              flash(gettext("Failed to create record."), "danger")
 
         form_opts = FormOpts(
             widget_args=self.form_widget_args, form_rules=self._form_create_rules
@@ -2421,7 +2423,8 @@ class BaseModelView(BaseView, ActionsMixin):
                     # save button
                     return redirect(self.get_save_return_url(model, is_created=False))
         else:
-            flash(gettext("Failed to save record."), "danger")
+            if is_form_submitted():
+                flash(gettext("Failed to save record."), "danger")
 
         if request.method == "GET" or form.errors:
             self.on_form_prefill(form, id)

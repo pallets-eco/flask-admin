@@ -845,39 +845,31 @@ def test_list_row_actions(app, admin):
     assert "http://localhost/?id=" in data
     assert "glyphicon-test" in data
 
-
-def test_form_submit(app, admin):
+@pytest.mark.parametrize("url, age, msg", [
+    ("/admin/model/new/", None, "Record was successfully created."),
+    ("/admin/model/new/", 15, "Record was successfully created."),
+    ("/admin/model/new/", "notAnInt", "Failed to create record|Not a valid integer value"),
+    ("/admin/model/edit/?id=1", None, "Record was successfully saved."),
+    ("/admin/model/edit/?id=1", 20, "Record was successfully saved."),
+    ("/admin/model/edit/?id=1", "notAnInt", "Failed to save record|Not a valid integer value"),
+])
+def test_form_submit(app, admin, url, age, msg):
     # Test error flashing
     view = MockModelView(Model)
     admin.add_view(view)
     client = app.test_client()
-    rv = client.post(
-        "/admin/model/new/",
-        data=dict(col1="test1", col2="test2", col3="test3"),
-        follow_redirects=True,
-    )
-    assert rv.status_code == 200
-    data = rv.data.decode("utf-8")
-    assert "Record was successfully created." in data
 
-    client = app.test_client()
-    rv = client.post(
-        "/admin/model/new/",
-        data=dict(col1="test1", col2="test2", col3="test3", age="notanint"),
-        follow_redirects=True,
-    )
+    rv = client.get(url)
     assert rv.status_code == 200
     data = rv.data.decode("utf-8")
-    assert "Failed to create record" in data
-    assert "Not a valid integer value" in data
+    assert all([part not in data for part in msg.split("|")])
 
-    client = app.test_client()
     rv = client.post(
-        "/admin/model/edit/?id=1",
-        data=dict(col1="test1", col2="test2", col3="test3", age="notanint"),
+        url,
+        data=dict(col1="test1", col2="test2", col3="test3", age=age),
         follow_redirects=True,
     )
     assert rv.status_code == 200
     data = rv.data.decode("utf-8")
-    assert "Failed to save record" in data
-    assert "Not a valid integer value" in data
+    assert all([part in data for part in msg.split("|")])
+
