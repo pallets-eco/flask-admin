@@ -20,6 +20,12 @@ def app():
 
 
 @pytest.fixture
+def app_context(app):
+    with app.app_context():
+        yield
+
+
+@pytest.fixture
 def db(app):
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
     app.config["SQLALCHEMY_ECHO"] = True
