@@ -1049,6 +1049,8 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     ),
                     "error",
                 )
+        else:
+            helpers.flash_errors(form, message="Failed to upload file: %(error)s")
 
         if self.upload_modal and request.args.get("modal"):
             template = self.upload_modal_template
