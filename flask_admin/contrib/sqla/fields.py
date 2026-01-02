@@ -30,7 +30,9 @@ from ..._types import T_ORM_MODEL
 from ..._types import T_SQLALCHEMY_MODEL
 from ..._types import T_VALIDATOR
 from ...model.form import InlineBaseFormAdmin
-from ._types import T_SCOPED_SESSION
+from ._compat import _get_deprecated_session
+from ._compat import _warn_session_deprecation
+from ._types import T_SESSION_OR_DB
 from .tools import get_primary_key
 
 
@@ -300,7 +302,7 @@ class InlineModelFormList(InlineFieldList):
     def __init__(
         self,
         form: type[form.BaseForm],
-        session: T_SCOPED_SESSION,
+        session: T_SESSION_OR_DB,
         model: type[T_SQLALCHEMY_MODEL],
         prop: str,
         inline_view: t.Any,
@@ -312,7 +314,10 @@ class InlineModelFormList(InlineFieldList):
         :param form:
             Form for the related model
         :param session:
-            SQLAlchemy session
+            flask_sqlalchemy.SQLAlchemy/flask_sqlalchemy_lite.SQLAlchemy db object
+            (preferred) or .session attribute (deprecated).
+            When passing a SQLAlchemy object, the session will be accessed via its
+            .session attribute.
         :param model:
             Related model
         :param prop:
@@ -321,7 +326,7 @@ class InlineModelFormList(InlineFieldList):
             Inline view
         """
         self.form = form
-        self.session = session
+        self.session = _warn_session_deprecation(session)
         self.model = model
         self.prop = prop
         self.inline_view = inline_view
@@ -363,7 +368,8 @@ class InlineModelFormList(InlineFieldList):
                 model = pk_map[field_id]
 
                 if self.should_delete(field):
-                    self.session.delete(model)
+                    session = _get_deprecated_session(self.session)
+                    session.delete(model)
                     continue
             else:
                 model = self.model()
@@ -378,14 +384,14 @@ class InlineModelOneToOneField(InlineModelFormField):
     def __init__(
         self,
         form: type[form.BaseForm],
-        session: T_SCOPED_SESSION,
+        session: T_SESSION_OR_DB,
         model: type[T_ORM_MODEL],
         prop: str,
         inline_view: InlineBaseFormAdmin,
         **kwargs: t.Any,
     ) -> None:
         self.form = form
-        self.session = session
+        self.session = _warn_session_deprecation(session)
         self.model = model
         self.prop = prop
         self.inline_view = inline_view

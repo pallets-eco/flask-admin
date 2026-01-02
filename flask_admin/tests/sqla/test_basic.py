@@ -33,6 +33,7 @@ from flask_admin.contrib.sqla import tools
 from flask_admin.form.fields import DateTimeField
 from flask_admin.form.fields import Select2Field
 from flask_admin.tests import flask_babel_test_decorator
+from flask_admin.tests.conftest import session_or_db
 
 
 class CustomModelView(ModelView):
@@ -233,15 +234,17 @@ def fill_db(db, Model1, Model2):
     db.session.commit()
 
 
+@session_or_db
 @pytest.mark.filterwarnings(
     "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this "
     "will be mandatory in wtforms 3.2:DeprecationWarning",
 )
-def test_model(app, db, admin):
+def test_model(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
-        view = CustomModelView(Model1, db.session)
+        param = db if session_or_db == "session" else db.session
+        view = CustomModelView(Model1, param)
 
         admin.add_view(view)
 
@@ -398,23 +401,39 @@ def test_model(app, db, admin):
         assert db.session.query(Model1).count() == 0
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @pytest.mark.xfail(raises=Exception)
-def test_no_pk(app, db, admin):
+def test_no_pk(app, db, admin, session_or_db):
     class Model(db.Model):  # type: ignore[name-defined, misc]
         test = db.Column(db.Integer)
 
-    view = CustomModelView(Model, db.session)
+    param = db if session_or_db == "session" else db.session
+    view = CustomModelView(Model, param)
     admin.add_view(view)
 
 
-def test_list_columns(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_list_columns(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
+        param = db if session_or_db == "session" else db.session
         # test column_list with a list of strings
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             column_list=["test1", "test3"],
             column_labels=dict(test1="Column1"),
         )
@@ -423,7 +442,7 @@ def test_list_columns(app, db, admin):
         # test column_list with a list of SQLAlchemy columns
         view2 = CustomModelView(
             Model1,
-            db.session,
+            param,
             endpoint="model1_2",
             column_list=[Model1.test1, Model1.test3],
             column_labels=dict(test1="Column1"),
@@ -449,7 +468,14 @@ def test_list_columns(app, db, admin):
         assert "Test2" not in data
 
 
-def test_complex_list_columns(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_complex_list_columns(app, db, admin, session_or_db):
     with app.app_context():
         M1, M2 = create_models(db)
 
@@ -460,7 +486,8 @@ def test_complex_list_columns(app, db, admin):
         db.session.commit()
 
         # test column_list with a list of strings on a relation
-        view = CustomModelView(M2, db.session, column_list=["model1.test1"])
+        param = db if session_or_db == "session" else db.session
+        view = CustomModelView(M2, param, column_list=["model1.test1"])
         admin.add_view(view)
 
         client = app.test_client()
@@ -471,13 +498,21 @@ def test_complex_list_columns(app, db, admin):
         assert "model1_val1" in data
 
 
-def test_exclude_columns(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_exclude_columns(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
+        param = db if session_or_db == "session" else db.session
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             column_exclude_list=[
                 "test2",
                 "test4",
@@ -514,12 +549,20 @@ def test_exclude_columns(app, db, admin):
         assert "Test2" not in data
 
 
-def test_column_searchable_list(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_column_searchable_list(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
+        param = db if session_or_db == "session" else db.session
         view = CustomModelView(
-            Model2, db.session, column_searchable_list=["string_field", "int_field"]
+            Model2, param, column_searchable_list=["string_field", "int_field"]
         )
         admin.add_view(view)
 
@@ -549,13 +592,21 @@ def test_column_searchable_list(app, db, admin):
         assert "model2-test" in data
 
 
-def test_extra_args_search(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_extra_args_search(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
+        param = db if session_or_db == "session" else db.session
         view1 = CustomModelView(
             Model1,
-            db.session,
+            param,
             column_searchable_list=[
                 "test1",
             ],
@@ -579,13 +630,21 @@ def test_extra_args_search(app, db, admin):
         assert '<input type="hidden" name="foo" value="bar">' in data
 
 
-def test_extra_args_filter(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_extra_args_filter(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
+        param = db if session_or_db == "session" else db.session
         view2 = CustomModelView(
             Model2,
-            db.session,
+            param,
             column_filters=[
                 "int_field",
             ],
@@ -603,16 +662,22 @@ def test_extra_args_filter(app, db, admin):
         assert '<input type="hidden" name="foo" value="bar">' in data
 
 
-def test_complex_searchable_list(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_complex_searchable_list(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
-        view = CustomModelView(
-            Model2, db.session, column_searchable_list=["model1.test1"]
-        )
+        param = db if session_or_db == "session" else db.session
+        view = CustomModelView(Model2, param, column_searchable_list=["model1.test1"])
         admin.add_view(view)
         view2 = CustomModelView(
-            Model1, db.session, column_searchable_list=[Model2.string_field]
+            Model1, param, column_searchable_list=[Model2.string_field]
         )
         admin.add_view(view2)
 
@@ -639,12 +704,20 @@ def test_complex_searchable_list(app, db, admin):
         assert "model1-test2-val" not in data
 
 
-def test_complex_searchable_list_missing_children(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_complex_searchable_list_missing_children(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
+        param = db if session_or_db == "session" else db.session
         view = CustomModelView(
-            Model1, db.session, column_searchable_list=["test1", "model2.string_field"]
+            Model1, param, column_searchable_list=["test1", "model2.string_field"]
         )
         admin.add_view(view)
 
@@ -658,17 +731,25 @@ def test_complex_searchable_list_missing_children(app, db, admin):
         assert "magic string" in data
 
 
-def test_column_editable_list(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_column_editable_list(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
+        param = db if session_or_db == "session" else db.session
         view = CustomModelView(
-            Model1, db.session, column_editable_list=["test1", "enum_field"]
+            Model1, param, column_editable_list=["test1", "enum_field"]
         )
         admin.add_view(view)
 
         # Test in-line editing for relations
-        view = CustomModelView(Model2, db.session, column_editable_list=["model1"])
+        view = CustomModelView(Model2, param, column_editable_list=["model1"])
         admin.add_view(view)
 
         fill_db(db, Model1, Model2)
@@ -744,21 +825,29 @@ def test_column_editable_list(app, db, admin):
         assert "test1_val_3" in data
 
 
-def test_details_view(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_details_view(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
-        view_no_details = CustomModelView(Model1, db.session)
+        param = db if session_or_db == "session" else db.session
+        view_no_details = CustomModelView(Model1, param)
         admin.add_view(view_no_details)
 
         # fields are scaffolded
-        view_w_details = CustomModelView(Model2, db.session, can_view_details=True)
+        view_w_details = CustomModelView(Model2, param, can_view_details=True)
         admin.add_view(view_w_details)
 
         # show only specific fields in details w/ column_details_list
         string_field_view = CustomModelView(
             Model2,
-            db.session,
+            param,
             can_view_details=True,
             column_details_list=["string_field"],
             endpoint="sf_view",
@@ -798,7 +887,14 @@ def test_details_view(app, db, admin):
         assert "test1_val_1" not in data
 
 
-def test_editable_list_special_pks(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_editable_list_special_pks(app, db, admin, session_or_db):
     """Tests editable list view + a primary key with special characters"""
     with app.app_context():
 
@@ -812,7 +908,8 @@ def test_editable_list_special_pks(app, db, admin):
 
         db.create_all()
 
-        view = CustomModelView(Model1, db.session, column_editable_list=["val1"])
+        param = db if session_or_db == "session" else db.session
+        view = CustomModelView(Model1, param, column_editable_list=["val1"])
         admin.add_view(view)
 
         db.session.add(Model1("1-1", "test1"))
@@ -838,11 +935,19 @@ def test_editable_list_special_pks(app, db, admin):
         assert "change-success-1" in data
 
 
-def test_column_filters(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_column_filters(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
-        view1 = CustomModelView(Model1, db.session, column_filters=["test1"])
+        param = db if session_or_db == "session" else db.session
+        view1 = CustomModelView(Model1, param, column_filters=["test1"])
         admin.add_view(view1)
 
         client = app.test_client()
@@ -850,29 +955,29 @@ def test_column_filters(app, db, admin):
         assert len(view1._filters) == 7
 
         # Generate views
-        view2 = CustomModelView(Model2, db.session, column_filters=["model1"])
+        view2 = CustomModelView(Model2, param, column_filters=["model1"])
 
         view5 = CustomModelView(
-            Model1, db.session, column_filters=["test1"], endpoint="_strings"
+            Model1, param, column_filters=["test1"], endpoint="_strings"
         )
         admin.add_view(view5)
 
-        view6 = CustomModelView(Model2, db.session, column_filters=["int_field"])
+        view6 = CustomModelView(Model2, param, column_filters=["int_field"])
         admin.add_view(view6)
 
         view7 = CustomModelView(
-            Model1, db.session, column_filters=["bool_field"], endpoint="_bools"
+            Model1, param, column_filters=["bool_field"], endpoint="_bools"
         )
         admin.add_view(view7)
 
         view8 = CustomModelView(
-            Model2, db.session, column_filters=["float_field"], endpoint="_float"
+            Model2, param, column_filters=["float_field"], endpoint="_float"
         )
         admin.add_view(view8)
 
         view9 = CustomModelView(
             Model2,
-            db.session,
+            param,
             endpoint="_model2",
             column_filters=["model1.bool_field"],
             column_list=[
@@ -885,7 +990,7 @@ def test_column_filters(app, db, admin):
 
         view10 = CustomModelView(
             Model1,
-            db.session,
+            param,
             column_filters=["test1"],
             endpoint="_model3",
             named_filter_urls=True,
@@ -894,20 +999,20 @@ def test_column_filters(app, db, admin):
 
         view11 = CustomModelView(
             Model1,
-            db.session,
+            param,
             column_filters=["date_field", "datetime_field", "time_field"],
             endpoint="_datetime",
         )
         admin.add_view(view11)
 
         view12 = CustomModelView(
-            Model1, db.session, column_filters=["enum_field"], endpoint="_enumfield"
+            Model1, param, column_filters=["enum_field"], endpoint="_enumfield"
         )
         admin.add_view(view12)
 
         view13 = CustomModelView(
             Model2,
-            db.session,
+            param,
             column_filters=[filters.FilterEqual(Model1.test1, "Test1")],
             endpoint="_relation_test",
         )
@@ -915,7 +1020,7 @@ def test_column_filters(app, db, admin):
 
         view14 = CustomModelView(
             Model1,
-            db.session,
+            param,
             column_filters=["enum_type_field"],
             endpoint="_enumtypefield",
         )
@@ -1101,9 +1206,7 @@ def test_column_filters(app, db, admin):
         ]
 
         # Test filter with a dot
-        view3 = CustomModelView(
-            Model2, db.session, column_filters=["model1.bool_field"]
-        )
+        view3 = CustomModelView(Model2, param, column_filters=["model1.bool_field"])
         assert view3._filter_groups
         assert [
             (f["index"], f["operation"])
@@ -1116,7 +1219,7 @@ def test_column_filters(app, db, admin):
         # Test column_labels on filters
         view4 = CustomModelView(
             Model2,
-            db.session,
+            param,
             column_filters=["model1.bool_field", "string_field"],
             column_labels={
                 "model1.bool_field": "Test Filter #1",
@@ -1789,17 +1892,32 @@ def test_column_filters(app, db, admin):
         assert "test1_val_2" not in data
 
 
-def test_column_filters_sqla_obj(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_column_filters_sqla_obj(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
-        view = CustomModelView(Model1, db.session, column_filters=[Model1.test1])
+        param = db if session_or_db == "session" else db.session
+        view = CustomModelView(Model1, param, column_filters=[Model1.test1])
         admin.add_view(view)
         assert view._filters
         assert len(view._filters) == 7
 
 
-def test_hybrid_property(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_hybrid_property(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model1(db.Model):  # type: ignore[name-defined, misc]
@@ -1833,9 +1951,10 @@ def test_hybrid_property(app, db, admin):
 
         client = app.test_client()
 
+        param = db if session_or_db == "session" else db.session
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             column_default_sort="number_of_pixels",
             column_filters=[
                 filters.IntGreaterFilter(Model1.number_of_pixels, "Number of Pixels")  # type: ignore[arg-type]
@@ -1871,7 +1990,14 @@ def test_hybrid_property(app, db, admin):
         assert "test_row_1" not in data
 
 
-def test_hybrid_property_nested(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_hybrid_property_nested(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model1(db.Model):  # type: ignore[name-defined, misc]
@@ -1907,9 +2033,10 @@ def test_hybrid_property_nested(app, db, admin):
 
         client = app.test_client()
 
+        param = db if session_or_db == "session" else db.session
         view = CustomModelView(
             Model2,
-            db.session,
+            param,
             column_list=("id", "name", "owner.fullname"),
             column_default_sort="id",
         )
@@ -1922,13 +2049,21 @@ def test_hybrid_property_nested(app, db, admin):
         assert "Jim Smith" in data
 
 
-def test_url_args(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_url_args(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
+        param = db if session_or_db == "session" else db.session
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             page_size=2,
             column_searchable_list=["test1"],
             column_filters=["test1"],
@@ -1982,7 +2117,14 @@ def test_url_args(app, db, admin):
         assert "data2" in data
 
 
-def test_non_int_pk(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_non_int_pk(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model(db.Model):  # type: ignore[name-defined, misc]
@@ -1991,7 +2133,8 @@ def test_non_int_pk(app, db, admin):
 
         db.create_all()
 
-        view = CustomModelView(Model, db.session, form_columns=["id", "test"])
+        param = db if session_or_db == "session" else db.session
+        view = CustomModelView(Model, param, form_columns=["id", "test"])
         admin.add_view(view)
 
         client = app.test_client()
@@ -2013,7 +2156,14 @@ def test_non_int_pk(app, db, admin):
         assert "test2" in data
 
 
-def test_form_columns(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_form_columns(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model(db.Model):  # type: ignore[name-defined, misc]
@@ -2042,19 +2192,20 @@ def test_form_columns(app, db, admin):
 
         db.create_all()
 
+        param = db if session_or_db == "session" else db.session
         view1 = CustomModelView(
             Model,
-            db.session,
+            param,
             endpoint="view1",
             form_columns=("int_field", "text_field"),
         )
         view2 = CustomModelView(
             Model,
-            db.session,
+            param,
             endpoint="view2",
             form_excluded_columns=("excluded_column",),
         )
-        view3 = CustomModelView(ChildModel, db.session, endpoint="view3")
+        view3 = CustomModelView(ChildModel, param, endpoint="view3")
 
         form1 = view1.create_form()
         form2 = view2.create_form()
@@ -2080,23 +2231,38 @@ def test_form_columns(app, db, admin):
 
         # test form_columns with model objects
         view4 = CustomModelView(
-            Model, db.session, endpoint="view1", form_columns=[Model.int_field]
+            Model, param, endpoint="view1", form_columns=[Model.int_field]
         )
         form4 = view4.create_form()
         assert "int_field" in form4._fields
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @pytest.mark.xfail(raises=Exception)
-def test_complex_form_columns(app, db, admin):
+def test_complex_form_columns(app, db, admin, session_or_db):
     with app.app_context():
         M1, M2 = create_models(db)
 
+        param = db if session_or_db == "session" else db.session
         # test using a form column in another table
-        view = CustomModelView(M2, db.session, form_columns=["model1.test1"])
+        view = CustomModelView(M2, param, form_columns=["model1.test1"])
         view.create_form()
 
 
-def test_form_args(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_form_args(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model(db.Model):  # type: ignore[name-defined, misc]
@@ -2107,7 +2273,9 @@ def test_form_args(app, db, admin):
 
         shared_form_args = {"test": {"validators": [validators.Regexp("test")]}}
 
-        view = CustomModelView(Model, db.session, form_args=shared_form_args)
+        param = db if session_or_db == "session" else db.session
+        param = db if session_or_db == "session" else db.session
+        view = CustomModelView(Model, param, form_args=shared_form_args)
         admin.add_view(view)
 
         create_form = view.create_form()
@@ -2118,7 +2286,14 @@ def test_form_args(app, db, admin):
         assert len(edit_form.test.validators) == 2  # type: ignore[attr-defined]
 
 
-def test_form_override(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_form_override(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model(db.Model):  # type: ignore[name-defined, misc]
@@ -2127,10 +2302,11 @@ def test_form_override(app, db, admin):
 
         db.create_all()
 
-        view1 = CustomModelView(Model, db.session, endpoint="view1")
+        param = db if session_or_db == "session" else db.session
+        view1 = CustomModelView(Model, param, endpoint="view1")
         view2 = CustomModelView(
             Model,
-            db.session,
+            param,
             endpoint="view2",
             form_overrides=dict(test=fields.FileField),
         )
@@ -2141,7 +2317,14 @@ def test_form_override(app, db, admin):
         assert view2._create_form_class.test.field_class == fields.FileField  # type: ignore[attr-defined]
 
 
-def test_form_onetoone(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_form_onetoone(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model1(db.Model):  # type: ignore[name-defined, misc]
@@ -2158,8 +2341,9 @@ def test_form_onetoone(app, db, admin):
 
         db.create_all()
 
-        view1 = CustomModelView(Model1, db.session, endpoint="view1")
-        view2 = CustomModelView(Model2, db.session, endpoint="view2")
+        param = db if session_or_db == "session" else db.session
+        view1 = CustomModelView(Model1, param, endpoint="view1")
+        view2 = CustomModelView(Model2, param, endpoint="view2")
         admin.add_view(view1)
         admin.add_view(view2)
 
@@ -2181,7 +2365,14 @@ def test_relations():
     pass
 
 
-def test_on_model_change_delete(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_on_model_change_delete(app, db, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(db)
 
@@ -2192,7 +2383,8 @@ def test_on_model_change_delete(app, db, admin):
             def on_model_delete(self, model):
                 self.deleted = True
 
-        view = ModelView(Model1, db.session)
+        param = db if session_or_db == "session" else db.session
+        view = ModelView(Model1, param)
         admin.add_view(view)
 
         client = app.test_client()
@@ -2213,7 +2405,14 @@ def test_on_model_change_delete(app, db, admin):
         assert view.deleted
 
 
-def test_multiple_delete(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_multiple_delete(app, db, admin, session_or_db):
     with app.app_context():
         M1, _ = create_models(db)
 
@@ -2221,7 +2420,8 @@ def test_multiple_delete(app, db, admin):
         db.session.commit()
         assert M1.query.count() == 3
 
-        view = ModelView(M1, db.session)
+        param = db if session_or_db == "session" else db.session
+        view = ModelView(M1, param)
         admin.add_view(view)
 
         client = app.test_client()
@@ -2233,7 +2433,14 @@ def test_multiple_delete(app, db, admin):
         assert M1.query.count() == 0
 
 
-def test_default_sort(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_default_sort(app, db, admin, session_or_db):
     with app.app_context():
         M1, _ = create_models(db)
 
@@ -2241,7 +2448,8 @@ def test_default_sort(app, db, admin):
         db.session.commit()
         assert M1.query.count() == 3
 
-        view = CustomModelView(M1, db.session, column_default_sort="test1")
+        param = db if session_or_db == "session" else db.session
+        view = CustomModelView(M1, param, column_default_sort="test1")
         admin.add_view(view)
 
         _, data = view.get_list(0, None, False, None, None)
@@ -2253,7 +2461,7 @@ def test_default_sort(app, db, admin):
         # test default sort on renamed columns - with column_list scaffolding
         view2 = CustomModelView(
             M1,
-            db.session,
+            param,
             column_default_sort="test1",
             column_labels={"test1": "blah"},
             endpoint="m1_2",
@@ -2270,7 +2478,7 @@ def test_default_sort(app, db, admin):
         # test default sort on renamed columns - without column_list scaffolding
         view3 = CustomModelView(
             M1,
-            db.session,
+            param,
             column_default_sort="test1",
             column_labels={"test1": "blah"},
             endpoint="m1_3",
@@ -2287,9 +2495,7 @@ def test_default_sort(app, db, admin):
 
         # test default sort with multiple columns
         order = [("test2", False), ("test1", False)]
-        view4 = CustomModelView(
-            M1, db.session, column_default_sort=order, endpoint="m1_4"
-        )
+        view4 = CustomModelView(M1, param, column_default_sort=order, endpoint="m1_4")
         admin.add_view(view4)
 
         _, data = view4.get_list(0, None, False, None, None)
@@ -2300,7 +2506,14 @@ def test_default_sort(app, db, admin):
         assert data[2].test1 == "a"
 
 
-def test_complex_sort(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_complex_sort(app, db, admin, session_or_db):
     with app.app_context():
         M1, M2 = create_models(db)
 
@@ -2318,17 +2531,18 @@ def test_complex_sort(app, db, admin):
 
         db.session.commit()
 
+        param = db if session_or_db == "session" else db.session
         # test sorting on relation string - 'model1.test1'
         view = CustomModelView(
             M2,
-            db.session,
+            param,
             column_list=["string_field", "model1.test1"],
             column_sortable_list=["model1.test1"],
         )
         admin.add_view(view)
         view2 = CustomModelView(
             M2,
-            db.session,
+            param,
             column_list=["string_field", "model1"],
             column_sortable_list=[("model1", ("model1.test2", "model1.test1"))],
             endpoint="m1_2",
@@ -2357,14 +2571,22 @@ def test_complex_sort(app, db, admin):
         assert data[2].model1.test1 == "a"
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @pytest.mark.xfail(raises=Exception)
-def test_complex_sort_exception(app, db, admin):
+def test_complex_sort_exception(app, db, admin, session_or_db):
     with app.app_context():
         M1, M2 = create_models(db)
 
+        param = db if session_or_db == "session" else db.session
         # test column_sortable_list on a related table's column object
         view = CustomModelView(
-            M2, db.session, endpoint="model2_3", column_sortable_list=[M1.test1]
+            M2, param, endpoint="model2_3", column_sortable_list=[M1.test1]
         )
         admin.add_view(view)
 
@@ -2376,7 +2598,14 @@ def test_complex_sort_exception(app, db, admin):
         assert data[1].model1.test1 == "b"
 
 
-def test_default_complex_sort(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_default_complex_sort(app, db, admin, session_or_db):
     with app.app_context():
         M1, M2 = create_models(db)
 
@@ -2390,7 +2619,8 @@ def test_default_complex_sort(app, db, admin):
 
         db.session.commit()
 
-        view = CustomModelView(M2, db.session, column_default_sort="model1.test1")
+        param = db if session_or_db == "session" else db.session
+        view = CustomModelView(M2, param, column_default_sort="model1.test1")
         admin.add_view(view)
 
         _, data = view.get_list(0, None, False, None, None)
@@ -2401,7 +2631,7 @@ def test_default_complex_sort(app, db, admin):
 
         # test column_default_sort on a related table's column object
         view2 = CustomModelView(
-            M2, db.session, endpoint="model2_2", column_default_sort=(M1.test1, False)
+            M2, param, endpoint="model2_2", column_default_sort=(M1.test1, False)
         )
         admin.add_view(view2)
 
@@ -2412,17 +2642,19 @@ def test_default_complex_sort(app, db, admin):
         assert data[1].model1.test1 == "b"
 
 
+@session_or_db
 @pytest.mark.filterwarnings(
     "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this "
     "will be mandatory in wtforms 3.2:DeprecationWarning",
 )
-def test_extra_fields(app, db, admin):
+def test_extra_fields(app, db, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(db)
 
+        param = db if session_or_db == "session" else db.session
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             form_extra_fields={"extra_field": fields.StringField("Extra Field")},
         )
         admin.add_view(view)
@@ -2440,13 +2672,21 @@ def test_extra_fields(app, db, admin):
         assert pos2 < pos1
 
 
-def test_extra_field_order(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_extra_field_order(app, db, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(db)
 
+        param = db if session_or_db == "session" else db.session
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             form_columns=("extra_field", "test1"),
             form_extra_fields={"extra_field": fields.StringField("Extra Field")},
         )
@@ -2464,9 +2704,12 @@ def test_extra_field_order(app, db, admin):
         assert pos2 > pos1
 
 
-@pytest.mark.parametrize(
-    "locale, expect_text",
-    (
+def _make_params():
+    """
+    Return 12 test cases: one testing the deprecated session API with English, and the
+    rest testing the new db API with all locales.
+    """
+    locales = [
         ("en", "Home"),
         ("cs", "Domů"),
         ("de", "Start"),
@@ -2478,14 +2721,29 @@ def test_extra_field_order(app, db, admin):
         ("pa", "ਹੋਮ"),
         ("zh_CN", "首页"),
         ("zh_TW", "首頁"),
-    ),
-)
+    ]
+
+    # Test deprecated session API once with English
+    params = [pytest.param("session", "en", "Home", id="session-en")]
+
+    # Test new db API with all locales
+    params.extend(
+        [
+            pytest.param("db", locale, text, id=f"db-{locale}")
+            for locale, text in locales
+        ]
+    )
+
+    return params
+
+
+@pytest.mark.parametrize("session_or_db, locale, expect_text", _make_params())
 @pytest.mark.filterwarnings(
     "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this "
     "will be mandatory in wtforms 3.2:DeprecationWarning",
 )
 @flask_babel_test_decorator
-def test_modelview_localization(request, app, locale, expect_text):
+def test_modelview_localization(request, app, locale, expect_text, session_or_db):
     # We need to configure the default Babel locale _before_ the `babel` fixture is
     # initialised, so we have to use `request.getfixturevalue` to pull the fixture
     # within the test function rather than the test signature. The `admin` fixture
@@ -2497,9 +2755,10 @@ def test_modelview_localization(request, app, locale, expect_text):
     with app.app_context():
         Model1, _ = create_models(db)
 
+        param = db if session_or_db == "session" else db.session
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             column_filters=[
                 "test1",
                 "bool_field",
@@ -2521,8 +2780,15 @@ def test_modelview_localization(request, app, locale, expect_text):
         assert rv.status_code == 200
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @flask_babel_test_decorator
-def test_modelview_named_filter_localization(request, app):
+def test_modelview_named_filter_localization(request, app, session_or_db):
     # We need to configure the default Babel locale _before_ the `babel` fixture is
     # initialised, so we have to use `request.getfixturevalue` to pull the fixture
     # within the test function rather than the test signature. The `admin` fixture
@@ -2534,9 +2800,10 @@ def test_modelview_named_filter_localization(request, app):
     with app.app_context():
         Model1, _ = create_models(db)
 
+        param = db if session_or_db == "session" else db.session
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             named_filter_urls=True,
             column_filters=["test1"],
         )
@@ -2548,7 +2815,14 @@ def test_modelview_named_filter_localization(request, app):
         assert "test1_equals" == flt_name
 
 
-def test_custom_form_base(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_custom_form_base(app, db, admin, session_or_db):
     with app.app_context():
 
         class TestForm(form.BaseForm):
@@ -2556,7 +2830,8 @@ def test_custom_form_base(app, db, admin):
 
         Model1, _ = create_models(db)
 
-        view = CustomModelView(Model1, db.session, form_base_class=TestForm)
+        param = db if session_or_db == "session" else db.session
+        view = CustomModelView(Model1, param, form_base_class=TestForm)
         admin.add_view(view)
 
         assert hasattr(view._create_form_class, "test1")
@@ -2565,13 +2840,21 @@ def test_custom_form_base(app, db, admin):
         assert isinstance(create_form, TestForm)
 
 
-def test_ajax_fk(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_ajax_fk(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
+        param = db if session_or_db == "session" else db.session
         view = CustomModelView(
             Model2,
-            db.session,
+            param,
             url="view",
             form_ajax_refs={"model1": {"fields": ("test1", "test2")}},
         )
@@ -2627,7 +2910,14 @@ def test_ajax_fk(app, db, admin):
         assert mdl.model1.test1 == "first"
 
 
-def test_ajax_fk_multi(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_ajax_fk_multi(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model1(db.Model):  # type: ignore[name-defined, misc]
@@ -2657,9 +2947,10 @@ def test_ajax_fk_multi(app, db, admin):
 
         db.create_all()
 
+        param = db if session_or_db == "session" else db.session
         view = CustomModelView(
             Model2,
-            db.session,
+            param,
             url="view",
             form_ajax_refs={"model1": {"fields": ["name"]}},
         )
@@ -2694,11 +2985,19 @@ def test_ajax_fk_multi(app, db, admin):
         assert len(mdl.model1) == 1
 
 
-def test_safe_redirect(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_safe_redirect(app, db, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(db)
 
-        view = CustomModelView(Model1, db.session)
+        param = db if session_or_db == "session" else db.session
+        view = CustomModelView(Model1, param)
         admin.add_view(view)
 
         client = app.test_client()
@@ -2781,7 +3080,14 @@ def test_relative_redirect_on_save_and_add_another(app, db, admin):
         assert "url=http://localhost/admin/model2view/" in rv.location
 
 
-def test_simple_list_pager(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_simple_list_pager(app, db, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(db)
 
@@ -2791,37 +3097,46 @@ def test_simple_list_pager(app, db, admin):
             def get_count_query(self):
                 raise AssertionError()
 
-        view = TestModelView(Model1, db.session)
+        param = db if session_or_db == "session" else db.session
+        view = TestModelView(Model1, param)
         admin.add_view(view)
 
         count, data = view.get_list(0, None, False, None, None)
         assert count is None
 
 
-def test_customising_page_size(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_customising_page_size(app, db, admin, session_or_db):
     with app.app_context():
         M1, _ = create_models(db)
 
         db.session.add_all([M1(str(f"instance-{x+1:03d}")) for x in range(101)])
 
+        param = db if session_or_db == "session" else db.session
         view1 = CustomModelView(
-            M1, db.session, endpoint="view1", page_size=20, can_set_page_size=False
+            M1, param, endpoint="view1", page_size=20, can_set_page_size=False
         )
         admin.add_view(view1)
 
         view2 = CustomModelView(
-            M1, db.session, endpoint="view2", page_size=5, can_set_page_size=False
+            M1, param, endpoint="view2", page_size=5, can_set_page_size=False
         )
         admin.add_view(view2)
 
         view3 = CustomModelView(
-            M1, db.session, endpoint="view3", page_size=20, can_set_page_size=True
+            M1, param, endpoint="view3", page_size=20, can_set_page_size=True
         )
         admin.add_view(view3)
 
         view4 = CustomModelView(
             M1,
-            db.session,
+            param,
             endpoint="view4",
             page_size=5,
             page_size_options=(5, 10, 15),
@@ -2882,7 +3197,14 @@ def test_customising_page_size(app, db, admin):
         assert "instance-016" not in rv.text
 
 
-def test_unlimited_page_size(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_unlimited_page_size(app, db, admin, session_or_db):
     with app.app_context():
         M1, _ = create_models(db)
 
@@ -2912,7 +3234,8 @@ def test_unlimited_page_size(app, db, admin):
             ]
         )
 
-        view = CustomModelView(M1, db.session)
+        param = db if session_or_db == "session" else db.session
+        view = CustomModelView(M1, param)
 
         # test 0 as page_size
         _, data = view.get_list(0, None, False, None, None, execute=True, page_size=0)
@@ -2925,7 +3248,14 @@ def test_unlimited_page_size(app, db, admin):
         assert len(data) == 21
 
 
-def test_advanced_joins(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_advanced_joins(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model1(db.Model):  # type: ignore[name-defined, misc]
@@ -2947,13 +3277,14 @@ def test_advanced_joins(app, db, admin):
             model2_id = db.Column(db.Integer, db.ForeignKey(Model2.id))
             model2 = db.relationship(Model2, backref="model3")
 
-        view1 = CustomModelView(Model1, db.session)
+        param = db if session_or_db == "session" else db.session
+        view1 = CustomModelView(Model1, param)
         admin.add_view(view1)
 
-        view2 = CustomModelView(Model2, db.session)
+        view2 = CustomModelView(Model2, param)
         admin.add_view(view2)
 
-        view3 = CustomModelView(Model3, db.session)
+        view3 = CustomModelView(Model3, param)
         admin.add_view(view3)
 
         # Test joins
@@ -3000,7 +3331,14 @@ def test_advanced_joins(app, db, admin):
         assert alias is None
 
 
-def test_multipath_joins(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_multipath_joins(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model1(db.Model):  # type: ignore[name-defined, misc]
@@ -3020,7 +3358,8 @@ def test_multipath_joins(app, db, admin):
 
         db.create_all()
 
-        view = CustomModelView(Model2, db.session, filters=["first.test"])
+        param = db if session_or_db == "session" else db.session
+        view = CustomModelView(Model2, param, filters=["first.test"])
         admin.add_view(view)
 
         client = app.test_client()
@@ -3029,7 +3368,14 @@ def test_multipath_joins(app, db, admin):
         assert rv.status_code == 200
 
 
-def test_different_bind_joins(request, app):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_different_bind_joins(request, app, session_or_db):
     app.config["SQLALCHEMY_BINDS"] = {"other": "sqlite:///"}
 
     db = request.getfixturevalue("db")
@@ -3050,7 +3396,8 @@ def test_different_bind_joins(request, app):
 
         db.create_all()
 
-        view = CustomModelView(Model2, db.session)
+        param = db if session_or_db == "session" else db.session
+        view = CustomModelView(Model2, param)
         admin.add_view(view)
 
         client = app.test_client()
@@ -3059,14 +3406,22 @@ def test_different_bind_joins(request, app):
         assert rv.status_code == 200
 
 
-def test_model_default(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_model_default(app, db, admin, session_or_db):
     with app.app_context():
         _, Model2 = create_models(db)
 
         class ModelView(CustomModelView):
             pass
 
-        view = ModelView(Model2, db.session)
+        param = db if session_or_db == "session" else db.session
+        view = ModelView(Model2, param)
         admin.add_view(view)
 
         client = app.test_client()
@@ -3074,16 +3429,24 @@ def test_model_default(app, db, admin):
         assert b"This field is required" not in rv.data
 
 
-def test_export_csv(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_export_csv(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
 
         for _x in range(5):
             fill_db(db, Model1, Model2)
 
+        param = db if session_or_db == "session" else db.session
         view1 = CustomModelView(
             Model1,
-            db.session,
+            param,
             can_export=True,
             column_list=["test1", "test2"],
             export_max_rows=2,
@@ -3092,7 +3455,7 @@ def test_export_csv(app, db, admin):
         admin.add_view(view1)
         view2 = CustomModelView(
             Model1,
-            db.session,
+            param,
             can_export=True,
             column_list=["test1", "test2"],
             endpoint="no_row_limit",
@@ -3122,7 +3485,14 @@ def test_export_csv(app, db, admin):
 STRING_CONSTANT = "Anyway, here's Wonderwall"
 
 
-def test_string_null_behavior(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_string_null_behavior(app, db, admin, session_or_db):
     with app.app_context():
 
         class StringTestModel(db.Model):  # type: ignore[name-defined, misc]
@@ -3139,7 +3509,8 @@ def test_string_null_behavior(app, db, admin):
 
         db.create_all()
 
-        view = CustomModelView(StringTestModel, db.session)
+        param = db if session_or_db == "session" else db.session
+        view = CustomModelView(StringTestModel, param)
         admin.add_view(view)
 
         client = app.test_client()
@@ -3207,7 +3578,14 @@ def test_string_null_behavior(app, db, admin):
         assert empty_string_inst.text_field is None
 
 
-def test_form_overrides(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_form_overrides(app, db, admin, session_or_db):
     with app.app_context():
 
         class UserModel(db.Model):  # type: ignore[name-defined, misc]
@@ -3219,7 +3597,8 @@ def test_form_overrides(app, db, admin):
             "text": PasswordField,
         }
 
-    admin.add_view(UserView(UserModel, db.session))
+    param = db if session_or_db == "session" else db.session
+    admin.add_view(UserView(UserModel, param))
     client = app.test_client()
     # Test that the create form uses <input type="password">
     rv = client.get("/admin/usermodel/new/")
@@ -3246,7 +3625,14 @@ def match_page_title_and_icon(data: str, title: str, icon_html: str) -> bool:
     return bool(title_match and icon_match)
 
 
-def test_page_title(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_page_title(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
         db.session.add_all(
@@ -3260,10 +3646,11 @@ def test_page_title(app, db, admin):
         class MyModelView(CustomModelView):
             can_view_details = True
 
+        param = db if session_or_db == "session" else db.session
         # test column_list with a list of strings
         view = MyModelView(
             Model1,
-            db.session,
+            param,
             name="My Model1",
             menu_icon_type="fa",
             menu_icon_value="fa-user",

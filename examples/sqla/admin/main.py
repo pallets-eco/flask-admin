@@ -311,10 +311,10 @@ class TreeView(ModelView):
 
 admin = Admin(app, name="Example: SQLAlchemy", theme=Bootstrap4Theme(swatch="default"))
 
-admin.add_view(UserAdmin(User, db.session))
-admin.add_view(ModelView(Tag, db.session))
-admin.add_view(PostAdmin(db.session))
-admin.add_view(TreeView(Tree, db.session, category="Other"))
+admin.add_view(UserAdmin(User, db))
+admin.add_view(ModelView(Tag, db))
+admin.add_view(PostAdmin(db))
+admin.add_view(TreeView(Tree, db, category="Other"))
 admin.add_sub_category(name="Links", parent_name="Other")
 admin.add_link(MenuLink(name="Back Home", url="/", category="Links"))
 admin.add_link(

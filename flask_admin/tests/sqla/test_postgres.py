@@ -1,3 +1,4 @@
+import pytest
 from citext import CIText
 from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import HSTORE
@@ -6,7 +7,14 @@ from sqlalchemy.dialects.postgresql import JSON
 from .test_basic import CustomModelView
 
 
-def test_hstore(app, postgres_db, postgres_admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_hstore(app, postgres_db, postgres_admin, session_or_db):
     with app.app_context():
 
         class Model(postgres_db.Model):  # type: ignore[name-defined, misc]
@@ -17,7 +25,8 @@ def test_hstore(app, postgres_db, postgres_admin):
 
         postgres_db.create_all()
 
-        view = CustomModelView(Model, postgres_db.session)
+        param = postgres_db.session if session_or_db == "session" else postgres_db
+        view = CustomModelView(Model, param)
         postgres_admin.add_view(view)
 
         client = app.test_client()
@@ -44,7 +53,14 @@ def test_hstore(app, postgres_db, postgres_admin):
         assert "test_val2" in data
 
 
-def test_json(app, postgres_db, postgres_admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_json(app, postgres_db, postgres_admin, session_or_db):
     with app.app_context():
 
         class JSONModel(postgres_db.Model):  # type: ignore[name-defined, misc]
@@ -55,7 +71,8 @@ def test_json(app, postgres_db, postgres_admin):
 
         postgres_db.create_all()
 
-        view = CustomModelView(JSONModel, postgres_db.session)
+        param = postgres_db.session if session_or_db == "session" else postgres_db
+        view = CustomModelView(JSONModel, param)
         postgres_admin.add_view(view)
 
         client = app.test_client()
@@ -87,7 +104,14 @@ def test_json(app, postgres_db, postgres_admin):
         )
 
 
-def test_citext(app, postgres_db, postgres_admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_citext(app, postgres_db, postgres_admin, session_or_db):
     with app.app_context():
 
         class CITextModel(postgres_db.Model):  # type: ignore[name-defined, misc]
@@ -100,7 +124,8 @@ def test_citext(app, postgres_db, postgres_admin):
             connection.execute(text("CREATE EXTENSION IF NOT EXISTS citext"))
         postgres_db.create_all()
 
-        view = CustomModelView(CITextModel, postgres_db.session)
+        param = postgres_db.session if session_or_db == "session" else postgres_db
+        view = CustomModelView(CITextModel, param)
         postgres_admin.add_view(view)
 
         client = app.test_client()
@@ -129,7 +154,14 @@ def test_citext(app, postgres_db, postgres_admin):
         assert ">Foo</" in data or ">\nFoo</" in data or ">\r\nFoo</" in data
 
 
-def test_boolean_filters(app, postgres_db, postgres_admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_boolean_filters(app, postgres_db, postgres_admin, session_or_db):
     """
     Test that boolean filters work correctly with PostgreSQL.
     This is particularly important for psycopg3 compatibility,
@@ -152,9 +184,8 @@ def test_boolean_filters(app, postgres_db, postgres_admin):
         postgres_db.session.add(BoolModel(bool_field=False, name="false_val_2"))
         postgres_db.session.commit()
 
-        view = CustomModelView(
-            BoolModel, postgres_db.session, column_filters=["bool_field"]
-        )
+        param = postgres_db.session if session_or_db == "session" else postgres_db
+        view = CustomModelView(BoolModel, param, column_filters=["bool_field"])
         postgres_admin.add_view(view)
 
         client = app.test_client()
