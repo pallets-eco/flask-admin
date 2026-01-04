@@ -23,7 +23,7 @@ def _warn_session_deprecation(session, warn: bool = True):
     Warn about deprecation of passing session objects directly.
     Raise error if session is from Flask-SQLAlchemy-Lite.
     """
-    if hasattr(session, "session"):
+    if not hasattr(session, "session"):
         if T_SQLALCHEMY_LITE is not None and isinstance(session, T_SQLALCHEMY_LITE):
             # see::
             # https://github.com/pallets-eco/flask-admin/issues/2585
