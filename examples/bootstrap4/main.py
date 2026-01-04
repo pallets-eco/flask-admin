@@ -122,7 +122,7 @@ if __name__ == "__main__":
     admin.add_view(
         UserAdmin(
             User,
-            db.session,
+            db,
             category="Menu",
             menu_icon_type="fa",
             menu_icon_value="fa-users",
@@ -130,20 +130,18 @@ if __name__ == "__main__":
         )
     )
     admin.add_menu_item(MenuDivider(), target_category="Menu")
-    admin.add_view(
-        SimplePageView(Page, db.session, category="Menu", name="Simple Page")
-    )
+    admin.add_view(SimplePageView(Page, db, category="Menu", name="Simple Page"))
 
     admin.add_view(
         PageWithModalView(
-            Page, db.session, category="Menu", endpoint="page-modal", name="Page-Modal"
+            Page, db, category="Menu", endpoint="page-modal", name="Page-Modal"
         )
     )
 
     admin.add_view(
         ModelView(
             Page,
-            db.session,
+            db,
             name="Page-with-icon",
             endpoint="page2",
             menu_class_name="text-danger",

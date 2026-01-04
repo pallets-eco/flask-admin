@@ -1,10 +1,18 @@
+import pytest
 from flask_sqlalchemy.model import Model
 from sqlalchemy.orm import declarative_base
 
 from .test_basic import CustomModelView
 
 
-def test_multiple_pk(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_multiple_pk(app, db, admin, session_or_db):
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
@@ -15,7 +23,8 @@ def test_multiple_pk(app, db, admin):
 
         db.create_all()
 
-        view = CustomModelView(Model, db.session, form_columns=["id", "id2", "test"])
+        param = db.session if session_or_db == "session" else db
+        view = CustomModelView(Model, param, form_columns=["id", "id2", "test"])
         admin.add_view(view)
 
         client = app.test_client()
@@ -41,7 +50,14 @@ def test_multiple_pk(app, db, admin):
         assert rv.status_code == 302
 
 
-def test_joined_inheritance(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_joined_inheritance(app, db, admin, session_or_db):
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
@@ -61,7 +77,8 @@ def test_joined_inheritance(app, db, admin):
 
         db.create_all()
 
-        view = CustomModelView(Child, db.session, form_columns=["id", "test", "name"])
+        param = db.session if session_or_db == "session" else db
+        view = CustomModelView(Child, param, form_columns=["id", "test", "name"])
         admin.add_view(view)
 
         client = app.test_client()
@@ -79,7 +96,14 @@ def test_joined_inheritance(app, db, admin):
         assert "bar" in data
 
 
-def test_single_table_inheritance(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_single_table_inheritance(app, db, admin, session_or_db):
     # Test multiple primary keys - mix int and string together
     with app.app_context():
         CustomModel = declarative_base(cls=Model, name="Model")
@@ -99,7 +123,8 @@ def test_single_table_inheritance(app, db, admin):
 
         CustomModel.metadata.create_all(db.engine)
 
-        view = CustomModelView(Child, db.session, form_columns=["id", "test", "name"])
+        param = db.session if session_or_db == "session" else db
+        view = CustomModelView(Child, param, form_columns=["id", "test", "name"])
         admin.add_view(view)
 
         client = app.test_client()
@@ -117,7 +142,14 @@ def test_single_table_inheritance(app, db, admin):
         assert "bar" in data
 
 
-def test_concrete_table_inheritance(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_concrete_table_inheritance(app, db, admin, session_or_db):
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
@@ -133,7 +165,8 @@ def test_concrete_table_inheritance(app, db, admin):
 
         db.create_all()
 
-        view = CustomModelView(Child, db.session, form_columns=["id", "test", "name"])
+        param = db.session if session_or_db == "session" else db
+        view = CustomModelView(Child, param, form_columns=["id", "test", "name"])
         admin.add_view(view)
 
         client = app.test_client()
@@ -151,7 +184,14 @@ def test_concrete_table_inheritance(app, db, admin):
         assert "bar" in data
 
 
-def test_concrete_multipk_inheritance(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_concrete_multipk_inheritance(app, db, admin, session_or_db):
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
@@ -168,9 +208,8 @@ def test_concrete_multipk_inheritance(app, db, admin):
 
         db.create_all()
 
-        view = CustomModelView(
-            Child, db.session, form_columns=["id", "id2", "test", "name"]
-        )
+        param = db.session if session_or_db == "session" else db
+        view = CustomModelView(Child, param, form_columns=["id", "id2", "test", "name"])
         admin.add_view(view)
 
         client = app.test_client()

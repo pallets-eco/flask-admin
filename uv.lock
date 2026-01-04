@@ -711,6 +711,7 @@ all = [
     { name = "email-validator" },
     { name = "flask-babel" },
     { name = "flask-sqlalchemy" },
+    { name = "flask-sqlalchemy-lite" },
     { name = "geoalchemy2" },
     { name = "mongoengine" },
     { name = "peewee" },
@@ -758,6 +759,9 @@ s3 = [
 sqlalchemy = [
     { name = "flask-sqlalchemy" },
     { name = "sqlalchemy" },
+]
+sqlalchemy-lite = [
+    { name = "flask-sqlalchemy-lite" },
 ]
 sqlalchemy-with-utils = [
     { name = "arrow" },
@@ -857,10 +861,12 @@ requires-dist = [
     { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'geoalchemy'", editable = "." },
     { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'sqlalchemy-with-utils'", editable = "." },
+    { name = "flask-admin", extras = ["sqlalchemy-lite"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["sqlalchemy-with-utils"], marker = "extra == 'all'", editable = "." },
     { name = "flask-admin", extras = ["translation"], marker = "extra == 'all'", editable = "." },
     { name = "flask-babel", marker = "extra == 'translation'", specifier = ">=3.0.1" },
     { name = "flask-sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=3" },
+    { name = "flask-sqlalchemy-lite", marker = "extra == 'sqlalchemy-lite'" },
     { name = "geoalchemy2", marker = "extra == 'geoalchemy'", specifier = ">=0.14.0" },
     { name = "jinja2", specifier = ">=3.0" },
     { name = "markupsafe", specifier = ">=2.0" },
@@ -879,7 +885,7 @@ requires-dist = [
     { name = "wtf-peewee", marker = "extra == 'peewee'", specifier = ">=3.0.4" },
     { name = "wtforms", specifier = ">=2.3" },
 ]
-provides-extras = ["sqlalchemy", "sqlalchemy-with-utils", "geoalchemy", "pymongo", "mongoengine", "peewee", "s3", "azure-blob-storage", "images", "export", "rediscli", "translation", "all"]
+provides-extras = ["sqlalchemy", "sqlalchemy-lite", "sqlalchemy-with-utils", "geoalchemy", "pymongo", "mongoengine", "peewee", "s3", "azure-blob-storage", "images", "export", "rediscli", "translation", "all"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -970,6 +976,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/91/53/b0a9fcc1b1297f51e68b69ed3b7c3c40d8c45be1391d77ae198712914392/flask_sqlalchemy-3.1.1.tar.gz", hash = "sha256:e4b68bb881802dda1a7d878b2fc84c06d1ee57fb40b874d3dc97dabfa36b8312", size = 81899, upload-time = "2023-09-11T21:42:36.147Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1d/6a/89963a5c6ecf166e8be29e0d1bf6806051ee8fe6c82e232842e3aeac9204/flask_sqlalchemy-3.1.1-py3-none-any.whl", hash = "sha256:4ba4be7f419dc72f4efd8802d69974803c37259dd42f3913b0dcf75c9447e0a0", size = 25125, upload-time = "2023-09-11T21:42:34.514Z" },
+]
+
+[[package]]
+name = "flask-sqlalchemy-lite"
+version = "0.2.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "flask", extra = ["async"] },
+    { name = "sqlalchemy", extra = ["asyncio"] },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b7/dc/3f4c55cfc03e189e50b80843d5d3ff70c97711d924537b7a5ad8587cf7fb/flask_sqlalchemy_lite-0.2.1.tar.gz", hash = "sha256:6de2f70c835a2c0a11264cbbc0cc33e7ed9732a52ee056781c5739e960213d2f", size = 10389, upload-time = "2025-11-20T21:38:10.209Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/20/f3/df9d508d4ed9657ae23d9e936ca2f2c0556742c032598e0d79f78e64646f/flask_sqlalchemy_lite-0.2.1-py3-none-any.whl", hash = "sha256:93f1df6228389fdc60a0733353f8c1a18aaeaf03c8d6ab541bafdf2987c5e777", size = 10208, upload-time = "2025-11-20T21:38:08.729Z" },
 ]
 
 [[package]]
@@ -2413,6 +2432,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/42/39/f05f0ed54d451156bbed0e23eb0516bcad7cbb9f18b3bf219c786371b3f0/sqlalchemy-2.0.45-cp314-cp314t-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:cd337d3526ec5298f67d6a30bbbe4ed7e5e68862f0bf6dd21d289f8d37b7d60b", size = 3522029, upload-time = "2025-12-09T22:13:32.09Z" },
     { url = "https://files.pythonhosted.org/packages/54/0f/d15398b98b65c2bce288d5ee3f7d0a81f77ab89d9456994d5c7cc8b2a9db/sqlalchemy-2.0.45-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:9a62b446b7d86a3909abbcd1cd3cc550a832f99c2bc37c5b22e1925438b9367b", size = 3475142, upload-time = "2025-12-09T22:13:33.739Z" },
     { url = "https://files.pythonhosted.org/packages/bf/e1/3ccb13c643399d22289c6a9786c1a91e3dcbb68bce4beb44926ac2c557bf/sqlalchemy-2.0.45-py3-none-any.whl", hash = "sha256:5225a288e4c8cc2308dbdd874edad6e7d0fd38eac1e9e5f23503425c8eee20d0", size = 1936672, upload-time = "2025-12-09T21:54:52.608Z" },
+]
+
+[package.optional-dependencies]
+asyncio = [
+    { name = "greenlet" },
 ]
 
 [[package]]

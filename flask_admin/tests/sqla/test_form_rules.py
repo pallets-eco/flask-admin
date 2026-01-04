@@ -6,14 +6,22 @@ from .test_basic import create_models
 from .test_basic import CustomModelView
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_form_rules(app, db, admin):
+def test_form_rules(app, db, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
 
+        param = db.session if session_or_db == "session" else db
         view = CustomModelView(
-            Model1, db.session, form_rules=("test2", "test1", rules.Field("test4"))
+            Model1, param, form_rules=("test2", "test1", rules.Field("test4"))
         )
         admin.add_view(view)
 
@@ -32,15 +40,23 @@ def test_form_rules(app, db, admin):
         assert pos3 == -1
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_macro(app, db, admin):
+def test_rule_macro(app, db, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
 
+        param = db.session if session_or_db == "session" else db
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             create_template="macro.html",
             form_create_rules=(
                 rules.Macro("test", arg="foobar"),
@@ -59,15 +75,23 @@ def test_rule_macro(app, db, admin):
         assert "Hello another_test" in data
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_container(app, db, admin):
+def test_rule_container(app, db, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
 
+        param = db.session if session_or_db == "session" else db
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             create_template="macro.html",
             form_create_rules=(
                 rules.Container("wrap", rules.Macro("test_lib.another_test")),
@@ -90,15 +114,21 @@ def test_rule_container(app, db, admin):
         assert pos1 < pos2 < pos3
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_text(app, db, admin):
+def test_rule_text(app, db, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
 
-        view = CustomModelView(
-            Model1, db.session, form_create_rules=(rules.Text("hello"),)
-        )
+        param = db.session if session_or_db == "session" else db
+        view = CustomModelView(Model1, param, form_create_rules=(rules.Text("hello"),))
         admin.add_view(view)
 
         client = app.test_client()
@@ -110,14 +140,22 @@ def test_rule_text(app, db, admin):
         assert "hello" in data
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_html(app, db, admin):
+def test_rule_html(app, db, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
 
+        param = db.session if session_or_db == "session" else db
         view = CustomModelView(
-            Model1, db.session, form_create_rules=(rules.HTML("<h1>hello</h1>"),)
+            Model1, param, form_create_rules=(rules.HTML("<h1>hello</h1>"),)
         )
         admin.add_view(view)
 
@@ -130,14 +168,22 @@ def test_rule_html(app, db, admin):
         assert "<h1>hello</h1>" in data
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_header(app, db, admin):
+def test_rule_header(app, db, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
 
+        param = db.session if session_or_db == "session" else db
         view = CustomModelView(
-            Model1, db.session, form_create_rules=(rules.Header("hello"),)
+            Model1, param, form_create_rules=(rules.Header("hello"),)
         )
         admin.add_view(view)
 
@@ -150,15 +196,23 @@ def test_rule_header(app, db, admin):
         assert "<h3>hello</h3>" in data
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_nested(app, db, admin):
+def test_rule_nested(app, db, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
 
+        param = db.session if session_or_db == "session" else db
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             form_create_rules=(
                 rules.NestedRule(
                     rules=[
@@ -188,15 +242,23 @@ def test_rule_nested(app, db, admin):
         assert pos3 == -1
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_row(app, db, admin):
+def test_rule_row(app, db, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
 
+        param = db.session if session_or_db == "session" else db
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             form_create_rules=(
                 rules.Row(
                     rules.Field("test1"),
@@ -220,15 +282,23 @@ def test_rule_row(app, db, admin):
         assert pos1 < pos2 < pos3 < pos4 < pos5
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_group(app, db, admin):
+def test_rule_group(app, db, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
 
+        param = db.session if session_or_db == "session" else db
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             form_create_rules=(
                 rules.Group(
                     "test1",
@@ -253,15 +323,23 @@ def test_rule_group(app, db, admin):
         assert pos1 < pos2 < pos3 < pos4 < pos5
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_field_set(app, db, admin):
+def test_rule_field_set(app, db, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(db)
         db.create_all()
 
+        param = db.session if session_or_db == "session" else db
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             form_create_rules=(
                 rules.FieldSet(
                     ["test2", "test1", "test4", rules.Text("helloworld")], "header"
@@ -293,14 +371,22 @@ def test_rule_field_set(app, db, admin):
     "will be mandatory in wtforms 3.2:DeprecationWarning",
     "ignore:Fields missing from ruleset.*:UserWarning",
 )
-def test_rule_inlinefieldlist(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_rule_inlinefieldlist(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
         db.create_all()
 
+        param = db.session if session_or_db == "session" else db
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             inline_models=(Model2,),
             form_create_rules=("test1", "model2"),
         )
@@ -312,18 +398,26 @@ def test_rule_inlinefieldlist(app, db, admin):
         assert rv.status_code == 200
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @pytest.mark.filterwarnings(
     "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this "
     "will be mandatory in wtforms 3.2:DeprecationWarning",
 )
-def test_inline_model_rules(app, db, admin):
+def test_inline_model_rules(app, db, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(db)
         db.create_all()
 
+        param = db.session if session_or_db == "session" else db
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             inline_models=[(Model2, dict(form_rules=("string_field", "bool_field")))],
         )
         admin.add_view(view)

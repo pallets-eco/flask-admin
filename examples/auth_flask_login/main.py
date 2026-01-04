@@ -280,7 +280,7 @@ if __name__ == "__main__":
         theme=Bootstrap4Theme(base_template="my_master.html", fluid=True),
     )
 
-    admin.add_view(MyModelView(User, db.session))
+    admin.add_view(MyModelView(User, db))
 
     app_dir = os.path.realpath(os.path.dirname(__file__))
     database_path = os.path.join(app_dir, app.config["DATABASE_FILE"])
