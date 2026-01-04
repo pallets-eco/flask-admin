@@ -4,6 +4,9 @@ from flask_admin.contrib.geoa import ModelView
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2.types import Geometry
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy.orm import mapped_column
 from testcontainers.postgres import PostgresContainer
 
 db = SQLAlchemy()
@@ -15,39 +18,39 @@ def index():
 
 
 class Point(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    point = db.Column(Geometry("POINT"))
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(64), unique=True)
+    point = mapped_column(Geometry("POINT"))
 
 
 class MultiPoint(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    point = db.Column(Geometry("MULTIPOINT"))
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(64), unique=True)
+    point = mapped_column(Geometry("MULTIPOINT"))
 
 
 class Polygon(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    point = db.Column(Geometry("POLYGON"))
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(64), unique=True)
+    point = mapped_column(Geometry("POLYGON"))
 
 
 class MultiPolygon(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    point = db.Column(Geometry("MULTIPOLYGON"))
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(64), unique=True)
+    point = mapped_column(Geometry("MULTIPOLYGON"))
 
 
 class LineString(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    point = db.Column(Geometry("LINESTRING"))
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(64), unique=True)
+    point = mapped_column(Geometry("LINESTRING"))
 
 
 class MultiLineString(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    point = db.Column(Geometry("MULTILINESTRING"))
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(64), unique=True)
+    point = mapped_column(Geometry("MULTILINESTRING"))
 
 
 class LeafletModelView(ModelView):

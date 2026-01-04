@@ -3,8 +3,12 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import backref
+from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
 app = Flask(__name__)
@@ -26,8 +30,8 @@ def index():
 
 class User(db.Model):
     __tablename__ = "user"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(64))
 
     # Association proxy of "user_keywords" collection to "keyword" attribute - a list
     # of keywords objects.
@@ -41,9 +45,9 @@ class User(db.Model):
 
 class UserKeyword(db.Model):
     __tablename__ = "user_keyword"
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
-    keyword_id = db.Column(db.Integer, db.ForeignKey("keyword.id"), primary_key=True)
-    special_key = db.Column(db.String(50))
+    user_id = mapped_column(Integer, ForeignKey("user.id"), primary_key=True)
+    keyword_id = mapped_column(Integer, ForeignKey("keyword.id"), primary_key=True)
+    special_key = mapped_column(String(50))
 
     # Bidirectional attribute/collection of "user"/"user_keywords"
     user = relationship(
@@ -63,8 +67,8 @@ class UserKeyword(db.Model):
 
 class Keyword(db.Model):
     __tablename__ = "keyword"
-    id = db.Column(db.Integer, primary_key=True)
-    keyword = db.Column("keyword", db.String(64))
+    id = mapped_column(Integer, primary_key=True)
+    keyword = mapped_column("keyword", String(64))
 
     def __init__(self, keyword=None):
         self.keyword = keyword

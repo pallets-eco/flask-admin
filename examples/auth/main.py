@@ -17,12 +17,23 @@ from flask_security import SQLAlchemyUserDatastore
 from flask_security import UserMixin
 from flask_security.utils import hash_password
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Boolean
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Table
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
 app = Flask(__name__)
+
 app.config["SECRET_KEY"] = "secret"
 app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
-app.config["SQLALCHEMY_ECHO"] = True
+app.config["SQLALCHEMY_ECHO"] = False
 # Flask-Security config
 app.config["SECURITY_URL_PREFIX"] = "/admin"
 app.config["SECURITY_PASSWORD_HASH"] = "pbkdf2_sha512"
@@ -38,6 +49,7 @@ app.config["SECURITY_POST_REGISTER_VIEW"] = "/admin/"
 app.config["SECURITY_REGISTERABLE"] = True
 app.config["SECURITY_SEND_REGISTER_EMAIL"] = False
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 db = SQLAlchemy(app)
 admin = Admin(
     app,
@@ -46,34 +58,35 @@ admin = Admin(
 )
 
 
-roles_users = db.Table(
+roles_users = Table(
     "roles_users",
-    db.Column("user_id", db.Integer(), db.ForeignKey("user.id")),
-    db.Column("role_id", db.Integer(), db.ForeignKey("role.id")),
+    db.Model.metadata,
+    Column("user_id", Integer(), ForeignKey("user.id")),
+    Column("role_id", Integer(), ForeignKey("role.id")),
 )
 
 
 class Role(db.Model, RoleMixin):
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(80), unique=True)
-    description = db.Column(db.String(255))
+    id: Mapped[int] = mapped_column(Integer(), primary_key=True)
+    name: Mapped[str] = mapped_column(String(80), unique=True)
+    description: Mapped[str] = mapped_column(String(255), nullable=False)
 
     def __str__(self):
         return self.name
 
 
 class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(255))
-    last_name = db.Column(db.String(255))
-    email = db.Column(db.String(255), unique=True)
-    password = db.Column(db.String(255))
-    active = db.Column(db.Boolean())
-    confirmed_at = db.Column(db.DateTime())
-    roles = db.relationship(
+    id = mapped_column(Integer, primary_key=True)
+    first_name = mapped_column(String(255))
+    last_name = mapped_column(String(255))
+    email = mapped_column(String(255), unique=True)
+    password = mapped_column(String(255))
+    active: Mapped[bool] = mapped_column(Boolean())
+    confirmed_at = mapped_column(DateTime())
+    roles = relationship(
         "Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic")
     )
-    fs_uniquifier = db.Column(db.String(64), unique=True, nullable=False)
+    fs_uniquifier = mapped_column(String(64), unique=True, nullable=False)
 
     def __str__(self):
         return self.email

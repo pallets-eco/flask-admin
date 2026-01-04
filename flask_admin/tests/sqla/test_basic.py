@@ -9,8 +9,20 @@ from typing import Any
 
 import arrow
 import pytest
+from sqlalchemy import Boolean
 from sqlalchemy import cast
+from sqlalchemy import Column
+from sqlalchemy import Date
+from sqlalchemy import DateTime
+from sqlalchemy import Enum
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Text
+from sqlalchemy import Time
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import backref
+from sqlalchemy.orm import relationship
 from sqlalchemy_utils import ArrowType
 from sqlalchemy_utils import ChoiceType
 from sqlalchemy_utils import ColorType
@@ -104,29 +116,29 @@ def create_models(db):
             first = 1
             second = 2
 
-        id = db.Column(db.Integer, primary_key=True)
-        test1 = db.Column(db.String(20))
-        test2 = db.Column(db.Unicode(20))
-        test3 = db.Column(db.Text)
-        test4 = db.Column(db.UnicodeText)
-        bool_field = db.Column(db.Boolean)
-        date_field = db.Column(db.Date)
-        time_field = db.Column(db.Time)
-        datetime_field = db.Column(db.DateTime)
-        email_field = db.Column(EmailType)
-        enum_field = db.Column(db.Enum("model1_v1", "model1_v2"), nullable=True)
-        enum_type_field = db.Column(db.Enum(EnumChoices), nullable=True)
-        choice_field = db.Column(db.String, nullable=True)
-        sqla_utils_choice = db.Column(
+        id = Column(Integer, primary_key=True)
+        test1 = Column(String(20))
+        test2 = Column(String(20))
+        test3 = Column(Text)
+        test4 = Column(Text)
+        bool_field = Column(Boolean)
+        date_field = Column(Date)
+        time_field = Column(Time)
+        datetime_field = Column(DateTime)
+        email_field = Column(EmailType)
+        enum_field = Column(Enum("model1_v1", "model1_v2"), nullable=True)
+        enum_type_field = Column(Enum(EnumChoices), nullable=True)
+        choice_field = Column(String, nullable=True)
+        sqla_utils_choice = Column(
             ChoiceType([("choice-1", "First choice"), ("choice-2", "Second choice")])
         )
-        sqla_utils_enum = db.Column(ChoiceType(EnumChoices, impl=db.Integer()))
-        sqla_utils_arrow = db.Column(ArrowType, default=arrow.utcnow())
-        sqla_utils_uuid = db.Column(UUIDType(binary=False), default=uuid.uuid4)
-        sqla_utils_url = db.Column(URLType)
-        sqla_utils_ip_address = db.Column(IPAddressType)
-        sqla_utils_currency = db.Column(CurrencyType)
-        sqla_utils_color = db.Column(ColorType)
+        sqla_utils_enum = Column(ChoiceType(EnumChoices, impl=Integer()))
+        sqla_utils_arrow = Column(ArrowType, default=arrow.utcnow())
+        sqla_utils_uuid = Column(UUIDType(binary=False), default=uuid.uuid4)
+        sqla_utils_url = Column(URLType)
+        sqla_utils_ip_address = Column(IPAddressType)
+        sqla_utils_currency = Column(CurrencyType)
+        sqla_utils_color = Column(ColorType)
 
         def __unicode__(self):
             return self.test1
@@ -153,18 +165,18 @@ def create_models(db):
             self.string_field_default = string_field_default
             self.string_field_empty_default = string_field_empty_default
 
-        id = db.Column(db.Integer, primary_key=True)
-        string_field = db.Column(db.String)
-        string_field_default = db.Column(db.Text, nullable=False, default="")
-        string_field_empty_default = db.Column(db.Text, nullable=False, default="")
-        int_field = db.Column(db.Integer)
-        bool_field = db.Column(db.Boolean)
-        enum_field = db.Column(db.Enum("model2_v1", "model2_v2"), nullable=True)
-        float_field = db.Column(db.Float)
+        id = Column(Integer, primary_key=True)
+        string_field = Column(String)
+        string_field_default = Column(Text, nullable=False, default="")
+        string_field_empty_default = Column(Text, nullable=False, default="")
+        int_field = Column(Integer)
+        bool_field = Column(Boolean)
+        enum_field: Column[Enum] = Column(Enum("model2_v1", "model2_v2"), nullable=True)
+        float_field = Column(db.Float)
 
         # Relation
-        model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
-        model1 = db.relationship(lambda: Model1, backref="model2")
+        model1_id = Column(Integer, ForeignKey(Model1.id))
+        model1 = relationship(lambda: Model1, backref="model2")
 
     db.create_all()
 
@@ -411,7 +423,7 @@ def test_model(app, db, admin, session_or_db):
 @pytest.mark.xfail(raises=Exception)
 def test_no_pk(app, db, admin, session_or_db):
     class Model(db.Model):  # type: ignore[name-defined, misc]
-        test = db.Column(db.Integer)
+        test = Column(Integer)
 
     param = db if session_or_db == "session" else db.session
     view = CustomModelView(Model, param)
@@ -570,8 +582,8 @@ def test_column_searchable_list(app, db, admin, session_or_db):
         assert view._search_fields
         assert len(view._search_fields) == 2
 
-        assert isinstance(view._search_fields[0][0], db.Column)
-        assert isinstance(view._search_fields[1][0], db.Column)
+        assert isinstance(view._search_fields[0][0], Column)
+        assert isinstance(view._search_fields[1][0], Column)
         assert view._search_fields[0][0].name == "string_field"
         assert view._search_fields[1][0].name == "int_field"
 
@@ -903,8 +915,8 @@ def test_editable_list_special_pks(app, db, admin, session_or_db):
                 self.id = id
                 self.val1 = val1
 
-            id = db.Column(db.String(20), primary_key=True)
-            val1 = db.Column(db.String(20))
+            id = Column(String(20), primary_key=True)  # type: ignore[assignment]
+            val1 = Column(String(20))
 
         db.create_all()
 
@@ -1921,10 +1933,10 @@ def test_hybrid_property(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model1(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String)
-            width = db.Column(db.Integer)
-            height = db.Column(db.Integer)
+            id = Column(Integer, primary_key=True)
+            name = Column(String)
+            width = Column(Integer)
+            height = Column(Integer)
 
             @hybrid_property
             def number_of_pixels(self):
@@ -1936,7 +1948,7 @@ def test_hybrid_property(app, db, admin, session_or_db):
 
             @number_of_pixels_str.expression  # type: ignore[no-redef]
             def number_of_pixels_str(cls):
-                return cast(cls.width * cls.height, db.String)
+                return cast(cls.width * cls.height, String)
 
         db.create_all()
 
@@ -2001,23 +2013,19 @@ def test_hybrid_property_nested(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model1(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            firstname = db.Column(db.String)
-            lastname = db.Column(db.String)
+            id = Column(Integer, primary_key=True)
+            firstname = Column(String)
+            lastname = Column(String)
 
             @hybrid_property
             def fullname(self):
                 return f"{self.firstname} {self.lastname}"
 
         class Model2(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String)
-            owner_id = db.Column(
-                db.Integer, db.ForeignKey("model1.id", ondelete="CASCADE")
-            )
-            owner = db.relationship(
-                "Model1", backref=db.backref("tiles"), uselist=False
-            )
+            id = Column(Integer, primary_key=True)
+            name = Column(String)
+            owner_id = Column(Integer, ForeignKey("model1.id", ondelete="CASCADE"))
+            owner = relationship("Model1", backref=backref("tiles"), uselist=False)
 
         db.create_all()
 
@@ -2128,8 +2136,8 @@ def test_non_int_pk(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.String, primary_key=True)
-            test = db.Column(db.String)
+            id = Column(String, primary_key=True)
+            test = Column(String)
 
         db.create_all()
 
@@ -2167,28 +2175,28 @@ def test_form_columns(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.String, primary_key=True)
-            int_field = db.Column(db.Integer)
-            datetime_field = db.Column(db.DateTime)
-            text_field = db.Column(db.UnicodeText)
-            excluded_column = db.Column(db.String)
+            id = Column(String, primary_key=True)
+            int_field = Column(Integer)
+            datetime_field = Column(DateTime)
+            text_field = Column(Text)
+            excluded_column = Column(String)
 
         class ChildModel(db.Model):  # type: ignore[name-defined, misc]
             class EnumChoices(enum.Enum):
                 first = 1
                 second = 2
 
-            id = db.Column(db.String, primary_key=True)
-            model_id = db.Column(db.Integer, db.ForeignKey(Model.id))
-            model = db.relationship(Model, backref="backref")
-            enum_field = db.Column(db.Enum("model1_v1", "model1_v2"), nullable=True)
-            choice_field = db.Column(db.String, nullable=True)
-            sqla_utils_choice = db.Column(
+            id = Column(String, primary_key=True)
+            model_id = Column(Integer, ForeignKey(Model.id))
+            model = relationship(Model, backref="backref")
+            enum_field = Column(Enum("model1_v1", "model1_v2"), nullable=True)  # type: ignore[var-annotated]
+            choice_field = Column(String, nullable=True)
+            sqla_utils_choice = Column(
                 ChoiceType(
                     [("choice-1", "First choice"), ("choice-2", "Second choice")]
                 )
             )
-            sqla_utils_enum = db.Column(ChoiceType(EnumChoices, impl=db.Integer()))
+            sqla_utils_enum = Column(ChoiceType(EnumChoices, impl=Integer()))
 
         db.create_all()
 
@@ -2266,8 +2274,8 @@ def test_form_args(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.String, primary_key=True)
-            test = db.Column(db.String, nullable=False)
+            id = Column(String, primary_key=True)
+            test = Column(String, nullable=False)
 
         db.create_all()
 
@@ -2297,8 +2305,8 @@ def test_form_override(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.String, primary_key=True)
-            test = db.Column(db.String)
+            id = Column(String, primary_key=True)
+            test = Column(String)
 
         db.create_all()
 
@@ -2328,16 +2336,14 @@ def test_form_onetoone(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model1(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            test = db.Column(db.String)
+            id = Column(Integer, primary_key=True)
+            test = Column(String)
 
         class Model2(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
+            id = Column(Integer, primary_key=True)
 
-            model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
-            model1 = db.relationship(
-                Model1, backref=db.backref("model2", uselist=False)
-            )
+            model1_id = Column(Integer, ForeignKey(Model1.id))
+            model1 = relationship(Model1, backref=backref("model2", uselist=False))
 
         db.create_all()
 
@@ -2923,8 +2929,8 @@ def test_ajax_fk_multi(app, db, admin, session_or_db):
         class Model1(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "model1"
 
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String(20))
+            id = Column(Integer, primary_key=True)
+            name = Column(String(20))
 
             def __str__(self):
                 return self.name
@@ -2932,18 +2938,18 @@ def test_ajax_fk_multi(app, db, admin, session_or_db):
         table = db.Table(
             "m2m",
             db.Model.metadata,
-            db.Column("model1_id", db.Integer, db.ForeignKey("model1.id")),
-            db.Column("model2_id", db.Integer, db.ForeignKey("model2.id")),
+            Column("model1_id", Integer, ForeignKey("model1.id")),
+            Column("model2_id", Integer, ForeignKey("model2.id")),
         )
 
         class Model2(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "model2"
 
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String(20))
+            id = Column(Integer, primary_key=True)
+            name = Column(String(20))
 
-            model1_id = db.Column(db.Integer(), db.ForeignKey(Model1.id))
-            model1 = db.relationship(Model1, backref="models2", secondary=table)
+            model1_id = Column(Integer(), ForeignKey(Model1.id))
+            model1 = relationship(Model1, backref="models2", secondary=table)
 
         db.create_all()
 
@@ -3259,23 +3265,23 @@ def test_advanced_joins(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model1(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            val1 = db.Column(db.String(20))
-            test = db.Column(db.String(20))
+            id = Column(Integer, primary_key=True)
+            val1 = Column(String(20))
+            test = Column(String(20))
 
         class Model2(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            val2 = db.Column(db.String(20))
+            id = Column(Integer, primary_key=True)
+            val2 = Column(String(20))
 
-            model1_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
-            model1 = db.relationship(Model1, backref="model2")
+            model1_id = Column(Integer, ForeignKey(Model1.id))
+            model1 = relationship(Model1, backref="model2")
 
         class Model3(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            val2 = db.Column(db.String(20))
+            id = Column(Integer, primary_key=True)
+            val2 = Column(String(20))
 
-            model2_id = db.Column(db.Integer, db.ForeignKey(Model2.id))
-            model2 = db.relationship(Model2, backref="model3")
+            model2_id = Column(Integer, ForeignKey(Model2.id))
+            model2 = relationship(Model2, backref="model3")
 
         param = db if session_or_db == "session" else db.session
         view1 = CustomModelView(Model1, param)
@@ -3342,19 +3348,19 @@ def test_multipath_joins(app, db, admin, session_or_db):
     with app.app_context():
 
         class Model1(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            val1 = db.Column(db.String(20))
-            test = db.Column(db.String(20))
+            id = Column(Integer, primary_key=True)
+            val1 = Column(String(20))
+            test = Column(String(20))
 
         class Model2(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            val2 = db.Column(db.String(20))
+            id = Column(Integer, primary_key=True)
+            val2 = Column(String(20))
 
-            first_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
-            first = db.relationship(Model1, backref="first", foreign_keys=[first_id])
+            first_id = Column(Integer, ForeignKey(Model1.id))
+            first = relationship(Model1, backref="first", foreign_keys=[first_id])
 
-            second_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
-            second = db.relationship(Model1, backref="second", foreign_keys=[second_id])
+            second_id = Column(Integer, ForeignKey(Model1.id))
+            second = relationship(Model1, backref="second", foreign_keys=[second_id])
 
         db.create_all()
 
@@ -3384,15 +3390,15 @@ def test_different_bind_joins(request, app, session_or_db):
     with app.app_context():
 
         class Model1(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            val1 = db.Column(db.String(20))
+            id = Column(Integer, primary_key=True)
+            val1 = Column(String(20))
 
         class Model2(db.Model):  # type: ignore[name-defined, misc]
             __bind_key__ = "other"
-            id = db.Column(db.Integer, primary_key=True)
-            val1 = db.Column(db.String(20))
-            first_id = db.Column(db.Integer, db.ForeignKey(Model1.id))
-            first = db.relationship(Model1)
+            id = Column(Integer, primary_key=True)
+            val1 = Column(String(20))
+            first_id = Column(Integer, ForeignKey(Model1.id))
+            first = relationship(Model1)
 
         db.create_all()
 
@@ -3496,16 +3502,14 @@ def test_string_null_behavior(app, db, admin, session_or_db):
     with app.app_context():
 
         class StringTestModel(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            test_no = db.Column(db.Integer, nullable=False)
-            string_field = db.Column(db.String)
-            string_field_nonull = db.Column(db.String, nullable=False)
-            string_field_nonull_default = db.Column(
-                db.String, nullable=False, default=""
-            )
-            text_field = db.Column(db.Text)
-            text_field_nonull = db.Column(db.Text, nullable=False)
-            text_field_nonull_default = db.Column(db.Text, nullable=False, default="")
+            id = Column(Integer, primary_key=True)
+            test_no = Column(Integer, nullable=False)
+            string_field = Column(String)
+            string_field_nonull = Column(String, nullable=False)
+            string_field_nonull_default = Column(String, nullable=False, default="")
+            text_field = Column(Text)
+            text_field_nonull = Column(Text, nullable=False)
+            text_field_nonull_default = Column(Text, nullable=False, default="")
 
         db.create_all()
 
@@ -3589,8 +3593,8 @@ def test_form_overrides(app, db, admin, session_or_db):
     with app.app_context():
 
         class UserModel(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            text = db.Column(db.String)
+            id = Column(Integer, primary_key=True)
+            text = Column(String)
 
     class UserView(ModelView):
         form_overrides = {

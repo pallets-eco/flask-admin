@@ -5,6 +5,13 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Text
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
@@ -27,9 +34,9 @@ babel = Babel(app, locale_selector=get_locale)
 
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True)
-    email = db.Column(db.String(120), unique=True)
+    id = mapped_column(Integer, primary_key=True)
+    username = mapped_column(String(80), unique=True)
+    email = mapped_column(String(120), unique=True)
 
     # Required for administrative interface
     def __unicode__(self):
@@ -37,13 +44,13 @@ class User(db.Model):
 
 
 class Post(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(120))
-    text = db.Column(db.Text, nullable=False)
-    date = db.Column(db.DateTime)
+    id = mapped_column(Integer, primary_key=True)
+    title = mapped_column(String(120))
+    text = mapped_column(Text, nullable=False)
+    date = mapped_column(DateTime)
 
-    user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
-    user = db.relationship(User, backref="posts")
+    user_id = mapped_column(Integer(), ForeignKey(User.id))
+    user = relationship(User, backref="posts")
 
     def __unicode__(self):
         return self.title

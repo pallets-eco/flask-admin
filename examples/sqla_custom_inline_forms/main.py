@@ -13,6 +13,12 @@ from flask_admin.form import RenderTemplateWidget
 from flask_admin.model.form import InlineFormAdmin
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Unicode
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 from werkzeug.utils import secure_filename
 from wtforms import fields
 
@@ -28,8 +34,8 @@ base_path = op.join(op.dirname(__file__), "static")
 
 
 class Location(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(64))
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(64))
 
 
 class ImageType(db.Model):
@@ -38,10 +44,10 @@ class ImageType(db.Model):
     so we can test the "form_ajax_refs" inside the "inline_models"
     """
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(64))
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         """
         Represent this model as a string
         (e.g. in the Image Type list dropdown when creating an inline model)
@@ -50,15 +56,15 @@ class ImageType(db.Model):
 
 
 class LocationImage(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    alt = db.Column(db.Unicode(128))
-    path = db.Column(db.String(64))
+    id = mapped_column(Integer, primary_key=True)
+    alt = mapped_column(Unicode(128))
+    path = mapped_column(String(64))
 
-    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    location = db.relation(Location, backref="images")
+    location_id = mapped_column(Integer, ForeignKey(Location.id))
+    location = relationship(Location, backref="images")
 
-    image_type_id = db.Column(db.Integer, db.ForeignKey(ImageType.id))
-    image_type = db.relation(ImageType, backref="images")
+    image_type_id = mapped_column(Integer, ForeignKey(ImageType.id))
+    image_type = relationship(ImageType, backref="images")
 
 
 # Register after_delete handler which will delete image file after model gets deleted

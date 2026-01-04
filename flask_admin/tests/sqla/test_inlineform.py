@@ -1,4 +1,11 @@
 import pytest
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy.orm import backref
+from sqlalchemy.orm import relationship
 from wtforms import fields
 
 from flask_admin import form
@@ -21,21 +28,21 @@ def test_inline_form(app, db, admin, session_or_db):
         # Set up models and database
         class User(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String, unique=True)
+            id = Column(Integer, primary_key=True)
+            name = Column(String, unique=True)
 
             def __init__(self, name=None):
                 self.name = name
 
         class UserInfo(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
-            id = db.Column(db.Integer, primary_key=True)
-            key = db.Column(db.String, nullable=False)
-            val = db.Column(db.String)
-            user_id = db.Column(db.Integer, db.ForeignKey(User.id))
-            user = db.relationship(
+            id = Column(Integer, primary_key=True)
+            key = Column(String, nullable=False)
+            val = Column(String)
+            user_id = Column(Integer, ForeignKey(User.id))
+            user = relationship(
                 User,
-                backref=db.backref(
+                backref=backref(
                     "info", cascade="all, delete-orphan", single_parent=True
                 ),
             )
@@ -137,21 +144,21 @@ def test_inline_form_required(app, db, admin, session_or_db):
         # Set up models and database
         class User(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String, unique=True)
+            id = Column(Integer, primary_key=True)
+            name = Column(String, unique=True)
 
             def __init__(self, name=None):
                 self.name = name
 
         class UserEmail(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
-            id = db.Column(db.Integer, primary_key=True)
-            email = db.Column(db.String, nullable=False, unique=True)
-            verified_at = db.Column(db.DateTime)
-            user_id = db.Column(db.Integer, db.ForeignKey(User.id))
-            user = db.relationship(
+            id = Column(Integer, primary_key=True)
+            email = Column(String, nullable=False, unique=True)
+            verified_at = Column(DateTime)
+            user_id = Column(Integer, ForeignKey(User.id))
+            user = relationship(
                 User,
-                backref=db.backref(
+                backref=backref(
                     "emails", cascade="all, delete-orphan", single_parent=True
                 ),
             )
@@ -205,8 +212,8 @@ def test_inline_form_ajax_fk(app, db, admin, session_or_db):
         # Set up models and database
         class User(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String, unique=True)
+            id = Column(Integer, primary_key=True)
+            name = Column(String, unique=True)
 
             def __init__(self, name=None):
                 self.name = name
@@ -214,25 +221,25 @@ def test_inline_form_ajax_fk(app, db, admin, session_or_db):
         class Tag(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "tags"
 
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String, unique=True)
+            id = Column(Integer, primary_key=True)
+            name = Column(String, unique=True)
 
         class UserInfo(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
-            id = db.Column(db.Integer, primary_key=True)
-            key = db.Column(db.String, nullable=False)
-            val = db.Column(db.String)
+            id = Column(Integer, primary_key=True)
+            key = Column(String, nullable=False)
+            val = Column(String)
 
-            user_id = db.Column(db.Integer, db.ForeignKey(User.id))
-            user = db.relationship(
+            user_id = Column(Integer, ForeignKey(User.id))
+            user = relationship(
                 User,
-                backref=db.backref(
+                backref=backref(
                     "info", cascade="all, delete-orphan", single_parent=True
                 ),
             )
 
-            tag_id = db.Column(db.Integer, db.ForeignKey(Tag.id))
-            tag = db.relationship(Tag, backref="user_info")
+            tag_id = Column(Integer, ForeignKey(Tag.id))
+            tag = relationship(Tag, backref="user_info")
 
         db.create_all()
 
@@ -266,9 +273,9 @@ def test_inline_form_self(app, db, admin, session_or_db):
     with app.app_context():
 
         class Tree(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            parent_id = db.Column(db.Integer, db.ForeignKey("tree.id"))
-            parent = db.relationship("Tree", remote_side=[id], backref="children")
+            id = Column(Integer, primary_key=True)
+            parent_id = Column(Integer, ForeignKey("tree.id"))
+            parent = relationship("Tree", remote_side=[id], backref="children")
 
         db.create_all()
 
@@ -298,21 +305,21 @@ def test_inline_form_base_class(app, db, admin, session_or_db):
         # Set up models and database
         class User(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String, unique=True)
+            id = Column(Integer, primary_key=True)
+            name = Column(String, unique=True)
 
             def __init__(self, name=None):
                 self.name = name
 
         class UserEmail(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
-            id = db.Column(db.Integer, primary_key=True)
-            email = db.Column(db.String, nullable=False, unique=True)
-            verified_at = db.Column(db.DateTime)
-            user_id = db.Column(db.Integer, db.ForeignKey(User.id))
-            user = db.relationship(
+            id = Column(Integer, primary_key=True)
+            email = Column(String, nullable=False, unique=True)
+            verified_at = Column(DateTime)
+            user_id = Column(Integer, ForeignKey(User.id))
+            user = relationship(
                 User,
-                backref=db.backref(
+                backref=backref(
                     "emails", cascade="all, delete-orphan", single_parent=True
                 ),
             )

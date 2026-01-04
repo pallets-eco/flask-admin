@@ -1,5 +1,9 @@
 import pytest
 from citext import CIText
+from sqlalchemy import Boolean
+from sqlalchemy import Column
+from sqlalchemy import Integer
+from sqlalchemy import String
 from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import HSTORE
 from sqlalchemy.dialects.postgresql import JSON
@@ -18,10 +22,8 @@ def test_hstore(app, postgres_db, postgres_admin, session_or_db):
     with app.app_context():
 
         class Model(postgres_db.Model):  # type: ignore[name-defined, misc]
-            id = postgres_db.Column(
-                postgres_db.Integer, primary_key=True, autoincrement=True
-            )
-            hstore_test = postgres_db.Column(HSTORE)
+            id = Column(Integer, primary_key=True, autoincrement=True)
+            hstore_test = Column(HSTORE)
 
         postgres_db.create_all()
 
@@ -64,10 +66,8 @@ def test_json(app, postgres_db, postgres_admin, session_or_db):
     with app.app_context():
 
         class JSONModel(postgres_db.Model):  # type: ignore[name-defined, misc]
-            id = postgres_db.Column(
-                postgres_db.Integer, primary_key=True, autoincrement=True
-            )
-            json_test = postgres_db.Column(JSON)
+            id = Column(Integer, primary_key=True, autoincrement=True)
+            json_test = Column(JSON)
 
         postgres_db.create_all()
 
@@ -115,10 +115,8 @@ def test_citext(app, postgres_db, postgres_admin, session_or_db):
     with app.app_context():
 
         class CITextModel(postgres_db.Model):  # type: ignore[name-defined, misc]
-            id = postgres_db.Column(
-                postgres_db.Integer, primary_key=True, autoincrement=True
-            )
-            citext_test = postgres_db.Column(CIText)
+            id = Column(Integer, primary_key=True, autoincrement=True)
+            citext_test = Column(CIText)
 
         with postgres_db.engine.begin() as connection:
             connection.execute(text("CREATE EXTENSION IF NOT EXISTS citext"))
@@ -170,11 +168,9 @@ def test_boolean_filters(app, postgres_db, postgres_admin, session_or_db):
     with app.app_context():
 
         class BoolModel(postgres_db.Model):  # type: ignore[name-defined, misc]
-            id = postgres_db.Column(
-                postgres_db.Integer, primary_key=True, autoincrement=True
-            )
-            bool_field = postgres_db.Column(postgres_db.Boolean, nullable=False)
-            name = postgres_db.Column(postgres_db.String(50))
+            id = Column(Integer, primary_key=True, autoincrement=True)
+            bool_field = Column(Boolean, nullable=False)
+            name = Column(String(50))
 
         postgres_db.create_all()
 

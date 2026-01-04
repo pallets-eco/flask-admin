@@ -11,7 +11,12 @@ from flask_admin.form import rules
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import Markup
+from sqlalchemy import Boolean
+from sqlalchemy import Integer
+from sqlalchemy import Text
+from sqlalchemy import Unicode
 from sqlalchemy.event import listens_for
+from sqlalchemy.orm import mapped_column
 from wtforms import fields
 from wtforms import widgets
 
@@ -38,39 +43,39 @@ except OSError:
 
 
 class File(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(64))
-    path = db.Column(db.Unicode(128))
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(Unicode(64))
+    path = mapped_column(Unicode(128))
 
     def __unicode__(self):
         return self.name
 
 
 class Image(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(64))
-    path = db.Column(db.Unicode(128))
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(Unicode(64))
+    path = mapped_column(Unicode(128))
 
     def __unicode__(self):
         return self.name
 
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.Unicode(64))
-    last_name = db.Column(db.Unicode(64))
-    email = db.Column(db.Unicode(128))
-    phone = db.Column(db.Unicode(32))
-    city = db.Column(db.Unicode(128))
-    country = db.Column(db.Unicode(128))
-    notes = db.Column(db.UnicodeText)
-    is_admin = db.Column(db.Boolean, default=False)
+    id = mapped_column(Integer, primary_key=True)
+    first_name = mapped_column(Unicode(64))
+    last_name = mapped_column(Unicode(64))
+    email = mapped_column(Unicode(128))
+    phone = mapped_column(Unicode(32))
+    city = mapped_column(Unicode(128))
+    country = mapped_column(Unicode(128))
+    notes = mapped_column(Text)
+    is_admin = mapped_column(Boolean, default=False)
 
 
 class Page(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(64))
-    text = db.Column(db.UnicodeText)
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(Unicode(64))
+    text = mapped_column(Text)
 
     def __unicode__(self):
         return self.name

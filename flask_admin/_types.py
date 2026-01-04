@@ -126,7 +126,7 @@ else:
     )
     T_PIL_IMAGE = "PIL.Image.Image"
 
-T_COLUMN = t.Union[str, T_SQLALCHEMY_COLUMN]
+T_COLUMN = t.Union[str, T_SQLALCHEMY_COLUMN, T_INSTRUMENTED_ATTRIBUTE]
 T_FILTER = tuple[int, T_COLUMN, str]
 T_ORM_COLUMN = t.Union[T_COLUMN, T_PEEWEE_FIELD]
 T_COLUMN_LIST = t.Sequence[

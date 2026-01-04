@@ -4,8 +4,19 @@ import uuid
 import arrow
 from admin import db
 from sqlalchemy import cast
+from sqlalchemy import Column
+from sqlalchemy import Date
+from sqlalchemy import Enum
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
 from sqlalchemy import sql
+from sqlalchemy import String
+from sqlalchemy import Table
+from sqlalchemy import Text
+from sqlalchemy import Unicode
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 from sqlalchemy_utils import ArrowType
 from sqlalchemy_utils import ChoiceType
 from sqlalchemy_utils import ColorType
@@ -30,34 +41,36 @@ class EnumChoices(enum.Enum):
 
 
 class User(db.Model):
-    id = db.Column(UUIDType(binary=False), default=uuid.uuid4, primary_key=True)
+    id = mapped_column(UUIDType(binary=False), default=uuid.uuid4, primary_key=True)
 
     # use a regular string field, for which we can specify a list of available choices
     # later on
-    type = db.Column(db.String(100))
+    type = mapped_column(String(100))
 
     # Fixed choices can be handled in a number of different ways:
-    enum_choice_field = db.Column(db.Enum(EnumChoices), nullable=True)
-    sqla_utils_choice_field = db.Column(ChoiceType(AVAILABLE_USER_TYPES), nullable=True)
-    sqla_utils_enum_choice_field = db.Column(
-        ChoiceType(EnumChoices, impl=db.Integer()), nullable=True
+    enum_choice_field = mapped_column(Enum(EnumChoices), nullable=True)  # type: ignore[var-annotated]
+    sqla_utils_choice_field = mapped_column(
+        ChoiceType(AVAILABLE_USER_TYPES), nullable=True
+    )
+    sqla_utils_enum_choice_field = mapped_column(
+        ChoiceType(EnumChoices, impl=Integer()), nullable=True
     )
 
-    first_name = db.Column(db.String(100))
-    last_name = db.Column(db.String(100))
+    first_name = mapped_column(String(100))
+    last_name = mapped_column(String(100))
 
     # Some sqlalchemy_utils data types (see https://sqlalchemy-utils.readthedocs.io/)
-    email = db.Column(EmailType, unique=True, nullable=False)
-    website = db.Column(URLType)
-    ip_address = db.Column(IPAddressType)
-    currency = db.Column(CurrencyType, nullable=True, default=None)
-    timezone = db.Column(TimezoneType(backend="pytz"))
+    email = mapped_column(EmailType, unique=True, nullable=False)
+    website = mapped_column(URLType)
+    ip_address = mapped_column(IPAddressType)
+    currency = mapped_column(CurrencyType, nullable=True, default=None)
+    timezone = mapped_column(TimezoneType(backend="pytz"))
 
-    dialling_code = db.Column(db.Integer())
-    local_phone_number = db.Column(db.String(10))
+    dialling_code = mapped_column(Integer())
+    local_phone_number = mapped_column(String(10))
 
-    featured_post_id = db.Column(db.Integer, db.ForeignKey("post.id"))
-    featured_post = db.relationship("Post", foreign_keys=[featured_post_id])
+    featured_post_id = mapped_column(Integer, ForeignKey("post.id"))
+    featured_post = relationship("Post", foreign_keys=[featured_post_id])
 
     @hybrid_property
     def phone_number(self):
@@ -72,7 +85,7 @@ class User(db.Model):
     @phone_number.expression  # type: ignore[no-redef]
     def phone_number(cls):
         return sql.operators.ColumnOperators.concat(
-            cast(cls.dialling_code, db.String), cls.local_phone_number
+            cast(cls.dialling_code, String), cls.local_phone_number
         )
 
     def __str__(self):
@@ -83,47 +96,47 @@ class User(db.Model):
 
 
 # Create M2M table
-post_tags_table = db.Table(
+post_tags_table = Table(
     "post_tags",
     db.Model.metadata,
-    db.Column("post_id", db.Integer, db.ForeignKey("post.id")),
-    db.Column("tag_id", db.Integer, db.ForeignKey("tag.id")),
+    Column("post_id", Integer, ForeignKey("post.id")),
+    Column("tag_id", Integer, ForeignKey("tag.id")),
 )
 
 
 class Post(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(120))
-    text = db.Column(db.Text, nullable=False)
-    date = db.Column(db.Date)
+    id = mapped_column(Integer, primary_key=True)
+    title = mapped_column(String(120))
+    text = mapped_column(Text, nullable=False)
+    date = mapped_column(Date)
 
     # some sqlalchemy_utils data types (see https://sqlalchemy-utils.readthedocs.io/)
-    background_color = db.Column(ColorType)
-    created_at = db.Column(ArrowType, default=arrow.utcnow())
-    user_id = db.Column(UUIDType(binary=False), db.ForeignKey(User.id))
+    background_color = mapped_column(ColorType)
+    created_at = mapped_column(ArrowType, default=arrow.utcnow())
+    user_id = mapped_column(UUIDType(binary=False), ForeignKey(User.id))
 
-    user = db.relationship(User, foreign_keys=[user_id], backref="posts")
-    tags = db.relationship("Tag", secondary=post_tags_table)
+    user = relationship(User, foreign_keys=[user_id], backref="posts")
+    tags = relationship("Tag", secondary=post_tags_table)
 
     def __str__(self):
         return f"{self.title}"
 
 
 class Tag(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(64), unique=True)
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(Unicode(64), unique=True)
 
     def __str__(self):
         return f"{self.name}"
 
 
 class Tree(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(64))
 
     # recursive relationship
-    parent_id = db.Column(db.Integer, db.ForeignKey("tree.id"))
-    parent = db.relationship("Tree", remote_side=[id], backref="children")
+    parent_id = mapped_column(Integer, ForeignKey("tree.id"))
+    parent = relationship("Tree", remote_side=[id], backref="children")
 
     def __str__(self):
         return f"{self.name}"

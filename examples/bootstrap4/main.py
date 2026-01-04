@@ -14,6 +14,12 @@ from flask_admin.menu import MenuDivider
 from flask_admin.menu import MenuLink
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Boolean
+from sqlalchemy import DateTime
+from sqlalchemy import Integer
+from sqlalchemy import Text
+from sqlalchemy import Unicode
+from sqlalchemy.orm import mapped_column
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
@@ -61,20 +67,20 @@ def index():
 
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(64))
-    email = db.Column(db.Unicode(64))
-    active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.now)
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(Unicode(64))
+    email = mapped_column(Unicode(64))
+    active = mapped_column(Boolean, default=True)
+    created_at = mapped_column(DateTime, default=datetime.datetime.now)
 
     def __unicode__(self):
         return self.name
 
 
 class Page(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.Unicode(64))
-    content = db.Column(db.UnicodeText)
+    id = mapped_column(Integer, primary_key=True)
+    title = mapped_column(Unicode(64))
+    content = mapped_column(Text)
 
     def __unicode__(self):
         return self.name
