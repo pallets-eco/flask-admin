@@ -1,4 +1,7 @@
 import pytest
+from sqlalchemy import Column
+from sqlalchemy import Integer
+from sqlalchemy import String
 
 from flask_admin.babel import gettext
 
@@ -59,8 +62,8 @@ def test_unique_validator_translation_is_dynamic(app, db, admin, session_or_db):
     with app.app_context():
 
         class UniqueTable(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            value = db.Column(db.String, unique=True)
+            id = Column(Integer, primary_key=True)
+            value = Column(String, unique=True)
 
         db.create_all()
 
