@@ -777,7 +777,9 @@ class BaseModelView(BaseView, ActionsMixin):
         dict[
             str,
             AjaxModelLoader
-            | dict[str, str | t.Iterable[t.Union[str, T_PEEWEE_FIELD]] | int],
+            | dict[
+                str | T_COLUMN, str | t.Iterable[str | T_PEEWEE_FIELD | T_COLUMN] | int
+            ],
         ]
         | None
     ) = None
