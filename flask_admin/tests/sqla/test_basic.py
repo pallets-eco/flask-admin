@@ -1,6 +1,7 @@
 import enum
 import os
 import re
+import typing as t
 import uuid
 from datetime import date
 from datetime import datetime
@@ -171,7 +172,7 @@ def create_models(db):
         string_field_empty_default = Column(Text, nullable=False, default="")
         int_field = Column(Integer)
         bool_field = Column(Boolean)
-        enum_field: Column[Enum] = Column(Enum("model2_v1", "model2_v2"), nullable=True)
+        enum_field: t.Any = Column(Enum("model2_v1", "model2_v2"), nullable=True)
         float_field = Column(db.Float)
 
         # Relation
