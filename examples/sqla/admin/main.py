@@ -126,14 +126,9 @@ class UserAdmin(ModelView):
         "website",
         "dialling_code",
         "local_phone_number",
+        "ip_address",
+        "timezone",
     ]
-    form_create_rules = [
-        "last_name",
-        "first_name",
-        "type",
-        "email",
-    ]
-
     create_template = "admin/users/create.html"
     form_create_rules = [
         rules.Header("Users"),  # HTML header
@@ -170,6 +165,9 @@ class UserAdmin(ModelView):
             ),
             card_title="Some Choices",
         ),
+        "website",
+        "ip_address",
+        "timezone",
         # render a macro (see templates/admin/create.html)
         rules.Macro("my_macro", arg1="Just a Title", arg2="bla bla bla"),
     ]
@@ -233,9 +231,6 @@ class PostAdmin(ModelView):
         "user.email",
         ("user", ("user.last_name", "user.first_name")),  # sort on multiple columns
     ]
-    column_labels = {
-        "title": "Post Title"  # Rename 'title' column in list view
-    }
     column_searchable_list = [
         "title",
         "tags.name",
@@ -243,7 +238,7 @@ class PostAdmin(ModelView):
         "user.last_name",
     ]
     column_labels = {
-        "title": "Title",
+        "title": "Post Title",
         "tags.name": "Tags",
         "user.first_name": "User's first name",
         "user.last_name": "Last name",

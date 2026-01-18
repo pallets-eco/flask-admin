@@ -3,14 +3,20 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
 from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.ext.associationproxy import AssociationProxy
 from sqlalchemy.orm import backref
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
-app.config["SQLALCHEMY_ECHO"] = True
+app.config["SQLALCHEMY_ECHO"] = False
 db = SQLAlchemy(app)
 admin = Admin(
     app,
@@ -26,14 +32,18 @@ def index():
 
 class User(db.Model):
     __tablename__ = "user"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(64))
 
     # Association proxy of "user_keywords" collection to "keyword" attribute - a list
     # of keywords objects.
-    keywords = association_proxy("user_keywords", "keyword")
+    keywords: AssociationProxy[list[str]] = association_proxy(
+        "user_keywords", "keyword"
+    )
     # Association proxy to association proxy - a list of keywords strings.
-    keywords_values = association_proxy("user_keywords", "keyword_value")
+    keywords_values: AssociationProxy[list[str]] = association_proxy(
+        "user_keywords", "keyword_value"
+    )
 
     def __init__(self, name=None):
         self.name = name
@@ -41,19 +51,23 @@ class User(db.Model):
 
 class UserKeyword(db.Model):
     __tablename__ = "user_keyword"
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
-    keyword_id = db.Column(db.Integer, db.ForeignKey("keyword.id"), primary_key=True)
-    special_key = db.Column(db.String(50))
+    user_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("user.id"), primary_key=True
+    )
+    keyword_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("keyword.id"), primary_key=True
+    )
+    special_key: Mapped[str] = mapped_column(String(50), nullable=True)
 
     # Bidirectional attribute/collection of "user"/"user_keywords"
-    user = relationship(
+    user: Mapped[User] = relationship(
         User, backref=backref("user_keywords", cascade="all, delete-orphan")
     )
 
     # Reference to the "Keyword" object
-    keyword = relationship("Keyword")
+    keyword: Mapped["Keyword"] = relationship("Keyword")
     # Reference to the "keyword" column inside the "Keyword" object.
-    keyword_value = association_proxy("keyword", "keyword")
+    keyword_value: AssociationProxy[list[str]] = association_proxy("keyword", "keyword")
 
     def __init__(self, keyword=None, user=None, special_key=None):
         self.user = user
@@ -63,8 +77,8 @@ class UserKeyword(db.Model):
 
 class Keyword(db.Model):
     __tablename__ = "keyword"
-    id = db.Column(db.Integer, primary_key=True)
-    keyword = db.Column("keyword", db.String(64))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    keyword: Mapped[str] = mapped_column("keyword", String(64))
 
     def __init__(self, keyword=None):
         self.keyword = keyword
