@@ -1,4 +1,10 @@
 from flask_admin.contrib.sqla.view import ModelView
+from sqlalchemy import Column
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy.orm import backref
+from sqlalchemy.orm import relationship
 
 
 def create_models(db):
@@ -11,9 +17,9 @@ def create_models(db):
             self.first_name = first_name
             self.last_name = last_name
 
-        id = db.Column(db.Integer, primary_key=True)
-        first_name = db.Column(db.String(20))
-        last_name = db.Column(db.Unicode(20))
+        id = Column(Integer, primary_key=True)
+        first_name = Column(String(20))
+        last_name = Column(String(20))
 
         def __unicode__(self):
             return self.first_name
@@ -27,11 +33,11 @@ def create_models(db):
             self.desc = desc
             self.author = author
 
-        id = db.Column(db.Integer, primary_key=True)
-        title = db.Column(db.String(20))
-        desc = db.Column(db.Unicode(20))
-        author_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-        author = db.relationship("User", backref=db.backref("posts", lazy="dynamic"))
+        id = Column(Integer, primary_key=True)
+        title = Column(String(20))
+        desc = Column(String(20))
+        author_id = Column(Integer, ForeignKey("user.id"))
+        author = relationship("User", backref=backref("posts", lazy="dynamic"))
 
     db.create_all()
 
