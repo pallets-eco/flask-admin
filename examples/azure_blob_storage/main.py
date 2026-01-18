@@ -19,6 +19,10 @@ babel = Babel(app)
 
 if __name__ == "__main__":
     with AzuriteContainer() as azurite_container:
+        print("\n\n=============================")
+        print("Run docker, waith for Azurite to start and then go to:")
+        print("http://127.0.0.1:5000/admin/")
+        print("\n\n=============================")
         connection_string = azurite_container.get_connection_string()
         client = BlobServiceClient.from_connection_string(
             connection_string, api_version="2019-12-12"

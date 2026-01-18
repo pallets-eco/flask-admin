@@ -11,15 +11,25 @@ from flask_admin.form import rules
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import Markup
+from sqlalchemy import Boolean
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Text
 from sqlalchemy.event import listens_for
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 from wtforms import fields
 from wtforms import widgets
+
+from examples.forms_files_images.data import first_names
+from examples.forms_files_images.data import last_names
+from examples.forms_files_images.data import locations
 
 app = Flask(__name__, static_folder="files")
 app.config["SECRET_KEY"] = "secret"
 app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
-app.config["SQLALCHEMY_ECHO"] = True
+app.config["SQLALCHEMY_ECHO"] = False
 db = SQLAlchemy(app)
 admin = Admin(app, name="Example: Forms", theme=Bootstrap4Theme(swatch="cerulean"))
 
@@ -38,41 +48,41 @@ except OSError:
 
 
 class File(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(64))
-    path = db.Column(db.Unicode(128))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(64))
+    path = mapped_column(String(128))
 
-    def __unicode__(self):
+    def __String__(self):
         return self.name
 
 
 class Image(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(64))
-    path = db.Column(db.Unicode(128))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(64))
+    path: Mapped[str] = mapped_column(String(128))
 
-    def __unicode__(self):
+    def __String__(self):
         return self.name
 
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.Unicode(64))
-    last_name = db.Column(db.Unicode(64))
-    email = db.Column(db.Unicode(128))
-    phone = db.Column(db.Unicode(32))
-    city = db.Column(db.Unicode(128))
-    country = db.Column(db.Unicode(128))
-    notes = db.Column(db.UnicodeText)
-    is_admin = db.Column(db.Boolean, default=False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    first_name: Mapped[str] = mapped_column(String(64))
+    last_name: Mapped[str] = mapped_column(String(64))
+    email: Mapped[str] = mapped_column(String(128))
+    phone: Mapped[str] = mapped_column(String(32))
+    city: Mapped[str] = mapped_column(String(128))
+    country: Mapped[str] = mapped_column(String(128))
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
 
 
 class Page(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(64))
-    text = db.Column(db.UnicodeText)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(64))
+    text: Mapped[str] = mapped_column(Text)
 
-    def __unicode__(self):
+    def __String__(self):
         return self.name
 
 
@@ -199,111 +209,28 @@ def build_sample_db():
     db.drop_all()
     db.create_all()
 
-    first_names = [
-        "Harry",
-        "Amelia",
-        "Oliver",
-        "Jack",
-        "Isabella",
-        "Charlie",
-        "Sophie",
-        "Mia",
-        "Jacob",
-        "Thomas",
-        "Emily",
-        "Lily",
-        "Ava",
-        "Isla",
-        "Alfie",
-        "Olivia",
-        "Jessica",
-        "Riley",
-        "William",
-        "James",
-        "Geoffrey",
-        "Lisa",
-        "Benjamin",
-        "Stacey",
-        "Lucy",
-    ]
-    last_names = [
-        "Brown",
-        "Smith",
-        "Patel",
-        "Jones",
-        "Williams",
-        "Johnson",
-        "Taylor",
-        "Thomas",
-        "Roberts",
-        "Khan",
-        "Lewis",
-        "Jackson",
-        "Clarke",
-        "James",
-        "Phillips",
-        "Wilson",
-        "Ali",
-        "Mason",
-        "Mitchell",
-        "Rose",
-        "Davis",
-        "Davies",
-        "Rodriguez",
-        "Cox",
-        "Alexander",
-    ]
-    locations = [
-        ("Shanghai", "China"),
-        ("Istanbul", "Turkey"),
-        ("Karachi", "Pakistan"),
-        ("Mumbai", "India"),
-        ("Moscow", "Russia"),
-        ("Sao Paulo", "Brazil"),
-        ("Beijing", "China"),
-        ("Tianjin", "China"),
-        ("Guangzhou", "China"),
-        ("Delhi", "India"),
-        ("Seoul", "South Korea"),
-        ("Shenzhen", "China"),
-        ("Jakarta", "Indonesia"),
-        ("Tokyo", "Japan"),
-        ("Mexico City", "Mexico"),
-        ("Kinshasa", "Democratic Republic of the Congo"),
-        ("Bangalore", "India"),
-        ("New York City", "United States"),
-        ("London", "United Kingdom"),
-        ("Bangkok", "Thailand"),
-        ("Tehran", "Iran"),
-        ("Dongguan", "China"),
-        ("Lagos", "Nigeria"),
-        ("Lima", "Peru"),
-        ("Ho Chi Minh City", "Vietnam"),
-    ]
-
-    for i in range(len(first_names)):
-        user = User()
-        user.first_name = first_names[i]
-        user.last_name = last_names[i]
-        user.email = user.first_name.lower() + "@example.com"
+    users = []
+    for name, surname, location in zip(
+        first_names, last_names, locations, strict=False
+    ):
         tmp = "".join(random.choice(string.digits) for i in range(10))
-        user.phone = "(" + tmp[0:3] + ") " + tmp[3:6] + " " + tmp[6::]
-        user.city = locations[i][0]
-        user.country = locations[i][1]
-        db.session.add(user)
+        phone = f"({tmp[0:3]}) {tmp[3:6]} {tmp[6::]}"
+        users.append(
+            User(
+                first_name=name,
+                last_name=surname,
+                email=f"{name.lower()}.{surname.lower()}@example.com",
+                phone=phone,
+                city=location[0],
+                country=location[1],
+            )
+        )
 
     images = ["Buffalo", "Elephant", "Leopard", "Lion", "Rhino"]
-    for name in images:
-        image = Image()
-        image.name = name
-        image.path = name.lower() + ".jpg"
-        db.session.add(image)
+    images_objects = [Image(name=name, path=f"{name.lower()}.jpg") for name in images]
+    files = [File(name=f"Example {str(i)}") for i in range(1, 4)]
 
-    for i in [1, 2, 3]:
-        file = File()
-        file.name = "Example " + str(i)
-        file.path = "example_" + str(i) + ".pdf"
-        db.session.add(file)
+    db.session.add_all(users + images_objects + files)
 
     sample_text = (
         "<h2>This is a test</h2>"
@@ -313,7 +240,6 @@ def build_sample_db():
     db.session.add(Page(name="Test Page", text=sample_text))
 
     db.session.commit()
-    return
 
 
 if __name__ == "__main__":
