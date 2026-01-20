@@ -30,7 +30,7 @@
         <!-- just enhance the readability -->
         <li class="{% if item.is_active(admin_view) %}active {% endif %}dropdown">
 
-          <a class="dropdown-toggle {% if is_main_nav %}nav-link{% else %}dropdown-item{% endif %}" data-toggle="dropdown" href="javascript:void(0)">
+          <a class="dropdown-toggle {% if is_main_nav %}nav-link{% else %}dropdown-item{% endif %} unlink-btn" data-toggle="dropdown" href="#">
             <!-- show icon -->
             {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}
             {{ menu_icon(item) }}{{ item.name }}

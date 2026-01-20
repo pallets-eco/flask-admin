@@ -1,5 +1,7 @@
 import os.path as op
+import re
 import typing as t
+from pathlib import Path
 
 import pytest
 from bs4 import BeautifulSoup
@@ -197,3 +199,51 @@ class TestCSPOnAllPages:
             styles = soup.select("style")
             for tag in styles:
                 assert tag.attrs["nonce"] == nonce
+
+
+def find_template_files():
+    """Recursively find all .html files in the template directory."""
+
+    # Adjust this path to match your project structure
+    TEMPLATE_DIR = Path("flask_admin/templates/bootstrap4/admin")
+
+    if not TEMPLATE_DIR.exists():
+        return []
+
+    # return list(TEMPLATE_DIR.rglob("*.html"))
+    all_files = TEMPLATE_DIR.rglob("*.html")
+    return [(x.as_posix().replace(TEMPLATE_DIR.as_posix(), ""), x) for x in all_files]
+
+
+UNSAFE_PATTERNS = [
+    # Match href="javascript:...", onclick="...", etc.
+    re.compile(
+        r"""href\s*=\s*["']\s*javascript:""", re.IGNORECASE
+    ),  # javascript:void(0) ..etc
+    re.compile(
+        r"""src\s*=\s*["']\s*javascript:""", re.IGNORECASE
+    ),  # javascript:void(0) ..etc
+    re.compile(r"""\son\w+\s*=\s*["'][^"']*""", re.IGNORECASE),  # onclick, onload, etc.
+]
+
+
+@pytest.mark.parametrize("rpath, template_path", find_template_files())
+def test_no_unsafe_javascript_in_templates(rpath, template_path):
+    """Ensure no template contains javascript: URIs or inline event handlers."""
+
+    content = template_path.read_text(encoding="utf-8")
+
+    violations = []
+    for pattern in UNSAFE_PATTERNS:
+        matches = pattern.findall(content)
+        if matches:
+            # For better error reporting, show line numbers
+            lines = content.splitlines()
+            for i, line in enumerate(lines, start=1):
+                if pattern.search(line):
+                    violations.append(f"Line {i}: {line.strip()}")
+
+    assert not violations, (
+        f"Unsafe JavaScript pattern(s) found in {template_path}:\n"
+        + "\n".join(violations)
+    )
