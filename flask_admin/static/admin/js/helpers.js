@@ -9,4 +9,11 @@
             }
         }
     };
+
+    $(document).ready(function() {
+        // Prevent default action for all links with 'unlink-btn' class
+        $('a.unlink-btn').click( (e) => {
+            e.preventDefault();
+        });
+    });
 })();
