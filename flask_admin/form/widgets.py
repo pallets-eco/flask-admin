@@ -115,8 +115,8 @@ class RenderTemplateWidget:
                 "_ngettext": ngettext,
                 "h": h,
                 "admin_csp_nonce_attribute": (
-                    Markup(f'nonce="{admin.csp_nonce_generator()}"')  # type: ignore[union-attr]
-                    if admin.csp_nonce_generator  # type: ignore[union-attr]
+                    Markup(f'nonce="{admin.csp_nonce_generator()}"')
+                    if admin.csp_nonce_generator
                     else ""
                 ),
             }
