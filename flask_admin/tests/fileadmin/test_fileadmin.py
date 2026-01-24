@@ -17,12 +17,23 @@ class Base:
         def fileadmin_args(self):
             raise NotImplementedError
 
-        def test_file_admin(self, app, admin):
+        def test_file_admin(self, app, admin, request):
             fileadmin_class = self.fileadmin_class()
             fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
+            def finalizer():
+                try:
+                    os.remove(op.join(self._test_files_root, "dummy_renamed.txt"))
+                    os.remove(op.join(self._test_files_root, "dummy2.txt"))
+                    os.remove(op.join(self._test_files_root, "dummy-pdf.pdf"))
+                except OSError:
+                    pass
+
+            request.addfinalizer(finalizer)
+
             class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
                 editable_extensions = ("txt",)
+                allowed_extensions = ("txt",)
 
             view_kwargs = dict(fileadmin_kwargs)
             view_kwargs.setdefault("name", "Files")
@@ -62,12 +73,33 @@ class Base:
                 "/admin/myfileadmin/upload/",
                 data=dict(upload=(BytesIO(b""), "dummy.txt")),
             )
+            data = rv.data.decode("utf-8")
             assert rv.status_code == 302
 
             rv = client.get("/admin/myfileadmin/")
             assert rv.status_code == 200
             assert "path=dummy.txt" in rv.data.decode("utf-8")
             assert "path=dummy_renamed.txt" in rv.data.decode("utf-8")
+
+            # upload existing file
+            rv = client.post(
+                "/admin/myfileadmin/upload/",
+                data=dict(upload=(BytesIO(b""), "dummy.txt")),
+                follow_redirects=True,
+            )
+            data = rv.data.decode("utf-8")
+            assert rv.status_code == 200
+            assert "already exists." in data
+
+            # upload invalid file type
+            rv = client.post(
+                "/admin/myfileadmin/upload/",
+                data=dict(upload=(BytesIO(b""), "dummy-pdf.pdf")),
+                follow_redirects=True,
+            )
+            data = rv.data.decode("utf-8")
+            assert rv.status_code == 200
+            assert "Invalid file type" in data
 
             # delete
             rv = client.post(
@@ -141,7 +173,7 @@ class Base:
 
             rv = client.post(
                 "/admin/myfileadmin/edit/?path=dummy.txt",
-                data=dict(content="new_string"),
+                data=dict(content="new_string\n"),
             )
             assert rv.status_code == 302
 

@@ -1,21 +1,36 @@
+import typing as t
+
+import pytest
 from flask_sqlalchemy.model import Model
+from sqlalchemy import Column
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
 from sqlalchemy.orm import declarative_base
 
 from .test_basic import CustomModelView
 
 
-def test_multiple_pk(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_multiple_pk(app, db, admin, session_or_db):
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
         class Model(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            id2 = db.Column(db.String(20), primary_key=True)
-            test = db.Column(db.String)
+            id = Column(Integer, primary_key=True)
+            id2 = Column(String(20), primary_key=True)
+            test = Column(String)
 
         db.create_all()
 
-        view = CustomModelView(Model, db.session, form_columns=["id", "id2", "test"])
+        param = db.session if session_or_db == "session" else db
+        view = CustomModelView(Model, param, form_columns=["id", "id2", "test"])
         admin.add_view(view)
 
         client = app.test_client()
@@ -41,27 +56,35 @@ def test_multiple_pk(app, db, admin):
         assert rv.status_code == 302
 
 
-def test_joined_inheritance(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_joined_inheritance(app, db, admin, session_or_db):
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
         class Parent(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            test = db.Column(db.String)
+            id = Column(Integer, primary_key=True)
+            test = Column(String)
 
-            discriminator = db.Column("type", db.String(50))
+            discriminator = Column("type", String(50))
             __mapper_args__ = {"polymorphic_on": discriminator}
 
         class Child(Parent):
             __tablename__ = "children"
-            __mapper_args__ = {"polymorphic_identity": "child"}
+            __mapper_args__: dict[str, t.Any] = {"polymorphic_identity": "child"}
 
-            id = db.Column(db.ForeignKey(Parent.id), primary_key=True)
-            name = db.Column(db.String(100))
+            id = Column(ForeignKey(Parent.id), primary_key=True)
+            name = Column(String(100))
 
         db.create_all()
 
-        view = CustomModelView(Child, db.session, form_columns=["id", "test", "name"])
+        param = db.session if session_or_db == "session" else db
+        view = CustomModelView(Child, param, form_columns=["id", "test", "name"])
         admin.add_view(view)
 
         client = app.test_client()
@@ -79,7 +102,14 @@ def test_joined_inheritance(app, db, admin):
         assert "bar" in data
 
 
-def test_single_table_inheritance(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_single_table_inheritance(app, db, admin, session_or_db):
     # Test multiple primary keys - mix int and string together
     with app.app_context():
         CustomModel = declarative_base(cls=Model, name="Model")
@@ -87,19 +117,20 @@ def test_single_table_inheritance(app, db, admin):
         class Parent(CustomModel):  # type: ignore[valid-type, misc]
             __tablename__ = "parent"
 
-            id = db.Column(db.Integer, primary_key=True)
-            test = db.Column(db.String)
+            id = Column(Integer, primary_key=True)
+            test = Column(String)
 
-            discriminator = db.Column("type", db.String(50))
+            discriminator = Column("type", String(50))
             __mapper_args__ = {"polymorphic_on": discriminator}
 
         class Child(Parent):
-            __mapper_args__ = {"polymorphic_identity": "child"}
-            name = db.Column(db.String(100))
+            __mapper_args__: dict[str, t.Any] = {"polymorphic_identity": "child"}
+            name = Column(String(100))
 
         CustomModel.metadata.create_all(db.engine)
 
-        view = CustomModelView(Child, db.session, form_columns=["id", "test", "name"])
+        param = db.session if session_or_db == "session" else db
+        view = CustomModelView(Child, param, form_columns=["id", "test", "name"])
         admin.add_view(view)
 
         client = app.test_client()
@@ -117,23 +148,31 @@ def test_single_table_inheritance(app, db, admin):
         assert "bar" in data
 
 
-def test_concrete_table_inheritance(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_concrete_table_inheritance(app, db, admin, session_or_db):
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
         class Parent(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            test = db.Column(db.String)
+            id = Column(Integer, primary_key=True)
+            test = Column(String)
 
         class Child(Parent):
             __mapper_args__ = {"concrete": True}
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String(100))
-            test = db.Column(db.String)
+            id = Column(Integer, primary_key=True)
+            name = Column(String(100))
+            test = Column(String)
 
         db.create_all()
 
-        view = CustomModelView(Child, db.session, form_columns=["id", "test", "name"])
+        param = db.session if session_or_db == "session" else db
+        view = CustomModelView(Child, param, form_columns=["id", "test", "name"])
         admin.add_view(view)
 
         client = app.test_client()
@@ -151,26 +190,32 @@ def test_concrete_table_inheritance(app, db, admin):
         assert "bar" in data
 
 
-def test_concrete_multipk_inheritance(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_concrete_multipk_inheritance(app, db, admin, session_or_db):
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
         class Parent(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            test = db.Column(db.String)
+            id = Column(Integer, primary_key=True)
+            test = Column(String)
 
         class Child(Parent):
             __mapper_args__ = {"concrete": True}
-            id = db.Column(db.Integer, primary_key=True)
-            id2 = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String(100))
-            test = db.Column(db.String)
+            id = Column(Integer, primary_key=True)
+            id2 = Column(Integer, primary_key=True)
+            name = Column(String(100))
+            test = Column(String)
 
         db.create_all()
 
-        view = CustomModelView(
-            Child, db.session, form_columns=["id", "id2", "test", "name"]
-        )
+        param = db.session if session_or_db == "session" else db
+        view = CustomModelView(Child, param, form_columns=["id", "id2", "test", "name"])
         admin.add_view(view)
 
         client = app.test_client()

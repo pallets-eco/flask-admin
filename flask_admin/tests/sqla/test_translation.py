@@ -1,3 +1,8 @@
+import pytest
+from sqlalchemy import Column
+from sqlalchemy import Integer
+from sqlalchemy import String
+
 from flask_admin.babel import gettext
 
 from ...contrib.sqla import ModelView
@@ -6,8 +11,15 @@ from .test_basic import create_models
 from .test_basic import CustomModelView
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @flask_babel_test_decorator
-def test_column_label_translation(request, app):
+def test_column_label_translation(request, app, session_or_db):
     # We need to configure the default Babel locale _before_ the `babel` fixture is
     # initialised, so we have to use `request.getfixturevalue` to pull the fixture
     # within the test function rather than the test signature. The `admin` fixture
@@ -21,9 +33,10 @@ def test_column_label_translation(request, app):
 
         label = gettext("Name")
 
+        param = db.session if session_or_db == "session" else db
         view = CustomModelView(
             Model1,
-            db.session,
+            param,
             column_list=["test1", "test3"],
             column_labels=dict(test1=label),
             column_filters=("test1",),
@@ -37,17 +50,25 @@ def test_column_label_translation(request, app):
         assert '{"Nombre":' in rv.data.decode("utf-8")
 
 
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
 @flask_babel_test_decorator
-def test_unique_validator_translation_is_dynamic(app, db, admin):
+def test_unique_validator_translation_is_dynamic(app, db, admin, session_or_db):
     with app.app_context():
 
         class UniqueTable(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            value = db.Column(db.String, unique=True)
+            id = Column(Integer, primary_key=True)
+            value = Column(String, unique=True)
 
         db.create_all()
 
-        view = ModelView(UniqueTable, db.session)
+        param = db.session if session_or_db == "session" else db
+        view = ModelView(UniqueTable, param)
         view.can_create = True
         admin.add_view(view)
 

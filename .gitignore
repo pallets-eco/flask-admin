@@ -31,3 +31,8 @@ env
 doc/_build
 .vscode
 node_modules/
+
+
+# Testing only
+flask_admin/tests/fileadmin/files/*
+f.html

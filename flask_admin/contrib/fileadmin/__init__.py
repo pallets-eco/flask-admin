@@ -854,6 +854,8 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         :param timestamp: The timestamp to format.
         :return: A formatted date.
         """
+        if timestamp == 0:
+            return ""
         return datetime.fromtimestamp(timestamp).strftime(self.date_format)
 
     def _save_form_files(self, directory: str, path: str, form: t.Any) -> None:
@@ -1047,6 +1049,8 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     ),
                     "error",
                 )
+        else:
+            helpers.flash_errors(form, message="Failed to upload file: %(error)s")
 
         if self.upload_modal and request.args.get("modal"):
             template = self.upload_modal_template

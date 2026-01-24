@@ -1,21 +1,26 @@
 import json
 import re
 
+import pytest
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
+from sqlalchemy import Column
+from sqlalchemy import Integer
+from sqlalchemy import String
 
 from flask_admin.contrib.geoa import ModelView
 from flask_admin.contrib.geoa.fields import GeoJSONField
+from flask_admin.tests.conftest import session_or_db
 
 
 def create_models(db):
     class GeoModel(db.Model):  # type: ignore[name-defined, misc]
-        id = db.Column(db.Integer, primary_key=True)
-        name = db.Column(db.String(20))
-        point = db.Column(Geometry("POINT"))
-        line = db.Column(Geometry("LINESTRING"))
-        polygon = db.Column(Geometry("POLYGON"))
-        multi = db.Column(Geometry("MULTIPOINT"))
+        id = Column(Integer, primary_key=True)
+        name = Column(String(20))
+        point = Column(Geometry("POINT"))
+        line = Column(Geometry("LINESTRING"))
+        polygon = Column(Geometry("POLYGON"))
+        multi = Column(Geometry("MULTIPOINT"))
 
         def __unicode__(self):
             return self.name
@@ -23,14 +28,16 @@ def create_models(db):
     return GeoModel
 
 
-def test_model(app, db, admin):
+@session_or_db
+def test_model(app, db, admin, session_or_db):
     GeoModel = create_models(db)
     with app.app_context():
         db.create_all()
     GeoModel.query.delete()
     db.session.commit()
 
-    view = ModelView(GeoModel, db.session)
+    param = db if session_or_db == "session" else db.session
+    view = ModelView(GeoModel, param)
     admin.add_view(view)
 
     assert view.model == GeoModel
@@ -148,14 +155,22 @@ def test_model(app, db, admin):
     assert db.session.query(GeoModel).count() == 0
 
 
-def test_none(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_none(app, db, admin, session_or_db):
     GeoModel = create_models(db)
     with app.app_context():
         db.create_all()
     GeoModel.query.delete()
     db.session.commit()
 
-    view = ModelView(GeoModel, db.session)
+    param = db if session_or_db == "session" else db.session
+    view = ModelView(GeoModel, param)
     admin.add_view(view)
 
     # Make some test clients

@@ -29,6 +29,7 @@ except ImportError:
         ASSOCIATION_PROXY,
     )
 
+from sqlalchemy import Column
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.sql.operators import eq
 
@@ -163,7 +164,7 @@ def get_query_for_ids(
 
 
 def get_columns_for_field(
-    field: T_INSTRUMENTED_ATTRIBUTE | ColumnProperty[t.Any],
+    field: T_INSTRUMENTED_ATTRIBUTE | ColumnProperty[t.Any] | Column[str],
 ) -> list[T_SQLALCHEMY_COLUMN]:
     if (
         not field
@@ -185,7 +186,7 @@ def need_join(model: type[T_SQLALCHEMY_MODEL], table: Table) -> bool:
 
 def get_field_with_path(
     model: type[T_SQLALCHEMY_MODEL],
-    name: str | T_INSTRUMENTED_ATTRIBUTE | ColumnProperty[t.Any],
+    name: str | T_INSTRUMENTED_ATTRIBUTE | ColumnProperty[t.Any] | Column[str],
     return_remote_proxy_attr: bool = True,
 ) -> tuple[t.Any, list[t.Any]]:
     """
@@ -276,7 +277,7 @@ def is_relationship(attr: T_INSTRUMENTED_ATTRIBUTE) -> bool:
 
 
 def is_association_proxy(
-    attr: ColumnProperty[t.Any] | T_INSTRUMENTED_ATTRIBUTE,
+    attr: ColumnProperty[t.Any] | T_INSTRUMENTED_ATTRIBUTE | Column[str],
 ) -> bool:
     if hasattr(attr, "parent"):
         attr = attr.parent  # type: ignore[assignment]

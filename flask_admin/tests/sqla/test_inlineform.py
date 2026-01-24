@@ -1,3 +1,11 @@
+import pytest
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy.orm import backref
+from sqlalchemy.orm import relationship
 from wtforms import fields
 
 from flask_admin import form
@@ -6,28 +14,35 @@ from flask_admin.contrib.sqla.fields import InlineModelFormList
 from flask_admin.contrib.sqla.validators import ItemsRequired
 
 
-def test_inline_form(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_inline_form(app, db, admin, session_or_db):
     with app.app_context():
         client = app.test_client()
 
         # Set up models and database
         class User(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String, unique=True)
+            id = Column(Integer, primary_key=True)
+            name = Column(String, unique=True)
 
             def __init__(self, name=None):
                 self.name = name
 
         class UserInfo(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
-            id = db.Column(db.Integer, primary_key=True)
-            key = db.Column(db.String, nullable=False)
-            val = db.Column(db.String)
-            user_id = db.Column(db.Integer, db.ForeignKey(User.id))
-            user = db.relationship(
+            id = Column(Integer, primary_key=True)
+            key = Column(String, nullable=False)
+            val = Column(String)
+            user_id = Column(Integer, ForeignKey(User.id))
+            user = relationship(
                 User,
-                backref=db.backref(
+                backref=backref(
                     "info", cascade="all, delete-orphan", single_parent=True
                 ),
             )
@@ -38,7 +53,8 @@ def test_inline_form(app, db, admin):
         class UserModelView(ModelView):
             inline_models = (UserInfo,)
 
-        view = UserModelView(User, db.session)
+        param = db.session if session_or_db == "session" else db
+        view = UserModelView(User, param)
         admin.add_view(view)
 
         # Basic tests
@@ -114,28 +130,35 @@ def test_inline_form(app, db, admin):
         assert UserInfo.query.count() == 0
 
 
-def test_inline_form_required(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_inline_form_required(app, db, admin, session_or_db):
     with app.app_context():
         client = app.test_client()
 
         # Set up models and database
         class User(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String, unique=True)
+            id = Column(Integer, primary_key=True)
+            name = Column(String, unique=True)
 
             def __init__(self, name=None):
                 self.name = name
 
         class UserEmail(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
-            id = db.Column(db.Integer, primary_key=True)
-            email = db.Column(db.String, nullable=False, unique=True)
-            verified_at = db.Column(db.DateTime)
-            user_id = db.Column(db.Integer, db.ForeignKey(User.id))
-            user = db.relationship(
+            id = Column(Integer, primary_key=True)
+            email = Column(String, nullable=False, unique=True)
+            verified_at = Column(DateTime)
+            user_id = Column(Integer, ForeignKey(User.id))
+            user = relationship(
                 User,
-                backref=db.backref(
+                backref=backref(
                     "emails", cascade="all, delete-orphan", single_parent=True
                 ),
             )
@@ -147,7 +170,8 @@ def test_inline_form_required(app, db, admin):
             inline_models = (UserEmail,)
             form_args = {"emails": {"validators": [ItemsRequired()]}}
 
-        view = UserModelView(User, db.session)
+        param = db.session if session_or_db == "session" else db
+        view = UserModelView(User, param)
         admin.add_view(view)
 
         # Create
@@ -176,13 +200,20 @@ def test_inline_form_required(app, db, admin):
         assert UserEmail.query.count() == 1
 
 
-def test_inline_form_ajax_fk(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_inline_form_ajax_fk(app, db, admin, session_or_db):
     with app.app_context():
         # Set up models and database
         class User(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String, unique=True)
+            id = Column(Integer, primary_key=True)
+            name = Column(String, unique=True)
 
             def __init__(self, name=None):
                 self.name = name
@@ -190,25 +221,25 @@ def test_inline_form_ajax_fk(app, db, admin):
         class Tag(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "tags"
 
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String, unique=True)
+            id = Column(Integer, primary_key=True)
+            name = Column(String, unique=True)
 
         class UserInfo(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
-            id = db.Column(db.Integer, primary_key=True)
-            key = db.Column(db.String, nullable=False)
-            val = db.Column(db.String)
+            id = Column(Integer, primary_key=True)
+            key = Column(String, nullable=False)
+            val = Column(String)
 
-            user_id = db.Column(db.Integer, db.ForeignKey(User.id))
-            user = db.relationship(
+            user_id = Column(Integer, ForeignKey(User.id))
+            user = relationship(
                 User,
-                backref=db.backref(
+                backref=backref(
                     "info", cascade="all, delete-orphan", single_parent=True
                 ),
             )
 
-            tag_id = db.Column(db.Integer, db.ForeignKey(Tag.id))
-            tag = db.relationship(Tag, backref="user_info")
+            tag_id = Column(Integer, ForeignKey(Tag.id))
+            tag = relationship(Tag, backref="user_info")
 
         db.create_all()
 
@@ -218,7 +249,8 @@ def test_inline_form_ajax_fk(app, db, admin):
 
             inline_models = [(UserInfo, opts)]
 
-        view = UserModelView(User, db.session)
+        param = db.session if session_or_db == "session" else db
+        view = UserModelView(User, param)
         admin.add_view(view)
 
         form = view.create_form()
@@ -230,20 +262,28 @@ def test_inline_form_ajax_fk(app, db, admin):
         assert "userinfo-tag" in view._form_ajax_refs
 
 
-def test_inline_form_self(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_inline_form_self(app, db, admin, session_or_db):
     with app.app_context():
 
         class Tree(db.Model):  # type: ignore[name-defined, misc]
-            id = db.Column(db.Integer, primary_key=True)
-            parent_id = db.Column(db.Integer, db.ForeignKey("tree.id"))
-            parent = db.relationship("Tree", remote_side=[id], backref="children")
+            id = Column(Integer, primary_key=True)
+            parent_id = Column(Integer, ForeignKey("tree.id"))
+            parent = relationship("Tree", remote_side=[id], backref="children")
 
         db.create_all()
 
         class TreeView(ModelView):
             inline_models = (Tree,)
 
-        view = TreeView(Tree, db.session)
+        param = db.session if session_or_db == "session" else db
+        view = TreeView(Tree, param)
 
         parent = Tree()
         child = Tree(parent=parent)
@@ -251,28 +291,35 @@ def test_inline_form_self(app, db, admin):
         assert form.parent.data == parent  # type: ignore[attr-defined]
 
 
-def test_inline_form_base_class(app, db, admin):
+@pytest.mark.parametrize(
+    "session_or_db",
+    [
+        pytest.param("session", id="with_session_deprecated"),
+        pytest.param("db", id="with_db"),
+    ],
+)
+def test_inline_form_base_class(app, db, admin, session_or_db):
     client = app.test_client()
 
     with app.app_context():
         # Set up models and database
         class User(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
-            id = db.Column(db.Integer, primary_key=True)
-            name = db.Column(db.String, unique=True)
+            id = Column(Integer, primary_key=True)
+            name = Column(String, unique=True)
 
             def __init__(self, name=None):
                 self.name = name
 
         class UserEmail(db.Model):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
-            id = db.Column(db.Integer, primary_key=True)
-            email = db.Column(db.String, nullable=False, unique=True)
-            verified_at = db.Column(db.DateTime)
-            user_id = db.Column(db.Integer, db.ForeignKey(User.id))
-            user = db.relationship(
+            id = Column(Integer, primary_key=True)
+            email = Column(String, nullable=False, unique=True)
+            verified_at = Column(DateTime)
+            user_id = Column(Integer, ForeignKey(User.id))
+            user = relationship(
                 User,
-                backref=db.backref(
+                backref=backref(
                     "emails", cascade="all, delete-orphan", single_parent=True
                 ),
             )
@@ -297,7 +344,8 @@ def test_inline_form_base_class(app, db, admin):
             inline_models = ((UserEmail, {"form_base_class": StubBaseForm}),)
             form_args = {"emails": {"validators": [ItemsRequired()]}}
 
-        view = UserModelView(User, db.session)
+        param = db.session if session_or_db == "session" else db
+        view = UserModelView(User, param)
         admin.add_view(view)
 
         # Create

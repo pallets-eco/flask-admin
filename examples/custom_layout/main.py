@@ -3,20 +3,52 @@ import os.path as op
 
 from flask import Flask
 from flask_admin import Admin
+from flask_admin import AdminIndexView
+from flask_admin import expose
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
+from sqlalchemy import Integer
+from sqlalchemy import Numeric
+from sqlalchemy import select
+from sqlalchemy import String
+from sqlalchemy import Text
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+
+from examples.custom_layout.data import first_names
+from examples.custom_layout.data import last_names
+from examples.custom_layout.data import sample_text
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
 app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
-app.config["SQLALCHEMY_ECHO"] = True
+app.config["SQLALCHEMY_ECHO"] = False
 db = SQLAlchemy(app)
+
+
+class MyHomeView(AdminIndexView):
+    @expose("/")
+    def index(self):
+        user_count = db.session.scalar(select(func.count()).select_from(User))
+        pages_count = db.session.scalar(select(func.count()).select_from(Page))
+        sales_sum = db.session.scalar(select(func.sum(Sale.amount))) or 0
+        return self.render(
+            "admin/index.html",
+            user_count=user_count,
+            pages_count=pages_count,
+            sales_sum=round(sales_sum, 2),
+        )
+
+
+# 2. Pass this view to the Admin object
 admin = Admin(
     app,
-    name="Example: Custom Layout - Bootstrap4",
-    theme=Bootstrap4Theme(base_template="layout.html"),
+    name="Example: Custom Layout",
+    index_view=MyHomeView(),
+    theme=Bootstrap4Theme(base_template="admin/custom_layout.html"),
 )
 
 
@@ -26,21 +58,30 @@ def index():
 
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(64))
-    email = db.Column(db.Unicode(64))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(64))
+    email: Mapped[str] = mapped_column(String(64))
 
-    def __unicode__(self):
+    def __repr__(self):
         return self.name
 
 
 class Page(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.Unicode(64))
-    content = db.Column(db.UnicodeText)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(String(64))
+    content: Mapped[Text] = mapped_column(Text)
 
-    def __unicode__(self):
+    def __repr__(self):
         return self.name
+
+
+class Sale(db.Model):
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    item: Mapped[str] = mapped_column(String(64))
+    amount: Mapped[int] = mapped_column(Numeric)
+
+    def __repr__(self):
+        return self.item
 
 
 class CustomView(ModelView):
@@ -54,145 +95,35 @@ class UserAdmin(CustomView):
     column_filters = ("name", "email")
 
 
-def build_sample_db():
+def build_sample_db(names, surnames, pages):
     """
     Populate a small db with some example entries.
     """
-
     db.drop_all()
     db.create_all()
-
-    first_names = [
-        "Harry",
-        "Amelia",
-        "Oliver",
-        "Jack",
-        "Isabella",
-        "Charlie",
-        "Sophie",
-        "Mia",
-        "Jacob",
-        "Thomas",
-        "Emily",
-        "Lily",
-        "Ava",
-        "Isla",
-        "Alfie",
-        "Olivia",
-        "Jessica",
-        "Riley",
-        "William",
-        "James",
-        "Geoffrey",
-        "Lisa",
-        "Benjamin",
-        "Stacey",
-        "Lucy",
-    ]
-    last_names = [
-        "Brown",
-        "Smith",
-        "Patel",
-        "Jones",
-        "Williams",
-        "Johnson",
-        "Taylor",
-        "Thomas",
-        "Roberts",
-        "Khan",
-        "Lewis",
-        "Jackson",
-        "Clarke",
-        "James",
-        "Phillips",
-        "Wilson",
-        "Ali",
-        "Mason",
-        "Mitchell",
-        "Rose",
-        "Davis",
-        "Davies",
-        "Rodriguez",
-        "Cox",
-        "Alexander",
-    ]
-
-    for i in range(len(first_names)):
-        user = User()
-        user.name = first_names[i] + " " + last_names[i]
-        user.email = first_names[i].lower() + "@example.com"
-        db.session.add(user)
-
-    sample_text = [
-        {
-            "title": "de Finibus Bonorum et Malorum - Part I",
-            "content": (
-                "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do "
-                "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim "
-                "ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
-                "aliquip ex ea commodo consequat. Duis aute irure dolor in "
-                "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
-                "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
-                "culpa qui officia deserunt mollit anim id est laborum."
-            ),
-        },
-        {
-            "title": "de Finibus Bonorum et Malorum - Part II",
-            "content": (
-                "Sed ut perspiciatis unde omnis iste natus error sit voluptatem "
-                "accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae "
-                "ab illo inventore veritatis et quasi architecto beatae vitae dicta "
-                "sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit "
-                "aspernatur aut odit aut fugit, sed quia consequuntur magni dolores "
-                "eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, "
-                "qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, "
-                "sed quia non numquam eius modi tempora incidunt ut labore et dolore "
-                "magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis "
-                "nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut "
-                "aliquid ex ea commodi consequatur? Quis autem vel eum iure "
-                "reprehenderit qui in ea voluptate velit esse quam nihil molestiae "
-                "consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla "
-                "pariatur?"
-            ),
-        },
-        {
-            "title": "de Finibus Bonorum et Malorum - Part III",
-            "content": (
-                "At vero eos et accusamus et iusto odio dignissimos ducimus qui "
-                "blanditiis praesentium voluptatum deleniti atque corrupti quos "
-                "dolores et quas molestias excepturi sint occaecati cupiditate non "
-                "provident, similique sunt in culpa qui officia deserunt mollitia "
-                "animi, id est laborum et dolorum fuga. Et harum quidem rerum "
-                "facilis est et expedita distinctio. Nam libero tempore, cum soluta "
-                "nobis est eligendi optio cumque nihil impedit quo minus id quod "
-                "maxime placeat facere possimus, omnis voluptas assumenda est, omnis "
-                "dolor repellendus. Temporibus autem quibusdam et aut officiis debitis "
-                "aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae "
-                "sint et molestiae non recusandae. Itaque earum rerum hic tenetur a "
-                "sapiente delectus, ut aut reiciendis voluptatibus maiores alias "
-                "consequatur aut perferendis doloribus asperiores repellat."
-            ),
-        },
-    ]
-
-    for entry in sample_text:
-        page = Page()
-        page.title = entry["title"]
-        page.content = entry["content"]
-        db.session.add(page)
-
+    db.session.add_all(
+        User(
+            name=f"{name} {surname}",
+            email=f"{name.lower()}.{surname.lower()}@example.com",
+        )
+        for name, surname in zip(names, surnames, strict=False)
+    )
+    db.session.add_all(
+        Page(title=entry["title"], content=entry["content"]) for entry in pages
+    )
+    db.session.add(Sale(item="Sample Item 1", amount=19.99))
     db.session.commit()
-    return
 
 
 if __name__ == "__main__":
-    admin.add_view(UserAdmin(User, db.session))
-    admin.add_view(CustomView(Page, db.session))
+    admin.add_view(UserAdmin(User, db))
+    admin.add_view(CustomView(Page, db))
+    admin.add_view(CustomView(Sale, db))
 
     app_dir = op.realpath(os.path.dirname(__file__))
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])
     if not os.path.exists(database_path):
         with app.app_context():
-            build_sample_db()
+            build_sample_db(first_names, last_names, sample_text)
 
     app.run(debug=True)

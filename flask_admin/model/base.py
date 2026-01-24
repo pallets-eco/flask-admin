@@ -68,7 +68,7 @@ from flask_admin.base import expose
 from flask_admin.form import BaseForm
 from flask_admin.form import FormOpts
 from flask_admin.form import rules
-from flask_admin.helpers import flash_errors
+from flask_admin.helpers import flash_errors, is_form_submitted
 from flask_admin.helpers import get_form_data
 from flask_admin.helpers import get_redirect_target
 from flask_admin.helpers import validate_form_on_submit
@@ -777,7 +777,9 @@ class BaseModelView(BaseView, ActionsMixin):
         dict[
             str,
             AjaxModelLoader
-            | dict[str, str | t.Iterable[t.Union[str, T_PEEWEE_FIELD]] | int],
+            | dict[
+                str | T_COLUMN, str | t.Iterable[str | T_PEEWEE_FIELD | T_COLUMN] | int
+            ],
         ]
         | None
     ) = None
@@ -2343,6 +2345,7 @@ class BaseModelView(BaseView, ActionsMixin):
             return redirect(return_url)
 
         form = self.create_form()
+
         if not hasattr(form, "_validated_ruleset") or not form._validated_ruleset:
             self._validate_form_instance(ruleset=self._form_create_rules, form=form)
 
@@ -2353,7 +2356,7 @@ class BaseModelView(BaseView, ActionsMixin):
             if model:
                 flash(gettext("Record was successfully created."), "success")
                 if "_add_another" in request.form:
-                    return redirect(request.url)
+                    return redirect(self.get_url(".create_view", url=return_url))
                 elif "_continue_editing" in request.form:
                     # if we have a valid model, try to go to the edit view
                     if model is not True:
@@ -2367,6 +2370,9 @@ class BaseModelView(BaseView, ActionsMixin):
                     model = t.cast(T_ORM_MODEL, model)
                     # save button
                     return redirect(self.get_save_return_url(model, is_created=True))
+        else:
+            if is_form_submitted():
+                flash(gettext("Failed to create record."), "danger")
 
         form_opts = FormOpts(
             widget_args=self.form_widget_args, form_rules=self._form_create_rules
@@ -2418,6 +2424,9 @@ class BaseModelView(BaseView, ActionsMixin):
                 else:
                     # save button
                     return redirect(self.get_save_return_url(model, is_created=False))
+        else:
+            if is_form_submitted():
+                flash(gettext("Failed to save record."), "danger")
 
         if request.method == "GET" or form.errors:
             self.on_form_prefill(form, id)
@@ -2684,12 +2693,33 @@ class BaseModelView(BaseView, ActionsMixin):
     @expose("/ajax/update/", methods=("POST",))
     def ajax_update(self) -> None | tuple[str, int] | str:
         """
-        Edits a single column of a record in list view.
+        Edits a single column of a record in list view. Usually used with
+        `column_editable_list` that integrates with the x-editable library.
+
+        .. code-block:: javascript
+
+            // you can use jQuery to make ajax calls like this:
+
+            $.ajax({
+                url: '/admin/<your_model_view_endpoint>/ajax/update/',
+                type: 'POST',
+                data: {
+                    "list_form_pk" : "<primary_key_value>",
+                    "<column_name>": "<new_value>"
+                },
+                success: function(response) {
+                    // handle success
+                },
+                error: function(response) {
+                    // handle error
+                }
+            });
+
         """
         if not self.column_editable_list:
             abort(404)
 
-        form = self.list_form()
+        form = self.list_form()  # returns a form of all fields
 
         # prevent validation issues due to submitting a single field
         # delete all fields except the submitted fields and csrf token
