@@ -218,4 +218,4 @@ class Model1(db.Model):  # type: ignore[name-defined, misc]
         return self.test1
 
     def __str__(self):
-        return self.test1
+        return f"{self.name}"
