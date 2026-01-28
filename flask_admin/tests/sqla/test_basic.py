@@ -854,36 +854,6 @@ def test_column_editable_list(app, db, admin, session_or_db):
         pytest.param("db", id="with_db"),
     ],
 )
-def test_details_view(app, db, admin, session_or_db):
-    with app.app_context():
-        Model1, Model2 = create_models(db)
-
-        param = db if session_or_db == "session" else db.session
-        view_no_details = CustomModelView(Model1, param)
-        admin.add_view(view_no_details)
-
-        # fields are scaffolded
-        view_w_details = CustomModelView(Model2, param, can_view_details=True)
-        admin.add_view(view_w_details)
-
-        # show only specific fields in details w/ column_details_list
-        string_field_view = CustomModelView(
-            Model2,
-            param,
-            can_view_details=True,
-            column_details_list=["string_field"],
-            endpoint="sf_view",
-        )
-        admin.add_view(string_field_view)
-
-
-@pytest.mark.parametrize(
-    "session_or_db",
-    [
-        pytest.param("session", id="with_session_deprecated"),
-        pytest.param("db", id="with_db"),
-    ],
-)
 def test_column_editable_list_with_column_formatter(app, db, admin, session_or_db):
     """Tests column_editable_list with a column_formatter defined for the same field"""
 
