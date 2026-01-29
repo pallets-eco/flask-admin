@@ -254,6 +254,7 @@ class ModelView(BaseModelView):
         menu_class_name=None,
         menu_icon_type=None,
         menu_icon_value=None,
+        tooltip=None,
     ):
         """
         Constructor
@@ -281,6 +282,8 @@ class ModelView(BaseModelView):
 
         :param menu_icon_value:
             Icon glyph name or URL, depending on `menu_icon_type` setting
+        :param tooltip:
+            Tooltip for the menu item
         """
         self._search_fields = []
 
@@ -294,6 +297,7 @@ class ModelView(BaseModelView):
             menu_class_name=menu_class_name,
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
+            tooltip=tooltip,
         )
 
         self._primary_key = self.scaffold_pk()

@@ -205,6 +205,7 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
         menu_class_name: str | None = None,
         menu_icon_type: str | None = None,
         menu_icon_value: str | None = None,
+        tooltip: str | None = None,
     ) -> None:
         """
         Constructor.
@@ -239,6 +240,8 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
              - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
         :param menu_icon_value:
             Icon glyph name or URL, depending on `menu_icon_type` setting
+        :param tooltip:
+            Optional tooltip for the menu item.
         """
         self.name = name
         self.category = category
@@ -251,6 +254,7 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
         self.menu_class_name = menu_class_name
         self.menu_icon_type = menu_icon_type
         self.menu_icon_value = menu_icon_value
+        self.tooltip = tooltip
 
         # Initialized from create_blueprint
         self.admin: Admin | None = None
@@ -514,6 +518,7 @@ class AdminIndexView(BaseView):
         menu_class_name: str | None = None,
         menu_icon_type: str | None = None,
         menu_icon_value: str | None = None,
+        tooltip: str | None = None,
     ) -> None:
         super().__init__(
             name or babel.lazy_gettext("Home"),
@@ -524,6 +529,7 @@ class AdminIndexView(BaseView):
             menu_class_name=menu_class_name,
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
+            tooltip=tooltip,
         )
         self._template = template
 

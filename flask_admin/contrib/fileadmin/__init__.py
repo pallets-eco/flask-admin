@@ -357,6 +357,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         menu_class_name: str | None = None,
         menu_icon_type: str | None = None,
         menu_icon_value: str | None = None,
+        tooltip: str | None = None,
         storage: BaseFileStorage | None = None,
     ) -> None:
         """
@@ -375,6 +376,8 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         :param verify_path:
             Verify if path exists. If set to `True` and path does not exist
             will raise an exception.
+        :param tooltip:
+            Optional tooltip for the menu item.
         :param storage:
             The storage backend that the `BaseFileAdmin` will use to operate on the
             files.
@@ -402,6 +405,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             menu_class_name=menu_class_name,
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
+            tooltip=tooltip,
         )
 
     def is_accessible_path(self, path: str) -> bool:

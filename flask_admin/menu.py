@@ -18,11 +18,13 @@ class BaseMenu:
         icon_type: str | None = None,
         icon_value: str | None = None,
         target: str | None = None,
+        tooltip: str | None = None,
     ) -> None:
         self.name = name
         self.class_name: str = class_name if class_name is not None else ""
         self.icon_type = icon_type
         self.icon_value = icon_value
+        self.tooltip = tooltip
         self.target = target
 
         self.parent: BaseMenu | None = None
@@ -107,6 +109,7 @@ class MenuView(BaseMenu):
             class_name=view.menu_class_name,
             icon_type=view.menu_icon_type,
             icon_value=view.menu_icon_value,
+            tooltip=view.tooltip,
         )
 
         self._view = view
@@ -165,6 +168,7 @@ class MenuLink(BaseMenu):
         icon_type: str | None = None,
         icon_value: str | None = None,
         target: str | None = None,
+        tooltip: str | None = None,
     ) -> None:
         super().__init__(name, class_name, icon_type, icon_value, target)
 
@@ -172,6 +176,7 @@ class MenuLink(BaseMenu):
 
         self.url = url
         self.endpoint = endpoint
+        self.tooltip = tooltip
 
     def get_url(self) -> str:
         return self.url or url_for(self.endpoint)  # type: ignore[arg-type]
