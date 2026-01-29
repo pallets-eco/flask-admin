@@ -3720,6 +3720,9 @@ def test_tooltip_of_menu_items(app, db, admin, session_or_db):
 
     class MyModelView(CustomModelView):
         can_view_details = True
+        column_descriptions = {
+            "test1": 'tooltip of test1. <b class="text-danger">with HTML</b>',
+        }
 
     param = db if session_or_db == "session" else db.session
     # test column_list with a list of strings
@@ -3735,6 +3738,10 @@ def test_tooltip_of_menu_items(app, db, admin, session_or_db):
     data = rv.data.decode("utf-8")
     assert "tooltip of Model1" in data
     assert "tooltip link1" in data
+    assert (
+        "tooltip of test1. &lt;b class=&#34;text-danger&#34;&gt;with HTML&lt;/b&gt;"
+        in data
+    )
 
     rv = client.get("/admin/model2/")
     data = rv.data.decode("utf-8")
