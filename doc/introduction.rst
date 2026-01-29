@@ -349,6 +349,13 @@ To add arbitrary hyperlinks to the menu::
 
   admin.add_link(MenuLink(name='Home Page', url='/', category='Links'))
 
+  # With icon and tooltip
+  admin.add_link(MenuLink(name='Home Page', url='/',
+      category='Links',
+      menu_icon_type='fa',
+      menu_icon_value='fa-home',
+      tooltip='Go to Home Page'))
+
 And to add a menu divider to separate menu items in the menu::
 
   admin.add_menu_item(MenuDivider(), target_category='Links')

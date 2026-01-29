@@ -147,12 +147,15 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
             def index(self):
                 return 'Hello World!'
 
-    Icons can be added to the menu by using `menu_icon_type` and `menu_icon_value`. For
-    example::
+    Icons can be added to the menu by using `menu_icon_type` and `menu_icon_value`.
+    Tooltip also can be injected in the menu item using `tooltip`. For example::
 
         admin.add_view(
             MyView(
-                name='My View', menu_icon_type='glyph', menu_icon_value='glyphicon-home'
+                name='My View',
+                menu_icon_type='glyph',
+                menu_icon_value='glyphicon-home',
+                tooltip='This is my view'
             )
         )
     """
