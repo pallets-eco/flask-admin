@@ -27,7 +27,8 @@ dependencies = [
     "markupsafe>=2.0",
     "werkzeug>=2.0",
     "wtforms>=2.3",
-    "typing_extensions; python_version < '3.11'"
+    "typing_extensions; python_version < '3.11'",
+    "nh3>=0.3.2",
 ]
 
 [project.optional-dependencies]

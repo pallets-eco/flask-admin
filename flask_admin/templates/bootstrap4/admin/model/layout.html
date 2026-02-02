@@ -2,7 +2,7 @@
     <a class="nav-link {{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">{{ _gettext('Add Filter') }}</a>
     <div class="dropdown-menu field-filters">
         {% for k in filter_groups %}
-            <a href="javascript:void(0)" class="dropdown-item filter" onclick="return false;">{{ k | safe }}</a>
+            <a href="javascript:void(0)" class="dropdown-item filter" onclick="return false;">{{ k | make_safe | safe }}</a>
         {% endfor %}
     </div>
 {% endmacro %}
@@ -77,7 +77,7 @@
         {% if search %}
             <div class="form-inline input-group">
               <input  class="form-control {{ input_class }}" size="30" type="text" name="search" value="{{ search }}"
-                       placeholder="{{ _gettext('%(placeholder)s', placeholder=search_placeholder) }}">
+                       placeholder="{{ _gettext('%(placeholder)s', placeholder=search_placeholder) | make_safe  }}">
                 <div class="input-group-append">
                   <span class="input-group-text">
                     <a href="{{ clear_search_url }}" class="align-middle">
@@ -90,7 +90,7 @@
         {% else %}
             <div class="form-inline">
               <input class="form-control {{ input_class }}" size="30" type="text" name="search" value=""
-                       placeholder="{{ _gettext('%(placeholder)s', placeholder=search_placeholder) }}">
+                       placeholder="{{ _gettext('%(placeholder)s', placeholder=search_placeholder) | make_safe }} ">
                 <button class="btn btn-secondary my-2 my-sm-0 ml-2" type="submit">{{ _gettext('Search') }}</button>
             </div>
         {% endif %}

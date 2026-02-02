@@ -87,7 +87,7 @@
                         {% if admin_view.is_sortable(c) %}
                             {% if sort_column == column %}
                                 <a href="{{ sort_url(column, True) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">
-                                    {{ name }}
+                                    {{ name | make_safe | safe }}
                                     {% if sort_desc %}
                                         <span class="fa fa-chevron-up glyphicon glyphicon-chevron-up"></span>
                                     {% else %}
@@ -95,7 +95,9 @@
                                     {% endif %}
                                 </a>
                             {% else %}
-                                <a href="{{ sort_url(column) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">{{ name }}</a>
+                                <a href="{{ sort_url(column) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">
+                                  {{ name | make_safe | safe }}
+                                </a>
                             {% endif %}
                         {% else %}
                             {{ name }}
@@ -124,7 +126,7 @@
                     <td class="list-buttons-column">
                         {% block list_row_actions scoped %}
                           {% for action in list_row_actions %}
-                          {{ action.render_ctx(get_pk_value(row), row) }}
+                          {{ action.render_ctx(get_pk_value(row), row) }} 55
                           {% endfor %}
                         {% endblock %}
                     </td>

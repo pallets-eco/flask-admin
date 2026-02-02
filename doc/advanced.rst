@@ -49,6 +49,34 @@ make sure it is appropriate for your project's security needs.
 
 If you create any of your own templates for Flask-Admin pages, you will need to inject the CSP nonces yourself as appropriate.
 
+Safe HTML support
+------------------
+To support safe HTML rendering avoiding XSS attacks, Flask-Admin allows you to use `nh3 <https://pypi.org/project/nh3/>`_ to sanitize
+any HTML content before rendering it in your templates. `nh3.clean` method is embedded as a Jinja2 filter named `make_safe`.
+You can use it in your templates as follows::
+
+    {{ some_untrusted_html_content | make_safe | safe }}
+
+However, you can customize the allowed tags and attributes by injecting your own policy during the application setup
+code as follows::
+
+  admin = Admin(
+    app,
+    name="Example",
+    theme=Bootstrap4Theme(),
+    safe_html_policy = dict(
+      tags = {'a', 'b', 'i', 'u', 'em', 'strong', 'p', 'br', 'ul', 'ol', 'li'},
+      attributes= {
+        'a': {'href', 'title', 'target'},
+        '*': {'class'}
+      }
+    )
+  )
+
+please refer to `nh3 documentation <https://nh3.readthedocs.io/en/latest/>`_ for more details on how to
+customize the sanitization policy.
+
+
 Adding Custom Javascript and CSS
 --------------------------------
 

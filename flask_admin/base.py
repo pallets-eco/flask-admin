@@ -3,6 +3,7 @@ import typing as t
 import warnings
 from functools import wraps
 
+import nh3
 from flask import abort
 from flask import current_app
 from flask import Flask
@@ -537,6 +538,37 @@ class Admin:
     Collection of the admin views. Also manages menu structure.
     """
 
+    DEFAULT_SAFE_HTML_POLICY = dict(
+        tags={
+            "a",
+            "abbr",
+            "acronym",
+            "b",
+            "blockquote",
+            "code",
+            "em",
+            "i",
+            "li",
+            "ol",
+            "strong",
+            "ul",
+            "h1",
+            "h2",
+            "h3",
+            "p",
+            "br",
+            "span",
+            "div",
+        },
+        attributes={
+            "a": {"href", "title", "target"},
+            "abbr": {"title"},
+            "acronym": {"title"},
+            "blockquote": {"cite"},
+            "*": {"class", "style"},
+        },
+    )
+
     def __init__(
         self,
         app: Flask | None = None,
@@ -551,6 +583,7 @@ class Admin:
         category_icon_classes: dict[str, str] | None = None,
         host: str | None = None,
         csp_nonce_generator: t.Callable[[], t.Any] | None = None,
+        html_safe_policy: dict[str, t.Any] | None = None,
     ) -> None:
         """
         Constructor.
@@ -585,6 +618,12 @@ class Admin:
             The host to register all admin views on. Mutually exclusive with `subdomain`
         :param csp_nonce_generator:
             A callable that returns a nonce to inject into Flask-Admin JS, CSS, etc.
+        :param html_safe_policy:
+            A dict defining the HTML sanitization policy to be used when rendering
+            untrusted HTML. If not provided, a default safe policy will be used. This
+            use the same format as expected by the `nh3.clean` function; for more
+            details, please refer to the [nh3 documentation](https://nh3.readthedocs.io/en/latest/)
+            for the expected format.
         """
         self.app = app
 
@@ -607,6 +646,7 @@ class Admin:
         self.host = host
         self.theme: Theme = theme or Bootstrap4Theme()
         self.category_icon_classes = category_icon_classes or dict()
+        self.html_safe_policy = html_safe_policy
 
         self._validate_admin_host_and_subdomain()
 
@@ -618,6 +658,13 @@ class Admin:
         # Register with application
         if app is not None:
             self._init_extension()
+
+            app.jinja_env.filters["make_safe"] = self._make_safe
+
+    def _make_safe(self, unsafe_html):
+        policy = self.html_safe_policy or self.DEFAULT_SAFE_HTML_POLICY
+        safe_html = nh3.clean(unsafe_html, **policy)
+        return safe_html
 
     def _validate_admin_host_and_subdomain(self) -> None:
         if self.subdomain is not None and self.host is not None:
@@ -862,6 +909,7 @@ class Admin:
         self._validate_admin_host_and_subdomain()
 
         self._init_extension()
+        self.app.jinja_env.filters["make_safe"] = self._make_safe
 
         # Register Index view
         if index_view is not None:

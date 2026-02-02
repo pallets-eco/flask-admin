@@ -101,6 +101,11 @@ class UserAdmin(ModelView):
     page_size_options = (3, 5, 7, 10, 20, 50, 100)
     page_size = 7
 
+    column_labels = {
+        "name": '<script>alert("XSS!")</script> <i class="fa fa-user"></i> Name',
+        "email": '<i class="fa fa-envelope"></i> Email',
+    }
+
 
 class SimplePageView(ModelView):
     can_view_details = True
