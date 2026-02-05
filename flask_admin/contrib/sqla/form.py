@@ -356,6 +356,9 @@ class AdminModelConverter(ModelConverterBase):
             form_choices = getattr(self.view, "form_choices", None)
             if mapper.class_ == self.view.model and form_choices:
                 choices = form_choices.get(prop.key)
+                if "coerce" not in kwargs:
+                    kwargs["coerce"] = column.type.python_type  # type: ignore[attr-defined]
+
                 if choices:
                     return form.Select2Field(  # type: ignore[misc]
                         choices=choices,
