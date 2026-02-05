@@ -29,6 +29,7 @@ from flask_admin.model.form import create_editable_list_form
 from ..._types import T_AJAX_MODEL_LOADER
 from ..._types import T_COLUMN_TYPE_FORMATTERS
 from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
+from ..._types import T_FIELD_ARGS_VALIDATORS_SELECTABLE
 from ..._types import T_MONGO_ENGINE_DOCUMENT
 from ..._types import T_WIDGET
 from .ajax import create_ajax_loader
@@ -481,7 +482,10 @@ class ModelView(BaseModelView):
     def scaffold_list_form(
         self,
         widget: type[T_WIDGET] | None = None,
-        validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
+        validators: dict[
+            str, T_FIELD_ARGS_VALIDATORS_FILES | T_FIELD_ARGS_VALIDATORS_SELECTABLE
+        ]
+        | None = None,
     ) -> type[BaseListForm]:
         """
         Create form for the `index_view` using only the columns from
