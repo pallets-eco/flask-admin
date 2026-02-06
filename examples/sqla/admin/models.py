@@ -1,5 +1,7 @@
 import enum
+import json
 import uuid
+from datetime import date, datetime
 from typing import Optional
 
 import arrow
@@ -7,7 +9,9 @@ from admin import db
 from sqlalchemy import cast
 from sqlalchemy import Column
 from sqlalchemy import Date
+from sqlalchemy import DateTime
 from sqlalchemy import Enum
+from sqlalchemy import event
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import sql
@@ -18,6 +22,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm.attributes import get_history
 from sqlalchemy_utils import ArrowType
 from sqlalchemy_utils import ChoiceType
 from sqlalchemy_utils import ColorType
@@ -27,6 +32,13 @@ from sqlalchemy_utils import IPAddressType
 from sqlalchemy_utils import TimezoneType
 from sqlalchemy_utils import URLType
 from sqlalchemy_utils import UUIDType
+
+
+# Audit Log Action Types
+class AuditActionType(enum.Enum):
+    CREATE = "CREATE"
+    UPDATE = "UPDATE"
+    DELETE = "DELETE"
 
 AVAILABLE_USER_TYPES = [
     ("admin", "Admin"),
@@ -161,3 +173,129 @@ class Tree(db.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+
+# Audit Log Model
+class AuditLog(db.Model):
+    __tablename__ = "audit_log"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    action: Mapped[AuditActionType] = mapped_column(
+        Enum(AuditActionType), nullable=False
+    )
+    model_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    record_id: Mapped[str] = mapped_column(String(100), nullable=False)
+    old_values: Mapped[str | None] = mapped_column(Text, nullable=True)
+    new_values: Mapped[str | None] = mapped_column(Text, nullable=True)
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, default=datetime.utcnow
+    )
+
+    def __repr__(self):
+        return f"<AuditLog {self.id}: {self.action.value} {self.model_name} #{self.record_id}>"
+
+
+def _serialize_value(value):
+    """Serialize a value to a JSON-compatible format."""
+    if value is None:
+        return None
+    if isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, uuid.UUID):
+        return str(value)
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, date):
+        return value.isoformat()
+    if isinstance(value, enum.Enum):
+        return value.value
+    if hasattr(value, 'isoformat'):
+        return value.isoformat()
+    if hasattr(value, '__str__'):
+        return str(value)
+    return repr(value)
+
+
+def _get_model_dict(instance, include_relationships=False):
+    """Convert a model instance to a dictionary of its column values."""
+    result = {}
+    mapper = instance.__class__.__mapper__
+    for column in mapper.columns:
+        key = column.key
+        value = getattr(instance, key, None)
+        result[key] = _serialize_value(value)
+    return result
+
+
+def _get_primary_key(instance):
+    """Get the primary key value of a model instance as a string."""
+    mapper = instance.__class__.__mapper__
+    pk_cols = mapper.primary_key
+    if len(pk_cols) == 1:
+        return str(getattr(instance, pk_cols[0].key))
+    return str(tuple(getattr(instance, col.key) for col in pk_cols))
+
+
+def _create_audit_log(session, action, instance, old_values=None, new_values=None):
+    """Create an audit log entry."""
+    if isinstance(instance, AuditLog):
+        return
+
+    audit = AuditLog(
+        action=action,
+        model_name=instance.__class__.__name__,
+        record_id=_get_primary_key(instance),
+        old_values=json.dumps(old_values) if old_values else None,
+        new_values=json.dumps(new_values) if new_values else None,
+    )
+    session.add(audit)
+
+
+def _after_insert_listener(mapper, connection, target):
+    """Event listener for after insert."""
+    new_values = _get_model_dict(target)
+
+    @event.listens_for(db.session, "after_flush", once=True)
+    def receive_after_flush(session, flush_context):
+        _create_audit_log(session, AuditActionType.CREATE, target, new_values=new_values)
+
+
+def _after_update_listener(mapper, connection, target):
+    """Event listener for after update."""
+    old_values = {}
+    new_values = {}
+
+    for column in mapper.columns:
+        key = column.key
+        history = get_history(target, key)
+        if history.has_changes():
+            old_val = history.deleted[0] if history.deleted else None
+            new_val = history.added[0] if history.added else None
+            old_values[key] = _serialize_value(old_val)
+            new_values[key] = _serialize_value(new_val)
+
+    if old_values:
+        @event.listens_for(db.session, "after_flush", once=True)
+        def receive_after_flush(session, flush_context):
+            _create_audit_log(
+                session, AuditActionType.UPDATE, target,
+                old_values=old_values, new_values=new_values
+            )
+
+
+def _after_delete_listener(mapper, connection, target):
+    """Event listener for after delete."""
+    old_values = _get_model_dict(target)
+
+    @event.listens_for(db.session, "after_flush", once=True)
+    def receive_after_flush(session, flush_context):
+        _create_audit_log(session, AuditActionType.DELETE, target, old_values=old_values)
+
+
+# Register event listeners for all audited models
+AUDITED_MODELS = [User, Post, Tag, Tree]
+
+for model in AUDITED_MODELS:
+    event.listen(model, "after_insert", _after_insert_listener)
+    event.listen(model, "after_update", _after_update_listener)
+    event.listen(model, "after_delete", _after_delete_listener)

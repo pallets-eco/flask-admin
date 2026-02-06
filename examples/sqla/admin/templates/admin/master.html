@@ -1,0 +1,13 @@
+{% extends 'admin/base.html' %}
+
+{% block head_css %}
+{{ super() }}
+<link href="{{ url_for('static', filename='css/custom-theme.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block brand %}
+<span style="display: flex; align-items: center; gap: 8px;">
+    <span style="font-size: 1.5rem;">&#9881;</span>
+    Flask-Admin
+</span>
+{% endblock %}

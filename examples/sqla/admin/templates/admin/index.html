@@ -1,20 +1,52 @@
 {% extends 'admin/master.html' %}
+
 {% block body %}
 {{ super() }}
-<div class="container">
-    <div class="row">
-        <div class="col-sm-10 col-sm-offset-1">
-            <h1>Flask-Admin {{ _gettext('example') }}</h1>
-            <p class="lead">
-                Basic SQLAlchemy model views.
-            </p>
-            <p>
-                This example shows how to add basic CRUD-views for your SQLAlchemy models.
-            </p>
-            <p>
-                The views are generated automatically, but it is perfectly possible to customize them to suit your needs.
-            </p>
-            <a class="btn btn-primary" href="/"><i class="glyphicon glyphicon-chevron-left"></i> {{ _gettext('Back') }}</a>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card" style="text-align: center; padding: 3rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">&#9881;</div>
+                <h1 style="margin-bottom: 0.5rem;">{{ _gettext('Welcome to Flask-Admin') }}</h1>
+                <p class="lead" style="color: #666; margin-bottom: 2rem;">
+                    SQLAlchemy Example with Audit Logging
+                </p>
+
+                <div style="height: 1px; background: linear-gradient(90deg, transparent, #ddd, transparent); margin: 1.5rem 0;"></div>
+
+                <div class="row" style="margin-top: 2rem;">
+                    <div class="col-md-4 mb-3">
+                        <div style="padding: 1.5rem; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border-radius: 12px;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">&#128100;</div>
+                            <h5>Users</h5>
+                            <p style="font-size: 0.9rem; color: #666;">Manage user accounts with advanced filtering</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div style="padding: 1.5rem; background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.1) 100%); border-radius: 12px;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">&#128221;</div>
+                            <h5>Posts</h5>
+                            <p style="font-size: 0.9rem; color: #666;">Create and edit blog posts with tags</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div style="padding: 1.5rem; background: linear-gradient(135deg, rgba(240, 147, 251, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%); border-radius: 12px;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">&#128203;</div>
+                            <h5>Audit Log</h5>
+                            <p style="font-size: 0.9rem; color: #666;">Track all changes with full history</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <a class="btn btn-primary btn-lg" href="/" style="margin-right: 0.5rem;">
+                        <i class="fa fa-globe"></i> {{ _gettext('Change Language') }}
+                    </a>
+                    <a class="btn btn-success btn-lg" href="{{ url_for('user.index_view') }}">
+                        <i class="fa fa-arrow-right"></i> {{ _gettext('Get Started') }}
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

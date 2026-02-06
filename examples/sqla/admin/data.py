@@ -3,6 +3,7 @@ import random
 
 from admin import db
 from admin.models import AVAILABLE_USER_TYPES
+from admin.models import AuditLog
 from admin.models import Post
 from admin.models import Tag
 from admin.models import Tree

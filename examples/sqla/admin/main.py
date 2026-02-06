@@ -15,6 +15,7 @@ from wtforms import validators
 from . import app
 from . import db
 from .models import AVAILABLE_USER_TYPES
+from .models import AuditLog
 from .models import Post
 from .models import Tag
 from .models import Tree
@@ -23,22 +24,213 @@ from .models import User
 
 @app.route("/")
 def index():
-    tmp = """
-<p><a href="/admin/?lang=en">Click me to get to Admin! (English)</a></p>
-<p><a href="/admin/?lang=cs">Click me to get to Admin! (Czech)</a></p>
-<p><a href="/admin/?lang=de">Click me to get to Admin! (German)</a></p>
-<p><a href="/admin/?lang=es">Click me to get to Admin! (Spanish)</a></p>
-<p><a href="/admin/?lang=fa">Click me to get to Admin! (Farsi)</a></p>
-<p><a href="/admin/?lang=fr">Click me to get to Admin! (French)</a></p>
-<p><a href="/admin/?lang=pt">Click me to get to Admin! (Portuguese)</a></p>
-<p><a href="/admin/?lang=ru">Click me to get to Admin! (Russian)</a></p>
-<p><a href="/admin/?lang=pa">Click me to get to Admin! (Punjabi)</a></p>
-<p><a href="/admin/?lang=zh_CN">Click me to get to Admin! (Chinese - Simplified)</a></p>
-<p>
-  <a href="/admin/?lang=zh_TW">Click me to get to Admin! (Chinese - Traditional)</a>
-</p>
-"""
-    return tmp
+    return """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask-Admin Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #1a1a2e;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #ddd, transparent);
+            margin: 20px 0;
+        }
+
+        .language-label {
+            color: #888;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .languages {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .lang-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .lang-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .lang-btn .flag {
+            font-size: 20px;
+        }
+
+        .lang-btn.featured {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+        }
+
+        .lang-btn.featured:hover {
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.4);
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #999;
+            font-size: 13px;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .languages {
+                grid-template-columns: 1fr;
+            }
+
+            .lang-btn.featured {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="logo">&#9881;</div>
+        <h1>Flask-Admin Demo</h1>
+        <p class="subtitle">SQLAlchemy Example with Audit Logging</p>
+
+        <div class="divider"></div>
+
+        <p class="language-label">Select Your Language</p>
+
+        <div class="languages">
+            <a href="/admin/?lang=en" class="lang-btn featured">
+                <span class="flag">&#127468;&#127463;</span>
+                <span>English</span>
+            </a>
+            <a href="/admin/?lang=de" class="lang-btn">
+                <span class="flag">&#127465;&#127466;</span>
+                <span>Deutsch</span>
+            </a>
+            <a href="/admin/?lang=fr" class="lang-btn">
+                <span class="flag">&#127467;&#127479;</span>
+                <span>Fran&#231;ais</span>
+            </a>
+            <a href="/admin/?lang=es" class="lang-btn">
+                <span class="flag">&#127466;&#127480;</span>
+                <span>Espa&#241;ol</span>
+            </a>
+            <a href="/admin/?lang=pt" class="lang-btn">
+                <span class="flag">&#127463;&#127479;</span>
+                <span>Portugu&#234;s</span>
+            </a>
+            <a href="/admin/?lang=ru" class="lang-btn">
+                <span class="flag">&#127479;&#127482;</span>
+                <span>&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</span>
+            </a>
+            <a href="/admin/?lang=cs" class="lang-btn">
+                <span class="flag">&#127464;&#127487;</span>
+                <span>&#268;e&#353;tina</span>
+            </a>
+            <a href="/admin/?lang=fa" class="lang-btn">
+                <span class="flag">&#127470;&#127479;</span>
+                <span>&#1601;&#1575;&#1585;&#1587;&#1740;</span>
+            </a>
+            <a href="/admin/?lang=pa" class="lang-btn">
+                <span class="flag">&#127470;&#127475;</span>
+                <span>&#2602;&#2672;&#2588;&#2622;&#2604;&#2624;</span>
+            </a>
+            <a href="/admin/?lang=zh_CN" class="lang-btn">
+                <span class="flag">&#127464;&#127475;</span>
+                <span>&#31616;&#20307;&#20013;&#25991;</span>
+            </a>
+            <a href="/admin/?lang=zh_TW" class="lang-btn">
+                <span class="flag">&#127481;&#127484;</span>
+                <span>&#32321;&#39636;&#20013;&#25991;</span>
+            </a>
+        </div>
+
+        <div class="footer">
+            Powered by <a href="https://github.com/flask-admin/flask-admin" target="_blank">Flask-Admin</a>
+        </div>
+    </div>
+</body>
+</html>"""
 
 
 @app.route("/favicon.ico")
@@ -304,12 +496,48 @@ class TreeView(ModelView):
         return super().render(template, foo="bar", **kwargs)
 
 
+class AuditLogAdmin(ModelView):
+    """Read-only view for audit log entries."""
+    can_create = False
+    can_edit = False
+    can_delete = False
+    can_view_details = True
+    column_default_sort = ("timestamp", True)
+    column_list = [
+        "id",
+        "timestamp",
+        "action",
+        "model_name",
+        "record_id",
+    ]
+    column_details_list = [
+        "id",
+        "timestamp",
+        "action",
+        "model_name",
+        "record_id",
+        "old_values",
+        "new_values",
+    ]
+    column_filters = [
+        "action",
+        "model_name",
+        "record_id",
+        "timestamp",
+    ]
+    column_searchable_list = [
+        "model_name",
+        "record_id",
+    ]
+
+
 admin = Admin(app, name="Example: SQLAlchemy", theme=Bootstrap4Theme(swatch="default"))
 
 admin.add_view(UserAdmin(User, db))
 admin.add_view(ModelView(Tag, db))
 admin.add_view(PostAdmin(db))
 admin.add_view(TreeView(Tree, db, category="Other"))
+admin.add_view(AuditLogAdmin(AuditLog, db, name="Audit Log", category="Other"))
 admin.add_sub_category(name="Links", parent_name="Other")
 admin.add_link(MenuLink(name="Back Home", url="/", category="Links"))
 admin.add_link(
