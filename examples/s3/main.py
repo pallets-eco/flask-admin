@@ -72,7 +72,7 @@ if __name__ == "__main__":
                 s3_client=s3_client,
                 name="S3 with Prefix",
                 prefix="some-directory/",
-                endpoint= "s3-with-prefix"
+                endpoint="s3-with-prefix",
             )
         )
 

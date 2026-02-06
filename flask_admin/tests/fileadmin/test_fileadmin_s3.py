@@ -201,7 +201,6 @@ class TestS3FileAdmin(Base.FileAdminTests):
         rv = client.get("/admin/myfileadmin/b/xx/yy/zz")
         assert rv.status_code == 200
 
-
     def test_prefix(self, app, admin, mock_s3_client):
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
@@ -221,20 +220,18 @@ class TestS3FileAdmin(Base.FileAdminTests):
 
         client = app.test_client()
 
-
         # upload to deep path
         rv = client.post(
-            f"/admin/myfileadmin/upload/zz/",
-            data=dict(upload=(BytesIO(b"test content"), f"test_upload.txt")),
+            "/admin/myfileadmin/upload/zz/",
+            data=dict(upload=(BytesIO(b"test content"), "test_upload.txt")),
             follow_redirects=True,
         )
         assert rv.status_code == 200
-        assert f"Successfully saved file: test_upload.txt" in rv.text
+        assert "Successfully saved file: test_upload.txt" in rv.text
 
-        rv = client.get(f"/admin/myfileadmin/b/zz/")
+        rv = client.get("/admin/myfileadmin/b/zz/")
         assert rv.status_code == 200
-        assert f"path=zz/test_upload.txt" in rv.text
-
+        assert "path=zz/test_upload.txt" in rv.text
 
         # rename in deep path
         rv = client.post(
@@ -248,7 +245,6 @@ class TestS3FileAdmin(Base.FileAdminTests):
         assert "path=zz/dummy.txt" in rv.text
         assert "path=test_upload.txt" not in rv.text
 
-
         # download from deep path
         rv = client.get("/admin/myfileadmin/download/zz/dummy.txt")
         assert rv.status_code == 302
@@ -257,24 +253,26 @@ class TestS3FileAdmin(Base.FileAdminTests):
         )
 
         # delete
-        rv = client.post("/admin/myfileadmin/delete", data=dict(path="zz/dummy.txt"), follow_redirects=True)
+        rv = client.post(
+            "/admin/myfileadmin/delete",
+            data=dict(path="zz/dummy.txt"),
+            follow_redirects=True,
+        )
         assert rv.status_code == 200
         assert "successfully deleted" in rv.text
-
-
 
     @pytest.mark.parametrize(
         "prefix, res_code",
         [
-          ("xx/yy", 200),
-          ("xx/yy/", 200),
-          ("/xx/yy", 200),
-          ("/xx/yy/", 200),
-          ("/xx//yy/", 200),
-          ("xx\\yy", 404),
-          ("/xx\\yy/", 404),
-          ("xx/../xx/yy", 200),
-          ("xx/../xx//yy", 200),
+            ("xx/yy", 200),
+            ("xx/yy/", 200),
+            ("/xx/yy", 200),
+            ("/xx/yy/", 200),
+            ("/xx//yy/", 200),
+            ("xx\\yy", 404),
+            ("/xx\\yy/", 404),
+            ("xx/../xx/yy", 200),
+            ("xx/../xx//yy", 200),
         ],
     )
     def test_base_path(self, app, admin, mock_s3_client, prefix, res_code):
@@ -300,16 +298,15 @@ class TestS3FileAdmin(Base.FileAdminTests):
         rv = client.get("/admin/myfileadmin/")
         assert rv.status_code == res_code
         if res_code == 200:
-          assert "dummy2.txt" not in rv.data.decode("utf-8")
+            assert "dummy2.txt" not in rv.data.decode("utf-8")
 
         rv = client.get("/admin/myfileadmin/b/zz/")
         assert rv.status_code == res_code
         if res_code == 200:
-          assert "dummy2.txt" in rv.data.decode("utf-8")
+            assert "dummy2.txt" in rv.data.decode("utf-8")
 
         rv = client.get("/admin/myfileadmin/b/xx/zz/")
         assert rv.status_code == 404
-
 
     @pytest.mark.parametrize(
         "prefix",
@@ -345,5 +342,3 @@ class TestS3FileAdmin(Base.FileAdminTests):
         rv = client.get("/admin/myfileadmin/b/xx/yy/zz")
         assert rv.status_code == 200
         assert "dummy2.txt" in rv.data.decode("utf-8")
-
-

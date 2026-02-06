@@ -65,7 +65,9 @@ class S3Storage(BaseFileStorage):
         fileadmin_view = MyS3Admin(storage=S3Storage(...))
     """
 
-    def __init__(self, s3_client: BaseClient, bucket_name: str, prefix: str = "") -> None:
+    def __init__(
+        self, s3_client: BaseClient, bucket_name: str, prefix: str = ""
+    ) -> None:
         """
         Constructor
 
@@ -86,11 +88,10 @@ class S3Storage(BaseFileStorage):
         self.bucket_name = bucket_name
         self.separator = "/"
         prefix = self.normpath(prefix).lstrip("/")
-        prefix = "" if prefix in [".", "./"] else prefix 
+        prefix = "" if prefix in [".", "./"] else prefix
         if prefix and not prefix.endswith(self.separator):
             prefix += self.separator
         self.prefix = prefix
-
 
     @_strip_leading_slash_from("directory")
     def get_files(self, directory: str, path: str) -> list[t.Any]:
@@ -100,7 +101,7 @@ class S3Storage(BaseFileStorage):
             return name
 
         def rcoat(x: str) -> str:
-            return x.ljust(len(x)+1, "/") if not x.endswith("/") else x
+            return x.ljust(len(x) + 1, "/") if not x.endswith("/") else x
 
         files = []
         directories = []
@@ -114,7 +115,9 @@ class S3Storage(BaseFileStorage):
             ):
                 for common_prefix in page.get("CommonPrefixes", []):
                     name = common_prefix["Prefix"].removeprefix(path).rstrip("/")
-                    rel_path = common_prefix["Prefix"].removeprefix(self.prefix).rstrip("/")
+                    rel_path = (
+                        common_prefix["Prefix"].removeprefix(self.prefix).rstrip("/")
+                    )
                     directories.append((name, rel_path, True, 0, 0))
 
                 for obj in page.get("Contents", []):
@@ -170,7 +173,7 @@ class S3Storage(BaseFileStorage):
     def path_exists(self, path: str) -> bool:
         if path == "":
             return True
-        keys = self._get_path_keys(path) 
+        keys = self._get_path_keys(path)
         return any([k.startswith(path) for k in keys])
 
     def get_base_path(self) -> str:
@@ -292,12 +295,12 @@ class S3FileAdmin(BaseFileAdmin):
 
         :param bucket_name:
             Name of the bucket that the files are on.
-        
+
         :param prefix:
             Optional prefix to use within the bucket. Note that this is different
             from the `base_path` parameter of the BaseFileAdmin, which is handled
-            internally by the S3Storage. Prefix must be specified without leading 
-            slash and will be normalized to end with a slash.  
+            internally by the S3Storage. Prefix must be specified without leading
+            slash and will be normalized to end with a slash.
 
     Sample usage::
 
