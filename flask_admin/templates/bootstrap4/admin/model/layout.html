@@ -74,7 +74,7 @@
         {% if sort_desc %}
             <input type="hidden" name="desc" value="1">
         {% endif %}
-        <div class="search-controls d-flex flex-column flex-sm-row w-100 align-items-stretch">
+        <div class="search-controls d-flex align-items-stretch">
             <div class="input-group flex-fill">
               <input class="form-control {{ input_class }} flex-fill" size="30" type="text" name="search"
                        value="{{ search or '' }}"
@@ -89,7 +89,7 @@
                 </div>
                 {% endif %}
             </div>
-            <button class="btn btn-secondary mt-2 mt-sm-0 ml-sm-2 w-100 w-sm-auto" type="submit">{{ _gettext('Search') }}</button>
+            <button class="btn btn-secondary mt-2 mt-sm-0 ml-sm-2" type="submit">{{ _gettext('Search') }}</button>
         </div>
     </form>
 {% endmacro %}

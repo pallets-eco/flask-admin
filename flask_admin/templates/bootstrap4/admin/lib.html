@@ -124,7 +124,7 @@
   {% set prepend = kwargs.pop('prepend', None) %}
   {% set append = kwargs.pop('append', None) %}
   {% set column_class = kwargs.pop('column_class', 'col-12 col-md-6') %}
-  <div class="form-group row {{ column_class }}">
+  <div class="form-group {{ column_class }} row form-row">
     <label for="{{ field.id }}"
            class="col-form-label col-12 col-md-3 {% if field.widget.input_type is defined and field.widget.input_type == 'checkbox' %}d-block mb-0{% endif %}">
         {{ field.label.text }}
