@@ -52,11 +52,15 @@ if t.TYPE_CHECKING:
     from arrow import Arrow as T_ARROW  # noqa
     from flask_babel import LazyString as T_LAZY_STRING  # noqa
 
-    from flask_sqlalchemy import Model as T_SQLALCHEMY_MODEL
-    from peewee import Model as T_PEEWEE_MODEL
-    from peewee import Field as T_PEEWEE_FIELD  # noqa
-    from pymongo import MongoClient
+    from flask_sqlalchemy import Model as T_SQLALCHEMY_LEGACY_MODEL
+    from sqlalchemy.orm import DeclarativeBase as T_DECLARATIVE_BASE
+
+    T_SQLALCHEMY_MODEL = T_SQLALCHEMY_LEGACY_MODEL | T_DECLARATIVE_BASE
+
     from mongoengine import Document as T_MONGO_ENGINE_CLIENT
+    from peewee import Field as T_PEEWEE_FIELD  # noqa
+    from peewee import Model as T_PEEWEE_MODEL
+    from pymongo import MongoClient
     from sqlalchemy import Column
     from sqlalchemy import Table as T_TABLE  # noqa
     from sqlalchemy.orm import InstrumentedAttribute
@@ -144,20 +148,24 @@ T_ITER_CHOICES = t.Union[
 T_OPTION = tuple[str, T_TRANSLATABLE]
 T_OPTION_LIST = t.Sequence[T_OPTION]
 T_OPTIONS = t.Union[None, T_OPTION_LIST, t.Callable[[], T_OPTION_LIST]]
-T_ORM_MODEL = t.Union[
-    T_SQLALCHEMY_MODEL, T_PEEWEE_MODEL, T_MONGO_CLIENT, T_MONGO_ENGINE_CLIENT
-]
+T_ORM_MODEL = (
+    T_SQLALCHEMY_LEGACY_MODEL
+    | T_DECLARATIVE_BASE
+    | T_PEEWEE_MODEL
+    | T_MONGO_CLIENT
+    | T_MONGO_ENGINE_CLIENT
+)
 T_QUERY_AJAX_MODEL_LOADER = t.Union[
     T_PEEWEE_QUERY_AJAX_MODEL_LOADER, T_SQLA_QUERY_AJAX_MODEL_LOADER
 ]
 T_RESPONSE = t.Union[Response, Wkzg_Response]
+
 T_SQLALCHEMY_INLINE_MODELS = t.Sequence[
-    t.Union[
-        T_INLINE_FORM_ADMIN,
-        type[T_SQLALCHEMY_MODEL],
-        tuple[type[T_SQLALCHEMY_MODEL], dict[str, t.Any]],
-    ]
+    T_INLINE_FORM_ADMIN
+    | type[T_SQLALCHEMY_LEGACY_MODEL | T_DECLARATIVE_BASE]
+    | tuple[type[T_SQLALCHEMY_LEGACY_MODEL | T_DECLARATIVE_BASE] | dict[str, t.Any]]
 ]
+
 T_RULES_SEQUENCE = t.Sequence[
     t.Union[str, T_FIELD_SET, T_BASE_RULE, T_HEADER, T_FLASK_ADMIN_FIELD, T_MACRO]
 ]

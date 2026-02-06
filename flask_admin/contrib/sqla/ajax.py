@@ -1,6 +1,5 @@
 import typing as t
 
-from flask_sqlalchemy.model import Model
 from sqlalchemy import and_
 from sqlalchemy import cast
 from sqlalchemy import or_
@@ -12,6 +11,7 @@ from flask_admin._compat import string_types
 from flask_admin.model.ajax import AjaxModelLoader
 from flask_admin.model.ajax import DEFAULT_PAGE_SIZE
 
+from ..._types import T_SQLALCHEMY_MODEL
 from ._compat import _get_deprecated_session
 from ._compat import _warn_session_deprecation
 from ._types import T_SESSION_OR_DB
@@ -27,7 +27,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         self,
         name: str,
         session: T_SESSION_OR_DB,
-        model: type[Model],
+        model: type[T_SQLALCHEMY_MODEL],
         **options: t.Any,
     ) -> None:
         """
@@ -78,7 +78,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
-    def format(self, model: Model | None) -> tuple[t.Any, str] | None:  # type: ignore[override]
+    def format(self, model: T_SQLALCHEMY_MODEL | None) -> tuple[t.Any, str] | None:  # type: ignore[override]
         if not model:
             return None
 
