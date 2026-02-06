@@ -23,7 +23,8 @@
 
 /* List View - fix checkbox column width */
 .list-checkbox-column {
-    width: 14px;
+    width: auto;
+    min-width: 40px;
 }
 
 /* List View - fix overlapping border between actions and table */
@@ -43,31 +44,128 @@
     white-space: nowrap;
 }
 
+/* List control tabs */
+.nav-tabs.nav-list-controls {
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.nav-tabs.nav-list-controls .nav-item {
+    margin-right: 0.5rem;
+    margin-bottom: 0.4rem;
+}
+
+.nav-tabs.nav-list-controls .nav-link {
+    white-space: nowrap;
+}
+
+.nav-item.nav-search {
+    flex: 1 1 100%;
+    margin-bottom: 0;
+}
+
+.nav-item.nav-search .nav-search-form {
+    width: 100%;
+}
+
+.nav-search-form {
+    width: 100%;
+}
+
+.nav-search-form .search-controls {
+    width: 100%;
+    gap: 0.5rem;
+}
+
+.nav-search-form .search-controls .input-group {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.nav-search-form .search-controls input.form-control {
+    min-width: 0;
+}
+
+.nav-search-form .search-controls button {
+    flex: 0 0 auto;
+}
+
+@media (min-width: 576px) {
+    .nav-item.nav-search {
+        flex: 0 0 auto;
+        max-width: 360px;
+        margin-left: auto;
+    }
+    .nav-tabs.nav-list-controls .nav-item {
+        margin-bottom: 0.25rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .nav-search-form .search-controls {
+        flex-direction: column;
+    }
+    .nav-search-form .search-controls button {
+        width: 100%;
+    }
+}
+
 /* Filters */
-table.filters {
-    border-collapse: collapse;
-    border-spacing: 4px;
+.filters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 12px 0 20px 0;
 }
 
-/* prevents gap between table and actions while there are no filters set */
-table.filters:not(:empty) {
-    margin: 12px 0px 20px 0px;
+.filters:empty {
+    margin: 0;
 }
 
-/* spacing between filter X button, operation, and value field */
-/* uses tables instead of form classes for bootstrap2-3 compatibility */
-table.filters tr td {
-    padding-right: 5px;
-    padding-bottom: 3px;
+.filter-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.5rem 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    background-color: #fff;
 }
 
-/* Filters - Select2 Boxes */
+.filter-label {
+    flex: 0 0 auto;
+    min-width: 160px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-operation {
+    flex: 0 0 auto;
+    min-width: 120px;
+}
+
+.filter-field {
+    flex: 1 1 auto;
+    min-width: 150px;
+}
+
 .filters .filter-op {
-    width: 130px;
+    width: auto;
+    min-width: 120px;
 }
 
 .filters .filter-val {
-    width: 220px;
+    width: auto;
+    min-width: 200px;
+    flex: 1 1 auto;
+}
+
+.filter-label .remove-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
 }
 
 /* Image thumbnails */
@@ -81,6 +179,24 @@ table.filters tr td {
 /* required because form-horizontal removes top padding */
 div.container > .admin-form {
     margin-top: 35px;
+}
+
+/* Submit rows */
+.submit-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+@media (max-width: 576px) {
+    .submit-row {
+        justify-content: center;
+    }
+    .submit-row .btn {
+        flex: 1 1 auto;
+        min-width: 120px;
+    }
 }
 
 /* Form Field Description - Appears when field has 'description' attribute */
@@ -107,4 +223,72 @@ body.modal-open {
 .table-responsive
 {
     overflow-x: auto;
+}
+
+@media (max-width: 576px) {
+    .table-responsive-mobile .table thead {
+        display: none;
+    }
+
+    .table-responsive-mobile .table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+    }
+
+    .table-responsive-mobile .table tbody td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border: none;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .table-responsive-mobile .table tbody td:last-child {
+        border-bottom: none;
+    }
+
+    .table-responsive-mobile .table tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        margin-right: 0.5rem;
+        flex: 1 1 40%;
+    }
+
+    .filters {
+        gap: 0.5rem;
+        margin: 0;
+    }
+
+    .filter-item {
+        flex-direction: column;
+        padding: 0.5rem;
+    }
+
+    .filter-label,
+    .filter-operation,
+    .filter-field {
+        width: 100%;
+    }
+
+    .list-buttons-column {
+        white-space: normal;
+        width: 100%;
+    }
+
+    .form-control {
+        width: 100%;
+    }
+
+    .hide-mobile {
+        display: none !important;
+    }
+}
+
+@media (min-width: 577px) and (max-width: 991px) {
+    .filters .filter-op {
+        min-width: 100px;
+    }
 }

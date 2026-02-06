@@ -22,11 +22,11 @@
     {% endif %}
 
     {% if min > 0 %}
-    <li class="page-item">
+    <li class="page-item d-none d-sm-block">
         <a class="page-link" href="{{ generator(0) }}">&laquo;</a>
     </li>
     {% else %}
-    <li class="page-item disabled">
+    <li class="page-item disabled d-none d-sm-block">
         <a class="page-link" href="javascript:void(0)">&laquo;</a>
     </li>
     {% endif %}
@@ -41,12 +41,16 @@
     {% endif %}
 
     {% for p in range(min, max) %}
+    {% set hide_on_mobile = '' %}
+    {% if p < page - 1 or p > page + 1 %}
+        {% set hide_on_mobile = ' d-none d-sm-block' %}
+    {% endif %}
     {% if page == p %}
-    <li class="page-item active">
+    <li class="page-item active{{ hide_on_mobile }}">
         <a class="page-link" href="javascript:void(0)">{{ p + 1 }}</a>
     </li>
     {% else %}
-    <li class="page-item">
+    <li class="page-item{{ hide_on_mobile }}">
         <a class="page-link" href="{{ generator(p) }}">{{ p + 1 }}</a>
     </li>
     {% endif %}
@@ -62,11 +66,11 @@
     </li>
     {% endif %}
     {% if max < pages %}
-    <li class="page-item">
+    <li class="page-item d-none d-sm-block">
         <a class="page-link" href="{{ generator(pages - 1) }}">&raquo;</a>
     </li>
     {% else %}
-    <li class="page-item disabled">
+    <li class="page-item disabled d-none d-sm-block">
         <a class="page-link" href="javascript:void(0)">&raquo;</a>
     </li>
     {% endif %}
@@ -119,55 +123,60 @@
   {% set direct_error = h.is_field_error(field.errors) %}
   {% set prepend = kwargs.pop('prepend', None) %}
   {% set append = kwargs.pop('append', None) %}
-  <div class="form-group {{ kwargs.get('column_class', '') }}">
-    <label for="{{ field.id }}" class="col-form-label {% if field.widget.input_type is defined and field.widget.input_type == 'checkbox' %}d-block mb-0{% endif %}">{{ field.label.text }}
+  {% set column_class = kwargs.pop('column_class', 'col-12 col-md-6') %}
+  <div class="form-group row {{ column_class }}">
+    <label for="{{ field.id }}"
+           class="col-form-label col-12 col-md-3 {% if field.widget.input_type is defined and field.widget.input_type == 'checkbox' %}d-block mb-0{% endif %}">
+        {{ field.label.text }}
         {% if h.is_required_form_field(field) %}
           <strong class="text-danger">&#42;</strong>
         {%- else -%}
           &nbsp;
         {%- endif %}
     </label>
-    {% if prepend or append %}
-    <div class="input-group">
-      {%- if prepend -%}
-      <div class="input-group-prepend">
-        {{ prepend }}
-      </div>
-      {%- endif -%}
-    {% endif %}
-      {% if field.widget.input_type is defined and field.widget.input_type == 'checkbox' %}
-        {% set _class = kwargs.setdefault('class', '') %}
-      {% elif field.widget.input_type is defined and field.widget.input_type == 'file' %}
-        {% set _class = kwargs.setdefault('class', 'form-control-file') %}
-      {% else %}
-        {% set _class = kwargs.setdefault('class', 'form-control') %}
-      {% endif %}
-      {%- if direct_error %} {% set _ = kwargs.update({'class': kwargs['class'] ~ ' is-invalid'}) %} {% endif -%}
-      {{ field(**kwargs) | safe }}
-      {%- if append -%}
-      <div class="input-group-append">
-        {{ append }}
-      </div>
-      {%- endif -%}
-      {% if direct_error %}
-        <div class="invalid-feedback">
-          <ul class="form-text text-danger {% if field.widget.input_type == 'checkbox' %}mt-0{% endif %}">
-          {% for e in field.errors if e is string %}
-            <li>{{ e }}</li>
-          {% endfor %}
-          </ul>
+    <div class="col-12 col-md-9">
+        {% if prepend or append %}
+        <div class="input-group">
+          {%- if prepend -%}
+          <div class="input-group-prepend">
+            {{ prepend }}
+          </div>
+          {%- endif -%}
+        {% endif %}
+          {% if field.widget.input_type is defined and field.widget.input_type == 'checkbox' %}
+            {% set _class = kwargs.setdefault('class', '') %}
+          {% elif field.widget.input_type is defined and field.widget.input_type == 'file' %}
+            {% set _class = kwargs.setdefault('class', 'form-control-file') %}
+          {% else %}
+            {% set _class = kwargs.setdefault('class', 'form-control') %}
+          {% endif %}
+          {%- if direct_error %} {% set _ = kwargs.update({'class': kwargs['class'] ~ ' is-invalid'}) %} {% endif -%}
+          {{ field(**kwargs) | safe }}
+          {%- if append -%}
+          <div class="input-group-append">
+            {{ append }}
+          </div>
+          {%- endif -%}
+        {% if prepend or append %}
         </div>
-      {% elif field.description %}
-        <small class="form-text text-muted {% if field.widget.input_type == 'checkbox' %}mt-0{% endif %}">
-            {{ field.description|safe }}
-        </small>
-      {% endif %}
-    {% if prepend or append %}
+        {% endif %}
+        {% if direct_error %}
+          <div class="invalid-feedback">
+            <ul class="form-text text-danger {% if field.widget.input_type == 'checkbox' %}mt-0{% endif %}">
+            {% for e in field.errors if e is string %}
+              <li>{{ e }}</li>
+            {% endfor %}
+            </ul>
+          </div>
+        {% elif field.description %}
+          <small class="form-text text-muted {% if field.widget.input_type == 'checkbox' %}mt-0{% endif %}">
+              {{ field.description|safe }}
+          </small>
+        {% endif %}
+        {% if caller %}
+          {{ caller(form, field, direct_error, kwargs) }}
+        {% endif %}
     </div>
-    {% endif %}
-    {% if caller %}
-      {{ caller(form, field, direct_error, kwargs) }}
-    {% endif %}
   </div>
 {% endmacro %}
 
@@ -222,8 +231,8 @@
         {% endif %}
   {% else %}
     <hr>
-    <div class="form-group">
-      <div class="col-md-offset-2 col-md-10 submit-row">
+    <div class="form-group row">
+      <div class="offset-md-2 col-12 col-md-10 submit-row">
         <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
         {% if extra %}
         {{ extra }}
