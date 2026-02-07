@@ -1,5 +1,6 @@
 import os.path as op
 import secrets
+import typing as t
 
 import pytest
 from bs4 import BeautifulSoup
@@ -141,14 +142,14 @@ class TestCSPOnAllPages:
 
     @pytest.fixture
     def myfileview(self, app, admin):
-        class MyFileView(fileadmin.FileAdmin):  # type: ignore[valid-type, misc]
+        class MyFileView(fileadmin.FileAdmin):
             can_delete = True
             can_upload = True
             can_delete_dirs = True
             can_rename = True
             editable_extensions = ("txt",)
 
-        vi_kwargs = dict()
+        vi_kwargs: dict[str, t.Any] = dict()
         vi_kwargs["endpoint"] = "fa"
         vi_kwargs.setdefault("name", "Files")
         vi = MyFileView(self._test_files_root, **vi_kwargs)
@@ -158,7 +159,7 @@ class TestCSPOnAllPages:
 
     @pytest.fixture
     def modalfileview(self, app, admin):
-        class ModalFileView(fileadmin.FileAdmin):  # type: ignore[valid-type, misc]
+        class ModalFileView(fileadmin.FileAdmin):
             can_delete = True
             can_upload = True
             can_delete_dirs = True
@@ -169,14 +170,11 @@ class TestCSPOnAllPages:
             upload_modal = True
             editable_extensions = ("txt",)
 
-        vi_kwargs = dict()
+        vi_kwargs: dict[str, t.Any] = dict()
         vi_kwargs.setdefault("name", "ModalFiles")
         vi_kwargs["endpoint"] = "modalfa"
         vi = ModalFileView(self._test_files_root, **vi_kwargs)
 
-        # files_root = op.join(op.dirname(__file__), "files")
-
-        # vi = ModalFileView(base_path=files_root, endpoint="modalfa")
         admin.add_view(vi)
         return vi
 
