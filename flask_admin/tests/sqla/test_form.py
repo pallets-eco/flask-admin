@@ -77,7 +77,7 @@ def test_coerce(app, db, admin, session_or_db):
 
         class MyModelView(ModelView):
             form_columns = ["int_field"]
-            form_choices = {"int_field": [(101, "101"), (150, "150")]}
+            form_choices = {"int_field": [("101", "101"), ("150", "150")]}
             form_args = {
                 "int_field": {"validators": [NumberRange(min=100, max=199)]},
             }

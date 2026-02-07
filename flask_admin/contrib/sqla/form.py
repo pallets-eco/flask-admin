@@ -9,6 +9,8 @@ from enum import EnumMeta
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy.orm import ColumnProperty
+from sqlalchemy.sql.type_api import TypeEngine
+from sqlalchemy_utils import ChoiceType
 from wtforms import Field
 from wtforms import fields
 from wtforms import Form
@@ -36,6 +38,7 @@ from ..._types import T_FIELD_ARGS_PLACES
 from ..._types import T_FIELD_ARGS_VALIDATORS
 from ..._types import T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK
 from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
+from ..._types import T_FIELD_ARGS_VALIDATORS_SELECTABLE
 from ..._types import T_INSTRUMENTED_ATTRIBUTE
 from ..._types import T_MODEL_VIEW
 from ..._types import T_ORM_MODEL
@@ -228,7 +231,7 @@ class AdminModelConverter(ModelConverterBase):
         if isinstance(prop, FieldPlaceholder):
             return form.recreate_field(prop.field)
 
-        kwargs: T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK = {"validators": [], "filters": []}
+        kwargs: T_FIELD_ARGS_VALIDATORS_SELECTABLE = {"validators": [], "filters": []}
 
         if field_args:
             kwargs.update(field_args)  # type: ignore[typeddict-item]
@@ -356,10 +359,11 @@ class AdminModelConverter(ModelConverterBase):
             form_choices = getattr(self.view, "form_choices", None)
             if mapper.class_ == self.view.model and form_choices:
                 choices = form_choices.get(prop.key)
-                if "coerce" not in kwargs:
-                    kwargs["coerce"] = column.type.python_type  # type: ignore[attr-defined]
 
                 if choices:
+                    if "coerce" not in kwargs:
+                        kwargs["coerce"] = coerce_factory(column.type)
+
                     return form.Select2Field(  # type: ignore[misc]
                         choices=choices,
                         allow_blank=column.nullable,  # type: ignore[arg-type]
@@ -651,6 +655,18 @@ def avoid_empty_strings(value: t.Any) -> t.Any:
     return value if value else None
 
 
+def coerce_factory(type_: TypeEngine[t.Any]) -> t.Callable[[t.Any], t.Any]:
+    """
+    Return a function to coerce a column, for use by Select2Field.
+    :param type_: Column type
+    """
+
+    if isinstance(type_, ChoiceType):
+        return choice_type_coerce_factory(type_)
+    else:
+        return type_.python_type
+
+
 def choice_type_coerce_factory(type_: T_CHOICE_TYPE) -> t.Callable[[t.Any], t.Any]:
     """
     Return a function to coerce a ChoiceType column, for use by Select2Field.
@@ -695,7 +711,10 @@ def get_form(
     base_class: type[form.BaseForm] = form.BaseForm,
     only: t.Collection[str | T_INSTRUMENTED_ATTRIBUTE] | None = None,
     exclude: t.Collection[str | T_INSTRUMENTED_ATTRIBUTE] | None = None,
-    field_args: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
+    field_args: dict[
+        str, T_FIELD_ARGS_VALIDATORS_FILES | T_FIELD_ARGS_VALIDATORS_SELECTABLE
+    ]
+    | None = None,
     hidden_pk: bool = False,
     ignore_hidden: bool = True,
     extra_fields: dict[str | T_INSTRUMENTED_ATTRIBUTE, Field] | None = None,
