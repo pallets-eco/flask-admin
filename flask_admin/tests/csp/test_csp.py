@@ -4,7 +4,7 @@ import secrets
 import pytest
 from bs4 import BeautifulSoup
 from flask_admin import Admin
-from flask_admin.contrib.fileadmin import FileAdmin
+from flask_admin.contrib import fileadmin
 from flask_admin.contrib.sqla.view import ModelView
 from flask_sqlalchemy import SQLAlchemy
 
@@ -97,14 +97,6 @@ def fill_db(db, Model1):
 
 
 class TestCSPOnAllPages:
-    _test_files_root = op.join(op.dirname(__file__), "files")
-
-    def fileadmin_class(self):
-        return FileAdmin
-
-    def fileadmin_args(self):
-        return (self._test_files_root, "/files"), {}
-
     @pytest.fixture
     def myview(self, app, admin, db, Model1):
         class MyModelView(ModelView):
@@ -145,23 +137,42 @@ class TestCSPOnAllPages:
 
             return vi
 
+    _test_files_root = op.join(op.dirname(__file__), "files")
+
+    def fileadmin_class(self):
+        return fileadmin.FileAdmin
+
+    def fileadmin_args(self):
+        return (self._test_files_root, "/files"), {}
+
     @pytest.fixture
     def myfileview(self, app, admin):
-        class MyFileView(self.fileadmin_class()):
+        fa_class = self.fileadmin_class()
+        fa_args, fa_kwargs = self.fileadmin_args()
+
+        class MyFileView(fa_class):  # type: ignore[valid-type, misc]
             can_delete = True
             can_upload = True
             can_delete_dirs = True
             can_rename = True
             editable_extensions = ("txt",)
 
-        files_root = op.join(op.dirname(__file__), "files")
-        vi = MyFileView(base_path=files_root, endpoint="fa")
+        vi_kwargs = dict(fa_kwargs)
+        vi_kwargs["endpoint"] = "fa"
+        vi_kwargs.setdefault("name", "Files")
+        vi = MyFileView(*fa_args, **vi_kwargs)
+
+        # files_root = op.join(op.dirname(__file__), "files")
+        vi = MyFileView(*fa_args, **vi_kwargs)
         admin.add_view(vi)
         return vi
 
     @pytest.fixture
     def modalfileview(self, app, admin):
-        class ModalFileView(self.fileadmin_class()):
+        fa_class = self.fileadmin_class()
+        fa_args, fa_kwargs = self.fileadmin_args()
+
+        class ModalFileView(fa_class):  # type: ignore[valid-type, misc]
             can_delete = True
             can_upload = True
             can_delete_dirs = True
@@ -172,9 +183,14 @@ class TestCSPOnAllPages:
             upload_modal = True
             editable_extensions = ("txt",)
 
-        files_root = op.join(op.dirname(__file__), "files")
+        vi_kwargs = dict(fa_kwargs)
+        vi_kwargs.setdefault("name", "ModalFiles")
+        vi_kwargs["endpoint"] = "modalfa"
+        vi = ModalFileView(*fa_args, **vi_kwargs)
 
-        vi = ModalFileView(base_path=files_root, endpoint="modalfa")
+        # files_root = op.join(op.dirname(__file__), "files")
+
+        # vi = ModalFileView(base_path=files_root, endpoint="modalfa")
         admin.add_view(vi)
         return vi
 
