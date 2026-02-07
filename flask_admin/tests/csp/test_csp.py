@@ -1,16 +1,10 @@
 import os.path as op
-import secrets
 import typing as t
 
 import pytest
 from bs4 import BeautifulSoup
 from flask_admin.contrib import fileadmin
 from flask_admin.contrib.sqla.view import ModelView
-
-
-@pytest.fixture
-def nonce():
-    return secrets.token_urlsafe(32)
 
 
 def test_csp_nonces_injected(app, admin, nonce):
@@ -31,8 +25,7 @@ def test_csp_nonces_injected(app, admin, nonce):
         assert tag.attrs["nonce"] == nonce
 
 
-@pytest.fixture
-def Model1(app, db):
+def create_model_class(app, db):
     class Model1(db.Model):  # type: ignore[name-defined, misc]
         def __init__(
             self,
@@ -74,8 +67,7 @@ def fill_db(db, Model1):
 
 
 class TestCSPOnAllPages:
-    @pytest.fixture
-    def myview(self, app, admin, db, Model1):
+    def create_modelview(self, app, admin, db, Model1):
         class MyModelView(ModelView):
             can_create = True
             can_edit = True
@@ -94,8 +86,7 @@ class TestCSPOnAllPages:
 
             return myview
 
-    @pytest.fixture
-    def modalview(self, app, admin, db, Model1):
+    def create_modelveiw_with_modal(self, app, admin, db, Model1):
         class ModalModelView(ModelView):
             can_create = True
             can_edit = True
@@ -116,8 +107,7 @@ class TestCSPOnAllPages:
 
     _test_files_root = op.join(op.dirname(__file__), "files")
 
-    @pytest.fixture
-    def myfileview(self, app, admin):
+    def create_fileview(self, app, admin):
         class MyFileView(fileadmin.FileAdmin):
             can_delete = True
             can_upload = True
@@ -133,8 +123,7 @@ class TestCSPOnAllPages:
         admin.add_view(vi)
         return vi
 
-    @pytest.fixture
-    def modalfileview(self, app, admin):
+    def create_fileview_with_modal(self, app, admin):
         class ModalFileView(fileadmin.FileAdmin):
             can_delete = True
             can_upload = True
@@ -178,15 +167,21 @@ class TestCSPOnAllPages:
     def test_csp(
         self,
         app,
-        myview,
-        modalview,
-        myfileview,
-        modalfileview,
+        admin,
+        db,
         nonce,
         endpoint,
         url,
     ):
+        Model1 = create_model_class(app, db)
+
+        self.create_modelview(app, admin, db, Model1)
+        self.create_modelveiw_with_modal(app, admin, db, Model1)
+        self.create_fileview(app, admin)
+        self.create_fileview_with_modal(app, admin)
+
         with app.app_context():
+            fill_db(db, Model1)
             client = app.test_client()
 
             # check that we can retrieve a list view

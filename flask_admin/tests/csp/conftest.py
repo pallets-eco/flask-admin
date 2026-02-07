@@ -1,3 +1,5 @@
+import secrets
+
 import pytest
 from flask_admin.base import Admin
 from flask_sqlalchemy import SQLAlchemy
@@ -14,6 +16,11 @@ def db(app):
     with app.app_context():
         db.session.close()
         db.engine.dispose()
+
+
+@pytest.fixture
+def nonce():
+    return secrets.token_urlsafe(32)
 
 
 @pytest.fixture
