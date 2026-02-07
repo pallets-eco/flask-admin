@@ -139,39 +139,26 @@ class TestCSPOnAllPages:
 
     _test_files_root = op.join(op.dirname(__file__), "files")
 
-    def fileadmin_class(self):
-        return fileadmin.FileAdmin
-
-    def fileadmin_args(self):
-        return [self._test_files_root], {}
-        # return self._test_files_root, {}
-
     @pytest.fixture
     def myfileview(self, app, admin):
-        fa_class = self.fileadmin_class()
-        fa_args, fa_kwargs = self.fileadmin_args()
-
-        class MyFileView(fa_class):  # type: ignore[valid-type, misc]
+        class MyFileView(fileadmin.FileAdmin):  # type: ignore[valid-type, misc]
             can_delete = True
             can_upload = True
             can_delete_dirs = True
             can_rename = True
             editable_extensions = ("txt",)
 
-        vi_kwargs = dict(fa_kwargs)
+        vi_kwargs = dict()
         vi_kwargs["endpoint"] = "fa"
         vi_kwargs.setdefault("name", "Files")
-        vi = MyFileView(*fa_args, **vi_kwargs)
+        vi = MyFileView(self._test_files_root, **vi_kwargs)
 
         admin.add_view(vi)
         return vi
 
     @pytest.fixture
     def modalfileview(self, app, admin):
-        fa_class = self.fileadmin_class()
-        fa_args, fa_kwargs = self.fileadmin_args()
-
-        class ModalFileView(fa_class):  # type: ignore[valid-type, misc]
+        class ModalFileView(fileadmin.FileAdmin):  # type: ignore[valid-type, misc]
             can_delete = True
             can_upload = True
             can_delete_dirs = True
@@ -182,10 +169,10 @@ class TestCSPOnAllPages:
             upload_modal = True
             editable_extensions = ("txt",)
 
-        vi_kwargs = dict(fa_kwargs)
+        vi_kwargs = dict()
         vi_kwargs.setdefault("name", "ModalFiles")
         vi_kwargs["endpoint"] = "modalfa"
-        vi = ModalFileView(*fa_args, **vi_kwargs)
+        vi = ModalFileView(self._test_files_root, **vi_kwargs)
 
         # files_root = op.join(op.dirname(__file__), "files")
 
