@@ -107,12 +107,20 @@ class RenderTemplateWidget:
         self.template = template
 
     def __call__(self, field: Field, **kwargs: t.Any) -> str:
+        admin = h.g._admin_view.admin
+        admin_csp_nonce_attribute = (
+            Markup(f'nonce="{admin.csp_nonce_generator()}"')  # type: ignore[union-attr]
+            if admin.csp_nonce_generator  # type: ignore[union-attr]
+            else ""
+        )
+
         kwargs.update(
             {
                 "field": field,
                 "_gettext": gettext,
                 "_ngettext": ngettext,
                 "h": h,
+                "admin_csp_nonce_attribute": admin_csp_nonce_attribute,
             }
         )
 

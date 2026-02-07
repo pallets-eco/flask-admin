@@ -12,9 +12,9 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  {% call lib.form_tag(action=url_for('.create_view', url=return_url)) %}
+  {% call lib.form_tag(action=url_for('.create_view', url=return_url))  %}
   <div class="modal-body">
-        {{ lib.render_form_fields(form, form_opts=form_opts) }}
+        {{ lib.render_form_fields(form, form_opts=form_opts) }} 77
   </div>
   <div class="modal-footer">
         {{ lib.render_form_buttons(return_url, extra=None, is_modal=True) }}
