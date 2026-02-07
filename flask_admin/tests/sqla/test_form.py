@@ -58,13 +58,15 @@ class TestAdminModelConverter:
 
 
 @pytest.mark.parametrize(
-    "session_or_db",
+    "session_or_db, field_name",
     [
-        pytest.param("session"),
-        pytest.param("db"),
+        pytest.param("session", "int_field", id="session"),
+        pytest.param("session", "float_field", id="session"),
+        pytest.param("db", "int_field", id="db"),
+        pytest.param("db", "float_field", id="db"),
     ],
 )
-def test_coerce(app, db, admin, session_or_db):
+def test_coerce(app, db, admin, session_or_db, field_name):
     with app.app_context():
         Model1, Model2 = create_models(db)
         db.session.add_all(
