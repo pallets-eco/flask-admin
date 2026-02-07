@@ -96,188 +96,198 @@ def fill_db(db, Model1):
     db.session.commit()
 
 
-@pytest.fixture
-def myview(app, admin, db, Model1):
-    class MyModelView(ModelView):
-        can_create = True
-        can_edit = True
-        can_delete = True
-        column_filters = ["bool_field"]
-        column_editable_list = ["test1", "bool_field"]
-        column_searchable_list = ["test1", "test2"]
-        can_view_details = True
-        can_export = True
-        page_size_options = (2, 5, 10)
+class TestCSPOnAllPages:
+    _test_files_root = op.join(op.dirname(__file__), "files")
 
-    with app.app_context():
-        fill_db(db, Model1)
-        myview = MyModelView(Model1, db.session)
-        admin.add_view(myview)
+    def fileadmin_class(self):
+        return FileAdmin
 
-        return myview
+    def fileadmin_args(self):
+        return (self._test_files_root, "/files"), {}
 
+    @pytest.fixture
+    def myview(self, app, admin, db, Model1):
+        class MyModelView(ModelView):
+            can_create = True
+            can_edit = True
+            can_delete = True
+            column_filters = ["bool_field"]
+            column_editable_list = ["test1", "bool_field"]
+            column_searchable_list = ["test1", "test2"]
+            can_view_details = True
+            can_export = True
+            page_size_options = (2, 5, 10)
 
-@pytest.fixture
-def modalview(app, admin, db, Model1):
-    class ModalModelView(ModelView):
-        can_create = True
-        can_edit = True
-        can_delete = True
-        column_filters = ["bool_field"]
-        column_editable_list = ["test1", "bool_field"]
-        column_searchable_list = ["test1", "test2"]
-        can_view_details = True
-        can_export = True
-        page_size_options = (2, 5, 10)
+        with app.app_context():
+            fill_db(db, Model1)
+            myview = MyModelView(Model1, db.session)
+            admin.add_view(myview)
 
-    with app.app_context():
-        fill_db(db, Model1)
-        vi = ModalModelView(Model1, db.session, endpoint="modal")
+            return myview
+
+    @pytest.fixture
+    def modalview(self, app, admin, db, Model1):
+        class ModalModelView(ModelView):
+            can_create = True
+            can_edit = True
+            can_delete = True
+            column_filters = ["bool_field"]
+            column_editable_list = ["test1", "bool_field"]
+            column_searchable_list = ["test1", "test2"]
+            can_view_details = True
+            can_export = True
+            page_size_options = (2, 5, 10)
+
+        with app.app_context():
+            fill_db(db, Model1)
+            vi = ModalModelView(Model1, db.session, endpoint="modal")
+            admin.add_view(vi)
+
+            return vi
+
+    @pytest.fixture
+    def myfileview(self, app, admin):
+        class MyFileView(self.fileadmin_class()):
+            can_delete = True
+            can_upload = True
+            can_delete_dirs = True
+            can_rename = True
+            editable_extensions = ("txt",)
+
+        files_root = op.join(op.dirname(__file__), "files")
+        vi = MyFileView(base_path=files_root, endpoint="fa")
         admin.add_view(vi)
-
         return vi
 
+    @pytest.fixture
+    def modalfileview(self, app, admin):
+        class ModalFileView(self.fileadmin_class()):
+            can_delete = True
+            can_upload = True
+            can_delete_dirs = True
+            can_rename = True
+            edit_modal = True
+            rename_modal = True
+            mkdir_modal = True
+            upload_modal = True
+            editable_extensions = ("txt",)
 
-@pytest.fixture
-def myfileview(app, admin):
-    class MyFileView(FileAdmin):
-        can_delete = True
-        can_upload = True
-        can_delete_dirs = True
-        can_rename = True
-        editable_extensions = ("txt",)
+        files_root = op.join(op.dirname(__file__), "files")
 
-    files_root = op.join(op.dirname(__file__), "files")
-    vi = MyFileView(base_path=files_root, endpoint="fa")
-    admin.add_view(vi)
-    return vi
+        vi = ModalFileView(base_path=files_root, endpoint="modalfa")
+        admin.add_view(vi)
+        return vi
 
+    @pytest.mark.parametrize(
+        "name, endpoint, url",
+        [
+            (
+                "Model1 List",
+                "model1",
+                "?flt1_0=1",
+            ),
+            (
+                "Model1 Create",
+                "model1",
+                "new/",
+            ),
+            (
+                "Model1 Edit",
+                "model1",
+                "edit/?id=1",
+            ),
+            (
+                "Model1 Details",
+                "model1",
+                "details/?id=1",
+            ),
+            (
+                "Modal List",
+                "modal",
+                "?flt1_0=1",
+            ),
+            (
+                "Modal Create",
+                "modal",
+                "new/",
+            ),
+            (
+                "Modal Edit",
+                "modal",
+                "edit/?id=1",
+            ),
+            (
+                "Modal Details",
+                "modal",
+                "details/?id=1",
+            ),
+            (
+                "FileAdmin List",
+                "fa",
+                "",
+            ),
+            (
+                "FileAdmin rename",
+                "fa",
+                "rename/?path=test.txt",
+            ),
+            (
+                "FileAdmin rename dir",
+                "fa",
+                "rename/?path=dir1",
+            ),
+            (
+                "FileAdmin edit",
+                "fa",
+                "edit/?path=test.txt",
+            ),
+            (
+                "ModalFileAdmin List",
+                "modalfa",
+                "",
+            ),
+            (
+                "ModalFileAdmin rename",
+                "modalfa",
+                "rename/?path=test.txt",
+            ),
+            (
+                "ModalFileAdmin rename dir",
+                "modalfa",
+                "rename/?path=dir1",
+            ),
+            (
+                "ModalFileAdmin edit",
+                "modalfa",
+                "edit/?path=test.txt",
+            ),
+        ],
+    )
+    def test_csp(
+        self,
+        app,
+        myview,
+        modalview,
+        myfileview,
+        modalfileview,
+        nonce,
+        name,
+        endpoint,
+        url,
+    ):
+        with app.app_context():
+            client = app.test_client()
 
-@pytest.fixture
-def modalfileview(app, admin):
-    class ModalFileView(FileAdmin):
-        can_delete = True
-        can_upload = True
-        can_delete_dirs = True
-        can_rename = True
-        edit_modal = True
-        rename_modal = True
-        mkdir_modal = True
-        upload_modal = True
-        editable_extensions = ("txt",)
+            # check that we can retrieve a list view
+            rv = client.get(f"/admin/{endpoint}/{url}")
+            assert rv.status_code == 200
 
-    files_root = op.join(op.dirname(__file__), "files")
+            soup = BeautifulSoup(rv.data, "html.parser")
 
-    vi = ModalFileView(base_path=files_root, endpoint="modalfa")
-    admin.add_view(vi)
-    return vi
+            scripts = soup.select("script")
+            for tag in scripts:
+                assert tag.attrs["nonce"] == nonce
 
-
-def create_views():
-    return myview, modalview
-
-
-@pytest.mark.parametrize(
-    "name, endpoint, url",
-    [
-        (
-            "Model1 List",
-            "model1",
-            "?flt1_0=1",
-        ),
-        (
-            "Model1 Create",
-            "model1",
-            "new/",
-        ),
-        (
-            "Model1 Edit",
-            "model1",
-            "edit/?id=1",
-        ),
-        (
-            "Model1 Details",
-            "model1",
-            "details/?id=1",
-        ),
-        (
-            "Modal List",
-            "modal",
-            "?flt1_0=1",
-        ),
-        (
-            "Modal Create",
-            "modal",
-            "new/",
-        ),
-        (
-            "Modal Edit",
-            "modal",
-            "edit/?id=1",
-        ),
-        (
-            "Modal Details",
-            "modal",
-            "details/?id=1",
-        ),
-        (
-            "FileAdmin List",
-            "fa",
-            "",
-        ),
-        (
-            "FileAdmin rename",
-            "fa",
-            "rename/?path=test.txt",
-        ),
-        (
-            "FileAdmin rename dir",
-            "fa",
-            "rename/?path=dir1",
-        ),
-        (
-            "FileAdmin edit",
-            "fa",
-            "edit/?path=test.txt",
-        ),
-        (
-            "ModalFileAdmin List",
-            "modalfa",
-            "",
-        ),
-        (
-            "ModalFileAdmin rename",
-            "modalfa",
-            "rename/?path=test.txt",
-        ),
-        (
-            "ModalFileAdmin rename dir",
-            "modalfa",
-            "rename/?path=dir1",
-        ),
-        (
-            "ModalFileAdmin edit",
-            "modalfa",
-            "edit/?path=test.txt",
-        ),
-    ],
-)
-def test_csp(
-    app, myview, modalview, myfileview, modalfileview, nonce, name, endpoint, url
-):
-    with app.app_context():
-        client = app.test_client()
-
-        # check that we can retrieve a list view
-        rv = client.get(f"/admin/{endpoint}/{url}")
-        assert rv.status_code == 200
-
-        soup = BeautifulSoup(rv.data, "html.parser")
-
-        scripts = soup.select("script")
-        for tag in scripts:
-            assert tag.attrs["nonce"] == nonce
-
-        styles = soup.select("style")
-        for tag in styles:
-            assert tag.attrs["nonce"] == nonce
+            styles = soup.select("style")
+            for tag in styles:
+                assert tag.attrs["nonce"] == nonce
