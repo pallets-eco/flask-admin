@@ -5,11 +5,24 @@
        aria-expanded="false">{{ _gettext('With selected') }}</a>
     <div class="dropdown-menu">
         {% for p in actions %}
-            <a class="dropdown-item" href="javascript:void(0)"
-               onclick="return modelActions.execute('{{ p[0] }}');">{{ _gettext(p[1]) }}</a>
+            <a class="dropdown-item p-action" data-action="{{ p[0] }}">{{ _gettext(p[1]) }} </a>
         {% endfor %}
     </div>
+
+    <script {{ admin_csp_nonce_attribute }} >
+
+      document.addEventListener('DOMContentLoaded', function ()
+      {
+          $('.p-action').on('click', function (e)
+          {
+              e.preventDefault();
+              var action = $(this).data('action');
+              modelActions.execute(action);
+          });
+      });
+    </script>
 {% endmacro %}
+
 
 {% macro form(actions, url) %}
     {% if actions %}

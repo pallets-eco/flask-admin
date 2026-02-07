@@ -89,7 +89,8 @@
                             {% if delete_form.csrf_token is defined and delete_form.csrf_token %}
                             {{ delete_form.csrf_token }}
                             {% endif %}
-                            <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
+                            <button class="btn-delete-dir"
+                                data-msg="{{ _gettext('Are you sure you want to delete \'%(name)s\' recursively?', name=name) }}">
                                 <i class="fa fa-times glyphicon glyphicon-remove"></i>
                             </button>
                         </form>
@@ -100,7 +101,8 @@
                         {% if delete_form.csrf_token is defined and delete_form.csrf_token %}
                         {{ delete_form.csrf_token }}
                         {% endif %}
-                        <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
+                        <button class="btn-delete-file"
+                            data-msg="{{ _gettext('Are you sure you want to delete \'%(name)s\' ?', name=name) }}">
                             <i class="fa fa-trash glyphicon glyphicon-trash"></i>
                         </button>
                     </form>
@@ -192,4 +194,21 @@
                          actions,
                          actions_confirmation) }}
   <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
+
+
+  <script {{ admin_csp_nonce_attribute }}>
+
+    $('.btn-delete-file').on('click', function (e)
+    {
+        var message = $(this).data('msg');
+        return confirm(message);
+    });
+
+    $('.btn-delete-dir').on('click', function (e)
+    {
+        var message = $(this).data('msg');
+        return confirm(message);
+    });
+
+  </script>
 {% endblock %}
