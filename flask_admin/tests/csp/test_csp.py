@@ -44,8 +44,8 @@ def test_csp_nonces_injected(app, admin, nonce):
 @pytest.fixture
 def db(app):
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
-    app.config["SQLALCHEMY_ECHO"] = True
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    # app.config["SQLALCHEMY_ECHO"] = True
+    # app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db = SQLAlchemy(app)
     yield db
 
@@ -85,19 +85,14 @@ def Model1(app, db):
 
 
 def fill_db(db, Model1):
-    model1_obj1 = Model1("test1_val_1", "test2_val_1", bool_field=True)
-    model1_obj2 = Model1("test1_val_2", "test2_val_2", bool_field=False)
-    model1_obj3 = Model1("test1_val_3", "test2_val_3")
-    model1_obj4 = Model1("test1_val_4", "test2_val_4")
+    objs = [
+        {"test1": "test1_val_1", "test2": "test2_val_1", "bool_field": True},
+        {"test1": "test1_val_2", "test2": "test2_val_2", "bool_field": False},
+        {"test1": "test1_val_3", "test2": "test2_val_3"},
+        {"test1": "test1_val_4", "test2": "test2_val_4"},
+    ]
 
-    db.session.add_all(
-        [
-            model1_obj1,
-            model1_obj2,
-            model1_obj3,
-            model1_obj4,
-        ]
-    )
+    db.session.add_all([Model1(**obj) for obj in objs])
     db.session.commit()
 
 
