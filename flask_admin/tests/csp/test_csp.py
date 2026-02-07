@@ -143,7 +143,8 @@ class TestCSPOnAllPages:
         return fileadmin.FileAdmin
 
     def fileadmin_args(self):
-        return (self._test_files_root, "/files"), {}
+        return [self._test_files_root], {}
+        # return self._test_files_root, {}
 
     @pytest.fixture
     def myfileview(self, app, admin):
@@ -162,8 +163,6 @@ class TestCSPOnAllPages:
         vi_kwargs.setdefault("name", "Files")
         vi = MyFileView(*fa_args, **vi_kwargs)
 
-        # files_root = op.join(op.dirname(__file__), "files")
-        vi = MyFileView(*fa_args, **vi_kwargs)
         admin.add_view(vi)
         return vi
 
@@ -195,88 +194,24 @@ class TestCSPOnAllPages:
         return vi
 
     @pytest.mark.parametrize(
-        "name, endpoint, url",
+        "endpoint, url",
         [
-            (
-                "Model1 List",
-                "model1",
-                "?flt1_0=1",
-            ),
-            (
-                "Model1 Create",
-                "model1",
-                "new/",
-            ),
-            (
-                "Model1 Edit",
-                "model1",
-                "edit/?id=1",
-            ),
-            (
-                "Model1 Details",
-                "model1",
-                "details/?id=1",
-            ),
-            (
-                "Modal List",
-                "modal",
-                "?flt1_0=1",
-            ),
-            (
-                "Modal Create",
-                "modal",
-                "new/",
-            ),
-            (
-                "Modal Edit",
-                "modal",
-                "edit/?id=1",
-            ),
-            (
-                "Modal Details",
-                "modal",
-                "details/?id=1",
-            ),
-            (
-                "FileAdmin List",
-                "fa",
-                "",
-            ),
-            (
-                "FileAdmin rename",
-                "fa",
-                "rename/?path=test.txt",
-            ),
-            (
-                "FileAdmin rename dir",
-                "fa",
-                "rename/?path=dir1",
-            ),
-            (
-                "FileAdmin edit",
-                "fa",
-                "edit/?path=test.txt",
-            ),
-            (
-                "ModalFileAdmin List",
-                "modalfa",
-                "",
-            ),
-            (
-                "ModalFileAdmin rename",
-                "modalfa",
-                "rename/?path=test.txt",
-            ),
-            (
-                "ModalFileAdmin rename dir",
-                "modalfa",
-                "rename/?path=dir1",
-            ),
-            (
-                "ModalFileAdmin edit",
-                "modalfa",
-                "edit/?path=test.txt",
-            ),
+            ("model1", "?flt1_0=1"),
+            ("model1", "new/"),
+            ("model1", "edit/?id=1"),
+            ("model1", "details/?id=1"),
+            ("modal", "?flt1_0=1"),
+            ("modal", "new/"),
+            ("modal", "edit/?id=1"),
+            ("modal", "details/?id=1"),
+            ("fa", ""),
+            ("fa", "rename/?path=test.txt"),
+            ("fa", "rename/?path=dir1"),
+            ("fa", "edit/?path=test.txt"),
+            ("modalfa", ""),
+            ("modalfa", "rename/?path=test.txt"),
+            ("modalfa", "rename/?path=dir1"),
+            ("modalfa", "edit/?path=test.txt"),
         ],
     )
     def test_csp(
@@ -287,7 +222,6 @@ class TestCSPOnAllPages:
         myfileview,
         modalfileview,
         nonce,
-        name,
         endpoint,
         url,
     ):
