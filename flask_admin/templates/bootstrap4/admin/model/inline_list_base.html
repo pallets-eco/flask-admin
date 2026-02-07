@@ -50,7 +50,7 @@
       {
         $(`#{{ field.id }}-button`).on('click', function (e)
         {
-          //e.preventDefault();
+          e.preventDefault();
           faForm.addInlineField(this, $(this).data('fieldid') );
         });
       });
