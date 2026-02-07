@@ -55,7 +55,9 @@ if t.TYPE_CHECKING:
     from flask_sqlalchemy import Model as T_SQLALCHEMY_LEGACY_MODEL
     from sqlalchemy.orm import DeclarativeBase as T_DECLARATIVE_BASE
 
-    T_SQLALCHEMY_MODEL = T_SQLALCHEMY_LEGACY_MODEL | T_DECLARATIVE_BASE
+    T_SQLALCHEMY_MODEL = t.TypeVar(
+        "T_SQLALCHEMY_MODEL", bound=(T_SQLALCHEMY_LEGACY_MODEL | T_DECLARATIVE_BASE)
+    )
 
     from mongoengine import Document as T_MONGO_ENGINE_CLIENT
     from peewee import Field as T_PEEWEE_FIELD  # noqa
@@ -85,6 +87,17 @@ if t.TYPE_CHECKING:
         QueryAjaxModelLoader as T_SQLA_QUERY_AJAX_MODEL_LOADER,
     )  # noqa
     from PIL.Image import Image as T_PIL_IMAGE  # noqa
+
+    T_ORM_MODEL = t.TypeVar(
+        "T_ORM_MODEL",
+        bound=(
+            T_SQLALCHEMY_LEGACY_MODEL
+            | T_DECLARATIVE_BASE
+            | T_PEEWEE_MODEL
+            | T_MONGO_CLIENT
+            | T_MONGO_ENGINE_CLIENT
+        ),
+    )
 else:
     T_VIEW = "flask_admin.base.BaseView"
     T_INPUT_REQUIRED = "InputRequired"
@@ -129,6 +142,7 @@ else:
         "flask_admin.contrib.sqla.ajax.QueryAjaxModelLoader"
     )
     T_PIL_IMAGE = "PIL.Image.Image"
+    T_ORM_MODEL = t.TypeVar("T_ORM_MODEL", bound=t.Any)
 
 T_COLUMN = t.Union[str, T_SQLALCHEMY_COLUMN, T_INSTRUMENTED_ATTRIBUTE]
 T_FILTER = tuple[int, T_COLUMN, str]
@@ -148,13 +162,6 @@ T_ITER_CHOICES = t.Union[
 T_OPTION = tuple[str, T_TRANSLATABLE]
 T_OPTION_LIST = t.Sequence[T_OPTION]
 T_OPTIONS = t.Union[None, T_OPTION_LIST, t.Callable[[], T_OPTION_LIST]]
-T_ORM_MODEL = (
-    T_SQLALCHEMY_LEGACY_MODEL
-    | T_DECLARATIVE_BASE
-    | T_PEEWEE_MODEL
-    | T_MONGO_CLIENT
-    | T_MONGO_ENGINE_CLIENT
-)
 T_QUERY_AJAX_MODEL_LOADER = t.Union[
     T_PEEWEE_QUERY_AJAX_MODEL_LOADER, T_SQLA_QUERY_AJAX_MODEL_LOADER
 ]

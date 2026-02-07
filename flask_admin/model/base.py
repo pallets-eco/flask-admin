@@ -2641,6 +2641,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
         ds = tablib.Dataset(headers=[csv_encode(c[1]) for c in self._export_columns])
 
+        data: list[T_ORM_MODEL]
         count, data = self._export_data()
 
         for row in data:

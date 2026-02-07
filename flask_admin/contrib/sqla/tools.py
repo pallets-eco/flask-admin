@@ -73,7 +73,7 @@ def get_primary_key(
     :param model:
         Model instance
     """
-    mapper = model._sa_class_manager.mapper  # type: ignore[union-attr]
+    mapper = model._sa_class_manager.mapper  # type: ignore[attr-defined]
     pks = [mapper.get_property_by_column(c).key for c in mapper.primary_key]
     if len(pks) == 1:
         return pks[0]
@@ -90,7 +90,7 @@ def has_multiple_pks(model: type[T_SQLALCHEMY_MODEL]) -> bool:
     if not hasattr(model, "_sa_class_manager"):
         raise TypeError("model must be a sqlalchemy mapped model")
 
-    return len(model._sa_class_manager.mapper.primary_key) > 1
+    return len(model._sa_class_manager.mapper.primary_key) > 1  # type: ignore[attr-defined]
 
 
 def tuple_operator_in(
@@ -181,7 +181,7 @@ def need_join(model: type[T_SQLALCHEMY_MODEL], table: Table) -> bool:
     """
     Check if join to a table is necessary.
     """
-    return table not in model._sa_class_manager.mapper.tables
+    return table not in model._sa_class_manager.mapper.tables  # type: ignore[attr-defined]
 
 
 def get_field_with_path(
@@ -263,7 +263,7 @@ def is_hybrid_property(model: type[T_SQLALCHEMY_MODEL], attr_name: str) -> bool:
             if isinstance(last_model, string_types):
                 last_model = attr.property._clsregistry_resolve_name(last_model)()
             elif isinstance(last_model, _class_resolver):
-                last_model = model._decl_class_registry[last_model.arg]
+                last_model = model._decl_class_registry[last_model.arg]  # type: ignore[attr-defined]
             elif isinstance(last_model, types.FunctionType | types.MethodType):
                 last_model = last_model()
         last_name = names[-1]

@@ -78,7 +78,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
-    def format(self, model: T_SQLALCHEMY_MODEL | None) -> tuple[t.Any, str] | None:  # type: ignore[override]
+    def format(self, model: T_SQLALCHEMY_MODEL | None) -> tuple[t.Any, str] | None:
         if not model:
             return None
 
@@ -110,7 +110,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         if self.filters:
             filters = [
-                text(f"{self.model.__tablename__.lower()}.{value}")  # type: ignore[attr-defined]
+                text(f"{self.model.__tablename__.lower()}.{value}")
                 for value in self.filters
             ]
             query = query.filter(and_(*filters))
