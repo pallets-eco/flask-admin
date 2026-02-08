@@ -100,13 +100,13 @@ class S3Storage(BaseFileStorage):
                 return name.replace(path, "", 1)
             return name
 
-        def rcoat(x: str) -> str:
+        def _rcoat(x: str) -> str:
             return x.ljust(len(x) + 1, "/") if not x.endswith("/") else x
 
         files = []
         directories = []
-        directory = rcoat(directory) if directory else ""
-        path = rcoat(path) if path else ""
+        directory = _rcoat(directory) if directory else ""
+        path = _rcoat(path) if path else ""
 
         try:
             paginator = self.s3_client.get_paginator("list_objects_v2")
