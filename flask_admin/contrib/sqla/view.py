@@ -1329,10 +1329,11 @@ class ModelView(BaseModelView):
             Model id
         """
         session = _get_deprecated_session(self.session)
+        _id = tools.iterdecode(id)
         if isinstance(self._primary_key, tuple):
             _id = tools.iterdecode(id)
         else:
-            _id = tools.escape(id)
+            _id = (tools.escape(id),)
 
         return session.get(self.model, _id)
 
