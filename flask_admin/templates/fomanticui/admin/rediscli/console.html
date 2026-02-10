@@ -1,0 +1,94 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+{% import 'admin/static.html' as admin_static with context %}
+
+{% block head %}
+  {{ super() }}
+  <style>
+    .console {
+      position: relative;
+      width: 100%;
+      min-height: 400px;
+      font-family: monospace;
+    }
+
+    .console-container {
+      border-radius: 4px;
+      position: absolute;
+      border: 1px solid #d4d4d4;
+      padding: 2px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      bottom: 5em;
+    }
+
+    .console-line {
+      position: absolute;
+      left: 2px;
+      right: 2px;
+      bottom: 2px;
+    }
+
+    .console-line input {
+      width: 100%;
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      height: 2em;
+      padding: 4px 4px 4px 1.5em;
+      font-size: 1.2em;
+      border: 1px solid #000;
+      outline: none;
+    }
+
+    .console-line label {
+      position: absolute;
+      font-weight: 900;
+      left: 0;
+      top: 0;
+      height: 2em;
+      width: 1.8em;
+      text-align: center;
+      font-size: 1.2em;
+      align-content: center;
+    }
+
+    .console .cmd {
+      background-color: #f5f5f5;
+      padding: 2px;
+      margin: 1px;
+    }
+
+    .console .response {
+      background-color: #f0f0f0;
+      padding: 2px;
+      margin: 1px;
+    }
+
+    .console .error {
+      color: red;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <div class="console">
+    <div class="console-container"></div>
+    <div class="console-line mb-4">
+      <form action="#" autocomplete="off">
+        <input type="text" id="cmd-input" aria-label="Command input">
+        <label for="cmd-input" aria-hidden="true">&gt;</label>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  <div id="execute-view-data" class="d-none">{{ admin_view.get_url(".execute_view") |tojson|safe }}</div>
+  <script {{ admin_csp_nonce_attribute }}
+          src="{{ admin_static.url(filename='fomanticui/js/rediscli.js', v='1.0.0') }}"></script>
+{% endblock %}
