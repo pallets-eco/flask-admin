@@ -266,6 +266,8 @@ def is_hybrid_property(model: type[T_SQLALCHEMY_MODEL], attr_name: str) -> bool:
                 last_model = model._decl_class_registry[last_model.arg]
             elif isinstance(last_model, types.FunctionType | types.MethodType):
                 last_model = last_model()
+            elif getattr(last_model, 'is_mapper'):
+                last_model = last_model.class_
         last_name = names[-1]
         return last_name in get_hybrid_properties(last_model)
     else:
