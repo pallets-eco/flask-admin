@@ -90,19 +90,7 @@ if t.TYPE_CHECKING:
     )  # noqa
     from PIL.Image import Image as T_PIL_IMAGE  # noqa
 
-    T_ORM_MODEL = t.TypeVar(
-        "T_ORM_MODEL",
-        bound=(
-            T_SQLALCHEMY_LEGACY_MODEL
-            | T_DECLARATIVE_BASE
-            | T_PEEWEE_MODEL
-            | T_MONGO_CLIENT
-            | T_MONGO_ENGINE_DOCUMENT
-        ),
-    )
-
-    # Union type for when you need a concrete type rather than a TypeVar
-    T_ALIAS_ORM_MODEL: t.TypeAlias = t.Union[
+    T_ORM_MODEL: t.TypeAlias = t.Union[
         T_SQLALCHEMY_LEGACY_MODEL,
         T_DECLARATIVE_BASE,
         T_PEEWEE_MODEL,
@@ -154,8 +142,7 @@ else:
         "flask_admin.contrib.sqla.ajax.QueryAjaxModelLoader"
     )
     T_PIL_IMAGE = "PIL.Image.Image"
-    T_ORM_MODEL = t.TypeVar("T_ORM_MODEL", bound=t.Any)
-    T_ALIAS_ORM_MODEL = object
+    T_ORM_MODEL = object
 
 T_COLUMN = t.Union[str, T_SQLALCHEMY_COLUMN, T_INSTRUMENTED_ATTRIBUTE]
 T_FILTER = tuple[int, T_COLUMN, str]

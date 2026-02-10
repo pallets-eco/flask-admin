@@ -74,7 +74,7 @@ def get_primary_key(
     :param model:
         Model instance
     """
-    mapper = model._sa_class_manager.mapper  # type: ignore[attr-defined]
+    mapper = model._sa_class_manager.mapper  # type: ignore[union-attr]
     pks = [mapper.get_property_by_column(c).key for c in mapper.primary_key]
     if len(pks) == 1:
         return pks[0]

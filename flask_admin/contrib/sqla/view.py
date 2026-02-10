@@ -407,7 +407,7 @@ class ModelView(BaseModelView):
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
         )
-        self.model: type[T_SQLALCHEMY_MODEL]  # type: ignore[assignment]
+        self.model: type[T_SQLALCHEMY_MODEL]
         self._manager = manager_of_class(self.model)
 
         # Primary key
@@ -1363,7 +1363,7 @@ class ModelView(BaseModelView):
         return model
 
     # Model handlers
-    def create_model(self, form: Form) -> t.Union[bool, T_SQLALCHEMY_MODEL]:  # type: ignore[override]
+    def create_model(self, form: Form) -> t.Union[bool, T_SQLALCHEMY_MODEL]:
         """
         Create model from form.
 

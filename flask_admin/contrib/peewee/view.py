@@ -216,7 +216,7 @@ class ModelView(BaseModelView):
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
         )
-        self.model: type[T_PEEWEE_MODEL]  # type: ignore[assignment]
+        self.model: type[T_PEEWEE_MODEL]
         self._primary_key = self.scaffold_pk()
 
     def _get_model_fields(
@@ -530,7 +530,7 @@ class ModelView(BaseModelView):
             )
         return self.model.get(**{self._primary_key: id})
 
-    def create_model(self, form: Form) -> t.Union[bool, T_PEEWEE_MODEL]:  # type: ignore[override]
+    def create_model(self, form: Form) -> t.Union[bool, T_PEEWEE_MODEL]:
         try:
             model = self.model()
             form.populate_obj(model)

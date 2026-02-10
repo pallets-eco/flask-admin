@@ -25,7 +25,6 @@ from markupsafe import Markup
 from werkzeug import Response
 from werkzeug.utils import secure_filename
 
-from .._types import T_ALIAS_ORM_MODEL
 from .._types import T_COLUMN
 from .._types import T_COLUMN_LIST
 from .._types import T_COLUMN_TYPE_FORMATTERS
@@ -1708,7 +1707,7 @@ class BaseModelView(BaseView, ActionsMixin):
         search: str | None,
         filters: t.Sequence[T_FILTER] | None,
         page_size: int | None = None,
-    ) -> tuple[int, list[T_ALIAS_ORM_MODEL]]:
+    ) -> tuple[int, list[T_ORM_MODEL]]:
         """
         Return a tuple of a count of results and a paginated and sorted list of models
         from the data source.
@@ -2235,7 +2234,7 @@ class BaseModelView(BaseView, ActionsMixin):
         page_size = self.get_safe_page_size(view_args.page_size)
 
         # Get count and data
-        data: list[T_ALIAS_ORM_MODEL]
+        data: list[T_ORM_MODEL]
         count, data = self.get_list(
             view_args.page,
             sort_column,
@@ -2522,7 +2521,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         return self.handle_action()
 
-    def _export_data(self) -> tuple[int, list[T_ALIAS_ORM_MODEL]]:
+    def _export_data(self) -> tuple[int, list[T_ORM_MODEL]]:
         # Macros in column_formatters are not supported.
         # Macros will have a function name 'inner'
         # This causes non-macro functions named 'inner' not work.
@@ -2550,7 +2549,7 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             sort_column = None
         # Get count and data
-        data: list[T_ALIAS_ORM_MODEL]
+        data: list[T_ORM_MODEL]
         count, data = self.get_list(
             0,
             sort_column,
@@ -2579,7 +2578,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         Export a CSV of records as a stream.
         """
-        data: list[T_ALIAS_ORM_MODEL]
+        data: list[T_ORM_MODEL]
         count, data = self._export_data()
 
         # https://docs.djangoproject.com/en/1.8/howto/outputting-csv/
@@ -2743,7 +2742,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 return gettext("Record was successfully saved.")
             else:
                 # Error: No records changed, or problem saving to database.
-                msgs = ", ".join([msg for msg in get_flashed_messages()])
+                msgs = ", ".join([msg for msg in get_flashed_messages()])  # type: ignore[misc]
                 return gettext("Failed to update record. %(error)s", error=msgs), 500
         else:
             for field in form:
