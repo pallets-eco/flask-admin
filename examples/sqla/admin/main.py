@@ -496,6 +496,16 @@ class TreeView(ModelView):
         return super().render(template, foo="bar", **kwargs)
 
 
+def format_action_for_export(view, context, model, name):
+    """Format action enum for export."""
+    return model.action.value if model.action else ""
+
+
+def format_timestamp_for_export(view, context, model, name):
+    """Format timestamp for export."""
+    return model.timestamp.strftime("%Y-%m-%d %H:%M:%S") if model.timestamp else ""
+
+
 class AuditLogAdmin(ModelView):
     """Read-only view for audit log entries."""
     can_create = False
@@ -529,6 +539,39 @@ class AuditLogAdmin(ModelView):
         "model_name",
         "record_id",
     ]
+
+    # CSV Export configuration
+    can_export = True
+    export_max_rows = 10000
+    export_types = ["csv"]
+
+    # Columns to include in export (in order)
+    column_export_list = [
+        "id",
+        "action",
+        "model_name",
+        "record_id",
+        "old_values",
+        "new_values",
+        "timestamp",
+    ]
+
+    # Column labels for export headers
+    column_labels = {
+        "id": "ID",
+        "action": "Action",
+        "model_name": "Table Name",
+        "record_id": "Record ID",
+        "old_values": "Old Values",
+        "new_values": "New Values",
+        "timestamp": "Timestamp",
+    }
+
+    # Formatters for export to ensure proper CSV formatting
+    column_formatters_export = {
+        "action": format_action_for_export,
+        "timestamp": format_timestamp_for_export,
+    }
 
 
 admin = Admin(app, name="Example: SQLAlchemy", theme=Bootstrap4Theme(swatch="default"))
