@@ -900,7 +900,7 @@ class InlineModelConverter(InlineModelConverterBase):
         :return:
             A dict of forward property key and reverse property key
         """
-        mapper = model._sa_class_manager.mapper
+        mapper = model._sa_class_manager.mapper  # type: ignore[union-attr]
 
         # Find property from target model to current model
         # Use the base mapper to support inheritance
@@ -1041,7 +1041,7 @@ class InlineOneToOneModelConverter(InlineModelConverter):
         self, model: type[T_SQLALCHEMY_MODEL], info: InlineFormAdmin
     ) -> dict[str, str]:
         mapper = info.model._sa_class_manager.mapper.base_mapper  # type: ignore[union-attr]
-        target_mapper = model._sa_class_manager.mapper
+        target_mapper = model._sa_class_manager.mapper  # type: ignore[union-attr]
 
         inline_relationship = dict()
 

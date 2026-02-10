@@ -1895,8 +1895,8 @@ def test_hybrid_property(app, sqla_db_ext, admin, session_or_db):
         _, data = view.get_list(0, None, False, None, None)
 
         assert len(data) == 2
-        assert data[0].name == "test_row_2"
-        assert data[1].name == "test_row_1"
+        assert data[0].name == "test_row_2"  # type: ignore[union-attr]
+        assert data[1].name == "test_row_1"  # type: ignore[union-attr]
 
         # searching
         rv = client.get("/admin/model1/?search=100")
@@ -2297,9 +2297,9 @@ def test_default_sort(app, sqla_db_ext, admin, session_or_db):
 
         _, data = view.get_list(0, None, False, None, None)
         assert len(data) == 3
-        assert data[0].test1 == "a"
-        assert data[1].test1 == "b"
-        assert data[2].test1 == "c"
+        assert data[0].test1 == "a"  # type: ignore[union-attr]
+        assert data[1].test1 == "b"  # type: ignore[union-attr]
+        assert data[2].test1 == "c"  # type: ignore[union-attr]
 
         # test default sort on renamed columns - with column_list scaffolding
         view2 = CustomModelView(
@@ -2314,9 +2314,9 @@ def test_default_sort(app, sqla_db_ext, admin, session_or_db):
         _, data = view2.get_list(0, None, False, None, None)
 
         assert len(data) == 3
-        assert data[0].test1 == "a"
-        assert data[1].test1 == "b"
-        assert data[2].test1 == "c"
+        assert data[0].test1 == "a"  # type: ignore[union-attr]
+        assert data[1].test1 == "b"  # type: ignore[union-attr]
+        assert data[2].test1 == "c"  # type: ignore[union-attr]
 
         # test default sort on renamed columns - without column_list scaffolding
         view3 = CustomModelView(
@@ -2332,9 +2332,9 @@ def test_default_sort(app, sqla_db_ext, admin, session_or_db):
         _, data = view3.get_list(0, None, False, None, None)
 
         assert len(data) == 3
-        assert data[0].test1 == "a"
-        assert data[1].test1 == "b"
-        assert data[2].test1 == "c"
+        assert data[0].test1 == "a"  # type: ignore[union-attr]
+        assert data[1].test1 == "b"  # type: ignore[union-attr]
+        assert data[2].test1 == "c"  # type: ignore[union-attr]
 
         # test default sort with multiple columns
         order = [("test2", False), ("test1", False)]
@@ -2344,9 +2344,9 @@ def test_default_sort(app, sqla_db_ext, admin, session_or_db):
         _, data = view4.get_list(0, None, False, None, None)
 
         assert len(data) == 3
-        assert data[0].test1 == "b"
-        assert data[1].test1 == "c"
-        assert data[2].test1 == "a"
+        assert data[0].test1 == "b"  # type: ignore[union-attr]
+        assert data[1].test1 == "c"  # type: ignore[union-attr]
+        assert data[2].test1 == "a"  # type: ignore[union-attr]
 
 
 def test_complex_sort(app, sqla_db_ext, admin, session_or_db):
@@ -2392,9 +2392,9 @@ def test_complex_sort(app, sqla_db_ext, admin, session_or_db):
 
         _, data = view.get_list(0, "model1.test1", False, None, None)
 
-        assert data[0].model1.test1 == "a"
-        assert data[1].model1.test1 == "b"
-        assert data[2].model1.test1 == "c"
+        assert data[0].model1.test1 == "a"  # type: ignore[union-attr]
+        assert data[1].model1.test1 == "b"  # type: ignore[union-attr]
+        assert data[2].model1.test1 == "c"  # type: ignore[union-attr]
 
         # test sorting on multiple columns in related model
         rv = client.get("/admin/m1_2/?sort=0")
@@ -2402,9 +2402,10 @@ def test_complex_sort(app, sqla_db_ext, admin, session_or_db):
 
         _, data = view2.get_list(0, "model1", False, None, None)
 
-        assert data[0].model1.test1 == "b"
-        assert data[1].model1.test1 == "c"
-        assert data[2].model1.test1 == "a"
+        assert data[0].model1.test1 == "b"  # type: ignore[union-attr]
+        assert data[1].model1.test1 == "c"  # type: ignore[union-attr]
+        assert data[1].model1.test1 == "c"  # type: ignore[union-attr]
+        assert data[2].model1.test1 == "a"  # type: ignore[union-attr]
 
 
 @pytest.mark.xfail(raises=Exception)
@@ -2423,8 +2424,10 @@ def test_complex_sort_exception(app, sqla_db_ext, admin, session_or_db):
         _, data = view.get_list(0, sort_column, False, None, None)
 
         assert len(data) == 2
-        assert data[0].model1.test1 == "a"
-        assert data[1].model1.test1 == "b"
+        print(type(data[0]))
+        print(type(data[0].model1))  # type: ignore[union-attr]
+        assert data[0].model1.test1 == "a"  # type: ignore[union-attr]
+        assert data[1].model1.test1 == "b"  # type: ignore[union-attr]
 
 
 def test_default_complex_sort(app, sqla_db_ext, admin, session_or_db):
@@ -2448,8 +2451,8 @@ def test_default_complex_sort(app, sqla_db_ext, admin, session_or_db):
         _, data = view.get_list(0, None, False, None, None)
 
         assert len(data) == 2
-        assert data[0].model1.test1 == "a"
-        assert data[1].model1.test1 == "b"
+        assert data[0].model1.test1 == "a"  # type: ignore[union-attr]
+        assert data[1].model1.test1 == "b"  # type: ignore[union-attr]
 
         # test column_default_sort on a related table's column object
         view2 = CustomModelView(
@@ -2460,8 +2463,8 @@ def test_default_complex_sort(app, sqla_db_ext, admin, session_or_db):
         _, data = view2.get_list(0, None, False, None, None)
 
         assert len(data) == 2
-        assert data[0].model1.test1 == "a"
-        assert data[1].model1.test1 == "b"
+        assert data[0].model1.test1 == "a"  # type: ignore[union-attr]
+        assert data[1].model1.test1 == "b"  # type: ignore[union-attr]
 
 
 @pytest.mark.filterwarnings(

@@ -4,6 +4,7 @@ import types
 import typing as t
 
 from sqlalchemy import and_
+from sqlalchemy import FromClause
 from sqlalchemy import inspect
 from sqlalchemy import or_
 from sqlalchemy import tuple_
@@ -52,7 +53,7 @@ def parse_like_term(term: str) -> str:
 
 
 def filter_foreign_columns(
-    base_table: Table, columns: list[T_COLUMN]
+    base_table: Table | FromClause, columns: list[T_COLUMN]
 ) -> list[T_COLUMN]:
     """
     Return list of columns that belong to passed table.
@@ -90,7 +91,7 @@ def has_multiple_pks(model: type[T_SQLALCHEMY_MODEL]) -> bool:
     if not hasattr(model, "_sa_class_manager"):
         raise TypeError("model must be a sqlalchemy mapped model")
 
-    return len(model._sa_class_manager.mapper.primary_key) > 1  # type: ignore[attr-defined]
+    return len(model._sa_class_manager.mapper.primary_key) > 1
 
 
 def tuple_operator_in(
@@ -181,7 +182,7 @@ def need_join(model: type[T_SQLALCHEMY_MODEL], table: Table) -> bool:
     """
     Check if join to a table is necessary.
     """
-    return table not in model._sa_class_manager.mapper.tables  # type: ignore[attr-defined]
+    return table not in model._sa_class_manager.mapper.tables  # type: ignore[union-attr]
 
 
 def get_field_with_path(
@@ -263,7 +264,7 @@ def is_hybrid_property(model: type[T_SQLALCHEMY_MODEL], attr_name: str) -> bool:
             if isinstance(last_model, string_types):
                 last_model = attr.property._clsregistry_resolve_name(last_model)()
             elif isinstance(last_model, _class_resolver):
-                last_model = model._decl_class_registry[last_model.arg]  # type: ignore[attr-defined]
+                last_model = model._decl_class_registry[last_model.arg]  # type: ignore[union-attr]
             elif isinstance(last_model, types.FunctionType | types.MethodType):
                 last_model = last_model()
         last_name = names[-1]

@@ -216,18 +216,18 @@ class ModelView(BaseModelView):
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
         )
+        self.model: type[T_PEEWEE_MODEL]  # type: ignore[assignment]
         self._primary_key = self.scaffold_pk()
 
     def _get_model_fields(
         self, model: type[T_PEEWEE_MODEL] | None = None
     ) -> t.Generator[tuple[str, Field], t.Any, None]:
         if model is None:
-            model = self.model  # type: ignore[assignment]
-        model = t.cast(type[T_PEEWEE_MODEL], model)
+            model = self.model
         return ((field.name, field) for field in get_meta_fields(model))
 
     def scaffold_pk(self) -> str:
-        return get_primary_key(self.model)  # type: ignore[arg-type]
+        return get_primary_key(self.model)
 
     def get_pk_value(self, model: type[T_PEEWEE_MODEL]) -> t.Any:  # type: ignore[override]
         if self.model._meta.composite_key:  # type: ignore[attr-defined]
@@ -378,7 +378,7 @@ class ModelView(BaseModelView):
     def _create_ajax_loader(
         self, name: str, options: dict[str, t.Any]
     ) -> QueryAjaxModelLoader:
-        return create_ajax_loader(self.model, name, name, options)  # type: ignore[arg-type]
+        return create_ajax_loader(self.model, name, name, options)
 
     def _handle_join(
         self, query: ModelSelect, field: t.Any, joins: set[str]
@@ -426,7 +426,7 @@ class ModelView(BaseModelView):
         return query, joins, clause
 
     def get_query(self) -> ModelSelect:
-        return self.model.select()  # type: ignore[union-attr]
+        return self.model.select()
 
     def get_list(  # type: ignore[override]
         self,
@@ -524,18 +524,18 @@ class ModelView(BaseModelView):
         return count, query
 
     def get_one(self, id: t.Any) -> t.Any:
-        if self.model._meta.composite_key:  # type: ignore[union-attr]
-            return self.model.get(  # type: ignore[union-attr]
-                **dict(zip(self.model._meta.primary_key.field_names, id, strict=False))  # type: ignore[union-attr]
+        if self.model._meta.composite_key:  # type: ignore[attr-defined]
+            return self.model.get(
+                **dict(zip(self.model._meta.primary_key.field_names, id, strict=False))  # type: ignore[attr-defined]
             )
-        return self.model.get(**{self._primary_key: id})  # type: ignore[union-attr]
+        return self.model.get(**{self._primary_key: id})
 
-    def create_model(self, form: Form) -> t.Union[bool, T_PEEWEE_MODEL]:
+    def create_model(self, form: Form) -> t.Union[bool, T_PEEWEE_MODEL]:  # type: ignore[override]
         try:
             model = self.model()
             form.populate_obj(model)
             self._on_model_change(form, model, True)
-            model.save(force_insert=True)  # type: ignore[operator]
+            model.save(force_insert=True)
 
             # For peewee have to save inline forms after model was saved
             save_inline(form, model)
@@ -551,7 +551,7 @@ class ModelView(BaseModelView):
         else:
             self.after_model_change(form, model, True)
 
-        return model  # type: ignore[return-value]
+        return model
 
     def update_model(self, form: Form, model: T_PEEWEE_MODEL) -> bool | None:  # type: ignore[override]
         try:
@@ -611,11 +611,11 @@ class ModelView(BaseModelView):
             model_pk = getattr(self.model, self._primary_key)
 
             if self.fast_mass_delete:
-                count = self.model.delete().where(model_pk << ids).execute()  # type: ignore[union-attr]
+                count = self.model.delete().where(model_pk << ids).execute()
             else:
                 count = 0
 
-                query = self.model.select().filter(model_pk << ids)  # type: ignore[union-attr]
+                query = self.model.select().filter(model_pk << ids)
 
                 for m in query:
                     self.on_model_delete(m)

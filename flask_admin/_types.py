@@ -55,11 +55,11 @@ if t.TYPE_CHECKING:
     from flask_sqlalchemy import Model as T_SQLALCHEMY_LEGACY_MODEL
     from sqlalchemy.orm import DeclarativeBase as T_DECLARATIVE_BASE
 
-    T_SQLALCHEMY_MODEL = t.TypeVar(
-        "T_SQLALCHEMY_MODEL", bound=(T_SQLALCHEMY_LEGACY_MODEL | T_DECLARATIVE_BASE)
-    )
+    T_SQLALCHEMY_MODEL: t.TypeAlias = t.Union[
+        T_SQLALCHEMY_LEGACY_MODEL, T_DECLARATIVE_BASE
+    ]
 
-    from mongoengine import Document as T_MONGO_ENGINE_CLIENT
+    from mongoengine import Document as T_MONGO_ENGINE_DOCUMENT
     from peewee import Field as T_PEEWEE_FIELD  # noqa
     from peewee import Model as T_PEEWEE_MODEL
     from pymongo import MongoClient
@@ -69,6 +69,7 @@ if t.TYPE_CHECKING:
     from sqlalchemy_utils import Choice as T_CHOICE  # noqa
     from sqlalchemy_utils import ChoiceType as T_CHOICE_TYPE  # noqa
 
+    # Handle SQLAlchemy generic type changes
     try:
         T_INSTRUMENTED_ATTRIBUTE = InstrumentedAttribute[t.Any]
     except TypeError:  # Fall back to non-generic types for older SQLAlchemy
@@ -78,6 +79,7 @@ if t.TYPE_CHECKING:
         T_SQLALCHEMY_COLUMN = Column[t.Any]
     except TypeError:  # Fall back to non-generic types for older SQLAlchemy
         T_SQLALCHEMY_COLUMN = Column  # type: ignore[misc]
+
     T_MONGO_CLIENT = MongoClient[t.Any]
     from redis import Redis as T_REDIS  # noqa
     from flask_admin.contrib.peewee.ajax import (
@@ -95,9 +97,18 @@ if t.TYPE_CHECKING:
             | T_DECLARATIVE_BASE
             | T_PEEWEE_MODEL
             | T_MONGO_CLIENT
-            | T_MONGO_ENGINE_CLIENT
+            | T_MONGO_ENGINE_DOCUMENT
         ),
     )
+
+    # Union type for when you need a concrete type rather than a TypeVar
+    T_ALIAS_ORM_MODEL: t.TypeAlias = t.Union[
+        T_SQLALCHEMY_LEGACY_MODEL,
+        T_DECLARATIVE_BASE,
+        T_PEEWEE_MODEL,
+        T_MONGO_CLIENT,
+        T_MONGO_ENGINE_DOCUMENT,
+    ]
 else:
     T_VIEW = "flask_admin.base.BaseView"
     T_INPUT_REQUIRED = "InputRequired"
@@ -124,11 +135,12 @@ else:
     T_ARROW = "arrow.Arrow"
     T_LAZY_STRING = "flask_babel.LazyString"
     T_SQLALCHEMY_COLUMN = "sqlalchemy.Column[t.Any]"
-    T_SQLALCHEMY_MODEL = t.TypeVar("T_SQLALCHEMY_MODEL", bound=t.Any)
+    T_SQLALCHEMY_LEGACY_MODEL = "flask_sqlalchemy.Model"
+    T_SQLALCHEMY_MODEL = object
     T_PEEWEE_FIELD = "peewee.Field"
-    T_PEEWEE_MODEL = t.TypeVar("T_PEEWEE_MODEL", bound=t.Any)
+    T_PEEWEE_MODEL = object
     T_MONGO_CLIENT = "pymongo.MongoClient[t.Any]"
-    T_MONGO_ENGINE_CLIENT = "mongoengine.Document"
+    T_MONGO_ENGINE_DOCUMENT = "mongoengine.Document"
     T_TABLE = "sqlalchemy.Table"
     T_CHOICE_TYPE = "sqlalchemy_utils.ChoiceType"
     T_CHOICE = "sqlalchemy_utils.Choice"
@@ -143,6 +155,7 @@ else:
     )
     T_PIL_IMAGE = "PIL.Image.Image"
     T_ORM_MODEL = t.TypeVar("T_ORM_MODEL", bound=t.Any)
+    T_ALIAS_ORM_MODEL = object
 
 T_COLUMN = t.Union[str, T_SQLALCHEMY_COLUMN, T_INSTRUMENTED_ATTRIBUTE]
 T_FILTER = tuple[int, T_COLUMN, str]
@@ -168,9 +181,11 @@ T_QUERY_AJAX_MODEL_LOADER = t.Union[
 T_RESPONSE = t.Union[Response, Wkzg_Response]
 
 T_SQLALCHEMY_INLINE_MODELS = t.Sequence[
-    T_INLINE_FORM_ADMIN
-    | type[T_SQLALCHEMY_LEGACY_MODEL | T_DECLARATIVE_BASE]
-    | tuple[type[T_SQLALCHEMY_LEGACY_MODEL | T_DECLARATIVE_BASE] | dict[str, t.Any]]
+    t.Union[
+        T_INLINE_FORM_ADMIN,
+        type[T_SQLALCHEMY_MODEL],
+        tuple[type[T_SQLALCHEMY_MODEL]] | dict[str, t.Any],
+    ]
 ]
 
 T_RULES_SEQUENCE = t.Sequence[

@@ -226,7 +226,7 @@ def test_inline_form_ajax_fk(app, sqla_db_ext, admin, session_or_db):
         class UserModelView(ModelView):
             opts = {"form_ajax_refs": {"tag": {"fields": ["name"]}}}
 
-            inline_models = [(UserInfo, opts)]
+            inline_models = [(UserInfo, opts)]  # type: ignore[list-item]
 
         param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
         view = UserModelView(User, param)
@@ -307,7 +307,7 @@ def test_inline_form_base_class(app, sqla_db_ext, admin, session_or_db):
 
         # Set up Admin
         class UserModelView(ModelView):
-            inline_models = ((UserEmail, {"form_base_class": StubBaseForm}),)
+            inline_models = ((UserEmail, {"form_base_class": StubBaseForm}),)  # type: ignore[assignment]
             form_args = {"emails": {"validators": [ItemsRequired()]}}
 
         param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
