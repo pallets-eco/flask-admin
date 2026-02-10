@@ -60,11 +60,12 @@ if t.TYPE_CHECKING:
     ]
 
     from mongoengine import Document as T_MONGO_ENGINE_DOCUMENT
-    from peewee import Field as T_PEEWEE_FIELD  # noqa
+    from peewee import Field as T_PEEWEE_FIELD
     from peewee import Model as T_PEEWEE_MODEL
     from pymongo import MongoClient
     from sqlalchemy import Column
-    from sqlalchemy import Table as T_TABLE  # noqa
+    from sqlalchemy import FromClause
+    from sqlalchemy import Table
     from sqlalchemy.orm import InstrumentedAttribute
     from sqlalchemy_utils import Choice as T_CHOICE  # noqa
     from sqlalchemy_utils import ChoiceType as T_CHOICE_TYPE  # noqa
@@ -97,6 +98,8 @@ if t.TYPE_CHECKING:
         T_MONGO_CLIENT,
         T_MONGO_ENGINE_DOCUMENT,
     ]
+
+    T_SQLALCHEMY_TABLE: t.TypeAlias = t.Union[Table, FromClause]
 else:
     T_VIEW = "flask_admin.base.BaseView"
     T_INPUT_REQUIRED = "InputRequired"
@@ -124,12 +127,11 @@ else:
     T_LAZY_STRING = "flask_babel.LazyString"
     T_SQLALCHEMY_COLUMN = "sqlalchemy.Column[t.Any]"
     T_SQLALCHEMY_LEGACY_MODEL = "flask_sqlalchemy.Model"
-    T_SQLALCHEMY_MODEL = object
+    T_SQLALCHEMY_MODEL = t.Any
     T_PEEWEE_FIELD = "peewee.Field"
-    T_PEEWEE_MODEL = object
+    T_PEEWEE_MODEL = t.Any
     T_MONGO_CLIENT = "pymongo.MongoClient[t.Any]"
     T_MONGO_ENGINE_DOCUMENT = "mongoengine.Document"
-    T_TABLE = "sqlalchemy.Table"
     T_CHOICE_TYPE = "sqlalchemy_utils.ChoiceType"
     T_CHOICE = "sqlalchemy_utils.Choice"
 
@@ -142,7 +144,10 @@ else:
         "flask_admin.contrib.sqla.ajax.QueryAjaxModelLoader"
     )
     T_PIL_IMAGE = "PIL.Image.Image"
-    T_ORM_MODEL = object
+    T_ORM_MODEL = t.Any
+    T_SQLALCHEMY_TABLE = (
+        "sqlalchemy.sql.schema.Table | sqlalchemy.sql.selectable.FromClause"
+    )
 
 T_COLUMN = t.Union[str, T_SQLALCHEMY_COLUMN, T_INSTRUMENTED_ATTRIBUTE]
 T_FILTER = tuple[int, T_COLUMN, str]

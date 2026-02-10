@@ -4,7 +4,6 @@ import types
 import typing as t
 
 from sqlalchemy import and_
-from sqlalchemy import FromClause
 from sqlalchemy import inspect
 from sqlalchemy import or_
 from sqlalchemy import tuple_
@@ -19,6 +18,7 @@ from flask_admin._types import T_INSTRUMENTED_ATTRIBUTE
 from flask_admin._types import T_ORM_MODEL
 from flask_admin._types import T_SQLALCHEMY_COLUMN
 from flask_admin._types import T_SQLALCHEMY_MODEL
+from flask_admin._types import T_SQLALCHEMY_TABLE
 
 try:
     # SQLAlchemy 2.0
@@ -53,7 +53,7 @@ def parse_like_term(term: str) -> str:
 
 
 def filter_foreign_columns(
-    base_table: Table | FromClause, columns: list[T_COLUMN]
+    base_table: T_SQLALCHEMY_TABLE, columns: list[T_COLUMN]
 ) -> list[T_COLUMN]:
     """
     Return list of columns that belong to passed table.
