@@ -237,20 +237,131 @@ To **disable some of the CRUD operations**, set any of these boolean parameters:
     can_edit = False
     can_delete = False
 
+
+**To include** only a subset of the model's columns in the list view, specify a list of column names for
+the *column_list* parameter::
+
+    column_list = ['name', 'email', 'country']
+
+
+By default, the Primary key column is excluded from the list view, but you can include it by adding it
+to the *column_list* or by setting::
+
+    column_display_pk = True
+
 If your model has too much data to display in the list view, you can **add a read-only
-details view** by setting::
+details view**, with option to show this view in a modal. This can be done by setting::
 
     can_view_details = True
+    column_details_list = ['ip_address', 'user_agent', 'created_at', 'updated_at']
+    details_modal = False
 
-**Removing columns** from the list view is easy, just pass a list of column names for
-the *column_exclude_list* parameter::
+**Removing columns** from the list view or from the details view is easy, just pass a list of
+column names for the *column_exclude_list* and *column_details_exclude_list* parameters::
 
     column_exclude_list = ['password', ]
+    column_details_exclude_list = ['password', ]
+
+**Renaming columns** is also easy, just specify a dictionary mapping column names to their
+new labels::
+
+    column_labels = {
+        'name': 'Full Name',
+        'email': 'Email Address',
+        'country': 'Country of Residence'
+    }
+
+And if you want more description for the columns to be presented as a tooltip, you can
+specify a dictionary mapping column names to their descriptions::
+
+    column_descriptions = {
+        'name': 'The full name of the user',
+        'email': 'The email address of the user',
+        'country': 'The country where the user lives'
+    }
 
 To **make columns searchable**, or to use them for filtering, specify a list of column names::
 
     column_searchable_list = ['name', 'email']
     column_filters = ['country']
+
+
+To make **columns sortable**, specify a list of column names like the example below. The
+default sort can be specified using the *column_default_sort* attribute::
+
+    column_sortable_list = ['name', 'email', 'country']
+
+See more details and examples of sortable columns in the API documentation
+for :meth:`~flask_admin.model.BaseModelView.column_sortable_list`.
+
+A value can presented in different ways by specifying a **formatter function** for the column::
+
+    column_formatters = {
+        "price" : lambda v, c, m, p: m.price*2,
+        "created_at": lambda v, c, m, p: m.created_at.strftime('%Y-%m-%d'),
+        "imgage": lambda v, c, m, p: Markup('<img src="%s">' % m.image_url)
+    }
+
+See the API documentation for :meth:`~flask_admin.model.BaseModelView.column_formatters` for more
+details and examples of formatter functions. And for details view the *column_formatters_detail*
+can be used::
+
+    column_formatters_detail = {
+        "created_at": lambda v, c, m, p: m.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+    }
+
+For generalization, you can use *column_type_formatters* to specify formatters for all columns of
+a given type. The following example demonstrates how to do this::
+
+    from flask_admin.model import typefmt
+    from datetime import datetime
+
+    MY_DEFAULT_FORMATTERS = dict(typefmt.BASE_FORMATTERS)
+    MY_DEFAULT_FORMATTERS.update({
+        datetime: lambda v, c, m, p: m.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+    })
+
+    class MyModelView(ModelView):
+        column_type_formatters = MY_DEFAULT_FORMATTERS
+
+Likewise, you can use *column_type_formatters_detail* to specify formatters for all columns of
+a given type in the details view::
+
+    column_type_formatters_detail = MY_DEFAULT_FORMATTERS
+
+
+**Pagination** is enabled by default, but you can disable it by setting::
+
+    page_size = 50  # the number of entries to display on the list view
+    can_set_page_size = False
+    page_size_options = (10, 20, 50, 100)
+
+Row Actions:
+************
+
+By default, the list view includes a set of action buttons for each row, which allow you to
+edit, delete, or view details for that record. To **disable these buttons**, set::
+
+    column_display_actions = False
+
+And to **add custom action buttons** to the list view, specify a list of dictionaries for
+the *column_extra_row_actions* parameter::
+
+    from flask_admin.model.template import EndpointLinkRowAction, LinkRowAction
+
+    class MyModelView(BaseModelView):
+        column_extra_row_actions = [
+            LinkRowAction(
+                'glyphicon glyphicon-off', 'http://direct.link/?id={row_id}'
+            ),
+            EndpointLinkRowAction(
+                'glyphicon glyphicon-test', 'my_view.index_view'
+            )
+        ]
+
+
+Row Editing:
+************
 
 For a faster editing experience, enable **inline editing** in the list view::
 
@@ -260,10 +371,12 @@ Editable_list is converts each column into Ajax form so that you can edit & save
 in same row. see the API docs :meth:`~flask_admin.model.BaseModelView.ajax_update` for Ajax example.
 
 Another way of inline editing without losing the current context, have the add & edit forms display
-inside a **modal window** on the list page, instead of the dedicated *create* & *edit* pages::
+inside a **modal window** on the list page, instead of the dedicated *create*, *edit* and *details*
+pages::
 
     create_modal = True
     edit_modal = True
+    details_modal = True
 
 You can restrict the possible values for a text-field by specifying a list of **select choices**::
 
@@ -305,6 +418,10 @@ When your forms contain foreign keys, have those **related models loaded via aja
         'user': {
             'fields': ['first_name', 'last_name', 'email'],
             'page_size': 10
+        },
+        'post': {
+            'fields': ['title', 'body'],
+            'page_size': 10
         }
     }
 
@@ -322,15 +439,32 @@ To **manage related models inline**::
 These inline forms can be customized. Have a look at the API documentation for
 :meth:`~flask_admin.contrib.sqla.ModelView.inline_models`.
 
-To **enable csv export** of the model view::
+Exporting Records:
+******************
+
+To **enable csv export** of the model view with including and excluding specific columns,
+data formatting options, and type-based formatters::
 
     can_export = True
+    column_export_list = ['name', 'email', 'country']
+    column_export_exclude_list = ['password', ]
+    column_formatters_export = {
+        'created_at': lambda v, c, m, p: m.created_at.strftime('%Y-%m-%d'),
+    }
+
+    column_type_formatters_export = {
+        datetime: lambda v, c, m, p: m.created_at.strftime('%Y-%m-%d'),
+    }
 
 This will add a button to the model view that exports records, truncating at :attr:`~flask_admin.model.BaseModelView.export_max_rows`.
+you can also specify the export types that are available for the model view::
+
+    export_types = ['csv', 'json']
 
 
-Grouping Views
-==============
+
+Grouping Views (Menu Categories)
+================================
 When adding a view, specify a value for the `category` parameter
 to group related views together in the menu::
 
