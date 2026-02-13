@@ -1,0 +1,26 @@
+{% import "admin/lib.html" as lib with context %}
+{% block body %}
+    <div class="modal-header">
+        {% block header_text %}
+            <h5 class="modal-title">{{ header_text }}</h5>
+        {% endblock header_text %}
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _gettext("Cancel") }}"></button>
+    </div>
+    {% block fa_form %}
+        {% call lib.form_tag(action=request.url) %}
+            <div class="modal-body">{{ lib.render_form_fields(form) }}</div>
+            <div class="modal-footer">{{ lib.render_form_buttons(dir_url, is_modal=True) }}</div>
+        {% endcall %}
+    {% endblock fa_form %}
+{% endblock body %}
+{% block tail %}
+    <script>
+        $(function() {
+            // Apply flask-admin form styles after the modal is loaded
+            window.faForm.applyGlobalStyles(document);
+        });
+    </script>
+{% endblock tail %}
