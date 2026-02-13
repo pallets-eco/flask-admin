@@ -237,6 +237,8 @@ To **disable some of the CRUD operations**, set any of these boolean parameters:
     can_edit = False
     can_delete = False
 
+**Controlling Columns:**
+************************
 
 **To include** only a subset of the model's columns in the list view, specify a list of column names for
 the *column_list* parameter::
@@ -329,15 +331,16 @@ a given type in the details view::
 
     column_type_formatters_detail = MY_DEFAULT_FORMATTERS
 
+Controlling Rows:
+*****************
+
 
 **Pagination** is enabled by default, but you can disable it by setting::
 
-    page_size = 50  # the number of entries to display on the list view
-    can_set_page_size = False
+    page_size = 50  # the number of entries per page.
+    can_set_page_size = True
     page_size_options = (10, 20, 50, 100)
 
-Row Actions:
-************
 
 By default, the list view includes a set of action buttons for each row, which allow you to
 edit, delete, or view details for that record. To **disable these buttons**, set::
@@ -360,8 +363,8 @@ the *column_extra_row_actions* parameter::
         ]
 
 
-Row Editing:
-************
+**Creating/Editing Rows:**
+**************************
 
 For a faster editing experience, enable **inline editing** in the list view::
 
@@ -439,8 +442,8 @@ To **manage related models inline**::
 These inline forms can be customized. Have a look at the API documentation for
 :meth:`~flask_admin.contrib.sqla.ModelView.inline_models`.
 
-Exporting Records:
-******************
+**Exporting:**
+**************
 
 To **enable csv export** of the model view with including and excluding specific columns,
 data formatting options, and type-based formatters::
