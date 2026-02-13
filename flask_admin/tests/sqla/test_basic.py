@@ -820,6 +820,16 @@ def test_details_view(app, sqla_db_ext, admin, session_or_db):
         assert "test2_val_1" in data
         assert "test1_val_1" in data
 
+        # test single-PK with multiple IDs in query string
+        rv = client.get(
+            "/admin/model2/details/?url=%2Fadmin%2Fmodel2%2F&id=1,2",
+            follow_redirects=True,
+        )
+        data = rv.data.decode("utf-8")
+        assert "String Field" in data
+        assert "test2_val_1" in data
+        assert "test1_val_1" in data
+
         # test column_details_list
         rv = client.get("/admin/sf_view/details/?url=%2Fadmin%2Fsf_view%2F&id=1")
         data = rv.data.decode("utf-8")
