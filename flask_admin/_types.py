@@ -265,6 +265,10 @@ class T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK(T_FIELD_ARGS_VALIDATORS):
     allow_blank: NotRequired[bool]
 
 
+class T_FIELD_ARGS_VALIDATORS_SELECTABLE(T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK):
+    coerce: NotRequired[t.Callable[[t.Any], t.Any]]
+
+
 class T_FIELD_ARGS_VALIDATORS_FILES(T_FIELD_ARGS_VALIDATORS):
     base_path: NotRequired[str]
     allow_overwrite: NotRequired[bool]
