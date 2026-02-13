@@ -274,7 +274,8 @@ new labels::
     }
 
 And if you want more description for the columns to be presented as a tooltip, you can
-specify a dictionary mapping column names to their descriptions::
+specify a dictionary mapping column names to their descriptions. This description
+will be also presented in create/edit form field::
 
     column_descriptions = {
         'name': 'The full name of the user',
