@@ -18,6 +18,7 @@ from flask_admin._types import T_INSTRUMENTED_ATTRIBUTE
 from flask_admin._types import T_ORM_MODEL
 from flask_admin._types import T_SQLALCHEMY_COLUMN
 from flask_admin._types import T_SQLALCHEMY_MODEL
+from flask_admin._types import T_SQLALCHEMY_TABLE
 
 try:
     # SQLAlchemy 2.0
@@ -52,7 +53,7 @@ def parse_like_term(term: str) -> str:
 
 
 def filter_foreign_columns(
-    base_table: Table, columns: list[T_COLUMN]
+    base_table: T_SQLALCHEMY_TABLE, columns: list[T_COLUMN]
 ) -> list[T_COLUMN]:
     """
     Return list of columns that belong to passed table.
@@ -181,7 +182,7 @@ def need_join(model: type[T_SQLALCHEMY_MODEL], table: Table) -> bool:
     """
     Check if join to a table is necessary.
     """
-    return table not in model._sa_class_manager.mapper.tables
+    return table not in model._sa_class_manager.mapper.tables  # type: ignore[union-attr]
 
 
 def get_field_with_path(
@@ -263,7 +264,7 @@ def is_hybrid_property(model: type[T_SQLALCHEMY_MODEL], attr_name: str) -> bool:
             if isinstance(last_model, string_types):
                 last_model = attr.property._clsregistry_resolve_name(last_model)()
             elif isinstance(last_model, _class_resolver):
-                last_model = model._decl_class_registry[last_model.arg]
+                last_model = model._decl_class_registry[last_model.arg]  # type: ignore[union-attr]
             elif isinstance(last_model, types.FunctionType | types.MethodType):
                 last_model = last_model()
         last_name = names[-1]
