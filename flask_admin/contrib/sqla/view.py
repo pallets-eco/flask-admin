@@ -387,7 +387,9 @@ class ModelView(BaseModelView):
 
         self._search_fields: list[tuple[T_SQLALCHEMY_COLUMN, t.Any]] | None = None
 
-        self._filter_joins: dict[tuple[bool, t.Any], t.Any] = dict()
+        self._filter_joins: dict[
+            tuple[bool, t.Any] | T_INSTRUMENTED_ATTRIBUTE | str, t.Any
+        ] = dict()
 
         self._sortable_joins: dict[T_COLUMN, list[T_INSTRUMENTED_ATTRIBUTE]] = dict()
 
@@ -405,6 +407,7 @@ class ModelView(BaseModelView):
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
         )
+        self.model: type[T_SQLALCHEMY_MODEL]
         self._manager = manager_of_class(self.model)
 
         # Primary key
@@ -511,7 +514,7 @@ class ModelView(BaseModelView):
             elif hasattr(p, "columns"):
                 if len(p.columns) > 1:
                     filtered = tools.filter_foreign_columns(
-                        self.model.__table__,  # type: ignore[union-attr]
+                        self.model.__table__,
                         p.columns,
                     )
 
@@ -582,7 +585,6 @@ class ModelView(BaseModelView):
             return self.scaffold_sortable_columns()
         else:
             result: dict[T_COLUMN, T_COLUMN] = dict()
-            self.model = t.cast(type[T_SQLALCHEMY_MODEL], self.model)
             for c in self.column_sortable_list:
                 if isinstance(c, tuple):
                     if isinstance(c[1], tuple):
@@ -1178,7 +1180,7 @@ class ModelView(BaseModelView):
             if isinstance(flt, sqla_filters.BaseSQLAFilter):
                 # If no key_name is specified, use filter column as filter key
                 filter_key = flt.key_name or flt.column
-                path = self._filter_joins.get(filter_key, [])  # type: ignore[call-overload]
+                path = self._filter_joins.get(filter_key, [])  # type: ignore[arg-type]
 
                 query, joins, alias = self._apply_path_joins(
                     query, joins, path, inner_join=False

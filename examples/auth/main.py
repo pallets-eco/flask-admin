@@ -1,4 +1,6 @@
 import os
+import random
+import string
 
 from flask import abort
 from flask import Flask
@@ -17,12 +19,26 @@ from flask_security import SQLAlchemyUserDatastore
 from flask_security import UserMixin
 from flask_security.utils import hash_password
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Boolean
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Table
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
+
+from examples.auth.data import first_names
+from examples.auth.data import last_names
 
 app = Flask(__name__)
+
 app.config["SECRET_KEY"] = "secret"
 app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
-app.config["SQLALCHEMY_ECHO"] = True
+app.config["SQLALCHEMY_ECHO"] = False
 # Flask-Security config
 app.config["SECURITY_URL_PREFIX"] = "/admin"
 app.config["SECURITY_PASSWORD_HASH"] = "pbkdf2_sha512"
@@ -38,6 +54,7 @@ app.config["SECURITY_POST_REGISTER_VIEW"] = "/admin/"
 app.config["SECURITY_REGISTERABLE"] = True
 app.config["SECURITY_SEND_REGISTER_EMAIL"] = False
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 db = SQLAlchemy(app)
 admin = Admin(
     app,
@@ -46,34 +63,35 @@ admin = Admin(
 )
 
 
-roles_users = db.Table(
+roles_users = Table(
     "roles_users",
-    db.Column("user_id", db.Integer(), db.ForeignKey("user.id")),
-    db.Column("role_id", db.Integer(), db.ForeignKey("role.id")),
+    db.Model.metadata,
+    Column("user_id", Integer(), ForeignKey("user.id")),
+    Column("role_id", Integer(), ForeignKey("role.id")),
 )
 
 
 class Role(db.Model, RoleMixin):
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(80), unique=True)
-    description = db.Column(db.String(255))
+    id: Mapped[int] = mapped_column(Integer(), primary_key=True)
+    name: Mapped[str] = mapped_column(String(80), unique=True)
+    description: Mapped[str] = mapped_column(String(255), nullable=True)
 
     def __str__(self):
         return self.name
 
 
 class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(255))
-    last_name = db.Column(db.String(255))
-    email = db.Column(db.String(255), unique=True)
-    password = db.Column(db.String(255))
-    active = db.Column(db.Boolean())
-    confirmed_at = db.Column(db.DateTime())
-    roles = db.relationship(
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    first_name: Mapped[str] = mapped_column(String(255), nullable=True)
+    last_name: Mapped[str] = mapped_column(String(255), nullable=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True)
+    password: Mapped[str] = mapped_column(String(255))
+    active: Mapped[bool] = mapped_column(Boolean())
+    confirmed_at: Mapped[DateTime | None] = mapped_column(DateTime())
+    roles: Mapped[list[Role]] = relationship(
         "Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic")
     )
-    fs_uniquifier = db.Column(db.String(64), unique=True, nullable=False)
+    fs_uniquifier: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
 
     def __str__(self):
         return self.email
@@ -127,10 +145,6 @@ def build_sample_db():
     """
     Populate a small db with some example entries.
     """
-
-    import random
-    import string
-
     db.drop_all()
     db.create_all()
 
@@ -148,71 +162,14 @@ def build_sample_db():
             roles=[user_role, super_user_role],
         )
 
-        first_names = [
-            "Harry",
-            "Amelia",
-            "Oliver",
-            "Jack",
-            "Isabella",
-            "Charlie",
-            "Sophie",
-            "Mia",
-            "Jacob",
-            "Thomas",
-            "Emily",
-            "Lily",
-            "Ava",
-            "Isla",
-            "Alfie",
-            "Olivia",
-            "Jessica",
-            "Riley",
-            "William",
-            "James",
-            "Geoffrey",
-            "Lisa",
-            "Benjamin",
-            "Stacey",
-            "Lucy",
-        ]
-        last_names = [
-            "Brown",
-            "Smith",
-            "Patel",
-            "Jones",
-            "Williams",
-            "Johnson",
-            "Taylor",
-            "Thomas",
-            "Roberts",
-            "Khan",
-            "Lewis",
-            "Jackson",
-            "Clarke",
-            "James",
-            "Phillips",
-            "Wilson",
-            "Ali",
-            "Mason",
-            "Mitchell",
-            "Rose",
-            "Davis",
-            "Davies",
-            "Rodriguez",
-            "Cox",
-            "Alexander",
-        ]
-
-        for i in range(len(first_names)):
-            tmp_email = (
-                first_names[i].lower() + "." + last_names[i].lower() + "@example.com"
-            )
+        for name, surname in zip(first_names, last_names, strict=True):
+            tmp_email = f"{name.lower()}.{surname.lower()}@example.com"
             tmp_pass = "".join(
                 random.choice(string.ascii_lowercase + string.digits) for i in range(10)
             )
             user_datastore.create_user(
-                first_name=first_names[i],
-                last_name=last_names[i],
+                first_name=name,
+                last_name=surname,
                 email=tmp_email,
                 password=hash_password(tmp_pass),
                 roles=[

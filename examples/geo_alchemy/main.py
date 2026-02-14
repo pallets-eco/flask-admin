@@ -4,6 +4,10 @@ from flask_admin.contrib.geoa import ModelView
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2.types import Geometry
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 from testcontainers.postgres import PostgresContainer
 
 db = SQLAlchemy()
@@ -15,39 +19,39 @@ def index():
 
 
 class Point(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    point = db.Column(Geometry("POINT"))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(64), unique=True)
+    point: Mapped[Geometry] = mapped_column(Geometry("POINT"))
 
 
 class MultiPoint(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    point = db.Column(Geometry("MULTIPOINT"))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(64), unique=True)
+    point: Mapped[Geometry] = mapped_column(Geometry("MULTIPOINT"))
 
 
 class Polygon(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    point = db.Column(Geometry("POLYGON"))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(64), unique=True)
+    point: Mapped[Geometry] = mapped_column(Geometry("POLYGON"))
 
 
 class MultiPolygon(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    point = db.Column(Geometry("MULTIPOLYGON"))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(64), unique=True)
+    point: Mapped[Geometry] = mapped_column(Geometry("MULTIPOLYGON"))
 
 
 class LineString(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    point = db.Column(Geometry("LINESTRING"))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(64), unique=True)
+    point: Mapped[Geometry] = mapped_column(Geometry("LINESTRING"))
 
 
 class MultiLineString(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    point = db.Column(Geometry("MULTILINESTRING"))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(64), unique=True)
+    point: Mapped[Geometry] = mapped_column(Geometry("MULTILINESTRING"))
 
 
 class LeafletModelView(ModelView):
@@ -73,7 +77,7 @@ if __name__ == "__main__":
         app = Flask(__name__)
         app.config["SECRET_KEY"] = "secret"
         app.config["SQLALCHEMY_DATABASE_URI"] = postgres.get_connection_url()
-        app.config["SQLALCHEMY_ECHO"] = True
+        app.config["SQLALCHEMY_ECHO"] = False
         # Credentials for loading map tiles from Mapbox
         app.config["FLASK_ADMIN_MAPS"] = True
         app.config["FLASK_ADMIN_MAPS_SEARCH"] = False

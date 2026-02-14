@@ -13,13 +13,19 @@ from flask_admin.form import RenderTemplateWidget
 from flask_admin.model.form import InlineFormAdmin
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 from werkzeug.utils import secure_filename
 from wtforms import fields
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
-app.config["SQLALCHEMY_ECHO"] = True
+app.config["SQLALCHEMY_ECHO"] = False
 db = SQLAlchemy(app)
 admin = Admin(app, name="Example: Custom Inline Forms")
 
@@ -28,8 +34,12 @@ base_path = op.join(op.dirname(__file__), "static")
 
 
 class Location(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(64))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(64))
+
+    images = relationship(
+        "LocationImage", back_populates="location", cascade="all, delete-orphan"
+    )
 
 
 class ImageType(db.Model):
@@ -38,10 +48,10 @@ class ImageType(db.Model):
     so we can test the "form_ajax_refs" inside the "inline_models"
     """
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(64))
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         """
         Represent this model as a string
         (e.g. in the Image Type list dropdown when creating an inline model)
@@ -50,15 +60,19 @@ class ImageType(db.Model):
 
 
 class LocationImage(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    alt = db.Column(db.Unicode(128))
-    path = db.Column(db.String(64))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    alt: Mapped[str] = mapped_column(String(128))
+    path: Mapped[str] = mapped_column(String(64))
 
-    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    location = db.relation(Location, backref="images")
+    location_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey(Location.id), nullable=False
+    )
+    location: Mapped[list[Location]] = relationship(Location, back_populates="images")
 
-    image_type_id = db.Column(db.Integer, db.ForeignKey(ImageType.id))
-    image_type = db.relation(ImageType, backref="images")
+    image_type_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey(ImageType.id), nullable=False
+    )
+    image_type: Mapped[list[ImageType]] = relationship(ImageType, backref="images")
 
 
 # Register after_delete handler which will delete image file after model gets deleted
