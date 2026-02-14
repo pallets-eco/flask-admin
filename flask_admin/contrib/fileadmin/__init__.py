@@ -482,7 +482,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
         def validate_name(self: type[form.BaseForm], field: Field) -> None:
             regexp = re.compile(
-                r"^(?!^(PRN|AUX|CLOCK\$|NUL|CON|COM\d|LPT\d|\..*)(\..+)?$)[^\x00-\x1f\\?*:\";|/]+$"
+                r"^(?!^(PRN|AUX|CLOCK\$|NUL|CON|COM\d|LPT\d|\..*)(\..+)?$)[^\x00-\x1f\\?*:\";'`|/]+$"
             )
             if not regexp.match(field.data):
                 raise validators.ValidationError(gettext("Invalid name"))
