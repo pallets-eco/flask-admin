@@ -13,7 +13,7 @@ of it.
 
 import typing as t
 from types import MappingProxyType
-from flask_admin._types import T_TRANSLATABLE, T_ITER_CHOICES, T_ORM_MODEL
+from flask_admin._types import T_TRANSLATABLE, T_ITER_CHOICES
 
 text_type = str
 string_types = (str,)
