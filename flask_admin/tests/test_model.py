@@ -20,12 +20,14 @@ class Model:
         self.col1 = c1
         self.col2 = c2
         self.col3 = c3
+        self.age = 0
 
 
 class Form(form.BaseForm):
     col1 = fields.StringField()
     col2 = fields.StringField()
     col3 = fields.StringField()
+    age = fields.IntegerField()
 
 
 class SimpleFilter(filters.BaseFilter):
@@ -842,3 +844,43 @@ def test_list_row_actions(app, admin):
     assert "bi bi-rocket-takeoff" in data
     assert "http://localhost/?id=" in data
     assert "bi bi-box-arrow-up-right" in data
+
+
+@pytest.mark.parametrize(
+    "url, age, msg",
+    [
+        ("/admin/model/new/", None, "Record was successfully created."),
+        ("/admin/model/new/", 15, "Record was successfully created."),
+        (
+            "/admin/model/new/",
+            "notAnInt",
+            "Failed to create record|Not a valid integer value",
+        ),
+        ("/admin/model/edit/?id=1", None, "Record was successfully saved."),
+        ("/admin/model/edit/?id=1", 20, "Record was successfully saved."),
+        (
+            "/admin/model/edit/?id=1",
+            "notAnInt",
+            "Failed to save record|Not a valid integer value",
+        ),
+    ],
+)
+def test_form_submit(app, admin, url, age, msg):
+    # Test error flashing
+    view = MockModelView(Model)
+    admin.add_view(view)
+    client = app.test_client()
+
+    rv = client.get(url)
+    assert rv.status_code == 200
+    data = rv.data.decode("utf-8")
+    assert all([part not in data for part in msg.split("|")])
+
+    rv = client.post(
+        url,
+        data=dict(col1="test1", col2="test2", col3="test3", age=age),
+        follow_redirects=True,
+    )
+    assert rv.status_code == 200
+    data = rv.data.decode("utf-8")
+    assert all([part in data for part in msg.split("|")])

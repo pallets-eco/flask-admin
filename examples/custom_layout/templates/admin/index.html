@@ -1,17 +1,51 @@
 {% extends 'admin/master.html' %}
+
 {% block body %}
-{{ super() }}
-<div class="row">
-    <h1>Flask-Admin example</h1>
-    <p class="lead">
-        Customize the layout
-    </p>
-    <p>
-        This example shows how you can customize the look & feel of the admin interface.
-    </p>
-    <p>
-        This is done by overriding some of the built-in templates.
-    </p>
-    <a class="btn btn-primary" href="/"><i class="bi bi-chevron-left"></i> Back</a>
-</div>
-{% endblock body %}
+  <div class="row">
+  <div class="col-md-4 mb-3">
+    <div class="card text-white bg-primary shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">Users</h5>
+        <p class="display-4">{{ user_count or 0 }}</p>
+        <a href="{{ url_for('user.index_view') }}" class="stretched-link"></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4 mb-3">
+    <div class="card text-white bg-success shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">Sales</h5>
+        <p class="display-4">$ {{ sales_sum }}</p>
+        <a href="{{ url_for('sale.index_view') }}" class="stretched-link"></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4 mb-3">
+    <div class="card text-white bg-warning shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">Pages</h5>
+        <p class="display-4">{{ pages_count or 0 }}</p>
+        <a href="{{ url_for('page.index_view') }}" class="stretched-link"></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+  </div>
+
+  <div class="row mt-5">
+    <div class="col-12">
+      <div class="alert alert-info border-0 shadow-sm">
+        <h5 class="alert-heading"><i class="fa fa-info-circle"></i> Dashboard Note</h5>
+        <p class="mb-0">
+          This is an <strong>Example Custom Layout</strong>.
+        </p>
+      </div>
+
+      <p class="text-center text-muted mt-4">
+      </p>
+    </div>
+  </div>
+{% endblock %}

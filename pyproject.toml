@@ -35,6 +35,9 @@ sqlalchemy = [
     "flask-sqlalchemy>=3",
     "sqlalchemy>=1.4",
 ]
+sqlalchemy-lite = [
+    "flask-sqlalchemy-lite",
+]
 sqlalchemy-with-utils = [
     "Flask-Admin[sqlalchemy]",
     "sqlalchemy_utils>=0.38.0",
@@ -62,6 +65,7 @@ rediscli = ["redis>=4.0.0"]
 translation = ["flask-babel>=3.0.1"]
 all = [
     "Flask-Admin[sqlalchemy]",
+    "Flask-Admin[sqlalchemy-lite]",
     "Flask-Admin[sqlalchemy-with-utils]",
     "Flask-Admin[geoalchemy]",
     "Flask-Admin[pymongo]",
@@ -78,7 +82,7 @@ all = [
 [dependency-groups]
 dev = [
     "flask-admin[all]",
-    "tox",
+    "tox<4.30",   # https://github.com/tox-dev/tox/issues/3602
     "tox-uv",
     {include-group = "pre-commit"},
     {include-group = "docs"},
@@ -172,7 +176,10 @@ filterwarnings = [
     "ignore:unclosed database in <sqlite3\\.Connection object at 0x[0-9a-f]+>:ResourceWarning",
 
     # raised at end of test run, maybe by Werkzeug?
-    "ignore:unclosed file <_io.FileIO name='/home/runner/work/flask-admin/flask-admin/flask_admin/static/bootstrap/bootstrap4/css/bootstrap.min.css' mode='rb' closefd=True>:ResourceWarning",
+    "ignore:unclosed file .*bootstrap\\.min\\.css.*:ResourceWarning",
+
+    # remove once the deprecated ModelView(Model, db.session) API is fully retired
+    "ignore:Passing a session object directly is deprecated.*:DeprecationWarning",
 ]
 
 [tool.coverage.run]

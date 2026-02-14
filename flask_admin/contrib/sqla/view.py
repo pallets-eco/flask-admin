@@ -45,7 +45,9 @@ from ..._types import T_SQLALCHEMY_COLUMN
 from ..._types import T_SQLALCHEMY_INLINE_MODELS
 from ..._types import T_SQLALCHEMY_MODEL
 from ..._types import T_WIDGET
-from ._types import T_SCOPED_SESSION
+from ._compat import _get_deprecated_session
+from ._compat import _warn_session_deprecation
+from ._types import T_SESSION_OR_DB
 from ._types import T_SQLALCHEMY_QUERY
 from .ajax import create_ajax_loader
 from .ajax import QueryAjaxModelLoader
@@ -340,7 +342,7 @@ class ModelView(BaseModelView):
     def __init__(
         self,
         model: type[T_SQLALCHEMY_MODEL],
-        session: T_SCOPED_SESSION,
+        session: T_SESSION_OR_DB,
         name: str | None = None,
         category: str | None = None,
         endpoint: str | None = None,
@@ -356,7 +358,10 @@ class ModelView(BaseModelView):
         :param model:
             Model class
         :param session:
-            SQLAlchemy session
+            flask_sqlalchemy.SQLAlchemy/flask_sqlalchemy_lite.SQLAlchemy object
+            (preferred) or scoped session (deprecated).
+            When passing a SQLAlchemy object, the session will be accessed via its
+            .session attribute.
         :param name:
             View name. If not set, defaults to the model name
         :param category:
@@ -379,11 +384,13 @@ class ModelView(BaseModelView):
             Icon name (Fontawesome, or Bootstrap) or URL, depending on
             `menu_icon_type` setting
         """
-        self.session = session
+        self.session = _warn_session_deprecation(session)
 
         self._search_fields: list[tuple[T_SQLALCHEMY_COLUMN, t.Any]] | None = None
 
-        self._filter_joins: dict[tuple[bool, t.Any], t.Any] = dict()
+        self._filter_joins: dict[
+            tuple[bool, t.Any] | T_INSTRUMENTED_ATTRIBUTE | str, t.Any
+        ] = dict()
 
         self._sortable_joins: dict[T_COLUMN, list[T_INSTRUMENTED_ATTRIBUTE]] = dict()
 
@@ -401,6 +408,7 @@ class ModelView(BaseModelView):
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
         )
+        self.model: type[T_SQLALCHEMY_MODEL]
         self._manager = manager_of_class(self.model)
 
         # Primary key
@@ -507,7 +515,7 @@ class ModelView(BaseModelView):
             elif hasattr(p, "columns"):
                 if len(p.columns) > 1:
                     filtered = tools.filter_foreign_columns(
-                        self.model.__table__,  # type: ignore[union-attr]
+                        self.model.__table__,
                         p.columns,
                     )
 
@@ -578,7 +586,6 @@ class ModelView(BaseModelView):
             return self.scaffold_sortable_columns()
         else:
             result: dict[T_COLUMN, T_COLUMN] = dict()
-            self.model = t.cast(type[T_SQLALCHEMY_MODEL], self.model)
             for c in self.column_sortable_list:
                 if isinstance(c, tuple):
                     if isinstance(c[1], tuple):
@@ -994,7 +1001,8 @@ class ModelView(BaseModelView):
         for displaying the correct item count in the list view, and `get_one`, which is
         used when retrieving records for the edit view.
         """
-        return self.session.query(self.model)
+        session = _get_deprecated_session(self.session)
+        return session.query(self.model)
 
     def get_count_query(self) -> T_SQLALCHEMY_QUERY:
         """
@@ -1005,7 +1013,8 @@ class ModelView(BaseModelView):
 
         See commit ``#45a2723`` for details.
         """
-        return self.session.query(func.count("*")).select_from(self.model)
+        session = _get_deprecated_session(self.session)
+        return session.query(func.count("*")).select_from(self.model)
 
     def _order_by(
         self,
@@ -1172,7 +1181,7 @@ class ModelView(BaseModelView):
             if isinstance(flt, sqla_filters.BaseSQLAFilter):
                 # If no key_name is specified, use filter column as filter key
                 filter_key = flt.key_name or flt.column
-                path = self._filter_joins.get(filter_key, [])  # type: ignore[call-overload]
+                path = self._filter_joins.get(filter_key, [])  # type: ignore[arg-type]
 
                 query, joins, alias = self._apply_path_joins(
                     query, joins, path, inner_join=False
@@ -1320,7 +1329,8 @@ class ModelView(BaseModelView):
         :param id:
             Model id
         """
-        return self.session.get(self.model, tools.iterdecode(id))
+        session = _get_deprecated_session(self.session)
+        return session.get(self.model, tools.iterdecode(id))
 
     # Error handler
     def handle_view_exception(self, exc: Exception) -> bool:
@@ -1365,9 +1375,10 @@ class ModelView(BaseModelView):
             model = self.build_new_instance()
 
             form.populate_obj(model)
-            self.session.add(model)
+            session = _get_deprecated_session(self.session)
+            session.add(model)
             self._on_model_change(form, model, True)
-            self.session.commit()
+            session.commit()
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 flash(
@@ -1376,7 +1387,7 @@ class ModelView(BaseModelView):
                 )
                 log.exception("Failed to create record.")
 
-            self.session.rollback()
+            session.rollback()
 
             return False
         else:
@@ -1396,7 +1407,8 @@ class ModelView(BaseModelView):
         try:
             form.populate_obj(model)
             self._on_model_change(form, model, False)
-            self.session.commit()
+            session = _get_deprecated_session(self.session)
+            session.commit()
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 flash(
@@ -1405,7 +1417,7 @@ class ModelView(BaseModelView):
                 )
                 log.exception("Failed to update record.")
 
-            self.session.rollback()
+            session.rollback()
 
             return False
         else:
@@ -1420,11 +1432,12 @@ class ModelView(BaseModelView):
         :param model:
             Model to delete
         """
+        session = _get_deprecated_session(self.session)
         try:
             self.on_model_delete(model)
-            self.session.flush()
-            self.session.delete(model)
-            self.session.commit()
+            session.flush()
+            session.delete(model)
+            session.commit()
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 flash(
@@ -1433,7 +1446,7 @@ class ModelView(BaseModelView):
                 )
                 log.exception("Failed to delete record.")
 
-            self.session.rollback()
+            session.rollback()
 
             return False
         else:
@@ -1471,7 +1484,8 @@ class ModelView(BaseModelView):
                     if self.delete_model(m):
                         count += 1
 
-            self.session.commit()
+            session = _get_deprecated_session(self.session)
+            session.commit()
 
             flash(
                 ngettext(

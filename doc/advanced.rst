@@ -315,6 +315,9 @@ Some of the Geometry field types that are available include:
 Have a look at https://github.com/pallets-eco/flask-admin/tree/master/examples/geo-alchemy
 to get started.
 
+
+.. _display-map-widgets:
+
 Display map widgets
 *******************
 
@@ -718,6 +721,8 @@ While the wrapped function should accept only one parameter - `ids`::
 
                 flash(gettext('Failed to approve users. %(error)s', error=str(ex)), 'error')
 
+
+.. _raise-exceptions-instead-of-flash:
 
 Raise exceptions instead of flash error messages
 ------------------------------------------------
