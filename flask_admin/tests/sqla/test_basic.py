@@ -144,7 +144,7 @@ def create_models(sqla_db_ext):
         sqla_utils_ip_address = Column(IPAddressType)
         sqla_utils_currency = Column(CurrencyType)
         sqla_utils_color = Column(ColorType)
-        test5 = Column(Float(10, 2))
+        test5 = Column(Float(2))
 
         def __unicode__(self):
             return self.test1
@@ -1826,13 +1826,14 @@ def test_column_filters(app, sqla_db_ext, admin, session_or_db):
         assert "test1_val_2" not in data
 
 
-def test_url_for_simple(app, app_context, db, admin):
+def test_url_for_simple(app, sqla_db_ext, admin, session_or_db):
     # with app.app_context():
-    Model1, Model2 = create_models(db)
+    Model1, Model2 = create_models(sqla_db_ext)
 
+    param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
     view = CustomModelView(
         Model1,
-        db.session,
+        param,
         endpoint="user",
         column_filters=["test1", "id", "test5", "bool_field"],
     )
@@ -2230,9 +2231,9 @@ def create_filter_params():
 )
 def test_url_for(
     app,
-    app_context,
-    db,
+    sqla_db_ext,
     admin,
+    session_or_db,
     FilterClass,
     col,
     filter_value,
@@ -2241,11 +2242,12 @@ def test_url_for(
     expected_value,
 ):
     # with app.app_context():
-    Model1, Model2 = create_models(db)
+    Model1, Model2 = create_models(sqla_db_ext)
 
     col = getattr(Model1, col)
 
-    view = CustomModelView(Model1, db.session, endpoint="user", column_filters=[col])
+    param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+    view = CustomModelView(Model1, param, endpoint="user", column_filters=[col])
     admin.add_view(view)
 
     with app.test_request_context("http://localhost/admin/user/"):
@@ -2352,9 +2354,9 @@ def create_filter_params_enums_and_choices():
 )
 def test_url_for_enums_and_choices(
     app,
-    app_context,
-    db,
+    sqla_db_ext,
     admin,
+    session_or_db,
     FilterClass,
     col,
     filter_value,
@@ -2362,12 +2364,12 @@ def test_url_for_enums_and_choices(
     arg_named_key,
     expected_value,
 ):
-    # with app.app_context():
-    Model1, Model2 = create_models(db)
+    Model1, Model2 = create_models(sqla_db_ext)
 
     col = getattr(Model1, col)
 
-    view = CustomModelView(Model1, db.session, endpoint="user", column_filters=[col])
+    param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+    view = CustomModelView(Model1, param, endpoint="user", column_filters=[col])
     admin.add_view(view)
 
     with app.test_request_context("http://localhost/admin/user/"):

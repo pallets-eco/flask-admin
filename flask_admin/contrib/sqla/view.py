@@ -1180,7 +1180,7 @@ class ModelView(BaseModelView):
             if isinstance(flt, sqla_filters.BaseSQLAFilter):
                 # If no key_name is specified, use filter column as filter key
                 filter_key = flt.key_name or flt.column
-                path = self._filter_joins.get(filter_key, [])  # type: ignore[arg-type]
+                path = self._filter_joins.get(filter_key, [])
 
                 query, joins, alias = self._apply_path_joins(
                     query, joins, path, inner_join=False
