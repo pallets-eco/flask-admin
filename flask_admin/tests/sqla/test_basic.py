@@ -3425,16 +3425,9 @@ def test_page_title(app, sqla_db_ext, admin, session_or_db):
         )
 
 
-@pytest.mark.parametrize(
-    "session_or_db",
-    [
-        pytest.param("session", id="with_session_deprecated"),
-        pytest.param("db", id="with_db"),
-    ],
-)
-def test_tooltip_of_menu_items(app, db, admin, session_or_db):
+def test_tooltip_of_menu_items(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
-        Model1, Model2 = create_models(db)
+        Model1, Model2 = create_models(sqla_db_ext)
 
     class MyModelView(CustomModelView):
         can_view_details = True
@@ -3442,7 +3435,7 @@ def test_tooltip_of_menu_items(app, db, admin, session_or_db):
             "test1": 'tooltip of test1. <b class="text-danger">with HTML</b>',
         }
 
-    param = db if session_or_db == "session" else db.session
+    param = sqla_db_ext.db if session_or_db == "session" else sqla_db_ext.db.session
     # test column_list with a list of strings
     view = MyModelView(Model1, param, name="Model1", tooltip="tooltip of Model1")
     view2 = MyModelView(Model2, param, name="Model2", tooltip="tooltip of Model2")
