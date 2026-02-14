@@ -31,6 +31,9 @@ class Form(form.BaseForm):
 
 
 class SimpleFilter(filters.BaseFilter):
+    def __init__(self, name=None, options=None):
+        super().__init__(column=None, name=name, options=options)
+
     def apply(self, query, value):
         query._applied = True
         return query
@@ -85,7 +88,7 @@ class MockModelView(base.BaseModelView):
         return bool(self.column_searchable_list)
 
     def scaffold_filters(self, name):
-        return [SimpleFilter(name)]
+        return [SimpleFilter(name=name)]
 
     def scaffold_sortable_columns(self):
         return ["col1", "col2", "col3"]
@@ -302,11 +305,11 @@ def test_column_searchable_list(app, admin):
 
 
 def test_column_filters(app, admin):
-    view = MockModelView(Model, column_filters=["col1", "col2"])
+    view = MockModelView(Model, column_filters=["col1", "col2", "col3"])
     admin.add_view(view)
 
     assert view._filters
-    assert len(view._filters) == 2
+    assert len(view._filters) == 3
     assert view._filters[0].name == "col1"
     assert view._filters[1].name == "col2"
     assert view._filter_groups
@@ -323,7 +326,7 @@ def test_column_filters(app, admin):
 
 
 def test_filter_list_callable(app, admin):
-    flt = SimpleFilter("test", options=lambda: [("1", "Test 1"), ("2", "Test 2")])
+    flt = SimpleFilter(name="test", options=lambda: [("1", "Test 1"), ("2", "Test 2")])
 
     view = MockModelView(Model, column_filters=[flt])
     admin.add_view(view)

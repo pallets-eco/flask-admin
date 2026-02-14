@@ -21,6 +21,7 @@ class BasePyMongoFilter(filters.BaseFilter):
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
+        url_value: t.Any = None,
     ) -> None:
         """
         Constructor.
@@ -34,7 +35,7 @@ class BasePyMongoFilter(filters.BaseFilter):
         :param data_type:
             Client data type
         """
-        super().__init__(name, options, data_type)
+        super().__init__(column, name, options, data_type, url_value=url_value)
 
         self.column = column
 
