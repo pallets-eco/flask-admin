@@ -271,6 +271,9 @@ class AzureStorage(BaseFileStorage):
         src = t.cast(str, self._ensure_blob_path(src))
         dst = t.cast(str, self._ensure_blob_path(dst))
 
+        if src == dst:
+            return
+
         if self.is_dir(src):
             self._rename_directory(src, dst)
         else:
