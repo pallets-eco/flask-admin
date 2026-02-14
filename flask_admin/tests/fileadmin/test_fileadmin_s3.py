@@ -200,3 +200,145 @@ class TestS3FileAdmin(Base.FileAdminTests):
         # Test access to deep path
         rv = client.get("/admin/myfileadmin/b/xx/yy/zz")
         assert rv.status_code == 200
+
+    def test_prefix(self, app, admin, mock_s3_client):
+        fileadmin_class = self.fileadmin_class()
+        fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+
+        class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+            pass
+
+        view_kwargs = dict(fileadmin_kwargs)
+        view_kwargs["prefix"] = "xx/yy/"
+        view_kwargs.setdefault("name", "Files")
+        view = MyFileAdmin(*fileadmin_args, **view_kwargs)
+
+        # create deep path
+        view.storage.make_dir("", "xx/yy/zz/")
+
+        admin.add_view(view)
+
+        client = app.test_client()
+
+        # upload to deep path
+        rv = client.post(
+            "/admin/myfileadmin/upload/zz/",
+            data=dict(upload=(BytesIO(b"test content"), "test_upload.txt")),
+            follow_redirects=True,
+        )
+        assert rv.status_code == 200
+        assert "Successfully saved file: test_upload.txt" in rv.text
+
+        rv = client.get("/admin/myfileadmin/b/zz/")
+        assert rv.status_code == 200
+        assert "path=zz/test_upload.txt" in rv.text
+
+        # rename in deep path
+        rv = client.post(
+            "/admin/myfileadmin/rename/?path=zz/test_upload.txt",
+            data=dict(name="dummy.txt", path="zz/test_upload.txt"),
+        )
+        assert rv.status_code == 302
+
+        rv = client.get("/admin/myfileadmin/b/zz/")
+        assert rv.status_code == 200
+        assert "path=zz/dummy.txt" in rv.text
+        assert "path=test_upload.txt" not in rv.text
+
+        # download from deep path
+        rv = client.get("/admin/myfileadmin/download/zz/dummy.txt")
+        assert rv.status_code == 302
+        assert rv.headers["Location"].startswith(
+            "https://my-bucket.s3.amazonaws.com/xx/yy/zz/dummy.txt?AWSAccessKeyId=FOOBARKEY"
+        )
+
+        # delete
+        rv = client.post(
+            "/admin/myfileadmin/delete",
+            data=dict(path="zz/dummy.txt"),
+            follow_redirects=True,
+        )
+        assert rv.status_code == 200
+        assert "successfully deleted" in rv.text
+
+    @pytest.mark.parametrize(
+        "prefix, res_code",
+        [
+            ("xx/yy", 200),
+            ("xx/yy/", 200),
+            ("/xx/yy", 200),
+            ("/xx/yy/", 200),
+            ("/xx//yy/", 200),
+            ("xx\\yy", 404),
+            ("/xx\\yy/", 404),
+            ("xx/../xx/yy", 200),
+            ("xx/../xx//yy", 200),
+        ],
+    )
+    def test_base_path(self, app, admin, mock_s3_client, prefix, res_code):
+        fileadmin_class = self.fileadmin_class()
+        fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+
+        s3 = fileadmin_args[0]
+        s3.upload_fileobj(BytesIO(b""), _bucket_name, "xx/yy/zz/dummy2.txt")
+
+        class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+            pass
+
+        view_kwargs = dict(fileadmin_kwargs)
+        view_kwargs["prefix"] = prefix
+        view_kwargs.setdefault("name", "Files")
+        view = MyFileAdmin(*fileadmin_args, **view_kwargs)
+
+        admin.add_view(view)
+
+        client = app.test_client()
+
+        # actual s3 prefix is xx/yy/
+        rv = client.get("/admin/myfileadmin/")
+        assert rv.status_code == res_code
+        if res_code == 200:
+            assert "dummy2.txt" not in rv.data.decode("utf-8")
+
+        rv = client.get("/admin/myfileadmin/b/zz/")
+        assert rv.status_code == res_code
+        if res_code == 200:
+            assert "dummy2.txt" in rv.data.decode("utf-8")
+
+        rv = client.get("/admin/myfileadmin/b/xx/zz/")
+        assert rv.status_code == 404
+
+    @pytest.mark.parametrize(
+        "prefix",
+        ["", ".", "/", "./"],
+    )
+    def test_base_path_root(self, app, admin, mock_s3_client, prefix):
+        fileadmin_class = self.fileadmin_class()
+        fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+
+        s3 = fileadmin_args[0]
+        s3.upload_fileobj(BytesIO(b""), _bucket_name, "xx/yy/zz/dummy2.txt")
+
+        class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+            pass
+
+        view_kwargs = dict(fileadmin_kwargs)
+        view_kwargs["prefix"] = prefix
+        view_kwargs.setdefault("name", "Files")
+        view = MyFileAdmin(*fileadmin_args, **view_kwargs)
+
+        admin.add_view(view)
+
+        client = app.test_client()
+
+        rv = client.get("/admin/myfileadmin/")
+        assert rv.status_code == 200
+        assert "dummy2.txt" not in rv.data.decode("utf-8")
+
+        rv = client.get("/admin/myfileadmin/b/xx/yy/")
+        assert rv.status_code == 200
+        assert "dummy2.txt" not in rv.data.decode("utf-8")
+
+        rv = client.get("/admin/myfileadmin/b/xx/yy/zz")
+        assert rv.status_code == 200
+        assert "dummy2.txt" in rv.data.decode("utf-8")
