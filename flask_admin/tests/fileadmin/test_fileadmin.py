@@ -2,6 +2,8 @@ import os
 import os.path as op
 from io import BytesIO
 
+import pytest
+
 from flask_admin import Admin
 from flask_admin.contrib import fileadmin
 from flask_admin.theme import Bootstrap4Theme
@@ -221,6 +223,46 @@ class Base:
             assert rv.status_code == 200
             data = rv.data.decode("utf-8")
             assert "fa_modal_window" not in data
+
+        @pytest.mark.parametrize("wrongname", ["x`x", "x'x", 'y"y'])
+        def test_invalid_names(self, app, admin, request, wrongname):
+            fileadmin_class = self.fileadmin_class()
+            fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+
+            class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+                editable_extensions = ("txt",)
+                allowed_extensions = ("txt",)
+
+            view_kwargs = dict(fileadmin_kwargs)
+            view_kwargs.setdefault("name", "Files")
+            view = MyFileAdmin(*fileadmin_args, **view_kwargs)
+
+            admin.add_view(view)
+            client = app.test_client()
+
+            rv = client.post(
+                "/admin/myfileadmin/rename/?path=dummy.txt",
+                data=dict(name=wrongname, path="dummy.txt"),
+                follow_redirects=True,
+            )
+            data = rv.data.decode("utf-8")
+            assert rv.status_code == 200
+            assert "Invalid name" in data
+
+            rv = client.post("/admin/myfileadmin/mkdir/", data=dict(name=wrongname))
+            data = rv.data.decode("utf-8")
+            assert rv.status_code == 200
+            assert "Invalid name" in data
+
+            rv = client.post("/admin/myfileadmin/mkdir/", data=dict(name="d1"))
+            rv = client.post(
+                "/admin/myfileadmin/rename/?path=d1",
+                data=dict(name=wrongname, path="d1"),
+                follow_redirects=True,
+            )
+            data = rv.data.decode("utf-8")
+            assert rv.status_code == 200
+            assert "Invalid name" in data
 
 
 class TestLocalFileAdmin(Base.FileAdminTests):
