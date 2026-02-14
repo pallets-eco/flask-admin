@@ -1,30 +1,25 @@
 import os
 
 import pytest
-from flask_sqlalchemy import SQLAlchemy
 
-from flask_admin import Admin
-
-
-@pytest.fixture
-def db(app):
-    db = SQLAlchemy()
-    yield db
-    db.session.remove()
+from flask_admin.tests.conftest import close_db
+from flask_admin.tests.conftest import configure_sqla
+from flask_admin.tests.conftest import sqla_db_exts
 
 
-@pytest.fixture
-def admin(app, babel, db):
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+@pytest.fixture(params=sqla_db_exts)
+def sqla_db_ext(request, app):
+    # need postgres for spatial types
+    uri = os.getenv(
         "SQLALCHEMY_DATABASE_URI",
         "postgresql://postgres:postgres@localhost/flask_admin_test",
     )
-    app.config["SQLALCHEMY_ECHO"] = True
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    db.init_app(app)
+    configure_sqla(app, uri, request)
 
-    app.app_context().push()
+    p = request.param()
+    p.db.init_app(app)
 
-    admin = Admin(app)
-    yield admin
+    with app.app_context():
+        yield p
+        close_db(app, p)
