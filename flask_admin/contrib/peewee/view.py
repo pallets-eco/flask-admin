@@ -203,6 +203,7 @@ class ModelView(BaseModelView):
         menu_class_name: str | None = None,
         menu_icon_type: str | None = None,
         menu_icon_value: str | None = None,
+        tooltip: str | None = None,
     ) -> None:
         self._search_fields: list[t.Any] = []
         super().__init__(
@@ -215,6 +216,7 @@ class ModelView(BaseModelView):
             menu_class_name=menu_class_name,
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
+            tooltip=tooltip,
         )
         self.model: type[T_PEEWEE_MODEL]
         self._primary_key = self.scaffold_pk()

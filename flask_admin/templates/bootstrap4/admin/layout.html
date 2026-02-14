@@ -50,15 +50,13 @@
                   <li class="{{ class_name }}"></li>
                 {% else %}
                   <li>
-                    {%- if child.is_active(admin_view) %}
-                      <a class="dropdown-item active {{ class_name }} " href="{{ child.get_url() }}"{% if child.target %}
-                      target="{{ child.target }}"{% endif %}>
-                        {{ menu_icon(child) }}{{ child.name }}</a>
-                    {% else %}
-                      <a class="dropdown-item {{ class_name }}" href="{{ child.get_url() }}"{% if child.target %}
-                      target="{{ child.target }}"{% endif %}>
-                        {{ menu_icon(child) }}{{ child.name }}</a>
-                    {%- endif %}
+                      <a class="dropdown-item {{ 'active' if child.is_active(admin_view) else '' }} {{ class_name }} "
+                        href="{{ child.get_url() }}"
+                        {% if child.target %} target="{{ child.target }}"{% endif %}
+                        data-toggle="tooltip" data-placement="bottom" title="{{ child.tooltip or '' }}"
+                      >
+                        {{ menu_icon(child) }}{{ child.name }}
+                      </a>
                   </li>
                 {%- endif %}
               {%- endif %}
@@ -74,8 +72,12 @@
             {%- else %}
           <li>
         {%- endif %}
-      <a class="nav-link {{ class_name }}" href="{{ item.get_url() }}"{% if item.target %} target="{{ item.target }}"{% endif %}>
-        {{ menu_icon(item) }}{{ item.name }}</a>
+      <a class="nav-link {{ class_name }}" href="{{ item.get_url() }}"
+        {% if item.target %} target="{{ item.target }}"{% endif %}
+        data-toggle="tooltip" data-placement="bottom" title="{{ item.tooltip or '' }}"
+      >
+        {{ menu_icon(item) }}{{ item.name }}
+      </a>
       </li>
       {%- endif -%}
     {% endif -%}
@@ -88,8 +90,12 @@
     {% set class_name = item.get_class_name() %}
     {% if item.is_accessible() and item.is_visible() %}
       <li>
-        <a class="nav-link {{ class_name }}" href="{{ item.get_url() }}"{% if item.target %} target="{{ item.target }}"{% endif %}>
-          {{ menu_icon(item) }}{{ item.name }}</a>
+        <a class="nav-link {{ class_name }}" href="{{ item.get_url() }}"
+          {% if item.target %} target="{{ item.target }}"{% endif %}
+          data-toggle="tooltip" data-placement="bottom" title="{{ item.tooltip or '' }}"
+        >
+          {{ menu_icon(item) }}{{ item.name }}
+        </a>
       </li>
     {% endif %}
   {% endfor %}

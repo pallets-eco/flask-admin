@@ -48,6 +48,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla import tools
 from flask_admin.form.fields import DateTimeField
 from flask_admin.form.fields import Select2Field
+from flask_admin.menu import MenuLink
 from flask_admin.tests import flask_babel_test_decorator
 
 
@@ -64,6 +65,7 @@ class CustomModelView(ModelView):
         menu_class_name=None,
         menu_icon_type=None,
         menu_icon_value=None,
+        tooltip: str | None = None,
         **kwargs,
     ):
         for k, v in iteritems(kwargs):
@@ -80,6 +82,7 @@ class CustomModelView(ModelView):
             menu_class_name,
             menu_icon_type,
             menu_icon_value,
+            tooltip=tooltip,
         )
 
     form_choices = {"choice_field": [("choice-1", "One"), ("choice-2", "Two")]}
@@ -3420,3 +3423,38 @@ def test_page_title(app, sqla_db_ext, admin, session_or_db):
         assert match_page_title_and_icon(
             data, "Local Files", '<i class="fa fa-folder"></i>'
         )
+
+
+def test_tooltip_of_menu_items(app, sqla_db_ext, admin, session_or_db):
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+    class MyModelView(CustomModelView):
+        can_view_details = True
+        column_descriptions = {
+            "test1": 'tooltip of test1. <b class="text-danger">with HTML</b>',
+        }
+
+    param = sqla_db_ext.db if session_or_db == "session" else sqla_db_ext.db.session
+    # test column_list with a list of strings
+    view = MyModelView(Model1, param, name="Model1", tooltip="tooltip of Model1")
+    view2 = MyModelView(Model2, param, name="Model2", tooltip="tooltip of Model2")
+    admin.add_view(view)
+    admin.add_view(view2)
+    admin.add_link(MenuLink(name="link1", url="/", tooltip="tooltip link1"))
+
+    client = app.test_client()
+
+    rv = client.get("/admin/model1/")
+    data = rv.data.decode("utf-8")
+    assert "tooltip of Model1" in data
+    assert "tooltip link1" in data
+    assert (
+        "tooltip of test1. &lt;b class=&#34;text-danger&#34;&gt;with HTML&lt;/b&gt;"
+        in data
+    )
+
+    rv = client.get("/admin/model2/")
+    data = rv.data.decode("utf-8")
+    assert "tooltip of Model2" in data
+    assert "tooltip link1" in data
