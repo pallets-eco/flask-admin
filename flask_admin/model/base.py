@@ -2371,7 +2371,6 @@ class BaseModelView(BaseView, ActionsMixin):
                         url = return_url
                     return redirect(url)
                 else:
-                    model = t.cast(T_ORM_MODEL, model)
                     # save button
                     return redirect(self.get_save_return_url(model, is_created=True))
         else:
@@ -2583,6 +2582,7 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         Export a CSV of records as a stream.
         """
+        data: list[T_ORM_MODEL]
         count, data = self._export_data()
 
         # https://docs.djangoproject.com/en/1.8/howto/outputting-csv/
