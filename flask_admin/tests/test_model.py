@@ -812,10 +812,10 @@ def test_list_row_actions(app, admin):
         endpoint="test3",
         column_extra_row_actions=[
             template.LinkRowAction(
-                "glyphicon glyphicon-off", "http://localhost/?id={row_id}"
+                "bi bi-rocket-takeoff", "http://localhost/?id={row_id}"
             ),
             template.EndpointLinkRowAction(
-                "glyphicon glyphicon-test", "test1.index_view"
+                "bi bi-box-arrow-up-right", "test1.index_view"
             ),
         ],
     )
@@ -841,9 +841,9 @@ def test_list_row_actions(app, admin):
 
     data = rv.data.decode("utf-8")
 
-    assert "glyphicon-off" in data
+    assert "bi bi-rocket-takeoff" in data
     assert "http://localhost/?id=" in data
-    assert "glyphicon-test" in data
+    assert "bi bi-box-arrow-up-right" in data
 
 
 @pytest.mark.parametrize(
