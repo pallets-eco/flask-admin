@@ -4,6 +4,7 @@ import typing as t
 from sqlalchemy.sql import not_
 from sqlalchemy.sql import or_
 
+from flask_admin._types import T_INSTRUMENTED_ATTRIBUTE
 from flask_admin._types import T_OPTIONS
 from flask_admin._types import T_SQLALCHEMY_COLUMN
 from flask_admin._types import T_TRANSLATABLE
@@ -21,7 +22,7 @@ class BaseSQLAFilter(filters.BaseFilter):
 
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN,
+        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
@@ -43,7 +44,9 @@ class BaseSQLAFilter(filters.BaseFilter):
 
         self.column = column
 
-    def get_column(self, alias: t.Any) -> T_SQLALCHEMY_COLUMN:
+    def get_column(
+        self, alias: t.Any
+    ) -> T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE:
         return self.column if alias is None else getattr(alias, self.column.key)
 
     def apply(
@@ -489,13 +492,13 @@ class ChoiceTypeEqualFilter(FilterEqual):
         column = self.get_column(alias)
         choice_type = None
         # loop through choice 'values' to try and find an exact match
-        if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore[attr-defined]
-            for choice in column.type.choices:  # type: enum.Enum  # type: ignore[attr-defined]
+        if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore[union-attr]
+            for choice in column.type.choices:  # type: enum.Enum  # type: ignore[union-attr]
                 if choice.name == user_query:
                     choice_type = choice.value
                     break
         else:
-            for type, value in column.type.choices:  # type: ignore[attr-defined]
+            for type, value in column.type.choices:  # type: ignore[union-attr]
                 if value == user_query:
                     choice_type = type
                     break
@@ -522,13 +525,13 @@ class ChoiceTypeNotEqualFilter(FilterNotEqual):
         column = self.get_column(alias)
         choice_type = None
         # loop through choice 'values' to try and find an exact match
-        if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore[attr-defined]
-            for choice in column.type.choices:  # type: enum.Enum # type: ignore[attr-defined]
+        if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore[union-attr]
+            for choice in column.type.choices:  # type: enum.Enum # type: ignore[union-attr]
                 if choice.name == user_query:
                     choice_type = choice.value
                     break
         else:
-            for type, value in column.type.choices:  # type: ignore[attr-defined]
+            for type, value in column.type.choices:  # type: ignore[union-attr]
                 if value == user_query:
                     choice_type = type
                     break
@@ -557,12 +560,12 @@ class ChoiceTypeLikeFilter(FilterLike):
         choice_types = []
         if user_query:
             # loop through choice 'values' looking for matches
-            if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore[attr-defined]
-                for choice in column.type.choices:  # type: enum.Enum  # type: ignore[attr-defined]
+            if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore[union-attr]
+                for choice in column.type.choices:  # type: enum.Enum  # type: ignore[union-attr]
                     if user_query.lower() in choice.name.lower():
                         choice_types.append(choice.value)
             else:
-                for type, value in column.type.choices:  # type: ignore[attr-defined]
+                for type, value in column.type.choices:  # type: ignore[union-attr]
                     if user_query.lower() in value.lower():
                         choice_types.append(type)
         if choice_types:
@@ -589,12 +592,12 @@ class ChoiceTypeNotLikeFilter(FilterNotLike):
         choice_types = []
         if user_query:
             # loop through choice 'values' looking for matches
-            if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore[attr-defined]
-                for choice in column.type.choices:  # type: enum.Enum  # type: ignore[attr-defined]
+            if isinstance(column.type.choices, enum.EnumMeta):  # type: ignore[union-attr]
+                for choice in column.type.choices:  # type: enum.Enum  # type: ignore[union-attr]
                     if user_query.lower() in choice.name.lower():
                         choice_types.append(choice.value)
             else:
-                for type, value in column.type.choices:  # type: ignore[attr-defined]
+                for type, value in column.type.choices:  # type: ignore[union-attr]
                     if user_query.lower() in value.lower():
                         choice_types.append(type)
         if choice_types:

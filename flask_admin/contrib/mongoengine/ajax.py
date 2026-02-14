@@ -15,7 +15,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         :param fields:
             Fields to run query against
         """
-        super()
+        super().__init__(name, options)
 
         self.model = model
         self.fields = options.get("fields")

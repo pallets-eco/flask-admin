@@ -18,6 +18,7 @@ from flask_admin._types import T_INSTRUMENTED_ATTRIBUTE
 from flask_admin._types import T_ORM_MODEL
 from flask_admin._types import T_SQLALCHEMY_COLUMN
 from flask_admin._types import T_SQLALCHEMY_MODEL
+from flask_admin._types import T_SQLALCHEMY_TABLE
 
 try:
     # SQLAlchemy 2.0
@@ -29,6 +30,7 @@ except ImportError:
         ASSOCIATION_PROXY,
     )
 
+from sqlalchemy import Column
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.sql.operators import eq
 
@@ -51,7 +53,7 @@ def parse_like_term(term: str) -> str:
 
 
 def filter_foreign_columns(
-    base_table: Table, columns: list[T_COLUMN]
+    base_table: T_SQLALCHEMY_TABLE, columns: list[T_COLUMN]
 ) -> list[T_COLUMN]:
     """
     Return list of columns that belong to passed table.
@@ -163,7 +165,7 @@ def get_query_for_ids(
 
 
 def get_columns_for_field(
-    field: T_INSTRUMENTED_ATTRIBUTE | ColumnProperty[t.Any],
+    field: T_INSTRUMENTED_ATTRIBUTE | ColumnProperty[t.Any] | Column[str],
 ) -> list[T_SQLALCHEMY_COLUMN]:
     if (
         not field
@@ -180,12 +182,12 @@ def need_join(model: type[T_SQLALCHEMY_MODEL], table: Table) -> bool:
     """
     Check if join to a table is necessary.
     """
-    return table not in model._sa_class_manager.mapper.tables
+    return table not in model._sa_class_manager.mapper.tables  # type: ignore[union-attr]
 
 
 def get_field_with_path(
     model: type[T_SQLALCHEMY_MODEL],
-    name: str | T_INSTRUMENTED_ATTRIBUTE | ColumnProperty[t.Any],
+    name: str | T_INSTRUMENTED_ATTRIBUTE | ColumnProperty[t.Any] | Column[str],
     return_remote_proxy_attr: bool = True,
 ) -> tuple[t.Any, list[t.Any]]:
     """
@@ -262,7 +264,7 @@ def is_hybrid_property(model: type[T_SQLALCHEMY_MODEL], attr_name: str) -> bool:
             if isinstance(last_model, string_types):
                 last_model = attr.property._clsregistry_resolve_name(last_model)()
             elif isinstance(last_model, _class_resolver):
-                last_model = model._decl_class_registry[last_model.arg]
+                last_model = model._decl_class_registry[last_model.arg]  # type: ignore[union-attr]
             elif isinstance(last_model, types.FunctionType | types.MethodType):
                 last_model = last_model()
         last_name = names[-1]
@@ -276,7 +278,7 @@ def is_relationship(attr: T_INSTRUMENTED_ATTRIBUTE) -> bool:
 
 
 def is_association_proxy(
-    attr: ColumnProperty[t.Any] | T_INSTRUMENTED_ATTRIBUTE,
+    attr: ColumnProperty[t.Any] | T_INSTRUMENTED_ATTRIBUTE | Column[str],
 ) -> bool:
     if hasattr(attr, "parent"):
         attr = attr.parent  # type: ignore[assignment]

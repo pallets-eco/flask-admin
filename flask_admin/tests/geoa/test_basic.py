@@ -3,34 +3,39 @@ import re
 
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
+from sqlalchemy import Column
+from sqlalchemy import Integer
+from sqlalchemy import String
 
 from flask_admin.contrib.geoa import ModelView
 from flask_admin.contrib.geoa.fields import GeoJSONField
 
 
-def create_models(db):
-    class GeoModel(db.Model):  # type: ignore[name-defined, misc]
-        id = db.Column(db.Integer, primary_key=True)
-        name = db.Column(db.String(20))
-        point = db.Column(Geometry("POINT"))
-        line = db.Column(Geometry("LINESTRING"))
-        polygon = db.Column(Geometry("POLYGON"))
-        multi = db.Column(Geometry("MULTIPOINT"))
+def create_models(sqla_db_ext):
+    class GeoModel(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        __tablename__ = "geo_model"
+        id = Column(Integer, primary_key=True)
+        name = Column(String(20))
+        point = Column(Geometry("POINT"))
+        line = Column(Geometry("LINESTRING"))
+        polygon = Column(Geometry("POLYGON"))
+        multi = Column(Geometry("MULTIPOINT"))
 
-        def __unicode__(self):
+        def __str__(self):
             return self.name
 
     return GeoModel
 
 
-def test_model(app, db, admin):
-    GeoModel = create_models(db)
+def test_model(app, sqla_db_ext, admin, session_or_db):
+    GeoModel = create_models(sqla_db_ext)
     with app.app_context():
-        db.create_all()
-    GeoModel.query.delete()
-    db.session.commit()
+        sqla_db_ext.create_all()
+    sqla_db_ext.db.session.query(GeoModel).delete()
+    sqla_db_ext.db.session.commit()
 
-    view = ModelView(GeoModel, db.session)
+    param = sqla_db_ext.db if session_or_db == "session" else sqla_db_ext.db.session
+    view = ModelView(GeoModel, param)
     admin.add_view(view)
 
     assert view.model == GeoModel
@@ -75,7 +80,7 @@ def test_model(app, db, admin):
     )
     assert rv.status_code == 302
 
-    model = db.session.query(GeoModel).first()
+    model = sqla_db_ext.db.session.query(GeoModel).first()
     assert model.name == "test1"
     assert to_shape(model.point).geom_type == "Point"
     assert list(to_shape(model.point).coords) == [
@@ -122,40 +127,21 @@ def test_model(app, db, admin):
         in data
     )
 
-    # rv = client.post(url, data={
-    #     "name": "edited",
-    #     "point": '{"type": "Point", "coordinates": [99.9, 10.5]}',
-    #     "line": '',  # set to NULL in the database
-    # })
-    # assert rv.status_code == 302
-    #
-    # model = db.session.query(GeoModel).first()
-    # assert model.name == "edited"
-    # assert to_shape(model.point).geom_type == "Point"
-    # assert list(to_shape(model.point).coords) == [(99.9, 10.5])
-    # assert to_shape(model.line) == None
-    # assert to_shape(model.polygon).geom_type == "Polygon"
-    # eq_(list(to_shape(model.polygon).exterior.coords),
-    #     [(100.0, 0.0), (101.0, 0.0), (101.0, 1.0), (100.0, 1.0), (100.0, 0.0)])
-    # assert to_shape(model.multi).geom_type == "MultiPoint"
-    # assert len(to_shape(model.multi).geoms) == 2
-    # assert list(to_shape(model.multi).geoms[0].coords) == [(100.0, 0.0])
-    # assert list(to_shape(model.multi).geoms[1].coords) == [(101.0, 1.0])
-
     url = f"/admin/geomodel/delete/?id={model.id}"
     rv = client.post(url)
     assert rv.status_code == 302
-    assert db.session.query(GeoModel).count() == 0
+    assert sqla_db_ext.db.session.query(GeoModel).count() == 0
 
 
-def test_none(app, db, admin):
-    GeoModel = create_models(db)
+def test_none(app, sqla_db_ext, admin, session_or_db):
+    GeoModel = create_models(sqla_db_ext)
     with app.app_context():
-        db.create_all()
-    GeoModel.query.delete()
-    db.session.commit()
+        sqla_db_ext.create_all()
+    sqla_db_ext.db.session.query(GeoModel).delete()
+    sqla_db_ext.db.session.commit()
 
-    view = ModelView(GeoModel, db.session)
+    param = sqla_db_ext.db if session_or_db == "session" else sqla_db_ext.db.session
+    view = ModelView(GeoModel, param)
     admin.add_view(view)
 
     # Make some test clients
@@ -169,7 +155,7 @@ def test_none(app, db, admin):
     )
     assert rv.status_code == 302
 
-    model = db.session.query(GeoModel).first()
+    model = sqla_db_ext.db.session.query(GeoModel).first()
 
     url = f"/admin/geomodel/edit/?id={model.id}"
     rv = client.get(url)

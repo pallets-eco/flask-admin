@@ -1,10 +1,15 @@
 import os
+import sys
+import typing as t
 
 import pytest
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 
 from flask_admin import Admin
+from flask_admin.tests.conftest import close_db
+from flask_admin.tests.conftest import configure_sqla
+from flask_admin.tests.conftest import sqla_db_exts
+from flask_admin.tests.conftest import SQLAProvider
 
 
 @pytest.fixture(scope="function")
@@ -19,43 +24,64 @@ def app():
     yield app
 
 
-@pytest.fixture
-def app_context(app):
-    with app.app_context():
-        yield
+@pytest.fixture(params=sqla_db_exts)
+def sqla_db_ext_with_binds(request, app_with_binds):
+    uri = "sqlite:///file:mem?mode=memory&cache=shared"
+    configure_sqla(app_with_binds, uri, request)
+
+    # Instantiate the provider (SQLAProvider or SQLALiteProvider)
+    p = request.param()
+    p.db.init_app(app_with_binds)
+
+    with app_with_binds.app_context():
+        yield p
+        close_db(app_with_binds, p)
 
 
 @pytest.fixture
-def db(app):
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"
-    app.config["SQLALCHEMY_ECHO"] = True
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    db = SQLAlchemy(app)
-    yield db
-    db.session.remove()
+def app_with_binds(app):
+    # flask-sqlalchemy
+    app.config["SQLALCHEMY_BINDS"] = {"other": "sqlite:///"}
+    # flask-sqlalchemy-lite
+    app.config["SQLALCHEMY_ENGINES"] = {
+        "default": "sqlite:///file:mem?mode=memory&cache=shared",
+        "other": "sqlite:///file:mem?mode=memory&cache=shared",
+    }
+    yield app
 
 
 @pytest.fixture
-def postgres_db(app):
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+def admin(app, babel):
+    admin = Admin(app)
+    yield admin
+
+
+@pytest.fixture
+def postgres_admin(app, babel):
+    admin = Admin(app)
+    yield admin
+
+
+@pytest.fixture(params=sqla_db_exts)
+def sqla_postgres_db_ext(app, request):
+    uri = os.getenv(
         "SQLALCHEMY_DATABASE_URI",
         "postgresql://postgres:postgres@localhost/flask_admin_test",
     )
-    app.config["SQLALCHEMY_ECHO"] = True
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    configure_sqla(app, uri, request)
+    # SQLALiteProvider needs special handling for Python 3.12+ with SQLite
+    provider_class = request.param
+    if provider_class != SQLAProvider:
+        engine_options: dict[str, t.Any] = {}
+        if sys.version_info >= (3, 12) and uri.startswith("sqlite"):
+            engine_options["connect_args"] = {"autocommit": False}
+        provider = provider_class(engine_options=engine_options)
+    else:
+        # SQLAProvider (legacy) uses app.config directly
+        provider = provider_class()
 
-    db = SQLAlchemy(app)
-    yield db
-    db.session.remove()
+    provider.db.init_app(app)
 
-
-@pytest.fixture
-def admin(app, babel, db):
-    admin = Admin(app)
-    yield admin
-
-
-@pytest.fixture
-def postgres_admin(app, babel, postgres_db):
-    admin = Admin(app)
-    yield admin
+    with app.app_context():
+        yield provider
+        close_db(app, provider)

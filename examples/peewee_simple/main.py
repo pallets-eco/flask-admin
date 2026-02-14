@@ -65,7 +65,7 @@ class PostAdmin(ModelView):
     # Full text search
     column_searchable_list = ("title", User.username)
 
-    # Column filters
+    # mapped_column filters
     column_filters = ("title", "date", User.username)
 
     form_ajax_refs = {"user": {"fields": (User.username, "email")}}

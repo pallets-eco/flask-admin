@@ -9,6 +9,7 @@ from wtforms import form
 
 from flask_admin.contrib.mongoengine import filters
 from flask_admin.contrib.mongoengine import ModelView
+from flask_admin.contrib.mongoengine.ajax import QueryAjaxModelLoader
 
 
 class Test(Document):  # type: ignore[misc]
@@ -380,3 +381,14 @@ def test_url_for(
         d1 = filter_value
         filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
         assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
+
+
+def test_query_ajax_model_loader_initialization(db):
+    class TestModel(Document):  # type: ignore[misc]
+        meta = {"collection": "test_ajax_loader"}
+        name = StringField()
+
+    loader = QueryAjaxModelLoader("test_field", TestModel, fields=["name"])
+
+    assert loader.name == "test_field"
+    assert loader.options == {"fields": ["name"]}
