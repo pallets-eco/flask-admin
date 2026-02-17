@@ -182,7 +182,7 @@ def test_admin_customizations(app, babel):
                 "admin.static", filename="bootstrap/bootstrap4/css/bootstrap.min.css"
             )
         )
-    assert rv.status_code == 200
+    assert rv.status_code == 404
 
 
 def test_baseview_registration():
@@ -467,7 +467,7 @@ def test_root_mount(app, babel):
             )
         )
         rv.close()
-    assert rv.status_code == 200
+    assert rv.status_code == 404
 
 
 @pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")

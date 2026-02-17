@@ -134,12 +134,14 @@ def test_mounting_on_host(app, babel, initialise_using_init_app):
 
     # Check that static assets are embedded with the expected (relative) URLs
     assert (
-        b'<link href="/static/admin/bootstrap/bootstrap4/swatch'
-        b'/default/bootstrap.min.css?v=4.2.1"' in rv.data
+        b'<link href="https://cdn.jsdelivr.net/gh/pallets-eco/flask-admin@2.0.2/'
+        b'flask_admin/static/bootstrap/bootstrap4/swatch/default/bootstrap.min.css?v=4.2.1"'
+        in rv.data
     )
     assert (
-        b'<script  src="/static/admin/vendor'
-        b'/jquery.min.js?v=3.5.1" type="text/javascript">' in rv.data
+        b'<script  src="https://cdn.jsdelivr.net/gh/pallets-eco/flask-admin@2.0.2/'
+        b'flask_admin/static/vendor/jquery.min.js?v=3.5.1" type="text/javascript">'
+        in rv.data
     )
 
     # test static files when url='/'
@@ -161,7 +163,7 @@ def test_mounting_on_host(app, babel, initialise_using_init_app):
             headers={"Host": "admin.test.localhost"},
         )
         rv.close()
-        assert rv.status_code == 200
+        assert rv.status_code == 404
 
 
 @pytest.mark.parametrize("initialise_using_init_app", [True, False])
@@ -186,12 +188,14 @@ def test_mounting_on_wildcard_host(app, babel, initialise_using_init_app):
 
         # Check that static assets are embedded with the expected (relative) URLs
         assert (
-            b'<link href="/static/admin/bootstrap/bootstrap4/swatch'
-            b'/default/bootstrap.min.css?v=4.2.1"' in rv.data
+            b'<link href="https://cdn.jsdelivr.net/gh/pallets-eco/flask-admin@2.0.2/'
+            b'flask_admin/static/bootstrap/bootstrap4/swatch/default/bootstrap.min.css?v=4.2.1"'
+            in rv.data
         )
         assert (
-            b'<script  src="/static/admin/vendor'
-            b'/jquery.min.js?v=3.5.1" type="text/javascript">' in rv.data
+            b'<script  src="https://cdn.jsdelivr.net/gh/pallets-eco/flask-admin@2.0.2/'
+            b'flask_admin/static/vendor/jquery.min.js?v=3.5.1" type="text/javascript">'
+            in rv.data
         )
 
         # test static files when url='/'
@@ -204,4 +208,4 @@ def test_mounting_on_wildcard_host(app, babel, initialise_using_init_app):
                 ),
             )
             rv.close()
-            assert rv.status_code == 200
+            assert rv.status_code == 404

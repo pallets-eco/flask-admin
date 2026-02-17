@@ -1,3 +1,20 @@
 {% macro url() -%}
-    {{ get_url('{admin_endpoint}.static'.format(admin_endpoint=admin_view.admin.endpoint), *varargs, **kwargs) }}
+    {%- set filename = kwargs.get('filename') -%}
+    {%- if filename is none and varargs|length > 0 -%}
+        {%- set filename = varargs[0] -%}
+    {%- endif -%}
+
+    {%- set asset_url = get_url('{admin_endpoint}.static'.format(admin_endpoint=admin_view.admin.endpoint), *varargs, **kwargs) -%}
+    {%- set is_third_party = filename and (filename.startswith('bootstrap/') or filename.startswith('vendor/')) -%}
+    {%- set is_css_or_js = filename and (filename.endswith('.css') or filename.endswith('.js')) -%}
+    {%- if is_third_party and is_css_or_js -%}
+        {%- set cdn_base = "https://cdn.jsdelivr.net/gh/pallets-eco/flask-admin@2.0.2/flask_admin/static" -%}
+        {%- set version = kwargs.get('v') -%}
+        {%- if version -%}
+            {%- set asset_url = "{base}/{filename}?v={version}".format(base=cdn_base, filename=filename, version=version) -%}
+        {%- else -%}
+            {%- set asset_url = "{base}/{filename}".format(base=cdn_base, filename=filename) -%}
+        {%- endif -%}
+    {%- endif -%}
+    {{- asset_url -}}
 {%- endmacro %}
