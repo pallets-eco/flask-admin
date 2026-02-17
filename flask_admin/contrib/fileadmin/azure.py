@@ -20,9 +20,10 @@ except ImportError as e:
 import flask
 
 from . import BaseFileAdmin
+from . import BaseFileStorage
 
 
-class AzureStorage:
+class AzureStorage(BaseFileStorage):
     """
     Storage object representing files on an Azure Storage container.
 
@@ -45,7 +46,12 @@ class AzureStorage:
     _send_file_validity = timedelta(hours=1)
     separator = "/"
 
-    def __init__(self, blob_service_client: BlobServiceClient, container_name: str):
+    def __init__(
+        self,
+        blob_service_client: BlobServiceClient,
+        container_name: str,
+        on_windows=False,
+    ):
         """
         Constructor
 
@@ -54,9 +60,15 @@ class AzureStorage:
 
         :param container_name:
             Name of the container that the files are on.
+
+        :param on_windows:
+            True for Windows storage, this parameter is needed only if your
+            azure storage on Windows while your host is Linux and vice
+            versa.
         """
         self._client = blob_service_client
         self._container_name = container_name
+        self.on_windows = on_windows
         try:
             self._client.create_container(self._container_name)
         except ResourceExistsError:
@@ -289,8 +301,11 @@ class AzureFileAdmin(BaseFileAdmin):
         self,
         blob_service_client: BlobServiceClient,
         container_name: str,
+        on_windows: bool | None = False,
         *args: t.Any,
         **kwargs: t.Any,
     ) -> None:
-        storage = AzureStorage(blob_service_client, container_name)
-        super().__init__(*args, storage=storage, **kwargs)  # type: ignore[misc, arg-type]
+        storage = AzureStorage(
+            blob_service_client, container_name, on_windows=on_windows
+        )
+        super().__init__(*args, storage=storage, **kwargs)  # type: ignore[misc]

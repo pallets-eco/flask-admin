@@ -35,6 +35,9 @@ sqlalchemy = [
     "flask-sqlalchemy>=3",
     "sqlalchemy>=1.4",
 ]
+sqlalchemy-lite = [
+    "flask-sqlalchemy-lite",
+]
 sqlalchemy-with-utils = [
     "Flask-Admin[sqlalchemy]",
     "sqlalchemy_utils>=0.38.0",
@@ -62,6 +65,7 @@ rediscli = ["redis>=4.0.0"]
 translation = ["flask-babel>=3.0.1"]
 all = [
     "Flask-Admin[sqlalchemy]",
+    "Flask-Admin[sqlalchemy-lite]",
     "Flask-Admin[sqlalchemy-with-utils]",
     "Flask-Admin[geoalchemy]",
     "Flask-Admin[pymongo]",
@@ -78,7 +82,7 @@ all = [
 [dependency-groups]
 dev = [
     "flask-admin[all]",
-    "tox",
+    "tox<4.30",   # https://github.com/tox-dev/tox/issues/3602
     "tox-uv",
     {include-group = "pre-commit"},
     {include-group = "docs"},
@@ -170,6 +174,12 @@ filterwarnings = [
 
     # raised by flask-sqlalchemy https://github.com/pallets-eco/flask-sqlalchemy/issues/1379
     "ignore:unclosed database in <sqlite3\\.Connection object at 0x[0-9a-f]+>:ResourceWarning",
+
+    # raised at end of test run, maybe by Werkzeug?
+    "ignore:unclosed file .*bootstrap\\.min\\.css.*:ResourceWarning",
+
+    # remove once the deprecated ModelView(Model, db.session) API is fully retired
+    "ignore:Passing a session object directly is deprecated.*:DeprecationWarning",
 ]
 
 [tool.coverage.run]
@@ -197,9 +207,9 @@ strict_concatenate = true
 
 # These shouldn't be too much additional work, but may be tricky to
 # get passing if you use a lot of untyped libraries
-disallow_subclassing_any = false
-disallow_untyped_decorators = false
-disallow_any_generics = false
+disallow_subclassing_any = true
+disallow_untyped_decorators = true
+disallow_any_generics = true
 
 # These next few are various gradations of forcing use of type annotations
 disallow_untyped_calls = false
@@ -258,7 +268,6 @@ select = [
 ignore = [
     "UP007",  # Use X | Y for type annotations; doesn't work with some of our (stringy) type definitions - should aim to resolve this
 ]
-ignore-init-module-imports = true
 
 [tool.ruff.lint.isort]
 force-single-line = true
@@ -383,6 +392,7 @@ commands = [
         "--ignore-missing-imports",
         "--disable-error-code", "name-defined", # allow flask_sqlalchemy's db.Model in examples
         "--no-warn-unused-ignores",  # prevent conflict with mypy 1st run on src folder
+        "--allow-subclassing-any",  # flask-slqalchemy db.Model is Any
         "examples", ]
     # TODO: reenable after pyright test pass
     # ["pyright"],

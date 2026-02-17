@@ -21,7 +21,7 @@ from flask_admin.babel import ngettext
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import create_editable_list_form
 
-from ...model.filters import BaseFilter
+from ..._types import T_MONGO_ENGINE_DOCUMENT
 from .ajax import create_ajax_loader
 from .ajax import process_ajax_references
 from .filters import BaseMongoEngineFilter
@@ -60,13 +60,15 @@ class ModelView(BaseModelView):
     MongoEngine model scaffolding.
     """
 
-    column_filters: t.Collection[str | BaseFilter] | None = None
+    column_filters: t.Collection[str | BaseMongoEngineFilter] | None = None
     """
-        Collection of the column filters.
+        Collection of column filters used in the list view.
 
-        Can contain either field names or instances of
-        :class:`flask_admin.contrib.mongoengine.filters.BaseMongoEngineFilter`
-        classes.
+        Can contain either:
+        - Field names (str): allow any appropriate filter operation based on the
+        field’s data type.
+        - Instances of :class:`~flask_admin.contrib.mongoengine.filters.BaseFilter`
+        classes: restrict or customize which filters are available for a specific field.
 
         Filters will be grouped by name when displayed in the drop-down.
 
@@ -244,7 +246,7 @@ class ModelView(BaseModelView):
 
     def __init__(
         self,
-        model,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
         name=None,
         category=None,
         endpoint=None,
@@ -281,7 +283,7 @@ class ModelView(BaseModelView):
         :param menu_icon_value:
             Icon glyph name or URL, depending on `menu_icon_type` setting
         """
-        self._search_fields = []
+        self._search_fields: list[t.Any] = []
 
         super().__init__(
             model,
@@ -294,7 +296,7 @@ class ModelView(BaseModelView):
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
         )
-
+        self.model: type[T_MONGO_ENGINE_DOCUMENT]
         self._primary_key = self.scaffold_pk()
 
     def _refresh_cache(self):
@@ -390,7 +392,7 @@ class ModelView(BaseModelView):
         if self.column_searchable_list:
             for p in self.column_searchable_list:
                 if isinstance(p, string_types):
-                    p = self.model._fields.get(p)  # type: ignore[union-attr]
+                    p = self.model._fields.get(p)
 
                 if p is None:
                     raise Exception("Invalid search field")
@@ -416,7 +418,7 @@ class ModelView(BaseModelView):
             Either field name or field instance
         """
         if isinstance(name, string_types):
-            attr = self.model._fields.get(name)  # type: ignore[union-attr]
+            attr = self.model._fields.get(name)
         else:
             attr = name
 
@@ -493,7 +495,7 @@ class ModelView(BaseModelView):
         Returns the QuerySet for this view.  By default, it returns all the
         objects for the current model.
         """
-        return self.model.objects  # type: ignore[union-attr]
+        return self.model.objects
 
     def _search(self, query, search_term):
         # TODO: Unfortunately, MongoEngine contains bug which
@@ -619,7 +621,7 @@ class ModelView(BaseModelView):
             model = self.model()
             form.populate_obj(model)
             self._on_model_change(form, model, True)
-            model.save()  # type: ignore[operator]
+            model.save()
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 flash(

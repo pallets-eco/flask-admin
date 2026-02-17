@@ -1,6 +1,7 @@
 from flask_admin.contrib.sqla.form import AdminModelConverter as SQLAAdminConverter
 from flask_admin.model.form import converts
 
+from ..sqla._compat import _get_deprecated_session
 from .fields import GeoJSONField
 
 
@@ -9,7 +10,7 @@ class AdminModelConverter(SQLAAdminConverter):
     def convert_geom(self, column, field_args, **extra):
         field_args["geometry_type"] = column.type.geometry_type
         field_args["srid"] = column.type.srid
-        field_args["session"] = self.session
+        field_args["session"] = _get_deprecated_session(self.session)
         field_args["tile_layer_url"] = self.view.tile_layer_url  # type: ignore[attr-defined]
         field_args["tile_layer_attribution"] = self.view.tile_layer_attribution  # type: ignore[attr-defined]
         return GeoJSONField(**field_args)

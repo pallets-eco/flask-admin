@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import types
 import typing as t
 
@@ -9,11 +11,14 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.clsregistry import _class_resolver
 from sqlalchemy.orm.properties import ColumnProperty
-from sqlalchemy.sql.schema import Column
 from sqlalchemy.sql.schema import Table
 
+from flask_admin._types import T_COLUMN
+from flask_admin._types import T_INSTRUMENTED_ATTRIBUTE
 from flask_admin._types import T_ORM_MODEL
+from flask_admin._types import T_SQLALCHEMY_COLUMN
 from flask_admin._types import T_SQLALCHEMY_MODEL
+from flask_admin._types import T_SQLALCHEMY_TABLE
 
 try:
     # SQLAlchemy 2.0
@@ -25,6 +30,7 @@ except ImportError:
         ASSOCIATION_PROXY,
     )
 
+from sqlalchemy import Column
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.sql.operators import eq
 
@@ -46,7 +52,9 @@ def parse_like_term(term: str) -> str:
     return stmt
 
 
-def filter_foreign_columns(base_table: Table, columns: list) -> list:
+def filter_foreign_columns(
+    base_table: T_SQLALCHEMY_TABLE, columns: list[T_COLUMN]
+) -> list[T_COLUMN]:
     """
     Return list of columns that belong to passed table.
 
@@ -119,7 +127,7 @@ def tuple_operator_in(
 
 
 def get_query_for_ids(
-    modelquery: t.Any, model: type[T_SQLALCHEMY_MODEL], ids: tuple
+    modelquery: t.Any, model: type[T_SQLALCHEMY_MODEL], ids: tuple[str, ...]
 ) -> t.Any:
     """
     Return a query object filtered by primary key values passed in `ids` argument.
@@ -157,8 +165,8 @@ def get_query_for_ids(
 
 
 def get_columns_for_field(
-    field: InstrumentedAttribute | ColumnProperty,
-) -> list[Column]:
+    field: T_INSTRUMENTED_ATTRIBUTE | ColumnProperty[t.Any] | Column[str],
+) -> list[T_SQLALCHEMY_COLUMN]:
     if (
         not field
         or not hasattr(field, "property")
@@ -174,14 +182,14 @@ def need_join(model: type[T_SQLALCHEMY_MODEL], table: Table) -> bool:
     """
     Check if join to a table is necessary.
     """
-    return table not in model._sa_class_manager.mapper.tables
+    return table not in model._sa_class_manager.mapper.tables  # type: ignore[union-attr]
 
 
 def get_field_with_path(
     model: type[T_SQLALCHEMY_MODEL],
-    name: str | InstrumentedAttribute | ColumnProperty,
+    name: str | T_INSTRUMENTED_ATTRIBUTE | ColumnProperty[t.Any] | Column[str],
     return_remote_proxy_attr: bool = True,
-) -> tuple[t.Any | None, list]:
+) -> tuple[t.Any, list[t.Any]]:
     """
     Resolve property by name and figure out its join path.
 
@@ -236,7 +244,7 @@ def get_field_with_path(
 # copied from sqlalchemy-utils
 def get_hybrid_properties(
     model: type[T_SQLALCHEMY_MODEL],
-) -> dict[str, hybrid_property]:
+) -> dict[str, hybrid_property[t.Any]]:
     return dict(
         (key, prop)
         for key, prop in inspect(model).all_orm_descriptors.items()
@@ -256,7 +264,7 @@ def is_hybrid_property(model: type[T_SQLALCHEMY_MODEL], attr_name: str) -> bool:
             if isinstance(last_model, string_types):
                 last_model = attr.property._clsregistry_resolve_name(last_model)()
             elif isinstance(last_model, _class_resolver):
-                last_model = model._decl_class_registry[last_model.arg]
+                last_model = model._decl_class_registry[last_model.arg]  # type: ignore[union-attr]
             elif isinstance(last_model, types.FunctionType | types.MethodType):
                 last_model = last_model()
         last_name = names[-1]
@@ -265,11 +273,13 @@ def is_hybrid_property(model: type[T_SQLALCHEMY_MODEL], attr_name: str) -> bool:
         return attr_name.name in get_hybrid_properties(model)
 
 
-def is_relationship(attr: InstrumentedAttribute) -> bool:
+def is_relationship(attr: T_INSTRUMENTED_ATTRIBUTE) -> bool:
     return hasattr(attr, "property") and hasattr(attr.property, "direction")
 
 
-def is_association_proxy(attr: ColumnProperty | InstrumentedAttribute) -> bool:
+def is_association_proxy(
+    attr: ColumnProperty[t.Any] | T_INSTRUMENTED_ATTRIBUTE | Column[str],
+) -> bool:
     if hasattr(attr, "parent"):
         attr = attr.parent  # type: ignore[assignment]
     return hasattr(attr, "extension_type") and attr.extension_type == ASSOCIATION_PROXY

@@ -19,21 +19,21 @@ text_type = str
 string_types = (str,)
 
 
-def itervalues(d: dict) -> t.Iterator[t.Any]:
+def itervalues(d: dict[t.Any, t.Any]) -> t.Iterator[t.Any]:
     return iter(d.values())
 
 
 def iteritems(
-    d: dict | MappingProxyType[str, t.Any] | t.Mapping[str, t.Any],
+    d: dict[t.Any, t.Any] | MappingProxyType[str, t.Any] | t.Mapping[t.Any, t.Any],
 ) -> t.Iterator[tuple[t.Any, t.Any]]:
     return iter(d.items())
 
 
-def filter_list(f: t.Callable, l: list) -> list[t.Any]:
+def filter_list(f: t.Callable[[t.Any], t.Any], l: list[t.Any]) -> list[t.Any]:
     return list(filter(f, l))
 
 
-def as_unicode(s: str | bytes | int) -> str:
+def as_unicode(s: t.Any) -> str:
     if isinstance(s, bytes):
         return s.decode("utf-8")
 

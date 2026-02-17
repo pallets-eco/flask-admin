@@ -293,7 +293,9 @@ class FilterConverter(filters.BaseFilterConverter):
         filter_name = type_name.lower()
 
         if filter_name in self.converters:
-            return self.converters[filter_name](column, name)
+            if isinstance(column, str):
+                return self.converters[filter_name](column, name)
+            return self.converters[filter_name](column.name, name)
 
         return None
 

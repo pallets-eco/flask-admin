@@ -1,0 +1,158 @@
+{% extends 'admin/base.html' %}
+{% import 'admin/layout.html' as layout with context %}
+
+{% block head_css %}
+  {{ super() }}
+  <style>
+    /* Side Nav Styles */
+    body, html {
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    .wrapper {
+      display: flex;
+      width: 100%;
+      align-items: stretch;
+      min-height: 100vh;
+    }
+
+    #sidebar {
+      min-width: 250px;
+      max-width: 250px;
+      background: #212529;
+      color: #fff;
+      transition: all 0.3s;
+    }
+
+    #sidebar .sidebar-header {
+      padding: 20px;
+      background: #1a1d20;
+    }
+
+    #sidebar ul.components {
+      padding: 20px 0;
+      border-bottom: 1px solid #47748b;
+    }
+
+    #sidebar ul li a {
+      padding: 10px 20px;
+      font-size: 1.1em;
+      display: block;
+      color: #adb5bd;
+      text-decoration: none;
+    }
+
+    #sidebar ul li a:hover {
+      color: #fff;
+      background: #343a40;
+    }
+
+    #sidebar ul li.active > a {
+      color: #fff;
+      background: #007bff;
+    }
+
+    #content {
+      width: 100%;
+      padding: 20px;
+      background: #f8f9fa;
+    }
+
+    /* Dark Mode Filter Hack */
+    body.dark-mode {
+      filter: invert(1) hue-rotate(180deg);
+      background: #fff;
+    }
+
+    body.dark-mode img,
+    body.dark-mode #sidebar,
+    body.dark-mode .navbar,
+    body.dark-mode .btn,
+    body.dark-mode .alert {
+      filter: invert(1) hue-rotate(180deg);
+    }
+
+    @media (max-width: 768px) {
+      #sidebar {
+        margin-left: -250px;
+      }
+
+      #sidebar.active {
+        margin-left: 0;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block page_body %}
+  <div class="wrapper">
+    <nav id="sidebar">
+      <div class="sidebar-header">
+        <h3>{% block brand %}{{ admin_view.admin.name }}{% endblock %}</h3>
+      </div>
+
+      <ul class="list-unstyled components">
+        {{ layout.menu() }}
+      </ul>
+    </nav>
+
+    <div id="content">
+      <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+        <button type="button" id="sidebarCollapse" class="btn btn-primary d-md-none">
+          <i class="fa fa-bars"></i>
+        </button>
+
+        <div class="ml-auto d-flex align-items-center">
+          <button id="themeToggle" class="btn btn-link text-dark shadow-none mr-2"
+                  type="button">
+            <span id="themeIcon">🌙</span>
+          </button>
+          {{ layout.menu_links() }}
+        </div>
+      </nav>
+
+      <div class="container-fluid">
+        {{ layout.messages() }}
+        {% block body %}{% endblock %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block tail_js %}
+  {{ super() }}
+  <script>
+    // Sidebar Toggle
+    const sidebarBtn = document.getElementById('sidebarCollapse');
+    if (sidebarBtn) {
+      sidebarBtn.addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('active');
+      });
+    }
+
+    // Dark Mode Logic
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const body = document.body;
+
+    const enableDarkMode = () => {
+      body.classList.add('dark-mode');
+      themeIcon.textContent = '☀️';
+      localStorage.setItem('theme', 'dark');
+    };
+
+    const disableDarkMode = () => {
+      body.classList.remove('dark-mode');
+      themeIcon.textContent = '🌙';
+      localStorage.setItem('theme', 'light');
+    };
+
+    // Check saved preference
+    if (localStorage.getItem('theme') === 'dark') enableDarkMode();
+
+    themeToggle.addEventListener('click', () => {
+      body.classList.contains('dark-mode') ? disableDarkMode() : enableDarkMode();
+    });
+  </script>
+{% endblock %}

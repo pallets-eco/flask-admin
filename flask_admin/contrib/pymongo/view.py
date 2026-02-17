@@ -29,7 +29,7 @@ class ModelView(BaseModelView):
     MongoEngine model scaffolding.
     """
 
-    column_filters: t.Collection[str | BaseFilter] | None = None
+    column_filters: t.Collection[str | BasePyMongoFilter] | None = None
     """
         Collection of the column filters.
 
@@ -195,7 +195,7 @@ class ModelView(BaseModelView):
     def _search(self, query, search_term: str):
         values = search_term.split(" ")
 
-        queries: list[dict] = []
+        queries: list[dict[str, t.Any]] = []
 
         # Construct inner querie
         for value in values:
@@ -265,7 +265,7 @@ class ModelView(BaseModelView):
 
         # Filters
         if self._filters:
-            data: list = []
+            data: list[str] | str = []
 
             for flt, _flt_name, value in filters:  # type: ignore[union-attr]
                 f = self._filters[flt]
@@ -273,7 +273,7 @@ class ModelView(BaseModelView):
 
             if data:
                 if len(data) == 1:
-                    query = data[0]
+                    query = data[0]  # type: ignore[assignment]
                 else:
                     query["$and"] = data
 

@@ -28,9 +28,11 @@ from flask_admin.model.fields import InlineModelFormField
 from ..._types import T_ITER_CHOICES
 from ..._types import T_ORM_MODEL
 from ..._types import T_SQLALCHEMY_MODEL
-from ..._types import T_SQLALCHEMY_SESSION
 from ..._types import T_VALIDATOR
 from ...model.form import InlineBaseFormAdmin
+from ._compat import _get_deprecated_session
+from ._compat import _warn_session_deprecation
+from ._types import T_SESSION_OR_DB
 from .tools import get_primary_key
 
 
@@ -112,7 +114,7 @@ class QuerySelectField(SelectFieldBase):
 
     def _set_data(self, data: t.Any) -> None:
         self._data = data
-        self._formdata: set | str | None = None
+        self._formdata: set[str] | str | None = None
 
     data = property(_get_data, _set_data)
 
@@ -192,7 +194,7 @@ class QuerySelectMultipleField(QuerySelectField):
 
     def _set_data(self, data: list[t.Any]) -> None:
         self._data = data
-        self._formdata: set | None = None
+        self._formdata: set[str] | None = None
 
     data = property(_get_data, _set_data)
 
@@ -202,7 +204,7 @@ class QuerySelectMultipleField(QuerySelectField):
                 pk, self.get_label(obj), obj in self.data
             )
 
-    def process_formdata(self, valuelist: t.Iterable) -> None:
+    def process_formdata(self, valuelist: t.Iterable[str]) -> None:
         self._formdata = set(valuelist)
 
     def pre_validate(self, form: form.BaseForm) -> None:
@@ -261,7 +263,7 @@ class InlineHstoreList(InlineFieldList):
 
     def process(
         self,
-        formdata: dict | None,  # type: ignore[override]
+        formdata: dict[t.Any, t.Any] | None,  # type: ignore[override]
         data: UnsetValue | list[KeyValue] = unset_value,
         extra_filters: t.Any = None,
     ) -> None:
@@ -300,7 +302,7 @@ class InlineModelFormList(InlineFieldList):
     def __init__(
         self,
         form: type[form.BaseForm],
-        session: T_SQLALCHEMY_SESSION,
+        session: T_SESSION_OR_DB,
         model: type[T_SQLALCHEMY_MODEL],
         prop: str,
         inline_view: t.Any,
@@ -312,7 +314,10 @@ class InlineModelFormList(InlineFieldList):
         :param form:
             Form for the related model
         :param session:
-            SQLAlchemy session
+            flask_sqlalchemy.SQLAlchemy/flask_sqlalchemy_lite.SQLAlchemy db object
+            (preferred) or .session attribute (deprecated).
+            When passing a SQLAlchemy object, the session will be accessed via its
+            .session attribute.
         :param model:
             Related model
         :param prop:
@@ -321,7 +326,7 @@ class InlineModelFormList(InlineFieldList):
             Inline view
         """
         self.form = form
-        self.session = session
+        self.session = _warn_session_deprecation(session)
         self.model = model
         self.prop = prop
         self.inline_view = inline_view
@@ -363,7 +368,8 @@ class InlineModelFormList(InlineFieldList):
                 model = pk_map[field_id]
 
                 if self.should_delete(field):
-                    self.session.delete(model)
+                    session = _get_deprecated_session(self.session)
+                    session.delete(model)
                     continue
             else:
                 model = self.model()
@@ -378,14 +384,14 @@ class InlineModelOneToOneField(InlineModelFormField):
     def __init__(
         self,
         form: type[form.BaseForm],
-        session: T_SQLALCHEMY_SESSION,
+        session: T_SESSION_OR_DB,
         model: type[T_ORM_MODEL],
         prop: str,
         inline_view: InlineBaseFormAdmin,
         **kwargs: t.Any,
     ) -> None:
         self.form = form
-        self.session = session
+        self.session = _warn_session_deprecation(session)
         self.model = model
         self.prop = prop
         self.inline_view = inline_view

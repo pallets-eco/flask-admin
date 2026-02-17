@@ -7,6 +7,7 @@ from flask_admin.contrib.sqla import filters
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter
 from flask_admin.contrib.sqla.filters import FilterEqual
+from flask_admin.form import rules
 from flask_admin.theme import Bootstrap4Theme
 from markupsafe import Markup
 from wtforms import validators
@@ -125,12 +126,50 @@ class UserAdmin(ModelView):
         "website",
         "dialling_code",
         "local_phone_number",
+        "ip_address",
+        "timezone",
     ]
+    create_template = "admin/users/create.html"
     form_create_rules = [
-        "last_name",
-        "first_name",
-        "type",
-        "email",
+        rules.Header("Users"),  # HTML header
+        rules.HTML("<hr>"),  # HTML horizontal line
+        "last_name",  # show it as first field
+        "first_name",  # show it as second field
+        rules.Text("Foobar"),  # static text
+        rules.FieldSet(
+            (
+                "type",
+                rules.Row(
+                    rules.Group(
+                        "dialling_code",
+                        prepend="➕",
+                        append='<i class="fa fa-phone"></i>',
+                    ),
+                    "local_phone_number",
+                    "email",
+                ),
+                rules.Text("--- The end of contact details ---"),
+            ),
+            "Contact details:",
+        ),  # field set with legend
+        # custom container (see templates/admin/create.html)
+        rules.Container(
+            "wrap_in_card",
+            rules.NestedRule(
+                separator="<hr>",
+                rules=[
+                    rules.Field("enum_choice_field"),
+                    rules.Field("sqla_utils_choice_field"),
+                    rules.Field("sqla_utils_enum_choice_field"),
+                ],
+            ),
+            card_title="Some Choices",
+        ),
+        "website",
+        "ip_address",
+        "timezone",
+        # render a macro (see templates/admin/create.html)
+        rules.Macro("my_macro", arg1="Just a Title", arg2="bla bla bla"),
     ]
 
     column_auto_select_related = True
@@ -172,6 +211,7 @@ class PostAdmin(ModelView):
     column_list = [
         "id",
         "user",
+        "user.email",
         "title",
         "date",
         "tags",
@@ -188,11 +228,9 @@ class PostAdmin(ModelView):
         "id",
         "title",
         "date",
+        "user.email",
         ("user", ("user.last_name", "user.first_name")),  # sort on multiple columns
     ]
-    column_labels = {
-        "title": "Post Title"  # Rename 'title' column in list view
-    }
     column_searchable_list = [
         "title",
         "tags.name",
@@ -200,7 +238,7 @@ class PostAdmin(ModelView):
         "user.last_name",
     ]
     column_labels = {
-        "title": "Title",
+        "title": "Post Title",
         "tags.name": "Tags",
         "user.first_name": "User's first name",
         "user.last_name": "Last name",
@@ -268,10 +306,10 @@ class TreeView(ModelView):
 
 admin = Admin(app, name="Example: SQLAlchemy", theme=Bootstrap4Theme(swatch="default"))
 
-admin.add_view(UserAdmin(User, db.session))
-admin.add_view(ModelView(Tag, db.session))
-admin.add_view(PostAdmin(db.session))
-admin.add_view(TreeView(Tree, db.session, category="Other"))
+admin.add_view(UserAdmin(User, db))
+admin.add_view(ModelView(Tag, db))
+admin.add_view(PostAdmin(db))
+admin.add_view(TreeView(Tree, db, category="Other"))
 admin.add_sub_category(name="Links", parent_name="Other")
 admin.add_link(MenuLink(name="Back Home", url="/", category="Links"))
 admin.add_link(

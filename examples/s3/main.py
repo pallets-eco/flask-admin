@@ -4,6 +4,7 @@ from io import BytesIO
 import boto3
 from flask import Flask
 from flask_admin import Admin
+from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.fileadmin.s3 import S3FileAdmin
 from flask_babel import Babel
 from testcontainers.localstack import LocalStackContainer
@@ -12,6 +13,11 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
 admin = Admin(app, name="Example: S3 File Admin")
 babel = Babel(app)
+
+
+@app.route("/")
+def index():
+    return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
 if __name__ == "__main__":
@@ -31,8 +37,6 @@ if __name__ == "__main__":
         bucket_name = "bucket"
         s3_client.create_bucket(Bucket=bucket_name)
 
-        s3_client.upload_fileobj(BytesIO(b""), "bucket", "some-directory/")
-
         s3_client.upload_fileobj(
             BytesIO(b"abcdef"),
             "bucket",
@@ -47,6 +51,13 @@ if __name__ == "__main__":
             ExtraArgs={"ContentType": "text/plain"},
         )
 
+        s3_client.upload_fileobj(
+            BytesIO(b"abcdef"),
+            "bucket",
+            "some-directory/yy/another-file",
+            ExtraArgs={"ContentType": "text/plain"},
+        )
+
         # Add S3FileAdmin view
         admin.add_view(
             S3FileAdmin(
@@ -54,5 +65,8 @@ if __name__ == "__main__":
                 s3_client=s3_client,
             )
         )
+
+        # Add Local Directory view
+        admin.add_view(FileAdmin("localdir", name="Local Dir"))
 
         app.run(debug=True)

@@ -10,23 +10,25 @@ from flask_admin.babel import gettext
 
 from ..._types import T_RESPONSE
 from . import BaseFileAdmin
+from . import BaseFileStorage
+
+P = t.ParamSpec("P")
+R = t.TypeVar("R")
 
 
 def _strip_leading_slash_from(
     arg_name: str,
-) -> t.Callable[[t.Any], t.Callable[[tuple[t.Any, ...], dict[str, t.Any]], t.Any]]:
+) -> t.Callable[[t.Callable[P, R]], t.Callable[P, R]]:
     """Strips leading slashes from the specified argument of the decorated function.
 
     This is used to clean S3 object/key names because the base FileAdmin layers passes
     paths with leading slashes, but S3 doesn't want and doesn't handle this.
     """
 
-    def decorator(
-        func: t.Callable,
-    ) -> t.Callable[[tuple[t.Any, ...], dict[str, t.Any]], t.Any]:
+    def decorator(func: t.Callable[P, R]) -> t.Callable[P, R]:
         @functools.wraps(func)
         def wrapper(*args: t.Any, **kwargs: t.Any) -> t.Any:
-            args: list = list(args)  # type: ignore[no-redef]
+            args: list[t.Any] = list(args)  # type: ignore[no-redef]
             arg_names = func.__code__.co_varnames[: func.__code__.co_argcount]
 
             if arg_name in arg_names:
@@ -47,7 +49,7 @@ def _strip_leading_slash_from(
     return decorator
 
 
-class S3Storage:
+class S3Storage(BaseFileStorage):
     """
     Storage object representing files on an Amazon S3 bucket.
 
@@ -77,12 +79,15 @@ class S3Storage:
         Amazon or else S3 will return a 403 FORBIDDEN error.
         """
 
+        # S3 Storage always uses Unix based path format.
+        super().__init__(on_windows=False)
+
         self.s3_client = s3_client
         self.bucket_name = bucket_name
         self.separator = "/"
 
     @_strip_leading_slash_from("path")
-    def get_files(self, path: str, directory: str) -> list:
+    def get_files(self, path: str, directory: str) -> list[t.Any]:
         def _strip_path(name: str, path: str) -> str:
             if name.startswith(path):
                 return name.replace(path, "", 1)
@@ -202,7 +207,7 @@ class S3Storage:
     @_strip_leading_slash_from("directory")
     def delete_tree(self, directory: str) -> None:
         self._check_empty_directory(directory)
-        self.delete_file(directory + self.separator)  # type: ignore[misc, arg-type]
+        self.delete_file(directory + self.separator)
 
     @_strip_leading_slash_from("file_path")
     def delete_file(self, file_path: str) -> None:
@@ -236,7 +241,7 @@ class S3Storage:
     @_strip_leading_slash_from("src")
     @_strip_leading_slash_from("dst")
     def rename_path(self, src: str, dst: str) -> None:
-        if self.is_dir(src):  # type: ignore[misc, arg-type]
+        if self.is_dir(src):
             self._check_empty_directory(src)
             src += self.separator
             dst += self.separator
@@ -245,7 +250,7 @@ class S3Storage:
             self.s3_client.copy_object(  # type: ignore[attr-defined]
                 CopySource=copy_source, Bucket=self.bucket_name, Key=dst
             )
-            self.delete_file(src)  # type: ignore[misc, arg-type]
+            self.delete_file(src)
         except ClientError as e:
             raise ValueError(f"Failed to rename path: {e}") from e
 
@@ -304,4 +309,4 @@ class S3FileAdmin(BaseFileAdmin):
         **kwargs: t.Any,
     ) -> None:
         storage = S3Storage(s3_client, bucket_name)
-        super().__init__(*args, storage=storage, **kwargs)  # type: ignore[misc, arg-type]
+        super().__init__(*args, storage=storage, **kwargs)  # type: ignore[misc]

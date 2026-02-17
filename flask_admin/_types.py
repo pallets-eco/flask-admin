@@ -5,7 +5,6 @@ from os import PathLike
 
 import wtforms.widgets
 from flask import Response
-from jinja2.runtime import Context
 from markupsafe import Markup
 from werkzeug.wrappers import Response as Wkzg_Response
 from wtforms import Field
@@ -14,9 +13,9 @@ from wtforms.utils import UnsetValue
 from wtforms.widgets import Input
 
 if sys.version_info >= (3, 11):
-    from typing import NotRequired
+    from typing import NotRequired  # noqa
 else:
-    from typing_extensions import NotRequired
+    from typing_extensions import NotRequired  # noqa
 
 if t.TYPE_CHECKING:
     from flask_admin.base import BaseView as T_VIEW  # noqa
@@ -53,21 +52,36 @@ if t.TYPE_CHECKING:
     from arrow import Arrow as T_ARROW  # noqa
     from flask_babel import LazyString as T_LAZY_STRING  # noqa
 
-    from flask_sqlalchemy import Model as T_SQLALCHEMY_MODEL
+    from flask_sqlalchemy import Model as T_SQLALCHEMY_LEGACY_MODEL
+    from sqlalchemy.orm import DeclarativeBase as T_DECLARATIVE_BASE
+
+    T_SQLALCHEMY_MODEL: t.TypeAlias = t.Union[
+        T_SQLALCHEMY_LEGACY_MODEL, T_DECLARATIVE_BASE
+    ]
+
+    from mongoengine import Document as T_MONGO_ENGINE_DOCUMENT
+    from peewee import Field as T_PEEWEE_FIELD
     from peewee import Model as T_PEEWEE_MODEL
-    from peewee import Field as T_PEEWEE_FIELD  # noqa
-    from pymongo import MongoClient as T_MONGO_CLIENT
-    from mongoengine import Document as T_MONGO_ENGINE_CLIENT
-    import sqlalchemy  # noqa
-    from sqlalchemy import Column as T_SQLALCHEMY_COLUMN
-    from sqlalchemy import Table as T_TABLE  # noqa
-    from sqlalchemy.orm import InstrumentedAttribute as T_INSTRUMENTED_ATTRIBUTE  # noqa
-    from sqlalchemy.orm import scoped_session as T_SQLALCHEMY_SESSION  # noqa
-    from sqlalchemy.orm.query import Query
+    from pymongo import MongoClient
+    from sqlalchemy import Column
+    from sqlalchemy import FromClause
+    from sqlalchemy import Table
+    from sqlalchemy.orm import InstrumentedAttribute
     from sqlalchemy_utils import Choice as T_CHOICE  # noqa
     from sqlalchemy_utils import ChoiceType as T_CHOICE_TYPE  # noqa
 
-    T_SQLALCHEMY_QUERY = Query
+    # Handle SQLAlchemy generic type changes
+    try:
+        T_INSTRUMENTED_ATTRIBUTE = InstrumentedAttribute[t.Any]
+    except TypeError:  # Fall back to non-generic types for older SQLAlchemy
+        T_INSTRUMENTED_ATTRIBUTE = InstrumentedAttribute  # type: ignore[misc]
+
+    try:
+        T_SQLALCHEMY_COLUMN = Column[t.Any]
+    except TypeError:  # Fall back to non-generic types for older SQLAlchemy
+        T_SQLALCHEMY_COLUMN = Column  # type: ignore[misc]
+
+    T_MONGO_CLIENT = MongoClient[t.Any]
     from redis import Redis as T_REDIS  # noqa
     from flask_admin.contrib.peewee.ajax import (
         QueryAjaxModelLoader as T_PEEWEE_QUERY_AJAX_MODEL_LOADER,
@@ -76,6 +90,16 @@ if t.TYPE_CHECKING:
         QueryAjaxModelLoader as T_SQLA_QUERY_AJAX_MODEL_LOADER,
     )  # noqa
     from PIL.Image import Image as T_PIL_IMAGE  # noqa
+
+    T_ORM_MODEL: t.TypeAlias = t.Union[
+        T_SQLALCHEMY_LEGACY_MODEL,
+        T_DECLARATIVE_BASE,
+        T_PEEWEE_MODEL,
+        T_MONGO_CLIENT,
+        T_MONGO_ENGINE_DOCUMENT,
+    ]
+
+    T_SQLALCHEMY_TABLE: t.TypeAlias = t.Union[Table, FromClause]
 else:
     T_VIEW = "flask_admin.base.BaseView"
     T_INPUT_REQUIRED = "InputRequired"
@@ -101,19 +125,17 @@ else:
     # optional dependencies
     T_ARROW = "arrow.Arrow"
     T_LAZY_STRING = "flask_babel.LazyString"
-    T_SQLALCHEMY_COLUMN = "sqlalchemy.Column"
-    T_SQLALCHEMY_MODEL = "flask_sqlalchemy.Model"
+    T_SQLALCHEMY_COLUMN = "sqlalchemy.Column[t.Any]"
+    T_SQLALCHEMY_LEGACY_MODEL = "flask_sqlalchemy.Model"
+    T_SQLALCHEMY_MODEL = t.Any
     T_PEEWEE_FIELD = "peewee.Field"
-    T_PEEWEE_MODEL = "peewee.Model"
-    T_MONGO_CLIENT = "pymongo.MongoClient"
-    T_MONGO_ENGINE_CLIENT = "mongoengine.Document"
-    T_TABLE = "sqlalchemy.Table"
+    T_PEEWEE_MODEL = t.Any
+    T_MONGO_CLIENT = "pymongo.MongoClient[t.Any]"
+    T_MONGO_ENGINE_DOCUMENT = "mongoengine.Document"
     T_CHOICE_TYPE = "sqlalchemy_utils.ChoiceType"
     T_CHOICE = "sqlalchemy_utils.Choice"
 
-    T_SQLALCHEMY_QUERY = "sqlalchemy.orm.query.Query"
-    T_INSTRUMENTED_ATTRIBUTE = "sqlalchemy.orm.InstrumentedAttribute"
-    T_SQLALCHEMY_SESSION = "sqlalchemy.orm.scoped_session"
+    T_INSTRUMENTED_ATTRIBUTE = t.TypeVar("T_INSTRUMENTED_ATTRIBUTE", bound=t.Any)
     T_REDIS = "redis.Redis"
     T_PEEWEE_QUERY_AJAX_MODEL_LOADER = (
         "flask_admin.contrib.peewee.ajax.QueryAjaxModelLoader"
@@ -122,20 +144,17 @@ else:
         "flask_admin.contrib.sqla.ajax.QueryAjaxModelLoader"
     )
     T_PIL_IMAGE = "PIL.Image.Image"
+    T_ORM_MODEL = t.Any
+    T_SQLALCHEMY_TABLE = (
+        "sqlalchemy.sql.schema.Table | sqlalchemy.sql.selectable.FromClause"
+    )
 
-T_COLUMN = t.Union[str, T_SQLALCHEMY_COLUMN]
+T_COLUMN = t.Union[str, T_SQLALCHEMY_COLUMN, T_INSTRUMENTED_ATTRIBUTE]
 T_FILTER = tuple[int, T_COLUMN, str]
 T_ORM_COLUMN = t.Union[T_COLUMN, T_PEEWEE_FIELD]
 T_COLUMN_LIST = t.Sequence[
     T_ORM_COLUMN | t.Iterable[T_ORM_COLUMN] | tuple[str, tuple[T_ORM_COLUMN, ...]]
 ]
-T_CONTRAVARIANT_MODEL_VIEW = t.TypeVar(
-    "T_CONTRAVARIANT_MODEL_VIEW", bound=T_MODEL_VIEW, contravariant=True
-)
-T_FORMATTER = t.Callable[
-    [T_CONTRAVARIANT_MODEL_VIEW, Context | None, t.Any, str], str | Markup
-]
-T_COLUMN_FORMATTERS = dict[str, T_FORMATTER]
 T_TYPE_FORMATTER = t.Callable[[T_MODEL_VIEW, t.Any, str], str | Markup]
 T_COLUMN_TYPE_FORMATTERS = dict[type, T_TYPE_FORMATTER]
 T_TRANSLATABLE = t.Union[str, T_LAZY_STRING]
@@ -148,20 +167,19 @@ T_ITER_CHOICES = t.Union[
 T_OPTION = tuple[str, T_TRANSLATABLE]
 T_OPTION_LIST = t.Sequence[T_OPTION]
 T_OPTIONS = t.Union[None, T_OPTION_LIST, t.Callable[[], T_OPTION_LIST]]
-T_ORM_MODEL = t.Union[
-    T_SQLALCHEMY_MODEL, T_PEEWEE_MODEL, T_MONGO_CLIENT, T_MONGO_ENGINE_CLIENT
-]
 T_QUERY_AJAX_MODEL_LOADER = t.Union[
     T_PEEWEE_QUERY_AJAX_MODEL_LOADER, T_SQLA_QUERY_AJAX_MODEL_LOADER
 ]
 T_RESPONSE = t.Union[Response, Wkzg_Response]
+
 T_SQLALCHEMY_INLINE_MODELS = t.Sequence[
     t.Union[
         T_INLINE_FORM_ADMIN,
         type[T_SQLALCHEMY_MODEL],
-        tuple[type[T_SQLALCHEMY_MODEL], dict[str, t.Any]],
+        tuple[type[T_SQLALCHEMY_MODEL]] | dict[str, t.Any],
     ]
 ]
+
 T_RULES_SEQUENCE = t.Sequence[
     t.Union[str, T_FIELD_SET, T_BASE_RULE, T_HEADER, T_FLASK_ADMIN_FIELD, T_MACRO]
 ]
