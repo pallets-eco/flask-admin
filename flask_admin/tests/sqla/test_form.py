@@ -66,16 +66,16 @@ class TestAdminModelConverter:
         pytest.param("db", "float_field", id="db"),
     ],
 )
-def test_coerce(app, db, admin, session_or_db, field_name):
+def test_coerce(app, admin, sqla_db_ext, field_name, session_or_db):
     with app.app_context():
-        Model1, Model2 = create_models(db)
-        db.session.add_all(
+        Model1, Model2 = create_models(sqla_db_ext)
+        sqla_db_ext.db.session.add_all(
             [
                 Model2("1", int_field=1),
                 Model2("2", int_field=2),
             ]
         )
-        db.session.commit()
+        sqla_db_ext.db.session.commit()
 
         class MyModelView(ModelView):
             form_columns = ["int_field"]
@@ -92,7 +92,7 @@ def test_coerce(app, db, admin, session_or_db, field_name):
                 },
             }
 
-        param = db if session_or_db == "session" else db.session
+        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
         # test column_list with a list of strings
         view1 = MyModelView(Model2, param, name="My Model1")
         view2 = MyModelView2(Model2, param, name="My Model1", endpoint="mymodelview2")
