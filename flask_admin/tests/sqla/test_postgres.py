@@ -1,4 +1,3 @@
-import pytest
 from citext import CIText
 from sqlalchemy import Boolean
 from sqlalchemy import Column
@@ -11,23 +10,21 @@ from sqlalchemy.dialects.postgresql import JSON
 from .test_basic import CustomModelView
 
 
-@pytest.mark.parametrize(
-    "session_or_db",
-    [
-        pytest.param("session", id="with_session_deprecated"),
-        pytest.param("db", id="with_db"),
-    ],
-)
-def test_hstore(app, postgres_db, postgres_admin, session_or_db):
+def test_hstore(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
     with app.app_context():
 
-        class Model(postgres_db.Model):  # type: ignore[name-defined, misc]
+        class Model(sqla_postgres_db_ext.Base):  # type: ignore[name-defined, misc]
+            __tablename__ = "model"
             id = Column(Integer, primary_key=True, autoincrement=True)
             hstore_test = Column(HSTORE)
 
-        postgres_db.create_all()
+        sqla_postgres_db_ext.create_all()
 
-        param = postgres_db.session if session_or_db == "session" else postgres_db
+        param = (
+            sqla_postgres_db_ext.db.session
+            if session_or_db == "session"
+            else sqla_postgres_db_ext.db
+        )
         view = CustomModelView(Model, param)
         postgres_admin.add_view(view)
 
@@ -55,23 +52,21 @@ def test_hstore(app, postgres_db, postgres_admin, session_or_db):
         assert "test_val2" in data
 
 
-@pytest.mark.parametrize(
-    "session_or_db",
-    [
-        pytest.param("session", id="with_session_deprecated"),
-        pytest.param("db", id="with_db"),
-    ],
-)
-def test_json(app, postgres_db, postgres_admin, session_or_db):
+def test_json(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
     with app.app_context():
 
-        class JSONModel(postgres_db.Model):  # type: ignore[name-defined, misc]
+        class JSONModel(sqla_postgres_db_ext.Base):  # type: ignore[name-defined, misc]
+            __tablename__ = "json_model"
             id = Column(Integer, primary_key=True, autoincrement=True)
             json_test = Column(JSON)
 
-        postgres_db.create_all()
+        sqla_postgres_db_ext.create_all()
 
-        param = postgres_db.session if session_or_db == "session" else postgres_db
+        param = (
+            sqla_postgres_db_ext.db.session
+            if session_or_db == "session"
+            else sqla_postgres_db_ext.db
+        )
         view = CustomModelView(JSONModel, param)
         postgres_admin.add_view(view)
 
@@ -104,25 +99,23 @@ def test_json(app, postgres_db, postgres_admin, session_or_db):
         )
 
 
-@pytest.mark.parametrize(
-    "session_or_db",
-    [
-        pytest.param("session", id="with_session_deprecated"),
-        pytest.param("db", id="with_db"),
-    ],
-)
-def test_citext(app, postgres_db, postgres_admin, session_or_db):
+def test_citext(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
     with app.app_context():
 
-        class CITextModel(postgres_db.Model):  # type: ignore[name-defined, misc]
+        class CITextModel(sqla_postgres_db_ext.Base):  # type: ignore[name-defined, misc]
+            __tablename__ = "citext_model"
             id = Column(Integer, primary_key=True, autoincrement=True)
             citext_test = Column(CIText)
 
-        with postgres_db.engine.begin() as connection:
+        with sqla_postgres_db_ext.db.engine.begin() as connection:
             connection.execute(text("CREATE EXTENSION IF NOT EXISTS citext"))
-        postgres_db.create_all()
+        sqla_postgres_db_ext.create_all()
 
-        param = postgres_db.session if session_or_db == "session" else postgres_db
+        param = (
+            sqla_postgres_db_ext.db.session
+            if session_or_db == "session"
+            else sqla_postgres_db_ext.db
+        )
         view = CustomModelView(CITextModel, param)
         postgres_admin.add_view(view)
 
@@ -152,14 +145,7 @@ def test_citext(app, postgres_db, postgres_admin, session_or_db):
         assert ">Foo</" in data or ">\nFoo</" in data or ">\r\nFoo</" in data
 
 
-@pytest.mark.parametrize(
-    "session_or_db",
-    [
-        pytest.param("session", id="with_session_deprecated"),
-        pytest.param("db", id="with_db"),
-    ],
-)
-def test_boolean_filters(app, postgres_db, postgres_admin, session_or_db):
+def test_boolean_filters(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
     """
     Test that boolean filters work correctly with PostgreSQL.
     This is particularly important for psycopg3 compatibility,
@@ -167,20 +153,31 @@ def test_boolean_filters(app, postgres_db, postgres_admin, session_or_db):
     """
     with app.app_context():
 
-        class BoolModel(postgres_db.Model):  # type: ignore[name-defined, misc]
+        class BoolModel(sqla_postgres_db_ext.Base):  # type: ignore[name-defined, misc]
+            __tablename__ = "bool_model"
             id = Column(Integer, primary_key=True, autoincrement=True)
             bool_field = Column(Boolean, nullable=False)
             name = Column(String(50))
 
-        postgres_db.create_all()
+        sqla_postgres_db_ext.create_all()
 
         # Add test data
-        postgres_db.session.add(BoolModel(bool_field=True, name="true_val_1"))
-        postgres_db.session.add(BoolModel(bool_field=False, name="false_val_1"))
-        postgres_db.session.add(BoolModel(bool_field=False, name="false_val_2"))
-        postgres_db.session.commit()
+        sqla_postgres_db_ext.db.session.add(
+            BoolModel(bool_field=True, name="true_val_1")
+        )
+        sqla_postgres_db_ext.db.session.add(
+            BoolModel(bool_field=False, name="false_val_1")
+        )
+        sqla_postgres_db_ext.db.session.add(
+            BoolModel(bool_field=False, name="false_val_2")
+        )
+        sqla_postgres_db_ext.db.session.commit()
 
-        param = postgres_db.session if session_or_db == "session" else postgres_db
+        param = (
+            sqla_postgres_db_ext.db.session
+            if session_or_db == "session"
+            else sqla_postgres_db_ext.db
+        )
         view = CustomModelView(BoolModel, param, column_filters=["bool_field"])
         postgres_admin.add_view(view)
 

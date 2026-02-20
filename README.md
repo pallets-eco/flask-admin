@@ -28,7 +28,8 @@ application.
 
 Out-of-the-box, Flask-Admin plays nicely with various ORM\'s, including
 
-- [SQLAlchemy](https://www.sqlalchemy.org/)
+- [SQLAlchemy](https://www.sqlalchemy.org/) (via either [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/) or)
+  [Flask-SQLAlchemy-Lite](https://flask-sqlalchemy-lite.readthedocs.io/))
 - [pymongo](https://pymongo.readthedocs.io/)
 - [MongoEngine](https://mongoengine.org/)
 - and [Peewee](https://github.com/coleifer/peewee).
