@@ -320,6 +320,13 @@ def test_inaccessible_callback(app, admin):
     rv = client.get("/admin/mockview/")
     assert rv.status_code == 418
 
+    # if inaccessible_callback returns None
+    view.allow_access = False
+    view.inaccessible_callback = lambda *args, **kwargs: None  # type: ignore[method-assign]
+
+    rv = client.get("/admin/mockview/")
+    assert rv.status_code == 403
+
 
 def get_visibility(app, admin):
     view = MockView(name="TestMenuItem")
