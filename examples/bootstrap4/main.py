@@ -2,23 +2,63 @@ import datetime
 import os.path as op
 
 from flask import Flask
+from flask import redirect
+from flask import request
+from flask import url_for
 from flask_admin import Admin
+from flask_admin import AdminIndexView
+from flask_admin import expose
+from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuDivider
 from flask_admin.menu import MenuLink
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Boolean
+from sqlalchemy import DateTime
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Text
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+
+from examples.bootstrap4.data import all_themes
+from examples.bootstrap4.data import build_sample_db
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
 app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
-app.config["SQLALCHEMY_ECHO"] = True
+app.config["SQLALCHEMY_ECHO"] = False
+
 db = SQLAlchemy(app)
+
+
+class MyAdminIndexView(AdminIndexView):
+    def set_theme(self):
+        reqTheme = request.args.get("theme")
+        cookTheme = request.cookies.get("theme")
+
+        t = reqTheme or cookTheme or "cosmo"
+
+        if self.admin and self.admin.theme:
+            if hasattr(self.admin.theme, "swatch"):
+                self.admin.theme.swatch = t
+
+    @expose("/change-theme")
+    def change_theme(self):
+        self.set_theme()
+
+        next = request.args.get("next")
+
+        return redirect(next or url_for("admin.index"))
+
+
 admin = Admin(
     app,
     name="Example: Bootstrap4",
-    theme=Bootstrap4Theme(swatch="flatly"),
+    theme=Bootstrap4Theme(swatch="cosmo"),
+    index_view=MyAdminIndexView(),
     category_icon_classes={
         "Menu": "fa fa-cog text-danger",
     },
@@ -31,30 +71,28 @@ def index():
 
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(64))
-    email = db.Column(db.Unicode(64))
-    active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.now)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(64))
+    email: Mapped[str] = mapped_column(String(64))
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[DateTime] = mapped_column(
+        DateTime, default=datetime.datetime.now
+    )
 
-    def __unicode__(self):
+    def __repr__(self):
         return self.name
 
 
 class Page(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.Unicode(64))
-    content = db.Column(db.UnicodeText)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(String(64))
+    content: Mapped[Text] = mapped_column(Text)
 
-    def __unicode__(self):
+    def __repr__(self):
         return self.name
 
 
-class CustomView(ModelView):
-    pass
-
-
-class UserAdmin(CustomView):
+class UserAdmin(ModelView):
     column_searchable_list = ("name",)
     column_filters = ("name", "email")
     can_export = True
@@ -64,136 +102,26 @@ class UserAdmin(CustomView):
     page_size = 7
 
 
-def build_sample_db():
-    """
-    Populate a small db with some example entries.
-    """
+class SimplePageView(ModelView):
+    can_view_details = True
 
-    db.drop_all()
-    db.create_all()
 
-    first_names = [
-        "Harry",
-        "Amelia",
-        "Oliver",
-        "Jack",
-        "Isabella",
-        "Charlie",
-        "Sophie",
-        "Mia",
-        "Jacob",
-        "Thomas",
-        "Emily",
-        "Lily",
-        "Ava",
-        "Isla",
-        "Alfie",
-        "Olivia",
-        "Jessica",
-        "Riley",
-        "William",
-        "James",
-        "Geoffrey",
-        "Lisa",
-        "Benjamin",
-        "Stacey",
-        "Lucy",
-    ]
-    last_names = [
-        "Brown",
-        "Smith",
-        "Patel",
-        "Jones",
-        "Williams",
-        "Johnson",
-        "Taylor",
-        "Thomas",
-        "Roberts",
-        "Khan",
-        "Lewis",
-        "Jackson",
-        "Clarke",
-        "James",
-        "Phillips",
-        "Wilson",
-        "Ali",
-        "Mason",
-        "Mitchell",
-        "Rose",
-        "Davis",
-        "Davies",
-        "Rodriguez",
-        "Cox",
-        "Alexander",
-    ]
+class FileAdminModal(FileAdmin):
+    rename_modal = True
+    edit_modal = True
+    mkdir_modal = True
+    upload_modal = True
 
-    for i in range(len(first_names)):
-        user = User()
-        user.name = first_names[i] + " " + last_names[i]
-        user.email = first_names[i].lower() + "@example.com"
-        db.session.add(user)
 
-    sample_text = [
-        {
-            "title": "de Finibus Bonorum et Malorum - Part I",
-            "content": (
-                "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do "
-                "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim "
-                "ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
-                "aliquip ex ea commodo consequat. Duis aute irure dolor in "
-                "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
-                "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
-                "culpa qui officia deserunt mollit anim id est laborum."
-            ),
-        },
-        {
-            "title": "de Finibus Bonorum et Malorum - Part II",
-            "content": (
-                "Sed ut perspiciatis unde omnis iste natus error sit voluptatem "
-                "accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae "
-                "ab illo inventore veritatis et quasi architecto beatae vitae dicta "
-                "sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit "
-                "aspernatur aut odit aut fugit, sed quia consequuntur magni dolores "
-                "eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, "
-                "qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, "
-                "sed quia non numquam eius modi tempora incidunt ut labore et dolore "
-                "magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis "
-                "nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut "
-                "aliquid ex ea commodi consequatur? Quis autem vel eum iure "
-                "reprehenderit qui in ea voluptate velit esse quam nihil molestiae "
-                "consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla "
-                "pariatur?"
-            ),
-        },
-        {
-            "title": "de Finibus Bonorum et Malorum - Part III",
-            "content": (
-                "At vero eos et accusamus et iusto odio dignissimos ducimus qui "
-                "blanditiis praesentium voluptatum deleniti atque corrupti quos "
-                "dolores et quas molestias excepturi sint occaecati cupiditate non "
-                "provident, similique sunt in culpa qui officia deserunt mollitia "
-                "animi, id est laborum et dolorum fuga. Et harum quidem rerum "
-                "facilis est et expedita distinctio. Nam libero tempore, cum soluta "
-                "nobis est eligendi optio cumque nihil impedit quo minus id quod "
-                "maxime placeat facere possimus, omnis voluptas assumenda est, omnis "
-                "dolor repellendus. Temporibus autem quibusdam et aut officiis debitis "
-                "aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae "
-                "sint et molestiae non recusandae. Itaque earum rerum hic tenetur a "
-                "sapiente delectus, ut aut reiciendis voluptatibus maiores alias "
-                "consequatur aut perferendis doloribus asperiores repellat."
-            ),
-        },
-    ]
+class PageWithModalView(ModelView):
+    create_modal = True
+    edit_modal = True
+    details_modal = True
+    can_view_details = True
 
-    for entry in sample_text:
-        page = Page()
-        page.title = entry["title"]
-        page.content = entry["content"]
-        db.session.add(page)
 
-    db.session.commit()
-    return
-
+with app.app_context():
+    build_sample_db(db, User, Page)
 
 if __name__ == "__main__":
     # Icons reference (FontAwesome v4):
@@ -202,7 +130,7 @@ if __name__ == "__main__":
     admin.add_view(
         UserAdmin(
             User,
-            db.session,
+            db,
             category="Menu",
             menu_icon_type="fa",
             menu_icon_value="fa-users",
@@ -210,17 +138,29 @@ if __name__ == "__main__":
         )
     )
     admin.add_menu_item(MenuDivider(), target_category="Menu")
-    admin.add_view(CustomView(Page, db.session, category="Menu"))
+    admin.add_view(SimplePageView(Page, db, category="Menu", name="Simple Page"))
+
     admin.add_view(
-        CustomView(
+        PageWithModalView(
+            Page, db, category="Menu", endpoint="page-modal", name="Page-Modal"
+        )
+    )
+
+    admin.add_view(
+        ModelView(
             Page,
-            db.session,
+            db,
             name="Page-with-icon",
             endpoint="page2",
             menu_class_name="text-danger",
             menu_icon_type="fa",
             menu_icon_value="fa-file",
         )
+    )
+
+    admin.add_view(FileAdmin("files/", name="Local Files", category="Menu"))
+    admin.add_view(
+        FileAdminModal("files/", name="Local Files with Modals", category="Menu")
     )
 
     admin.add_link(
@@ -261,10 +201,19 @@ if __name__ == "__main__":
         MenuLink(name="External link", url="http://www.example.com/", category="Links")
     )
 
+    for t in all_themes:
+        admin.add_link(
+            MenuLink(
+                name=f"{t.title()}",
+                url=f"/admin/change-theme?theme={t}&next=/admin/user/",
+                category="Themes",
+            )
+        )
+
     app_dir = op.realpath(op.dirname(__file__))
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])
     if not op.exists(database_path):
         with app.app_context():
-            build_sample_db()
+            build_sample_db(db, User, Page)
 
     app.run(debug=True)

@@ -27,11 +27,11 @@ from flask_admin.model.form import InlineFormAdmin
 
 from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
 from ..._types import T_FILTER
-from ..._types import T_PEEWEE_FIELD
 from ..._types import T_PEEWEE_MODEL
 from ..._types import T_WIDGET
 from .ajax import create_ajax_loader
 from .ajax import QueryAjaxModelLoader
+from .filters import BasePeeweeFilter
 from .form import CustomModelConverter
 from .form import get_form
 from .form import InlineModelConverter
@@ -45,12 +45,15 @@ log = logging.getLogger("flask-admin.peewee")
 
 
 class ModelView(BaseModelView):
-    column_filters: t.Collection[t.Union[str, T_PEEWEE_FIELD]] | None = None  # type: ignore[assignment]
+    column_filters: t.Collection[str | Field | BasePeeweeFilter] | None = None  # type: ignore[assignment]
     """
         Collection of the column filters.
 
-        Can contain either field names or instances of
-        :class:`flask_admin.contrib.peewee.filters.BasePeeweeFilter` classes.
+        Can contain either:
+        - Field names (str) or Fields (instances of :class:`peewee.Field`): allow any
+        filter operation available for the field’s data type.
+        - Instances of :class:`flask_admin.contrib.peewee.filters.BasePeeweeFilter`
+        classes: restrict or customize which filters are available for a specific field.
 
         Filters will be grouped by name when displayed in the drop-down.
 
@@ -201,7 +204,7 @@ class ModelView(BaseModelView):
         menu_icon_type: str | None = None,
         menu_icon_value: str | None = None,
     ) -> None:
-        self._search_fields: list = []
+        self._search_fields: list[t.Any] = []
         super().__init__(
             model,
             name,
@@ -213,25 +216,25 @@ class ModelView(BaseModelView):
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
         )
+        self.model: type[T_PEEWEE_MODEL]
         self._primary_key = self.scaffold_pk()
 
     def _get_model_fields(
         self, model: type[T_PEEWEE_MODEL] | None = None
     ) -> t.Generator[tuple[str, Field], t.Any, None]:
         if model is None:
-            model = self.model  # type: ignore[assignment]
-        model = t.cast(type[T_PEEWEE_MODEL], model)
+            model = self.model
         return ((field.name, field) for field in get_meta_fields(model))
 
     def scaffold_pk(self) -> str:
-        return get_primary_key(self.model)  # type: ignore[arg-type]
+        return get_primary_key(self.model)
 
     def get_pk_value(self, model: type[T_PEEWEE_MODEL]) -> t.Any:  # type: ignore[override]
-        if self.model._meta.composite_key:  # type: ignore[union-attr]
+        if self.model._meta.composite_key:  # type: ignore[attr-defined]
             return tuple(
                 [
                     getattr(model, field_name)
-                    for field_name in self.model._meta.primary_key.field_names  # type: ignore[union-attr]
+                    for field_name in self.model._meta.primary_key.field_names  # type: ignore[attr-defined]
                 ]
             )
         return getattr(model, self._primary_key)
@@ -373,9 +376,9 @@ class ModelView(BaseModelView):
 
     # AJAX foreignkey support
     def _create_ajax_loader(
-        self, name: str, options: dict[str, t.Any] | list | tuple
+        self, name: str, options: dict[str, t.Any]
     ) -> QueryAjaxModelLoader:
-        return create_ajax_loader(self.model, name, name, options)  # type: ignore[arg-type]
+        return create_ajax_loader(self.model, name, name, options)
 
     def _handle_join(
         self, query: ModelSelect, field: t.Any, joins: set[str]
@@ -423,7 +426,7 @@ class ModelView(BaseModelView):
         return query, joins, clause
 
     def get_query(self) -> ModelSelect:
-        return self.model.select()  # type: ignore[union-attr]
+        return self.model.select()
 
     def get_list(  # type: ignore[override]
         self,
@@ -434,7 +437,7 @@ class ModelView(BaseModelView):
         filters: t.Sequence[T_FILTER] | None,
         execute: bool = True,
         page_size: int | None = None,
-    ) -> tuple[int | None, list | ModelSelect]:
+    ) -> tuple[int | None, list[ModelBase] | ModelSelect]:
         """
         Return records from the database.
 
@@ -521,18 +524,18 @@ class ModelView(BaseModelView):
         return count, query
 
     def get_one(self, id: t.Any) -> t.Any:
-        if self.model._meta.composite_key:  # type: ignore[union-attr]
-            return self.model.get(  # type: ignore[union-attr]
-                **dict(zip(self.model._meta.primary_key.field_names, id, strict=False))  # type: ignore[union-attr]
+        if self.model._meta.composite_key:  # type: ignore[attr-defined]
+            return self.model.get(
+                **dict(zip(self.model._meta.primary_key.field_names, id, strict=False))  # type: ignore[attr-defined]
             )
-        return self.model.get(**{self._primary_key: id})  # type: ignore[union-attr]
+        return self.model.get(**{self._primary_key: id})
 
     def create_model(self, form: Form) -> t.Union[bool, T_PEEWEE_MODEL]:
         try:
             model = self.model()
             form.populate_obj(model)
             self._on_model_change(form, model, True)
-            model.save(force_insert=True)  # type: ignore[operator]
+            model.save(force_insert=True)
 
             # For peewee have to save inline forms after model was saved
             save_inline(form, model)
@@ -548,7 +551,7 @@ class ModelView(BaseModelView):
         else:
             self.after_model_change(form, model, True)
 
-        return model  # type: ignore[return-value]
+        return model
 
     def update_model(self, form: Form, model: T_PEEWEE_MODEL) -> bool | None:  # type: ignore[override]
         try:
@@ -608,11 +611,11 @@ class ModelView(BaseModelView):
             model_pk = getattr(self.model, self._primary_key)
 
             if self.fast_mass_delete:
-                count = self.model.delete().where(model_pk << ids).execute()  # type: ignore[union-attr]
+                count = self.model.delete().where(model_pk << ids).execute()
             else:
                 count = 0
 
-                query = self.model.select().filter(model_pk << ids)  # type: ignore[union-attr]
+                query = self.model.select().filter(model_pk << ids)
 
                 for m in query:
                     self.on_model_delete(m)

@@ -55,12 +55,23 @@ The first step is to initialize an empty admin interface for your Flask app::
 
     app.run()
 
-Here, both the *name* and *theme* parameters are optional. Alternatively,
-you could use the :meth:`~flask_admin.base.Admin.init_app` method.
+Here, both the *name* and *theme* parameters are optional, have a look to the API
+:class:`~flask_admin.base.Admin` for more details about all other parameters.
+Alternatively, you could use the :meth:`~flask_admin.base.Admin.init_app` method.
 
 If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
 you should see an empty page with a navigation bar on top. Customize the look by
 specifying one of the included Bootswatch themes (see https://bootswatch.com/4/ for a preview of the swatches).
+Here is list of all available themes:::
+
+  all_themes = [
+    "default", "cerulean", "cosmo", "cyborg",  "darkly",
+    "flatly", "journal", "litera", "lumen", "lux", "materia",
+    "minty", "pulse", "sandstone", "simplex", "sketchy", "slate",
+    "solar", "spacelab",  "superhero", "united", "yeti"
+  ]
+
+
 
 Adding Model Views
 ------------------
@@ -245,8 +256,11 @@ For a faster editing experience, enable **inline editing** in the list view::
 
     column_editable_list = ['name', 'last_name']
 
-Or, have the add & edit forms display inside a **modal window** on the list page, instead of
-the dedicated *create* & *edit* pages::
+Editable_list is converts each column into Ajax form so that you can edit & save the new value
+in same row. see the API docs :meth:`~flask_admin.model.BaseModelView.ajax_update` for Ajax example.
+
+Another way of inline editing without losing the current context, have the add & edit forms display
+inside a **modal window** on the list page, instead of the dedicated *create* & *edit* pages::
 
     create_modal = True
     edit_modal = True
@@ -396,6 +410,56 @@ For this you could override only the view in question, and all the links to it w
 
         return self.render('create_user.html')
 
+
+Configure Views
+---------------
+Views can be configured by changing some Environment variables.
+
+
+=============================== ==============================================
+Variable                        Desctiption
+=============================== ==============================================
+Geographical Map views          To enable use of maps:
+
+                                ``FLASK_ADMIN_MAPS``
+
+                                Usually Works with:
+
+                                ``FLASK_ADMIN_DEFAULT_CENTER_LAT``
+
+                                ``FLASK_ADMIN_DEFAULT_CENTER_LONG``
+
+                                Can be integrated with MapBox using:
+
+                                ``FLASK_ADMIN_MAPBOX_MAP_ID``
+
+                                ``FLASK_ADMIN_MAPBOX_ACCESS_TOKEN``
+
+                                And can use with Google Search with:
+
+                                ``FLASK_ADMIN_MAPS_SEARCH``
+
+                                ``FLASK_ADMIN_GOOGLE_MAPS_API_KEY``
+
+                                see more :ref:`display-map-widgets`
+
+Exception handling               To show exceptions on the output rather than
+                                 flash messages:
+
+                                 ``FLASK_ADMIN_RAISE_ON_VIEW_EXCEPTION``
+
+                                 ``FLASK_ADMIN_RAISE_ON_INTEGRITY_ERROR``
+
+                                 ``FLASK_ADMIN_RAISE_ON_INTEGRITY_ERROR``
+
+                                 see more :ref:`raise-exceptions-instead-of-flash`
+=============================== ==============================================
+
+**Note:** The ``FLASK_ADMIN_SWATCH``, ``FLASK_ADMIN_FLUID_LAYOUT`` variables are
+deprecated and moved to :class:`~flask_admin.theme.BootstrapTheme`
+
+
+
 Working With the Built-in Templates
 ===================================
 
@@ -475,6 +539,7 @@ main_menu      Main menu
 menu_links     Links menu
 access_control Section to the right of the menu (can be used to add login/logout buttons)
 messages       Alerts and various messages
+page_title     Page title containing the view name and icon
 body           Content (that's where your view will be displayed)
 tail           Empty area below content
 ============== ========================================================================
@@ -485,9 +550,9 @@ also contains the following blocks:
 ======================= ============================================
 Block Name              Description
 ======================= ============================================
-model_menu_bar          Menu bar
-model_list_table  		Table container
-list_header       		Table header row
+model_menu_bar          Menu bar for the model view with add/export/etc buttons
+model_list_table  		  Table container for the list view
+list_header       		  Table header row for the list view
 list_row_actions_header Actions header
 list_row                Single row
 list_row_actions        Row action cell with edit/remove/etc buttons

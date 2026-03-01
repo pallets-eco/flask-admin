@@ -1,3 +1,5 @@
+from typing import Any
+
 from bson.objectid import ObjectId
 from flask import Flask
 from flask import url_for
@@ -107,7 +109,7 @@ def index():
 
 if __name__ == "__main__":
     with MongoDbContainer("mongo:7.0.7") as mongo:
-        conn: MongoClient = MongoClient(mongo.get_connection_url())
+        conn: MongoClient[Any] = MongoClient(mongo.get_connection_url())
         db = conn.test
 
         admin.add_view(UserView(db.user, "User"))

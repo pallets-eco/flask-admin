@@ -6,9 +6,10 @@ from wtforms import form
 
 from flask_admin.contrib.mongoengine import filters
 from flask_admin.contrib.mongoengine import ModelView
+from flask_admin.contrib.mongoengine.ajax import QueryAjaxModelLoader
 
 
-class Test(Document):
+class Test(Document):  # type: ignore[misc]
     __test__ = False
     test1 = StringField()
     test2 = StringField()
@@ -28,6 +29,7 @@ class TestView(ModelView):
     form = TestForm
 
     column_filters = (
+        "test1",
         filters.FilterEqual("test1", "test1"),
         filters.FilterEqual("test2", "test2"),
     )
@@ -52,8 +54,23 @@ def test_model(app, db, admin):
     assert view._edit_form_class is not None
     assert not view._search_supported
     assert view._filters
-    assert all(isinstance(f, filters.FilterEqual) for f in view._filters)
-    assert [f.__dict__ for f in view._filters] == [
+    for f, f_type in zip(
+        view._filters,
+        (
+            filters.FilterLike,
+            filters.FilterNotLike,
+            filters.FilterEqual,
+            filters.FilterNotEqual,
+            filters.FilterEmpty,
+            filters.FilterInList,
+            filters.FilterNotInList,
+            filters.FilterEqual,
+            filters.FilterEqual,
+        ),
+        strict=True,
+    ):
+        assert isinstance(f, f_type)
+    assert [f.__dict__ for f in view._filters[-2:]] == [
         {
             "name": "test1",
             "options": None,
@@ -123,3 +140,14 @@ def test_model(app, db, admin):
     data = rv.data.decode("utf-8")
     assert "test2large" not in data
     assert "test2" in data
+
+
+def test_query_ajax_model_loader_initialization(db):
+    class TestModel(Document):  # type: ignore[misc]
+        meta = {"collection": "test_ajax_loader"}
+        name = StringField()
+
+    loader = QueryAjaxModelLoader("test_field", TestModel, fields=["name"])
+
+    assert loader.name == "test_field"
+    assert loader.options == {"fields": ["name"]}

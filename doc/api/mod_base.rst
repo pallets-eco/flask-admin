@@ -3,6 +3,15 @@
 
 .. automodule:: flask_admin.base
 
+    .. better to view Admin class first than BaseView class ..
+
+    Admin
+    -----
+
+    .. autoclass:: Admin
+        :members:
+
+
     Base View
     ---------
 
@@ -12,14 +21,8 @@
     .. autoclass:: BaseView
         :members:
 
-    Default view
-    ------------
+    Default (Index) view
+    --------------------
 
     .. autoclass:: AdminIndexView
-        :members:
-
-    Admin
-    -----
-
-    .. autoclass:: Admin
         :members:

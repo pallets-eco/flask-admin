@@ -10,16 +10,17 @@ from wtforms.validators import InputRequired
 from flask_admin._compat import filter_list
 from flask_admin._types import T_COLUMN
 from flask_admin._types import T_SQLALCHEMY_MODEL
-from flask_admin._types import T_SQLALCHEMY_SESSION
 from flask_admin._types import T_TRANSLATABLE
 from flask_admin.babel import lazy_gettext
+from flask_admin.contrib.sqla._types import T_SCOPED_SESSION
+from flask_admin.contrib.sqla._types import T_SESSION
 
 
 class Unique:
     """Checks field value unicity against specified table field.
 
-    :param get_session:
-        A function that return a SQAlchemy Session.
+    :param db_session:
+        A db or a scoped session.
     :param model:
         The model to check unicity against.
     :param column:
@@ -32,7 +33,7 @@ class Unique:
 
     def __init__(
         self,
-        db_session: T_SQLALCHEMY_SESSION,
+        db_session: T_SCOPED_SESSION | T_SESSION,
         model: type[T_SQLALCHEMY_MODEL],
         column: T_COLUMN,
         message: T_TRANSLATABLE | None = None,

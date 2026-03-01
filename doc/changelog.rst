@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.0.2
+-----
+
+* Adds support for Python 3.14: https://github.com/pallets-eco/flask-admin/pull/2685
+* Adds a MenuDivider item for bootstrap themes: https://github.com/pallets-eco/flask-admin/pull/2696
+* Field errors are now shown in red text for bootstrap themes: https://github.com/pallets-eco/flask-admin/pull/2699
+
 2.0.1
 -----
 

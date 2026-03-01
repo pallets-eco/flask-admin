@@ -308,6 +308,7 @@ def test_permissions(app, admin):
     assert rv.status_code == 403
 
 
+@pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
 def test_inaccessible_callback(app, admin):
     view = MockView()
     admin.add_view(view)
@@ -318,6 +319,13 @@ def test_inaccessible_callback(app, admin):
 
     rv = client.get("/admin/mockview/")
     assert rv.status_code == 418
+
+    # if inaccessible_callback returns None
+    view.allow_access = False
+    view.inaccessible_callback = lambda *args, **kwargs: None  # type: ignore[method-assign]
+
+    rv = client.get("/admin/mockview/")
+    assert rv.status_code == 403
 
 
 def get_visibility(app, admin):
@@ -462,6 +470,7 @@ def test_root_mount(app, babel):
     assert rv.status_code == 200
 
 
+@pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
 def test_menu_links(app, admin):
     admin.add_link(base.MenuLink("TestMenuLink1", endpoint=".index"))
     admin.add_link(base.MenuLink("TestMenuLink2", url="http://python.org/"))
