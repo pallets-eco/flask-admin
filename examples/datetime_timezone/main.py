@@ -110,6 +110,8 @@ class BlogModelView(ModelView):
         "last_edit": "Last Edit (UTC)",
     }
 
+    column_filters = ["last_edit"]
+
 
 if __name__ == "__main__":
     with app.app_context():
