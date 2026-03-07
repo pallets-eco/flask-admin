@@ -161,3 +161,61 @@ class Tree(db.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+
+class Model1(db.Model):  # type: ignore[name-defined, misc]
+    def __init__(
+        self,
+        test1=None,
+        test2=None,
+        bool_field=False,
+        date_field=None,
+        time_field=None,
+        datetime_field=None,
+        email_field=None,
+        choice_field=None,
+        enum_field=None,
+        enum_type_field=None,
+    ):
+        self.test1 = test1
+        self.test2 = test2
+        self.bool_field = bool_field
+        self.date_field = date_field
+        self.time_field = time_field
+        self.datetime_field = datetime_field
+        self.email_field = email_field
+        self.choice_field = choice_field
+        self.enum_field = enum_field
+        self.enum_type_field = enum_type_field
+
+    class EnumChoices(enum.Enum):
+        first = 1
+        second = 2
+
+    id = db.Column(db.Integer, primary_key=True)
+    test1 = db.Column(db.String(20))
+    test2 = db.Column(db.Unicode(20))
+    bool_field = db.Column(db.Boolean)
+    date_field = db.Column(db.Date)
+    time_field = db.Column(db.Time)
+    datetime_field = db.Column(db.DateTime)
+    email_field = db.Column(EmailType)
+    choice_field = db.Column(db.String, nullable=True)
+    enum_field = db.Column(db.Enum("model1_v1", "model1_v2"), nullable=True)
+    enum_type_field = db.Column(db.Enum(EnumChoices), nullable=True)
+    sqla_utils_choice = db.Column(
+        ChoiceType([("choice-1", "First choice"), ("choice-2", "Second choice")])
+    )
+    sqla_utils_enum = db.Column(ChoiceType(EnumChoices, impl=db.Integer()))
+    sqla_utils_arrow = db.Column(ArrowType, default=arrow.utcnow())
+    sqla_utils_uuid = db.Column(UUIDType(binary=False), default=uuid.uuid4)
+    sqla_utils_url = db.Column(URLType)
+    sqla_utils_ip_address = db.Column(IPAddressType)
+    sqla_utils_currency = db.Column(CurrencyType)
+    sqla_utils_color = db.Column(ColorType)
+
+    def __unicode__(self):
+        return self.test1
+
+    def __str__(self):
+        return self.test1
