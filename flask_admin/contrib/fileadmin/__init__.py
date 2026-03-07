@@ -1022,8 +1022,11 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             return redirect(self._get_dir_url(".index_view"))
 
         form = self.upload_form()
-        if form.upload.data and form.upload.data.filename:
-            form.upload.data.filename = secure_filename(form.upload.data.filename)  # type: ignore[attr-defined]
+        fname = getattr(
+            getattr(getattr(form, "upload", None), "data", None), "filename", None
+        )
+        if fname:
+            form.upload.data.filename = secure_filename(fname)  # type: ignore[attr-defined]
 
         if self.validate_form(form):
             try:
@@ -1103,8 +1106,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             return redirect(self._get_dir_url(".index_view"))
 
         form = self.name_form()
-        if form.name.data:
-            form.name.data = secure_filename(form.name.data)  # type: ignore[attr-defined]
+        fname = getattr(getattr(form, "name", None), "data", None)
+        if fname:
+            form.name.data = secure_filename(fname)  # type: ignore[attr-defined]
 
         if self.validate_form(form):
             try:
