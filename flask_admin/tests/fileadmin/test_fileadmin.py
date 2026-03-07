@@ -1,5 +1,6 @@
 import os
 import os.path as op
+import shutil
 from io import BytesIO
 
 import pytest
@@ -224,8 +225,16 @@ class Base:
             data = rv.data.decode("utf-8")
             assert "fa_modal_window" not in data
 
-        @pytest.mark.parametrize("wrongname", ["x`x", "x'x", 'y"y'])
-        def test_invalid_names(self, app, admin, request, wrongname):
+        @pytest.mark.parametrize(
+            "wrongname, expected",
+            [
+                ("x`x", "xx"),
+                ("x'x", "xx"),
+                ("y<script>y", "yscripty"),
+                ("y<script>alert('err')</script>y", "yscriptalerterr_scripty"),
+            ],
+        )
+        def test_invalid_names(self, app, admin, request, wrongname, expected):
             fileadmin_class = self.fileadmin_class()
             fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
@@ -240,29 +249,53 @@ class Base:
             admin.add_view(view)
             client = app.test_client()
 
+            p = op.join(self._test_files_root, expected)
+            if op.exists(p):
+                shutil.rmtree(p)
+
             rv = client.post(
-                "/admin/myfileadmin/rename/?path=dummy.txt",
-                data=dict(name=wrongname, path="dummy.txt"),
+                "/admin/myfileadmin/mkdir/",
+                data=dict(name=wrongname),
                 follow_redirects=True,
             )
             data = rv.data.decode("utf-8")
             assert rv.status_code == 200
-            assert "Invalid name" in data
+            assert "Successfully created" in data
+            assert expected in data
 
-            rv = client.post("/admin/myfileadmin/mkdir/", data=dict(name=wrongname))
-            data = rv.data.decode("utf-8")
-            assert rv.status_code == 200
-            assert "Invalid name" in data
-
-            rv = client.post("/admin/myfileadmin/mkdir/", data=dict(name="d1"))
             rv = client.post(
-                "/admin/myfileadmin/rename/?path=d1",
-                data=dict(name=wrongname, path="d1"),
+                f"/admin/myfileadmin/rename/?path={expected}",
+                data=dict(name=wrongname, path=f"{expected}"),
                 follow_redirects=True,
             )
             data = rv.data.decode("utf-8")
             assert rv.status_code == 200
-            assert "Invalid name" in data
+            assert "Successfully renamed" in data
+            assert expected in data
+
+            rv = client.post(
+                f"/admin/myfileadmin/upload/{expected}/",
+                data=dict(upload=(BytesIO(b""), f"{wrongname}.txt")),
+                follow_redirects=True,
+            )
+            data = rv.data.decode("utf-8")
+            assert rv.status_code == 200
+            assert "Successfully saved file" in data
+            assert expected in data
+
+            rv = client.post(
+                f"/admin/myfileadmin/rename/?path={expected}/{expected}.txt",
+                data=dict(name=f"{wrongname}.txt", path=f"{expected}/{expected}.txt"),
+                follow_redirects=True,
+            )
+            data = rv.data.decode("utf-8")
+            assert rv.status_code == 200
+            assert "Successfully renamed" in data
+            assert expected in data
+
+            p = op.join(self._test_files_root, expected)
+            os.remove(op.join(p, f"{expected}.txt"))
+            os.rmdir(p)
 
 
 class TestLocalFileAdmin(Base.FileAdminTests):
