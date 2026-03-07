@@ -263,6 +263,7 @@ class Base:
             assert "Successfully created" in data
             assert expected in data
 
+            # rename dir
             rv = client.post(
                 f"/admin/myfileadmin/rename/?path={expected}",
                 data=dict(name=wrongname, path=f"{expected}"),
@@ -273,6 +274,7 @@ class Base:
             assert "Successfully renamed" in data
             assert expected in data
 
+            # upload file to dir
             rv = client.post(
                 f"/admin/myfileadmin/upload/{expected}/",
                 data=dict(upload=(BytesIO(b""), f"{wrongname}.txt")),
@@ -283,6 +285,7 @@ class Base:
             assert "Successfully saved file" in data
             assert expected in data
 
+            # rename file
             rv = client.post(
                 f"/admin/myfileadmin/rename/?path={expected}/{expected}.txt",
                 data=dict(name=f"{wrongname}.txt", path=f"{expected}/{expected}.txt"),
@@ -293,9 +296,14 @@ class Base:
             assert "Successfully renamed" in data
             assert expected in data
 
-            p = op.join(self._test_files_root, expected)
-            os.remove(op.join(p, f"{expected}.txt"))
-            os.rmdir(p)
+            # delete file and dir
+            rv = client.post(
+                "/admin/myfileadmin/delete/",
+                data=dict(path=f"{expected}/{expected}.txt"),
+            )
+            rv = client.post(
+                "/admin/myfileadmin/delete/", data=dict(path=f"{expected}")
+            )
 
 
 class TestLocalFileAdmin(Base.FileAdminTests):
