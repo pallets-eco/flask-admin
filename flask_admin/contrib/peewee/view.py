@@ -26,6 +26,7 @@ from flask_admin.model.form import create_editable_list_form
 from flask_admin.model.form import InlineFormAdmin
 
 from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
+from ..._types import T_FIELD_ARGS_VALIDATORS_SELECTABLE
 from ..._types import T_FILTER
 from ..._types import T_PEEWEE_MODEL
 from ..._types import T_WIDGET
@@ -338,7 +339,10 @@ class ModelView(BaseModelView):
     def scaffold_list_form(
         self,
         widget: type[T_WIDGET] | None = None,
-        validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
+        validators: dict[
+            str, T_FIELD_ARGS_VALIDATORS_FILES | T_FIELD_ARGS_VALIDATORS_SELECTABLE
+        ]
+        | None = None,
     ) -> type[Form]:
         """
         Create form for the `index_view` using only the columns from
