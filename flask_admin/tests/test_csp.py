@@ -28,7 +28,7 @@ def test_csp_nonces_injected(app, admin, nonce):
     soup = BeautifulSoup(rv.data, "html.parser")
 
     scripts = soup.select("script")
-    assert len(scripts) == 9
+    assert len(scripts) == 10
     for tag in scripts:
         assert tag.attrs["nonce"] == nonce
 

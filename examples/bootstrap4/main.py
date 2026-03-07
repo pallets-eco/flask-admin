@@ -101,6 +101,11 @@ class UserAdmin(ModelView):
     page_size_options = (3, 5, 7, 10, 20, 50, 100)
     page_size = 7
 
+    column_descriptions = {
+        "active": "Is active? if not active user "
+        'can <strong class="text-danger">NOT</strong> login.',
+    }
+
 
 class SimplePageView(ModelView):
     can_view_details = True
@@ -135,6 +140,7 @@ if __name__ == "__main__":
             menu_icon_type="fa",
             menu_icon_value="fa-users",
             menu_class_name="text-warning",
+            tooltip="This is User ModelView",
         )
     )
     admin.add_menu_item(MenuDivider(), target_category="Menu")
@@ -150,11 +156,12 @@ if __name__ == "__main__":
         ModelView(
             Page,
             db,
-            name="Page-with-icon",
+            name="Page",
             endpoint="page2",
             menu_class_name="text-danger",
             menu_icon_type="fa",
             menu_icon_value="fa-file",
+            tooltip="This is Page ModelView",
         )
     )
 
@@ -166,16 +173,15 @@ if __name__ == "__main__":
     admin.add_link(
         MenuLink(
             name="link1",
-            url="http://www.example.com/",
-            class_name="text-warning bg-danger",
+            url="/",
+            class_name="text-danger bg-warning",
             icon_type="fa",
             icon_value="fa-external-link",
+            tooltip="This is link1",
         )
     )
-    admin.add_link(
-        MenuLink(name="link2", url="http://www.example.com/", class_name="text-danger")
-    )
-    admin.add_link(MenuLink(name="Link3", url="http://www.example.com/"))
+    admin.add_link(MenuLink(name="link2", url="/", class_name="text-danger"))
+    admin.add_link(MenuLink(name="Link3", url="/"))
 
     admin.add_sub_category(name="Links", parent_name="Menu")
     admin.add_link(

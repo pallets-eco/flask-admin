@@ -912,6 +912,7 @@ class BaseModelView(BaseView, ActionsMixin):
         menu_class_name: str | None = None,
         menu_icon_type: str | None = None,
         menu_icon_value: str | None = None,
+        tooltip: str | None = None,
     ) -> None:
         """
         Constructor.
@@ -938,6 +939,8 @@ class BaseModelView(BaseView, ActionsMixin):
              - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
         :param menu_icon_value:
             Icon glyph name or URL, depending on `menu_icon_type` setting
+        :param tooltip:
+            Tooltip for the menu item
         """
         self.model = model
         # If name not provided, it is model name
@@ -953,6 +956,7 @@ class BaseModelView(BaseView, ActionsMixin):
             menu_class_name=menu_class_name,
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
+            tooltip=tooltip,
         )
 
         # Actions
