@@ -31,6 +31,7 @@ class GeoJSONField(JSONField):
         if self.srid == -1:
             self.transform_srid = self.web_srid
         else:
+            self.web_srid = self.srid
             self.transform_srid = self.srid
         self.geometry_type = geometry_type.upper()
         self.session = _warn_session_deprecation(session)
