@@ -66,7 +66,7 @@ class TestAdminModelConverter:
         pytest.param("db", "float_field", id="db"),
     ],
 )
-def test_coerce(app, admin, sqla_db_ext, field_name, session_or_db):
+def test_coerce(app, admin, sqla_db_ext, session_or_db, field_name):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
         sqla_db_ext.db.session.add_all(
