@@ -251,6 +251,8 @@ class Base:
             # Cross-Site-Request-Forgery (CSRF) Protection
             app.config["WTF_CSRF_ENABLED"] = True
 
+            os.makedirs(op.join(self._test_files_root, "d1"), exist_ok=True)
+
             view = SecureFileAdmin(
                 self._test_files_root, "/files", endpoint="fileadmin"
             )
