@@ -10,13 +10,6 @@ from flask_admin.form import SecureForm
 from flask_admin.theme import Bootstrap4Theme
 
 
-class SecureFileAdmin(fileadmin.FileAdmin):
-    form_base_class = SecureForm
-
-    def is_accessible(self):
-        return True
-
-
 class Base:
     class FileAdminTests:
         _test_files_root = op.join(op.dirname(__file__), "files")
@@ -253,9 +246,14 @@ class Base:
 
             os.makedirs(op.join(self._test_files_root, "d1"), exist_ok=True)
 
-            view = SecureFileAdmin(
-                self._test_files_root, "/files", endpoint="fileadmin"
-            )
+            fileadmin_class = self.fileadmin_class()
+            fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+
+            class SecureFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+                form_base_class = SecureForm
+
+            fileadmin_kwargs["endpoint"] = "fileadmin"
+            view = SecureFileAdmin(*fileadmin_args, **fileadmin_kwargs)
             admin.add_view(view)
 
             client = app.test_client()
@@ -266,13 +264,28 @@ class Base:
             assert 'name="csrf_token"' in data
             assert len(self.get_csrf_token(data)) == 56
 
-        def test_csrf_submit(self, app, admin):
+        def test_csrf_submit(self, app, admin, request):
             # Cross-Site-Request-Forgery (CSRF) Protection
             app.config["WTF_CSRF_ENABLED"] = True
 
-            view = SecureFileAdmin(
-                self._test_files_root, "/files", endpoint="myfileadmin"
-            )
+            def finalizer():
+                try:
+                    os.remove(op.join(self._test_files_root, "d1/dum.txt"))
+                    os.remove(op.join(self._test_files_root, "dummy_renamed.txt"))
+                    os.remove(op.join(self._test_files_root, "dummy2.txt"))
+                except OSError:
+                    pass
+
+            request.addfinalizer(finalizer)
+
+            fileadmin_class = self.fileadmin_class()
+            fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+
+            class SecureFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+                form_base_class = SecureForm
+
+            fileadmin_kwargs["endpoint"] = "fileadmin"
+            view = SecureFileAdmin(*fileadmin_args, **fileadmin_kwargs)
             admin.add_view(view)
 
             client = app.test_client()
