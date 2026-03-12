@@ -26,9 +26,12 @@ class TestAzureFileAdmin(Base.FileAdminTests):
         self._client.create_container(self._container_name)
         for file_name in [["dummy.txt"], ["d1", "dum.txt"]]:
             file_path = os.path.join(self._test_files_root, *file_name)
-            blob_client = self._client.get_blob_client(
-                self._container_name, "/".join(file_name)
-            )
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+            with open(file_path, "w") as f:
+                f.write("")
+
+            blob_path = "/".join(file_name)
+            blob_client = self._client.get_blob_client(self._container_name, blob_path)
             with open(file_path, "rb") as file:
                 blob_client.upload_blob(file)
 
