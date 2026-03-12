@@ -3,11 +3,18 @@ import os.path as op
 from io import BytesIO
 
 import pytest
-from flask_wtf.csrf import CSRFProtect
 
 from flask_admin import Admin
 from flask_admin.contrib import fileadmin
+from flask_admin.form import SecureForm
 from flask_admin.theme import Bootstrap4Theme
+
+
+class SecureFileAdmin(fileadmin.FileAdmin):
+    form_base_class = SecureForm
+
+    def is_accessible(self):
+        return True
 
 
 class Base:
@@ -225,6 +232,11 @@ class Base:
             data = rv.data.decode("utf-8")
             assert "fa_modal_window" not in data
 
+        def get_csrf_token(self, data):
+            data = data.split('name="csrf_token" type="hidden" value="')[1]
+            token = data.split('"')[0]
+            return token
+
         @pytest.mark.parametrize(
             "page",
             [
@@ -237,14 +249,11 @@ class Base:
         )
         def test_csrf_token(self, app, admin, page):
             # Cross-Site-Request-Forgery (CSRF) Protection
-            CSRFProtect(app)
+            app.config["WTF_CSRF_ENABLED"] = True
 
-            def get_csrf_token(data):
-                data = data.split('type="hidden" name="csrf_token" value="')[1]
-                token = data.split('"')[0]
-                return token
-
-            view = fileadmin.FileAdmin(self._test_files_root, "/files")
+            view = SecureFileAdmin(
+                self._test_files_root, "/files", endpoint="fileadmin"
+            )
             admin.add_view(view)
 
             client = app.test_client()
@@ -253,30 +262,30 @@ class Base:
             data = rv.data.decode("utf-8")
             assert rv.status_code == 200
             assert 'name="csrf_token"' in data
+            assert len(self.get_csrf_token(data)) == 56
 
         def test_csrf_submit(self, app, admin):
             # Cross-Site-Request-Forgery (CSRF) Protection
             app.config["WTF_CSRF_ENABLED"] = True
-            CSRFProtect(app)
 
-            def get_csrf_token(page):
-                rv = client.get(page, follow_redirects=True)
-                data = rv.data.decode("utf-8")
-                data = data.split('type="hidden" name="csrf_token" value="')[1]
-                token = data.split('"')[0]
-                return token
-
-            view = fileadmin.FileAdmin(
+            view = SecureFileAdmin(
                 self._test_files_root, "/files", endpoint="myfileadmin"
             )
             admin.add_view(view)
 
             client = app.test_client()
 
-            # rename
             assert os.path.exists(op.join(self._test_files_root, "dummy.txt"))
 
-            csrf_token = get_csrf_token("/admin/myfileadmin/rename/?path=dummy.txt")
+            # read the token
+            rv = client.get("/admin/myfileadmin", follow_redirects=True)
+            data = rv.data.decode("utf-8")
+            assert rv.status_code == 200
+            assert 'name="csrf_token"' in data
+            assert len(self.get_csrf_token(data)) == 56
+            csrf_token = self.get_csrf_token(data)
+
+            # rename
             rv = client.post(
                 "/admin/myfileadmin/rename/?path=dummy.txt",
                 data=dict(
@@ -285,7 +294,8 @@ class Base:
                 ),
             )
             data = rv.data.decode("utf-8")
-            assert rv.status_code == 400
+            assert rv.status_code == 200
+            assert "CSRF token missing." in data
 
             rv = client.post(
                 "/admin/myfileadmin/rename/?path=dummy.txt",
