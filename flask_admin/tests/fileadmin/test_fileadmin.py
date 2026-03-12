@@ -284,7 +284,10 @@ class Base:
             class SecureFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
                 form_base_class = SecureForm
 
-            fileadmin_kwargs["endpoint"] = "fileadmin"
+                def is_accessible(self):
+                    return True
+
+            fileadmin_kwargs["endpoint"] = "myfileadmin"
             view = SecureFileAdmin(*fileadmin_args, **fileadmin_kwargs)
             admin.add_view(view)
 
