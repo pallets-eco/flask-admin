@@ -321,10 +321,8 @@ class Base:
             assert os.path.exists(op.join(self._test_files_root, "dummy_renamed.txt"))
             assert "already exists." in data
 
-            assert os.rename(
-                op.join(self._test_files_root, "dummy_renamed.txt"),
-                op.join(self._test_files_root, "dummy.txt"),
-            )
+            with open(op.join(self._test_files_root, "dummy.txt"), "w") as fp:
+                fp.write("new_string\n")
 
             # delete
             rv = client.post(
