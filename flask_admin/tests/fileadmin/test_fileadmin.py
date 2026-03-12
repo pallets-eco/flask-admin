@@ -309,13 +309,20 @@ class Base:
 
             rv = client.post(
                 "/admin/myfileadmin/upload/",
-                data=dict(upload=(BytesIO(b""), "dummy.txt"), csrf_token=csrf_token),
+                data=dict(
+                    upload=(BytesIO(b""), "dummy_renamed.txt"), csrf_token=csrf_token
+                ),
                 follow_redirects=True,
             )
             data = rv.data.decode("utf-8")
             assert rv.status_code == 200
-            assert os.path.exists(op.join(self._test_files_root, "dummy.txt"))
+            assert os.path.exists(op.join(self._test_files_root, "dummy_renamed.txt"))
             assert "already exists." in data
+
+            assert os.rename(
+                op.join(self._test_files_root, "dummy_renamed.txt"),
+                op.join(self._test_files_root, "dummy.txt"),
+            )
 
             # delete
             rv = client.post(
