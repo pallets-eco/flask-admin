@@ -24,7 +24,7 @@ class TestAzureFileAdmin(Base.FileAdminTests):
             azure_connection_string
         )
         self._client.create_container(self._container_name)
-        for file_name in [("dummy.txt"), ("d1", "dum.txt")]:
+        for file_name in [["dummy.txt"], ["d1", "dum.txt"]]:
             file_path = os.path.join(self._test_files_root, *file_name)
             blob_client = self._client.get_blob_client(
                 self._container_name, "/".join(file_name)
