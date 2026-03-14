@@ -249,6 +249,23 @@ def fill_db(sqla_db_ext, Model1, Model2):
     )
     sqla_db_ext.db.session.commit()
 
+def test_sqlalchemy_lite_model_with_session_raise_error(
+    app, sqla_db_ext_base, admin, session_or_db
+):
+    Model1, Model2 = create_models(sqla_db_ext_base)
+
+    if sqla_db_ext_base.__class__.__name__ == "SQLALiteProvider" and session_or_db == "session":
+        with pytest.raises(
+            TypeError,
+            match="Passing a session object directly is not supported with Flask-SQLAlchemy-Lite",
+        ):
+            CustomModelView(Model1, sqla_db_ext_base.db.session)
+        return
+
+    # normal behavior for other combinations
+    param = sqla_db_ext_base.db.session if session_or_db == "session" else sqla_db_ext_base.db
+    view = CustomModelView(Model1, param)
+    admin.add_view(view)
 
 @pytest.mark.filterwarnings(
     "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this "

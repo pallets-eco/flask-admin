@@ -24,7 +24,7 @@ def _warn_session_deprecation(session, warn: bool = True):
     Raise error if session is from Flask-SQLAlchemy-Lite.
     """
     if not hasattr(session, "session"):
-        if T_SQLALCHEMY_LITE is not None and isinstance(session, T_SQLALCHEMY_LITE):
+        if T_SQLALCHEMY_LITE is not None and isinstance(session, T_SESSION):
             # see::
             # https://github.com/pallets-eco/flask-admin/issues/2585
             # https://github.com/pallets-eco/flask-admin/pull/2680
