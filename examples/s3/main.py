@@ -20,53 +20,54 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
+with LocalStackContainer(image="localstack/localstack:latest") as localstack:
+    s3_endpoint = localstack.get_url()
+    os.environ["AWS_ENDPOINT_OVERRIDE"] = s3_endpoint
+
+    # Create S3 client
+    s3_client = boto3.client(
+        "s3",
+        aws_access_key_id="test",
+        aws_secret_access_key="test",
+        endpoint_url=s3_endpoint,
+    )
+
+    # Create S3 bucket
+    bucket_name = "bucket"
+    s3_client.create_bucket(Bucket=bucket_name)
+
+    s3_client.upload_fileobj(
+        BytesIO(b"abcdef"),
+        "bucket",
+        "some-file",
+        ExtraArgs={"ContentType": "text/plain"},
+    )
+
+    s3_client.upload_fileobj(
+        BytesIO(b"abcdef"),
+        "bucket",
+        "some-directory/some-file",
+        ExtraArgs={"ContentType": "text/plain"},
+    )
+
+    s3_client.upload_fileobj(
+        BytesIO(b"abcdef"),
+        "bucket",
+        "some-directory/yy/another-file",
+        ExtraArgs={"ContentType": "text/plain"},
+    )
+
+    # Add S3FileAdmin view
+    admin.add_view(
+        S3FileAdmin(
+            bucket_name=bucket_name,
+            s3_client=s3_client,
+        )
+    )
+
+    # Add Local Directory view
+    admin.add_view(FileAdmin("localdir", name="Local Dir"))
+
+
 if __name__ == "__main__":
-    with LocalStackContainer(image="localstack/localstack:latest") as localstack:
-        s3_endpoint = localstack.get_url()
-        os.environ["AWS_ENDPOINT_OVERRIDE"] = s3_endpoint
-
-        # Create S3 client
-        s3_client = boto3.client(
-            "s3",
-            aws_access_key_id="test",
-            aws_secret_access_key="test",
-            endpoint_url=s3_endpoint,
-        )
-
-        # Create S3 bucket
-        bucket_name = "bucket"
-        s3_client.create_bucket(Bucket=bucket_name)
-
-        s3_client.upload_fileobj(
-            BytesIO(b"abcdef"),
-            "bucket",
-            "some-file",
-            ExtraArgs={"ContentType": "text/plain"},
-        )
-
-        s3_client.upload_fileobj(
-            BytesIO(b"abcdef"),
-            "bucket",
-            "some-directory/some-file",
-            ExtraArgs={"ContentType": "text/plain"},
-        )
-
-        s3_client.upload_fileobj(
-            BytesIO(b"abcdef"),
-            "bucket",
-            "some-directory/yy/another-file",
-            ExtraArgs={"ContentType": "text/plain"},
-        )
-
-        # Add S3FileAdmin view
-        admin.add_view(
-            S3FileAdmin(
-                bucket_name=bucket_name,
-                s3_client=s3_client,
-            )
-        )
-
-        # Add Local Directory view
-        admin.add_view(FileAdmin("localdir", name="Local Dir"))
-
-        app.run(debug=True)
+    app.run(debug=True)

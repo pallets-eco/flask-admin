@@ -178,12 +178,12 @@ def create_example_data():
     ).save()
 
 
-if __name__ == "__main__":
-    with MongoDbContainer("mongo:7.0.7") as mongo:
-        mongo_uri = mongo.get_connection_url()
-        connect(host=mongo_uri)
-        create_example_data()
-        admin.add_view(UserView(User, "User"))
-        admin.add_view(TweetView(Tweet, "Tweets"))
+with MongoDbContainer("mongo:7.0.7") as mongo:
+    mongo_uri = mongo.get_connection_url()
+    connect(host=mongo_uri)
+    create_example_data()
+    admin.add_view(UserView(User, "User"))
+    admin.add_view(TweetView(Tweet, "Tweets"))
 
-        app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)

@@ -29,7 +29,9 @@ def index():
     )
 
 
+admin1.add_view(FirstView())
+admin2.add_view(SecondView())
+
+
 if __name__ == "__main__":
-    admin1.add_view(FirstView())
-    admin2.add_view(SecondView())
     app.run(debug=True)

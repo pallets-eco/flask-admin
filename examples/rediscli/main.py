@@ -14,17 +14,17 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
-if __name__ == "__main__":
-    with RedisContainer() as redis_container:
-        redis_client = redis_container.get_client()
-        admin.add_view(
-            RedisCli(
-                Redis(
-                    host=redis_container.get_container_host_ip(),
-                    port=redis_container.get_exposed_port(redis_container.port),
-                    password=redis_container.password,
-                )
+with RedisContainer() as redis_container:
+    redis_client = redis_container.get_client()
+    admin.add_view(
+        RedisCli(
+            Redis(
+                host=redis_container.get_container_host_ip(),
+                port=redis_container.get_exposed_port(redis_container.port),
+                password=redis_container.password,
             )
         )
+    )
 
-        app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)

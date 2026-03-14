@@ -107,12 +107,12 @@ def index():
     return f'<a href="{url_for("admin.index")}">Go to admin!</a>'
 
 
+with MongoDbContainer("mongo:7.0.7") as mongo:
+    conn: MongoClient[Any] = MongoClient(mongo.get_connection_url())
+    db = conn.test
+
+    admin.add_view(UserView(db.user, "User"))
+    admin.add_view(TweetView(db.tweet, "Tweets"))
+
 if __name__ == "__main__":
-    with MongoDbContainer("mongo:7.0.7") as mongo:
-        conn: MongoClient[Any] = MongoClient(mongo.get_connection_url())
-        db = conn.test
-
-        admin.add_view(UserView(db.user, "User"))
-        admin.add_view(TweetView(db.tweet, "Tweets"))
-
-        app.run(debug=True)
+    app.run(debug=True)
