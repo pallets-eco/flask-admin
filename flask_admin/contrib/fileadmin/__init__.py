@@ -2,7 +2,6 @@ import os
 import os.path as op
 import platform
 import posixpath
-import re
 import shutil
 import sys
 import typing as t
@@ -480,13 +479,6 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         Override to implement customized behavior.
         """
 
-        def validate_name(self: type[form.BaseForm], field: Field) -> None:
-            regexp = re.compile(
-                r"^(?!^(PRN|AUX|CLOCK\$|NUL|CON|COM\d|LPT\d|\..*)(\..+)?$)[^\x00-\x1f\\?*:\";|/]+$"
-            )
-            if not regexp.match(field.data):
-                raise validators.ValidationError(gettext("Invalid name"))
-
         class NameForm(self.form_base_class):  # type: ignore[name-defined, misc]
             """
             Form with a filename input field.
@@ -496,7 +488,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
             name = fields.StringField(
                 lazy_gettext("Name"),
-                validators=[validators.InputRequired(), validate_name],
+                validators=[validators.InputRequired()],
             )
             path = fields.HiddenField()
 
@@ -1030,6 +1022,12 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             return redirect(self._get_dir_url(".index_view"))
 
         form = self.upload_form()
+        fname = getattr(
+            getattr(getattr(form, "upload", None), "data", None), "filename", None
+        )
+        if fname:
+            form.upload.data.filename = secure_filename(fname)  # type: ignore[attr-defined]
+
         if self.validate_form(form):
             try:
                 self._save_form_files(directory, path, form)
@@ -1108,6 +1106,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             return redirect(self._get_dir_url(".index_view"))
 
         form = self.name_form()
+        fname = getattr(getattr(form, "name", None), "data", None)
+        if fname:
+            form.name.data = secure_filename(fname)  # type: ignore[attr-defined]
 
         if self.validate_form(form):
             try:

@@ -241,6 +241,9 @@ class S3Storage(BaseFileStorage):
     @_strip_leading_slash_from("src")
     @_strip_leading_slash_from("dst")
     def rename_path(self, src: str, dst: str) -> None:
+        if src == dst:
+            return
+
         if self.is_dir(src):
             self._check_empty_directory(src)
             src += self.separator
