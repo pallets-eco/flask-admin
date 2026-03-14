@@ -163,7 +163,7 @@ def close_db(app: Flask, p: SQLAProvider):
 
 
 @pytest.fixture(params=sqla_db_exts)
-def sqla_db_ext(request, app):
+def sqla_db_ext_base(request, app):
     uri = "sqlite:///:memory:"
     configure_sqla(app, uri, request)
     p = request.param()
@@ -172,6 +172,16 @@ def sqla_db_ext(request, app):
     with app.app_context():
         yield p
         close_db(app, p)
+
+@pytest.fixture
+def sqla_db_ext(sqla_db_ext_base, session_or_db):
+    if (
+        sqla_db_ext_base.__class__.__name__ == "SQLALiteProvider"
+        and session_or_db == "session"
+    ):
+        pytest.skip("SQLALiteProvider does not support passing session")
+
+    return sqla_db_ext_base
 
 
 @pytest.fixture(
