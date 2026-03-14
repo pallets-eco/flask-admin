@@ -293,7 +293,9 @@ class Base:
 
             client = app.test_client()
 
-            assert os.path.exists(op.join(self._test_files_root, "dummy.txt"))
+            assert "dummy.txt" in client.get(
+                "/admin/myfileadmin/", follow_redirects=True
+            ).data.decode("utf-8")
 
             # read the token
             rv = client.get("/admin/myfileadmin", follow_redirects=True)
@@ -323,7 +325,9 @@ class Base:
                 follow_redirects=True,
             )
             assert rv.status_code == 200
-            assert os.path.exists(op.join(self._test_files_root, "dummy_renamed.txt"))
+            assert "dummy_renamed.txt" in client.get(
+                "/admin/myfileadmin/", follow_redirects=True
+            ).data.decode("utf-8")
 
             rv = client.post(
                 "/admin/myfileadmin/upload/",
@@ -334,7 +338,9 @@ class Base:
             )
             data = rv.data.decode("utf-8")
             assert rv.status_code == 200
-            assert os.path.exists(op.join(self._test_files_root, "dummy_renamed.txt"))
+            assert "dummy_renamed.txt" in client.get(
+                "/admin/myfileadmin/", follow_redirects=True
+            ).data.decode("utf-8")
             assert "already exists." in data
 
             with open(op.join(self._test_files_root, "dummy.txt"), "w") as fp:
@@ -347,9 +353,9 @@ class Base:
                 follow_redirects=True,
             )
             assert rv.status_code == 200
-            assert not os.path.exists(
-                op.join(self._test_files_root, "dummy_renamed.txt")
-            )
+            assert "dummy_renamed.txt" not in client.get(
+                "/admin/myfileadmin/", follow_redirects=True
+            ).data.decode("utf-8")
 
             # mkdir
             rv = client.post(
@@ -358,7 +364,9 @@ class Base:
                 follow_redirects=True,
             )
             assert rv.status_code == 200
-            assert os.path.exists(op.join(self._test_files_root, "dummy_dir"))
+            assert "dummy_dir" in client.get(
+                "/admin/myfileadmin/", follow_redirects=True
+            ).data.decode("utf-8")
 
             # rename - dir
             rv = client.post(
@@ -369,7 +377,9 @@ class Base:
                 follow_redirects=True,
             )
             assert rv.status_code == 200
-            assert os.path.exists(op.join(self._test_files_root, "dummy_renamed_dir"))
+            assert "dummy_renamed_dir" in client.get(
+                "/admin/myfileadmin/", follow_redirects=True
+            ).data.decode("utf-8")
 
             # delete - directory
             rv = client.post(
@@ -378,9 +388,9 @@ class Base:
                 follow_redirects=True,
             )
             assert rv.status_code == 200
-            assert not os.path.exists(
-                op.join(self._test_files_root, "dummy_renamed_dir")
-            )
+            assert "dummy_renamed_dir" not in client.get(
+                "/admin/myfileadmin/", follow_redirects=True
+            ).data.decode("utf-8")
 
 
 class TestLocalFileAdmin(Base.FileAdminTests):
