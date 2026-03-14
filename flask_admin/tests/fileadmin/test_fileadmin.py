@@ -2,8 +2,11 @@ import os
 import os.path as op
 from io import BytesIO
 
+import pytest
+
 from flask_admin import Admin
 from flask_admin.contrib import fileadmin
+from flask_admin.form import SecureForm
 from flask_admin.theme import Bootstrap4Theme
 
 
@@ -221,6 +224,173 @@ class Base:
             assert rv.status_code == 200
             data = rv.data.decode("utf-8")
             assert "fa_modal_window" not in data
+
+        def get_csrf_token(self, data):
+            data = data.split('name="csrf_token" type="hidden" value="')[1]
+            token = data.split('"')[0]
+            return token
+
+        @pytest.mark.parametrize(
+            "page",
+            [
+                "/admin/fileadmin/",
+                "/admin/fileadmin/upload",
+                "/admin/fileadmin/rename/?path=dummy.txt",
+                "/admin/fileadmin/rename/?path=d1",
+                "/admin/fileadmin/mkdir",
+            ],
+        )
+        def test_csrf_token(self, app, admin, page):
+            # Cross-Site-Request-Forgery (CSRF) Protection
+            app.config["WTF_CSRF_ENABLED"] = True
+
+            os.makedirs(op.join(self._test_files_root, "d1"), exist_ok=True)
+
+            fileadmin_class = self.fileadmin_class()
+            fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+
+            class SecureFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+                form_base_class = SecureForm
+
+            fileadmin_kwargs["endpoint"] = "fileadmin"
+            view = SecureFileAdmin(*fileadmin_args, **fileadmin_kwargs)
+            admin.add_view(view)
+
+            client = app.test_client()
+
+            rv = client.get(page, follow_redirects=True)
+            data = rv.data.decode("utf-8")
+            assert rv.status_code == 200
+            assert 'name="csrf_token"' in data
+            assert len(self.get_csrf_token(data)) == 56
+
+        def test_csrf_submit(self, app, admin, request):
+            # Cross-Site-Request-Forgery (CSRF) Protection
+            app.config["WTF_CSRF_ENABLED"] = True
+
+            def finalizer():
+                try:
+                    os.remove(op.join(self._test_files_root, "d1/dum.txt"))
+                    os.remove(op.join(self._test_files_root, "dummy_renamed.txt"))
+                    os.remove(op.join(self._test_files_root, "dummy2.txt"))
+                except OSError:
+                    pass
+
+            request.addfinalizer(finalizer)
+
+            fileadmin_class = self.fileadmin_class()
+            fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+
+            class SecureFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+                form_base_class = SecureForm
+
+                def is_accessible(self):
+                    return True
+
+            fileadmin_kwargs["endpoint"] = "myfileadmin"
+            view = SecureFileAdmin(*fileadmin_args, **fileadmin_kwargs)
+            admin.add_view(view)
+
+            client = app.test_client()
+
+            assert "dummy.txt" in client.get(
+                "/admin/myfileadmin/", follow_redirects=True
+            ).data.decode("utf-8")
+
+            # read the token
+            rv = client.get("/admin/myfileadmin", follow_redirects=True)
+            data = rv.data.decode("utf-8")
+            assert rv.status_code == 200
+            assert 'name="csrf_token"' in data
+            assert len(self.get_csrf_token(data)) == 56
+            csrf_token = self.get_csrf_token(data)
+
+            # rename
+            rv = client.post(
+                "/admin/myfileadmin/rename/?path=dummy.txt",
+                data=dict(
+                    name="dummy_renamed.txt",
+                    path="dummy.txt",
+                ),
+            )
+            data = rv.data.decode("utf-8")
+            assert rv.status_code == 200
+            assert "CSRF token missing." in data
+
+            rv = client.post(
+                "/admin/myfileadmin/rename/?path=dummy.txt",
+                data=dict(
+                    name="dummy_renamed.txt", path="dummy.txt", csrf_token=csrf_token
+                ),
+                follow_redirects=True,
+            )
+            assert rv.status_code == 200
+            assert "dummy_renamed.txt" in client.get(
+                "/admin/myfileadmin/", follow_redirects=True
+            ).data.decode("utf-8")
+
+            rv = client.post(
+                "/admin/myfileadmin/upload/",
+                data=dict(
+                    upload=(BytesIO(b""), "dummy_renamed.txt"), csrf_token=csrf_token
+                ),
+                follow_redirects=True,
+            )
+            data = rv.data.decode("utf-8")
+            assert rv.status_code == 200
+            assert "dummy_renamed.txt" in client.get(
+                "/admin/myfileadmin/", follow_redirects=True
+            ).data.decode("utf-8")
+            assert "already exists." in data
+
+            with open(op.join(self._test_files_root, "dummy.txt"), "w") as fp:
+                fp.write("new_string\n")
+
+            # delete
+            rv = client.post(
+                "/admin/myfileadmin/delete/",
+                data=dict(path="dummy_renamed.txt", csrf_token=csrf_token),
+                follow_redirects=True,
+            )
+            assert rv.status_code == 200
+            assert "dummy_renamed.txt" not in client.get(
+                "/admin/myfileadmin/", follow_redirects=True
+            ).data.decode("utf-8")
+
+            # mkdir
+            rv = client.post(
+                "/admin/myfileadmin/mkdir/",
+                data=dict(name="dummy_dir", csrf_token=csrf_token),
+                follow_redirects=True,
+            )
+            assert rv.status_code == 200
+            assert "dummy_dir" in client.get(
+                "/admin/myfileadmin/", follow_redirects=True
+            ).data.decode("utf-8")
+
+            # rename - dir
+            rv = client.post(
+                "/admin/myfileadmin/rename/?path=dummy_dir",
+                data=dict(
+                    name="dummy_renamed_dir", path="dummy_dir", csrf_token=csrf_token
+                ),
+                follow_redirects=True,
+            )
+            assert rv.status_code == 200
+            assert "dummy_renamed_dir" in client.get(
+                "/admin/myfileadmin/", follow_redirects=True
+            ).data.decode("utf-8")
+
+            # delete - directory
+            rv = client.post(
+                "/admin/myfileadmin/delete/",
+                data=dict(path="dummy_renamed_dir", csrf_token=csrf_token),
+                follow_redirects=True,
+            )
+            assert rv.status_code == 200
+            assert "dummy_renamed_dir" not in client.get(
+                "/admin/myfileadmin/", follow_redirects=True
+            ).data.decode("utf-8")
 
 
 class TestLocalFileAdmin(Base.FileAdminTests):
