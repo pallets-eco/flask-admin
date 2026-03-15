@@ -58,10 +58,10 @@ if HAS_SQLALCHEMY_2:
     class SQLALiteProvider:
         def __init__(self, engine_options: dict[str, t.Any] | None = None):
             # must be in __init__ to avoid leaking db instances btw tests
-            from flask_sqlalchemy_lite import SQLAlchemy
+            from flask_sqlalchemy_lite import SQLAlchemy as SQLAlchemyLite
 
             # This ensures the engine created by lite-sqla is stable
-            self.db = SQLAlchemy(engine_options=engine_options or {})
+            self.db = SQLAlchemyLite(engine_options=engine_options or {})
 
             class SqlAlchemyBase(DeclarativeBase):
                 pass
@@ -182,3 +182,12 @@ def sqla_db_ext(request, app):
 )
 def session_or_db(request):
     return request.param
+
+
+def skip_or_return_session_or_db(extension, string):
+    param = (
+        pytest.skip("SQLALiteProvider does not support session")
+        if extension.__class__.__name__ == "SQLALiteProvider" and string == "session"
+        else (extension.db.session if session_or_db == "session" else extension.db)
+    )
+    return param

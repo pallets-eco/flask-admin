@@ -1,3 +1,4 @@
+import pytest
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
@@ -24,7 +25,14 @@ def test_column_label_translation(request, app, session_or_db, sqla_db_ext):
 
         label = gettext("Name")
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = (
+            pytest.skip("SQLALiteProvider does not support session")
+            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
+            and session_or_db == "session"
+            else (
+                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+            )
+        )
         view = CustomModelView(
             Model1,
             param,
@@ -54,7 +62,14 @@ def test_unique_validator_translation_is_dynamic(
 
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = (
+            pytest.skip("SQLALiteProvider does not support session")
+            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
+            and session_or_db == "session"
+            else (
+                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+            )
+        )
         view = ModelView(UniqueTable, param)
         view.can_create = True
         admin.add_view(view)

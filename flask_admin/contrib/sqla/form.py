@@ -44,7 +44,6 @@ from ..._types import T_SQLALCHEMY_INLINE_MODELS
 from ..._types import T_SQLALCHEMY_MODEL
 from ...form import Select2Field
 from ._compat import _get_deprecated_session
-from ._compat import _warn_session_deprecation
 from ._types import T_SESSION_OR_DB
 from .ajax import create_ajax_loader
 from .fields import HstoreForm
@@ -76,7 +75,7 @@ class AdminModelConverter(ModelConverterBase):
     ) -> None:
         super().__init__()
 
-        self.session = _warn_session_deprecation(session)
+        self.session = session
         self.view = view
 
     def _get_label(self, name: str, field_args: T_FIELD_ARGS_LABEL) -> str:
@@ -824,7 +823,7 @@ class InlineModelConverter(InlineModelConverterBase):
             appropriate `InlineFormAdmin` instance.
         """
         super().__init__(view)
-        self.session = _warn_session_deprecation(session)
+        self.session = session
         self.model_converter = model_converter
 
     def get_info(

@@ -13,7 +13,6 @@ from flask_admin.model.ajax import DEFAULT_PAGE_SIZE
 
 from ..._types import T_SQLALCHEMY_MODEL
 from ._compat import _get_deprecated_session
-from ._compat import _warn_session_deprecation
 from ._types import T_SESSION_OR_DB
 from ._types import T_SQLALCHEMY_QUERY
 from .tools import get_primary_key
@@ -40,7 +39,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         """
         super().__init__(name, options)
 
-        self.session = _warn_session_deprecation(session)
+        self.session = session
         self.model = model
         self.fields = options.get("fields")
         self.order_by = options.get("order_by")

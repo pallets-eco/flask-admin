@@ -1,6 +1,7 @@
 import json
 import re
 
+import pytest
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
 from sqlalchemy import Column
@@ -34,7 +35,12 @@ def test_model(app, sqla_db_ext, admin, session_or_db):
     sqla_db_ext.db.session.query(GeoModel).delete()
     sqla_db_ext.db.session.commit()
 
-    param = sqla_db_ext.db if session_or_db == "session" else sqla_db_ext.db.session
+    param = (
+        pytest.skip("SQLALiteProvider does not support session")
+        if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
+        and session_or_db == "session"
+        else (sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db)
+    )
     view = ModelView(GeoModel, param)
     admin.add_view(view)
 
@@ -140,7 +146,12 @@ def test_none(app, sqla_db_ext, admin, session_or_db):
     sqla_db_ext.db.session.query(GeoModel).delete()
     sqla_db_ext.db.session.commit()
 
-    param = sqla_db_ext.db if session_or_db == "session" else sqla_db_ext.db.session
+    param = (
+        pytest.skip("SQLALiteProvider does not support session")
+        if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
+        and session_or_db == "session"
+        else (sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db)
+    )
     view = ModelView(GeoModel, param)
     admin.add_view(view)
 
