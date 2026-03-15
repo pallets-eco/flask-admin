@@ -184,10 +184,12 @@ def session_or_db(request):
     return request.param
 
 
-def skip_or_return_session_or_db(extension, string):
+def skip_or_return_session_or_db(
+    extension: "SQLAProvider | SQLALiteProvider", string: t.Literal["session", "db"]
+):
     param = (
         pytest.skip("SQLALiteProvider does not support session")
         if extension.__class__.__name__ == "SQLALiteProvider" and string == "session"
-        else (extension.db.session if session_or_db == "session" else extension.db)
+        else (extension.db.session if string == "session" else extension.db)
     )
     return param
