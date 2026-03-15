@@ -49,6 +49,7 @@ from flask_admin.contrib.sqla import tools
 from flask_admin.form.fields import DateTimeField
 from flask_admin.form.fields import Select2Field
 from flask_admin.tests import flask_babel_test_decorator
+from flask_admin.tests.conftest import skip_or_return_session_or_db
 
 
 class CustomModelView(ModelView):
@@ -258,14 +259,7 @@ def test_model(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Model1, param)
 
         admin.add_view(view)
@@ -429,12 +423,7 @@ def test_no_pk(app, sqla_db_ext, admin, session_or_db):
         __tablename__ = "model"
         test = Column(Integer)
 
-    param = (
-        pytest.skip("SQLALiteProvider does not support session")
-        if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-        and session_or_db == "session"
-        else (sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db)
-    )
+    param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = CustomModelView(Model, param)
     admin.add_view(view)
 
@@ -443,14 +432,7 @@ def test_list_columns(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         # test column_list with a list of strings
         view = CustomModelView(
             Model1,
@@ -500,14 +482,7 @@ def test_complex_list_columns(app, sqla_db_ext, admin, session_or_db):
         sqla_db_ext.db.session.commit()
 
         # test column_list with a list of strings on a relation
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(M2, param, column_list=["model1.test1"])
         admin.add_view(view)
 
@@ -523,14 +498,7 @@ def test_exclude_columns(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,
@@ -574,14 +542,7 @@ def test_column_searchable_list(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model2, param, column_searchable_list=["string_field", "int_field"]
         )
@@ -617,14 +578,7 @@ def test_extra_args_search(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view1 = CustomModelView(
             Model1,
             param,
@@ -655,14 +609,7 @@ def test_extra_args_filter(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view2 = CustomModelView(
             Model2,
             param,
@@ -687,14 +634,7 @@ def test_complex_searchable_list(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Model2, param, column_searchable_list=["model1.test1"])
         admin.add_view(view)
         view2 = CustomModelView(
@@ -731,14 +671,7 @@ def test_complex_searchable_list_missing_children(
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1, param, column_searchable_list=["test1", "model2.string_field"]
         )
@@ -758,14 +691,7 @@ def test_column_editable_list(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1, param, column_editable_list=["test1", "enum_field"]
         )
@@ -852,14 +778,7 @@ def test_details_view(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view_no_details = CustomModelView(Model1, param)
         admin.add_view(view_no_details)
 
@@ -926,14 +845,7 @@ def test_editable_list_special_pks(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Model1, param, column_editable_list=["val1"])
         admin.add_view(view)
 
@@ -964,14 +876,7 @@ def test_column_filters(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view1 = CustomModelView(Model1, param, column_filters=["test1"])
         admin.add_view(view1)
 
@@ -1921,14 +1826,7 @@ def test_column_filters_sqla_obj(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Model1, param, column_filters=[Model1.test1])
         admin.add_view(view)
         assert view._filters
@@ -1970,14 +1868,7 @@ def test_hybrid_property(app, sqla_db_ext, admin, session_or_db):
 
         client = app.test_client()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,
@@ -2050,14 +1941,7 @@ def test_hybrid_property_nested(app, sqla_db_ext, admin, session_or_db):
 
         client = app.test_client()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model2,
             param,
@@ -2077,14 +1961,7 @@ def test_url_args(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,
@@ -2151,14 +2028,7 @@ def test_non_int_pk(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Model, param, form_columns=["id", "test"])
         admin.add_view(view)
 
@@ -2213,14 +2083,7 @@ def test_form_columns(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view1 = CustomModelView(
             Model,
             param,
@@ -2270,14 +2133,7 @@ def test_complex_form_columns(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         M1, M2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         # test using a form column in another table
         view = CustomModelView(M2, param, form_columns=["model1.test1"])
         view.create_form()
@@ -2295,22 +2151,8 @@ def test_form_args(app, sqla_db_ext, admin, session_or_db):
 
         shared_form_args = {"test": {"validators": [validators.Regexp("test")]}}
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Model, param, form_args=shared_form_args)
         admin.add_view(view)
 
@@ -2332,14 +2174,7 @@ def test_form_override(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view1 = CustomModelView(Model, param, endpoint="view1")
         view2 = CustomModelView(
             Model,
@@ -2371,14 +2206,7 @@ def test_form_onetoone(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view1 = CustomModelView(Model1, param, endpoint="view1")
         view2 = CustomModelView(Model2, param, endpoint="view2")
         admin.add_view(view1)
@@ -2413,14 +2241,7 @@ def test_on_model_change_delete(app, sqla_db_ext, admin, session_or_db):
             def on_model_delete(self, model):
                 self.deleted = True
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = ModelView(Model1, param)
         admin.add_view(view)
 
@@ -2450,14 +2271,7 @@ def test_multiple_delete(app, sqla_db_ext, admin, session_or_db):
         sqla_db_ext.db.session.commit()
         assert sqla_db_ext.db.session.query(M1).count() == 3
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = ModelView(M1, param)
         admin.add_view(view)
 
@@ -2478,14 +2292,7 @@ def test_default_sort(app, sqla_db_ext, admin, session_or_db):
         sqla_db_ext.db.session.commit()
         assert sqla_db_ext.db.session.query(M1).count() == 3
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(M1, param, column_default_sort="test1")
         admin.add_view(view)
 
@@ -2561,14 +2368,7 @@ def test_complex_sort(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.db.session.commit()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         # test sorting on relation string - 'model1.test1'
         view = CustomModelView(
             M2,
@@ -2614,14 +2414,7 @@ def test_complex_sort_exception(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         M1, M2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         # test column_sortable_list on a related table's column object
         view = CustomModelView(
             M2, param, endpoint="model2_3", column_sortable_list=[M1.test1]
@@ -2652,14 +2445,7 @@ def test_default_complex_sort(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.db.session.commit()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(M2, param, column_default_sort="model1.test1")
         admin.add_view(view)
 
@@ -2690,14 +2476,7 @@ def test_extra_fields(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,
@@ -2722,14 +2501,7 @@ def test_extra_field_order(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,
@@ -2802,14 +2574,7 @@ def test_modelview_localization(
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,
@@ -2846,14 +2611,7 @@ def test_modelview_named_filter_localization(request, app, session_or_db, sqla_d
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,
@@ -2876,14 +2634,7 @@ def test_custom_form_base(app, sqla_db_ext, admin, session_or_db):
 
         Model1, _ = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Model1, param, form_base_class=TestForm)
         admin.add_view(view)
 
@@ -2897,14 +2648,7 @@ def test_ajax_fk(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model2,
             param,
@@ -2993,14 +2737,7 @@ def test_ajax_fk_multi(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model2,
             param,
@@ -3042,14 +2779,7 @@ def test_safe_redirect(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Model1, param)
         admin.add_view(view)
 
@@ -3105,14 +2835,7 @@ def test_relative_redirect_on_save_and_add_another(
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Model1, param)
         admin.add_view(view)
 
@@ -3153,14 +2876,7 @@ def test_simple_list_pager(app, sqla_db_ext, admin, session_or_db):
             def get_count_query(self):
                 raise AssertionError()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = TestModelView(Model1, param)
         admin.add_view(view)
 
@@ -3176,14 +2892,7 @@ def test_customising_page_size(app, sqla_db_ext, admin, session_or_db):
             [M1(str(f"instance-{x+1:03d}")) for x in range(101)]
         )
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view1 = CustomModelView(
             M1, param, endpoint="view1", page_size=20, can_set_page_size=False
         )
@@ -3292,14 +3001,7 @@ def test_unlimited_page_size(app, sqla_db_ext, admin, session_or_db):
             ]
         )
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(M1, param)
 
         # test 0 as page_size
@@ -3338,14 +3040,7 @@ def test_advanced_joins(app, sqla_db_ext, admin, session_or_db):
             model2_id = Column(Integer, ForeignKey(Model2.id))
             model2 = relationship(Model2, backref="model3")
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view1 = CustomModelView(Model1, param)
         admin.add_view(view1)
 
@@ -3421,14 +3116,7 @@ def test_multipath_joins(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Model2, param, filters=["first.test"])
         admin.add_view(view)
 
@@ -3458,16 +3146,7 @@ def test_different_bind_joins(
 
     sqla_db_ext_with_binds.create_all()
 
-    param = (
-        pytest.skip("SQLALiteProvider does not support session")
-        if sqla_db_ext_with_binds.__class__.__name__ == "SQLALiteProvider"
-        and session_or_db == "session"
-        else (
-            sqla_db_ext_with_binds.db.session
-            if session_or_db == "session"
-            else sqla_db_ext_with_binds.db
-        )
-    )
+    param = skip_or_return_session_or_db(sqla_db_ext_with_binds, session_or_db)
 
     view = CustomModelView(Model2, param)
     admin.add_view(view)
@@ -3485,14 +3164,7 @@ def test_model_default(app, sqla_db_ext, admin, session_or_db):
         class ModelView(CustomModelView):
             pass
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = ModelView(Model2, param)
         admin.add_view(view)
 
@@ -3508,14 +3180,7 @@ def test_export_csv(app, sqla_db_ext, admin, session_or_db):
         for _x in range(5):
             fill_db(sqla_db_ext, Model1, Model2)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view1 = CustomModelView(
             Model1,
             param,
@@ -3573,14 +3238,7 @@ def test_string_null_behavior(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(StringTestModel, param)
         admin.add_view(view)
 
@@ -3670,12 +3328,7 @@ def test_form_overrides(app, sqla_db_ext, admin, session_or_db):
             "text": PasswordField,
         }
 
-    param = (
-        pytest.skip("SQLALiteProvider does not support session")
-        if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-        and session_or_db == "session"
-        else (sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db)
-    )
+    param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     admin.add_view(UserView(UserModel, param))
     client = app.test_client()
     # Test that the create form uses <input type="password">
@@ -3717,14 +3370,7 @@ def test_page_title(app, sqla_db_ext, admin, session_or_db):
         class MyModelView(CustomModelView):
             can_view_details = True
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         # test column_list with a list of strings
         view = MyModelView(
             Model1,
@@ -3775,3 +3421,19 @@ def test_page_title(app, sqla_db_ext, admin, session_or_db):
         assert match_page_title_and_icon(
             data, "Local Files", '<i class="fa fa-folder"></i>'
         )
+
+
+@pytest.mark.xfail(
+    reason="SQLALiteProvider does not support passing db.session directly",
+    raises=TypeError,
+    strict=True,
+)
+def test_sqlalite_session_raises(app, sqla_db_ext):
+    if sqla_db_ext.__class__.__name__ != "SQLALiteProvider":
+        pytest.skip("Only relevant for SQLALiteProvider")
+
+    Model = create_models(sqla_db_ext)
+    with app.app_context():
+        sqla_db_ext.create_all()
+
+    ModelView(Model, sqla_db_ext.db.session)

@@ -6,7 +6,6 @@ import pytest
 from flask import Flask
 
 from flask_admin import Admin
-from flask_admin.tests.conftest import close_db
 from flask_admin.tests.conftest import configure_sqla
 from flask_admin.tests.conftest import sqla_db_exts
 from flask_admin.tests.conftest import SQLAProvider
@@ -35,7 +34,6 @@ def sqla_db_ext_with_binds(request, app_with_binds):
 
     with app_with_binds.app_context():
         yield p
-        close_db(app_with_binds, p)
 
 
 @pytest.fixture
@@ -84,4 +82,3 @@ def sqla_postgres_db_ext(app, request):
 
     with app.app_context():
         yield provider
-        close_db(app, provider)

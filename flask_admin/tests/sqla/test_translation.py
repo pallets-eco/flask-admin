@@ -1,4 +1,3 @@
-import pytest
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
@@ -7,6 +6,7 @@ from flask_admin.babel import gettext
 
 from ...contrib.sqla import ModelView
 from .. import flask_babel_test_decorator
+from ..conftest import skip_or_return_session_or_db
 from .test_basic import create_models
 from .test_basic import CustomModelView
 
@@ -25,14 +25,7 @@ def test_column_label_translation(request, app, session_or_db, sqla_db_ext):
 
         label = gettext("Name")
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,
@@ -62,14 +55,7 @@ def test_unique_validator_translation_is_dynamic(
 
         sqla_db_ext.create_all()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = ModelView(UniqueTable, param)
         view.can_create = True
         admin.add_view(view)

@@ -1,11 +1,11 @@
 import typing as t
 
-import pytest
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
 
+from ..conftest import skip_or_return_session_or_db
 from .test_basic import CustomModelView
 
 
@@ -21,14 +21,7 @@ def test_multiple_pk(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Model, param, form_columns=["id", "id2", "test"])
         admin.add_view(view)
 
@@ -76,14 +69,7 @@ def test_joined_inheritance(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Child, param, form_columns=["id", "test", "name"])
         admin.add_view(view)
 
@@ -118,12 +104,7 @@ def test_single_table_inheritance(app, sqla_db_ext, admin, session_or_db):
 
     sqla_db_ext.create_all()
 
-    param = (
-        pytest.skip("SQLALiteProvider does not support session")
-        if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-        and session_or_db == "session"
-        else (sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db)
-    )
+    param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = CustomModelView(Child, param, form_columns=["id", "test", "name"])
     admin.add_view(view)
 
@@ -157,14 +138,7 @@ def test_concrete_table_inheritance(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Child, param, form_columns=["id", "test", "name"])
         admin.add_view(view)
 
@@ -206,14 +180,7 @@ def test_concrete_multipk_inheritance(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Child, param, form_columns=["id", "id2", "test", "name"])
         admin.add_view(view)
 

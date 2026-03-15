@@ -1,4 +1,3 @@
-import pytest
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
@@ -13,6 +12,7 @@ from flask_admin import form
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.fields import InlineModelFormList
 from flask_admin.contrib.sqla.validators import ItemsRequired
+from flask_admin.tests.conftest import skip_or_return_session_or_db
 
 
 def test_inline_form(app, sqla_db_ext, admin, session_or_db):
@@ -47,14 +47,7 @@ def test_inline_form(app, sqla_db_ext, admin, session_or_db):
         class UserModelView(ModelView):
             inline_models = (UserInfo,)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = UserModelView(User, param)
         admin.add_view(view)
 
@@ -164,14 +157,7 @@ def test_inline_form_required(app, sqla_db_ext, admin, session_or_db):
             inline_models = (UserEmail,)
             form_args = {"emails": {"validators": [ItemsRequired()]}}
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = UserModelView(User, param)
         admin.add_view(view)
 
@@ -243,14 +229,7 @@ def test_inline_form_ajax_fk(app, sqla_db_ext, admin, session_or_db):
 
             inline_models = [(UserInfo, opts)]  # type: ignore[list-item]
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = UserModelView(User, param)
         admin.add_view(view)
 
@@ -277,14 +256,7 @@ def test_inline_form_self(app, sqla_db_ext, admin, session_or_db):
         class TreeView(ModelView):
             inline_models = (Tree,)
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = TreeView(Tree, param)
 
         parent = Tree()
@@ -339,14 +311,7 @@ def test_inline_form_base_class(app, sqla_db_ext, admin, session_or_db):
             inline_models = ((UserEmail, {"form_base_class": StubBaseForm}),)  # type: ignore[assignment]
             form_args = {"emails": {"validators": [ItemsRequired()]}}
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-            )
-        )
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = UserModelView(User, param)
         admin.add_view(view)
 

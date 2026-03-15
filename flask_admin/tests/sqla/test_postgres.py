@@ -1,4 +1,3 @@
-import pytest
 from citext import CIText
 from sqlalchemy import Boolean
 from sqlalchemy import Column
@@ -22,15 +21,8 @@ def test_hstore(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
 
         sqla_postgres_db_ext.create_all()
 
-        param = (
-            pytest.skip("SQLALiteProvider does not support session")
-            if sqla_postgres_db_ext.__class__.__name__ == "SQLALiteProvider"
-            and session_or_db == "session"
-            else (
-                sqla_postgres_db_ext.db.session
-                if session_or_db == "session"
-                else sqla_postgres_db_ext.db
-            )
+        param = skip_or_return_session_or_db(
+            sqla_postgres_db_ext, session_or_db == "session"
         )
         view = CustomModelView(Model, param)
         postgres_admin.add_view(view)
