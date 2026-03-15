@@ -141,8 +141,11 @@ class AdminModelConverter(ModelConverterBase):
                 return AjaxSelectField(loader, **kwargs)
 
         if "query_factory" not in kwargs:
-            session = _get_deprecated_session(self.session)
-            kwargs["query_factory"] = lambda: session.query(remote_model)
+            # _get_deprecated_session must be inside lambda call or session will stay
+            # the same across requests. https://github.com/pallets-eco/flask-admin/issues/2831
+            kwargs["query_factory"] = lambda: _get_deprecated_session(
+                self.session
+            ).query(remote_model)
 
         if multiple:
             return QuerySelectMultipleField(**kwargs)
@@ -287,8 +290,6 @@ class AdminModelConverter(ModelConverterBase):
 
             unique = False
 
-            session = _get_deprecated_session(self.session)
-
             if column.primary_key:
                 if hidden_pk:
                     # If requested to add hidden field, show it
@@ -301,12 +302,16 @@ class AdminModelConverter(ModelConverterBase):
 
                     # Current Unique Validator does not work with multicolumns-pks
                     if not has_multiple_pks(model):
-                        kwargs["validators"].append(Unique(session, model, column))
+                        kwargs["validators"].append(
+                            Unique(_get_deprecated_session(self.session), model, column)
+                        )
                         unique = True
 
             # If field is unique, validate it
             if column.unique and not unique:
-                kwargs["validators"].append(Unique(session, model, column))
+                kwargs["validators"].append(
+                    Unique(_get_deprecated_session(self.session), model, column)
+                )
 
             optional_types = getattr(self.view, "form_optional_types", (Boolean,))
 

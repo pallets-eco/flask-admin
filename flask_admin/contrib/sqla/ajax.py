@@ -139,5 +139,4 @@ def create_ajax_loader(
         attr = attr.remote_attr
 
     remote_model = attr.prop.mapper.class_
-    db_session = _get_deprecated_session(session)
-    return QueryAjaxModelLoader(name, db_session, remote_model, **options)
+    return QueryAjaxModelLoader(name, session, remote_model, **options)

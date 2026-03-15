@@ -67,6 +67,9 @@ def _get_deprecated_session(
 ):
     """
     Returns the session if passed directly, session.session otherwise.
+    THIS must be called ONLY immediately before querying on the session, or SQLALite
+    will be using different session across requests.
+    See: https://github.com/pallets-eco/flask-admin/issues/2831
     """
     if (T_SQLALCHEMY is not None and isinstance(session, T_SQLALCHEMY)) or (
         T_SQLALCHEMY_LITE is not None and isinstance(session, T_SQLALCHEMY_LITE)
