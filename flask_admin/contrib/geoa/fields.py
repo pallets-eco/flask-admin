@@ -5,7 +5,6 @@ from sqlalchemy import func
 from flask_admin.form import JSONField
 
 from ..sqla._compat import _get_deprecated_session
-from ..sqla._compat import _warn_session_deprecation
 from ..sqla._types import T_SESSION_OR_DB
 from .widgets import LeafletWidget
 
@@ -33,7 +32,7 @@ class GeoJSONField(JSONField):
         else:
             self.transform_srid = self.srid
         self.geometry_type = geometry_type.upper()
-        self.session = _warn_session_deprecation(session)
+        self.session = session
 
     def _value(self):
         if self.raw_data:
