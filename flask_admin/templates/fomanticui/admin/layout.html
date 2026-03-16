@@ -3,7 +3,9 @@
   {% set icon_value = item.get_icon_value() %}
   {% if icon_value %}
     {% if icon_type == 'default' or not icon_type %}
-      <i class="{{ icon_value }} icon"></i>
+      <i class="icon {{ icon_value }}"></i>
+    {% elif icon_type == 'fa' %}
+      <i class="fa {{ icon_value }}"></i>
     {% elif icon_type == 'image' %}
       <img src="{{ url_for('static', filename=icon_value) }}" alt="menu image" />
     {% elif icon_type == 'image-url' %}
@@ -32,11 +34,16 @@
                 {{ menu(menu_root=[child]) }}
               {% else %}
                 {% set class_name = child.get_class_name() %}
-                <a class="item {{ 'active' if child.is_active(admin_view) }}" href="{{ child.get_url() }}" {% if child.target
-                  %}target="{{ child.target }}" {% endif %}>
-                  {{ menu_icon(child) }}
-                  {{ child.name }}
-                </a>
+                {% if child.name == 'divider' %}
+                  <a class="item ui divider {{ class_name }}"></a>
+                {% else %}
+                  <a class="item {{ 'active' if child.is_active(admin_view) }} {{ class_name }}"
+                    href="{{ child.get_url() }}"
+                    {% if child.target %} target="{{ child.target }}" {% endif %}>
+                    {{ menu_icon(child) }}
+                    {{ child.name }}
+                  </a>
+                {% endif %}
               {%- endif %}
             {%- endfor %}
           </div>

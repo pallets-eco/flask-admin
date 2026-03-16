@@ -12,7 +12,6 @@
 {% endblock %}
 {% block body %}
   <h2 class="ui header">
-    {{ admin_view.name }}
     {% if admin_view.can_create %}
       {% if admin_view.create_modal %}
         <a href="{{ get_url('.create_view', url=return_url, modal=True) }}"

@@ -150,6 +150,7 @@ admin.add_view(
         db.session,
         name="Users (Standard)",
         endpoint="s/user",
+        menu_class_name="",
         menu_icon_type="default",
         menu_icon_value="user",
         category="User Management",

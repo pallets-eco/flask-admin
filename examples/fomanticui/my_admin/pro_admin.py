@@ -6,6 +6,7 @@ from flask_admin import Admin
 from flask_admin.contrib import rediscli
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.menu import MenuDivider
 from flask_admin.menu import MenuLink
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin.theme import FomanticUI
@@ -301,6 +302,9 @@ admin.add_view(
         category="E-Commerce",
     )
 )
+
+admin.add_menu_item(MenuDivider(), target_category="E-Commerce")
+
 admin.add_view(
     PaymentView(
         Payment,
@@ -348,7 +352,13 @@ admin.add_view(
 )
 admin.add_view(
     EmployeeView(
-        Employee, db.session, name="Employees", endpoint="p/employees", category="HR"
+        Employee,
+        db.session,
+        name="Employees",
+        endpoint="p/employees",
+        category="HR",
+        menu_icon_type="default",
+        menu_icon_value="users",
     )
 )
 admin.add_view(

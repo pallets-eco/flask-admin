@@ -4,7 +4,7 @@
 
 {% block head %}
   {{ super() }}
-  <style>
+  <style {{ admin_csp_nonce_attribute }}>
     .console {
       position: relative;
       width: 100%;
