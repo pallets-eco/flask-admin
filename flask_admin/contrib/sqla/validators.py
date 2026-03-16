@@ -51,8 +51,12 @@ class Unique:
         DB row are considered equal even when they were loaded by different
         Session instances (e.g. with flask-sqlalchemy-lite).
         """
+        if obj_a == obj_b:
+            return True
+
         if type(obj_a) is not type(obj_b):
             return False
+
         mapper = sa_inspect(type(obj_a))
         pk_attrs = [col.key for col in mapper.primary_key]
         return all(getattr(obj_a, attr) == getattr(obj_b, attr) for attr in pk_attrs)
