@@ -234,7 +234,9 @@ class Base:
                 ("y<script>alert('err')</script>y", "yscriptalerterr_scripty"),
             ],
         )
-        def test_invalid_names(self, app, admin, request, wrongname, expected):
+        def test_invalid_file_and_dir_names(
+            self, app, admin, request, wrongname, expected
+        ):
             fileadmin_class = self.fileadmin_class()
             fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
@@ -253,6 +255,7 @@ class Base:
             if op.exists(p):
                 shutil.rmtree(p)
 
+            # mkdir with invalid name
             rv = client.post(
                 "/admin/myfileadmin/mkdir/",
                 data=dict(name=wrongname),
@@ -263,7 +266,7 @@ class Base:
             assert "Successfully created" in data
             assert expected in data
 
-            # rename dir
+            # rename dir with invalid name
             rv = client.post(
                 f"/admin/myfileadmin/rename/?path={expected}",
                 data=dict(name=wrongname, path=f"{expected}"),

@@ -489,6 +489,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             name = fields.StringField(
                 lazy_gettext("Name"),
                 validators=[validators.InputRequired()],
+                filters=[lambda x: secure_filename(x) if x else None],
             )
             path = fields.HiddenField()
 
@@ -1022,11 +1023,6 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             return redirect(self._get_dir_url(".index_view"))
 
         form = self.upload_form()
-        fname = getattr(
-            getattr(getattr(form, "upload", None), "data", None), "filename", None
-        )
-        if fname:
-            form.upload.data.filename = secure_filename(fname)  # type: ignore[attr-defined]
 
         if self.validate_form(form):
             try:
@@ -1106,9 +1102,6 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             return redirect(self._get_dir_url(".index_view"))
 
         form = self.name_form()
-        fname = getattr(getattr(form, "name", None), "data", None)
-        if fname:
-            form.name.data = secure_filename(fname)  # type: ignore[attr-defined]
 
         if self.validate_form(form):
             try:
