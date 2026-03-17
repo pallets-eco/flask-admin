@@ -115,7 +115,7 @@
               {% endif %}
               {% for c, name in list_columns %}
                 {% set column = loop.index0 %}
-                <th class="column-header col-{{ c }}">
+                <th class="column-header col-{{ c | replace('.', '-') }}">
                   {% if admin_view.is_sortable(c) %}
                     {% if sort_column == column %}
                       <a href="{{ sort_url(column, True) }}"
