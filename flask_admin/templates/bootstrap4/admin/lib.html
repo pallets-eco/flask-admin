@@ -203,7 +203,8 @@
     {% endif %}
 {% endmacro %}
 
-{% macro form_tag(form=None, action=None) %}
+``{% macro form_tag(form=None, action=None) %}
+
     <form action="{{ action or '' }}" method="POST" role="form" class="admin-form" enctype="multipart/form-data">
     <fieldset>
       {{ caller() }}
@@ -213,27 +214,104 @@
 
 {% macro render_form_buttons(cancel_url, extra=None, is_modal=False) %}
   {% if is_modal %}
-        <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
-        {% if extra %}
-        {{ extra }}
-        {% endif %}
-        {% if cancel_url %}
-          <a href="{{ cancel_url }}" class="btn btn-danger" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
-        {% endif %}
+    <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
+    {% if extra %}
+    {{ extra }}
+    {% endif %}
+    {% if cancel_url %}
+      <a href="{{ cancel_url }}" class="btn btn-danger" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
+    {% endif %}
+    <div>
+      {{ render_delete_form() }}
+    </div>
+
   {% else %}
     <hr>
     <div class="form-group">
-      <div class="col-md-offset-2 col-md-10 submit-row">
-        <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
-        {% if extra %}
-        {{ extra }}
-        {% endif %}
-        {% if cancel_url is defined and cancel_url %}
-          <a href="{{ cancel_url }}" class="btn btn-danger" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
-        {% endif %}
+      <div class="d-flex justify-content-between">
+        <div class="col-md-offset-2 col-md-10 submit-row">
+          <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
+          {% if extra %}
+          {{ extra }}
+          {% endif %}
+          {% if cancel_url is defined and cancel_url %}
+            <a href="{{ cancel_url }}" class="btn btn-danger" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
+          {% endif %}
+
+        </div>
+        <div>
+          {{ render_delete_form() }}
+        </div>
       </div>
     </div>
   {% endif %}
+{% endmacro %}
+
+
+{% macro render_delete_form() -%}
+
+    {% if delete_form is defined  %}
+
+      {{ delete_form.id(id='delete-id', value=get_pk_value(model)) }}
+      {{ delete_form.url(id='delete-url', value=return_url) }}
+      {% if delete_form.csrf_token is defined and delete_form.csrf_token %}
+        {{ delete_form.csrf_token(id='delete-csrf') }}
+      {% elif csrf_token is defined and csrf_token %}
+        <input type="hidden" name="csrf_token" id="delete-csrf" value="{{ csrf_token() }}"/>
+      {% endif %}
+
+      <button class="btn btn-outline-danger"  id="btn-delete"
+        data-msg="{{ _gettext('Are you sure you want to delete this record?') }}"
+        title="{{ _gettext('Delete Record') }}">
+        <span class="fa fa-trash glyphicon glyphicon-trash"></span>
+        {{ _gettext('Delete') }}
+      </button>
+
+      <script {{ admin_csp_nonce_attribute }} >
+
+        function deleteButtonHandler() {
+          $('#btn-delete').on('click', function (e)
+          {
+            e.preventDefault();
+            const msg = $(this).data('msg');
+            const confirmed = faHelpers.safeConfirm(msg);
+            if (!confirmed) {
+              return false;
+            }
+            const formData = new FormData();
+            formData.append('id', document.getElementById('delete-id').value);
+            formData.append('url', document.getElementById('delete-url').value);
+            formData.append('csrf_token', document.getElementById('delete-csrf')?.value);
+
+            fetch(`{{ url_for('.delete_view') }}`,
+            {
+              method: 'POST',
+              body: formData
+            }).then(res => {
+              console.log(res);
+              if (res.ok)
+                window.location.href = document.getElementById('delete-url').value;
+            });
+          });
+        }
+
+        document.addEventListener('DOMContentLoaded', function()
+        {
+          //console.log("DOM is fully loaded and parsed");
+          deleteButtonHandler();
+        });
+
+        // If the delete button is inside a modal, we need to re-attach the event handler every time the modal is shown
+        $('#fa_modal_window').on('shown.bs.modal', function (e)
+        {
+          //console.log("Modal shown");
+          deleteButtonHandler();
+        });
+
+      </script>
+
+    {% endif %}
+
 {% endmacro %}
 
 {% macro render_form(form, cancel_url, extra=None, form_opts=None, action=None, is_modal=False) -%}
