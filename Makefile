@@ -158,4 +158,4 @@ test-in-docker:
 
 .PHONY: tox-in-docker
 tox-in-docker:
-	docker compose -f .devcontainer/tests/docker-compose.yaml run --remove-orphans app uv run tox
+	docker compose -f .devcontainer/tests/docker-compose.yaml run --remove-orphans app uv run tox run-parallel
