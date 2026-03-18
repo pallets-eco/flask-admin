@@ -3426,16 +3426,19 @@ def test_page_title(app, sqla_db_ext, admin, session_or_db):
 @pytest.mark.parametrize(
     "with_delete, modal", [(True, True), (True, False), (False, True), (False, False)]
 )
-def test_del_btn_in_edit_and_details(app, db, admin, with_delete, modal):
+def test_del_btn_in_edit_and_details(
+    app, sqla_db_ext, admin, session_or_db, with_delete, modal
+):
     with app.app_context():
-        Model1, Model2 = create_models(db)
-        db.session.add_all(
+        Model1, Model2 = create_models(sqla_db_ext)
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        sqla_db_ext.db.session.add_all(
             [
                 Model1("record-1"),
                 Model1("record-2"),
             ]
         )
-        db.session.commit()
+        sqla_db_ext.db.session.commit()
 
         class MyModelView(CustomModelView):
             can_edit = True
@@ -3448,7 +3451,7 @@ def test_del_btn_in_edit_and_details(app, db, admin, with_delete, modal):
         # test column_list with a list of strings
         view = MyModelView(
             Model1,
-            db.session,
+            param,
             name="Without Modal",
         )
         admin.add_view(view)
@@ -3468,8 +3471,8 @@ def test_del_btn_in_edit_and_details(app, db, admin, with_delete, modal):
             assert "btn-delete" in data
         else:
             assert "btn-delete" not in data
-            
-            
+
+
 @pytest.mark.xfail(
     reason="SQLALiteProvider does not support passing db.session directly",
     raises=TypeError,
