@@ -1,5 +1,6 @@
 import typing as t
 
+from sqlalchemy import inspect as sa_inspect
 from sqlalchemy.orm.exc import NoResultFound
 from wtforms import Field
 from wtforms import Form
@@ -13,13 +14,14 @@ from flask_admin._types import T_SQLALCHEMY_MODEL
 from flask_admin._types import T_TRANSLATABLE
 from flask_admin.babel import lazy_gettext
 from flask_admin.contrib.sqla._types import T_SCOPED_SESSION
+from flask_admin.contrib.sqla._types import T_SESSION
 
 
 class Unique:
     """Checks field value unicity against specified table field.
 
-    :param get_session:
-        A function that return a SQAlchemy Session.
+    :param db_session:
+        A db or a scoped session.
     :param model:
         The model to check unicity against.
     :param column:
@@ -32,7 +34,7 @@ class Unique:
 
     def __init__(
         self,
-        db_session: T_SCOPED_SESSION,
+        db_session: T_SCOPED_SESSION | T_SESSION,
         model: type[T_SQLALCHEMY_MODEL],
         column: T_COLUMN,
         message: T_TRANSLATABLE | None = None,
@@ -41,6 +43,23 @@ class Unique:
         self.model = model
         self.column = column
         self.message = message or lazy_gettext("Already exists.")
+
+    @staticmethod
+    def _same_record(obj_a: t.Any, obj_b: t.Any) -> bool:
+        """Compare two model instances by primary key rather than object
+        identity. This is session-agnostic: two objects representing the same
+        DB row are considered equal even when they were loaded by different
+        Session instances (e.g. with flask-sqlalchemy-lite).
+        """
+        if obj_a == obj_b:
+            return True
+
+        if type(obj_a) is not type(obj_b):
+            return False
+
+        mapper = sa_inspect(type(obj_a))
+        pk_attrs = [col.key for col in mapper.primary_key]
+        return all(getattr(obj_a, attr) == getattr(obj_b, attr) for attr in pk_attrs)
 
     def __call__(self, form: Form, field: Field) -> None:
         # databases allow multiple NULL values for unique columns
@@ -54,7 +73,7 @@ class Unique:
                 .one()
             )
 
-            if not hasattr(form, "_obj") or not form._obj == obj:
+            if not hasattr(form, "_obj") or not self._same_record(form._obj, obj):
                 raise ValidationError(str(self.message))
         except NoResultFound:
             pass

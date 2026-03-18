@@ -6,6 +6,7 @@ from wtforms import form
 
 from flask_admin.contrib.mongoengine import filters
 from flask_admin.contrib.mongoengine import ModelView
+from flask_admin.contrib.mongoengine.ajax import QueryAjaxModelLoader
 
 
 class Test(Document):  # type: ignore[misc]
@@ -139,3 +140,14 @@ def test_model(app, db, admin):
     data = rv.data.decode("utf-8")
     assert "test2large" not in data
     assert "test2" in data
+
+
+def test_query_ajax_model_loader_initialization(db):
+    class TestModel(Document):  # type: ignore[misc]
+        meta = {"collection": "test_ajax_loader"}
+        name = StringField()
+
+    loader = QueryAjaxModelLoader("test_field", TestModel, fields=["name"])
+
+    assert loader.name == "test_field"
+    assert loader.options == {"fields": ["name"]}

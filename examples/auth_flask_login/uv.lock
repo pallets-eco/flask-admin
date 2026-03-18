@@ -1,9 +1,6 @@
 version = 1
 revision = 3
 requires-python = ">=3.10"
-resolution-markers = [
-    "python_version < '0'",
-]
 
 [[package]]
 name = "arrow"
@@ -98,7 +95,7 @@ requires-dist = [
 
 [[package]]
 name = "flask"
-version = "3.1.1"
+version = "3.1.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "blinker" },
@@ -108,14 +105,14 @@ dependencies = [
     { name = "markupsafe" },
     { name = "werkzeug" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c0/de/e47735752347f4128bcf354e0da07ef311a78244eba9e3dc1d4a5ab21a98/flask-3.1.1.tar.gz", hash = "sha256:284c7b8f2f58cb737f0cf1c30fd7eaf0ccfcde196099d24ecede3fc2005aa59e", size = 753440, upload-time = "2025-05-13T15:01:17.447Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/26/00/35d85dcce6c57fdc871f3867d465d780f302a175ea360f62533f12b27e2b/flask-3.1.3.tar.gz", hash = "sha256:0ef0e52b8a9cd932855379197dd8f94047b359ca0a78695144304cb45f87c9eb", size = 759004, upload-time = "2026-02-19T05:00:57.678Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3d/68/9d4508e893976286d2ead7f8f571314af6c2037af34853a30fd769c02e9d/flask-3.1.1-py3-none-any.whl", hash = "sha256:07aae2bb5eaf77993ef57e357491839f5fd9f4dc281593a81a9e4d79a24f295c", size = 103305, upload-time = "2025-05-13T15:01:15.591Z" },
+    { url = "https://files.pythonhosted.org/packages/7f/9c/34f6962f9b9e9c71f6e5ed806e0d0ff03c9d1b0b2340088a0cf4bce09b18/flask-3.1.3-py3-none-any.whl", hash = "sha256:f4bcbefc124291925f1a26446da31a5178f9483862233b23c0c96a20701f670c", size = 103424, upload-time = "2026-02-19T05:00:56.027Z" },
 ]
 
 [[package]]
 name = "flask-admin"
-version = "2.0.0rc1"
+version = "2.0.2"
 source = { editable = "../../" }
 dependencies = [
     { name = "flask" },
@@ -157,10 +154,12 @@ requires-dist = [
     { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'all'", editable = "../../" },
     { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'geoalchemy'", editable = "../../" },
     { name = "flask-admin", extras = ["sqlalchemy"], marker = "extra == 'sqlalchemy-with-utils'", editable = "../../" },
+    { name = "flask-admin", extras = ["sqlalchemy-lite"], marker = "extra == 'all'", editable = "../../" },
     { name = "flask-admin", extras = ["sqlalchemy-with-utils"], marker = "extra == 'all'", editable = "../../" },
     { name = "flask-admin", extras = ["translation"], marker = "extra == 'all'", editable = "../../" },
     { name = "flask-babel", marker = "extra == 'translation'", specifier = ">=3.0.1" },
     { name = "flask-sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=3" },
+    { name = "flask-sqlalchemy-lite", marker = "extra == 'sqlalchemy-lite'" },
     { name = "geoalchemy2", marker = "extra == 'geoalchemy'", specifier = ">=0.14.0" },
     { name = "jinja2", specifier = ">=3.0" },
     { name = "markupsafe", specifier = ">=2.0" },
@@ -179,7 +178,7 @@ requires-dist = [
     { name = "wtf-peewee", marker = "extra == 'peewee'", specifier = ">=3.0.4" },
     { name = "wtforms", specifier = ">=2.3" },
 ]
-provides-extras = ["sqlalchemy", "sqlalchemy-with-utils", "geoalchemy", "pymongo", "mongoengine", "peewee", "s3", "azure-blob-storage", "images", "export", "rediscli", "translation", "all"]
+provides-extras = ["sqlalchemy", "sqlalchemy-lite", "sqlalchemy-with-utils", "geoalchemy", "pymongo", "mongoengine", "peewee", "s3", "azure-blob-storage", "images", "export", "rediscli", "translation", "all"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -201,7 +200,7 @@ dev = [
     { name = "sphinx" },
     { name = "sphinx-intl", specifier = ">=2.3.1" },
     { name = "sphinxcontrib-log-cabinet" },
-    { name = "tox" },
+    { name = "tox", specifier = "<4.30" },
     { name = "tox-uv" },
     { name = "types-beautifulsoup4" },
     { name = "types-boto3" },
@@ -530,14 +529,14 @@ wheels = [
 
 [[package]]
 name = "werkzeug"
-version = "3.1.3"
+version = "3.1.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "markupsafe" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/9f/69/83029f1f6300c5fb2471d621ab06f6ec6b3324685a2ce0f9777fd4a8b71e/werkzeug-3.1.3.tar.gz", hash = "sha256:60723ce945c19328679790e3282cc758aa4a6040e4bb330f53d30fa546d44746", size = 806925, upload-time = "2024-11-08T15:52:18.093Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/61/f1/ee81806690a87dab5f5653c1f146c92bc066d7f4cebc603ef88eb9e13957/werkzeug-3.1.6.tar.gz", hash = "sha256:210c6bede5a420a913956b4791a7f4d6843a43b6fcee4dfa08a65e93007d0d25", size = 864736, upload-time = "2026-02-19T15:17:18.884Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/52/24/ab44c871b0f07f491e5d2ad12c9bd7358e527510618cb1b803a88e986db1/werkzeug-3.1.3-py3-none-any.whl", hash = "sha256:54b78bf3716d19a65be4fceccc0d1d7b89e608834989dfae50ea87564639213e", size = 224498, upload-time = "2024-11-08T15:52:16.132Z" },
+    { url = "https://files.pythonhosted.org/packages/4d/ec/d58832f89ede95652fd01f4f24236af7d32b70cab2196dfcc2d2fd13c5c2/werkzeug-3.1.6-py3-none-any.whl", hash = "sha256:7ddf3357bb9564e407607f988f683d72038551200c704012bb9a4c523d42f131", size = 225166, upload-time = "2026-02-19T15:17:17.475Z" },
 ]
 
 [[package]]

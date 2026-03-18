@@ -43,7 +43,8 @@ from ..._types import T_SQLALCHEMY_COLUMN
 from ..._types import T_SQLALCHEMY_INLINE_MODELS
 from ..._types import T_SQLALCHEMY_MODEL
 from ...form import Select2Field
-from ._types import T_SCOPED_SESSION
+from ._compat import _get_deprecated_session
+from ._types import T_SESSION_OR_DB
 from .ajax import create_ajax_loader
 from .fields import HstoreForm
 from .fields import InlineHstoreList
@@ -67,7 +68,11 @@ class AdminModelConverter(ModelConverterBase):
     SQLAlchemy model to form converter
     """
 
-    def __init__(self, session: T_SCOPED_SESSION, view: T_MODEL_VIEW) -> None:
+    def __init__(
+        self,
+        session: T_SESSION_OR_DB,
+        view: T_MODEL_VIEW,
+    ) -> None:
         super().__init__()
 
         self.session = session
@@ -136,7 +141,11 @@ class AdminModelConverter(ModelConverterBase):
                 return AjaxSelectField(loader, **kwargs)
 
         if "query_factory" not in kwargs:
-            kwargs["query_factory"] = lambda: self.session.query(remote_model)
+            # _get_deprecated_session must be inside lambda call or session will stay
+            # the same across requests. https://github.com/pallets-eco/flask-admin/issues/2831
+            kwargs["query_factory"] = lambda: _get_deprecated_session(
+                self.session
+            ).query(remote_model)
 
         if multiple:
             return QuerySelectMultipleField(**kwargs)
@@ -293,12 +302,16 @@ class AdminModelConverter(ModelConverterBase):
 
                     # Current Unique Validator does not work with multicolumns-pks
                     if not has_multiple_pks(model):
-                        kwargs["validators"].append(Unique(self.session, model, column))
+                        kwargs["validators"].append(
+                            Unique(_get_deprecated_session(self.session), model, column)
+                        )
                         unique = True
 
             # If field is unique, validate it
             if column.unique and not unique:
-                kwargs["validators"].append(Unique(self.session, model, column))
+                kwargs["validators"].append(
+                    Unique(_get_deprecated_session(self.session), model, column)
+                )
 
             optional_types = getattr(self.view, "form_optional_types", (Boolean,))
 
@@ -797,15 +810,17 @@ class InlineModelConverter(InlineModelConverterBase):
 
     def __init__(
         self,
-        session: T_SCOPED_SESSION,
+        session: T_SESSION_OR_DB,
         view: T_MODEL_VIEW,
-        model_converter: t.Callable[[T_SCOPED_SESSION, t.Any], t.Any],
+        model_converter: t.Callable[[T_SESSION_OR_DB, t.Any], t.Any],
     ) -> None:
         """
         Constructor.
-
-        :param session:
-            SQLAlchemy session
+         :param session:
+            flask_sqlalchemy.SQLAlchemy/flask_sqlalchemy_lite.SQLAlchemy object
+            (preferred) or scoped session (deprecated).
+            When passing a SQLAlchemy object, the session will be accessed via its
+            .session attribute.
         :param view:
             Flask-Admin view object
         :param model_converter:
@@ -889,7 +904,7 @@ class InlineModelConverter(InlineModelConverterBase):
         :return:
             A dict of forward property key and reverse property key
         """
-        mapper = model._sa_class_manager.mapper
+        mapper = model._sa_class_manager.mapper  # type: ignore[union-attr]
 
         # Find property from target model to current model
         # Use the base mapper to support inheritance
@@ -942,11 +957,6 @@ class InlineModelConverter(InlineModelConverterBase):
         """
         Generate form fields for inline forms and contribute them to
         the `form_class`
-
-        :param converter:
-            ModelConverterBase instance
-        :param session:
-            SQLAlchemy session
         :param model:
             Model class
         :param form_class:
@@ -1035,7 +1045,7 @@ class InlineOneToOneModelConverter(InlineModelConverter):
         self, model: type[T_SQLALCHEMY_MODEL], info: InlineFormAdmin
     ) -> dict[str, str]:
         mapper = info.model._sa_class_manager.mapper.base_mapper  # type: ignore[union-attr]
-        target_mapper = model._sa_class_manager.mapper
+        target_mapper = model._sa_class_manager.mapper  # type: ignore[union-attr]
 
         inline_relationship = dict()
 

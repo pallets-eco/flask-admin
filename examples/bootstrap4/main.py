@@ -14,12 +14,22 @@ from flask_admin.menu import MenuDivider
 from flask_admin.menu import MenuLink
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Boolean
+from sqlalchemy import DateTime
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Text
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+
+from examples.bootstrap4.data import all_themes
+from examples.bootstrap4.data import build_sample_db
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
 app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
-app.config["SQLALCHEMY_ECHO"] = True
+app.config["SQLALCHEMY_ECHO"] = False
 
 db = SQLAlchemy(app)
 
@@ -61,22 +71,24 @@ def index():
 
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(64))
-    email = db.Column(db.Unicode(64))
-    active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.now)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(64))
+    email: Mapped[str] = mapped_column(String(64))
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[DateTime] = mapped_column(
+        DateTime, default=datetime.datetime.now
+    )
 
-    def __unicode__(self):
+    def __repr__(self):
         return self.name
 
 
 class Page(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.Unicode(64))
-    content = db.Column(db.UnicodeText)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(String(64))
+    content: Mapped[Text] = mapped_column(Text)
 
-    def __unicode__(self):
+    def __repr__(self):
         return self.name
 
 
@@ -109,20 +121,16 @@ class PageWithModalView(ModelView):
 
 
 with app.app_context():
-    from data import build_sample_db
-
     build_sample_db(db, User, Page)
 
 if __name__ == "__main__":
     # Icons reference (FontAwesome v4):
     # https://fontawesome.com/v4/icons/
 
-    from data import all_themes
-
     admin.add_view(
         UserAdmin(
             User,
-            db.session,
+            db,
             category="Menu",
             menu_icon_type="fa",
             menu_icon_value="fa-users",
@@ -130,20 +138,18 @@ if __name__ == "__main__":
         )
     )
     admin.add_menu_item(MenuDivider(), target_category="Menu")
-    admin.add_view(
-        SimplePageView(Page, db.session, category="Menu", name="Simple Page")
-    )
+    admin.add_view(SimplePageView(Page, db, category="Menu", name="Simple Page"))
 
     admin.add_view(
         PageWithModalView(
-            Page, db.session, category="Menu", endpoint="page-modal", name="Page-Modal"
+            Page, db, category="Menu", endpoint="page-modal", name="Page-Modal"
         )
     )
 
     admin.add_view(
         ModelView(
             Page,
-            db.session,
+            db,
             name="Page-with-icon",
             endpoint="page2",
             menu_class_name="text-danger",
