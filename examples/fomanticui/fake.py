@@ -28,7 +28,7 @@ def generate_fake_data(app):
     """Populate the database with a rich set of example data covering all models."""
     with app.app_context():
         db.create_all()
-        db.create_all()
+
         # ----- Roles -----
         if Role.query.count() == 0:
             for name in ("admin", "editor", "user"):
