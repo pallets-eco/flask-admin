@@ -314,8 +314,9 @@ class Base:
                 ),
             )
             data = rv.data.decode("utf-8")
+            data = data.split("</nav>")[1]
             assert rv.status_code == 200
-            assert "CSRF token missing." in data
+            assert "CSRF token missing" in data
 
             rv = client.post(
                 "/admin/myfileadmin/rename/?path=dummy.txt",
