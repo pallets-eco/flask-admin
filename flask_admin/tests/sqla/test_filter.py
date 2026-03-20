@@ -4,6 +4,7 @@ from datetime import time
 import pytest
 
 from flask_admin.contrib.sqla import filters
+from flask_admin.tests.conftest import skip_or_return_session_or_db
 from flask_admin.tests.sqla.test_basic import create_models
 from flask_admin.tests.sqla.test_basic import CustomModelView
 from flask_admin.tests.sqla.test_basic import fill_db
@@ -13,7 +14,7 @@ def test_column_filters(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view1 = CustomModelView(Model1, param, column_filters=["test1"])
         admin.add_view(view1)
 
@@ -965,7 +966,7 @@ def test_url_for_simple(app, sqla_db_ext, admin, session_or_db):
     # with app.app_context():
     Model1, Model2 = create_models(sqla_db_ext)
 
-    param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+    param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = CustomModelView(
         Model1,
         param,
@@ -1381,7 +1382,7 @@ def test_url_for(
 
     col = getattr(Model1, col)
 
-    param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+    param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = CustomModelView(Model1, param, endpoint="user", column_filters=[col])
     admin.add_view(view)
 
@@ -1503,7 +1504,7 @@ def test_url_for_enums_and_choices(
 
     col = getattr(Model1, col)
 
-    param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+    param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = CustomModelView(Model1, param, endpoint="user", column_filters=[col])
     admin.add_view(view)
 
@@ -1522,7 +1523,7 @@ def test_column_filters_sqla_obj(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Model1, param, column_filters=[Model1.test1])
         admin.add_view(view)
         assert view._filters
