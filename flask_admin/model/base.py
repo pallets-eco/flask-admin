@@ -1395,7 +1395,7 @@ class BaseModelView(BaseView, ActionsMixin):
         if not self._filter_args:
             return None
 
-        found = None
+        filter_arg_key = None
         for k, v in self._filter_args.items():
             filter_arg = v[1]
             if hasattr(flt.column, "name"):
@@ -1412,10 +1412,10 @@ class BaseModelView(BaseView, ActionsMixin):
             if filter_arg_col_name.lower() == flt_col_name.lower() and type(
                 flt
             ) == type(filter_arg):
-                found = k
+                filter_arg_key = k
                 break
 
-        return self._filter_args[found] if found else None
+        return self._filter_args[filter_arg_key] if filter_arg_key else None
 
     def url_for(
         self, search: str | None = None, filters: list[BaseFilter] | None = None

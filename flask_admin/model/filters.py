@@ -18,20 +18,18 @@ class BaseFilter:
 
     def __init__(
         self,
-        column: t.Any,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
         key_name: str | None = None,
-        # FIXME: to be removed in future releases and replaced with `value`
-        # where it should be used in other functions like clean, validate, etc.
+        column: t.Any | None = None,
+        # FIXME: to be renamed in future releases into `value`
+        # thus, `self.value` should be used in functions like clean, validate, etc.
         url_value: str | None = None,
     ) -> None:
         """
         Constructor.
 
-        :param column:
-            Model/Document field
         :param name:
             Displayed name
         :param options:
@@ -40,12 +38,19 @@ class BaseFilter:
             Client-side widget type to use.
         :param key_name:
             Optional name who represent this filter.
+        :param column:
+            Optional, field of Model/Document
+        :param url_value:
+            Optional value to use in URL argument instead of value passed to apply
+            method. This is useful for filters that need to convert value to a
+            different format for URL argument,such as convert the filter object into
+            string format for URL argument.
         """
-        self.column = column
         self.name = name
         self.options = options
         self.data_type = data_type
         self.key_name = key_name
+        self.column = column
         self.url_value = url_value
 
     def get_options(self, view: T_MODEL_VIEW) -> T_OPTION_LIST | None:
@@ -156,17 +161,17 @@ class BaseBooleanFilter(BaseFilter):
 
     def __init__(
         self,
-        column: t.Any,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
+        column: t.Any | None = None,
         url_value: str | None = None,
     ) -> None:
         super().__init__(
-            column,
             name,
             (("1", lazy_gettext("Yes")), ("0", lazy_gettext("No"))),
             data_type,
+            column,
             url_value=url_value,
         )
 
@@ -232,14 +237,14 @@ class BaseDateFilter(BaseFilter):
 
     def __init__(
         self,
-        column: t.Any,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
+        column: t.Any | None = None,
         url_value: str | None = None,
     ):
         super().__init__(
-            column, name, options, data_type="datepicker", url_value=url_value
+            name, options, data_type="datepicker", column=column, url_value=url_value
         )
 
     def clean(self, value: str) -> datetime.date:
@@ -290,14 +295,18 @@ class BaseDateTimeFilter(BaseFilter):
 
     def __init__(
         self,
-        column: t.Any,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
+        column: t.Any | None = None,
         url_value: str | None = None,
     ) -> None:
         super().__init__(
-            column, name, options, data_type="datetimepicker", url_value=url_value
+            name,
+            options,
+            data_type="datetimepicker",
+            column=column,
+            url_value=url_value,
         )
 
     def clean(self, value: str) -> datetime.datetime:
@@ -348,14 +357,14 @@ class BaseTimeFilter(BaseFilter):
 
     def __init__(
         self,
-        column: t.Any,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
+        column: t.Any | None = None,
         url_value: str | None = None,
     ) -> None:
         super().__init__(
-            column, name, options, data_type="timepicker", url_value=url_value
+            name, options, data_type="timepicker", column=column, url_value=url_value
         )
 
     def clean(self, value: str) -> datetime.time:
@@ -408,13 +417,15 @@ class BaseUuidFilter(BaseFilter):
 
     def __init__(
         self,
-        column: t.Any,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
+        column: t.Any | None = None,
         url_value: str | None = None,
     ) -> None:
-        super().__init__(column, name, options, data_type="uuid", url_value=url_value)
+        super().__init__(
+            name, options, data_type="uuid", column=column, url_value=url_value
+        )
 
     def clean(self, value: str) -> t.Any:
         value = uuid.UUID(value)  # type: ignore[assignment]

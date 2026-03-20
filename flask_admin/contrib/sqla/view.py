@@ -1179,7 +1179,7 @@ class ModelView(BaseModelView):
             # Figure out joins
             if isinstance(flt, sqla_filters.BaseSQLAFilter):
                 # If no key_name is specified, use filter column as filter key
-                filter_key = flt.key_name or flt.column
+                filter_key = flt.key_name if flt.key_name is not None else flt.column
                 path = self._filter_joins.get(filter_key, [])
 
                 query, joins, alias = self._apply_path_joins(

@@ -30,9 +30,7 @@ class BaseMongoEngineFilter(filters.BaseFilter):
         :param url_value:
             URL value
         """
-        super().__init__(column, name, options, data_type, url_value=url_value)
-
-        self.column = column
+        super().__init__(name, options, data_type, column=column, url_value=url_value)
 
 
 # Common filters
@@ -136,9 +134,6 @@ class FilterNotInList(FilterInList):
 
     def operation(self):
         return lazy_gettext("not in list")
-
-    def stringify(self, value: t.Any) -> str:
-        return ",".join(str(v) for v in value)
 
 
 # Customized type filters

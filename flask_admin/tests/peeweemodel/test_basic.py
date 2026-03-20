@@ -1506,8 +1506,6 @@ def test_url_for(
 ):
     Model1, Model2 = create_models(db)
 
-    col = getattr(Model1, col)
-
     class MyView(ModelView):
         __test__ = False
 
