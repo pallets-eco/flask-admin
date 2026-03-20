@@ -38,6 +38,8 @@ class BasePeeweeFilter(filters.BaseFilter):
         """
         super().__init__(name, options, data_type, column=column, url_value=url_value)
 
+        self.column: t.Any = column
+
 
 # Common filters
 class FilterEqual(BasePeeweeFilter):

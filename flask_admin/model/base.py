@@ -1399,12 +1399,12 @@ class BaseModelView(BaseView, ActionsMixin):
         for k, v in self._filter_args.items():
             filter_arg = v[1]
             if hasattr(flt.column, "name"):
-                flt_col_name = flt.column.name
+                flt_col_name = flt.column.name  # type: ignore[union-attr]
             else:
                 flt_col_name = str(flt.column)
 
             filter_arg_col_name = (
-                filter_arg.column.name
+                filter_arg.column.name  # type: ignore[union-attr]
                 if hasattr(filter_arg.column, "name")
                 else str(filter_arg.column)
             )

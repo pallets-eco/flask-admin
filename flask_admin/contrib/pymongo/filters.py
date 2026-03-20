@@ -37,6 +37,8 @@ class BasePyMongoFilter(filters.BaseFilter):
         """
         super().__init__(name, options, data_type, column=column, url_value=url_value)
 
+        self.column = column
+
 
 # Common filters
 class FilterEqual(BasePyMongoFilter):

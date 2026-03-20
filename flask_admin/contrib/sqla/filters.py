@@ -44,7 +44,7 @@ class BaseSQLAFilter(filters.BaseFilter):
         """
         super().__init__(name, options, data_type, column=column, url_value=url_value)
 
-        self.column = column
+        self.column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE = column
 
     def get_column(
         self, alias: t.Any
@@ -390,7 +390,7 @@ class EnumEqualFilter(FilterEqual):
         url_value: t.Any = None,
         **kwargs: t.Any,
     ) -> None:
-        self.enum_class = column.type.enum_class  # type: ignore[attr-defined]
+        self.enum_class = column.type.enum_class  # type: ignore[union-attr]
         super().__init__(column, name, options, url_value=url_value, **kwargs)
 
     def clean(self, value: t.Any) -> t.Any:
@@ -408,7 +408,7 @@ class EnumFilterNotEqual(FilterNotEqual):
         url_value: t.Any = None,
         **kwargs: t.Any,
     ) -> None:
-        self.enum_class = column.type.enum_class  # type: ignore[attr-defined]
+        self.enum_class = column.type.enum_class  # type: ignore[union-attr]
         super().__init__(column, name, options, url_value=url_value, **kwargs)
 
     def clean(self, value: t.Any) -> t.Any:
@@ -426,7 +426,7 @@ class EnumFilterEmpty(FilterEmpty):
         url_value: t.Any = None,
         **kwargs: t.Any,
     ) -> None:
-        self.enum_class = column.type.enum_class  # type: ignore[attr-defined]
+        self.enum_class = column.type.enum_class  # type: ignore[union-attr]
         super().__init__(column, name, options, url_value=url_value, **kwargs)
 
 
@@ -439,7 +439,7 @@ class EnumFilterInList(FilterInList):
         url_value: t.Any = None,
         **kwargs: t.Any,
     ) -> None:
-        self.enum_class = column.type.enum_class  # type: ignore[attr-defined]
+        self.enum_class = column.type.enum_class  # type: ignore[union-attr]
         super().__init__(column, name, options, url_value=url_value, **kwargs)
 
     def clean(self, value: t.Any) -> t.Any:
@@ -461,7 +461,7 @@ class EnumFilterNotInList(FilterNotInList):
         url_value: t.Any = None,
         **kwargs: t.Any,
     ) -> None:
-        self.enum_class = column.type.enum_class  # type: ignore[attr-defined]
+        self.enum_class = column.type.enum_class  # type: ignore[union-attr]
         super().__init__(column, name, options, url_value=url_value, **kwargs)
 
     def clean(self, value: t.Any) -> t.Any:
