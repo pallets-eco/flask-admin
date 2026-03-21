@@ -112,7 +112,7 @@
 
 {% macro page_size_form(generator, page_size_options, btn_class='nav-link dropdown-toggle') %}
     <a class="{{ btn_class }} a-unlink" data-toggle="dropdown" href="#">
-        {{ page_size }} {{ _gettext('items') }} ss
+        {{ page_size }} {{ _gettext('items') }}
     </a>
     <div class="dropdown-menu">
       {% for option in page_size_options %}
