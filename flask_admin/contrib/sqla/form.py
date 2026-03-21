@@ -9,11 +9,11 @@ from enum import EnumMeta
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy.orm import ColumnProperty
-from wtforms import Field
 from wtforms import fields
 from wtforms import Form
 from wtforms import HiddenField
 from wtforms import validators
+from wtforms.fields.core import UnboundField
 
 from flask_admin import form
 from flask_admin._backwards import get_property
@@ -639,13 +639,16 @@ class AdminModelConverter(ModelConverterBase):
         return form.JSONField(**field_args)
 
 
-def avoid_empty_strings(value: t.Any) -> t.Any:
+T = t.TypeVar("T")
+
+
+def avoid_empty_strings(value: T) -> T | None:
     """
     Return None if the incoming value is an empty string or whitespace.
     """
     if value:
         try:
-            value = value.strip()
+            value = value.strip()  # type: ignore[attr-defined]
         except AttributeError:
             # values are not always strings
             pass
@@ -699,7 +702,8 @@ def get_form(
     field_args: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
     hidden_pk: bool = False,
     ignore_hidden: bool = True,
-    extra_fields: dict[str | T_INSTRUMENTED_ATTRIBUTE, Field] | None = None,
+    extra_fields: dict[str | T_INSTRUMENTED_ATTRIBUTE, UnboundField[t.Any]]
+    | None = None,
 ) -> type:
     """
     Generate form from the model.
@@ -789,8 +793,8 @@ def get_form(
 
     # Contribute extra fields
     if not only and extra_fields:
-        for name, field in iteritems(extra_fields):
-            field_dict[name] = form.recreate_field(field)
+        for name_field, extra_field in iteritems(extra_fields):
+            field_dict[name_field] = form.recreate_field(extra_field)
 
     return type(model.__name__ + "Form", (base_class,), field_dict)
 
