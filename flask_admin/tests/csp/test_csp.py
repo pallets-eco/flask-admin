@@ -26,12 +26,6 @@ def create_model_class(sqla_db_ext):
         test2 = sa.Column(sa.Unicode(20))
         bool_field = sa.Column(sa.Boolean)
 
-            return self.test1
-
-        def __str__(self):
-            return self.test1
-
-    # with app.app_context():
     sqla_db_ext.create_all()
 
     return Model1
