@@ -151,7 +151,7 @@ class TestCSPOnAllPages:
         self.create_fileview_with_modal(admin)
 
         with app.app_context():
-            fill_db(sqla_db_ext, session_or_db, Model1)
+            fill_db(sqla_db_ext, sqla_db_ext, Model1)
             client = app.test_client()
 
         # check that we can retrieve a list view
