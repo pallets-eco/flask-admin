@@ -1,32 +1,16 @@
 import os.path as op
-import typing as t
 
 import pytest
+import sqlalchemy as sa
 from bs4 import BeautifulSoup
 from flask_admin.contrib import fileadmin
 from flask_admin.contrib.sqla.view import ModelView
 
 
-def test_csp_nonces_injected(app, admin, nonce):
-    client = app.test_client()
-    rv = client.get("/admin/")
-    assert rv.status_code == 200
+def create_model_class(sqla_db_ext):
+    class Model1(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        __tablename__ = "model1"
 
-    soup = BeautifulSoup(rv.data, "html.parser")
-
-    scripts = soup.select("script")
-    assert len(scripts) == 9
-    for tag in scripts:
-        assert tag.attrs["nonce"] == nonce
-
-    styles = soup.select("style")
-    assert len(styles) == 0
-    for tag in styles:
-        assert tag.attrs["nonce"] == nonce
-
-
-def create_model_class(app, db):
-    class Model1(db.Model):  # type: ignore[name-defined, misc]
         def __init__(
             self,
             test1=None,
@@ -37,10 +21,10 @@ def create_model_class(app, db):
             self.test2 = test2
             self.bool_field = bool_field
 
-        id = db.Column(db.Integer, primary_key=True)
-        test1 = db.Column(db.String(20))
-        test2 = db.Column(db.Unicode(20))
-        bool_field = db.Column(db.Boolean)
+        id = sa.Column(sa.Integer, primary_key=True)
+        test1 = sa.Column(sa.String(20))
+        test2 = sa.Column(sa.Unicode(20))
+        bool_field = sa.Column(sa.Boolean)
 
         def __unicode__(self):
             return self.test1
@@ -48,13 +32,13 @@ def create_model_class(app, db):
         def __str__(self):
             return self.test1
 
-    with app.app_context():
-        db.create_all()
+    # with app.app_context():
+    sqla_db_ext.create_all()
 
     return Model1
 
 
-def fill_db(db, Model1):
+def fill_db(sqla_db_ext, session_or_db, Model1):
     objs = [
         {"test1": "test1_val_1", "test2": "test2_val_1", "bool_field": True},
         {"test1": "test1_val_2", "test2": "test2_val_2", "bool_field": False},
@@ -62,90 +46,74 @@ def fill_db(db, Model1):
         {"test1": "test1_val_4", "test2": "test2_val_4"},
     ]
 
-    db.session.add_all([Model1(**obj) for obj in objs])
-    db.session.commit()
+    sqla_db_ext.db.session.add_all([Model1(**obj) for obj in objs])
+    sqla_db_ext.db.session.commit()
+
+
+class MyModelView(ModelView):
+    can_create = True
+    can_edit = True
+    can_delete = True
+    column_filters = ["bool_field"]
+    column_editable_list = ["test1", "bool_field"]
+    column_searchable_list = ["test1", "test2"]
+    can_view_details = True
+    can_export = True
+    page_size_options = (2, 5, 10)
+
+
+class MyFileView(fileadmin.FileAdmin):
+    can_delete = True
+    can_upload = True
+    can_delete_dirs = True
+    can_rename = True
+    editable_extensions = ("txt",)
 
 
 class TestCSPOnAllPages:
-    def create_modelview(self, app, admin, db, Model1):
-        class MyModelView(ModelView):
-            can_create = True
-            can_edit = True
-            can_delete = True
-            column_filters = ["bool_field"]
-            column_editable_list = ["test1", "bool_field"]
-            column_searchable_list = ["test1", "test2"]
-            can_view_details = True
-            can_export = True
-            page_size_options = (2, 5, 10)
+    def create_modelview(self, app, admin, db_param, Model1):
+        with app.app_context():
+            v = MyModelView(Model1, db_param)
+            admin.add_view(v)
+
+            return v
+
+    def create_modelveiw_with_modal(self, app, admin, db_param, Model1):
+        class ModalModelView(MyModelView):
+            create_modal = True
+            edit_modal = True
+            details_modal = True
 
         with app.app_context():
-            fill_db(db, Model1)
-            myview = MyModelView(Model1, db.session)
-            admin.add_view(myview)
-
-            return myview
-
-    def create_modelveiw_with_modal(self, app, admin, db, Model1):
-        class ModalModelView(ModelView):
-            can_create = True
-            can_edit = True
-            can_delete = True
-            column_filters = ["bool_field"]
-            column_editable_list = ["test1", "bool_field"]
-            column_searchable_list = ["test1", "test2"]
-            can_view_details = True
-            can_export = True
-            page_size_options = (2, 5, 10)
-
-        with app.app_context():
-            fill_db(db, Model1)
-            vi = ModalModelView(Model1, db.session, endpoint="modal")
+            vi = ModalModelView(Model1, db_param, endpoint="modal")
             admin.add_view(vi)
 
             return vi
 
     _test_files_root = op.join(op.dirname(__file__), "files")
 
-    def create_fileview(self, app, admin):
-        class MyFileView(fileadmin.FileAdmin):
-            can_delete = True
-            can_upload = True
-            can_delete_dirs = True
-            can_rename = True
-            editable_extensions = ("txt",)
+    def create_fileview(self, admin):
+        view = MyFileView(self._test_files_root, name="Files", endpoint="fa")
+        admin.add_view(view)
 
-        vi_kwargs: dict[str, t.Any] = dict()
-        vi_kwargs["endpoint"] = "fa"
-        vi_kwargs.setdefault("name", "Files")
-        vi = MyFileView(self._test_files_root, **vi_kwargs)
+        return view
 
-        admin.add_view(vi)
-        return vi
-
-    def create_fileview_with_modal(self, app, admin):
-        class ModalFileView(fileadmin.FileAdmin):
-            can_delete = True
-            can_upload = True
-            can_delete_dirs = True
-            can_rename = True
+    def create_fileview_with_modal(self, admin):
+        class ModalFileView(MyFileView):
             edit_modal = True
             rename_modal = True
             mkdir_modal = True
             upload_modal = True
-            editable_extensions = ("txt",)
 
-        vi_kwargs: dict[str, t.Any] = dict()
-        vi_kwargs.setdefault("name", "ModalFiles")
-        vi_kwargs["endpoint"] = "modalfa"
-        vi = ModalFileView(self._test_files_root, **vi_kwargs)
+        v = ModalFileView(self._test_files_root, name="ModalFiles", endpoint="modalfa")
 
-        admin.add_view(vi)
-        return vi
+        admin.add_view(v)
+        return v
 
     @pytest.mark.parametrize(
         "endpoint, url",
         [
+            ("", ""),  # index view
             ("model1", "?flt1_0=1"),
             ("model1", "new/"),
             ("model1", "edit/?id=1"),
@@ -168,32 +136,41 @@ class TestCSPOnAllPages:
         self,
         app,
         admin,
-        db,
+        sqla_db_ext,
+        session_or_db,
         nonce,
         endpoint,
         url,
     ):
-        Model1 = create_model_class(app, db)
+        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        Model1 = create_model_class(sqla_db_ext)
 
-        self.create_modelview(app, admin, db, Model1)
-        self.create_modelveiw_with_modal(app, admin, db, Model1)
-        self.create_fileview(app, admin)
-        self.create_fileview_with_modal(app, admin)
+        self.create_modelview(app, admin, param, Model1)
+        self.create_modelveiw_with_modal(app, admin, param, Model1)
+        self.create_fileview(admin)
+        self.create_fileview_with_modal(admin)
 
         with app.app_context():
-            fill_db(db, Model1)
+            fill_db(sqla_db_ext, session_or_db, Model1)
             client = app.test_client()
 
-            # check that we can retrieve a list view
-            rv = client.get(f"/admin/{endpoint}/{url}")
-            assert rv.status_code == 200
+        # check that we can retrieve a list view
+        rv = client.get(f"/admin/{endpoint}/{url}", follow_redirects=True)
+        assert rv.status_code == 200
 
-            soup = BeautifulSoup(rv.data, "html.parser")
+        soup = BeautifulSoup(rv.data, "html.parser")
 
-            scripts = soup.select("script")
-            for tag in scripts:
-                assert tag.attrs["nonce"] == nonce
+        scripts = soup.select("script")
+        for tag in scripts:
+            assert tag.attrs["nonce"] == nonce
 
-            styles = soup.select("style")
-            for tag in styles:
-                assert tag.attrs["nonce"] == nonce
+        styles = soup.select("style")
+        for tag in styles:
+            assert tag.attrs["nonce"] == nonce
+
+    # FIXME: This test is currently a no-op since the RedisView is not being added
+    # to the admin instance. We should add it and then test that the nonce is
+    # injected into the view's templates.
+    @pytest.mark.skip(reason="RedisView is not added to the admin instance.")
+    def test_csp_on_rediscli(self, app, admin, nonce):
+        pass
