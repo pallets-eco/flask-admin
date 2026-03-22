@@ -44,7 +44,6 @@ from ..._types import T_SQLALCHEMY_INLINE_MODELS
 from ..._types import T_SQLALCHEMY_MODEL
 from ...form import Select2Field
 from ._compat import _get_deprecated_session
-from ._compat import _warn_session_deprecation
 from ._types import T_SESSION_OR_DB
 from .ajax import create_ajax_loader
 from .fields import HstoreForm
@@ -76,7 +75,7 @@ class AdminModelConverter(ModelConverterBase):
     ) -> None:
         super().__init__()
 
-        self.session = _warn_session_deprecation(session)
+        self.session = session
         self.view = view
 
     def _get_label(self, name: str, field_args: T_FIELD_ARGS_LABEL) -> str:
@@ -142,8 +141,11 @@ class AdminModelConverter(ModelConverterBase):
                 return AjaxSelectField(loader, **kwargs)
 
         if "query_factory" not in kwargs:
-            session = _get_deprecated_session(self.session)
-            kwargs["query_factory"] = lambda: session.query(remote_model)
+            # _get_deprecated_session must be inside lambda call or session will stay
+            # the same across requests. https://github.com/pallets-eco/flask-admin/issues/2831
+            kwargs["query_factory"] = lambda: _get_deprecated_session(
+                self.session
+            ).query(remote_model)
 
         if multiple:
             return QuerySelectMultipleField(**kwargs)
@@ -288,8 +290,6 @@ class AdminModelConverter(ModelConverterBase):
 
             unique = False
 
-            session = _get_deprecated_session(self.session)
-
             if column.primary_key:
                 if hidden_pk:
                     # If requested to add hidden field, show it
@@ -302,12 +302,16 @@ class AdminModelConverter(ModelConverterBase):
 
                     # Current Unique Validator does not work with multicolumns-pks
                     if not has_multiple_pks(model):
-                        kwargs["validators"].append(Unique(session, model, column))
+                        kwargs["validators"].append(
+                            Unique(_get_deprecated_session(self.session), model, column)
+                        )
                         unique = True
 
             # If field is unique, validate it
             if column.unique and not unique:
-                kwargs["validators"].append(Unique(session, model, column))
+                kwargs["validators"].append(
+                    Unique(_get_deprecated_session(self.session), model, column)
+                )
 
             optional_types = getattr(self.view, "form_optional_types", (Boolean,))
 
@@ -824,7 +828,7 @@ class InlineModelConverter(InlineModelConverterBase):
             appropriate `InlineFormAdmin` instance.
         """
         super().__init__(view)
-        self.session = _warn_session_deprecation(session)
+        self.session = session
         self.model_converter = model_converter
 
     def get_info(
