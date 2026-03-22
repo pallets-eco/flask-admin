@@ -135,9 +135,9 @@ class TestCSPOnAllPages:
         endpoint,
         url,
     ):
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
         Model1 = create_model_class(sqla_db_ext)
 
+        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
         self.create_modelview(app, admin, param, Model1)
         self.create_modelveiw_with_modal(app, admin, param, Model1)
         self.create_fileview(admin)
