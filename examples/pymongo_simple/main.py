@@ -115,4 +115,4 @@ if __name__ == "__main__":
         admin.add_view(UserView(db.user, "User"))
         admin.add_view(TweetView(db.tweet, "Tweets"))
 
-        app.run(debug=True)
+    app.run(debug=True)

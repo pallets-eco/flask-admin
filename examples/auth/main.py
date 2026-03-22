@@ -180,12 +180,13 @@ def build_sample_db():
     return
 
 
-if __name__ == "__main__":
-    admin.add_view(MyModelView(Role, db))
-    admin.add_view(MyModelView(User, db))
+admin.add_view(MyModelView(Role, db))
+admin.add_view(MyModelView(User, db))
 
-    app_dir = os.path.realpath(os.path.dirname(__file__))
-    database_path = os.path.join(app_dir, app.config["DATABASE_FILE"])
+app_dir = os.path.realpath(os.path.dirname(__file__))
+database_path = os.path.join(app_dir, app.config["DATABASE_FILE"])
+
+if __name__ == "__main__":
     if not os.path.exists(database_path):
         with app.app_context():
             build_sample_db()

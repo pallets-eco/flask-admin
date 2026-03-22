@@ -186,4 +186,4 @@ if __name__ == "__main__":
         admin.add_view(UserView(User, "User"))
         admin.add_view(TweetView(Tweet, "Tweets"))
 
-        app.run(debug=True)
+    app.run(debug=True)

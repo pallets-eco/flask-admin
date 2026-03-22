@@ -69,4 +69,4 @@ if __name__ == "__main__":
         # Add Local Directory view
         admin.add_view(FileAdmin("localdir", name="Local Dir"))
 
-        app.run(debug=True)
+    app.run(debug=True)

@@ -272,18 +272,20 @@ def build_sample_db():
     db.session.commit()
 
 
+admin = Admin(
+    app,
+    name="Example: Auth",
+    index_view=MyAdminIndexView(),
+    theme=Bootstrap4Theme(base_template="my_master.html", fluid=True),
+)
+
+admin.add_view(MyModelView(User, db))
+
+app_dir = os.path.realpath(os.path.dirname(__file__))
+database_path = os.path.join(app_dir, app.config["DATABASE_FILE"])
+
+
 if __name__ == "__main__":
-    admin = Admin(
-        app,
-        name="Example: Auth",
-        index_view=MyAdminIndexView(),
-        theme=Bootstrap4Theme(base_template="my_master.html", fluid=True),
-    )
-
-    admin.add_view(MyModelView(User, db))
-
-    app_dir = os.path.realpath(os.path.dirname(__file__))
-    database_path = os.path.join(app_dir, app.config["DATABASE_FILE"])
     if not os.path.exists(database_path):
         with app.app_context():
             build_sample_db()

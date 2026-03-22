@@ -242,16 +242,17 @@ def build_sample_db():
     db.session.commit()
 
 
+admin.add_view(FileView(File, db))
+admin.add_view(ImageView(Image, db))
+admin.add_view(UserView(User, db))
+admin.add_view(PageView(Page, db))
+
+app_dir = op.realpath(os.path.dirname(__file__))
+database_path = op.join(app_dir, app.config["DATABASE_FILE"])
+if not os.path.exists(database_path):
+    with app.app_context():
+        build_sample_db()
+
+
 if __name__ == "__main__":
-    admin.add_view(FileView(File, db))
-    admin.add_view(ImageView(Image, db))
-    admin.add_view(UserView(User, db))
-    admin.add_view(PageView(Page, db))
-
-    app_dir = op.realpath(os.path.dirname(__file__))
-    database_path = op.join(app_dir, app.config["DATABASE_FILE"])
-    if not os.path.exists(database_path):
-        with app.app_context():
-            build_sample_db()
-
     app.run(debug=True)

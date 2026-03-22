@@ -78,11 +78,12 @@ def index():
     return tmp
 
 
-if __name__ == "__main__":
-    # admin.locale_selector(get_locale)
-    admin.add_view(ModelView(User, db))
-    admin.add_view(ModelView(Post, db))
+# admin.locale_selector(get_locale)
+admin.add_view(ModelView(User, db))
+admin.add_view(ModelView(Post, db))
 
+
+if __name__ == "__main__":
     with app.app_context():
         db.create_all()
 
