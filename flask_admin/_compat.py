@@ -29,7 +29,7 @@ def itervalues(d: dict[t.Any, V]) -> t.Iterator[V]:
 def iteritems(
     d: dict[K, V] | MappingProxyType[K, V] | t.Mapping[K, V],
 ) -> t.ItemsView[K, V]:
-    return d.items()
+    return iter(d.items())
 
 
 T = t.TypeVar("T")
