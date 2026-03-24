@@ -28,7 +28,7 @@ def itervalues(d: dict[t.Any, V]) -> t.Iterator[V]:
 
 def iteritems(
     d: dict[K, V] | MappingProxyType[K, V] | t.Mapping[K, V],
-) -> t.ItemsView[K, V]:
+) -> t.Iterator[tuple[K, V]]:
     return iter(d.items())
 
 
