@@ -1,14 +1,18 @@
+import enum
 import inspect
+import typing as t
 from unittest.mock import MagicMock
 
 import pytest
+import sqlalchemy as sa
+import sqlalchemy_utils as sa_utils
 import wtforms
 from wtforms.fields.simple import StringField
+from wtforms.validators import Length
 from wtforms.validators import NumberRange
 
-from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.form import AdminModelConverter
-from flask_admin.tests.sqla.test_basic import create_models
+from flask_admin.tests.sqla.test_basic import CustomModelView
 
 sqla_admin_model_converters = [
     method_name
@@ -57,62 +61,181 @@ class TestAdminModelConverter:
         assert field() == "<p>widget overridden</p>"
 
 
+class EnumChoices(enum.Enum):
+    first = 101
+    second = 150
+
+
+class StrEnumChoices(enum.Enum):
+    first = "101"
+    second = "150"
+
+
+def create_models(sqla_db_ext):
+    class Model1(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        __tablename__ = "model1"
+
+        def __init__(self, test1, int_field):
+            self.test1 = test1
+            self.int_field = int_field
+
+        id = sa.Column(sa.Integer, primary_key=True)
+        test1 = sa.Column(sa.String(20))
+        int_field = sa.Column(sa.Integer)
+        float_field = sa.Column(sa.Float)
+        choice_field = sa.Column(sa.String, nullable=True)
+        enum_field = sa.Column(sa.Enum("101", "150"), nullable=True)  # type: ignore[var-annotated]
+        enum_type_field = sa.Column(sa.Enum(EnumChoices), nullable=True)  # type: ignore[var-annotated]
+        sa_utils_choicetype = sa.Column(
+            sa_utils.ChoiceType(
+                [("101", "First"), ("150", "Second")]
+            )  # default impl=sa.String()
+        )
+        sa_utils_choicetype_impl_int = sa.Column(
+            sa_utils.ChoiceType([(101, "First"), (150, "Second")], impl=sa.Integer())
+        )
+        sa_utils_choicetype_with_enum = sa.Column(
+            sa_utils.ChoiceType(EnumChoices, impl=sa.Integer())
+        )
+        sa_utils_choicetype_with_strenum = sa.Column(
+            sa_utils.ChoiceType(StrEnumChoices, impl=sa.String())
+        )
+
+        def __str__(self):
+            return self.test1
+
+    sqla_db_ext.create_all()
+
+    return Model1
+
+
+@pytest.mark.parametrize("use_coerce_explicitly", [True, False])
 @pytest.mark.parametrize(
-    "session_or_db, field_name",
+    "field_name, expected_coerce",
     [
-        pytest.param("session", "int_field", id="session"),
-        pytest.param("session", "float_field", id="session"),
-        pytest.param("db", "int_field", id="db"),
-        pytest.param("db", "float_field", id="db"),
+        ("int_field", int),
+        ("float_field", float),
+        ("choice_field", str),
+        ("enum_field", str),
+        ("sa_utils_choicetype", str),
+        ("sa_utils_choicetype_impl_int", int),
     ],
 )
-def test_coerce(app, admin, sqla_db_ext, session_or_db, field_name):
+def test_coerce(
+    app,
+    admin,
+    sqla_db_ext,
+    session_or_db,
+    field_name,
+    expected_coerce,
+    use_coerce_explicitly,
+):
     with app.app_context():
-        Model1, Model2 = create_models(sqla_db_ext)
+        Model1 = create_models(sqla_db_ext)
         sqla_db_ext.db.session.add_all(
             [
-                Model2("1", int_field=1),
-                Model2("2", int_field=2),
+                Model1("101", int_field=101),
+                Model1("102", int_field=102),
             ]
         )
         sqla_db_ext.db.session.commit()
 
-        class MyModelView(ModelView):
-            form_columns = ["int_field"]
-            form_choices = {"int_field": [("101", "101"), ("150", "150")]}
-            form_args = {
-                "int_field": {"validators": [NumberRange(min=100, max=199)]},
-            }
+        validators: list[t.Any] = []
+        if expected_coerce in [int, float]:
+            validators = [NumberRange(min=100, max=199)]
+        elif expected_coerce in [str]:
+            validators = [Length(min=1, max=3)]
 
-        class MyModelView2(MyModelView):
-            form_args = {
-                "int_field": {
-                    "validators": [NumberRange(min=100, max=199)],
-                    "coerce": int,
-                },
-            }
+        f_choices = [(expected_coerce(101), "First"), (expected_coerce(150), "Second")]
+
+        kwargs = {
+            "form_columns": [field_name],
+            "form_choices": {field_name: f_choices},
+        }
+
+        if use_coerce_explicitly:
+            kwargs["form_args"] = {}
+            kwargs["form_args"][field_name] = {"validators": validators}  # type: ignore[index]
+            kwargs["form_args"][field_name]["coerce"] = expected_coerce  # type: ignore[index]
 
         param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
-        # test column_list with a list of strings
-        view1 = MyModelView(Model2, param, name="My Model1")
-        view2 = MyModelView2(Model2, param, name="My Model1", endpoint="mymodelview2")
+
+        view1 = CustomModelView(Model1, param, name="My Model1", **kwargs)
         admin.add_view(view1)
-        admin.add_view(view2)
 
-        client = app.test_client()
-        rv = client.get("/admin/model2/new/")
-        data = rv.data.decode("utf-8")
-        assert 'value="101"' in data
-        assert ">101</option>" in data
+    client = app.test_client()
+    rv = client.get("/admin/model1/new/")
+    data = rv.data.decode("utf-8")
+    assert f'value="{expected_coerce(101)}"' in data
+    assert ">First</option>" in data
 
-        rv = client.post(
-            "/admin/model2/new/", data={"int_field": "150"}, follow_redirects=True
+    rv = client.post(
+        "/admin/model1/new/",
+        data={field_name: f"{expected_coerce(150)}"},
+        follow_redirects=True,
+    )
+    data = rv.data.decode("utf-8")
+    assert "Record was successfully created" in data
+
+
+@pytest.mark.parametrize("use_coerce_explicitly", [True, False])
+@pytest.mark.parametrize(
+    "field_name, expected_coerce",
+    [
+        ("enum_type_field", EnumChoices),
+        ("sa_utils_choicetype_with_enum", EnumChoices),
+        ("sa_utils_choicetype_with_strenum", StrEnumChoices),
+    ],
+)
+def test_str_coerce(
+    app,
+    admin,
+    sqla_db_ext,
+    session_or_db,
+    field_name,
+    expected_coerce,
+    use_coerce_explicitly,
+):
+    with app.app_context():
+        Model1 = create_models(sqla_db_ext)
+        sqla_db_ext.db.session.add_all(
+            [
+                Model1("101", int_field=101),
+                Model1("102", int_field=102),
+            ]
         )
-        data = rv.data.decode("utf-8")
-        assert "Record was successfully created" in data
+        sqla_db_ext.db.session.commit()
 
-        rv = client.post(
-            "/admin/mymodelview2/new/", data={"int_field": "150"}, follow_redirects=True
-        )
-        data = rv.data.decode("utf-8")
-        assert "Record was successfully created" in data
+        f_choices = [
+            (expected_coerce["first"], "First"),
+            (expected_coerce["second"], "Second"),
+        ]
+
+        kwargs = {
+            "form_columns": [field_name],
+            "form_choices": {field_name: f_choices},
+        }
+
+        if use_coerce_explicitly:
+            kwargs["form_args"] = {}
+            kwargs["form_args"][field_name] = {}  # type: ignore[index]
+            kwargs["form_args"][field_name]["coerce"] = expected_coerce  # type: ignore[index]
+
+        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+
+        view1 = CustomModelView(Model1, param, name="My Model1", **kwargs)
+        admin.add_view(view1)
+
+    client = app.test_client()
+    rv = client.get("/admin/model1/new/")
+    data = rv.data.decode("utf-8")
+    assert f'value="{expected_coerce["first"]}"' in data
+    assert ">First</option>" in data
+
+    rv = client.post(
+        "/admin/model1/new/",
+        data={field_name: f"{expected_coerce['second']}"},
+        follow_redirects=True,
+    )
+    data = rv.data.decode("utf-8")
+    assert "Record was successfully created" in data

@@ -683,8 +683,18 @@ def choice_type_coerce_factory(type_: T_CHOICE_TYPE) -> t.Callable[[t.Any], t.An
     def choice_coerce(value: t.Any) -> t.Any:
         if value is None:
             return None
+
+        if issubclass(choice_cls, Enum):
+            ename = getattr(value, "name", value)
+            ename = str(value).replace(choice_cls.__name__ + ".", "")
+            if ename in choice_cls.__members__:
+                return choice_cls[ename]
+            else:
+                return choice_cls(value)
+
         if isinstance(value, choice_cls):
             return getattr(value, key)
+
         return type_.python_type(value)
 
     return choice_coerce
