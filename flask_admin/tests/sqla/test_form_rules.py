@@ -2,6 +2,7 @@ import pytest
 
 from flask_admin.form import rules
 
+from ..conftest import skip_or_return_session_or_db
 from .test_basic import create_models
 from .test_basic import CustomModelView
 
@@ -12,7 +13,7 @@ def test_form_rules(app, sqla_db_ext, admin, session_or_db):
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1, param, form_rules=("test2", "test1", rules.Field("test4"))
         )
@@ -39,7 +40,7 @@ def test_rule_macro(app, sqla_db_ext, admin, session_or_db):
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,
@@ -67,7 +68,7 @@ def test_rule_container(app, sqla_db_ext, admin, session_or_db):
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,
@@ -99,7 +100,7 @@ def test_rule_text(app, sqla_db_ext, admin, session_or_db):
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Model1, param, form_create_rules=(rules.Text("hello"),))
         admin.add_view(view)
 
@@ -118,7 +119,7 @@ def test_rule_html(app, sqla_db_ext, admin, session_or_db):
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1, param, form_create_rules=(rules.HTML("<h1>hello</h1>"),)
         )
@@ -139,7 +140,7 @@ def test_rule_header(app, sqla_db_ext, admin, session_or_db):
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1, param, form_create_rules=(rules.Header("hello"),)
         )
@@ -160,7 +161,7 @@ def test_rule_nested(app, sqla_db_ext, admin, session_or_db):
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,
@@ -199,7 +200,7 @@ def test_rule_row(app, sqla_db_ext, admin, session_or_db):
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,
@@ -232,7 +233,7 @@ def test_rule_group(app, sqla_db_ext, admin, session_or_db):
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,
@@ -266,7 +267,7 @@ def test_rule_field_set(app, sqla_db_ext, admin, session_or_db):
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,
@@ -306,7 +307,7 @@ def test_rule_inlinefieldlist(app, sqla_db_ext, admin, session_or_db):
         Model1, Model2 = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,
@@ -330,7 +331,7 @@ def test_inline_model_rules(app, sqla_db_ext, admin, session_or_db):
         Model1, Model2 = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
             Model1,
             param,

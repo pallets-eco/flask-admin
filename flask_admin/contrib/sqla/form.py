@@ -16,6 +16,7 @@ from wtforms import fields
 from wtforms import Form
 from wtforms import HiddenField
 from wtforms import validators
+from wtforms.fields.core import UnboundField
 
 from flask_admin import form
 from flask_admin._backwards import get_property
@@ -47,7 +48,6 @@ from ..._types import T_SQLALCHEMY_INLINE_MODELS
 from ..._types import T_SQLALCHEMY_MODEL
 from ...form import Select2Field
 from ._compat import _get_deprecated_session
-from ._compat import _warn_session_deprecation
 from ._types import T_SESSION_OR_DB
 from .ajax import create_ajax_loader
 from .fields import HstoreForm
@@ -79,7 +79,7 @@ class AdminModelConverter(ModelConverterBase):
     ) -> None:
         super().__init__()
 
-        self.session = _warn_session_deprecation(session)
+        self.session = session
         self.view = view
 
     def _get_label(self, name: str, field_args: T_FIELD_ARGS_LABEL) -> str:
@@ -145,8 +145,11 @@ class AdminModelConverter(ModelConverterBase):
                 return AjaxSelectField(loader, **kwargs)
 
         if "query_factory" not in kwargs:
-            session = _get_deprecated_session(self.session)
-            kwargs["query_factory"] = lambda: session.query(remote_model)
+            # _get_deprecated_session must be inside lambda call or session will stay
+            # the same across requests. https://github.com/pallets-eco/flask-admin/issues/2831
+            kwargs["query_factory"] = lambda: _get_deprecated_session(
+                self.session
+            ).query(remote_model)
 
         if multiple:
             return QuerySelectMultipleField(**kwargs)
@@ -291,8 +294,6 @@ class AdminModelConverter(ModelConverterBase):
 
             unique = False
 
-            session = _get_deprecated_session(self.session)
-
             if column.primary_key:
                 if hidden_pk:
                     # If requested to add hidden field, show it
@@ -305,12 +306,16 @@ class AdminModelConverter(ModelConverterBase):
 
                     # Current Unique Validator does not work with multicolumns-pks
                     if not has_multiple_pks(model):
-                        kwargs["validators"].append(Unique(session, model, column))
+                        kwargs["validators"].append(
+                            Unique(_get_deprecated_session(self.session), model, column)
+                        )
                         unique = True
 
             # If field is unique, validate it
             if column.unique and not unique:
-                kwargs["validators"].append(Unique(session, model, column))
+                kwargs["validators"].append(
+                    Unique(_get_deprecated_session(self.session), model, column)
+                )
 
             optional_types = getattr(self.view, "form_optional_types", (Boolean,))
 
@@ -642,13 +647,16 @@ class AdminModelConverter(ModelConverterBase):
         return form.JSONField(**field_args)
 
 
-def avoid_empty_strings(value: t.Any) -> t.Any:
+T = t.TypeVar("T")
+
+
+def avoid_empty_strings(value: T) -> T | None:
     """
     Return None if the incoming value is an empty string or whitespace.
     """
     if value:
         try:
-            value = value.strip()
+            value = value.strip()  # type: ignore[attr-defined]
         except AttributeError:
             # values are not always strings
             pass
@@ -727,7 +735,8 @@ def get_form(
     | None = None,
     hidden_pk: bool = False,
     ignore_hidden: bool = True,
-    extra_fields: dict[str | T_INSTRUMENTED_ATTRIBUTE, Field] | None = None,
+    extra_fields: dict[str | T_INSTRUMENTED_ATTRIBUTE, UnboundField[t.Any]]
+    | None = None,
 ) -> type:
     """
     Generate form from the model.
@@ -817,8 +826,8 @@ def get_form(
 
     # Contribute extra fields
     if not only and extra_fields:
-        for name, field in iteritems(extra_fields):
-            field_dict[name] = form.recreate_field(field)
+        for name_field, extra_field in iteritems(extra_fields):
+            field_dict[name_field] = form.recreate_field(extra_field)
 
     return type(model.__name__ + "Form", (base_class,), field_dict)
 
@@ -856,7 +865,7 @@ class InlineModelConverter(InlineModelConverterBase):
             appropriate `InlineFormAdmin` instance.
         """
         super().__init__(view)
-        self.session = _warn_session_deprecation(session)
+        self.session = session
         self.model_converter = model_converter
 
     def get_info(
