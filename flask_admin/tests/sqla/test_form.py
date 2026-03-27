@@ -12,6 +12,7 @@ from wtforms.validators import Length
 from wtforms.validators import NumberRange
 
 from flask_admin.contrib.sqla.form import AdminModelConverter
+from flask_admin.tests.conftest import skip_or_return_session_or_db
 from flask_admin.tests.sqla.test_basic import CustomModelView
 
 sqla_admin_model_converters = [
@@ -158,7 +159,7 @@ def test_coerce(
             kwargs["form_args"][field_name] = {"validators": validators}  # type: ignore[index]
             kwargs["form_args"][field_name]["coerce"] = expected_coerce  # type: ignore[index]
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
 
         view1 = CustomModelView(Model1, param, name="My Model1", **kwargs)
         admin.add_view(view1)
@@ -221,7 +222,7 @@ def test_str_coerce(
             kwargs["form_args"][field_name] = {}  # type: ignore[index]
             kwargs["form_args"][field_name]["coerce"] = expected_coerce  # type: ignore[index]
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
 
         view1 = CustomModelView(Model1, param, name="My Model1", **kwargs)
         admin.add_view(view1)
