@@ -186,9 +186,10 @@ admin.add_view(MyModelView(User, db))
 app_dir = os.path.realpath(os.path.dirname(__file__))
 database_path = os.path.join(app_dir, app.config["DATABASE_FILE"])
 
-if __name__ == "__main__":
-    if not os.path.exists(database_path):
-        with app.app_context():
-            build_sample_db()
+if not os.path.exists(database_path):
+    with app.app_context():
+        build_sample_db()
 
+
+if __name__ == "__main__":
     app.run(debug=True)

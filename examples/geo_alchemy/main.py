@@ -84,26 +84,26 @@ app.config["FLASK_ADMIN_DEFAULT_CENTER_LONG"] = 18.423300
 app.config["FLASK_ADMIN_GOOGLE_MAPS_API_KEY"] = "..."
 app.add_url_rule(rule="/", view_func=index)
 
+with PostgresContainer(
+    image="postgis/postgis:12-3.0",
+    port=5432,
+    username="username",
+    password="password",
+    dbname="main",
+) as postgres:
+    app.config["SQLALCHEMY_DATABASE_URI"] = postgres.get_connection_url()
+    db.init_app(app)
+    admin.init_app(app)
+    admin.add_view(LeafletModelView(Point, db, category="Points"))
+    admin.add_view(OSMModelView(MultiPoint, db, category="Points"))
+    admin.add_view(LeafletModelView(Polygon, db, category="Polygons"))
+    admin.add_view(OSMModelView(MultiPolygon, db, category="Polygons"))
+    admin.add_view(LeafletModelView(LineString, db, category="Lines"))
+    admin.add_view(OSMModelView(MultiLineString, db, category="Lines"))
+
+    with app.app_context():
+        db.create_all()
+
 
 if __name__ == "__main__":
-    with PostgresContainer(
-        image="postgis/postgis:12-3.0",
-        port=5432,
-        username="username",
-        password="password",
-        dbname="main",
-    ) as postgres:
-        app.config["SQLALCHEMY_DATABASE_URI"] = postgres.get_connection_url()
-        db.init_app(app)
-        admin.init_app(app)
-        admin.add_view(LeafletModelView(Point, db, category="Points"))
-        admin.add_view(OSMModelView(MultiPoint, db, category="Points"))
-        admin.add_view(LeafletModelView(Polygon, db, category="Polygons"))
-        admin.add_view(OSMModelView(MultiPolygon, db, category="Polygons"))
-        admin.add_view(LeafletModelView(LineString, db, category="Lines"))
-        admin.add_view(OSMModelView(MultiLineString, db, category="Lines"))
-
-        with app.app_context():
-            db.create_all()
-
     app.run(debug=True)
