@@ -23,10 +23,10 @@ admin2 = Admin(app, url="/admin2", endpoint="admin2")
 
 @app.route("/")
 def index():
-    return (
-        '<a href="/admin1">Click me to get to Admin 1</a><br/><a href="/admin2">'
-        "Click me to get to Admin 2</a>"
-    )
+    return """
+    <a href="/admin1">Click me to get to Admin 1</a> <br/>
+    <a href="/admin2">Click me to get to Admin 2</a>
+    """
 
 
 admin1.add_view(FirstView())
