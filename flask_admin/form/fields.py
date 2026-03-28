@@ -198,7 +198,7 @@ class Select2Field(fields.SelectField):
             else:
                 try:
                     if isclass(self.coerce) and issubclass(self.coerce, Enum):
-                        self.coerce = self.enum_coerce_factory(self.coerce)
+                        self.coerce = self._enum_coerce_factory(self.coerce)
 
                     self.data = self.coerce(valuelist[0])
                 except ValueError as err:
@@ -212,7 +212,7 @@ class Select2Field(fields.SelectField):
 
         super().pre_validate(form)
 
-    def enum_coerce_factory(self, type_: type[Enum]) -> t.Callable[[t.Any], t.Any]:
+    def _enum_coerce_factory(self, type_: type[Enum]) -> t.Callable[[t.Any], t.Any]:
         """
         Return a function to coerce an Enum column, for use by Select2Field.
         :param type_: Enum class
