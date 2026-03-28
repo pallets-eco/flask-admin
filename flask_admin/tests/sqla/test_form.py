@@ -110,7 +110,7 @@ def create_models(sqla_db_ext):
     return Model1
 
 
-@pytest.mark.parametrize("use_coerce_explicitly", [True, False])
+@pytest.mark.parametrize("use_coerce_explicitly", [False, True])
 @pytest.mark.parametrize(
     "field_name, expected_coerce",
     [
@@ -155,7 +155,7 @@ def test_coerce(
         }
 
         if use_coerce_explicitly:
-            kwargs["form_args"] = {}
+            kwargs["form_args"] = dict()
             kwargs["form_args"][field_name] = {"validators": validators}  # type: ignore[index]
             kwargs["form_args"][field_name]["coerce"] = expected_coerce  # type: ignore[index]
 
@@ -179,21 +179,22 @@ def test_coerce(
     assert "Record was successfully created" in data
 
 
-@pytest.mark.parametrize("use_coerce_explicitly", [True, False])
+@pytest.mark.parametrize("use_coerce_explicitly", [False, True])
 @pytest.mark.parametrize(
-    "field_name, expected_coerce",
+    "field_name, expected_coerce, value",
     [
-        ("enum_type_field", EnumChoices),
-        ("sa_utils_choicetype_with_enum", EnumChoices),
-        ("sa_utils_choicetype_with_strenum", StrEnumChoices),
+        ("enum_type_field", EnumChoices, "first"),
+        ("sa_utils_choicetype_with_enum", EnumChoices, "101"),
+        ("sa_utils_choicetype_with_strenum", StrEnumChoices, "101"),
     ],
 )
-def test_str_coerce(
+def test_enum_coerce(
     app,
     admin,
     sqla_db_ext,
     session_or_db,
     field_name,
+    value,
     expected_coerce,
     use_coerce_explicitly,
 ):
@@ -207,20 +208,14 @@ def test_str_coerce(
         )
         sqla_db_ext.db.session.commit()
 
-        f_choices = [
-            (expected_coerce["first"], "First"),
-            (expected_coerce["second"], "Second"),
-        ]
-
         kwargs = {
             "form_columns": [field_name],
-            "form_choices": {field_name: f_choices},
         }
 
         if use_coerce_explicitly:
-            kwargs["form_args"] = {}
-            kwargs["form_args"][field_name] = {}  # type: ignore[index]
-            kwargs["form_args"][field_name]["coerce"] = expected_coerce  # type: ignore[index]
+            kwargs["form_args"] = dict()  # type: ignore[assignment]
+            kwargs["form_args"][field_name] = dict()
+            kwargs["form_args"][field_name]["coerce"] = expected_coerce
 
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
 
@@ -230,12 +225,12 @@ def test_str_coerce(
     client = app.test_client()
     rv = client.get("/admin/model1/new/")
     data = rv.data.decode("utf-8")
-    assert f'value="{expected_coerce["first"]}"' in data
-    assert ">First</option>" in data
+    assert f'value="{value}"' in data
+    assert ">first</option>" in data
 
     rv = client.post(
         "/admin/model1/new/",
-        data={field_name: f"{expected_coerce['second']}"},
+        data={field_name: value},
         follow_redirects=True,
     )
     data = rv.data.decode("utf-8")

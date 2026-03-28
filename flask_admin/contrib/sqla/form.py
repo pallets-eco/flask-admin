@@ -11,7 +11,6 @@ from sqlalchemy import Column
 from sqlalchemy.orm import ColumnProperty
 from sqlalchemy.sql.type_api import TypeEngine
 from sqlalchemy_utils import ChoiceType
-from wtforms import Field
 from wtforms import fields
 from wtforms import Form
 from wtforms import HiddenField
@@ -691,14 +690,6 @@ def choice_type_coerce_factory(type_: T_CHOICE_TYPE) -> t.Callable[[t.Any], t.An
     def choice_coerce(value: t.Any) -> t.Any:
         if value is None:
             return None
-
-        if issubclass(choice_cls, Enum):
-            ename = getattr(value, "name", value)
-            ename = str(value).replace(choice_cls.__name__ + ".", "")
-            if ename in choice_cls.__members__:
-                return choice_cls[ename]
-            else:
-                return choice_cls(value)
 
         if isinstance(value, choice_cls):
             return getattr(value, key)

@@ -1449,7 +1449,12 @@ class BaseModelView(BaseView, ActionsMixin):
                 def get_list_form(self):
                     return self.scaffold_list_form(widget=CustomWidget)
         """
-        validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None
+        validators: (
+            dict[
+                str, T_FIELD_ARGS_VALIDATORS_FILES | T_FIELD_ARGS_VALIDATORS_SELECTABLE
+            ]
+            | None
+        ) = None
         if self.form_args:
             # get only validators, other form_args can break FieldList wrapper
             validators = dict(
