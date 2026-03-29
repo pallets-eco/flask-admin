@@ -251,6 +251,44 @@
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css', v='1.0.2') }}" rel="stylesheet">
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css', v='0.4.6') }}" rel="stylesheet">
   {% endif %}
+  <style>
+    .editable-popover {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      margin-bottom: 8px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      padding: 12px;
+      min-width: 200px;
+      z-index: 1050;
+      white-space: nowrap;
+    }
+    .editable-popover-arrow {
+      position: absolute;
+      bottom: -6px;
+      left: 20px;
+      width: 12px;
+      height: 12px;
+      background: #fff;
+      border-right: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
+      transform: rotate(45deg);
+    }
+    .editable-popover-title {
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .editable-popover-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-top: 8px;
+    }
+  </style>
 {% endmacro %}
 
 {% macro form_js() %}
