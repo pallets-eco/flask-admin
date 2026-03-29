@@ -2780,9 +2780,11 @@ class BaseModelView(BaseView, ActionsMixin):
                         display_value=display_value,
                     )
             else:
-                msgs = ", ".join(get_flashed_messages())  # type: ignore[misc]
+                msgs = ", ".join(get_flashed_messages())  # type: ignore[arg-type]
                 if msgs:
-                    error_msg = gettext("Failed to update record. %(error)s", error=msgs)
+                    error_msg = gettext(
+                        "Failed to update record. %(error)s", error=msgs
+                    )
                 else:
                     error_msg = gettext("Failed to update record.")
                 errors = {field_name: [error_msg]}
@@ -2791,8 +2793,8 @@ class BaseModelView(BaseView, ActionsMixin):
             errors = {}
             for field in form:
                 if field.errors:
-                    errs = field.errors
-                    errors[field.name] = errs if isinstance(errs, list) else [errs]
+                    errs = list(field.errors)
+                    errors[field.name] = errs
             if not errors:
                 errors[field_name] = [gettext("Validation failed.")]
 

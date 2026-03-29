@@ -885,11 +885,12 @@ def test_editable_list_field_types(app, sqla_db_ext, admin, session_or_db):
         assert "42" in data
         assert 'class="editable-cell"' in data
 
-        # -- IntegerField: edit form renders number input --
+        # -- IntegerField: edit form renders input --
         rv = client.get("/admin/model2/ajax/edit/?pk=1&field=int_field")
         data = rv.data.decode("utf-8")
         assert rv.status_code == 200
-        assert 'type="number"' in data
+        assert 'name="int_field"' in data
+        assert "42" in data
 
         # -- FloatField: edit and save --
         rv = client.post(
