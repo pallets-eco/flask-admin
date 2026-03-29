@@ -54,11 +54,17 @@ def create_editable_list_form(
         widget = HTMXEditableWidget()
 
     class ListForm(BaseListForm, form_base_class):  # type: ignore[misc, valid-type]
-        pass
+        # Stores the original flask-admin widgets (DatePickerWidget, etc.)
+        # before they get replaced with the display widget (HTMXEditableWidget).
+        # Used by ajax_edit/ajax_update to restore proper input widgets.
+        _original_widgets: dict[str, t.Any] = {}
 
     # iterate FormMeta to get unbound fields, replace widget, copy to ListForm
     for name, obj in form_class.__dict__.items():
         if isinstance(obj, UnboundField):
+            ListForm._original_widgets[name] = obj.kwargs.get(
+                "widget", obj.field_class.widget
+            )
             obj.kwargs["widget"] = widget
             setattr(ListForm, name, obj)
 

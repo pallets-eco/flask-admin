@@ -3,12 +3,20 @@
       hx-swap="innerHTML"
       class="editable-form d-inline-flex align-items-center gap-1">
   <input type="hidden" name="list_form_pk" value="{{ pk }}">
+  <input type="hidden" name="field_name" value="{{ field_name }}">
   {% if form.csrf_token is defined and form.csrf_token %}
   {{ form.csrf_token }}
   {% elif csrf_token is defined and csrf_token %}
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   {% endif %}
-  {{ form[field_name](class="form-control form-control-sm" + (" is-invalid" if errors and field_name in errors else "")) }}
+  {% if form[field_name].type == 'BooleanField' %}
+  <select name="{{ field_name }}" class="form-control form-control-sm" style="min-width: 8em">
+    <option value="y" {{ 'selected' if form[field_name].data else '' }}>Yes</option>
+    <option value="" {{ 'selected' if not form[field_name].data else '' }}>No</option>
+  </select>
+  {% else %}
+  {{ form[field_name](class="form-control form-control-sm" + (" is-invalid" if errors and field_name in errors else ""), style="min-width: 12em") }}
+  {% endif %}
   {% if errors and field_name in errors %}
   <div class="invalid-feedback d-block">{{ errors[field_name] | join(', ') }}</div>
   {% endif %}

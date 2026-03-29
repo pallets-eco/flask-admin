@@ -2700,12 +2700,11 @@ class BaseModelView(BaseView, ActionsMixin):
 
         form = self.list_form(obj=record)
 
-        # Replace HTMXEditableWidget with the field class's default widget
-        # (e.g. TextInput for StringField). This works because WTForms stores
-        # the default widget as a class attribute, while create_editable_list_form
-        # injects HTMXEditableWidget via instance kwargs during field binding.
+        # Restore the original flask-admin widget (DatePickerWidget, etc.)
+        # that was saved before create_editable_list_form replaced it.
         edit_field = form[field_name]
-        edit_field.widget = type(edit_field).widget
+        original_widgets = getattr(self._list_form_class, "_original_widgets", {})
+        edit_field.widget = original_widgets.get(field_name, type(edit_field).widget)
 
         return self.render(
             "admin/model/editable_cell_edit.html",
@@ -2727,6 +2726,10 @@ class BaseModelView(BaseView, ActionsMixin):
         form = self.list_form()
 
         # Determine which editable field was submitted
+        # Determine which editable field was submitted. For most fields,
+        # the field name appears in request.form. For unchecked checkboxes
+        # (e.g. BooleanField), the field is absent — fall back to the
+        # hidden field_name input.
         field_name = None
         for name in request.form:
             if name in self.column_editable_list:
@@ -2734,13 +2737,16 @@ class BaseModelView(BaseView, ActionsMixin):
                 break
 
         if field_name is None:
+            field_name = request.form.get("field_name")
+
+        if not field_name or field_name not in self.column_editable_list:
             abort(404)
 
-        # Prevent validation issues: delete all fields except the submitted field and csrf
+        # Prevent validation issues: delete all fields except the submitted
+        # field, the field_name identifier, and csrf token
+        keep = {field_name, "list_form_pk", "field_name", "csrf_token"}
         for field in list(form):
-            if (field.name in request.form) or (field.name == "csrf_token"):
-                pass
-            else:
+            if field.name not in keep and field.name not in request.form:
                 form.__delitem__(field.name)
 
         pk = form.list_form_pk.data  # type: ignore[attr-defined]
@@ -2787,9 +2793,10 @@ class BaseModelView(BaseView, ActionsMixin):
                     if name in form and name != "csrf_token":
                         form[name].data = request.form[name]
 
-            # Replace HTMXEditableWidget with the field's natural input widget
+            # Restore the original flask-admin widget
             edit_field = form[field_name]
-            edit_field.widget = type(edit_field).widget
+            original_widgets = getattr(self._list_form_class, "_original_widgets", {})
+            edit_field.widget = original_widgets.get(field_name, type(edit_field).widget)
 
             return self.render(
                 "admin/model/editable_cell_edit.html",

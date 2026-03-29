@@ -584,11 +584,9 @@
 // HTMX: Initialize widgets and keyboard support after inline edit swap
 document.addEventListener('htmx:afterSwap', function(event) {
     var target = event.detail.target;
-    // Initialize select2 on any new select elements within editable cells
-    var $selects = $(target).find('select[data-role="select2"]');
-    if ($selects.length) {
-        $selects.select2({width: 'resolve'});
-    }
+
+    // Initialize all data-role widgets (select2, timepicker, datepicker, etc.)
+    faForm.applyGlobalStyles(target);
 
     // Focus the first input and add Escape key support
     var input = target.querySelector('input:not([type="hidden"]), select, textarea');
