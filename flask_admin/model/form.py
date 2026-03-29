@@ -36,12 +36,11 @@ def create_editable_list_form(
     widget: t.Callable[..., t.Any] | None = None,
 ) -> type[BaseListForm]:
     """
-    Create a form class with all the fields wrapped in a FieldList.
+    Create a form class for the editable list view.
 
-    Wrapping each field in FieldList allows submitting POST requests
-    in this format: ('<field_name>-<primary_key>', '<value>')
-
-    Used in the editable list view.
+    Replaces each field's widget with the display widget
+    (HTMXEditableWidget by default), while preserving the original
+    widgets for later restoration during inline editing.
 
     :param form_base_class:
         WTForms form class, by default `form_base_class` from base.

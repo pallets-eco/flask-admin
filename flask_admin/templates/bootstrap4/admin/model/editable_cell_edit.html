@@ -24,7 +24,7 @@
     <i class="fa fa-check"></i>
   </button>
   <button type="button" class="btn btn-sm btn-secondary"
-          onclick="var td=this.closest('td'); td.innerHTML=td.dataset.original; htmx.process(td);">
+          onclick="var td=this.closest('td'); if(td &amp;&amp; td.dataset.original){td.innerHTML=td.dataset.original; htmx.process(td);} else {window.location.reload();}">
     <i class="fa fa-times"></i>
   </button>
 </form>

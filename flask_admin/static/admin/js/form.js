@@ -581,6 +581,32 @@
     });
 })();
 
+// HTMX: Allow swapping content from error responses (validation errors return 500)
+// Scoped to editable cells to avoid affecting other HTMX interactions.
+document.addEventListener('htmx:beforeSwap', function(event) {
+    if (event.detail.xhr.status >= 400) {
+        var elt = event.detail.elt;
+        if (elt && elt.closest('.editable-form, .editable-cell')) {
+            event.detail.shouldSwap = true;
+            event.detail.isError = false;
+        }
+    }
+});
+
+// HTMX: Handle network failures (server unreachable, timeout, etc.)
+document.addEventListener('htmx:sendError', function(event) {
+    var elt = event.detail.elt;
+    if (!elt || !elt.closest('.editable-form, .editable-cell')) {
+        return;
+    }
+    var td = elt.closest('td');
+    if (td && td.dataset.original) {
+        td.innerHTML = td.dataset.original;
+        htmx.process(td);
+    }
+    alert('Network error: your change was not saved. Please try again.');
+});
+
 // HTMX: Initialize widgets and keyboard support after inline edit swap
 document.addEventListener('htmx:afterSwap', function(event) {
     var target = event.detail.target;

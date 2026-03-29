@@ -95,7 +95,7 @@ class HTMXEditableWidget:
         kwargs.pop("csrf", "")  # not needed in display state
 
         field_name = field.name
-        target_id = f"editable-{field_name}-{pk}"
+        target_id = f"editable-{escape(field_name)}-{escape(pk)}"
 
         url = f"./ajax/edit/?pk={escape(pk)}&amp;field={escape(field_name)}"
         stash = "this.closest('td').dataset.original = this.closest('td').innerHTML"
