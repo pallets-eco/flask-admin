@@ -1,4 +1,5 @@
 from mongoengine import Document
+from mongoengine import ReferenceField
 from mongoengine import StringField
 from mongoengine.connection import get_db
 from wtforms import fields
@@ -151,3 +152,101 @@ def test_query_ajax_model_loader_initialization(db):
 
     assert loader.name == "test_field"
     assert loader.options == {"fields": ["name"]}
+
+
+def test_column_editable_list(app, db, admin):
+    class EditableModel(Document):  # type: ignore[misc]
+        meta = {"collection": "editable_test"}
+        test1 = StringField(max_length=20)
+        test2 = StringField()
+
+    class RelatedModel(Document):  # type: ignore[misc]
+        meta = {"collection": "editable_related_test"}
+        name = StringField()
+        ref = ReferenceField(EditableModel)
+
+        def __str__(self):
+            return self.name or ""
+
+    # Drop existing data
+    mongo_db = get_db()
+    for name in ("editable_test", "editable_related_test"):
+        mongo_db.drop_collection(name)
+
+    view = ModelView(
+        EditableModel,
+        "EditableModel",
+        column_editable_list=["test1"],
+        endpoint="editable_model",
+    )
+    admin.add_view(view)
+
+    view2 = ModelView(
+        RelatedModel,
+        "RelatedModel",
+        column_editable_list=["ref"],
+        endpoint="editable_related",
+    )
+    admin.add_view(view2)
+
+    # Seed data
+    obj1 = EditableModel(test1="val1", test2="val2").save()
+    obj2 = EditableModel(test1="val2", test2="val3").save()
+    RelatedModel(name="related1", ref=obj1).save()
+
+    client = app.test_client()
+
+    # Test in-line edit field rendering
+    rv = client.get("/admin/editable_model/")
+    data = rv.data.decode("utf-8")
+    assert "hx-get=" in data
+    assert 'class="editable-cell"' in data
+
+    # Test basic in-line edit functionality
+    rv = client.post(
+        "/admin/editable_model/ajax/update/",
+        data={
+            "list_form_pk": str(obj1.pk),
+            "test1": "change-success-1",
+        },
+    )
+    data = rv.data.decode("utf-8")
+    assert "change-success-1" in data
+    assert 'class="editable-cell"' in data
+
+    # Ensure the value has changed
+    rv = client.get("/admin/editable_model/")
+    data = rv.data.decode("utf-8")
+    assert "change-success-1" in data
+
+    # Test editing column not in column_editable_list
+    rv = client.post(
+        "/admin/editable_model/ajax/update/",
+        data={
+            "list_form_pk": str(obj1.pk),
+            "test2": "problematic-input",
+        },
+    )
+    assert rv.status_code == 404
+
+    # Test ajax_edit endpoint
+    rv = client.get(f"/admin/editable_model/ajax/edit/?pk={obj1.pk}&field=test1")
+    data = rv.data.decode("utf-8")
+    assert rv.status_code == 200
+    assert 'hx-post="./ajax/update/"' in data
+    assert 'name="test1"' in data
+
+    # Test ajax_edit for non-editable field
+    rv = client.get(f"/admin/editable_model/ajax/edit/?pk={obj1.pk}&field=test2")
+    assert rv.status_code == 404
+
+    # Test relation editing
+    rv = client.post(
+        "/admin/editable_related/ajax/update/",
+        data={
+            "list_form_pk": str(RelatedModel.objects.first().pk),
+            "ref": str(obj2.pk),
+        },
+    )
+    data = rv.data.decode("utf-8")
+    assert 'class="editable-cell"' in data
