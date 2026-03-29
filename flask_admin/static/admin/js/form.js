@@ -607,25 +607,62 @@ document.addEventListener('htmx:sendError', function(event) {
     alert('Network error: your change was not saved. Please try again.');
 });
 
-// HTMX: Initialize widgets and keyboard support after inline edit swap
+// Close any open editable popover and restore original cell content
+function closeEditablePopover() {
+    var popover = document.querySelector('.editable-popover');
+    if (!popover) return false;
+    var td = popover.closest('td');
+    if (td && td.dataset.original) {
+        td.innerHTML = td.dataset.original;
+        htmx.process(td);
+    }
+    return true;
+}
+
+// HTMX: Close any existing popover before opening a new one
+document.addEventListener('htmx:beforeRequest', function(event) {
+    var elt = event.detail.elt;
+    if (!elt || !elt.closest('.editable-cell')) return;
+    closeEditablePopover();
+});
+
+// HTMX: Initialize widgets and keyboard support after popover swap
 document.addEventListener('htmx:afterSwap', function(event) {
     var target = event.detail.target;
 
     // Initialize all data-role widgets (select2, timepicker, datepicker, etc.)
     faForm.applyGlobalStyles(target);
 
-    // Focus the first input and add Escape key support
-    var input = target.querySelector('input:not([type="hidden"]), select, textarea');
-    if (input && input.closest('.editable-form')) {
-        input.focus();
-        input.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                var td = this.closest('td');
-                if (td && td.dataset.original) {
-                    td.innerHTML = td.dataset.original;
-                    htmx.process(td);
-                }
-            }
-        });
+    // Focus the first input in the popover
+    var popover = target.querySelector('.editable-popover');
+    if (popover) {
+        var input = popover.querySelector('input:not([type="hidden"]), select, textarea');
+        if (input) {
+            input.focus();
+        }
+    }
+});
+
+// Escape key: close popover
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeEditablePopover();
+    }
+});
+
+// Click outside: close popover
+document.addEventListener('click', function(event) {
+    var popover = document.querySelector('.editable-popover');
+    if (!popover) return;
+    if (popover.contains(event.target)) return;
+    // Don't dismiss if clicking another editable cell (close-before-open handles it)
+    if (event.target.closest('.editable-cell')) return;
+    closeEditablePopover();
+});
+
+// Cancel button inside popover
+document.addEventListener('click', function(event) {
+    if (event.target.closest('.editable-popover-cancel')) {
+        closeEditablePopover();
     }
 });
