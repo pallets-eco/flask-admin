@@ -1,3 +1,5 @@
+import typing as t
+
 from geoalchemy2.elements import WKBElement
 from geoalchemy2.shape import to_shape
 from markupsafe import Markup
@@ -8,7 +10,7 @@ from flask_admin.contrib.sqla._compat import _get_deprecated_session
 from flask_admin.contrib.sqla.typefmt import DEFAULT_FORMATTERS as BASE_FORMATTERS
 
 
-def geom_formatter(view, value, name) -> str:
+def geom_formatter(view: t.Any, value: WKBElement, name: str) -> str:
     kwargs = {
         "data-role": "leaflet",
         "disabled": "disabled",

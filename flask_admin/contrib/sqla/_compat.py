@@ -20,7 +20,7 @@ def _warn_session_deprecation(
 ) -> T_SESSION_OR_DB: ...
 
 
-def _warn_session_deprecation(session, warn: bool = True):
+def _warn_session_deprecation(session: T_SESSION_OR_DB | None, warn: bool = True) -> T_SESSION_OR_DB | None:
     """
     Warn about deprecation of passing session objects directly.
     Raise error if session is from Flask-SQLAlchemy-Lite.

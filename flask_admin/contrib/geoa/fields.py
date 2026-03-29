@@ -1,3 +1,5 @@
+import typing as t
+
 import geoalchemy2
 from shapely.geometry import shape
 from sqlalchemy import func
@@ -12,15 +14,15 @@ from .widgets import LeafletWidget
 class GeoJSONField(JSONField):
     def __init__(
         self,
-        label=None,
-        validators=None,
-        geometry_type="GEOMETRY",
-        srid="-1",
+        label: str | None = None,
+        validators: list[t.Any] | None = None,
+        geometry_type: str = "GEOMETRY",
+        srid: int = -1,
         session: T_SESSION_OR_DB | None = None,
-        tile_layer_url=None,
-        tile_layer_attribution=None,
-        **kwargs,
-    ):
+        tile_layer_url: str | None = None,
+        tile_layer_attribution: str | None = None,
+        **kwargs: t.Any,
+    ) -> None:
         self.widget = LeafletWidget(
             tile_layer_url=tile_layer_url, tile_layer_attribution=tile_layer_attribution
         )
