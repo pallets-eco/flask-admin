@@ -173,20 +173,16 @@ def test_column_editable_list(app, db, admin):
     for name in ("editable_test", "editable_related_test"):
         mongo_db.drop_collection(name)
 
-    view = ModelView(
-        EditableModel,
-        "EditableModel",
-        column_editable_list=["test1"],
-        endpoint="editable_model",
-    )
+    class EditableModelView(ModelView):
+        column_editable_list = ["test1"]
+
+    class RelatedModelView(ModelView):
+        column_editable_list = ["ref"]
+
+    view = EditableModelView(EditableModel, "EditableModel", endpoint="editable_model")
     admin.add_view(view)
 
-    view2 = ModelView(
-        RelatedModel,
-        "RelatedModel",
-        column_editable_list=["ref"],
-        endpoint="editable_related",
-    )
+    view2 = RelatedModelView(RelatedModel, "RelatedModel", endpoint="editable_related")
     admin.add_view(view2)
 
     # Seed data

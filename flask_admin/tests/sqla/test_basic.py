@@ -820,6 +820,149 @@ def test_ajax_edit_endpoint(app, sqla_db_ext, admin, session_or_db):
         assert rv.status_code == 404
 
 
+def test_editable_list_field_types(app, sqla_db_ext, admin, session_or_db):
+    """Tests inline editing for various field types."""
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = CustomModelView(
+            Model1,
+            param,
+            column_editable_list=[
+                "test3",
+                "bool_field",
+                "date_field",
+                "time_field",
+                "datetime_field",
+            ],
+        )
+        admin.add_view(view)
+
+        view2 = CustomModelView(
+            Model2,
+            param,
+            column_editable_list=[
+                "int_field",
+                "float_field",
+            ],
+        )
+        admin.add_view(view2)
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        # -- TextAreaField: edit and save --
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={
+                "list_form_pk": "1",
+                "test3": "updated text area content",
+            },
+        )
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert "updated text area content" in data
+        assert 'class="editable-cell"' in data
+
+        # -- TextAreaField: edit form renders textarea --
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=test3")
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert "<textarea" in data
+
+        # -- IntegerField: edit and save --
+        rv = client.post(
+            "/admin/model2/ajax/update/",
+            data={
+                "list_form_pk": "1",
+                "int_field": "42",
+            },
+        )
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert "42" in data
+        assert 'class="editable-cell"' in data
+
+        # -- IntegerField: edit form renders number input --
+        rv = client.get("/admin/model2/ajax/edit/?pk=1&field=int_field")
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'type="number"' in data
+
+        # -- FloatField: edit and save --
+        rv = client.post(
+            "/admin/model2/ajax/update/",
+            data={
+                "list_form_pk": "1",
+                "float_field": "3.14",
+            },
+        )
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'class="editable-cell"' in data
+
+        # -- FloatField: edit form renders number input with step --
+        rv = client.get("/admin/model2/ajax/edit/?pk=1&field=float_field")
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'type="number"' in data
+
+        # -- BooleanField: set to True via select value "y" --
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={
+                "list_form_pk": "1",
+                "field_name": "bool_field",
+                "bool_field": "y",
+            },
+        )
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'class="editable-cell"' in data
+
+        # -- BooleanField: set to False via empty value (unchecked checkbox) --
+        # Only list_form_pk and field_name are submitted; bool_field is absent
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={
+                "list_form_pk": "1",
+                "field_name": "bool_field",
+            },
+        )
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'class="editable-cell"' in data
+
+        # -- DateField: edit form renders with datepicker widget --
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=date_field")
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'data-role="datepicker"' in data
+        assert 'hx-post="./ajax/update/"' in data
+
+        # -- TimeField: edit form renders with timepicker widget --
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=time_field")
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'data-role="timepicker"' in data
+
+        # -- DateTimeField: edit form renders with datetimepicker widget --
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=datetime_field")
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'data-role="datetimepicker"' in data
+
+        # -- ajax_edit with missing pk returns 404 --
+        rv = client.get("/admin/model1/ajax/edit/?field=bool_field")
+        assert rv.status_code == 404
+
+        # -- ajax_edit with missing field returns 404 --
+        rv = client.get("/admin/model1/ajax/edit/?pk=1")
+        assert rv.status_code == 404
+
+
 def test_details_view(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
