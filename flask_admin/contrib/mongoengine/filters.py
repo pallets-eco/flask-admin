@@ -15,7 +15,13 @@ class BaseMongoEngineFilter(filters.BaseFilter):
     Base MongoEngine filter.
     """
 
-    def __init__(self, column: str, name: str, options: T_OPTIONS = None, data_type: T_WIDGET_TYPE = None) -> None:
+    def __init__(
+        self,
+        column: str,
+        name: str,
+        options: T_OPTIONS = None,
+        data_type: T_WIDGET_TYPE = None,
+    ) -> None:
         """
         Constructor.
 

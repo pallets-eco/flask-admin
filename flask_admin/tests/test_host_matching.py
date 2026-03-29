@@ -16,7 +16,9 @@ def app():
     yield app
 
 
-def init_admin(app: Flask, using_init_app: bool, admin_kwargs: dict[str, t.Any]) -> base.Admin:
+def init_admin(
+    app: Flask, using_init_app: bool, admin_kwargs: dict[str, t.Any]
+) -> base.Admin:
     if using_init_app:
         admin = base.Admin(**admin_kwargs)
         admin.init_app(app)

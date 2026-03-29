@@ -96,7 +96,7 @@ class User(db.Model, flask_login.UserMixin):
         return self.username
 
     @staticmethod
-    def get(data, field) -> t.Optional["User"]:
+    def get(data: t.Any, field: str) -> t.Optional["User"]:
         return db.session.execute(
             db.select(User).where(getattr(User, field) == data)
         ).scalar()
