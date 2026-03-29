@@ -281,18 +281,6 @@
                 return true;
         }
 
-        // make x-editable's POST compatible with WTForms
-        // for x-editable, x-editable-combodate, and x-editable-boolean cases
-        var overrideXeditableParams = function(params) {
-            var newParams = {};
-            newParams['list_form_pk'] = params.pk;
-            newParams[params.name] = params.value;
-            if ($(this).data('csrf')) {
-                newParams['csrf_token'] = $(this).data('csrf');
-            }
-            return newParams;
-        }
-
         switch (name) {
             case 'select2':
                 var opts = {
@@ -474,79 +462,6 @@
             case 'leaflet':
                 processLeafletWidget($el, name);
                 return true;
-            case 'x-editable':
-                $el.editable({
-                    params: overrideXeditableParams,
-                    combodate: {
-                        // prevent minutes from showing in 5 minute increments
-                        minuteStep: 1,
-                        maxYear: 2030,
-                    }
-                });
-                return true;
-            case 'x-editable-combodate':
-                // Fixes bootstrap4 issue where data-template breaks bs4 popover.
-                // https://github.com/pallets-eco/flask-admin/issues/2022
-                let template = $el.data('template');
-                $el.removeAttr('data-template');
-                $el.editable({
-                    params: overrideXeditableParams,
-                    template: template,
-                    combodate: {
-                        // prevent minutes from showing in 5 minute increments
-                        minuteStep: 1,
-                        maxYear: 2030,
-                    }
-                });
-                return true;
-            case 'x-editable-select2-multiple':
-                $el.editable({
-                    params: overrideXeditableParams,
-                    ajaxOptions: {
-                        // prevents keys with the same value from getting converted into arrays
-                        traditional: true
-                    },
-                    select2: {
-                        multiple: true
-                    },
-                    display: function(value) {
-                        // override to display text instead of ids on list view
-                        var html = [];
-                        // temporary patch to provide bs3 & bs4 compatibility
-                        var data = $.fn.editableutils.itemsByValue(value, $el.data('source'), 'id').concat(
-                            $.fn.editableutils.itemsByValue(value, $el.data('source'), 'value'));
-
-                        if(data.length) {
-                            $.each(data, function(i, v) { html.push($.fn.editableutils.escape(v.text)); });
-                            $(this).html(html.join(', '));
-                        } else {
-                            $(this).empty();
-                        }
-                    }
-                });
-                return true;
-            case 'x-editable-boolean':
-                $el.editable({
-                    params: overrideXeditableParams,
-                    display: function(value, response) {
-                      // display boolean value as an icon
-                      var glyph = (value == '1') ? 'ok-circle' : 'minus-sign';
-                      var fa = (value == '1') ? 'fa-check' : 'fa-minus-circle';
-                      $(this).empty().append($('<span />', {
-                        'class': `fa ${fa} glyphicon glyphicon-${glyph} icon-${glyph}`,
-                        'title': $(this).parent().data('title'),
-                      }));
-                    },
-                    success: function(response, newValue) {
-                      // update display
-                      var glyph = (newValue == '1') ? 'ok-circle' : 'minus-sign';
-                      var fa = (newValue  == '1') ? 'fa-check' : 'fa-minus-circle';
-                      $(this).empty().append($('<span />', {
-                        'class': `fa ${fa} glyphicon glyphicon-${glyph} icon-${glyph}`,
-                        'title': $(this).parent().data('title'),
-                      }));
-                    }
-                });
         }
       };
 
@@ -665,3 +580,28 @@
         faForm.applyGlobalStyles(document);
     });
 })();
+
+// HTMX: Initialize widgets and keyboard support after inline edit swap
+document.addEventListener('htmx:afterSwap', function(event) {
+    var target = event.detail.target;
+    // Initialize select2 on any new select elements within editable cells
+    var $selects = $(target).find('select[data-role="select2"]');
+    if ($selects.length) {
+        $selects.select2({width: 'resolve'});
+    }
+
+    // Focus the first input and add Escape key support
+    var input = target.querySelector('input:not([type="hidden"]), select, textarea');
+    if (input && input.closest('.editable-form')) {
+        input.focus();
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var td = this.closest('td');
+                if (td && td.dataset.original) {
+                    td.innerHTML = td.dataset.original;
+                    htmx.process(td);
+                }
+            }
+        });
+    }
+});

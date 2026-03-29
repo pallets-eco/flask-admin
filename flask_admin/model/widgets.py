@@ -4,15 +4,12 @@ from flask import json
 from markupsafe import escape
 from markupsafe import Markup
 from wtforms import Field
-from wtforms import SelectField
 from wtforms.widgets import html_params
 
 from flask_admin._compat import as_unicode
-from flask_admin._compat import text_type
 from flask_admin._types import T_AJAX_SELECT_FIELD
 from flask_admin.babel import gettext
 from flask_admin.form import RenderTemplateWidget
-from flask_admin.form import Select2Field
 from flask_admin.helpers import get_url
 
 
@@ -80,128 +77,37 @@ class AjaxSelect2Widget:
         return Markup(f"<input {html_params(name=field.name, **kwargs)}>")
 
 
-class XEditableWidget:
+class HTMXEditableWidget:
     """
-    WTForms widget that provides in-line editing for the list view.
+    WTForms widget that provides HTMX-powered in-line editing for the list view.
 
-    Determines how to display the x-editable/ajax form based on the
-    field inside of the FieldList (StringField, IntegerField, etc).
+    Renders a clickable <span> with hx-get to fetch the edit form on click.
+    The edit form is returned as an HTML fragment by the ajax_edit endpoint.
     """
 
     def __call__(self, field: Field, **kwargs: t.Any) -> str:
         display_value = kwargs.pop("display_value", "")
-        kwargs.setdefault("data-value", display_value)
-
-        kwargs.setdefault("data-role", "x-editable")
-        kwargs.setdefault("data-url", "./ajax/update/")
-
-        kwargs.setdefault("id", field.id)
-        kwargs.setdefault("name", field.name)
-        kwargs.setdefault("href", "#")
 
         if not kwargs.get("pk"):
             raise Exception("pk required")
-        kwargs["data-pk"] = str(kwargs.pop("pk"))
+        pk = str(kwargs.pop("pk"))
 
-        kwargs["data-csrf"] = kwargs.pop("csrf", "")
+        kwargs.pop("csrf", "")  # not needed in display state
 
-        kwargs = self.get_kwargs(field, kwargs)
+        field_name = field.name
+        target_id = f"editable-{field_name}-{pk}"
 
-        return Markup(f"<a {html_params(**kwargs)}>{escape(display_value)}</a>")
+        return Markup(
+            f'<span hx-get="./ajax/edit/?pk={escape(pk)}&amp;field={escape(field_name)}"'
+            f' hx-target="#{target_id}"'
+            f' hx-swap="innerHTML"'
+            f""" hx-on::before-request="this.closest('td').dataset.original = this.closest('td').innerHTML" """
+            f' class="editable-cell"'
+            f' title="Click to edit">'
+            f"{escape(display_value)}"
+            f"</span>"
+        )
 
-    def get_kwargs(self, field: Field, kwargs: dict[str, str]) -> dict[str, str]:
-        """
-        Return extra kwargs based on the field type.
-        """
-        if field.type == "StringField":
-            kwargs["data-type"] = "text"
-        elif field.type == "TextAreaField":
-            kwargs["data-type"] = "textarea"
-            kwargs["data-rows"] = "5"
-        elif field.type == "BooleanField":
-            kwargs["data-type"] = "select2"
-            kwargs["data-value"] = "1" if field.data else ""
-            # data-source = dropdown options
-            kwargs["data-source"] = json.dumps(
-                [
-                    {"value": "", "text": gettext("No")},
-                    {"value": "1", "text": gettext("Yes")},
-                ]
-            )
-            kwargs["data-role"] = "x-editable-boolean"
-        elif field.type in ["Select2Field", "SelectField"]:
-            field = t.cast(Select2Field | SelectField, field)
-            kwargs["data-type"] = "select2"
-            choices = [  # type:ignore[misc]
-                {"value": x, "text": y} for x, y in field.choices
-            ]
 
-            # prepend a blank field to choices if allow_blank = True
-            if getattr(field, "allow_blank", False):
-                choices.insert(0, {"value": "__None", "text": ""})
-
-            # json.dumps fixes issue with unicode strings not loading correctly
-            kwargs["data-source"] = json.dumps(choices)
-        elif field.type == "DateField":
-            kwargs["data-type"] = "combodate"
-            kwargs["data-format"] = "YYYY-MM-DD"
-            kwargs["data-template"] = "YYYY-MM-DD"
-            kwargs["data-role"] = "x-editable-combodate"
-        elif field.type == "DateTimeField":
-            kwargs["data-type"] = "combodate"
-            kwargs["data-format"] = "YYYY-MM-DD HH:mm:ss"
-            kwargs["data-template"] = "YYYY-MM-DD  HH:mm:ss"
-            # x-editable-combodate uses 1 minute increments
-            kwargs["data-role"] = "x-editable-combodate"
-        elif field.type == "TimeField":
-            kwargs["data-type"] = "combodate"
-            kwargs["data-format"] = "HH:mm:ss"
-            kwargs["data-template"] = "HH:mm:ss"
-            kwargs["data-role"] = "x-editable-combodate"
-        elif field.type == "IntegerField":
-            kwargs["data-type"] = "number"
-        elif field.type in ["FloatField", "DecimalField"]:
-            kwargs["data-type"] = "number"
-            kwargs["data-step"] = "any"
-        elif field.type in [
-            "QuerySelectField",
-            "ModelSelectField",
-            "QuerySelectMultipleField",
-            "KeyPropertyField",
-        ]:
-            field = t.cast(SelectField, field)
-            # QuerySelectField and ModelSelectField are for relations
-            kwargs["data-type"] = "select2"
-
-            choices = []
-            selected_ids = []
-            for field_choices in field.iter_choices():
-                if len(field_choices) == 3:  # wtforms <3.1, >=3.1.1, <3.2
-                    field_choices = t.cast(tuple[t.Any, t.Any, bool], field_choices)
-                    value, label, selected = field_choices
-                else:
-                    value, label, selected, _ = field_choices
-                try:
-                    label = text_type(label)
-                except TypeError:
-                    # unable to display text value
-                    label = ""
-                choices.append({"value": text_type(value), "text": label})
-                if selected:
-                    selected_ids.append(value)
-
-            # blank field is already included if allow_blank
-            kwargs["data-source"] = json.dumps(choices)
-
-            if field.type == "QuerySelectMultipleField":
-                kwargs["data-role"] = "x-editable-select2-multiple"
-
-                # must use id instead of text or prefilled values won't work
-                separator = getattr(field, "separator", ",")
-                kwargs["data-value"] = separator.join(selected_ids)
-            else:
-                kwargs["data-value"] = text_type(selected_ids[0])
-        else:
-            raise Exception(f"Unsupported field type: {type(field)}")
-
-        return kwargs
+# Backwards compatibility alias
+XEditableWidget = HTMXEditableWidget

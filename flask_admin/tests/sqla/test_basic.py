@@ -708,7 +708,8 @@ def test_column_editable_list(app, sqla_db_ext, admin, session_or_db):
         # Test in-line edit field rendering
         rv = client.get("/admin/model1/")
         data = rv.data.decode("utf-8")
-        assert 'data-role="x-editable"' in data
+        assert 'hx-get=' in data
+        assert 'class="editable-cell"' in data
 
         # Form - Test basic in-line edit functionality
         rv = client.post(
@@ -719,7 +720,8 @@ def test_column_editable_list(app, sqla_db_ext, admin, session_or_db):
             },
         )
         data = rv.data.decode("utf-8")
-        assert "Record was successfully saved." == data
+        assert "change-success-1" in data
+        assert 'class="editable-cell"' in data
 
         # ensure the value has changed
         rv = client.get("/admin/model1/")
@@ -735,6 +737,8 @@ def test_column_editable_list(app, sqla_db_ext, admin, session_or_db):
             },
         )
         assert rv.status_code == 500
+        data = rv.data.decode("utf-8")
+        assert 'hx-post="./ajax/update/"' in data  # edit form re-rendered with errors
 
         # Test invalid primary key
         rv = client.post(
@@ -755,6 +759,7 @@ def test_column_editable_list(app, sqla_db_ext, admin, session_or_db):
                 "test2": "problematic-input",
             },
         )
+        assert rv.status_code == 404
         data = rv.data.decode("utf-8")
         assert "problematic-input" not in data
 
@@ -766,12 +771,53 @@ def test_column_editable_list(app, sqla_db_ext, admin, session_or_db):
             },
         )
         data = rv.data.decode("utf-8")
-        assert "Record was successfully saved." == data
+        assert "test1_val_3" in data
+        assert 'class="editable-cell"' in data
 
         # confirm the value has changed
         rv = client.get("/admin/model2/")
         data = rv.data.decode("utf-8")
         assert "test1_val_3" in data
+
+
+def test_ajax_edit_endpoint(app, sqla_db_ext, admin, session_or_db):
+    """Tests the GET /ajax/edit/ endpoint returns an edit form fragment."""
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = CustomModelView(
+            Model1, param, column_editable_list=["test1", "enum_field"]
+        )
+        admin.add_view(view)
+
+        # Add view2 before any requests so Flask can register the blueprint
+        view2 = CustomModelView(Model2, param)
+        admin.add_view(view2)
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        # Test fetching edit form for a valid field
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=test1")
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'hx-post="./ajax/update/"' in data
+        assert 'name="list_form_pk"' in data
+        assert 'name="test1"' in data
+
+        # Test fetching edit form for non-editable field returns 404
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=test2")
+        assert rv.status_code == 404
+
+        # Test fetching edit form for non-existent record returns 404
+        rv = client.get("/admin/model1/ajax/edit/?pk=9999&field=test1")
+        assert rv.status_code == 404
+
+        # Test endpoint without column_editable_list returns 404
+        rv = client.get("/admin/model2/ajax/edit/?pk=1&field=string_field")
+        assert rv.status_code == 404
 
 
 def test_details_view(app, sqla_db_ext, admin, session_or_db):
@@ -864,7 +910,8 @@ def test_editable_list_special_pks(app, sqla_db_ext, admin, session_or_db):
             },
         )
         data = rv.data.decode("utf-8")
-        assert "Record was successfully saved." == data
+        assert "change-success-1" in data
+        assert 'class="editable-cell"' in data
 
         # ensure the value has changed
         rv = client.get("/admin/model1/")

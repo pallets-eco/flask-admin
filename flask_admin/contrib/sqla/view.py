@@ -899,7 +899,7 @@ class ModelView(BaseModelView):
         `self.column_editable_list`.
 
         :param widget:
-            WTForms widget class. Defaults to `XEditableWidget`.
+            WTForms widget class. Defaults to `HTMXEditableWidget`.
         :param validators:
             `form_args` dict with only validators
             {'name': {'validators': [required()]}}

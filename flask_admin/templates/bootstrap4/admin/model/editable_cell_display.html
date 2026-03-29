@@ -1,0 +1,8 @@
+<span hx-get="./ajax/edit/?pk={{ pk }}&amp;field={{ field_name }}"
+      hx-target="#editable-{{ field_name }}-{{ pk }}"
+      hx-swap="innerHTML"
+      hx-on::before-request="this.closest('td').dataset.original = this.closest('td').innerHTML"
+      class="editable-cell"
+      title="Click to edit">
+  {{ display_value }}
+</span>

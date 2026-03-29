@@ -1,0 +1,22 @@
+<form hx-post="./ajax/update/"
+      hx-target="#editable-{{ field_name }}-{{ pk }}"
+      hx-swap="innerHTML"
+      class="editable-form d-inline-flex align-items-center gap-1">
+  <input type="hidden" name="list_form_pk" value="{{ pk }}">
+  {% if form.csrf_token is defined and form.csrf_token %}
+  {{ form.csrf_token }}
+  {% elif csrf_token is defined and csrf_token %}
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+  {% endif %}
+  {{ form[field_name](class="form-control form-control-sm" + (" is-invalid" if errors and field_name in errors else "")) }}
+  {% if errors and field_name in errors %}
+  <div class="invalid-feedback d-block">{{ errors[field_name] | join(', ') }}</div>
+  {% endif %}
+  <button type="submit" class="btn btn-sm btn-primary">
+    <i class="fa fa-check"></i>
+  </button>
+  <button type="button" class="btn btn-sm btn-secondary"
+          onclick="var td=this.closest('td'); td.innerHTML=td.dataset.original; htmx.process(td);">
+    <i class="fa fa-times"></i>
+  </button>
+</form>
