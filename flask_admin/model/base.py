@@ -1440,7 +1440,8 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None
         if self.form_args:
-            # get only validators, other form_args may conflict with the editable list form
+            # get only validators, other form_args may conflict
+            # with the editable list form
             validators = dict(
                 (key, {"validators": value["validators"]})
                 for key, value in iteritems(self.form_args)
