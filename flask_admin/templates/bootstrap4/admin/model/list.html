@@ -133,7 +133,7 @@
 
                 {% for c, name in list_columns %}
                     {% if admin_view.is_editable(c) %}
-                    <td class="col-{{c}}" id="editable-{{c}}-{{ get_pk_value(row) }}" style="position:relative;">
+                    <td class="col-{{c}}" id="editable-{{c}}-{{ get_pk_value(row) }}">
                         {% set form = list_forms[get_pk_value(row)] %}
                         {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c)) }}
                     </td>

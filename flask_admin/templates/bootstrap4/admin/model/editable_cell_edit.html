@@ -2,8 +2,7 @@
   <form hx-post="./ajax/update/"
         hx-target="#editable-{{ field_name }}-{{ pk }}"
         hx-swap="innerHTML"
-        class="editable-form">
-    <div class="editable-popover-title">{{ field_name }}</div>
+        class="editable-form d-flex align-items-start gap-1">
     <input type="hidden" name="list_form_pk" value="{{ pk }}">
     <input type="hidden" name="field_name" value="{{ field_name }}">
     {% if form.csrf_token is defined and form.csrf_token %}
@@ -12,24 +11,22 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     {% endif %}
     {% if form[field_name].type == 'BooleanField' %}
-    <select name="{{ field_name }}" class="form-control form-control-sm" style="min-width: 8em">
+    <select name="{{ field_name }}" class="form-control" style="min-width: 8em">
       <option value="y" {{ 'selected' if form[field_name].data else '' }}>Yes</option>
       <option value="" {{ 'selected' if not form[field_name].data else '' }}>No</option>
     </select>
     {% else %}
-    {{ form[field_name](class="form-control form-control-sm" + (" is-invalid" if errors and field_name in errors else ""), style="min-width: 12em") }}
+    {{ form[field_name](class="form-control" + (" is-invalid" if errors and field_name in errors else ""), style="min-width: 10em") }}
     {% endif %}
-    {% if errors and field_name in errors %}
-    <div class="invalid-feedback d-block">{{ errors[field_name] | join(', ') }}</div>
-    {% endif %}
-    <div class="editable-popover-buttons">
-      <button type="button" class="btn btn-sm btn-secondary editable-popover-cancel">
-        <i class="fa fa-times"></i>
-      </button>
-      <button type="submit" class="btn btn-sm btn-primary">
-        <i class="fa fa-check"></i>
-      </button>
-    </div>
+    <button type="submit" class="btn btn-sm btn-primary">
+      <i class="fa fa-check"></i>
+    </button>
+    <button type="button" class="btn btn-sm btn-danger editable-popover-cancel">
+      <i class="fa fa-times"></i>
+    </button>
   </form>
+  {% if errors and field_name in errors %}
+  <div class="text-danger" style="font-size:12px; margin-top:4px;">{{ errors[field_name] | join(', ') }}</div>
+  {% endif %}
   <div class="editable-popover-arrow"></div>
 </div>

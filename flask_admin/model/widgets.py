@@ -98,12 +98,10 @@ class HTMXEditableWidget:
         target_id = f"editable-{escape(field_name)}-{escape(pk)}"
 
         url = f"./ajax/edit/?pk={escape(pk)}&amp;field={escape(field_name)}"
-        stash = "this.closest('td').dataset.original = this.closest('td').innerHTML"
         return Markup(
             f'<span hx-get="{url}"'
             f' hx-target="#{target_id}"'
-            f' hx-swap="innerHTML"'
-            f' hx-on::before-request="{stash}"'
+            f' hx-swap="beforeend"'
             f' class="editable-cell"'
             f' title="Click to edit">'
             f"{escape(display_value)}"

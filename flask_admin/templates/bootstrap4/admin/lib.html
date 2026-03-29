@@ -253,40 +253,44 @@
   {% endif %}
   <style>
     .editable-popover {
-      position: absolute;
-      bottom: 100%;
-      left: 0;
-      margin-bottom: 8px;
+      position: fixed;
       background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      padding: 12px;
-      min-width: 200px;
+      border: 1px solid rgba(0,0,0,0.2);
+      border-radius: .3rem;
+      box-shadow: 0 .25rem .5rem rgba(0,0,0,0.1);
+      padding: .75rem 1rem;
       z-index: 1050;
       white-space: nowrap;
     }
+    .editable-popover .editable-form {
+      gap: .5rem !important;
+    }
+    .editable-popover .btn-sm {
+      padding: .375rem .5rem;
+      font-size: .875rem;
+    }
+    .editable-popover textarea {
+      min-height: 7.5em;
+      min-width: 15em;
+    }
     .editable-popover-arrow {
       position: absolute;
-      bottom: -6px;
+      top: -6px;
       left: 20px;
       width: 12px;
       height: 12px;
       background: #fff;
-      border-right: 1px solid #ccc;
-      border-bottom: 1px solid #ccc;
+      border-left: 1px solid rgba(0,0,0,0.2);
+      border-top: 1px solid rgba(0,0,0,0.2);
       transform: rotate(45deg);
     }
-    .editable-popover-title {
-      font-weight: 600;
-      font-size: 13px;
-      margin-bottom: 8px;
+    .editable-cell {
+      color: #007bff;
+      border-bottom: 1px dashed #007bff;
+      cursor: pointer;
     }
-    .editable-popover-buttons {
-      display: flex;
-      justify-content: flex-end;
-      gap: 6px;
-      margin-top: 8px;
+    .editable-cell:hover {
+      border-bottom-style: solid;
     }
   </style>
 {% endmacro %}

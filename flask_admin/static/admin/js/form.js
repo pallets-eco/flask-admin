@@ -599,23 +599,15 @@ document.addEventListener('htmx:sendError', function(event) {
     if (!elt || !elt.closest('.editable-form, .editable-cell')) {
         return;
     }
-    var td = elt.closest('td');
-    if (td && td.dataset.original) {
-        td.innerHTML = td.dataset.original;
-        htmx.process(td);
-    }
+    closeEditablePopover();
     alert('Network error: your change was not saved. Please try again.');
 });
 
-// Close any open editable popover and restore original cell content
+// Close any open editable popover (display span stays intact since we use beforeend)
 function closeEditablePopover() {
     var popover = document.querySelector('.editable-popover');
     if (!popover) return false;
-    var td = popover.closest('td');
-    if (td && td.dataset.original) {
-        td.innerHTML = td.dataset.original;
-        htmx.process(td);
-    }
+    popover.remove();
     return true;
 }
 
@@ -633,9 +625,17 @@ document.addEventListener('htmx:afterSwap', function(event) {
     // Initialize all data-role widgets (select2, timepicker, datepicker, etc.)
     faForm.applyGlobalStyles(target);
 
-    // Focus the first input in the popover
+    // Position and focus the popover
     var popover = target.querySelector('.editable-popover');
     if (popover) {
+        // Position fixed popover below the cell using viewport coordinates
+        var td = popover.closest('td');
+        if (td) {
+            var rect = td.getBoundingClientRect();
+            popover.style.left = rect.left + 'px';
+            popover.style.top = (rect.bottom + 8) + 'px';
+        }
+
         var input = popover.querySelector('input:not([type="hidden"]), select, textarea');
         if (input) {
             input.focus();
