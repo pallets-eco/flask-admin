@@ -708,7 +708,7 @@ def test_column_editable_list(app, sqla_db_ext, admin, session_or_db):
         # Test in-line edit field rendering
         rv = client.get("/admin/model1/")
         data = rv.data.decode("utf-8")
-        assert 'hx-get=' in data
+        assert "hx-get=" in data
         assert 'class="editable-cell"' in data
 
         # Form - Test basic in-line edit functionality

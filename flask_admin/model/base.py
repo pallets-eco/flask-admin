@@ -2765,7 +2765,9 @@ class BaseModelView(BaseView, ActionsMixin):
                 # Pass None as Jinja context — column_formatters that use
                 # Jinja macros are not expected for editable columns.
                 display_value = self.get_list_value(
-                    None, record, field_name
+                    None,  # type: ignore[arg-type]
+                    record,
+                    field_name,
                 )
 
                 return self.render(
@@ -2782,7 +2784,8 @@ class BaseModelView(BaseView, ActionsMixin):
             errors = {}
             for field in form:
                 if field.errors:
-                    errors[field.name] = field.errors if isinstance(field.errors, list) else [field.errors]
+                    errs = field.errors
+                    errors[field.name] = errs if isinstance(errs, list) else [errs]
 
             # Re-create form with record data for proper field rendering
             record = self.get_one(pk)
@@ -2796,7 +2799,9 @@ class BaseModelView(BaseView, ActionsMixin):
             # Restore the original flask-admin widget
             edit_field = form[field_name]
             original_widgets = getattr(self._list_form_class, "_original_widgets", {})
-            edit_field.widget = original_widgets.get(field_name, type(edit_field).widget)
+            edit_field.widget = original_widgets.get(
+                field_name, type(edit_field).widget
+            )
 
             return self.render(
                 "admin/model/editable_cell_edit.html",

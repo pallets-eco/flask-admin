@@ -102,7 +102,6 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "dev-secret-key"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
 
-Babel(app)
 db.init_app(app)
 
 admin = Admin(app, name="Kitchen Sink", theme=Bootstrap4Theme())

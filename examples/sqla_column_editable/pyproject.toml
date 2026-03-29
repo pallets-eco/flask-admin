@@ -5,7 +5,7 @@ description = "SQLAlchemy column_editable_list example for Flask-Admin."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "flask-admin[sqlalchemy-with-utils,translation]",
+    "flask-admin[sqlalchemy-with-utils]",
 ]
 
 [tool.uv.sources]
