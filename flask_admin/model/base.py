@@ -28,6 +28,7 @@ from .._types import T_COLUMN
 from .._types import T_COLUMN_LIST
 from .._types import T_COLUMN_TYPE_FORMATTERS
 from .._types import T_FIELD_ARGS_VALIDATORS_FILES
+from .._types import T_FIELD_ARGS_VALIDATORS_SELECTABLE
 from .._types import T_FILTER
 from .._types import T_INSTRUMENTED_ATTRIBUTE
 from .._types import T_ORM_MODEL
@@ -654,7 +655,10 @@ class BaseModelView(BaseView, ActionsMixin):
 
     """
 
-    form_args: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None
+    form_args: (
+        dict[str, T_FIELD_ARGS_VALIDATORS_FILES | T_FIELD_ARGS_VALIDATORS_SELECTABLE]
+        | None
+    ) = None
     """
         Dictionary of form field arguments. Refer to WTForms documentation for
         list of possible options.
@@ -1389,7 +1393,10 @@ class BaseModelView(BaseView, ActionsMixin):
     def scaffold_list_form(
         self,
         widget: type[T_WIDGET] | None = None,
-        validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
+        validators: dict[
+            str, T_FIELD_ARGS_VALIDATORS_FILES | T_FIELD_ARGS_VALIDATORS_SELECTABLE
+        ]
+        | None = None,
     ) -> type[Form]:
         """
         Create form for the `index_view` using only the columns from
@@ -1442,7 +1449,12 @@ class BaseModelView(BaseView, ActionsMixin):
                 def get_list_form(self):
                     return self.scaffold_list_form(widget=CustomWidget)
         """
-        validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None
+        validators: (
+            dict[
+                str, T_FIELD_ARGS_VALIDATORS_FILES | T_FIELD_ARGS_VALIDATORS_SELECTABLE
+            ]
+            | None
+        ) = None
         if self.form_args:
             # get only validators, other form_args can break FieldList wrapper
             validators = dict(
