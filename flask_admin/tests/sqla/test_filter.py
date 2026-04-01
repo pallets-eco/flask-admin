@@ -1472,14 +1472,14 @@ def create_filter_params_enums_and_choices():
             "flt0_sqla_utils_choice_not_contains",
             "choice-1",
         ),
-        # (
-        #     filters.FilterEmpty,
-        #     "sqla_utils_choice",
-        #     "1",
-        #     "flt0_4",
-        #     "flt0_sqla_utils_choice_empty",
-        #     "1",
-        # ),
+        (
+            filters.FilterEmpty,
+            "sqla_utils_choice",
+            "1",
+            "flt0_4",
+            "flt0_sqla_utils_choice_empty",
+            "1",
+        ),
     ]
     return params
 

@@ -1396,22 +1396,11 @@ class BaseModelView(BaseView, ActionsMixin):
             return None
 
         filter_arg_key = None
-        for k, v in self._filter_args.items():
-            filter_arg = v[1]
-            if hasattr(flt.column, "name"):
-                flt_col_name = flt.column.name  # type: ignore[union-attr]
-            else:
-                flt_col_name = str(flt.column)
+        for k, (_index, filter_arg) in self._filter_args.items():
+            c1 = flt.column_name().lower()
+            c2 = filter_arg.column_name().lower()
 
-            filter_arg_col_name = (
-                filter_arg.column.name  # type: ignore[union-attr]
-                if hasattr(filter_arg.column, "name")
-                else str(filter_arg.column)
-            )
-
-            if filter_arg_col_name.lower() == flt_col_name.lower() and type(
-                flt
-            ) == type(filter_arg):
+            if c2 == c1 and type(flt) == type(filter_arg):
                 filter_arg_key = k
                 break
 

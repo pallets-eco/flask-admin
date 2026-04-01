@@ -149,6 +149,15 @@ class BaseFilter:
 
         return f"flt{flt_idx}_{flt_key}", f"{stringified}"
 
+    def column_name(self) -> str:
+        """
+        Return column name for this filter.
+        """
+        if hasattr(self.column, "name"):
+            return self.column.name  # type: ignore[union-attr]
+
+        return str(self.column)
+
     def __unicode__(self) -> str:
         return self.name
 
