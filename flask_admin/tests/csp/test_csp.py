@@ -5,6 +5,7 @@ import sqlalchemy as sa
 from bs4 import BeautifulSoup
 from flask_admin.contrib import fileadmin
 from flask_admin.contrib.sqla.view import ModelView
+from flask_admin.tests.conftest import skip_or_return_session_or_db
 
 
 def create_model_class(sqla_db_ext):
@@ -31,7 +32,7 @@ def create_model_class(sqla_db_ext):
     return Model1
 
 
-def fill_db(sqla_db_ext, session_or_db, Model1):
+def fill_db(sqla_db_ext, Model1):
     objs = [
         {"test1": "test1_val_1", "test2": "test2_val_1", "bool_field": True},
         {"test1": "test1_val_2", "test2": "test2_val_2", "bool_field": False},
@@ -137,14 +138,14 @@ class TestCSPOnAllPages:
     ):
         Model1 = create_model_class(sqla_db_ext)
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         self.create_modelview(app, admin, param, Model1)
         self.create_modelveiw_with_modal(app, admin, param, Model1)
         self.create_fileview(admin)
         self.create_fileview_with_modal(admin)
 
         with app.app_context():
-            fill_db(sqla_db_ext, sqla_db_ext, Model1)
+            fill_db(sqla_db_ext, Model1)
             client = app.test_client()
 
         # check that we can retrieve a list view
