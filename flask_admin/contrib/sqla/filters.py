@@ -606,6 +606,18 @@ class ChoiceTypeNotLikeFilter(FilterNotLike):
             return query
 
 
+class ChoiceTypeEmptyFilter(FilterEmpty):
+    def __init__(
+        self,
+        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        name: str,
+        options: T_OPTIONS = None,
+        url_value: t.Any = None,
+        **kwargs: t.Any,
+    ) -> None:
+        super().__init__(column, name, options, url_value=url_value, **kwargs)
+
+
 class UuidFilterEqual(FilterEqual, filters.BaseUuidFilter):
     pass
 
@@ -698,7 +710,7 @@ class FilterConverter(filters.BaseFilterConverter):
         ChoiceTypeNotEqualFilter,
         ChoiceTypeLikeFilter,
         ChoiceTypeNotLikeFilter,
-        FilterEmpty,
+        ChoiceTypeEmptyFilter,
     )
     uuid_filters = (
         UuidFilterEqual,

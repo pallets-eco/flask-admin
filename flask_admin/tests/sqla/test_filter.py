@@ -1473,7 +1473,7 @@ def create_filter_params_enums_and_choices():
             "choice-1",
         ),
         (
-            filters.FilterEmpty,
+            filters.ChoiceTypeEmptyFilter,
             "sqla_utils_choice",
             "1",
             "flt0_4",
