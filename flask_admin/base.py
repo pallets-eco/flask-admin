@@ -417,8 +417,9 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
         :param kwargs:
             View function arguments
         """
+        # abort(403)
         if not self.is_accessible():
-            return self.inaccessible_callback(name, **kwargs)
+            return self.inaccessible_callback(name, **kwargs) or abort(403)
 
     def _run_view(
         self, fn: t.Callable[..., t.Any], *args: t.Any, **kwargs: t.Any

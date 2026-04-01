@@ -8,19 +8,24 @@ from flask import session
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.model import typefmt
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy_lite import SQLAlchemy
 from markupsafe import Markup
 from sqlalchemy import DateTime
 from sqlalchemy import String
+from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
+app.config["SQLALCHEMY_ENGINES"] = {"default": "sqlite:///:memory:"}
 db = SQLAlchemy()
 db.init_app(app)
 admin = Admin(app, name="Example: Datetime and Timezone")
+
+
+class Base(DeclarativeBase):
+    pass
 
 
 @app.route("/")
@@ -42,7 +47,8 @@ def set_timezone():
         return jsonify({"error": "Invalid timezone"}), 400
 
 
-class Article(db.Model):
+class Article(Base):
+    __tablename__ = "article"
     id: Mapped[int] = mapped_column(primary_key=True)
     text: Mapped[str] = mapped_column(String(30))
     last_edit: Mapped[datetime] = mapped_column(DateTime(timezone=True))
@@ -107,8 +113,8 @@ class BlogModelView(ModelView):
 
 if __name__ == "__main__":
     with app.app_context():
-        db.drop_all()
-        db.create_all()
+        Base.metadata.drop_all(db.engine)
+        Base.metadata.create_all(db.engine)
         db.session.add(
             Article(text="Written at 9:00 UTC", last_edit=datetime(2024, 8, 8, 9, 0, 0))
         )

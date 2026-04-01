@@ -1,7 +1,7 @@
-import pytest
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
+from sqlalchemy import func
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy.orm import backref
@@ -12,21 +12,15 @@ from flask_admin import form
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.fields import InlineModelFormList
 from flask_admin.contrib.sqla.validators import ItemsRequired
+from flask_admin.tests.conftest import skip_or_return_session_or_db
 
 
-@pytest.mark.parametrize(
-    "session_or_db",
-    [
-        pytest.param("session", id="with_session_deprecated"),
-        pytest.param("db", id="with_db"),
-    ],
-)
-def test_inline_form(app, db, admin, session_or_db):
+def test_inline_form(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         client = app.test_client()
 
         # Set up models and database
-        class User(db.Model):  # type: ignore[name-defined, misc]
+        class User(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
             id = Column(Integer, primary_key=True)
             name = Column(String, unique=True)
@@ -34,7 +28,7 @@ def test_inline_form(app, db, admin, session_or_db):
             def __init__(self, name=None):
                 self.name = name
 
-        class UserInfo(db.Model):  # type: ignore[name-defined, misc]
+        class UserInfo(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
             id = Column(Integer, primary_key=True)
             key = Column(String, nullable=False)
@@ -47,13 +41,13 @@ def test_inline_form(app, db, admin, session_or_db):
                 ),
             )
 
-        db.create_all()
+        sqla_db_ext.create_all()
 
         # Set up Admin
         class UserModelView(ModelView):
             inline_models = (UserInfo,)
 
-        param = db.session if session_or_db == "session" else db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = UserModelView(User, param)
         admin.add_view(view)
 
@@ -75,8 +69,8 @@ def test_inline_form(app, db, admin, session_or_db):
         # Create
         rv = client.post("/admin/user/new/", data=dict(name="äõüxyz"))
         assert rv.status_code == 302
-        assert User.query.count() == 1
-        assert UserInfo.query.count() == 0
+        assert sqla_db_ext.db.session.query(func.count(User.id)).scalar() == 1
+        assert sqla_db_ext.db.session.query(func.count(UserInfo.id)).scalar() == 0
 
         data: dict[str, str | int | None] = {
             "name": "fbar",
@@ -85,8 +79,8 @@ def test_inline_form(app, db, admin, session_or_db):
         }
         rv = client.post("/admin/user/new/", data=data)
         assert rv.status_code == 302
-        assert User.query.count() == 2
-        assert UserInfo.query.count() == 1
+        assert sqla_db_ext.db.session.query(func.count(User.id)).scalar() == 2
+        assert sqla_db_ext.db.session.query(func.count(UserInfo.id)).scalar() == 1
 
         # Edit
         rv = client.get("/admin/user/edit/?id=2")
@@ -99,8 +93,8 @@ def test_inline_form(app, db, admin, session_or_db):
             "info-0-val": "yyy",
         }
         rv = client.post("/admin/user/edit/?id=2", data=data)
-        assert UserInfo.query.count() == 1
-        assert UserInfo.query.one().key == "xxx"
+        assert sqla_db_ext.db.session.query(func.count(UserInfo.id)).scalar() == 1
+        assert sqla_db_ext.db.session.query(UserInfo).one().key == "xxx"
 
         # Edit - add & delete
         data = {
@@ -115,34 +109,27 @@ def test_inline_form(app, db, admin, session_or_db):
         }
         rv = client.post("/admin/user/edit/?id=2", data=data)
         assert rv.status_code == 302
-        assert User.query.count() == 2
-        assert db.session.get(User, 2).name == "barf"
-        assert UserInfo.query.count() == 1
-        assert UserInfo.query.one().key == "bar"
+        assert sqla_db_ext.db.session.query(func.count(User.id)).scalar() == 2
+        assert sqla_db_ext.db.session.get(User, 2).name == "barf"
+        assert sqla_db_ext.db.session.query(func.count(UserInfo.id)).scalar() == 1
+        assert sqla_db_ext.db.session.query(UserInfo).one().key == "bar"
 
         # Delete
         rv = client.post("/admin/user/delete/?id=2")
         assert rv.status_code == 302
-        assert User.query.count() == 1
+        assert sqla_db_ext.db.session.query(func.count(User.id)).scalar() == 1
         rv = client.post("/admin/user/delete/?id=1")
         assert rv.status_code == 302
-        assert User.query.count() == 0
-        assert UserInfo.query.count() == 0
+        assert sqla_db_ext.db.session.query(func.count(User.id)).scalar() == 0
+        assert sqla_db_ext.db.session.query(func.count(UserInfo.id)).scalar() == 0
 
 
-@pytest.mark.parametrize(
-    "session_or_db",
-    [
-        pytest.param("session", id="with_session_deprecated"),
-        pytest.param("db", id="with_db"),
-    ],
-)
-def test_inline_form_required(app, db, admin, session_or_db):
+def test_inline_form_required(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         client = app.test_client()
 
         # Set up models and database
-        class User(db.Model):  # type: ignore[name-defined, misc]
+        class User(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
             id = Column(Integer, primary_key=True)
             name = Column(String, unique=True)
@@ -150,7 +137,7 @@ def test_inline_form_required(app, db, admin, session_or_db):
             def __init__(self, name=None):
                 self.name = name
 
-        class UserEmail(db.Model):  # type: ignore[name-defined, misc]
+        class UserEmail(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
             id = Column(Integer, primary_key=True)
             email = Column(String, nullable=False, unique=True)
@@ -163,21 +150,21 @@ def test_inline_form_required(app, db, admin, session_or_db):
                 ),
             )
 
-        db.create_all()
+        sqla_db_ext.create_all()
 
         # Set up Admin
         class UserModelView(ModelView):
             inline_models = (UserEmail,)
             form_args = {"emails": {"validators": [ItemsRequired()]}}
 
-        param = db.session if session_or_db == "session" else db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = UserModelView(User, param)
         admin.add_view(view)
 
         # Create
         rv = client.post("/admin/user/new/", data=dict(name="no-email"))
         assert rv.status_code == 200
-        assert User.query.count() == 0
+        assert sqla_db_ext.db.session.query(func.count(User.id)).scalar() == 0
 
         data = {
             "name": "hasEmail",
@@ -185,8 +172,8 @@ def test_inline_form_required(app, db, admin, session_or_db):
         }
         rv = client.post("/admin/user/new/", data=data)
         assert rv.status_code == 302
-        assert User.query.count() == 1
-        assert UserEmail.query.count() == 1
+        assert sqla_db_ext.db.session.query(func.count(User.id)).scalar() == 1
+        assert sqla_db_ext.db.session.query(func.count(UserEmail.id)).scalar() == 1
 
         # Attempted delete, prevented by ItemsRequired
         data = {
@@ -196,21 +183,14 @@ def test_inline_form_required(app, db, admin, session_or_db):
         }
         rv = client.post("/admin/user/edit/?id=1", data=data)
         assert rv.status_code == 200
-        assert User.query.count() == 1
-        assert UserEmail.query.count() == 1
+        assert sqla_db_ext.db.session.query(func.count(User.id)).scalar() == 1
+        assert sqla_db_ext.db.session.query(func.count(UserEmail.id)).scalar() == 1
 
 
-@pytest.mark.parametrize(
-    "session_or_db",
-    [
-        pytest.param("session", id="with_session_deprecated"),
-        pytest.param("db", id="with_db"),
-    ],
-)
-def test_inline_form_ajax_fk(app, db, admin, session_or_db):
+def test_inline_form_ajax_fk(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
         # Set up models and database
-        class User(db.Model):  # type: ignore[name-defined, misc]
+        class User(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
             id = Column(Integer, primary_key=True)
             name = Column(String, unique=True)
@@ -218,13 +198,13 @@ def test_inline_form_ajax_fk(app, db, admin, session_or_db):
             def __init__(self, name=None):
                 self.name = name
 
-        class Tag(db.Model):  # type: ignore[name-defined, misc]
+        class Tag(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
             __tablename__ = "tags"
 
             id = Column(Integer, primary_key=True)
             name = Column(String, unique=True)
 
-        class UserInfo(db.Model):  # type: ignore[name-defined, misc]
+        class UserInfo(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
             id = Column(Integer, primary_key=True)
             key = Column(String, nullable=False)
@@ -241,15 +221,15 @@ def test_inline_form_ajax_fk(app, db, admin, session_or_db):
             tag_id = Column(Integer, ForeignKey(Tag.id))
             tag = relationship(Tag, backref="user_info")
 
-        db.create_all()
+        sqla_db_ext.create_all()
 
         # Set up Admin
         class UserModelView(ModelView):
             opts = {"form_ajax_refs": {"tag": {"fields": ["name"]}}}
 
-            inline_models = [(UserInfo, opts)]
+            inline_models = [(UserInfo, opts)]  # type: ignore[list-item]
 
-        param = db.session if session_or_db == "session" else db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = UserModelView(User, param)
         admin.add_view(view)
 
@@ -262,27 +242,21 @@ def test_inline_form_ajax_fk(app, db, admin, session_or_db):
         assert "userinfo-tag" in view._form_ajax_refs
 
 
-@pytest.mark.parametrize(
-    "session_or_db",
-    [
-        pytest.param("session", id="with_session_deprecated"),
-        pytest.param("db", id="with_db"),
-    ],
-)
-def test_inline_form_self(app, db, admin, session_or_db):
+def test_inline_form_self(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
 
-        class Tree(db.Model):  # type: ignore[name-defined, misc]
+        class Tree(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+            __tablename__ = "tree"
             id = Column(Integer, primary_key=True)
             parent_id = Column(Integer, ForeignKey("tree.id"))
             parent = relationship("Tree", remote_side=[id], backref="children")
 
-        db.create_all()
+        sqla_db_ext.create_all()
 
         class TreeView(ModelView):
             inline_models = (Tree,)
 
-        param = db.session if session_or_db == "session" else db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = TreeView(Tree, param)
 
         parent = Tree()
@@ -291,19 +265,12 @@ def test_inline_form_self(app, db, admin, session_or_db):
         assert form.parent.data == parent  # type: ignore[attr-defined]
 
 
-@pytest.mark.parametrize(
-    "session_or_db",
-    [
-        pytest.param("session", id="with_session_deprecated"),
-        pytest.param("db", id="with_db"),
-    ],
-)
-def test_inline_form_base_class(app, db, admin, session_or_db):
+def test_inline_form_base_class(app, sqla_db_ext, admin, session_or_db):
     client = app.test_client()
 
     with app.app_context():
         # Set up models and database
-        class User(db.Model):  # type: ignore[name-defined, misc]
+        class User(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
             __tablename__ = "users"
             id = Column(Integer, primary_key=True)
             name = Column(String, unique=True)
@@ -311,7 +278,7 @@ def test_inline_form_base_class(app, db, admin, session_or_db):
             def __init__(self, name=None):
                 self.name = name
 
-        class UserEmail(db.Model):  # type: ignore[name-defined, misc]
+        class UserEmail(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
             __tablename__ = "user_info"
             id = Column(Integer, primary_key=True)
             email = Column(String, nullable=False, unique=True)
@@ -324,7 +291,7 @@ def test_inline_form_base_class(app, db, admin, session_or_db):
                 ),
             )
 
-        db.create_all()
+        sqla_db_ext.create_all()
 
         # Customize error message
         class StubTranslation:
@@ -341,10 +308,10 @@ def test_inline_form_base_class(app, db, admin, session_or_db):
 
         # Set up Admin
         class UserModelView(ModelView):
-            inline_models = ((UserEmail, {"form_base_class": StubBaseForm}),)
+            inline_models = ((UserEmail, {"form_base_class": StubBaseForm}),)  # type: ignore[assignment]
             form_args = {"emails": {"validators": [ItemsRequired()]}}
 
-        param = db.session if session_or_db == "session" else db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = UserModelView(User, param)
         admin.add_view(view)
 
@@ -355,5 +322,5 @@ def test_inline_form_base_class(app, db, admin, session_or_db):
         }
         rv = client.post("/admin/user/new/", data=data)
         assert rv.status_code == 200
-        assert User.query.count() == 0
+        assert sqla_db_ext.db.session.query(func.count(User.id)).scalar() == 0
         assert b"success!" in rv.data, rv.data

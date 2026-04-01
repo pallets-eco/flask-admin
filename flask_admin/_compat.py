@@ -13,23 +13,29 @@ of it.
 
 import typing as t
 from types import MappingProxyType
-from flask_admin._types import T_TRANSLATABLE, T_ITER_CHOICES, T_ORM_MODEL
+from flask_admin._types import T_TRANSLATABLE, T_ITER_CHOICES
 
 text_type = str
 string_types = (str,)
 
+K = t.TypeVar("K")
+V = t.TypeVar("V")
 
-def itervalues(d: dict[t.Any, t.Any]) -> t.Iterator[t.Any]:
+
+def itervalues(d: dict[t.Any, V]) -> t.Iterator[V]:
     return iter(d.values())
 
 
 def iteritems(
-    d: dict[t.Any, t.Any] | MappingProxyType[str, t.Any] | t.Mapping[t.Any, t.Any],
-) -> t.Iterator[tuple[t.Any, t.Any]]:
+    d: dict[K, V] | MappingProxyType[K, V] | t.Mapping[K, V],
+) -> t.Iterator[tuple[K, V]]:
     return iter(d.items())
 
 
-def filter_list(f: t.Callable[[t.Any], t.Any], l: list[t.Any]) -> list[t.Any]:
+T = t.TypeVar("T")
+
+
+def filter_list(f: t.Callable[[t.Any], bool], l: t.Sequence[T]) -> list[T]:
     return list(filter(f, l))
 
 

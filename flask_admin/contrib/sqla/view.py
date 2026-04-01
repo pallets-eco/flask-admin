@@ -407,6 +407,7 @@ class ModelView(BaseModelView):
             menu_icon_type=menu_icon_type,
             menu_icon_value=menu_icon_value,
         )
+        self.model: type[T_SQLALCHEMY_MODEL]
         self._manager = manager_of_class(self.model)
 
         # Primary key
@@ -513,7 +514,7 @@ class ModelView(BaseModelView):
             elif hasattr(p, "columns"):
                 if len(p.columns) > 1:
                     filtered = tools.filter_foreign_columns(
-                        self.model.__table__,  # type: ignore[union-attr]
+                        self.model.__table__,
                         p.columns,
                     )
 
@@ -584,7 +585,6 @@ class ModelView(BaseModelView):
             return self.scaffold_sortable_columns()
         else:
             result: dict[T_COLUMN, T_COLUMN] = dict()
-            self.model = t.cast(type[T_SQLALCHEMY_MODEL], self.model)
             for c in self.column_sortable_list:
                 if isinstance(c, tuple):
                     if isinstance(c[1], tuple):

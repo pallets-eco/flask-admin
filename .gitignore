@@ -36,3 +36,5 @@ node_modules/
 # Testing only
 flask_admin/tests/fileadmin/files/*
 f.html
+/instance/file:mem
+/instance/file:test_different_bind_joins[with_session_deprecated-SQLALiteProvider]

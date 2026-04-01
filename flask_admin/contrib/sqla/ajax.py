@@ -1,6 +1,5 @@
 import typing as t
 
-from flask_sqlalchemy.model import Model
 from sqlalchemy import and_
 from sqlalchemy import cast
 from sqlalchemy import or_
@@ -12,8 +11,8 @@ from flask_admin._compat import string_types
 from flask_admin.model.ajax import AjaxModelLoader
 from flask_admin.model.ajax import DEFAULT_PAGE_SIZE
 
+from ..._types import T_SQLALCHEMY_MODEL
 from ._compat import _get_deprecated_session
-from ._compat import _warn_session_deprecation
 from ._types import T_SESSION_OR_DB
 from ._types import T_SQLALCHEMY_QUERY
 from .tools import get_primary_key
@@ -27,7 +26,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         self,
         name: str,
         session: T_SESSION_OR_DB,
-        model: type[Model],
+        model: type[T_SQLALCHEMY_MODEL],
         **options: t.Any,
     ) -> None:
         """
@@ -40,7 +39,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         """
         super().__init__(name, options)
 
-        self.session = _warn_session_deprecation(session)
+        self.session = session
         self.model = model
         self.fields = options.get("fields")
         self.order_by = options.get("order_by")
@@ -78,7 +77,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
-    def format(self, model: Model | None) -> tuple[t.Any, str] | None:  # type: ignore[override]
+    def format(self, model: T_SQLALCHEMY_MODEL | None) -> tuple[t.Any, str] | None:
         if not model:
             return None
 
@@ -110,7 +109,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         if self.filters:
             filters = [
-                text(f"{self.model.__tablename__.lower()}.{value}")  # type: ignore[attr-defined]
+                text(f"{self.model.__tablename__.lower()}.{value}")
                 for value in self.filters
             ]
             query = query.filter(and_(*filters))
@@ -140,5 +139,4 @@ def create_ajax_loader(
         attr = attr.remote_attr
 
     remote_model = attr.prop.mapper.class_
-    db_session = _get_deprecated_session(session)
-    return QueryAjaxModelLoader(name, db_session, remote_model, **options)
+    return QueryAjaxModelLoader(name, session, remote_model, **options)
