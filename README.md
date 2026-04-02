@@ -125,7 +125,7 @@ pre-commit install
 
 Tests are run with *pytest*. If you are not familiar with this package, you can find out more on [their website](https://pytest.org/).
 
-### Running tests inside the devcontainer (eg when using VS Code)
+### Running tests inside the devcontainer (eg when using VS Code)
 
 If you are developing with the devcontainer configuration, then you can run tests directly using either of the following commands.
 
@@ -137,8 +137,18 @@ uv run pytest
 
 To run the test suite against all supported python versions, and also run other checks performed by CI, use:
 
-```shell
+```bash
+# run against python 3.13
+uv run tox -e py13
+
+# or run against all supported versions
 uv run tox
+```
+
+This will create `.tox` directory taht contains a separate folder for each supported python version, thus you can activate any of them. For example to test the Blinker under python 3.11, run:
+
+```bash
+./.tox/py311/Scripts/activate
 ```
 
 ### Running tests as a one-off via docker-compose run / `make test`
