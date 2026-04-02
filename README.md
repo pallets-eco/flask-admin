@@ -4,7 +4,15 @@ Flask-Admin is now part of Pallets-Eco, an open source organization managed by t
 Pallets team to facilitate community maintenance of Flask extensions. Please update
 your references to `https://github.com/pallets-eco/flask-admin.git`.
 
+
+[![image](https://img.shields.io/github/tag/pallets-eco/flask-admin.svg)](https://github.com/pallets-eco/flask-admin/releases)
+_
 [![image](https://github.com/pallets-eco/flask-admin/actions/workflows/tests.yaml/badge.svg?branch=master)](https://github.com/pallets-eco/flask-admin/actions/workflows/test.yaml)
+_
+[![Documentation Status](https://readthedocs.org/projects/flask-admin/badge/?version=latest)](https://flask-admin.readthedocs.io/en/latest/?badge=latest)
+_
+[![Downloads](https://img.shields.io/pypi/dm/flask-admin.svg)](https://pypi.python.org/pypi/flask-admin)
+
 
 ## Pallets Community Ecosystem
 
@@ -45,6 +53,17 @@ the need arises.
 
 Flask-Admin is an active project, well-tested and production-ready.
 
+## Installation
+
+To install Flask-Admin using pip, simply:
+
+```shell
+pip install flask-admin
+```
+
+Flask-Admin is extensively documented, you can find all of the
+documentation at <https://flask-admin.readthedocs.io/en/latest/>.
+
 ## Examples
 
 Several usage examples are included in the */examples* folder. Please add your own, or improve on the existing examples, and submit a *pull-request*.
@@ -67,29 +86,6 @@ uv run main.py
 ```
 
 Check the Flask app running on <http://localhost:5000>.
-
-## Documentation
-
-Flask-Admin is extensively documented, you can find all of the
-documentation at <https://flask-admin.readthedocs.io/en/latest/>.
-
-The docs are auto-generated from the *.rst* files in the */doc* folder.
-If you come across any errors or if you think of anything else that
-should be included, feel free to make the changes and submit a *pull-request*.
-
-To build the docs in your local environment, from the project directory:
-
-```shell
-tox -e docs
-```
-
-## Installation
-
-To install Flask-Admin using pip, simply:
-
-```shell
-pip install flask-admin
-```
 
 ## Contributing
 
@@ -167,6 +163,37 @@ You can also run the full test suite including CI checks with:
 make tox-in-docker
 ```
 
+
+
+
+## Documentation
+
+The docs are auto-generated from the *.rst* files in the */doc* folder.
+If you come across any errors or if you think of anything else that
+should be included, feel free to make the changes and submit a *pull-request*.
+
+To build the docs in your local environment, from the project directory:
+
+```shell
+tox -e docs
+```
+
+## Translations
+
+You can help improve Flask-Admin\'s translations by opening a PR.
+As a developer who's changed some text in Flask-Admin
+```bash
+uv sync --group docs
+cd babel
+./babel.sh --update
+```
+
+As a translator who's updated some `.po`/`.mo` files
+```shell
+cd babel
+./babel.sh
+```
+
 ## 3rd Party Stuff
 
 Flask-Admin is built with the help of
@@ -177,17 +204,6 @@ Flask-Admin is built with the help of
 If you want to localize your application, install the
 [Flask-Babel](https://pypi.python.org/pypi/Flask-Babel) package.
 
-You can help improve Flask-Admin\'s translations by opening a PR.
-## As a developer who's changed some text in Flask-Admin
-```bash
-uv sync --group docs
-cd babel
-./babel.sh --update
-```
-
-## As a translator who's updated some `.po`/`.mo` files
-Run `cd babel`
-Run `./babel.sh`
 
 <!-- refs -->
 [discord]: https://discord.gg/pallets
