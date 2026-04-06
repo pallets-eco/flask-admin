@@ -6,6 +6,7 @@ from sqlalchemy import func
 
 from flask_admin.form import JSONField
 
+from ..._types import T_VALIDATOR
 from ..sqla._compat import _get_deprecated_session
 from ..sqla._types import T_SESSION_OR_DB
 from .widgets import LeafletWidget
@@ -15,7 +16,7 @@ class GeoJSONField(JSONField):
     def __init__(
         self,
         label: str | None = None,
-        validators: list[t.Any] | None = None,
+        validators: list[T_VALIDATOR] | None = None,
         geometry_type: str = "GEOMETRY",
         srid: int = -1,
         session: T_SESSION_OR_DB | None = None,
