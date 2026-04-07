@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from geoalchemy2.elements import WKBElement
 from geoalchemy2.shape import to_shape
 from markupsafe import Markup
@@ -5,12 +7,14 @@ from sqlalchemy import func
 from wtforms.widgets import html_params
 
 from flask_admin._types import T_COLUMN_TYPE_FORMATTERS
-from flask_admin.contrib.geoa import ModelView
 from flask_admin.contrib.sqla._compat import _get_deprecated_session
 from flask_admin.contrib.sqla.typefmt import DEFAULT_FORMATTERS as BASE_FORMATTERS
 
+if TYPE_CHECKING:
+    from flask_admin.contrib.geoa import ModelView
 
-def geom_formatter(view: ModelView, value: WKBElement, name: str) -> str:
+
+def geom_formatter(view: "ModelView", value: WKBElement, name: str) -> str:
     kwargs = {
         "data-role": "leaflet",
         "disabled": "disabled",
