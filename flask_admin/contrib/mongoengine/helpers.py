@@ -26,7 +26,7 @@ def make_thumb_args(value):
         return make_gridfs_args(value)
 
 
-def format_error(error: ValidationError | wtfValidationError | str):
+def format_error(error: ValidationError | wtfValidationError | str) -> str:
     if isinstance(error, ValidationError):
         return as_unicode(error)
 

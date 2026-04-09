@@ -213,7 +213,7 @@ disallow_any_generics = true
 
 # These next few are various gradations of forcing use of type annotations
 disallow_untyped_calls = false
-disallow_incomplete_defs = false
+disallow_incomplete_defs = true
 disallow_untyped_defs = false
 
 # This one isn't too hard to get passing, but return on investment is lower

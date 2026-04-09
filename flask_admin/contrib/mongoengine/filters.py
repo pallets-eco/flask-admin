@@ -2,6 +2,8 @@ from bson.errors import InvalidId
 from bson.objectid import ObjectId
 from mongoengine.queryset import Q
 
+from flask_admin._types import T_OPTIONS
+from flask_admin._types import T_WIDGET_TYPE
 from flask_admin.babel import lazy_gettext
 from flask_admin.model import filters
 
@@ -13,7 +15,13 @@ class BaseMongoEngineFilter(filters.BaseFilter):
     Base MongoEngine filter.
     """
 
-    def __init__(self, column: str, name, options=None, data_type=None):
+    def __init__(
+        self,
+        column: str,
+        name: str,
+        options: T_OPTIONS = None,
+        data_type: T_WIDGET_TYPE = None,
+    ) -> None:
         """
         Constructor.
 
