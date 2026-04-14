@@ -12,6 +12,9 @@ updates:
     directory: /requirements/
     schedule:
       interval: monthly
+    exclude-paths:
+      - "/examples/**"
+      - "/flask_admin/tests/**"
     groups:
       python-requirements:
         patterns:
