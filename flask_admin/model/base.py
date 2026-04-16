@@ -1396,7 +1396,7 @@ class BaseModelView(BaseView, ActionsMixin):
         `self.column_editable_list`.
 
         :param widget:
-            WTForms widget class. Defaults to `XEditableWidget`.
+            WTForms widget class. Defaults to `HTMXEditableWidget`.
         :param validators:
             `form_args` dict with only validators
             {'name': {'validators': [DataRequired()]}}
@@ -1427,16 +1427,12 @@ class BaseModelView(BaseView, ActionsMixin):
 
         Allows overriding the editable list view field/widget. For example::
 
-            from flask_admin.model.widgets import XEditableWidget
+            from flask_admin.model.widgets import HTMXEditableWidget
 
-            class CustomWidget(XEditableWidget):
-                def get_kwargs(self, subfield, kwargs):
-                    if subfield.type == 'TextAreaField':
-                        kwargs['data-type'] = 'textarea'
-                        kwargs['data-rows'] = '20'
-                    # elif: kwargs for other fields
-
-                    return kwargs
+            class CustomWidget(HTMXEditableWidget):
+                def __call__(self, field, **kwargs):
+                    # Custom rendering logic
+                    return super().__call__(field, **kwargs)
 
             class MyModelView(BaseModelView):
                 def get_list_form(self):
@@ -1444,7 +1440,8 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None
         if self.form_args:
-            # get only validators, other form_args can break FieldList wrapper
+            # get only validators, other form_args may conflict
+            # with the editable list form
             validators = dict(
                 (key, {"validators": value["validators"]})
                 for key, value in iteritems(self.form_args)
@@ -2683,70 +2680,141 @@ class BaseModelView(BaseView, ActionsMixin):
         ]
         return Response(json.dumps(data), mimetype="application/json")
 
-    @expose("/ajax/update/", methods=("POST",))
-    def ajax_update(self) -> None | tuple[str, int] | str:
+    def _restore_original_widget(self, form: Form, field_name: str) -> None:
+        """Restore the original flask-admin widget (DatePickerWidget, etc.)
+        that was saved before create_editable_list_form replaced it."""
+        if field_name not in form:
+            return
+        edit_field = form[field_name]
+        original_widgets = getattr(self._list_form_class, "_original_widgets", {})
+        edit_field.widget = original_widgets.get(field_name, type(edit_field).widget)
+
+    @expose("/ajax/edit/", methods=("GET",))
+    def ajax_edit(self) -> str:
         """
-        Edits a single column of a record in list view. Usually used with
-        `column_editable_list` that integrates with the x-editable library.
-
-        .. code-block:: javascript
-
-            // you can use jQuery to make ajax calls like this:
-
-            $.ajax({
-                url: '/admin/<your_model_view_endpoint>/ajax/update/',
-                type: 'POST',
-                data: {
-                    "list_form_pk" : "<primary_key_value>",
-                    "<column_name>": "<new_value>"
-                },
-                success: function(response) {
-                    // handle success
-                },
-                error: function(response) {
-                    // handle error
-                }
-            });
-
+        Return an edit form HTML fragment for a single editable cell.
+        Used by HTMX to swap the display state with an inline edit form.
         """
-        if not self.column_editable_list:
+        if not self.can_edit or not self.column_editable_list:
             abort(404)
 
-        form = self.list_form()  # returns a form of all fields
+        pk = request.args.get("pk")
+        field_name = request.args.get("field")
 
-        # prevent validation issues due to submitting a single field
-        # delete all fields except the submitted fields and csrf token
+        if not pk or not field_name or field_name not in self.column_editable_list:
+            abort(404)
+
+        record = self.get_one(pk)
+        if record is None:
+            abort(404)
+
+        form = self.list_form(obj=record)
+        self._restore_original_widget(form, field_name)
+
+        return self.render(
+            "admin/model/editable_cell_edit.html",
+            form=form,
+            field_name=field_name,
+            pk=pk,
+            errors=None,
+        )
+
+    @expose("/ajax/update/", methods=("POST",))
+    def ajax_update(self) -> str | tuple[str, int]:
+        """
+        Edits a single column of a record in list view.
+        Returns an HTML fragment for HTMX to swap into the editable cell.
+        """
+        if not self.can_edit or not self.column_editable_list:
+            abort(404)
+
+        form = self.list_form()
+
+        # Determine which editable field was submitted. For most fields,
+        # the field name appears in request.form. For unchecked checkboxes
+        # (e.g. BooleanField), the field is absent — fall back to the
+        # hidden field_name input.
+        field_name = None
+        for name in request.form:
+            if name in self.column_editable_list:
+                field_name = name
+                break
+
+        if field_name is None:
+            field_name = request.form.get("field_name")
+
+        if not field_name or field_name not in self.column_editable_list:
+            abort(404)
+
+        # Prevent validation issues: delete all fields except the submitted
+        # field, primary key, and csrf token
+        keep = {field_name, "list_form_pk", "csrf_token"}
         for field in list(form):
-            if (field.name in request.form) or (field.name == "csrf_token"):
-                pass
-            else:
+            if field.name not in keep and field.name not in request.form:
                 form.__delitem__(field.name)
 
+        pk = form.list_form_pk.data  # type: ignore[attr-defined]
+
         if self.validate_form(form):
-            pk = form.list_form_pk.data  # type: ignore[attr-defined]
             record = self.get_one(pk)
 
             if record is None:
-                return gettext("Record does not exist."), 500
+                errors = {field_name: [gettext("Record does not exist.")]}
+            elif self.update_model(form, record):
+                # Re-fetch the record to get updated display value
+                record = self.get_one(pk)
+                if record is None:
+                    errors = {field_name: [gettext("Record does not exist.")]}
+                else:
+                    # Pass None as Jinja context — column_formatters that use
+                    # Jinja macros are not expected for editable columns.
+                    display_value = self.get_list_value(
+                        None,  # type: ignore[arg-type]
+                        record,
+                        field_name,
+                    )
 
-            record = record
-            if self.update_model(form, record):
-                # Success
-                return gettext("Record was successfully saved.")
+                    return self.render(
+                        "admin/model/editable_cell_display.html",
+                        pk=pk,
+                        field_name=field_name,
+                        display_value=display_value,
+                    )
             else:
-                # Error: No records changed, or problem saving to database.
-                msgs = ", ".join([msg for msg in get_flashed_messages()])  # type: ignore[misc]
-                return gettext("Failed to update record. %(error)s", error=msgs), 500
+                msgs = ", ".join(get_flashed_messages())  # type: ignore[arg-type]
+                if msgs:
+                    error_msg = gettext(
+                        "Failed to update record. %(error)s", error=msgs
+                    )
+                else:
+                    error_msg = gettext("Failed to update record.")
+                errors = {field_name: [error_msg]}
         else:
+            # Collect errors from the validated form before re-creating
+            errors = {}
             for field in form:
-                for error in field.errors:
-                    # return validation error to x-editable
-                    if isinstance(error, list):
-                        return gettext(
-                            "Failed to update record. %(error)s", error=", ".join(error)
-                        ), 500
-                    else:
-                        return gettext(
-                            "Failed to update record. %(error)s", error=error
-                        ), 500
-        return None
+                if field.errors:
+                    errs = list(field.errors)
+                    errors[field.name] = errs
+            if not errors:
+                errors[field_name] = [gettext("Validation failed.")]
+
+        # Re-create form with record data for proper field rendering
+        record = self.get_one(pk)
+        if record is not None:
+            form = self.list_form(obj=record)
+            # Re-populate with submitted value so the user sees what they typed
+            for name in request.form:
+                if name in form and name != "csrf_token":
+                    form[name].data = request.form[name]
+
+        # Restore the original flask-admin widget
+        self._restore_original_widget(form, field_name)
+
+        return self.render(
+            "admin/model/editable_cell_edit.html",
+            form=form,
+            field_name=field_name,
+            pk=pk,
+            errors=errors,
+        ), 500
