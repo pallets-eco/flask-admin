@@ -8,13 +8,10 @@ updates:
       github-actions:
         patterns:
           - '*'
-  - package-ecosystem: pip
-    directory: /requirements/
+  - package-ecosystem: uv
+    directory: /
     schedule:
       interval: monthly
-    exclude-paths:
-      - "/examples/**"
-      - "/flask_admin/tests/**"
     groups:
       python-requirements:
         patterns:
