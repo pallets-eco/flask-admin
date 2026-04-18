@@ -8,8 +8,8 @@ updates:
       github-actions:
         patterns:
           - '*'
-  - package-ecosystem: pip
-    directory: /requirements/
+  - package-ecosystem: uv
+    directory: /
     schedule:
       interval: monthly
     groups:
