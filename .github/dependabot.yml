@@ -11,7 +11,7 @@ updates:
   - package-ecosystem: uv
     directory: /
     schedule:
-      interval: daily
+      interval: monthly
     exclude-paths:
       - "LICENSE.txt"
     groups:
