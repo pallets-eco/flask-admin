@@ -11,7 +11,9 @@ updates:
   - package-ecosystem: uv
     directory: /
     schedule:
-      interval: monthly
+      interval: daily
+    exclude-paths:
+      - "LICENSE.txt"
     groups:
       python-requirements:
         patterns:
