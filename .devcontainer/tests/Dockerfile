@@ -10,5 +10,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 WORKDIR /workspace
+COPY pyproject.toml uv.lock ./
+RUN uv sync --extra all --no-install-project
+
 COPY . .
-RUN uv sync --extra all
