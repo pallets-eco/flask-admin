@@ -1,3 +1,5 @@
+import typing as t
+
 import pytest
 from flask import Flask
 from flask import url_for
@@ -14,7 +16,9 @@ def app():
     yield app
 
 
-def init_admin(app, using_init_app: bool, admin_kwargs):
+def init_admin(
+    app: Flask, using_init_app: bool, admin_kwargs: dict[str, t.Any]
+) -> base.Admin:
     if using_init_app:
         admin = base.Admin(**admin_kwargs)
         admin.init_app(app)

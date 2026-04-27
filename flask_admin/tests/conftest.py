@@ -125,7 +125,7 @@ def admin(app, babel):
     yield admin
 
 
-def configure_sqla(app: Flask, uri: str, request):
+def configure_sqla(app: Flask, uri: str, request: pytest.FixtureRequest) -> None:
     """
     Sets common app config.
     Function calling must have @pytest.fixture(params=sqla_db_exts)
@@ -162,7 +162,7 @@ def session_or_db(request):
 
 def skip_or_return_session_or_db(
     extension: "SQLAProvider | SQLALiteProvider", string: t.Literal["session", "db"]
-):
+) -> t.Any:
     """
     Helper function to skip tests (when using SQLALiteProvider and deprecated session)
     or to return the appropriate parameter (extension.db.session or extension.db) for

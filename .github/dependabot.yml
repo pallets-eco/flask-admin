@@ -8,10 +8,12 @@ updates:
       github-actions:
         patterns:
           - '*'
-  - package-ecosystem: pip
-    directory: /requirements/
+  - package-ecosystem: uv
+    directory: /
     schedule:
       interval: monthly
+    exclude-paths:
+      - "LICENSE.txt"
     groups:
       python-requirements:
         patterns:

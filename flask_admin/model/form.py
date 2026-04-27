@@ -3,7 +3,6 @@ import typing as t
 import warnings
 from collections.abc import Callable
 
-from wtforms import Field
 from wtforms import Form
 from wtforms.fields import HiddenField
 from wtforms.fields.core import UnboundField
@@ -299,5 +298,5 @@ class FieldPlaceholder:
     Field placeholder for model convertors.
     """
 
-    def __init__(self, field: Field) -> None:
+    def __init__(self, field: "UnboundField[t.Any]") -> None:
         self.field = field
