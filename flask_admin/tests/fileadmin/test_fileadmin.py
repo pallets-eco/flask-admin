@@ -177,10 +177,17 @@ class Base:
             )
             assert rv.status_code == 302
 
+            rv = client.post(
+                "/admin/myfileadmin/edit/?path=dummy.txt",
+                data=dict(content="new_string 😁\n"),
+            )
+            assert rv.status_code == 302
+
             rv = client.get("/admin/myfileadmin/edit/?path=dummy.txt")
             assert rv.status_code == 200
             assert "dummy.txt" in rv.data.decode("utf-8")
             assert "new_string" in rv.data.decode("utf-8")
+            assert "😁" in rv.data.decode("utf-8")
 
         def test_modal_edit_bs4(self, app, babel):
             admin_bs4 = Admin(app, theme=Bootstrap4Theme())
