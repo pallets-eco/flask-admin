@@ -23,7 +23,7 @@ class BaseMongoEngineFilter(filters.BaseFilter):
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
-        url_value: str=None,
+        url_value: str | None = None,
     ) -> None:
         """
         Constructor.
