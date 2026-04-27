@@ -5,15 +5,12 @@ from admin import app
 from admin.data import build_sample_db
 from flask import redirect
 from flask import url_for
-from jinja2 import StrictUndefined
 
 app_dir = op.join(op.realpath(os.path.dirname(__file__)), "admin")
 database_path = op.join(app_dir, app.config["DATABASE_FILE"])
 if not os.path.exists(database_path):
     with app.app_context():
         build_sample_db()
-
-app.jinja_env.undefined = StrictUndefined
 
 
 @app.route("/")
