@@ -293,9 +293,10 @@ class Base:
 
             client = app.test_client()
 
-            assert "dummy.txt" in client.get(
-                "/admin/myfileadmin/", follow_redirects=True
-            ).data.decode("utf-8")
+            rv = client.get("/admin/myfileadmin/", follow_redirects=True)
+            data = rv.data.decode("utf-8")
+            # make sure that dummy.txt exists
+            assert "dummy.txt" in data
 
             # read the token
             rv = client.get("/admin/myfileadmin", follow_redirects=True)
