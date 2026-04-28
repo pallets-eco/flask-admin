@@ -257,6 +257,10 @@ class PostAdmin(ModelView):
             "Fixed Title",
             options=(("test1", "Test 1"), ("test2", "Test 2")),
         ),
+        # Filter instances also accept a dotted-path string for ``column``;
+        # it is resolved against the view's model and the necessary joins
+        # are added automatically.
+        filters.FilterLike(column="user.email", name="Author Email"),
     ]
     can_export = True
     export_max_rows = 1000

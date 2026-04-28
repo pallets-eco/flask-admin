@@ -858,10 +858,18 @@ class ModelView(BaseModelView):
 
     def handle_filter(self, filter: t.Any) -> t.Any:
         if isinstance(filter, sqla_filters.BaseSQLAFilter):
+            filter.bind(self.model)
             column = filter.column
 
+            if filter._joins:
+                if filter.key_name is None:
+                    raise RuntimeError(
+                        "Filter has joins recorded but no key_name; "
+                        "this indicates an internal state error."
+                    )
+                self._filter_joins[filter.key_name] = filter._joins
             # hybrid_property joins are not supported yet
-            if isinstance(column, InstrumentedAttribute) and tools.need_join(
+            elif isinstance(column, InstrumentedAttribute) and tools.need_join(
                 self.model, column.table
             ):
                 self._filter_joins[column] = [column.table]

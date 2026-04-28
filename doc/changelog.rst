@@ -1,8 +1,11 @@
 Changelog
 =========
 
-2.1.1 [unreleased]
+[unreleased]
 ------------------
+
+New Features:
+* SQLAlchemy filter classes (``FilterEqual``, ``FilterLike``, etc.) now accept a dotted-path string for the ``column`` argument (e.g. ``FilterEqual(column="author.email", name="Author Email")``); the path is resolved against the view's model and the necessary joins are added automatically.
 
 Bugfixes:
 * Fix a bug in v2.1.0 that caused UnboundLocalError in flask_admin.contrib.sqla.ModelView when an exception was raised during a create or update operation
