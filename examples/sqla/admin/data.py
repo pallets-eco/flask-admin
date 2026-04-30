@@ -85,11 +85,11 @@ def build_sample_db():
     ]
 
     accounts = []
-    for _, first in enumerate(first_names):
+    for first in first_names:
         provider = random.choice([e.value for e in AccountProvider])
         account = Account(username=f"{first.lower()}_{provider}", provider=provider)
         accounts.append(account)
-        db.session.add(account)
+    db.session.add_all(accounts)
 
     user_list = []
     for i in range(len(first_names)):
