@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.1.1 [unreleased]
+------------------
+
+Bugfixes:
+* Fix a bug in v2.1.0 that caused UnboundLocalError in flask_admin.contrib.sqla.ModelView when an exception was raised during a create or update operation
+
 2.1.0
 -----
 

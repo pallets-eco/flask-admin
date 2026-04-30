@@ -1370,11 +1370,11 @@ class ModelView(BaseModelView):
         :param form:
             Form instance
         """
+        session = _get_deprecated_session(self.session)
         try:
             model = self.build_new_instance()
 
             form.populate_obj(model)
-            session = _get_deprecated_session(self.session)
             session.add(model)
             self._on_model_change(form, model, True)
             session.commit()
@@ -1403,10 +1403,10 @@ class ModelView(BaseModelView):
         :param model:
             Model instance
         """
+        session = _get_deprecated_session(self.session)
         try:
             form.populate_obj(model)
             self._on_model_change(form, model, False)
-            session = _get_deprecated_session(self.session)
             session.commit()
         except Exception as ex:
             if not self.handle_view_exception(ex):
