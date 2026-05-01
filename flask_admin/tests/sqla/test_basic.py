@@ -1833,6 +1833,139 @@ def test_column_filters_sqla_obj(app, sqla_db_ext, admin, session_or_db):
         assert len(view._filters) == 7
 
 
+def test_column_filters_dotted_path(app, sqla_db_ext, admin, session_or_db):
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+
+        # FilterInList with a dotted path traverses Model2 -> model1 -> test1.
+        flt = filters.FilterInList(column="model1.test1", name="Model1 Test1")
+        view = CustomModelView(
+            Model2, param, column_filters=[flt], endpoint="_dotted_path"
+        )
+        admin.add_view(view)
+
+        # Binding resolves the string into the real attribute and records joins.
+        assert flt._bound is True
+        assert flt.column is Model1.test1
+        assert flt._joins  # at least one relationship to traverse
+        assert flt.key_name == "model1.test1"
+        assert "model1.test1" in view._filter_joins
+
+        client = app.test_client()
+        rv = client.get("/admin/_dotted_path/?flt0_0=test1_val_1")
+        assert rv.status_code == 200
+        data = rv.data.decode("utf-8")
+        assert "test2_val_1" in data  # joined row matches
+        assert "test2_val_2" not in data  # joined row excluded
+
+
+def test_column_filters_dotted_path_unresolvable(
+    app, sqla_db_ext, admin, session_or_db
+):
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+
+        flt = filters.FilterInList(column="does_not_exist", name="Missing")
+        # Path is unresolved until the view binds it.
+        assert flt._bound is False
+        assert flt.column == "does_not_exist"
+
+        with pytest.raises(ValueError, match="Could not resolve filter path"):
+            CustomModelView(
+                Model2, param, column_filters=[flt], endpoint="_dotted_path_bad"
+            )
+
+
+def test_column_filters_dotted_path_relationship_raises(
+    app, sqla_db_ext, admin, session_or_db
+):
+    """A path that resolves to a relationship (not a column) is rejected."""
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+
+        # `model1` on Model2 is the relationship itself, not a column.
+        flt = filters.FilterEqual(column="model1", name="Model1")
+
+        with pytest.raises(ValueError, match="Cannot filter on relationship"):
+            CustomModelView(
+                Model2, param, column_filters=[flt], endpoint="_dotted_path_rel"
+            )
+
+
+def test_column_filters_dotted_path_reuse_same_model(
+    app, sqla_db_ext, admin, session_or_db
+):
+    """A string-path filter can be reused across views over the same model."""
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+
+        flt = filters.FilterInList(column="model1.test1", name="Model1 Test1")
+
+        view1 = CustomModelView(
+            Model2, param, column_filters=[flt], endpoint="_reuse_same_1"
+        )
+        view2 = CustomModelView(
+            Model2, param, column_filters=[flt], endpoint="_reuse_same_2"
+        )
+
+        # Both views resolved against the same model; rebind is a no-op.
+        assert flt._bound_model is Model2
+        assert "model1.test1" in view1._filter_joins
+        assert "model1.test1" in view2._filter_joins
+
+
+def test_column_filters_dotted_path_rebind_different_model_raises(
+    app, sqla_db_ext, admin, session_or_db
+):
+    """A string-path filter cannot be reused across views with different models."""
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+
+        flt = filters.FilterInList(column="model1.test1", name="Model1 Test1")
+        # First view binds the filter to Model2.
+        CustomModelView(Model2, param, column_filters=[flt], endpoint="_rebind_first")
+        assert flt._bound_model is Model2
+
+        # Re-using the same filter against a different model raises loudly.
+        with pytest.raises(RuntimeError, match="cannot rebind to"):
+            CustomModelView(
+                Model1,
+                param,
+                column_filters=[flt],
+                endpoint="_rebind_second",
+            )
+
+
+def test_enum_filter_dotted_path(app, sqla_db_ext, admin, session_or_db):
+    """Verify _on_column_resolved hook fires for Enum filters with string columns."""
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+
+        flt = filters.EnumEqualFilter(
+            column="model1.enum_type_field", name="Model1 Enum"
+        )
+        # Before binding, enum_class is unset because column was a string.
+        assert flt.enum_class is None
+
+        view = CustomModelView(
+            Model2, param, column_filters=[flt], endpoint="_dotted_enum"
+        )
+        admin.add_view(view)
+
+        # Binding ran the hook, which populated enum_class from the resolved column.
+        assert flt._bound is True
+        assert flt.enum_class is Model1.EnumChoices
+        assert flt.column is Model1.enum_type_field
+
+
 def test_hybrid_property(app, sqla_db_ext, admin, session_or_db):
     with app.app_context():
 
