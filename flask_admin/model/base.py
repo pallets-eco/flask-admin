@@ -9,7 +9,6 @@ import typing as t
 import warnings
 from collections import OrderedDict
 from math import ceil
-from typing import cast
 
 from flask import abort
 from flask import current_app
@@ -32,7 +31,6 @@ from .._types import T_FIELD_ARGS_VALIDATORS_FILES
 from .._types import T_FILTER
 from .._types import T_INSTRUMENTED_ATTRIBUTE
 from .._types import T_ORM_MODEL
-from .._types import T_PEEWEE_FIELD
 from .._types import T_QUERY_AJAX_MODEL_LOADER
 from .._types import T_RESPONSE
 from .._types import T_RULES_SEQUENCE
@@ -138,7 +136,7 @@ class FilterGroup:
     def append(self, filter: dict[t.Any, t.Any]) -> None:
         self.filters.append(filter)
 
-    def non_lazy(self) -> tuple[str, list[dict[t.Any, t.Any]]]:
+    def non_lazy(self) -> tuple[str, list[dict[str, t.Any]]]:
         filters = []
         for item in self.filters:
             copy = dict(item)
@@ -247,7 +245,7 @@ class BaseModelView(BaseView, ActionsMixin):
     """Setting this to true will display the details_view as a modal dialog."""
 
     # Customizations
-    column_list: T_COLUMN_LIST | None = cast(
+    column_list: T_COLUMN_LIST | None = t.cast(
         None, ObsoleteAttr("column_list", "list_columns", None)
     )
     """
@@ -269,7 +267,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_list = ('<relationship>.<related column name>',)
     """
 
-    column_exclude_list: t.Sequence[str] | None = cast(
+    column_exclude_list: t.Sequence[str] | None = t.cast(
         None, ObsoleteAttr("column_exclude_list", "excluded_list_columns", None)
     )
     """
@@ -303,7 +301,7 @@ class BaseModelView(BaseView, ActionsMixin):
         Collection of fields excluded from the export.
     """
 
-    column_formatters: T_COLUMN_FORMATTERS = cast(
+    column_formatters: T_COLUMN_FORMATTERS = t.cast(
         T_COLUMN_FORMATTERS,
         ObsoleteAttr("column_formatters", "list_formatters", dict()),
     )
@@ -359,7 +357,7 @@ class BaseModelView(BaseView, ActionsMixin):
         that macros are not supported.
     """
 
-    column_type_formatters: T_COLUMN_TYPE_FORMATTERS | None = cast(
+    column_type_formatters: T_COLUMN_TYPE_FORMATTERS | None = t.cast(
         None, ObsoleteAttr("column_type_formatters", "list_type_formatters", None)
     )
     """
@@ -433,7 +431,7 @@ class BaseModelView(BaseView, ActionsMixin):
         Functions the same way as column_type_formatters.
     """
 
-    column_labels: dict[str, str] = cast(
+    column_labels: dict[str, str] = t.cast(
         dict[str, str], ObsoleteAttr("column_labels", "rename_columns", None)
     )
     """
@@ -458,7 +456,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 )
     """
 
-    column_sortable_list: T_COLUMN_LIST | None = cast(
+    column_sortable_list: T_COLUMN_LIST | None = t.cast(
         None,
         ObsoleteAttr("column_sortable_list", "sortable_columns", None),
     )
@@ -512,7 +510,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 column_default_sort = [('name', True), ('last_name', True)]
     """
 
-    column_searchable_list: T_COLUMN_LIST | None = cast(
+    column_searchable_list: T_COLUMN_LIST | None = t.cast(
         None,
         ObsoleteAttr("column_searchable_list", "searchable_columns", None),
     )
@@ -558,10 +556,23 @@ class BaseModelView(BaseView, ActionsMixin):
         Can contain either field names or instances of
         :class:`~flask_admin.model.filters.BaseFilter` classes.
 
+        Field names may be plain column names or dotted paths that walk
+        across relationships, e.g. ``"author.email"``.
+
+        For SQLAlchemy views the same dotted-path syntax can be passed as
+        the ``column`` argument when constructing a filter instance, in
+        which case it is resolved against the view's model and any joins
+        required to reach the target column are added automatically.
+
         Example::
 
             class MyModelView(BaseModelView):
-                column_filters = ('user', 'email')
+                column_filters = (
+                    'user',
+                    'email',
+                    'author.email',  # walks a relationship
+                    FilterEqual(column='author.email', name='Author Email'),
+                )
     """
 
     named_filter_urls: bool = False
@@ -573,7 +584,7 @@ class BaseModelView(BaseView, ActionsMixin):
         Changing this parameter will break any existing URLs that have filters.
     """
 
-    column_display_pk: bool = cast(
+    column_display_pk: bool = t.cast(
         bool, ObsoleteAttr("column_display_pk", "list_display_pk", False)
     )
     """
@@ -690,7 +701,7 @@ class BaseModelView(BaseView, ActionsMixin):
         or you will need to use `inline_models`.
     """
 
-    form_excluded_columns: t.Collection[str] = cast(
+    form_excluded_columns: t.Collection[str] = t.cast(
         t.Collection[str],
         ObsoleteAttr("form_excluded_columns", "excluded_form_columns", None),
     )
@@ -776,10 +787,7 @@ class BaseModelView(BaseView, ActionsMixin):
     form_ajax_refs: (
         dict[
             str,
-            AjaxModelLoader
-            | dict[
-                str | T_COLUMN, str | t.Iterable[str | T_PEEWEE_FIELD | T_COLUMN] | int
-            ],
+            AjaxModelLoader | dict[str, t.Any],
         ]
         | None
     ) = None
@@ -856,7 +864,7 @@ class BaseModelView(BaseView, ActionsMixin):
     """
 
     # Actions
-    action_disallowed_list: t.Sequence[str] = cast(
+    action_disallowed_list: t.Sequence[str] = t.cast(
         t.Sequence[str],
         ObsoleteAttr("action_disallowed_list", "disallowed_actions", []),
     )
@@ -1369,7 +1377,7 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             return str(index)
 
-    def _get_filter_groups(self) -> OrderedDict[str, FilterGroup] | None:
+    def _get_filter_groups(self) -> OrderedDict[str, list[dict[str, t.Any]]] | None:
         """
         Returns non-lazy version of filter strings
         """
@@ -1379,7 +1387,6 @@ class BaseModelView(BaseView, ActionsMixin):
             for group in itervalues(self._filter_groups):
                 key, items = group.non_lazy()
                 results[key] = items
-
             return results
 
         return None
@@ -1448,6 +1455,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 def get_list_form(self):
                     return self.scaffold_list_form(widget=CustomWidget)
         """
+        validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None
         if self.form_args:
             # get only validators, other form_args can break FieldList wrapper
             validators = dict(
@@ -1455,8 +1463,6 @@ class BaseModelView(BaseView, ActionsMixin):
                 for key, value in iteritems(self.form_args)
                 if value.get("validators")
             )
-        else:
-            validators = None
 
         return self.scaffold_list_form(validators=validators)
 

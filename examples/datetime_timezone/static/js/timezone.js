@@ -7,23 +7,23 @@ fetch('/set_timezone', {
   body: JSON.stringify(Intl.DateTimeFormat().resolvedOptions().timeZone)
 })
 
-
 // convert all datetime fields to client timezone
 function localizeDateTimes() {
   const inputsOrSpans = document.querySelectorAll('input[data-date-format], span.timezone-aware');
 
   inputsOrSpans.forEach(element => {
-    let localizedTime;
+    const isInput = element.tagName.toLowerCase() === 'input';
+    const rawValue = isInput
+      ? element.getAttribute("value")
+      : element.textContent.trim();
 
-    const isInput = element.tagName.toLowerCase() === 'input'
-    // Check if the element is an input or a span
-    if (isInput) {
-      // For input elements, use the value attribute
-      localizedTime = new Date(element.getAttribute("value") + "Z");
-    } else {
-      // For span elements, use the text content
-      localizedTime = new Date(element.textContent.trim() + "Z");
-    }
+    // Skip empty, missing, or Python "None" values
+    if (!rawValue || rawValue === 'None') return;
+
+    const localizedTime = new Date(rawValue + "Z");
+
+    // Skip if the date parsed as invalid
+    if (isNaN(localizedTime.getTime())) return;
 
     const formattedTime = moment(localizedTime).format('YYYY-MM-DD HH:mm:ss');
 

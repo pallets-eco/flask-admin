@@ -1,6 +1,40 @@
 Changelog
 =========
 
+[unreleased]
+------------------
+
+New Features:
+* SQLAlchemy filter classes (``FilterEqual``, ``FilterLike``, etc.) now accept a dotted-path string for the ``column`` argument (e.g. ``FilterEqual(column="author.email", name="Author Email")``); the path is resolved against the view's model and the necessary joins are added automatically.
+
+Bugfixes:
+* Fix a bug in v2.1.0 that caused UnboundLocalError in flask_admin.contrib.sqla.ModelView when an exception was raised during a create or update operation
+
+2.1.0
+-----
+
+Deprecations:
+
+* Deprecate ModelView(Model, db.session) in favor of ModelView(Model, db): https://github.com/pallets-eco/flask-admin/pull/2717
+
+New Features:
+
+* Flask-SQLAlchemy-Lite support: https://github.com/pallets-eco/flask-admin/pull/2789
+* Add page title header with icon above every view via new {% block page_title %}: https://github.com/pallets-eco/flask-admin/pull/2706
+* Upgrade bundled Bootstrap from 4.2.1 to 4.6.2 and remove unminified files: https://github.com/pallets-eco/flask-admin/pull/2787
+* Flash error message on form validation failure (“Failed to create/save record”): https://github.com/pallets-eco/flask-admin/pull/2738
+
+Bugfixes:
+
+* Fix CSS class on column headers (dots replaced with dashes e.g.: col-user.email → col-user-email): https://github.com/pallets-eco/flask-admin/pull/2730
+* Return HTTP 403 instead of 500 when inaccessible_callback returns None: https://github.com/pallets-eco/flask-admin/pull/2793
+* FileAdmin: show empty date instead of 1970-01-01 when directory has no timestamp: https://github.com/pallets-eco/flask-admin/pull/2721
+* Fix “Save & Add Another” using non-relative redirect URL (broke behind reverse proxies): https://github.com/pallets-eco/flask-admin/pull/2716
+
+Others:
+
+* Improved examples, tests, type hints
+
 2.0.2
 -----
 

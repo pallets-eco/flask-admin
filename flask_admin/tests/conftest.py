@@ -6,7 +6,6 @@ from flask import Flask
 from jinja2 import StrictUndefined
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import clear_mappers
 
 from flask_admin import Admin
 
@@ -58,10 +57,10 @@ if HAS_SQLALCHEMY_2:
     class SQLALiteProvider:
         def __init__(self, engine_options: dict[str, t.Any] | None = None):
             # must be in __init__ to avoid leaking db instances btw tests
-            from flask_sqlalchemy_lite import SQLAlchemy
+            from flask_sqlalchemy_lite import SQLAlchemy as SQLAlchemyLite
 
             # This ensures the engine created by lite-sqla is stable
-            self.db = SQLAlchemy(engine_options=engine_options or {})
+            self.db = SQLAlchemyLite(engine_options=engine_options or {})
 
             class SqlAlchemyBase(DeclarativeBase):
                 pass
@@ -105,7 +104,7 @@ def admin(app, babel):
     yield admin
 
 
-def configure_sqla(app: Flask, uri: str, request):
+def configure_sqla(app: Flask, uri: str, request: pytest.FixtureRequest) -> None:
     """
     Sets common app config.
     Function calling must have @pytest.fixture(params=sqla_db_exts)
@@ -119,49 +118,6 @@ def configure_sqla(app: Flask, uri: str, request):
         app.config["SQLALCHEMY_ENGINES"] = {"default": uri}
 
 
-def close_db(app: Flask, p: SQLAProvider):
-    """
-    Handles cleanup for both flask_sqlalchemy and flask_sqlalchemy_lite.
-    """
-    pass
-    # if p and hasattr(p.db, "session") and hasattr(p.db.session, "remove"):
-    #     p.db.session.remove()
-    #
-    # if hasattr(p.db, 'engine'):
-    #     p.db.engine.dispose()
-    #
-    # # Clear the registry and metadata
-    # if hasattr(p, "Base"):
-    #     # For SQLAlchemy 2.x DeclarativeBase
-    #     if hasattr(p.Base, "registry"):
-    #         # Use try-except because locally defined classes in tests
-    #         # often cause instrumentation issues during dispose()
-    #         try:
-    #             p.Base.registry.dispose()
-    #         except AttributeError:
-    #             pass
-    #     # For legacy/standard metadata
-    #     if hasattr(p.Base, "metadata"):
-    #         p.Base.metadata.clear()
-
-    # OClear mappers for SQLA 1.x compatibility
-    try:
-        clear_mappers()
-    except (AttributeError, Exception):
-        # Some mapper configurations (like single table inheritance)
-        # can cause issues during cleanup - ignore these
-        pass
-
-    # Dispose engines to prevent unclosed connection warnings
-    # db_ext = app.extensions.get("sqlalchemy")
-    # if db_ext:
-    #     engines = getattr(db_ext, "engines", {}).values()
-    #     for engine in engines:
-    #         engine.dispose()
-    #     # Remove the extension so init_app doesn't crash on the next run
-    #     del app.extensions["sqlalchemy"]
-
-
 @pytest.fixture(params=sqla_db_exts)
 def sqla_db_ext(request, app):
     uri = "sqlite:///:memory:"
@@ -171,7 +127,6 @@ def sqla_db_ext(request, app):
 
     with app.app_context():
         yield p
-        close_db(app, p)
 
 
 @pytest.fixture(
@@ -182,3 +137,30 @@ def sqla_db_ext(request, app):
 )
 def session_or_db(request):
     return request.param
+
+
+def skip_or_return_session_or_db(
+    extension: "SQLAProvider | SQLALiteProvider", string: t.Literal["session", "db"]
+) -> t.Any:
+    """
+    Helper function to skip tests (when using SQLALiteProvider and deprecated session)
+    or to return the appropriate parameter (extension.db.session or extension.db) for
+    other cases.
+
+    Returns
+    -------
+    object
+        - `extension.db.session` when `string == "session"` and the provider supports it
+        - `extension.db` when any other object is requested.
+
+    Raises
+    ------
+    pytest.skip
+        If `"session"` is requested while using `SQLALiteProvider`.
+    """
+    if extension.__class__.__name__ == "SQLALiteProvider" and string == "session":
+        pytest.skip("SQLALiteProvider does not support session")
+    elif string == "session":
+        return extension.db.session
+    else:
+        return extension.db

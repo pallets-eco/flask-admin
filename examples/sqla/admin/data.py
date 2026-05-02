@@ -6,6 +6,8 @@ from datetime import timedelta
 
 import arrow
 from admin import db
+from admin.models import Account
+from admin.models import AccountProvider
 from admin.models import AVAILABLE_USER_TYPES
 from admin.models import Model1
 from admin.models import Post
@@ -87,6 +89,13 @@ def build_sample_db():
         ("CN", "China", 86, "CNY", "Asia/Shanghai"),
     ]
 
+    accounts = []
+    for first in first_names:
+        provider = random.choice([e.value for e in AccountProvider])
+        account = Account(username=f"{first.lower()}_{provider}", provider=provider)
+        accounts.append(account)
+    db.session.add_all(accounts)
+
     user_list = []
     for i in range(len(first_names)):
         user = User()
@@ -95,6 +104,7 @@ def build_sample_db():
         user.first_name = first_names[i]
         user.last_name = last_names[i]
         user.email = first_names[i].lower() + "@example.com"
+        user.account = accounts[i]
 
         user.website = "https://www.example.com"
         user.ip_address = "127.0.0.1"
