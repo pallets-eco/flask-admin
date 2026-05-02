@@ -803,7 +803,7 @@ def test_column_editable_list_with_column_formatter(
 
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
 
         view = CustomModelView(
             Model1,
