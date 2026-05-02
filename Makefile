@@ -154,7 +154,8 @@ doctest:
 
 .PHONY: test-in-docker
 test-in-docker:
-	docker compose -f .devcontainer/tests/docker-compose.yaml run --remove-orphans app uv run pytest
+	docker compose -f .devcontainer/tests/docker-compose.yaml build app
+	docker compose -f .devcontainer/tests/docker-compose.yaml run --remove-orphans app uv run --no-sync pytest
 
 .PHONY: tox-in-docker
 tox-in-docker:
