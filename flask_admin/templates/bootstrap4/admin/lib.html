@@ -251,9 +251,48 @@
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.css', v='1.0.2') }}" rel="stylesheet">
   <link href="{{ admin_static.url(filename='vendor/leaflet/leaflet.draw.css', v='0.4.6') }}" rel="stylesheet">
   {% endif %}
-  {% if editable_columns is defined and editable_columns %}
-  <link href="{{ admin_static.url(filename='vendor/x-editable/css/bootstrap4-editable.css', v='1.5.1.1') }}" rel="stylesheet">
-  {% endif %}
+  <style>
+    .editable-popover {
+      position: fixed;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.2);
+      border-radius: .3rem;
+      box-shadow: 0 .25rem .5rem rgba(0,0,0,0.1);
+      padding: .75rem 1rem;
+      z-index: 1050;
+      white-space: nowrap;
+    }
+    .editable-popover .editable-form {
+      gap: .5rem !important;
+    }
+    .editable-popover .btn-sm {
+      padding: .375rem .5rem;
+      font-size: .875rem;
+    }
+    .editable-popover textarea {
+      min-height: 7.5em;
+      min-width: 15em;
+    }
+    .editable-popover-arrow {
+      position: absolute;
+      top: -6px;
+      left: 20px;
+      width: 12px;
+      height: 12px;
+      background: #fff;
+      border-left: 1px solid rgba(0,0,0,0.2);
+      border-top: 1px solid rgba(0,0,0,0.2);
+      transform: rotate(45deg);
+    }
+    .editable-cell {
+      color: #007bff;
+      border-bottom: 1px dashed #007bff;
+      cursor: pointer;
+    }
+    .editable-cell:hover {
+      border-bottom-style: solid;
+    }
+  </style>
 {% endmacro %}
 
 {% macro form_js() %}
@@ -280,7 +319,7 @@
   {% endif %}
   <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker.js', v='1.3.22') }}"></script>
   {% if editable_columns is defined and editable_columns %}
-  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/x-editable/js/bootstrap4-editable.min.js', v='1.5.1.1') }}"></script>
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/htmx/htmx.min.js', v='2.0.8') }}"></script>
   {% endif %}
   <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/form.js', v='1.0.1') }}"></script>
 {% endmacro %}
