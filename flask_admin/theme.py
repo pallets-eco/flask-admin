@@ -23,11 +23,12 @@ class BootstrapTheme(Theme):
         )
         admin = Admin(app, name='microblog', theme=t)
     """
-
-    folder: typing.Literal["bootstrap4"]
+    folder: typing.Literal["bootstrap4", "tabler"]
     base_template: str = "admin/base.html"
     swatch: str = "default"
     fluid: bool = False
 
 
 Bootstrap4Theme = partial(BootstrapTheme, folder="bootstrap4")
+
+TablerTheme = partial(BootstrapTheme, folder="tabler")
