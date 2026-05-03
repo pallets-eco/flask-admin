@@ -14,6 +14,7 @@ from wtforms import validators
 
 from . import app
 from . import db
+from .models import AccountProvider
 from .models import AVAILABLE_USER_TYPES
 from .models import Post
 from .models import Tag
@@ -256,6 +257,16 @@ class PostAdmin(ModelView):
             Post.title,
             "Fixed Title",
             options=(("test1", "Test 1"), ("test2", "Test 2")),
+        ),
+        # Filter instances also accept a dotted-path string for ``column``;
+        # it is resolved against the view's model and the necessary joins
+        # are added automatically. Paths can traverse multiple
+        # relationships, e.g. Post -> user -> account -> username.
+        filters.FilterLike(column="user.email", name="Author Email"),
+        filters.FilterInList(
+            column="user.account.provider",
+            name="Author's Account Provider",
+            options=[(e.value, e.value) for e in AccountProvider],
         ),
     ]
     can_export = True
