@@ -1,0 +1,108 @@
+/* Flask-Admin Tabler Theme — admin.css
+   Minimal overrides to make Flask-Admin widgets blend with Tabler 1.4.0.
+*/
+
+/* --- General tweaks --- */
+.admin-form fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tabler-admin-header .navbar-brand {
+  margin-right: 1rem;
+}
+
+.tabler-admin-navbar-collapse {
+  justify-content: space-between;
+}
+
+.tabler-admin-navbar-secondary .navbar-nav,
+.tabler-admin-navbar-collapse .navbar-nav {
+  flex-wrap: wrap;
+}
+
+.tabler-admin-navbar-secondary .nav-item.dropdown .dropdown-menu,
+.tabler-admin-navbar-collapse .nav-item.dropdown .dropdown-menu {
+  position: absolute;
+}
+
+.submit-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* --- List view --- */
+.model-list th.list-checkbox-column,
+.model-list td.list-checkbox-column {
+  width: 2rem;
+  text-align: center;
+}
+
+.list-buttons-column {
+  white-space: nowrap;
+}
+
+.list-buttons-column form.icon {
+  display: inline;
+}
+
+.list-buttons-column form.icon button {
+  background: none;
+  border: none;
+  padding: 0 0.25rem;
+  cursor: pointer;
+  color: var(--tblr-secondary);
+}
+
+.list-buttons-column form.icon button:hover {
+  color: var(--tblr-danger);
+}
+
+.list-buttons-column a.icon {
+  padding: 0 0.25rem;
+  color: var(--tblr-secondary);
+}
+
+.list-buttons-column a.icon:hover {
+  color: var(--tblr-primary);
+}
+
+/* --- Inline fields --- */
+.inline-field .inline-field-list .inline-field {
+  margin-bottom: 1rem;
+}
+
+.inline-remove-field {
+  color: var(--tblr-danger);
+}
+
+/* --- Filters --- */
+.filters td {
+  padding: 0.25rem;
+}
+
+.field-filters .filter {
+  cursor: pointer;
+}
+
+/* --- Select2 integration --- */
+.select2-container {
+  min-width: 100%;
+}
+
+/* --- Nav tabs used in model views --- */
+.nav-tabs {
+  margin-bottom: 1rem;
+}
+
+/* --- Pagination alignment --- */
+.pagination {
+  margin-top: 1rem;
+}
+
+/* --- Flash messages --- */
+.alert-dismissible .btn-close {
+  padding: 0.75rem 1rem;
+}

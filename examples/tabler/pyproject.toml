@@ -1,0 +1,14 @@
+[project]
+name = "example-tabler"
+version = "0.1.0"
+description = "Example Tabler UI."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "flask-admin[sqlalchemy-with-utils]",
+  "flask-debugtoolbar",
+  "flask-debugtoolbar-extrapanels",
+]
+
+[tool.uv.sources]
+flask-admin = { path = "../../", editable = true }
