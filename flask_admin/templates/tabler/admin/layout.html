@@ -8,7 +8,7 @@
 <i class="{{ icon_value }}"></i>
 {% elif icon_type == 'fa' %}
 <i class="fa fa-{{ icon_value }}"></i>
-{% elif icon_type == 'tabler' %}
+{% elif icon_type == 'ti' %}
 <i class="ti ti-{{ icon_value }}"></i>
 {% elif icon_type == 'image' %}
 <img src="{{ url_for('static', filename=icon_value) }}" alt="menu image">
@@ -29,14 +29,15 @@
 {%- if children %}
 {% set class_name = item.get_class_name() or '' %}
 
+{% set _sidebar = admin_view.admin.theme.is_sidebar_layout %}
 <li class="nav-item dropdown {% if item.is_active(admin_view) %}active{% endif %}">
-  <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="false" href="javascript:void(0)" role="button" aria-haspopup="true"
-    aria-expanded="{{ 'true' if item.is_active(admin_view) else 'false' }}" {% if item.is_active(admin_view) %}aria-current="page" {% endif %}>
+  <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="{{ 'false' if _sidebar else 'true' }}" href="javascript:void(0)" role="button" aria-haspopup="true"
+    aria-expanded="{{ 'true' if item.is_active(admin_view) and _sidebar else 'false' }}" {% if item.is_active(admin_view) %}aria-current="page" {% endif %}>
     {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}
     <span class="nav-link-icon d-md-none d-lg-inline-block">{{ menu_icon(item) }}</span>
     <span class="nav-link-title">{{ item.name }}</span>
   </a>
-  <div class="dropdown-menu {% if item.is_active(admin_view) %}show{% endif %}">
+  <div class="dropdown-menu {% if item.is_active(admin_view) and _sidebar %}show{% endif %}">
     {%- for child in children -%}
     {%- if child.is_category() -%}
     {{ menu(menu_root=[child]) }}

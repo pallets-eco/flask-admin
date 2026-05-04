@@ -33,10 +33,10 @@ class BootstrapTheme(Theme):
 TablerLayout = t.Literal["vertical", "fluid", "condensed"]
 
 
-def _validate_choice(name: str, value: str, choices: tuple[str, ...]) -> None:
+def _validate_choice(value: str, choices: tuple[str, ...]) -> None:
     if value not in choices:
         supported = ", ".join(choices)
-        raise ValueError(f"Unsupported {name!r}: {value!r}. Expected one of: {supported}")
+        raise ValueError(f"Unsupported layout: {value}. Expected one of: {supported}")
 
 
 @dataclass
@@ -51,11 +51,7 @@ class TablerUITheme(Theme):
         admin = Admin(app, name="my app", theme=TablerTheme(layout="vertical"))
     """
 
-    VALID_LAYOUTS: t.ClassVar[tuple[TablerLayout, ...]] = (
-        "vertical",
-        "fluid",
-        "condensed",
-    )
+    VALID_LAYOUTS = t.get_args(TablerLayout)
 
     folder: str = "tabler"
     base_template: str = "admin/base.html"
@@ -71,7 +67,7 @@ class TablerUITheme(Theme):
     theme_radius: str = "1"  # "0" | "0.5" | "1" | "1.5" | "2"
 
     def __post_init__(self) -> None:
-        _validate_choice("layout", self.layout, self.VALID_LAYOUTS)
+        _validate_choice(self.layout, self.VALID_LAYOUTS)
 
     @property
     def is_sidebar_layout(self) -> bool:

@@ -1,18 +1,9 @@
-// Vanilla JS replacement for bs4_filters.js.
-// No jQuery, no select2. Works with Bootstrap 5 / Tabler.
-//
-// Data contract (unchanged from bs4 version):
-//   #filter-groups-data  — JSON blob of filter group definitions
-//   #active-filters-data — JSON blob of currently active filters
-//   #filter_form         — the filter <form> element
-//   .field-filters       — the dropdown menu whose <a class="filter"> items add filters
+// bs4 converted to tabler
 
 const AdminFilters = function (element, filtersElement, filterGroups, activeFilters) {
     const root = document.querySelector(element);
     const filterTable = root.querySelector('.filters');
     let lastCount = 0;
-
-    // ── helpers ──────────────────────────────────────────────────────────────
 
     function getCount(name) {
         const idx = name.indexOf('_');
@@ -36,7 +27,7 @@ const AdminFilters = function (element, filtersElement, filterGroups, activeFilt
         });
     }
 
-    // Return the appropriate <input> type for a filter based on its type tag.
+    // Return correct <input>
     function inputTypeFor(filter) {
         switch (filter.type) {
             case 'datepicker':
@@ -53,9 +44,6 @@ const AdminFilters = function (element, filtersElement, filterGroups, activeFilt
         }
     }
 
-    // ── filter row management ────────────────────────────────────────────────
-
-    // Build and insert the value <td>, replacing the placeholder td.
     function createFilterInput(placeholderTd, filterValue, filter) {
         const td = document.createElement('td');
         let field;
@@ -87,7 +75,6 @@ const AdminFilters = function (element, filtersElement, filterGroups, activeFilt
         return field;
     }
 
-    // Rebuild the value cell when the operation <select> changes.
     function changeOperation(subfilters, row, opSelect) {
         const selectedFilter = subfilters[opSelect.selectedIndex];
         const lastTd = row.querySelector('td:last-child');
@@ -106,7 +93,6 @@ const AdminFilters = function (element, filtersElement, filterGroups, activeFilt
     }
 
     function addFilter(name, subfilters, selectedIndex, filterValue) {
-        // Ensure a <tbody> exists in the filter table.
         let tbody = filterTable.querySelector('tbody');
         if (!tbody) {
             tbody = document.createElement('tbody');
@@ -116,7 +102,6 @@ const AdminFilters = function (element, filtersElement, filterGroups, activeFilt
         const row = document.createElement('tr');
         tbody.appendChild(row);
 
-        // Cell 1: remove button + filter name label.
         const labelTd = document.createElement('td');
         const removeBtn = document.createElement('a');
         removeBtn.href = '#';
@@ -129,7 +114,6 @@ const AdminFilters = function (element, filtersElement, filterGroups, activeFilt
         labelTd.appendChild(removeBtn);
         row.appendChild(labelTd);
 
-        // Cell 2: operation <select> (equals, not equals, …).
         const opTd = document.createElement('td');
         const opSelect = document.createElement('select');
         opSelect.className = 'filter-op form-select form-select-sm';
@@ -148,7 +132,6 @@ const AdminFilters = function (element, filtersElement, filterGroups, activeFilt
         opTd.appendChild(opSelect);
         row.appendChild(opTd);
 
-        // Cell 3: value input (placeholder replaced by createFilterInput).
         const valueTd = document.createElement('td');
         row.appendChild(valueTd);
 
@@ -163,9 +146,6 @@ const AdminFilters = function (element, filtersElement, filterGroups, activeFilt
         return field;
     }
 
-    // ── event wiring ─────────────────────────────────────────────────────────
-
-    // "Add Filter" dropdown clicks.
     const filtersMenu = document.querySelector(filtersElement);
     if (filtersMenu) {
         filtersMenu.addEventListener('click', function (e) {
@@ -177,7 +157,6 @@ const AdminFilters = function (element, filtersElement, filterGroups, activeFilt
         });
     }
 
-    // Restore active filters on page load.
     activeFilters.forEach(function (activeFilter) {
         const idx = activeFilter[0];
         const name = activeFilter[1];
@@ -185,7 +164,6 @@ const AdminFilters = function (element, filtersElement, filterGroups, activeFilt
         addFilter(name, filterGroups[name], idx, filterValue);
     });
 
-    // Sync lastCount from any pre-rendered filter-val inputs.
     root.querySelectorAll('.filter-val').forEach(function (el) {
         const count = getCount(el.name || '');
         if (count > lastCount) lastCount = count;
