@@ -44,7 +44,7 @@ toolbar.init_app(app)
 admin = Admin(
     app,
     name="Example: Tabler",
-    theme=TablerTheme(layout="fluid")
+    theme=TablerTheme(layout="condensed")
 )
 
 
@@ -71,6 +71,7 @@ class Page(db.Model):
     title: Mapped[str] = mapped_column(String(64))
     content: Mapped[Text] = mapped_column(Text)
     meta_data: Mapped[dict] = mapped_column(JSON, default=dict, server_default=text("'{}'"))
+
     def __repr__(self):
         return self.title
 
@@ -96,11 +97,11 @@ class FileAdminModal(FileAdmin):
     upload_modal = True
 
 
-# class PageWithModalView(ModelView):
-#     create_modal = True
-#     edit_modal = True
-#     details_modal = True
-#     can_view_details = True
+class PageWithModalView(ModelView):
+    create_modal = True
+    edit_modal = True
+    details_modal = True
+    can_view_details = True
 
 
 with app.app_context():
@@ -111,47 +112,51 @@ if __name__ == "__main__":
         UserAdmin(
             User,
             db,
+            category="Menu",
+            menu_icon_type="ti",
+            menu_icon_value="user",
+            menu_class_name="text-warning",
         )
     )
-    # admin.add_menu_item(MenuDivider(), target_category="Menu")
-    admin.add_view(SimplePageView(Page, db))
+    admin.add_menu_item(MenuDivider(), target_category="Menu")
+    admin.add_view(SimplePageView(Page, db, category="Menu", name="Simple Page"))
 
-    # admin.add_view(
-    #     PageWithModalView(
-    #         Page, db, category="Menu", endpoint="page-modal", name="Page-Modal"
-    #     )
-    # )
-
-    # admin.add_view(
-    #     ModelView(
-    #         Page,
-    #         db,
-    #         name="Page-with-icon",
-    #         endpoint="page2",
-    #         menu_class_name="text-danger",
-    #         menu_icon_type="fa",
-    #         menu_icon_value="fa-file",
-    #     )
-    # )
-
-    admin.add_view(FileAdmin("files/", name="Local Files"))
     admin.add_view(
-        FileAdminModal("files/", name="Local Files with Modals")
+        PageWithModalView(
+            Page, db, category="Menu", endpoint="page-modal", name="Page-Modal"
+        )
     )
 
-    # admin.add_link(
-    #     MenuLink(
-    #         name="link1",
-    #         url="http://www.example.com/",
-    #         class_name="text-warning bg-danger",
-    #         icon_type="fa",
-    #         icon_value="fa-external-link",
-    #     )
-    # )
-    # admin.add_link(
-    #     MenuLink(name="link2", url="http://www.example.com/", class_name="text-danger")
-    # )
-    # admin.add_link(MenuLink(name="Link3", url="http://www.example.com/"))
+    admin.add_view(
+        ModelView(
+            Page,
+            db,
+            name="Page-with-icon",
+            endpoint="page2",
+            menu_class_name="text-danger",
+            menu_icon_type="ti",
+            menu_icon_value="file",
+        )
+    )
+
+    admin.add_view(FileAdmin("files/", name="Local Files", category="Menu"))
+    admin.add_view(
+        FileAdminModal("files/", name="Local Files with Modals", category="Menu")
+    )
+
+    admin.add_link(
+        MenuLink(
+            name="link1",
+            url="http://www.example.com/",
+            class_name="text-warning bg-danger",
+            icon_type="ti",
+            icon_value="link",
+        )
+    )
+    admin.add_link(
+        MenuLink(name="link2", url="http://www.example.com/", class_name="text-danger")
+    )
+    admin.add_link(MenuLink(name="Link3", url="http://www.example.com/"))
 
     # admin.add_sub_category(name="Links", parent_name="Menu")
     # admin.add_link(
@@ -160,8 +165,8 @@ if __name__ == "__main__":
     #         url="http://www.example.com/",
     #         category="Links",
     #         class_name="text-info",
-    #         icon_type="fa",
-    #         icon_value="fa-external-link",
+    #         icon_type="ti",
+    #         icon_value="link",
     #     )
     # )
     # admin.add_link(
@@ -176,6 +181,7 @@ if __name__ == "__main__":
     # admin.add_link(
     #     MenuLink(name="External link", url="http://www.example.com/", category="Links")
     # )
+
 
     app_dir = op.realpath(op.dirname(__file__))
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])
