@@ -1,8 +1,3 @@
-/* Flask-Admin Tabler Theme — admin.css
-   Minimal overrides to make Flask-Admin widgets blend with Tabler 1.4.0.
-*/
-
-/* --- General tweaks --- */
 .admin-form fieldset {
   border: none;
   padding: 0;
@@ -33,7 +28,6 @@
   flex-wrap: wrap;
 }
 
-/* --- List view --- */
 .model-list th.list-checkbox-column,
 .model-list td.list-checkbox-column {
   width: 2rem;
@@ -69,7 +63,7 @@
   color: var(--tblr-primary);
 }
 
-/* --- Inline fields --- */
+
 .inline-field .inline-field-list .inline-field {
   margin-bottom: 1rem;
 }
@@ -78,7 +72,7 @@
   color: var(--tblr-danger);
 }
 
-/* --- Filters --- */
+
 .filters td {
   padding: 0.25rem;
 }
@@ -87,22 +81,21 @@
   cursor: pointer;
 }
 
-/* --- Select2 integration --- */
+
 .select2-container {
   min-width: 100%;
 }
 
-/* --- Nav tabs used in model views --- */
+
 .nav-tabs {
   margin-bottom: 1rem;
 }
 
-/* --- Pagination alignment --- */
+
 .pagination {
   margin-top: 1rem;
 }
 
-/* --- Flash messages --- */
 .alert-dismissible .btn-close {
   padding: 0.75rem 1rem;
 }
