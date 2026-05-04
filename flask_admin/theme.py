@@ -65,6 +65,7 @@ class TablerUITheme(Theme):
     theme_base: str = "gray"  # "gray" | "neutral" | "slate" | "zinc" | "stone"
     theme_font: str = "sans-serif"  # "sans-serif" | "serif" | "monospace" | "comic"
     theme_radius: str = "1"  # "0" | "0.5" | "1" | "1.5" | "2"
+    theme_use_cdn: bool = True # From where to load tabler files
 
     def __post_init__(self) -> None:
         _validate_choice(self.layout, self.VALID_LAYOUTS)
@@ -84,6 +85,10 @@ class TablerUITheme(Theme):
     @property
     def body_class(self) -> str:
         return "layout-fluid" if self.is_fluid_layout else ""
+
+    @property
+    def use_cdn(self) -> bool:
+        return self.theme_use_cdn
 
 
 Bootstrap4Theme = partial(BootstrapTheme, folder="bootstrap4")
