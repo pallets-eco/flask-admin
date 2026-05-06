@@ -128,7 +128,7 @@ class AzureStorage(BaseFileStorage):
                 folder = self.separator.join(next_level_folder)
                 folders.add(folder)
 
-        folders.discard(directory)  # type: ignore[arg-type]
+        folders.discard(directory)
         for folder in folders:
             name = folder.split(self.separator)[-1]
             rel_path = folder

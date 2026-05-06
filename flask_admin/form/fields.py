@@ -169,7 +169,7 @@ class Select2Field(fields.SelectField):
                 "__None", self.blank_text, self.data is None
             )
 
-        for choice in self.choices:
+        for choice in self.choices or ():
             if isinstance(choice, tuple):
                 yield _iter_choices_wtforms_compat(
                     choice[0], choice[1], self.coerce(choice[0]) == self.data
