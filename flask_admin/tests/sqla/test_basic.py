@@ -6,10 +6,11 @@ import uuid
 from datetime import date
 from datetime import datetime
 from datetime import time
-from typing import Any
 
 import arrow
 import pytest
+from _pytest.mark.structures import ParameterSet
+from flask import Flask
 from sqlalchemy import Boolean
 from sqlalchemy import cast
 from sqlalchemy import Column
@@ -37,6 +38,7 @@ from sqlalchemy_utils import UUIDType
 from wtforms import fields
 from wtforms import PasswordField
 from wtforms import validators
+from wtforms.form import Form
 
 from flask_admin import Admin
 from flask_admin import form
@@ -50,23 +52,25 @@ from flask_admin.form.fields import DateTimeField
 from flask_admin.form.fields import Select2Field
 from flask_admin.tests import flask_babel_test_decorator
 from flask_admin.tests.conftest import skip_or_return_session_or_db
+from flask_admin.tests.conftest import T_ANY_SQLA_PROVIDER
+from flask_admin.tests.conftest import T_LITERAL_SESSION_OR_DB
 
 
 class CustomModelView(ModelView):
     def __init__(
         self,
-        model,
-        session,
-        name=None,
-        category=None,
-        endpoint=None,
-        url=None,
-        static_folder=None,
-        menu_class_name=None,
-        menu_icon_type=None,
-        menu_icon_value=None,
-        **kwargs,
-    ):
+        model: type,
+        session: t.Any,
+        name: str | None = None,
+        category: str | None = None,
+        endpoint: str | None = None,
+        url: str | None = None,
+        static_folder: str | None = None,
+        menu_class_name: str | None = None,
+        menu_icon_type: str | None = None,
+        menu_icon_value: str | None = None,
+        **kwargs: t.Any,
+    ) -> None:
         for k, v in iteritems(kwargs):
             setattr(self, k, v)
 
@@ -86,37 +90,9 @@ class CustomModelView(ModelView):
     form_choices = {"choice_field": [("choice-1", "One"), ("choice-2", "Two")]}
 
 
-def create_models(sqla_db_ext):
-    class Model1(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+def create_models(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> tuple[type, type]:
+    class Model1(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
         __tablename__ = "model1"
-
-        def __init__(
-            self,
-            test1=None,
-            test2=None,
-            test3=None,
-            test4=None,
-            bool_field=False,
-            date_field=None,
-            time_field=None,
-            datetime_field=None,
-            email_field=None,
-            choice_field=None,
-            enum_field=None,
-            enum_type_field=None,
-        ):
-            self.test1 = test1
-            self.test2 = test2
-            self.test3 = test3
-            self.test4 = test4
-            self.bool_field = bool_field
-            self.date_field = date_field
-            self.time_field = time_field
-            self.datetime_field = datetime_field
-            self.email_field = email_field
-            self.choice_field = choice_field
-            self.enum_field = enum_field
-            self.enum_type_field = enum_type_field
 
         class EnumChoices(enum.Enum):
             first = 1
@@ -127,13 +103,13 @@ def create_models(sqla_db_ext):
         test2 = Column(String(20))
         test3 = Column(Text)
         test4 = Column(Text)
-        bool_field = Column(Boolean)
+        bool_field = Column(Boolean, default=False)
         date_field = Column(Date)
         time_field = Column(Time)
         datetime_field = Column(DateTime)
         email_field = Column(EmailType)
-        enum_field = Column(Enum("model1_v1", "model1_v2"), nullable=True)
-        enum_type_field = Column(Enum(EnumChoices), nullable=True)
+        enum_field = Column(Enum("model1_v1", "model1_v2"), nullable=True)  # type: ignore[var-annotated]
+        enum_type_field = Column(Enum(EnumChoices), nullable=True)  # type: ignore[var-annotated]
         choice_field = Column(String, nullable=True)
         sqla_utils_choice = Column(
             ChoiceType([("choice-1", "First choice"), ("choice-2", "Second choice")])
@@ -146,29 +122,11 @@ def create_models(sqla_db_ext):
         sqla_utils_currency = Column(CurrencyType)
         sqla_utils_color = Column(ColorType)
 
-        def __str__(self):
-            return self.test1
+        def __str__(self) -> str:
+            return self.test1  # type: ignore[return-value]
 
-    class Model2(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+    class Model2(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
         __tablename__ = "model2"
-
-        def __init__(
-            self,
-            string_field=None,
-            int_field=None,
-            bool_field=None,
-            model1=None,
-            float_field=None,
-            string_field_default=None,
-            string_field_empty_default=None,
-        ):
-            self.string_field = string_field
-            self.int_field = int_field
-            self.bool_field = bool_field
-            self.model1 = model1
-            self.float_field = float_field
-            self.string_field_default = string_field_default
-            self.string_field_empty_default = string_field_empty_default
 
         id = Column(Integer, primary_key=True)
         string_field = Column(String)
@@ -188,39 +146,49 @@ def create_models(sqla_db_ext):
     return Model1, Model2
 
 
-def fill_db(sqla_db_ext, Model1, Model2):
-    model1_obj1 = Model1("test1_val_1", "test2_val_1", bool_field=True)
-    model1_obj2 = Model1("test1_val_2", "test2_val_2", bool_field=False)
-    model1_obj3 = Model1("test1_val_3", "test2_val_3")
+def fill_db(sqla_db_ext: T_ANY_SQLA_PROVIDER, Model1: type, Model2: type) -> None:
+    model1_obj1 = Model1(test1="test1_val_1", test2="test2_val_1", bool_field=True)
+    model1_obj2 = Model1(test1="test1_val_2", test2="test2_val_2", bool_field=False)
+    model1_obj3 = Model1(test1="test1_val_3", test2="test2_val_3")
     model1_obj4 = Model1(
-        "test1_val_4",
-        "test2_val_4",
+        test1="test1_val_4",
+        test2="test2_val_4",
         email_field="test@test.com",
         choice_field="choice-1",
     )
 
-    model2_obj1 = Model2("test2_val_1", model1=model1_obj1, float_field=None)
-    model2_obj2 = Model2("test2_val_2", model1=model1_obj2, float_field=None)
-    model2_obj3 = Model2("test2_val_3", int_field=5000, float_field=25.9)
-    model2_obj4 = Model2("test2_val_4", int_field=9000, float_field=75.5)
-    model2_obj5 = Model2("test2_val_5", int_field=6169453081680413441)
+    model2_obj1 = Model2(
+        string_field="test2_val_1", model1=model1_obj1, float_field=None
+    )
+    model2_obj2 = Model2(
+        string_field="test2_val_2", model1=model1_obj2, float_field=None
+    )
+    model2_obj3 = Model2(string_field="test2_val_3", int_field=5000, float_field=25.9)
+    model2_obj4 = Model2(string_field="test2_val_4", int_field=9000, float_field=75.5)
+    model2_obj5 = Model2(string_field="test2_val_5", int_field=6169453081680413441)
 
-    date_obj1 = Model1("date_obj1", date_field=date(2014, 11, 17))
-    date_obj2 = Model1("date_obj2", date_field=date(2013, 10, 16))
-    timeonly_obj1 = Model1("timeonly_obj1", time_field=time(11, 10, 9))
-    timeonly_obj2 = Model1("timeonly_obj2", time_field=time(10, 9, 8))
+    date_obj1 = Model1(test1="date_obj1", date_field=date(2014, 11, 17))
+    date_obj2 = Model1(test1="date_obj2", date_field=date(2013, 10, 16))
+    timeonly_obj1 = Model1(test1="timeonly_obj1", time_field=time(11, 10, 9))
+    timeonly_obj2 = Model1(test1="timeonly_obj2", time_field=time(10, 9, 8))
     datetime_obj1 = Model1(
-        "datetime_obj1", datetime_field=datetime(2014, 4, 3, 1, 9, 0)
+        test1="datetime_obj1", datetime_field=datetime(2014, 4, 3, 1, 9, 0)
     )
     datetime_obj2 = Model1(
-        "datetime_obj2", datetime_field=datetime(2013, 3, 2, 0, 8, 0)
+        test1="datetime_obj2", datetime_field=datetime(2013, 3, 2, 0, 8, 0)
     )
 
-    enum_obj1 = Model1("enum_obj1", enum_field="model1_v1")
-    enum_obj2 = Model1("enum_obj2", enum_field="model1_v2")
+    enum_obj1 = Model1(test1="enum_obj1", enum_field="model1_v1")
+    enum_obj2 = Model1(test1="enum_obj2", enum_field="model1_v2")
 
-    enum_type_obj1 = Model1("enum_type_obj1", enum_type_field=Model1.EnumChoices.first)
-    enum_type_obj2 = Model1("enum_type_obj2", enum_type_field=Model1.EnumChoices.second)
+    enum_type_obj1 = Model1(
+        test1="enum_type_obj1",
+        enum_type_field=Model1.EnumChoices.first,  # type: ignore[attr-defined]
+    )
+    enum_type_obj2 = Model1(
+        test1="enum_type_obj2",
+        enum_type_field=Model1.EnumChoices.second,  # type: ignore[attr-defined]
+    )
 
     empty_obj = Model1(test2="empty_obj")
 
@@ -255,7 +223,12 @@ def fill_db(sqla_db_ext, Model1, Model2):
     "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this "
     "will be mandatory in wtforms 3.2:DeprecationWarning",
 )
-def test_model(app, sqla_db_ext, admin, session_or_db):
+def test_model(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
@@ -341,6 +314,7 @@ def test_model(app, sqla_db_ext, admin, session_or_db):
 
         # check that the new record was persisted
         model = sqla_db_ext.db.session.query(Model1).first()
+        assert model
         assert model.test1 == "test1large"
         assert model.test2 == "test2"
         assert model.test3 is None
@@ -394,6 +368,7 @@ def test_model(app, sqla_db_ext, admin, session_or_db):
 
         # check that the changes were persisted
         model = sqla_db_ext.db.session.query(Model1).first()
+        assert model
         assert model.test1 == "test1small"
         assert model.test2 == "test2large"
         assert model.test3 is None
@@ -418,8 +393,13 @@ def test_model(app, sqla_db_ext, admin, session_or_db):
 
 
 @pytest.mark.xfail(raises=Exception)
-def test_no_pk(app, sqla_db_ext, admin, session_or_db):
-    class Model(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+def test_no_pk(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    class Model(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
         __tablename__ = "model"
         test = Column(Integer)
 
@@ -428,7 +408,12 @@ def test_no_pk(app, sqla_db_ext, admin, session_or_db):
     admin.add_view(view)
 
 
-def test_list_columns(app, sqla_db_ext, admin, session_or_db):
+def test_list_columns(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
@@ -447,7 +432,7 @@ def test_list_columns(app, sqla_db_ext, admin, session_or_db):
             Model1,
             param,
             endpoint="model1_2",
-            column_list=[Model1.test1, Model1.test3],
+            column_list=[Model1.test1, Model1.test3],  # type: ignore[attr-defined]
             column_labels=dict(test1="Column1"),
         )
         admin.add_view(view2)
@@ -471,13 +456,18 @@ def test_list_columns(app, sqla_db_ext, admin, session_or_db):
         assert "Test2" not in data
 
 
-def test_complex_list_columns(app, sqla_db_ext, admin, session_or_db):
+def test_complex_list_columns(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         M1, M2 = create_models(sqla_db_ext)
 
-        m1 = M1("model1_val1")
+        m1 = M1(test1="model1_val1")
         sqla_db_ext.db.session.add(m1)
-        sqla_db_ext.db.session.add(M2("model2_val1", model1=m1))
+        sqla_db_ext.db.session.add(M2(string_field="model2_val1", model1=m1))
 
         sqla_db_ext.db.session.commit()
 
@@ -494,7 +484,12 @@ def test_complex_list_columns(app, sqla_db_ext, admin, session_or_db):
         assert "model1_val1" in data
 
 
-def test_exclude_columns(app, sqla_db_ext, admin, session_or_db):
+def test_exclude_columns(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
@@ -538,7 +533,12 @@ def test_exclude_columns(app, sqla_db_ext, admin, session_or_db):
         assert "Test2" not in data
 
 
-def test_column_searchable_list(app, sqla_db_ext, admin, session_or_db):
+def test_column_searchable_list(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
@@ -557,8 +557,8 @@ def test_column_searchable_list(app, sqla_db_ext, admin, session_or_db):
         assert view._search_fields[0][0].name == "string_field"
         assert view._search_fields[1][0].name == "int_field"
 
-        sqla_db_ext.db.session.add(Model2("model1-test", 5000))
-        sqla_db_ext.db.session.add(Model2("model2-test", 9000))
+        sqla_db_ext.db.session.add(Model2(string_field="model1-test", int_field=5000))
+        sqla_db_ext.db.session.add(Model2(string_field="model2-test", int_field=9000))
         sqla_db_ext.db.session.commit()
 
         client = app.test_client()
@@ -574,7 +574,12 @@ def test_column_searchable_list(app, sqla_db_ext, admin, session_or_db):
         assert "model2-test" in data
 
 
-def test_extra_args_search(app, sqla_db_ext, admin, session_or_db):
+def test_extra_args_search(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
@@ -591,7 +596,7 @@ def test_extra_args_search(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.db.session.add(
             Model2(
-                "model1-test",
+                string_field="model1-test",
             )
         )
         sqla_db_ext.db.session.commit()
@@ -605,7 +610,12 @@ def test_extra_args_search(app, sqla_db_ext, admin, session_or_db):
         assert '<input type="hidden" name="foo" value="bar">' in data
 
 
-def test_extra_args_filter(app, sqla_db_ext, admin, session_or_db):
+def test_extra_args_filter(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
@@ -619,7 +629,7 @@ def test_extra_args_filter(app, sqla_db_ext, admin, session_or_db):
         )
         admin.add_view(view2)
 
-        sqla_db_ext.db.session.add(Model2("model2-test", 5000))
+        sqla_db_ext.db.session.add(Model2(string_field="model2-test", int_field=5000))
         sqla_db_ext.db.session.commit()
 
         client = app.test_client()
@@ -630,7 +640,12 @@ def test_extra_args_filter(app, sqla_db_ext, admin, session_or_db):
         assert '<input type="hidden" name="foo" value="bar">' in data
 
 
-def test_complex_searchable_list(app, sqla_db_ext, admin, session_or_db):
+def test_complex_searchable_list(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
@@ -638,16 +653,18 @@ def test_complex_searchable_list(app, sqla_db_ext, admin, session_or_db):
         view = CustomModelView(Model2, param, column_searchable_list=["model1.test1"])
         admin.add_view(view)
         view2 = CustomModelView(
-            Model1, param, column_searchable_list=[Model2.string_field]
+            Model1,
+            param,
+            column_searchable_list=[Model2.string_field],  # type: ignore[attr-defined]
         )
         admin.add_view(view2)
 
-        m1 = Model1("model1-test1-val")
-        m2 = Model1("model1-test2-val")
+        m1 = Model1(test1="model1-test1-val")
+        m2 = Model1(test1="model1-test2-val")
         sqla_db_ext.db.session.add(m1)
         sqla_db_ext.db.session.add(m2)
-        sqla_db_ext.db.session.add(Model2("model2-test1-val", model1=m1))
-        sqla_db_ext.db.session.add(Model2("model2-test2-val", model1=m2))
+        sqla_db_ext.db.session.add(Model2(string_field="model2-test1-val", model1=m1))
+        sqla_db_ext.db.session.add(Model2(string_field="model2-test2-val", model1=m2))
         sqla_db_ext.db.session.commit()
 
         client = app.test_client()
@@ -666,8 +683,11 @@ def test_complex_searchable_list(app, sqla_db_ext, admin, session_or_db):
 
 
 def test_complex_searchable_list_missing_children(
-    app, sqla_db_ext, admin, session_or_db
-):
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
@@ -677,7 +697,7 @@ def test_complex_searchable_list_missing_children(
         )
         admin.add_view(view)
 
-        sqla_db_ext.db.session.add(Model1("magic string"))
+        sqla_db_ext.db.session.add(Model1(test1="magic string"))
         sqla_db_ext.db.session.commit()
 
         client = app.test_client()
@@ -687,7 +707,12 @@ def test_complex_searchable_list_missing_children(
         assert "magic string" in data
 
 
-def test_column_editable_list(app, sqla_db_ext, admin, session_or_db):
+def test_column_editable_list(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
@@ -774,7 +799,12 @@ def test_column_editable_list(app, sqla_db_ext, admin, session_or_db):
         assert "test1_val_3" in data
 
 
-def test_details_view(app, sqla_db_ext, admin, session_or_db):
+def test_details_view(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
@@ -829,14 +859,19 @@ def test_details_view(app, sqla_db_ext, admin, session_or_db):
         assert "test1_val_1" not in data
 
 
-def test_editable_list_special_pks(app, sqla_db_ext, admin, session_or_db):
+def test_editable_list_special_pks(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     """Tests editable list view + a primary key with special characters"""
     with app.app_context():
 
-        class Model1(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model1(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model1"
 
-            def __init__(self, id=None, val1=None):
+            def __init__(self, id: t.Any = None, val1: t.Any = None) -> None:
                 self.id = id
                 self.val1 = val1
 
@@ -872,7 +907,12 @@ def test_editable_list_special_pks(app, sqla_db_ext, admin, session_or_db):
         assert "change-success-1" in data
 
 
-def test_column_filters(app, sqla_db_ext, admin, session_or_db):
+def test_column_filters(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
@@ -943,7 +983,7 @@ def test_column_filters(app, sqla_db_ext, admin, session_or_db):
         view13 = CustomModelView(
             Model2,
             param,
-            column_filters=[filters.FilterEqual(Model1.test1, "Test1")],
+            column_filters=[filters.FilterEqual(Model1.test1, "Test1")],  # type: ignore[attr-defined]
             endpoint="_relation_test",
         )
         admin.add_view(view13)
@@ -1822,18 +1862,28 @@ def test_column_filters(app, sqla_db_ext, admin, session_or_db):
         assert "test1_val_2" not in data
 
 
-def test_column_filters_sqla_obj(app, sqla_db_ext, admin, session_or_db):
+def test_column_filters_sqla_obj(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
-        view = CustomModelView(Model1, param, column_filters=[Model1.test1])
+        view = CustomModelView(Model1, param, column_filters=[Model1.test1])  # type: ignore[attr-defined]
         admin.add_view(view)
         assert view._filters
         assert len(view._filters) == 7
 
 
-def test_column_filters_dotted_path(app, sqla_db_ext, admin, session_or_db):
+def test_column_filters_dotted_path(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
         fill_db(sqla_db_ext, Model1, Model2)
@@ -1849,7 +1899,7 @@ def test_column_filters_dotted_path(app, sqla_db_ext, admin, session_or_db):
 
         # Binding resolves the string into the real attribute and records joins.
         assert flt._bound is True
-        assert flt.column is Model1.test1
+        assert flt.column is Model1.test1  # type: ignore[attr-defined]
         assert flt._joins  # at least one relationship to traverse
         assert flt.key_name == "model1.test1"
         assert "model1.test1" in view._filter_joins
@@ -1863,8 +1913,11 @@ def test_column_filters_dotted_path(app, sqla_db_ext, admin, session_or_db):
 
 
 def test_column_filters_dotted_path_unresolvable(
-    app, sqla_db_ext, admin, session_or_db
-):
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
@@ -1881,8 +1934,11 @@ def test_column_filters_dotted_path_unresolvable(
 
 
 def test_column_filters_dotted_path_relationship_raises(
-    app, sqla_db_ext, admin, session_or_db
-):
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     """A path that resolves to a relationship (not a column) is rejected."""
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
@@ -1898,8 +1954,11 @@ def test_column_filters_dotted_path_relationship_raises(
 
 
 def test_column_filters_dotted_path_reuse_same_model(
-    app, sqla_db_ext, admin, session_or_db
-):
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     """A string-path filter can be reused across views over the same model."""
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
@@ -1921,8 +1980,11 @@ def test_column_filters_dotted_path_reuse_same_model(
 
 
 def test_column_filters_dotted_path_rebind_different_model_raises(
-    app, sqla_db_ext, admin, session_or_db
-):
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     """A string-path filter cannot be reused across views with different models."""
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
@@ -1943,7 +2005,12 @@ def test_column_filters_dotted_path_rebind_different_model_raises(
             )
 
 
-def test_enum_filter_dotted_path(app, sqla_db_ext, admin, session_or_db):
+def test_enum_filter_dotted_path(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     """Verify _on_column_resolved hook fires for Enum filters with string columns."""
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
@@ -1962,14 +2029,19 @@ def test_enum_filter_dotted_path(app, sqla_db_ext, admin, session_or_db):
 
         # Binding ran the hook, which populated enum_class from the resolved column.
         assert flt._bound is True
-        assert flt.enum_class is Model1.EnumChoices
-        assert flt.column is Model1.enum_type_field
+        assert flt.enum_class is Model1.EnumChoices  # type: ignore[attr-defined]
+        assert flt.column is Model1.enum_type_field  # type: ignore[attr-defined]
 
 
-def test_hybrid_property(app, sqla_db_ext, admin, session_or_db):
+def test_hybrid_property(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
-        class Model1(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model1(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model1"
             id = Column(Integer, primary_key=True)
             name = Column(String)
@@ -1977,15 +2049,15 @@ def test_hybrid_property(app, sqla_db_ext, admin, session_or_db):
             height = Column(Integer)
 
             @hybrid_property
-            def number_of_pixels(self):
-                return self.width * self.height
+            def number_of_pixels(self) -> int:
+                return self.width * self.height  # type: ignore[return-value]
 
             @hybrid_property
-            def number_of_pixels_str(self):
+            def number_of_pixels_str(self) -> str:
                 return str(self.number_of_pixels())
 
             @number_of_pixels_str.expression  # type: ignore[no-redef]
-            def number_of_pixels_str(cls):
+            def number_of_pixels_str(cls) -> str:
                 return cast(cls.width * cls.height, String)
 
         sqla_db_ext.create_all()
@@ -2040,20 +2112,25 @@ def test_hybrid_property(app, sqla_db_ext, admin, session_or_db):
         assert "test_row_1" not in data
 
 
-def test_hybrid_property_nested(app, sqla_db_ext, admin, session_or_db):
+def test_hybrid_property_nested(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
-        class Model1(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model1(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model1"
             id = Column(Integer, primary_key=True)
             firstname = Column(String)
             lastname = Column(String)
 
             @hybrid_property
-            def fullname(self):
+            def fullname(self) -> str:
                 return f"{self.firstname} {self.lastname}"
 
-        class Model2(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model2(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model2"
             id = Column(Integer, primary_key=True)
             name = Column(String)
@@ -2090,7 +2167,12 @@ def test_hybrid_property_nested(app, sqla_db_ext, admin, session_or_db):
         assert "Jim Smith" in data
 
 
-def test_url_args(app, sqla_db_ext, admin, session_or_db):
+def test_url_args(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
@@ -2104,10 +2186,10 @@ def test_url_args(app, sqla_db_ext, admin, session_or_db):
         )
         admin.add_view(view)
 
-        sqla_db_ext.db.session.add(Model1("data1"))
-        sqla_db_ext.db.session.add(Model1("data2"))
-        sqla_db_ext.db.session.add(Model1("data3"))
-        sqla_db_ext.db.session.add(Model1("data4"))
+        sqla_db_ext.db.session.add(Model1(test1="data1"))
+        sqla_db_ext.db.session.add(Model1(test1="data2"))
+        sqla_db_ext.db.session.add(Model1(test1="data3"))
+        sqla_db_ext.db.session.add(Model1(test1="data4"))
         sqla_db_ext.db.session.commit()
 
         client = app.test_client()
@@ -2151,10 +2233,15 @@ def test_url_args(app, sqla_db_ext, admin, session_or_db):
         assert "data2" in data
 
 
-def test_non_int_pk(app, sqla_db_ext, admin, session_or_db):
+def test_non_int_pk(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
-        class Model(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model"
             id = Column(String, primary_key=True)
             test = Column(String)
@@ -2184,10 +2271,15 @@ def test_non_int_pk(app, sqla_db_ext, admin, session_or_db):
         assert "test2" in data
 
 
-def test_form_columns(app, sqla_db_ext, admin, session_or_db):
+def test_form_columns(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
-        class Model(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model"
             id = Column(String, primary_key=True)
             int_field = Column(Integer)
@@ -2195,7 +2287,7 @@ def test_form_columns(app, sqla_db_ext, admin, session_or_db):
             text_field = Column(Text)
             excluded_column = Column(String)
 
-        class ChildModel(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class ChildModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "child_model"
 
             class EnumChoices(enum.Enum):
@@ -2262,7 +2354,12 @@ def test_form_columns(app, sqla_db_ext, admin, session_or_db):
 
 
 @pytest.mark.xfail(raises=Exception)
-def test_complex_form_columns(app, sqla_db_ext, admin, session_or_db):
+def test_complex_form_columns(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         M1, M2 = create_models(sqla_db_ext)
 
@@ -2272,10 +2369,15 @@ def test_complex_form_columns(app, sqla_db_ext, admin, session_or_db):
         view.create_form()
 
 
-def test_form_args(app, sqla_db_ext, admin, session_or_db):
+def test_form_args(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
-        class Model(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model"
             id = Column(String, primary_key=True)
             test = Column(String, nullable=False)
@@ -2297,10 +2399,15 @@ def test_form_args(app, sqla_db_ext, admin, session_or_db):
         assert len(edit_form.test.validators) == 2  # type: ignore[attr-defined]
 
 
-def test_form_override(app, sqla_db_ext, admin, session_or_db):
+def test_form_override(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
-        class Model(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model"
             id = Column(String, primary_key=True)
             test = Column(String)
@@ -2322,15 +2429,20 @@ def test_form_override(app, sqla_db_ext, admin, session_or_db):
         assert view2._create_form_class.test.field_class == fields.FileField  # type: ignore[attr-defined]
 
 
-def test_form_onetoone(app, sqla_db_ext, admin, session_or_db):
+def test_form_onetoone(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
-        class Model1(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model1(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model1"
             id = Column(Integer, primary_key=True)
             test = Column(String)
 
-        class Model2(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model2(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model2"
             id = Column(Integer, primary_key=True)
 
@@ -2358,20 +2470,30 @@ def test_form_onetoone(app, sqla_db_ext, admin, session_or_db):
         assert not view2._create_form_class.model1.field_class.widget.multiple  # type: ignore[attr-defined]
 
 
-def test_relations():
+def test_relations() -> None:
     # TODO: test relations
     pass
 
 
-def test_on_model_change_delete(app, sqla_db_ext, admin, session_or_db):
+def test_on_model_change_delete(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
 
         class ModelView(CustomModelView):
-            def on_model_change(self, form, model, is_created):
-                model.test1 = model.test1.upper()
+            def on_model_change(
+                self,
+                form: Form,
+                model: type,  # type: ignore[override]
+                is_created: bool,
+            ) -> None:
+                model.test1 = model.test1.upper()  # type: ignore[attr-defined]
 
-            def on_model_delete(self, model):
+            def on_model_delete(self, model: type) -> None:  # type: ignore[override]
                 self.deleted = True
 
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
@@ -2383,6 +2505,7 @@ def test_on_model_change_delete(app, sqla_db_ext, admin, session_or_db):
         client.post("/admin/model1/new/", data=dict(test1="test1large", test2="test2"))
 
         model = sqla_db_ext.db.session.query(Model1).first()
+        assert model
         assert model.test1 == "TEST1LARGE"
 
         url = f"/admin/model1/edit/?id={model.id}"
@@ -2396,11 +2519,16 @@ def test_on_model_change_delete(app, sqla_db_ext, admin, session_or_db):
         assert view.deleted
 
 
-def test_multiple_delete(app, sqla_db_ext, admin, session_or_db):
+def test_multiple_delete(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         M1, _ = create_models(sqla_db_ext)
 
-        sqla_db_ext.db.session.add_all([M1("a"), M1("b"), M1("c")])
+        sqla_db_ext.db.session.add_all([M1(test1="a"), M1(test1="b"), M1(test1="c")])
         sqla_db_ext.db.session.commit()
         assert sqla_db_ext.db.session.query(M1).count() == 3
 
@@ -2417,11 +2545,22 @@ def test_multiple_delete(app, sqla_db_ext, admin, session_or_db):
         assert sqla_db_ext.db.session.query(M1).count() == 0
 
 
-def test_default_sort(app, sqla_db_ext, admin, session_or_db):
+def test_default_sort(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         M1, _ = create_models(sqla_db_ext)
 
-        sqla_db_ext.db.session.add_all([M1("c", "x"), M1("b", "x"), M1("a", "y")])
+        sqla_db_ext.db.session.add_all(
+            [
+                M1(test1="c", test2="x"),
+                M1(test1="b", test2="x"),
+                M1(test1="a", test2="y"),
+            ]
+        )
         sqla_db_ext.db.session.commit()
         assert sqla_db_ext.db.session.query(M1).count() == 3
 
@@ -2483,21 +2622,26 @@ def test_default_sort(app, sqla_db_ext, admin, session_or_db):
         assert data[2].test1 == "a"  # type: ignore[union-attr]
 
 
-def test_complex_sort(app, sqla_db_ext, admin, session_or_db):
+def test_complex_sort(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         M1, M2 = create_models(sqla_db_ext)
 
         m1 = M1(test1="c", test2="x")
         sqla_db_ext.db.session.add(m1)
-        sqla_db_ext.db.session.add(M2("c", model1=m1))
+        sqla_db_ext.db.session.add(M2(string_field="c", model1=m1))
 
         m2 = M1(test1="b", test2="x")
         sqla_db_ext.db.session.add(m2)
-        sqla_db_ext.db.session.add(M2("b", model1=m2))
+        sqla_db_ext.db.session.add(M2(string_field="b", model1=m2))
 
         m3 = M1(test1="a", test2="y")
         sqla_db_ext.db.session.add(m3)
-        sqla_db_ext.db.session.add(M2("a", model1=m3))
+        sqla_db_ext.db.session.add(M2(string_field="a", model1=m3))
 
         sqla_db_ext.db.session.commit()
 
@@ -2543,14 +2687,22 @@ def test_complex_sort(app, sqla_db_ext, admin, session_or_db):
 
 
 @pytest.mark.xfail(raises=Exception)
-def test_complex_sort_exception(app, sqla_db_ext, admin, session_or_db):
+def test_complex_sort_exception(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         M1, M2 = create_models(sqla_db_ext)
 
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         # test column_sortable_list on a related table's column object
         view = CustomModelView(
-            M2, param, endpoint="model2_3", column_sortable_list=[M1.test1]
+            M2,
+            param,
+            endpoint="model2_3",
+            column_sortable_list=[M1.test1],  # type: ignore[attr-defined]
         )
         admin.add_view(view)
 
@@ -2564,17 +2716,22 @@ def test_complex_sort_exception(app, sqla_db_ext, admin, session_or_db):
         assert data[1].model1.test1 == "b"  # type: ignore[union-attr]
 
 
-def test_default_complex_sort(app, sqla_db_ext, admin, session_or_db):
+def test_default_complex_sort(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         M1, M2 = create_models(sqla_db_ext)
 
-        m1 = M1("b")
+        m1 = M1(test1="b")
         sqla_db_ext.db.session.add(m1)
-        sqla_db_ext.db.session.add(M2("c", model1=m1))
+        sqla_db_ext.db.session.add(M2(string_field="c", model1=m1))
 
-        m2 = M1("a")
+        m2 = M1(test1="a")
         sqla_db_ext.db.session.add(m2)
-        sqla_db_ext.db.session.add(M2("c", model1=m2))
+        sqla_db_ext.db.session.add(M2(string_field="c", model1=m2))
 
         sqla_db_ext.db.session.commit()
 
@@ -2590,7 +2747,10 @@ def test_default_complex_sort(app, sqla_db_ext, admin, session_or_db):
 
         # test column_default_sort on a related table's column object
         view2 = CustomModelView(
-            M2, param, endpoint="model2_2", column_default_sort=(M1.test1, False)
+            M2,
+            param,
+            endpoint="model2_2",
+            column_default_sort=(M1.test1, False),  # type: ignore[attr-defined]
         )
         admin.add_view(view2)
 
@@ -2605,7 +2765,12 @@ def test_default_complex_sort(app, sqla_db_ext, admin, session_or_db):
     "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this "
     "will be mandatory in wtforms 3.2:DeprecationWarning",
 )
-def test_extra_fields(app, sqla_db_ext, admin, session_or_db):
+def test_extra_fields(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
 
@@ -2630,7 +2795,12 @@ def test_extra_fields(app, sqla_db_ext, admin, session_or_db):
         assert pos2 < pos1
 
 
-def test_extra_field_order(app, sqla_db_ext, admin, session_or_db):
+def test_extra_field_order(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
 
@@ -2655,7 +2825,7 @@ def test_extra_field_order(app, sqla_db_ext, admin, session_or_db):
         assert pos2 > pos1
 
 
-def _make_params():
+def _make_params() -> list[ParameterSet]:
     """
     Return 12 test cases: one testing the deprecated session API with English, and the
     rest testing the new db API with all locales.
@@ -2695,8 +2865,13 @@ def _make_params():
 )
 @flask_babel_test_decorator
 def test_modelview_localization(
-    request, app, locale, expect_text, session_or_db, sqla_db_ext
-):
+    request: pytest.FixtureRequest,
+    app: Flask,
+    locale: str,
+    expect_text: str,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+) -> None:
     # We need to configure the default Babel locale _before_ the `babel` fixture is
     # initialised, so we have to use `request.getfixturevalue` to pull the fixture
     # within the test function rather than the test signature. The `admin` fixture
@@ -2733,7 +2908,12 @@ def test_modelview_localization(
 
 
 @flask_babel_test_decorator
-def test_modelview_named_filter_localization(request, app, session_or_db, sqla_db_ext):
+def test_modelview_named_filter_localization(
+    request: pytest.FixtureRequest,
+    app: Flask,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+) -> None:
     # We need to configure the default Babel locale _before_ the `babel` fixture is
     # initialised, so we have to use `request.getfixturevalue` to pull the fixture
     # within the test function rather than the test signature. The `admin` fixture
@@ -2759,7 +2939,12 @@ def test_modelview_named_filter_localization(request, app, session_or_db, sqla_d
         assert "test1_equals" == flt_name
 
 
-def test_custom_form_base(app, sqla_db_ext, admin, session_or_db):
+def test_custom_form_base(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
         class TestForm(form.BaseForm):
@@ -2777,7 +2962,12 @@ def test_custom_form_base(app, sqla_db_ext, admin, session_or_db):
         assert isinstance(create_form, TestForm)
 
 
-def test_ajax_fk(app, sqla_db_ext, admin, session_or_db):
+def test_ajax_fk(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
@@ -2792,8 +2982,8 @@ def test_ajax_fk(app, sqla_db_ext, admin, session_or_db):
 
         assert "model1" in view._form_ajax_refs
 
-        model = Model1("first")
-        model2 = Model1("foo", "bar")
+        model = Model1(test1="first")
+        model2 = Model1(test1="foo", test2="bar")
         sqla_db_ext.db.session.add_all([model, model2])
         sqla_db_ext.db.session.commit()
 
@@ -2840,17 +3030,22 @@ def test_ajax_fk(app, sqla_db_ext, admin, session_or_db):
         assert mdl.model1.test1 == "first"
 
 
-def test_ajax_fk_multi(app, sqla_db_ext, admin, session_or_db):
+def test_ajax_fk_multi(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
-        class Model1(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model1(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model1"
 
             id = Column(Integer, primary_key=True)
             name = Column(String(20))
 
-            def __str__(self):
-                return self.name
+            def __str__(self) -> str:
+                return self.name  # type: ignore[return-value]
 
         table = Table(
             "m2m",
@@ -2859,7 +3054,7 @@ def test_ajax_fk_multi(app, sqla_db_ext, admin, session_or_db):
             Column("model2_id", Integer, ForeignKey("model2.id")),
         )
 
-        class Model2(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model2(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model2"
 
             id = Column(Integer, primary_key=True)
@@ -2908,7 +3103,12 @@ def test_ajax_fk_multi(app, sqla_db_ext, admin, session_or_db):
         assert len(mdl.model1) == 1
 
 
-def test_safe_redirect(app, sqla_db_ext, admin, session_or_db):
+def test_safe_redirect(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
 
@@ -2960,8 +3160,11 @@ def test_safe_redirect(app, sqla_db_ext, admin, session_or_db):
 
 
 def test_relative_redirect_on_save_and_add_another(
-    app, sqla_db_ext, admin, session_or_db
-):
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     """
     Test that redirect URL after "Save and Add Another" is relative
     """
@@ -2999,7 +3202,12 @@ def test_relative_redirect_on_save_and_add_another(
         assert "url=http://localhost/admin/model2view/" in rv.location
 
 
-def test_simple_list_pager(app, sqla_db_ext, admin, session_or_db):
+def test_simple_list_pager(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
 
@@ -3017,12 +3225,17 @@ def test_simple_list_pager(app, sqla_db_ext, admin, session_or_db):
         assert count is None
 
 
-def test_customising_page_size(app, sqla_db_ext, admin, session_or_db):
+def test_customising_page_size(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         M1, _ = create_models(sqla_db_ext)
 
         sqla_db_ext.db.session.add_all(
-            [M1(str(f"instance-{x+1:03d}")) for x in range(101)]
+            [M1(test1=str(f"instance-{x+1:03d}")) for x in range(101)]
         )
 
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
@@ -3104,33 +3317,38 @@ def test_customising_page_size(app, sqla_db_ext, admin, session_or_db):
         assert "instance-016" not in rv.text
 
 
-def test_unlimited_page_size(app, sqla_db_ext, admin, session_or_db):
+def test_unlimited_page_size(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         M1, _ = create_models(sqla_db_ext)
 
         sqla_db_ext.db.session.add_all(
             [
-                M1("1"),
-                M1("2"),
-                M1("3"),
-                M1("4"),
-                M1("5"),
-                M1("6"),
-                M1("7"),
-                M1("8"),
-                M1("9"),
-                M1("10"),
-                M1("11"),
-                M1("12"),
-                M1("13"),
-                M1("14"),
-                M1("15"),
-                M1("16"),
-                M1("17"),
-                M1("18"),
-                M1("19"),
-                M1("20"),
-                M1("21"),
+                M1(test1="1"),
+                M1(test1="2"),
+                M1(test1="3"),
+                M1(test1="4"),
+                M1(test1="5"),
+                M1(test1="6"),
+                M1(test1="7"),
+                M1(test1="8"),
+                M1(test1="9"),
+                M1(test1="10"),
+                M1(test1="11"),
+                M1(test1="12"),
+                M1(test1="13"),
+                M1(test1="14"),
+                M1(test1="15"),
+                M1(test1="16"),
+                M1(test1="17"),
+                M1(test1="18"),
+                M1(test1="19"),
+                M1(test1="20"),
+                M1(test1="21"),
             ]
         )
 
@@ -3148,16 +3366,21 @@ def test_unlimited_page_size(app, sqla_db_ext, admin, session_or_db):
         assert len(data) == 21
 
 
-def test_advanced_joins(app, sqla_db_ext, admin, session_or_db):
+def test_advanced_joins(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
-        class Model1(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model1(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model1"
             id = Column(Integer, primary_key=True)
             val1 = Column(String(20))
             test = Column(String(20))
 
-        class Model2(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model2(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model2"
             id = Column(Integer, primary_key=True)
             val2 = Column(String(20))
@@ -3165,7 +3388,7 @@ def test_advanced_joins(app, sqla_db_ext, admin, session_or_db):
             model1_id = Column(Integer, ForeignKey(Model1.id))
             model1 = relationship(Model1, backref="model2")
 
-        class Model3(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model3(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model3"
             id = Column(Integer, primary_key=True)
             val2 = Column(String(20))
@@ -3199,7 +3422,7 @@ def test_advanced_joins(app, sqla_db_ext, admin, session_or_db):
         # Test how joins are applied
         query = view3.get_query()
 
-        joins: dict[tuple[bool, Any], Any] = {}
+        joins: dict[tuple[bool, t.Any], t.Any] = {}
         q1, joins, alias = view3._apply_path_joins(query, joins, path)
         assert (True, Model3.model2) in joins
         assert (True, Model2.model1) in joins
@@ -3227,16 +3450,21 @@ def test_advanced_joins(app, sqla_db_ext, admin, session_or_db):
         assert alias is None
 
 
-def test_multipath_joins(app, sqla_db_ext, admin, session_or_db):
+def test_multipath_joins(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
-        class Model1(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model1(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model1"
             id = Column(Integer, primary_key=True)
             val1 = Column(String(20))
             test = Column(String(20))
 
-        class Model2(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model2(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model2"
             id = Column(Integer, primary_key=True)
             val2 = Column(String(20))
@@ -3260,11 +3488,14 @@ def test_multipath_joins(app, sqla_db_ext, admin, session_or_db):
 
 
 def test_different_bind_joins(
-    babel, app_with_binds, session_or_db, sqla_db_ext_with_binds
-):
+    babel: object | None,
+    app_with_binds: Flask,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+    sqla_db_ext_with_binds: T_ANY_SQLA_PROVIDER,
+) -> None:
     admin = Admin(app_with_binds)
 
-    class Model1(sqla_db_ext_with_binds.Base):  # type: ignore[name-defined, misc]
+    class Model1(sqla_db_ext_with_binds.Base):  # type: ignore[misc,name-defined]
         __tablename__ = "model1"
         id = Column(Integer, primary_key=True)
         val1 = Column(String(20))
@@ -3290,7 +3521,12 @@ def test_different_bind_joins(
     assert rv.status_code == 200
 
 
-def test_model_default(app, sqla_db_ext, admin, session_or_db):
+def test_model_default(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         _, Model2 = create_models(sqla_db_ext)
 
@@ -3306,7 +3542,12 @@ def test_model_default(app, sqla_db_ext, admin, session_or_db):
         assert b"This field is required" not in rv.data
 
 
-def test_export_csv(app, sqla_db_ext, admin, session_or_db):
+def test_export_csv(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
@@ -3355,10 +3596,15 @@ def test_export_csv(app, sqla_db_ext, admin, session_or_db):
 STRING_CONSTANT = "Anyway, here's Wonderwall"
 
 
-def test_string_null_behavior(app, sqla_db_ext, admin, session_or_db):
+def test_string_null_behavior(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
-        class StringTestModel(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class StringTestModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "string_test_model"
             id = Column(Integer, primary_key=True)
             test_no = Column(Integer, nullable=False)
@@ -3448,10 +3694,15 @@ def test_string_null_behavior(app, sqla_db_ext, admin, session_or_db):
         assert empty_string_inst.text_field is None
 
 
-def test_form_overrides(app, sqla_db_ext, admin, session_or_db):
+def test_form_overrides(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
-        class UserModel(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class UserModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "user_model"
             id = Column(Integer, primary_key=True)
             text = Column(String)
@@ -3489,13 +3740,18 @@ def match_page_title_and_icon(data: str, title: str, icon_html: str) -> bool:
     return bool(title_match and icon_match)
 
 
-def test_page_title(app, sqla_db_ext, admin, session_or_db):
+def test_page_title(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
         sqla_db_ext.db.session.add_all(
             [
-                Model1("1"),
-                Model1("2"),
+                Model1(test1="1"),
+                Model1(test1="2"),
             ]
         )
         sqla_db_ext.db.session.commit()
@@ -3561,12 +3817,12 @@ def test_page_title(app, sqla_db_ext, admin, session_or_db):
     raises=TypeError,
     strict=True,
 )
-def test_sqlalite_session_raises(app, sqla_db_ext):
+def test_sqlalite_session_raises(app: Flask, sqla_db_ext: T_ANY_SQLA_PROVIDER) -> None:
     if sqla_db_ext.__class__.__name__ != "SQLALiteProvider":
         pytest.skip("Only relevant for SQLALiteProvider")
 
-    Model = create_models(sqla_db_ext)
+    Model, _ = create_models(sqla_db_ext)
     with app.app_context():
         sqla_db_ext.create_all()
 
-    ModelView(Model, sqla_db_ext.db.session)
+    ModelView(Model, sqla_db_ext.db.session)  # type: ignore[arg-type]

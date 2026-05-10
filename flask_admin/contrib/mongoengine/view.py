@@ -1,4 +1,5 @@
 import logging
+import re
 import typing as t
 
 import gridfs
@@ -9,7 +10,9 @@ from flask import flash
 from flask import request
 from flask import Response
 from mongoengine import Document
+from mongoengine import QuerySet
 from mongoengine.connection import get_db
+from wtforms.form import Form
 
 from flask_admin import expose
 from flask_admin._compat import iteritems
@@ -18,10 +21,15 @@ from flask_admin.actions import action
 from flask_admin.babel import gettext
 from flask_admin.babel import lazy_gettext
 from flask_admin.babel import ngettext
+from flask_admin.contrib.mongoengine.ajax import QueryAjaxModelLoader
 from flask_admin.model import BaseModelView
+from flask_admin.model.form import BaseListForm
 from flask_admin.model.form import create_editable_list_form
 
+from ..._types import T_COLUMN_TYPE_FORMATTERS
+from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
 from ..._types import T_MONGO_ENGINE_DOCUMENT
+from ..._types import T_WIDGET
 from .ajax import create_ajax_loader
 from .ajax import process_ajax_references
 from .filters import BaseMongoEngineFilter
@@ -89,7 +97,7 @@ class ModelView(BaseModelView):
             from flask_admin.contrib.mongoengine.filters import BaseMongoEngineFilter
 
             class FilterLastNameBrown(BaseMongoEngineFilter):
-                def apply(self, query, value):
+                def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
                     if value == '1':
                         return query.filter(self.column == "Brown")
                     else:
@@ -148,7 +156,7 @@ class ModelView(BaseModelView):
         Override this attribute to use a non-default converter.
     """
 
-    column_type_formatters = DEFAULT_FORMATTERS
+    column_type_formatters: T_COLUMN_TYPE_FORMATTERS = DEFAULT_FORMATTERS
     """
         Customized type formatters for MongoEngine backend
     """
@@ -244,6 +252,8 @@ class ModelView(BaseModelView):
                 }
     """
 
+    form_columns: list[str] | None = None
+
     def __init__(
         self,
         model: type[T_MONGO_ENGINE_DOCUMENT],
@@ -299,7 +309,7 @@ class ModelView(BaseModelView):
         self.model: type[T_MONGO_ENGINE_DOCUMENT]
         self._primary_key = self.scaffold_pk()
 
-    def _refresh_cache(self):
+    def _refresh_cache(self) -> None:
         """
         Refresh cache.
         """
@@ -324,7 +334,9 @@ class ModelView(BaseModelView):
         references = super()._process_ajax_references()
         return process_ajax_references(references, self)
 
-    def _get_model_fields(self, model=None):
+    def _get_model_fields(
+        self, model: type[T_MONGO_ENGINE_DOCUMENT] | None = None
+    ) -> list[tuple[t.Any, t.Any]]:
         """
         Inspect model and return list of model fields
 
@@ -336,11 +348,11 @@ class ModelView(BaseModelView):
 
         return sorted(iteritems(model._fields), key=lambda n: n[1].creation_counter)
 
-    def scaffold_pk(self):
+    def scaffold_pk(self) -> str:
         # MongoEngine models have predefined 'id' as a key
         return "id"
 
-    def get_pk_value(self, model):
+    def get_pk_value(self, model: type[T_MONGO_ENGINE_DOCUMENT]) -> t.Any:  # type: ignore[override]
         """
         Return the primary key value from the model instance
 
@@ -349,7 +361,7 @@ class ModelView(BaseModelView):
         """
         return model.pk
 
-    def scaffold_list_columns(self):
+    def scaffold_list_columns(self) -> list[str]:
         """
         Scaffold list columns
         """
@@ -372,7 +384,7 @@ class ModelView(BaseModelView):
 
         return columns
 
-    def scaffold_sortable_columns(self):
+    def scaffold_sortable_columns(self) -> dict[str, t.Any]:  # type: ignore[override]
         """
         Return a dictionary of sortable columns (name, field)
         """
@@ -385,7 +397,7 @@ class ModelView(BaseModelView):
 
         return columns
 
-    def init_search(self):
+    def init_search(self) -> bool:
         """
         Init search
         """
@@ -410,7 +422,7 @@ class ModelView(BaseModelView):
 
         return bool(self._search_fields)
 
-    def scaffold_filters(self, name):
+    def scaffold_filters(self, name: str) -> t.Any:  # type: ignore[override]
         """
         Return filter object(s) for the field
 
@@ -449,7 +461,7 @@ class ModelView(BaseModelView):
         """
         return isinstance(filter, BaseMongoEngineFilter)
 
-    def scaffold_form(self):
+    def scaffold_form(self) -> type:
         """
         Create form from the model.
         """
@@ -460,12 +472,16 @@ class ModelView(BaseModelView):
             only=self.form_columns,
             exclude=self.form_excluded_columns,
             field_args=self.form_args,
-            extra_fields=self.form_extra_fields,
+            extra_fields=self.form_extra_fields,  # type: ignore[arg-type]
         )
 
         return form_class
 
-    def scaffold_list_form(self, widget=None, validators=None):
+    def scaffold_list_form(
+        self,
+        widget: type[T_WIDGET] | None = None,
+        validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
+    ) -> type[BaseListForm]:
         """
         Create form for the `index_view` using only the columns from
         `self.column_editable_list`.
@@ -487,17 +503,17 @@ class ModelView(BaseModelView):
         return create_editable_list_form(self.form_base_class, form_class, widget)
 
     # AJAX foreignkey support
-    def _create_ajax_loader(self, name, opts):
+    def _create_ajax_loader(self, name: str, opts: t.Any) -> QueryAjaxModelLoader:
         return create_ajax_loader(self.model, name, name, opts)
 
-    def get_query(self):
+    def get_query(self) -> QuerySet:
         """
         Returns the QuerySet for this view.  By default, it returns all the
         objects for the current model.
         """
         return self.model.objects
 
-    def _search(self, query, search_term):
+    def _search(self, query: QuerySet, search_term: str) -> t.Any:
         # TODO: Unfortunately, MongoEngine contains bug which
         # prevents running complex Q queries and, as a result,
         # Flask-Admin does not support per-word searching like
@@ -508,9 +524,7 @@ class ModelView(BaseModelView):
 
         for field in self._search_fields:
             if type(field) == mongoengine.ReferenceField:
-                import re
-
-                regex = re.compile(".*{term}.*")
+                regex: str | re.Pattern[str] = re.compile(".*{term}.*")
             else:
                 regex = term
             flt = {f"{field.name}__{op}": regex}
@@ -610,7 +624,7 @@ class ModelView(BaseModelView):
             )
             return None
 
-    def create_model(self, form):
+    def create_model(self, form: Form) -> Document | bool:
         """
         Create model helper
 
@@ -638,7 +652,7 @@ class ModelView(BaseModelView):
 
         return model
 
-    def update_model(self, form, model):
+    def update_model(self, form: Form, model: type[T_MONGO_ENGINE_DOCUMENT]) -> bool:  # type: ignore[override]
         """
         Update model helper
 
@@ -667,7 +681,7 @@ class ModelView(BaseModelView):
 
         return True
 
-    def delete_model(self, model):
+    def delete_model(self, model: type[T_MONGO_ENGINE_DOCUMENT]) -> bool:  # type: ignore[override]
         """
         Delete model helper
 
@@ -695,7 +709,7 @@ class ModelView(BaseModelView):
 
     # FileField access API
     @expose("/api/file/")
-    def api_file_view(self):
+    def api_file_view(self) -> Response:
         pk = request.args.get("id")
         coll = request.args.get("coll")
         db = request.args.get("db", "default")
@@ -716,7 +730,7 @@ class ModelView(BaseModelView):
         )
 
     # Default model actions
-    def is_action_allowed(self, name):
+    def is_action_allowed(self, name: str) -> bool:
         # Check delete action permission
         if name == "delete" and not self.can_delete:
             return False
@@ -728,7 +742,7 @@ class ModelView(BaseModelView):
         lazy_gettext("Delete"),
         lazy_gettext("Are you sure you want to delete selected records?"),
     )
-    def action_delete(self, ids):
+    def action_delete(self, ids: t.Any) -> None:
         try:
             count = 0
 

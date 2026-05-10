@@ -85,7 +85,7 @@ class ItemsRequired(InputRequired):
     to require a minimum number of related items.
     """
 
-    def __init__(self, min: int = 1, message: T_TRANSLATABLE | None = None):
+    def __init__(self, min: int = 1, message: T_TRANSLATABLE | None = None) -> None:
         super().__init__(message=message)
         self.min = min
 

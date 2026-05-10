@@ -97,7 +97,7 @@ class S3Storage(BaseFileStorage):
             return name[:-1]
 
         files = []
-        directories = []
+        directories: list[tuple[str, str, bool, int, int]] = []
         if path and not path.endswith(self.separator):
             path += self.separator
 
@@ -173,8 +173,8 @@ class S3Storage(BaseFileStorage):
 
     @_strip_leading_slash_from("path")
     def get_breadcrumbs(self, path: str) -> list[tuple[str, str]]:
-        accumulator = []
-        breadcrumbs = []
+        accumulator: list[str] = []
+        breadcrumbs: list[tuple[str, str]] = []
         for n in path.split(self.separator):
             accumulator.append(n)
             breadcrumbs.append((n, self.separator.join(accumulator)))

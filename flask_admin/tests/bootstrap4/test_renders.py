@@ -1,4 +1,9 @@
+import typing as t
+
+from flask import Flask
+from flask_admin import Admin
 from flask_admin.contrib.sqla.view import ModelView
+from flask_admin.tests.conftest import T_ANY_SQLA_PROVIDER
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
@@ -7,17 +12,19 @@ from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 
 
-def create_models(sqla_db_ext):
-    class User(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+def create_models(
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+) -> tuple[type[t.Any], type[t.Any]]:
+    class User(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
         __tablename__ = "user"
         id = Column(Integer, primary_key=True)
         first_name = Column(String(20))
         last_name = Column(String(20))
 
-        def __str__(self):
-            return self.first_name
+        def __str__(self) -> str:
+            return self.first_name  # type: ignore[return-value]
 
-    class Post(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+    class Post(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
         __tablename__ = "post"
         id = Column(Integer, primary_key=True)
         title = Column(String(20))
@@ -30,7 +37,9 @@ def create_models(sqla_db_ext):
     return User, Post
 
 
-def fill_data(sqla_db_ext, User, Post):
+def fill_data(
+    sqla_db_ext: T_ANY_SQLA_PROVIDER, User: type[t.Any], Post: type[t.Any]
+) -> None:
     u1 = User(first_name="user1", last_name="userdesc1")
     u2 = User(first_name="user2", last_name="userdesc2")
 
@@ -45,7 +54,9 @@ def fill_data(sqla_db_ext, User, Post):
     sqla_db_ext.db.session.commit()
 
 
-def test_css_class_with_combined(app, sqla_db_ext, admin):
+def test_css_class_with_combined(
+    app: Flask, sqla_db_ext: T_ANY_SQLA_PROVIDER, admin: Admin
+) -> None:
     with app.app_context():
         User, Post = create_models(sqla_db_ext)
         fill_data(sqla_db_ext, User, Post)

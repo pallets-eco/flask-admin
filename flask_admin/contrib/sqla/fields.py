@@ -74,11 +74,11 @@ class QuerySelectField(SelectFieldBase):
         validators: list[T_VALIDATOR] | tuple[T_VALIDATOR, ...] | None = None,
         query_factory: t.Any = None,
         get_pk: t.Any = None,
-        get_label: t.Any = None,
+        get_label: str | t.Callable[[t.Any], str] | None = None,
         allow_blank: bool = False,
         blank_text: str = "",
         **kwargs: t.Any,
-    ):
+    ) -> None:
         super().__init__(
             label,
             validators,  # type: ignore[arg-type]
@@ -92,7 +92,7 @@ class QuerySelectField(SelectFieldBase):
             self.get_pk = get_pk
 
         if get_label is None:
-            self.get_label = lambda x: x
+            self.get_label: t.Callable[[t.Any], str] = lambda x: x
         elif isinstance(get_label, string_types):
             self.get_label = operator.attrgetter(get_label)
         else:
@@ -277,7 +277,7 @@ class InlineHstoreList(InlineFieldList):
         """Combines each FormField key/value into a dictionary for storage"""
         _fake = type("_fake", (object,), {})
 
-        output = {}
+        output: dict[str | None, str | None] = {}
         for form_field in self.entries:
             if not self.should_delete(form_field):
                 fake_obj = _fake()

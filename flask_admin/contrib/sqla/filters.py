@@ -355,7 +355,7 @@ class DateBetweenFilter(BaseSQLAFilter, filters.BaseDateBetweenFilter):
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
-    ):
+    ) -> None:
         super().__init__(column, name, options, data_type="daterangepicker")
 
     def apply(

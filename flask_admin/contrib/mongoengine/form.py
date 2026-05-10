@@ -3,13 +3,28 @@ import typing as t
 
 from bson import ObjectId
 from mongoengine import ListField
+from mongoengine import QuerySet
 from mongoengine import ReferenceField
 from mongoengine.base import BaseDocument
+from mongoengine.base import BaseField
 from mongoengine.base import DocumentMetaclass
 from mongoengine.base import get_document
 from mongoengine.queryset import DoesNotExist
+from wtforms import Field
 from wtforms import fields
 from wtforms import validators
+from wtforms.fields import BooleanField
+from wtforms.fields import DateField
+from wtforms.fields import DateTimeField
+from wtforms.fields import DecimalField
+from wtforms.fields import FileField
+from wtforms.fields import FloatField
+from wtforms.fields import IntegerField
+from wtforms.fields import PasswordField
+from wtforms.fields import StringField
+from wtforms.fields import TextAreaField
+from wtforms.fields.core import UnboundField
+from wtforms.form import BaseForm
 
 from flask_admin import form
 from flask_admin._compat import _iter_choices_wtforms_compat
@@ -20,10 +35,19 @@ from flask_admin.model.fields import AjaxSelectMultipleField
 from flask_admin.model.fields import InlineFieldList
 from flask_admin.model.form import FieldPlaceholder
 
+from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
+from ..._types import T_ITER_CHOICES
+from ..._types import T_MONGO_ENGINE_DOCUMENT
+from ..._types import T_VALIDATOR
 from .fields import ModelFormField
 from .fields import MongoFileField
 from .fields import MongoImageField
 from .subdoc import EmbeddedForm
+
+if t.TYPE_CHECKING:
+    from . import ModelView
+else:
+    ModelView = object
 
 
 class QuerySetSelectField(fields.SelectFieldBase):
@@ -47,25 +71,25 @@ class QuerySetSelectField(fields.SelectFieldBase):
 
     def __init__(
         self,
-        label="",
-        validators=None,
-        queryset=None,
-        label_attr="",
-        allow_blank=False,
-        blank_text="---",
-        label_modifier=None,
-        **kwargs,
-    ):
+        label: str = "",
+        validators: tuple[T_VALIDATOR] | None = None,
+        queryset: QuerySet | None = None,
+        label_attr: str = "",
+        allow_blank: bool = False,
+        blank_text: str = "---",
+        label_modifier: t.Callable[[t.Any], str] | None = None,
+        **kwargs: t.Any,
+    ) -> None:
         """Init docstring placeholder."""
 
-        super().__init__(label, validators, **kwargs)
+        super().__init__(label, validators, **kwargs)  # type: ignore[arg-type]
         self.label_attr = label_attr
         self.allow_blank = allow_blank
         self.blank_text = blank_text
         self.label_modifier = label_modifier
         self.queryset = queryset
 
-    def iter_choices(self):
+    def iter_choices(self) -> t.Generator[T_ITER_CHOICES, None, None]:  # type: ignore[override]
         """
         Provides data for choice widget rendering. Must return a sequence or
         iterable of (value, label, selected) tuples.
@@ -82,7 +106,7 @@ class QuerySetSelectField(fields.SelectFieldBase):
         for obj in self.queryset:
             label = (
                 self.label_modifier(obj)
-                if self.label_modifier
+                if self.label_modifier is not None
                 else (self.label_attr and getattr(obj, self.label_attr) or obj)
             )
 
@@ -92,7 +116,7 @@ class QuerySetSelectField(fields.SelectFieldBase):
                 selected = self._is_selected(obj)
             yield _iter_choices_wtforms_compat(obj.id, label, selected)
 
-    def process_formdata(self, valuelist):
+    def process_formdata(self, valuelist: list[t.Any]) -> None:
         """
         Process data received over the wire from a form.
 
@@ -111,7 +135,7 @@ class QuerySetSelectField(fields.SelectFieldBase):
         except DoesNotExist:
             self.data = None
 
-    def pre_validate(self, form):
+    def pre_validate(self, form: BaseForm) -> None:
         """
         Field-level validation. Runs before any other validators.
 
@@ -120,7 +144,7 @@ class QuerySetSelectField(fields.SelectFieldBase):
         if (not self.allow_blank or self.data is not None) and not self.data:
             raise validators.ValidationError(self.gettext("Not a valid choice"))
 
-    def _is_selected(self, item):
+    def _is_selected(self, item: t.Any) -> bool:
         return item == self.data
 
 
@@ -131,19 +155,19 @@ class QuerySetSelectMultipleField(QuerySetSelectField):
 
     def __init__(
         self,
-        label="",
-        validators=None,
-        queryset=None,
-        label_attr="",
-        allow_blank=False,
-        blank_text="---",
-        **kwargs,
-    ):
+        label: str = "",
+        validators: tuple[T_VALIDATOR] | None = None,
+        queryset: QuerySet | None = None,
+        label_attr: str = "",
+        allow_blank: bool = False,
+        blank_text: str = "---",
+        **kwargs: t.Any,
+    ) -> None:
         super().__init__(
             label, validators, queryset, label_attr, allow_blank, blank_text, **kwargs
         )
 
-    def process_formdata(self, valuelist):
+    def process_formdata(self, valuelist: list[str]) -> None:
         """
         Process data received over the wire from a form.
 
@@ -172,8 +196,14 @@ class ModelSelectField(QuerySetSelectField):
     queryset and lists everything in it.
     """
 
-    def __init__(self, label="", validators=None, model=None, **kwargs):
-        queryset = kwargs.pop("queryset", model.objects)
+    def __init__(
+        self,
+        label: str = "",
+        validators: tuple[T_VALIDATOR] | None = None,
+        model: type[T_MONGO_ENGINE_DOCUMENT] | None = None,
+        **kwargs: t.Any,
+    ) -> None:
+        queryset = kwargs.pop("queryset", model.objects if model is not None else None)
         super().__init__(label, validators, queryset=queryset, **kwargs)
 
 
@@ -182,8 +212,14 @@ class ModelSelectMultipleField(QuerySetSelectMultipleField):
     Allows multiple select
     """
 
-    def __init__(self, label="", validators=None, model=None, **kwargs):
-        queryset = kwargs.pop("queryset", model.objects)
+    def __init__(
+        self,
+        label: str = "",
+        validators: tuple[T_VALIDATOR] | None = None,
+        model: type[T_MONGO_ENGINE_DOCUMENT] | None = None,
+        **kwargs: t.Any,
+    ) -> None:
+        queryset = kwargs.pop("queryset", model.objects if model is not None else None)
         super().__init__(label, validators, queryset=queryset, **kwargs)
 
 
@@ -195,7 +231,7 @@ class CustomModelConverter:
     customized InlineFieldList field.
     """
 
-    def __init__(self, view):
+    def __init__(self, view: t.Any) -> None:
         self.view = view
         self.converters = {
             "StringField": self.conv_String,
@@ -220,7 +256,7 @@ class CustomModelConverter:
             "ImageField": self.conv_image,
         }
 
-    def _get_field_override(self, name):
+    def _get_field_override(self, name: str) -> t.Any | None:
         form_overrides = getattr(self.view, "form_overrides", None)
 
         if form_overrides:
@@ -228,7 +264,7 @@ class CustomModelConverter:
 
         return None
 
-    def _get_subdocument_config(self, name):
+    def _get_subdocument_config(self, name: str) -> t.Any:
         config = getattr(self.view, "_form_subdocuments", {})
 
         p = config.get(name)
@@ -237,22 +273,29 @@ class CustomModelConverter:
 
         return p
 
-    def _convert_choices(self, choices):
+    def _convert_choices(
+        self, choices: t.Iterable[t.Any]
+    ) -> t.Generator[tuple[t.Any, t.Any], None, None]:
         for c in choices:
             if isinstance(c, tuple):
                 yield c
             else:
                 yield (c, c)
 
-    def clone_converter(self, view):
+    def clone_converter(self, view: ModelView) -> "CustomModelConverter":
         return self.__class__(view)
 
-    def convert(self, model, field, field_args):
+    def convert(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        field_args: T_FIELD_ARGS_VALIDATORS_FILES | None,
+    ) -> t.Any:
         # Check if it is overridden field
         if isinstance(field, FieldPlaceholder):
             return form.recreate_field(field.field)
 
-        kwargs = {
+        kwargs: dict[str, t.Any] = {
             "label": getattr(field, "verbose_name", None),
             "description": getattr(field, "help_text", ""),
             "validators": [],
@@ -299,7 +342,12 @@ class CustomModelConverter:
             return self.converters[ftype](model, field, kwargs)
 
     @classmethod
-    def _string_common(cls, model, field, kwargs):
+    def _string_common(
+        cls,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> None:
         if field.max_length or field.min_length:
             kwargs["validators"].append(
                 validators.Length(
@@ -308,14 +356,18 @@ class CustomModelConverter:
             )
 
     @classmethod
-    def _number_common(cls, model, field, kwargs):
+    def _number_common(
+        cls, model: T_MONGO_ENGINE_DOCUMENT, field: BaseField, kwargs: t.Any
+    ) -> None:
         if field.max_value or field.min_value:
             kwargs["validators"].append(
                 validators.NumberRange(max=field.max_value, min=field.min_value)
             )
 
     # Converters
-    def conv_String(self, model, field, kwargs):
+    def conv_String(
+        self, model: T_MONGO_ENGINE_DOCUMENT, field: BaseField, kwargs: dict[str, t.Any]
+    ) -> PasswordField | StringField | TextAreaField:
         if field.regex:
             kwargs["validators"].append(validators.Regexp(regex=field.regex))
         self._string_common(model, field, kwargs)
@@ -327,65 +379,135 @@ class CustomModelConverter:
             return fields.TextAreaField(**kwargs)
         return fields.StringField(**kwargs)
 
-    def conv_URL(self, model, field, kwargs):
+    def conv_URL(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> StringField:
         kwargs["validators"].append(validators.URL())
         self._string_common(model, field, kwargs)
         return fields.StringField(**kwargs)
 
-    def conv_Email(self, model, field, kwargs):
+    def conv_Email(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> StringField:
         kwargs["validators"].append(validators.Email())
         self._string_common(model, field, kwargs)
         return fields.StringField(**kwargs)
 
-    def conv_Int(self, model, field, kwargs):
+    def conv_Int(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> IntegerField:
         self._number_common(model, field, kwargs)
         return fields.IntegerField(**kwargs)
 
-    def conv_Float(self, model, field, kwargs):
+    def conv_Float(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> FloatField:
         self._number_common(model, field, kwargs)
         return fields.FloatField(**kwargs)
 
-    def conv_Decimal(self, model, field, kwargs):
+    def conv_Decimal(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> DecimalField:
         self._number_common(model, field, kwargs)
         kwargs["places"] = getattr(field, "precision", None)
         return fields.DecimalField(**kwargs)
 
-    def conv_Boolean(self, model, field, kwargs):
+    def conv_Boolean(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> BooleanField:
         return fields.BooleanField(**kwargs)
 
-    def conv_Date(self, model, field, kwargs):
+    def conv_Date(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> DateField:
         return fields.DateField(**kwargs)
 
-    def conv_Binary(self, model, field, kwargs):
+    def conv_Binary(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> FileField:
         # TODO: may be set file field that will save file`s data to MongoDB
         if field.max_bytes:
             kwargs["validators"].append(validators.Length(max=field.max_bytes))
         return fields.FileField(**kwargs)
 
-    def conv_Dict(self, model, field, kwargs):
+    def conv_Dict(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> TextAreaField:
         return fields.TextAreaField(**kwargs)
 
     def conv_SortedList(self, model, field, kwargs):
         # TODO: sort functionality, may be need sortable widget
         return self.conv_List(model, field, kwargs)
 
-    def conv_GeoLocation(self, model, field, kwargs):
+    def conv_GeoLocation(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> None:
         # TODO: create geo field and widget (also GoogleMaps)
         return
 
-    def conv_ObjectId(self, model, field, kwargs):
+    def conv_ObjectId(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> None:
         return
 
-    def conv_GenericReference(self, model, field, kwargs):
+    def conv_GenericReference(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> None:
         return
 
     # Existing converters
 
-    def conv_DateTime(self, model, field, kwargs):
+    def conv_DateTime(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> DateTimeField:
         kwargs["widget"] = form.DateTimePickerWidget()
         return fields.DateTimeField(**kwargs)
 
-    def conv_List(self, model, field, kwargs):
+    def conv_List(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: T_FIELD_ARGS_VALIDATORS_FILES,
+    ) -> AjaxSelectMultipleField | ModelSelectMultipleField | InlineFieldList | t.Any:
         if field.field is None:
             raise ValueError(
                 f'ListField "{field.name}" must have field specified for model {model}'
@@ -396,20 +518,25 @@ class CustomModelConverter:
             if loader:
                 return AjaxSelectMultipleField(loader, **kwargs)
 
-            return ModelSelectMultipleField(model=field.field.document_type, **kwargs)
+            return ModelSelectMultipleField(model=field.field.document_type, **kwargs)  # type: ignore[arg-type]
 
         # Create converter
         view = self._get_subdocument_config(field.name)
         converter = self.clone_converter(view)
 
         if field.field.choices:
-            kwargs["multiple"] = True
+            kwargs["multiple"] = True  # type: ignore[typeddict-unknown-key]
             return converter.convert(model, field.field, kwargs)
 
         unbound_field = converter.convert(model, field.field, {})
         return InlineFieldList(unbound_field, min_entries=0, **kwargs)
 
-    def conv_EmbeddedDocument(self, model, field, kwargs):
+    def conv_EmbeddedDocument(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> ModelFormField:
         # FormField does not support validators
         kwargs["validators"] = []
 
@@ -436,10 +563,16 @@ class CustomModelConverter:
             form_class = view.postprocess_form(form_class)
 
         return ModelFormField(
-            field.document_type_obj, view, form_class, form_opts=form_opts, **kwargs
+            field.document_type_obj,
+            view,
+            form_class,
+            form_opts=form_opts,
+            **kwargs,
         )
 
-    def conv_Reference(self, model, field, kwargs):
+    def conv_Reference(
+        self, model: T_MONGO_ENGINE_DOCUMENT, field: BaseField, kwargs: dict[str, t.Any]
+    ) -> AjaxSelectField | ModelSelectField:
         kwargs["allow_blank"] = not field.required
 
         loader = getattr(self.view, "_form_ajax_refs", {}).get(field.name)
@@ -448,13 +581,25 @@ class CustomModelConverter:
 
         return ModelSelectField(model=field.document_type, **kwargs)
 
-    def conv_File(self, model, field, kwargs):
+    def conv_File(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> MongoFileField:
         return MongoFileField(**kwargs)
 
-    def conv_image(self, model, field, kwargs):
+    def conv_image(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: dict[str, t.Any],
+    ) -> MongoImageField:
         return MongoImageField(**kwargs)
 
-    def coerce(self, field_type):
+    def coerce(
+        self, field_type: str
+    ) -> type[int | bool | float | decimal.Decimal | ObjectId | str]:
         coercions = {
             "IntField": int,
             "BooleanField": bool,
@@ -465,15 +610,18 @@ class CustomModelConverter:
         return coercions.get(field_type, str)
 
 
+F = t.TypeVar("F", bound="Field")
+
+
 def get_form(
-    model,
-    converter,
-    base_class=form.BaseForm,
-    only=None,
-    exclude=None,
-    field_args=None,
-    extra_fields=None,
-):
+    model: type[T_MONGO_ENGINE_DOCUMENT],
+    converter: "CustomModelConverter",
+    base_class: type[form.BaseForm] = form.BaseForm,
+    only: t.Iterable[str] | None = None,
+    exclude: t.Iterable[str] | None = None,
+    field_args: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
+    extra_fields: dict[str, "UnboundField[F]"] | None = None,
+) -> type[form.BaseForm]:
     """
     Create a wtforms Form for a given mongoengine Document schema::
 
@@ -481,6 +629,8 @@ def get_form(
         from myproject.myapp.schemas import Article
         ArticleForm = model_form(Article)
 
+    :param converter:
+        A converter to generate the fields based on the model properties.
     :param model:
         A mongoengine Document schema class
     :param base_class:
@@ -494,7 +644,7 @@ def get_form(
     :param field_args:
         An optional dictionary of field names mapping to keyword arguments used
         to construct each field object.
-    :param converter:
+    :param extra_fields:
         A converter to generate the fields based on the model properties. If
         not set, ``ModelConverter`` is used.
     """
@@ -517,7 +667,7 @@ def get_form(
     if only:
         props = dict(properties)
 
-        def find(name):
+        def find(name: str) -> FieldPlaceholder | None | t.Any:
             if extra_fields and name in extra_fields:
                 return FieldPlaceholder(extra_fields[name])
 

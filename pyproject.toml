@@ -211,7 +211,7 @@ disallow_untyped_decorators = true
 disallow_any_generics = true
 
 # These next few are various gradations of forcing use of type annotations
-disallow_untyped_calls = false
+disallow_untyped_calls = true
 disallow_incomplete_defs = true
 disallow_untyped_defs = false
 
@@ -382,6 +382,7 @@ commands = [
         "--disable-error-code", "name-defined", # allow flask_sqlalchemy's db.Model in examples
         "--no-warn-unused-ignores",  # prevent conflict with mypy 1st run on src folder
         "--allow-subclassing-any",  # flask-slqalchemy db.Model is Any
+        "--allow-untyped-calls",  # allow calls to untyped functions in examples
         "examples", ]
     # TODO: reenable after pyright test pass
     # ["pyright"],
