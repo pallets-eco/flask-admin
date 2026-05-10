@@ -13,4 +13,12 @@ try:
     T_PYMONGO_DB = Database[t.Any]
 
 except ImportError:
-    pass
+    from pymongo import MongoClient
+    from pymongo.collection import Collection
+    from pymongo.cursor import Cursor
+    from pymongo.database import Database
+
+    T_PYMONGO_CLIENT = MongoClient  # type: ignore[misc]
+    T_PYMONGO_COLLECTION = Collection  # type: ignore[misc]
+    T_PYMONGO_CURSOR = Cursor  # type: ignore[misc]
+    T_PYMONGO_DB = Database  # type: ignore[misc]
