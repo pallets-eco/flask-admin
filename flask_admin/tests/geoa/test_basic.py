@@ -3,6 +3,8 @@ import re
 
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
+from shapely import MultiPoint
+from shapely import Polygon
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
@@ -92,18 +94,20 @@ def test_model(app, sqla_db_ext, admin, session_or_db):
     ]
     assert to_shape(model.line).geom_type == "LineString"
     assert list(to_shape(model.line).coords) == [(50.2345, 94.2), (50.21, 94.87)]
-    assert to_shape(model.polygon).geom_type == "Polygon"
-    assert list(to_shape(model.polygon).exterior.coords) == [
+    shape = to_shape(model.polygon)
+    assert isinstance(shape, Polygon)
+    assert list(shape.exterior.coords) == [
         (100.0, 0.0),
         (101.0, 0.0),
         (101.0, 1.0),
         (100.0, 1.0),
         (100.0, 0.0),
     ]
-    assert to_shape(model.multi).geom_type == "MultiPoint"
-    assert len(to_shape(model.multi).geoms) == 2
-    assert list(to_shape(model.multi).geoms[0].coords) == [(100.0, 0.0)]
-    assert list(to_shape(model.multi).geoms[1].coords) == [(101.0, 1.0)]
+    shape = to_shape(model.multi)
+    assert isinstance(shape, MultiPoint)
+    assert len(shape.geoms) == 2
+    assert list(shape.geoms[0].coords) == [(100.0, 0.0)]
+    assert list(shape.geoms[1].coords) == [(101.0, 1.0)]
 
     rv = client.get("/admin/geomodel/")
     assert rv.status_code == 200
