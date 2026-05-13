@@ -4,6 +4,7 @@ import typing as t
 from sqlalchemy.sql import not_
 from sqlalchemy.sql import or_
 
+from flask_admin._types import T_COLUMN
 from flask_admin._types import T_INSTRUMENTED_ATTRIBUTE
 from flask_admin._types import T_OPTIONS
 from flask_admin._types import T_SQLALCHEMY_COLUMN
@@ -22,7 +23,7 @@ class BaseSQLAFilter(filters.BaseFilter):
 
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        column: T_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
@@ -44,7 +45,7 @@ class BaseSQLAFilter(filters.BaseFilter):
         """
         super().__init__(name, options, data_type, column=column, url_value=url_value)
 
-        self.column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE = column
+        self.column = column
 
     def get_column(
         self, alias: t.Any
@@ -136,7 +137,7 @@ class FilterEmpty(BaseSQLAFilter, filters.BaseBooleanFilter):
 class FilterInList(BaseSQLAFilter):
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        column: T_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
@@ -259,7 +260,7 @@ class DateSmallerFilter(FilterSmaller, filters.BaseDateFilter):
 class DateBetweenFilter(BaseSQLAFilter, filters.BaseDateBetweenFilter):
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        column: T_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
@@ -306,7 +307,7 @@ class DateTimeSmallerFilter(FilterSmaller, filters.BaseDateTimeFilter):
 class DateTimeBetweenFilter(BaseSQLAFilter, filters.BaseDateTimeBetweenFilter):
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        column: T_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
@@ -353,7 +354,7 @@ class TimeSmallerFilter(FilterSmaller, filters.BaseTimeFilter):
 class TimeBetweenFilter(BaseSQLAFilter, filters.BaseTimeBetweenFilter):
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        column: T_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
@@ -384,13 +385,13 @@ class TimeNotBetweenFilter(TimeBetweenFilter):
 class EnumEqualFilter(FilterEqual):
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        column: T_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
         **kwargs: t.Any,
     ) -> None:
-        self.enum_class = column.type.enum_class  # type: ignore[union-attr]
+        self.enum_class = None
         super().__init__(column, name, options, url_value=url_value, **kwargs)
 
     def clean(self, value: t.Any) -> t.Any:
@@ -402,13 +403,13 @@ class EnumEqualFilter(FilterEqual):
 class EnumFilterNotEqual(FilterNotEqual):
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        column: T_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
         **kwargs: t.Any,
     ) -> None:
-        self.enum_class = column.type.enum_class  # type: ignore[union-attr]
+        self.enum_class = None
         super().__init__(column, name, options, url_value=url_value, **kwargs)
 
     def clean(self, value: t.Any) -> t.Any:
@@ -420,26 +421,26 @@ class EnumFilterNotEqual(FilterNotEqual):
 class EnumFilterEmpty(FilterEmpty):
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        column: T_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
         **kwargs: t.Any,
     ) -> None:
-        self.enum_class = column.type.enum_class  # type: ignore[union-attr]
+        self.enum_class = None
         super().__init__(column, name, options, url_value=url_value, **kwargs)
 
 
 class EnumFilterInList(FilterInList):
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        column: T_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
         **kwargs: t.Any,
     ) -> None:
-        self.enum_class = column.type.enum_class  # type: ignore[union-attr]
+        self.enum_class = None
         super().__init__(column, name, options, url_value=url_value, **kwargs)
 
     def clean(self, value: t.Any) -> t.Any:
@@ -455,13 +456,13 @@ class EnumFilterInList(FilterInList):
 class EnumFilterNotInList(FilterNotInList):
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        column: T_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
         **kwargs: t.Any,
     ) -> None:
-        self.enum_class = column.type.enum_class  # type: ignore[union-attr]
+        self.enum_class = None
         super().__init__(column, name, options, url_value=url_value, **kwargs)
 
     def clean(self, value: t.Any) -> t.Any:
@@ -477,7 +478,7 @@ class EnumFilterNotInList(FilterNotInList):
 class ChoiceTypeEqualFilter(FilterEqual):
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        column: T_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
@@ -510,7 +511,7 @@ class ChoiceTypeEqualFilter(FilterEqual):
 class ChoiceTypeNotEqualFilter(FilterNotEqual):
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        column: T_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
@@ -544,7 +545,7 @@ class ChoiceTypeNotEqualFilter(FilterNotEqual):
 class ChoiceTypeLikeFilter(FilterLike):
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        column: T_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
@@ -576,7 +577,7 @@ class ChoiceTypeLikeFilter(FilterLike):
 class ChoiceTypeNotLikeFilter(FilterNotLike):
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        column: T_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
@@ -609,7 +610,7 @@ class ChoiceTypeNotLikeFilter(FilterNotLike):
 class ChoiceTypeEmptyFilter(FilterEmpty):
     def __init__(
         self,
-        column: T_SQLALCHEMY_COLUMN | T_INSTRUMENTED_ATTRIBUTE,
+        column: T_COLUMN,
         name: str,
         options: T_OPTIONS = None,
         url_value: t.Any = None,
