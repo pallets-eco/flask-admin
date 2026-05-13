@@ -73,7 +73,7 @@ class BaseSQLAFilter(filters.BaseFilter):
         """
         super().__init__(name, options, data_type, column=column, url_value=url_value)
 
-        self.column = column
+        self.column: T_COLUMN = column
         self._joins: list[t.Any] | None = None
         self._bound = False
         self._bound_model: type | None = None
