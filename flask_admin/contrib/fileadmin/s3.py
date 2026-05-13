@@ -305,8 +305,11 @@ class S3FileAdmin(BaseFileAdmin):
         self,
         s3_client: BaseClient,
         bucket_name: str,
+        storage: S3Storage | None = None,
         *args: t.Any,
         **kwargs: t.Any,
     ) -> None:
-        storage = S3Storage(s3_client, bucket_name)
+        if storage is None:
+            storage = S3Storage(s3_client, bucket_name)
+
         super().__init__(*args, storage=storage, **kwargs)  # type: ignore[misc]
