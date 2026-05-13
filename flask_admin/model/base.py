@@ -556,10 +556,23 @@ class BaseModelView(BaseView, ActionsMixin):
         Can contain either field names or instances of
         :class:`~flask_admin.model.filters.BaseFilter` classes.
 
+        Field names may be plain column names or dotted paths that walk
+        across relationships, e.g. ``"author.email"``.
+
+        For SQLAlchemy views the same dotted-path syntax can be passed as
+        the ``column`` argument when constructing a filter instance, in
+        which case it is resolved against the view's model and any joins
+        required to reach the target column are added automatically.
+
         Example::
 
             class MyModelView(BaseModelView):
-                column_filters = ('user', 'email')
+                column_filters = (
+                    'user',
+                    'email',
+                    'author.email',  # walks a relationship
+                    FilterEqual(column='author.email', name='Author Email'),
+                )
     """
 
     named_filter_urls: bool = False

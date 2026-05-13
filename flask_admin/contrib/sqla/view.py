@@ -858,10 +858,18 @@ class ModelView(BaseModelView):
 
     def handle_filter(self, filter: t.Any) -> t.Any:
         if isinstance(filter, sqla_filters.BaseSQLAFilter):
+            filter.bind(self.model)
             column = filter.column
 
+            if filter._joins:
+                if filter.key_name is None:
+                    raise RuntimeError(
+                        "Filter has joins recorded but no key_name; "
+                        "this indicates an internal state error."
+                    )
+                self._filter_joins[filter.key_name] = filter._joins
             # hybrid_property joins are not supported yet
-            if isinstance(column, InstrumentedAttribute) and tools.need_join(
+            elif isinstance(column, InstrumentedAttribute) and tools.need_join(
                 self.model, column.table
             ):
                 self._filter_joins[column] = [column.table]
@@ -1370,11 +1378,11 @@ class ModelView(BaseModelView):
         :param form:
             Form instance
         """
+        session = _get_deprecated_session(self.session)
         try:
             model = self.build_new_instance()
 
             form.populate_obj(model)
-            session = _get_deprecated_session(self.session)
             session.add(model)
             self._on_model_change(form, model, True)
             session.commit()
@@ -1403,10 +1411,10 @@ class ModelView(BaseModelView):
         :param model:
             Model instance
         """
+        session = _get_deprecated_session(self.session)
         try:
             form.populate_obj(model)
             self._on_model_change(form, model, False)
-            session = _get_deprecated_session(self.session)
             session.commit()
         except Exception as ex:
             if not self.handle_view_exception(ex):

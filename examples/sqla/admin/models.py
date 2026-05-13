@@ -41,6 +41,21 @@ class EnumChoices(enum.Enum):
     second = 2
 
 
+class AccountProvider(enum.Enum):
+    GOOGLE = "google"
+    FACEBOOK = "facebook"
+    GITHUB = "github"
+
+
+class Account(db.Model):
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    username: Mapped[str] = mapped_column(String(64), unique=True)
+    provider: Mapped[str] = mapped_column(ChoiceType(AccountProvider))
+
+    def __str__(self):
+        return f"{self.provider}:{self.username}"
+
+
 class User(db.Model):
     id: Mapped[UUIDType] = mapped_column(
         UUIDType(binary=False), default=uuid.uuid4, primary_key=True
@@ -49,6 +64,11 @@ class User(db.Model):
     # use a regular string field, for which we can specify a list of available choices
     # later on
     type: Mapped[str] = mapped_column(String(100))
+
+    account_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("account.id"), nullable=True
+    )
+    account: Mapped["Account | None"] = relationship("Account")
 
     # Fixed choices can be handled in a number of different ways:
     enum_choice_field: Mapped[Enum] = mapped_column(Enum(EnumChoices), nullable=True)  # type: ignore[var-annotated]
