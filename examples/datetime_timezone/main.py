@@ -111,21 +111,23 @@ class BlogModelView(ModelView):
     }
 
 
+with app.app_context():
+    Base.metadata.drop_all(db.engine)
+    Base.metadata.create_all(db.engine)
+    db.session.add(
+        Article(text="Written at 9:00 UTC", last_edit=datetime(2024, 8, 8, 9, 0, 0))
+    )
+    db.session.commit()
+    admin.add_view(BlogModelView(Article, db, name="Article", endpoint="article"))
+    admin.add_view(
+        TimezoneAwareBlogModelView(
+            Article,
+            db,
+            name="Timezone Aware Article",
+            endpoint="timezone_aware_article",
+        )
+    )
+
+
 if __name__ == "__main__":
-    with app.app_context():
-        Base.metadata.drop_all(db.engine)
-        Base.metadata.create_all(db.engine)
-        db.session.add(
-            Article(text="Written at 9:00 UTC", last_edit=datetime(2024, 8, 8, 9, 0, 0))
-        )
-        db.session.commit()
-        admin.add_view(BlogModelView(Article, db, name="Article", endpoint="article"))
-        admin.add_view(
-            TimezoneAwareBlogModelView(
-                Article,
-                db,
-                name="Timezone Aware Article",
-                endpoint="timezone_aware_article",
-            )
-        )
     app.run(debug=True)
