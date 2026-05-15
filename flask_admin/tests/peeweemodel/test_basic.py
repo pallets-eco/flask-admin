@@ -966,6 +966,79 @@ def test_form_args(app, db, admin):
     assert len(edit_form.test.validators) == 2  # type: ignore[attr-defined]
 
 
+def test_form_choices(app, db, admin):
+    class BaseModel(peewee.Model):
+        class Meta:
+            database = db
+
+    class Model(BaseModel):
+        title = peewee.CharField(max_length=200)
+        status = peewee.CharField(max_length=20, default="draft")
+        priority = peewee.CharField(max_length=20, null=True)
+
+    Model.create_table()
+
+    status_choices = [
+        ("draft", "Draft"),
+        ("review", "In Review"),
+        ("published", "Published"),
+    ]
+    priority_choices = [
+        ("low", "Low"),
+        ("high", "High"),
+    ]
+    view = CustomModelView(
+        Model,
+        form_choices={
+            "status": status_choices,
+            "priority": priority_choices,
+        },
+    )
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+
+    # Check that select field is rendered with correct choices
+    assert type(form_obj.status).__name__ == "Select2Field"  # type: ignore[attr-defined]
+    assert form_obj.status.choices == status_choices  # type: ignore[attr-defined]
+
+    # Nullable field should allow blank
+    assert type(form_obj.priority).__name__ == "Select2Field"  # type: ignore[attr-defined]
+    assert form_obj.priority.choices == priority_choices  # type: ignore[attr-defined]
+    assert form_obj.priority.allow_blank is True  # type: ignore[attr-defined]
+
+    # Non-nullable field should not allow blank
+    assert form_obj.status.allow_blank is False  # type: ignore[attr-defined]
+
+    # Fields not in form_choices should convert normally
+    assert type(form_obj.title).__name__ == "StringField"  # type: ignore[attr-defined]
+
+
+def test_form_choices_with_form_overrides(app, db, admin):
+    class BaseModel(peewee.Model):
+        class Meta:
+            database = db
+
+    class Model(BaseModel):
+        status = peewee.CharField(max_length=20, default="draft")
+
+    Model.create_table()
+
+    view = CustomModelView(
+        Model,
+        form_choices={
+            "status": [("draft", "Draft"), ("published", "Published")],
+        },
+        form_overrides={"status": fields.TextAreaField},
+    )
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+
+    # form_overrides should take priority over form_choices
+    assert type(form_obj.status).__name__ == "TextAreaField"  # type: ignore[attr-defined]
+
+
 def test_ajax_fk(app, db, admin):
     class BaseModel(peewee.Model):
         class Meta:
