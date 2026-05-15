@@ -1,5 +1,6 @@
 import datetime
 import os.path as op
+from typing import Any
 
 from flask import Flask
 from flask import redirect
@@ -70,7 +71,7 @@ class Page(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(64))
     content: Mapped[Text] = mapped_column(Text)
-    meta_data: Mapped[dict] = mapped_column(JSON, default=dict, server_default=text("'{}'"))
+    meta_data: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, server_default=text("'{}'"))
 
     def __repr__(self):
         return self.title
