@@ -1,7 +1,11 @@
+import typing as t
+
 import pytest
 
+F = t.TypeVar("F", bound=t.Callable[..., object])
 
-def flask_babel_test_decorator(fn):
+
+def flask_babel_test_decorator(fn: F) -> F:
     """Decorator to annotate any tests that *require* Flask-Babel to be available,
     ie they check translations directly, with the `flask_babel` mark.
 

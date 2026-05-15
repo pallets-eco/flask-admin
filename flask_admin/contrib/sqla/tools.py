@@ -115,7 +115,7 @@ def tuple_operator_in(
 
     The returning operator can be used within a filter(), as it is just an or_ operator
     """
-    ands = []
+    ands: list[t.Any] = []
     for id in ids:
         k = []
         for i in range(len(model_pk)):

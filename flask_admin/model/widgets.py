@@ -47,7 +47,7 @@ class AjaxSelect2Widget:
 
         if self.multiple:
             result = []
-            ids = []
+            ids: list[str] = []
 
             for value in field.data:
                 data = field.loader.format(value)
@@ -132,8 +132,13 @@ class XEditableWidget:
         elif field.type in ["Select2Field", "SelectField"]:
             field = t.cast(Select2Field | SelectField, field)
             kwargs["data-type"] = "select2"
-            choices = [  # type:ignore[misc]
-                {"value": x, "text": y} for x, y in field.choices
+
+            raw_choices = field.choices or ()
+            if isinstance(raw_choices, dict):
+                raw_choices = list(raw_choices.items())
+
+            choices = [
+                {"value": choice[0], "text": choice[1]} for choice in raw_choices
             ]
 
             # prepend a blank field to choices if allow_blank = True

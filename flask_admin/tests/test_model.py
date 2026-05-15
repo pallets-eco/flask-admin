@@ -1,4 +1,7 @@
+import typing as t
+
 import pytest
+import wtforms
 from flask import Flask
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from werkzeug.test import Client
@@ -8,14 +11,23 @@ from flask_admin import Admin
 from flask_admin import form
 from flask_admin._compat import iteritems
 from flask_admin._compat import itervalues
+from flask_admin._types import T_COLUMN
+from flask_admin._types import T_FILTER
 from flask_admin.model import base
 from flask_admin.model import filters
+from flask_admin.model.filters import BaseFilter
 from flask_admin.model.template import macro
 from flask_admin.theme import Bootstrap4Theme
 
 
 class Model:
-    def __init__(self, id=None, c1=1, c2=2, c3=3):
+    def __init__(
+        self,
+        id: int | None = None,
+        c1: int | str | None = 1,
+        c2: int | str = 2,
+        c3: int | str = 3,
+    ) -> None:
         self.id = id
         self.col1 = c1
         self.col2 = c2
@@ -35,32 +47,40 @@ class SimpleFilter(filters.BaseFilter):
         query._applied = True
         return query
 
-    def operation(self):
+    def operation(self) -> str:
         return "test"
 
 
 class MockModelView(base.BaseModelView):
     def __init__(
         self,
-        model,
-        data=None,
-        name=None,
-        category=None,
-        endpoint=None,
-        url=None,
-        **kwargs,
-    ):
+        model: type[Model],
+        data: dict[int, Model] | None = None,
+        name: str | None = None,
+        category: str | None = None,
+        endpoint: str | None = None,
+        url: str | None = None,
+        **kwargs: t.Any,
+    ) -> None:
         # Allow to set any attributes from parameters
         for k, v in iteritems(kwargs):
             setattr(self, k, v)
 
         super().__init__(model, name, category, endpoint, url)
 
-        self.created_models = []
-        self.updated_models = []
-        self.deleted_models = []
+        self.created_models: list[Model] = []
+        self.updated_models: list[Model] = []
+        self.deleted_models: list[Model] = []
 
-        self.search_arguments = []
+        self.search_arguments: list[
+            tuple[
+                int | None,
+                T_COLUMN | None,
+                bool,
+                str | None,
+                t.Sequence[tuple[int, str | T_COLUMN, str]] | None,
+            ]
+        ] = []
 
         if data is None:
             self.all_models = {1: Model(1), 2: Model(2)}
@@ -70,58 +90,67 @@ class MockModelView(base.BaseModelView):
         self.last_id = len(self.all_models) + 1
 
     # Scaffolding
-    def get_pk_value(self, model):
+    def get_pk_value(self, model: Model) -> int | None:  # type: ignore[override]
         return model.id
 
-    def scaffold_list_columns(self):
+    def scaffold_list_columns(self) -> list[str]:
         columns = ["col1", "col2", "col3"]
 
         if self.column_exclude_list:
-            return filter(lambda x: x not in self.column_exclude_list, columns)  # type: ignore[arg-type]
+            return filter(lambda x: x not in self.column_exclude_list, columns)  # type: ignore[arg-type,return-value]
 
         return columns
 
-    def init_search(self):
+    def init_search(self) -> bool:
         return bool(self.column_searchable_list)
 
-    def scaffold_filters(self, name):
+    def scaffold_filters(self, name: str) -> list[BaseFilter]:  # type: ignore[override]
         return [SimpleFilter(name)]
 
-    def scaffold_sortable_columns(self):
+    def scaffold_sortable_columns(self) -> list[str]:  # type: ignore[override]
         return ["col1", "col2", "col3"]
 
-    def scaffold_form(self):
+    def scaffold_form(self) -> type[wtforms.Form]:
         return Form
 
     # Data
-    def get_list(self, page, sort_field, sort_desc, search, filters, page_size=None):
+    def get_list(  # type: ignore[override]
+        self,
+        page: int | None,
+        sort_field: T_COLUMN | None,
+        sort_desc: bool,
+        search: str | None,
+        filters: t.Sequence[T_FILTER] | None,
+        page_size: int | None = None,
+    ) -> tuple[int, t.Iterator[Model]]:
         self.search_arguments.append((page, sort_field, sort_desc, search, filters))
         return len(self.all_models), itervalues(self.all_models)
 
-    def get_one(self, id):
+    def get_one(self, id: str | int) -> Model | None:
         return self.all_models.get(int(id))
 
-    def create_model(self, form):
+    def create_model(self, form: wtforms.Form) -> bool:
         model = Model(self.last_id)
         self.last_id += 1
 
         form.populate_obj(model)
         self.created_models.append(model)
+        assert model.id
         self.all_models[model.id] = model
 
         return True
 
-    def update_model(self, form, model):
+    def update_model(self, form: wtforms.Form, model: Model) -> bool:  # type: ignore[override]
         form.populate_obj(model)
         self.updated_models.append(model)
         return True
 
-    def delete_model(self, model):
+    def delete_model(self, model: Model) -> bool:  # type: ignore[override]
         self.deleted_models.append(model)
         return True
 
 
-def test_mockview(app, admin):
+def test_mockview(app: Flask, admin: Admin) -> None:
     view = MockModelView(Model)
     admin.add_view(view)
 
@@ -215,7 +244,7 @@ def test_mockview(app, admin):
     assert model.col1 == "another test!"
 
 
-def test_permissions(app, admin):
+def test_permissions(app: Flask, admin: Admin) -> None:
     view = MockModelView(Model)
     admin.add_view(view)
 
@@ -234,7 +263,7 @@ def test_permissions(app, admin):
     assert rv.status_code == 302
 
 
-def test_templates(app, admin):
+def test_templates(app: Flask, admin: Admin) -> None:
     view = MockModelView(Model)
     admin.add_view(view)
 
@@ -254,7 +283,7 @@ def test_templates(app, admin):
     assert rv.data == b"Success!"
 
 
-def test_list_columns(app, admin):
+def test_list_columns(app: Flask, admin: Admin) -> None:
     view = MockModelView(
         Model, column_list=["col1", "col3"], column_labels=dict(col1="Column1")
     )
@@ -271,7 +300,7 @@ def test_list_columns(app, admin):
     assert "Col2" not in data
 
 
-def test_exclude_columns(app, admin):
+def test_exclude_columns(app: Flask, admin: Admin) -> None:
     view = MockModelView(Model, column_exclude_list=["col2"])
     admin.add_view(view)
 
@@ -285,14 +314,14 @@ def test_exclude_columns(app, admin):
     assert "Col2" not in data
 
 
-def test_sortable_columns(app, admin):
+def test_sortable_columns(app: Flask, admin: Admin) -> None:
     view = MockModelView(Model, column_sortable_list=["col1", ("col2", "test1")])
     admin.add_view(view)
 
     assert view._sortable_columns == dict(col1="col1", col2="test1")
 
 
-def test_column_searchable_list(app, admin):
+def test_column_searchable_list(app: Flask, admin: Admin) -> None:
     view = MockModelView(Model, column_searchable_list=["col1", "col2"])
     admin.add_view(view)
 
@@ -301,7 +330,7 @@ def test_column_searchable_list(app, admin):
     # TODO: Make calls with search
 
 
-def test_column_filters(app, admin):
+def test_column_filters(app: Flask, admin: Admin) -> None:
     view = MockModelView(Model, column_filters=["col1", "col2"])
     admin.add_view(view)
 
@@ -322,7 +351,7 @@ def test_column_filters(app, admin):
     # TODO: Make calls with filters
 
 
-def test_filter_list_callable(app, admin):
+def test_filter_list_callable(app: Flask, admin: Admin) -> None:
     flt = SimpleFilter("test", options=lambda: [("1", "Test 1"), ("2", "Test 2")])
 
     view = MockModelView(Model, column_filters=[flt])
@@ -334,7 +363,7 @@ def test_filter_list_callable(app, admin):
     assert opts == [("1", "Test 1"), ("2", "Test 2")]
 
 
-def test_form():
+def test_form() -> None:
     # TODO: form_columns
     # TODO: form_excluded_columns
     # TODO: form_args
@@ -342,14 +371,14 @@ def test_form():
     pass
 
 
-def test_csrf(app, admin):
+def test_csrf(app: Flask, admin: Admin) -> None:
     class SecureModelView(MockModelView):
         form_base_class = form.SecureForm
 
-        def scaffold_form(self):
+        def scaffold_form(self) -> type[wtforms.Form]:
             return form.SecureForm
 
-    def get_csrf_token(data):
+    def get_csrf_token(data: str) -> str:
         data = data.split('name="csrf_token" type="hidden" value="')[1]
         token = data.split('"')[0]
         return token
@@ -448,7 +477,7 @@ def test_csrf(app, admin):
     assert "Failed to perform action." in rv.data.decode("utf-8")
 
 
-def test_custom_form(app, admin):
+def test_custom_form(app: Flask, admin: Admin) -> None:
     class TestForm(form.BaseForm):
         pass
 
@@ -462,7 +491,7 @@ def test_custom_form(app, admin):
 
 
 @pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
-def test_modal_edit_bs4(app, babel):
+def test_modal_edit_bs4(app: Flask, babel: object | None) -> None:
     admin_bs4 = Admin(app, theme=Bootstrap4Theme())
 
     edit_modal_on = MockModelView(Model, edit_modal=True, endpoint="edit_modal_on")
@@ -505,7 +534,7 @@ def test_modal_edit_bs4(app, babel):
     assert "fa_modal_window" not in data
 
 
-def check_class_name():
+def check_class_name() -> None:
     class DummyView(MockModelView):
         pass
 
@@ -513,7 +542,7 @@ def check_class_name():
     assert view.name == "Dummy View"
 
 
-def test_export_csv(app, admin):
+def test_export_csv(app: Flask, admin: Admin) -> None:
     client = app.test_client()
 
     # test redirect when csv export is disabled
@@ -736,7 +765,7 @@ def test_export_csv(app, admin):
     assert rv.status_code == 500
 
 
-def test_export_tablib(app, admin):
+def test_export_tablib(app: Flask, admin: Admin) -> None:
     client = app.test_client()
 
     # basic test of tsv export with a few records using tablib
@@ -768,7 +797,7 @@ def test_export_tablib(app, admin):
     )
 
 
-def test_list_row_actions(app, admin):
+def test_list_row_actions(app: Flask, admin: Admin) -> None:
     client = app.test_client()
 
     from flask_admin.model import template
@@ -865,7 +894,7 @@ def test_list_row_actions(app, admin):
         ),
     ],
 )
-def test_form_submit(app, admin, url, age, msg):
+def test_form_submit(app: Flask, admin: Admin, url: str, age: int, msg: str) -> None:
     # Test error flashing
     view = MockModelView(Model)
     admin.add_view(view)

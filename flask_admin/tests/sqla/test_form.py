@@ -1,4 +1,5 @@
 import inspect
+import typing as t
 from unittest.mock import MagicMock
 
 import pytest
@@ -16,10 +17,10 @@ sqla_admin_model_converters = [
 
 class TestAdminModelConverter:
     @pytest.mark.parametrize("method_name", sqla_admin_model_converters)
-    def test_can_override_widget(self, method_name):
+    def test_can_override_widget(self, method_name: str) -> None:
         converter = AdminModelConverter(None, None)  # type: ignore[arg-type]
 
-        def fake_widget(*args, **kwargs):
+        def fake_widget(*args: t.Any, **kwargs: t.Any) -> str:
             return "<p>widget overridden</p>"
 
         class TestForm(wtforms.Form):

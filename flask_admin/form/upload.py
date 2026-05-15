@@ -269,7 +269,7 @@ class FileUploadField(fields.StringField):
         if int(wtforms_version[0]) < 3:
             return super().process(formdata, data)  # type:ignore[arg-type]
         else:
-            return super(FileUploadField, self).process(  # noqa
+            return super().process(
                 formdata,  # type: ignore[arg-type]
                 data,
                 extra_filters,

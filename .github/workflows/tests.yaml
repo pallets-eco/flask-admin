@@ -82,7 +82,15 @@ jobs:
         env:
           PGPASSWORD: postgres
         run: psql -U postgres -h localhost -c 'CREATE EXTENSION hstore;' flask_admin_test
-      - run: uv run --locked tox run -e ${{ matrix.tox == 'normal' && format('py{0}', matrix.python) || matrix.tox }}
+      - name: Set tox env name
+        id: tox_env
+        run: |
+            if [ "${{ matrix.tox }}" = "normal" ]; then
+            echo "name=py$(echo '${{ matrix.python }}' | tr -d '.')" >> $GITHUB_OUTPUT
+            else
+            echo "name=${{ matrix.tox }}" >> $GITHUB_OUTPUT
+            fi
+      - run: uv run --locked tox run -e ${{ steps.tox_env.outputs.name }}
   not_tests:
     name: ${{ matrix.tox }}
     runs-on: ubuntu-latest

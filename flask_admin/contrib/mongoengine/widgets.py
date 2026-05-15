@@ -1,3 +1,5 @@
+import typing as t
+
 from markupsafe import escape
 from markupsafe import Markup
 from mongoengine.fields import GridFSProxy
@@ -6,6 +8,7 @@ from wtforms.widgets import html_params
 
 from flask_admin.helpers import get_url
 
+from ..._types import _T_MONGOENGINE_FIELD_PROTOCOL
 from . import helpers
 
 
@@ -21,7 +24,7 @@ class MongoFileInput:
         "</div>"
     )
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: _T_MONGOENGINE_FIELD_PROTOCOL, **kwargs: t.Any) -> Markup:
         kwargs.setdefault("id", field.id)
 
         placeholder = ""
@@ -51,7 +54,7 @@ class MongoImageInput:
         "</div>"
     )
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field: _T_MONGOENGINE_FIELD_PROTOCOL, **kwargs: t.Any) -> Markup:
         kwargs.setdefault("id", field.id)
         placeholder = ""
         if field.data and isinstance(field.data, ImageGridFsProxy):

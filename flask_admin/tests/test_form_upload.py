@@ -9,7 +9,7 @@ from flask_admin import form
 from flask_admin import helpers
 
 
-def _create_temp():
+def _create_temp() -> str:
     path = op.join(op.dirname(__file__), "tmp")
     if not op.exists(path):
         os.mkdir(path)
@@ -21,17 +21,17 @@ def _create_temp():
     return path
 
 
-def safe_delete(path, name):
+def safe_delete(path: str, name: str) -> None:
     try:
         os.remove(op.join(path, name))
     except OSError:
         pass
 
 
-def test_upload_field(app, babel):
+def test_upload_field(app: Flask, babel: object | None) -> None:
     path = _create_temp()
 
-    def _remove_testfiles():
+    def _remove_testfiles() -> None:
         safe_delete(path, "test1.txt")
         safe_delete(path, "test2.txt")
 
@@ -112,12 +112,12 @@ def test_upload_field(app, babel):
     _remove_testfiles()
 
 
-def test_image_upload_field():
+def test_image_upload_field() -> None:
     app = Flask(__name__)
 
     path = _create_temp()
 
-    def _remove_testimages():
+    def _remove_testimages() -> None:
         safe_delete(path, "test1.png")
         safe_delete(path, "test1_thumb.jpg")
         safe_delete(path, "test2.png")
@@ -269,12 +269,12 @@ def test_image_upload_field():
             assert my_form.validate()
 
 
-def test_relative_path():
+def test_relative_path() -> None:
     app = Flask(__name__)
 
     path = _create_temp()
 
-    def _remove_testfiles():
+    def _remove_testfiles() -> None:
         safe_delete(path, "test1.txt")
 
     class TestForm(form.BaseForm):

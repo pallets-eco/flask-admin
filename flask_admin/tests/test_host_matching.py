@@ -3,6 +3,7 @@ import typing as t
 import pytest
 from flask import Flask
 from flask import url_for
+from flask.typing import ResponseReturnValue
 
 from flask_admin import base
 
@@ -35,30 +36,30 @@ class MockView(base.BaseView):
     visible = True
 
     @base.expose("/")
-    def index(self):
+    def index(self) -> str:
         return "Success!"
 
     @base.expose("/test/")
-    def test(self):
+    def test(self) -> str:
         return self.render("mock.html")
 
     @base.expose("/base/")
-    def base(self):
+    def base(self) -> str:
         return self.render("admin/base.html")
 
-    def _handle_view(self, name, **kwargs):
+    def _handle_view(self, name: str, **kwargs: t.Any) -> None | ResponseReturnValue:
         if self.allow_call:
             return super()._handle_view(name, **kwargs)
         else:
             return "Failure!"
 
-    def is_accessible(self):
+    def is_accessible(self) -> bool:
         if self.allow_access:
             return super().is_accessible()
 
         return False
 
-    def is_visible(self):
+    def is_visible(self) -> bool:
         if self.visible:
             return super().is_visible()
 
@@ -67,8 +68,8 @@ class MockView(base.BaseView):
 
 @pytest.mark.parametrize("initialise_using_init_app", [True, False])
 def test_mounting_on_host_with_variable_is_unsupported(
-    app, babel, initialise_using_init_app
-):
+    app: Flask, babel: object | None, initialise_using_init_app: bool
+) -> None:
     with pytest.raises(ValueError) as e:
         init_admin(
             app,
@@ -83,7 +84,7 @@ def test_mounting_on_host_with_variable_is_unsupported(
 
 
 @pytest.mark.parametrize("initialise_using_init_app", [True, False])
-def test_mounting_on_host_with_flask_mismatch(initialise_using_init_app):
+def test_mounting_on_host_with_flask_mismatch(initialise_using_init_app: bool) -> None:
     app = Flask(__name__, host_matching=False)
 
     with pytest.raises(ValueError) as e:
@@ -100,8 +101,8 @@ def test_mounting_on_host_with_flask_mismatch(initialise_using_init_app):
 
 @pytest.mark.parametrize("initialise_using_init_app", [True, False])
 def test_mounting_on_subdomain_and_host_is_rejected(
-    app, babel, initialise_using_init_app
-):
+    app: Flask, babel: object | None, initialise_using_init_app: bool
+) -> None:
     with pytest.raises(ValueError) as e:
         init_admin(
             app,
@@ -113,7 +114,9 @@ def test_mounting_on_subdomain_and_host_is_rejected(
 
 
 @pytest.mark.parametrize("initialise_using_init_app", [True, False])
-def test_mounting_on_host(app, babel, initialise_using_init_app):
+def test_mounting_on_host(
+    app: Flask, babel: object | None, initialise_using_init_app: bool
+) -> None:
     admin = init_admin(
         app,
         using_init_app=initialise_using_init_app,
@@ -169,7 +172,9 @@ def test_mounting_on_host(app, babel, initialise_using_init_app):
 
 
 @pytest.mark.parametrize("initialise_using_init_app", [True, False])
-def test_mounting_on_wildcard_host(app, babel, initialise_using_init_app):
+def test_mounting_on_wildcard_host(
+    app: Flask, babel: object | None, initialise_using_init_app: bool
+) -> None:
     admin = init_admin(
         app,
         using_init_app=initialise_using_init_app,

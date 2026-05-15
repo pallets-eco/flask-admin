@@ -1,9 +1,11 @@
+import typing as t
+
 from flask_admin._compat import iteritems
 from flask_admin.model.form import InlineBaseFormAdmin
 
 
 class EmbeddedForm(InlineBaseFormAdmin):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: t.Any) -> None:
         super().__init__(**kwargs)
 
         self._form_subdocuments = convert_subdocuments(
@@ -11,7 +13,7 @@ class EmbeddedForm(InlineBaseFormAdmin):
         )
 
 
-def convert_subdocuments(values):
+def convert_subdocuments(values: dict[t.Any, t.Any]) -> dict[t.Any, t.Any]:
     result = {}
 
     for name, p in iteritems(values):
