@@ -65,7 +65,7 @@ class TablerUITheme(Theme):
     theme_base: str = "gray"  # "gray" | "neutral" | "slate" | "zinc" | "stone"
     theme_font: str = "sans-serif"  # "sans-serif" | "serif" | "monospace" | "comic"
     theme_radius: str = "1"  # "0" | "0.5" | "1" | "1.5" | "2"
-    theme_use_cdn: bool = True # From where to load tabler files
+    theme_use_cdn: bool = True  # From where to load tabler files
 
     def __post_init__(self) -> None:
         _validate_choice(self.layout, self.VALID_LAYOUTS)

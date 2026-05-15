@@ -1,29 +1,25 @@
 import datetime
 import os.path as op
+from typing import Any
 
 from flask import Flask
-from flask import redirect
-from flask import request
-from flask import url_for
 from flask_admin import Admin
-from flask_admin import AdminIndexView
-from flask_admin import expose
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuDivider
 from flask_admin.menu import MenuLink
 from flask_admin.theme import TablerTheme
+from flask_debugtoolbar import DebugToolbarExtension
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime
 from sqlalchemy import Integer
+from sqlalchemy import JSON
 from sqlalchemy import String
 from sqlalchemy import Text
-from sqlalchemy import JSON
 from sqlalchemy import text
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
-from flask_debugtoolbar import DebugToolbarExtension
 
 from examples.tabler.data import build_sample_db
 
@@ -41,11 +37,7 @@ toolbar = DebugToolbarExtension()
 toolbar.init_app(app)
 
 
-admin = Admin(
-    app,
-    name="Example: Tabler",
-    theme=TablerTheme(layout="condensed")
-)
+admin = Admin(app, name="Example: Tabler", theme=TablerTheme(layout="condensed"))
 
 
 @app.route("/")
@@ -70,7 +62,9 @@ class Page(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(64))
     content: Mapped[Text] = mapped_column(Text)
-    meta_data: Mapped[dict] = mapped_column(JSON, default=dict, server_default=text("'{}'"))
+    meta_data: Mapped[dict[str, Any]] = mapped_column(
+        JSON, default=dict, server_default=text("'{}'")
+    )
 
     def __repr__(self):
         return self.title
@@ -179,9 +173,12 @@ if __name__ == "__main__":
     # )
     # admin.add_menu_item(MenuDivider(), target_category="Links")
     # admin.add_link(
-    #     MenuLink(name="External link", url="http://www.example.com/", category="Links")
+    #     MenuLink(
+    #         name="External link",
+    #         url="http://www.example.com/",
+    #         category="Links",
+    #     )
     # )
-
 
     app_dir = op.realpath(op.dirname(__file__))
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])
