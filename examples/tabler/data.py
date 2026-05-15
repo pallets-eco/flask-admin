@@ -79,7 +79,7 @@ def build_sample_db(db, User, Page):
                 "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
                 "culpa qui officia deserunt mollit anim id est laborum."
             ),
-            "meta_data": {"a":1, "b":"a"},
+            "meta_data": {"a": 1, "b": "a"},
         },
         {
             "title": "de Finibus Bonorum et Malorum - Part II",
@@ -99,7 +99,7 @@ def build_sample_db(db, User, Page):
                 "consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla "
                 "pariatur?"
             ),
-            "meta_data": {"a":1, "b":"a"},
+            "meta_data": {"a": 1, "b": "a"},
         },
         {
             "title": "de Finibus Bonorum et Malorum - Part III",
@@ -118,7 +118,7 @@ def build_sample_db(db, User, Page):
                 "sapiente delectus, ut aut reiciendis voluptatibus maiores alias "
                 "consequatur aut perferendis doloribus asperiores repellat."
             ),
-            "meta_data": {"a":1, "b":"a"},
+            "meta_data": {"a": 1, "b": "a"},
         },
     ]
 
