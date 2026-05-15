@@ -1,13 +1,14 @@
 import pytest
-from flask_admin import Admin
-from flask_admin.contrib.sqla.view import ModelView
-from flask_admin.theme import TablerTheme
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
+
+from flask_admin import Admin
+from flask_admin.contrib.sqla.view import ModelView
+from flask_admin.theme import TablerTheme
 
 
 def create_models(sqla_db_ext):
@@ -51,16 +52,22 @@ def fill_data(sqla_db_ext, User, Post):
 @pytest.mark.parametrize(
     ("layout", "markers"),
     [
-        ("vertical", ["data-tabler-layout=\"vertical\"", "tabler-admin-sidebar"]),
+        ("vertical", ['data-tabler-layout="vertical"', "tabler-admin-sidebar"]),
         (
             "fluid",
             [
-                "data-tabler-layout=\"fluid\"",
-                "class=\"layout-fluid\"",
+                'data-tabler-layout="fluid"',
+                'class="layout-fluid"',
                 "tabler-admin-navbar-secondary",
             ],
         ),
-        ("condensed", ["data-tabler-layout=\"condensed\"", "tabler-admin-navbar-collapse"]),
+        (
+            "condensed",
+            [
+                'data-tabler-layout="condensed"',
+                "tabler-admin-navbar-collapse",
+            ],
+        ),
     ],
 )
 def test_layout_renders(app, babel, sqla_db_ext, layout, markers):
