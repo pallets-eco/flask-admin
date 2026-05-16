@@ -838,6 +838,7 @@ tests = [
     { name = "pylint" },
     { name = "pytest" },
     { name = "pytest-cov" },
+    { name = "sqlmodel" },
 ]
 typing = [
     { name = "mypy" },
@@ -948,6 +949,7 @@ tests = [
     { name = "pylint" },
     { name = "pytest" },
     { name = "pytest-cov" },
+    { name = "sqlmodel", specifier = ">=0.0.37" },
 ]
 typing = [
     { name = "mypy" },

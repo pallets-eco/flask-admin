@@ -107,6 +107,7 @@ tests = [
     "pylint",
     "pytest",
     "pytest-cov",
+    "sqlmodel>=0.0.37",
     "moto",
     "botocore>=1.35",
     "psycopg2-binary",
