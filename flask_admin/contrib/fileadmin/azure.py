@@ -50,7 +50,7 @@ class AzureStorage(BaseFileStorage):
         self,
         blob_service_client: BlobServiceClient,
         container_name: str,
-        on_windows=False,
+        on_windows: bool = False,
     ):
         """
         Constructor
@@ -301,7 +301,7 @@ class AzureFileAdmin(BaseFileAdmin):
         self,
         blob_service_client: BlobServiceClient,
         container_name: str,
-        on_windows: bool | None = False,
+        on_windows: bool = False,
         *args: t.Any,
         **kwargs: t.Any,
     ) -> None:

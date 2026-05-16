@@ -1,6 +1,8 @@
 import typing as t
 import warnings
 
+import sqlalchemy
+
 from flask_admin.contrib.sqla._types import T_SCOPED_SESSION
 from flask_admin.contrib.sqla._types import T_SESSION
 from flask_admin.contrib.sqla._types import T_SESSION_OR_DB
@@ -18,13 +20,17 @@ def _warn_session_deprecation(
 ) -> T_SESSION_OR_DB: ...
 
 
-def _warn_session_deprecation(session, warn: bool = True):
+def _warn_session_deprecation(
+    session: T_SESSION_OR_DB | None, warn: bool = True
+) -> T_SESSION_OR_DB | None:
     """
     Warn about deprecation of passing session objects directly.
     Raise error if session is from Flask-SQLAlchemy-Lite.
     """
     if not hasattr(session, "session"):
-        if T_SQLALCHEMY_LITE is not None and isinstance(session, T_SQLALCHEMY_LITE):
+        if T_SQLALCHEMY_LITE is not None and not isinstance(
+            session, sqlalchemy.orm.scoping.scoped_session
+        ):
             # see::
             # https://github.com/pallets-eco/flask-admin/issues/2585
             # https://github.com/pallets-eco/flask-admin/pull/2680
@@ -63,6 +69,9 @@ def _get_deprecated_session(
 ):
     """
     Returns the session if passed directly, session.session otherwise.
+    THIS must be called ONLY immediately before querying on the session, or SQLALite
+    will be using different session across requests.
+    See: https://github.com/pallets-eco/flask-admin/issues/2831
     """
     if (T_SQLALCHEMY is not None and isinstance(session, T_SQLALCHEMY)) or (
         T_SQLALCHEMY_LITE is not None and isinstance(session, T_SQLALCHEMY_LITE)

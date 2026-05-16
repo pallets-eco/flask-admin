@@ -78,20 +78,20 @@
 <ul class="pagination">
   {% if page > 0 %}
   <li class="page-item">
-      <a href="{{ generator(page - 1) }}">&lt;</a>
+      <a class="page-link" href="{{ generator(page - 1) }}">&lt;</a>
   </li>
   {% else %}
   <li class="page-item disabled">
-      <a href="{{ generator(0) }}">&lt;</a>
+      <a class="page-link" href="{{ generator(0) }}">&lt;</a>
   </li>
   {% endif %}
   {% if have_next %}
   <li class="page-item">
-      <a href="{{ generator(page + 1) }}">&gt;</a>
+      <a class="page-link" href="{{ generator(page + 1) }}">&gt;</a>
   </li>
   {% else %}
   <li class="page-item disabled">
-      <a href="{{ generator(page) }}">&gt;</a>
+      <a class="page-link" href="{{ generator(page) }}">&gt;</a>
   </li>
   {% endif %}
 </ul>

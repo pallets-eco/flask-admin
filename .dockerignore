@@ -4,3 +4,11 @@
 .pytest_cache
 .vscode
 .idea
+
+.git
+__pycache__
+**/*.pyc
+**/*.pyo
+*.egg-info
+.coverage
+.venv

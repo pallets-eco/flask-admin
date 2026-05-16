@@ -247,15 +247,15 @@ class ModelView(BaseModelView):
     def __init__(
         self,
         model: type[T_MONGO_ENGINE_DOCUMENT],
-        name=None,
-        category=None,
-        endpoint=None,
-        url=None,
-        static_folder=None,
-        menu_class_name=None,
-        menu_icon_type=None,
-        menu_icon_value=None,
-    ):
+        name: str | None = None,
+        category: str | None = None,
+        endpoint: str | None = None,
+        url: str | None = None,
+        static_folder: str | None = None,
+        menu_class_name: str | None = None,
+        menu_icon_type: str | None = None,
+        menu_icon_value: str | None = None,
+    ) -> None:
         """
         Constructor
 
@@ -440,7 +440,7 @@ class ModelView(BaseModelView):
 
         return flt
 
-    def is_valid_filter(self, filter: BaseMongoEngineFilter):  # type: ignore[override]
+    def is_valid_filter(self, filter: BaseMongoEngineFilter) -> bool:  # type: ignore[override]
         """
         Validate if the provided filter is a valid MongoEngine filter
 

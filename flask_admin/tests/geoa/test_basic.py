@@ -9,6 +9,7 @@ from sqlalchemy import String
 
 from flask_admin.contrib.geoa import ModelView
 from flask_admin.contrib.geoa.fields import GeoJSONField
+from flask_admin.tests.conftest import skip_or_return_session_or_db
 
 
 def create_models(sqla_db_ext):
@@ -34,7 +35,7 @@ def test_model(app, sqla_db_ext, admin, session_or_db):
     sqla_db_ext.db.session.query(GeoModel).delete()
     sqla_db_ext.db.session.commit()
 
-    param = sqla_db_ext.db if session_or_db == "session" else sqla_db_ext.db.session
+    param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = ModelView(GeoModel, param)
     admin.add_view(view)
 
@@ -140,7 +141,7 @@ def test_none(app, sqla_db_ext, admin, session_or_db):
     sqla_db_ext.db.session.query(GeoModel).delete()
     sqla_db_ext.db.session.commit()
 
-    param = sqla_db_ext.db if session_or_db == "session" else sqla_db_ext.db.session
+    param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = ModelView(GeoModel, param)
     admin.add_view(view)
 

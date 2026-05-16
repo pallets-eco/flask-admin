@@ -179,7 +179,7 @@ class LocalFileStorage(BaseFileStorage):
         """
         Writes `content` to the file located at `file_path`.
         """
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             return f.write(content)
 
     def save_file(self, path: str, file_data: FileStorage) -> None:
@@ -1364,7 +1364,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                 error = True
             else:
                 try:
-                    content = content.decode("utf8")
+                    content = content.decode("utf-8")
                 except UnicodeDecodeError:
                     flash(gettext("Cannot edit %(name)s.", name=path), "error")
                     error = True

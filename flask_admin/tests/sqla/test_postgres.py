@@ -7,6 +7,7 @@ from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import HSTORE
 from sqlalchemy.dialects.postgresql import JSON
 
+from ..conftest import skip_or_return_session_or_db
 from .test_basic import CustomModelView
 
 
@@ -20,10 +21,8 @@ def test_hstore(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
 
         sqla_postgres_db_ext.create_all()
 
-        param = (
-            sqla_postgres_db_ext.db.session
-            if session_or_db == "session"
-            else sqla_postgres_db_ext.db
+        param = skip_or_return_session_or_db(
+            sqla_postgres_db_ext, session_or_db == "session"
         )
         view = CustomModelView(Model, param)
         postgres_admin.add_view(view)
@@ -62,11 +61,7 @@ def test_json(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
 
         sqla_postgres_db_ext.create_all()
 
-        param = (
-            sqla_postgres_db_ext.db.session
-            if session_or_db == "session"
-            else sqla_postgres_db_ext.db
-        )
+        param = skip_or_return_session_or_db(sqla_postgres_db_ext, session_or_db)
         view = CustomModelView(JSONModel, param)
         postgres_admin.add_view(view)
 
@@ -111,11 +106,7 @@ def test_citext(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
             connection.execute(text("CREATE EXTENSION IF NOT EXISTS citext"))
         sqla_postgres_db_ext.create_all()
 
-        param = (
-            sqla_postgres_db_ext.db.session
-            if session_or_db == "session"
-            else sqla_postgres_db_ext.db
-        )
+        param = skip_or_return_session_or_db(sqla_postgres_db_ext, session_or_db)
         view = CustomModelView(CITextModel, param)
         postgres_admin.add_view(view)
 
@@ -173,11 +164,7 @@ def test_boolean_filters(app, sqla_postgres_db_ext, postgres_admin, session_or_d
         )
         sqla_postgres_db_ext.db.session.commit()
 
-        param = (
-            sqla_postgres_db_ext.db.session
-            if session_or_db == "session"
-            else sqla_postgres_db_ext.db
-        )
+        param = skip_or_return_session_or_db(sqla_postgres_db_ext, session_or_db)
         view = CustomModelView(BoolModel, param, column_filters=["bool_field"])
         postgres_admin.add_view(view)
 

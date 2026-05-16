@@ -13,6 +13,7 @@ from sqlalchemy.orm.clsregistry import _class_resolver
 from sqlalchemy.orm.properties import ColumnProperty
 from sqlalchemy.sql.schema import Table
 
+from flask_admin._types import T_COL_NO_STR
 from flask_admin._types import T_COLUMN
 from flask_admin._types import T_INSTRUMENTED_ATTRIBUTE
 from flask_admin._types import T_ORM_MODEL
@@ -53,7 +54,7 @@ def parse_like_term(term: str) -> str:
 
 
 def filter_foreign_columns(
-    base_table: T_SQLALCHEMY_TABLE, columns: list[T_COLUMN]
+    base_table: T_SQLALCHEMY_TABLE, columns: list[T_COL_NO_STR]
 ) -> list[T_COLUMN]:
     """
     Return list of columns that belong to passed table.

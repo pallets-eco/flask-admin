@@ -31,7 +31,6 @@ from ..._types import T_SQLALCHEMY_MODEL
 from ..._types import T_VALIDATOR
 from ...model.form import InlineBaseFormAdmin
 from ._compat import _get_deprecated_session
-from ._compat import _warn_session_deprecation
 from ._types import T_SESSION_OR_DB
 from .tools import get_primary_key
 
@@ -326,7 +325,7 @@ class InlineModelFormList(InlineFieldList):
             Inline view
         """
         self.form = form
-        self.session = _warn_session_deprecation(session)
+        self.session = session
         self.model = model
         self.prop = prop
         self.inline_view = inline_view
@@ -391,7 +390,7 @@ class InlineModelOneToOneField(InlineModelFormField):
         **kwargs: t.Any,
     ) -> None:
         self.form = form
-        self.session = _warn_session_deprecation(session)
+        self.session = session
         self.model = model
         self.prop = prop
         self.inline_view = inline_view

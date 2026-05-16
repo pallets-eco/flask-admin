@@ -99,7 +99,7 @@ if t.TYPE_CHECKING:
         T_MONGO_ENGINE_DOCUMENT,
     ]
 
-    T_SQLALCHEMY_TABLE: t.TypeAlias = t.Union[Table, FromClause]
+    T_SQLALCHEMY_TABLE: t.TypeAlias = Table | FromClause
 else:
     T_VIEW = "flask_admin.base.BaseView"
     T_INPUT_REQUIRED = "InputRequired"
@@ -145,10 +145,9 @@ else:
     )
     T_PIL_IMAGE = "PIL.Image.Image"
     T_ORM_MODEL = t.Any
-    T_SQLALCHEMY_TABLE = (
-        "sqlalchemy.sql.schema.Table | sqlalchemy.sql.selectable.FromClause"
-    )
+    T_SQLALCHEMY_TABLE: t.TypeAlias = "Table | FromClause"
 
+T_COL_NO_STR: t.TypeAlias = t.Union[T_SQLALCHEMY_COLUMN, T_INSTRUMENTED_ATTRIBUTE]
 T_COLUMN = t.Union[str, T_SQLALCHEMY_COLUMN, T_INSTRUMENTED_ATTRIBUTE]
 T_FILTER = tuple[int, T_COLUMN, str]
 T_ORM_COLUMN = t.Union[T_COLUMN, T_PEEWEE_FIELD]

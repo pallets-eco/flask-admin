@@ -1,5 +1,6 @@
 import os
 import os.path as op
+import typing as t
 
 import jinja2.runtime
 from flask import Flask
@@ -145,7 +146,7 @@ class FileView(ModelView):
 
 class ImageView(ModelView):
     def _list_thumbnail(
-        view, context: jinja2.runtime.Context | None, model, name: str
+        view: t.Any, context: jinja2.runtime.Context | None, model: t.Any, name: str
     ) -> str | Markup:
         if not model.path:
             return ""

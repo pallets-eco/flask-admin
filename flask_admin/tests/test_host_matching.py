@@ -1,3 +1,5 @@
+import typing as t
+
 import pytest
 from flask import Flask
 from flask import url_for
@@ -14,7 +16,9 @@ def app():
     yield app
 
 
-def init_admin(app, using_init_app: bool, admin_kwargs):
+def init_admin(
+    app: Flask, using_init_app: bool, admin_kwargs: dict[str, t.Any]
+) -> base.Admin:
     if using_init_app:
         admin = base.Admin(**admin_kwargs)
         admin.init_app(app)
@@ -135,7 +139,7 @@ def test_mounting_on_host(app, babel, initialise_using_init_app):
     # Check that static assets are embedded with the expected (relative) URLs
     assert (
         b'<link href="/static/admin/bootstrap/bootstrap4/swatch'
-        b'/default/bootstrap.min.css?v=4.2.1"' in rv.data
+        b'/default/bootstrap.min.css?v=4.6.2"' in rv.data
     )
     assert (
         b'<script  src="/static/admin/vendor'
@@ -187,7 +191,7 @@ def test_mounting_on_wildcard_host(app, babel, initialise_using_init_app):
         # Check that static assets are embedded with the expected (relative) URLs
         assert (
             b'<link href="/static/admin/bootstrap/bootstrap4/swatch'
-            b'/default/bootstrap.min.css?v=4.2.1"' in rv.data
+            b'/default/bootstrap.min.css?v=4.6.2"' in rv.data
         )
         assert (
             b'<script  src="/static/admin/vendor'

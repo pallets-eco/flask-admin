@@ -192,7 +192,7 @@ class ModelView(BaseModelView):
         """
         return model.get(name)
 
-    def _search(self, query, search_term: str):
+    def _search(self, query: dict[str, t.Any], search_term: str) -> dict[str, t.Any]:
         values = search_term.split(" ")
 
         queries: list[dict[str, t.Any]] = []
@@ -234,13 +234,13 @@ class ModelView(BaseModelView):
     def get_list(  # type: ignore[override]
         self,
         page: int | None,
-        sort_column,
+        sort_column: str | None,
         sort_desc: bool,
         search: str | None,
         filters: t.Sequence[T_FILTER] | None,
-        execute=True,
+        execute: bool = True,
         page_size: int | None = None,
-    ):
+    ) -> tuple[int | None, t.Any]:
         """
         Get list of objects from MongoEngine
 

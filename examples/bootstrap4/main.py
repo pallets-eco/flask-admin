@@ -13,6 +13,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuDivider
 from flask_admin.menu import MenuLink
 from flask_admin.theme import Bootstrap4Theme
+from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime
@@ -32,6 +33,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE
 app.config["SQLALCHEMY_ECHO"] = False
 
 db = SQLAlchemy(app)
+babel = Babel(app)
 
 
 class MyAdminIndexView(AdminIndexView):
@@ -106,6 +108,10 @@ class SimplePageView(ModelView):
     can_view_details = True
 
 
+class MyFileAdmin(FileAdmin):
+    editable_extensions = ["txt", "html", "js", "css"]
+
+
 class FileAdminModal(FileAdmin):
     rename_modal = True
     edit_modal = True
@@ -158,7 +164,7 @@ if __name__ == "__main__":
         )
     )
 
-    admin.add_view(FileAdmin("files/", name="Local Files", category="Menu"))
+    admin.add_view(MyFileAdmin("files/", name="Local Files", category="Menu"))
     admin.add_view(
         FileAdminModal("files/", name="Local Files with Modals", category="Menu")
     )
