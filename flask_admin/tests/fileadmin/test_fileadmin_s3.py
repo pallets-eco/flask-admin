@@ -18,6 +18,7 @@ def mock_s3_client():
         client = boto3.client("s3")
         client.create_bucket(Bucket=_bucket_name)
         client.upload_fileobj(BytesIO(b""), _bucket_name, "dummy.txt")
+        client.upload_fileobj(BytesIO(b""), _bucket_name, "d1/dum.txt")
         yield client
 
 
