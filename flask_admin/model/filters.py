@@ -23,9 +23,6 @@ class BaseFilter:
         data_type: T_WIDGET_TYPE = None,
         key_name: str | None = None,
         column: t.Any | None = None,
-        # FIXME: to be renamed in future releases into `value`
-        # thus, `self.value` should be used in functions like clean, validate, etc.
-        url_value: str | None = None,
     ) -> None:
         """
         Constructor.
@@ -40,18 +37,12 @@ class BaseFilter:
             Optional name who represent this filter.
         :param column:
             Optional, field of Model/Document
-        :param url_value:
-            Optional value to use in URL argument instead of value passed to apply
-            method. This is useful for filters that need to convert value to a
-            different format for URL argument,such as convert the filter object into
-            string format for URL argument.
         """
         self.name = name
         self.options = options
         self.data_type = data_type
         self.key_name = key_name
         self.column = column
-        self.url_value = url_value
 
     def get_options(self, view: T_MODEL_VIEW) -> T_OPTION_LIST | None:
         """
@@ -129,7 +120,9 @@ class BaseFilter:
         """
         return str(value)
 
-    def get_url_argument(self, flt_idx: int, flt_key: str) -> tuple[str, str]:
+    def get_url_argument(
+        self, flt_idx: int, flt_key: str, value: t.Any
+    ) -> tuple[str, str]:
         """
         Return URL argument for this filter. e.g. flt0_7=value
 
@@ -139,12 +132,12 @@ class BaseFilter:
             Filter key
         """
 
-        stringified = self.stringify(self.url_value)
+        stringified = self.stringify(value)
         valid = self.validate(stringified)
         if not valid:
             raise ValueError(
                 f"Cannot generate URL argument for invalid filter value. "
-                f"Value: {self.url_value}"
+                f"Value: {value}"
             )
 
         return f"flt{flt_idx}_{flt_key}", f"{stringified}"
@@ -174,14 +167,12 @@ class BaseBooleanFilter(BaseFilter):
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
         column: t.Any | None = None,
-        url_value: str | None = None,
     ) -> None:
         super().__init__(
             name,
             (("1", lazy_gettext("Yes")), ("0", lazy_gettext("No"))),
             data_type,
             column,
-            url_value=url_value,
         )
 
     def validate(self, value: str) -> bool:
@@ -189,6 +180,14 @@ class BaseBooleanFilter(BaseFilter):
 
     def stringify(self, value: t.Any) -> str:
         return "1" if value else "0"
+
+
+class BaseEmptyFilter(BaseBooleanFilter):
+    """
+    Filter empty values, uses fixed list of options.
+    """
+
+    pass
 
 
 class BaseIntFilter(BaseFilter):
@@ -200,7 +199,7 @@ class BaseIntFilter(BaseFilter):
     """
 
     def clean(self, value: str) -> int:
-        return int(value)
+        return int(value) if value else 0
 
 
 class BaseFloatFilter(BaseFilter):
@@ -209,7 +208,7 @@ class BaseFloatFilter(BaseFilter):
     """
 
     def clean(self, value: str) -> float:
-        return float(value)
+        return float(value) if value else 0.0
 
 
 class BaseIntListFilter(BaseFilter):
@@ -250,11 +249,8 @@ class BaseDateFilter(BaseFilter):
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
         column: t.Any | None = None,
-        url_value: str | None = None,
     ):
-        super().__init__(
-            name, options, data_type="datepicker", column=column, url_value=url_value
-        )
+        super().__init__(name, options, data_type="datepicker", column=column)
 
     def clean(self, value: str) -> datetime.date:
         return datetime.datetime.strptime(value, "%Y-%m-%d").date()
@@ -308,14 +304,12 @@ class BaseDateTimeFilter(BaseFilter):
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
         column: t.Any | None = None,
-        url_value: str | None = None,
     ) -> None:
         super().__init__(
             name,
             options,
             data_type="datetimepicker",
             column=column,
-            url_value=url_value,
         )
 
     def clean(self, value: str) -> datetime.datetime:
@@ -370,11 +364,8 @@ class BaseTimeFilter(BaseFilter):
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
         column: t.Any | None = None,
-        url_value: str | None = None,
     ) -> None:
-        super().__init__(
-            name, options, data_type="timepicker", column=column, url_value=url_value
-        )
+        super().__init__(name, options, data_type="timepicker", column=column)
 
     def clean(self, value: str) -> datetime.time:
         # time filters will not work in SQLite + SQLAlchemy if value not converted
@@ -430,11 +421,8 @@ class BaseUuidFilter(BaseFilter):
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
         column: t.Any | None = None,
-        url_value: str | None = None,
     ) -> None:
-        super().__init__(
-            name, options, data_type="uuid", column=column, url_value=url_value
-        )
+        super().__init__(name, options, data_type="uuid", column=column)
 
     def clean(self, value: str) -> t.Any:
         value = uuid.UUID(value)  # type: ignore[assignment]

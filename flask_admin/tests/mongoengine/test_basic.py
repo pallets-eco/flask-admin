@@ -84,7 +84,6 @@ def test_model(app, db, admin):
             "options": None,
             "data_type": None,
             "key_name": None,
-            "url_value": None,
             "column": "test1",
         },
         {
@@ -92,7 +91,6 @@ def test_model(app, db, admin):
             "options": None,
             "data_type": None,
             "key_name": None,
-            "url_value": None,
             "column": "test2",
         },
     ]
@@ -374,12 +372,12 @@ def test_url_for(
         # Without named filters
         view.named_filter_urls = False
         d1 = filter_value
-        filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+        filtered_url = view.url_for(filters=[(FilterClass(col, "f1"), d1)])
         assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
 
         view.named_filter_urls = True
         d1 = filter_value
-        filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+        filtered_url = view.url_for(filters=[(FilterClass(col, "f1"), d1)])
         assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
 
 

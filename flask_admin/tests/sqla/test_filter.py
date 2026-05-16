@@ -985,14 +985,12 @@ def test_url_for_simple(app, sqla_db_ext, admin, session_or_db):
         filtered_url = view.url_for(
             search="exam",
             filters=[
-                filters.FilterLike(Model1.test1, "Email", url_value="test1"),
-                filters.FilterLike(Model1.test1, "Email222", url_value="test1"),
-                filters.BooleanEqualFilter(
-                    Model1.bool_field, "active", url_value=False
-                ),
-                filters.IntInListFilter(Model1.id, "ID", url_value=[33, 30, 35]),
-                filters.FloatGreaterFilter(Model1.test5, "Salary", url_value=50000.0),
-                filters.FloatSmallerFilter(Model1.test5, "Salary", url_value=150000.0),
+                (filters.FilterLike(Model1.test1, "Email"), "test1"),
+                (filters.FilterLike(Model1.test1, "Email222"), "test1"),
+                (filters.BooleanEqualFilter(Model1.bool_field, "active"), False),
+                (filters.IntInListFilter(Model1.id, "ID"), [33, 30, 35]),
+                (filters.FloatGreaterFilter(Model1.test5, "Salary"), 50000.0),
+                (filters.FloatSmallerFilter(Model1.test5, "Salary"), 150000.0),
             ],
         )
         assert (
@@ -1005,13 +1003,11 @@ def test_url_for_simple(app, sqla_db_ext, admin, session_or_db):
         filtered_url = view.url_for(
             search="exam",
             filters=[
-                filters.FilterLike(Model1.test1, "Email", url_value="test1"),
-                filters.FilterLike(Model1.test1, "Email222", url_value="test1"),
-                filters.BooleanEqualFilter(
-                    Model1.bool_field, "active", url_value=False
-                ),
-                filters.IntInListFilter(Model1.id, "ID", url_value=[33, 30, 35]),
-                filters.FloatGreaterFilter(Model1.test5, "Salary", url_value=50000.0),
+                (filters.FilterLike(Model1.test1, "Email"), "test1"),
+                (filters.FilterLike(Model1.test1, "Email222"), "test1"),
+                (filters.BooleanEqualFilter(Model1.bool_field, "active"), False),
+                (filters.IntInListFilter(Model1.id, "ID"), [33, 30, 35]),
+                (filters.FloatGreaterFilter(Model1.test5, "Salary"), 50000.0),
             ],
         )
         assert (
@@ -1388,13 +1384,13 @@ def test_url_for(
 
     with app.test_request_context("http://localhost/admin/user/"):
         d1 = filter_value
-        filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+        filtered_url = view.url_for(filters=[(FilterClass(col, "f1"), d1)])
         assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
 
         view.named_filter_urls = True
 
         d1 = filter_value
-        filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+        filtered_url = view.url_for(filters=[(FilterClass(col, "f1"), d1)])
         assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
 
 
@@ -1510,12 +1506,12 @@ def test_url_for_enums_and_choices(
 
     with app.test_request_context("http://localhost/admin/user/"):
         d1 = filter_value
-        filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+        filtered_url = view.url_for(filters=[(FilterClass(col, "f1"), d1)])
         assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
 
         view.named_filter_urls = True
         d1 = filter_value
-        filtered_url = view.url_for(filters=[FilterClass(col, "f1", url_value=d1)])
+        filtered_url = view.url_for(filters=[(FilterClass(col, "f1"), d1)])
         assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
 
 

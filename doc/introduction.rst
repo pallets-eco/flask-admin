@@ -294,6 +294,18 @@ be a string column's name, column, or :meth:`~flask_admin.model.filters.BaseFilt
     column_filters = [User.country]
     column_filters = [FilterLike("email", "Email")]
 
+However, executing filters can be done on the server side, where it reads the filter values
+from the URL-request arguments. To make it work, you can specify a list of filterable objects
+with their corresponding filter values::
+
+    url = view.get_url(
+    search="foo",
+    filters=[
+        (FilterEqual(Account.email, "Email"), "jane@doe.com"),
+        (FilterGreaterThan(Account.age, "Age"), 30),
+      ]
+    )
+
 
 To make **columns sortable**, specify a list of column names like the example below. The
 default sort can be specified using the *column_default_sort* attribute::

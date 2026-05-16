@@ -2760,7 +2760,7 @@ def test_modelview_named_filter_localization(request, app, session_or_db, sqla_d
         assert filters
         flt = filters[2]
         with app.test_request_context():
-            flt_name = view.get_filter_arg_name(2, flt)
+            flt_name = view.get_filter_arg(2, flt)
         assert "test1_equals" == flt_name
 
 

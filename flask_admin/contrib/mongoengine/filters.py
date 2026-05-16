@@ -23,7 +23,6 @@ class BaseMongoEngineFilter(filters.BaseFilter):
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
-        url_value: str | None = None,
     ) -> None:
         """
         Constructor.
@@ -36,10 +35,8 @@ class BaseMongoEngineFilter(filters.BaseFilter):
             Fixed set of options. If provided, will use drop down instead of textbox.
         :param data_type:
             Client data type
-        :param url_value:
-            URL value
         """
-        super().__init__(name, options, data_type, column=column, url_value=url_value)
+        super().__init__(name, options, data_type, column=column)
 
         self.column = column
 
@@ -101,7 +98,7 @@ class FilterSmaller(BaseMongoEngineFilter):
         return lazy_gettext("smaller than")
 
 
-class FilterEmpty(BaseMongoEngineFilter, filters.BaseBooleanFilter):
+class FilterEmpty(BaseMongoEngineFilter, filters.BaseEmptyFilter):
     def apply(self, query, value):
         if value == "1":
             flt = {str(self.column): None}
@@ -114,10 +111,8 @@ class FilterEmpty(BaseMongoEngineFilter, filters.BaseBooleanFilter):
 
 
 class FilterInList(BaseMongoEngineFilter):
-    def __init__(self, column, name, options=None, data_type=None, url_value=None):
-        super().__init__(
-            column, name, options, data_type="select2-tags", url_value=url_value
-        )
+    def __init__(self, column, name, options=None, data_type=None):
+        super().__init__(column, name, options, data_type="select2-tags")
 
     def clean(self, value):
         return [v.strip() for v in value.split(",") if v.strip()]
@@ -134,10 +129,8 @@ class FilterInList(BaseMongoEngineFilter):
 
 
 class FilterNotInList(FilterInList):
-    def __init__(self, column, name, options=None, data_type=None, url_value=None):
-        super().__init__(
-            column, name, options, data_type="select2-tags", url_value=url_value
-        )
+    def __init__(self, column, name, options=None, data_type=None):
+        super().__init__(column, name, options, data_type="select2-tags")
 
     def apply(self, query, value):
         flt = {f"{self.column}__nin": value}
@@ -225,10 +218,8 @@ class DateTimeSmallerFilter(FilterSmaller, filters.BaseDateTimeFilter):
 
 
 class DateTimeBetweenFilter(BaseMongoEngineFilter, filters.BaseDateTimeBetweenFilter):
-    def __init__(self, column, name, options=None, data_type=None, url_value=None):
-        super().__init__(
-            column, name, options, data_type="datetimerangepicker", url_value=url_value
-        )
+    def __init__(self, column, name, options=None, data_type=None):
+        super().__init__(column, name, options, data_type="datetimerangepicker")
 
     def apply(self, query, value):
         start, end = value

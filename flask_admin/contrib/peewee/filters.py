@@ -20,7 +20,6 @@ class BasePeeweeFilter(filters.BaseFilter):
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
-        url_value: t.Any = None,
     ):
         """
         Constructor.
@@ -33,10 +32,8 @@ class BasePeeweeFilter(filters.BaseFilter):
             Fixed set of options
         :param data_type:
             Client data type
-        :param url_value:
-            URL value
         """
-        super().__init__(name, options, data_type, column=column, url_value=url_value)
+        super().__init__(name, options, data_type, column=column)
 
         self.column: t.Any = column
 
@@ -92,7 +89,7 @@ class FilterSmaller(BasePeeweeFilter):
         return lazy_gettext("smaller than")
 
 
-class FilterEmpty(BasePeeweeFilter, filters.BaseBooleanFilter):
+class FilterEmpty(BasePeeweeFilter, filters.BaseEmptyFilter):
     def apply(self, query: t.Any, value: t.Any) -> t.Any:
         if value == "1":
             return query.filter(self.column >> None)
@@ -110,11 +107,8 @@ class FilterInList(BasePeeweeFilter):
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
-        url_value: t.Any = None,
     ) -> None:
-        super().__init__(
-            column, name, options, data_type="select2-tags", url_value=url_value
-        )
+        super().__init__(column, name, options, data_type="select2-tags")
 
     def clean(self, value: str) -> list[str]:
         return [v.strip() for v in value.split(",") if v.strip()]
@@ -220,11 +214,8 @@ class DateBetweenFilter(BasePeeweeFilter, filters.BaseDateBetweenFilter):
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
-        url_value: t.Any = None,
     ) -> None:
-        super().__init__(
-            column, name, options, data_type="daterangepicker", url_value=url_value
-        )
+        super().__init__(column, name, options, data_type="daterangepicker")
 
     def apply(self, query: t.Any, value: t.Any) -> t.Any:
         start, end = value
@@ -263,11 +254,8 @@ class DateTimeBetweenFilter(BasePeeweeFilter, filters.BaseDateTimeBetweenFilter)
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
-        url_value: t.Any = None,
     ):
-        super().__init__(
-            column, name, options, data_type="datetimerangepicker", url_value=url_value
-        )
+        super().__init__(column, name, options, data_type="datetimerangepicker")
 
     def apply(self, query: t.Any, value: t.Any) -> t.Any:
         start, end = value
@@ -306,11 +294,8 @@ class TimeBetweenFilter(BasePeeweeFilter, filters.BaseTimeBetweenFilter):
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
-        url_value: t.Any = None,
     ):
-        super().__init__(
-            column, name, options, data_type="timerangepicker", url_value=url_value
-        )
+        super().__init__(column, name, options, data_type="timerangepicker")
 
     def apply(self, query: t.Any, value: t.Any) -> t.Any:
         start, end = value
