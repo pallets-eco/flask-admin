@@ -65,7 +65,9 @@ class S3Storage(BaseFileStorage):
         fileadmin_view = MyS3Admin(storage=S3Storage(...))
     """
 
-    def __init__(self, s3_client: BaseClient, bucket_name: str) -> None:
+    def __init__(
+        self, s3_client: BaseClient, bucket_name: str, prefix: str = ""
+    ) -> None:
         """
         Constructor
 
@@ -85,21 +87,26 @@ class S3Storage(BaseFileStorage):
         self.s3_client = s3_client
         self.bucket_name = bucket_name
         self.separator = "/"
+        prefix = self.normpath(prefix).lstrip("/")
+        prefix = "" if prefix in [".", "./"] else prefix
+        if prefix and not prefix.endswith(self.separator):
+            prefix += self.separator
+        self.prefix = prefix
 
-    @_strip_leading_slash_from("path")
-    def get_files(self, path: str, directory: str) -> list[t.Any]:
-        def _strip_path(name: str, path: str) -> str:
+    @_strip_leading_slash_from("directory")
+    def get_files(self, directory: str, path: str) -> list[t.Any]:
+        def _strip_prefix(name: str) -> str:
             if name.startswith(path):
                 return name.replace(path, "", 1)
             return name
 
-        def _remove_trailing_slash(name: str) -> str:
-            return name[:-1]
+        def _rcoat(x: str) -> str:
+            return x.ljust(len(x) + 1, "/") if not x.endswith("/") else x
 
         files = []
         directories = []
-        if path and not path.endswith(self.separator):
-            path += self.separator
+        directory = _rcoat(directory) if directory else ""
+        path = _rcoat(path) if path else ""
 
         try:
             paginator = self.s3_client.get_paginator("list_objects_v2")
@@ -107,19 +114,20 @@ class S3Storage(BaseFileStorage):
                 Bucket=self.bucket_name, Prefix=path, Delimiter=self.separator
             ):
                 for common_prefix in page.get("CommonPrefixes", []):
-                    name = _remove_trailing_slash(
-                        _strip_path(common_prefix["Prefix"], path)
+                    name = common_prefix["Prefix"].removeprefix(path).rstrip("/")
+                    rel_path = (
+                        common_prefix["Prefix"].removeprefix(self.prefix).rstrip("/")
                     )
-                    key_name = _remove_trailing_slash(common_prefix["Prefix"])
-                    directories.append((name, key_name, True, 0, 0))
+                    directories.append((name, rel_path, True, 0, 0))
 
                 for obj in page.get("Contents", []):
                     if obj["Key"] == path:
                         continue
 
                     last_modified = int(obj["LastModified"].timestamp())
-                    name = _strip_path(obj["Key"], path)
-                    files.append((name, obj["Key"], False, obj["Size"], last_modified))
+                    name = obj["Key"].removeprefix(path)
+                    rel_path = obj["Key"].removeprefix(self.prefix)
+                    files.append((name, rel_path, False, obj["Size"], last_modified))
 
         except ClientError as e:
             raise ValueError(f"Failed to list files: {e}") from e
@@ -166,10 +174,10 @@ class S3Storage(BaseFileStorage):
         if path == "":
             return True
         keys = self._get_path_keys(path)
-        return path in keys or (path + self.separator) in keys
+        return any([k.startswith(path) for k in keys])
 
     def get_base_path(self) -> str:
-        return ""
+        return self.prefix
 
     @_strip_leading_slash_from("path")
     def get_breadcrumbs(self, path: str) -> list[tuple[str, str]]:
@@ -288,6 +296,12 @@ class S3FileAdmin(BaseFileAdmin):
         :param bucket_name:
             Name of the bucket that the files are on.
 
+        :param prefix:
+            Optional prefix to use within the bucket. Note that this is different
+            from the `base_path` parameter of the BaseFileAdmin, which is handled
+            internally by the S3Storage. Prefix must be specified without leading
+            slash and will be normalized to end with a slash.
+
     Sample usage::
 
         from flask_admin import Admin
@@ -305,8 +319,10 @@ class S3FileAdmin(BaseFileAdmin):
         self,
         s3_client: BaseClient,
         bucket_name: str,
+        prefix: str = "",
         *args: t.Any,
         **kwargs: t.Any,
     ) -> None:
-        storage = S3Storage(s3_client, bucket_name)
+        storage = S3Storage(s3_client, bucket_name, prefix=prefix)
+
         super().__init__(*args, storage=storage, **kwargs)  # type: ignore[misc]
