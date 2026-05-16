@@ -1,17 +1,29 @@
+import typing as t
+
 import pytest
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
-from sqlmodel import Field
-from sqlmodel import SQLModel
-from sqlmodel import create_engine
+
+if t.TYPE_CHECKING:
+    Field = t.cast(t.Any, None)
+    SQLModel = t.cast(t.Any, None)
+    create_engine = t.cast(t.Any, None)
+    User = t.Any
+else:
+    try:
+        from sqlmodel import create_engine
+        from sqlmodel import Field
+        from sqlmodel import SQLModel
+    except ImportError as exc:
+        pytest.skip(f"sqlmodel backend unavailable: {exc}", allow_module_level=True)
+
+    class User(SQLModel, table=True):
+        id: int | None = Field(default=None, primary_key=True)
+        name: str
+
 
 from flask_admin.contrib.sqlmodel import ModelView
-
-
-class User(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    name: str
 
 
 @pytest.fixture
@@ -34,7 +46,7 @@ def sqlmodel_session():
 
 
 def test_modelview_crud(app, admin, sqlmodel_session):
-    view = ModelView(User, sqlmodel_session)
+    view = ModelView(t.cast(type[t.Any], User), sqlmodel_session)
     admin.add_view(view)
 
     client = app.test_client()

@@ -1,16 +1,15 @@
 import datetime
 import random
 
-from sqlmodel import Session
-from sqlmodel import SQLModel
-from sqlmodel import select
-
 from admin import engine
 from admin.models import AVAILABLE_USER_TYPES
 from admin.models import Post
 from admin.models import Tag
 from admin.models import Tree
 from admin.models import User
+from sqlmodel import select
+from sqlmodel import Session
+from sqlmodel import SQLModel
 
 
 def build_sample_db() -> None:
@@ -105,14 +104,15 @@ def build_sample_db() -> None:
             "title": "de Finibus Bonorum et Malorum - Part III",
             "content": (
                 "At vero eos et accusamus et iusto odio dignissimos ducimus qui "
-                "blanditiis praesentium voluptatum deleniti atque corrupti quos dolores."
+                "blanditiis praesentium voluptatum deleniti atque corrupti "
+                "quos dolores."
             ),
         },
     ]
 
     with Session(engine) as session:
         users: list[User] = []
-        for first_name, last_name in zip(first_names, last_names):
+        for first_name, last_name in zip(first_names, last_names, strict=False):
             country = random.choice(countries)
             user = User(
                 type=random.choice(AVAILABLE_USER_TYPES)[0],
