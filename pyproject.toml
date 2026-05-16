@@ -82,6 +82,7 @@ all = [
 [dependency-groups]
 dev = [
     "flask-admin[all]",
+    "sqlmodel>=0.0.37",
     "tox<4.30",   # https://github.com/tox-dev/tox/issues/3602
     "tox-uv",
     {include-group = "pre-commit"},
@@ -106,6 +107,7 @@ tests = [
     "pylint",
     "pytest",
     "pytest-cov",
+    "sqlmodel>=0.0.37",
     "moto",
     "botocore>=1.35",
     "psycopg2-binary",

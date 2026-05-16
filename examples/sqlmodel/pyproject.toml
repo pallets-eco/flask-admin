@@ -1,0 +1,13 @@
+[project]
+name = "example-sqlmodel"
+version = "0.1.0"
+description = "SQLModel backend example."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "flask-admin[sqlalchemy-with-utils,export,translation]",
+    "sqlmodel",
+]
+
+[tool.uv.sources]
+flask-admin = { path = "../../", editable = true }
