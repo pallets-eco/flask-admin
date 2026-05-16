@@ -20,14 +20,14 @@ class EnumChoices(enum.Enum):
     second = 2
 
 
-class PostTagLink(SQLModel, table=True):
+class PostTagLink(SQLModel, table=True):  # type: ignore[call-arg]
     post_id: Optional[int] = Field(
         default=None, foreign_key="post.id", primary_key=True
     )
     tag_id: Optional[int] = Field(default=None, foreign_key="tag.id", primary_key=True)
 
 
-class User(SQLModel, table=True):
+class User(SQLModel, table=True):  # type: ignore[call-arg]
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     type: str = Field(default="regular-user", max_length=100)
     enum_choice_field: Optional[EnumChoices] = Field(default=None)
@@ -67,7 +67,7 @@ class User(SQLModel, table=True):
         return f"{self.last_name}, {self.first_name}"
 
 
-class Tag(SQLModel, table=True):
+class Tag(SQLModel, table=True):  # type: ignore[call-arg]
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(index=True, max_length=64)
 
@@ -77,7 +77,7 @@ class Tag(SQLModel, table=True):
         return self.name
 
 
-class Post(SQLModel, table=True):
+class Post(SQLModel, table=True):  # type: ignore[call-arg]
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str = Field(max_length=120)
     text: str
@@ -97,7 +97,7 @@ class Post(SQLModel, table=True):
         return self.title
 
 
-class Tree(SQLModel, table=True):
+class Tree(SQLModel, table=True):  # type: ignore[call-arg]
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=64)
     parent_id: Optional[int] = Field(default=None, foreign_key="tree.id")
