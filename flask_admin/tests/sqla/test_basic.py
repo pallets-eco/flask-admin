@@ -145,6 +145,10 @@ def create_models(sqla_db_ext):
         sqla_utils_ip_address = Column(IPAddressType)
         sqla_utils_currency = Column(CurrencyType)
         sqla_utils_color = Column(ColorType)
+        test5 = Column(Float(2))
+
+        def __unicode__(self):
+            return self.test1
 
         def __str__(self):
             return self.test1
@@ -528,6 +532,7 @@ def test_exclude_columns(app, sqla_db_ext, admin, session_or_db):
             ("bool_field", "Bool Field"),
             ("email_field", "Email Field"),
             ("choice_field", "Choice Field"),
+            ("test5", "Test5"),
         ]
 
         client = app.test_client()

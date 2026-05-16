@@ -68,9 +68,14 @@ class BaseSQLAFilter(filters.BaseFilter):
         :param data_type:
             Client data type
         """
-        super().__init__(name, options, data_type)
+        super().__init__(
+            name,
+            options,
+            data_type,
+            column=column,
+        )
 
-        self.column = column
+        self.column: T_COLUMN = column
         self._joins: list[t.Any] | None = None
         self._bound = False
         self._bound_model: type | None = None
@@ -218,7 +223,7 @@ class FilterSmaller(BaseSQLAFilter):
         return lazy_gettext("smaller than")
 
 
-class FilterEmpty(BaseSQLAFilter, filters.BaseBooleanFilter):
+class FilterEmpty(BaseSQLAFilter, filters.BaseEmptyFilter):
     def apply(
         self, query: T_SQLALCHEMY_QUERY, value: t.Any, alias: t.Any = None
     ) -> t.Any:
@@ -251,6 +256,9 @@ class FilterInList(BaseSQLAFilter):
 
     def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("in list")
+
+    def stringify(self, value: t.Any) -> str:
+        return ",".join(str(v) for v in value)
 
 
 class FilterNotInList(FilterInList):
@@ -725,6 +733,17 @@ class ChoiceTypeNotLikeFilter(FilterNotLike):
             return query
 
 
+class ChoiceTypeEmptyFilter(FilterEmpty):
+    def __init__(
+        self,
+        column: T_COLUMN,
+        name: str,
+        options: T_OPTIONS = None,
+        **kwargs: t.Any,
+    ) -> None:
+        super().__init__(column, name, options, **kwargs)
+
+
 class UuidFilterEqual(FilterEqual, filters.BaseUuidFilter):
     pass
 
@@ -817,7 +836,7 @@ class FilterConverter(filters.BaseFilterConverter):
         ChoiceTypeNotEqualFilter,
         ChoiceTypeLikeFilter,
         ChoiceTypeNotLikeFilter,
-        FilterEmpty,
+        ChoiceTypeEmptyFilter,
     )
     uuid_filters = (
         UuidFilterEqual,
@@ -938,7 +957,7 @@ class FilterConverter(filters.BaseFilterConverter):
 
         return [f(column, name, options, **kwargs) for f in self.enum]
 
-    @filters.convert("uuid")
+    @filters.convert("uuid", "UUIDType")
     def conv_uuid(
         self, column: T_SQLALCHEMY_COLUMN, name: str, **kwargs: t.Any
     ) -> list[BaseSQLAFilter]:

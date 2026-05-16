@@ -1,3 +1,5 @@
+import typing as t
+
 from bson.errors import InvalidId
 from bson.objectid import ObjectId
 from mongoengine.queryset import Q
@@ -34,7 +36,7 @@ class BaseMongoEngineFilter(filters.BaseFilter):
         :param data_type:
             Client data type
         """
-        super().__init__(name, options, data_type)
+        super().__init__(name, options, data_type, column=column)
 
         self.column = column
 
@@ -96,7 +98,7 @@ class FilterSmaller(BaseMongoEngineFilter):
         return lazy_gettext("smaller than")
 
 
-class FilterEmpty(BaseMongoEngineFilter, filters.BaseBooleanFilter):
+class FilterEmpty(BaseMongoEngineFilter, filters.BaseEmptyFilter):
     def apply(self, query, value):
         if value == "1":
             flt = {str(self.column): None}
@@ -122,8 +124,14 @@ class FilterInList(BaseMongoEngineFilter):
     def operation(self):
         return lazy_gettext("in list")
 
+    def stringify(self, value: t.Any) -> str:
+        return ",".join(str(v) for v in value)
+
 
 class FilterNotInList(FilterInList):
+    def __init__(self, column, name, options=None, data_type=None):
+        super().__init__(column, name, options, data_type="select2-tags")
+
     def apply(self, query, value):
         flt = {f"{self.column}__nin": value}
         return query.filter(**flt)

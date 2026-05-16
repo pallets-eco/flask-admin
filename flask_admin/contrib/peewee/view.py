@@ -491,7 +491,7 @@ class ModelView(BaseModelView):
             for flt, _flt_name, value in filters:  # type: ignore[union-attr]
                 f = self._filters[flt]
 
-                query = self._handle_join(query, f.column, joins)  # type: ignore[attr-defined]
+                query = self._handle_join(query, f.column, joins)
                 query = f.apply(query, f.clean(value))
 
         # Get count
