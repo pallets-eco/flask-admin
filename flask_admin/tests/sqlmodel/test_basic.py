@@ -78,3 +78,17 @@ def test_modelview_crud(app, admin, sqlmodel_session):
     rv = client.post(f"/admin/user/delete/?id={model.id}")
     assert rv.status_code == 302
     assert sqlmodel_session.query(User).count() == 0
+
+
+def test_modelview_uuid_pk_edit(app, admin, sqlmodel_session):
+    view = ModelView(t.cast(type[t.Any], User), sqlmodel_session)
+    admin.add_view(view)
+
+    model_cls = t.cast(t.Any, User)
+    model = model_cls(name="uuid-check")
+    sqlmodel_session.add(model)
+    sqlmodel_session.commit()
+
+    client = app.test_client()
+    rv = client.get(f"/admin/user/edit/?id={model.id}")
+    assert rv.status_code == 200
