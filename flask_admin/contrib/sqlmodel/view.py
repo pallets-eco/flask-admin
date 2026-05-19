@@ -76,7 +76,8 @@ class SQLModelView(SQLAModelView):
 
             return tuple(values)
 
-        value = tools.iterdecode(id_value)
+        decoded = tools.iterdecode(id_value)
+        value: t.Any = decoded[0] if len(decoded) == 1 else decoded
         try:
             column = getattr(self.model, primary_key).property.columns[0]
             python_type = column.type.python_type
