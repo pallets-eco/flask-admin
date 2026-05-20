@@ -132,8 +132,9 @@ class XEditableWidget:
         elif field.type in ["Select2Field", "SelectField"]:
             field = t.cast(Select2Field | SelectField, field)
             kwargs["data-type"] = "select2"
-            choices = [  # type:ignore[misc]
-                {"value": x, "text": y} for x, y in field.choices
+            choices = [  # type:ignore[misc, str-unpack]
+                {"value": x, "text": y}
+                for x, y in field.choices  # type: ignore[union-attr]
             ]
 
             # prepend a blank field to choices if allow_blank = True

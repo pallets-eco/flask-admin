@@ -82,7 +82,7 @@ all = [
 [dependency-groups]
 dev = [
     "flask-admin[all]",
-    "tox<4.30",   # https://github.com/tox-dev/tox/issues/3602
+    "tox",
     "tox-uv",
     {include-group = "pre-commit"},
     {include-group = "docs"},
@@ -103,24 +103,23 @@ docs = [
 tests = [
     "flake8",
     "flask[async]",
-    "pylint",
     "pytest",
     "pytest-cov",
     "moto",
     "botocore>=1.35",
     "psycopg2-binary",
     "beautifulsoup4",
+    "azure-storage-blob<12.28.0", # Azurite 3.35.0 only supports up to API 2025-11-05
 ]
 typing = [
+    "flask-admin[dev]",
     "mypy",
-    "pyright",
     "pytest",
-    "types-Pillow", # keep until pillow < 4.13.0
-    "types-beautifulsoup4", # keep for beautifulsoup 4.12
     "types-boto3", # keep
     "types-peewee", # for peewee==3.18.2
     "types-WTForms", # for WTForms 3.2.1
     "types-shapely", # for shapely==2.1.*
+    {include-group = "tests"},
 ]
 
 [project.urls]
@@ -224,22 +223,12 @@ warn_return_any = false
 
 [[tool.mypy.overrides]]
 module = [
-    "arrow",
-    "azure.*",
-    "bson.*",
     "citext",
     "colour",
     "flask_babel",
-    "flask_wtf",
-    "gridfs",
-    "marker",
-    "playhouse.*",
-    "pymongo",
     "mongoengine.*",
-    "sqlalchemy.*",
     "sqlalchemy_utils",
     "tablib",
-    "wtforms.*",
     "wtfpeewee.*",
 ]
 ignore_missing_imports = true

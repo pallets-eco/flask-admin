@@ -230,11 +230,11 @@ class ModelView(BaseModelView):
         return get_primary_key(self.model)
 
     def get_pk_value(self, model: type[T_PEEWEE_MODEL]) -> t.Any:  # type: ignore[override]
-        if self.model._meta.composite_key:  # type: ignore[attr-defined]
+        if self.model._meta.composite_key:
             return tuple(
                 [
                     getattr(model, field_name)
-                    for field_name in self.model._meta.primary_key.field_names  # type: ignore[attr-defined]
+                    for field_name in self.model._meta.primary_key.field_names
                 ]
             )
         return getattr(model, self._primary_key)
@@ -524,9 +524,9 @@ class ModelView(BaseModelView):
         return count, query
 
     def get_one(self, id: t.Any) -> t.Any:
-        if self.model._meta.composite_key:  # type: ignore[attr-defined]
+        if self.model._meta.composite_key:
             return self.model.get(
-                **dict(zip(self.model._meta.primary_key.field_names, id, strict=False))  # type: ignore[attr-defined]
+                **dict(zip(self.model._meta.primary_key.field_names, id, strict=False))
             )
         return self.model.get(**{self._primary_key: id})
 
