@@ -1,4 +1,5 @@
 from citext import CIText
+from flask import Flask
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import Integer
@@ -7,11 +8,19 @@ from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import HSTORE
 from sqlalchemy.dialects.postgresql import JSON
 
+from ... import Admin
 from ..conftest import skip_or_return_session_or_db
+from ..conftest import T_ANY_SQLA_PROVIDER
+from ..conftest import T_LITERAL_SESSION_OR_DB
 from .test_basic import CustomModelView
 
 
-def test_hstore(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
+def test_hstore(
+    app: Flask,
+    sqla_postgres_db_ext: T_ANY_SQLA_PROVIDER,
+    postgres_admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
         class Model(sqla_postgres_db_ext.Base):  # type: ignore[name-defined, misc]
@@ -21,9 +30,7 @@ def test_hstore(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
 
         sqla_postgres_db_ext.create_all()
 
-        param = skip_or_return_session_or_db(
-            sqla_postgres_db_ext, session_or_db == "session"
-        )
+        param = skip_or_return_session_or_db(sqla_postgres_db_ext, session_or_db)
         view = CustomModelView(Model, param)
         postgres_admin.add_view(view)
 
@@ -51,7 +58,12 @@ def test_hstore(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
         assert "test_val2" in data
 
 
-def test_json(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
+def test_json(
+    app: Flask,
+    sqla_postgres_db_ext: T_ANY_SQLA_PROVIDER,
+    postgres_admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
         class JSONModel(sqla_postgres_db_ext.Base):  # type: ignore[name-defined, misc]
@@ -94,7 +106,12 @@ def test_json(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
         )
 
 
-def test_citext(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
+def test_citext(
+    app: Flask,
+    sqla_postgres_db_ext: T_ANY_SQLA_PROVIDER,
+    postgres_admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
         class CITextModel(sqla_postgres_db_ext.Base):  # type: ignore[name-defined, misc]
@@ -136,7 +153,12 @@ def test_citext(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
         assert ">Foo</" in data or ">\nFoo</" in data or ">\r\nFoo</" in data
 
 
-def test_boolean_filters(app, sqla_postgres_db_ext, postgres_admin, session_or_db):
+def test_boolean_filters(
+    app: Flask,
+    sqla_postgres_db_ext: T_ANY_SQLA_PROVIDER,
+    postgres_admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     """
     Test that boolean filters work correctly with PostgreSQL.
     This is particularly important for psycopg3 compatibility,

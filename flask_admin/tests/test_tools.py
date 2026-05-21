@@ -1,7 +1,7 @@
 from flask_admin import tools
 
 
-def test_encode_decode():
+def test_encode_decode() -> None:
     assert tools.iterdecode(tools.iterencode([1, 2, 3])) == ("1", "2", "3")
 
     assert tools.iterdecode(tools.iterencode([",", ",", ","])) == (",", ",", ",")

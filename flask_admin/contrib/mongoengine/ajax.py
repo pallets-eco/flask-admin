@@ -1,14 +1,19 @@
+import typing as t
+
 import mongoengine
+from mongoengine import Document
+from mongoengine import QuerySet
 
 from flask_admin._compat import as_unicode
 from flask_admin._compat import iteritems
 from flask_admin._compat import string_types
+from flask_admin._types import T_MONGO_ENGINE_DOCUMENT
 from flask_admin.model.ajax import AjaxModelLoader
 from flask_admin.model.ajax import DEFAULT_PAGE_SIZE
 
 
 class QueryAjaxModelLoader(AjaxModelLoader):
-    def __init__(self, name, model, **options):
+    def __init__(self, name: str, model: Document, **options: t.Any) -> None:
         """
         Constructor.
 
@@ -28,7 +33,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
                 f"to be specified for {model}.{self.name}"
             )
 
-    def _process_fields(self):
+    def _process_fields(self) -> list[t.Any]:
         remote_fields = []
 
         for field in self.fields:  # type:  ignore[union-attr]
@@ -44,18 +49,18 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
-    def format(self, model):
+    def format(self, model: Document | None) -> tuple[str, str] | None:
         if not model:
             return None
 
         return (as_unicode(model.pk), as_unicode(model))
 
-    def get_one(self, pk):
+    def get_one(self, pk: t.Any) -> Document | None:
         return self.model.objects.filter(pk=pk).first()
 
-    def get_list(self, query, offset=0, limit=DEFAULT_PAGE_SIZE):
-        query = self.model.objects
-
+    def get_list(
+        self, query: QuerySet, offset: int = 0, limit: int = DEFAULT_PAGE_SIZE
+    ) -> QuerySet:
         if len(query) > 0:
             criteria = None
 
@@ -75,7 +80,9 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         return query.limit(limit).all()
 
 
-def create_ajax_loader(model, name, field_name, opts):
+def create_ajax_loader(
+    model: type[T_MONGO_ENGINE_DOCUMENT], name: str, field_name: str, opts: t.Any
+) -> QueryAjaxModelLoader:
     prop = getattr(model, field_name, None)
 
     if prop is None:
@@ -94,13 +101,15 @@ def create_ajax_loader(model, name, field_name, opts):
     return QueryAjaxModelLoader(name, remote_model, **opts)
 
 
-def process_ajax_references(references, view):
-    def make_name(base, name):
+def process_ajax_references(
+    references: dict[str, t.Any], view: t.Any
+) -> dict[str, t.Any]:
+    def make_name(base: str, name: str) -> str:
         if base:
-            return (f"{base}-{name}").lower()
+            return f"{base}-{name}".lower()
         return as_unicode(name).lower()
 
-    def handle_field(field, subdoc, base):
+    def handle_field(field: t.Any, subdoc: Document, base: str) -> None:
         ftype = type(field).__name__
 
         if ftype in ["ListField", "SortedListField"]:
@@ -134,7 +143,7 @@ def process_ajax_references(references, view):
         else:
             raise ValueError(f"Failed to process subdocument field {field}")
 
-    def handle_subdoc(model, subdoc, base):
+    def handle_subdoc(model: Document, subdoc: Document, base: str) -> None:
         documents = getattr(subdoc, "_form_subdocuments", {})
 
         for name, doc in iteritems(documents):

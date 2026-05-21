@@ -43,7 +43,7 @@ try:
     import tablib
 except ImportError:
     tablib = None
-from typing import TypeGuard  # noqa
+from typing import TypeGuard
 
 from wtforms.fields import HiddenField
 from wtforms.fields.core import Field
@@ -66,9 +66,10 @@ from flask_admin.base import expose
 from flask_admin.form import BaseForm
 from flask_admin.form import FormOpts
 from flask_admin.form import rules
-from flask_admin.helpers import flash_errors, is_form_submitted
+from flask_admin.helpers import flash_errors
 from flask_admin.helpers import get_form_data
 from flask_admin.helpers import get_redirect_target
+from flask_admin.helpers import is_form_submitted
 from flask_admin.helpers import validate_form_on_submit
 from flask_admin.model import filters
 from flask_admin.model import template
@@ -1334,7 +1335,7 @@ class BaseModelView(BaseView, ActionsMixin):
         override this method and return `None`.
         """
         if self.column_filters:
-            collection = []
+            collection: list[BaseFilter] = []
 
             for n in self.column_filters:
                 if self.is_valid_filter(n):
@@ -1591,7 +1592,7 @@ class BaseModelView(BaseView, ActionsMixin):
     def _get_ruleset_missing_fields(
         self, ruleset: RuleSet | None, form: Form
     ) -> list[str]:
-        missing_fields = []
+        missing_fields: list[str] = []
 
         if ruleset:
             visible_fields = ruleset.visible_fields
@@ -1610,7 +1611,7 @@ class BaseModelView(BaseView, ActionsMixin):
         form_class: type[Form],
         remove_missing: bool = True,
     ) -> None:
-        form_fields = []
+        form_fields: list[str] = []
         for name, obj in iteritems(form_class.__dict__):
             if isinstance(obj, UnboundField):
                 form_fields.append(name)
@@ -2003,7 +2004,7 @@ class BaseModelView(BaseView, ActionsMixin):
         :param filters:
             List of filters from ViewArgs object
         """
-        kwargs = {}
+        kwargs: dict[str, str] = {}
 
         if filters:
             for i, pair in enumerate(filters):
@@ -2192,7 +2193,7 @@ class BaseModelView(BaseView, ActionsMixin):
         Process `form_ajax_refs` and generate model loaders that
         will be used by the `ajax_lookup` view.
         """
-        result = {}
+        result: dict[str, AjaxModelLoader] = {}
 
         if self.form_ajax_refs:
             for name, options in iteritems(self.form_ajax_refs):

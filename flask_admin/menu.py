@@ -191,13 +191,13 @@ class MenuDivider(MenuLink):
       admin.add_menu_item(MenuDivider(), target_category='Category1')
     """
 
-    def __init__(self, class_name=""):
+    def __init__(self, class_name: str = "") -> None:
         class_name = "dropdown-divider" + (" " + class_name if class_name else "")
         super().__init__("divider", class_name=class_name)
 
-    def get_url(self):
+    def get_url(self) -> None:  # type: ignore[override]
         return None
 
-    def is_visible(self):
+    def is_visible(self) -> bool:
         # Return True/False depending on your use-case
         return True

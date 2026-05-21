@@ -1,7 +1,10 @@
+from flask import Flask
 from wtforms import fields
 from wtforms import form
 
+from flask_admin import Admin
 from flask_admin.contrib.pymongo import ModelView
+from flask_admin.contrib.pymongo._types import T_PYMONGO_DB
 
 
 class TestForm(form.Form):
@@ -18,7 +21,7 @@ class TestView(ModelView):
     form = TestForm
 
 
-def test_model(app, db, admin):
+def test_model(app: Flask, db: T_PYMONGO_DB, admin: Admin) -> None:
     view = TestView(db.test, "Test")
     admin.add_view(view)
 

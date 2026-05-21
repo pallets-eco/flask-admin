@@ -3,7 +3,7 @@ import flask
 from flask_admin import helpers
 
 
-def test_is_safe_url():
+def test_is_safe_url() -> None:
     app = flask.Flask(__name__)
 
     with app.test_request_context("http://127.0.0.1/admin/car/edit/"):

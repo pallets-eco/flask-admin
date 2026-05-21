@@ -54,7 +54,7 @@ class GeoJSONField(JSONField):
         else:
             return ""
 
-    def process_formdata(self, valuelist):
+    def process_formdata(self, valuelist: t.Sequence[str] | None) -> None:
         super().process_formdata(valuelist)
         if str(self.data) == "":
             self.data = None
