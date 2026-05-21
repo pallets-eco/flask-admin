@@ -1,14 +1,23 @@
 import pytest
+from flask import Flask
 
 from flask_admin.form import rules
 
+from ... import Admin
 from ..conftest import skip_or_return_session_or_db
+from ..conftest import T_ANY_SQLA_PROVIDER
+from ..conftest import T_LITERAL_SESSION_OR_DB
 from .test_basic import create_models
 from .test_basic import CustomModelView
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_form_rules(app, sqla_db_ext, admin, session_or_db):
+def test_form_rules(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
@@ -35,7 +44,12 @@ def test_form_rules(app, sqla_db_ext, admin, session_or_db):
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_macro(app, sqla_db_ext, admin, session_or_db):
+def test_rule_macro(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
@@ -63,7 +77,12 @@ def test_rule_macro(app, sqla_db_ext, admin, session_or_db):
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_container(app, sqla_db_ext, admin, session_or_db):
+def test_rule_container(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
@@ -95,7 +114,12 @@ def test_rule_container(app, sqla_db_ext, admin, session_or_db):
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_text(app, sqla_db_ext, admin, session_or_db):
+def test_rule_text(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
@@ -114,7 +138,12 @@ def test_rule_text(app, sqla_db_ext, admin, session_or_db):
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_html(app, sqla_db_ext, admin, session_or_db):
+def test_rule_html(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
@@ -135,7 +164,12 @@ def test_rule_html(app, sqla_db_ext, admin, session_or_db):
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_header(app, sqla_db_ext, admin, session_or_db):
+def test_rule_header(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
@@ -156,7 +190,12 @@ def test_rule_header(app, sqla_db_ext, admin, session_or_db):
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_nested(app, sqla_db_ext, admin, session_or_db):
+def test_rule_nested(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
@@ -195,7 +234,12 @@ def test_rule_nested(app, sqla_db_ext, admin, session_or_db):
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_row(app, sqla_db_ext, admin, session_or_db):
+def test_rule_row(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
@@ -228,7 +272,12 @@ def test_rule_row(app, sqla_db_ext, admin, session_or_db):
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_group(app, sqla_db_ext, admin, session_or_db):
+def test_rule_group(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
@@ -262,7 +311,12 @@ def test_rule_group(app, sqla_db_ext, admin, session_or_db):
 
 
 @pytest.mark.filterwarnings("ignore:Fields missing:UserWarning")
-def test_rule_field_set(app, sqla_db_ext, admin, session_or_db):
+def test_rule_field_set(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, _ = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
@@ -302,7 +356,12 @@ def test_rule_field_set(app, sqla_db_ext, admin, session_or_db):
     "will be mandatory in wtforms 3.2:DeprecationWarning",
     "ignore:Fields missing from ruleset.*:UserWarning",
 )
-def test_rule_inlinefieldlist(app, sqla_db_ext, admin, session_or_db):
+def test_rule_inlinefieldlist(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
         sqla_db_ext.create_all()
@@ -326,7 +385,12 @@ def test_rule_inlinefieldlist(app, sqla_db_ext, admin, session_or_db):
     "ignore:'iter_groups' is expected to return 4 items tuple since wtforms 3.1, this "
     "will be mandatory in wtforms 3.2:DeprecationWarning",
 )
-def test_inline_model_rules(app, sqla_db_ext, admin, session_or_db):
+def test_inline_model_rules(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
         sqla_db_ext.create_all()

@@ -1,14 +1,17 @@
 import asyncio
 import os
+import typing as t
 
 import pytest
 from flask import abort
 from flask import Flask
 from flask import request
 from flask import url_for
+from flask.typing import ResponseReturnValue
 from flask.views import MethodView
 from jinja2 import StrictUndefined
 
+from flask_admin import Admin
 from flask_admin import base
 from flask_admin import BaseView
 from flask_admin import expose
@@ -35,26 +38,26 @@ class MockView(base.BaseView):
     visible = True
 
     @base.expose("/")
-    def index(self):
+    def index(self) -> str:
         return "Success!"
 
     @base.expose("/test/")
-    def test(self):
+    def test(self) -> str:
         return self.render("mock.html")
 
-    def _handle_view(self, name, **kwargs):
+    def _handle_view(self, name: str, **kwargs: t.Any) -> ResponseReturnValue | None:
         if self.allow_call:
             return super()._handle_view(name, **kwargs)
         else:
             return "Failure!"
 
-    def is_accessible(self):
+    def is_accessible(self) -> bool:
         if self.allow_access:
             return super().is_accessible()
 
         return False
 
-    def is_visible(self):
+    def is_visible(self) -> bool:
         if self.visible:
             return super().is_visible()
 
@@ -63,7 +66,7 @@ class MockView(base.BaseView):
 
 class MockMethodView(base.BaseView):
     @base.expose("/")
-    def index(self):
+    def index(self) -> str:
         return "Success!"
 
     @base.expose_plugview("/_api/1")
@@ -95,7 +98,7 @@ class MockMethodView(base.BaseView):
             return cls.render("method.html", request=request, name="API3")
 
 
-def test_baseview_defaults():
+def test_baseview_defaults() -> None:
     view = MockView()
     assert view.name is None
     assert view.category is None
@@ -106,7 +109,7 @@ def test_baseview_defaults():
     assert view.blueprint is None
 
 
-def test_base_defaults():
+def test_base_defaults() -> None:
     admin = base.Admin()
     assert admin.name == "Admin"
     assert admin.url == "/admin"
@@ -120,7 +123,7 @@ def test_base_defaults():
     assert admin._views[0] == admin.index_view
 
 
-def test_custom_index_view():
+def test_custom_index_view() -> None:
     view = base.AdminIndexView(
         name="a", category="b", endpoint="c", url="/d", template="e"
     )
@@ -138,7 +141,7 @@ def test_custom_index_view():
     assert admin._views[0] == view
 
 
-def test_custom_index_view_in_init_app(app, babel):
+def test_custom_index_view_in_init_app(app: Flask, babel: object | None) -> None:
     view = base.AdminIndexView(
         name="a", category="b", endpoint="c", url="/d", template="e"
     )
@@ -157,12 +160,12 @@ def test_custom_index_view_in_init_app(app, babel):
     assert admin._views[0] == view
 
 
-def test_base_registration(app, admin):
+def test_base_registration(app: Flask, admin: Admin) -> None:
     assert admin.app == app
     assert admin.index_view.blueprint is not None
 
 
-def test_admin_customizations(app, babel):
+def test_admin_customizations(app: Flask, babel: object | None) -> None:
     admin = base.Admin(
         app, name="Test", url="/foobar", static_url_path="/static/my/admin"
     )
@@ -185,7 +188,7 @@ def test_admin_customizations(app, babel):
     assert rv.status_code == 200
 
 
-def test_baseview_registration():
+def test_baseview_registration() -> None:
     admin = base.Admin()
 
     view = MockView()
@@ -233,7 +236,7 @@ def test_baseview_registration():
 
 
 @pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
-def test_baseview_urls(admin):
+def test_baseview_urls(admin: Admin) -> None:
     view = MockView()
     admin.add_view(view)
 
@@ -241,14 +244,14 @@ def test_baseview_urls(admin):
 
 
 @pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
-def test_add_views(admin):
+def test_add_views(admin: Admin) -> None:
     admin.add_views(MockView(endpoint="test1"), MockView(endpoint="test2"))
 
     assert len(admin.menu()) == 3
 
 
 @pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
-def test_add_category(admin):
+def test_add_category(admin: Admin) -> None:
     admin.add_category("Category1", "class-name", "icon-type", "icon-value")
     admin.add_view(MockView(name="Test 1", endpoint="test1", category="Category1"))
     admin.add_view(MockView(name="Test 2", endpoint="test2", category="Category2"))
@@ -273,11 +276,11 @@ def test_add_category(admin):
 
 
 @pytest.mark.xfail(raises=Exception)
-def test_no_default(admin):
+def test_no_default(admin: Admin) -> None:
     admin.add_view(base.BaseView())
 
 
-def test_call(app, admin):
+def test_call(app: Flask, admin: Admin) -> None:
     view = MockView()
     admin.add_view(view)
     client = app.test_client()
@@ -297,7 +300,7 @@ def test_call(app, admin):
     assert rv.data == b"Failure!"
 
 
-def test_permissions(app, admin):
+def test_permissions(app: Flask, admin: Admin) -> None:
     view = MockView()
     admin.add_view(view)
     client = app.test_client()
@@ -309,7 +312,7 @@ def test_permissions(app, admin):
 
 
 @pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
-def test_inaccessible_callback(app, admin):
+def test_inaccessible_callback(app: Flask, admin: Admin) -> None:
     view = MockView()
     admin.add_view(view)
     client = app.test_client()
@@ -322,13 +325,13 @@ def test_inaccessible_callback(app, admin):
 
     # if inaccessible_callback returns None
     view.allow_access = False
-    view.inaccessible_callback = lambda *args, **kwargs: None  # type: ignore[method-assign]
+    view.inaccessible_callback = lambda *args, **kwargs: None  # type: ignore[method-assign,assignment]
 
     rv = client.get("/admin/mockview/")
     assert rv.status_code == 403
 
 
-def get_visibility(app, admin):
+def get_visibility(app: Flask, admin: Admin) -> None:
     view = MockView(name="TestMenuItem")
     view.visible = False
 
@@ -340,7 +343,7 @@ def get_visibility(app, admin):
     assert "TestMenuItem" not in rv.data.decode("utf-8")
 
 
-def test_submenu(admin):
+def test_submenu(admin: Admin) -> None:
     admin.add_view(MockView(name="Test 1", category="Test", endpoint="test1"))
 
     # Second view is not normally accessible
@@ -365,7 +368,7 @@ def test_submenu(admin):
     assert children[0].is_accessible()
 
 
-def test_menu_divider(app, admin):
+def test_menu_divider(app: Flask, admin: Admin) -> None:
     # admin.add_view(MockView(name="Test 1", category="Test", endpoint="test1"))
     # admin.add_view(MockView(name="Test 2", category="Test", endpoint="test2"))
     admin.add_link(
@@ -399,7 +402,7 @@ def test_menu_divider(app, admin):
     assert pos4 > pos3
 
 
-def test_delayed_init(app, admin):
+def test_delayed_init(app: Flask, admin: Admin) -> None:
     admin.add_view(MockView())
 
     client = app.test_client()
@@ -408,19 +411,19 @@ def test_delayed_init(app, admin):
     assert rv.data == b"Success!"
 
 
-def test_multi_instances_init(app, admin):
+def test_multi_instances_init(app: Flask, admin: Admin) -> None:
     class ManageIndex(base.AdminIndexView):
         pass
 
-    _ = base.Admin(app, index_view=ManageIndex(url="/manage", endpoint="manage"))  # noqa: F841
+    _ = base.Admin(app, index_view=ManageIndex(url="/manage", endpoint="manage"))
 
 
 @pytest.mark.xfail(raises=Exception)
-def test_double_init(app, admin):
+def test_double_init(app: Flask, admin: Admin) -> None:
     admin.init_app(app)
 
 
-def test_nested_flask_views(app, admin):
+def test_nested_flask_views(app: Flask, admin: Admin) -> None:
     view = MockMethodView()
     admin.add_view(view)
 
@@ -451,7 +454,7 @@ def test_nested_flask_views(app, admin):
     assert rv.data == b"GET - API3"
 
 
-def test_root_mount(app, babel):
+def test_root_mount(app: Flask, babel: object | None) -> None:
     admin = base.Admin(app, url="/")
     admin.add_view(MockView())
 
@@ -471,7 +474,7 @@ def test_root_mount(app, babel):
 
 
 @pytest.mark.filterwarnings("ignore:unclosed file:ResourceWarning")
-def test_menu_links(app, admin):
+def test_menu_links(app: Flask, admin: Admin) -> None:
     admin.add_link(base.MenuLink("TestMenuLink1", endpoint=".index"))
     admin.add_link(base.MenuLink("TestMenuLink2", url="http://python.org/"))
 
@@ -483,7 +486,7 @@ def test_menu_links(app, admin):
     assert "TestMenuLink2" in data
 
 
-def test_add_links(app, admin):
+def test_add_links(app: Flask, admin: Admin) -> None:
     admin.add_links(
         base.MenuLink("TestMenuLink1", endpoint=".index"),
         base.MenuLink("TestMenuLink2", url="http://python.org/"),
@@ -497,14 +500,14 @@ def test_add_links(app, admin):
     assert "TestMenuLink2" in data
 
 
-def test_async_admin_view(app, admin):
+def test_async_admin_view(app: Flask, admin: Admin) -> None:
     """
     Test admin with async view.
     """
 
     class AsyncView(BaseView):
         @expose("/")
-        async def index(self):
+        async def index(self) -> str:
             await asyncio.sleep(0.05)
             return "Async Hello world"
 
@@ -517,7 +520,7 @@ def test_async_admin_view(app, admin):
     assert b"Async Hello world" == rv.data
 
 
-def test_with_async_routes(app, admin):
+def test_with_async_routes(app: Flask, admin: Admin) -> None:
     """
     Test flask-admin working at same time of async routes.
     """
@@ -538,14 +541,14 @@ def test_with_async_routes(app, admin):
     assert rv.data == b"Success!"
 
 
-def check_class_name():
+def check_class_name() -> None:
     view = MockView()
     assert view.name == "Mock View"
 
 
-def check_endpoint():
+def check_endpoint() -> None:
     class CustomView(MockView):
-        def _get_endpoint(self, endpoint):
+        def _get_endpoint(self, endpoint: str | None) -> str:
             return "admin." + super()._get_endpoint(endpoint)
 
     view = CustomView()

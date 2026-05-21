@@ -1,3 +1,6 @@
+import typing as t
+
+from gridfs import GridOut
 from markupsafe import escape
 from markupsafe import Markup
 from mongoengine.base import BaseList
@@ -9,8 +12,13 @@ from flask_admin.model.typefmt import list_formatter
 
 from . import helpers
 
+if t.TYPE_CHECKING:
+    from . import ModelView
+else:
+    ModelView = t.Any
 
-def grid_formatter(view, value):
+
+def grid_formatter(view: ModelView, value: GridOut) -> Markup | str:
     if not value.grid_id:
         return ""
 
@@ -31,7 +39,7 @@ def grid_formatter(view, value):
     )
 
 
-def grid_image_formatter(view, value):
+def grid_image_formatter(view: ModelView, value: ImageGridFsProxy) -> Markup | str:
     if not value.grid_id:
         return ""
 

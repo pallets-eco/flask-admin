@@ -22,7 +22,7 @@ class CheckboxListInput:
     )
 
     def __call__(self, field: SelectFieldBase, **kwargs: dict[str, t.Any]) -> str:
-        items = []
+        items: list[str] = []
         for field_choices in field.iter_choices():
             if len(field_choices) == 3:  # wtforms <3.1, >=3.1.1, <3.2
                 value, label, selected = field_choices

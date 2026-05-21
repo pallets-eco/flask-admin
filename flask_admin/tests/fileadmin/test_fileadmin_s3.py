@@ -1,9 +1,12 @@
+import typing as t
 from io import BytesIO
 
 import boto3
 import pytest
+from flask import Flask
 from moto import mock_aws
 
+from flask_admin import Admin
 from flask_admin.contrib.fileadmin.s3 import _strip_leading_slash_from
 from flask_admin.contrib.fileadmin.s3 import S3FileAdmin
 
@@ -13,7 +16,7 @@ _bucket_name = "my-bucket"
 
 
 @pytest.fixture(scope="function", autouse=True)
-def mock_s3_client():
+def mock_s3_client() -> t.Generator[t.Any, None, None]:
     with mock_aws():
         client = boto3.client("s3")
         client.create_bucket(Bucket=_bucket_name)
@@ -31,7 +34,9 @@ def mock_s3_client():
         ("arg1", [], dict(arg1="/something/", arg2="", arg3=""), "something/"),
     ),
 )
-def test_strip_slashes(arg_name, args, kwargs, expected_value):
+def test_strip_slashes(
+    arg_name: str, args: t.Any, kwargs: t.Any, expected_value: str
+) -> None:
     @_strip_leading_slash_from(arg_name)
     def fn(arg1, arg2, arg3):
         return dict(arg1=arg1, arg2=arg2, arg3=arg3)
@@ -40,18 +45,18 @@ def test_strip_slashes(arg_name, args, kwargs, expected_value):
 
 
 class TestS3FileAdmin(Base.FileAdminTests):
-    def fileadmin_class(self):
+    def fileadmin_class(self) -> type[S3FileAdmin]:
         return S3FileAdmin
 
-    def fileadmin_args(self):
+    def fileadmin_args(self) -> tuple[tuple[t.Any], dict[str, str]]:  # type: ignore[override]
         return (boto3.client("s3"),), {"bucket_name": _bucket_name}
 
     @pytest.mark.skip
-    def test_file_admin_edit(self):  # type: ignore[override]
+    def test_file_admin_edit(self) -> None:  # type: ignore[override]
         """Override the inherited test as S3FileAdmin has no edit file functionality."""
         pass
 
-    def test_fileadmin_sort_bogus_url_param(self, app, admin):
+    def test_fileadmin_sort_bogus_url_param(self, app: Flask, admin: Admin) -> None:
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
@@ -64,7 +69,7 @@ class TestS3FileAdmin(Base.FileAdminTests):
 
         admin.add_view(view)
 
-    def test_file_upload(self, app, admin):
+    def test_file_upload(self, app: Flask, admin: Admin) -> None:
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
@@ -93,7 +98,9 @@ class TestS3FileAdmin(Base.FileAdminTests):
         assert rv.status_code == 200
         assert "path=test_upload.txt" in rv.text
 
-    def test_file_download(self, app, admin, mock_s3_client):
+    def test_file_download(
+        self, app: Flask, admin: Admin, mock_s3_client: t.Any
+    ) -> None:
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
@@ -114,7 +121,7 @@ class TestS3FileAdmin(Base.FileAdminTests):
             "https://my-bucket.s3.amazonaws.com/dummy.txt?AWSAccessKeyId=FOOBARKEY"
         )
 
-    def test_file_rename(self, app, admin, mock_s3_client):
+    def test_file_rename(self, app: Flask, admin: Admin, mock_s3_client: t.Any) -> None:
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
@@ -145,7 +152,7 @@ class TestS3FileAdmin(Base.FileAdminTests):
         assert "path=dummy_renamed.txt" in rv.text
         assert "path=dummy.txt" not in rv.text
 
-    def test_file_delete(self, app, admin, mock_s3_client):
+    def test_file_delete(self, app: Flask, admin: Admin, mock_s3_client: t.Any) -> None:
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
@@ -168,7 +175,9 @@ class TestS3FileAdmin(Base.FileAdminTests):
         assert rv.status_code == 200
         assert "successfully deleted" in rv.text
 
-    def test_deep_browsing(self, app, admin, mock_s3_client):
+    def test_deep_browsing(
+        self, app: Flask, admin: Admin, mock_s3_client: t.Any
+    ) -> None:
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 

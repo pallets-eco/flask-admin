@@ -20,7 +20,7 @@ class BasePeeweeFilter(filters.BaseFilter):
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
-    ):
+    ) -> None:
         """
         Constructor.
 
@@ -251,7 +251,7 @@ class DateTimeBetweenFilter(BasePeeweeFilter, filters.BaseDateTimeBetweenFilter)
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
-    ):
+    ) -> None:
         super().__init__(column, name, options, data_type="datetimerangepicker")
 
     def apply(self, query: t.Any, value: t.Any) -> t.Any:
@@ -291,7 +291,7 @@ class TimeBetweenFilter(BasePeeweeFilter, filters.BaseTimeBetweenFilter):
         name: str,
         options: T_OPTIONS = None,
         data_type: T_WIDGET_TYPE = None,
-    ):
+    ) -> None:
         super().__init__(column, name, options, data_type="timerangepicker")
 
     def apply(self, query: t.Any, value: t.Any) -> t.Any:

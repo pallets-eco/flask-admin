@@ -1,26 +1,30 @@
 import secrets
+import typing as t
 
 import pytest
 from bs4 import BeautifulSoup
+from flask import Flask
 
 from flask_admin import Admin
 
 
 @pytest.fixture
-def nonce():
+def nonce() -> str:
     return secrets.token_urlsafe(32)
 
 
 @pytest.fixture
-def admin(app, babel, nonce):
-    def csp_nonce_generator():
+def admin(
+    app: Flask, babel: object | None, nonce: str
+) -> t.Generator[Admin, None, None]:
+    def csp_nonce_generator() -> str:
         return nonce
 
     admin = Admin(app, csp_nonce_generator=csp_nonce_generator)
     yield admin
 
 
-def test_csp_nonces_injected(app, admin, nonce):
+def test_csp_nonces_injected(app: Flask, admin: Admin, nonce: str) -> None:
     client = app.test_client()
     rv = client.get("/admin/")
     assert rv.status_code == 200

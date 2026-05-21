@@ -49,19 +49,21 @@ def app_with_binds(app):
 
 
 @pytest.fixture
-def admin(app, babel):
+def admin(app: Flask, babel: object | None) -> t.Generator[Admin, t.Any, None]:
     admin = Admin(app)
     yield admin
 
 
 @pytest.fixture
-def postgres_admin(app, babel):
+def postgres_admin(app: Flask, babel: object | None) -> t.Generator[Admin, t.Any, None]:
     admin = Admin(app)
     yield admin
 
 
 @pytest.fixture(params=sqla_db_exts)
-def sqla_postgres_db_ext(app, request):
+def sqla_postgres_db_ext(
+    app: Flask, request: pytest.FixtureRequest
+) -> t.Generator[Admin, t.Any, None]:
     uri = os.getenv(
         "SQLALCHEMY_DATABASE_URI",
         "postgresql://postgres:postgres@localhost/flask_admin_test",

@@ -1,9 +1,13 @@
+import typing as t
+
+from flask import Flask
 from mongoengine import Document
 from mongoengine import StringField
 from mongoengine.connection import get_db
 from wtforms import fields
 from wtforms import form
 
+from flask_admin import Admin
 from flask_admin.contrib.mongoengine import filters
 from flask_admin.contrib.mongoengine import ModelView
 from flask_admin.contrib.mongoengine.ajax import QueryAjaxModelLoader
@@ -35,7 +39,7 @@ class TestView(ModelView):
     )
 
 
-def test_model(app, db, admin):
+def test_model(app: Flask, db: t.Any, admin: Admin) -> None:
     view = TestView(Test, "Test", endpoint="testview")
     admin.add_view(view)
 
@@ -142,7 +146,7 @@ def test_model(app, db, admin):
     assert "test2" in data
 
 
-def test_query_ajax_model_loader_initialization(db):
+def test_query_ajax_model_loader_initialization(db: t.Any) -> None:
     class TestModel(Document):  # type: ignore[misc]
         meta = {"collection": "test_ajax_loader"}
         name = StringField()

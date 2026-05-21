@@ -47,7 +47,7 @@ class AjaxSelect2Widget:
 
         if self.multiple:
             result = []
-            ids = []
+            ids: list[str] = []
 
             for value in field.data:
                 data = field.loader.format(value)

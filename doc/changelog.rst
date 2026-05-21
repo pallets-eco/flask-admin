@@ -7,6 +7,8 @@ Changelog
 Bugfixes:
 * Fix encoding for editing file in FileAdmin. Now it uses UTF-8 and accepts non-ASCII characters.
 
+Type hints:
+* Type hints added to all functions and methods (some using `typing.Any` where full typing not yet available)
 
 2.2.0
 ------------------

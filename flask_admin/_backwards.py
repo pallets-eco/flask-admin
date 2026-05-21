@@ -36,7 +36,7 @@ def get_property(obj: t.Any, name: str, old_name: str, default: t.Any = None) ->
 
 
 class ObsoleteAttr:
-    def __init__(self, new_name: str, old_name: str, default: t.Any):
+    def __init__(self, new_name: str, old_name: str, default: t.Any) -> None:
         self.new_name = new_name
         self.old_name = old_name
         self.cache = "_cache_" + new_name
@@ -69,7 +69,7 @@ class ObsoleteAttr:
 
 
 class ImportRedirect:
-    def __init__(self, prefix: str, target: str):
+    def __init__(self, prefix: str, target: str) -> None:
         self.prefix = prefix
         self.target = target
 

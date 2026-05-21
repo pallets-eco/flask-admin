@@ -1,8 +1,12 @@
+import typing as t
+
 from bson.errors import InvalidId
 from bson.objectid import ObjectId
+from mongoengine import QuerySet
 from mongoengine.queryset import Q
 
 from flask_admin._types import T_OPTIONS
+from flask_admin._types import T_TRANSLATABLE
 from flask_admin._types import T_WIDGET_TYPE
 from flask_admin.babel import lazy_gettext
 from flask_admin.model import filters
@@ -41,106 +45,112 @@ class BaseMongoEngineFilter(filters.BaseFilter):
 
 # Common filters
 class FilterEqual(BaseMongoEngineFilter):
-    def apply(self, query, value):
+    def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
         flt = {str(self.column): value}
         return query.filter(**flt)
 
-    def operation(self):
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("equals")
 
 
 class FilterNotEqual(BaseMongoEngineFilter):
-    def apply(self, query, value):
+    def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
         flt = {f"{self.column}__ne": value}
         return query.filter(**flt)
 
-    def operation(self):
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("not equal")
 
 
 class FilterLike(BaseMongoEngineFilter):
-    def apply(self, query, value):
+    def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
         term, data = parse_like_term(value)
         flt = {f"{self.column}__{term}": data}
         return query.filter(**flt)
 
-    def operation(self):
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("contains")
 
 
 class FilterNotLike(BaseMongoEngineFilter):
-    def apply(self, query, value):
+    def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
         term, data = parse_like_term(value)
         flt = {f"{self.column}__not__{term}": data}
         return query.filter(**flt)
 
-    def operation(self):
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("not contains")
 
 
 class FilterGreater(BaseMongoEngineFilter):
-    def apply(self, query, value):
+    def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
         flt = {f"{self.column}__gt": value}
         return query.filter(**flt)
 
-    def operation(self):
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("greater than")
 
 
 class FilterSmaller(BaseMongoEngineFilter):
-    def apply(self, query, value):
+    def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
         flt = {f"{self.column}__lt": value}
         return query.filter(**flt)
 
-    def operation(self):
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("smaller than")
 
 
 class FilterEmpty(BaseMongoEngineFilter, filters.BaseBooleanFilter):
-    def apply(self, query, value):
+    def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
         if value == "1":
             flt = {str(self.column): None}
         else:
             flt = {f"{self.column}__ne": None}
         return query.filter(**flt)
 
-    def operation(self):
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("empty")
 
 
 class FilterInList(BaseMongoEngineFilter):
-    def __init__(self, column, name, options=None, data_type=None):
+    def __init__(
+        self,
+        column: str,
+        name: str,
+        options: T_OPTIONS = None,
+        data_type: T_WIDGET_TYPE = None,
+    ) -> None:
         super().__init__(column, name, options, data_type="select2-tags")
 
     def clean(self, value):
         return [v.strip() for v in value.split(",") if v.strip()]
 
-    def apply(self, query, value):
+    def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
         flt = {f"{self.column}__in": value}
         return query.filter(**flt)
 
-    def operation(self):
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("in list")
 
 
 class FilterNotInList(FilterInList):
-    def apply(self, query, value):
+    def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
         flt = {f"{self.column}__nin": value}
         return query.filter(**flt)
 
-    def operation(self):
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("not in list")
 
 
 # Customized type filters
 class BooleanEqualFilter(FilterEqual, filters.BaseBooleanFilter):
-    def apply(self, query, value):
+    def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
         flt = {str(self.column): value == "1"}
         return query.filter(**flt)
 
 
 class BooleanNotEqualFilter(FilterNotEqual, filters.BaseBooleanFilter):
-    def apply(self, query, value):
+    def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
         flt = {str(self.column): value != "1"}
         return query.filter(**flt)
 
@@ -210,29 +220,35 @@ class DateTimeSmallerFilter(FilterSmaller, filters.BaseDateTimeFilter):
 
 
 class DateTimeBetweenFilter(BaseMongoEngineFilter, filters.BaseDateTimeBetweenFilter):
-    def __init__(self, column, name, options=None, data_type=None):
+    def __init__(
+        self,
+        column: str,
+        name: str,
+        options: T_OPTIONS = None,
+        data_type: T_WIDGET_TYPE = None,
+    ) -> None:
         super().__init__(column, name, options, data_type="datetimerangepicker")
 
-    def apply(self, query, value):
+    def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
         start, end = value
         flt = {f"{self.column}__gte": start, f"{self.column}__lte": end}
         return query.filter(**flt)
 
 
 class DateTimeNotBetweenFilter(DateTimeBetweenFilter):
-    def apply(self, query, value):
+    def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
         start, end = value
         return query.filter(
             Q(**{f"{self.column}__not__gte": start})
             | Q(**{f"{self.column}__not__lte": end})
         )
 
-    def operation(self):
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("not between")
 
 
 class ReferenceObjectIdFilter(BaseMongoEngineFilter):
-    def validate(self, value):
+    def validate(self, value: str) -> bool:
         """
         Validate value.
         If value is valid, returns `True` and `False` otherwise.
@@ -245,14 +261,14 @@ class ReferenceObjectIdFilter(BaseMongoEngineFilter):
         except InvalidId:
             return False
 
-    def clean(self, value):
+    def clean(self, value: str) -> ObjectId:
         return ObjectId(value.strip())
 
-    def apply(self, query, value):
+    def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
         flt = {str(self.column): value}
         return query.filter(**flt)
 
-    def operation(self):
+    def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("ObjectId equals")
 
 
@@ -297,7 +313,7 @@ class FilterConverter(filters.BaseFilterConverter):
     )
     reference_filters = (ReferenceObjectIdFilter,)
 
-    def convert(self, type_name, column, name):
+    def convert(self, type_name: str, column: str, name: str) -> t.Any | None:
         filter_name = type_name.lower()
 
         if filter_name in self.converters:
@@ -308,25 +324,27 @@ class FilterConverter(filters.BaseFilterConverter):
         return None
 
     @filters.convert("StringField", "EmailField", "URLField")
-    def conv_string(self, column, name):
+    def conv_string(self, column: str, name: str) -> list[BaseMongoEngineFilter]:
         return [f(column, name) for f in self.strings]
 
     @filters.convert("BooleanField")
-    def conv_bool(self, column, name):
+    def conv_bool(
+        self, column: str, name: str
+    ) -> list[BooleanEqualFilter | BooleanNotEqualFilter]:
         return [f(column, name) for f in self.bool_filters]
 
     @filters.convert("IntField", "LongField")
-    def conv_int(self, column, name):
+    def conv_int(self, column: str, name: str) -> list[BaseMongoEngineFilter]:
         return [f(column, name) for f in self.int_filters]
 
     @filters.convert("DecimalField", "FloatField")
-    def conv_float(self, column, name):
+    def conv_float(self, column: str, name: str) -> list[BaseMongoEngineFilter]:
         return [f(column, name) for f in self.float_filters]
 
     @filters.convert("DateTimeField", "ComplexDateTimeField")
-    def conv_datetime(self, column, name):
+    def conv_datetime(self, column: str, name: str) -> list[BaseMongoEngineFilter]:
         return [f(column, name) for f in self.datetime_filters]
 
     @filters.convert("ReferenceField")
-    def conv_reference(self, column, name):
+    def conv_reference(self, column: str, name: str) -> list[ReferenceObjectIdFilter]:
         return [f(column, name) for f in self.reference_filters]
