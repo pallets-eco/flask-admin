@@ -112,7 +112,7 @@ tests = [
     "azure-storage-blob<12.28.0", # Azurite 3.35.0 only supports up to API 2025-11-05
 ]
 typing = [
-    "flask-admin[dev]",
+    "flask-admin[all]",
     "mypy",
     "pytest",
     "types-boto3", # keep
@@ -136,7 +136,8 @@ build-backend = "flit_core.buildapi"
 name = "flask_admin"
 
 [tool.uv]
-default-groups = ["dev", "pre-commit", "tests", "typing"]
+default-groups = ["dev"]
+exclude-newer = "7 days"
 
 [tool.uv.sources]
 flask-admin = { workspace = true }
