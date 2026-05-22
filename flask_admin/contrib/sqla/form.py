@@ -640,7 +640,12 @@ class AdminModelConverter(ModelConverterBase):
             except (AttributeError, NotImplementedError):
                 python_type = None
             if python_type is not None and python_type is not str:
-                field_args.setdefault("coerce", python_type)  # type: ignore[typeddict-unknown-key]
+                # `coerce` isn't part of T_FIELD_ARGS_VALIDATORS (it's a
+                # Select2TagsField-specific kwarg), so smuggle it via a cast
+                # rather than widening the TypedDict.
+                t.cast(dict[str, t.Any], field_args).setdefault(
+                    "coerce", python_type
+                )
         return form.Select2TagsField(save_as_list=True, **field_args)
 
     @converts("HSTORE")

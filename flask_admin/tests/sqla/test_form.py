@@ -83,7 +83,7 @@ class TestArrayConverter:
 
     def test_conv_ARRAY_integer_coerces_each_item_to_int(self) -> None:
         converter = AdminModelConverter(None, None)  # type: ignore[arg-type]
-        column = Column("x", ARRAY(Integer))
+        column: Column[t.Any] = Column("x", ARRAY(Integer))
         bound = self._bind(
             converter.conv_ARRAY(field_args={"validators": []}, column=column)
         )
@@ -97,7 +97,7 @@ class TestArrayConverter:
 
     def test_conv_ARRAY_float_coerces_each_item_to_float(self) -> None:
         converter = AdminModelConverter(None, None)  # type: ignore[arg-type]
-        column = Column("x", ARRAY(Float))
+        column: Column[t.Any] = Column("x", ARRAY(Float))
         bound = self._bind(
             converter.conv_ARRAY(field_args={"validators": []}, column=column)
         )
@@ -112,7 +112,7 @@ class TestArrayConverter:
         spurious coercion that would round-trip values through `int()`.
         """
         converter = AdminModelConverter(None, None)  # type: ignore[arg-type]
-        column = Column("x", ARRAY(String))
+        column: Column[t.Any] = Column("x", ARRAY(String))
         bound = self._bind(
             converter.conv_ARRAY(field_args={"validators": []}, column=column)
         )
