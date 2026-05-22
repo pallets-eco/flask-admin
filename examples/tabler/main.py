@@ -147,7 +147,6 @@ if __name__ == "__main__":
     )
     admin.add_link(MenuLink(name="Link3", url="http://www.example.com/"))
 
-
     app_dir = op.realpath(op.dirname(__file__))
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])
     if not op.exists(database_path):

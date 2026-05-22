@@ -45,7 +45,11 @@ class TablerUITheme(Theme):
     Tabler 1.4.0 theme for Flask-Admin.
 
     Usage::
-        admin = Admin(app, name="my app", theme=TablerTheme(layout="vertical", theme_primary="teal"))
+        admin = Admin(app, name="my app", theme=TablerTheme(
+                                                    layout="vertical",
+                                                    theme="light",
+                                                    ),
+        )
     """
 
     VALID_LAYOUTS = t.get_args(TablerLayout)
@@ -58,7 +62,19 @@ class TablerUITheme(Theme):
     # Tabler UI theme settings — map directly to data-bs-* HTML attributes.
     # Defaults match Tabler's own defaults so existing deployments are unaffected.
     theme: t.Literal["light", "dark"] = "light"
-    theme_primary: t.Literal["blue", "azure", "indigo", "purple", "pink", "red", "orange", "lime", "green", "teal", "cyan"] = "blue"
+    theme_primary: t.Literal[
+        "blue",
+        "azure",
+        "indigo",
+        "purple",
+        "pink",
+        "red",
+        "orange",
+        "lime",
+        "green",
+        "teal",
+        "cyan",
+    ] = "blue"
     theme_base: t.Literal["gray", "neutral", "slate", "zinc", "stone"] = "gray"
     theme_font: t.Literal["sans-serif", "serif", "monospace", "comic"] = "sans-serif"
     theme_radius: t.Literal["0", "0.5", "1", "1.5", "2"] = "1"
