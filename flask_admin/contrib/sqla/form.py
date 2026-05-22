@@ -623,6 +623,24 @@ class AdminModelConverter(ModelConverterBase):
     def conv_ARRAY(
         self, field_args: T_FIELD_ARGS_VALIDATORS, **extra: t.Any
     ) -> form.Select2TagsField:
+        # Without `coerce`, all submitted values fall back to `text_type`,
+        # so a Postgres `ARRAY(Integer)` column is sent back to the DB as
+        # text[] and the INSERT/UPDATE fails with
+        #     column "x" is of type integer[] but expression is of type text[]
+        # (see #1724). When we can introspect the column we infer the inner
+        # `python_type` and pass it through as the per-tag coerce callable so
+        # the resulting Python list matches the column's element type. We
+        # fall back silently for types that don't implement `python_type`
+        # (e.g. SQLAlchemy's `JSON`).
+        column = extra.get("column")
+        item_type = getattr(getattr(column, "type", None), "item_type", None)
+        if item_type is not None:
+            try:
+                python_type = item_type.python_type
+            except (AttributeError, NotImplementedError):
+                python_type = None
+            if python_type is not None and python_type is not str:
+                field_args.setdefault("coerce", python_type)  # type: ignore[typeddict-unknown-key]
         return form.Select2TagsField(save_as_list=True, **field_args)
 
     @converts("HSTORE")
