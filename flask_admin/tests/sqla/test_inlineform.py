@@ -401,7 +401,7 @@ def test_inline_form_postprocess_form_hook(
         sqla_db_ext.create_all()
 
         class UserInfoInlineForm(InlineFormAdmin):
-            def postprocess_form(self, form_class):  # type: ignore[no-untyped-def]
+            def postprocess_form(self, form_class):
                 # Contribute an extra field that does not exist on the SQLA
                 # model. If `postprocess_form` is not invoked by the converter,
                 # this attribute will be missing on the generated form class.

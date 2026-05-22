@@ -1196,7 +1196,7 @@ def test_inline_form_postprocess_form_hook(
     Model1, Model2 = create_models(db)
 
     class Model2InlineForm(InlineFormAdmin):
-        def postprocess_form(self, form_class):  # type: ignore[no-untyped-def]
+        def postprocess_form(self, form_class):
             form_class.extra = fields.StringField("extra")
             return form_class
 
@@ -1207,7 +1207,7 @@ def test_inline_form_postprocess_form_hook(
     # as an UnboundField whose first positional arg is the per-row form
     # class; ``postprocess_form`` is supposed to mutate that class.
     create_form_cls = view._create_form_class
-    inline_unbound = create_form_cls.model2_set  # backref name on Model2
+    inline_unbound = create_form_cls.model2_set  # type: ignore[attr-defined]
     inline_form_cls = inline_unbound.args[0]
     assert hasattr(inline_form_cls, "extra"), (
         "InlineFormAdmin.postprocess_form should contribute extra fields on "
