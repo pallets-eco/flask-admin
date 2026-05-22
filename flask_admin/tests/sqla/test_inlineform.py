@@ -1,5 +1,4 @@
 import typing as t
-from typing import Optional
 
 from flask import Flask
 from sqlalchemy import Column
@@ -18,6 +17,7 @@ from flask_admin import form
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.fields import InlineModelFormList
 from flask_admin.contrib.sqla.validators import ItemsRequired
+from flask_admin.model.form import InlineFormAdmin
 from flask_admin.tests.conftest import skip_or_return_session_or_db
 from flask_admin.tests.conftest import T_ANY_SQLA_PROVIDER
 from flask_admin.tests.conftest import T_LITERAL_SESSION_OR_DB
@@ -38,7 +38,7 @@ def test_inline_form(
             id = Column(Integer, primary_key=True)
             name = Column(String, unique=True)
 
-            def __init__(self, name: Optional[str] = None) -> None:
+            def __init__(self, name: str | None = None) -> None:
                 self.name = name  # type: ignore[assignment]
 
         class UserInfo(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
@@ -153,7 +153,7 @@ def test_inline_form_required(
             id = Column(Integer, primary_key=True)
             name: str | None = Column(String, unique=True)  # type: ignore[assignment]
 
-            def __init__(self, name: Optional[str] = None) -> None:
+            def __init__(self, name: str | None = None) -> None:
                 self.name = name
 
         class UserEmail(sqla_db_ext.Base):  # type: ignore[misc,name-defined]
@@ -219,7 +219,7 @@ def test_inline_form_ajax_fk(
             id = Column(Integer, primary_key=True)
             name: str | None = Column(String, unique=True)  # type: ignore[assignment]
 
-            def __init__(self, name: Optional[str] = None) -> None:
+            def __init__(self, name: str | None = None) -> None:
                 self.name = name
 
         class Tag(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
@@ -309,7 +309,7 @@ def test_inline_form_base_class(
             id = Column(Integer, primary_key=True)
             name: str | None = Column(String, unique=True)  # type: ignore[assignment]
 
-            def __init__(self, name: Optional[str] = None) -> None:
+            def __init__(self, name: str | None = None) -> None:
                 self.name = name
 
         class UserEmail(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
@@ -358,3 +358,71 @@ def test_inline_form_base_class(
         assert rv.status_code == 200
         assert sqla_db_ext.db.session.query(func.count(User.id)).scalar() == 0
         assert b"success!" in rv.data, rv.data
+
+
+def test_inline_form_postprocess_form_hook(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    """``InlineFormAdmin.postprocess_form`` is the hook invoked by the
+    inline-model converter to contribute extra fields onto the generated
+    inline form class. The matching docstrings in
+    ``flask_admin.contrib.sqla.view`` and ``flask_admin.contrib.peewee.view``
+    used to advertise a ``post_process`` method on a converter subclass, which
+    is never actually invoked anywhere in the codebase -- see issue #1738.
+
+    This test pins the real, working API so the docs cannot drift away from it
+    again: subclass ``InlineFormAdmin``, override ``postprocess_form``, pass
+    an instance through ``inline_models``, and verify the extra field appears
+    on the generated inline form class.
+    """
+    with app.app_context():
+        # Set up models and database
+        class User(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
+            __tablename__ = "users"
+            id = Column(Integer, primary_key=True)
+            name = Column(String, unique=True)
+
+        class UserInfo(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
+            __tablename__ = "user_info"
+            id = Column(Integer, primary_key=True)
+            key = Column(String, nullable=False)
+            val = Column(String)
+            user_id = Column(Integer, ForeignKey(User.id))
+            user = relationship(
+                User,
+                backref=backref(
+                    "info", cascade="all, delete-orphan", single_parent=True
+                ),
+            )
+
+        sqla_db_ext.create_all()
+
+        class UserInfoInlineForm(InlineFormAdmin):
+            def postprocess_form(self, form_class):  # type: ignore[no-untyped-def]
+                # Contribute an extra field that does not exist on the SQLA
+                # model. If `postprocess_form` is not invoked by the converter,
+                # this attribute will be missing on the generated form class.
+                form_class.extra = fields.StringField("extra")
+                return form_class
+
+        class UserModelView(ModelView):
+            inline_models = (UserInfoInlineForm(UserInfo),)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = UserModelView(User, param)
+        admin.add_view(view)
+
+        # On the parent form, the inline relationship lives as an UnboundField
+        # whose first positional arg is the generated per-row form class. That
+        # class is what `postprocess_form` mutates; assert the contributed
+        # field is present on it.
+        unbound_info = view._create_form_class.info  # type: ignore[attr-defined]
+        inline_form_cls = unbound_info.args[0]
+        assert hasattr(inline_form_cls, "extra"), (
+            "InlineFormAdmin.postprocess_form should contribute extra fields; "
+            "if this fails the converter is no longer calling the hook the "
+            "docstrings document."
+        )

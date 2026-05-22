@@ -15,6 +15,7 @@ from flask_admin._compat import as_unicode
 from flask_admin._compat import iteritems
 from flask_admin._types import T_PEEWEE_MODEL
 from flask_admin.contrib.peewee import ModelView
+from flask_admin.model.form import InlineFormAdmin
 
 
 class CustomModelView(ModelView):
@@ -1060,7 +1061,7 @@ def test_customising_page_size(
     with app.app_context():
         M1, _ = create_models(db)
 
-        instances = [M1(f"instance-{x+1:03d}") for x in range(101)]
+        instances = [M1(f"instance-{x + 1:03d}") for x in range(101)]
         for instance in instances:
             instance.save()
 
@@ -1180,3 +1181,35 @@ def test_export_csv(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None
     data = rv.data.decode("utf-8")
     assert rv.status_code == 200
     assert len(data.splitlines()) > 21
+
+
+def test_inline_form_postprocess_form_hook(
+    app: Flask, db: peewee.SqliteDatabase, admin: Admin
+) -> None:
+    """``InlineFormAdmin.postprocess_form`` should be invoked by the Peewee
+    inline-model converter, mirroring the behavior already provided by the
+    SQLAlchemy backend. Before the fix accompanying this test the Peewee
+    backend never called the hook, so subclassing ``InlineFormAdmin`` to
+    contribute extra fields onto an inline form was silently a no-op (this
+    is what issue #1738 was really about for the Peewee docstring example).
+    """
+    Model1, Model2 = create_models(db)
+
+    class Model2InlineForm(InlineFormAdmin):
+        def postprocess_form(self, form_class):  # type: ignore[no-untyped-def]
+            form_class.extra = fields.StringField("extra")
+            return form_class
+
+    view = CustomModelView(Model1, inline_models=(Model2InlineForm(Model2),))
+    admin.add_view(view)
+
+    # The inline relationship is exposed on the generated create-form class
+    # as an UnboundField whose first positional arg is the per-row form
+    # class; ``postprocess_form`` is supposed to mutate that class.
+    create_form_cls = view._create_form_class
+    inline_unbound = create_form_cls.model2_set  # backref name on Model2
+    inline_form_cls = inline_unbound.args[0]
+    assert hasattr(inline_form_cls, "extra"), (
+        "InlineFormAdmin.postprocess_form should contribute extra fields on "
+        "the Peewee backend just like it does on the SQLAlchemy backend."
+    )

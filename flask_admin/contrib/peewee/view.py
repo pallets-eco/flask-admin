@@ -110,16 +110,23 @@ class ModelView(BaseModelView):
 
     inline_model_form_converter: type[InlineModelConverter] = InlineModelConverter
     """
-        Inline model conversion class. If you need some kind of post-processing for
-        inline forms, you can customize behavior by doing something like this::
+        Inline model conversion class. Override this if you need custom
+        scaffolding logic for inline forms; for simple per-field tweaks, prefer
+        overriding ``postprocess_form`` on an ``InlineFormAdmin`` subclass and
+        passing it to ``inline_models`` (this is the hook actually invoked by
+        the converter)::
 
-            class MyInlineModelConverter(AdminModelConverter):
-                def post_process(self, form_class, info):
-                    form_class.value = TextField('value')
+            from flask_admin.contrib.peewee import ModelView
+            from flask_admin.model.form import InlineFormAdmin
+            from wtforms import StringField
+
+            class MyInlineForm(InlineFormAdmin):
+                def postprocess_form(self, form_class):
+                    form_class.value = StringField('value')
                     return form_class
 
             class MyAdminView(ModelView):
-                inline_model_form_converter = MyInlineModelConverter
+                inline_models = (MyInlineForm(MyInlineModel),)
     """
 
     filter_converter: filters.FilterConverter = filters.FilterConverter()
