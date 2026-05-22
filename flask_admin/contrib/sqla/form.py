@@ -35,6 +35,7 @@ from ..._types import T_FIELD_ARGS_LABEL
 from ..._types import T_FIELD_ARGS_PLACES
 from ..._types import T_FIELD_ARGS_VALIDATORS
 from ..._types import T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK
+from ..._types import T_FIELD_ARGS_VALIDATORS_COERCE
 from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
 from ..._types import T_INSTRUMENTED_ATTRIBUTE
 from ..._types import T_MODEL_VIEW
@@ -621,17 +622,10 @@ class AdminModelConverter(ModelConverterBase):
         "sqlalchemy.dialects.postgresql.base.ARRAY", "sqlalchemy.sql.sqltypes.ARRAY"
     )
     def conv_ARRAY(
-        self, field_args: T_FIELD_ARGS_VALIDATORS, **extra: t.Any
+        self, field_args: T_FIELD_ARGS_VALIDATORS_COERCE, **extra: t.Any
     ) -> form.Select2TagsField:
-        # Without `coerce`, all submitted values fall back to `text_type`,
-        # so a Postgres `ARRAY(Integer)` column is sent back to the DB as
-        # text[] and the INSERT/UPDATE fails with
-        #     column "x" is of type integer[] but expression is of type text[]
-        # (see #1724). When we can introspect the column we infer the inner
-        # `python_type` and pass it through as the per-tag coerce callable so
-        # the resulting Python list matches the column's element type. We
-        # fall back silently for types that don't implement `python_type`
-        # (e.g. SQLAlchemy's `JSON`).
+        # Ensure Select2TagsField uses the correct Python type for ARRAY element values.
+        # Otherwise, WTForms defaults to text_type, causing Postgres ARRAY type errors.
         column = extra.get("column")
         item_type = getattr(getattr(column, "type", None), "item_type", None)
         if item_type is not None:
@@ -640,10 +634,7 @@ class AdminModelConverter(ModelConverterBase):
             except (AttributeError, NotImplementedError):
                 python_type = None
             if python_type is not None and python_type is not str:
-                # `coerce` isn't part of T_FIELD_ARGS_VALIDATORS (it's a
-                # Select2TagsField-specific kwarg), so smuggle it via a cast
-                # rather than widening the TypedDict.
-                t.cast(dict[str, t.Any], field_args).setdefault("coerce", python_type)
+                field_args.setdefault("coerce", python_type)
         return form.Select2TagsField(save_as_list=True, **field_args)
 
     @converts("HSTORE")
