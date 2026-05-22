@@ -9,7 +9,7 @@ from flask_admin import base
 
 
 @pytest.fixture
-def app():
+def app() -> t.Generator[Flask, None, None]:
     app = Flask(__name__, host_matching=True, static_host="static.test.localhost")
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False

@@ -13,6 +13,7 @@ from flask_admin._compat import iteritems
 from flask_admin._compat import itervalues
 from flask_admin._types import T_COLUMN
 from flask_admin._types import T_FILTER
+from flask_admin._types import T_MODEL_VIEW
 from flask_admin.model import base
 from flask_admin.model import filters
 from flask_admin.model.filters import BaseFilter
@@ -43,7 +44,7 @@ class Form(form.BaseForm):
 
 
 class SimpleFilter(filters.BaseFilter):
-    def apply(self, query, value):
+    def apply(self, query: t.Any, value: t.Any) -> t.Any:
         query._applied = True
         return query
 
@@ -639,7 +640,7 @@ def test_export_csv(app: Flask, admin: Admin) -> None:
 
     # We should be able to specify column_formatters_export
     # and not get an exception if a column_formatter is using a macro
-    def export_formatter(v, c, m, p):
+    def export_formatter(v: T_MODEL_VIEW, c: t.Any, m: t.Any, p: t.Any) -> str:
         return m.col1 if m else ""
 
     view9 = MockModelView(

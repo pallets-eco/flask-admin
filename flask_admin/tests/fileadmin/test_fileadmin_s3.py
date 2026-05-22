@@ -38,7 +38,7 @@ def test_strip_slashes(
     arg_name: str, args: t.Any, kwargs: t.Any, expected_value: str
 ) -> None:
     @_strip_leading_slash_from(arg_name)
-    def fn(arg1, arg2, arg3):
+    def fn(arg1: t.Any, arg2: t.Any, arg3: t.Any) -> dict[str, t.Any]:
         return dict(arg1=arg1, arg2=arg2, arg3=arg3)
 
     assert fn(*args, **kwargs)[arg_name] == expected_value

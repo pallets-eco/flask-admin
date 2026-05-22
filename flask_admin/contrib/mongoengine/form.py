@@ -186,7 +186,7 @@ class QuerySetSelectMultipleField(QuerySetSelectField):
         if not len(self.data):
             self.data = None
 
-    def _is_selected(self, item):
+    def _is_selected(self, item: t.Any) -> bool:
         return item in self.data if self.data else False
 
 
@@ -233,7 +233,7 @@ class CustomModelConverter:
 
     def __init__(self, view: t.Any) -> None:
         self.view = view
-        self.converters = {
+        self.converters: dict[str, t.Callable[..., Field | t.Any]] = {
             "StringField": self.conv_String,
             "URLField": self.conv_URL,
             "EmailField": self.conv_Email,
@@ -462,7 +462,12 @@ class CustomModelConverter:
     ) -> TextAreaField:
         return fields.TextAreaField(**kwargs)
 
-    def conv_SortedList(self, model, field, kwargs):
+    def conv_SortedList(
+        self,
+        model: type[T_MONGO_ENGINE_DOCUMENT],
+        field: BaseField,
+        kwargs: T_FIELD_ARGS_VALIDATORS_FILES,
+    ) -> AjaxSelectMultipleField | ModelSelectMultipleField | InlineFieldList | t.Any:
         # TODO: sort functionality, may be need sortable widget
         return self.conv_List(model, field, kwargs)
 

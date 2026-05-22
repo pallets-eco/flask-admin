@@ -26,6 +26,7 @@ from flask_admin.model import BaseModelView
 from flask_admin.model.form import BaseListForm
 from flask_admin.model.form import create_editable_list_form
 
+from ..._types import T_AJAX_MODEL_LOADER
 from ..._types import T_COLUMN_TYPE_FORMATTERS
 from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
 from ..._types import T_MONGO_ENGINE_DOCUMENT
@@ -322,7 +323,7 @@ class ModelView(BaseModelView):
         # Cache other properties
         super()._refresh_cache()
 
-    def _process_ajax_references(self):
+    def _process_ajax_references(self) -> dict[str, T_AJAX_MODEL_LOADER]:
         """
         AJAX endpoint is exposed by top-level admin view class, but
         subdocuments might have AJAX references too.
@@ -608,7 +609,7 @@ class ModelView(BaseModelView):
 
         return count, query
 
-    def get_one(self, id):
+    def get_one(self, id: t.Any) -> t.Any | None:
         """
         Return a single model instance by its ID
 

@@ -65,8 +65,8 @@ def _get_deprecated_session(
 
 
 def _get_deprecated_session(
-    session,
-):
+    session: T_SESSION_OR_DB | None,
+) -> T_SCOPED_SESSION | T_SESSION | None:
     """
     Returns the session if passed directly, session.session otherwise.
     THIS must be called ONLY immediately before querying on the session, or SQLALite
@@ -76,5 +76,5 @@ def _get_deprecated_session(
     if (T_SQLALCHEMY is not None and isinstance(session, T_SQLALCHEMY)) or (
         T_SQLALCHEMY_LITE is not None and isinstance(session, T_SQLALCHEMY_LITE)
     ):
-        return session.session
-    return session
+        return session.session  # type: ignore[return-value]
+    return session  # type: ignore[return-value]

@@ -342,7 +342,7 @@ class ModelView(BaseModelView):
         """
         return self._edit_form_class(get_form_data(), **obj)
 
-    def create_model(self, form):
+    def create_model(self, form: Form) -> bool | t.Any:
         """
         Create model helper
 

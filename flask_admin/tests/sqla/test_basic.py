@@ -3214,7 +3214,7 @@ def test_simple_list_pager(
         class TestModelView(CustomModelView):
             simple_list_pager = True
 
-            def get_count_query(self):
+            def get_count_query(self) -> t.NoReturn:
                 raise AssertionError()
 
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
