@@ -122,7 +122,7 @@ class FilterInList(BaseMongoEngineFilter):
     ) -> None:
         super().__init__(column, name, options, data_type="select2-tags")
 
-    def clean(self, value):
+    def clean(self, value: str) -> list[str]:
         return [v.strip() for v in value.split(",") if v.strip()]
 
     def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
@@ -171,11 +171,11 @@ class IntSmallerFilter(FilterSmaller, filters.BaseIntFilter):
     pass
 
 
-class IntInListFilter(filters.BaseIntListFilter, FilterInList):
+class IntInListFilter(filters.BaseIntListFilter, FilterInList):  # type: ignore[misc]
     pass
 
 
-class IntNotInListFilter(filters.BaseIntListFilter, FilterNotInList):
+class IntNotInListFilter(filters.BaseIntListFilter, FilterNotInList):  # type: ignore[misc]
     pass
 
 
@@ -195,11 +195,11 @@ class FloatSmallerFilter(FilterSmaller, filters.BaseFloatFilter):
     pass
 
 
-class FloatInListFilter(filters.BaseFloatListFilter, FilterInList):
+class FloatInListFilter(filters.BaseFloatListFilter, FilterInList):  # type: ignore[misc]
     pass
 
 
-class FloatNotInListFilter(filters.BaseFloatListFilter, FilterNotInList):
+class FloatNotInListFilter(filters.BaseFloatListFilter, FilterNotInList):  # type: ignore[misc]
     pass
 
 

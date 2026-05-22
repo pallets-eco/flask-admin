@@ -13,7 +13,7 @@ from .test_fileadmin import Base
 
 class TestAzureFileAdmin(Base.FileAdminTests):
     @pytest.fixture(autouse=True)
-    def setup_and_teardown(self):
+    def setup_and_teardown(self) -> t.Generator[None, t.Any, None]:
         azure_connection_string = os.getenv(
             "AZURE_STORAGE_CONNECTION_STRING",
             "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://localhost:10000/devstoreaccount1;",

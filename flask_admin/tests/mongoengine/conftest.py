@@ -11,12 +11,14 @@ from flask_admin.contrib.sqla._types import T_SESSION_OR_DB
 
 
 @pytest.fixture
-def db():
+def db() -> t.Generator[None, t.Any, None]:
     db_name = "tests"
     host = os.getenv("MONGOCLIENT_HOST", "localhost")
     connect(db=db_name, host=host, uuidRepresentation="standard")
-    yield db
-    disconnect()
+    try:
+        yield
+    finally:
+        disconnect()
 
 
 @pytest.fixture

@@ -37,7 +37,7 @@ class GeoJSONField(JSONField):
         self.geometry_type = geometry_type.upper()
         self.session = session
 
-    def _value(self):
+    def _value(self) -> t.Any:
         if self.raw_data:
             return self.raw_data[0]
         if type(self.data) is geoalchemy2.elements.WKBElement:  # type: ignore[comparison-overlap]

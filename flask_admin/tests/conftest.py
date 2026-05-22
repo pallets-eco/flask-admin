@@ -94,7 +94,7 @@ if HAS_SQLALCHEMY_2:
 
 
 @pytest.fixture(scope="function")
-def app():
+def app() -> t.Generator[Flask, t.Any, None]:
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "1"
     app.config["WTF_CSRF_ENABLED"] = False
