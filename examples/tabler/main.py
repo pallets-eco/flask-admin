@@ -9,7 +9,6 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuDivider
 from flask_admin.menu import MenuLink
 from flask_admin.theme import TablerTheme
-from flask_debugtoolbar import DebugToolbarExtension
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime
@@ -32,10 +31,6 @@ app.config["SQLALCHEMY_ECHO"] = False
 app.config["EXPLAIN_TEMPLATE_LOADING"] = True
 
 db = SQLAlchemy(app)
-
-toolbar = DebugToolbarExtension()
-toolbar.init_app(app)
-
 
 admin = Admin(app, name="Example: Tabler", theme=TablerTheme(layout="condensed"))
 
@@ -133,9 +128,9 @@ if __name__ == "__main__":
         )
     )
 
-    admin.add_view(FileAdmin("files/", name="Local Files", category="Menu"))
+    admin.add_view(FileAdmin("./", name="Local Files", category="Menu"))
     admin.add_view(
-        FileAdminModal("files/", name="Local Files with Modals", category="Menu")
+        FileAdminModal("./", name="Local Files with Modals", category="Menu")
     )
 
     admin.add_link(
@@ -152,33 +147,6 @@ if __name__ == "__main__":
     )
     admin.add_link(MenuLink(name="Link3", url="http://www.example.com/"))
 
-    # admin.add_sub_category(name="Links", parent_name="Menu")
-    # admin.add_link(
-    #     MenuLink(
-    #         name="External link",
-    #         url="http://www.example.com/",
-    #         category="Links",
-    #         class_name="text-info",
-    #         icon_type="ti",
-    #         icon_value="link",
-    #     )
-    # )
-    # admin.add_link(
-    #     MenuLink(
-    #         name="External link",
-    #         url="http://www.example.com/",
-    #         category="Links",
-    #         class_name="text-success",
-    #     )
-    # )
-    # admin.add_menu_item(MenuDivider(), target_category="Links")
-    # admin.add_link(
-    #     MenuLink(
-    #         name="External link",
-    #         url="http://www.example.com/",
-    #         category="Links",
-    #     )
-    # )
 
     app_dir = op.realpath(op.dirname(__file__))
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])

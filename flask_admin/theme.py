@@ -44,11 +44,8 @@ class TablerUITheme(Theme):
     """
     Tabler 1.4.0 theme for Flask-Admin.
 
-    Ships Tabler UI assets locally (CSS, JS, icon webfonts) so no CDN is
-    required.
-
     Usage::
-        admin = Admin(app, name="my app", theme=TablerTheme(layout="vertical"))
+        admin = Admin(app, name="my app", theme=TablerTheme(layout="vertical", theme_primary="teal"))
     """
 
     VALID_LAYOUTS = t.get_args(TablerLayout)
@@ -60,12 +57,12 @@ class TablerUITheme(Theme):
 
     # Tabler UI theme settings — map directly to data-bs-* HTML attributes.
     # Defaults match Tabler's own defaults so existing deployments are unaffected.
-    theme: str = "light"  # "light" | "dark"
-    theme_primary: str = "blue"  # "blue" | "lime" | "azure" | "indigo" | …
-    theme_base: str = "gray"  # "gray" | "neutral" | "slate" | "zinc" | "stone"
-    theme_font: str = "sans-serif"  # "sans-serif" | "serif" | "monospace" | "comic"
-    theme_radius: str = "1"  # "0" | "0.5" | "1" | "1.5" | "2"
-    theme_use_cdn: bool = True  # From where to load tabler files
+    theme: t.Literal["light", "dark"] = "light"
+    theme_primary: t.Literal["blue", "azure", "indigo", "purple", "pink", "red", "orange", "lime", "green", "teal", "cyan"] = "blue"
+    theme_base: t.Literal["gray", "neutral", "slate", "zinc", "stone"] = "gray"
+    theme_font: t.Literal["sans-serif", "serif", "monospace", "comic"] = "sans-serif"
+    theme_radius: t.Literal["0", "0.5", "1", "1.5", "2"] = "1"
+    theme_use_cdn: bool = False  # Load Tabler Files from CDN or static files (Default)
 
     def __post_init__(self) -> None:
         _validate_choice(self.layout, self.VALID_LAYOUTS)
