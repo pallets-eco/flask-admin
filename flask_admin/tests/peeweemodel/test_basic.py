@@ -1188,16 +1188,13 @@ def test_inline_form_postprocess_form_hook(
 ) -> None:
     """``InlineFormAdmin.postprocess_form`` should be invoked by the Peewee
     inline-model converter, mirroring the behavior already provided by the
-    SQLAlchemy backend. Before the fix accompanying this test the Peewee
-    backend never called the hook, so subclassing ``InlineFormAdmin`` to
-    contribute extra fields onto an inline form was silently a no-op (this
-    is what issue #1738 was really about for the Peewee docstring example).
+    SQLAlchemy backend.
     """
     Model1, Model2 = create_models(db)
 
     class Model2InlineForm(InlineFormAdmin):
         def postprocess_form(self, form_class):
-            form_class.extra = fields.StringField("extra")
+            form_class.extra = fields.StringField("FooBarExtraField")
             return form_class
 
     view = CustomModelView(Model1, inline_models=(Model2InlineForm(Model2),))
@@ -1209,7 +1206,4 @@ def test_inline_form_postprocess_form_hook(
     create_form_cls = view._create_form_class
     inline_unbound = create_form_cls.model2_set  # type: ignore[attr-defined]
     inline_form_cls = inline_unbound.args[0]
-    assert hasattr(inline_form_cls, "extra"), (
-        "InlineFormAdmin.postprocess_form should contribute extra fields on "
-        "the Peewee backend just like it does on the SQLAlchemy backend."
-    )
+    assert inline_form_cls.extra.args == ("FooBarExtraField",)
