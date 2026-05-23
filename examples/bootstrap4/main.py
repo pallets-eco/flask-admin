@@ -13,7 +13,6 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuDivider
 from flask_admin.menu import MenuLink
 from flask_admin.theme import Bootstrap4Theme
-from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime
@@ -33,7 +32,6 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE
 app.config["SQLALCHEMY_ECHO"] = False
 
 db = SQLAlchemy(app)
-babel = Babel(app)
 
 
 class MyAdminIndexView(AdminIndexView):
