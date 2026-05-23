@@ -6,6 +6,8 @@ interface.
 The current example uses `TablerTheme(layout="fluid")`. Supported layout values
 are `vertical`, `fluid`, and `condensed`.
 
+<img width="1371" height="676" alt="image" src="https://github.com/user-attachments/assets/5e856cd1-416f-4752-97da-69cf65cb5879" />
+
 ## How to run this example
 
 Clone the repository and navigate to this example:
