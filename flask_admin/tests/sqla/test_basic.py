@@ -121,6 +121,10 @@ def create_models(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> tuple[type, type]:
         sqla_utils_ip_address = Column(IPAddressType)
         sqla_utils_currency = Column(CurrencyType)
         sqla_utils_color = Column(ColorType)
+        test5 = Column(Float(2))
+
+        def __unicode__(self):
+            return self.test1
 
         def __str__(self) -> str:
             return self.test1  # type: ignore[return-value]
@@ -523,6 +527,7 @@ def test_exclude_columns(
             ("bool_field", "Bool Field"),
             ("email_field", "Email Field"),
             ("choice_field", "Choice Field"),
+            ("test5", "Test5"),
         ]
 
         client = app.test_client()

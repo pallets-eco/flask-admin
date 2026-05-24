@@ -38,7 +38,7 @@ class BaseMongoEngineFilter(filters.BaseFilter):
         :param data_type:
             Client data type
         """
-        super().__init__(name, options, data_type)
+        super().__init__(name, options, data_type, column=column)
 
         self.column = column
 
@@ -131,6 +131,9 @@ class FilterInList(BaseMongoEngineFilter):
 
     def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("in list")
+
+    def stringify(self, value: t.Any) -> str:
+        return ",".join(str(v) for v in value)
 
 
 class FilterNotInList(FilterInList):
