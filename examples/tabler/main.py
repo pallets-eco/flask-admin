@@ -1,14 +1,21 @@
 import datetime
 import os.path as op
+import typing as t
 from typing import Any
 
 from flask import Flask
+from flask import redirect
+from flask import request
+from flask import url_for
 from flask_admin import Admin
+from flask_admin import AdminIndexView
+from flask_admin import expose
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuDivider
 from flask_admin.menu import MenuLink
 from flask_admin.theme import TablerTheme
+from flask_admin.theme import TablerUITheme
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime
@@ -23,16 +30,54 @@ from sqlalchemy.orm import mapped_column
 from examples.tabler.data import build_sample_db
 
 app = Flask(__name__)
-app.config["DEBUG"] = True
 app.config["SECRET_KEY"] = "secret"
 app.config["DATABASE_FILE"] = "db.sqlite"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + app.config["DATABASE_FILE"]
 app.config["SQLALCHEMY_ECHO"] = False
-app.config["EXPLAIN_TEMPLATE_LOADING"] = True
 
 db = SQLAlchemy(app)
 
-admin = Admin(app, name="Example: Tabler", theme=TablerTheme(layout="condensed"))
+
+class MyAdminIndexView(AdminIndexView):
+    """
+    Let user dynamically change GLOBAL theme settings.
+    Demo only.
+    """
+
+    extra_js = ["/static/js/active-layout.js"]
+
+    def _theme(self):
+        return getattr(self.admin, "theme", None)
+
+    def _allowed_values(self, theme, field_name):
+        ann = type(theme).__annotations__.get(field_name)
+        if not ann or t.get_origin(ann) is not t.Literal:
+            return None
+        return t.get_args(ann)
+
+    @expose("/set-theme")
+    def set_theme_view(self):
+        theme = self._theme()
+
+        field = request.args.get("field")
+        value = request.args.get("value")
+
+        if theme and field and value:
+            allowed = self._allowed_values(theme, field)
+
+            if allowed and value in allowed:
+                setattr(theme, field, value)
+
+        next_url = request.args.get("next") or request.referrer
+        return redirect(next_url or url_for("admin.index"))
+
+
+admin = Admin(
+    app,
+    name="Example: Tabler",
+    theme=TablerTheme(layout="fluid", theme_primary="purple"),
+    index_view=MyAdminIndexView(),
+)
 
 
 @app.route("/")
@@ -65,7 +110,11 @@ class Page(db.Model):
         return self.title
 
 
-class UserAdmin(ModelView):
+class ModelViewExtraJs(ModelView):
+    extra_js = ["/static/js/active-layout.js"]
+
+
+class UserAdmin(ModelViewExtraJs):
     column_searchable_list = ("name",)
     column_filters = ("name", "email")
     can_export = True
@@ -75,18 +124,22 @@ class UserAdmin(ModelView):
     page_size = 7
 
 
-class SimplePageView(ModelView):
+class SimplePageView(ModelViewExtraJs):
     can_view_details = True
 
 
-class FileAdminModal(FileAdmin):
+class FileAdminExtraJs(FileAdmin):
+    extra_js = ["/static/js/active-layout.js"]
+
+
+class FileAdminModal(FileAdminExtraJs):
     rename_modal = True
     edit_modal = True
     mkdir_modal = True
     upload_modal = True
 
 
-class PageWithModalView(ModelView):
+class PageWithModalView(ModelViewExtraJs):
     create_modal = True
     edit_modal = True
     details_modal = True
@@ -117,7 +170,7 @@ if __name__ == "__main__":
     )
 
     admin.add_view(
-        ModelView(
+        ModelViewExtraJs(
             Page,
             db,
             name="Page-with-icon",
@@ -128,7 +181,7 @@ if __name__ == "__main__":
         )
     )
 
-    admin.add_view(FileAdmin("./", name="Local Files", category="Menu"))
+    admin.add_view(FileAdminExtraJs("./", name="Local Files", category="Menu"))
     admin.add_view(
         FileAdminModal("./", name="Local Files with Modals", category="Menu")
     )
@@ -137,20 +190,40 @@ if __name__ == "__main__":
         MenuLink(
             name="link1",
             url="http://www.example.com/",
-            class_name="text-warning bg-danger",
+            class_name="bg-primary link-light",
             icon_type="ti",
             icon_value="link",
         )
     )
-    admin.add_link(
-        MenuLink(name="link2", url="http://www.example.com/", class_name="text-danger")
+
+    fields = (
+        "layout",
+        "theme_primary",
+        "theme_base",
+        "theme_font",
+        "theme_radius",
     )
-    admin.add_link(MenuLink(name="Link3", url="http://www.example.com/"))
+
+    options = {name: t.get_args(TablerUITheme.__annotations__[name]) for name in fields}
+
+    for name, settings in options.items():
+        for value in settings:
+            admin.add_link(
+                MenuLink(
+                    name=str(value).replace("-", " ").title(),
+                    url=f"/admin/set-theme?field={name}&value={value}",
+                    category=name.replace("_", " ").title(),
+                    icon_type="ti",
+                    # have a different icon for layout and palette settings
+                    icon_value="layout" if name == "layout" else "palette",
+                    # CSS class for custom JS highlighting
+                    class_name=f"user-{name}-options",
+                ),
+            )
 
     app_dir = op.realpath(op.dirname(__file__))
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])
     if not op.exists(database_path):
         with app.app_context():
             build_sample_db(db, User, Page)
-
     app.run(debug=True)

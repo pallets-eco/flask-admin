@@ -45,11 +45,18 @@ class TablerUITheme(Theme):
     Tabler 1.4.0 theme for Flask-Admin.
 
     Usage::
-        admin = Admin(app, name="my app", theme=TablerTheme(
-                                                    layout="vertical",
-                                                    theme="light",
-                                                    ),
-        )
+        admin = Admin(app,
+                      name="my app",
+                      theme=TablerTheme(
+                                        layout="vertical",
+                                        theme="light",
+                                        theme_primary="blue",
+                                        theme_base="gray",
+                                        theme_font="sans-serif",
+                                        theme_radius="1",
+                                        theme_use_cdn=True
+                                        )
+                      )
     """
 
     VALID_LAYOUTS = t.get_args(TablerLayout)
