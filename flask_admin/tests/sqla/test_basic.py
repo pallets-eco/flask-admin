@@ -937,6 +937,7 @@ def test_editable_list_field_types(
         data = rv.data.decode("utf-8")
         assert rv.status_code == 200
         assert 'class="editable-cell"' in data
+        assert "3.14" in data
 
         # -- FloatField: edit form renders input --
         rv = client.get("/admin/model2/ajax/edit/?pk=1&field=float_field")
