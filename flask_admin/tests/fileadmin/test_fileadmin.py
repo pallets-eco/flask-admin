@@ -11,9 +11,6 @@ from flask_admin.contrib import fileadmin
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.fileadmin.azure import AzureFileAdmin
 from flask_admin.contrib.fileadmin.s3 import S3FileAdmin
-
-from flask_admin import Admin
-from flask_admin.contrib import fileadmin
 from flask_admin.form import SecureForm
 from flask_admin.theme import Bootstrap4Theme
 
@@ -242,7 +239,7 @@ class Base:
             data = rv.data.decode("utf-8")
             assert "fa_modal_window" not in data
 
-        def get_csrf_token(self, data):
+        def get_csrf_token(self, data: str) -> str:
             data = data.split('name="csrf_token" type="hidden" value="')[1]
             token = data.split('"')[0]
             return token
@@ -257,7 +254,7 @@ class Base:
                 "/admin/fileadmin/mkdir",
             ],
         )
-        def test_csrf_token(self, app, admin, page):
+        def test_csrf_token(self, app: Flask, admin: Admin, page: str) -> None:
             # Cross-Site-Request-Forgery (CSRF) Protection
             app.config["WTF_CSRF_ENABLED"] = True
 
@@ -281,11 +278,11 @@ class Base:
             assert 'name="csrf_token"' in data
             assert len(self.get_csrf_token(data)) == 56
 
-        def test_csrf_submit(self, app, admin, request):
+        def test_csrf_submit(self, app: Flask, admin: Admin, request: t.Any) -> None:
             # Cross-Site-Request-Forgery (CSRF) Protection
             app.config["WTF_CSRF_ENABLED"] = True
 
-            def finalizer():
+            def finalizer() -> None:
                 try:
                     os.remove(op.join(self._test_files_root, "d1/dum.txt"))
                     os.remove(op.join(self._test_files_root, "dummy_renamed.txt"))
@@ -301,7 +298,7 @@ class Base:
             class SecureFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
                 form_base_class = SecureForm
 
-                def is_accessible(self):
+                def is_accessible(self) -> bool:
                     return True
 
             fileadmin_kwargs["endpoint"] = "myfileadmin"
