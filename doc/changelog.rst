@@ -3,6 +3,8 @@ Changelog
 
 [unreleased]
 ------------------
+New Features:
+* Added experimental TablerTheme
 
 Bugfixes:
 * Fix encoding for editing file in FileAdmin. Now it uses UTF-8 and accepts non-ASCII characters.
