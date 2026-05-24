@@ -2764,7 +2764,7 @@ class BaseModelView(BaseView, ActionsMixin):
         # field, primary key, and csrf token
         keep = {field_name, "list_form_pk", "csrf_token"}
         for field in list(form):
-            if field.name not in keep and field.name not in request.form:
+            if field.name not in keep:
                 form.__delitem__(field.name)
 
         pk = form.list_form_pk.data  # type: ignore[attr-defined]
