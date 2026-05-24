@@ -100,7 +100,7 @@ class CuisineView(ModelView):
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "dev-secret-key"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 
 db.init_app(app)
 
