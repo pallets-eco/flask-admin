@@ -1,3 +1,5 @@
+import typing as t
+
 import pytest
 from flask import Flask
 from wtforms import fields
@@ -86,7 +88,7 @@ def test_model(app: Flask, db: T_PYMONGO_DB, admin: Admin) -> None:
     assert db.test.estimated_document_count() == 0
 
 
-def create_filter_params():
+def create_filter_params() -> list[tuple[t.Any, ...]]:
     params = [
         (filters.FilterEqual, "test1", "x", "flt0_0", "flt0_test1_equals", "x"),
         (filters.FilterNotEqual, "test1", "x", "flt0_0", "flt0_test1_not_equal", "x"),
@@ -133,17 +135,16 @@ def create_filter_params():
     create_filter_params(),
 )
 def test_url_for(
-    app,
-    app_context,
-    db,
-    admin,
-    FilterClass,
-    col,
-    filter_value,
-    arg_key,
-    arg_named_key,
-    expected_value,
-):
+    app: Flask,
+    admin: Admin,
+    db: T_PYMONGO_DB,
+    FilterClass: type[filters.BasePyMongoFilter],
+    col: str,
+    filter_value: t.Any,
+    arg_key: str,
+    arg_named_key: str,
+    expected_value: t.Any,
+) -> None:
     class MyView(ModelView):
         __test__ = False
 
@@ -154,8 +155,9 @@ def test_url_for(
         ]
         form = TestForm
 
-    view = MyView(db.test, endpoint="user")
-    admin.add_view(view)
+    with app.app_context():
+        view = MyView(db.test, endpoint="user")
+        admin.add_view(view)
 
     # print(view.column_filters)
 

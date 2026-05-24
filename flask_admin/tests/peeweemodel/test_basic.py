@@ -1189,7 +1189,7 @@ def test_export_csv(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None
     assert len(data.splitlines()) > 21
 
 
-def create_filter_params():
+def create_filter_params() -> list[tuple[t.Any, ...]]:
     params = [
         (filters.FilterLike, "test1", "x", "flt0_0", "flt0_test1_contains", "x"),
         (filters.FilterNotLike, "test1", "x", "flt0_1", "flt0_test1_not_contains", "x"),
@@ -1510,17 +1510,16 @@ def create_filter_params():
     create_filter_params(),
 )
 def test_url_for(
-    app,
-    app_context,
-    db,
-    admin,
-    FilterClass,
-    col,
-    filter_value,
-    arg_key,
-    arg_named_key,
-    expected_value,
-):
+    app: Flask,
+    db: peewee.SqliteDatabase,
+    admin: Admin,
+    FilterClass: type[filters.BasePeeweeFilter],
+    col: str,
+    filter_value: t.Any,
+    arg_key: str,
+    arg_named_key: str,
+    expected_value: str,
+) -> None:
     Model1, Model2 = create_models(db)
 
     class MyView(ModelView):
@@ -1529,8 +1528,9 @@ def test_url_for(
         # FilterClass(col, col),
         column_filters = [col]
 
-    view = MyView(Model1, endpoint="user")
-    admin.add_view(view)
+    with app.app_context():
+        view = MyView(Model1, endpoint="user")
+        admin.add_view(view)
 
     with app.test_request_context("http://localhost/admin/user/"):
         d1 = filter_value

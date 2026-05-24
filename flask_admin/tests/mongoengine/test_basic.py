@@ -13,6 +13,7 @@ from flask_admin import Admin
 from flask_admin.contrib.mongoengine import filters
 from flask_admin.contrib.mongoengine import ModelView
 from flask_admin.contrib.mongoengine.ajax import QueryAjaxModelLoader
+from flask_admin.contrib.pymongo._types import T_PYMONGO_DB
 
 
 class Test(Document):  # type: ignore[misc]
@@ -153,7 +154,7 @@ def test_model(app: Flask, db: t.Any, admin: Admin) -> None:
     assert "test2" in data
 
 
-def create_filter_params():
+def create_filter_params() -> list[tuple[t.Any, ...]]:
     params = [
         (filters.FilterEqual, "test1", "x", "flt0_0", "flt0_test1_equals", "x"),
         (filters.FilterNotEqual, "test1", "x", "flt0_0", "flt0_test1_not_equal", "x"),
@@ -347,17 +348,16 @@ def create_filter_params():
     create_filter_params(),
 )
 def test_url_for(
-    app,
-    app_context,
-    db,
-    admin,
-    FilterClass,
-    col,
-    filter_value,
-    arg_key,
-    arg_named_key,
-    expected_value,
-):
+    app: Flask,
+    admin: Admin,
+    db: T_PYMONGO_DB,
+    FilterClass: type[filters.BaseMongoEngineFilter],
+    col: str,
+    filter_value: t.Any,
+    arg_key: str,
+    arg_named_key: str,
+    expected_value: str,
+) -> None:
     class MyView(ModelView):
         __test__ = False
 
@@ -368,8 +368,9 @@ def test_url_for(
         ]
         form = TestForm
 
-    view = MyView(Test, "Test", endpoint="user")
-    admin.add_view(view)
+    with app.app_context():
+        view = MyView(Test, "Test", endpoint="user")
+        admin.add_view(view)
 
     with app.test_request_context("http://localhost/admin/user/"):
         # Without named filters

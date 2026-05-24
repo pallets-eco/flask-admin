@@ -7,7 +7,9 @@ from datetime import time
 import pytest
 from bson.errors import InvalidId
 from bson.objectid import ObjectId
+from flask import Flask
 
+from flask_admin.base import Admin
 from flask_admin.contrib.mongoengine import filters as mofilters
 from flask_admin.contrib.peewee import filters as peefilters
 from flask_admin.contrib.pymongo import filters as pymofilters
@@ -20,7 +22,7 @@ class Day(enum.Enum):
     SUNDAY = 7
 
 
-def create_filter_clean_params():
+def create_filter_clean_params() -> list[tuple[t.Any, ...]]:
     params: list[t.Any] = []
     all_filter_classes: list[type[filters.BaseFilter]] = []
     all = (
@@ -152,8 +154,14 @@ def create_filter_clean_params():
 @pytest.mark.parametrize(
     "FilterClass, filter_value, expected_value", create_filter_clean_params()
 )
-def test_filter_clean(app, admin, FilterClass, filter_value, expected_value):
-    flt = FilterClass("f1", "F1_LABEL", options=None)
+def test_filter_clean(
+    app: Flask,
+    admin: Admin,
+    FilterClass: type[filters.BaseFilter],
+    filter_value: t.Any,
+    expected_value: t.Any,
+) -> None:
+    flt = FilterClass(column="f1", name="F1_LABEL", options=None)
     is_execption = isinstance(expected_value, type) and issubclass(
         expected_value, Exception
     )

@@ -1,16 +1,26 @@
+import typing as t
 from datetime import datetime
 from datetime import time
 
 import pytest
+from flask import Flask
 
+from flask_admin.base import Admin
 from flask_admin.contrib.sqla import filters
 from flask_admin.tests.conftest import skip_or_return_session_or_db
+from flask_admin.tests.conftest import T_ANY_SQLA_PROVIDER
+from flask_admin.tests.conftest import T_LITERAL_SESSION_OR_DB
 from flask_admin.tests.sqla.test_basic import create_models
 from flask_admin.tests.sqla.test_basic import CustomModelView
 from flask_admin.tests.sqla.test_basic import fill_db
 
 
-def test_column_filters(app, sqla_db_ext, admin, session_or_db):
+def test_column_filters(
+    app: Flask,
+    admin: Admin,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
@@ -962,7 +972,12 @@ def test_column_filters(app, sqla_db_ext, admin, session_or_db):
         assert "test1_val_2" not in data
 
 
-def test_url_for_simple(app, sqla_db_ext, admin, session_or_db):
+def test_url_for_simple(
+    app: Flask,
+    admin: Admin,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     # with app.app_context():
     Model1, Model2 = create_models(sqla_db_ext)
 
@@ -1020,7 +1035,7 @@ def test_url_for_simple(app, sqla_db_ext, admin, session_or_db):
         )
 
 
-def create_filter_params():
+def create_filter_params() -> list[tuple[t.Any, ...]]:
     uuid1 = "a81bc81b-dead-4e5d-abff-90865d1e13b1"
     uuid2 = "344a5ad9-6b2a-410c-aa06-401d1ae8ea39"
 
@@ -1362,17 +1377,17 @@ def create_filter_params():
     create_filter_params(),
 )
 def test_url_for(
-    app,
-    sqla_db_ext,
-    admin,
-    session_or_db,
-    FilterClass,
-    col,
-    filter_value,
-    arg_key,
-    arg_named_key,
-    expected_value,
-):
+    app: Flask,
+    admin: Admin,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+    FilterClass: type[filters.BaseSQLAFilter],
+    col: str,
+    filter_value: t.Any,
+    arg_key: str,
+    arg_named_key: str,
+    expected_value: t.Any,
+) -> None:
     # with app.app_context():
     Model1, Model2 = create_models(sqla_db_ext)
 
@@ -1394,7 +1409,7 @@ def test_url_for(
         assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
 
 
-def create_filter_params_enums_and_choices():
+def create_filter_params_enums_and_choices() -> list[tuple[t.Any, ...]]:
     params = [
         (
             filters.EnumEqualFilter,
@@ -1485,17 +1500,17 @@ def create_filter_params_enums_and_choices():
     create_filter_params_enums_and_choices(),
 )
 def test_url_for_enums_and_choices(
-    app,
-    sqla_db_ext,
-    admin,
-    session_or_db,
-    FilterClass,
-    col,
-    filter_value,
-    arg_key,
-    arg_named_key,
-    expected_value,
-):
+    app: Flask,
+    admin: Admin,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+    FilterClass: type[filters.BaseSQLAFilter],
+    col: str,
+    filter_value: t.Any,
+    arg_key: str,
+    arg_named_key: str,
+    expected_value: t.Any,
+) -> None:
     Model1, Model2 = create_models(sqla_db_ext)
 
     col = getattr(Model1, col)
@@ -1515,12 +1530,17 @@ def test_url_for_enums_and_choices(
         assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
 
 
-def test_column_filters_sqla_obj(app, sqla_db_ext, admin, session_or_db):
+def test_column_filters_sqla_obj(
+    app: Flask,
+    admin: Admin,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
 
-        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
-        view = CustomModelView(Model1, param, column_filters=[Model1.test1])
+        session = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = CustomModelView(Model1, session, column_filters=[Model1.test1])
         admin.add_view(view)
         assert view._filters
         assert len(view._filters) == 7

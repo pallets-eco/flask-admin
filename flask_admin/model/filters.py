@@ -244,9 +244,13 @@ class BaseDateFilter(BaseFilter):
     """
 
     def __init__(
-        self, name: str, options: T_OPTIONS = None, data_type: T_WIDGET_TYPE = None
+        self,
+        name: str,
+        options: T_OPTIONS = None,
+        data_type: T_WIDGET_TYPE = None,
+        column: t.Any | None = None,
     ) -> None:
-        super().__init__(name, options, data_type="datepicker")
+        super().__init__(name, options, data_type="datepicker", column=column)
 
     def clean(self, value: str) -> datetime.date:
         return datetime.datetime.strptime(value, "%Y-%m-%d").date()
