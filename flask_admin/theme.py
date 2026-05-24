@@ -40,7 +40,7 @@ def _validate_choice(value: str, choices: tuple[str, ...]) -> None:
 
 
 @dataclass
-class TablerUITheme(Theme):
+class TablerTheme(Theme):
     """
     Tabler 1.4.0 theme for Flask-Admin.
 
@@ -112,4 +112,3 @@ class TablerUITheme(Theme):
 
 
 Bootstrap4Theme = partial(BootstrapTheme, folder="bootstrap4")
-TablerTheme = partial(TablerUITheme, folder="tabler")

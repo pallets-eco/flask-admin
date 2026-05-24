@@ -15,7 +15,6 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuDivider
 from flask_admin.menu import MenuLink
 from flask_admin.theme import TablerTheme
-from flask_admin.theme import TablerUITheme
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime
@@ -208,7 +207,7 @@ if __name__ == "__main__":
         "theme_radius",
     )
 
-    options = {name: t.get_args(TablerUITheme.__annotations__[name]) for name in fields}
+    options = {name: t.get_args(TablerTheme.__annotations__[name]) for name in fields}
 
     for name, settings in options.items():
         for value in settings:
