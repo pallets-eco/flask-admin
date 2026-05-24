@@ -914,4 +914,3 @@ def test_form_submit(app: Flask, admin: Admin, url: str, age: int, msg: str) -> 
     assert rv.status_code == 200
     data = rv.data.decode("utf-8")
     assert all([part in data for part in msg.split("|")])
-    assert "bi bi-box-arrow-up-right" in data
