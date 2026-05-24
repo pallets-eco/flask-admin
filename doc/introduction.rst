@@ -283,10 +283,28 @@ will be also presented in create/edit form field::
         'country': 'The country where the user lives'
     }
 
-To **make columns searchable**, or to use them for filtering, specify a list of column names::
+To **make columns searchable**, specify a list of column names::
 
     column_searchable_list = ['name', 'email']
+
+To **use columns for filtering**, specify a list of filterable objects, where it could
+be a string column's name, column, or :meth:`~flask_admin.model.filters.BaseFilter`::
+
     column_filters = ['country']
+    column_filters = [User.country]
+    column_filters = [FilterLike("email", "Email")]
+
+However, executing filters can be done on the server side, where it reads the filter values
+from the URL-request arguments. To make it work, you can specify a list of filterable objects
+with their corresponding filter values::
+
+    url = view.get_url(
+    search="foo",
+    filters=[
+        (FilterEqual(Account.email, "Email"), "jane@doe.com"),
+        (FilterGreaterThan(Account.age, "Age"), 30),
+      ]
+    )
 
 
 To make **columns sortable**, specify a list of column names like the example below. The

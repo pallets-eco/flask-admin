@@ -10,6 +10,7 @@ repos:
     rev: v5.0.0
     hooks:
       - id: check-merge-conflict
+        exclude: ^NOTICE$
       - id: debug-statements
       - id: fix-byte-order-marker
       - id: trailing-whitespace
