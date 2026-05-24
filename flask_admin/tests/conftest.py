@@ -4,7 +4,6 @@ import typing as t
 import flask_sqlalchemy
 import pytest
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from jinja2 import StrictUndefined
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
@@ -14,6 +13,7 @@ from sqlalchemy.orm import Session
 from flask_admin import Admin
 from flask_admin.contrib.sqla._types import T_SCOPED_SESSION
 from flask_admin.contrib.sqla._types import T_SESSION_OR_DB
+from flask_admin.contrib.sqla._types import T_SQLALCHEMY
 from flask_admin.contrib.sqla._types import T_SQLALCHEMY_LITE
 
 # flask-sqlalchemy-lite is compatible only with SQLAlchemy 2.x
@@ -172,7 +172,7 @@ def skip_or_return_session_or_db(
 def skip_or_return_session_or_db(
     extension: "SQLAProvider",
     string: t.Literal["db"],
-) -> SQLAlchemy: ...
+) -> T_SQLALCHEMY: ...
 
 
 @t.overload
@@ -194,7 +194,7 @@ def skip_or_return_session_or_db(
 ) -> (
     T_SCOPED_SESSION
     | Session
-    | SQLAlchemy
+    | T_SQLALCHEMY
     | T_SQLALCHEMY_LITE
     | T_SCOPED_SESSION_FLASK_SQLA
 ):
