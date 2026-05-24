@@ -3812,22 +3812,6 @@ def test_page_title(
         )
 
 
-@pytest.mark.xfail(
-    reason="SQLALiteProvider does not support passing db.session directly",
-    raises=TypeError,
-    strict=True,
-)
-def test_sqlalite_session_raises(app: Flask, sqla_db_ext: T_ANY_SQLA_PROVIDER) -> None:
-    if sqla_db_ext.__class__.__name__ != "SQLALiteProvider":
-        pytest.skip("Only relevant for SQLALiteProvider")
-
-    Model, _ = create_models(sqla_db_ext)
-    with app.app_context():
-        sqla_db_ext.create_all()
-
-    ModelView(Model, sqla_db_ext.db.session)  # type: ignore[arg-type]
-
-
 @pytest.mark.parametrize(
     "with_delete, modal", [(True, True), (True, False), (False, True), (False, False)]
 )
@@ -3839,8 +3823,6 @@ def test_del_btn_in_edit_and_details(
     with_delete: bool,
     modal: bool,
 ) -> None:
-    
-
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
@@ -3890,12 +3872,12 @@ def test_del_btn_in_edit_and_details(
     raises=TypeError,
     strict=True,
 )
-def test_sqlalite_session_raises(app, sqla_db_ext):
+def test_sqlalite_session_raises(app: Flask, sqla_db_ext: T_ANY_SQLA_PROVIDER) -> None:
     if sqla_db_ext.__class__.__name__ != "SQLALiteProvider":
         pytest.skip("Only relevant for SQLALiteProvider")
 
-    Model = create_models(sqla_db_ext)
+    Model, _ = create_models(sqla_db_ext)
     with app.app_context():
         sqla_db_ext.create_all()
 
-    ModelView(Model, sqla_db_ext.db.session)
+    ModelView(Model, sqla_db_ext.db.session)  # type: ignore[arg-type]
