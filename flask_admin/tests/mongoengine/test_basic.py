@@ -192,7 +192,7 @@ def test_column_editable_list(app: Flask, db: t.Any, admin: Admin) -> None:
     # Seed data
     obj1 = EditableModel(test1="val1", test2="val2").save()
     obj2 = EditableModel(test1="val2", test2="val3").save()
-    RelatedModel(name="related1", ref=obj1).save()
+    related_obj = RelatedModel(name="related1", ref=obj1).save()
 
     client = app.test_client()
 
@@ -244,9 +244,15 @@ def test_column_editable_list(app: Flask, db: t.Any, admin: Admin) -> None:
     rv = client.post(
         "/admin/editable_related/ajax/update/",
         data={
-            "list_form_pk": str(RelatedModel.objects.first().pk),
+            "list_form_pk": str(related_obj.pk),
             "ref": str(obj2.pk),
         },
     )
     data = rv.data.decode("utf-8")
     assert 'class="editable-cell"' in data
+
+    # Verify the relation actually changed in the database
+    related_obj.reload()
+    assert related_obj.ref.pk == obj2.pk
+    # Also verify the related object's name appears in the response
+    assert str(obj2) in data
