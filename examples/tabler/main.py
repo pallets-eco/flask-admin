@@ -90,8 +90,8 @@ def index():
 
 class User(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String(64))
-    email: Mapped[str] = mapped_column(String(64))
+    name: Mapped[str] = mapped_column(String(64), unique=True)
+    email: Mapped[str] = mapped_column(String(64), unique=True)
     active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[DateTime] = mapped_column(
         DateTime, default=datetime.datetime.now
