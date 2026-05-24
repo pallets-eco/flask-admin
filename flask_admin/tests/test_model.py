@@ -873,7 +873,7 @@ def test_list_row_actions(app: Flask, admin: Admin) -> None:
 
     assert "bi bi-rocket-takeoff" in data
     assert "http://localhost/?id=" in data
-    assert "glyphicon-test" in data
+    assert "bi bi-box-arrow-up-right" in data
 
 
 @pytest.mark.parametrize(
