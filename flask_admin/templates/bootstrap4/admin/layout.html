@@ -13,7 +13,7 @@
       {% elif icon_type == 'image-url' %}
         <img src="{{ icon_value }}" alt="menu image">
       {% elif icon_type == 'bi' %}
-        <i class="bi {{ icon_value }}"></i> 
+        <i class="bi {{ icon_value }}"></i>
       {% endif %}
     {% endif %}
   {% endif %}
@@ -35,9 +35,9 @@
           <a class="dropdown-toggle {% if is_main_nav %}nav-link{% else %}dropdown-item{% endif %}" data-toggle="dropdown" href="javascript:void(0)">
             <!-- show icon -->
             {% if item.class_name %}<span class="{{ item.class_name }}"></span> {% endif %}
-            {{ menu_icon(item) }}{{ item.name }} 
+            {{ menu_icon(item) }}{{ item.name }}
 
-            {# 
+            {#
             <!-- no longer needed as bootstrap 4 handles this with CSS -->
             {%- if 'dropdown-submenu' in class_name -%}
               <i class="bi bi-chevron-right small"></i>

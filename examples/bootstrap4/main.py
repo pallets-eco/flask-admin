@@ -108,6 +108,7 @@ class UserAdmin(ModelView):
         EndpointLinkRowAction("bi bi-cake-fill", ".index_view"),
     ]
 
+
 class SimplePageView(ModelView):
     can_view_details = True
 
@@ -270,7 +271,6 @@ if __name__ == "__main__":
             icon_value="https://placehold.co/32?text=S",
         )
     )
-
 
     app_dir = op.realpath(op.dirname(__file__))
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])
