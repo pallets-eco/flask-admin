@@ -40,8 +40,11 @@ db = SQLAlchemy(app)
 
 class MyAdminIndexView(AdminIndexView):
     """
-    Let user dynamically change GLOBAL theme settings.
-    Demo only.
+    Custom index view that allows dynamic theme switching via URL parameters.
+
+    WARNING: Demo purposes only. Theme changes are stored in the shared Admin
+    instance and will affect all users. Do not use in production without
+    implementing per-user session storage.
     """
 
     extra_js = ["/static/js/active-layout.js"]
@@ -51,9 +54,10 @@ class MyAdminIndexView(AdminIndexView):
 
     def _allowed_values(self, theme, field_name):
         ann = type(theme).__annotations__.get(field_name)
-        if not ann or t.get_origin(ann) is not t.Literal:
-            return None
-        return t.get_args(ann)
+        if not ann:
+            return ()
+
+        return t.get_args(ann) or ()
 
     @expose("/set-theme")
     def set_theme_view(self):
@@ -65,7 +69,7 @@ class MyAdminIndexView(AdminIndexView):
         if theme and field and value:
             allowed = self._allowed_values(theme, field)
 
-            if allowed and value in allowed:
+            if value in allowed:
                 setattr(theme, field, value)
 
         next_url = request.args.get("next") or request.referrer
