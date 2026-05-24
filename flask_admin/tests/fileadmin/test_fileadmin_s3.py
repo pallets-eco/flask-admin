@@ -210,7 +210,7 @@ class TestS3FileAdmin(Base.FileAdminTests):
         rv = client.get("/admin/myfileadmin/b/xx/yy/zz")
         assert rv.status_code == 200
 
-    def test_prefix(self, app, admin, mock_s3_client):
+    def test_prefix(self, app: Flask, admin: Admin, mock_s3_client: t.Any) -> None:
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
@@ -284,7 +284,14 @@ class TestS3FileAdmin(Base.FileAdminTests):
             ("xx/../xx//yy", 200),
         ],
     )
-    def test_base_path(self, app, admin, mock_s3_client, prefix, res_code):
+    def test_base_path(
+        self,
+        app: Flask,
+        admin: Admin,
+        mock_s3_client: t.Any,
+        prefix: str,
+        res_code: int,
+    ) -> None:
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
@@ -321,7 +328,9 @@ class TestS3FileAdmin(Base.FileAdminTests):
         "prefix",
         ["", ".", "/", "./"],
     )
-    def test_base_path_root(self, app, admin, mock_s3_client, prefix):
+    def test_base_path_root(
+        self, app: Flask, admin: Admin, mock_s3_client: t.Any, prefix: str
+    ) -> None:
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
