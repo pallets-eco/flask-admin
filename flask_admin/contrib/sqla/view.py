@@ -211,16 +211,23 @@ class ModelView(BaseModelView):
         form.InlineModelConverter
     )
     """
-        Inline model conversion class. If you need some kind of post-processing for
-        inline forms, you can customize behavior by doing something like this::
+        Inline model conversion class. Override this if you need custom
+        scaffolding logic for inline forms; for simple per-field tweaks, prefer
+        overriding ``postprocess_form`` on an ``InlineFormAdmin`` subclass and
+        passing it to ``inline_models`` (this is the hook actually invoked by
+        the converter)::
 
-            class MyInlineModelConverter(InlineModelConverter):
-                def post_process(self, form_class, info):
+            from flask_admin.contrib.sqla import ModelView
+            from flask_admin.model.form import InlineFormAdmin
+            import wtforms as wtf
+
+            class MyInlineForm(InlineFormAdmin):
+                def postprocess_form(self, form_class):
                     form_class.value = wtf.StringField('value')
                     return form_class
 
             class MyAdminView(ModelView):
-                inline_model_form_converter = MyInlineModelConverter
+                inline_models = (MyInlineForm(MyInlineModel),)
     """
 
     filter_converter: sqla_filters.FilterConverter = sqla_filters.FilterConverter()
@@ -1110,13 +1117,13 @@ class ModelView(BaseModelView):
     def _apply_search(
         self,
         query: T_SQLALCHEMY_QUERY,
-        count_query: t.Optional[T_SQLALCHEMY_QUERY],
+        count_query: T_SQLALCHEMY_QUERY | None,
         joins: dict[tuple[bool, t.Any], t.Any],
         count_joins: dict[tuple[bool, t.Any], t.Any],
         search: str,
     ) -> tuple[
         T_SQLALCHEMY_QUERY,
-        t.Optional[T_SQLALCHEMY_QUERY],
+        T_SQLALCHEMY_QUERY | None,
         dict[tuple[bool, t.Any], t.Any],
         dict[tuple[bool, t.Any], t.Any],
     ]:
@@ -1167,13 +1174,13 @@ class ModelView(BaseModelView):
     def _apply_filters(
         self,
         query: T_SQLALCHEMY_QUERY,
-        count_query: t.Optional[T_SQLALCHEMY_QUERY],
+        count_query: T_SQLALCHEMY_QUERY | None,
         joins: dict[tuple[bool, t.Any], t.Any],
         count_joins: dict[tuple[bool, t.Any], t.Any],
         filters: t.Sequence[T_FILTER],
     ) -> tuple[
         T_SQLALCHEMY_QUERY,
-        t.Optional[T_SQLALCHEMY_QUERY],
+        T_SQLALCHEMY_QUERY | None,
         dict[tuple[bool, t.Any], t.Any],
         dict[tuple[bool, t.Any], t.Any],
     ]:

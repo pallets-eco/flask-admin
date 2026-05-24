@@ -6,6 +6,10 @@ Changelog
 
 Bugfixes:
 * Fix encoding for editing file in FileAdmin. Now it uses UTF-8 and accepts non-ASCII characters.
+* Peewee backend: invoke ``InlineFormAdmin.postprocess_form`` matching SQLAlchemy behavior (#1738).
+
+Documentation:
+* Fix the ``inline_model_form_converter`` docstrings in the SQLAlchemy and Peewee model views. They previously showed a ``post_process`` method on a converter subclass, which is never invoked anywhere in the codebase. The hook actually called by the converter is ``InlineFormAdmin.postprocess_form``; the examples now reflect that (closes #1738).
 
 Type hints:
 * Type hints added to all functions and methods (some using `typing.Any` where full typing not yet available)

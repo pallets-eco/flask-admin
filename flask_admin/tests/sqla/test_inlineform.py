@@ -1,5 +1,4 @@
 import typing as t
-from typing import Optional
 
 from flask import Flask
 from sqlalchemy import Column
@@ -11,6 +10,7 @@ from sqlalchemy import String
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from wtforms import fields
+from wtforms import StringField
 from wtforms.form import Form
 
 from flask_admin import Admin
@@ -18,6 +18,7 @@ from flask_admin import form
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.fields import InlineModelFormList
 from flask_admin.contrib.sqla.validators import ItemsRequired
+from flask_admin.model.form import InlineFormAdmin
 from flask_admin.tests.conftest import skip_or_return_session_or_db
 from flask_admin.tests.conftest import T_ANY_SQLA_PROVIDER
 from flask_admin.tests.conftest import T_LITERAL_SESSION_OR_DB
@@ -38,7 +39,7 @@ def test_inline_form(
             id = Column(Integer, primary_key=True)
             name = Column(String, unique=True)
 
-            def __init__(self, name: Optional[str] = None) -> None:
+            def __init__(self, name: str | None = None) -> None:
                 self.name = name  # type: ignore[assignment]
 
         class UserInfo(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
@@ -57,8 +58,15 @@ def test_inline_form(
         sqla_db_ext.create_all()
 
         # Set up Admin
+
+        class UserInfoInlineForm(InlineFormAdmin):
+            def postprocess_form(self, form_class):
+                # Contribute an extra field that does not exist on the model
+                form_class.extra = fields.StringField("FooBarExtraField")
+                return form_class
+
         class UserModelView(ModelView):
-            inline_models = (UserInfo,)
+            inline_models = (UserInfoInlineForm(UserInfo),)
 
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = UserModelView(User, param)
@@ -137,6 +145,13 @@ def test_inline_form(
         assert sqla_db_ext.db.session.query(func.count(User.id)).scalar() == 0
         assert sqla_db_ext.db.session.query(func.count(UserInfo.id)).scalar() == 0
 
+        form_class = view._create_form_class
+        inline_field = form_class.info  # type: ignore[attr-defined]
+        subform_class = inline_field.args[0]
+        extra = subform_class.extra
+        assert extra.field_class is StringField
+        assert extra.args == ("FooBarExtraField",)
+
 
 def test_inline_form_required(
     app: Flask,
@@ -153,7 +168,7 @@ def test_inline_form_required(
             id = Column(Integer, primary_key=True)
             name: str | None = Column(String, unique=True)  # type: ignore[assignment]
 
-            def __init__(self, name: Optional[str] = None) -> None:
+            def __init__(self, name: str | None = None) -> None:
                 self.name = name
 
         class UserEmail(sqla_db_ext.Base):  # type: ignore[misc,name-defined]
@@ -219,7 +234,7 @@ def test_inline_form_ajax_fk(
             id = Column(Integer, primary_key=True)
             name: str | None = Column(String, unique=True)  # type: ignore[assignment]
 
-            def __init__(self, name: Optional[str] = None) -> None:
+            def __init__(self, name: str | None = None) -> None:
                 self.name = name
 
         class Tag(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
@@ -309,7 +324,7 @@ def test_inline_form_base_class(
             id = Column(Integer, primary_key=True)
             name: str | None = Column(String, unique=True)  # type: ignore[assignment]
 
-            def __init__(self, name: Optional[str] = None) -> None:
+            def __init__(self, name: str | None = None) -> None:
                 self.name = name
 
         class UserEmail(sqla_db_ext.Base):  # type: ignore[misc, name-defined]

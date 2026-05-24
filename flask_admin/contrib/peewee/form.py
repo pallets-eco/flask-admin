@@ -328,6 +328,11 @@ class InlineModelConverter(InlineModelConverterBase):
                 converter=converter,
             )
 
+        # Give InlineFormAdmin subclasses a chance to contribute extra fields
+        # onto the generated inline form, matching the behavior of the
+        # SQLAlchemy backend (see flask_admin/contrib/sqla/form.py).
+        child_form = info.postprocess_form(child_form)  # type: ignore[arg-type,assignment]
+
         try:
             prop_name = reverse_field.related_name  # type: ignore[attr-defined]
         except AttributeError:
