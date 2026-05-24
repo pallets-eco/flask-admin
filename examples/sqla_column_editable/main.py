@@ -104,9 +104,16 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 
 db.init_app(app)
 
-admin = Admin(app, name="Kitchen Sink", theme=Bootstrap4Theme())
+admin = Admin(
+    app, name="Click any editable column value to edit inline", theme=Bootstrap4Theme()
+)
 admin.add_view(DishView(Dish, db.session, name="Dishes"))
 admin.add_view(CuisineView(Cuisine, db.session, name="Cuisines"))
+
+
+@app.route("/")
+def index():
+    return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
 with app.app_context():
@@ -156,6 +163,4 @@ with app.app_context():
 
 
 if __name__ == "__main__":
-    print("Visit http://127.0.0.1:5000/admin/dish/")
-    print("Click any editable column value to edit inline.")
     app.run(debug=True)
