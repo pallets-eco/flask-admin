@@ -1,7 +1,7 @@
 import os
 import os.path as op
-import typing as t
 import shutil
+import typing as t
 from io import BytesIO
 
 import pytest
@@ -249,8 +249,13 @@ class Base:
             ],
         )
         def test_invalid_file_and_dir_names(
-            self, app, admin, request, wrongname, expected
-        ):
+            self,
+            app: Flask,
+            admin: Admin,
+            request: t.Any,
+            wrongname: str,
+            expected: str,
+        ) -> None:
             fileadmin_class = self.fileadmin_class()
             fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
