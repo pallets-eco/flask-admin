@@ -3,6 +3,10 @@ Changelog
 
 [unreleased]
 ------------------
+Breaking changes:
+* XEditableWidget replacement: XEditableWidget has been replaced by HTMXEditableWidget, a custom implementation that removes the dependency on the unmaintained x-editable library.
+The original XEditableWidget is still available as an alias for HTMXEditableWidget to preserve some backward compatibility.
+Some adjustments may be required for custom templates or JavaScript that interacted directly with the previous widget implementation.
 
 Bugfixes:
 * Fix encoding for editing file in FileAdmin. Now it uses UTF-8 and accepts non-ASCII characters.

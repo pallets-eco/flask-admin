@@ -1,4 +1,5 @@
 import typing as t
+import warnings
 
 from flask import json
 from markupsafe import escape
@@ -109,5 +110,12 @@ class HTMXEditableWidget:
         )
 
 
-# Backwards compatibility alias
-XEditableWidget = HTMXEditableWidget
+# Backwards compatibility alias raising DeprecationWarning
+class XEditableWidget(HTMXEditableWidget):
+    def __init__(self, *args, **kwargs):
+        warnings.warn(
+            "XEditableWidget is deprecated; use HTMXEditableWidget instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(*args, **kwargs)
