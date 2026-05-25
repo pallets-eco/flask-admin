@@ -803,6 +803,35 @@ def test_column_editable_list(
         data = rv.data.decode("utf-8")
         assert "test1_val_3" in data
 
+        # Test validation error
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={
+                "list_form_pk": "1",
+                "enum_field": "problematic-input",
+            },
+        )
+        assert rv.status_code == 500
+        data = rv.data.decode("utf-8")
+        assert 'hx-post="./ajax/update/"' in data  # edit form re-rendered with errors
+        assert (
+            "Not a valid choice" in data
+        )  # <-- Verify WTForms validation err msg is displayed
+
+        # Test invalid primary key
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={
+                "list_form_pk": "1000",
+                "test1": "problematic-input",
+            },
+        )
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 500
+        assert (
+            "Record not found." in data
+        )  # <-- Verify the HTMX error template msg is displayed
+
 
 def test_ajax_edit_endpoint(
     app: Flask,

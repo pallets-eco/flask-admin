@@ -581,14 +581,24 @@
     });
 })();
 
-// HTMX: Allow swapping content from error responses (validation errors return 500)
-// Scoped to editable cells to avoid affecting other HTMX interactions.
-document.addEventListener('htmx:beforeSwap', function(event) {
-    if (event.detail.xhr.status >= 400) {
-        var elt = event.detail.elt;
-        if (elt && elt.closest('.editable-form, .editable-cell')) {
-            event.detail.shouldSwap = true;
-            event.detail.isError = false;
+// HTMX: Handle 500 validation errors without wiping cell data and showing err
+document.body.addEventListener('htmx:beforeSwap', function(event) {
+    if (event.detail.xhr.status === 500) {
+        // 1. Tell HTMX to ignore the error but cancel the default full-cell swap
+        event.detail.isError = false;
+        event.detail.shouldSwap = false;
+
+        // 2. Find the existing popover inside the target cell
+        var existingPopover = event.detail.target.querySelector('.editable-popover');
+        if (existingPopover) {
+            // 3. Manually replace ONLY the popover with the 500 response (error HTML)
+            existingPopover.outerHTML = event.detail.xhr.responseText;
+
+            // 4. Re-initialize HTMX on the new popover so buttons keep working
+            var newPopover = event.detail.target.querySelector('.editable-popover');
+            if (window.htmx && newPopover) {
+                htmx.process(newPopover);
+            }
         }
     }
 });
