@@ -109,12 +109,19 @@ class HTMXEditableWidget:
         """)
 
 
-# Backwards compatibility alias raising DeprecationWarning
 class XEditableWidget(HTMXEditableWidget):
+    """
+    Backwards compatibility alias raising DeprecationWarning.
+    """
+
+    warned = False
+
     def __call__(self, field: Field, **kwargs: t.Any) -> str:
-        warnings.warn(
-            "XEditableWidget is deprecated; use HTMXEditableWidget instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
+        if not self.warned:
+            self.warned = True
+            warnings.warn(
+                "XEditableWidget is deprecated; use HTMXEditableWidget instead",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         return super().__call__(field, **kwargs)
