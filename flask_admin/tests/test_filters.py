@@ -148,15 +148,22 @@ def create_filter_clean_params() -> list[tuple[t.Any, ...]]:
         ):
             params.append((FilterClass, "SATURDAY", Day.SATURDAY.name))
 
+    # Clean module path for better readability in test output.
+    for i, p in enumerate(params):
+        Cls = p[0]
+        Cls = Cls.__module__.replace("flask_admin.contrib.", "").replace(".filters", "")
+        params[i] = (Cls,) + params[i]
+
     return params
 
 
 @pytest.mark.parametrize(
-    "FilterClass, filter_value, expected_value", create_filter_clean_params()
+    "module, FilterClass, filter_value, expected_value", create_filter_clean_params()
 )
 def test_filter_clean(
     app: Flask,
     admin: Admin,
+    module: str,
     FilterClass: type[filters.BaseFilter],
     filter_value: t.Any,
     expected_value: t.Any,
