@@ -80,34 +80,33 @@ class AjaxSelect2Widget:
 
 class HTMXEditableWidget:
     """
-    WTForms widget that provides HTMX-powered in-line editing for the list view.
+    WTForms widget providing HTMX-powered inline editing.
 
-    Renders a clickable <span> with hx-get to fetch the edit form on click.
-    The edit form is returned as an HTML fragment by the ajax_edit endpoint.
+    Renders a clickable element that swaps itself with an edit form
+    fetched from the ``ajax_edit`` endpoint.
     """
 
     def __call__(self, field: Field, **kwargs: t.Any) -> str:
-        display_value = kwargs.pop("display_value", "")
+        pk = kwargs.pop("pk", None)
+        if pk is None:
+            raise ValueError("HTMXEditableWidget requires 'pk'")
 
-        if not kwargs.get("pk"):
-            raise Exception("pk required")
-        pk = str(kwargs.pop("pk"))
+        display_value = escape(kwargs.get("display_value", ""))
+        field_name = escape(field.name)
+        pk_esc = escape(pk)
 
-        kwargs.pop("csrf", "")  # not needed in display state
-
-        field_name = field.name
-        target_id = f"editable-{escape(field_name)}-{escape(pk)}"
-
-        url = f"./ajax/edit/?pk={escape(pk)}&amp;field={escape(field_name)}"
-        return Markup(
-            f'<span hx-get="{url}"'
-            f' hx-target="#{target_id}"'
-            f' hx-swap="beforeend"'
-            f' class="editable-cell"'
-            f' title="Click to edit">'
-            f"{escape(display_value)}"
-            f"</span>"
-        )
+        return Markup(f"""
+        <span
+            id="editable-{field_name}-{pk_esc}"
+            hx-get="./ajax/edit/?pk={pk}&field={field_name}"
+            hx-target="#editable-{field_name}-{pk_esc}"
+            hx-swap="beforeend"
+            class="editable-cell"
+            title="Click to edit"
+        >
+          {display_value}
+        </span>
+        """)
 
 
 # Backwards compatibility alias raising DeprecationWarning
