@@ -581,21 +581,26 @@
     });
 })();
 
-// HTMX: Handle 500 validation errors without wiping cell data and showing err
+// HTMX: Handle 500 validation errors without wiping cell data but showing err
 document.body.addEventListener('htmx:beforeSwap', function(event) {
     if (event.detail.xhr.status === 500) {
-        // 1. Tell HTMX to ignore the error but cancel the default full-cell swap
+        // 1. Tell HTMX to ignore the error but cancel the default swap
         event.detail.isError = false;
         event.detail.shouldSwap = false;
 
-        // 2. Find the existing popover inside the target cell
-        var existingPopover = event.detail.target.querySelector('.editable-popover');
-        if (existingPopover) {
-            // 3. Manually replace ONLY the popover with the 500 response (error HTML)
-            existingPopover.outerHTML = event.detail.xhr.responseText;
+        // 2. Find the existing popover
+        const existingPopover = event.detail.target.querySelector('.editable-popover');
 
-            // 4. Re-initialize HTMX on the new popover so buttons keep working
-            var newPopover = event.detail.target.querySelector('.editable-popover');
+        if (existingPopover) {
+            // 3. Parse the 500 error response safely to prevent XSS
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(event.detail.xhr.responseText, 'text/html');
+
+            // 4. Swap the old popover with the new parsed element
+            existingPopover.replaceWith(doc.body.firstChild);
+
+            // 5. Re-initialize HTMX on the newly injected popover
+            const newPopover = event.detail.target.querySelector('.editable-popover');
             if (window.htmx && newPopover) {
                 htmx.process(newPopover);
             }
