@@ -282,3 +282,7 @@ class _T_MONGOENGINE_FIELD_PROTOCOL(t.Protocol):
     id: t.Any
     data: t.Any
     name: str
+
+
+class T_FIELD_ARGS_VALIDATORS_COERCE(T_FIELD_ARGS_VALIDATORS, total=False):
+    coerce: t.Callable[[t.Any], t.Any]
