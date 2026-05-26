@@ -1,3 +1,4 @@
+import re
 import typing as t
 import warnings
 
@@ -94,6 +95,14 @@ class HTMXEditableWidget:
         display_value = escape(kwargs.get("display_value", ""))
         field_name = escape(field.name)
         pk_esc = escape(pk)
+
+        if re.search(r"[^\w-]", pk_esc):
+            warnings.warn(
+                f"Primary key {str(pk)!r} contains characters that are invalid "
+                f"in CSS identifiers. Inline editing will not work for this record.",
+                UserWarning,
+                stacklevel=1,
+            )
 
         return Markup(f"""
         <span
