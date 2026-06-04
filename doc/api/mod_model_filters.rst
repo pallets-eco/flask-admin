@@ -5,4 +5,3 @@
 
     .. autoclass:: BaseFilter
         :members:
-        :exclude-members: get_url_argument

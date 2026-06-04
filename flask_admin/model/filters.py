@@ -127,9 +127,20 @@ class BaseFilter:
         Return URL argument for this filter. e.g. flt0_7=value
 
         :param flt_idx:
-            Filter index
+            Filter index, used to distinguish multiple filters of the same type.
+            For example, if you have two filters, they will have flt_idx 0 and 1,
+            and the URL arguments will be flt0_7 and flt1_7
+            respectively.
         :param flt_key:
-            Filter key
+            Filter key, used to distinguish different filters.
+            For example, if you have two filters of the same type, one for "equals"
+            and one for "not equals", they will have flt_key 7 and 8 respectively,
+            and the URL arguments will be flt0_7 and flt1_8 respectively.
+        :param value:
+            Filter value to be converted to value of the returned URL argument.
+
+        :return:
+            Tuple of URL argument key and value. For example: ("flt0_7", "15")
         """
 
         stringified = self.stringify(value)
