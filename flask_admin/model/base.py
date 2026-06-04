@@ -1408,7 +1408,8 @@ class BaseModelView(BaseView, ActionsMixin):
             c1 = flt.column_name().lower()
             c2 = filter_arg.column_name().lower()
 
-            if c2 == c1 and type(flt) == type(filter_arg):
+            c2_is_a_c1 = issubclass(type(filter_arg), type(flt))
+            if c2 == c1 and c2_is_a_c1:
                 filter_arg_key = k
                 break
 
@@ -1419,6 +1420,28 @@ class BaseModelView(BaseView, ActionsMixin):
         search: str | None = None,
         filters: list[tuple[BaseFilter, t.Any]] | None = None,
     ) -> str:
+        """Return URL for the view with applied filters and search query.
+
+        :param search:
+            Optional search query string.
+        :param filters:
+            List of tuples containing (BaseFilter instance, filter value).
+            If duplicate filters are provided (filter type/same column), they
+            both will be included in the URL with different parameter names.
+            Both filters will be applied with an AND condition. Note that
+            the order of filters in the list does not matter.
+            Example::
+
+                filters = [
+                    (FilterLike(column='first_name'), 'John'),
+                    (FilterLike(column='first_name'), 'Jane')
+                ]
+                myview.url_for(filters=filters)
+                # Output: /admin/myview?flt0_0=John&flt1_0=Jane
+
+        :return:
+            URL string with filter and search parameters applied.
+        """
         url_args = {}
         if search:
             url_args["search"] = search
@@ -1432,7 +1455,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 warnings.warn(
                     f"The filter {flt.__class__.__name__}('{flt.name}') is not found "
                     "in filter arguments, did you forget to add it in column_filters?",
-                    stacklevel=1,
+                    stacklevel=2,
                 )
                 continue
             else:
@@ -2027,7 +2050,6 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return None
 
-    # FIXME: rename to get_view_args()
     def _get_list_extra_args(self) -> ViewArgs:
         """
         Return arguments from query string.
