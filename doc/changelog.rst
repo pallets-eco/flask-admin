@@ -7,7 +7,7 @@ Changelog
 Bugfixes:
 * Fix encoding for editing file in FileAdmin. Now it uses UTF-8 and accepts non-ASCII characters.
 * SQLAlchemy backend: ``conv_ARRAY`` now infers the array element's ``python_type`` and passes it through as the ``Select2TagsField`` ``coerce`` callable. Saving a Postgres ``ARRAY(Integer)`` / ``ARRAY(Float)`` column no longer fails with ``column "x" is of type integer[] but expression is of type text[]`` (closes #1724).
-* MongoEngine backend: ``QueryAjaxModelLoader.format`` now handles unresolved ``DBRef`` values gracefully instead of crashing with ``AttributeError: 'DBRef' object has no attribute 'pk'`` (which surfaced as HTTP 500 from the autocomplete endpoint when a ``ReferenceField`` target was deleted). Broken references are shown as ``(missing: <collection>/<id>)`` so users can clear them (closes #2917). Originally reported and patched by `@bekab95 <https://github.com/bekab95>`_ in #2036.
+* MongoEngine backend: ``QueryAjaxModelLoader.format`` now handles unresolved ``DBRef`` values gracefully instead of crashing with ``AttributeError: 'DBRef' object has no attribute 'pk'`` (which surfaced as HTTP 500 from the autocomplete endpoint when a ``ReferenceField`` target was deleted). Broken references are shown as ``(missing: <collection>/<id>)`` so users can clear them (closes #2917).
 
 Type hints:
 * Type hints added to all functions and methods (some using `typing.Any` where full typing not yet available)
