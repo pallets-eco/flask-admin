@@ -4,11 +4,11 @@ services:
       context: ../..
       dockerfile: .devcontainer/tests/Dockerfile
       args:
-        IMAGE: python:3.12
+        IMAGE: python:3.10-slim
 
     volumes:
       - ../..:/workspace
-      - /workspace/.venv
+      - uv-cache:/root/.cache/uv
 
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
@@ -44,3 +44,4 @@ services:
 volumes:
   postgres-data:
   azurite-data:
+  uv-cache:

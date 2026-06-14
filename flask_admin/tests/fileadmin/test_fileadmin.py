@@ -1,9 +1,16 @@
 import os
 import os.path as op
+import typing as t
 from io import BytesIO
+
+import pytest
+from flask import Flask
 
 from flask_admin import Admin
 from flask_admin.contrib import fileadmin
+from flask_admin.contrib.fileadmin import FileAdmin
+from flask_admin.contrib.fileadmin.azure import AzureFileAdmin
+from flask_admin.contrib.fileadmin.s3 import S3FileAdmin
 from flask_admin.theme import Bootstrap4Theme
 
 
@@ -11,17 +18,19 @@ class Base:
     class FileAdminTests:
         _test_files_root = op.join(op.dirname(__file__), "files")
 
-        def fileadmin_class(self):
+        def fileadmin_class(self) -> type[S3FileAdmin | AzureFileAdmin]:
             raise NotImplementedError
 
-        def fileadmin_args(self):
+        def fileadmin_args(self) -> tuple[tuple[t.Any, t.Any], dict[t.Any, t.Any]]:
             raise NotImplementedError
 
-        def test_file_admin(self, app, admin, request):
+        def test_file_admin(
+            self, app: Flask, admin: Admin, request: pytest.FixtureRequest
+        ) -> None:
             fileadmin_class = self.fileadmin_class()
             fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
-            def finalizer():
+            def finalizer() -> None:
                 try:
                     os.remove(op.join(self._test_files_root, "dummy_renamed.txt"))
                     os.remove(op.join(self._test_files_root, "dummy2.txt"))
@@ -151,7 +160,7 @@ class Base:
             assert "path=dummy_renamed_dir" not in rv.data.decode("utf-8")
             assert "path=dummy.txt" in rv.data.decode("utf-8")
 
-        def test_file_admin_edit(self, app, admin):
+        def test_file_admin_edit(self, app: Flask, admin: Admin) -> None:
             fileadmin_class = self.fileadmin_class()
             fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 
@@ -177,12 +186,19 @@ class Base:
             )
             assert rv.status_code == 302
 
+            rv = client.post(
+                "/admin/myfileadmin/edit/?path=dummy.txt",
+                data=dict(content="new_string 😁\n"),
+            )
+            assert rv.status_code == 302
+
             rv = client.get("/admin/myfileadmin/edit/?path=dummy.txt")
             assert rv.status_code == 200
             assert "dummy.txt" in rv.data.decode("utf-8")
             assert "new_string" in rv.data.decode("utf-8")
+            assert "😁" in rv.data.decode("utf-8")
 
-        def test_modal_edit_bs4(self, app, babel):
+        def test_modal_edit_bs4(self, app: Flask, babel: object | None) -> None:
             admin_bs4 = Admin(app, theme=Bootstrap4Theme())
 
             fileadmin_class = self.fileadmin_class()
@@ -224,13 +240,13 @@ class Base:
 
 
 class TestLocalFileAdmin(Base.FileAdminTests):
-    def fileadmin_class(self):
+    def fileadmin_class(self) -> type[FileAdmin]:  # type: ignore[override]
         return fileadmin.FileAdmin
 
-    def fileadmin_args(self):
+    def fileadmin_args(self) -> tuple[tuple[t.Any, t.Any], dict[t.Any, t.Any]]:
         return (self._test_files_root, "/files"), {}
 
-    def test_fileadmin_sort_bogus_url_param(self, app, admin):
+    def test_fileadmin_sort_bogus_url_param(self, app: Flask, admin: Admin) -> None:
         fileadmin_class = self.fileadmin_class()
         fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
 

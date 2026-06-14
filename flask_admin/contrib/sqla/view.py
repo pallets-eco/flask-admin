@@ -38,6 +38,7 @@ from flask_admin.model.form import create_editable_list_form
 
 from ..._types import T_COLUMN
 from ..._types import T_COLUMN_LIST
+from ..._types import T_COLUMN_TYPE_FORMATTERS
 from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
 from ..._types import T_FILTER
 from ..._types import T_INSTRUMENTED_ATTRIBUTE
@@ -303,9 +304,7 @@ class ModelView(BaseModelView):
                 inline_models = (MyInlineModelForm(MyInlineModel),)
     """
 
-    column_type_formatters: dict[type, t.Callable[[BaseModelView, t.Any, str], str]] = (
-        DEFAULT_FORMATTERS
-    )
+    column_type_formatters: T_COLUMN_TYPE_FORMATTERS = DEFAULT_FORMATTERS
 
     form_choices: dict[str, list[tuple[str, str]]] | None = None
     """
@@ -721,7 +720,7 @@ class ModelView(BaseModelView):
         if not self.column_searchable_list:
             return None
 
-        placeholders = []
+        placeholders: list[str] = []
 
         for searchable in self.column_searchable_list:
             if isinstance(searchable, InstrumentedAttribute):
@@ -747,7 +746,7 @@ class ModelView(BaseModelView):
 
         # Figure out filters for related column
         if is_relationship(attr):
-            filters = []
+            filters: list[BaseSQLAFilter] = []
 
             for p in self._get_model_iterator(attr.property.mapper.class_):
                 if hasattr(p, "columns"):
@@ -1132,7 +1131,7 @@ class ModelView(BaseModelView):
 
             stmt = tools.parse_like_term(term)
 
-            filter_stmt = []
+            filter_stmt: list[BinaryExpression[bool]] = []
             count_filter_stmt: list[BinaryExpression[t.Any]] = []
 
             for field, path in self._search_fields:  # type: ignore[union-attr]

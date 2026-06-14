@@ -89,8 +89,8 @@ class ActionsMixin:
         """
         Return a list and a dictionary of allowed actions.
         """
-        actions = []
-        actions_confirmation = {}
+        actions: list[tuple[str, str]] = []
+        actions_confirmation: dict[str, str] = {}
 
         for act in self._actions:
             name, text = act

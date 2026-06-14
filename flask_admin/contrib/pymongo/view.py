@@ -1,11 +1,12 @@
 import logging
 import typing as t
-from typing import TypeGuard  # noqa
+from typing import TypeGuard
 
 import pymongo
 from bson import ObjectId
 from bson.errors import InvalidId
 from flask import flash
+from wtforms.form import Form
 
 from flask_admin._compat import string_types
 from flask_admin.actions import action
@@ -17,6 +18,8 @@ from flask_admin.model import BaseModelView
 
 from ..._types import T_FILTER
 from ...model.filters import BaseFilter
+from ._types import T_PYMONGO_COLLECTION
+from ._types import T_PYMONGO_CURSOR
 from .filters import BasePyMongoFilter
 from .tools import parse_like_term
 
@@ -70,15 +73,15 @@ class ModelView(BaseModelView):
 
     def __init__(
         self,
-        coll,
-        name=None,
-        category=None,
-        endpoint=None,
-        url=None,
-        menu_class_name=None,
-        menu_icon_type=None,
-        menu_icon_value=None,
-    ):
+        coll: T_PYMONGO_COLLECTION,
+        name: str | None = None,
+        category: str | None = None,
+        endpoint: str | None = None,
+        url: str | None = None,
+        menu_class_name: str | None = None,
+        menu_icon_type: str | None = None,
+        menu_icon_value: str | None = None,
+    ) -> None:
         """
         Constructor
 
@@ -105,7 +108,7 @@ class ModelView(BaseModelView):
         :param menu_icon_value:
             Icon glyph name or URL, depending on `menu_icon_type` setting
         """
-        self._search_fields = []
+        self._search_fields: list[str] = []
 
         if name is None:
             name = self._prettify_name(coll.name)
@@ -126,10 +129,10 @@ class ModelView(BaseModelView):
 
         self.coll = coll
 
-    def scaffold_pk(self):
+    def scaffold_pk(self) -> str:
         return "_id"
 
-    def get_pk_value(self, model):
+    def get_pk_value(self, model: t.Any) -> t.Any | tuple[str, ...]:
         """
         Return primary key value from the model instance
 
@@ -138,19 +141,19 @@ class ModelView(BaseModelView):
         """
         return model.get("_id")
 
-    def scaffold_list_columns(self):
+    def scaffold_list_columns(self) -> list[str]:
         """
         Scaffold list columns
         """
         raise NotImplementedError()
 
-    def scaffold_sortable_columns(self):
+    def scaffold_sortable_columns(self) -> t.Any:
         """
         Return sortable columns dictionary (name, field)
         """
         return []
 
-    def init_search(self):
+    def init_search(self) -> bool:
         """
         Init search
         """
@@ -165,7 +168,7 @@ class ModelView(BaseModelView):
 
         return bool(self._search_fields)
 
-    def scaffold_filters(self, attr):
+    def scaffold_filters(self, attr: t.Any) -> t.Any:
         """
         Return filter object(s) for the field
 
@@ -183,10 +186,10 @@ class ModelView(BaseModelView):
         """
         return isinstance(filter, BasePyMongoFilter)
 
-    def scaffold_form(self):
+    def scaffold_form(self) -> t.Any:
         raise NotImplementedError()
 
-    def _get_field_value(self, model, name):
+    def _get_field_value(self, model: t.Any, name: str) -> t.Any:  # type: ignore[override]
         """
         Get unformatted field value from the model
         """
@@ -240,7 +243,7 @@ class ModelView(BaseModelView):
         filters: t.Sequence[T_FILTER] | None,
         execute: bool = True,
         page_size: int | None = None,
-    ) -> tuple[int | None, t.Any]:
+    ) -> tuple[int | None, list[t.Any] | T_PYMONGO_CURSOR]:
         """
         Get list of objects from MongoEngine
 
@@ -312,17 +315,19 @@ class ModelView(BaseModelView):
         results = self.coll.find(query, sort=sort_by, skip=skip, limit=page_size)
 
         if execute:
-            results = list(results)
+            return count, list(results)
 
         return count, results
 
-    def _get_valid_id(self, id):
+    def _get_valid_id(
+        self, id: str | ObjectId | bytes | None
+    ) -> ObjectId | str | bytes | None:
         try:
             return ObjectId(id)
         except InvalidId:
             return id
 
-    def get_one(self, id):
+    def get_one(self, id: t.Any) -> t.Any:
         """
         Return single model instance by ID
 
@@ -331,13 +336,13 @@ class ModelView(BaseModelView):
         """
         return self.coll.find_one({"_id": self._get_valid_id(id)})
 
-    def edit_form(self, obj):  # type: ignore[override]
+    def edit_form(self, obj: t.Any) -> Form:  # type: ignore[override]
         """
         Create edit form from the MongoDB document
         """
         return self._edit_form_class(get_form_data(), **obj)
 
-    def create_model(self, form):
+    def create_model(self, form: Form) -> bool | t.Any:
         """
         Create model helper
 
@@ -357,7 +362,7 @@ class ModelView(BaseModelView):
 
         return model
 
-    def update_model(self, form, model):
+    def update_model(self, form: Form, model: t.Any) -> bool:
         """
         Update model helper
 
@@ -381,7 +386,7 @@ class ModelView(BaseModelView):
 
         return True
 
-    def delete_model(self, model):
+    def delete_model(self, model: t.Any) -> bool:
         """
         Delete model helper
 
@@ -406,7 +411,7 @@ class ModelView(BaseModelView):
         return True
 
     # Default model actions
-    def is_action_allowed(self, name):
+    def is_action_allowed(self, name: str) -> bool:
         # Check delete action permission
         if name == "delete" and not self.can_delete:
             return False
@@ -418,7 +423,7 @@ class ModelView(BaseModelView):
         lazy_gettext("Delete"),
         lazy_gettext("Are you sure you want to delete selected records?"),
     )
-    def action_delete(self, ids):
+    def action_delete(self, ids: t.Iterable[t.Any]) -> None:
         try:
             count = 0
 

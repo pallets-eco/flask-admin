@@ -11,6 +11,7 @@ from peewee import JOIN
 from peewee import ModelBase
 from peewee import ModelSelect
 from peewee import PrimaryKeyField
+from peewee import SqliteDatabase
 from peewee import TextField
 from wtforms import Form
 
@@ -195,7 +196,7 @@ class ModelView(BaseModelView):
     def __init__(
         self,
         model: type[T_PEEWEE_MODEL],
-        name: str | None = None,
+        name: SqliteDatabase | None = None,
         category: str | None = None,
         endpoint: str | None = None,
         url: str | None = None,
@@ -207,7 +208,7 @@ class ModelView(BaseModelView):
         self._search_fields: list[t.Any] = []
         super().__init__(
             model,
-            name,
+            name,  # type: ignore[arg-type]
             category,
             endpoint,
             url,
@@ -230,17 +231,17 @@ class ModelView(BaseModelView):
         return get_primary_key(self.model)
 
     def get_pk_value(self, model: type[T_PEEWEE_MODEL]) -> t.Any:  # type: ignore[override]
-        if self.model._meta.composite_key:  # type: ignore[attr-defined]
+        if self.model._meta.composite_key:
             return tuple(
                 [
                     getattr(model, field_name)
-                    for field_name in self.model._meta.primary_key.field_names  # type: ignore[attr-defined]
+                    for field_name in self.model._meta.primary_key.field_names
                 ]
             )
         return getattr(model, self._primary_key)
 
     def scaffold_list_columns(self) -> list[str]:
-        columns = []
+        columns: list[str] = []
 
         for n, f in self._get_model_fields():
             if isinstance(f, ForeignKeyField):
@@ -399,7 +400,7 @@ class ModelView(BaseModelView):
     def _order_by(
         self, query: ModelSelect, joins: set[str], order: list[tuple[str, bool]]
     ) -> tuple[ModelSelect, set[str]]:
-        clauses = []
+        clauses: list[Expression] = []
         for sort_field, sort_desc in order:
             query, joins, clause = self._sort_clause(
                 query, joins, sort_field, sort_desc
@@ -519,16 +520,16 @@ class ModelView(BaseModelView):
             query = query.offset(page * page_size)
 
         if execute:
-            query = list(query.execute())  # type: ignore[assignment]
+            query = list(query.execute())  # type: ignore[assignment,no-untyped-call]
 
         return count, query
 
     def get_one(self, id: t.Any) -> t.Any:
-        if self.model._meta.composite_key:  # type: ignore[attr-defined]
-            return self.model.get(
-                **dict(zip(self.model._meta.primary_key.field_names, id, strict=False))  # type: ignore[attr-defined]
+        if self.model._meta.composite_key:
+            return self.model.get(  # type: ignore[no-untyped-call]
+                **dict(zip(self.model._meta.primary_key.field_names, id, strict=False))
             )
-        return self.model.get(**{self._primary_key: id})
+        return self.model.get(**{self._primary_key: id})  # type: ignore[no-untyped-call]
 
     def create_model(self, form: Form) -> t.Union[bool, T_PEEWEE_MODEL]:
         try:
@@ -611,11 +612,11 @@ class ModelView(BaseModelView):
             model_pk = getattr(self.model, self._primary_key)
 
             if self.fast_mass_delete:
-                count = self.model.delete().where(model_pk << ids).execute()
+                count = self.model.delete().where(model_pk << ids).execute()  # type: ignore[no-untyped-call]
             else:
                 count = 0
 
-                query = self.model.select().filter(model_pk << ids)
+                query = self.model.select().filter(model_pk << ids)  # type: ignore[no-untyped-call]
 
                 for m in query:
                     self.on_model_delete(m)

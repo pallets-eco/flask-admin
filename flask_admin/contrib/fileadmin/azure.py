@@ -51,7 +51,7 @@ class AzureStorage(BaseFileStorage):
         blob_service_client: BlobServiceClient,
         container_name: str,
         on_windows: bool = False,
-    ):
+    ) -> None:
         """
         Constructor
 
@@ -106,7 +106,7 @@ class AzureStorage(BaseFileStorage):
         num_path_parts = len(path_parts)
 
         folders = set()
-        files = []
+        files: list[tuple[str, str, bool, int, float]] = []
 
         container_client = self._client.get_container_client(self._container_name)
 
@@ -128,7 +128,7 @@ class AzureStorage(BaseFileStorage):
                 folder = self.separator.join(next_level_folder)
                 folders.add(folder)
 
-        folders.discard(directory)  # type: ignore[arg-type]
+        folders.discard(directory)
         for folder in folders:
             name = folder.split(self.separator)[-1]
             rel_path = folder
@@ -168,8 +168,8 @@ class AzureStorage(BaseFileStorage):
     def get_breadcrumbs(self, path: str | None) -> list[tuple[str, str]]:
         path = self._ensure_blob_path(path)
 
-        accumulator = []
-        breadcrumbs = []
+        accumulator: list[str] = []
+        breadcrumbs: list[tuple[str, str]] = []
         if path is not None:
             for folder in path.split(self.separator):
                 accumulator.append(folder)
@@ -181,7 +181,7 @@ class AzureStorage(BaseFileStorage):
         if path is None:
             raise ValueError("No path provided")
         blob = self._container_client.get_blob_client(path).download_blob()
-        if not blob.properties or not blob.properties.has_key("content_settings"):
+        if not blob.properties or not blob.properties.has_key("content_settings"):  # type: ignore[no-untyped-call]
             raise ValueError("Blob has no properties")
         mime_type = blob.properties["content_settings"]["content_type"]
         blob_file = io.BytesIO()

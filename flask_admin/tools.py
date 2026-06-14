@@ -135,7 +135,7 @@ def iterdecode(value: t.Iterable[str]) -> tuple[str, ...]:
     if not value:
         return tuple()
 
-    result = []
+    result: list[str] = []
     accumulator = ""
 
     escaped = False

@@ -58,7 +58,7 @@ class BaseFileStorage:
         """
         self.on_windows = on_windows
 
-    def normpath(self, path):
+    def normpath(self, path: str) -> str:
         """
         returns the correct normalized path based on the platform of the storage.
 
@@ -122,7 +122,7 @@ class LocalFileStorage(BaseFileStorage):
         the relative path, a flag signifying if it is a directory, the file
         size in bytes and the time last modified in seconds since the epoch
         """
-        items = []
+        items: list[tuple[str, str, bool, int, float]] = []
         for f in os.listdir(directory):
             fp = op.join(directory, f)
             rel_path = op.join(path, f)
@@ -179,7 +179,7 @@ class LocalFileStorage(BaseFileStorage):
         """
         Writes `content` to the file located at `file_path`.
         """
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             return f.write(content)
 
     def save_file(self, path: str, file_data: FileStorage) -> None:
@@ -645,7 +645,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         :param directory:
             Directory path to check
         """
-        return self.normpath(directory).startswith(base_path)
+        return self.normpath(directory).startswith(base_path)  # type: ignore[arg-type]
 
     def save_file(self, path: str, file_data: FileStorage) -> None:
         """
@@ -874,7 +874,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             self.save_file(filename, form.upload.data)
             self.on_file_upload(directory, path, filename)
 
-    def normpath(self, path):
+    def normpath(self, path: str) -> str:
         return self.storage.normpath(path)  # type: ignore[union-attr]
 
     @property
@@ -886,8 +886,8 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         Returns a list of tuples with each tuple containing the folder and
         the tree up to that folder when traversing down the `path`
         """
-        accumulator = []
-        breadcrumbs = []
+        accumulator: list[str] = []
+        breadcrumbs: list[tuple[str, str]] = []
 
         for n in path.split(self._separator):
             accumulator.append(n)
@@ -1364,7 +1364,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                 error = True
             else:
                 try:
-                    content = content.decode("utf8")
+                    content = content.decode("utf-8")
                 except UnicodeDecodeError:
                     flash(gettext("Cannot edit %(name)s.", name=path), "error")
                     error = True

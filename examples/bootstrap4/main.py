@@ -106,6 +106,10 @@ class SimplePageView(ModelView):
     can_view_details = True
 
 
+class MyFileAdmin(FileAdmin):
+    editable_extensions = ["txt", "html", "js", "css"]
+
+
 class FileAdminModal(FileAdmin):
     rename_modal = True
     edit_modal = True
@@ -158,7 +162,7 @@ if __name__ == "__main__":
         )
     )
 
-    admin.add_view(FileAdmin("files/", name="Local Files", category="Menu"))
+    admin.add_view(MyFileAdmin("files/", name="Local Files", category="Menu"))
     admin.add_view(
         FileAdminModal("files/", name="Local Files with Modals", category="Menu")
     )

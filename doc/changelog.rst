@@ -1,6 +1,16 @@
 Changelog
 =========
 
+[unreleased]
+------------------
+
+Bugfixes:
+* Fix encoding for editing file in FileAdmin. Now it uses UTF-8 and accepts non-ASCII characters.
+* SQLAlchemy backend: ``conv_ARRAY`` now infers the array element's ``python_type`` and passes it through as the ``Select2TagsField`` ``coerce`` callable. Saving a Postgres ``ARRAY(Integer)`` / ``ARRAY(Float)`` column no longer fails with ``column "x" is of type integer[] but expression is of type text[]`` (closes #1724).
+
+Type hints:
+* Type hints added to all functions and methods (some using `typing.Any` where full typing not yet available)
+
 2.2.0
 ------------------
 

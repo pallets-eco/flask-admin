@@ -1,16 +1,19 @@
 import os
+import typing as t
 from uuid import uuid4
 
 import pytest
+from azure.storage.blob import BlobServiceClient
 
 from flask_admin.contrib.fileadmin import azure
+from flask_admin.contrib.fileadmin.azure import AzureFileAdmin
 
 from .test_fileadmin import Base
 
 
 class TestAzureFileAdmin(Base.FileAdminTests):
     @pytest.fixture(autouse=True)
-    def setup_and_teardown(self):
+    def setup_and_teardown(self) -> t.Generator[None, t.Any, None]:
         azure_connection_string = os.getenv(
             "AZURE_STORAGE_CONNECTION_STRING",
             "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://localhost:10000/devstoreaccount1;",
@@ -34,8 +37,10 @@ class TestAzureFileAdmin(Base.FileAdminTests):
 
         self._client.delete_container(self._container_name)
 
-    def fileadmin_class(self):
+    def fileadmin_class(self) -> type[AzureFileAdmin]:
         return azure.AzureFileAdmin
 
-    def fileadmin_args(self):
+    def fileadmin_args(
+        self,
+    ) -> tuple[tuple[BlobServiceClient, str], dict[t.Any, t.Any]]:
         return (self._client, self._container_name), {}

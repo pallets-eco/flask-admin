@@ -12,7 +12,7 @@ from flask_admin.tests.conftest import SQLAProvider
 
 
 @pytest.fixture(scope="function")
-def app():
+def app() -> t.Generator[Flask, t.Any, None]:
     # Overrides the `app` fixture in `flask_admin/tests/conftest.py` so that the `sqla`
     # directory/import path is configured as the root path for Flask. This will
     # cause the `templates` directory here to be used for template resolution.
@@ -24,7 +24,9 @@ def app():
 
 
 @pytest.fixture(params=sqla_db_exts)
-def sqla_db_ext_with_binds(request, app_with_binds):
+def sqla_db_ext_with_binds(
+    request: pytest.FixtureRequest, app_with_binds: Flask
+) -> t.Generator[Admin, t.Any, None]:
     uri = "sqlite:///file:mem?mode=memory&cache=shared"
     configure_sqla(app_with_binds, uri, request)
 
@@ -37,7 +39,7 @@ def sqla_db_ext_with_binds(request, app_with_binds):
 
 
 @pytest.fixture
-def app_with_binds(app):
+def app_with_binds(app: Flask) -> t.Generator[Flask, t.Any, None]:
     # flask-sqlalchemy
     app.config["SQLALCHEMY_BINDS"] = {"other": "sqlite:///"}
     # flask-sqlalchemy-lite
@@ -49,19 +51,21 @@ def app_with_binds(app):
 
 
 @pytest.fixture
-def admin(app, babel):
+def admin(app: Flask, babel: object | None) -> t.Generator[Admin, t.Any, None]:
     admin = Admin(app)
     yield admin
 
 
 @pytest.fixture
-def postgres_admin(app, babel):
+def postgres_admin(app: Flask, babel: object | None) -> t.Generator[Admin, t.Any, None]:
     admin = Admin(app)
     yield admin
 
 
 @pytest.fixture(params=sqla_db_exts)
-def sqla_postgres_db_ext(app, request):
+def sqla_postgres_db_ext(
+    app: Flask, request: pytest.FixtureRequest
+) -> t.Generator[Admin, t.Any, None]:
     uri = os.getenv(
         "SQLALCHEMY_DATABASE_URI",
         "postgresql://postgres:postgres@localhost/flask_admin_test",

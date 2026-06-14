@@ -1,4 +1,4 @@
-def parse_like_term(term):
+def parse_like_term(term: str) -> tuple[str, str]:
     """
     Parse search term into (operation, term) tuple. Recognizes operators
     in the beginning of the search term. Case insensitive is the default.

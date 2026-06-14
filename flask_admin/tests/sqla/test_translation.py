@@ -1,18 +1,28 @@
+import pytest
+from flask import Flask
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
 
 from flask_admin.babel import gettext
 
+from ... import Admin
 from ...contrib.sqla import ModelView
 from .. import flask_babel_test_decorator
 from ..conftest import skip_or_return_session_or_db
+from ..conftest import T_ANY_SQLA_PROVIDER
+from ..conftest import T_LITERAL_SESSION_OR_DB
 from .test_basic import create_models
 from .test_basic import CustomModelView
 
 
 @flask_babel_test_decorator
-def test_column_label_translation(request, app, session_or_db, sqla_db_ext):
+def test_column_label_translation(
+    request: pytest.FixtureRequest,
+    app: Flask,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+) -> None:
     # We need to configure the default Babel locale _before_ the `babel` fixture is
     # initialised, so we have to use `request.getfixturevalue` to pull the fixture
     # within the test function rather than the test signature. The `admin` fixture
@@ -44,11 +54,14 @@ def test_column_label_translation(request, app, session_or_db, sqla_db_ext):
 
 @flask_babel_test_decorator
 def test_unique_validator_translation_is_dynamic(
-    app, sqla_db_ext, admin, session_or_db
-):
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
-        class UniqueTable(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class UniqueTable(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "uniquetable"
             id = Column(Integer, primary_key=True)
             value = Column(String, unique=True)

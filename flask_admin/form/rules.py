@@ -136,7 +136,7 @@ class NestedRule(BaseRule):
         """
         if field_args is None:
             field_args = {}
-        result = []
+        result: list[str] = []
 
         for r in self.rules:
             result.append(
@@ -560,7 +560,7 @@ class Group(Macro):
         else:
             widget_args = {}
 
-        opts = {}
+        opts: dict[str, Markup] = {}
         prepend = []
         append = []
         for cnf in self._addons:
@@ -624,7 +624,7 @@ class RuleSet:
 
     @property
     def visible_fields(self) -> list[str]:
-        visible_fields = []
+        visible_fields: list[str] = []
         for rule in self.rules:
             for field in rule.visible_fields:
                 visible_fields.append(field)
@@ -652,7 +652,7 @@ class RuleSet:
         :param parent:
             Parent rule (if any)
         """
-        result = []
+        result: list[BaseRule] = []
 
         for r in rules:
             if isinstance(r, string_types):

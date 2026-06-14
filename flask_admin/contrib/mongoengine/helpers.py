@@ -1,3 +1,6 @@
+import typing as t
+
+from mongoengine import FileField
 from mongoengine import ValidationError
 from wtforms.validators import ValidationError as wtfValidationError
 
@@ -5,7 +8,7 @@ from flask_admin._compat import as_unicode
 from flask_admin._compat import itervalues
 
 
-def make_gridfs_args(value):
+def make_gridfs_args(value: FileField) -> dict[str, t.Any]:
     args = {"id": value.grid_id, "coll": value.collection_name}
 
     if value.db_alias != "default":
@@ -14,7 +17,7 @@ def make_gridfs_args(value):
     return args
 
 
-def make_thumb_args(value):
+def make_thumb_args(value: FileField) -> dict[str, t.Any]:
     if getattr(value, "thumbnail", None):
         args = {"id": value.thumbnail._id, "coll": value.collection_name}
 

@@ -13,47 +13,42 @@ from wtforms.utils import UnsetValue
 from wtforms.widgets import Input
 
 if sys.version_info >= (3, 11):
-    from typing import NotRequired  # noqa
+    from typing import NotRequired
 else:
-    from typing_extensions import NotRequired  # noqa
+    from typing_extensions import NotRequired
 
 if t.TYPE_CHECKING:
-    from flask_admin.base import BaseView as T_VIEW  # noqa
+    # optional dependencies
+    from arrow import Arrow as T_ARROW  # noqa
+    from flask_babel import LazyString as T_LAZY_STRING
+    from flask_sqlalchemy import Model as T_SQLALCHEMY_LEGACY_MODEL
+    from sqlalchemy.orm import DeclarativeBase as T_DECLARATIVE_BASE
+
+    from flask_admin.base import BaseView as T_VIEW  # noqa: F401
     from flask_admin.contrib.sqla.validators import InputRequired as T_INPUT_REQUIRED
     from flask_admin.contrib.sqla.validators import (
         TimeZoneValidator as T_TIMEZONE_VALIDATOR,
     )
     from flask_admin.contrib.sqla.validators import Unique as T_UNIQUE
-    from flask_admin.form import FormOpts as T_FORM_OPTS  # noqa
-    from flask_admin.form.rules import (
-        FieldSet as T_FIELD_SET,
-        BaseRule as T_BASE_RULE,
-        Header as T_HEADER,
-        Field as T_FLASK_ADMIN_FIELD,
-        Macro as T_MACRO,
-    )
+    from flask_admin.form import FormOpts as T_FORM_OPTS  # noqa: F401
+    from flask_admin.form.rules import BaseRule as T_BASE_RULE
+    from flask_admin.form.rules import Field as T_FLASK_ADMIN_FIELD
+    from flask_admin.form.rules import FieldSet as T_FIELD_SET
+    from flask_admin.form.rules import Header as T_HEADER
+    from flask_admin.form.rules import Macro as T_MACRO
     from flask_admin.model import BaseModelView as T_MODEL_VIEW
-    from flask_admin.model.ajax import AjaxModelLoader as T_AJAX_MODEL_LOADER  # noqa
-    from flask_admin.model.fields import AjaxSelectField as T_AJAX_SELECT_FIELD  # noqa
-    from flask_admin.model.form import (  # noqa
-        InlineBaseFormAdmin as T_INLINE_BASE_FORM_ADMIN,
-    )
+    from flask_admin.model.ajax import AjaxModelLoader as T_AJAX_MODEL_LOADER  # noqa: F401
+    from flask_admin.model.fields import AjaxSelectField as T_AJAX_SELECT_FIELD  # noqa: F401
+    from flask_admin.model.form import InlineBaseFormAdmin as T_INLINE_BASE_FORM_ADMIN  # noqa: F401
     from flask_admin.model.form import InlineFormAdmin as T_INLINE_FORM_ADMIN
+    from flask_admin.model.widgets import (
+        AjaxSelect2Widget as T_INLINE_AJAX_SELECT2_WIDGET,
+    )
     from flask_admin.model.widgets import (
         InlineFieldListWidget as T_INLINE_FIELD_LIST_WIDGET,
     )
     from flask_admin.model.widgets import InlineFormWidget as T_INLINE_FORM_WIDGET
-    from flask_admin.model.widgets import (
-        AjaxSelect2Widget as T_INLINE_AJAX_SELECT2_WIDGET,
-    )
     from flask_admin.model.widgets import XEditableWidget as T_INLINE_X_EDITABLE_WIDGET
-
-    # optional dependencies
-    from arrow import Arrow as T_ARROW  # noqa
-    from flask_babel import LazyString as T_LAZY_STRING  # noqa
-
-    from flask_sqlalchemy import Model as T_SQLALCHEMY_LEGACY_MODEL
-    from sqlalchemy.orm import DeclarativeBase as T_DECLARATIVE_BASE
 
     T_SQLALCHEMY_MODEL: t.TypeAlias = t.Union[
         T_SQLALCHEMY_LEGACY_MODEL, T_DECLARATIVE_BASE
@@ -82,14 +77,15 @@ if t.TYPE_CHECKING:
         T_SQLALCHEMY_COLUMN = Column  # type: ignore[misc]
 
     T_MONGO_CLIENT = MongoClient[t.Any]
-    from redis import Redis as T_REDIS  # noqa
+    from PIL.Image import Image as T_PIL_IMAGE  # noqa: F401
+    from redis import Redis as T_REDIS  # noqa: F401
+
     from flask_admin.contrib.peewee.ajax import (
         QueryAjaxModelLoader as T_PEEWEE_QUERY_AJAX_MODEL_LOADER,
-    )  # noqa
+    )
     from flask_admin.contrib.sqla.ajax import (
         QueryAjaxModelLoader as T_SQLA_QUERY_AJAX_MODEL_LOADER,
-    )  # noqa
-    from PIL.Image import Image as T_PIL_IMAGE  # noqa
+    )
 
     T_ORM_MODEL: t.TypeAlias = t.Union[
         T_SQLALCHEMY_LEGACY_MODEL,
@@ -278,3 +274,13 @@ class _MultiDictLikeBase(t.Protocol):
 
 class _MultiDictLikeWithGetlist(_MultiDictLikeBase, t.Protocol):
     def getlist(self, key: str, /) -> list[t.Any]: ...
+
+
+class _T_MONGOENGINE_FIELD_PROTOCOL(t.Protocol):
+    id: t.Any
+    data: t.Any
+    name: str
+
+
+class T_FIELD_ARGS_VALIDATORS_COERCE(T_FIELD_ARGS_VALIDATORS, total=False):
+    coerce: t.Callable[[t.Any], t.Any]

@@ -1,4 +1,5 @@
 from unittest import mock
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -16,13 +17,13 @@ from . import flask_babel_test_decorator
 @mock.patch("flask_babel.get_locale", return_value="qux")
 @mock.patch("babel.support.Translations")
 def test_translations_path(
-    _Translations,
-    _get_locale,
-    _get_current_context,
-    _get_translations_cache,
-    _get_current_view,
-    dirname,
-):
+    _Translations: MagicMock,
+    _get_locale: MagicMock,
+    _get_current_context: MagicMock,
+    _get_translations_cache: MagicMock,
+    _get_current_view: MagicMock,
+    dirname: str | None,
+) -> None:
     _get_current_view.return_value.admin.translations_path = dirname
     _get_translations_cache.return_value = {}
     _dirname = dirname or translations.__path__[0]

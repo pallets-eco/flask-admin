@@ -50,10 +50,10 @@ class FormOpts:
         self.form_rules = form_rules
 
 
-F = t.TypeVar("F", bound="Field")
+F = t.TypeVar("F", bound=Field)
 
 
-def recreate_field(unbound: "UnboundField[F] | Field") -> F:
+def recreate_field(unbound: "UnboundField[F]") -> F:
     """
     Create new instance of the unbound field, resetting wtforms creation counter.
 
