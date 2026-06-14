@@ -1061,7 +1061,7 @@ def test_form_choices_persists_and_prepopulates(
     )
     assert rv.status_code == 302
 
-    model = Model.select().get()
+    model = Model.select().get()  # type: ignore[no-untyped-call]
     assert model.status == "published"
 
     rv = client.get(f"/admin/model/edit/?id={model.id}")
