@@ -1,6 +1,7 @@
 import typing as t
 
 import mongoengine
+from bson.dbref import DBRef
 from mongoengine import Document
 from mongoengine import QuerySet
 
@@ -49,9 +50,21 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
-    def format(self, model: Document | None) -> tuple[str, str] | None:
+    def format(
+        self, model: Document | DBRef | None
+    ) -> tuple[str, str] | None:
         if not model:
             return None
+
+        if isinstance(model, DBRef):
+            # MongoEngine returns a raw ``DBRef`` when it cannot dereference
+            # a ``ReferenceField`` (e.g. the target document was deleted, or
+            # points to a different collection). Surface the broken reference
+            # in the widget instead of raising ``AttributeError`` on ``.pk``.
+            return (
+                as_unicode(model.id),
+                f"(missing: {model.collection}/{model.id})",
+            )
 
         return (as_unicode(model.pk), as_unicode(model))
 
