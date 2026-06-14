@@ -9,14 +9,10 @@ from peewee import PrimaryKeyField
 from peewee import TimeField
 from wtforms import Field
 from wtforms import fields
-from wtforms import validators
 from wtforms.form import BaseForm
 from wtforms.form import Form
-from wtfpeewee.orm import FieldInfo
-from wtfpeewee.orm import handle_null_filter
 from wtfpeewee.orm import model_form
 from wtfpeewee.orm import ModelConverter
-from wtfpeewee.orm import ValueRequired
 
 from flask_admin import form
 from flask_admin._compat import iteritems
@@ -147,50 +143,30 @@ class CustomModelConverter(ModelConverter):  # type: ignore[misc]
 
         self.overrides = getattr(self.view, "form_overrides", None) or {}
 
-    def convert(
-        self, model: t.Any, field: t.Any, field_args: t.Any
-    ) -> tuple[str, t.Any]:
-        # form_overrides take priority, matching SQLAlchemy behavior
-        if field.name in self.overrides:
-            return super().convert(model, field, field_args)
+    def convert(self, model: t.Any, field: t.Any, field_args: t.Any) -> t.Any:
+        info = super().convert(model, field, field_args)
 
-        # Check if form_choices are specified for this field
+        # Override field type if necessary - form_overrides take priority
+        if field.name in self.overrides:
+            return info
+
+        # Check if a list of 'form_choices' are specified
         form_choices = getattr(self.view, "form_choices", None)
         if form_choices:
             choices = form_choices.get(field.name)
             if choices:
-                # Build kwargs consistently with parent ModelConverter.convert()
-                kwargs: dict[str, t.Any] = {
-                    "label": field.verbose_name,
-                    "validators": [],
-                    "filters": [],
-                    "default": field.default,
-                    "description": field.help_text,
-                }
-                if field_args:
-                    kwargs.update(field_args)
-
-                if kwargs["validators"]:
-                    kwargs["validators"] = list(kwargs["validators"])
-
-                if field.null:
-                    kwargs["filters"].append(handle_null_filter)
-
-                if field.null or field.default is not None:
-                    kwargs["validators"].append(validators.Optional())
-                else:
-                    kwargs["validators"].append(ValueRequired())
-
-                return FieldInfo(
-                    field.name,
-                    form.Select2Field(
+                kwargs = dict(info.field.kwargs)
+                for k in ("choices", "allow_blank", "coerce"):
+                    kwargs.pop(k, None)
+                return info._replace(
+                    field=form.Select2Field(
                         choices=choices,
                         allow_blank=field.null,
                         **kwargs,
-                    ),
+                    )
                 )
 
-        return super().convert(model, field, field_args)
+        return info
 
     def handle_foreign_key(
         self, model: t.Any, field: t.Any, **kwargs: t.Any

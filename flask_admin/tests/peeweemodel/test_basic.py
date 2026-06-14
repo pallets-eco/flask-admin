@@ -1014,6 +1014,46 @@ def test_form_choices(app, db, admin):
     assert type(form_obj.title).__name__ == "StringField"  # type: ignore[attr-defined]
 
 
+def test_form_choices_persists_and_prepopulates(app, db, admin):
+    class BaseModel(peewee.Model):
+        class Meta:
+            database = db
+
+    class Model(BaseModel):
+        title = peewee.CharField(max_length=200)
+        status = peewee.CharField(max_length=20, default="draft")
+
+    Model.create_table()
+
+    view = CustomModelView(
+        Model,
+        form_choices={
+            "status": [
+                ("draft", "Draft"),
+                ("published", "Published"),
+            ],
+        },
+    )
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.post(
+        "/admin/model/new/",
+        data={"title": "Hello", "status": "published"},
+    )
+    assert rv.status_code == 302
+
+    model = Model.select().get()
+    assert model.status == "published"
+
+    rv = client.get(f"/admin/model/edit/?id={model.id}")
+    assert rv.status_code == 200
+    assert b"published" in rv.data
+    edit_form = view.edit_form(obj=model)
+    assert edit_form.status.data == "published"  # type: ignore[attr-defined]
+
+
 def test_form_choices_with_form_overrides(app, db, admin):
     class BaseModel(peewee.Model):
         class Meta:
