@@ -50,9 +50,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
         return remote_fields
 
-    def format(
-        self, model: Document | DBRef | None
-    ) -> tuple[str, str] | None:
+    def format(self, model: Document | DBRef | None) -> tuple[str, str] | None:
         if not model:
             return None
 
