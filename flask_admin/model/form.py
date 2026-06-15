@@ -109,7 +109,7 @@ class InlineBaseFormAdmin:
         else:
             self._form_rules = None
 
-    def get_form(self) -> t.Union[T_MODEL_VIEW, None]:
+    def get_form(self) -> type | None:
         """
         If you want to use completely custom form for inline field, you can override
         Flask-Admin form generation logic by overriding this method and returning your
