@@ -155,7 +155,7 @@ class TestArrayConverter:
         assert bound.data == ["x", "y"]
 
 
-class EnumChoices(enum.Enum):
+class IntEnumChoices(enum.Enum):
     First = 101
     Second = 150
 
@@ -175,7 +175,7 @@ def create_models(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> t.Any:
         float_field = sa.Column(sa.Float)
         choice_field = sa.Column(sa.String, nullable=True)
         enum_field = sa.Column(sa.Enum("101", "150"), nullable=True)  # type: ignore[var-annotated]
-        enum_type_field = sa.Column(sa.Enum(EnumChoices), nullable=True)  # type: ignore[var-annotated]
+        enum_type_field = sa.Column(sa.Enum(IntEnumChoices), nullable=True)  # type: ignore[var-annotated]
         sau_choicetype = sa.Column(
             sau.ChoiceType(
                 [("101", "First"), ("150", "Second")]
@@ -184,8 +184,8 @@ def create_models(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> t.Any:
         sau_choicetype_impl_int = sa.Column(
             sau.ChoiceType([(101, "First"), (150, "Second")], impl=sa.Integer())
         )
-        sau_choicetype_with_enum = sa.Column(
-            sau.ChoiceType(EnumChoices, impl=sa.Integer())
+        sau_choicetype_with_intenum = sa.Column(
+            sau.ChoiceType(IntEnumChoices, impl=sa.Integer())
         )
         sau_choicetype_with_strenum = sa.Column(
             sau.ChoiceType(StrEnumChoices, impl=sa.String())
@@ -217,7 +217,7 @@ def prepare_kwargs(
         validators = [Length(min=1, max=3)]
         kwargs["form_choices"] = {field_name: f_choices}
 
-    elif expected_coerce in [EnumChoices, StrEnumChoices]:
+    elif expected_coerce in [IntEnumChoices, StrEnumChoices]:
         pass
 
     kwargs["form_columns"] = [field_name]
@@ -234,14 +234,14 @@ def prepare_kwargs(
 @pytest.mark.parametrize(
     "field_name, expected_coerce, coerced_value, model_value",
     [
-        ("int_field", int, None, 101),
-        ("float_field", float, None, 101.0),
-        ("choice_field", str, None, "101"),
-        ("enum_field", str, None, "101"),
-        ("enum_type_field", EnumChoices, "First", EnumChoices.First),
-        ("sau_choicetype", str, None, sau.Choice("101", "First")),
-        ("sau_choicetype_impl_int", int, None, sau.Choice(101, "First")),
-        ("sau_choicetype_with_enum", EnumChoices, "101", EnumChoices.First),
+        ("int_field", int, "101", 101),
+        ("float_field", float, "101.0", 101.0),
+        ("choice_field", str, "101", "101"),
+        ("enum_field", str, "101", "101"),
+        ("enum_type_field", IntEnumChoices, "First", IntEnumChoices.First),
+        ("sau_choicetype", str, "101", sau.Choice("101", "First")),
+        ("sau_choicetype_impl_int", int, "101", sau.Choice(101, "First")),
+        ("sau_choicetype_with_intenum", IntEnumChoices, "101", IntEnumChoices.First),
         ("sau_choicetype_with_strenum", StrEnumChoices, "101", StrEnumChoices.First),
     ],
 )
@@ -273,18 +273,16 @@ def test_coerce(
         view1 = CustomModelView(Model1, param, name="My Model1", **kwargs)
         admin.add_view(view1)
 
-    value = expected_coerce(101) if coerced_value is None else coerced_value
-
     client = app.test_client()
 
     rv = client.get("/admin/model1/new/")
     data = rv.data.decode("utf-8")
-    assert f'value="{value}"' in data
+    assert f'value="{coerced_value}"' in data
     assert ">First</option>" in data
 
     rv = client.post(
         "/admin/model1/new/",
-        data={field_name: f"{value}"},
+        data={field_name: f"{coerced_value}"},
         follow_redirects=True,
     )
     data = rv.data.decode("utf-8")

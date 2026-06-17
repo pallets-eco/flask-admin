@@ -4,7 +4,6 @@ import re
 import time
 import typing as t
 from enum import Enum
-from inspect import isclass
 
 from wtforms import fields
 from wtforms.form import BaseForm
@@ -197,11 +196,7 @@ class Select2Field(fields.SelectField):
                 self.data = None
             else:
                 try:
-                    coerce = self.coerce # do not override self.coerce
-                    if isclass(coerce) and issubclass(coerce, Enum):
-                        coerce = self._enum_coerce_factory(coerce)
-                    
-                    self.data = coerce(valuelist[0])
+                    self.data = self.coerce(valuelist[0])
                 except ValueError as err:
                     raise ValueError(
                         self.gettext("Invalid Choice: could not coerce")
@@ -212,28 +207,6 @@ class Select2Field(fields.SelectField):
             return
 
         super().pre_validate(form)
-
-    def _enum_coerce_factory(self, type_: type[Enum]) -> t.Callable[[t.Any], t.Any]:
-        """
-        Return a function to coerce an Enum column, for use by Select2Field.
-        :param type_: Enum class
-        """
-
-        def enum_coerce(value: t.Any) -> t.Any:
-            if value is None:
-                return None
-
-            if isinstance(value, type_):
-                return value
-
-            ename = getattr(value, "name", value)
-            ename = str(value).replace(type_.__name__ + ".", "")
-            try:
-                return type_[ename]
-            except KeyError:
-                return type_(value)
-
-        return enum_coerce
 
 
 class Select2TagsField(fields.StringField):
