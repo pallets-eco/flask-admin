@@ -197,10 +197,11 @@ class Select2Field(fields.SelectField):
                 self.data = None
             else:
                 try:
-                    if isclass(self.coerce) and issubclass(self.coerce, Enum):
-                        self.coerce = self._enum_coerce_factory(self.coerce)
-
-                    self.data = self.coerce(valuelist[0])
+                    coerce = self.coerce # do not override self.coerce
+                    if isclass(coerce) and issubclass(coerce, Enum):
+                        coerce = self._enum_coerce_factory(coerce)
+                    
+                    self.data = coerce(valuelist[0])
                 except ValueError as err:
                     raise ValueError(
                         self.gettext("Invalid Choice: could not coerce")
