@@ -212,9 +212,7 @@ def prepare_kwargs(
         validators = [NumberRange(min=100, max=199)]
         kwargs["form_choices"] = {field_name: f_choices}
 
-    elif expected_coerce in [
-        str,
-    ]:
+    elif expected_coerce is str:
         f_choices = [(expected_coerce(101), "First"), (expected_coerce(150), "Second")]
         validators = [Length(min=1, max=3)]
         kwargs["form_choices"] = {field_name: f_choices}
