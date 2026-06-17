@@ -683,7 +683,7 @@ def coerce_factory(type_: TypeEngine[t.Any]) -> t.Callable[[t.Any], t.Any]:
     :param type_: Column type
     """
 
-    if isinstance(type_, ChoiceType):
+    if ChoiceType is not None and isinstance(type_, ChoiceType):
         return choice_type_coerce_factory(type_)
     else:
         return type_.python_type
