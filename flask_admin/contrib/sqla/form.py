@@ -10,7 +10,10 @@ from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy.orm import ColumnProperty
 from sqlalchemy.sql.type_api import TypeEngine
-from sqlalchemy_utils import ChoiceType
+try:
+    from sqlalchemy_utils import ChoiceType # optional dependency
+except ImportError:
+    ChoiceType = None  # type: ignore[assignment]
 from wtforms import fields
 from wtforms import Form
 from wtforms import HiddenField
