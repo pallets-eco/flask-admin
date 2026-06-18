@@ -914,3 +914,26 @@ def test_form_submit(app: Flask, admin: Admin, url: str, age: int, msg: str) -> 
     assert rv.status_code == 200
     data = rv.data.decode("utf-8")
     assert all([part in data for part in msg.split("|")])
+
+
+def test_time_between_filter_validate_invalid_input() -> None:
+    """BaseTimeBetweenFilter.validate() must return False for bad input, not raise."""
+    flt = filters.BaseTimeBetweenFilter("time_col")
+
+    # Valid range returns True
+    assert flt.validate("08:00:00 to 17:00:00") is True
+
+    # Start == end is still True (boundary)
+    assert flt.validate("12:00:00 to 12:00:00") is True
+
+    # Start after end returns False
+    assert flt.validate("17:00:00 to 08:00:00") is False
+
+    # Missing " to " separator must return False, not raise ValueError
+    assert flt.validate("notavalidtime") is False
+
+    # Malformed time values must return False, not raise ValueError
+    assert flt.validate("99:99:99 to 99:99:99") is False
+
+    # Empty string must return False, not raise ValueError
+    assert flt.validate("") is False

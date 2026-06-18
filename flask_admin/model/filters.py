@@ -300,7 +300,6 @@ class BaseTimeBetweenFilter(BaseFilter):
             else:
                 return False
         except ValueError:
-            raise
             return False
 
 
