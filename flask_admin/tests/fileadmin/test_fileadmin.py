@@ -138,6 +138,11 @@ class Base:
             assert rv.status_code == 200
             assert "dummy_dir" in rv.data.decode("utf-8")
 
+            # rename - directory (modal)
+            rv = client.get("/admin/myfileadmin/rename/?path=dummy_dir&modal=1")
+            assert rv.status_code == 200
+            assert "dummy_dir" in rv.data.decode("utf-8")
+
             rv = client.post(
                 "/admin/myfileadmin/rename/?path=dummy_dir",
                 data=dict(name="dummy_renamed_dir", path="dummy_dir"),
@@ -159,6 +164,64 @@ class Base:
             assert rv.status_code == 200
             assert "path=dummy_renamed_dir" not in rv.data.decode("utf-8")
             assert "path=dummy.txt" in rv.data.decode("utf-8")
+
+        @pytest.mark.parametrize(
+            "url, expected",
+            [
+                ("/", ['data-toggle="modal"', "fa_modal_window"]),
+                (
+                    "/mkdir/?modal=1",
+                    [
+                        "Create Directory",
+                        "modal-header",
+                        "modal-body",
+                        'action="/admin/mymodalfileadmin/mkdir/"',
+                    ],
+                ),
+                (
+                    "/rename/?path=dummy.txt&modal=1",
+                    [
+                        "Rename dummy.txt",
+                        'action="/admin/mymodalfileadmin/rename/?path="',
+                    ],
+                ),
+                (
+                    "/upload/?modal=1",
+                    [
+                        "Upload File",
+                        "modal-header",
+                        "modal-body",
+                        'action="/admin/mymodalfileadmin/upload/"',
+                    ],
+                ),
+            ],
+        )
+        def test_file_admin_modal(
+            self, app: Flask, admin: Admin, url: str, expected: list[str]
+        ) -> None:
+            fileadmin_class = self.fileadmin_class()
+            fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+
+            class MyModalFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+                editable_extensions = ("txt",)
+                rename_modal = True
+                edit_modal = True
+                mkdir_modal = True
+                upload_modal = True
+
+            view_kwargs = dict(fileadmin_kwargs)
+            view_kwargs.setdefault("name", "Files")
+            view = MyModalFileAdmin(*fileadmin_args, **view_kwargs)
+            admin.add_view(view)
+
+            client = app.test_client()
+
+            rv = client.get(f"/admin/mymodalfileadmin{url}")
+            assert rv.status_code == 200
+            data = rv.data.decode("utf-8")
+
+            for ex in expected:
+                assert ex in data
 
         def test_file_admin_edit(self, app: Flask, admin: Admin) -> None:
             fileadmin_class = self.fileadmin_class()

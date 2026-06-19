@@ -9,11 +9,16 @@
   </div>
   <div class="modal-body">
     {% block fa_form %}
-      {{ lib.render_form(form, dir_url, action=request.url, is_modal=True) }}
+
+      {# to execlude 'modal' arg  #}
+      {% set p = url_for(request.endpoint, path=path)  %}
+      {{ lib.render_form(form, dir_url, action=p ) }}
     {% endblock %}
   </div>
 {% endblock %}
 
 {% block tail %}
   <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
+  <script {{ admin_csp_nonce_attribute }}>window.faForm.applyGlobalStyles(document.getElementsByClassName('modal-content'));</script>
+
 {% endblock %}

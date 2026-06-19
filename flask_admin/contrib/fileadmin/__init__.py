@@ -1060,6 +1060,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         return self.render(
             template,
             form=form,
+            path=path,
             header_text=gettext("Upload File"),
             modal=request.args.get("modal"),
         )
@@ -1146,6 +1147,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         return self.render(
             template,
             form=form,
+            path=path,
             dir_url=dir_url,
             header_text=gettext("Create Directory"),
         )
