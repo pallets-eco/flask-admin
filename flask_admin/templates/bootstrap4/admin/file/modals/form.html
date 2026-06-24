@@ -10,7 +10,7 @@
   <div class="modal-body">
     {% block fa_form %}
 
-      {# to execlude 'modal' arg  #}
+      {# to exclude 'modal' arg  #}
       {% set p = url_for(request.endpoint, path=path)  %}
       {{ lib.render_form(form, dir_url, action=p ) }}
     {% endblock %}
