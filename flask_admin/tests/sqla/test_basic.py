@@ -90,7 +90,7 @@ class CustomModelView(ModelView):
     form_choices = {"choice_field": [("choice-1", "One"), ("choice-2", "Two")]}
 
 
-def create_models(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> tuple[type, type]:
+def create_models(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> tuple[t.Any, t.Any]:
     class Model1(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
         __tablename__ = "model1"
 
@@ -121,6 +121,10 @@ def create_models(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> tuple[type, type]:
         sqla_utils_ip_address = Column(IPAddressType)
         sqla_utils_currency = Column(CurrencyType)
         sqla_utils_color = Column(ColorType)
+        test5 = Column(Float(2))
+
+        def __unicode__(self) -> str:
+            return self.test1  # type: ignore[return-value]
 
         def __str__(self) -> str:
             return self.test1  # type: ignore[return-value]
@@ -432,7 +436,7 @@ def test_list_columns(
             Model1,
             param,
             endpoint="model1_2",
-            column_list=[Model1.test1, Model1.test3],  # type: ignore[attr-defined]
+            column_list=[Model1.test1, Model1.test3],
             column_labels=dict(test1="Column1"),
         )
         admin.add_view(view2)
@@ -523,6 +527,7 @@ def test_exclude_columns(
             ("bool_field", "Bool Field"),
             ("email_field", "Email Field"),
             ("choice_field", "Choice Field"),
+            ("test5", "Test5"),
         ]
 
         client = app.test_client()
@@ -655,7 +660,7 @@ def test_complex_searchable_list(
         view2 = CustomModelView(
             Model1,
             param,
-            column_searchable_list=[Model2.string_field],  # type: ignore[attr-defined]
+            column_searchable_list=[Model2.string_field],
         )
         admin.add_view(view2)
 
@@ -983,7 +988,7 @@ def test_column_filters(
         view13 = CustomModelView(
             Model2,
             param,
-            column_filters=[filters.FilterEqual(Model1.test1, "Test1")],  # type: ignore[attr-defined]
+            column_filters=[filters.FilterEqual(Model1.test1, "Test1")],
             endpoint="_relation_test",
         )
         admin.add_view(view13)
@@ -1872,7 +1877,7 @@ def test_column_filters_sqla_obj(
         Model1, Model2 = create_models(sqla_db_ext)
 
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
-        view = CustomModelView(Model1, param, column_filters=[Model1.test1])  # type: ignore[attr-defined]
+        view = CustomModelView(Model1, param, column_filters=[Model1.test1])
         admin.add_view(view)
         assert view._filters
         assert len(view._filters) == 7
@@ -1899,7 +1904,7 @@ def test_column_filters_dotted_path(
 
         # Binding resolves the string into the real attribute and records joins.
         assert flt._bound is True
-        assert flt.column is Model1.test1  # type: ignore[attr-defined]
+        assert flt.column is Model1.test1
         assert flt._joins  # at least one relationship to traverse
         assert flt.key_name == "model1.test1"
         assert "model1.test1" in view._filter_joins
@@ -2029,8 +2034,8 @@ def test_enum_filter_dotted_path(
 
         # Binding ran the hook, which populated enum_class from the resolved column.
         assert flt._bound is True
-        assert flt.enum_class is Model1.EnumChoices  # type: ignore[attr-defined]
-        assert flt.column is Model1.enum_type_field  # type: ignore[attr-defined]
+        assert flt.enum_class is Model1.EnumChoices
+        assert flt.column is Model1.enum_type_field
 
 
 def test_hybrid_property(
@@ -2702,7 +2707,7 @@ def test_complex_sort_exception(
             M2,
             param,
             endpoint="model2_3",
-            column_sortable_list=[M1.test1],  # type: ignore[attr-defined]
+            column_sortable_list=[M1.test1],
         )
         admin.add_view(view)
 
@@ -2750,7 +2755,7 @@ def test_default_complex_sort(
             M2,
             param,
             endpoint="model2_2",
-            column_default_sort=(M1.test1, False),  # type: ignore[attr-defined]
+            column_default_sort=(M1.test1, False),
         )
         admin.add_view(view2)
 

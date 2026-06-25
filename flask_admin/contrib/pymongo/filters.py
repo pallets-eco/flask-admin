@@ -34,7 +34,7 @@ class BasePyMongoFilter(filters.BaseFilter):
         :param data_type:
             Client data type
         """
-        super().__init__(name, options, data_type)
+        super().__init__(name, options, data_type, column=column)
 
         self.column = column
 
