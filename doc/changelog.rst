@@ -3,6 +3,29 @@ Changelog
 
 [unreleased]
 ------------------
+Breaking changes:
+[unreleased]
+------------------
+Breaking changes:
+
+* XEditableWidget has been replaced by HTMXEditableWidget, which removes the dependency on the unmaintained
+  x-editable library. XEditableWidget remains as a deprecated alias, but HTMXEditableWidget should be used for any new
+  development and existing code should be migrated accordingly.
+  Subsequently, the ``get_kwargs`` method on ``XEditableWidget`` no
+  longer has any effect. It existed solely to produce x-editable data
+  attributes which are not used in the new implementation. To customise
+  inline edit rendering, override ``HTMXEditableWidget.__call__`` instead::
+
+      from flask_admin.model.widgets import HTMXEditableWidget
+
+      class CustomWidget(HTMXEditableWidget):
+          def __call__(self, field, **kwargs):
+              # custom rendering logic
+              return super().__call__(field, **kwargs)
+
+* ``ajax/update/`` response format: this endpoint now returns an HTML fragment instead
+  of a plain text string. Any custom JavaScript calling this endpoint
+  directly will need to be updated to handle the new response format.
 
 Bugfixes:
 * Fix encoding for editing file in FileAdmin. Now it uses UTF-8 and accepts non-ASCII characters.
