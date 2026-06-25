@@ -318,14 +318,15 @@ class InlineModelConverter(InlineModelConverterBase):
         child_form = info.get_form()
 
         if child_form is None:
-            child_form = model_form(
-                info.model,
+            child_form = get_form(
+                info.model,  # type: ignore[arg-type]
                 base_class=form.BaseForm,
                 only=info.form_columns,  # type: ignore[attr-defined]
                 exclude=exclude,
                 field_args=info.form_args,  # type: ignore[attr-defined]
                 allow_pk=True,
                 converter=converter,
+                extra_fields=info.form_extra_fields,  # type: ignore[attr-defined]
             )
 
         try:
@@ -339,7 +340,7 @@ class InlineModelConverter(InlineModelConverterBase):
             form_class,
             prop_name,
             self.inline_field_list_type(
-                child_form,  # type: ignore[arg-type]
+                child_form,
                 info.model,  # type: ignore[arg-type]
                 reverse_field.name,
                 info,  # type: ignore[arg-type]
