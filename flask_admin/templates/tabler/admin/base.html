@@ -1,0 +1,228 @@
+{% import 'admin/layout.html' as layout with context -%}
+{% import 'admin/static.html' as admin_static with context %}
+{% set _t = admin_view.admin.theme %}
+{% set menu_class = 'navbar-nav pt-lg-3' if _t.is_sidebar_layout else 'navbar-nav' %}
+{% if _t.is_sidebar_layout %}
+{% set menu_links_class = 'navbar-nav' %}
+{% elif _t.is_condensed_layout %}
+{% set menu_links_class = 'navbar-nav ms-md-auto' %}
+{% else %}
+{% set menu_links_class = 'navbar-nav' %}
+{% endif %}
+{% set brand_markup %}
+{% block brand %}
+<a class="navbar-brand navbar-brand-autodark pe-0 pe-md-3" href="{{ admin_view.admin.url }}">
+  {{ admin_view.admin.name }}
+</a>
+{% endblock %}
+{% endset %}
+{% set main_menu_markup %}
+{% block main_menu %}
+<ul class="{{ menu_class }}">
+  {{ layout.menu() }}
+</ul>
+{% endblock %}
+{% endset %}
+{% set menu_links_markup %}
+{% block menu_links %}
+<ul class="{{ menu_links_class }}">
+  {{ layout.menu_links() }}
+</ul>
+{% endblock %}
+{% endset %}
+{% set access_control_markup %}
+{% block access_control %}
+{% endblock %}
+{% endset %}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="{{ _t.theme }}" data-bs-theme-primary="{{ _t.theme_primary }}" data-bs-theme-base="{{ _t.theme_base }}" data-bs-theme-font="{{ _t.theme_font }}"
+  data-bs-theme-radius="{{ _t.theme_radius }}">
+
+<head>
+  <!-- <script>
+    window.addEventListener('error', function(e) {
+      var suppress = [
+        'helpers',
+        'form',
+        'actions'
+      ];
+      if (e.filename && suppress.some(function(f) { return e.filename.includes(f); })) {
+        e.preventDefault();
+        console.warn('Suppressed error in ' + e.filename + ':', e.message);
+      }
+    }, true);
+  </script> -->
+  <title>{% block title %}{% if admin_view.category %}{{ admin_view.category }} - {% endif %}{{ admin_view.name }} - {{ admin_view.admin.name }}{% endblock %}</title>
+  {% block head_meta %}
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  {% endblock %}
+  {% block head_css %}
+  {% if _t.use_cdn %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler-themes.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.35.0/tabler-icons.min.css" />
+  {% else %}
+  <link href="{{ url_for('admin.static', filename='tabler/css/tabler.min.css', v='1.4.0') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
+  <link href="{{ url_for('admin.static', filename='tabler/css/tabler-themes.min.css', v='1.4.0') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
+  <link href="{{ url_for('admin.static', filename='tabler/icons/tabler-icons.min.css', v='3.40.0') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
+  {% endif %}
+  <link href="{{ url_for('admin.static', filename='admin/css/tabler/admin.css') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
+  {% if admin_view.extra_css %}
+  {% for css_url in admin_view.extra_css %}
+  <link href="{{ css_url }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
+  {% endfor %}
+  {% endif %}
+  {% endblock %}
+  {% block head %}
+  {% endblock %}
+  {% block head_tail %}
+  {% endblock %}
+</head>
+
+<body{% if _t.body_class %} class="{{ _t.body_class }}" {% endif %} data-tabler-layout="{{ _t.layout }}">
+  {# Apply stored dark/light preference immediately to prevent flash.
+  Only dark/light is user-switchable; other theme settings are server-side. #}
+  <script {{ admin_csp_nonce_attribute }}>
+    (function() {
+      var stored = localStorage.getItem('tabler-admin-theme');
+      if (stored === 'dark' || stored === 'light') {
+        document.documentElement.setAttribute('data-bs-theme', stored);
+      }
+    })();
+  </script>
+
+  <div class="page">
+    {% block page_body %}
+    {% if _t.is_sidebar_layout %}
+    <aside class="navbar navbar-vertical navbar-expand-lg tabler-admin-sidebar" data-bs-theme="dark">
+      <div class="container-fluid">
+        {{ brand_markup }}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu" aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="sidebar-menu">
+          {{ main_menu_markup }}
+          {{ menu_links_markup }}
+          {{ access_control_markup }}
+          <div class="mt-auto border-top pt-2">
+            {% set icon_only = False %}
+            {% include 'admin/_theme_toggle.html' %}
+          </div>
+        </div>
+      </div>
+    </aside>
+    {% else %}
+    <header class="navbar navbar-expand-md d-print-none tabler-admin-header">
+      <div class="container-xl">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle primary navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        {{ brand_markup }}
+        <div class="navbar-nav flex-row order-md-last">
+          {% set icon_only = True %}
+          {% include 'admin/_theme_toggle.html' %}
+        </div>
+        {% if _t.is_condensed_layout %}
+        <div class="collapse navbar-collapse tabler-admin-navbar-collapse" id="navbar-menu">
+          <nav aria-label="Primary">
+            {{ main_menu_markup }}
+          </nav>
+          {{ access_control_markup }}
+          {{ menu_links_markup }}
+        </div>
+        {% endif %}
+      </div>
+    </header>
+    {% if _t.is_fluid_layout %}
+    <div class="navbar-expand-md tabler-admin-navbar-secondary">
+      <div class="collapse navbar-collapse" id="navbar-menu">
+        <div class="navbar">
+          <div class="container-xl">
+            <div class="row flex-column flex-md-row flex-fill align-items-center">
+              <div class="col">
+                <nav aria-label="Primary">
+                  {{ main_menu_markup }}
+                </nav>
+              </div>
+              {{ access_control_markup }}
+              <div class="col col-md-auto">
+                {{ menu_links_markup }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% endif %}
+
+    <div class="page-wrapper">
+      <div class="page-header d-print-none">
+        <div class="container-xl">
+          <div class="row g-2 align-items-center">
+            <div class="col">
+              {% block page_title %}
+              <h2 class="page-title">
+                {{ layout.menu_icon(admin_view.menu) }}
+                {{ admin_view.name }}
+              </h2>
+              {% endblock %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <main id="content" class="page-body">
+        <div class="container-xl">
+          {% block messages %}
+          {{ layout.messages() }}
+          {% endblock %}
+
+          {# store the jinja2 context for form_rules rendering logic #}
+          {% set render_ctx = h.resolve_ctx() %}
+
+          {% block body %}{% endblock %}
+        </div>
+      </main>
+    </div>
+    {% endblock %}
+  </div>
+
+  {% block tail_js %}
+  {% if _t.use_cdn %}
+  <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+  {% else %}
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='tabler/js/tabler.min.js', v='1.4.0') }}" type="text/javascript"></script>
+  {% endif %}
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/jquery.min.js', v='3.5.1') }}" type="text/javascript"></script>
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/moment.min.js', v='2.9.4') }}" type="text/javascript"></script>
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/select2/select2.min.js', v='4.2.1') }}" type="text/javascript"></script>
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/helpers.js', v='1.0.0') }}" type="text/javascript"></script>
+  <script {{ admin_csp_nonce_attribute }}>
+    // Dark/light toggle — persists to localStorage under extension-specific key
+    document.querySelectorAll('[data-admin-theme-toggle]').forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        e.preventDefault();
+        var current = document.documentElement.getAttribute('data-bs-theme') || 'light';
+        var next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-bs-theme', next);
+        localStorage.setItem('tabler-admin-theme', next);
+      });
+    });
+  </script>
+  {% if admin_view.extra_js %}
+  {% for js_url in admin_view.extra_js %}
+  <script {{ admin_csp_nonce_attribute }} src="{{ js_url }}" type="text/javascript"></script>
+  {% endfor %}
+  {% endif %}
+  {% endblock %}
+
+  {% block tail %}
+  {% endblock %}
+  </body>
+
+</html>
