@@ -166,23 +166,35 @@ class Base:
             assert "path=dummy.txt" in rv.data.decode("utf-8")
 
         @pytest.mark.parametrize(
-            "url, expected",
+            "url, expected, action_url, post_data, expected_post_res",
             [
-                ("/", ['data-toggle="modal"', "fa_modal_window"]),
                 (
                     "/mkdir/?modal=1",
                     [
                         "Create Directory",
                         "modal-header",
                         "modal-body",
-                        'action="/admin/mymodalfileadmin/mkdir/"',
+                    ],
+                    "/admin/mymodalfileadmin/mkdir/",
+                    {"name": "dummy_dir"},
+                    [
+                        "Successfully created directory: dummy_dir",
+                        'name="path" type="hidden" value="dummy_dir"',
                     ],
                 ),
                 (
                     "/rename/?path=dummy.txt&modal=1",
                     [
                         "Rename dummy.txt",
-                        'action="/admin/mymodalfileadmin/rename/?path="',
+                        "modal-header",
+                        "modal-body",
+                    ],
+                    "/admin/mymodalfileadmin/rename/?path=",
+                    {"path": "dummy.txt", "name": "dummy_renamed.txt"},
+                    [
+                        "Successfully renamed",
+                        "dummy_renamed.txt",
+                        'name="path" type="hidden" value="dummy_renamed.txt"',
                     ],
                 ),
                 (
@@ -191,13 +203,36 @@ class Base:
                         "Upload File",
                         "modal-header",
                         "modal-body",
-                        'action="/admin/mymodalfileadmin/upload/"',
                     ],
+                    "/admin/mymodalfileadmin/upload/",
+                    {"upload": (BytesIO(b""), "dummy11.txt")},
+                    [
+                        "Successfully saved file: dummy11.txt",
+                        'name="path" type="hidden" value="dummy11.txt"',
+                    ],
+                ),
+                (
+                    "/edit/?path=dummy.txt&modal=1",
+                    [
+                        "Editing dummy.txt",
+                        "modal-header",
+                        "modal-body",
+                    ],
+                    "/admin/mymodalfileadmin/edit/?path=dummy.txt",
+                    {"content": "dummy file 😁\n"},
+                    ["Changes to dummy.txt saved successfully"],
                 ),
             ],
         )
         def test_file_admin_modal(
-            self, app: Flask, admin: Admin, url: str, expected: list[str]
+            self,
+            app: Flask,
+            admin: Admin,
+            url: str,
+            expected: list[str],
+            action_url: str,
+            post_data: dict[str, str],
+            expected_post_res: list[str],
         ) -> None:
             fileadmin_class = self.fileadmin_class()
             fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
@@ -216,12 +251,42 @@ class Base:
 
             client = app.test_client()
 
+            # Create dummy.txt if it does not exist
+            dummy_file_path = op.join(self._test_files_root, "dummy.txt")
+            if not op.exists(dummy_file_path):
+                with open(dummy_file_path, "w", encoding="utf-8") as f:
+                    f.write("dummy file 😁\n")
+
+            # delete dummy_renamed.txt if it exists
+            # delete dummy11.txt if it exists
+            for file_name in ["dummy_renamed.txt", "dummy11.txt"]:
+                file_path = op.join(self._test_files_root, file_name)
+                if op.exists(file_path):
+                    os.remove(file_path)
+
+            for dir_name in ["dummy_dir", "dummy_renamed_dir"]:
+                dir_path = op.join(self._test_files_root, dir_name)
+                if os.path.exists(dir_path) and os.path.isdir(dir_path):
+                    os.rmdir(dir_path)
+
             rv = client.get(f"/admin/mymodalfileadmin{url}")
             assert rv.status_code == 200
             data = rv.data.decode("utf-8")
 
+            assert f'action="{action_url}"' in data
             for ex in expected:
-                assert ex in data
+                assert (
+                    ex in data
+                ), f"Expected '{ex}' in response data, but it was not found."
+
+            rv = client.post(action_url, data=post_data, follow_redirects=True)
+            assert rv.status_code == 200
+            data = rv.data.decode("utf-8")
+
+            for ex in expected_post_res:
+                assert (
+                    ex in data
+                ), f"Expected '{ex}' in response data, but it was not found."
 
         def test_file_admin_edit(self, app: Flask, admin: Admin) -> None:
             fileadmin_class = self.fileadmin_class()
