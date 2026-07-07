@@ -30,6 +30,7 @@ Breaking changes:
 Bugfixes:
 
 * Peewee backend: return None from ajax get_one() when no record matches rather than raising DoesNotExist
+* HTMX inline editing (``column_editable_list``): the popover cancel button now reliably closes the editor (clicks inside the popover no longer re-open it), records whose primary key contains characters such as ``&`` or ``#`` are now editable (the key is percent-encoded rather than disabling editing), and the edit form targets ``closest .editable-cell`` instead of a duplicated cell ``id``.
 
 Dev:
 

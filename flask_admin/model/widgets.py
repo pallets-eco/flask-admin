@@ -1,6 +1,6 @@
-import re
 import typing as t
 import warnings
+from urllib.parse import quote
 
 from flask import json
 from markupsafe import escape
@@ -94,28 +94,30 @@ class HTMXEditableWidget:
 
         display_value = escape(kwargs.get("display_value", ""))
         field_name = escape(field.name)
-        pk_esc = escape(pk)
+        pk_str = str(pk)
 
-        if re.search(r"[^\w-]", pk_esc):
-            warnings.warn(
-                f"Primary key {str(pk)!r} contains characters that are invalid "
-                f"in CSS identifiers. Inline editing will not work for this record.",
-                UserWarning,
-                stacklevel=1,
-            )
+        # Percent-encode the pk for the querystring so values containing
+        # ``&``, ``#``, ``%``, etc. can't corrupt the pk/field split, and
+        # HTML-escape it separately for use inside the ``id`` attribute. The
+        # pk is no longer used as a CSS selector (the edit form targets
+        # ``closest .editable-cell``), so arbitrary pk values work.
+        pk_url = quote(pk_str, safe="")
+        pk_html = escape(pk_str)
 
-        return Markup(f"""
-        <span
-            id="editable-{field_name}-{pk_esc}"
-            hx-get="./ajax/edit/?pk={pk}&field={field_name}"
-            hx-target="#editable-{field_name}-{pk_esc}"
-            hx-swap="beforeend"
-            class="editable-cell"
-            title="Click to edit"
-        >
-          {display_value}
-        </span>
-        """)
+        # ``hx-trigger`` filter: only open the editor for clicks on the cell
+        # itself, not clicks bubbling up from inside an already-open popover.
+        # This keeps the popover's own controls (inputs, cancel button) from
+        # re-triggering the GET without resorting to ``stopPropagation``,
+        # which would otherwise break the delegated cancel handler.
+        return Markup(
+            f'<span id="editable-{field_name}-{pk_html}"'
+            f' hx-get="./ajax/edit/?pk={pk_url}&field={field_name}"'
+            f' hx-target="this"'
+            f' hx-swap="beforeend"'
+            f" hx-trigger=\"click[!target.closest('.editable-popover')]\""
+            f' class="editable-cell"'
+            f' title="Click to edit">{display_value}</span>'
+        )
 
 
 class XEditableWidget(HTMXEditableWidget):

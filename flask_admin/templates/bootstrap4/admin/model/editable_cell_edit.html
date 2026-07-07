@@ -1,7 +1,7 @@
 <div class="editable-popover">
   <form hx-post="./ajax/update/"
-        hx-target="#editable-{{ field_name }}-{{ pk }}"
-        hx-swap="innerHTML"
+        hx-target="closest .editable-cell"
+        hx-swap="outerHTML"
         class="editable-form d-flex align-items-start gap-1">
     <input type="hidden" name="list_form_pk" value="{{ pk }}">
     <input type="hidden" name="field_name" value="{{ field_name }}">
