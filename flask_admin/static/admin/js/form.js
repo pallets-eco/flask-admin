@@ -596,13 +596,18 @@ document.body.addEventListener('htmx:beforeSwap', function(event) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(event.detail.xhr.responseText, 'text/html');
 
-            // 4. Swap the old popover with the new parsed element
-            existingPopover.replaceWith(doc.body.firstChild);
+            // 4. Swap the old popover with the new parsed element. Select the
+            //    popover node explicitly (not body.firstChild, which may be a
+            //    whitespace text node from template indentation).
+            const newPopover = doc.querySelector('.editable-popover');
+            if (newPopover) {
+                existingPopover.replaceWith(newPopover);
 
-            // 5. Re-initialize HTMX on the newly injected popover
-            const newPopover = event.detail.target.querySelector('.editable-popover');
-            if (window.htmx && newPopover) {
-                htmx.process(newPopover);
+                // 5. Re-initialize HTMX + widgets on the newly injected popover
+                if (window.htmx) {
+                    htmx.process(newPopover);
+                }
+                faForm.applyGlobalStyles(newPopover);
             }
         }
     }
@@ -626,10 +631,13 @@ function closeEditablePopover() {
     return true;
 }
 
-// HTMX: Close any existing popover before opening a new one
+// HTMX: Close any existing popover before opening a new one. Scoped to the
+// cell element itself (which triggers the GET /ajax/edit/); the edit form's
+// POST also lives inside a .editable-cell, so matching descendants here would
+// wrongly close the popover mid-submit.
 document.addEventListener('htmx:beforeRequest', function(event) {
     var elt = event.detail.elt;
-    if (!elt || !elt.closest('.editable-cell')) return;
+    if (!elt || !elt.matches || !elt.matches('.editable-cell')) return;
     closeEditablePopover();
 });
 

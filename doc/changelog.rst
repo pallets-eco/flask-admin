@@ -28,6 +28,7 @@ Breaking changes:
   directly will need to be updated to handle the new response format.
 
 Bugfixes:
+* HTMX inline editing (``column_editable_list``): the popover cancel button now reliably closes the editor (clicks inside the popover no longer re-open it), records whose primary key contains characters such as ``&`` or ``#`` are now editable (the key is percent-encoded rather than disabling editing), and the edit form targets ``closest .editable-cell`` instead of a duplicated cell ``id``.
 * Fix encoding for editing file in FileAdmin. Now it uses UTF-8 and accepts non-ASCII characters.
 * SQLAlchemy backend: ``conv_ARRAY`` now infers the array element's ``python_type`` and passes it through as the ``Select2TagsField`` ``coerce`` callable. Saving a Postgres ``ARRAY(Integer)`` / ``ARRAY(Float)`` column no longer fails with ``column "x" is of type integer[] but expression is of type text[]`` (closes #1724).
 * MongoEngine fileadmin backend: downloading GridFS files now preserves their name and extension instead of saving them as ``file`` (closes #2916).
