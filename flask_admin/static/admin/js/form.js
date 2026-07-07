@@ -614,13 +614,25 @@ document.body.addEventListener('htmx:beforeSwap', function(event) {
 });
 
 // HTMX: Handle network failures (server unreachable, timeout, etc.)
+// Keep the popover open and surface a non-blocking inline error so the user's
+// in-progress edit survives and they can retry. A blocking alert() would both
+// freeze the page and discard the edit (closeEditablePopover clears the cell).
 document.addEventListener('htmx:sendError', function(event) {
     var elt = event.detail.elt;
     if (!elt || !elt.closest('.editable-form, .editable-cell')) {
         return;
     }
-    closeEditablePopover();
-    alert('Network error: your change was not saved. Please try again.');
+    var popover = document.querySelector('.editable-popover');
+    if (!popover) return;
+    var msg = popover.querySelector('.editable-popover-error');
+    if (!msg) {
+        msg = document.createElement('div');
+        msg.className = 'text-danger editable-popover-error';
+        msg.style.fontSize = '12px';
+        msg.style.marginTop = '4px';
+        popover.appendChild(msg);
+    }
+    msg.textContent = 'Network error: your change was not saved. Please try again.';
 });
 
 // Close any open editable popover (display span stays intact since we use beforeend)
