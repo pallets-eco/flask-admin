@@ -1029,6 +1029,111 @@ def test_editable_list_field_types(
         assert rv.status_code == 404
 
 
+def test_editable_partial_update_preserves_other_fields(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    """An inline update must touch only the edited field.
+
+    ``ajax_update`` builds the form from request data (not ``obj=record``) and
+    strips every field except the target before ``update_model``. This pins
+    down that the untouched columns keep their existing database values, so a
+    single-field edit can never wipe the rest of the row.
+    """
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        admin.add_view(
+            CustomModelView(
+                Model1, param, column_editable_list=["test1", "bool_field"]
+            )
+        )
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        # Baseline: pk=1 has test1="test1_val_1", test2="test2_val_1",
+        # bool_field=True (see fill_db).
+        client = app.test_client()
+
+        # Edit only test1; test2 and bool_field must be left untouched.
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={"list_form_pk": "1", "test1": "only-this-changes"},
+        )
+        assert rv.status_code == 200
+
+        record = sqla_db_ext.db.session.get(Model1, 1)
+        assert record.test1 == "only-this-changes"
+        assert record.test2 == "test2_val_1"  # not in the form -> preserved
+        assert record.bool_field is True  # editable, but not submitted -> preserved
+
+        # Now edit only bool_field; test1 (just changed above) must survive.
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={"list_form_pk": "1", "field_name": "bool_field"},  # unchecked
+        )
+        assert rv.status_code == 200
+
+        record = sqla_db_ext.db.session.get(Model1, 1)
+        assert record.bool_field is False
+        assert record.test1 == "only-this-changes"  # preserved across a 2nd edit
+        assert record.test2 == "test2_val_1"
+
+
+def test_editable_widgets_isolated_between_views(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    """Two editable views must not share ``_original_widgets`` state.
+
+    ``create_editable_list_form`` builds a fresh ``ListForm`` class per view and
+    records the original (pre-HTMX) input widget for each field on it. This
+    verifies that widget restoration in ``ajax_edit`` stays scoped to each
+    view: a date field renders its datepicker in one view without leaking into
+    a plain-text field of the other, and vice versa.
+    """
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        # View A: a date field is editable (original widget = datepicker).
+        admin.add_view(
+            CustomModelView(Model1, param, column_editable_list=["date_field"])
+        )
+        # View B: a plain string field is editable (original widget = text input).
+        admin.add_view(
+            CustomModelView(
+                Model2, param, endpoint="model2", column_editable_list=["string_field"]
+            )
+        )
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        # View A restores its own datepicker widget...
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=date_field")
+        data_a = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'data-role="datepicker"' in data_a
+
+        # ...and View B's text field is unaffected by A's widget state.
+        rv = client.get("/admin/model2/ajax/edit/?pk=1&field=string_field")
+        data_b = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'name="string_field"' in data_b
+        assert 'data-role="datepicker"' not in data_b
+
+        # Re-fetching View A still yields its datepicker (no cross-view clobber).
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=date_field")
+        assert 'data-role="datepicker"' in rv.data.decode("utf-8")
+
+
 def test_details_view(
     app: Flask,
     sqla_db_ext: T_ANY_SQLA_PROVIDER,
