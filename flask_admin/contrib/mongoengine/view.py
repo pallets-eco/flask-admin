@@ -9,6 +9,7 @@ from flask import abort
 from flask import flash
 from flask import request
 from flask import Response
+from flask import send_file
 from mongoengine import Document
 from mongoengine import QuerySet
 from mongoengine.connection import get_db
@@ -724,10 +725,11 @@ class ModelView(BaseModelView):
         if not data:
             abort(404)
 
-        return Response(
-            data.read(),
-            content_type=data.content_type,
-            headers={"Content-Length": data.length},  # type: ignore[arg-type]
+        return send_file(
+            data,
+            mimetype=data.content_type,
+            download_name=data.filename,
+            as_attachment=False,
         )
 
     # Default model actions
