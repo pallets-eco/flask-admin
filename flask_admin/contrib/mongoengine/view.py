@@ -23,6 +23,7 @@ from flask_admin.babel import gettext
 from flask_admin.babel import lazy_gettext
 from flask_admin.babel import ngettext
 from flask_admin.contrib.mongoengine.ajax import QueryAjaxModelLoader
+from flask_admin.contrib.mongoengine.helpers import gridfs_content_type
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import BaseListForm
 from flask_admin.model.form import create_editable_list_form
@@ -727,7 +728,7 @@ class ModelView(BaseModelView):
 
         return send_file(
             data,
-            mimetype=data.content_type,
+            mimetype=gridfs_content_type(data),
             download_name=data.filename,
             as_attachment=False,
         )

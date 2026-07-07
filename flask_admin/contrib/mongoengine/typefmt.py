@@ -11,6 +11,7 @@ from flask_admin.model.typefmt import BASE_FORMATTERS
 from flask_admin.model.typefmt import list_formatter
 
 from . import helpers
+from .helpers import gridfs_content_type
 
 if t.TYPE_CHECKING:
     from . import ModelView
@@ -34,7 +35,7 @@ def grid_formatter(view: ModelView, value: GridOut) -> Markup | str:
             "url": view.get_url(".api_file_view", **args),
             "name": escape(value.name),
             "size": value.length // 1024,
-            "content_type": escape(value.content_type),
+            "content_type": escape(gridfs_content_type(value) or ""),
         }
     )
 

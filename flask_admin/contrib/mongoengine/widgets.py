@@ -10,6 +10,7 @@ from flask_admin.helpers import get_url
 
 from ..._types import _T_MONGOENGINE_FIELD_PROTOCOL
 from . import helpers
+from .helpers import gridfs_content_type
 
 
 class MongoFileInput:
@@ -33,7 +34,7 @@ class MongoFileInput:
 
             placeholder = self.template % {
                 "name": escape(data.name),
-                "content_type": escape(data.content_type),
+                "content_type": escape(gridfs_content_type(data) or ""),
                 "size": data.length // 1024,
                 "marker": f"_{field.name}-delete",
             }
