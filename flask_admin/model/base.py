@@ -2122,7 +2122,11 @@ class BaseModelView(BaseView, ActionsMixin):
         Returns the value to be displayed in the list view
 
         :param context:
-            :py:class:`jinja2.runtime.Context`
+            :py:class:`jinja2.runtime.Context`. May be ``None`` when called
+            outside template rendering (e.g. by ``ajax_update`` to recompute a
+            single cell's display value after an inline edit). A custom
+            ``column_formatter`` that relies on the Jinja context must guard
+            against ``context`` being ``None``.
         :param model:
             Model instance
         :param name:
@@ -2768,7 +2772,7 @@ class BaseModelView(BaseView, ActionsMixin):
             500,
         )
 
-    def _extract_field_name(self) -> t.Optional[str]:
+    def _extract_field_name(self) -> str | None:
         """
         Determine which editable field was submitted. For most fields,
         the field name appears in request.form. For unchecked checkboxes

@@ -878,6 +878,42 @@ def test_ajax_edit_endpoint(
         assert rv.status_code == 404
 
 
+def test_editable_endpoints_require_can_edit(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    """Both inline-edit endpoints must 404 when the view forbids editing,
+    even if column_editable_list is configured."""
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = CustomModelView(
+            Model1,
+            param,
+            column_editable_list=["test1"],
+            can_edit=False,
+        )
+        admin.add_view(view)
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        # GET /ajax/edit/ must not expose an edit form
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=test1")
+        assert rv.status_code == 404
+
+        # POST /ajax/update/ must not mutate the record
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={"list_form_pk": "1", "test1": "should not save"},
+        )
+        assert rv.status_code == 404
+
+
 def test_editable_list_field_types(
     app: Flask,
     sqla_db_ext: T_ANY_SQLA_PROVIDER,
@@ -3571,7 +3607,7 @@ def test_customising_page_size(
         M1, _ = create_models(sqla_db_ext)
 
         sqla_db_ext.db.session.add_all(
-            [M1(test1=str(f"instance-{x+1:03d}")) for x in range(101)]
+            [M1(test1=str(f"instance-{x + 1:03d}")) for x in range(101)]
         )
 
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
