@@ -1047,9 +1047,7 @@ def test_editable_partial_update_preserves_other_fields(
 
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         admin.add_view(
-            CustomModelView(
-                Model1, param, column_editable_list=["test1", "bool_field"]
-            )
+            CustomModelView(Model1, param, column_editable_list=["test1", "bool_field"])
         )
 
         fill_db(sqla_db_ext, Model1, Model2)
@@ -1066,6 +1064,7 @@ def test_editable_partial_update_preserves_other_fields(
         assert rv.status_code == 200
 
         record = sqla_db_ext.db.session.get(Model1, 1)
+        assert record is not None
         assert record.test1 == "only-this-changes"
         assert record.test2 == "test2_val_1"  # not in the form -> preserved
         assert record.bool_field is True  # editable, but not submitted -> preserved
@@ -1078,6 +1077,7 @@ def test_editable_partial_update_preserves_other_fields(
         assert rv.status_code == 200
 
         record = sqla_db_ext.db.session.get(Model1, 1)
+        assert record is not None
         assert record.bool_field is False
         assert record.test1 == "only-this-changes"  # preserved across a 2nd edit
         assert record.test2 == "test2_val_1"
