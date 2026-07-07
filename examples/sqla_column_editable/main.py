@@ -107,8 +107,8 @@ db.init_app(app)
 admin = Admin(
     app, name="Click any editable column value to edit inline", theme=Bootstrap4Theme()
 )
-admin.add_view(DishView(Dish, db.session, name="Dishes"))
-admin.add_view(CuisineView(Cuisine, db.session, name="Cuisines"))
+admin.add_view(DishView(Dish, db, name="Dishes"))
+admin.add_view(CuisineView(Cuisine, db, name="Cuisines"))
 
 
 @app.route("/")
