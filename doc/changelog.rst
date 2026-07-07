@@ -4,9 +4,6 @@ Changelog
 [unreleased]
 ------------------
 Breaking changes:
-[unreleased]
-------------------
-Breaking changes:
 
 * XEditableWidget has been replaced by HTMXEditableWidget, which removes the dependency on the unmaintained
   x-editable library. XEditableWidget remains as a deprecated alias, but HTMXEditableWidget should be used for any new
