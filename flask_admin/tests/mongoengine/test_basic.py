@@ -2,6 +2,7 @@ import typing as t
 
 from flask import Flask
 from mongoengine import Document
+from mongoengine import FileField
 from mongoengine import StringField
 from mongoengine.connection import get_db
 from wtforms import fields
@@ -144,6 +145,43 @@ def test_model(app: Flask, db: t.Any, admin: Admin) -> None:
     data = rv.data.decode("utf-8")
     assert "test2large" not in data
     assert "test2" in data
+
+
+def test_api_file_view_sets_content_disposition(
+    app: Flask, db: t.Any, admin: Admin
+) -> None:
+    """Regression test for #2916: api_file_view must expose the original
+    GridFS filename via Content-Disposition so browsers don't save the file
+    as ``file`` with no extension.
+    """
+
+    class FileDoc(Document):  # type: ignore[misc]
+        meta = {"collection": "file_doc"}
+        name = StringField()
+        upload = FileField()
+
+    class FileDocView(ModelView):
+        pass
+
+    # Drop existing data
+    raw_db = get_db()
+    for name in raw_db.list_collection_names():
+        raw_db.drop_collection(name)
+
+    admin.add_view(FileDocView(FileDoc, "FileDoc", endpoint="filedocview"))
+
+    doc = FileDoc(name="report")
+    doc.upload.put(b"hello world", filename="report.txt", content_type="text/plain")
+    doc.save()
+
+    client = app.test_client()
+    grid_id = doc.upload.grid_id
+    rv = client.get(f"/admin/filedocview/api/file/?id={grid_id}&coll=fs&db=default")
+
+    assert rv.status_code == 200
+    assert rv.data == b"hello world"
+    assert rv.mimetype == "text/plain"
+    assert "report.txt" in rv.headers.get("Content-Disposition", "")
 
 
 def test_query_ajax_model_loader_initialization(db: t.Any) -> None:
