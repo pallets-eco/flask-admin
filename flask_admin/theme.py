@@ -54,7 +54,6 @@ class TablerTheme(Theme):
                                         theme_base="gray",
                                         theme_font="sans-serif",
                                         theme_radius="1",
-                                        theme_use_cdn=True
                                         )
                       )
     """
@@ -85,7 +84,6 @@ class TablerTheme(Theme):
     theme_base: t.Literal["gray", "neutral", "slate", "zinc", "stone"] = "gray"
     theme_font: t.Literal["sans-serif", "serif", "monospace", "comic"] = "sans-serif"
     theme_radius: t.Literal["0", "0.5", "1", "1.5", "2"] = "1"
-    theme_use_cdn: bool = False  # Load Tabler Files from CDN or static files (Default)
 
     def __post_init__(self) -> None:
         _validate_choice(self.layout, self.VALID_LAYOUTS)
@@ -105,10 +103,6 @@ class TablerTheme(Theme):
     @property
     def body_class(self) -> str:
         return "layout-fluid" if self.is_fluid_layout else ""
-
-    @property
-    def use_cdn(self) -> bool:
-        return self.theme_use_cdn
 
 
 Bootstrap4Theme = partial(BootstrapTheme, folder="bootstrap4")

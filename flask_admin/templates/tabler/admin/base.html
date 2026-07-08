@@ -39,19 +39,6 @@
   data-bs-theme-radius="{{ _t.theme_radius }}">
 
 <head>
-  <!-- <script>
-    window.addEventListener('error', function(e) {
-      var suppress = [
-        'helpers',
-        'form',
-        'actions'
-      ];
-      if (e.filename && suppress.some(function(f) { return e.filename.includes(f); })) {
-        e.preventDefault();
-        console.warn('Suppressed error in ' + e.filename + ':', e.message);
-      }
-    }, true);
-  </script> -->
   <title>{% block title %}{% if admin_view.category %}{{ admin_view.category }} - {% endif %}{{ admin_view.name }} - {{ admin_view.admin.name }}{% endblock %}</title>
   {% block head_meta %}
   <meta charset="UTF-8">
@@ -61,16 +48,11 @@
   <meta name="author" content="">
   {% endblock %}
   {% block head_css %}
-  {% if _t.use_cdn %}
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler-themes.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.35.0/tabler-icons.min.css" />
-  {% else %}
-  <link href="{{ url_for('admin.static', filename='tabler/css/tabler.min.css', v='1.4.0') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
-  <link href="{{ url_for('admin.static', filename='tabler/css/tabler-themes.min.css', v='1.4.0') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
-  <link href="{{ url_for('admin.static', filename='tabler/icons/tabler-icons.min.css', v='3.40.0') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
-  {% endif %}
-  <link href="{{ url_for('admin.static', filename='admin/css/tabler/admin.css') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
+  <link href="{{ admin_static.url(filename='tabler/css/tabler.min.css', v='1.4.0') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
+  <link href="{{ admin_static.url(filename='tabler/css/tabler-themes.min.css', v='1.4.0') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
+  <link href="{{ admin_static.url(filename='tabler/icons/tabler-icons.min.css', v='3.40.0') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
+
+  <link href="{{ admin_static.url(filename='admin/css/tabler/admin.css') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
   {% if admin_view.extra_css %}
   {% for css_url in admin_view.extra_css %}
   <link href="{{ css_url }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
@@ -193,11 +175,7 @@
   </div>
 
   {% block tail_js %}
-  {% if _t.use_cdn %}
-  <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
-  {% else %}
   <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='tabler/js/tabler.min.js', v='1.4.0') }}" type="text/javascript"></script>
-  {% endif %}
   <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/jquery.min.js', v='3.5.1') }}" type="text/javascript"></script>
   <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/moment.min.js', v='2.9.4') }}" type="text/javascript"></script>
   <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/select2/select2.min.js', v='4.2.1') }}" type="text/javascript"></script>

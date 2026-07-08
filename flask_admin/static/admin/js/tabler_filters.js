@@ -6,9 +6,11 @@ const AdminFilters = function (element, filtersElement, filterGroups, activeFilt
     let lastCount = 0;
 
     function getCount(name) {
-        const idx = name.indexOf('_');
-        if (idx === -1) return 0;
-        return parseInt(name.substr(3, idx - 3), 10);
+        const underscoreIndex = name.indexOf('_');
+        if (underscoreIndex === -1) return 0;
+
+        const numberPart = name.slice(3, underscoreIndex);
+        return parseInt(numberPart, 10);
     }
 
     function makeName(name) {

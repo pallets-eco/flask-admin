@@ -8,7 +8,19 @@ document.addEventListener('show.bs.modal', function (event) {
     const modalContent = event.target.querySelector('.modal-content');
     if (!modalContent) return;
 
+    modalContent.innerHTML = '<div class="modal-body text-center py-5"><div class="spinner-border" role="status"></div></div>';
+
     fetch(href)
-        .then(function (response) { return response.text(); })
-        .then(function (html) { modalContent.innerHTML = html; });
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.text();
+        })
+        .then(function (html) {
+            modalContent.innerHTML = html;
+        })
+        .catch(function (error) {
+            modalContent.innerHTML = '<div class="modal-body text-danger">' + error.message + '</div>';
+        });
 });
