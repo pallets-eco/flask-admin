@@ -268,7 +268,7 @@ class Base:
                         "modal-body",
                     ],
                     "/admin/mymodalfileadmin/upload/",
-                    {"upload": (BytesIO(b""), "dummy3.txt")},
+                    dict(upload=(BytesIO(b""), "dummy3.txt")),
                     [
                         "Successfully saved file: dummy3.txt",
                         'name="path" type="hidden" value="dummy3.txt"',
@@ -359,6 +359,11 @@ class Base:
             assert f'action="{action_url}"' in data
             for ex in expected:
                 assert ex in data, f"Expected '{ex}' , but it was not found."
+
+            # Ensure any file-like object is reset for this request
+            if "upload" in post_data and isinstance(post_data["upload"], tuple):
+                _, fname = post_data["upload"]
+                post_data["upload"] = (BytesIO(b""), fname)
 
             rv = client.post(action_url, data=post_data, follow_redirects=True)
             assert rv.status_code == 200
