@@ -916,7 +916,7 @@ def test_form_submit(app: Flask, admin: Admin, url: str, age: int, msg: str) -> 
     assert all([part in data for part in msg.split("|")])
 
 
-def test_time_between_filter_validate_invalid_input() -> None:
+def test_base_time_between_filter_validate() -> None:
     """BaseTimeBetweenFilter.validate() must return False for bad input, not raise."""
     flt = filters.BaseTimeBetweenFilter("time_col")
 
