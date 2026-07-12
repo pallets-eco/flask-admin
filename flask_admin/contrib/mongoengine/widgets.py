@@ -10,7 +10,6 @@ from flask_admin.helpers import get_url
 
 from ..._types import _T_MONGOENGINE_FIELD_PROTOCOL
 from . import helpers
-from .helpers import gridfs_content_type
 
 
 class MongoFileInput:
