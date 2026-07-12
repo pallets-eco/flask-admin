@@ -733,7 +733,7 @@ def test_column_editable_list(
         # Test in-line edit field rendering
         rv = client.get("/admin/model1/")
         data = rv.data.decode("utf-8")
-        assert 'data-role="x-editable"' in data
+        assert "hx-get=" in data
 
         # Form - Test basic in-line edit functionality
         rv = client.post(
@@ -744,7 +744,8 @@ def test_column_editable_list(
             },
         )
         data = rv.data.decode("utf-8")
-        assert "Record was successfully saved." == data
+        assert "change-success-1" in data
+        assert 'class="editable-cell"' in data
 
         # ensure the value has changed
         rv = client.get("/admin/model1/")
@@ -760,6 +761,8 @@ def test_column_editable_list(
             },
         )
         assert rv.status_code == 500
+        data = rv.data.decode("utf-8")
+        assert 'hx-post="./ajax/update/"' in data  # edit form re-rendered with errors
 
         # Test invalid primary key
         rv = client.post(
@@ -780,6 +783,7 @@ def test_column_editable_list(
                 "test2": "problematic-input",
             },
         )
+        assert rv.status_code == 404
         data = rv.data.decode("utf-8")
         assert "problematic-input" not in data
 
@@ -791,12 +795,379 @@ def test_column_editable_list(
             },
         )
         data = rv.data.decode("utf-8")
-        assert "Record was successfully saved." == data
+        assert "test1_val_3" in data
+        assert 'class="editable-cell"' in data
 
         # confirm the value has changed
         rv = client.get("/admin/model2/")
         data = rv.data.decode("utf-8")
         assert "test1_val_3" in data
+
+        # Test validation error
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={
+                "list_form_pk": "1",
+                "enum_field": "problematic-input",
+            },
+        )
+        assert rv.status_code == 500
+        data = rv.data.decode("utf-8")
+        assert 'hx-post="./ajax/update/"' in data  # edit form re-rendered with errors
+        assert (
+            "Not a valid choice" in data
+        )  # <-- Verify WTForms validation err msg is displayed
+
+        # Test invalid primary key
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={
+                "list_form_pk": "1000",
+                "test1": "problematic-input",
+            },
+        )
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 500
+        assert (
+            "Record not found." in data
+        )  # <-- Verify the HTMX error template msg is displayed
+
+
+def test_ajax_edit_endpoint(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    """Tests the GET /ajax/edit/ endpoint returns an edit form fragment."""
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = CustomModelView(
+            Model1, param, column_editable_list=["test1", "enum_field"]
+        )
+        admin.add_view(view)
+
+        # Add view2 before any requests so Flask can register the blueprint
+        view2 = CustomModelView(Model2, param)
+        admin.add_view(view2)
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        # Test fetching edit form for a valid field
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=test1")
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'hx-post="./ajax/update/"' in data
+        assert 'name="list_form_pk"' in data
+        assert 'name="test1"' in data
+
+        # Test fetching edit form for non-editable field returns 404
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=test2")
+        assert rv.status_code == 404
+
+        # Test fetching edit form for non-existent record returns 404
+        rv = client.get("/admin/model1/ajax/edit/?pk=9999&field=test1")
+        assert rv.status_code == 404
+
+        # Test endpoint without column_editable_list returns 404
+        rv = client.get("/admin/model2/ajax/edit/?pk=1&field=string_field")
+        assert rv.status_code == 404
+
+
+def test_editable_endpoints_require_can_edit(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    """Both inline-edit endpoints must 404 when the view forbids editing,
+    even if column_editable_list is configured."""
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = CustomModelView(
+            Model1,
+            param,
+            column_editable_list=["test1"],
+            can_edit=False,
+        )
+        admin.add_view(view)
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        # GET /ajax/edit/ must not expose an edit form
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=test1")
+        assert rv.status_code == 404
+
+        # POST /ajax/update/ must not mutate the record
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={"list_form_pk": "1", "test1": "should not save"},
+        )
+        assert rv.status_code == 404
+
+
+def test_editable_list_field_types(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    """Tests inline editing for various field types."""
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = CustomModelView(
+            Model1,
+            param,
+            column_editable_list=[
+                "test3",
+                "bool_field",
+                "date_field",
+                "time_field",
+                "datetime_field",
+            ],
+        )
+        admin.add_view(view)
+
+        view2 = CustomModelView(
+            Model2,
+            param,
+            column_editable_list=[
+                "int_field",
+                "float_field",
+            ],
+        )
+        admin.add_view(view2)
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        # -- TextAreaField: edit and save --
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={
+                "list_form_pk": "1",
+                "test3": "updated text area content",
+            },
+        )
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert "updated text area content" in data
+        assert 'class="editable-cell"' in data
+
+        # -- TextAreaField: edit form renders textarea --
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=test3")
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert "<textarea" in data
+
+        # -- IntegerField: edit and save --
+        rv = client.post(
+            "/admin/model2/ajax/update/",
+            data={
+                "list_form_pk": "1",
+                "int_field": "42",
+            },
+        )
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert "42" in data
+        assert 'class="editable-cell"' in data
+
+        # -- IntegerField: edit form renders input --
+        rv = client.get("/admin/model2/ajax/edit/?pk=1&field=int_field")
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'name="int_field"' in data
+        assert "42" in data
+
+        # -- FloatField: edit and save --
+        rv = client.post(
+            "/admin/model2/ajax/update/",
+            data={
+                "list_form_pk": "1",
+                "float_field": "3.14",
+            },
+        )
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'class="editable-cell"' in data
+        assert "3.14" in data
+
+        # -- FloatField: edit form renders input --
+        rv = client.get("/admin/model2/ajax/edit/?pk=1&field=float_field")
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'name="float_field"' in data
+        assert "3.14" in data
+
+        # -- BooleanField: set to True via select value "y" --
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={
+                "list_form_pk": "1",
+                "field_name": "bool_field",
+                "bool_field": "y",
+            },
+        )
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'class="editable-cell"' in data
+
+        # -- BooleanField: set to False via empty value (unchecked checkbox) --
+        # Only list_form_pk and field_name are submitted; bool_field is absent
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={
+                "list_form_pk": "1",
+                "field_name": "bool_field",
+            },
+        )
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'class="editable-cell"' in data
+
+        # -- DateField: edit form renders with datepicker widget --
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=date_field")
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'data-role="datepicker"' in data
+        assert 'hx-post="./ajax/update/"' in data
+
+        # -- TimeField: edit form renders with timepicker widget --
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=time_field")
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'data-role="timepicker"' in data
+
+        # -- DateTimeField: edit form renders with datetimepicker widget --
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=datetime_field")
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'data-role="datetimepicker"' in data
+
+        # -- ajax_edit with missing pk returns 404 --
+        rv = client.get("/admin/model1/ajax/edit/?field=bool_field")
+        assert rv.status_code == 404
+
+        # -- ajax_edit with missing field returns 404 --
+        rv = client.get("/admin/model1/ajax/edit/?pk=1")
+        assert rv.status_code == 404
+
+
+def test_editable_partial_update_preserves_other_fields(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    """An inline update must touch only the edited field.
+
+    ``ajax_update`` builds the form from request data (not ``obj=record``) and
+    strips every field except the target before ``update_model``. This pins
+    down that the untouched columns keep their existing database values, so a
+    single-field edit can never wipe the rest of the row.
+    """
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        admin.add_view(
+            CustomModelView(Model1, param, column_editable_list=["test1", "bool_field"])
+        )
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        # Baseline: pk=1 has test1="test1_val_1", test2="test2_val_1",
+        # bool_field=True (see fill_db).
+        client = app.test_client()
+
+        # Edit only test1; test2 and bool_field must be left untouched.
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={"list_form_pk": "1", "test1": "only-this-changes"},
+        )
+        assert rv.status_code == 200
+
+        record = sqla_db_ext.db.session.get(Model1, 1)
+        assert record is not None
+        assert record.test1 == "only-this-changes"
+        assert record.test2 == "test2_val_1"  # not in the form -> preserved
+        assert record.bool_field is True  # editable, but not submitted -> preserved
+
+        # Now edit only bool_field; test1 (just changed above) must survive.
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={"list_form_pk": "1", "field_name": "bool_field"},  # unchecked
+        )
+        assert rv.status_code == 200
+
+        record = sqla_db_ext.db.session.get(Model1, 1)
+        assert record is not None
+        assert record.bool_field is False
+        assert record.test1 == "only-this-changes"  # preserved across a 2nd edit
+        assert record.test2 == "test2_val_1"
+
+
+def test_editable_widgets_isolated_between_views(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    """Two editable views must not share ``_original_widgets`` state.
+
+    ``create_editable_list_form`` builds a fresh ``ListForm`` class per view and
+    records the original (pre-HTMX) input widget for each field on it. This
+    verifies that widget restoration in ``ajax_edit`` stays scoped to each
+    view: a date field renders its datepicker in one view without leaking into
+    a plain-text field of the other, and vice versa.
+    """
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        # View A: a date field is editable (original widget = datepicker).
+        admin.add_view(
+            CustomModelView(Model1, param, column_editable_list=["date_field"])
+        )
+        # View B: a plain string field is editable (original widget = text input).
+        admin.add_view(
+            CustomModelView(
+                Model2, param, endpoint="model2", column_editable_list=["string_field"]
+            )
+        )
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        # View A restores its own datepicker widget...
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=date_field")
+        data_a = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'data-role="datepicker"' in data_a
+
+        # ...and View B's text field is unaffected by A's widget state.
+        rv = client.get("/admin/model2/ajax/edit/?pk=1&field=string_field")
+        data_b = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert 'name="string_field"' in data_b
+        assert 'data-role="datepicker"' not in data_b
+
+        # Re-fetching View A still yields its datepicker (no cross-view clobber).
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=date_field")
+        assert 'data-role="datepicker"' in rv.data.decode("utf-8")
 
 
 def test_details_view(
@@ -899,7 +1270,8 @@ def test_editable_list_special_pks(
             },
         )
         data = rv.data.decode("utf-8")
-        assert "Record was successfully saved." == data
+        assert "change-success-1" in data
+        assert 'class="editable-cell"' in data
 
         # ensure the value has changed
         rv = client.get("/admin/model1/")
@@ -3235,7 +3607,7 @@ def test_customising_page_size(
         M1, _ = create_models(sqla_db_ext)
 
         sqla_db_ext.db.session.add_all(
-            [M1(test1=str(f"instance-{x+1:03d}")) for x in range(101)]
+            [M1(test1=str(f"instance-{x + 1:03d}")) for x in range(101)]
         )
 
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)

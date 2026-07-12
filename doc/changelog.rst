@@ -3,8 +3,29 @@ Changelog
 
 [unreleased]
 ------------------
+Breaking changes:
+
+* XEditableWidget has been replaced by HTMXEditableWidget, which removes the dependency on the unmaintained
+  x-editable library. XEditableWidget remains as a deprecated alias, but HTMXEditableWidget should be used for any new
+  development and existing code should be migrated accordingly.
+  Subsequently, the ``get_kwargs`` method on ``XEditableWidget`` no
+  longer has any effect. It existed solely to produce x-editable data
+  attributes which are not used in the new implementation. To customise
+  inline edit rendering, override ``HTMXEditableWidget.__call__`` instead::
+
+      from flask_admin.model.widgets import HTMXEditableWidget
+
+      class CustomWidget(HTMXEditableWidget):
+          def __call__(self, field, **kwargs):
+              # custom rendering logic
+              return super().__call__(field, **kwargs)
+
+* ``ajax/update/`` response format: this endpoint now returns an HTML fragment instead
+  of a plain text string. Any custom JavaScript calling this endpoint
+  directly will need to be updated to handle the new response format.
 
 Bugfixes:
+* HTMX inline editing (``column_editable_list``): the popover cancel button now reliably closes the editor (clicks inside the popover no longer re-open it), records whose primary key contains characters such as ``&`` or ``#`` are now editable (the key is percent-encoded rather than disabling editing), and the edit form targets ``closest .editable-cell`` instead of a duplicated cell ``id``.
 * Fix encoding for editing file in FileAdmin. Now it uses UTF-8 and accepts non-ASCII characters.
 * SQLAlchemy backend: ``conv_ARRAY`` now infers the array element's ``python_type`` and passes it through as the ``Select2TagsField`` ``coerce`` callable. Saving a Postgres ``ARRAY(Integer)`` / ``ARRAY(Float)`` column no longer fails with ``column "x" is of type integer[] but expression is of type text[]`` (closes #1724).
 * Fix sorting arrow direction in admin list view. Now it reflects the current sorting state (closes #2933).
