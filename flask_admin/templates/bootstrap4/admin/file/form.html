@@ -7,3 +7,7 @@
     {{ lib.render_form(form, dir_url) }}
   {% endblock %}
 {% endblock %}
+
+{% block tail %}
+  {{ lib.form_js() }}
+{% endblock %}

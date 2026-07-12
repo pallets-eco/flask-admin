@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 Bugfixes:
+* Prevent double-clicking of submit buttons in forms by disabling the button on submit. This applies to regular forms and forms in modals (e.g. file edit form in FileAdmin). This should help prevent duplicate records from being created when users double-click the submit button.
 * Fix encoding for editing file in FileAdmin. Now it uses UTF-8 and accepts non-ASCII characters.
 * SQLAlchemy backend: ``conv_ARRAY`` now infers the array element's ``python_type`` and passes it through as the ``Select2TagsField`` ``coerce`` callable. Saving a Postgres ``ARRAY(Integer)`` / ``ARRAY(Float)`` column no longer fails with ``column "x" is of type integer[] but expression is of type text[]`` (closes #1724).
 * Fix sorting arrow direction in admin list view. Now it reflects the current sorting state (closes #2933).
