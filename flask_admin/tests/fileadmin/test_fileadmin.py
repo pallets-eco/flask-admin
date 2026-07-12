@@ -138,6 +138,11 @@ class Base:
             assert rv.status_code == 200
             assert "dummy_dir" in rv.data.decode("utf-8")
 
+            # rename - directory (modal)
+            rv = client.get("/admin/myfileadmin/rename/?path=dummy_dir&modal=1")
+            assert rv.status_code == 200
+            assert "dummy_dir" in rv.data.decode("utf-8")
+
             rv = client.post(
                 "/admin/myfileadmin/rename/?path=dummy_dir",
                 data=dict(name="dummy_renamed_dir", path="dummy_dir"),
@@ -237,6 +242,135 @@ class Base:
             assert rv.status_code == 200
             data = rv.data.decode("utf-8")
             assert "fa_modal_window" not in data
+
+        @pytest.mark.parametrize(
+            "url, expected, action_url, post_data, expected_post_res",
+            [
+                (
+                    "/mkdir/?modal=1",
+                    [
+                        "Create Directory",
+                        "modal-header",
+                        "modal-body",
+                    ],
+                    "/admin/mymodalfileadmin/mkdir/",
+                    {"name": "dummy_dir"},
+                    [
+                        "Successfully created directory: dummy_dir",
+                        'name="path" type="hidden" value="dummy_dir"',
+                    ],
+                ),
+                (
+                    "/upload/?modal=1",
+                    [
+                        "Upload File",
+                        "modal-header",
+                        "modal-body",
+                    ],
+                    "/admin/mymodalfileadmin/upload/",
+                    dict(upload=(BytesIO(b""), "dummy3.txt")),
+                    [
+                        "Successfully saved file: dummy3.txt",
+                        'name="path" type="hidden" value="dummy3.txt"',
+                    ],
+                ),
+                (
+                    "/edit/?path=dummy.txt&modal=1",
+                    [
+                        "Editing dummy.txt",
+                        "modal-header",
+                        "modal-body",
+                    ],
+                    "/admin/mymodalfileadmin/edit/?path=dummy.txt",
+                    {"content": "dummy file 😁\n"},
+                    ["Changes to dummy.txt saved successfully"],
+                ),
+                (
+                    "/rename/?path=dummy.txt&modal=1",
+                    [
+                        "Rename dummy.txt",
+                        "modal-header",
+                        "modal-body",
+                    ],
+                    "/admin/mymodalfileadmin/rename/?path=",
+                    {"path": "dummy.txt", "name": "dummy_renamed.txt"},
+                    [
+                        "Successfully renamed",
+                        "dummy_renamed.txt",
+                        'name="path" type="hidden" value="dummy_renamed.txt"',
+                    ],
+                ),
+            ],
+        )
+        def test_file_admin_modal(
+            self,
+            app: Flask,
+            admin: Admin,
+            url: str,
+            expected: list[str],
+            action_url: str,
+            post_data: dict[str, str],
+            expected_post_res: list[str],
+            request: pytest.FixtureRequest,
+        ) -> None:
+            fileadmin_class = self.fileadmin_class()
+            fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+
+            class MyModalFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+                editable_extensions = ("txt",)
+                rename_modal = True
+                edit_modal = True
+                mkdir_modal = True
+                upload_modal = True
+
+            view_kwargs = dict(fileadmin_kwargs)
+            view_kwargs.setdefault("name", "Files")
+            view = MyModalFileAdmin(*fileadmin_args, **view_kwargs)
+            admin.add_view(view)
+
+            client = app.test_client()
+
+            def finalizer() -> None:
+                restored_file = (BytesIO(b"new_string\n"), "dummy.txt")
+                client.post(
+                    "/admin/mymodalfileadmin/upload/", data={"upload": restored_file}
+                )
+                for p in [
+                    "dummy_renamed.txt",
+                    "dummy3.txt",
+                    "dummy_dir",
+                    "dummy_renamed_dir",
+                ]:
+                    client.post("/admin/mymodalfileadmin/delete/", data={"path": p})
+
+            request.addfinalizer(finalizer)
+
+            if fileadmin_class is S3FileAdmin and action_url.startswith(
+                "/admin/mymodalfileadmin/edit/"
+            ):
+                pytest.skip(
+                    "Skipping edit tests as S3FileAdmin has no edit file functionality."
+                )
+
+            rv = client.get(f"/admin/mymodalfileadmin{url}")
+            assert rv.status_code == 200
+            data = rv.data.decode("utf-8")
+
+            assert f'action="{action_url}"' in data
+            for ex in expected:
+                assert ex in data, f"Expected '{ex}' , but it was not found."
+
+            # Ensure any file-like object is reset for this request
+            if "upload" in post_data and isinstance(post_data["upload"], tuple):
+                _, fname = post_data["upload"]
+                post_data["upload"] = (BytesIO(b""), fname)
+
+            rv = client.post(action_url, data=post_data, follow_redirects=True)
+            assert rv.status_code == 200
+            data = rv.data.decode("utf-8")
+
+            for ex in expected_post_res:
+                assert ex in data, f"Expected '{ex}' , but it was not found."
 
 
 class TestLocalFileAdmin(Base.FileAdminTests):
