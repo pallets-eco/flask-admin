@@ -171,6 +171,8 @@ def test_query_ajax_model_loader_format_handles_dbref(db: t.Any) -> None:
     assert value == str(missing_id)
     assert "missing" in label
     assert str(missing_id) in label
+
+
 def test_api_file_view_sets_content_disposition(
     app: Flask, db: t.Any, admin: Admin
 ) -> None:
