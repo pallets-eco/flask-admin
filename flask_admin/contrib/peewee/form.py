@@ -10,7 +10,6 @@ from peewee import TimeField
 from wtforms import Field
 from wtforms import fields
 from wtforms.form import BaseForm
-from wtforms.form import Form
 from wtfpeewee.orm import model_form
 from wtfpeewee.orm import ModelConverter
 
@@ -194,7 +193,7 @@ def get_form(
     field_args: t.Any = None,
     allow_pk: t.Any = None,
     extra_fields: t.Any = None,
-) -> type[Form]:
+) -> type[form.BaseForm]:
     """
     Create form from peewee model and contribute extra fields, if necessary
     """
@@ -288,9 +287,9 @@ class InlineModelConverter(InlineModelConverterBase):
         self,
         converter: t.Any,
         model: t.Any,
-        form_class: type[Form],
+        form_class: type[BaseForm],
         inline_model: t.Union[T_PEEWEE_MODEL, InlineFormAdmin],
-    ) -> type[Form]:
+    ) -> type[BaseForm]:
         # Find property from target model to current model
         reverse_field = None
 
