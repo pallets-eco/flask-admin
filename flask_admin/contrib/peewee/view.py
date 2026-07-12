@@ -14,6 +14,7 @@ from peewee import PrimaryKeyField
 from peewee import SqliteDatabase
 from peewee import TextField
 from wtforms import Form
+from wtforms.form import BaseForm
 
 from flask_admin._compat import string_types
 from flask_admin.actions import action
@@ -332,7 +333,7 @@ class ModelView(BaseModelView):
         )
 
         if self.inline_models:
-            form_class = self.scaffold_inline_form_models(form_class)
+            form_class = self.scaffold_inline_form_models(form_class)  # type: ignore[assignment]
 
         return form_class
 
@@ -361,10 +362,9 @@ class ModelView(BaseModelView):
 
         return create_editable_list_form(self.form_base_class, form_class, widget)
 
-    def scaffold_inline_form_models(self, form_class: type[Form]) -> type[Form]:
+    def scaffold_inline_form_models(self, form_class: type[BaseForm]) -> type[BaseForm]:
         converter = self.model_form_converter(self)
         inline_converter = self.inline_model_form_converter(self)
-
         for m in self.inline_models:  # type: ignore[union-attr]
             form_class = inline_converter.contribute(
                 converter,
