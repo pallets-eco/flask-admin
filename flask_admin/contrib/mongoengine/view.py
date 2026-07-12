@@ -9,6 +9,7 @@ from flask import abort
 from flask import flash
 from flask import request
 from flask import Response
+from flask import send_file
 from mongoengine import Document
 from mongoengine import QuerySet
 from mongoengine.connection import get_db
@@ -22,6 +23,7 @@ from flask_admin.babel import gettext
 from flask_admin.babel import lazy_gettext
 from flask_admin.babel import ngettext
 from flask_admin.contrib.mongoengine.ajax import QueryAjaxModelLoader
+from flask_admin.contrib.mongoengine.helpers import gridfs_content_type
 from flask_admin.model import BaseModelView
 from flask_admin.model.form import BaseListForm
 from flask_admin.model.form import create_editable_list_form
@@ -724,10 +726,11 @@ class ModelView(BaseModelView):
         if not data:
             abort(404)
 
-        return Response(
-            data.read(),
-            content_type=data.content_type,
-            headers={"Content-Length": data.length},  # type: ignore[arg-type]
+        return send_file(
+            data,
+            mimetype=gridfs_content_type(data),
+            download_name=data.filename,
+            as_attachment=False,
         )
 
     # Default model actions
