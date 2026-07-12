@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 Bugfixes:
+* ``BaseTimeBetweenFilter.validate()`` now returns ``False`` on invalid input instead of raising an exception.
 * Fix encoding for editing file in FileAdmin. Now it uses UTF-8 and accepts non-ASCII characters.
 * SQLAlchemy backend: ``conv_ARRAY`` now infers the array element's ``python_type`` and passes it through as the ``Select2TagsField`` ``coerce`` callable. Saving a Postgres ``ARRAY(Integer)`` / ``ARRAY(Float)`` column no longer fails with ``column "x" is of type integer[] but expression is of type text[]`` (closes #1724).
 * Fix sorting arrow direction in admin list view. Now it reflects the current sorting state (closes #2933).
