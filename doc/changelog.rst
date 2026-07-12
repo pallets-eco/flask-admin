@@ -9,6 +9,7 @@ Bugfixes:
 * SQLAlchemy backend: ``conv_ARRAY`` now infers the array element's ``python_type`` and passes it through as the ``Select2TagsField`` ``coerce`` callable. Saving a Postgres ``ARRAY(Integer)`` / ``ARRAY(Float)`` column no longer fails with ``column "x" is of type integer[] but expression is of type text[]`` (closes #1724).
 * Fix sorting arrow direction in admin list view. Now it reflects the current sorting state (closes #2933).
 * MongoEngine fileadmin backend: downloading GridFS files now preserves their name and extension instead of saving them as ``file`` (closes #2916).
+* MongoEngine backend: stop reading the deprecated ``GridOut.contentType`` property. File downloads and list/form widgets now resolve the MIME type via ``metadata["content_type"]``, the GridFS document directly (for legacy data), or filename-based guessing (closes #2920).
 
 Type hints:
 * Type hints added to all functions and methods (some using `typing.Any` where full typing not yet available)

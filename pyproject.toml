@@ -166,12 +166,6 @@ filterwarnings = [
 
     "default:datetime\\.datetime\\.utcnow\\(\\) is deprecated and scheduled for removal in a future version:DeprecationWarning",
 
-    # PyMongo deprecated the camel-cased GridOut.contentType alias accessed by
-    # ``GridOut.content_type``. Mongoengine's ``FileField`` still exposes
-    # ``content_type`` and Flask-Admin mirrors that. Remove when the upstream
-    # property is replaced.
-    "default:GridOut property 'contentType' is deprecated and will be removed in PyMongo 5\\.0:DeprecationWarning",
-
     # `flask.testing` accesses this attribute; remove when they have updated their code.
     "default:The '__version__' attribute is deprecated and will be removed in Werkzeug 3\\.1\\.:DeprecationWarning",
 
