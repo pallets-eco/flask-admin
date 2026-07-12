@@ -11,6 +11,7 @@ Bugfixes:
 * Fix sorting arrow direction in admin list view. Now it reflects the current sorting state (closes #2933).
 * MongoEngine fileadmin backend: downloading GridFS files now preserves their name and extension instead of saving them as ``file`` (closes #2916).
 * MongoEngine backend: stop reading the deprecated ``GridOut.contentType`` property. File downloads and list/form widgets now resolve the MIME type via ``metadata["content_type"]``, the GridFS document directly (for legacy data), or filename-based guessing (closes #2920).
+* MongoEngine backend: ``QueryAjaxModelLoader.format`` now handles unresolved ``DBRef`` values gracefully instead of crashing with ``AttributeError: 'DBRef' object has no attribute 'pk'`` (which surfaced as HTTP 500 from the autocomplete endpoint when a ``ReferenceField`` target was deleted). Broken references are shown as ``(missing: <collection>/<id>)`` so users can clear them (closes #2917).
 
 Type hints:
 * Type hints added to all functions and methods (some using `typing.Any` where full typing not yet available)

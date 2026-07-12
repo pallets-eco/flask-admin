@@ -1,5 +1,7 @@
 import typing as t
 
+from bson import ObjectId
+from bson.dbref import DBRef
 from flask import Flask
 from mongoengine import Document
 from mongoengine import FileField
@@ -145,6 +147,30 @@ def test_model(app: Flask, db: t.Any, admin: Admin) -> None:
     data = rv.data.decode("utf-8")
     assert "test2large" not in data
     assert "test2" in data
+
+
+def test_query_ajax_model_loader_format_handles_dbref(db: t.Any) -> None:
+    """Regression test for #2917: ``QueryAjaxModelLoader.format`` must not
+    crash with ``AttributeError`` when MongoEngine cannot dereference a
+    ``ReferenceField`` and returns a raw ``DBRef`` instead of a ``Document``.
+    """
+
+    class RefTarget(Document):  # type: ignore[misc]
+        meta = {"collection": "ref_target"}
+        name = StringField()
+
+    loader = QueryAjaxModelLoader("ref", RefTarget, fields=["name"])
+
+    missing_id = ObjectId()
+    dbref = DBRef(collection="ref_target", id=missing_id)
+
+    result = loader.format(dbref)
+
+    assert result is not None
+    value, label = result
+    assert value == str(missing_id)
+    assert "missing" in label
+    assert str(missing_id) in label
 
 
 def test_api_file_view_sets_content_disposition(
