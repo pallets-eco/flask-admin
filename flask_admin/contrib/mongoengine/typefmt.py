@@ -11,7 +11,6 @@ from flask_admin.model.typefmt import BASE_FORMATTERS
 from flask_admin.model.typefmt import list_formatter
 
 from . import helpers
-from .helpers import gridfs_content_type
 
 if t.TYPE_CHECKING:
     from . import ModelView
