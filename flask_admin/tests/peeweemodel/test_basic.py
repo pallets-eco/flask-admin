@@ -1014,7 +1014,7 @@ def test_form_choices(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> No
     form_obj = view.create_form()
 
     # Check that select field is rendered with correct choices
-    assert type(form_obj.status).__name__ == "Select2Field"  # type: ignore[attr-defined]
+    assert isinstance(form_obj.status, form.Select2Field)  # type: ignore[attr-defined]
     assert form_obj.status.choices == status_choices  # type: ignore[attr-defined]
 
     # Nullable field should allow blank
