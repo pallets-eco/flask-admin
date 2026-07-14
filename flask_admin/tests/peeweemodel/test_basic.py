@@ -7,6 +7,7 @@ import peewee
 from flask import Flask
 from peewee import SqliteDatabase
 from wtforms import fields
+from wtforms import StringField
 from wtforms import validators
 
 from flask_admin import Admin
@@ -1180,3 +1181,35 @@ def test_export_csv(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None
     data = rv.data.decode("utf-8")
     assert rv.status_code == 200
     assert len(data.splitlines()) > 21
+
+
+def test_inline_admin_form_extra_fields(
+    app: Flask, db: peewee.SqliteDatabase, admin: Admin
+) -> None:
+    Model1, Model2 = create_models(db)
+
+    view = CustomModelView(
+        Model1,
+        inline_models=[
+            (
+                Model2,
+                {
+                    "form_extra_fields": {
+                        "extra_field": StringField("Extra Field"),
+                    }
+                },
+            )
+        ],
+    )
+    admin.add_view(view)
+
+    form_class = view.get_form()
+    form = form_class()
+
+    inline_field = form._fields["model2_set"]
+
+    child_form_class = inline_field.form  # type: ignore[attr-defined]
+
+    child_form = child_form_class()
+
+    assert "extra_field" in child_form._fields
