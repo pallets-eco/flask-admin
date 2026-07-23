@@ -1,3 +1,5 @@
+import datetime
+import random
 import uuid
 
 import peewee
@@ -151,5 +153,22 @@ if __name__ == "__main__":
         # Create relationships
         BookCategory.get_or_create(isbn=book1, category=cat1)
         BookCategory.get_or_create(isbn=book2, category=cat2)
+
+        # Seed additional users and posts for list pagination verification
+        users = []
+        for idx in range(1, 21):
+            user, _ = User.get_or_create(
+                username=f"user{idx}",
+                defaults={"email": f"user{idx}@example.com"},
+            )
+            users.append(user)
+
+        for idx in range(1, 51):
+            Post.create(
+                title=f"Sample Post {idx}",
+                text=f"Lorem ipsum dolor sit amet, generated entry {idx}.",
+                date=datetime.datetime.utcnow() - datetime.timedelta(days=idx),
+                user=random.choice(users),
+            )
 
     app.run(debug=True)
