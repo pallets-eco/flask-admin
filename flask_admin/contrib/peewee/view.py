@@ -4,6 +4,7 @@ from typing import TypeGuard
 
 from flask import flash
 from peewee import CharField
+from peewee import DoesNotExist
 from peewee import Expression
 from peewee import Field
 from peewee import ForeignKeyField
@@ -526,10 +527,15 @@ class ModelView(BaseModelView):
 
     def get_one(self, id: t.Any) -> t.Any:
         if self.model._meta.composite_key:
-            return self.model.get(  # type: ignore[no-untyped-call]
-                **dict(zip(self.model._meta.primary_key.field_names, id, strict=False))
+            kwargs = dict(
+                zip(self.model._meta.primary_key.field_names, id, strict=False)
             )
-        return self.model.get(**{self._primary_key: id})  # type: ignore[no-untyped-call]
+        else:
+            kwargs = {self._primary_key: id}
+        try:
+            return self.model.get(**kwargs)  # type: ignore[no-untyped-call]
+        except DoesNotExist:
+            return None
 
     def create_model(self, form: Form) -> t.Union[bool, T_PEEWEE_MODEL]:
         try:
