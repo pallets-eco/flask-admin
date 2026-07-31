@@ -341,6 +341,48 @@ def test_details_view(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> No
     assert "5000" not in data
 
 
+def test_get_one_missing_record(
+    app: Flask, db: peewee.SqliteDatabase, admin: Admin
+) -> None:
+    Model1, Model2 = create_models(db)
+
+    view = CustomModelView(Model2, can_view_details=True, can_delete=True)
+    admin.add_view(view)
+
+    fill_db(Model1, Model2)
+
+    client = app.test_client()
+
+    # a record that does not exist is not an error: get_one returns None and the
+    # view redirects with a message, rather than raising peewee's DoesNotExist
+    assert view.get_one(999999) is None
+
+    rv = client.get("/admin/model2/details/?url=%2Fadmin%2Fmodel2%2F&id=999999")
+    assert rv.status_code == 302
+
+    rv = client.get(
+        "/admin/model2/details/?url=%2Fadmin%2Fmodel2%2F&id=999999",
+        follow_redirects=True,
+    )
+    assert rv.status_code == 200
+    assert "Record does not exist." in rv.data.decode("utf-8")
+
+    rv = client.get("/admin/model2/edit/?url=%2Fadmin%2Fmodel2%2F&id=999999")
+    assert rv.status_code == 302
+
+    rv = client.post(
+        "/admin/model2/delete/",
+        data={"id": "999999", "url": "/admin/model2/"},
+        follow_redirects=True,
+    )
+    assert rv.status_code == 200
+    assert "Record does not exist." in rv.data.decode("utf-8")
+
+    # an id that cannot match the primary key behaves the same way
+    rv = client.get("/admin/model2/details/?url=%2Fadmin%2Fmodel2%2F&id=notanint")
+    assert rv.status_code == 302
+
+
 def test_column_filters(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None:
     Model1, Model2 = create_models(db)
 
