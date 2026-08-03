@@ -1,0 +1,23 @@
+{% if icon_only %}
+<div class="nav-item">
+  <a href="#" class="nav-link px-0 hide-theme-dark" data-admin-theme-toggle title="Enable dark mode">
+    <i class="ti ti-moon-stars"></i>
+  </a>
+  <a href="#" class="nav-link px-0 hide-theme-light" data-admin-theme-toggle title="Enable light mode">
+    <i class="ti ti-sun"></i>
+  </a>
+</div>
+{% else %}
+<ul class="navbar-nav">
+  <li class="nav-item">
+    <a href="#" class="nav-link hide-theme-dark" data-admin-theme-toggle title="Enable dark mode">
+      <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-moon-stars"></i></span>
+      <span class="nav-link-title">Dark mode</span>
+    </a>
+    <a href="#" class="nav-link hide-theme-light" data-admin-theme-toggle title="Enable light mode">
+      <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-sun"></i></span>
+      <span class="nav-link-title">Light mode</span>
+    </a>
+  </li>
+</ul>
+{% endif %}
