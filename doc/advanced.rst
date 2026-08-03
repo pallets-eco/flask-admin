@@ -37,6 +37,10 @@ of how to configure Flask-Admin to inject CSP nonce values::
         app,
         content_security_policy={
             "default-src": "'self'",
+            "script-src": "'self'",
+            "style-src": "'self' 'unsafe-inline' fonts.googleapis.com ",
+            "font-src": "'self' fonts.gstatic.com data: ",
+            "img-src": "'self' data: ",
         },
         content_security_policy_nonce_in=["script-src", "style-src"]
     )
