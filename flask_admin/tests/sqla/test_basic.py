@@ -718,7 +718,12 @@ def test_column_editable_list(
 
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(
-            Model1, param, column_editable_list=["test1", "enum_field"]
+            Model1,
+            param,
+            column_editable_list=["test1", "test2", "enum_field"],
+            column_formatters={
+                "test2": lambda v, c, m, p: m.test2.upper() if m.test2 else ""
+            },
         )
         admin.add_view(view)
 
@@ -734,6 +739,7 @@ def test_column_editable_list(
         rv = client.get("/admin/model1/")
         data = rv.data.decode("utf-8")
         assert 'data-role="x-editable"' in data
+        assert "test1_val_1" in data
 
         # Form - Test basic in-line edit functionality
         rv = client.post(
@@ -749,7 +755,10 @@ def test_column_editable_list(
         # ensure the value has changed
         rv = client.get("/admin/model1/")
         data = rv.data.decode("utf-8")
+
         assert "change-success-1" in data
+        assert 'data-value="change-success-1"' in data
+        assert "change-success-1</a>" in data
 
         # Test validation error
         rv = client.post(
@@ -799,64 +808,60 @@ def test_column_editable_list(
         assert "test1_val_3" in data
 
 
-def test_details_view(
+def test_column_editable_list_with_column_formatter(
     app: Flask,
     sqla_db_ext: T_ANY_SQLA_PROVIDER,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
+    """Tests column_editable_list with a column_formatter defined for the same field"""
+
     with app.app_context():
         Model1, Model2 = create_models(sqla_db_ext)
-
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
-        view_no_details = CustomModelView(Model1, param)
-        admin.add_view(view_no_details)
 
-        # fields are scaffolded
-        view_w_details = CustomModelView(Model2, param, can_view_details=True)
-        admin.add_view(view_w_details)
-
-        # show only specific fields in details w/ column_details_list
-        string_field_view = CustomModelView(
-            Model2,
+        view = CustomModelView(
+            Model1,
             param,
-            can_view_details=True,
-            column_details_list=["string_field"],
-            endpoint="sf_view",
+            column_editable_list=["test2"],
+            column_formatters={
+                "test2": lambda v, c, m, p: m.test2.upper() if m.test2 else ""
+            },
         )
-        admin.add_view(string_field_view)
+        admin.add_view(view)
+
+        # Test in-line editing for relations
+        view = CustomModelView(Model2, param, column_editable_list=["model1"])
+        admin.add_view(view)
 
         fill_db(sqla_db_ext, Model1, Model2)
 
         client = app.test_client()
 
-        # ensure link to details is hidden when can_view_details is disabled
+        # Test in-line edit field rendering
         rv = client.get("/admin/model1/")
         data = rv.data.decode("utf-8")
-        assert "/admin/model1/details/" not in data
+        assert 'data-role="x-editable"' in data
+        assert 'data-value="test2_val_1"' in data
+        assert "TEST2_VAL_1</a>" in data
 
-        # ensure link to details view appears
-        rv = client.get("/admin/model2/")
+        # Form - Test in-line edit with column_formatter
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={
+                "list_form_pk": "1",
+                "test2": "change-success-2",
+            },
+        )
         data = rv.data.decode("utf-8")
-        assert "/admin/model2/details/" in data
+        assert "Record was successfully saved." == data
 
-        # test redirection when details are disabled
-        rv = client.get("/admin/model1/details/?url=%2Fadmin%2Fmodel1%2F&id=1")
-        assert rv.status_code == 302
-
-        # test if correct data appears in details view when enabled
-        rv = client.get("/admin/model2/details/?url=%2Fadmin%2Fmodel2%2F&id=1")
+        # ensure the value has changed
+        rv = client.get("/admin/model1/")
         data = rv.data.decode("utf-8")
-        assert "String Field" in data
-        assert "test2_val_1" in data
-        assert "test1_val_1" in data
 
-        # test column_details_list
-        rv = client.get("/admin/sf_view/details/?url=%2Fadmin%2Fsf_view%2F&id=1")
-        data = rv.data.decode("utf-8")
-        assert "String Field" in data
-        assert "test2_val_1" in data
-        assert "test1_val_1" not in data
+        assert 'data-value="change-success-2"' in data
+        assert "CHANGE-SUCCESS-2</a>" in data
 
 
 def test_editable_list_special_pks(
@@ -905,6 +910,66 @@ def test_editable_list_special_pks(
         rv = client.get("/admin/model1/")
         data = rv.data.decode("utf-8")
         assert "change-success-1" in data
+
+
+def test_details_view(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+
+        view_no_details = CustomModelView(Model1, param)
+        admin.add_view(view_no_details)
+
+        # fields are scaffolded
+        view_w_details = CustomModelView(Model2, param, can_view_details=True)
+        admin.add_view(view_w_details)
+
+        # show only specific fields in details w/ column_details_list
+        string_field_view = CustomModelView(
+            Model2,
+            param,
+            can_view_details=True,
+            column_details_list=["string_field"],
+            endpoint="sf_view",
+        )
+        admin.add_view(string_field_view)
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        # ensure link to details is hidden when can_view_details is disabled
+        rv = client.get("/admin/model1/")
+        data = rv.data.decode("utf-8")
+        assert "/admin/model1/details/" not in data
+
+        # ensure link to details view appears
+        rv = client.get("/admin/model2/")
+        data = rv.data.decode("utf-8")
+        assert "/admin/model2/details/" in data
+
+        # test redirection when details are disabled
+        rv = client.get("/admin/model1/details/?url=%2Fadmin%2Fmodel1%2F&id=1")
+        assert rv.status_code == 302
+
+        # test if correct data appears in details view when enabled
+        rv = client.get("/admin/model2/details/?url=%2Fadmin%2Fmodel2%2F&id=1")
+        data = rv.data.decode("utf-8")
+        assert "String Field" in data
+        assert "test2_val_1" in data
+        assert "test1_val_1" in data
+
+        # test column_details_list
+        rv = client.get("/admin/sf_view/details/?url=%2Fadmin%2Fsf_view%2F&id=1")
+        data = rv.data.decode("utf-8")
+        assert "String Field" in data
+        assert "test2_val_1" in data
+        assert "test1_val_1" not in data
 
 
 def test_column_filters(

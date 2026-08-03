@@ -90,7 +90,9 @@ class XEditableWidget:
 
     def __call__(self, field: Field, **kwargs: t.Any) -> str:
         display_value = kwargs.pop("display_value", "")
-        kwargs.setdefault("data-value", display_value)
+        # kwargs.setdefault("data-value", display_value)
+        value = kwargs.pop("value", "")
+        kwargs.setdefault("data-value", value)
 
         kwargs.setdefault("data-role", "x-editable")
         kwargs.setdefault("data-url", "./ajax/update/")
