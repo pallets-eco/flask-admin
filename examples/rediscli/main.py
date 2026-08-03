@@ -17,6 +17,9 @@ def index():
 if __name__ == "__main__":
     with RedisContainer() as redis_container:
         redis_client = redis_container.get_client()
+        print("\n\n=============================")
+        print(f"using Redis in Docker container {redis_container}")
+
         admin.add_view(
             RedisCli(
                 Redis(
