@@ -1,17 +1,28 @@
+import enum
 import inspect
 import typing as t
 from unittest.mock import MagicMock
 
 import pytest
+import sqlalchemy as sa
+import sqlalchemy_utils as sau
 import wtforms
+from flask import Flask
 from sqlalchemy import ARRAY
 from sqlalchemy import Column
 from sqlalchemy import Float
 from sqlalchemy import Integer
 from sqlalchemy import String
 from wtforms.fields.simple import StringField
+from wtforms.validators import Length
+from wtforms.validators import NumberRange
 
+from flask_admin.base import Admin
 from flask_admin.contrib.sqla.form import AdminModelConverter
+from flask_admin.tests.conftest import skip_or_return_session_or_db
+from flask_admin.tests.conftest import T_ANY_SQLA_PROVIDER
+from flask_admin.tests.conftest import T_LITERAL_SESSION_OR_DB
+from flask_admin.tests.sqla.test_basic import CustomModelView
 
 sqla_admin_model_converters = [
     method_name
@@ -142,3 +153,141 @@ class TestArrayConverter:
 
         bound.process_formdata(["x,y"])
         assert bound.data == ["x", "y"]
+
+
+class IntEnumChoices(enum.Enum):
+    First = 101
+    Second = 150
+
+
+class StrEnumChoices(enum.Enum):
+    First = "101"
+    Second = "150"
+
+
+def create_models(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> t.Any:
+    class Model1(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        __tablename__ = "model1"
+
+        id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+        test1 = sa.Column(sa.String(20))
+        int_field = sa.Column(sa.Integer)
+        float_field = sa.Column(sa.Float)
+        choice_field = sa.Column(sa.String, nullable=True)
+        enum_field = sa.Column(sa.Enum("101", "150"), nullable=True)  # type: ignore[var-annotated]
+        enum_type_field = sa.Column(sa.Enum(IntEnumChoices), nullable=True)  # type: ignore[var-annotated]
+        sau_choicetype = sa.Column(
+            sau.ChoiceType(
+                [("101", "First"), ("150", "Second")]
+            )  # default impl=sa.String()
+        )
+        sau_choicetype_impl_int = sa.Column(
+            sau.ChoiceType([(101, "First"), (150, "Second")], impl=sa.Integer())
+        )
+        sau_choicetype_with_intenum = sa.Column(
+            sau.ChoiceType(IntEnumChoices, impl=sa.Integer())
+        )
+        sau_choicetype_with_strenum = sa.Column(
+            sau.ChoiceType(StrEnumChoices, impl=sa.String())
+        )
+
+        def __str__(self) -> str:
+            return str(self.test1.value) if self.test1 else ""
+
+    sqla_db_ext.create_all()
+
+    return Model1
+
+
+def prepare_kwargs(
+    expected_coerce: type[t.Any],
+    use_coerce_explicitly: bool,
+    field_name: str,
+) -> dict[str, t.Any]:
+    validators: list[t.Any] = []
+    kwargs: dict[str, t.Any] = dict()
+
+    if expected_coerce in [int, float]:
+        f_choices = [(expected_coerce(101), "First"), (expected_coerce(150), "Second")]
+        validators = [NumberRange(min=100, max=199)]
+        kwargs["form_choices"] = {field_name: f_choices}
+
+    elif expected_coerce is str:
+        f_choices = [(expected_coerce(101), "First"), (expected_coerce(150), "Second")]
+        validators = [Length(min=1, max=3)]
+        kwargs["form_choices"] = {field_name: f_choices}
+
+    elif expected_coerce in [IntEnumChoices, StrEnumChoices]:
+        pass
+
+    kwargs["form_columns"] = [field_name]
+
+    if use_coerce_explicitly:
+        kwargs["form_args"] = dict()
+        kwargs["form_args"][field_name] = {"validators": validators}
+        kwargs["form_args"][field_name]["coerce"] = expected_coerce
+
+    return kwargs
+
+
+@pytest.mark.parametrize("use_coerce_explicitly", [False, True])
+@pytest.mark.parametrize(
+    "field_name, expected_coerce, coerced_value, model_value",
+    [
+        ("int_field", int, "101", 101),
+        ("float_field", float, "101.0", 101.0),
+        ("choice_field", str, "101", "101"),
+        ("enum_field", str, "101", "101"),
+        ("enum_type_field", IntEnumChoices, "First", IntEnumChoices.First),
+        ("sau_choicetype", str, "101", sau.Choice("101", "First")),
+        ("sau_choicetype_impl_int", int, "101", sau.Choice(101, "First")),
+        ("sau_choicetype_with_intenum", IntEnumChoices, "101", IntEnumChoices.First),
+        ("sau_choicetype_with_strenum", StrEnumChoices, "101", StrEnumChoices.First),
+    ],
+)
+def test_coerce(
+    app: Flask,
+    admin: Admin,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+    field_name: str,
+    expected_coerce: type[t.Any],
+    use_coerce_explicitly: bool,
+    coerced_value: t.Any,
+    model_value: t.Any,
+) -> None:
+    with app.app_context():
+        Model1 = create_models(sqla_db_ext)
+        sqla_db_ext.db.session.add_all(
+            [
+                Model1(test1="101", int_field=101),
+                Model1(test1="102", int_field=102),
+            ]
+        )
+        sqla_db_ext.db.session.commit()
+
+        kwargs = prepare_kwargs(expected_coerce, use_coerce_explicitly, field_name)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+
+        view1 = CustomModelView(Model1, param, name="My Model1", **kwargs)
+        admin.add_view(view1)
+
+    client = app.test_client()
+
+    rv = client.get("/admin/model1/new/")
+    data = rv.data.decode("utf-8")
+    assert f'value="{coerced_value}"' in data
+    assert ">First</option>" in data
+
+    rv = client.post(
+        "/admin/model1/new/",
+        data={field_name: f"{coerced_value}"},
+        follow_redirects=True,
+    )
+    data = rv.data.decode("utf-8")
+    assert "Record was successfully created" in data
+
+    inserted = sqla_db_ext.db.session.query(Model1).order_by(Model1.id.desc()).first()
+    assert inserted is not None
+    assert getattr(inserted, field_name) == model_value
