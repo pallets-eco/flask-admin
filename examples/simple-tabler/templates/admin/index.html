@@ -1,0 +1,22 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+{{ super() }}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <h1>Flask-Admin example</h1>
+            <p class="lead">
+                Simple admin views, not related to models.
+            </p>
+            <p>
+                This example shows how to add your own views to the admin interface. The views do not have to be associated
+                to any of your models, and you can fill them with whatever content you want.
+            </p>
+            <p>
+                By adding custom views to the admin interface, they become accessible through the <em>navbar</em> at the top.
+            </p>
+            <a class="btn btn-primary" href="/"><i class="glyphicon glyphicon-chevron-left"></i> Back</a>
+        </div>
+    </div>
+</div>
+{% endblock body %}
