@@ -90,7 +90,7 @@ class InlineModelFormList(InlineFieldList):
         model_id = getattr(obj, self._pk)
 
         attr = getattr(self.model, self.prop)
-        values = self.model.select().where(attr == model_id).execute()  # type: ignore[no-untyped-call]
+        values = self.model.select().where(attr == model_id).execute()
 
         pk_map = dict((str(getattr(v, self._pk)), v) for v in values)
 

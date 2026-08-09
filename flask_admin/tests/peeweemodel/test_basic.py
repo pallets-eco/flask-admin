@@ -34,79 +34,86 @@ class CustomModelView(ModelView):
         super().__init__(model, name, category, endpoint, url)
 
 
+class BaseModel(peewee.Model):
+    id: peewee.AutoField
+
+    class Meta:
+        database = peewee.SqliteDatabase(None)
+
+
+class Model1(BaseModel):
+    def __init__(
+        self,
+        test1: t.Any = None,
+        test2: t.Any = None,
+        test3: t.Any = None,
+        test4: t.Any = None,
+        date_field: t.Any = None,
+        timeonly_field: t.Any = None,
+        datetime_field: t.Any = None,
+        **kwargs: t.Any,
+    ) -> None:
+        super().__init__(**kwargs)
+
+        self.test1 = test1
+        self.test2 = test2
+        self.test3 = test3
+        self.test4 = test4
+        self.date_field = date_field
+        self.timeonly_field = timeonly_field
+        self.datetime_field = datetime_field
+
+    test1 = peewee.CharField(max_length=20, null=True)
+    test2 = peewee.CharField(max_length=20, null=True)
+    test3 = peewee.TextField(null=True)
+    test4 = peewee.TextField(null=True)
+    date_field = peewee.DateField(null=True)
+    timeonly_field = peewee.TimeField(null=True)
+    datetime_field = peewee.DateTimeField(null=True)
+
+    def __str__(self) -> str:
+        # "or ''" fixes error when loading choices for relation field:
+        # TypeError: coercing to Unicode: need string or buffer, NoneType found
+        return self.test1 or ""
+
+
+class Model2(BaseModel):
+    def __init__(
+        self,
+        char_field: t.Any = None,
+        int_field: int | None = None,
+        float_field: float | None = None,
+        bool_field: t.Any = False,
+        **kwargs: t.Any,
+    ) -> None:
+        super().__init__(**kwargs)
+
+        self.char_field = char_field
+        self.int_field = int_field
+        self.float_field = float_field
+        self.bool_field = bool_field
+
+    char_field = peewee.CharField(max_length=20)
+    int_field = peewee.IntegerField(null=True)
+    float_field = peewee.FloatField(null=True)
+    bool_field = peewee.BooleanField()
+
+    # Relation
+    model1 = peewee.ForeignKeyField(Model1, null=True)
+
+
 def create_models(
     db: peewee.SqliteDatabase,
-) -> tuple[type[peewee.Model], type[peewee.Model]]:
-    class BaseModel(peewee.Model):
-        class Meta:
-            database = db
-
-    class Model1(BaseModel):
-        def __init__(
-            self,
-            test1: t.Any = None,
-            test2: t.Any = None,
-            test3: t.Any = None,
-            test4: t.Any = None,
-            date_field: t.Any = None,
-            timeonly_field: t.Any = None,
-            datetime_field: t.Any = None,
-            **kwargs: t.Any,
-        ) -> None:
-            super().__init__(**kwargs)
-
-            self.test1 = test1
-            self.test2 = test2
-            self.test3 = test3
-            self.test4 = test4
-            self.date_field = date_field
-            self.timeonly_field = timeonly_field
-            self.datetime_field = datetime_field
-
-        test1 = peewee.CharField(max_length=20, null=True)
-        test2 = peewee.CharField(max_length=20, null=True)
-        test3 = peewee.TextField(null=True)
-        test4 = peewee.TextField(null=True)
-        date_field = peewee.DateField(null=True)
-        timeonly_field = peewee.TimeField(null=True)
-        datetime_field = peewee.DateTimeField(null=True)
-
-        def __str__(self) -> str:
-            # "or ''" fixes error when loading choices for relation field:
-            # TypeError: coercing to Unicode: need string or buffer, NoneType found
-            return self.test1 or ""
-
-    class Model2(BaseModel):
-        def __init__(
-            self,
-            char_field: t.Any = None,
-            int_field: t.Any = None,
-            float_field: t.Any = None,
-            bool_field: peewee.BooleanField | int = 0,
-            **kwargs: t.Any,
-        ) -> None:
-            super().__init__(**kwargs)
-
-            self.char_field = char_field
-            self.int_field = int_field
-            self.float_field = float_field
-            self.bool_field = bool_field
-
-        char_field = peewee.CharField(max_length=20)
-        int_field = peewee.IntegerField(null=True)
-        float_field = peewee.FloatField(null=True)
-        bool_field = peewee.BooleanField()
-
-        # Relation
-        model1 = peewee.ForeignKeyField(Model1, null=True)
-
-    Model1.create_table()
-    Model2.create_table()
+) -> tuple[type[Model1], type[Model2]]:
+    models = (Model1, Model2)
+    db.bind(models)
+    db.connect()
+    db.create_tables(models)
 
     return Model1, Model2
 
 
-def fill_db(Model1: type[t.Any], Model2: type[t.Any]) -> None:
+def fill_db(Model1: type[Model1], Model2: type[Model2]) -> None:
     Model1("test1_val_1", "test2_val_1").save()
     Model1("test1_val_2", "test2_val_2").save()
     Model1("test1_val_3", "test2_val_3").save()
@@ -167,7 +174,7 @@ def test_model(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None:
     rv = client.post("/admin/model1/new/", data=dict(test1="test1large", test2="test2"))
     assert rv.status_code == 302
 
-    model = Model1.select().get()  # type: ignore[no-untyped-call]
+    model = Model1.select().get()
     assert model.test1 == "test1large"
     assert model.test2 == "test2"
     assert model.test3 is None or model.test3 == ""
@@ -184,7 +191,7 @@ def test_model(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None:
     rv = client.post(url, data=dict(test1="test1small", test2="test2large"))
     assert rv.status_code == 302
 
-    model = Model1.select().get()  # type: ignore[no-untyped-call]
+    model = Model1.select().get()
     assert model.test1 == "test1small"
     assert model.test2 == "test2large"
     assert model.test3 is None or model.test3 == ""
@@ -1017,11 +1024,22 @@ def test_form_args(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None:
 
     # ensure shared field_args don't create duplicate validators
     create_form = view.create_form()
-
-    assert len(create_form.test.validators) == 2  # type: ignore[attr-defined]
+    assert (
+        sum(
+            isinstance(v, validators.Regexp)
+            for v in create_form.test.validators  # type: ignore[attr-defined]
+        )
+        == 1
+    )
 
     edit_form = view.edit_form()
-    assert len(edit_form.test.validators) == 2  # type: ignore[attr-defined]
+    assert (
+        sum(
+            isinstance(v, validators.Regexp)
+            for v in edit_form.test.validators  # type: ignore[attr-defined]
+        )
+        == 1
+    )
 
 
 def test_ajax_fk(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None:
@@ -1034,7 +1052,7 @@ def test_ajax_fk(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None:
         test2 = peewee.CharField(max_length=20)
 
         def __str__(self) -> str:
-            return self.test1  # type: ignore[return-value]
+            return self.test1
 
     class Model2(BaseModel):
         model1 = peewee.ForeignKeyField(Model1)
