@@ -56,10 +56,14 @@ jobs:
           - 27017:27017
       azurite:
         image: mcr.microsoft.com/azure-storage/azurite:latest
-        env:
-          executable: blob
         ports:
           - 10000:10000
+        options: >-
+          --entrypoint azurite
+          --
+          --skipApiVersionCheck
+          --blobHost
+          0.0.0.0
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
