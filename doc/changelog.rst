@@ -18,9 +18,10 @@ Bugfixes:
 
 Type hints:
 
-* Type hints added to all functions and methods (some using `typing.Any` where full typing not yet available)
+* Type hints added to all functions and methods (some still use `typing.Any` where full typing not yet available)
 * Updated InlineBaseFormAdmin.get_form() to return type[BaseForm] | None rather than T_MODEL_VIEW | None
 * Minor type hinting improvements for peewee backend
+* Admin(index_view=...) now accepts a BaseView instance rather than AdminIndexView, allowing e.g. FileAdmin
 
 2.2.0
 ------------------
