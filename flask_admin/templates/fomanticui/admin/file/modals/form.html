@@ -1,0 +1,10 @@
+{% import 'admin/lib.html' as lib with context %}
+
+{% block body %}
+  {% block header %}<h3 class="ui centered header">{{ header_text }}</h3>{% endblock %}
+  {% block fa_form %}
+    {% call lib.form_tag(action=request.base_url) %}
+      {{ lib.render_form_fields(form, form_opts=form_opts) }}
+    {% endcall %}
+  {% endblock %}
+{% endblock %}

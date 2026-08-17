@@ -1,0 +1,29 @@
+{# Everything that makes up the Details view - nothing that decides *where* it is rendered #}
+
+{# ---------- search bar ---------- #}
+{% block details_search %}
+  <div class="ui form fa_filter_container">
+    <div class="inline field">
+      <div class="ui search">
+        <div class="ui icon input">
+          <input id="fa_filter" type="text" placeholder="{{ _gettext("Filter") }}">
+          <i class="search icon"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{# ---------- table ---------- #}
+{% block details_table %}
+  <table class="ui striped celled table searchable">
+    {% for c, name in details_columns %}
+      <tr>
+        <td>
+          <b>{{ name }}</b>
+        </td>
+        <td>{{ get_value(model, c) }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}
