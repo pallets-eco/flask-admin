@@ -142,6 +142,31 @@ class CustomModelConverter(ModelConverter):  # type: ignore[misc]
 
         self.overrides = getattr(self.view, "form_overrides", None) or {}
 
+    def convert(self, model: t.Any, field: t.Any, field_args: t.Any) -> t.Any:
+        info = super().convert(model, field, field_args)
+
+        # Override field type if necessary - form_overrides take priority
+        if field.name in self.overrides:
+            return info
+
+        # Check if a list of 'form_choices' are specified
+        form_choices = getattr(self.view, "form_choices", None)
+        if form_choices:
+            choices = form_choices.get(field.name)
+            if choices:
+                kwargs = dict(info.field.kwargs)
+                for k in ("choices", "allow_blank", "coerce"):
+                    kwargs.pop(k, None)
+                return info._replace(
+                    field=form.Select2Field(
+                        choices=choices,
+                        allow_blank=field.null,
+                        **kwargs,
+                    )
+                )
+
+        return info
+
     def handle_foreign_key(
         self, model: t.Any, field: t.Any, **kwargs: t.Any
     ) -> tuple[str, AjaxSelectField] | None:
