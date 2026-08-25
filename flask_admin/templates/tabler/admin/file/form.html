@@ -1,0 +1,23 @@
+{% extends "admin/master.html" %}
+{% import "admin/lib.html" as lib with context %}
+{% block header %}
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">{{ admin_view.category if admin_view.category else _gettext("Admin") }}</div>
+            <h2 class="page-title">{{ admin_view.name }} - {{ header_text }}</h2>
+        </div>
+    </div>
+{% endblock header %}
+{% block body %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ admin_view.name }} - {{ header_text }}</h3>
+        </div>
+        {% block fa_form %}
+            {% call lib.form_tag(action=request.url) %}
+                <div class="card-body">{{ lib.render_form_fields(form) }}</div>
+                <div class="card-footer">{{ lib.render_form_buttons(dir_url) }}</div>
+            {% endcall %}
+        {% endblock fa_form %}
+    </div>
+{% endblock body %}
