@@ -1,0 +1,16 @@
+{% import 'admin/static.html' as admin_static with context %}
+{% import 'admin/lib.html' as lib with context %}
+
+{# store the jinja2 context for form_rules rendering logic #}
+{% set render_ctx = h.resolve_ctx() %}
+
+{% block body %}
+  <h3 class="ui centered header">
+    {% block header_text %}
+      {{ _gettext("Edit Record") + ' #' + request.args.get('id') }}
+    {% endblock %}
+  </h3>
+  {% call lib.form_tag(action=url_for('.edit_view', id=request.args.get('id'), url=return_url)) %}
+    {{ lib.render_form_fields(form, form_opts=form_opts) }}
+  {% endcall %}
+{% endblock %}

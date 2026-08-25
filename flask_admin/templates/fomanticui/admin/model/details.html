@@ -1,0 +1,24 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block body %}
+  {# ---------- header / nav links ---------- #}
+  <h2 class="ui header centered">
+    {{ _gettext("Details") }} - #{{ request.args.get("id") }}
+    {%- if admin_view.can_edit -%}
+      <a class="ui right floated primary icon button"
+         href="{{ get_url('.edit_view', id=request.args.get('id') , url=return_url) }}">
+        <i class="edit icon"></i>
+        {{ _gettext("Edit") }}
+      </a>
+    {%- endif -%}
+  </h2>
+  {% block navlinks %}{% endblock %}
+  {%- include 'admin/model/_details.html' -%}
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  <script {{ admin_csp_nonce_attribute }}
+          src="{{ admin_static.url(filename='fomanticui/js/details_filter.js', v='1.0.0') }}"></script>
+{% endblock %}
