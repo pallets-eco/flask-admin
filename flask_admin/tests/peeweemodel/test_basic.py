@@ -1077,6 +1077,15 @@ def test_ajax_fk(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None:
     mdl = loader.get_one(model.id)  # type: ignore[attr-defined]
     assert mdl.test1 == model.test1
 
+    # a missing pk is not an error: get_one returns None so AjaxSelectField
+    # can render with no selection rather than raising peewee's DoesNotExist
+    assert loader.get_one(999999) is None
+
+    with app.test_request_context("/admin/view/"):
+        form = view.create_form()
+        form.model1.process_formdata([as_unicode(999999)])  # type: ignore[attr-defined]
+        assert form.model1.data is None  # type: ignore[attr-defined]
+
     items = loader.get_list("fir")
     assert len(items) == 1
     assert items[0].id == model.id  # type: ignore[attr-defined, union-attr]
