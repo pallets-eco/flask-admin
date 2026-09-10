@@ -54,21 +54,15 @@ jobs:
         image: mongo:5.0.14-focal
         ports:
           - 27017:27017
-      azurite:
-        image: mcr.microsoft.com/azure-storage/azurite:latest
-        env:
-          executable: blob
-        ports:
-          - 10000:10000
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
           enable-cache: true
           prune-cache: false
           cache-dependency-glob: |
             **/uv.lock
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ matrix.python }}
           allow-prereleases: true
@@ -78,6 +72,14 @@ jobs:
           sudo apt-get install -y libgeos-c1v5
       - name: Check out repository code
         uses: actions/checkout@v7
+      - name: Start Azurite service
+        run: |
+          docker run -d \
+            --name azurite \
+            --network host \
+            -p 10000:10000 \
+            mcr.microsoft.com/azure-storage/azurite:latest \
+            azurite --skipApiVersionCheck --blobHost 0.0.0.0
       - name: Set up PostgreSQL hstore module
         env:
           PGPASSWORD: postgres
@@ -100,13 +102,13 @@ jobs:
         tox: ['docs', 'typing', 'style']
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
           enable-cache: true
           prune-cache: false
           cache-dependency-glob: |
             **/uv.lock
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version-file: pyproject.toml
       - name: cache mypy
