@@ -1,0 +1,29 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block head %}
+  {{ super() }}
+  {{ lib.form_css() }}
+{% endblock %}
+
+{% block body %}
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+      <a href="{{ dir_url }}" class="nav-link">
+        <i class="ti ti-arrow-left me-1"></i>{{ _gettext('Back') }}
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="javascript:void(0)" class="nav-link active">{{ header_text }}</a>
+    </li>
+  </ul>
+
+  {% block fa_form %}
+    {{ lib.render_form(form, dir_url) }}
+  {% endblock %}
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  {{ lib.form_js() }}
+{% endblock %}
