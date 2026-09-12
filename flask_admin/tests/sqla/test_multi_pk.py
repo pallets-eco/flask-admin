@@ -7,6 +7,7 @@ from sqlalchemy import Integer
 from sqlalchemy import String
 
 from ... import Admin
+from ...contrib.sqla import tools
 from ..conftest import skip_or_return_session_or_db
 from ..conftest import T_ANY_SQLA_PROVIDER
 from ..conftest import T_LITERAL_SESSION_OR_DB
@@ -55,6 +56,31 @@ def test_multiple_pk(
         # Correct order is mandatory -> fail here
         rv = client.get("/admin/model/edit/?id=two,1")
         assert rv.status_code == 302
+
+        # Bulk delete with multiple PKs
+        rv = client.post(
+            "/admin/model/new/", data=dict(id=2, id2="three", test="test4")
+        )
+        assert rv.status_code == 302
+        assert sqla_db_ext.db.session.query(Model).count() == 2
+
+        # Submitting mismatched composite PK fields must fail and not delete
+        encoded_mismatched = tools.iterencode([1, "two", "extra"])
+        rv = client.post(
+            "/admin/model/action/",
+            data=dict(action="delete", rowid=[encoded_mismatched]),
+        )
+        assert rv.status_code == 500
+        assert sqla_db_ext.db.session.query(Model).count() == 2
+
+        encoded_id1 = tools.iterencode([1, "two"])
+        encoded_id2 = tools.iterencode([2, "three"])
+        rv = client.post(
+            "/admin/model/action/",
+            data=dict(action="delete", rowid=[encoded_id1, encoded_id2]),
+        )
+        assert rv.status_code == 302
+        assert sqla_db_ext.db.session.query(Model).count() == 0
 
 
 def test_joined_inheritance(

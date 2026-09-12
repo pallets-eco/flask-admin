@@ -9,6 +9,7 @@ Bugfixes:
 * ``BaseTimeBetweenFilter.validate()`` now returns ``False`` on invalid input instead of raising an exception.
 * Fix encoding for editing file in FileAdmin. Now it uses UTF-8 and accepts non-ASCII characters.
 * SQLAlchemy backend: ``conv_ARRAY`` now infers the array element's ``python_type`` and passes it through as the ``Select2TagsField`` ``coerce`` callable. Saving a Postgres ``ARRAY(Integer)`` / ``ARRAY(Float)`` column no longer fails with ``column "x" is of type integer[] but expression is of type text[]`` (closes #1724).
+* SQLAlchemy backend: ``get_query_for_ids()`` now coerces string IDs to their model primary key column type when a ``python_type`` is defined. Bulk delete of records with integer primary keys no longer fails on PostgreSQL with psycopg 3 (closes #2951).
 * Fix sorting arrow direction in admin list view. Now it reflects the current sorting state (closes #2933).
 * MongoEngine fileadmin backend: downloading GridFS files now preserves their name and extension instead of saving them as ``file`` (closes #2916).
 * MongoEngine backend: stop reading the deprecated ``GridOut.contentType`` property. File downloads and list/form widgets now resolve the MIME type via ``metadata["content_type"]``, the GridFS document directly (for legacy data), or filename-based guessing (closes #2920).

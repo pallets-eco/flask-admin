@@ -127,6 +127,35 @@ def tuple_operator_in(
         return None
 
 
+def _coerce_pk_value(col: t.Any, val: t.Any) -> t.Any:
+    """
+    Coerce string value from HTTP request into the column's native python_type.
+    Falls back gracefully if python_type is not implemented or coercion fails.
+    """
+    try:
+        type_ = getattr(col, "type", None)
+        try:
+            python_type = getattr(type_, "python_type", None)
+        except NotImplementedError:
+            python_type = None
+
+        if python_type is not None:
+            if isinstance(val, python_type):
+                return val
+            if python_type is bool:
+                if isinstance(val, str):
+                    v = val.strip().lower()
+                    if v in ("true", "1", "t", "yes", "y"):
+                        return True
+                    elif v in ("false", "0", "f", "no", "n"):
+                        return False
+                    return val
+            return python_type(val)
+    except (NotImplementedError, AttributeError, ValueError, TypeError):
+        return val
+    return val
+
+
 def get_query_for_ids(
     modelquery: t.Any, model: type[T_SQLALCHEMY_MODEL], ids: tuple[str, ...]
 ) -> t.Any:
@@ -143,8 +172,22 @@ def get_query_for_ids(
         # Get model primary key property references
         model_pk = [getattr(model, name) for name in get_primary_key(model)]
 
+        coerced_decoded_ids = []
+        for key_tuple in decoded_ids:
+            if len(key_tuple) != len(model_pk):
+                raise ValueError(
+                    f"Mismatch between expected primary key count ({len(model_pk)}) "
+                    f"and input key fields ({len(key_tuple)})."
+                )
+            coerced_decoded_ids.append(
+                tuple(
+                    _coerce_pk_value(col, val)
+                    for col, val in zip(model_pk, key_tuple, strict=True)
+                )
+            )
+
         try:
-            query = modelquery.filter(tuple_(*model_pk).in_(decoded_ids))
+            query = modelquery.filter(tuple_(*model_pk).in_(coerced_decoded_ids))
             # Only the execution of the query will tell us, if the tuple_
             # operator really works
             query.all()
@@ -152,7 +195,7 @@ def get_query_for_ids(
             query = modelquery.filter(
                 tuple_operator_in(
                     model_pk,
-                    decoded_ids,  # type: ignore[arg-type]
+                    coerced_decoded_ids,  # type: ignore[arg-type]
                 )
             )
     else:
@@ -160,7 +203,8 @@ def get_query_for_ids(
             model,
             get_primary_key(model),  # type: ignore[arg-type]
         )
-        query = modelquery.filter(model_pk.in_(ids))
+        coerced_ids = [_coerce_pk_value(model_pk, v) for v in ids]
+        query = modelquery.filter(model_pk.in_(coerced_ids))
 
     return query
 
